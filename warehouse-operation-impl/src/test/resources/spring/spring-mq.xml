@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jms="http://www.springframework.org/schema/jms"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms.xsd">
+
+	<bean id="jmsFactory" class="org.apache.activemq.pool.PooledConnectionFactory" destroy-method="stop">
+		<property name="connectionFactory">
+			<bean class="org.apache.activemq.ActiveMQConnectionFactory">
+				<property name="brokerURL" value="${jmsFactory.brokerURL}" />
+				<property name="userName" value="${jmsFactory.userName}"/>
+				<property name="password" value="${jmsFactory.password}"/>
+			</bean>
+		</property>
+		<property name="maxConnections" value="3"></property>
+	</bean>
+	
+	<bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+		<property name="connectionFactory">
+			<ref local="jmsFactory" />
+		</property>
+		<!-- 区别它采用的模式为false是p2p为true是订阅 -->
+		<!-- <property name="pubSubDomain" value="false" /> -->
+	</bean>
+	
+	<jms:listener-container connection-factory="jmsFactory" acknowledge="auto" concurrency="2" >
+		<jms:listener destination="${jmsFactory.listener.demo2Destination}" />
+		<jms:listener destination="${jmsFactory.listener.demo1Destination}" />
+	</jms:listener-container>
+		
+</beans>

@@ -1,0 +1,43 @@
+<!-- aop优先级一定要在事务之前，否则无法切换 如果不使用数据源拆分，请注释此代码 -->
+	<bean class="lark.orm.aop.ShardingDataSourceAspect" /> 
+	
+	<!-- 事务管理器开始 -->
+	
+	<!-- 事务管理器结束-->
+	
+	
+	<!-- 用于多库拆分 -->
+	
+	<bean id="source01" parent="parentSource">
+		<property name="jdbcUrl">
+			<value><![CDATA[jdbc:mysql://10.8.12.210:3306/db_sharding_oms_01]]></value>
+		</property>
+	</bean>
+	
+	<bean id="source02" parent="parentSource">
+		<property name="jdbcUrl">
+			<value><![CDATA[jdbc:mysql://10.8.12.210:3306/db_sharding_oms_02]]></value>
+		</property>
+	</bean>
+	
+	<bean id="sourceCommon" parent="parentSource">
+		<property name="jdbcUrl">
+			<value><![CDATA[jdbc:mysql://10.8.12.210:3306/db_sharding_oms_common]]></value>
+		</property>
+	</bean>
+	
+	
+	<bean id="dataSource" class="lark.orm.dao.ShardingDataSource">
+		<property name="dataSourceMap"> 
+			<map>
+				<entry key="01">
+					<ref local="source01"/>
+				</entry>
+				<entry key="02">
+					<ref local="source02"/>
+				</entry>
+			</map>
+		</property>
+		<property name="commonDataSource" ref="sourceCommon"></property>
+	</bean>
+	

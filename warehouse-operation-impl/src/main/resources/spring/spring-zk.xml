@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:p="http://www.springframework.org/schema/p"
+
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+		">
+		
+	<!-- 更改序列化方式 -->
+	<bean id="zkSerializer" class="com.baozun.zkpro.bean.ZkSerializerImpl"></bean>	
+	
+	<!-- zk data listener -->
+ 	<bean id="iZkDataListener" class="com.baozun.zkpro.listener.IZkDataListenerImpl"></bean>
+ 	
+ 	<!-- zk state listener -->
+ 	<bean id="iZkStateListener" class="com.baozun.zkpro.listener.IZkStateListenerImpl"></bean>
+ 	
+ 	<!-- state change will invoke task lock process methd -->
+ 	<bean id="taskLockCustomStateManager" class="com.baozun.task.bean.TaskLockCustomStateManagerImpl"></bean>
+
+	<!-- 以上为标准配置 -->
+ 	<!-- 以下为项目定制化配置 -->
+ 	<!-- zk客户端  必须配置-->
+ 	<bean id="zkClient" class="org.I0Itec.zkclient.ZkClient">
+	<!-- 	zk.timeout -->
+		<constructor-arg index="0" value="${zk.host}" ></constructor-arg>
+		<constructor-arg index="1" value="${zk.session.timeout}" ></constructor-arg>
+		<constructor-arg index="2" value="${zk.connection.timeout}"></constructor-arg>
+		<constructor-arg index="3" ref="zkSerializer"></constructor-arg>
+	</bean>
+ 	
+ 	<!-- zk data change的实际处理逻辑 -->
+ 	<bean id="zkDateChangeManager" class="com.baozun.scm.primservice.whoperation.zk.ZkDateChangeManagerImpl"></bean>
+ 	
+
+	
+	<!-- zk数据 -->
+	<bean id="zkClientFactory" class="com.baozun.zkpro.bean.ZkClientInitBean">
+		<property name="dataChangePaths">
+			<list>
+				<value>${zk.config.app.root}</value>
+			
+			</list>
+		</property>
+		<property name="subscribeStateChange">
+			<value>true</value>
+		</property>
+		
+	</bean>
+	
+
+ 	<!-- zk state change的实际处理逻辑 -->
+ 	<bean id="zkStateChangeManager" class="com.baozun.scm.primservice.whoperation.zk.ZkStateChangeManagerImpl"></bean>
+	<!-- aop -->
+ 	<bean class="com.baozun.task.aop.SingleTaskLockAop"></bean>
+	
+</beans>

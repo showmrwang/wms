@@ -1,0 +1,618 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	
+	<groupId>com.baozun.scm.primservice</groupId>
+	<artifactId>wh-operation-impl</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+	<name>wh-operation-impl</name>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<version.spring>4.2.2.RELEASE</version.spring>
+		<version.slf4j>1.7.5</version.slf4j>
+		<version.logback>1.0.3</version.logback>
+		<native2ascii_pattern>**/*.properties</native2ascii_pattern>
+
+		<!-- tomcat6-maven-plugin properties -->
+		<tomcat6.port>80</tomcat6.port>
+		<tomcat6.path>/</tomcat6.path>
+	</properties>
+
+	<dependencies>
+	
+	
+		<!-- spring -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-aop</artifactId>
+			<version>${version.spring}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>${version.spring}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context-support</artifactId>
+			<version>${version.spring}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<version>${version.spring}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+			<version>${version.spring}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-expression</artifactId>
+			<version>${version.spring}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-tx</artifactId>
+			<version>${version.spring}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jms</artifactId>
+			<version>${version.spring}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-aspects</artifactId>
+			<version>${version.spring}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jdbc</artifactId>
+			<version>${version.spring}</version>
+		</dependency>
+		
+		<!-- spring -->
+	
+	
+	
+		<dependency>
+			<groupId>com.baozun.scm.primservice</groupId>
+			<artifactId>wh-operation-api</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		
+		<!-- dubbo -->
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>dubbo</artifactId>
+			<version>2.5.3</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.github.sgroschupf</groupId>
+			<artifactId>zkclient</artifactId>
+			<version>0.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>quartz</groupId>
+			<artifactId>quartz</artifactId>
+			<version>1.5.2</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>lark</groupId>
+			<artifactId>lark-tool</artifactId>
+			<version>1.0.0</version>
+			<exclusions>
+				<exclusion>
+				  <groupId>org.slf4j</groupId>
+				  <artifactId>jcl-over-slf4j</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		
+		<!-- zk read properties -->
+		<dependency>
+			<groupId>com.baozun</groupId>
+			<artifactId>common-zkpro</artifactId>
+			<version>1.5.0</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>jcl-over-slf4j</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		
+		<dependency>
+		  <groupId>com.baozun</groupId>
+		  <artifactId>common-redis</artifactId>
+		  <version>1.0.0</version>
+		  <exclusions>
+				<exclusion>
+					<groupId>com.baozun</groupId>
+					<artifactId>common-utilities</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.baozun</groupId>
+			<artifactId>common-utilities</artifactId>
+		  	<version>1.0.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>lark</groupId>
+			<artifactId>lark-orm</artifactId>
+			<version>1.0.2</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>log4j</artifactId>
+					<groupId>log4j</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>slf4j-log4j12</artifactId>
+					<groupId>org.slf4j</groupId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-orm</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		
+		
+
+		<!-- spring-security -->
+		
+<!-- 		<dependency> -->
+<!-- 			<groupId>c3p0</groupId> -->
+<!-- 			<artifactId>c3p0</artifactId> -->
+<!-- 			<version>0.9.1.2</version> -->
+<!-- 		</dependency> -->
+
+		<!-- DBCP -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-dbcp2</artifactId>
+			<version>2.1</version>
+			<exclusions>
+				<exclusion>
+					 <groupId>commons-pool</groupId>
+  					 <artifactId>commons-pool</artifactId>
+				</exclusion>
+			
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.velocity</groupId>
+			<artifactId>velocity</artifactId>
+			<version>1.7</version>
+		</dependency>
+
+		<!-- 上传使用 -->
+		<dependency>
+			<groupId>commons-fileupload</groupId>
+			<artifactId>commons-fileupload</artifactId>
+			<version>1.2.2</version>
+		</dependency>
+
+				<!--******** log4j and slf4j ******** -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${version.slf4j}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.16</version>
+		</dependency>
+
+		<dependency>
+			<artifactId>slf4j-log4j12</artifactId>
+			<groupId>org.slf4j</groupId>
+			<version>${version.slf4j}</version>
+		</dependency>
+
+		<!-- servlet-api -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>2.5</version>
+			
+		</dependency>
+
+		<!-- jsp-api -->
+		<dependency>
+			<groupId>javax.servlet.jsp</groupId>
+			<artifactId>jsp-api</artifactId>
+			<version>2.1</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-mapper-asl</artifactId>
+			<version>1.8.5</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>${version.spring}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- junit -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.10</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>janino</groupId>
+			<artifactId>janino</artifactId>
+			<version>2.5.10</version>
+		</dependency>
+
+		<!-- redis -->
+		<dependency>
+			<groupId>redis.clients</groupId>
+			<artifactId>jedis</artifactId>
+			<version>2.2.1</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>mail</artifactId>
+			<version>1.4</version>
+		</dependency>
+		
+		<!-- activemq -->
+		<dependency>
+			<groupId>org.apache.activemq</groupId>
+			<artifactId>activemq-core</artifactId>
+			<version>5.5.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.activemq</groupId>
+			<artifactId>activemq-pool</artifactId>
+			<version>5.5.1</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>jasperreports</groupId>
+			<artifactId>jasperreports</artifactId>
+			<version>5.2.0</version>
+		</dependency>
+		
+		<dependency>
+		   <groupId>com.baozun</groupId>
+		  <artifactId>common-task-lock</artifactId>
+		  <version>1.2.1</version>
+		 
+		   <exclusions>
+		    <exclusion>
+		         <artifactId>spring-beans</artifactId>
+		         <groupId>org.springframework</groupId>
+		    </exclusion>
+		    <exclusion>
+		         <artifactId>spring-aspects</artifactId>
+		         <groupId>org.springframework</groupId>
+		    </exclusion>
+		    <exclusion>
+		         <artifactId>spring-context</artifactId>
+		         <groupId>org.springframework</groupId>
+		    </exclusion>
+		    <exclusion>
+		         <artifactId>spring-context-support</artifactId>
+		         <groupId>org.springframework</groupId>
+		    </exclusion>
+		   <exclusion>
+		         <groupId>org.slf4j</groupId>
+		         <artifactId>slf4j-api</artifactId>
+		    </exclusion>
+		   <exclusion>
+		         <groupId>log4j</groupId>
+		        <artifactId>log4j</artifactId>
+		    </exclusion>
+		    <exclusion>
+		         <artifactId>slf4j-log4j12</artifactId>
+		       <groupId>org.slf4j</groupId>
+		    </exclusion>
+		    <exclusion>
+		        <groupId>org.springframework</groupId>
+		       <artifactId>spring-test</artifactId>
+		    </exclusion>
+		    <exclusion>
+		        <groupId>org.springframework</groupId>
+		       <artifactId>spring-aop</artifactId>
+		    </exclusion>
+		   </exclusions> 
+		 </dependency>
+	</dependencies>
+
+	<profiles>
+		<profile>
+			<id>dev</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<env>dev</env>
+				<config.path>src/main/resources/config/dev</config.path>
+			</properties>
+		</profile>
+
+		<profile>
+			<id>test</id>
+			<properties>
+				<env>test</env>
+				<config.path>src/main/resources/config/test</config.path>
+			</properties>
+		</profile>
+		
+		<profile>
+			<id>sta</id>
+			<properties>
+				<env>st</env>
+				<config.path>src/main/resources/config/st</config.path>
+			</properties>
+		</profile>
+		
+		<profile>
+			<id>st</id>
+			<properties>
+				<env>st</env>
+				<config.path>src/main/resources/config/st</config.path>
+			</properties>
+		</profile>
+		
+		<profile>
+			<id>pro</id>
+			<properties>
+				<env>pro</env>
+				<config.path>src/main/resources/config/pro</config.path>
+			</properties>
+		</profile>
+	</profiles>
+
+	<build>
+		<finalName>service</finalName>
+		<plugins>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<descriptor>build/assembly.xml</descriptor>
+				</configuration>
+				<executions>
+					<execution>
+						<id>make-assembly</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.6</version>
+				<executions>
+					<execution>
+						<id>copy-resources</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${basedir}/target/classes/config</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${config.path}/</directory>
+									<filtering>true</filtering>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+	
+			
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.12</version>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+			</plugin>
+
+			<!-- 解决war bug Caused by: com.thoughtworks.xstream.mapper.CannotResolveClassException: 
+				modelEncoding : modelEncoding -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.2</version>
+				<configuration>
+					<!--注意增加这两行，在打包时相关的类会被独立打成jar -->
+					<attachClasses>true</attachClasses>
+					<classesClassifier>api</classesClassifier>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
+				<configuration>
+					<encoding>utf-8</encoding>
+					<source>1.7</source>
+					<target>1.7</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-eclipse-plugin</artifactId>
+				<version>2.9</version>
+				<configuration>
+					<downloadSources>true</downloadSources>
+					<downloadJavadocs>true</downloadJavadocs>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<inherited>true</inherited>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>2.1.2</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>native2ascii-maven-plugin</artifactId>
+				<version>1.0-beta-1</version>
+				<executions>
+					<execution>
+						<id>native2ascii</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>native2ascii</goal>
+						</goals>
+						<configuration>
+							<encoding>utf-8</encoding>
+							<includes>
+								<include>${native2ascii_pattern}</include>
+							</includes>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+
+		<extensions>
+			<extension>
+				<groupId>org.jvnet.wagon-svn</groupId>
+				<artifactId>wagon-svn</artifactId>
+				<version>1.9</version>
+			</extension>
+		</extensions>
+
+		<pluginManagement>
+			<plugins>
+				<!-- This plugin's configuration is used to store Eclipse m2e settings 
+					only. It has no influence on the Maven build itself. -->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.codehaus.mojo</groupId>
+										<artifactId>native2ascii-maven-plugin</artifactId>
+										<versionRange>[1.0-beta-1,)</versionRange>
+										<goals>
+											<goal>native2ascii</goal>
+
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore />
+									</action>
+								</pluginExecution>
+
+								<!-- copy-dependency plugin -->
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.apache.maven.plugins</groupId>
+										<artifactId>maven-dependency-plugin</artifactId>
+										<versionRange>[1.0.0,)</versionRange>
+										<goals>
+											<goal>unpack</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore />
+									</action>
+								</pluginExecution>
+								
+								<!-- copy-dependency plugin -->
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.apache.maven.plugins</groupId>
+										<artifactId>maven-resources-plugin</artifactId>
+										<versionRange>[1.0.0,)</versionRange>
+										<goals>
+											<goal>copy-resources</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore />
+									</action>
+								</pluginExecution>
+
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+
+	<distributionManagement>
+		<repository>
+			<id>releases</id>
+			<name>nexus-releases</name>
+			<url>http://10.8.12.100/nexus/content/repositories/releases/</url>
+		</repository>
+
+		<snapshotRepository>
+			<id>snapshots</id>
+			<name>nexus-snapshots</name>
+			<url>http://10.8.12.100/nexus/content/repositories/snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
+</project>

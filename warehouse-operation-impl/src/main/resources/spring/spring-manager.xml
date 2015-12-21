@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+<!-- 	<context:component-scan base-package="com.baozun.nebula.solr.dao" /> -->
+	<context:component-scan base-package="com.baozun.**.manager" >
+
+<!-- 		<context:exclude-filter type="regex" expression="com.baozun.nebula.cms.*" /> -->
+	</context:component-scan>
+	<context:component-scan base-package="com.baozun.**.event" />
+<!-- 	<context:component-scan base-package="com.baozun.**.engine" /> -->
+	<context:component-scan base-package="com.baozun.**.impl" >
+<!-- 		<context:exclude-filter type="regex" expression="com.baozun.nebula.cms.*" /> -->
+	</context:component-scan>
+
+
+<!-- 因为开启异步加载模式，造成dubbo local 模式启动出错 -->
+<!-- 	<bean id="applicationEventMulticaster" -->
+<!-- 		class="org.springframework.context.event.SimpleApplicationEventMulticaster"> -->
+<!-- 		<property name="taskExecutor"> -->
+<!-- 			<bean class="org.springframework.core.task.SimpleAsyncTaskExecutor"> -->
+<!-- 			</bean> -->
+<!-- 		</property> -->
+<!-- 	</bean> -->
+	
+<!-- 	<bean id="contextCollector" class="com.baozun.bizhub.util.spring.SpringUtil"> -->
+<!-- 		<property name="contextKey"> -->
+<!-- 			<value>mainContext</value> -->
+<!-- 		</property> -->
+<!-- 	</bean>  -->
+	
+</beans>

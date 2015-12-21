@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:loxia="http://loxia.benjamin.cn/schema/core"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://loxia.benjamin.cn/schema/core http://loxia.benjamin.cn/schema/core/loxia-spring-ext.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd	
+		">
+	
+
+
+	<bean id="redisconfig" class="redis.clients.jedis.JedisPoolConfig">
+		<property  name="maxActive" >
+			<value type="long">${redis.MaxActive}</value>
+		</property>
+		<property  name="maxIdle" >
+			<value type="long">${redis.MaxIdle}</value>
+		</property>
+		<property  name="maxWait">
+			<value type="long">${redis.MaxWait}</value>
+		</property>
+		<property  name="testOnBorrow" >
+			<value type="boolean">true</value>
+		</property>
+	</bean>
+	
+		<!--reids client -->
+<!-- 		<bean id="redisClient" class="redis.clients.jedis.Jedis"> -->
+<!-- 			<constructor-arg type="java.lang.String" value="${redis.host1}"></constructor-arg> -->
+<!-- 			<constructor-arg type="int" value="${redis.port1}"></constructor-arg> -->
+<!-- 			<constructor-arg type="int" value="${redis.timeout}"></constructor-arg> -->
+			
+<!-- 		</bean> -->
+<!-- 	<bean id="host1" class="redis.clients.jedis.JedisShardInfo"> -->
+<!-- 		<constructor-arg type="java.lang.String" value="${redis.host1}"></constructor-arg> -->
+<!-- 		<constructor-arg type="int" value="${redis.port1}"></constructor-arg> -->
+<!-- 	</bean> -->
+				
+<!-- 	<bean id="host2" class="redis.clients.jedis.JedisShardInfo"> -->
+<!-- 		<constructor-arg type="java.lang.String" value="${redis.host2}"></constructor-arg> -->
+<!-- 		<constructor-arg type="int" value="${redis.port2}"></constructor-arg> -->
+<!-- 	</bean> -->
+<!-- 	<bean id="murmurHash" class="redis.clients.util.MurmurHash"></bean> -->
+	
+<!-- 	<bean id="patternId" class="java.util.regex.Pattern"> -->
+<!-- 		<constructor-arg type="java.lang.String" value="\{(.+?)\}"></constructor-arg> -->
+<!-- 		<constructor-arg type="int" value="0"></constructor-arg> -->
+<!-- 	</bean> -->
+			
+<!-- 	<bean id="jedisPool" class="redis.clients.jedis.ShardedJedisPool"> -->
+<!-- 		<constructor-arg ref="redisconfig"></constructor-arg> -->
+<!-- 		<constructor-arg type="java.util.List"> -->
+<!-- 			<list> -->
+<!-- 				<ref bean="host1"/> -->
+<!--  				<ref bean="host2"/>  -->
+<!-- 			</list> -->
+<!-- 		</constructor-arg> -->
+<!-- 		<constructor-arg > -->
+<!-- 			<ref bean="murmurHash"/> -->
+<!-- 		</constructor-arg> -->
+<!-- 		<constructor-arg > -->
+<!-- 			<ref bean="patternId"/> -->
+<!-- 		</constructor-arg> -->
+<!-- 	</bean> -->
+	
+	<bean id="jedisSentinelPool" class="redis.clients.jedis.JedisSentinelPool">
+		<constructor-arg ref="redisconfig"></constructor-arg>
+			 
+		<constructor-arg type="java.util.Set">
+			<set>
+				<value>${redis.sentinel1}</value>
+				<value>${redis.sentinel2}</value>
+				<value>${redis.sentinel3}</value>
+			</set>
+			
+		</constructor-arg>
+ 			
+		<constructor-arg >
+			<value>${redis.mastername}</value>
+		</constructor-arg>
+		
+	</bean>
+	
+	<bean id="cacheManager" class="com.baozun.redis.manager.CacheManagerImpl">
+		<property name="cacheConfigManager" ref="cacheConfigManager"></property>
+		<property name="jedisPool" ref="jedisSentinelPool"></property>
+	</bean>
+</beans>
