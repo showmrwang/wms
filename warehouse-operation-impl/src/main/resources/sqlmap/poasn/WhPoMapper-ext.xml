@@ -4,8 +4,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
 
 
-<mapper namespace="com.baozun.wms4.dao.auth.WhPoDao">
-	<resultMap id="WhPoResultExt" type="com.baozun.wms4.model.auth.WhPo">
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.poasn.WhPoDao">
+	<resultMap id="WhPoResultExt" type="com.baozun.scm.primservice.whoperation.model.poasn.WhPo">
 	</resultMap>
 	
 	<!-- 用于select查询公用抽取的列 -->
@@ -92,7 +92,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	</sql>
 	
 
-		<update id="updateByVersion" parameterType="com.baozun.wms4.model.auth.WhPo">
+		<update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.poasn.WhPo">
 		    <![CDATA[
 		        UPDATE t_wh_po SET
 			        po_code = #{poCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -109,8 +109,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
 		        WHERE 
-			        id = #{id} 
-			        
+			        id = #{id}        
 			        and last_modify_time	<=  #{lastModifyTime}    
 		    ]]>
 		</update>

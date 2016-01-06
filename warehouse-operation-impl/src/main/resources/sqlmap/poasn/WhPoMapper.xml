@@ -4,8 +4,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
 
 
-<mapper namespace="com.baozun.wms4.dao.auth.WhPoDao">
-	<resultMap id="WhPoResult" type="com.baozun.wms4.model.auth.WhPo">
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.poasn.WhPoDao">
+	<resultMap id="WhPoResult" type="com.baozun.scm.primservice.whoperation.model.poasn.WhPo">
 	</resultMap>
 	
 	<!-- 用于select查询公用抽取的列 -->
@@ -28,7 +28,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    ]]>
 	</sql>
 		<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
-		<insert id="insert" parameterType="com.baozun.wms4.model.auth.WhPo" 
+		<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.poasn.WhPo" 
 			useGeneratedKeys="true" keyProperty="id" 
 		 flushCache="true">
 	    <![CDATA[
@@ -66,7 +66,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 
 		</insert>
 	    
-		<update id="update" parameterType="com.baozun.wms4.model.auth.WhPo">
+		<update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.poasn.WhPo">
 	    <![CDATA[
 	        UPDATE t_wh_po SET
 		        po_code = #{poCode,javaType=java.lang.String,jdbcType=VARCHAR} ,

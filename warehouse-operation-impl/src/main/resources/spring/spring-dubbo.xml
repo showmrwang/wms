@@ -24,48 +24,9 @@
     
  
     <!-- 声明需要暴露的服务接口 -->
-    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.system.SchedulerTaskManager" ref="schedulerTaskManager" />
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.createspoasn.CreatesAsnManager"  ref="createsAsnManager" />
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.createspoasn.CreatesPoManager"  ref="createsPoManager" />
     
-    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.system.SysDictionaryManager" ref="sysDictionaryManager" />
-    
-    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.system.AppConfigManager" ref="appConfigManager" />
-    
-    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.DemoManager" ref="demoManager" />
-    
-    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.test.TestManager" ref="testManager" />
-    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.auth.RoleManager" ref="roleManager" />
-    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.auth.UserManager" ref="userManager" />
-    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.auth.PrivilegeManager" ref="privilegeManager" />
-    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.auth.OperationUnitTypeManager" ref="operationUnitTypeManager" />
- 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.auth.UserRoleManager" ref="userRoleManager" />
- 	
- 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.auth.MenuItemManager" ref="menuItemManager" />
- 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.auth.OperationUnitManager" ref="operationUnitManager" />
- 	
-    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.localauth.LocalRoleManager" ref="localRoleManager" />
- 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.localauth.LocalUserManager" ref="localUserManager" />
- 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.localauth.LocalPrivilegeManager" ref="localPrivilegeManager" />
-	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.baseinfo.pwh.LocationManager" ref="locationManager" />
-	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.baseinfo.device.DevicePdaManager" ref="devicePdaManager" /> 
-	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.auth.PrivilegeAndUrlManager" ref="privilegeAndUrlManager" />
-	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.localauth.LocalPrivilegeAndUrlManager" ref="localPrivilegeAndUrlManager" />  
-	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.WarehouseManager" ref="warehouseManager" />  
-	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.RegionManager" ref="regionManager" />  
-	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.UomManager" ref="uomManager" />  
-	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.LocationTempletManager" ref="locationTempletManager" />  
-	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.LocationTempletRulesManager" ref="locationTempletRulesManager" />  
-	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.LocationManager" ref="whLocationManager" />  
-	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.InventoryStatusManager" ref="inventoryStatusManager" />  
-	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.LocationManagerProxy" ref="whLocationManagerProxy" />  
-	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.LocationLogManager" ref="locationLogManager" />  
-	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.LogisticsProviderManager" ref="logisticsProviderManager" />  
-	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.SupplierManager" ref="supplierManager" />  
-	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.ContainerManager" ref="containerManager" />
-	<!-- 区域管理 -->
-	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.AreaManager" ref="areaManager" />  
-	
-	<!-- 模糊查询 -->
-	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.GeneralFilterManager" ref="generalFilterManager" />  
 	
     <!--生成远程服务代理，可以和本地bean一样使用demoService-->
 <!--     <dubbo:reference id="demoManager" interface="com.baozun.scm.primservice.whoperation.manager.DemoManager" cluster="failfast" loadbalance="consistenthash"/> -->
