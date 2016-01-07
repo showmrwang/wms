@@ -34,6 +34,8 @@ public class WhPoLineCommand implements Serializable {
     private Integer qtyPlanned;
     /** 超收数量 */
     private Integer overshipped;
+    /** 可用数量 */
+    private Integer availableQty;
     /** 计划箱数 */
     private Integer ctnPlanned;
     /** 已收数量 */
@@ -291,6 +293,14 @@ public class WhPoLineCommand implements Serializable {
 
     public void setUuid(String value) {
         this.uuid = value;
+    }
+
+    public Integer getAvailableQty() {
+        return availableQty;
+    }
+
+    public void setAvailableQty(Integer availableQty) {
+        this.availableQty = availableQty;
     }
 
 }

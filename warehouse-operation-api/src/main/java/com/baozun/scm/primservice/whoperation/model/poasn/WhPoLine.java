@@ -41,6 +41,8 @@ public class WhPoLine extends BaseModel {
     private Integer qtyPlanned;
     /** 超收数量 */
     private Integer overshipped;
+    /** 可用数量 */
+    private Integer availableQty;
     /** 计划箱数 */
     private Integer ctnPlanned;
     /** 已收数量 */
@@ -299,4 +301,13 @@ public class WhPoLine extends BaseModel {
     public void setUuid(String value) {
         this.uuid = value;
     }
+
+    public Integer getAvailableQty() {
+        return availableQty;
+    }
+
+    public void setAvailableQty(Integer availableQty) {
+        this.availableQty = availableQty;
+    }
+
 }

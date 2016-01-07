@@ -17,6 +17,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	sku_id as skuId,
 	        	qty_planned as qtyPlanned,
 	        	overshipped as overshipped,
+	        	available_qty as availableQty,
 	        	ctn_planned as ctnPlanned,
 	        	qty_rcvd as qtyRcvd,
 	        	ctn_rcvd as ctnRcvd,
@@ -45,13 +46,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			useGeneratedKeys="true" keyProperty="id" 
 		 flushCache="true">
 	    <![CDATA[
-	        INSERT INTO
+	      INSERT INTO
 	        t_wh_po_line (
 	        	po_id ,
 	        	linenum ,
 	        	sku_id ,
 	        	qty_planned ,
 	        	overshipped ,
+	        	available_qty ,
 	        	ctn_planned ,
 	        	qty_rcvd ,
 	        	ctn_rcvd ,
@@ -79,6 +81,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	#{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{qtyPlanned,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 	        	#{overshipped,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+	        	#{availableQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 	        	#{ctnPlanned,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 	        	#{qtyRcvd,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 	        	#{ctnRcvd,javaType=java.lang.Integer,jdbcType=INTEGER} ,
@@ -107,12 +110,13 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    
 		<update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine">
 	    <![CDATA[
-	        UPDATE t_wh_po_line SET
+	    UPDATE t_wh_po_line SET
 		        po_id = #{poId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        linenum = #{linenum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        sku_id = #{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        qty_planned = #{qtyPlanned,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        overshipped = #{overshipped,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        available_qty = #{availableQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        ctn_planned = #{ctnPlanned,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        qty_rcvd = #{qtyRcvd,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        ctn_rcvd = #{ctnRcvd,javaType=java.lang.Integer,jdbcType=INTEGER} ,
