@@ -52,6 +52,11 @@ public class WhPoCommand implements Serializable {
     /** 操作人ID */
     private Long modifiedId;
 
+    /** 采购时间Str */
+    private String poDateStr;
+    /** 计划到货时间Str */
+    private String etaStr;
+
     public Long getId() {
         return this.id;
     }
