@@ -72,6 +72,11 @@ public class WhPoCommand implements Serializable {
     /** 操作人ID */
     private Long modifiedId;
 
+    /** 采购时间Str */
+    private String poDateStr;
+    /** 计划到货时间Str */
+    private String etaStr;
+
     public Long getId() {
         return this.id;
     }
@@ -262,6 +267,22 @@ public class WhPoCommand implements Serializable {
 
     public void setModifiedId(Long value) {
         this.modifiedId = value;
+    }
+
+    public String getPoDateStr() {
+        return poDateStr;
+    }
+
+    public void setPoDateStr(String poDateStr) {
+        this.poDateStr = poDateStr;
+    }
+
+    public String getEtaStr() {
+        return etaStr;
+    }
+
+    public void setEtaStr(String etaStr) {
+        this.etaStr = etaStr;
     }
 
 
