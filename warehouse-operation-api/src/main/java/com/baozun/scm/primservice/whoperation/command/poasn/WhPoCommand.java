@@ -269,5 +269,21 @@ public class WhPoCommand implements Serializable {
         this.modifiedId = value;
     }
 
+    public String getPoDateStr() {
+        return poDateStr;
+    }
+
+    public void setPoDateStr(String poDateStr) {
+        this.poDateStr = poDateStr;
+    }
+
+    public String getEtaStr() {
+        return etaStr;
+    }
+
+    public void setEtaStr(String etaStr) {
+        this.etaStr = etaStr;
+    }
+
 
 }
