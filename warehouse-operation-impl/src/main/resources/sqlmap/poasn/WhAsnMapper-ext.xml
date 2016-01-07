@@ -4,23 +4,19 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
 
 
-<mapper namespace="com.baozun.scm.primservice.whoperation.dao.poasn.WhPoDao">
-	<resultMap id="WhPoResultExt" type="com.baozun.scm.primservice.whoperation.model.poasn.WhPo">
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnDao">
+	<resultMap id="WhAsnResultExt" type="com.baozun.scm.primservice.whoperation.model.poasn.WhAsn">
 	</resultMap>
 	
 	<!-- 用于select查询公用抽取的列 -->
-	<sql id="whPoColumnsExt">
+	<sql id="whAsnColumnsExt">
 	    <![CDATA[
 	        	id as id,
-	        	po_code as poCode,
+	        	asn_code as asnCode,
+	        	po_id as poId,
 	        	ou_id as ouId,
 	        	customer_id as customerId,
 	        	store_id as storeId,
-	        	supplier_id as supplierId,
-	        	logistics_provider_id as logisticsProviderId,
-	        	po_type as poType,
-	        	status as status,
-	        	is_iqc as isIqc,
 	        	po_date as poDate,
 	        	eta as eta,
 	        	delivery_time as deliveryTime,
@@ -28,6 +24,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	qty_rcvd as qtyRcvd,
 	        	ctn_planned as ctnPlanned,
 	        	ctn_rcvd as ctnRcvd,
+	        	supplier_id as supplierId,
+	        	logistics_provider_id as logisticsProviderId,
+	        	asn_type as asnType,
+	        	status as status,
+	        	is_iqc as isIqc,
 	        	start_time as startTime,
 	        	stop_time as stopTime,
 	        	inbound_time as inboundTime,
@@ -38,7 +39,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    ]]>
 	</sql>
 	
-	<sql id="whPoDynamicWhereExt">
+	<sql id="whAsnDynamicWhereExt">
 		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
 		<where>
 	       
@@ -47,12 +48,52 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				</if>
 	       
 	       
-		       <if test="poCode!=null and poCode!=''">
-					and po_code = #{poCode}
+		       <if test="asnCode!=null and asnCode!=''">
+					and asn_code = #{asnCode}
+				</if>
+	       
+				<if test="poId!=null">
+					and po_id = #{poId}
 				</if>
 	       
 				<if test="ouId!=null">
 					and ou_id = #{ouId}
+				</if>
+	       
+				<if test="customerId!=null">
+					and customer_id = #{customerId}
+				</if>
+	       
+				<if test="storeId!=null">
+					and store_id = #{storeId}
+				</if>
+	       
+				<if test="poDate!=null">
+					and po_date = #{poDate}
+				</if>
+	       
+				<if test="eta!=null">
+					and eta = #{eta}
+				</if>
+	       
+				<if test="deliveryTime!=null">
+					and delivery_time = #{deliveryTime}
+				</if>
+	       
+				<if test="qtyPlanned!=null">
+					and qty_planned = #{qtyPlanned}
+				</if>
+	       
+				<if test="qtyRcvd!=null">
+					and qty_rcvd = #{qtyRcvd}
+				</if>
+	       
+				<if test="ctnPlanned!=null">
+					and ctn_planned = #{ctnPlanned}
+				</if>
+	       
+				<if test="ctnRcvd!=null">
+					and ctn_rcvd = #{ctnRcvd}
 				</if>
 	       
 				<if test="supplierId!=null">
@@ -63,8 +104,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					and logistics_provider_id = #{logisticsProviderId}
 				</if>
 	       
-				<if test="poType!=null">
-					and po_type = #{poType}
+				<if test="asnType!=null">
+					and asn_type = #{asnType}
 				</if>
 	       
 				<if test="status!=null">
@@ -75,12 +116,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					and is_iqc = #{isIqc}
 				</if>
 	       
-				<if test="poDate!=null">
-					and po_date = #{poDate}
+				<if test="startTime!=null">
+					and start_time = #{startTime}
 				</if>
 	       
-				<if test="eta!=null">
-					and eta = #{eta}
+				<if test="stopTime!=null">
+					and stop_time = #{stopTime}
+				</if>
+	       
+				<if test="inboundTime!=null">
+					and inbound_time = #{inboundTime}
 				</if>
 	       
 				<if test="createTime!=null">
@@ -102,18 +147,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	</sql>
 	
 
-		<update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.poasn.WhPo">
+		<update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.poasn.WhAsn">
 		    <![CDATA[
-		        UPDATE t_wh_po SET
-			        po_code = #{poCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        UPDATE t_wh_asn SET
+			        asn_code = #{asnCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        po_id = #{poId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        customer_id = #{customerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        store_id = #{storeId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-			        supplier_id = #{supplierId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-			        logistics_provider_id = #{logisticsProviderId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-			        po_type = #{poType,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-			        status = #{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-			        is_iqc = #{isIqc,javaType=java.lang.Boolean,jdbcType=BIT} ,
 			        po_date = #{poDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        eta = #{eta,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        delivery_time = #{deliveryTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
@@ -121,6 +162,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        qty_rcvd = #{qtyRcvd,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 			        ctn_planned = #{ctnPlanned,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 			        ctn_rcvd = #{ctnRcvd,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        supplier_id = #{supplierId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        logistics_provider_id = #{logisticsProviderId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        asn_type = #{asnType,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        status = #{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        is_iqc = #{isIqc,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 			        start_time = #{startTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        stop_time = #{stopTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        inbound_time = #{inboundTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
@@ -129,7 +175,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
 		        WHERE 
-			        id = #{id}        
+			        id = #{id} 
+			        
 			        and last_modify_time	<=  #{lastModifyTime}    
 		    ]]>
 		</update>

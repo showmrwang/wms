@@ -18,70 +18,82 @@ import java.util.Date;
 
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 
-
 /**
- * 采购单
  * 
  * @author larkark
  * 
  */
-public class WhPo extends BaseModel {
+public class WhAsn extends BaseModel {
 
-    private static final long serialVersionUID = 6476267264305613566L;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 3750380929086314560L;
 
-    /** PO单号 */
-    private String poCode;
-    /** 对应组织ID */
+    /** asn单号 */
+    private String asnCode;
+    /** 对应PO_ID */
+    private Long poId;
+    /** 所属仓库ID */
     private Long ouId;
     /** 客户ID */
     private Long customerId;
     /** 店铺ID */
     private Long storeId;
-    /** 供应商ID */
-    private Long supplierId;
-    /** 运输商ID */
-    private Long logisticsProviderId;
-    /** PO单类型 */
-    private Integer poType;
-    /** 状态 */
-    private Integer status;
-    /** 是否质检 1:是 0:否 */
-    private Boolean isIqc;
     /** 采购时间 */
     private Date poDate;
     /** 计划到货时间 */
     private Date eta;
     /** 实际到货时间 */
     private Date deliveryTime;
-    /** 计划到货数量 */
+    /** 计划数量 */
     private Integer qtyPlanned;
-    /** 实际到货数量 */
+    /** 实际数量 */
     private Integer qtyRcvd;
     /** 计划箱数 */
     private Integer ctnPlanned;
     /** 实际箱数 */
     private Integer ctnRcvd;
+    /** 供应商ID */
+    private Long supplierId;
+    /** 运输商ID */
+    private Long logisticsProviderId;
+    /** ASN单类型 */
+    private Integer asnType;
+    /** 状态 */
+    private Integer status;
+    /** 是否质检 1:是 0:否 */
+    private Integer isIqc;
     /** 开始收货时间 */
     private Date startTime;
-    /** 结束收货时间 */
+    /** 结束收获时间 */
     private Date stopTime;
     /** 上架完成时间 */
     private Date inboundTime;
     /** 创建时间 */
     private Date createTime;
-    /** 创建人 */
+    /** 创建人ID */
     private Long createdId;
-    /** 修改时间 */
+    /** 最后操作时间 */
     private Date lastModifyTime;
-    /** 操作人ID */
+    /** modifiedId */
     private Long modifiedId;
 
-    public String getPoCode() {
-        return this.poCode;
+
+    public String getAsnCode() {
+        return this.asnCode;
     }
 
-    public void setPoCode(String value) {
-        this.poCode = value;
+    public void setAsnCode(String value) {
+        this.asnCode = value;
+    }
+
+    public Long getPoId() {
+        return this.poId;
+    }
+
+    public void setPoId(Long value) {
+        this.poId = value;
     }
 
     public Long getOuId() {
@@ -106,46 +118,6 @@ public class WhPo extends BaseModel {
 
     public void setStoreId(Long value) {
         this.storeId = value;
-    }
-
-    public Long getSupplierId() {
-        return this.supplierId;
-    }
-
-    public void setSupplierId(Long value) {
-        this.supplierId = value;
-    }
-
-    public Long getLogisticsProviderId() {
-        return this.logisticsProviderId;
-    }
-
-    public void setLogisticsProviderId(Long value) {
-        this.logisticsProviderId = value;
-    }
-
-    public Integer getPoType() {
-        return this.poType;
-    }
-
-    public void setPoType(Integer value) {
-        this.poType = value;
-    }
-
-    public Integer getStatus() {
-        return this.status;
-    }
-
-    public void setStatus(Integer value) {
-        this.status = value;
-    }
-
-    public Boolean getIsIqc() {
-        return this.isIqc;
-    }
-
-    public void setIsIqc(Boolean value) {
-        this.isIqc = value;
     }
 
     public Date getPoDate() {
@@ -204,6 +176,46 @@ public class WhPo extends BaseModel {
         this.ctnRcvd = value;
     }
 
+    public Long getSupplierId() {
+        return this.supplierId;
+    }
+
+    public void setSupplierId(Long value) {
+        this.supplierId = value;
+    }
+
+    public Long getLogisticsProviderId() {
+        return this.logisticsProviderId;
+    }
+
+    public void setLogisticsProviderId(Long value) {
+        this.logisticsProviderId = value;
+    }
+
+    public Integer getAsnType() {
+        return this.asnType;
+    }
+
+    public void setAsnType(Integer value) {
+        this.asnType = value;
+    }
+
+    public Integer getStatus() {
+        return this.status;
+    }
+
+    public void setStatus(Integer value) {
+        this.status = value;
+    }
+
+    public Integer getIsIqc() {
+        return this.isIqc;
+    }
+
+    public void setIsIqc(Integer value) {
+        this.isIqc = value;
+    }
+
     public Date getStartTime() {
         return this.startTime;
     }
@@ -259,6 +271,4 @@ public class WhPo extends BaseModel {
     public void setModifiedId(Long value) {
         this.modifiedId = value;
     }
-
-
 }

@@ -4,23 +4,19 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
 
 
-<mapper namespace="com.baozun.scm.primservice.whoperation.dao.poasn.WhPoDao">
-	<resultMap id="WhPoResult" type="com.baozun.scm.primservice.whoperation.model.poasn.WhPo">
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnDao">
+	<resultMap id="WhAsnResult" type="com.baozun.scm.primservice.whoperation.model.poasn.WhAsn">
 	</resultMap>
 	
 	<!-- 用于select查询公用抽取的列 -->
-	<sql id="whPoColumns">
+	<sql id="whAsnColumns">
 	    <![CDATA[
-		        id as id,
-	        	po_code as poCode,
+	        	id as id,
+	        	asn_code as asnCode,
+	        	po_id as poId,
 	        	ou_id as ouId,
 	        	customer_id as customerId,
 	        	store_id as storeId,
-	        	supplier_id as supplierId,
-	        	logistics_provider_id as logisticsProviderId,
-	        	po_type as poType,
-	        	status as status,
-	        	is_iqc as isIqc,
 	        	po_date as poDate,
 	        	eta as eta,
 	        	delivery_time as deliveryTime,
@@ -28,6 +24,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	qty_rcvd as qtyRcvd,
 	        	ctn_planned as ctnPlanned,
 	        	ctn_rcvd as ctnRcvd,
+	        	supplier_id as supplierId,
+	        	logistics_provider_id as logisticsProviderId,
+	        	asn_type as asnType,
+	        	status as status,
+	        	is_iqc as isIqc,
 	        	start_time as startTime,
 	        	stop_time as stopTime,
 	        	inbound_time as inboundTime,
@@ -38,21 +39,17 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    ]]>
 	</sql>
 		<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
-		<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.poasn.WhPo" 
+		<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.poasn.WhAsn" 
 			useGeneratedKeys="true" keyProperty="id" 
 		 flushCache="true">
 	    <![CDATA[
 	        INSERT INTO
-	        t_wh_po (
-	        	po_code ,
+	        t_wh_asn (
+	        	asn_code ,
+	        	po_id ,
 	        	ou_id ,
 	        	customer_id ,
 	        	store_id ,
-	        	supplier_id ,
-	        	logistics_provider_id ,
-	        	po_type ,
-	        	status ,
-	        	is_iqc ,
 	        	po_date ,
 	        	eta ,
 	        	delivery_time ,
@@ -60,6 +57,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	qty_rcvd ,
 	        	ctn_planned ,
 	        	ctn_rcvd ,
+	        	supplier_id ,
+	        	logistics_provider_id ,
+	        	asn_type ,
+	        	status ,
+	        	is_iqc ,
 	        	start_time ,
 	        	stop_time ,
 	        	inbound_time ,
@@ -68,15 +70,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	last_modify_time ,
 	        	modified_id 
 	        ) VALUES (
-	        	#{poCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{asnCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{poId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{customerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{storeId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-	        	#{supplierId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-	        	#{logisticsProviderId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-	        	#{poType,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-	        	#{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-	        	#{isIqc,javaType=java.lang.Boolean,jdbcType=BIT} ,
 	        	#{poDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 	        	#{eta,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 	        	#{deliveryTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
@@ -84,6 +82,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	#{qtyRcvd,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 	        	#{ctnPlanned,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 	        	#{ctnRcvd,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+	        	#{supplierId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{logisticsProviderId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{asnType,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+	        	#{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+	        	#{isIqc,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 	        	#{startTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 	        	#{stopTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 	        	#{inboundTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
@@ -96,18 +99,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 
 		</insert>
 	    
-		<update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.poasn.WhPo">
+		<update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.poasn.WhAsn">
 	    <![CDATA[
-	          UPDATE t_wh_po SET
-		        po_code = #{poCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        UPDATE t_wh_asn SET
+		        asn_code = #{asnCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        po_id = #{poId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        customer_id = #{customerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        store_id = #{storeId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        supplier_id = #{supplierId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        logistics_provider_id = #{logisticsProviderId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        po_type = #{poType,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-		        status = #{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-		        is_iqc = #{isIqc,javaType=java.lang.Boolean,jdbcType=BIT} ,
 		        po_date = #{poDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        eta = #{eta,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        delivery_time = #{deliveryTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
@@ -115,6 +114,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        qty_rcvd = #{qtyRcvd,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        ctn_planned = #{ctnPlanned,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        ctn_rcvd = #{ctnRcvd,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        supplier_id = #{supplierId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        logistics_provider_id = #{logisticsProviderId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        asn_type = #{asnType,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        status = #{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        is_iqc = #{isIqc,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        start_time = #{startTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        stop_time = #{stopTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        inbound_time = #{inboundTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
@@ -128,36 +132,36 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</update>
 	   <delete id="delete" parameterType="java.lang.Long">
 	    <![CDATA[
-	        delete from t_wh_po where
+	        delete from t_wh_asn where
 		        id = #{id} 
 	    ]]>
 	    </delete> 
 	    
 	     <delete id="deleteByIds" parameterType="list">
 	    
-	        delete from t_wh_po 
+	        delete from t_wh_asn 
 	        where id in
 				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
 #{item}				</foreach>	
 	  
 	    </delete>  
 	         
-	    <select id="findById" parameterType="java.lang.Long" resultMap="WhPoResult" flushCache="false">
-			select <include refid="whPoColumns" />
+	    <select id="findById" parameterType="java.lang.Long" resultMap="WhAsnResult" flushCache="false">
+			select <include refid="whAsnColumns" />
 		    <![CDATA[
-			    from t_wh_po 
+			    from t_wh_asn 
 		        where 
 		        id = #{id} 
 		    ]]>
 		</select>	
-		<select id="getByIds" parameterType="list"  resultMap="WhPoResult" flushCache="false">
-			select <include refid="whPoColumns" />
-			    from t_wh_po 
+		<select id="getByIds" parameterType="list"  resultMap="WhAsnResult" flushCache="false">
+			select <include refid="whAsnColumns" />
+			    from t_wh_asn 
 		        where id in
 				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
 #{item}				</foreach>					
 		</select>	
-	<sql id="whPoDynamicWhere">
+	<sql id="whAsnDynamicWhere">
 		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
 		<where>
 	       
@@ -166,12 +170,52 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				</if>
 	       
 	       
-		       <if test="poCode!=null and poCode!=''">
-					and po_code = #{poCode}
+		       <if test="asnCode!=null and asnCode!=''">
+					and asn_code = #{asnCode}
+				</if>
+	       
+				<if test="poId!=null">
+					and po_id = #{poId}
 				</if>
 	       
 				<if test="ouId!=null">
 					and ou_id = #{ouId}
+				</if>
+	       
+				<if test="customerId!=null">
+					and customer_id = #{customerId}
+				</if>
+	       
+				<if test="storeId!=null">
+					and store_id = #{storeId}
+				</if>
+	       
+				<if test="poDate!=null">
+					and po_date = #{poDate}
+				</if>
+	       
+				<if test="eta!=null">
+					and eta = #{eta}
+				</if>
+	       
+				<if test="deliveryTime!=null">
+					and delivery_time = #{deliveryTime}
+				</if>
+	       
+				<if test="qtyPlanned!=null">
+					and qty_planned = #{qtyPlanned}
+				</if>
+	       
+				<if test="qtyRcvd!=null">
+					and qty_rcvd = #{qtyRcvd}
+				</if>
+	       
+				<if test="ctnPlanned!=null">
+					and ctn_planned = #{ctnPlanned}
+				</if>
+	       
+				<if test="ctnRcvd!=null">
+					and ctn_rcvd = #{ctnRcvd}
 				</if>
 	       
 				<if test="supplierId!=null">
@@ -182,8 +226,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					and logistics_provider_id = #{logisticsProviderId}
 				</if>
 	       
-				<if test="poType!=null">
-					and po_type = #{poType}
+				<if test="asnType!=null">
+					and asn_type = #{asnType}
 				</if>
 	       
 				<if test="status!=null">
@@ -194,12 +238,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					and is_iqc = #{isIqc}
 				</if>
 	       
-				<if test="poDate!=null">
-					and po_date = #{poDate}
+				<if test="startTime!=null">
+					and start_time = #{startTime}
 				</if>
 	       
-				<if test="eta!=null">
-					and eta = #{eta}
+				<if test="stopTime!=null">
+					and stop_time = #{stopTime}
+				</if>
+	       
+				<if test="inboundTime!=null">
+					and inbound_time = #{inboundTime}
 				</if>
 	       
 				<if test="createTime!=null">
@@ -222,47 +270,47 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	
 
 	<select id="getCount" resultType="long">
-        select count(*) from t_wh_po 
+        select count(*) from t_wh_asn 
     </select>
     <select id="findListCountByQueryMap" resultType="long">
-        select count(*) from t_wh_po 
-		<include refid="whPoDynamicWhere"/>    
+        select count(*) from t_wh_asn 
+		<include refid="whAsnDynamicWhere"/>    
     </select>
     
     <select id="findListCountByParam" resultType="long">
-        select count(*) from t_wh_po 
-		<include refid="whPoDynamicWhere"/>    
+        select count(*) from t_wh_asn 
+		<include refid="whAsnDynamicWhere"/>    
     </select>
     
     <!--
     	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
     	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
     -->
-    <select id="findListByQueryMapWithPage" resultMap="WhPoResult">
-    	select <include refid="whPoColumns" />
-	    from t_wh_po 
-		<include refid="whPoDynamicWhere"/>
+    <select id="findListByQueryMapWithPage" resultMap="WhAsnResult">
+    	select <include refid="whAsnColumns" />
+	    from t_wh_asn 
+		<include refid="whAsnDynamicWhere"/>
 		
     </select>
     
-    <select id="findListByQueryMap" resultMap="WhPoResult">
-    	select <include refid="whPoColumns" />
-	    from t_wh_po 
-		<include refid="whPoDynamicWhere"/>
+    <select id="findListByQueryMap" resultMap="WhAsnResult">
+    	select <include refid="whAsnColumns" />
+	    from t_wh_asn 
+		<include refid="whAsnDynamicWhere"/>
 		
     </select>
     
-    <select id="findListByParam" resultMap="WhPoResult">
-    	select <include refid="whPoColumns" />
-	    from t_wh_po 
-		<include refid="whPoDynamicWhere"/>
+    <select id="findListByParam" resultMap="WhAsnResult">
+    	select <include refid="whAsnColumns" />
+	    from t_wh_asn 
+		<include refid="whAsnDynamicWhere"/>
 		
     </select>
 
-    <select id="getByPoCode" resultMap="WhPoResult" parameterType="java.lang.String">
-	    select <include refid="whPoColumns"/>
+    <select id="getByAsnCode" resultMap="WhAsnResult" parameterType="java.lang.String">
+	    select <include refid="whAsnColumns"/>
 	    <![CDATA[
-	        from t_wh_po where po_code = #{poCode}
+	        from t_wh_asn where asn_code = #{asnCode}
 	    ]]>
     </select>
     

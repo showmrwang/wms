@@ -29,6 +29,10 @@ public class WhPoCommand implements Serializable {
     private String poCode;
     /** 对应组织ID */
     private Long ouId;
+    /** 客户ID */
+    private Long customerId;
+    /** 店铺ID */
+    private Long storeId;
     /** 供应商ID */
     private Long supplierId;
     /** 运输商ID */
@@ -43,6 +47,22 @@ public class WhPoCommand implements Serializable {
     private Date poDate;
     /** 计划到货时间 */
     private Date eta;
+    /** 实际到货时间 */
+    private Date deliveryTime;
+    /** 计划到货数量 */
+    private Integer qtyPlanned;
+    /** 实际到货数量 */
+    private Integer qtyRcvd;
+    /** 计划箱数 */
+    private Integer ctnPlanned;
+    /** 实际箱数 */
+    private Integer ctnRcvd;
+    /** 开始收货时间 */
+    private Date startTime;
+    /** 结束收货时间 */
+    private Date stopTime;
+    /** 上架完成时间 */
+    private Date inboundTime;
     /** 创建时间 */
     private Date createTime;
     /** 创建人 */
@@ -79,6 +99,22 @@ public class WhPoCommand implements Serializable {
 
     public void setOuId(Long value) {
         this.ouId = value;
+    }
+
+    public Long getCustomerId() {
+        return this.customerId;
+    }
+
+    public void setCustomerId(Long value) {
+        this.customerId = value;
+    }
+
+    public Long getStoreId() {
+        return this.storeId;
+    }
+
+    public void setStoreId(Long value) {
+        this.storeId = value;
     }
 
     public Long getSupplierId() {
@@ -137,6 +173,70 @@ public class WhPoCommand implements Serializable {
         this.eta = value;
     }
 
+    public Date getDeliveryTime() {
+        return this.deliveryTime;
+    }
+
+    public void setDeliveryTime(Date value) {
+        this.deliveryTime = value;
+    }
+
+    public Integer getQtyPlanned() {
+        return this.qtyPlanned;
+    }
+
+    public void setQtyPlanned(Integer value) {
+        this.qtyPlanned = value;
+    }
+
+    public Integer getQtyRcvd() {
+        return this.qtyRcvd;
+    }
+
+    public void setQtyRcvd(Integer value) {
+        this.qtyRcvd = value;
+    }
+
+    public Integer getCtnPlanned() {
+        return this.ctnPlanned;
+    }
+
+    public void setCtnPlanned(Integer value) {
+        this.ctnPlanned = value;
+    }
+
+    public Integer getCtnRcvd() {
+        return this.ctnRcvd;
+    }
+
+    public void setCtnRcvd(Integer value) {
+        this.ctnRcvd = value;
+    }
+
+    public Date getStartTime() {
+        return this.startTime;
+    }
+
+    public void setStartTime(Date value) {
+        this.startTime = value;
+    }
+
+    public Date getStopTime() {
+        return this.stopTime;
+    }
+
+    public void setStopTime(Date value) {
+        this.stopTime = value;
+    }
+
+    public Date getInboundTime() {
+        return this.inboundTime;
+    }
+
+    public void setInboundTime(Date value) {
+        this.inboundTime = value;
+    }
+
     public Date getCreateTime() {
         return this.createTime;
     }
@@ -168,5 +268,6 @@ public class WhPoCommand implements Serializable {
     public void setModifiedId(Long value) {
         this.modifiedId = value;
     }
+
 
 }
