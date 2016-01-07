@@ -14,7 +14,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	id as id,
 	        	asn_id as asnId,
 	        	po_line_id as poLineId,
-	        	linenum as linenum,
+	        	po_linenum as poLinenum,
 	        	sku_id as skuId,
 	        	qty_planned as qtyPlanned,
 	        	overshipped as overshipped,
@@ -168,7 +168,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        UPDATE t_wh_asn_line SET
 			        asn_id = #{asnId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        po_line_id = #{poLineId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-			        linenum = #{linenum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        po_linenum = #{poLinenum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 			        sku_id = #{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        qty_planned = #{qtyPlanned,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 			        overshipped = #{overshipped,javaType=java.lang.Integer,jdbcType=INTEGER} ,
@@ -194,7 +194,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
 		        WHERE 
 			        id = #{id} 
-			        
 			        and last_modify_time	<=  #{lastModifyTime}    
 		    ]]>
 		</update>

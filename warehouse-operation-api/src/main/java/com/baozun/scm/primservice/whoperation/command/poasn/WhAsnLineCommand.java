@@ -29,8 +29,8 @@ public class WhAsnLineCommand implements Serializable {
     private Long asnId;
     /** 对应po单lineid */
     private Long poLineId;
-    /** ASN行号 */
-    private Integer linenum;
+    /** POLine行号 */
+    private Integer poLinenum;
     /** SKU_ID */
     private Long skuId;
     /** 计划数量 */
@@ -102,12 +102,12 @@ public class WhAsnLineCommand implements Serializable {
         this.poLineId = value;
     }
 
-    public Integer getLinenum() {
-        return this.linenum;
+    public Integer getPoLinenum() {
+        return poLinenum;
     }
 
-    public void setLinenum(Integer value) {
-        this.linenum = value;
+    public void setPoLinenum(Integer poLinenum) {
+        this.poLinenum = poLinenum;
     }
 
     public Long getSkuId() {
