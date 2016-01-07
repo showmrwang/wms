@@ -33,6 +33,10 @@ public class WhPo extends BaseModel {
     private String poCode;
     /** 对应组织ID */
     private Long ouId;
+    /** 客户ID */
+    private Long customerId;
+    /** 店铺ID */
+    private Long storeId;
     /** 供应商ID */
     private Long supplierId;
     /** 运输商ID */
@@ -47,6 +51,22 @@ public class WhPo extends BaseModel {
     private Date poDate;
     /** 计划到货时间 */
     private Date eta;
+    /** 实际到货时间 */
+    private Date deliveryTime;
+    /** 计划到货数量 */
+    private Integer qtyPlanned;
+    /** 实际到货数量 */
+    private Integer qtyRcvd;
+    /** 计划箱数 */
+    private Integer ctnPlanned;
+    /** 实际箱数 */
+    private Integer ctnRcvd;
+    /** 开始收货时间 */
+    private Date startTime;
+    /** 结束收货时间 */
+    private Date stopTime;
+    /** 上架完成时间 */
+    private Date inboundTime;
     /** 创建时间 */
     private Date createTime;
     /** 创建人 */
@@ -57,107 +77,187 @@ public class WhPo extends BaseModel {
     private Long modifiedId;
 
     public String getPoCode() {
-        return poCode;
+        return this.poCode;
     }
 
-    public void setPoCode(String poCode) {
-        this.poCode = poCode;
+    public void setPoCode(String value) {
+        this.poCode = value;
     }
 
     public Long getOuId() {
-        return ouId;
+        return this.ouId;
     }
 
-    public void setOuId(Long ouId) {
-        this.ouId = ouId;
+    public void setOuId(Long value) {
+        this.ouId = value;
+    }
+
+    public Long getCustomerId() {
+        return this.customerId;
+    }
+
+    public void setCustomerId(Long value) {
+        this.customerId = value;
+    }
+
+    public Long getStoreId() {
+        return this.storeId;
+    }
+
+    public void setStoreId(Long value) {
+        this.storeId = value;
     }
 
     public Long getSupplierId() {
-        return supplierId;
+        return this.supplierId;
     }
 
-    public void setSupplierId(Long supplierId) {
-        this.supplierId = supplierId;
+    public void setSupplierId(Long value) {
+        this.supplierId = value;
     }
 
     public Long getLogisticsProviderId() {
-        return logisticsProviderId;
+        return this.logisticsProviderId;
     }
 
-    public void setLogisticsProviderId(Long logisticsProviderId) {
-        this.logisticsProviderId = logisticsProviderId;
+    public void setLogisticsProviderId(Long value) {
+        this.logisticsProviderId = value;
     }
 
     public Integer getPoType() {
-        return poType;
+        return this.poType;
     }
 
-    public void setPoType(Integer poType) {
-        this.poType = poType;
+    public void setPoType(Integer value) {
+        this.poType = value;
     }
 
     public Integer getStatus() {
-        return status;
+        return this.status;
     }
 
-    public void setStatus(Integer status) {
-        this.status = status;
+    public void setStatus(Integer value) {
+        this.status = value;
     }
 
     public Boolean getIsIqc() {
-        return isIqc;
+        return this.isIqc;
     }
 
-    public void setIsIqc(Boolean isIqc) {
-        this.isIqc = isIqc;
+    public void setIsIqc(Boolean value) {
+        this.isIqc = value;
     }
 
     public Date getPoDate() {
-        return poDate;
+        return this.poDate;
     }
 
-    public void setPoDate(Date poDate) {
-        this.poDate = poDate;
+    public void setPoDate(Date value) {
+        this.poDate = value;
     }
 
     public Date getEta() {
-        return eta;
+        return this.eta;
     }
 
-    public void setEta(Date eta) {
-        this.eta = eta;
+    public void setEta(Date value) {
+        this.eta = value;
+    }
+
+    public Date getDeliveryTime() {
+        return this.deliveryTime;
+    }
+
+    public void setDeliveryTime(Date value) {
+        this.deliveryTime = value;
+    }
+
+    public Integer getQtyPlanned() {
+        return this.qtyPlanned;
+    }
+
+    public void setQtyPlanned(Integer value) {
+        this.qtyPlanned = value;
+    }
+
+    public Integer getQtyRcvd() {
+        return this.qtyRcvd;
+    }
+
+    public void setQtyRcvd(Integer value) {
+        this.qtyRcvd = value;
+    }
+
+    public Integer getCtnPlanned() {
+        return this.ctnPlanned;
+    }
+
+    public void setCtnPlanned(Integer value) {
+        this.ctnPlanned = value;
+    }
+
+    public Integer getCtnRcvd() {
+        return this.ctnRcvd;
+    }
+
+    public void setCtnRcvd(Integer value) {
+        this.ctnRcvd = value;
+    }
+
+    public Date getStartTime() {
+        return this.startTime;
+    }
+
+    public void setStartTime(Date value) {
+        this.startTime = value;
+    }
+
+    public Date getStopTime() {
+        return this.stopTime;
+    }
+
+    public void setStopTime(Date value) {
+        this.stopTime = value;
+    }
+
+    public Date getInboundTime() {
+        return this.inboundTime;
+    }
+
+    public void setInboundTime(Date value) {
+        this.inboundTime = value;
     }
 
     public Date getCreateTime() {
-        return createTime;
+        return this.createTime;
     }
 
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
+    public void setCreateTime(Date value) {
+        this.createTime = value;
     }
 
     public Long getCreatedId() {
-        return createdId;
+        return this.createdId;
     }
 
-    public void setCreatedId(Long createdId) {
-        this.createdId = createdId;
+    public void setCreatedId(Long value) {
+        this.createdId = value;
     }
 
     public Date getLastModifyTime() {
-        return lastModifyTime;
+        return this.lastModifyTime;
     }
 
-    public void setLastModifyTime(Date lastModifyTime) {
-        this.lastModifyTime = lastModifyTime;
+    public void setLastModifyTime(Date value) {
+        this.lastModifyTime = value;
     }
 
     public Long getModifiedId() {
-        return modifiedId;
+        return this.modifiedId;
     }
 
-    public void setModifiedId(Long modifiedId) {
-        this.modifiedId = modifiedId;
+    public void setModifiedId(Long value) {
+        this.modifiedId = value;
     }
 
 
