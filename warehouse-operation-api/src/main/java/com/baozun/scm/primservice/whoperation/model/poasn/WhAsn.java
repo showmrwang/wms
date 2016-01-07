@@ -19,7 +19,7 @@ import java.util.Date;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 
 /**
- * 
+ * ASN单据信息
  * @author larkark
  * 
  */

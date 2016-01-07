@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnLineDao">
+	<resultMap id="WhAsnLineResultExt" type="com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whAsnLineColumnsExt">
+	    <![CDATA[
+	        	id as id,
+	        	asn_id as asnId,
+	        	po_line_id as poLineId,
+	        	linenum as linenum,
+	        	sku_id as skuId,
+	        	qty_planned as qtyPlanned,
+	        	overshipped as overshipped,
+	        	ctn_planned as ctnPlanned,
+	        	qty_rcvd as qtyRcvd,
+	        	ctn_rcvd as ctnRcvd,
+	        	status as status,
+	        	is_iqc as isIqc,
+	        	mfg_date as mfgDate,
+	        	exp_date as expDate,
+	        	valid_date as validDate,
+	        	batch_no as batchNo,
+	        	country_of_origin as countryOfOrigin,
+	        	inv_status as invStatus,
+	        	inv_attr1 as invAttr1,
+	        	inv_attr2 as invAttr2,
+	        	inv_attr3 as invAttr3,
+	        	inv_attr4 as invAttr4,
+	        	inv_attr5 as invAttr5,
+	        	create_time as createTime,
+	        	created_id as createdId,
+	        	last_modify_time as lastModifyTime,
+	        	modified_id as modifiedId
+	    ]]>
+	</sql>
+	
+	<sql id="whAsnLineDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+				<if test="asnId!=null">
+					and asn_id = #{asnId}
+				</if>
+	       
+				<if test="poLineId!=null">
+					and po_line_id = #{poLineId}
+				</if>
+	       
+				<if test="linenum!=null">
+					and linenum = #{linenum}
+				</if>
+	       
+				<if test="skuId!=null">
+					and sku_id = #{skuId}
+				</if>
+	       
+				<if test="qtyPlanned!=null">
+					and qty_planned = #{qtyPlanned}
+				</if>
+	       
+				<if test="overshipped!=null">
+					and overshipped = #{overshipped}
+				</if>
+	       
+				<if test="ctnPlanned!=null">
+					and ctn_planned = #{ctnPlanned}
+				</if>
+	       
+				<if test="qtyRcvd!=null">
+					and qty_rcvd = #{qtyRcvd}
+				</if>
+	       
+				<if test="ctnRcvd!=null">
+					and ctn_rcvd = #{ctnRcvd}
+				</if>
+	       
+				<if test="status!=null">
+					and status = #{status}
+				</if>
+	       
+				<if test="isIqc!=null">
+					and is_iqc = #{isIqc}
+				</if>
+	       
+				<if test="mfgDate!=null">
+					and mfg_date = #{mfgDate}
+				</if>
+	       
+				<if test="expDate!=null">
+					and exp_date = #{expDate}
+				</if>
+	       
+				<if test="validDate!=null">
+					and valid_date = #{validDate}
+				</if>
+	       
+	       
+		       <if test="batchNo!=null and batchNo!=''">
+					and batch_no = #{batchNo}
+				</if>
+	       
+	       
+		       <if test="countryOfOrigin!=null and countryOfOrigin!=''">
+					and country_of_origin = #{countryOfOrigin}
+				</if>
+	       
+				<if test="invStatus!=null">
+					and inv_status = #{invStatus}
+				</if>
+	       
+	       
+		       <if test="invAttr1!=null and invAttr1!=''">
+					and inv_attr1 = #{invAttr1}
+				</if>
+	       
+	       
+		       <if test="invAttr2!=null and invAttr2!=''">
+					and inv_attr2 = #{invAttr2}
+				</if>
+	       
+	       
+		       <if test="invAttr3!=null and invAttr3!=''">
+					and inv_attr3 = #{invAttr3}
+				</if>
+	       
+	       
+		       <if test="invAttr4!=null and invAttr4!=''">
+					and inv_attr4 = #{invAttr4}
+				</if>
+	       
+	       
+		       <if test="invAttr5!=null and invAttr5!=''">
+					and inv_attr5 = #{invAttr5}
+				</if>
+	       
+				<if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="createdId!=null">
+					and created_id = #{createdId}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="modifiedId!=null">
+					and modified_id = #{modifiedId}
+				</if>
+		</where>
+	</sql>
+	
+
+		<update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine">
+		    <![CDATA[
+		        UPDATE t_wh_asn_line SET
+			        asn_id = #{asnId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        po_line_id = #{poLineId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        linenum = #{linenum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        sku_id = #{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        qty_planned = #{qtyPlanned,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        overshipped = #{overshipped,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        ctn_planned = #{ctnPlanned,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        qty_rcvd = #{qtyRcvd,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        ctn_rcvd = #{ctnRcvd,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        status = #{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        is_iqc = #{isIqc,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        mfg_date = #{mfgDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+			        exp_date = #{expDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+			        valid_date = #{validDate,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        batch_no = #{batchNo,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        country_of_origin = #{countryOfOrigin,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        inv_status = #{invStatus,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        inv_attr1 = #{invAttr1,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        inv_attr2 = #{invAttr2,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        inv_attr3 = #{invAttr3,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        inv_attr4 = #{invAttr4,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        inv_attr5 = #{invAttr5,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+			        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+			        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        WHERE 
+			        id = #{id} 
+			        
+			        and last_modify_time	<=  #{lastModifyTime}    
+		    ]]>
+		</update>
+	
+</mapper>
