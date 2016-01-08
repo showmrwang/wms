@@ -16,6 +16,7 @@ package com.baozun.scm.primservice.whoperation.command.poasn;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 
 public class WhPoCommand implements Serializable {
@@ -76,6 +77,9 @@ public class WhPoCommand implements Serializable {
     private String poDateStr;
     /** 计划到货时间Str */
     private String etaStr;
+
+    /** poLine数据 */
+    private List<WhPoLineCommand> poLineList;
 
     public Long getId() {
         return this.id;
@@ -283,6 +287,14 @@ public class WhPoCommand implements Serializable {
 
     public void setEtaStr(String etaStr) {
         this.etaStr = etaStr;
+    }
+
+    public List<WhPoLineCommand> getPoLineList() {
+        return poLineList;
+    }
+
+    public void setPoLineList(List<WhPoLineCommand> poLineList) {
+        this.poLineList = poLineList;
     }
 
 

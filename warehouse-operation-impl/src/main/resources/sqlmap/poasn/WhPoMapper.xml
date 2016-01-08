@@ -242,14 +242,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     	select <include refid="whPoColumns" />
 	    from t_wh_po 
 		<include refid="whPoDynamicWhere"/>
-		
     </select>
     
     <select id="findListByQueryMap" resultMap="WhPoResult">
     	select <include refid="whPoColumns" />
 	    from t_wh_po 
 		<include refid="whPoDynamicWhere"/>
-		
     </select>
     
     <select id="findListByParam" resultMap="WhPoResult">

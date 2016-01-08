@@ -133,5 +133,19 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        and last_modify_time	<=  #{lastModifyTime}    
 		    ]]>
 		</update>
+		
+	<resultMap id="WhPoCommand" type="com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand">
+	</resultMap>	
+		
+	<select id="findListByQueryMapWithPageExt" resultMap="WhPoCommand">
+    	select <include refid="whPoColumnsExt" />
+	    from t_wh_po 
+    </select>
+		
+		
+	<select id="findListCountByQueryMapExt" resultType="long">
+        select count(*) from t_wh_po 
+    </select>
+		
 	
 </mapper>
