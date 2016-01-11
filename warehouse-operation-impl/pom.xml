@@ -390,6 +390,14 @@
 		</profile>
 		
 		<profile>
+			<id>rd</id>
+			<properties>
+				<env>rd</env>
+				<config.path>src/main/resources/config/rd</config.path>
+			</properties>
+		</profile>
+		
+		<profile>
 			<id>st</id>
 			<properties>
 				<env>st</env>
