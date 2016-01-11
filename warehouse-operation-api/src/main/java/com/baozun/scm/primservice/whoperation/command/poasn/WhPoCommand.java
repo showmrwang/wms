@@ -28,6 +28,8 @@ public class WhPoCommand implements Serializable {
     private Long id;
     /** PO单号 */
     private String poCode;
+    /** 相关单据号 */
+    private String extCode;
     /** 对应组织ID */
     private Long ouId;
     /** 客户ID */
@@ -80,6 +82,13 @@ public class WhPoCommand implements Serializable {
 
     /** poLine数据 */
     private List<WhPoLineCommand> poLineList;
+
+    /** 是否WMS创建PO单 true:wms创建 false:上位系统创建 */
+    private Boolean isWms = false;
+    /** 客户名称 */
+    private String customerName;
+    /** 店铺名称 */
+    private String storeName;
 
     public Long getId() {
         return this.id;
@@ -296,6 +305,39 @@ public class WhPoCommand implements Serializable {
     public void setPoLineList(List<WhPoLineCommand> poLineList) {
         this.poLineList = poLineList;
     }
+
+    public Boolean getIsWms() {
+        return isWms;
+    }
+
+    public void setIsWms(Boolean isWms) {
+        this.isWms = isWms;
+    }
+
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
+    }
+
+    public String getStoreName() {
+        return storeName;
+    }
+
+    public void setStoreName(String storeName) {
+        this.storeName = storeName;
+    }
+
+    public String getExtCode() {
+        return extCode;
+    }
+
+    public void setExtCode(String extCode) {
+        this.extCode = extCode;
+    }
+
 
 
 }

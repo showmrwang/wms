@@ -26,6 +26,7 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
             log.warn("CreatePo warn ResponseStatus: " + rm.getResponseStatus() + " msg: " + rm.getMsg());
             return rm;
         }
+
         log.info("CreatePo end =======================");
         return null;
     }
@@ -60,10 +61,21 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
         if (null == po.getPoType()) {
             response.setResponseStatus(ResponseMsg.DATA_ERROR);
             response.setMsg("PoType is null");
+            return response;
         }
         if (null == po.getStatus()) {
             response.setResponseStatus(ResponseMsg.DATA_ERROR);
             response.setMsg("Status is null");
+            return response;
+        }
+        // 验证是否是WMS内部创建还是上位系统同步的PO单
+        if (!po.getIsWms()) {
+            // false为 上位系统同步的PO单 需要验证poline的数据
+            if (po.getPoLineList().size() == 0) {
+                response.setResponseStatus(ResponseMsg.DATA_ERROR);
+                response.setMsg("PoLineList is null");
+                return response;
+            }
         }
         return response;
     }
