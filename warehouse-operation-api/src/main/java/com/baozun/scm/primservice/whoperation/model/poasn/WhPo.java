@@ -31,6 +31,8 @@ public class WhPo extends BaseModel {
 
     /** PO单号 */
     private String poCode;
+    /** 相关单据号 */
+    private String extCode;
     /** 对应组织ID */
     private Long ouId;
     /** 客户ID */
@@ -258,6 +260,14 @@ public class WhPo extends BaseModel {
 
     public void setModifiedId(Long value) {
         this.modifiedId = value;
+    }
+
+    public String getExtCode() {
+        return extCode;
+    }
+
+    public void setExtCode(String extCode) {
+        this.extCode = extCode;
     }
 
 

@@ -11,8 +11,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<!-- 用于select查询公用抽取的列 -->
 	<sql id="whPoColumns">
 	    <![CDATA[
-		        id as id,
+	        	id as id,
 	        	po_code as poCode,
+	        	ext_code as extCode,
 	        	ou_id as ouId,
 	        	customer_id as customerId,
 	        	store_id as storeId,
@@ -45,6 +46,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        INSERT INTO
 	        t_wh_po (
 	        	po_code ,
+	        	ext_code ,
 	        	ou_id ,
 	        	customer_id ,
 	        	store_id ,
@@ -69,6 +71,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	modified_id 
 	        ) VALUES (
 	        	#{poCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{extCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 	        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{customerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{storeId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -98,8 +101,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    
 		<update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.poasn.WhPo">
 	    <![CDATA[
-	          UPDATE t_wh_po SET
+	        UPDATE t_wh_po SET
 		        po_code = #{poCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        ext_code = #{extCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        customer_id = #{customerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        store_id = #{storeId,javaType=java.lang.Long,jdbcType=BIGINT} ,

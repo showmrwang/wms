@@ -13,6 +13,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    <![CDATA[
 	        	id as id,
 	        	po_code as poCode,
+	        	ext_code as extCode,
 	        	ou_id as ouId,
 	        	customer_id as customerId,
 	        	store_id as storeId,
@@ -106,6 +107,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    <![CDATA[
 		        UPDATE t_wh_po SET
 			        po_code = #{poCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        ext_code = #{extCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        customer_id = #{customerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        store_id = #{storeId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -129,22 +131,58 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
 		        WHERE 
-			        id = #{id}        
+			        id = #{id} 
 			        and last_modify_time	<=  #{lastModifyTime}    
 		    ]]>
 		</update>
+		
+	<sql id="whPoColumnsMapExt">
+	    <![CDATA[
+				po.id as id,
+				po.po_code as poCode,
+				po.ext_code as extCode,
+				po.ou_id as ouId,
+				po.customer_id as customerId,
+				po.store_id as storeId,
+				po.supplier_id as supplierId,
+				po.logistics_provider_id as logisticsProviderId,
+				po.po_type as poType,
+				po.status as status,
+				po.is_iqc as isIqc,
+				po.po_date as poDate,
+				po.eta as eta,
+				po.delivery_time as deliveryTime,
+				po.qty_planned as qtyPlanned,
+				po.qty_rcvd as qtyRcvd,
+				po.ctn_planned as ctnPlanned,
+				po.ctn_rcvd as ctnRcvd,
+				po.start_time as startTime,
+				po.stop_time as stopTime,
+				po.inbound_time as inboundTime,
+				po.create_time as createTime,
+				po.created_id as createdId,
+				po.last_modify_time as lastModifyTime,
+				po.modified_id as modifiedId,
+				c.customer_name as customerName,
+				s.store_name as storeName
+	    ]]>
+	</sql>	
 		
 	<resultMap id="WhPoCommand" type="com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand">
 	</resultMap>	
 		
 	<select id="findListByQueryMapWithPageExt" resultMap="WhPoCommand">
-    	select <include refid="whPoColumnsExt" />
-	    from t_wh_po 
+    	select <include refid="whPoColumnsMapExt" />
+	    from 
+	    t_wh_po po left join t_bi_customer c on po.customer_id = c.id
+		left join t_bi_store s on po.store_id = s.id
     </select>
 		
 		
 	<select id="findListCountByQueryMapExt" resultType="long">
-        select count(*) from t_wh_po 
+        select count(*) from 
+        t_wh_po po left join t_bi_customer c on po.customer_id = c.id
+		left join t_bi_store s on po.store_id = s.id
     </select>
 		
 	
