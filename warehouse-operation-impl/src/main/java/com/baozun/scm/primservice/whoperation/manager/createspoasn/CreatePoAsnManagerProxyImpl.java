@@ -21,7 +21,11 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
     public ResponseMsg CreatePo(WhPoCommand po) {
         log.info("CreatePo start =======================");
         // 验证数据完整性
-        ResponseMsg response = checkPoData(po);
+        ResponseMsg rm = checkPoData(po);
+        if (rm.getResponseStatus() != ResponseMsg.STATUS_SUCCESS) {
+            log.warn("CreatePo warn ResponseStatus: " + rm.getResponseStatus() + " msg: " + rm.getMsg());
+            return rm;
+        }
         log.info("CreatePo end =======================");
         return null;
     }
@@ -52,6 +56,14 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
             response.setResponseStatus(ResponseMsg.DATA_ERROR);
             response.setMsg("PoCode is null");
             return response;
+        }
+        if (null == po.getPoType()) {
+            response.setResponseStatus(ResponseMsg.DATA_ERROR);
+            response.setMsg("PoType is null");
+        }
+        if (null == po.getStatus()) {
+            response.setResponseStatus(ResponseMsg.DATA_ERROR);
+            response.setMsg("Status is null");
         }
         return response;
     }
