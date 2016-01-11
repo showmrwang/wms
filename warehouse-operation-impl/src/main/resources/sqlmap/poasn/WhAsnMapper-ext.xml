@@ -176,9 +176,17 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
 		        WHERE 
 			        id = #{id} 
-			        
 			        and last_modify_time	<=  #{lastModifyTime}    
 		    ]]>
 		</update>
+	
+	<resultMap id="whAsnCommand" type="com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand">
+	</resultMap>
+	
+	
+	 <select id="findWhAsnListByAsnCode" resultMap="whAsnCommand">
+	    	select <include refid="whAsnColumns" />
+		    from t_wh_asn where asn_code like '#{modifiedId}'
+    </select>
 	
 </mapper>

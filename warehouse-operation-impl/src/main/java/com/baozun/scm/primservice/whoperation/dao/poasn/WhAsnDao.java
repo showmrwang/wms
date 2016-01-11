@@ -14,6 +14,7 @@
  */
 package com.baozun.scm.primservice.whoperation.dao.poasn;
 
+import java.util.List;
 import java.util.Map;
 
 import lark.common.annotation.CommonQuery;
@@ -23,6 +24,7 @@ import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
 
+import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 
 
@@ -38,5 +40,7 @@ public interface WhAsnDao extends BaseDao<WhAsn, Long> {
 
     @CommonQuery
     int saveOrUpdateByVersion(WhAsn o);
+
+    List<WhAsnCommand> findWhAsnListByAsnCode(String asnCode);
 
 }
