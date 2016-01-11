@@ -1,0 +1,2 @@
+#发布脚本#
+mvn clean package -Ptest -Dconfig-path=包含配置文件的绝对目录
