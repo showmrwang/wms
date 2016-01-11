@@ -5,7 +5,7 @@
 	
 	<groupId>com.baozun.scm.primservice</groupId>
 	<artifactId>wh-operation-impl</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.0.1-SNAPSHOT</version>
 	<name>wh-operation-impl</name>
 
 	<properties>
