@@ -183,12 +183,21 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    t_wh_po po left join t_bi_customer c on po.customer_id = c.id
 		left join t_bi_store s on po.store_id = s.id
     </select>
-		
+    		
 		
 	<select id="findListCountByQueryMapExt" resultType="long">
         select count(*) from 
         t_wh_po po left join t_bi_customer c on po.customer_id = c.id
 		left join t_bi_store s on po.store_id = s.id
+    </select>
+    
+    <select id="findWhPoById" resultMap="WhPoCommand">
+    	select <include refid="whPoColumnsExt" />
+		    from 
+		    t_wh_po 
+		    where 
+		    id = #{id}
+		    and ou_id = #{ouid}
     </select>
 		
 	

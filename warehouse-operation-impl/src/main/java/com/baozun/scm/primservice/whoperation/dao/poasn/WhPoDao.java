@@ -16,6 +16,8 @@ package com.baozun.scm.primservice.whoperation.dao.poasn;
 
 import java.util.Map;
 
+import org.apache.ibatis.annotations.Param;
+
 import lark.common.annotation.CommonQuery;
 import lark.common.annotation.QueryPage;
 import lark.common.dao.Page;
@@ -42,4 +44,5 @@ public interface WhPoDao extends BaseDao<WhPo, Long> {
     @CommonQuery
     int saveOrUpdateByVersion(WhPo o);
 
+    WhPoCommand findWhPoById(@Param("id") Long id, @Param("ouid") Long ouid);
 }

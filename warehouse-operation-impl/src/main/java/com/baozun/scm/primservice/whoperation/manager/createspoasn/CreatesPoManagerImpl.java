@@ -72,7 +72,7 @@ public class CreatesPoManagerImpl implements CreatesPoManager {
      * 通过OP单ID查询相关信息
      */
     @Override
-    public WhPo findWhPoById(Long id) {
-        return whPoDao.findById(id);
+    public WhPoCommand findWhPoById(Long id, Long ouid) {
+        return null;
     }
 }
