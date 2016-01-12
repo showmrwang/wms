@@ -73,6 +73,6 @@ public class CreatesPoManagerImpl implements CreatesPoManager {
      */
     @Override
     public WhPoCommand findWhPoById(Long id, Long ouid) {
-        return null;
+        return whPoDao.findWhPoById(id, ouid);
     }
 }

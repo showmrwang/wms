@@ -44,63 +44,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<sql id="whPoDynamicWhereExt">
 		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
 		<where>
-	       
-				<if test="id!=null">
-					and id = #{id}
-				</if>
-	       
-	       
-		       <if test="poCode!=null and poCode!=''">
-					and po_code = #{poCode}
-				</if>
-	       
-				<if test="ouId!=null">
-					and ou_id = #{ouId}
-				</if>
-	       
-				<if test="supplierId!=null">
-					and supplier_id = #{supplierId}
-				</if>
-	       
-				<if test="logisticsProviderId!=null">
-					and logistics_provider_id = #{logisticsProviderId}
-				</if>
-	       
-				<if test="poType!=null">
-					and po_type = #{poType}
-				</if>
-	       
-				<if test="status!=null">
-					and status = #{status}
-				</if>
-	       
-				<if test="isIqc!=null">
-					and is_iqc = #{isIqc}
-				</if>
-	       
-				<if test="poDate!=null">
-					and po_date = #{poDate}
-				</if>
-	       
-				<if test="eta!=null">
-					and eta = #{eta}
-				</if>
-	       
-				<if test="createTime!=null">
-					and create_time = #{createTime}
-				</if>
-	       
-				<if test="createdId!=null">
-					and created_id = #{createdId}
-				</if>
-	       
-				<if test="lastModifyTime!=null">
-					and last_modify_time = #{lastModifyTime}
-				</if>
-	       
-				<if test="modifiedId!=null">
-					and modified_id = #{modifiedId}
-				</if>
+			and po.ou_id = #{ouId}
 		</where>
 	</sql>
 	
@@ -181,14 +125,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     	select <include refid="whPoColumnsMapExt" />
 	    from 
 	    t_wh_po po left join t_bi_customer c on po.customer_id = c.id
-		left join t_bi_store s on po.store_id = s.id
+		left join t_bi_store s on po.store_id = s.id 
+		<include refid="whPoDynamicWhereExt"/>
     </select>
     		
 		
 	<select id="findListCountByQueryMapExt" resultType="long">
         select count(*) from 
         t_wh_po po left join t_bi_customer c on po.customer_id = c.id
-		left join t_bi_store s on po.store_id = s.id
+		left join t_bi_store s on po.store_id = s.id 
+		<include refid="whPoDynamicWhereExt"/>
     </select>
     
     <select id="findWhPoById" resultMap="WhPoCommand">
