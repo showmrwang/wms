@@ -27,8 +27,8 @@ public class CreatesAsnManagerImpl implements CreatesAsnManager {
      * 通过asncode查询出asn列表
      */
     @Override
-    public List<WhAsnCommand> findWhAsnListByAsnCode(String asnCode) {
-        return whAsnDao.findWhAsnListByAsnCode(asnCode);
+    public List<WhAsnCommand> findWhAsnListByAsnCode(String asnCode, Integer status) {
+        return whAsnDao.findWhAsnListByAsnCode(asnCode, status);
     }
 
 }

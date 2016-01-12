@@ -186,7 +186,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	
 	 <select id="findWhAsnListByAsnCode" resultMap="whAsnCommand">
 	    	select <include refid="whAsnColumns" />
-		    from t_wh_asn where asn_code like '#{modifiedId}'
+		    from t_wh_asn 
+		   <where>
+			    asn_code like '#{modifiedId}' 
+			   <if test="status!=null">
+						and status = #{status}
+				</if>
+			</where>
+		    
     </select>
 	
 </mapper>

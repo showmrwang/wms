@@ -17,6 +17,8 @@ package com.baozun.scm.primservice.whoperation.dao.poasn;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.annotations.Param;
+
 import lark.common.annotation.CommonQuery;
 import lark.common.annotation.QueryPage;
 import lark.common.dao.Page;
@@ -41,6 +43,6 @@ public interface WhAsnDao extends BaseDao<WhAsn, Long> {
     @CommonQuery
     int saveOrUpdateByVersion(WhAsn o);
 
-    List<WhAsnCommand> findWhAsnListByAsnCode(String asnCode);
+    List<WhAsnCommand> findWhAsnListByAsnCode(@Param("asnCode") String asnCode, @Param("status") Integer status);
 
 }
