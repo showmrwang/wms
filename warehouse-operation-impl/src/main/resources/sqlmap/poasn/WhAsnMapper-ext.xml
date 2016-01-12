@@ -188,12 +188,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    	select <include refid="whAsnColumnsExt" />
 		    from t_wh_asn 
 		   <where>
-			    asn_code like '#{asnCode}' 
+			    asn_code like #{asnCode} 
+			    and ou_id = #{ouid}
 			   <if test="status!=null">
 						and status = #{status}
 				</if>
 			</where>
-		    
     </select>
 	
 </mapper>

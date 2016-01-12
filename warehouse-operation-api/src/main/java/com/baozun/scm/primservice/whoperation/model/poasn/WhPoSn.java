@@ -37,6 +37,8 @@ public class WhPoSn extends BaseModel {
     private Long skuId;
     /** sn号 */
     private String sn;
+    /** 对应组织ID */
+    private Long ouId;
     /** createTime */
     private Date createTime;
     /** createdId */
@@ -109,4 +111,13 @@ public class WhPoSn extends BaseModel {
     public void setModifiedId(Long value) {
         this.modifiedId = value;
     }
+
+    public Long getOuId() {
+        return ouId;
+    }
+
+    public void setOuId(Long ouId) {
+        this.ouId = ouId;
+    }
+
 }

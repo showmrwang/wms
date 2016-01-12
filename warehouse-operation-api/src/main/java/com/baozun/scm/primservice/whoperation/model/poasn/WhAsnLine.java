@@ -36,6 +36,8 @@ public class WhAsnLine extends BaseModel {
     private Long asnId;
     /** 对应po单lineid */
     private Long poLineId;
+    /** 对应组织ID */
+    private Long ouId;
     /** POLine行号 */
     private Integer poLinenum;
     /** SKU_ID */
@@ -100,7 +102,7 @@ public class WhAsnLine extends BaseModel {
     public void setPoLineId(Long value) {
         this.poLineId = value;
     }
-  
+
     public Integer getPoLinenum() {
         return poLinenum;
     }
@@ -291,6 +293,14 @@ public class WhAsnLine extends BaseModel {
 
     public void setModifiedId(Long value) {
         this.modifiedId = value;
+    }
+
+    public Long getOuId() {
+        return ouId;
+    }
+
+    public void setOuId(Long ouId) {
+        this.ouId = ouId;
     }
 
 

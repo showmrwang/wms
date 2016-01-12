@@ -27,6 +27,8 @@ public class WhAsnLineCommand implements Serializable {
     private Long id;
     /** ASN单ID */
     private Long asnId;
+    /** 对应组织ID */
+    private Long ouId;
     /** 对应po单lineid */
     private Long poLineId;
     /** POLine行号 */
@@ -292,6 +294,14 @@ public class WhAsnLineCommand implements Serializable {
 
     public void setModifiedId(Long value) {
         this.modifiedId = value;
+    }
+
+    public Long getOuId() {
+        return ouId;
+    }
+
+    public void setOuId(Long ouId) {
+        this.ouId = ouId;
     }
 
 

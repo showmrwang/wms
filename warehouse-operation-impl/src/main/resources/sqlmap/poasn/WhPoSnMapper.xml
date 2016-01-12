@@ -15,6 +15,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	po_line_id as poLineId,
 	        	sku_id as skuId,
 	        	sn as sn,
+	        	ou_id as ouId,	        	
 	        	create_time as createTime,
 	        	created_id as createdId,
 	        	last_modify_time as lastModifyTime,
@@ -34,7 +35,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	create_time ,
 	        	created_id ,
 	        	last_modify_time ,
-	        	modified_id 
+	        	modified_id,
+	        	ou_id 
 	        ) VALUES (
 	        	#{poLineId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -42,7 +44,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 	        	#{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-	        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
+	        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT}
 	        )
 	    ]]>
 
@@ -54,6 +57,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        po_line_id = #{poLineId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        sku_id = #{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        sn = #{sn,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		       	ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,

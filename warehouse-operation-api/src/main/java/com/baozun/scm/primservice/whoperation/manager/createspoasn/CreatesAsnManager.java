@@ -7,6 +7,6 @@ import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 
 public interface CreatesAsnManager extends BaseManager {
 
-    List<WhAsnCommand> findWhAsnListByAsnCode(String asnCode, Integer status);
+    List<WhAsnCommand> findWhAsnListByAsnCode(String asnCode, Integer status, Long ouid);
 
 }

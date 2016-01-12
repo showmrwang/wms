@@ -28,6 +28,8 @@ public class WhPoLineCommand implements Serializable {
     private Long poId;
     /** PO行号 */
     private Integer linenum;
+    /** 对应组织ID */
+    private Long ouId;
     /** SKU_ID */
     private Long skuId;
     /** 计划数量 */
@@ -302,5 +304,14 @@ public class WhPoLineCommand implements Serializable {
     public void setAvailableQty(Integer availableQty) {
         this.availableQty = availableQty;
     }
+
+    public Long getOuId() {
+        return ouId;
+    }
+
+    public void setOuId(Long ouId) {
+        this.ouId = ouId;
+    }
+
 
 }

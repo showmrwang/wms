@@ -14,6 +14,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	id as id,
 	        	po_id as poId,
 	        	linenum as linenum,
+	        	ou_id as ouId,	        	
 	        	sku_id as skuId,
 	        	qty_planned as qtyPlanned,
 	        	overshipped as overshipped,
@@ -74,7 +75,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	created_id ,
 	        	last_modify_time ,
 	        	modified_id ,
-	        	uuid 
+	        	uuid,
+	        	ou_id 
 	        ) VALUES (
 	        	#{poId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{linenum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
@@ -102,7 +104,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	#{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 	        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-	        	#{uuid,javaType=java.lang.String,jdbcType=VARCHAR} 
+	        	#{uuid,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
 	        )
 	    ]]>
 
@@ -114,6 +117,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        po_id = #{poId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        linenum = #{linenum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        sku_id = #{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        qty_planned = #{qtyPlanned,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        overshipped = #{overshipped,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        available_qty = #{availableQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
