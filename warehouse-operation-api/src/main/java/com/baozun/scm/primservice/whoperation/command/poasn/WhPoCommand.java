@@ -85,10 +85,14 @@ public class WhPoCommand implements Serializable {
 
     /** 是否WMS创建PO单 true:wms创建 false:上位系统创建 */
     private Boolean isWms = false;
+    /** 是否VMI创建PO单 true:是 false:否 */
+    private Boolean isVmi = false;
     /** 客户名称 */
     private String customerName;
     /** 店铺名称 */
     private String storeName;
+    /** 操作员工ID */
+    private Long userId;
 
     public Long getId() {
         return this.id;
@@ -336,6 +340,22 @@ public class WhPoCommand implements Serializable {
 
     public void setExtCode(String extCode) {
         this.extCode = extCode;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public Boolean getIsVmi() {
+        return isVmi;
+    }
+
+    public void setIsVmi(Boolean isVmi) {
+        this.isVmi = isVmi;
     }
 
 

@@ -69,6 +69,10 @@ public class WhPo extends BaseModel {
     private Date stopTime;
     /** 上架完成时间 */
     private Date inboundTime;
+    /** 是否WMS创建 1:是 0:否 */
+    private Boolean isWms;
+    /** 是否VMI收货单 1:是 0:否 */
+    private Boolean isVmi;
     /** 创建时间 */
     private Date createTime;
     /** 创建人 */
@@ -268,6 +272,22 @@ public class WhPo extends BaseModel {
 
     public void setExtCode(String extCode) {
         this.extCode = extCode;
+    }
+
+    public Boolean getIsWms() {
+        return isWms;
+    }
+
+    public void setIsWms(Boolean isWms) {
+        this.isWms = isWms;
+    }
+
+    public Boolean getIsVmi() {
+        return isVmi;
+    }
+
+    public void setIsVmi(Boolean isVmi) {
+        this.isVmi = isVmi;
     }
 
 

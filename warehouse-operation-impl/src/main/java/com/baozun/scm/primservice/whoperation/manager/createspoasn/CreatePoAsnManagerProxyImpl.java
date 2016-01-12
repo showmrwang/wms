@@ -2,6 +2,7 @@ package com.baozun.scm.primservice.whoperation.manager.createspoasn;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
@@ -14,11 +15,14 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
 
     protected static final Logger log = LoggerFactory.getLogger(CreatePoAsnManagerProxy.class);
 
+    @Autowired
+    private CreatesPoManager createsPoManager;
+
     /**
      * 创建PO单据
      */
     @Override
-    public ResponseMsg CreatePo(WhPoCommand po) {
+    public ResponseMsg createPo(WhPoCommand po) {
         log.info("CreatePo start =======================");
         // 验证数据完整性
         ResponseMsg rm = checkPoData(po);
@@ -26,7 +30,14 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
             log.warn("CreatePo warn ResponseStatus: " + rm.getResponseStatus() + " msg: " + rm.getMsg());
             return rm;
         }
-        
+        try {
+            rm = createsPoManager.createPoAndLine(po, rm);
+        } catch (Exception e) {
+            rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
+            log.error("printService error poCode: " + po.getPoCode());
+            log.error("" + e);
+            return rm;
+        }
         log.info("CreatePo end =======================");
         return null;
     }
@@ -35,7 +46,7 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
      * 创建ASN单据
      */
     @Override
-    public ResponseMsg CreateAsn(WhAsnCommand asn) {
+    public ResponseMsg createAsn(WhAsnCommand asn) {
         return null;
     }
 

@@ -7,8 +7,8 @@ import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
 
 public interface CreatePoAsnManagerProxy extends BaseManager {
 
-    ResponseMsg CreatePo(WhPoCommand po);
+    ResponseMsg createPo(WhPoCommand po);
 
-    ResponseMsg CreateAsn(WhAsnCommand asn);
+    ResponseMsg createAsn(WhAsnCommand asn);
 
 }
