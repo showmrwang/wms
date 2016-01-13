@@ -106,10 +106,10 @@
 		<property name="dataSourceMap">
 			<map>
 				<entry key="infoSource">
-					<ref local="infoSource"/>
+					<ref bean="infoSource" />
 				</entry>
 				<entry key="shardSource">
-					<ref local="shardSource"/>
+					<ref bean="shardSource"/>
 				</entry>
 			</map>
 		</property>
