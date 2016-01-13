@@ -81,29 +81,42 @@
     </bean>
     
     	<!-- aop优先级一定要在事务之前，否则无法切换 如果使用多数据源切换，请注释此代码 -->
-	<bean class="lark.orm.aop.ReadWriteDataSourceAspect" />
-    	<!--  -->
+	<!--<bean class="lark.orm.aop.ReadWriteDataSourceAspect" />
+    	  
 	<tx:annotation-driven transaction-manager="transactionManager" order="10"/>
 	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager" >
 		<property name="dataSource" ref="dataSource"></property>
-	</bean>
+	</bean>-->
+
+<!-- 公共库 -->
+	<bean id="infoSource" parent="parentSource">
+        <property name="url">
+            <value><![CDATA[${dataSource.url.info}]]></value>
+        </property>
+    </bean>
+<!-- 拆分库 -->
+    <bean id="shardSource" parent="parentSource">
+        <property name="url">
+            <value><![CDATA[${dataSource.url.shard}]]></value>
+        </property>
+    </bean>
 
 	<!-- 用于多数据库切换 -->
-<!-- 	<bean id="dataSource" class="lark.orm.dao.MoreDataSource"> -->
-<!-- 		<property name="dataSourceMap"> -->
-<!-- 			<map> -->
-<!-- 				<entry key="01"> -->
-<!-- 					<ref local="writeSource"/> -->
-<!-- 				</entry> -->
-<!-- 				<entry key="02"> -->
-<!-- 					<ref local="readSource"/> -->
-<!-- 				</entry> -->
-<!-- 			</map> -->
-<!-- 		</property> -->
-<!-- 		<property name="defaultDataSourceKey" > -->
-<!-- 			<value>01</value> -->
-<!-- 		</property> -->
-<!-- 	</bean> -->
+<bean id="dataSource" class="lark.orm.dao.MoreDataSource">
+		<property name="dataSourceMap">
+			<map>
+				<entry key="infoSource">
+					<ref local="infoSource"/>
+				</entry>
+				<entry key="shardSource">
+					<ref local="shardSource"/>
+				</entry>
+			</map>
+		</property>
+		<property name="defaultDataSourceKey" >
+			<value>infoSource</value>
+		</property>
+	</bean>
 	
 
 </beans>

@@ -16,4 +16,10 @@ public final class Constants {
     /** 删除状态 */
     public static final Integer LIFECYCLE_DELETE = 2;
 
+    /** 公共库 */
+    public static final Integer INFO_SOURCE = 1;
+
+    /** 拆分库 */
+    public static final Integer SHARD_SOURCE = 2;
+
 }
