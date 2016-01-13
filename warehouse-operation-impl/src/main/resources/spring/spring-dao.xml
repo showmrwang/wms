@@ -53,10 +53,10 @@
 	</bean>
 	
 		<!-- 用于主从库切换 -->
-	<bean id="dataSource" class="lark.orm.dao.ReadWriteDataSource">
+	<!--  <bean id="dataSource" class="lark.orm.dao.ReadWriteDataSource">
 		<property name="writeDataSource" ref="writeSource" />
 		<property name="readDataSource" ref="readSource" />
-	</bean>
+	</bean>-->
 	
 	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
 		<property name="configLocation" value="classpath:mybatis-config.xml" />
