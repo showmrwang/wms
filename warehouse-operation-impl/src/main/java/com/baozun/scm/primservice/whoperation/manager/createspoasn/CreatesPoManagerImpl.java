@@ -63,7 +63,7 @@ public class CreatesPoManagerImpl implements CreatesPoManager {
         whPo.setLastModifyTime(new Date());
         whPo.setModifiedId(po.getUserId());
         whPoDao.saveOrUpdate(whPo);
-        if (po.getPoLineList().size() > 0) {
+        if (null == po.getPoLineList()) {
             // 有line信息保存
             for (int i = 0; i < po.getPoLineList().size(); i++) {
                 WhPoLineCommand polineCommand = po.getPoLineList().get(i);
