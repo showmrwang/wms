@@ -1,13 +1,27 @@
 package com.baozun.scm.primservice.whoperation.manager.createspoasn;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import lark.common.dao.Page;
+import lark.common.dao.Pagination;
+import lark.common.dao.Sort;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
+import com.baozun.scm.primservice.whoperation.command.poasn.WhPoLineCommand;
+import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 import com.baozun.scm.primservice.whoperation.util.StringUtil;
 
 @Service("createPoAsnManagerProxy")
@@ -42,12 +56,94 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
         return null;
     }
 
+
+    /**
+     * 封装创建PO单数据
+     * 
+     * @param po
+     * @return
+     */
+    public WhPo copyPropertiesPo(WhPoCommand po) {
+        WhPo whPo = new WhPo();
+        BeanUtils.copyProperties(po, whPo);
+        // 相关单据号 调用HUB编码生成器获得
+        whPo.setExtCode(String.valueOf(System.currentTimeMillis()));
+        // 采购时间为空默认为当前时间
+        if (null == po.getPoDate()) {
+            whPo.setPoDate(new Date());
+        }
+        whPo.setCreateTime(new Date());
+        whPo.setCreatedId(po.getUserId());
+        whPo.setLastModifyTime(new Date());
+        whPo.setModifiedId(po.getUserId());
+        return whPo;
+    }
+
+    /**
+     * 封装创建POLINE数据
+     * 
+     * @param po
+     * @return
+     */
+    public List<WhPoLine> copyPropertiesPoLine(WhPoCommand po) {
+        List<WhPoLine> whPoLine = new ArrayList<WhPoLine>();
+        if (null != po.getPoLineList()) {
+            // 有line信息保存
+            for (int i = 0; i < po.getPoLineList().size(); i++) {
+                WhPoLineCommand polineCommand = po.getPoLineList().get(i);
+                WhPoLine poline = new WhPoLine();
+                BeanUtils.copyProperties(polineCommand, poline);
+                poline.setOuId(po.getOuId());
+                if (null == poline.getLinenum()) {
+                    // 行号为空的话默认1开始递增
+                    poline.setLinenum(i++);
+                }
+                poline.setPoId(po.getId());
+                poline.setCreateTime(new Date());
+                poline.setCreatedId(po.getUserId());
+                poline.setLastModifyTime(new Date());
+                poline.setModifiedId(po.getUserId());
+                whPoLine.add(poline);
+            }
+        }
+        return whPoLine;
+    }
+
     /**
      * 创建ASN单据
      */
     @Override
     public ResponseMsg createAsn(WhAsnCommand asn) {
         return null;
+    }
+
+
+    /**
+     * 
+     * 查询po单列表(带分页)
+     * 
+     * @param page
+     * @param sorts
+     * @param params
+     * @param sourceType
+     * @return
+     */
+    @Override
+    public Pagination<WhPoCommand> findListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params, Integer sourceType) {
+        Pagination<WhPoCommand> whPoCommandList = null;
+        if (null == sourceType) {
+            sourceType = Constants.SHARD_SOURCE;
+        }
+        // 判断读取那个库的数据
+        if (sourceType == Constants.SHARD_SOURCE) {
+            // 拆分库
+            whPoCommandList = createsPoManager.findListByQueryMapWithPageExtByShard(page, sorts, params);
+        }
+        if (sourceType == Constants.INFO_SOURCE) {
+            // 公共库
+            whPoCommandList = createsPoManager.findListByQueryMapWithPageExtByInfo(page, sorts, params);
+        }
+        return whPoCommandList;
     }
 
     /**

@@ -114,7 +114,7 @@
 			</map>
 		</property>
 		<property name="defaultDataSourceKey" >
-			<value>infoSource</value>
+			<value>shardSource</value>
 		</property>
 	</bean>
 	

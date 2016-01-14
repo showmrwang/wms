@@ -12,9 +12,11 @@ import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
 
 public interface CreatesPoManager extends BaseManager {
 
-    Pagination<WhPoCommand> findListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params, Integer sourceType);
-
     ResponseMsg createPoAndLine(WhPoCommand po, ResponseMsg rm);
 
     WhPoCommand findWhPoById(Long id, Long ouid);
+
+    Pagination<WhPoCommand> findListByQueryMapWithPageExtByInfo(Page page, Sort[] sorts, Map<String, Object> params);
+
+    Pagination<WhPoCommand> findListByQueryMapWithPageExtByShard(Page page, Sort[] sorts, Map<String, Object> params);
 }
