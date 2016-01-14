@@ -1,13 +1,21 @@
 package com.baozun.scm.primservice.whoperation.manager.createspoasn;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
+import com.baozun.scm.primservice.whoperation.command.poasn.WhPoLineCommand;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 import com.baozun.scm.primservice.whoperation.util.StringUtil;
 
 @Service("createPoAsnManagerProxy")
@@ -40,6 +48,59 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
         }
         log.info("CreatePo end =======================");
         return null;
+    }
+
+
+    /**
+     * 封装创建PO单数据
+     * 
+     * @param po
+     * @return
+     */
+    public WhPo copyPropertiesPo(WhPoCommand po) {
+        WhPo whPo = new WhPo();
+        BeanUtils.copyProperties(po, whPo);
+        // 相关单据号 调用HUB编码生成器获得
+        whPo.setExtCode(String.valueOf(System.currentTimeMillis()));
+        // 采购时间为空默认为当前时间
+        if (null == po.getPoDate()) {
+            whPo.setPoDate(new Date());
+        }
+        whPo.setCreateTime(new Date());
+        whPo.setCreatedId(po.getUserId());
+        whPo.setLastModifyTime(new Date());
+        whPo.setModifiedId(po.getUserId());
+        return whPo;
+    }
+
+    /**
+     * 封装创建POLINE数据
+     * 
+     * @param po
+     * @return
+     */
+    public List<WhPoLine> copyPropertiesPoLine(WhPoCommand po) {
+        List<WhPoLine> whPoLine = new ArrayList<WhPoLine>();
+        if (null != po.getPoLineList()) {
+            // 有line信息保存
+            for (int i = 0; i < po.getPoLineList().size(); i++) {
+                WhPoLineCommand polineCommand = po.getPoLineList().get(i);
+                WhPoLine poline = new WhPoLine();
+                BeanUtils.copyProperties(polineCommand, poline);
+                poline.setOuId(po.getOuId());
+                if (null == poline.getLinenum()) {
+                    // 行号为空的话默认1开始递增
+                    poline.setLinenum(i++);
+                }
+                poline.setPoId(po.getId());
+                poline.setCreateTime(new Date());
+                poline.setCreatedId(po.getUserId());
+                poline.setLastModifyTime(new Date());
+                poline.setModifiedId(po.getUserId());
+                whPoLine.add(poline);
+            }
+        }
+        return whPoLine;
     }
 
     /**
