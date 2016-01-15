@@ -19,6 +19,12 @@ import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 import com.baozun.scm.primservice.whoperation.util.StringUtil;
 
+/**
+ * 创建PoAsn单
+ * 
+ * @author bin.hu
+ * 
+ */
 @Service("createPoAsnManagerProxy")
 public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
 

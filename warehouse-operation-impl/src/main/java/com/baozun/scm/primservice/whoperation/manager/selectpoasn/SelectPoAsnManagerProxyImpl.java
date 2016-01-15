@@ -18,6 +18,12 @@ import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.manager.poasn.AsnManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.PoManager;
 
+/**
+ * 查询PoAsn相关数据
+ * 
+ * @author bin.hu
+ * 
+ */
 @Service("selectPoAsnManagerProxy")
 public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
 
