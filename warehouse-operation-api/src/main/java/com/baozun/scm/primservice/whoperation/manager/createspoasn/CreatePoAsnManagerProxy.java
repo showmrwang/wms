@@ -10,5 +10,5 @@ public interface CreatePoAsnManagerProxy extends BaseManager {
     ResponseMsg createPo(WhPoCommand po);
 
     ResponseMsg createAsn(WhAsnCommand asn);
-    
+
 }

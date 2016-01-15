@@ -1,5 +1,6 @@
 package com.baozun.scm.primservice.whoperation.manager.selectpoasn;
 
+import java.util.List;
 import java.util.Map;
 
 import lark.common.dao.Page;
@@ -11,8 +12,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
+import com.baozun.scm.primservice.whoperation.manager.poasn.AsnManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.PoManager;
 
 @Service("selectPoAsnManagerProxy")
@@ -22,6 +25,8 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
 
     @Autowired
     private PoManager poManager;
+    @Autowired
+    private AsnManager asnManager;
 
     /**
      * 
@@ -49,6 +54,14 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
             whPoCommandList = poManager.findListByQueryMapWithPageExtByInfo(page, sorts, params);
         }
         return whPoCommandList;
+    }
+
+    /**
+     * 通过asnCode查询对应数据 ASN预约时模糊查询对应数据
+     */
+    @Override
+    public List<WhAsnCommand> findWhAsnListByAsnCode(String asnCode, Integer status, Long ouid) {
+        return asnManager.findWhAsnListByAsnCode(asnCode, status, ouid);
     }
 
 
