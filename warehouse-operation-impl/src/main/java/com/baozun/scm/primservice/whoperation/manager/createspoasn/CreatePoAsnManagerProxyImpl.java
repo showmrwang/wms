@@ -41,7 +41,9 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
         }
         try {
             // 创建PO单数据
-            rm = poManager.createPoAndLine(po, rm);
+            WhPo whPo = copyPropertiesPo(po);
+            List<WhPoLine> whPoLines = copyPropertiesPoLine(po);
+            rm = poManager.createPoAndLine(whPo, whPoLines, rm);
         } catch (Exception e) {
             rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
             log.error("printService error poCode: " + po.getPoCode());

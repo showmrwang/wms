@@ -1,6 +1,6 @@
 package com.baozun.scm.primservice.whoperation.manager.poasn;
 
-import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import lark.common.annotation.MoreDB;
@@ -8,13 +8,11 @@ import lark.common.dao.Page;
 import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
-import com.baozun.scm.primservice.whoperation.command.poasn.WhPoLineCommand;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoLineDao;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
@@ -72,40 +70,17 @@ public class PoManagerImpl implements PoManager {
      * 
      */
     @Override
-    public ResponseMsg createPoAndLine(WhPoCommand po, ResponseMsg rm) {
-        WhPo whPo = new WhPo();
-        BeanUtils.copyProperties(po, whPo);
-        // 相关单据号 调用HUB编码生成器获得
-        whPo.setExtCode(String.valueOf(System.currentTimeMillis()));
-        // 采购时间为空默认为当前时间
-        if (null == po.getPoDate()) {
-            whPo.setPoDate(new Date());
-        }
-        whPo.setCreateTime(new Date());
-        whPo.setCreatedId(po.getUserId());
-        whPo.setLastModifyTime(new Date());
-        whPo.setModifiedId(po.getUserId());
-        whPoDao.saveOrUpdate(whPo);
-        if (null != po.getPoLineList()) {
+    public ResponseMsg createPoAndLine(WhPo po, List<WhPoLine> whPoLines, ResponseMsg rm) {
+        whPoDao.saveOrUpdate(po);
+        if (whPoLines.size() > 0) {
             // 有line信息保存
-            for (int i = 0; i < po.getPoLineList().size(); i++) {
-                WhPoLineCommand polineCommand = po.getPoLineList().get(i);
-                WhPoLine poline = new WhPoLine();
-                BeanUtils.copyProperties(polineCommand, poline);
-                poline.setOuId(whPo.getOuId());
-                if (null == poline.getLinenum()) {
-                    // 行号为空的话默认1开始递增
-                    poline.setLinenum(i++);
-                }
-                poline.setCreateTime(new Date());
-                poline.setCreatedId(po.getUserId());
-                poline.setLastModifyTime(new Date());
-                poline.setModifiedId(po.getUserId());
-                whPoLineDao.saveOrUpdate(poline);
+            for (WhPoLine whPoLine : whPoLines) {
+                whPoLine.setPoId(po.getId());
+                whPoLineDao.saveOrUpdate(whPoLine);
             }
         }
         rm.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
-        rm.setMsg(whPo.getId() + "");
+        rm.setMsg(po.getId() + "");
         return rm;
 
     }

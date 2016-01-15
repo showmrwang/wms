@@ -1,5 +1,6 @@
 package com.baozun.scm.primservice.whoperation.manager.poasn;
 
+import java.util.List;
 import java.util.Map;
 
 import lark.common.dao.Page;
@@ -9,10 +10,12 @@ import lark.common.dao.Sort;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 
 public interface PoManager extends BaseManager {
 
-    ResponseMsg createPoAndLine(WhPoCommand po, ResponseMsg rm);
+    ResponseMsg createPoAndLine(WhPo po, List<WhPoLine> whPoLines, ResponseMsg rm);
 
     WhPoCommand findWhPoById(Long id, Long ouid);
 
