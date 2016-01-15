@@ -1,8 +1,9 @@
-package com.baozun.scm.primservice.whoperation.manager.createspoasn;
+package com.baozun.scm.primservice.whoperation.manager.poasn;
 
 import java.util.Date;
 import java.util.Map;
 
+import lark.common.annotation.MoreDB;
 import lark.common.dao.Page;
 import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
@@ -27,9 +28,9 @@ import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
  * @author bin.hu
  * 
  */
-@Service("createsPoManager")
+@Service("poManager")
 @Transactional
-public class CreatesPoManagerImpl implements CreatesPoManager {
+public class PoManagerImpl implements PoManager {
 
     @Autowired
     private WhPoDao whPoDao;
@@ -46,6 +47,7 @@ public class CreatesPoManagerImpl implements CreatesPoManager {
      * @return
      */
     @Override
+    @MoreDB("infoSource")
     public Pagination<WhPoCommand> findListByQueryMapWithPageExtByInfo(Page page, Sort[] sorts, Map<String, Object> params) {
         return whPoDao.findListByQueryMapWithPageExt(page, sorts, params);
     }
@@ -59,6 +61,7 @@ public class CreatesPoManagerImpl implements CreatesPoManager {
      * @return
      */
     @Override
+    @MoreDB("shardSource")
     public Pagination<WhPoCommand> findListByQueryMapWithPageExtByShard(Page page, Sort[] sorts, Map<String, Object> params) {
         return whPoDao.findListByQueryMapWithPageExt(page, sorts, params);
     }

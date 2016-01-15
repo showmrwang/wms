@@ -1,4 +1,4 @@
-package com.baozun.scm.primservice.whoperation.manager.createspoasn;
+package com.baozun.scm.primservice.whoperation.manager.poasn;
 
 import java.util.List;
 
@@ -16,9 +16,9 @@ import com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnDao;
  * @author bin.hu
  * 
  */
-@Service("createsAsnManager")
+@Service("asnManager")
 @Transactional
-public class CreatesAsnManagerImpl implements CreatesAsnManager {
+public class AsnManagerImpl implements AsnManager {
 
     @Autowired
     private WhAsnDao whAsnDao;

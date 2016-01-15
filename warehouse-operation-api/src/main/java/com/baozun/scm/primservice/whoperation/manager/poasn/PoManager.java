@@ -1,8 +1,7 @@
-package com.baozun.scm.primservice.whoperation.manager.createspoasn;
+package com.baozun.scm.primservice.whoperation.manager.poasn;
 
 import java.util.Map;
 
-import lark.common.annotation.MoreDB;
 import lark.common.dao.Page;
 import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
@@ -11,15 +10,13 @@ import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
 
-public interface CreatesPoManager extends BaseManager {
+public interface PoManager extends BaseManager {
 
     ResponseMsg createPoAndLine(WhPoCommand po, ResponseMsg rm);
 
     WhPoCommand findWhPoById(Long id, Long ouid);
 
-    @MoreDB("infoSource")
     Pagination<WhPoCommand> findListByQueryMapWithPageExtByInfo(Page page, Sort[] sorts, Map<String, Object> params);
 
-    @MoreDB("shardSource")
     Pagination<WhPoCommand> findListByQueryMapWithPageExtByShard(Page page, Sort[] sorts, Map<String, Object> params);
 }
