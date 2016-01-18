@@ -24,11 +24,11 @@
     
  
     <!-- 声明需要暴露的服务接口 -->
-    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.poasn.AsnManager"  ref="asnManager" />
-    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.poasn.PoManager"  ref="poManager" />
-    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.createspoasn.CreatePoAsnManagerProxy"  ref="createPoAsnManagerProxy" />
-    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.selectpoasn.SelectPoAsnManagerProxy"  ref="selectPoAsnManagerProxy" />
-    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.editpoasn.EditPoAsnManagerProxy"  ref="editPoAsnManagerProxy" />
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnManager"  ref="asnManager" />
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoManager"  ref="poManager" />
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.poasn.createspoasn.CreatePoAsnManagerProxy"  ref="createPoAsnManagerProxy" />
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.poasn.selectpoasn.SelectPoAsnManagerProxy"  ref="selectPoAsnManagerProxy" />
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.poasn.editpoasn.EditPoAsnManagerProxy"  ref="editPoAsnManagerProxy" />
     
 	
     <!--生成远程服务代理，可以和本地bean一样使用demoService-->
