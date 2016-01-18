@@ -1,4 +1,4 @@
-package com.baozun.scm.primservice.whoperation.manager.poasn;
+package com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager;
 
 import java.util.List;
 

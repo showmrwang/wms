@@ -1,4 +1,4 @@
-package com.baozun.scm.primservice.whoperation.manager.createspoasn;
+package com.baozun.scm.primservice.whoperation.manager.poasn.createspoasn;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -13,7 +13,8 @@ import org.springframework.stereotype.Service;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoLineCommand;
-import com.baozun.scm.primservice.whoperation.manager.poasn.PoManager;
+import com.baozun.scm.primservice.whoperation.manager.poasn.createspoasn.CreatePoAsnManagerProxy;
+import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoManager;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;

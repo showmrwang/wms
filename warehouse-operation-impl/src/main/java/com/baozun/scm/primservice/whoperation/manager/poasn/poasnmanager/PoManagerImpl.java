@@ -1,4 +1,4 @@
-package com.baozun.scm.primservice.whoperation.manager.poasn;
+package com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager;
 
 import java.util.List;
 import java.util.Map;
@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoLineDao;
+import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoManager;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;

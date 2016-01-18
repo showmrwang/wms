@@ -1,4 +1,4 @@
-package com.baozun.scm.primservice.whoperation.manager.createspoasn;
+package com.baozun.scm.primservice.whoperation.manager.poasn.createspoasn;
 
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;

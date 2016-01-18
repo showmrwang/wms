@@ -1,4 +1,4 @@
-package com.baozun.scm.primservice.whoperation.manager.poasn;
+package com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager;
 
 import java.util.Date;
 import java.util.List;
@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnDao;
+import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnManager;
 
 
 /**

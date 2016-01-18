@@ -1,10 +1,11 @@
-package com.baozun.scm.primservice.whoperation.manager.editpoasn;
+package com.baozun.scm.primservice.whoperation.manager.poasn.editpoasn;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
-import com.baozun.scm.primservice.whoperation.manager.poasn.AsnManager;
+import com.baozun.scm.primservice.whoperation.manager.poasn.editpoasn.EditPoAsnManagerProxy;
+import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnManager;
 
 /**
  * 编辑PoAsn单信息

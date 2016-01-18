@@ -1,4 +1,4 @@
-package com.baozun.scm.primservice.whoperation.manager.selectpoasn;
+package com.baozun.scm.primservice.whoperation.manager.poasn.selectpoasn;
 
 import java.util.List;
 import java.util.Map;
@@ -15,8 +15,9 @@ import org.springframework.stereotype.Service;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
-import com.baozun.scm.primservice.whoperation.manager.poasn.AsnManager;
-import com.baozun.scm.primservice.whoperation.manager.poasn.PoManager;
+import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnManager;
+import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoManager;
+import com.baozun.scm.primservice.whoperation.manager.poasn.selectpoasn.SelectPoAsnManagerProxy;
 
 /**
  * 查询PoAsn相关数据
