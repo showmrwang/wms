@@ -33,7 +33,7 @@ public class PoAsnStatus implements Serializable {
     public static final int ASN_RESERVE = 2;// 预约
     public static final int ASN_CHECKIN = 3;// 签入 Checkin
     public static final int ASN_RCVD = 4;// 收货中
-    public static final int ASN_ONSHELF = 5;// 上架中 onshelf
+    public static final int ASN_PUTAWAY = 5;// 上架中 putaway
     public static final int ASN_INBOUND = 6;// 已入库
     public static final int ASN_REVIEW = 7;// 已审核 review
     public static final int ASN_RCVD_FINISH = 10;// 收货完成
