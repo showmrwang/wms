@@ -43,8 +43,7 @@ public class PoAsnStatus implements Serializable {
 
     /** ASN LINE */
     public static final int ASNLINE_NOT_RCVD = 1; // 未收货
-    public static final int ASNLINE_RCVD_PART = 2; // 部分收货
-    public static final int ASNLINE_RCVD_ALL = 3; // 全部收货
+    public static final int ASNLINE_RCVD = 2; // 部分收货
     public static final int ASNLINE_RCVD_FINISH = 10; // 收货完成
     public static final int ASNLINE_CANCELED = 17;// 取消
     public static final int ASNLINE_CLOSE = 20;// 关闭
