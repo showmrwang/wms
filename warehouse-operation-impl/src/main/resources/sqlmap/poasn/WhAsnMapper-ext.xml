@@ -195,5 +195,20 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				</if>
 			</where>
     </select>
+    
+    <update id="editAsnStatus" parameterType="com.baozun.scm.primservice.whoperation.model.poasn.WhAsn">
+		UPDATE t_wh_asn SET status = #{status},modified_id = #{userid},last_modify_time = now() 
+		<where>
+			id in
+			<foreach collection="ids" item="id" open="(" separator=","
+				close=")">
+				#{id}
+			</foreach>
+			 and last_modify_time &lt;=  #{lastModifyTime} 
+			   <if test="ouid!=null">
+						and ou_id = #{ouid}
+				</if>
+		</where>
+	</update>
 	
 </mapper>

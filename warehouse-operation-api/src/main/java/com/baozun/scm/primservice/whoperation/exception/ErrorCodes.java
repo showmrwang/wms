@@ -20,6 +20,9 @@ public class ErrorCodes {
 
     /** 输入参数不正确 */
     public static final Integer PARAMS_ERROR = 5;
+    
+    /** 传入的参数{0}不能为空,确保传入数据的完整性**/
+    public static final Integer PARAM_IS_NULL =6;
 
     /** 更新支付信息失败(t_so_payinfo) **/
     public static final Integer UPDATE_PAYINFO_FAILURE = 30001;
@@ -53,21 +56,41 @@ public class ErrorCodes {
 
     /** 删除数据失败,补货条码生成失败，请刷新页面后重试 **/
     public static final int UPDATE_REPLENISHMENT_ERROR = 1010;
-    
+
     /** 重复的库位编码，请重新选择库位编码起止 **/
     public static final int REDUPLICATIVE_DATA_ERROR = 1011;
 
     /** 所设定的维度包含过多的编码，已超过上限{0}，不能进行操作，请重新设定 **/
     public static final int UPDATE_DATA_UPPER_ERROR = 1012;
-    
-    /** 已有所设定的{0}，请重新设定**/
+
+    /** 已有所设定的{0}，请重新设定 **/
     public static final int UPDATE_UOM_CODENAME_ERROR = 1013;
-    
-    /** 数据备份失败，请刷新重试**/
+
+    /** 数据备份失败，请刷新重试 **/
     public static final int BACKUP_DATA_ERROR = 1014;
-    
-    /**区域下存在子区域，不能进行删除操作**/
+
+    /** 区域下存在子区域，不能进行删除操作 **/
     public static final int REGION_PARENT_ERROR = 1015;
-   
+
+    /** 更新的数据数量({0})与实际更新数量({1})不一致，请刷新页面后重试 **/
+    public static final int UPDATE_DATA_QUANTITYERROR = 1016;
+    
+    /** ASN号编码({0})在系统中未找到**/
+    public static final int ASN_CODE_IS_NOT_FOUND = 1017;
+
+    /** 用户角色id为空 **/
+    public static final int USER_EMPTY = 1020;
+    /** 所选ucid与当前用户不符 **/
+    public static final int USER_UC_NOT_EUQAL = 1021;
+    /** 删除失败 **/
+    public static final int DELETE_FAILURE = 1022;
+    /** 保存失败 **/
+    public static final int SAVE_FAILURE = 1023;
+    /** 店铺id为空 **/
+    public static final int STORE_EMPTY = 1024;
+    
+    
+    /** 页面会话错误 请刷新页面后重试 **/
+    public static final int SESSION_DATA_ERROR = 2001;
 
 }

@@ -9,4 +9,9 @@ public interface AsnManager extends BaseManager {
 
     List<WhAsnCommand> findWhAsnListByAsnCode(String asnCode, Integer status, Long ouid);
 
+    int editAsnStatusByInfo(WhAsnCommand whAsn);
+
+    int editAsnStatusByShard(WhAsnCommand whAsn);
+
+
 }

@@ -1,6 +1,9 @@
 package com.baozun.scm.primservice.whoperation.manager.poasn;
 
+import java.util.Date;
 import java.util.List;
+
+import lark.common.annotation.MoreDB;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,6 +32,18 @@ public class AsnManagerImpl implements AsnManager {
     @Override
     public List<WhAsnCommand> findWhAsnListByAsnCode(String asnCode, Integer status, Long ouid) {
         return whAsnDao.findWhAsnListByAsnCode(asnCode, status, ouid);
+    }
+
+    @Override
+    @MoreDB("infoSource")
+    public int editAsnStatusByInfo(WhAsnCommand whAsn) {
+        return whAsnDao.editAsnStatus(whAsn.getAsnIds(), whAsn.getStatus(), whAsn.getModifiedId(), whAsn.getOuId(), new Date());
+    }
+
+    @Override
+    @MoreDB("shardSource")
+    public int editAsnStatusByShard(WhAsnCommand whAsn) {
+        return whAsnDao.editAsnStatus(whAsn.getAsnIds(), whAsn.getStatus(), whAsn.getModifiedId(), whAsn.getOuId(), new Date());
     }
 
 }

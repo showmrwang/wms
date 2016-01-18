@@ -16,6 +16,7 @@ package com.baozun.scm.primservice.whoperation.command.poasn;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 
 public class WhAsnCommand implements Serializable {
@@ -72,6 +73,9 @@ public class WhAsnCommand implements Serializable {
     private Date lastModifyTime;
     /** modifiedId */
     private Long modifiedId;
+
+    /** asnid list */
+    private List<Long> asnIds;
 
     public Long getId() {
         return this.id;
@@ -271,6 +275,14 @@ public class WhAsnCommand implements Serializable {
 
     public void setModifiedId(Long value) {
         this.modifiedId = value;
+    }
+
+    public List<Long> getAsnIds() {
+        return asnIds;
+    }
+
+    public void setAsnIds(List<Long> asnIds) {
+        this.asnIds = asnIds;
     }
 
 
