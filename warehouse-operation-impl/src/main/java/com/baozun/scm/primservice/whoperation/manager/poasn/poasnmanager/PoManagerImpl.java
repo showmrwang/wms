@@ -1,5 +1,6 @@
 package com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -15,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoLineDao;
+import com.baozun.scm.primservice.whoperation.exception.BusinessException;
+import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoManager;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
@@ -92,5 +95,37 @@ public class PoManagerImpl implements PoManager {
     @Override
     public WhPoCommand findWhPoById(Long id, Long ouid) {
         return whPoDao.findWhPoById(id, ouid);
+    }
+
+    /**
+     * 修改公共库PO单状态
+     */
+    @Override
+    @MoreDB("infoSource")
+    public int editPoStatusByInfo(WhPoCommand whPo) {
+        int result = whPoDao.editPoStatus(whPo.getAsnIds(), whPo.getStatus(), whPo.getModifiedId(), whPo.getOuId(), new Date());
+        if (result <= 0) {
+            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+        }
+        if (result != whPo.getAsnIds().size()) {
+            throw new BusinessException(ErrorCodes.UPDATE_DATA_QUANTITYERROR, new Object[] {whPo.getAsnIds().size(), result});
+        }
+        return result;
+    }
+
+    /**
+     * 修改拆库PO单状态
+     */
+    @Override
+    @MoreDB("shardSource")
+    public int editPoStatusByShard(WhPoCommand whPo) {
+        int result = whPoDao.editPoStatus(whPo.getAsnIds(), whPo.getStatus(), whPo.getModifiedId(), whPo.getOuId(), new Date());
+        if (result <= 0) {
+            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+        }
+        if (result != whPo.getAsnIds().size()) {
+            throw new BusinessException(ErrorCodes.UPDATE_DATA_QUANTITYERROR, new Object[] {whPo.getAsnIds().size(), result});
+        }
+        return result;
     }
 }

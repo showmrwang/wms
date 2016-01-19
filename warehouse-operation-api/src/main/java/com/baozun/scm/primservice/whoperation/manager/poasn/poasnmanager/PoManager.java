@@ -22,4 +22,8 @@ public interface PoManager extends BaseManager {
     Pagination<WhPoCommand> findListByQueryMapWithPageExtByInfo(Page page, Sort[] sorts, Map<String, Object> params);
 
     Pagination<WhPoCommand> findListByQueryMapWithPageExtByShard(Page page, Sort[] sorts, Map<String, Object> params);
+
+    int editPoStatusByInfo(WhPoCommand whPo);
+
+    int editPoStatusByShard(WhPoCommand whPo);
 }

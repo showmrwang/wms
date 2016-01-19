@@ -14,6 +14,8 @@
  */
 package com.baozun.scm.primservice.whoperation.dao.poasn;
 
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
@@ -45,4 +47,6 @@ public interface WhPoDao extends BaseDao<WhPo, Long> {
     int saveOrUpdateByVersion(WhPo o);
 
     WhPoCommand findWhPoById(@Param("id") Long id, @Param("ouid") Long ouid);
+
+    int editPoStatus(@Param("ids") List<Long> ids, @Param("status") Integer status, @Param("userid") Long userid, @Param("ouid") Long ouid, @Param("lastModifyTime") Date lastModifyTime);
 }

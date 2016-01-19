@@ -36,6 +36,9 @@ public class AsnManagerImpl implements AsnManager {
         return whAsnDao.findWhAsnListByAsnCode(asnCode, status, ouid);
     }
 
+    /**
+     * 修改公共库ASN单状态
+     */
     @Override
     @MoreDB("infoSource")
     public int editAsnStatusByInfo(WhAsnCommand whAsn) {
@@ -49,6 +52,9 @@ public class AsnManagerImpl implements AsnManager {
         return result;
     }
 
+    /**
+     * 修改拆库ASN单状态
+     */
     @Override
     @MoreDB("shardSource")
     public int editAsnStatusByShard(WhAsnCommand whAsn) {

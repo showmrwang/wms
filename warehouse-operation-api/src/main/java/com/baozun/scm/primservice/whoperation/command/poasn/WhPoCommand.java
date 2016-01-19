@@ -94,6 +94,9 @@ public class WhPoCommand implements Serializable {
     /** 操作员工ID */
     private Long userId;
 
+    /** asnid list */
+    private List<Long> asnIds;
+
     public Long getId() {
         return this.id;
     }
@@ -356,6 +359,14 @@ public class WhPoCommand implements Serializable {
 
     public void setIsVmi(Boolean isVmi) {
         this.isVmi = isVmi;
+    }
+
+    public List<Long> getAsnIds() {
+        return asnIds;
+    }
+
+    public void setAsnIds(List<Long> asnIds) {
+        this.asnIds = asnIds;
     }
 
 
