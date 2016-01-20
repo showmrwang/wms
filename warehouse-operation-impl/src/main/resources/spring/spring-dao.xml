@@ -100,6 +100,12 @@
             <value><![CDATA[${dataSource.url.shard}]]></value>
         </property>
     </bean>
+<!-- 全局表 -->
+    <bean id="globalSource" parent="parentSource">
+        <property name="url">
+            <value><![CDATA[${dataSource.url.global}]]></value>
+        </property>
+    </bean>
 
 	<!-- 用于多数据库切换 -->
 <bean id="dataSource" class="lark.orm.dao.MoreDataSource">
@@ -110,6 +116,9 @@
 				</entry>
 				<entry key="shardSource">
 					<ref bean="shardSource"/>
+				</entry>
+				<entry key="globalSource">
+					<ref bean="globalSource"/>
 				</entry>
 			</map>
 		</property>
