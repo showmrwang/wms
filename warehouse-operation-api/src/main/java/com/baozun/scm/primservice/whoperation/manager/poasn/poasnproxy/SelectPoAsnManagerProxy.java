@@ -1,4 +1,4 @@
-package com.baozun.scm.primservice.whoperation.manager.poasn.selectpoasn;
+package com.baozun.scm.primservice.whoperation.manager.poasn.poasnproxy;
 
 import java.util.List;
 import java.util.Map;

@@ -1,4 +1,4 @@
-package com.baozun.scm.primservice.whoperation.manager.poasn.editpoasn;
+package com.baozun.scm.primservice.whoperation.manager.poasn.poasnproxy;
 
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;

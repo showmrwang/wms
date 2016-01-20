@@ -1,4 +1,4 @@
-package com.baozun.scm.primservice.whoperation.manager.poasn.selectpoasn;
+package com.baozun.scm.primservice.whoperation.manager.poasn.poasnproxy;
 
 import java.util.List;
 import java.util.Map;
@@ -17,7 +17,7 @@ import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoManager;
-import com.baozun.scm.primservice.whoperation.manager.poasn.selectpoasn.SelectPoAsnManagerProxy;
+import com.baozun.scm.primservice.whoperation.manager.poasn.poasnproxy.SelectPoAsnManagerProxy;
 
 /**
  * 查询PoAsn相关数据
