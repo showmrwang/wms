@@ -114,7 +114,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				po.create_time as createTime,
 				po.created_id as createdId,
 				po.last_modify_time as lastModifyTime,
-				po.modified_id as modifiedId
+				po.modified_id as modifiedId,
+				c.customer_name as customerName,
+				s.store_name as storeName
 	    ]]>
 	</sql>	
 		
@@ -124,14 +126,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<select id="findListByQueryMapWithPageExt" resultMap="WhPoCommand">
     	select <include refid="whPoColumnsMapExt" />
 	    from 
-	    t_wh_po po 
+	    t_wh_po po left join t_bi_customer c on po.customer_id = c.id
+		left join t_bi_store s on po.store_id = s.id 
 		<include refid="whPoDynamicWhereExt"/>
     </select>
     		
 		
 	<select id="findListCountByQueryMapExt" resultType="long">
         select count(*) from 
-        t_wh_po po 
+        t_wh_po po left join t_bi_customer c on po.customer_id = c.id
+		left join t_bi_store s on po.store_id = s.id 
 		<include refid="whPoDynamicWhereExt"/>
     </select>
     
