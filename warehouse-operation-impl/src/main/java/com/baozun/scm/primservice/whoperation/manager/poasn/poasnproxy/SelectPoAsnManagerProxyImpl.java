@@ -79,8 +79,10 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
     public WhPo findWhPoById(WhPoCommand whPoCommand) {
         WhPo whpo = null;
         if (null == whPoCommand.getOuId()) {
+            // 查询基本库内信息
             whpo = poManager.findWhPoByIdByInfo(whPoCommand);
         } else {
+            // 查询拆库内信息
             whpo = poManager.findWhPoByIdByShard(whPoCommand);
         }
         return whpo;
