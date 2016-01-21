@@ -90,14 +90,6 @@ public class PoManagerImpl implements PoManager {
     }
 
     /**
-     * 通过OP单ID查询相关信息
-     */
-    @Override
-    public WhPoCommand findWhPoById(Long id, Long ouid) {
-        return whPoDao.findWhPoById(id, ouid);
-    }
-
-    /**
      * 修改公共库PO单状态
      */
     @Override
@@ -127,5 +119,23 @@ public class PoManagerImpl implements PoManager {
             throw new BusinessException(ErrorCodes.UPDATE_DATA_QUANTITYERROR, new Object[] {whPo.getAsnIds().size(), result});
         }
         return result;
+    }
+
+    /**
+     * 通过OP单ID查询相关信息 基础表
+     */
+    @Override
+    @MoreDB("infoSource")
+    public WhPo findWhPoByIdByInfo(WhPoCommand whPo) {
+        return whPoDao.findWhPoById(whPo.getId(), whPo.getOuId());
+    }
+
+    /**
+     * 通过OP单ID查询相关信息 拆库表
+     */
+    @Override
+    @MoreDB("shardSource")
+    public WhPo findWhPoByIdByShard(WhPoCommand whPo) {
+        return whPoDao.findWhPoById(whPo.getId(), whPo.getOuId());
     }
 }

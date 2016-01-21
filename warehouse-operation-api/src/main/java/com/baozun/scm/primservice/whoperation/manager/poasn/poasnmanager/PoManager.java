@@ -17,7 +17,9 @@ public interface PoManager extends BaseManager {
 
     ResponseMsg createPoAndLine(WhPo po, List<WhPoLine> whPoLines, ResponseMsg rm);
 
-    WhPoCommand findWhPoById(Long id, Long ouid);
+    WhPo findWhPoByIdByInfo(WhPoCommand whPo);
+
+    WhPo findWhPoByIdByShard(WhPoCommand whPo);
 
     Pagination<WhPoCommand> findListByQueryMapWithPageExtByInfo(Page page, Sort[] sorts, Map<String, Object> params);
 

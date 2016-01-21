@@ -139,13 +139,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		<include refid="whPoDynamicWhereExt"/>
     </select>
     
-    <select id="findWhPoById" resultMap="WhPoCommand">
+    <select id="findWhPoById" resultMap="WhPoResultExt">
     	select <include refid="whPoColumnsExt" />
 		    from 
 		    t_wh_po 
-		    where 
-		    id = #{id}
-		    and ou_id = #{ouid}
+		    <where>
+		    	id = #{id}
+				<if test="ouId!=null">
+		   			 and ou_id = #{ouid}
+				</if>
+			</where>
     </select>
     
 	<update id="editPoStatus" parameterType="com.baozun.scm.primservice.whoperation.model.poasn.WhPo">
