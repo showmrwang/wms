@@ -50,6 +50,28 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
             // 创建PO单数据
             WhPo whPo = copyPropertiesPo(po);
             List<WhPoLine> whPoLines = copyPropertiesPoLine(po);
+            //判断OU_ID
+            /**
+             * if(ou_id == null){
+             * if(存在){
+             * 查询对应基础库中PO单po_code+store_id是否存在
+             * 存在ERROR 提示PO_CODE已经存在
+             * 不存在直接插入PO单
+             * }else{
+             * 插入t_wh_check_pocode表
+             * }
+             * }
+             * if(ou_id !=null)
+             * 拆数据源操作
+             * 先查询t_wh_check_pocode
+             * 存在
+             * 查询对应基础库中PO单po_code+store_id是否存在
+             * 存在ERROR 提示PO_CODE已经存在
+             * 不存在的话直接插入PO单
+             * 2个事务 
+             */
+            //查询t_wh_check_pocode
+            //有:查询对应
             rm = poManager.createPoAndLine(whPo, whPoLines, rm);
         } catch (Exception e) {
             rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
