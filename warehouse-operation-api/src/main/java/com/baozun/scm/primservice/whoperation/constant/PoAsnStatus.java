@@ -13,6 +13,7 @@ public class PoAsnStatus implements Serializable {
     private static final long serialVersionUID = -4336754187196074057L;
 
     /** PO */
+    public static final int PO_DELETE = 0; // 删除
     public static final int PO_NEW = 1; // 新建
     public static final int PO_CREATE_ASN = 2;// 已创建ASN
     public static final int PO_RCVD = 3;// 收货中
@@ -29,6 +30,7 @@ public class PoAsnStatus implements Serializable {
     /** PO LINE */
 
     /** ASN */
+    public static final int ASN_DELETE = 0;// 删除
     public static final int ASN_NEW = 1;// 新建
     public static final int ASN_RESERVE = 2;// 预约
     public static final int ASN_CHECKIN = 3;// 签入 Checkin
