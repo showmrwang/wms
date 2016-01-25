@@ -48,6 +48,27 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				<if test="ouId!=null">
 					and po.ou_id = #{ouId}
 				</if>
+				<if test="poCode!=null and poCode!=''">
+					and po.po_code like #{poCode}
+				</if>
+				<if test="extCode!=null and extCode!=''">
+					and po.ext_code like #{extCode}
+				</if>
+				<if test="customerId!=null">
+					and po.customer_id = #{customerId}
+				</if>
+				<if test="storeId!=null">
+					and po.store_id = #{storeId}
+				</if>
+				<if test="supplierId!=null">
+					and po.supplier_id = #{supplierId}
+				</if>
+				<if test="logisticsProviderId!=null">
+					and po.logistics_provider_id = #{logisticsProviderId}
+				</if>
+				<if test="isIqc!=null">
+					and po.is_iqc = #{isIqc}
+				</if>
 		</where>
 	</sql>
 	
