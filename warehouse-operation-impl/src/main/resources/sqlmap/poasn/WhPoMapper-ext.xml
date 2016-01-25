@@ -117,7 +117,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				po.last_modify_time as lastModifyTime,
 				po.modified_id as modifiedId,
 				c.customer_name as customerName,
-				s.store_name as storeName
+				s.store_name as storeName,
+				sys.dic_label as statusName
 	    ]]>
 	</sql>	
 		
@@ -127,16 +128,20 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<select id="findListByQueryMapWithPageExt" resultMap="WhPoCommand">
     	select <include refid="whPoColumnsMapExt" />
 	    from 
-	    t_wh_po po left join t_bi_customer c on po.customer_id = c.id
+	    t_wh_po po 
+	    left join t_bi_customer c on po.customer_id = c.id
 		left join t_bi_store s on po.store_id = s.id 
+		left join sys_dictionary sys on sys.dic_value = po.status and sys.group_value = 'POSTATUS'
 		<include refid="whPoDynamicWhereExt"/>
     </select>
     		
 		
 	<select id="findListCountByQueryMapExt" resultType="long">
         select count(*) from 
-        t_wh_po po left join t_bi_customer c on po.customer_id = c.id
+        t_wh_po po 
+        left join t_bi_customer c on po.customer_id = c.id
 		left join t_bi_store s on po.store_id = s.id 
+		left join sys_dictionary sys on sys.dic_value = po.status and sys.group_value = 'POSTATUS'
 		<include refid="whPoDynamicWhereExt"/>
     </select>
     

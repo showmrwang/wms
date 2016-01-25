@@ -96,6 +96,8 @@ public class WhPoCommand implements Serializable {
 
     /** asnid list */
     private List<Long> asnIds;
+    /** 状态名称 */
+    private String statusName;
 
     public Long getId() {
         return this.id;
@@ -367,6 +369,14 @@ public class WhPoCommand implements Serializable {
 
     public void setAsnIds(List<Long> asnIds) {
         this.asnIds = asnIds;
+    }
+
+    public String getStatusName() {
+        return statusName;
+    }
+
+    public void setStatusName(String statusName) {
+        this.statusName = statusName;
     }
 
 
