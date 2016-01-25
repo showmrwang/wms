@@ -28,4 +28,8 @@ public interface PoManager extends BaseManager {
     int editPoStatusByInfo(WhPoCommand whPo);
 
     int editPoStatusByShard(WhPoCommand whPo);
+
+    void editPoByInfo(WhPo whPo);
+
+    void editPoByShard(WhPo whPo);
 }

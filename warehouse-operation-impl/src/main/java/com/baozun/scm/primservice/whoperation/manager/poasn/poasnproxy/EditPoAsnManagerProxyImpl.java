@@ -68,8 +68,21 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
     @Override
     public ResponseMsg editPo(WhPo po) {
         log.info("EditPo start =======================");
+        ResponseMsg rm = new ResponseMsg();
+        rm.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
         if (po.getStatus() != PoAsnStatus.PO_NEW) {
-
+            // 如果PO单状态不是新建 失败
+            rm.setResponseStatus(ResponseMsg.DATA_ERROR);
+            rm.setMsg("po status is error status is: " + po.getStatus());
+            log.warn("EditPo warn ResponseStatus: " + rm.getResponseStatus() + " msg: " + rm.getMsg());
+            return rm;
+        }
+        if (null == po.getOuId()) {
+            // OUID为空更新基础表内信息
+            poManager.editPoByInfo(po);
+        } else {
+            // OUID不为空更新拆库表内信息
+            poManager.editPoByShard(po);
         }
         log.info("EditPo end  =======================");
         return null;

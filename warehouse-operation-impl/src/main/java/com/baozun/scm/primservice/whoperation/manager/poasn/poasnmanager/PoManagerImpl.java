@@ -95,12 +95,12 @@ public class PoManagerImpl implements PoManager {
     @Override
     @MoreDB("infoSource")
     public int editPoStatusByInfo(WhPoCommand whPo) {
-        int result = whPoDao.editPoStatus(whPo.getAsnIds(), whPo.getStatus(), whPo.getModifiedId(), whPo.getOuId(), new Date());
+        int result = whPoDao.editPoStatus(whPo.getPoIds(), whPo.getStatus(), whPo.getModifiedId(), whPo.getOuId(), new Date());
         if (result <= 0) {
             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
         }
-        if (result != whPo.getAsnIds().size()) {
-            throw new BusinessException(ErrorCodes.UPDATE_DATA_QUANTITYERROR, new Object[] {whPo.getAsnIds().size(), result});
+        if (result != whPo.getPoIds().size()) {
+            throw new BusinessException(ErrorCodes.UPDATE_DATA_QUANTITYERROR, new Object[] {whPo.getPoIds().size(), result});
         }
         return result;
     }
@@ -111,12 +111,12 @@ public class PoManagerImpl implements PoManager {
     @Override
     @MoreDB("shardSource")
     public int editPoStatusByShard(WhPoCommand whPo) {
-        int result = whPoDao.editPoStatus(whPo.getAsnIds(), whPo.getStatus(), whPo.getModifiedId(), whPo.getOuId(), new Date());
+        int result = whPoDao.editPoStatus(whPo.getPoIds(), whPo.getStatus(), whPo.getModifiedId(), whPo.getOuId(), new Date());
         if (result <= 0) {
             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
         }
-        if (result != whPo.getAsnIds().size()) {
-            throw new BusinessException(ErrorCodes.UPDATE_DATA_QUANTITYERROR, new Object[] {whPo.getAsnIds().size(), result});
+        if (result != whPo.getPoIds().size()) {
+            throw new BusinessException(ErrorCodes.UPDATE_DATA_QUANTITYERROR, new Object[] {whPo.getPoIds().size(), result});
         }
         return result;
     }
@@ -137,5 +137,35 @@ public class PoManagerImpl implements PoManager {
     @MoreDB("shardSource")
     public WhPo findWhPoByIdByShard(WhPoCommand whPo) {
         return whPoDao.findWhPoById(whPo.getId(), whPo.getOuId());
+    }
+
+    /**
+     * 更新PO单信息 基础表
+     * 
+     * @param whPo
+     */
+    @Override
+    @MoreDB("infoSource")
+    public void editPoByInfo(WhPo whPo) {
+        int count = 0;
+        count = whPoDao.saveOrUpdateByVersion(whPo);
+        if (count == 0) {
+            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+        }
+    }
+
+    /**
+     * 更新PO单信息 拆库表
+     * 
+     * @param whPo
+     */
+    @Override
+    @MoreDB("shardSource")
+    public void editPoByShard(WhPo whPo) {
+        int count = 0;
+        count = whPoDao.saveOrUpdateByVersion(whPo);
+        if (count == 0) {
+            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+        }
     }
 }

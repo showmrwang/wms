@@ -47,6 +47,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    <![CDATA[
 	        INSERT INTO
 	        t_wh_po (
+	        	id,
 	        	po_code ,
 	        	ext_code ,
 	        	ou_id ,
@@ -74,6 +75,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	last_modify_time ,
 	        	modified_id 
 	        ) VALUES (
+	            #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{poCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 	        	#{extCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 	        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
