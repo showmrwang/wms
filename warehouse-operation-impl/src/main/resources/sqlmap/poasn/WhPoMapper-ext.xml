@@ -172,7 +172,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    t_wh_po 
 		    <where>
 		    	id = #{id}
-				<if test="ouId!=null">
+				<if test="ouid!=null">
 		   			 and ou_id = #{ouid}
 				</if>
 			</where>
