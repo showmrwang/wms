@@ -4,7 +4,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
 
 
-<mapper namespace="com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnLineDao">
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.poasn.CheckPoCodeDao">
 	<resultMap id="CheckPoCodeResult" type="com.baozun.scm.primservice.whoperation.model.poasn.CheckPoCode">
 	</resultMap>
 	
