@@ -14,8 +14,10 @@ import org.springframework.stereotype.Service;
 
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
+import com.baozun.scm.primservice.whoperation.command.poasn.WhPoLineCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnManager;
+import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoLineManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnproxy.SelectPoAsnManagerProxy;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
@@ -35,6 +37,8 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
     private PoManager poManager;
     @Autowired
     private AsnManager asnManager;
+    @Autowired
+    private PoLineManager poLineManager;
 
     /**
      * 
@@ -86,6 +90,27 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
             whpo = poManager.findWhPoByIdByShard(whPoCommand);
         }
         return whpo;
+    }
+
+    /**
+     * 查询PO单明细行 包括保存和未保存的数据
+     */
+    @Override
+    public Pagination<WhPoLineCommand> findPoLineListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params, Integer sourceType) {
+        Pagination<WhPoLineCommand> whPoLineCommandList = null;
+        if (null == sourceType) {
+            sourceType = Constants.SHARD_SOURCE;
+        }
+        // 判断读取那个库的数据
+        if (sourceType == Constants.SHARD_SOURCE) {
+            // 拆分库
+            whPoLineCommandList = poLineManager.findListByQueryMapWithPageExtByShard(page, sorts, params);
+        }
+        if (sourceType == Constants.INFO_SOURCE) {
+            // 公共库
+            whPoLineCommandList = poLineManager.findListByQueryMapWithPageExtByInfo(page, sorts, params);
+        }
+        return whPoLineCommandList;
     }
 
 

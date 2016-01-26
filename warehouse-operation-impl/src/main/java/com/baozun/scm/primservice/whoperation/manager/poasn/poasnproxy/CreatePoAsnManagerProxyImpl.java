@@ -15,7 +15,9 @@ import com.baozun.scm.primservice.whoperation.command.poasn.PoCheckCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoLineCommand;
+import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoCheckManager;
+import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoLineManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoManager;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
 import com.baozun.scm.primservice.whoperation.model.poasn.CheckPoCode;
@@ -36,12 +38,12 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
 
     @Autowired
     private PoManager poManager;
-
     @Autowired
     private PoCheckManager poCheckManager;
-
     @Autowired
     private CodeManager codeManager;
+    @Autowired
+    private PoLineManager poLineManager;
 
     /**
      * 创建PO单据
@@ -231,15 +233,16 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
         if (null == line.getLinenum()) {
             line.setLinenum(1);
         }
+        line.setStatus(PoAsnStatus.POLINE_NOT_RCVD);
         line.setCreateTime(new Date());
         line.setLastModifyTime(new Date());
         try {
             if (null == line.getOuId()) {
                 // 没有ou_id插入基础表数据
-                poManager.createPoLineSingleToInfo(line);
+                poLineManager.createPoLineSingleToInfo(line);
             } else {
                 // 有ou_id插入拆库表数据
-                poManager.createPoLineSingleToShare(line);
+                poLineManager.createPoLineSingleToShare(line);
             }
         } catch (Exception e) {
             rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
