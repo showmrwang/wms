@@ -48,6 +48,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    <![CDATA[
 	        INSERT INTO
 	        t_wh_asn_line (
+	        	id,
 	        	asn_id ,
 	        	po_line_id ,
 	        	po_linenum ,
@@ -76,6 +77,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	modified_id,
 	        	ou_id 
 	        ) VALUES (
+	        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{asnId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{poLineId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{poLinenum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
