@@ -94,7 +94,7 @@ public class SeqAndCodeAspect implements Ordered, InitializingBean {
 	
 	                if (id == null) {
 	                    // 此处需要调用主键服务
-	                    id = pkManager.generatePk("wms", "com.baozun.scm.primservice.whoperation.model.poasn");
+	                    id = pkManager.generatePk("wms", processClass(model.getClass()));
 	
 	                    // 最后果将数据写到对象中
 	                    ReflectionUtils.invokeSetterMethod(model, "id", id);
