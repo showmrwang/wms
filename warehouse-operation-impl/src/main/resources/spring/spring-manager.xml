@@ -30,5 +30,18 @@
 <!-- 			<value>mainContext</value> -->
 <!-- 		</property> -->
 <!-- 	</bean>  -->
-		<bean class="com.baozun.scm.primservice.whoperation.aop.SeqAndCodeAspect"/>
+		<bean class="com.baozun.scm.primservice.whoperation.aop.SeqAndCodeAspect">
+			<property name="modelList">
+				<list>
+					<value>com.baozun.scm.primservice.whoperation.model.poasn.WhAsn</value>
+					<value>com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine</value>
+					<value>com.baozun.scm.primservice.whoperation.model.poasn.WhAsnSn</value>
+					<value>com.baozun.scm.primservice.whoperation.model.poasn.WhPo</value>
+					<value>com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine</value>
+					<value>com.baozun.scm.primservice.whoperation.model.poasn.WhPoSn</value>
+					
+				
+				</list>
+			</property>
+		</bean>
 </beans>
