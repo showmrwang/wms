@@ -15,6 +15,8 @@ import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 
 public interface PoManager extends BaseManager {
 
+    ResponseMsg createPoAndLine(WhPo po, List<WhPoLine> whPoLines, ResponseMsg rm);
+
     ResponseMsg createPoAndLineToInfo(WhPo po, List<WhPoLine> whPoLines, ResponseMsg rm);
 
     ResponseMsg createPoAndLineToShare(WhPo po, List<WhPoLine> whPoLines, ResponseMsg rm);
@@ -34,7 +36,7 @@ public interface PoManager extends BaseManager {
     ResponseMsg insertPoByPoAndStore(String poCode, Long storeId);
 
     ResponseMsg insertPoByPoAndStore(String poCode, Long storeId, Long ouId);
-    
+
     void editPoByInfo(WhPo whPo);
 
     void editPoByShard(WhPo whPo);

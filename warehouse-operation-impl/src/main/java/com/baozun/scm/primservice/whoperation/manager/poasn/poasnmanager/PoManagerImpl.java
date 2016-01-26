@@ -18,7 +18,6 @@ import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoLineDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
-import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoManager;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
@@ -68,6 +67,22 @@ public class PoManagerImpl implements PoManager {
         return whPoDao.findListByQueryMapWithPageExt(page, sorts, params);
     }
 
+
+    @Override
+    public ResponseMsg createPoAndLine(WhPo po, List<WhPoLine> whPoLines, ResponseMsg rm) {
+        whPoDao.saveOrUpdate(po);
+        if (whPoLines.size() > 0) {
+            // 有line信息保存
+            for (WhPoLine whPoLine : whPoLines) {
+                whPoLine.setPoId(po.getId());
+                whPoLineDao.saveOrUpdate(whPoLine);
+            }
+        }
+        rm.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
+        rm.setMsg(po.getId() + "");
+        return rm;
+
+    }
 
     /**
      * 保存po单信息
@@ -190,7 +205,7 @@ public class PoManagerImpl implements PoManager {
             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
         }
     }
-    
+
     @Override
     public ResponseMsg insertPoByPoAndStore(String poCode, Long storeId) {
         whPoDao.findPoByCodeAndStore(poCode, storeId);
@@ -199,7 +214,7 @@ public class PoManagerImpl implements PoManager {
 
     @Override
     public ResponseMsg insertPoByPoAndStore(String poCode, Long storeId, Long ouId) {
-        whPoDao.findPoByCodeAndStore(poCode, storeId, ouId);
+        // whPoDao.findPoByCodeAndStore(poCode, storeId, ouId);
         /* 插入操作 */
         return null;
     }

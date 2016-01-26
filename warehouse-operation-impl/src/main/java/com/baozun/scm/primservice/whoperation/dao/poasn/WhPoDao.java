@@ -18,14 +18,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.ibatis.annotations.Param;
-
 import lark.common.annotation.CommonQuery;
 import lark.common.annotation.QueryPage;
 import lark.common.dao.Page;
 import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
+
+import org.apache.ibatis.annotations.Param;
 
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
@@ -49,4 +49,6 @@ public interface WhPoDao extends BaseDao<WhPo, Long> {
     WhPo findWhPoById(@Param("id") Long id, @Param("ouid") Long ouid);
 
     int editPoStatus(@Param("ids") List<Long> ids, @Param("status") Integer status, @Param("userid") Long userid, @Param("ouid") Long ouid, @Param("lastModifyTime") Date lastModifyTime);
+
+    WhPo findPoByCodeAndStore(@Param("poCode") String poCode, @Param("storeId") Long storeId);
 }

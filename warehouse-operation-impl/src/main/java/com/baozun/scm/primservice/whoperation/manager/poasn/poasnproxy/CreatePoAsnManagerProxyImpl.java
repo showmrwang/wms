@@ -10,12 +10,14 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.baozun.scm.primservice.whoperation.command.poasn.PoCheckCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoLineCommand;
+import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoCheckManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoManager;
-import com.baozun.scm.primservice.whoperation.manager.poasn.poasnproxy.CreatePoAsnManagerProxy;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
+import com.baozun.scm.primservice.whoperation.model.poasn.CheckPoCode;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 import com.baozun.scm.primservice.whoperation.util.StringUtil;
@@ -34,6 +36,9 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
     @Autowired
     private PoManager poManager;
 
+    @Autowired
+    private PoCheckManager poCheckManager;
+
     /**
      * 创建PO单据
      */
@@ -50,7 +55,7 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
             // 创建PO单数据
             WhPo whPo = copyPropertiesPo(po);
             List<WhPoLine> whPoLines = copyPropertiesPoLine(po);
-            //判断OU_ID
+            // 判断OU_ID
             /**
              * if(ou_id == null){
              * if(存在){
@@ -70,8 +75,9 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
              * 不存在的话直接插入PO单
              * 2个事务 
              */
-            //查询t_wh_check_pocode
-            //有:查询对应
+            // 查询t_wh_check_pocode
+            // 有:查询对应
+            // rm = this.insertPoWithCheck(whPo, whPoLines, rm);
             rm = poManager.createPoAndLine(whPo, whPoLines, rm);
         } catch (Exception e) {
             rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
@@ -184,6 +190,40 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
             }
         }
         return response;
+    }
+
+    /**
+     * 检验是否可以插入t_wh_po表
+     */
+    private ResponseMsg insertPoWithCheck(WhPo whPo, List<WhPoLine> whPoLines, ResponseMsg rm) {
+        CheckPoCode checkPoCode = new CheckPoCode();
+        if (!StringUtil.isEmpty(whPo.getPoCode())) {
+            checkPoCode.setPoCode(whPo.getPoCode());
+        }
+        checkPoCode.setOuId(whPo.getOuId());
+        checkPoCode.setStoreId(whPo.getStoreId());
+        Long ouId = whPo.getOuId();
+        PoCheckCommand poCheckCommand = new PoCheckCommand();
+        poCheckCommand.setRm(rm);
+        poCheckCommand.setWhPo(whPo);
+        poCheckCommand.setWhPoLines(whPoLines);
+        poCheckCommand.setCheckPoCode(checkPoCode);
+
+
+        if (null == ouId) {
+            poCheckManager.insertPoWithCheckWithoutOuId(poCheckCommand);
+        } else {
+            ResponseMsg responseMsg = poCheckManager.insertPoWithCheckAndOuId(checkPoCode);
+            if ("no".equals(responseMsg.getMsg())) {
+                /* 在check表中不存在po单 */
+                poManager.createPoAndLineToShare(whPo, whPoLines, rm);
+            } else {
+                // poManager.insertPoWithCheckAndOuId(whPo.getPoCode(), whPo.getStoreId(),
+                // whPo.getOuId());
+
+            }
+        }
+        return null;
     }
 
 
