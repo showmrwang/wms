@@ -56,7 +56,7 @@ public class SeqAndCodeAspect implements Ordered, InitializingBean {
         String method = ms.getMethod().getName();
 
         // 如果是插入方法，以及保存或更新方法
-        if (INSERT_METHOD.equals(method) || SAVE_OR_UPDATE_METHOD.equals(method)) {
+        if (INSERT_METHOD.equals(method) ) {
 
             // 如果仅为一个参数
             if (pjp.getArgs().length == 1) {
