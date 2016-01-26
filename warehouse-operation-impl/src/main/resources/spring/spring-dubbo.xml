@@ -40,5 +40,11 @@
  
  	<!-- 扫描包中所有的方服务 -->
 <!--  	<dubbo:annotation package="com.baozun.scm.primservice.whoperation.manager" /> -->
+	<dubbo:consumer check="true" version="${dubbo.default.version}" cluster="failfast" timeout="350000"/>
+
+	<dubbo:reference id="pkManager" url="${dubbo.sac.server}" interface="com.baozun.scm.baseservice.sac.manager.PkManager"/>
+	
+	<dubbo:reference id="codeManager" url="${dubbo.sac.server}" interface="com.baozun.scm.baseservice.sac.manager.CodeManager"/>
+
 
 </beans>

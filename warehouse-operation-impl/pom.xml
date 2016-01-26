@@ -315,6 +315,13 @@
 			<version>5.2.0</version>
 		</dependency>
 		
+				 <!-- pk and code  -->
+		 <dependency>
+			<groupId>com.baozun.scm.baseservice</groupId>
+			<artifactId>seq-and-code-api</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		
 		<dependency>
 		   <groupId>com.baozun</groupId>
 		  <artifactId>common-task-lock</artifactId>

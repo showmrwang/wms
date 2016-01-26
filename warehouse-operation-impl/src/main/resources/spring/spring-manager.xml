@@ -30,5 +30,5 @@
 <!-- 			<value>mainContext</value> -->
 <!-- 		</property> -->
 <!-- 	</bean>  -->
-	
+		<bean class="com.baozun.scm.primservice.whoperation.aop.SeqAndCodeAspect"/>
 </beans>
