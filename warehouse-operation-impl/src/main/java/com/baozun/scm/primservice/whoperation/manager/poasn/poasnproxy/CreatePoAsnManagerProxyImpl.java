@@ -10,6 +10,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.baozun.scm.baseservice.sac.manager.CodeManager;
 import com.baozun.scm.primservice.whoperation.command.poasn.PoCheckCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
@@ -39,6 +40,9 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
     @Autowired
     private PoCheckManager poCheckManager;
 
+    @Autowired
+    private CodeManager codeManager;
+
     /**
      * 创建PO单据
      */
@@ -57,23 +61,10 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
             List<WhPoLine> whPoLines = copyPropertiesPoLine(po);
             // 判断OU_ID
             /**
-             * if(ou_id == null){
-             * if(存在){
-             * 查询对应基础库中PO单po_code+store_id是否存在
-             * 存在ERROR 提示PO_CODE已经存在
-             * 不存在直接插入PO单
-             * }else{
-             * 插入t_wh_check_pocode表
-             * }
-             * }
-             * if(ou_id !=null)
-             * 拆数据源操作
-             * 先查询t_wh_check_pocode
-             * 存在
-             * 查询对应基础库中PO单po_code+store_id是否存在
-             * 存在ERROR 提示PO_CODE已经存在
-             * 不存在的话直接插入PO单
-             * 2个事务 
+             * if(ou_id == null){ if(存在){ 查询对应基础库中PO单po_code+store_id是否存在 存在ERROR 提示PO_CODE已经存在
+             * 不存在直接插入PO单 }else{ 插入t_wh_check_pocode表 } } if(ou_id !=null) 拆数据源操作
+             * 先查询t_wh_check_pocode 存在 查询对应基础库中PO单po_code+store_id是否存在 存在ERROR 提示PO_CODE已经存在
+             * 不存在的话直接插入PO单 2个事务
              */
             // 查询t_wh_check_pocode
             // 有:查询对应
@@ -224,6 +215,40 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
             }
         }
         return null;
+    }
+
+
+    /**
+     * 创建POLine明细信息 业务缓存在表数据
+     */
+    @Override
+    public ResponseMsg createPoLineSingle(WhPoLineCommand whPoLine) {
+        log.info("CreatePoLineSingle start =======================");
+        ResponseMsg rm = new ResponseMsg();
+        WhPoLine line = new WhPoLine();
+        BeanUtils.copyProperties(whPoLine, line);
+        // 如果行号为空给个行号
+        if (null == line.getLinenum()) {
+            line.setLinenum(1);
+        }
+        line.setCreateTime(new Date());
+        line.setLastModifyTime(new Date());
+        try {
+            if (null == line.getOuId()) {
+                // 没有ou_id插入基础表数据
+                poManager.createPoLineSingleToInfo(line);
+            } else {
+                // 有ou_id插入拆库表数据
+                poManager.createPoLineSingleToShare(line);
+            }
+        } catch (Exception e) {
+            rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
+            log.error("CreatePoLineSingle Error PoId: " + whPoLine.getPoId());
+            log.error(e + "");
+            return rm;
+        }
+        log.info("CreatePoLineSingle end =======================");
+        return rm;
     }
 
 

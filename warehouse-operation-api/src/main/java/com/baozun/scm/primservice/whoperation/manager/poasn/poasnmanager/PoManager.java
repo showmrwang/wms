@@ -41,4 +41,8 @@ public interface PoManager extends BaseManager {
 
     void editPoByShard(WhPo whPo);
 
+    void createPoLineSingleToInfo(WhPoLine whPoLine);
+
+    void createPoLineSingleToShare(WhPoLine whPoLine);
+
 }

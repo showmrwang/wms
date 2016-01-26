@@ -218,4 +218,16 @@ public class PoManagerImpl implements PoManager {
         /* 插入操作 */
         return null;
     }
+
+    @Override
+    @MoreDB("infoSource")
+    public void createPoLineSingleToInfo(WhPoLine whPoLine) {
+        whPoLineDao.insert(whPoLine);
+    }
+
+    @Override
+    @MoreDB("shardSource")
+    public void createPoLineSingleToShare(WhPoLine whPoLine) {
+        whPoLineDao.insert(whPoLine);
+    }
 }
