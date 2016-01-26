@@ -189,6 +189,7 @@ public class PoManagerImpl implements PoManager {
             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
         }
     }
+    
     @Override
     public ResponseMsg insertPoByPoAndStore(String poCode, Long storeId) {
         whPoDao.findPoByCodeAndStore(poCode, storeId);
