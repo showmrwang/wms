@@ -23,8 +23,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    ]]>
 	</sql>
 		<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
-		<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.poasn.WhAsnSn" 
-			useGeneratedKeys="true" keyProperty="id" 
+		<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.poasn.WhAsnSn"  
 		 flushCache="true">
 	    <![CDATA[
 	        INSERT INTO
