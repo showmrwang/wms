@@ -29,6 +29,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    <![CDATA[
 	        INSERT INTO
 	        t_wh_po_sn (
+	            id,
 	        	po_line_id ,
 	        	sku_id ,
 	        	sn ,
@@ -38,6 +39,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	modified_id,
 	        	ou_id 
 	        ) VALUES (
+	        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{poLineId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{sn,javaType=java.lang.String,jdbcType=VARCHAR} ,

@@ -17,6 +17,10 @@ public interface PoManager extends BaseManager {
 
     ResponseMsg createPoAndLine(WhPo po, List<WhPoLine> whPoLines, ResponseMsg rm);
 
+    ResponseMsg createPoAndLineToInfo(WhPo po, List<WhPoLine> whPoLines, ResponseMsg rm);
+
+    ResponseMsg createPoAndLineToShare(WhPo po, List<WhPoLine> whPoLines, ResponseMsg rm);
+
     WhPo findWhPoByIdByInfo(WhPoCommand whPo);
 
     WhPo findWhPoByIdByShard(WhPoCommand whPo);
@@ -29,7 +33,16 @@ public interface PoManager extends BaseManager {
 
     int editPoStatusByShard(WhPoCommand whPo);
 
+    ResponseMsg insertPoByPoAndStore(String poCode, Long storeId);
+
+    ResponseMsg insertPoByPoAndStore(String poCode, Long storeId, Long ouId);
+
     void editPoByInfo(WhPo whPo);
 
     void editPoByShard(WhPo whPo);
+
+    void createPoLineSingleToInfo(WhPoLine whPoLine);
+
+    void createPoLineSingleToShare(WhPoLine whPoLine);
+
 }

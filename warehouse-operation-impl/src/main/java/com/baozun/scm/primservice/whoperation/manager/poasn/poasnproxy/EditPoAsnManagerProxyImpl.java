@@ -71,7 +71,6 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
         ResponseMsg rm = new ResponseMsg();
         rm.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
         if (po.getStatus() != PoAsnStatus.PO_NEW) {
-            // 如果PO单状态不是新建 失败
             rm.setResponseStatus(ResponseMsg.DATA_ERROR);
             rm.setMsg("po status is error status is: " + po.getStatus());
             log.warn("EditPo warn ResponseStatus: " + rm.getResponseStatus() + " msg: " + rm.getMsg());

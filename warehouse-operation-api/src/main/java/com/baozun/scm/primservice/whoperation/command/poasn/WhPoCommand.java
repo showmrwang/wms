@@ -94,7 +94,7 @@ public class WhPoCommand implements Serializable {
     /** 操作员工ID */
     private Long userId;
 
-    /** poid list */
+/** poid list */
     private List<Long> poIds;
     /** 状态名称 */
     private String statusName;

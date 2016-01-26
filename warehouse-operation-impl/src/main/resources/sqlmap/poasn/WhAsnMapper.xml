@@ -45,6 +45,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    <![CDATA[
 	        INSERT INTO
 	        t_wh_asn (
+	        	id,
 	        	asn_code ,
 	        	po_id ,
 	        	ou_id ,
@@ -70,6 +71,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	last_modify_time ,
 	        	modified_id 
 	        ) VALUES (
+	        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{asnCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 	        	#{poId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
