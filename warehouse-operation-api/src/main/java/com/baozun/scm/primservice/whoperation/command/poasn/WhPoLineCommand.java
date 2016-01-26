@@ -81,6 +81,9 @@ public class WhPoLineCommand implements Serializable {
     /** 临时数据批次 IT使用 */
     private String uuid;
 
+    /** 状态中文名称 */
+    private String statusName;
+
     public Long getId() {
         return this.id;
     }
@@ -311,6 +314,14 @@ public class WhPoLineCommand implements Serializable {
 
     public void setOuId(Long ouId) {
         this.ouId = ouId;
+    }
+
+    public String getStatusName() {
+        return statusName;
+    }
+
+    public void setStatusName(String statusName) {
+        this.statusName = statusName;
     }
 
 

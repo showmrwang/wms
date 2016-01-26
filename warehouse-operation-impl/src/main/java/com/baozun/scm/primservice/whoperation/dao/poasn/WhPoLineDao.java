@@ -23,6 +23,7 @@ import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
 
+import com.baozun.scm.primservice.whoperation.command.poasn.WhPoLineCommand;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 
 
@@ -32,6 +33,9 @@ public interface WhPoLineDao extends BaseDao<WhPoLine, Long> {
 
     @QueryPage("findListCountByQueryMap")
     Pagination<WhPoLine> findListByQueryMapWithPage(Page page, Sort[] sorts, Map<String, Object> params);
+
+    @QueryPage("findListCountByQueryMapExt")
+    Pagination<WhPoLineCommand> findListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params);
 
     @CommonQuery
     int saveOrUpdate(WhPoLine o);
