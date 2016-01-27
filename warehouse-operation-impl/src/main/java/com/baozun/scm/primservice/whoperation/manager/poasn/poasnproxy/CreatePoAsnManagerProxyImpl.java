@@ -115,7 +115,7 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
         List<WhPoLine> whPoLine = new ArrayList<WhPoLine>();
         if (null != po.getPoLineList()) {
             // 有line信息保存
-            log.debug("po.getPoLineList().size(): " + po.getPoLineList().size());
+            log.debug("CopyPropertiesPoLine po.getPoLineList().size(): " + po.getPoLineList().size());
             for (int i = 0; i < po.getPoLineList().size(); i++) {
                 WhPoLineCommand polineCommand = po.getPoLineList().get(i);
                 WhPoLine poline = new WhPoLine();
