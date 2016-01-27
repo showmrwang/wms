@@ -45,7 +45,7 @@ public class PoCheckManagerImpl implements PoCheckManager {
         /* 校验po单是否在t_wh_po_check中存在 */
         List<CheckPoCode> po = checkPoCodeDao.findListByParam(checkPoCode);
         /* 不存在则在po表中创建 */
-        if (po.size() == 0) {
+        if (po.isEmpty()) {
             /* 创建po */
             Long i = checkPoCodeDao.insert(checkPoCode);
             if (i != 0) {
@@ -79,7 +79,7 @@ public class PoCheckManagerImpl implements PoCheckManager {
         boolean flag = false;
         /* 查找check表中是否有此po单信息 */
         List<CheckPoCode> po = checkPoCodeDao.findListByParam(checkPoCode);
-        if (0 != po.size()) {
+        if (!po.isEmpty()) {
             /* 存在此po单号 */
             flag = true;
         } else {
