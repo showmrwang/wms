@@ -7,8 +7,12 @@ import org.springframework.stereotype.Service;
 
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
+import com.baozun.scm.primservice.whoperation.command.poasn.WhPoLineCommand;
 import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
+import com.baozun.scm.primservice.whoperation.exception.BusinessException;
+import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnManager;
+import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoLineManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoManager;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
@@ -29,6 +33,8 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
     private AsnManager asnManager;
     @Autowired
     private PoManager poManager;
+    @Autowired
+    private PoLineManager poLineManager;
 
     /**
      * 修改ASN单状态(可批量)
@@ -85,5 +91,27 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
         }
         log.info("EditPo end  =======================");
         return null;
+    }
+
+    /**
+     * 通过poid and ouid and uuid删除对应po明细
+     */
+    @Override
+    public void deletePoLineByUuid(WhPoLineCommand whPoLine) {
+        log.info("DeletePoLineByUuid start =======================");
+        try {
+            if (null == whPoLine.getOuId()) {
+                // OUID为空删除基础表内信息
+                poLineManager.deletePoLineByUuidToInfo(whPoLine);
+            } else {
+                // OUID不为空删除拆库表内信息
+                poLineManager.deletePoLineByUuidToShare(whPoLine);
+            }
+        } catch (Exception e) {
+            log.error("DeletePoLineByUuid Error PoId: " + whPoLine.getPoId() + " OuId: " + whPoLine.getOuId() + " UUID: " + whPoLine.getUuid());
+            log.error(e + "");
+            throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
+        }
+        log.info("DeletePoLineByUuid start =======================");
     }
 }
