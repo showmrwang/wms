@@ -49,6 +49,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				<if test="ouId!=null">
 					and line.ou_id = #{ouId}
 				</if>
+				<if test="poId!=null">
+					and line.po_id = #{poId}
+				</if>
 		</where>
 	</sql>
 	
