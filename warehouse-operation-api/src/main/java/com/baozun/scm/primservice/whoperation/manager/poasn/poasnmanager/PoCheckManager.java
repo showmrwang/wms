@@ -9,6 +9,6 @@ public interface PoCheckManager extends BaseManager {
 
     ResponseMsg insertPoWithCheckWithoutOuId(PoCheckCommand poCheckCommand);
 
-    ResponseMsg insertPoWithCheckAndOuId(CheckPoCode checkPoCode);
+    boolean insertPoWithCheckAndOuId(CheckPoCode checkPoCode);
 
 }

@@ -20,9 +20,9 @@ public class ErrorCodes {
 
     /** 输入参数不正确 */
     public static final Integer PARAMS_ERROR = 5;
-    
+
     /** 传入的参数{0}不能为空,确保传入数据的完整性**/
-    public static final Integer PARAM_IS_NULL =6;
+    public static final Integer PARAM_IS_NULL = 6;
 
     /** 更新支付信息失败(t_so_payinfo) **/
     public static final Integer UPDATE_PAYINFO_FAILURE = 30001;
@@ -74,7 +74,7 @@ public class ErrorCodes {
 
     /** 更新的数据数量({0})与实际更新数量({1})不一致，请刷新页面后重试 **/
     public static final int UPDATE_DATA_QUANTITYERROR = 1016;
-    
+
     /** ASN号编码({0})在系统中未找到**/
     public static final int ASN_CODE_IS_NOT_FOUND = 1017;
 
@@ -88,9 +88,18 @@ public class ErrorCodes {
     public static final int SAVE_FAILURE = 1023;
     /** 店铺id为空 **/
     public static final int STORE_EMPTY = 1024;
-    
-    
+
+
     /** 页面会话错误 请刷新页面后重试 **/
     public static final int SESSION_DATA_ERROR = 2001;
+
+    /** 保存至po_check表失败*/
+    public static final int SAVE_CHECK_TABLE_FAILED = 3001;
+
+    /** po单已存在*/
+    public static final int PO_EXIST = 3002;
+
+    /** 保存至po表失败*/
+    public static final int SAVE_PO_FAILED = 3003;
 
 }

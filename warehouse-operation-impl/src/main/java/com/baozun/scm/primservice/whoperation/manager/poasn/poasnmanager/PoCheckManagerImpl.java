@@ -11,7 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.baozun.scm.primservice.whoperation.command.poasn.PoCheckCommand;
 import com.baozun.scm.primservice.whoperation.dao.poasn.CheckPoCodeDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoDao;
+import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoLineDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
+import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
 import com.baozun.scm.primservice.whoperation.model.poasn.CheckPoCode;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
@@ -30,6 +32,9 @@ public class PoCheckManagerImpl implements PoCheckManager {
     @Autowired
     private PoManager poManager;
 
+    @Autowired
+    private WhPoLineDao whPoLineDao;
+
     @Override
     @MoreDB("infoSource")
     public ResponseMsg insertPoWithCheckWithoutOuId(PoCheckCommand poCheckCommand) {
@@ -38,42 +43,73 @@ public class PoCheckManagerImpl implements PoCheckManager {
         List<WhPoLine> whPoLines = poCheckCommand.getWhPoLines();
         ResponseMsg rm = poCheckCommand.getRm();
         /* 校验po单是否在t_wh_po_check中存在 */
-        CheckPoCode po = checkPoCodeDao.findPoFromPoCheck(checkPoCode);
+        List<CheckPoCode> po = checkPoCodeDao.findListByParam(checkPoCode);
         /* 不存在则在po表中创建 */
-        if (null == po) {
+        if (po.size() == 0) {
             /* 创建po */
-            int i = checkPoCodeDao.saveOrUpdate(checkPoCode);
+            Long i = checkPoCodeDao.insert(checkPoCode);
             if (i != 0) {
-                rm = poManager.createPoAndLineToInfo(whPo, whPoLines, rm);
+                rm = this.createPoAndLineToInfo(whPo, whPoLines, rm);
+            } else {
+                throw new BusinessException(ErrorCodes.SAVE_CHECK_TABLE_FAILED);
             }
+
         } else {
             /* 从po表中根据code和store id查找po单号 */
-            WhPo whpo = whPoDao.findPoByCodeAndStore(checkPoCode.getPoCode(), checkPoCode.getStoreId());
+            long count = whPoDao.findPoByCodeAndStore(checkPoCode.getPoCode(), checkPoCode.getStoreId(), null);
             /* 如果找不到则调用po manager插入po表 */
-            if (null == whpo) {
+            if (0 == count) {
                 /* 插入po表 */
-                rm = poManager.createPoAndLineToInfo(whPo, whPoLines, rm);
+                rm = this.createPoAndLineToInfo(whPo, whPoLines, rm);
             } else {
-                throw new BusinessException("已经存在此po单");
+                /* po单已经存在 */
+                throw new BusinessException(ErrorCodes.PO_EXIST);
             }
         }
-        return null;
+        return rm;
     }
 
     @Override
-    public ResponseMsg insertPoWithCheckAndOuId(CheckPoCode checkPoCode) {
-        CheckPoCode po = checkPoCodeDao.findPoFromPoCheck(checkPoCode);
-        ResponseMsg responseMsg = new ResponseMsg();
-        if (null != po) {
+    @MoreDB("infoSource")
+    public boolean insertPoWithCheckAndOuId(CheckPoCode checkPoCode) {
+        /**
+         * true:不存在此po单号
+         * false:存在此po
+        */
+        boolean flag = false;
+        /* 查找check表中是否有此po单信息 */
+        List<CheckPoCode> po = checkPoCodeDao.findListByParam(checkPoCode);
+        if (0 != po.size()) {
             /* 存在此po单号 */
-            responseMsg.setMsg("yes");
+            flag = true;
         } else {
-            /* 不存在此po单号 */
-            int i = checkPoCodeDao.saveOrUpdate(checkPoCode);
+            /* 不存在此po单号则在check表中插入此po信息 */
+            long i = checkPoCodeDao.insert(checkPoCode);
             if (0 != i) {
-                responseMsg.setMsg("no");
+                /* 插入check表成功 */
+                flag = false;
+            } else {
+                /* 插入check表失败 */
+                throw new BusinessException(ErrorCodes.SAVE_CHECK_TABLE_FAILED);
             }
         }
-        return responseMsg;
+        return flag;
+    }
+
+    private ResponseMsg createPoAndLineToInfo(WhPo po, List<WhPoLine> whPoLines, ResponseMsg rm) {
+        long i = whPoDao.insert(po);
+        if (0 == i) {
+            throw new BusinessException(ErrorCodes.SAVE_PO_FAILED);
+        }
+        if (whPoLines.size() > 0) {
+            // 有line信息保存
+            for (WhPoLine whPoLine : whPoLines) {
+                whPoLine.setPoId(po.getId());
+                whPoLineDao.insert(whPoLine);
+            }
+        }
+        rm.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
+        rm.setMsg(po.getId() + "");
+        return rm;
     }
 }
