@@ -90,6 +90,10 @@ public class WhPoLineCommand implements Serializable {
     private String statusName;
     /** 库存状态中文名称 */
     private String invName;
+    /** PO单号 */
+    private String poCode;
+    /** 相关单据号 */
+    private String extCode;
 
     public Long getId() {
         return this.id;
@@ -353,6 +357,22 @@ public class WhPoLineCommand implements Serializable {
 
     public void setInvName(String invName) {
         this.invName = invName;
+    }
+
+    public String getPoCode() {
+        return poCode;
+    }
+
+    public void setPoCode(String poCode) {
+        this.poCode = poCode;
+    }
+
+    public String getExtCode() {
+        return extCode;
+    }
+
+    public void setExtCode(String extCode) {
+        this.extCode = extCode;
     }
 
 

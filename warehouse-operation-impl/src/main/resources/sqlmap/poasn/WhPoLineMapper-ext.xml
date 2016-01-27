@@ -45,7 +45,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	
 	<sql id="whPoLineDynamicWhereExt">
 		<where>
-				(line.uuid = '' or line.uuid is null or line.uuid = #{uuid})
+				(line.uuid = '' or line.uuid is null or line.uuid = #{uuid}) 
+				and po.id = line.po_id 
 				<if test="ouId!=null">
 					and line.ou_id = #{ouId}
 				</if>
@@ -111,8 +112,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				line.ctn_rcvd as ctnRcvd,
 				line.status as status,
 				line.is_iqc as isIqc,
-				date_format(line.mfg_date,'%Y-%m-%d %T') as mfgDate,
-				date_format(line.exp_date,'%Y-%m-%d %T') as expDate,
+				date_format(line.mfg_date,'%Y-%m-%d %T') as mfgDateStr,
+				date_format(line.exp_date,'%Y-%m-%d %T') as expDateStr,
 				line.valid_date as validDate,
 				line.batch_no as batchNo,
 				line.country_of_origin as countryOfOrigin,
@@ -128,7 +129,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				line.modified_id as modifiedId,
 				line.uuid as uuid,
 				sys.dic_label as statusName,
-				inv.name as invName
+				inv.name as invName,
+				po.po_code as poCode,
+				po.ext_code as extCode
 	    ]]>
 	</sql>	
 	
@@ -138,7 +141,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    from 
 	    t_wh_po_line line 
 		left join sys_dictionary sys on sys.dic_value = line.status and sys.group_value = 'POSTATUS'
-		left join t_wh_inventory_status inv on inv.id = line.inv_status
+		left join t_wh_inventory_status inv on inv.id = line.inv_status,
+		t_wh_po po 
 		<include refid="whPoLineDynamicWhereExt"/>
     </select>
     		
@@ -147,7 +151,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         select count(*) from 
         t_wh_po_line line 
 		left join sys_dictionary sys on sys.dic_value = line.status and sys.group_value = 'POSTATUS'
-		left join t_wh_inventory_status inv on inv.id = line.inv_status
+		left join t_wh_inventory_status inv on inv.id = line.inv_status,
+		t_wh_po po 
 		<include refid="whPoLineDynamicWhereExt"/>
     </select>
     
