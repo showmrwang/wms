@@ -163,7 +163,7 @@ public class PoManagerImpl implements PoManager {
      */
     @Override
     @MoreDB("infoSource")
-    public WhPo findWhPoByIdByInfo(WhPoCommand whPo) {
+    public WhPoCommand findWhPoByIdByInfo(WhPoCommand whPo) {
         return whPoDao.findWhPoById(whPo.getId(), whPo.getOuId());
     }
 
@@ -172,7 +172,7 @@ public class PoManagerImpl implements PoManager {
      */
     @Override
     @MoreDB("shardSource")
-    public WhPo findWhPoByIdByShard(WhPoCommand whPo) {
+    public WhPoCommand findWhPoByIdByShard(WhPoCommand whPo) {
         return whPoDao.findWhPoById(whPo.getId(), whPo.getOuId());
     }
 
