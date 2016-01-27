@@ -19,4 +19,8 @@ public interface PoLineManager extends BaseManager {
     Pagination<WhPoLineCommand> findListByQueryMapWithPageExtByInfo(Page page, Sort[] sorts, Map<String, Object> params);
 
     Pagination<WhPoLineCommand> findListByQueryMapWithPageExtByShard(Page page, Sort[] sorts, Map<String, Object> params);
+
+    void deletePoLineByUuidToInfo(WhPoLineCommand WhPoLine);
+
+    void deletePoLineByUuidToShare(WhPoLineCommand WhPoLine);
 }

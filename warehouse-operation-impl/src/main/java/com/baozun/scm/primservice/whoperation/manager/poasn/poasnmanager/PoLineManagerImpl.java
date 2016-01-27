@@ -50,11 +50,23 @@ public class PoLineManagerImpl implements PoLineManager {
 
     @Override
     public Pagination<WhPoLineCommand> findListByQueryMapWithPageExtByInfo(Page page, Sort[] sorts, Map<String, Object> params) {
-        return null;
+        return this.whPoLineDao.findListByQueryMapWithPageExt(page, sorts, params);
     }
 
     @Override
     public Pagination<WhPoLineCommand> findListByQueryMapWithPageExtByShard(Page page, Sort[] sorts, Map<String, Object> params) {
-        return null;
+        return this.whPoLineDao.findListByQueryMapWithPageExt(page, sorts, params);
+    }
+
+    @Override
+    @MoreDB("infoSource")
+    public void deletePoLineByUuidToInfo(WhPoLineCommand WhPoLine) {
+        whPoLineDao.deletePoLineByUuid(WhPoLine.getPoId(), WhPoLine.getOuId(), WhPoLine.getUuid());
+    }
+
+    @Override
+    @MoreDB("shardSource")
+    public void deletePoLineByUuidToShare(WhPoLineCommand WhPoLine) {
+        whPoLineDao.deletePoLineByUuid(WhPoLine.getPoId(), WhPoLine.getOuId(), WhPoLine.getUuid());
     }
 }

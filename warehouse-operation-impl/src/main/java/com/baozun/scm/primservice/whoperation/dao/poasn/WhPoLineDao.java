@@ -23,6 +23,8 @@ import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoLineCommand;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 
@@ -42,5 +44,7 @@ public interface WhPoLineDao extends BaseDao<WhPoLine, Long> {
 
     @CommonQuery
     int saveOrUpdateByVersion(WhPoLine o);
+
+    int deletePoLineByUuid(@Param("poid") Long poid, @Param("ouid") Long ouid, @Param("uuid") String uuid);
 
 }

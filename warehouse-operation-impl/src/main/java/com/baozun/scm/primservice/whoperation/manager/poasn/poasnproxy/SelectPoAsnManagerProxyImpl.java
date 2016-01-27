@@ -19,8 +19,6 @@ import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoLineManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoManager;
-import com.baozun.scm.primservice.whoperation.manager.poasn.poasnproxy.SelectPoAsnManagerProxy;
-import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 
 /**
  * 查询PoAsn相关数据
@@ -80,8 +78,8 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
      * 通过id+ou_id 查询PO单信息
      */
     @Override
-    public WhPo findWhPoById(WhPoCommand whPoCommand) {
-        WhPo whpo = null;
+    public WhPoCommand findWhPoById(WhPoCommand whPoCommand) {
+        WhPoCommand whpo = null;
         if (null == whPoCommand.getOuId()) {
             // 查询基本库内信息
             whpo = poManager.findWhPoByIdByInfo(whPoCommand);

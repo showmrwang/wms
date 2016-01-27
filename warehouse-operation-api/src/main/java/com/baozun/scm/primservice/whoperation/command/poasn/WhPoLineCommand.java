@@ -80,9 +80,20 @@ public class WhPoLineCommand implements Serializable {
     private Long modifiedId;
     /** 临时数据批次 IT使用 */
     private String uuid;
+    // ------------------------------------------
+    /** 生产日期字符串 */
+    private String mfgDateStr;
+    /** 失效日期 字符串 */
+    private String expDateStr;
 
     /** 状态中文名称 */
     private String statusName;
+    /** 库存状态中文名称 */
+    private String invName;
+    /** PO单号 */
+    private String poCode;
+    /** 相关单据号 */
+    private String extCode;
 
     public Long getId() {
         return this.id;
@@ -316,12 +327,52 @@ public class WhPoLineCommand implements Serializable {
         this.ouId = ouId;
     }
 
+    public String getMfgDateStr() {
+        return mfgDateStr;
+    }
+
+    public void setMfgDateStr(String mfgDateStr) {
+        this.mfgDateStr = mfgDateStr;
+    }
+
+    public String getExpDateStr() {
+        return expDateStr;
+    }
+
+    public void setExpDateStr(String expDateStr) {
+        this.expDateStr = expDateStr;
+    }
+
     public String getStatusName() {
         return statusName;
     }
 
     public void setStatusName(String statusName) {
         this.statusName = statusName;
+    }
+
+    public String getInvName() {
+        return invName;
+    }
+
+    public void setInvName(String invName) {
+        this.invName = invName;
+    }
+
+    public String getPoCode() {
+        return poCode;
+    }
+
+    public void setPoCode(String poCode) {
+        this.poCode = poCode;
+    }
+
+    public String getExtCode() {
+        return extCode;
+    }
+
+    public void setExtCode(String extCode) {
+        this.extCode = extCode;
     }
 
 

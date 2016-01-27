@@ -45,9 +45,13 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	
 	<sql id="whPoLineDynamicWhereExt">
 		<where>
-				(line.uuid = '' or line.uuid is null or line.uuid = #{uuid})
+				(line.uuid = '' or line.uuid is null or line.uuid = #{uuid}) 
+				and po.id = line.po_id 
 				<if test="ouId!=null">
 					and line.ou_id = #{ouId}
+				</if>
+				<if test="poId!=null">
+					and line.po_id = #{poId}
 				</if>
 		</where>
 	</sql>
@@ -108,8 +112,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				line.ctn_rcvd as ctnRcvd,
 				line.status as status,
 				line.is_iqc as isIqc,
-				line.mfg_date as mfgDate,
-				line.exp_date as expDate,
+				date_format(line.mfg_date,'%Y-%m-%d') as mfgDateStr,
+				date_format(line.exp_date,'%Y-%m-%d') as expDateStr,
 				line.valid_date as validDate,
 				line.batch_no as batchNo,
 				line.country_of_origin as countryOfOrigin,
@@ -123,8 +127,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				line.created_id as createdId,
 				line.last_modify_time as lastModifyTime,
 				line.modified_id as modifiedId,
-				line.uuid as uuid
-				sys.dic_label as statusName
+				line.uuid as uuid,
+				sys.dic_label as statusName,
+				inv.name as invName,
+				po.po_code as poCode,
+				po.ext_code as extCode
 	    ]]>
 	</sql>	
 	
@@ -134,6 +141,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    from 
 	    t_wh_po_line line 
 		left join sys_dictionary sys on sys.dic_value = line.status and sys.group_value = 'POSTATUS'
+		left join t_wh_inventory_status inv on inv.id = line.inv_status,
+		t_wh_po po 
 		<include refid="whPoLineDynamicWhereExt"/>
     </select>
     		
@@ -142,7 +151,20 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         select count(*) from 
         t_wh_po_line line 
 		left join sys_dictionary sys on sys.dic_value = line.status and sys.group_value = 'POSTATUS'
+		left join t_wh_inventory_status inv on inv.id = line.inv_status,
+		t_wh_po po 
 		<include refid="whPoLineDynamicWhereExt"/>
     </select>
+    
+   <delete id="deletePoLineByUuid" parameterType="int">  
+		delete from t_wh_po_line line
+		<where>
+			line.po_id = #{poid} 
+			and line.uuid = #{uuid}
+			<if test="ouid != null">
+				and line.ou_id = #{ouid}
+			</if>
+		</where>
+    </delete>  
 	
 </mapper>
