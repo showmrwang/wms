@@ -7,6 +7,7 @@ import lark.common.dao.Page;
 import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 
+import com.baozun.scm.primservice.whoperation.command.poasn.PoCheckCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
@@ -21,9 +22,9 @@ public interface PoManager extends BaseManager {
 
     ResponseMsg createPoAndLineToShare(WhPo po, List<WhPoLine> whPoLines, ResponseMsg rm);
 
-    WhPo findWhPoByIdByInfo(WhPoCommand whPo);
+    WhPoCommand findWhPoByIdByInfo(WhPoCommand whPo);
 
-    WhPo findWhPoByIdByShard(WhPoCommand whPo);
+    WhPoCommand findWhPoByIdByShard(WhPoCommand whPo);
 
     Pagination<WhPoCommand> findListByQueryMapWithPageExtByInfo(Page page, Sort[] sorts, Map<String, Object> params);
 
@@ -40,5 +41,7 @@ public interface PoManager extends BaseManager {
     void editPoByInfo(WhPo whPo);
 
     void editPoByShard(WhPo whPo);
+
+    ResponseMsg insertPoWithOuId(PoCheckCommand poCheckCommand);
 
 }
