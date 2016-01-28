@@ -222,16 +222,19 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
         checkPoCode.setOuId(whPo.getOuId());
         checkPoCode.setStoreId(whPo.getStoreId());
         Long ouId = whPo.getOuId();
+
+        /* 封装poCheckCommand对象 */
         PoCheckCommand poCheckCommand = new PoCheckCommand();
         poCheckCommand.setRm(rm);
         poCheckCommand.setWhPo(whPo);
         poCheckCommand.setWhPoLines(whPoLines);
         poCheckCommand.setCheckPoCode(checkPoCode);
-        /* po单不带ouId */
         if (null == ouId) {
+            /* po单不带ouId */
             /* 查找并插入po数据 */
             rm = poCheckManager.insertPoWithCheckWithoutOuId(poCheckCommand);
         } else {
+            /* po单带ouId */
             /* 查找check表中是否有数据 */
             boolean flag = poCheckManager.insertPoWithCheckAndOuId(checkPoCode);
             if (!flag) {
