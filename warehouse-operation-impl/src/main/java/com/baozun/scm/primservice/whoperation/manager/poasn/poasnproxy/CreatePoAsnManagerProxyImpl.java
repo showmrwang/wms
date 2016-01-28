@@ -100,12 +100,12 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
         WhPo whPo = new WhPo();
         BeanUtils.copyProperties(po, whPo);
         // 相关单据号 调用HUB编码生成器获得
-        String extCode = codeManager.generateCode(Constants.WMS, Constants.MODEL_URL, null, null, null);
-        if (StringUtil.isEmpty(extCode)) {
-            log.warn("CreatePo warn extCode generateCode is null");
+        String poCode = codeManager.generateCode(Constants.WMS, Constants.MODEL_URL, null, null, null);
+        if (StringUtil.isEmpty(poCode)) {
+            log.warn("CreatePo warn poCode generateCode is null");
             throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
         }
-        whPo.setExtCode(extCode);
+        whPo.setPoCode(poCode);
         // 采购时间为空默认为当前时间
         if (null == po.getPoDate()) {
             whPo.setPoDate(new Date());
@@ -170,9 +170,9 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
             response.setMsg("po is null");
             return response;
         }
-        if (StringUtil.isEmpty(po.getPoCode())) {
+        if (StringUtil.isEmpty(po.getExtCode())) {
             response.setResponseStatus(ResponseMsg.DATA_ERROR);
-            response.setMsg("PoCode is null");
+            response.setMsg("extCode is null");
             return response;
         }
         if (null == po.getPoType()) {
@@ -203,13 +203,17 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
     private ResponseMsg insertPoWithCheck(WhPo whPo, List<WhPoLine> whPoLines, ResponseMsg rm) {
         log.info("InsertPoWithCheck start =======================");
         /**
-         * 流程: 1.封装poCheckCommand对象,包含了WhPo,List<WhPoLine>,ResponseMsg,CheckPoCode
+         * 流程:
+         * 1.封装poCheckCommand对象,包含了WhPo,List<WhPoLine>,ResponseMsg,CheckPoCode
          * 2.没有传入ouId,查找中间表t_wh_check_pocode是否有此PO单,在同一事务中执行以下两步:
-         * function==>poCheckManager.insertPoWithCheckWithoutOuId(); i)
-         * 如果有则去基础信息表查找此PO单。有PO则抛出异常,没有PO则添加一条数据. ii) 如果没有则在t_wh_check_pocode添加一条数据,并在PO表中添加一条数据.
+         * function==>poCheckManager.insertPoWithCheckWithoutOuId();
+         * i)  如果有则去基础信息表查找此PO单。有PO则抛出异常,没有PO则添加一条数据.
+         * ii) 如果没有则在t_wh_check_pocode添加一条数据,并在PO表中添加一条数据.
          * 3.有传入ouId,查找中间表t_wh_check_pocode是否有此PO单,在两个事务中分别执行以下两步:
-         * function==>poManager.createPoAndLineToShare(); i) 如果有则去对应的拆库表查找此PO单。有PO则抛出异常,没有PO则添加一条数据.
-         * function==>poManager.insertPoWithOuId(); ii) 如果没有则在t_wh_check_pocode添加一条数据,并在PO表中添加一条数据.
+         * function==>poManager.createPoAndLineToShare();
+         * i)  如果有则去对应的拆库表查找此PO单。有PO则抛出异常,没有PO则添加一条数据.
+         * function==>poManager.insertPoWithOuId();
+         * ii) 如果没有则在t_wh_check_pocode添加一条数据,并在PO表中添加一条数据.
          */
         CheckPoCode checkPoCode = new CheckPoCode();
         if (!StringUtil.isEmpty(whPo.getPoCode())) {
@@ -218,16 +222,19 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
         checkPoCode.setOuId(whPo.getOuId());
         checkPoCode.setStoreId(whPo.getStoreId());
         Long ouId = whPo.getOuId();
+
+        /* 封装poCheckCommand对象 */
         PoCheckCommand poCheckCommand = new PoCheckCommand();
         poCheckCommand.setRm(rm);
         poCheckCommand.setWhPo(whPo);
         poCheckCommand.setWhPoLines(whPoLines);
         poCheckCommand.setCheckPoCode(checkPoCode);
-        /* po单不带ouId */
         if (null == ouId) {
+            /* po单不带ouId */
             /* 查找并插入po数据 */
             rm = poCheckManager.insertPoWithCheckWithoutOuId(poCheckCommand);
         } else {
+            /* po单带ouId */
             /* 查找check表中是否有数据 */
             boolean flag = poCheckManager.insertPoWithCheckAndOuId(checkPoCode);
             if (!flag) {
