@@ -84,13 +84,13 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        inv_attr5 = #{invAttr5,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-			        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+			        last_modify_time = now(),
 			        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        uuid = #{uuid,javaType=java.lang.String,jdbcType=VARCHAR} 
 		    ]]>
 		    <where>
 		    		id = #{id} 
-			        and last_modify_time	&lt;=  #{lastModifyTime}    
+			        and last_modify_time	=  #{lastModifyTime}    
 			        <if test="ouId != null">
 			        	and ou_id = #{ouId}
 			        </if>
