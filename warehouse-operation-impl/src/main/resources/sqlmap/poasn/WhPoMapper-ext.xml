@@ -196,4 +196,22 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
 	</update>
 	
+	<select id="findPoByCodeAndStore" resultType="long">
+        select count(*) from 
+        t_wh_po
+		<where>
+			<if test="ouId!=null">
+				and ou_id = #{ouId}
+			</if>
+			<if test="poCode!=null and poCode!=''">
+				and po_code = #{poCode}
+			</if>
+			<if test="storeId!=null">
+				and store_id = #{storeId}
+			</if>
+		</where>
+    </select>
+	
+	
+	
 </mapper>

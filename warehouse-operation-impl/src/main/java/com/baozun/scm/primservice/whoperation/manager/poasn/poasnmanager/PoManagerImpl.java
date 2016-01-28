@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.baozun.scm.primservice.whoperation.command.poasn.PoCheckCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoLineDao;
@@ -89,35 +90,18 @@ public class PoManagerImpl implements PoManager {
      * 
      */
     @Override
-    @MoreDB("infoSource")
-    public ResponseMsg createPoAndLineToInfo(WhPo po, List<WhPoLine> whPoLines, ResponseMsg rm) {
-        whPoDao.saveOrUpdate(po);
-        if (whPoLines.size() > 0) {
-            // 有line信息保存
-            for (WhPoLine whPoLine : whPoLines) {
-                whPoLine.setPoId(po.getId());
-                whPoLineDao.saveOrUpdate(whPoLine);
-            }
-        }
-        rm.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
-        rm.setMsg(po.getId() + "");
-        return rm;
-
-    }
-
-    /**
-     * 保存po单信息
-     * 
-     */
-    @Override
     @MoreDB("shardSource")
     public ResponseMsg createPoAndLineToShare(WhPo po, List<WhPoLine> whPoLines, ResponseMsg rm) {
-        whPoDao.saveOrUpdate(po);
+        // whPoDao.saveOrUpdate(po);
+        long i = whPoDao.insert(po);
+        if (0 == i) {
+            throw new BusinessException(ErrorCodes.SAVE_PO_FAILED);
+        }
         if (whPoLines.size() > 0) {
             // 有line信息保存
             for (WhPoLine whPoLine : whPoLines) {
                 whPoLine.setPoId(po.getId());
-                whPoLineDao.saveOrUpdate(whPoLine);
+                whPoLineDao.insert(whPoLine);
             }
         }
         rm.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
@@ -207,15 +191,37 @@ public class PoManagerImpl implements PoManager {
     }
 
     @Override
-    public ResponseMsg insertPoByPoAndStore(String poCode, Long storeId) {
-        whPoDao.findPoByCodeAndStore(poCode, storeId);
-        return null;
-    }
+    @MoreDB("shardSource")
+    public ResponseMsg insertPoWithOuId(PoCheckCommand poCheckCommand) {
+        WhPo whPo = poCheckCommand.getWhPo();
+        List<WhPoLine> whPoLines = poCheckCommand.getWhPoLines();
+        ResponseMsg rm = poCheckCommand.getRm();
+        String poCode = whPo.getPoCode();
+        Long storeId = whPo.getStoreId();
+        Long ouId = whPo.getOuId();
+        /* 查找在性对应的拆库表中是否有此po单信息 */
+        long count = whPoDao.findPoByCodeAndStore(poCode, storeId, ouId);
+        /* 没有此po单信息 */
+        if (0 == count) {
+            long i = whPoDao.insert(whPo);
+            if (0 == i) {
+                throw new BusinessException(ErrorCodes.SAVE_CHECK_TABLE_FAILED);
+            }
+            // whPoDao.saveOrUpdate(whpo);
+            if (whPoLines.size() > 0) {
+                // 有line信息保存
+                for (WhPoLine whPoLine : whPoLines) {
+                    whPoLine.setPoId(whPo.getId());
+                    whPoLineDao.insert(whPoLine);
+                }
+            }
+            rm.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
+            rm.setMsg(whPo.getId() + "");
+        } else {
+            /* 存在此po单信息 */
+            throw new BusinessException(ErrorCodes.PO_EXIST);
+        }
+        return rm;
 
-    @Override
-    public ResponseMsg insertPoByPoAndStore(String poCode, Long storeId, Long ouId) {
-        // whPoDao.findPoByCodeAndStore(poCode, storeId, ouId);
-        /* 插入操作 */
-        return null;
     }
 }

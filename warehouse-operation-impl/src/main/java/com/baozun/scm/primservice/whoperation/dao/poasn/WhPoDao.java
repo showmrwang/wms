@@ -50,5 +50,5 @@ public interface WhPoDao extends BaseDao<WhPo, Long> {
 
     int editPoStatus(@Param("ids") List<Long> ids, @Param("status") Integer status, @Param("userid") Long userid, @Param("ouid") Long ouid, @Param("lastModifyTime") Date lastModifyTime);
 
-    WhPo findPoByCodeAndStore(@Param("poCode") String poCode, @Param("storeId") Long storeId);
+    long findPoByCodeAndStore(@Param("poCode") String poCode, @Param("storeId") Long storeId, @Param("ouId") Long ouId);
 }

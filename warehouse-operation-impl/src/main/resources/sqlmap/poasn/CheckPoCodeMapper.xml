@@ -20,16 +20,17 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	</sql>
 		<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
 		<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.poasn.CheckPoCode" 
-			useGeneratedKeys="true" keyProperty="id" 
 		 flushCache="true">
 	    <![CDATA[
 	        INSERT INTO
 	        t_wh_check_pocode (
+	        id,
 	        	po_code ,
 	        	ext_code ,
 	        	store_id ,
 	        	ou_id 
 	        ) VALUES (
+	        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{poCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 	        	#{extCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 	        	#{storeId,javaType=java.lang.Long,jdbcType=BIGINT} ,

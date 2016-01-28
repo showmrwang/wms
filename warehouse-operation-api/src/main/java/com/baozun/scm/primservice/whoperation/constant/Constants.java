@@ -22,4 +22,8 @@ public final class Constants {
     /** 拆分库 */
     public static final Integer SHARD_SOURCE = 2;
 
+    public static final String WMS = "wms";
+
+    public static final String MODEL_URL = "com.baozun.scm.primservice.whoperation.model.poasn.WhPo";
+
 }

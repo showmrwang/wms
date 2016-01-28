@@ -7,6 +7,7 @@ import lark.common.dao.Page;
 import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 
+import com.baozun.scm.primservice.whoperation.command.poasn.PoCheckCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
@@ -40,5 +41,7 @@ public interface PoManager extends BaseManager {
     void editPoByInfo(WhPo whPo);
 
     void editPoByShard(WhPo whPo);
+
+    ResponseMsg insertPoWithOuId(PoCheckCommand poCheckCommand);
 
 }

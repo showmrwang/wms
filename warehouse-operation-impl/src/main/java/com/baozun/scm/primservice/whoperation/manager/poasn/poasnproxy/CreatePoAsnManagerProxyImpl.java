@@ -15,7 +15,10 @@ import com.baozun.scm.primservice.whoperation.command.poasn.PoCheckCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoLineCommand;
+import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
+import com.baozun.scm.primservice.whoperation.exception.BusinessException;
+import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoCheckManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoLineManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoManager;
@@ -35,6 +38,7 @@ import com.baozun.scm.primservice.whoperation.util.StringUtil;
 public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
 
     protected static final Logger log = LoggerFactory.getLogger(CreatePoAsnManagerProxy.class);
+
 
     @Autowired
     private PoManager poManager;
@@ -70,9 +74,12 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
              */
             // 查询t_wh_check_pocode
             // 有:查询对应
-            // rm = this.insertPoWithCheck(whPo, whPoLines, rm);
-            rm = poManager.createPoAndLine(whPo, whPoLines, rm);
+            rm = this.insertPoWithCheck(whPo, whPoLines, rm);
+            // rm = poManager.createPoAndLine(whPo, whPoLines, rm);
         } catch (Exception e) {
+            if (e instanceof BusinessException) {
+                throw e;
+            }
             rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
             log.error("printService error poCode: " + po.getPoCode());
             log.error("" + e);
@@ -93,7 +100,12 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
         WhPo whPo = new WhPo();
         BeanUtils.copyProperties(po, whPo);
         // 相关单据号 调用HUB编码生成器获得
-        whPo.setExtCode(String.valueOf(System.currentTimeMillis()));
+        String extCode = codeManager.generateCode(Constants.WMS, Constants.MODEL_URL, null, null, null);
+        if (StringUtil.isEmpty(extCode)) {
+            log.warn("CreatePo warn extCode generateCode is null");
+            throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
+        }
+        whPo.setExtCode(extCode);
         // 采购时间为空默认为当前时间
         if (null == po.getPoDate()) {
             whPo.setPoDate(new Date());
@@ -189,6 +201,20 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
      * 检验是否可以插入t_wh_po表
      */
     private ResponseMsg insertPoWithCheck(WhPo whPo, List<WhPoLine> whPoLines, ResponseMsg rm) {
+        log.info("InsertPoWithCheck start =======================");
+        /**
+         * 流程:
+         * 1.封装poCheckCommand对象,包含了WhPo,List<WhPoLine>,ResponseMsg,CheckPoCode
+         * 2.没有传入ouId,查找中间表t_wh_check_pocode是否有此PO单,在同一事务中执行以下两步:
+         * function==>poCheckManager.insertPoWithCheckWithoutOuId();
+         * i)  如果有则去基础信息表查找此PO单。有PO则抛出异常,没有PO则添加一条数据.
+         * ii) 如果没有则在t_wh_check_pocode添加一条数据,并在PO表中添加一条数据.
+         * 3.有传入ouId,查找中间表t_wh_check_pocode是否有此PO单,在两个事务中分别执行以下两步:
+         * function==>poManager.createPoAndLineToShare();
+         * i)  如果有则去对应的拆库表查找此PO单。有PO则抛出异常,没有PO则添加一条数据.
+         * function==>poManager.insertPoWithOuId();
+         * ii) 如果没有则在t_wh_check_pocode添加一条数据,并在PO表中添加一条数据.
+         */
         CheckPoCode checkPoCode = new CheckPoCode();
         if (!StringUtil.isEmpty(whPo.getPoCode())) {
             checkPoCode.setPoCode(whPo.getPoCode());
@@ -201,24 +227,26 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
         poCheckCommand.setWhPo(whPo);
         poCheckCommand.setWhPoLines(whPoLines);
         poCheckCommand.setCheckPoCode(checkPoCode);
-
-
+        /* po单不带ouId */
         if (null == ouId) {
-            poCheckManager.insertPoWithCheckWithoutOuId(poCheckCommand);
+            /* 查找并插入po数据 */
+            rm = poCheckManager.insertPoWithCheckWithoutOuId(poCheckCommand);
         } else {
-            ResponseMsg responseMsg = poCheckManager.insertPoWithCheckAndOuId(checkPoCode);
-            if ("no".equals(responseMsg.getMsg())) {
+            /* 查找check表中是否有数据 */
+            boolean flag = poCheckManager.insertPoWithCheckAndOuId(checkPoCode);
+            if (!flag) {
                 /* 在check表中不存在po单 */
-                poManager.createPoAndLineToShare(whPo, whPoLines, rm);
+                rm = poManager.createPoAndLineToShare(whPo, whPoLines, rm);
             } else {
-                // poManager.insertPoWithCheckAndOuId(whPo.getPoCode(), whPo.getStoreId(),
-                // whPo.getOuId());
-
+                /* 在check表中存在此po单,则去po表中查找是否有这单. 如果有就抛出异常,没有就插入 */
+                rm = poManager.insertPoWithOuId(poCheckCommand);
+                // TODO
+                /* 如果抛出异常,此处会有补偿机制 */
             }
         }
-        return null;
+        log.info("InsertPoWithCheck end =======================");
+        return rm;
     }
-
 
     /**
      * 创建POLine明细信息 业务缓存在表数据

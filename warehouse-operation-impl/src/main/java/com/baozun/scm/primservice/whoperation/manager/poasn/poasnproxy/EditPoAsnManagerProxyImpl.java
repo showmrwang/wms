@@ -43,13 +43,14 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
     @Override
     public int editAsnStatus(WhAsnCommand whAsn) {
         int result = 0;
-        if (null == whAsn.getOuId()) {
-            // OUID为空更新基础表内信息
-            result = asnManager.editAsnStatusByInfo(whAsn);
-        } else {
-            // OUID不为空更新拆库表内信息
-            result = asnManager.editAsnStatusByShard(whAsn);
-        }
+        System.out.println("test");
+        // if (null == whAsn.getOuId()) {
+        // // OUID为空更新基础表内信息
+        // result = asnManager.editAsnStatusByInfo(whAsn);
+        // } else {
+        // // OUID不为空更新拆库表内信息
+        // result = asnManager.editAsnStatusByShard(whAsn);
+        // }
         return result;
     }
 
