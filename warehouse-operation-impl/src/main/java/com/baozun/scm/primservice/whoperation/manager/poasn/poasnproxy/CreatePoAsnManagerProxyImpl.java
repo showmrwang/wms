@@ -100,12 +100,12 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
         WhPo whPo = new WhPo();
         BeanUtils.copyProperties(po, whPo);
         // 相关单据号 调用HUB编码生成器获得
-        String extCode = codeManager.generateCode(Constants.WMS, Constants.MODEL_URL, null, null, null);
-        if (StringUtil.isEmpty(extCode)) {
-            log.warn("CreatePo warn extCode generateCode is null");
+        String poCode = codeManager.generateCode(Constants.WMS, Constants.MODEL_URL, null, null, null);
+        if (StringUtil.isEmpty(poCode)) {
+            log.warn("CreatePo warn poCode generateCode is null");
             throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
         }
-        whPo.setExtCode(extCode);
+        whPo.setPoCode(poCode);
         // 采购时间为空默认为当前时间
         if (null == po.getPoDate()) {
             whPo.setPoDate(new Date());
