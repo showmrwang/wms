@@ -92,7 +92,7 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
             poManager.editPoToShard(po);
         }
         log.info("EditPo end  =======================");
-        return null;
+        return rm;
     }
 
     /**
