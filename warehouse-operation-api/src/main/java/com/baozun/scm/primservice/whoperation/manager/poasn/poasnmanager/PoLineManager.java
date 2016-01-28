@@ -23,4 +23,8 @@ public interface PoLineManager extends BaseManager {
     void deletePoLineByUuidToInfo(WhPoLineCommand WhPoLine);
 
     void deletePoLineByUuidToShare(WhPoLineCommand WhPoLine);
+
+    void editPoLineToInfo(WhPoLine whPoLine);
+
+    void editPoLineToShare(WhPoLine whPoLine);
 }
