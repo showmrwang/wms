@@ -115,7 +115,7 @@ public class PoManagerImpl implements PoManager {
      */
     @Override
     @MoreDB("infoSource")
-    public int editPoStatusByInfo(WhPoCommand whPo) {
+    public int editPoStatusToInfo(WhPoCommand whPo) {
         int result = whPoDao.editPoStatus(whPo.getPoIds(), whPo.getStatus(), whPo.getModifiedId(), whPo.getOuId(), new Date());
         if (result <= 0) {
             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
@@ -131,7 +131,7 @@ public class PoManagerImpl implements PoManager {
      */
     @Override
     @MoreDB("shardSource")
-    public int editPoStatusByShard(WhPoCommand whPo) {
+    public int editPoStatusToShard(WhPoCommand whPo) {
         int result = whPoDao.editPoStatus(whPo.getPoIds(), whPo.getStatus(), whPo.getModifiedId(), whPo.getOuId(), new Date());
         if (result <= 0) {
             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
@@ -147,7 +147,7 @@ public class PoManagerImpl implements PoManager {
      */
     @Override
     @MoreDB("infoSource")
-    public WhPoCommand findWhPoByIdByInfo(WhPoCommand whPo) {
+    public WhPoCommand findWhPoByIdToInfo(WhPoCommand whPo) {
         return whPoDao.findWhPoById(whPo.getId(), whPo.getOuId());
     }
 
@@ -156,7 +156,7 @@ public class PoManagerImpl implements PoManager {
      */
     @Override
     @MoreDB("shardSource")
-    public WhPoCommand findWhPoByIdByShard(WhPoCommand whPo) {
+    public WhPoCommand findWhPoByIdToShard(WhPoCommand whPo) {
         return whPoDao.findWhPoById(whPo.getId(), whPo.getOuId());
     }
 
@@ -167,7 +167,7 @@ public class PoManagerImpl implements PoManager {
      */
     @Override
     @MoreDB("infoSource")
-    public void editPoByInfo(WhPo whPo) {
+    public void editPoToInfo(WhPo whPo) {
         int count = 0;
         count = whPoDao.saveOrUpdateByVersion(whPo);
         if (count == 0) {
@@ -182,7 +182,7 @@ public class PoManagerImpl implements PoManager {
      */
     @Override
     @MoreDB("shardSource")
-    public void editPoByShard(WhPo whPo) {
+    public void editPoToShard(WhPo whPo) {
         int count = 0;
         count = whPoDao.saveOrUpdateByVersion(whPo);
         if (count == 0) {

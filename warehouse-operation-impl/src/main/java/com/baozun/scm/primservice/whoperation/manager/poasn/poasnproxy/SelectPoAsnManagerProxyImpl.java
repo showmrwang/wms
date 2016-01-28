@@ -82,10 +82,10 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
         WhPoCommand whpo = null;
         if (null == whPoCommand.getOuId()) {
             // 查询基本库内信息
-            whpo = poManager.findWhPoByIdByInfo(whPoCommand);
+            whpo = poManager.findWhPoByIdToInfo(whPoCommand);
         } else {
             // 查询拆库内信息
-            whpo = poManager.findWhPoByIdByShard(whPoCommand);
+            whpo = poManager.findWhPoByIdToShard(whPoCommand);
         }
         return whpo;
     }
