@@ -62,8 +62,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        UPDATE t_wh_po_line SET
 			        po_id = #{poId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        linenum = #{linenum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-			        sku_id = #{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		     	    ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,			        
+			        sku_id = #{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,        
 			        qty_planned = #{qtyPlanned,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 			        overshipped = #{overshipped,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 			        available_qty = #{availableQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
@@ -88,10 +87,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        uuid = #{uuid,javaType=java.lang.String,jdbcType=VARCHAR} 
-		        WHERE 
-			        id = #{id} 
-			        and last_modify_time	<=  #{lastModifyTime}    
 		    ]]>
+		    <where>
+		    		id = #{id} 
+			        and last_modify_time	&lt;=  #{lastModifyTime}    
+			        <if test="ouId != null">
+			        	and ou_id = #{ouId}
+			        </if>
+		    </where>
 		</update>
 		
 	<resultMap id="WhPoLineCommand" type="com.baozun.scm.primservice.whoperation.command.poasn.WhPoLineCommand">
@@ -149,10 +152,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		
 	<select id="findListCountByQueryMapExt" resultType="long">
         select count(*) from 
-        t_wh_po_line line 
-		left join sys_dictionary sys on sys.dic_value = line.status and sys.group_value = 'POSTATUS'
-		left join t_wh_inventory_status inv on inv.id = line.inv_status,
-		t_wh_po po 
+	        t_wh_po_line line 
+			left join sys_dictionary sys on sys.dic_value = line.status and sys.group_value = 'POSTATUS'
+			left join t_wh_inventory_status inv on inv.id = line.inv_status,
+			t_wh_po po 
 		<include refid="whPoLineDynamicWhereExt"/>
     </select>
     
