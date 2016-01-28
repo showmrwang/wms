@@ -13,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoLineCommand;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoLineDao;
+import com.baozun.scm.primservice.whoperation.exception.BusinessException;
+import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 
 
@@ -68,5 +70,23 @@ public class PoLineManagerImpl implements PoLineManager {
     @MoreDB("shardSource")
     public void deletePoLineByUuidToShare(WhPoLineCommand WhPoLine) {
         whPoLineDao.deletePoLineByUuid(WhPoLine.getPoId(), WhPoLine.getOuId(), WhPoLine.getUuid());
+    }
+
+    @Override
+    @MoreDB("infoSource")
+    public void editPoLineToInfo(WhPoLine whPoLine) {
+        int result = whPoLineDao.saveOrUpdateByVersion(whPoLine);
+        if (result <= 0) {
+            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+        }
+    }
+
+    @Override
+    @MoreDB("shardSource")
+    public void editPoLineToShare(WhPoLine whPoLine) {
+        int result = whPoLineDao.saveOrUpdateByVersion(whPoLine);
+        if (result <= 0) {
+            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+        }
     }
 }

@@ -23,7 +23,7 @@ public class PoAsnStatus implements Serializable {
     /** PO */
 
     /** PO LINE */
-    public static final int POLINE_NOT_RCVD = 1; // 新建
+    public static final int POLINE_NEW = 1; // 新建
     public static final int POLINE_CREATE_ASN = 2;// 已创建ASN
     public static final int POLINE_RCVD = 3;// 收货中
     public static final int POLINE_RCVD_FINISH = 10; // 收货完成

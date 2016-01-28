@@ -121,8 +121,24 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
      * 修改POLINE 信息
      */
     @Override
-    public ResponseMsg editPoLine(WhPoLine poLine) {
-        // TODO Auto-generated method stub
-        return null;
+    public ResponseMsg editPoLine(WhPoLine whPoLine) {
+        log.info("EditPoLine start =======================");
+        ResponseMsg rm = new ResponseMsg();
+        // POLINE状态必须为新建 已创建ASN 收货中才能修改
+        if (whPoLine.getStatus() != PoAsnStatus.POLINE_NEW || whPoLine.getStatus() != PoAsnStatus.POLINE_CREATE_ASN || whPoLine.getStatus() != PoAsnStatus.POLINE_RCVD) {
+            rm.setResponseStatus(ResponseMsg.DATA_ERROR);
+            rm.setMsg("poLine status is error status is: " + whPoLine.getStatus());
+            log.warn("EditPoLine warn ResponseStatus: " + rm.getResponseStatus() + " msg: " + rm.getMsg());
+            return rm;
+        }
+        if (null == whPoLine.getOuId()) {
+            // OUID为空修改基础表内信息
+            poLineManager.editPoLineToInfo(whPoLine);
+        } else {
+            // OUID不为空修改拆库表内信息
+            poLineManager.editPoLineToShare(whPoLine);
+        }
+        log.info("EditPoLine start =======================");
+        return rm;
     }
 }
