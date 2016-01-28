@@ -101,11 +101,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
-		        WHERE 
-			        id = #{id} 
-			        and ou_id = #{ouId}
-			        and last_modify_time	<=  #{lastModifyTime}    
 		    ]]>
+		    <where>
+		    		id = #{id} 
+			        and last_modify_time	&lt;=  #{lastModifyTime}    
+			        <if test="ouId != null">
+			        	and ou_id = #{ouId}
+			        </if>
+		    </where>
 		</update>
 		
 	<sql id="whPoColumnsMapExt">

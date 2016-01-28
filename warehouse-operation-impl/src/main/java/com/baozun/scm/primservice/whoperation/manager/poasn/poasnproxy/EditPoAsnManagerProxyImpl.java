@@ -16,6 +16,7 @@ import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoLineM
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoManager;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 
 /**
  * 编辑PoAsn单信息
@@ -113,5 +114,14 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
             throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
         }
         log.info("DeletePoLineByUuid start =======================");
+    }
+
+    /**
+     * 修改POLINE 信息
+     */
+    @Override
+    public ResponseMsg editPoLine(WhPoLine poLine) {
+        // TODO Auto-generated method stub
+        return null;
     }
 }
