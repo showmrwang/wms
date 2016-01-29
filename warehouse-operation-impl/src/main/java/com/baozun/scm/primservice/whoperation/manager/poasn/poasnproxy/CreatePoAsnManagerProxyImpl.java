@@ -67,9 +67,9 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
             List<WhPoLine> whPoLines = copyPropertiesPoLine(po);
             // 判断OU_ID
             /**
-             * if(ou_id == null){ if(存在){ 查询对应基础库中PO单po_code+store_id是否存在 存在ERROR 提示PO_CODE已经存在
+             * if(ou_id == null){ if(存在){ 查询对应基础库中PO单ext_code+store_id是否存在 存在ERROR 提示EXT_CODE已经存在
              * 不存在直接插入PO单 }else{ 插入t_wh_check_pocode表 } } if(ou_id !=null) 拆数据源操作
-             * 先查询t_wh_check_pocode 存在 查询对应基础库中PO单po_code+store_id是否存在 存在ERROR 提示PO_CODE已经存在
+             * 先查询t_wh_check_pocode 存在 查询对应基础库中PO单ext_code+store_id是否存在 存在ERROR 提示EXT_CODE已经存在
              * 不存在的话直接插入PO单 2个事务
              */
             // 查询t_wh_check_pocode
@@ -213,9 +213,7 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
          */
         CheckPoCode checkPoCode = new CheckPoCode();
         // poCode为编码服务器生成 extCode为外围服务器传入或WMS创建PO单时填写
-        if (!StringUtil.isEmpty(whPo.getExtCode())) {
-            checkPoCode.setExtCode(whPo.getExtCode());
-        }
+        checkPoCode.setExtCode(whPo.getExtCode());
         checkPoCode.setPoCode(whPo.getPoCode());
         checkPoCode.setOuId(whPo.getOuId());
         checkPoCode.setStoreId(whPo.getStoreId());
