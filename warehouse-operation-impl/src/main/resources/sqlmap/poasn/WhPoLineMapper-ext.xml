@@ -169,5 +169,18 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			</if>
 		</where>
     </delete>  
+    
+    <select id="findWhPoLineById" resultMap="WhPoLineCommand">
+	    select
+	    <include refid="whPoLineColumnsMapExt" />
+	    from t_wh_po_line line
+	    left join sys_dictionary sys on sys.dic_value = line.status and sys.group_value = 'POSTATUS'
+		left join t_wh_inventory_status inv on inv.id = line.inv_status
+	    left join t_wh_po po on po.id=line.po_id
+	    where line.id=#{id}
+	    <if test="ouId!=null">
+	  			 and line.ou_id = #{ouId}
+		</if>
+    </select>
 	
 </mapper>

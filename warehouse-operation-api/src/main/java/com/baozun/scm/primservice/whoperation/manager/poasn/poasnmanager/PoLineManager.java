@@ -27,4 +27,8 @@ public interface PoLineManager extends BaseManager {
     void editPoLineToInfo(WhPoLine whPoLine);
 
     void editPoLineToShare(WhPoLine whPoLine);
+
+    WhPoLineCommand findPoLinebyIdToInfo(WhPoLineCommand command);
+
+    WhPoLineCommand findPoLinebyIdToShard(WhPoLineCommand command);
 }

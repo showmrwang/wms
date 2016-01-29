@@ -89,4 +89,16 @@ public class PoLineManagerImpl implements PoLineManager {
             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
         }
     }
+
+    @Override
+    @MoreDB("infoSource")
+    public WhPoLineCommand findPoLinebyIdToInfo(WhPoLineCommand command) {
+        return this.whPoLineDao.findWhPoLineById(command.getId(), command.getOuId());
+    }
+
+    @Override
+    @MoreDB("shardSource")
+    public WhPoLineCommand findPoLinebyIdToShard(WhPoLineCommand command) {
+        return this.whPoLineDao.findWhPoLineById(command.getId(), command.getOuId());
+    }
 }

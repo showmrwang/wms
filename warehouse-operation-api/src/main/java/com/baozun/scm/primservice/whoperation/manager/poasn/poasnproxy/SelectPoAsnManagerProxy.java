@@ -21,4 +21,6 @@ public interface SelectPoAsnManagerProxy extends BaseManager {
     WhPoCommand findWhPoById(WhPoCommand whPoCommand);
 
     Pagination<WhPoLineCommand> findPoLineListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params, Integer sourceType);
+
+    WhPoLineCommand findWhPoLineById(WhPoLineCommand Command);
 }
