@@ -14,6 +14,8 @@
  */
 package com.baozun.scm.primservice.whoperation.dao.poasn;
 
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import lark.common.annotation.CommonQuery;
@@ -48,5 +50,7 @@ public interface WhPoLineDao extends BaseDao<WhPoLine, Long> {
     int deletePoLineByUuid(@Param("poid") Long poid, @Param("ouid") Long ouid, @Param("uuid") String uuid);
 
     WhPoLineCommand findWhPoLineById(@Param("id") Long id, @Param("ouId") Long ouid);
+
+    int editPoLineStatus(@Param("ids") List<Long> ids, @Param("status") Integer status, @Param("userid") Long userid, @Param("ouid") Long ouid, @Param("lastModifyTime") Date lastModifyTime);
 
 }

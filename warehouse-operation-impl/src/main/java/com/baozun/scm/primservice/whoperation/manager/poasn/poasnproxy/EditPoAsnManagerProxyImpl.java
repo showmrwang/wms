@@ -141,4 +141,20 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
         log.info("EditPoLine start =======================");
         return rm;
     }
+
+    /**
+     * 修改PO单明细状态(可批量)
+     */
+    @Override
+    public int editPoLineStatus(WhPoLineCommand command) {
+        int result = 0;
+        if (null == command.getOuId()) {
+            // OUID为空更新基础表内信息
+            result = poLineManager.editPoLineStatusToInfo(command);
+        } else {
+            // OUID不为空更新拆库表内信息
+            result = poLineManager.editPoLineStatusToShard(command);
+        }
+        return result;
+    }
 }

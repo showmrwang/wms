@@ -19,4 +19,6 @@ public interface EditPoAsnManagerProxy extends BaseManager {
     void deletePoLineByUuid(WhPoLineCommand whPoLine);
 
     ResponseMsg editPoLine(WhPoLine whPoLine);
+
+    int editPoLineStatus(WhPoLineCommand command);
 }

@@ -31,4 +31,8 @@ public interface PoLineManager extends BaseManager {
     WhPoLineCommand findPoLinebyIdToInfo(WhPoLineCommand command);
 
     WhPoLineCommand findPoLinebyIdToShard(WhPoLineCommand command);
+
+    int editPoLineStatusToInfo(WhPoLineCommand command);
+
+    int editPoLineStatusToShard(WhPoLineCommand command);
 }
