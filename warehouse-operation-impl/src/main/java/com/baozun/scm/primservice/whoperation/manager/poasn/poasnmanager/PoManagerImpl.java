@@ -196,11 +196,11 @@ public class PoManagerImpl implements PoManager {
         WhPo whPo = poCheckCommand.getWhPo();
         List<WhPoLine> whPoLines = poCheckCommand.getWhPoLines();
         ResponseMsg rm = poCheckCommand.getRm();
-        String poCode = whPo.getPoCode();
+        String extCode = whPo.getExtCode();
         Long storeId = whPo.getStoreId();
         Long ouId = whPo.getOuId();
         /* 查找在性对应的拆库表中是否有此po单信息 */
-        long count = whPoDao.findPoByCodeAndStore(poCode, storeId, ouId);
+        long count = whPoDao.findPoByCodeAndStore(extCode, storeId, ouId);
         /* 没有此po单信息 */
         if (0 == count) {
             long i = whPoDao.insert(whPo);

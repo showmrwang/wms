@@ -203,8 +203,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<if test="ouId!=null">
 				and ou_id = #{ouId}
 			</if>
-			<if test="poCode!=null and poCode!=''">
-				and po_code = #{poCode}
+			<if test="extCode!=null and extCode!=''">
+				and ext_code = #{extCode}
 			</if>
 			<if test="storeId!=null">
 				and store_id = #{storeId}
