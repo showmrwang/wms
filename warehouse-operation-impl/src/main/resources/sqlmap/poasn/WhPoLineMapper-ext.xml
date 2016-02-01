@@ -173,6 +173,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
     </delete>  
     
+   <delete id="deletePoLineByIdOuId" parameterType="int">  
+		delete from t_wh_po_line
+		<where>
+			id = #{id} 
+			<if test="ouid != null">
+				and ou_id = #{ouid}
+			</if>
+		</where>
+    </delete>  
+    
    <delete id="deletePoLineByNotUuid" parameterType="int">  
 		delete from t_wh_po_line
 		<where>
@@ -266,4 +276,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    	</if>
 	    </where>
     </select>
+    
+    <select id="findWhPoLineByIdWhPoLine" resultMap="WhPoLineCommand">
+	    select
+	    <include refid="whPoLineColumnsExt" />
+	    from t_wh_po_line
+	    where id=#{id}
+	    <if test="ouId!=null">
+	  			 and ou_id = #{ouid}
+		</if>
+    </select>
+    
+    
 </mapper>

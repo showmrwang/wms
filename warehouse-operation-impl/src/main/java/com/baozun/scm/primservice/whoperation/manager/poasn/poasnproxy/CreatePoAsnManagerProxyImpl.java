@@ -315,4 +315,30 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
     }
 
 
+    /**
+     * 批量保存POLINE信息
+     */
+    @Override
+    public ResponseMsg createPoLineBatch(WhPoLineCommand whPoLine) {
+        log.info("CreatePoLineBatch start =======================");
+        ResponseMsg rm = new ResponseMsg();
+        try {
+            if (null == whPoLine.getOuId()) {
+                // 没有ou_id更新基础表数据
+                poLineManager.createPoLineBatchToInfo(whPoLine);
+            } else {
+                // 有ou_id更新拆库表数据
+                poLineManager.createPoLineBatchToShare(whPoLine);
+            }
+        } catch (Exception e) {
+            rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
+            log.error("CreatePoLineBatch Error PoId: " + whPoLine.getPoId());
+            log.error(e + "");
+            return rm;
+        }
+        log.info("CreatePoLineBatch end =======================");
+        return rm;
+    }
+
+
 }

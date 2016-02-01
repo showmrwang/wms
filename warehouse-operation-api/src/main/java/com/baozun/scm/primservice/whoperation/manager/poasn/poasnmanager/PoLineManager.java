@@ -43,4 +43,8 @@ public interface PoLineManager extends BaseManager {
     void updatePoLineSingleToInfo(WhPoLine whPoLine);
 
     void updatePoLineSingleToShare(WhPoLine whPoLine);
+
+    void createPoLineBatchToInfo(WhPoLineCommand whPoLine);
+
+    void createPoLineBatchToShare(WhPoLineCommand whPoLine);
 }
