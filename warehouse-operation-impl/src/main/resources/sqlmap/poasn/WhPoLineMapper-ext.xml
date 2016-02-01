@@ -88,7 +88,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        last_modify_time = now(),
 			        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        uuid = #{uuid,javaType=java.lang.String,jdbcType=VARCHAR} , 
-			        po_line_id = #{poLineId,javaType=java.lang.Long,jdbcType=BIGINT} , 
+			        po_line_id = #{poLineId,javaType=java.lang.Long,jdbcType=BIGINT}  
 		    ]]>
 		    <where>
 		    		id = #{id} 

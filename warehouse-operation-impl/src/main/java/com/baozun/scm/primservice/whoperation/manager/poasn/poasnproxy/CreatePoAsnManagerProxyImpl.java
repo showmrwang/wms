@@ -293,7 +293,7 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
             // 如果数据存在 合并数据
             wpl.setQtyPlanned(wpl.getQtyPlanned() + line.getQtyPlanned());// 计划数量
             wpl.setAvailableQty(wpl.getAvailableQty() + line.getQtyPlanned());// 可用数量=原可用数量+新计划数量
-            wpl.setLastModifyTime(new Date());
+            // wpl.setLastModifyTime(new Date());
             wpl.setModifiedId(line.getModifiedId());
             try {
                 if (null == line.getOuId()) {
