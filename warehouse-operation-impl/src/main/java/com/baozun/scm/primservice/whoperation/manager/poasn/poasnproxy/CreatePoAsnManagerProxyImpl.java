@@ -232,7 +232,6 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
             } else {
                 /* 在check表中存在此po单,则去po表中查找是否有这单. 如果有就抛出异常,没有就插入 */
                 rm = poManager.insertPoWithOuId(poCheckCommand);
-                // TODO
                 /* 如果抛出异常,此处会有补偿机制 */
             }
         }
@@ -249,26 +248,67 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
         ResponseMsg rm = new ResponseMsg();
         WhPoLine line = new WhPoLine();
         BeanUtils.copyProperties(whPoLine, line);
-        // 如果行号为空给个行号
-        if (null == line.getLinenum()) {
-            line.setLinenum(1);
+        WhPoLine wpl = null;
+        // 通过传入的值预先查找该PO单下是否存在对应UUID的商品数据
+        log.debug("CreatePoLineSingle findPoLineByAddPoLineParam poid: " + line.getPoId() + " ou_id: " + line.getOuId() + " uuid: " + line.getUuid());
+        if (null == line.getOuId()) {
+            // ouid is null to info mycat 需要带uuid
+            wpl = poLineManager.findPoLineByAddPoLineParamToInfo(line, false);
+        } else {
+            // ouid is not null to share mycat 需要带uuid
+            wpl = poLineManager.findPoLineByAddPoLineParamToShare(line, false);
         }
-        line.setStatus(PoAsnStatus.POLINE_NEW);
-        line.setCreateTime(new Date());
-        line.setLastModifyTime(new Date());
-        try {
+        if (null == wpl) {
+            // 根据POLINE信息查询POLINE正式数据
             if (null == line.getOuId()) {
-                // 没有ou_id插入基础表数据
-                poLineManager.createPoLineSingleToInfo(line);
+                // ouid is null to info mycat 不需要带uuid
+                wpl = poLineManager.findPoLineByAddPoLineParamToInfo(line, true);
             } else {
-                // 有ou_id插入拆库表数据
-                poLineManager.createPoLineSingleToShare(line);
+                // ouid is not null to share mycat 不需要带uuid
+                wpl = poLineManager.findPoLineByAddPoLineParamToShare(line, true);
             }
-        } catch (Exception e) {
-            rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
-            log.error("CreatePoLineSingle Error PoId: " + whPoLine.getPoId());
-            log.error(e + "");
-            return rm;
+            if (null != wpl) {
+                // 存在正式数据 需要在新数据的polineid赋值 等保存poline信息后合并信息用
+                line.setPoLineId(wpl.getId());
+            }
+            // 如果不存在插入一条数据
+            line.setStatus(PoAsnStatus.POLINE_NEW);
+            line.setCreateTime(new Date());
+            line.setLastModifyTime(new Date());
+            try {
+                if (null == line.getOuId()) {
+                    // 没有ou_id插入基础表数据
+                    poLineManager.createPoLineSingleToInfo(line);
+                } else {
+                    // 有ou_id插入拆库表数据
+                    poLineManager.createPoLineSingleToShare(line);
+                }
+            } catch (Exception e) {
+                rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
+                log.error("CreatePoLineSingle Error PoId: " + whPoLine.getPoId());
+                log.error(e + "");
+                return rm;
+            }
+        } else {
+            // 如果数据存在 合并数据
+            wpl.setQtyPlanned(wpl.getQtyPlanned() + line.getQtyPlanned());// 计划数量
+            wpl.setAvailableQty(wpl.getAvailableQty() + line.getQtyPlanned());// 可用数量=原可用数量+新计划数量
+            wpl.setLastModifyTime(new Date());
+            wpl.setModifiedId(line.getModifiedId());
+            try {
+                if (null == line.getOuId()) {
+                    // 没有ou_id更新基础表数据
+                    poLineManager.updatePoLineSingleToInfo(wpl);
+                } else {
+                    // 有ou_id更新拆库表数据
+                    poLineManager.updatePoLineSingleToShare(wpl);
+                }
+            } catch (Exception e) {
+                rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
+                log.error("CreatePoLineSingle Error PoId: " + whPoLine.getPoId());
+                log.error(e + "");
+                return rm;
+            }
         }
         log.info("CreatePoLineSingle end =======================");
         return rm;

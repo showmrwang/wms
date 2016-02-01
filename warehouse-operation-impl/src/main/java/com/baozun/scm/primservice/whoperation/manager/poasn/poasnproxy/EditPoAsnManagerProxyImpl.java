@@ -124,7 +124,7 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
         log.info("EditPoLine start =======================");
         ResponseMsg rm = new ResponseMsg();
         // POLINE状态必须为新建 已创建ASN 收货中才能修改
-        if (whPoLine.getStatus() != PoAsnStatus.POLINE_NEW || whPoLine.getStatus() != PoAsnStatus.POLINE_CREATE_ASN || whPoLine.getStatus() != PoAsnStatus.POLINE_RCVD) {
+        if (whPoLine.getStatus() != PoAsnStatus.POLINE_NEW && whPoLine.getStatus() != PoAsnStatus.POLINE_CREATE_ASN && whPoLine.getStatus() != PoAsnStatus.POLINE_RCVD) {
             rm.setResponseStatus(ResponseMsg.DATA_ERROR);
             rm.setMsg("poLine status is error status is: " + whPoLine.getStatus());
             log.warn("EditPoLine warn ResponseStatus: " + rm.getResponseStatus() + " msg: " + rm.getMsg());

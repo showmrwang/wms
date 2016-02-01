@@ -1,6 +1,8 @@
 package com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import lark.common.annotation.MoreDB;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoLineCommand;
+import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoLineDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
@@ -127,5 +130,66 @@ public class PoLineManagerImpl implements PoLineManager {
             throw new BusinessException(ErrorCodes.UPDATE_DATA_QUANTITYERROR, new Object[] {command.getIds().size(), result});
         }
         return result;
+    }
+
+    /**
+     * 通过创建POLINE信息查找是否该PO单下有对应明细信息(基础库)
+     */
+    @Override
+    @MoreDB("infoSource")
+    public WhPoLine findPoLineByAddPoLineParamToInfo(WhPoLine line, Boolean type) {
+        List<Integer> statusList = new ArrayList<Integer>();
+        statusList.add(PoAsnStatus.POLINE_NEW);
+        statusList.add(PoAsnStatus.POLINE_CREATE_ASN);
+        statusList.add(PoAsnStatus.POLINE_RCVD);
+        if (type) {
+            // 查询POLINE单正式数据
+            line.setUuid(null);
+        }
+        return whPoLineDao.findPoLineByAddPoLineParam(statusList, line.getPoId(), null, line.getSkuId(), line.getIsIqc() == true ? 1 : 0, line.getMfgDate(), line.getExpDate(), line.getValidDate(), line.getBatchNo(), line.getCountryOfOrigin(),
+                line.getInvStatus(), line.getUuid());
+    }
+
+    /**
+     * 通过创建POLINE信息查找是否该PO单下有对应明细信息(拆库)
+     */
+    @Override
+    @MoreDB("shardSource")
+    public WhPoLine findPoLineByAddPoLineParamToShare(WhPoLine line, Boolean type) {
+        List<Integer> statusList = new ArrayList<Integer>();
+        statusList.add(PoAsnStatus.POLINE_NEW);
+        statusList.add(PoAsnStatus.POLINE_CREATE_ASN);
+        statusList.add(PoAsnStatus.POLINE_RCVD);
+        if (type) {
+            // 查询POLINE单正式数据
+            line.setUuid(null);
+        }
+        return whPoLineDao.findPoLineByAddPoLineParam(statusList, line.getPoId(), null, line.getSkuId(), line.getIsIqc() == true ? 1 : 0, line.getMfgDate(), line.getExpDate(), line.getValidDate(), line.getBatchNo(), line.getCountryOfOrigin(),
+                line.getInvStatus(), line.getUuid());
+    }
+
+    /**
+     * 修改POLINE明细
+     */
+    @Override
+    @MoreDB("infoSource")
+    public void updatePoLineSingleToInfo(WhPoLine whPoLine) {
+        int result = whPoLineDao.saveOrUpdateByVersion(whPoLine);
+        if (result <= 0) {
+            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+        }
+    }
+
+    /**
+     * 修改POLINE明细
+     */
+    @Override
+    @MoreDB("shardSource")
+    public void updatePoLineSingleToShare(WhPoLine whPoLine) {
+        int result = whPoLineDao.saveOrUpdateByVersion(whPoLine);
+        if (result <= 0) {
+            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+        }
+
     }
 }

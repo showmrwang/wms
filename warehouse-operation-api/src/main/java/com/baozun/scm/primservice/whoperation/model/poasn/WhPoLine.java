@@ -87,6 +87,8 @@ public class WhPoLine extends BaseModel {
     private Long modifiedId;
     /** 临时数据批次 IT使用 */
     private String uuid;
+    /** POLINE明细ID IT逻辑用 */
+    private Long poLineId;
 
     public Long getId() {
         return this.id;
@@ -318,6 +320,14 @@ public class WhPoLine extends BaseModel {
 
     public void setOuId(Long ouId) {
         this.ouId = ouId;
+    }
+
+    public Long getPoLineId() {
+        return poLineId;
+    }
+
+    public void setPoLineId(Long poLineId) {
+        this.poLineId = poLineId;
     }
 
 }
