@@ -160,12 +160,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     </select>
     
    <delete id="deletePoLineByUuid" parameterType="int">  
-		delete from t_wh_po_line line
+		delete from t_wh_po_line
 		<where>
-			line.po_id = #{poid} 
-			and line.uuid = #{uuid}
+			po_id = #{poid} 
+			and uuid = #{uuid}
 			<if test="ouid != null">
-				and line.ou_id = #{ouid}
+				and ou_id = #{ouid}
 			</if>
 		</where>
     </delete>  
