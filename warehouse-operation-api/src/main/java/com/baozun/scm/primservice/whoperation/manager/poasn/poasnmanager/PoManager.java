@@ -20,21 +20,21 @@ public interface PoManager extends BaseManager {
 
     ResponseMsg createPoAndLineToShare(WhPo po, List<WhPoLine> whPoLines, ResponseMsg rm);
 
-    WhPoCommand findWhPoByIdByInfo(WhPoCommand whPo);
+    WhPoCommand findWhPoByIdToInfo(WhPoCommand whPo);
 
-    WhPoCommand findWhPoByIdByShard(WhPoCommand whPo);
+    WhPoCommand findWhPoByIdToShard(WhPoCommand whPo);
 
     Pagination<WhPoCommand> findListByQueryMapWithPageExtByInfo(Page page, Sort[] sorts, Map<String, Object> params);
 
     Pagination<WhPoCommand> findListByQueryMapWithPageExtByShard(Page page, Sort[] sorts, Map<String, Object> params);
 
-    int editPoStatusByInfo(WhPoCommand whPo);
+    int editPoStatusToInfo(WhPoCommand whPo);
 
-    int editPoStatusByShard(WhPoCommand whPo);
+    int editPoStatusToShard(WhPoCommand whPo);
 
-    void editPoByInfo(WhPo whPo);
+    void editPoToInfo(WhPo whPo);
 
-    void editPoByShard(WhPo whPo);
+    void editPoToShard(WhPo whPo);
 
     ResponseMsg insertPoWithOuId(PoCheckCommand poCheckCommand);
 

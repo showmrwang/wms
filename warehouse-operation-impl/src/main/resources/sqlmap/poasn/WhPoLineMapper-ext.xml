@@ -84,13 +84,13 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        inv_attr5 = #{invAttr5,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-			        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+			        last_modify_time = now(),
 			        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        uuid = #{uuid,javaType=java.lang.String,jdbcType=VARCHAR} 
 		    ]]>
 		    <where>
 		    		id = #{id} 
-			        and last_modify_time	&lt;=  #{lastModifyTime}    
+			        and last_modify_time	=  #{lastModifyTime}    
 			        <if test="ouId != null">
 			        	and ou_id = #{ouId}
 			        </if>
@@ -160,14 +160,41 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     </select>
     
    <delete id="deletePoLineByUuid" parameterType="int">  
-		delete from t_wh_po_line line
+		delete from t_wh_po_line
 		<where>
-			line.po_id = #{poid} 
-			and line.uuid = #{uuid}
+			po_id = #{poid} 
+			and uuid = #{uuid}
 			<if test="ouid != null">
-				and line.ou_id = #{ouid}
+				and ou_id = #{ouid}
 			</if>
 		</where>
     </delete>  
+    
+    <select id="findWhPoLineById" resultMap="WhPoLineCommand">
+	    select
+	    <include refid="whPoLineColumnsMapExt" />
+	    from t_wh_po_line line
+	    left join sys_dictionary sys on sys.dic_value = line.status and sys.group_value = 'POSTATUS'
+		left join t_wh_inventory_status inv on inv.id = line.inv_status
+	    left join t_wh_po po on po.id=line.po_id
+	    where line.id=#{id}
+	    <if test="ouId!=null">
+	  			 and line.ou_id = #{ouId}
+		</if>
+    </select>
 	
+	<update id="editPoLineStatus" parameterType="com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine">
+		UPDATE t_wh_po_line SET status = #{status},modified_id = #{userid},last_modify_time = now() 
+		<where>
+			id in
+			<foreach collection="ids" item="id" open="(" separator=","
+				close=")">
+				#{id}
+			</foreach>
+			 and last_modify_time &lt;=  #{lastModifyTime} 
+			   <if test="ouid!=null">
+						and ou_id = #{ouid}
+				</if>
+		</where>
+	</update>
 </mapper>

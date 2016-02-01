@@ -1,5 +1,6 @@
 package com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager;
 
+import java.util.Date;
 import java.util.Map;
 
 import lark.common.annotation.MoreDB;
@@ -88,5 +89,43 @@ public class PoLineManagerImpl implements PoLineManager {
         if (result <= 0) {
             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
         }
+    }
+
+    @Override
+    @MoreDB("infoSource")
+    public WhPoLineCommand findPoLinebyIdToInfo(WhPoLineCommand command) {
+        return this.whPoLineDao.findWhPoLineById(command.getId(), command.getOuId());
+    }
+
+    @Override
+    @MoreDB("shardSource")
+    public WhPoLineCommand findPoLinebyIdToShard(WhPoLineCommand command) {
+        return this.whPoLineDao.findWhPoLineById(command.getId(), command.getOuId());
+    }
+
+    @Override
+    @MoreDB("infoSource")
+    public int editPoLineStatusToInfo(WhPoLineCommand command) {
+        int result = whPoLineDao.editPoLineStatus(command.getIds(), command.getStatus(), command.getModifiedId(), command.getOuId(), new Date());
+        if (result <= 0) {
+            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+        }
+        if (result != command.getIds().size()) {
+            throw new BusinessException(ErrorCodes.UPDATE_DATA_QUANTITYERROR, new Object[] {command.getIds().size(), result});
+        }
+        return result;
+    }
+
+    @Override
+    @MoreDB("shardSource")
+    public int editPoLineStatusToShard(WhPoLineCommand command) {
+        int result = whPoLineDao.editPoLineStatus(command.getIds(), command.getStatus(), command.getModifiedId(), command.getOuId(), new Date());
+        if (result <= 0) {
+            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+        }
+        if (result != command.getIds().size()) {
+            throw new BusinessException(ErrorCodes.UPDATE_DATA_QUANTITYERROR, new Object[] {command.getIds().size(), result});
+        }
+        return result;
     }
 }

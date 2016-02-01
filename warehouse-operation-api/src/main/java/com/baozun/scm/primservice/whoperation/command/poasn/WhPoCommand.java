@@ -98,7 +98,16 @@ public class WhPoCommand implements Serializable {
     private List<Long> poIds;
     /** 状态名称 */
     private String statusName;
-
+    /** 仓库名称 */
+    private String ouName;
+    /** 单据类型名称 */
+    private String poTypeName;
+    /** 是否 */
+    private String isIqcName;
+    /** 供应商ID */
+    private String supplierName;
+    /** 运输商ID */
+    private String logisticsProviderName;
     public Long getId() {
         return this.id;
     }
@@ -377,6 +386,46 @@ public class WhPoCommand implements Serializable {
 
     public void setPoIds(List<Long> poIds) {
         this.poIds = poIds;
+    }
+
+    public String getOuName() {
+        return ouName;
+    }
+
+    public void setOuName(String ouName) {
+        this.ouName = ouName;
+    }
+
+    public String getPoTypeName() {
+        return poTypeName;
+    }
+
+    public void setPoTypeName(String poTypeName) {
+        this.poTypeName = poTypeName;
+    }
+
+    public String getIsIqcName() {
+        return isIqcName;
+    }
+
+    public void setIsIqcName(String isIqcName) {
+        this.isIqcName = isIqcName;
+    }
+
+    public String getSupplierName() {
+        return supplierName;
+    }
+
+    public void setSupplierName(String supplierName) {
+        this.supplierName = supplierName;
+    }
+
+    public String getLogisticsProviderName() {
+        return logisticsProviderName;
+    }
+
+    public void setLogisticsProviderName(String logisticsProviderName) {
+        this.logisticsProviderName = logisticsProviderName;
     }
 
 

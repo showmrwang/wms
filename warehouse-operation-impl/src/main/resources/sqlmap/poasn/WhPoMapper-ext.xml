@@ -99,12 +99,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        is_vmi = #{isVmi,javaType=java.lang.Boolean,jdbcType=BIT} ,
 			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-			        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+			        last_modify_time = now(),
 			        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
 		    ]]>
 		    <where>
 		    		id = #{id} 
-			        and last_modify_time	&lt;=  #{lastModifyTime}    
+			        and last_modify_time	=  #{lastModifyTime}    
 			        <if test="ouId != null">
 			        	and ou_id = #{ouId}
 			        </if>
@@ -203,8 +203,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<if test="ouId!=null">
 				and ou_id = #{ouId}
 			</if>
-			<if test="poCode!=null and poCode!=''">
-				and po_code = #{poCode}
+			<if test="extCode!=null and extCode!=''">
+				and ext_code = #{extCode}
 			</if>
 			<if test="storeId!=null">
 				and store_id = #{storeId}

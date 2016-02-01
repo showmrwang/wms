@@ -82,10 +82,10 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
         WhPoCommand whpo = null;
         if (null == whPoCommand.getOuId()) {
             // 查询基本库内信息
-            whpo = poManager.findWhPoByIdByInfo(whPoCommand);
+            whpo = poManager.findWhPoByIdToInfo(whPoCommand);
         } else {
             // 查询拆库内信息
-            whpo = poManager.findWhPoByIdByShard(whPoCommand);
+            whpo = poManager.findWhPoByIdToShard(whPoCommand);
         }
         return whpo;
     }
@@ -111,5 +111,20 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
         return whPoLineCommandList;
     }
 
+    /**
+     * 通过id+ou_id 查询PO单信息
+     */
+    @Override
+    public WhPoLineCommand findWhPoLineById(WhPoLineCommand Command) {
+        WhPoLineCommand whpoLine = null;
+        if (null == Command.getOuId()) {
+            // 查询基本库内信息
+            whpoLine = poLineManager.findPoLinebyIdToInfo(Command);
+        } else {
+            // 查询拆库内信息
+            whpoLine = poLineManager.findPoLinebyIdToShard(Command);
+        }
+        return whpoLine;
+    }
 
 }

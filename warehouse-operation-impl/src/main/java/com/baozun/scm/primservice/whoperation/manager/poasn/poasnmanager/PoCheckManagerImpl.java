@@ -25,13 +25,8 @@ public class PoCheckManagerImpl implements PoCheckManager {
 
     @Autowired
     private CheckPoCodeDao checkPoCodeDao;
-
     @Autowired
     private WhPoDao whPoDao;
-
-    @Autowired
-    private PoManager poManager;
-
     @Autowired
     private WhPoLineDao whPoLineDao;
 
@@ -55,8 +50,8 @@ public class PoCheckManagerImpl implements PoCheckManager {
             }
 
         } else {
-            /* 从po表中根据code和store id查找po单号 */
-            long count = whPoDao.findPoByCodeAndStore(checkPoCode.getPoCode(), checkPoCode.getStoreId(), null);
+            /* 从po表中根据extCode和store id查找po单号 */
+            long count = whPoDao.findPoByCodeAndStore(checkPoCode.getExtCode(), checkPoCode.getStoreId(), null);
             /* 如果找不到则调用po manager插入po表 */
             if (0 == count) {
                 /* 插入po表 */
@@ -73,9 +68,8 @@ public class PoCheckManagerImpl implements PoCheckManager {
     @MoreDB("infoSource")
     public boolean insertPoWithCheckAndOuId(CheckPoCode checkPoCode) {
         /**
-         * true:不存在此po单号
-         * false:存在此po
-        */
+         * true:不存在此po单号 false:存在此po
+         */
         boolean flag = false;
         /* 查找check表中是否有此po单信息 */
         List<CheckPoCode> po = checkPoCodeDao.findListByParam(checkPoCode);
