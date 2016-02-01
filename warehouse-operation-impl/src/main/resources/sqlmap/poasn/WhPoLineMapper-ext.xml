@@ -173,6 +173,17 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
     </delete>  
     
+   <delete id="deletePoLineByNotUuid" parameterType="int">  
+		delete from t_wh_po_line
+		<where>
+			po_id = #{poid} 
+			and uuid &lt;&gt; #{uuid}
+			<if test="ouid != null">
+				and ou_id = #{ouid}
+			</if>
+		</where>
+    </delete>  
+    
     <select id="findWhPoLineById" resultMap="WhPoLineCommand">
 	    select
 	    <include refid="whPoLineColumnsMapExt" />
@@ -226,10 +237,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    	<if test="validDate != null">
 	    		and valid_date = #{validDate}
 	    	</if>
-	    	<if test="batchNo != null && batchNo != ''">
+	    	<if test="batchNo != null and batchNo != ''">
 	    		and batch_no = #{batchNo}
 	    	</if>
-	    	<if test="coo != null && coo != ''">
+	    	<if test="coo != null and coo != ''">
 	    		and country_of_origin = #{coo}
 	    	</if>
 	    	<if test="invStatus != null">
