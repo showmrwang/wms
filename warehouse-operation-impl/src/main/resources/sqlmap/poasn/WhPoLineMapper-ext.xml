@@ -133,7 +133,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				line.last_modify_time as lastModifyTime,
 				line.modified_id as modifiedId,
 				line.uuid as uuid,
-				line.po_line_id as poLineId
+				line.po_line_id as poLineId,
 				sys.dic_label as statusName,
 				inv.name as invName,
 				po.po_code as poCode,
@@ -248,6 +248,21 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    	</if>
 	    	<if test="uuid != null">
 	    		and uuid = #{uuid}
+	    	</if>
+	    </where>
+    </select>
+    
+	<select id="findWhPoLineByPoIdOuId" resultMap="WhPoLineResultExt">
+    	select <include refid="whPoLineColumnsExt" />
+	    from 
+	    t_wh_po_line 
+	    <where>
+	    	po_id = #{poid} 
+	    	<if test="ouid != null">
+	    		ou_id = #{ouid}
+	    	</if>
+	    	<if test="uuid != null and uuid != ''">
+	    		uuid = #{uuid}
 	    	</if>
 	    </where>
     </select>
