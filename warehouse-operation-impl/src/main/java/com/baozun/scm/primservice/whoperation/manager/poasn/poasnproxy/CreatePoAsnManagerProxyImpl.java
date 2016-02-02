@@ -93,7 +93,7 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
         WhPo whPo = new WhPo();
         BeanUtils.copyProperties(po, whPo);
         // 相关单据号 调用HUB编码生成器获得
-        String poCode = codeManager.generateCode(Constants.WMS, Constants.MODEL_URL, null, null, null);
+        String poCode = codeManager.generateCode(Constants.WMS, Constants.WHPO_MODEL_URL, null, null, null);
         if (StringUtil.isEmpty(poCode)) {
             log.warn("CreatePo warn poCode generateCode is null");
             throw new BusinessException(ErrorCodes.SYSTEM_ERROR);

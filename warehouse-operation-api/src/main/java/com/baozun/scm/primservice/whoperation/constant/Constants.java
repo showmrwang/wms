@@ -24,6 +24,6 @@ public final class Constants {
 
     public static final String WMS = "wms";
 
-    public static final String MODEL_URL = "com.baozun.scm.primservice.whoperation.model.poasn.WhPo";
+    public static final String WHPO_MODEL_URL = "com.baozun.scm.primservice.whoperation.model.poasn.WhPo";
 
 }
