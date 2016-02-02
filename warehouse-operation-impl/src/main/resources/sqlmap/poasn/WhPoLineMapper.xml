@@ -39,7 +39,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	created_id as createdId,
 	        	last_modify_time as lastModifyTime,
 	        	modified_id as modifiedId,
-	        	uuid as uuid
+	        	uuid as uuid,
+	        	po_line_id as poLineId
 	    ]]>
 	</sql>
 		<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
@@ -76,7 +77,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	last_modify_time ,
 	        	modified_id ,
 	        	uuid,
-	        	ou_id 
+	        	ou_id,
+	        	po_line_id 
 	        ) VALUES (
 	        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{poId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -106,7 +108,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 	        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{uuid,javaType=java.lang.String,jdbcType=VARCHAR} ,
-	        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+	        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{poLineId,javaType=java.lang.Long,jdbcType=BIGINT} 
 	        )
 	    ]]>
 
@@ -142,7 +145,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        uuid = #{uuid,javaType=java.lang.String,jdbcType=VARCHAR} 
+		        uuid = #{uuid,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        po_line_id = #{poLineId,javaType=java.lang.Long,jdbcType=BIGINT} 
 	        WHERE 
 		        id = #{id} 
 	    ]]>

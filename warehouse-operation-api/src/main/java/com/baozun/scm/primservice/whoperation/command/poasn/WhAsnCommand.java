@@ -27,6 +27,8 @@ public class WhAsnCommand implements Serializable {
     private Long id;
     /** asn单号 */
     private String asnCode;
+    /** asn相关单据号 */
+    private String asnExtCode;
     /** 对应PO_ID */
     private Long poId;
     /** 所属仓库ID */
@@ -76,6 +78,12 @@ public class WhAsnCommand implements Serializable {
 
     /** asnid list */
     private List<Long> asnIds;
+    /** 客户名称 */
+    private String customerName;
+    /** 店铺名称 */
+    private String storeName;
+    /** ASN状态名称 */
+    private String statusName;
 
     public Long getId() {
         return this.id;
@@ -283,6 +291,38 @@ public class WhAsnCommand implements Serializable {
 
     public void setAsnIds(List<Long> asnIds) {
         this.asnIds = asnIds;
+    }
+
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
+    }
+
+    public String getStoreName() {
+        return storeName;
+    }
+
+    public void setStoreName(String storeName) {
+        this.storeName = storeName;
+    }
+
+    public String getStatusName() {
+        return statusName;
+    }
+
+    public void setStatusName(String statusName) {
+        this.statusName = statusName;
+    }
+
+    public String getAsnExtCode() {
+        return asnExtCode;
+    }
+
+    public void setAsnExtCode(String asnExtCode) {
+        this.asnExtCode = asnExtCode;
     }
 
 

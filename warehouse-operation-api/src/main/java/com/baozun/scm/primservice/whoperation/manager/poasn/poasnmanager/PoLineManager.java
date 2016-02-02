@@ -35,4 +35,16 @@ public interface PoLineManager extends BaseManager {
     int editPoLineStatusToInfo(WhPoLineCommand command);
 
     int editPoLineStatusToShard(WhPoLineCommand command);
+
+    WhPoLine findPoLineByAddPoLineParamToInfo(WhPoLine line, Boolean type);
+
+    WhPoLine findPoLineByAddPoLineParamToShare(WhPoLine line, Boolean type);
+
+    void updatePoLineSingleToInfo(WhPoLine whPoLine);
+
+    void updatePoLineSingleToShare(WhPoLine whPoLine);
+
+    void createPoLineBatchToInfo(WhPoLineCommand whPoLine);
+
+    void createPoLineBatchToShare(WhPoLineCommand whPoLine);
 }

@@ -43,14 +43,13 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
     @Override
     public int editAsnStatus(WhAsnCommand whAsn) {
         int result = 0;
-        System.out.println("test");
-        // if (null == whAsn.getOuId()) {
-        // // OUID为空更新基础表内信息
-        // result = asnManager.editAsnStatusByInfo(whAsn);
-        // } else {
-        // // OUID不为空更新拆库表内信息
-        // result = asnManager.editAsnStatusByShard(whAsn);
-        // }
+        if (null == whAsn.getOuId()) {
+            // OUID为空更新基础表内信息
+            result = asnManager.editAsnStatusByInfo(whAsn);
+        } else {
+            // OUID不为空更新拆库表内信息
+            result = asnManager.editAsnStatusByShard(whAsn);
+        }
         return result;
     }
 
@@ -125,7 +124,7 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
         log.info("EditPoLine start =======================");
         ResponseMsg rm = new ResponseMsg();
         // POLINE状态必须为新建 已创建ASN 收货中才能修改
-        if (whPoLine.getStatus() != PoAsnStatus.POLINE_NEW || whPoLine.getStatus() != PoAsnStatus.POLINE_CREATE_ASN || whPoLine.getStatus() != PoAsnStatus.POLINE_RCVD) {
+        if (whPoLine.getStatus() != PoAsnStatus.POLINE_NEW && whPoLine.getStatus() != PoAsnStatus.POLINE_CREATE_ASN && whPoLine.getStatus() != PoAsnStatus.POLINE_RCVD) {
             rm.setResponseStatus(ResponseMsg.DATA_ERROR);
             rm.setMsg("poLine status is error status is: " + whPoLine.getStatus());
             log.warn("EditPoLine warn ResponseStatus: " + rm.getResponseStatus() + " msg: " + rm.getMsg());

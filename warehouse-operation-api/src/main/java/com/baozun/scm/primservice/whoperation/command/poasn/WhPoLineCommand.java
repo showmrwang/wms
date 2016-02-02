@@ -81,6 +81,8 @@ public class WhPoLineCommand implements Serializable {
     private Long modifiedId;
     /** 临时数据批次 IT使用 */
     private String uuid;
+    /** POLINE明细ID IT逻辑用 */
+    private Long poLineId;
     // ------------------------------------------
     /** 生产日期字符串 */
     private String mfgDateStr;
@@ -384,6 +386,14 @@ public class WhPoLineCommand implements Serializable {
 
     public void setExtCode(String extCode) {
         this.extCode = extCode;
+    }
+
+    public Long getPoLineId() {
+        return poLineId;
+    }
+
+    public void setPoLineId(Long poLineId) {
+        this.poLineId = poLineId;
     }
 
 

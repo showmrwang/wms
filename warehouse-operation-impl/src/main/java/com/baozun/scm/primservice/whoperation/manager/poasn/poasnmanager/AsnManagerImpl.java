@@ -2,8 +2,12 @@ package com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import lark.common.annotation.MoreDB;
+import lark.common.dao.Page;
+import lark.common.dao.Pagination;
+import lark.common.dao.Sort;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -66,6 +70,24 @@ public class AsnManagerImpl implements AsnManager {
             throw new BusinessException(ErrorCodes.UPDATE_DATA_QUANTITYERROR, new Object[] {whAsn.getAsnIds().size(), result});
         }
         return result;
+    }
+
+    /**
+     * 读取公共库ASN单信息
+     */
+    @Override
+    @MoreDB("infoSource")
+    public Pagination<WhAsnCommand> findListByQueryMapWithPageExtByInfo(Page page, Sort[] sorts, Map<String, Object> params) {
+        return whAsnDao.findListByQueryMapWithPageExt(page, sorts, params);
+    }
+
+    /**
+     * 读取拆库
+     */
+    @Override
+    @MoreDB("shardSource")
+    public Pagination<WhAsnCommand> findListByQueryMapWithPageExtByShard(Page page, Sort[] sorts, Map<String, Object> params) {
+        return whAsnDao.findListByQueryMapWithPageExt(page, sorts, params);
     }
 
 }

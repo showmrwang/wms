@@ -49,8 +49,19 @@ public interface WhPoLineDao extends BaseDao<WhPoLine, Long> {
 
     int deletePoLineByUuid(@Param("poid") Long poid, @Param("ouid") Long ouid, @Param("uuid") String uuid);
 
+    int deletePoLineByNotUuid(@Param("poid") Long poid, @Param("ouid") Long ouid, @Param("uuid") String uuid);
+
+    int deletePoLineByIdOuId(@Param("id") Long id, @Param("ouid") Long ouid);
+
     WhPoLineCommand findWhPoLineById(@Param("id") Long id, @Param("ouId") Long ouid);
 
     int editPoLineStatus(@Param("ids") List<Long> ids, @Param("status") Integer status, @Param("userid") Long userid, @Param("ouid") Long ouid, @Param("lastModifyTime") Date lastModifyTime);
+
+    WhPoLine findPoLineByAddPoLineParam(@Param("status") List<Integer> status, @Param("poid") Long poid, @Param("ouid") Long ouid, @Param("skuid") Long skuid, @Param("isIqc") Integer isIqck, @Param("mfgDate") Date mfgDate, @Param("expDate") Date expDate,
+            @Param("validDate") Integer validDate, @Param("batchNo") String batchNo, @Param("coo") String coo, @Param("invStatus") Long invStatus, @Param("uuid") String uuid);
+
+    List<WhPoLine> findWhPoLineByPoIdOuId(@Param("poid") Long poid, @Param("ouid") Long ouid, @Param("uuid") String uuid);
+
+    WhPoLine findWhPoLineByIdWhPoLine(@Param("id") Long id, @Param("ouid") Long ouid);
 
 }

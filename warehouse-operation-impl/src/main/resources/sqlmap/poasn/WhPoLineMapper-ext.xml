@@ -39,7 +39,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	created_id as createdId,
 	        	last_modify_time as lastModifyTime,
 	        	modified_id as modifiedId,
-	        	uuid as uuid
+	        	uuid as uuid,
+	        	po_line_id as poLineId
 	    ]]>
 	</sql>
 	
@@ -86,7 +87,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        last_modify_time = now(),
 			        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-			        uuid = #{uuid,javaType=java.lang.String,jdbcType=VARCHAR} 
+			        uuid = #{uuid,javaType=java.lang.String,jdbcType=VARCHAR} , 
+			        po_line_id = #{poLineId,javaType=java.lang.Long,jdbcType=BIGINT}  
 		    ]]>
 		    <where>
 		    		id = #{id} 
@@ -131,6 +133,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				line.last_modify_time as lastModifyTime,
 				line.modified_id as modifiedId,
 				line.uuid as uuid,
+				line.po_line_id as poLineId,
 				sys.dic_label as statusName,
 				inv.name as invName,
 				po.po_code as poCode,
@@ -170,6 +173,27 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
     </delete>  
     
+   <delete id="deletePoLineByIdOuId" parameterType="int">  
+		delete from t_wh_po_line
+		<where>
+			id = #{id} 
+			<if test="ouid != null">
+				and ou_id = #{ouid}
+			</if>
+		</where>
+    </delete>  
+    
+   <delete id="deletePoLineByNotUuid" parameterType="int">  
+		delete from t_wh_po_line
+		<where>
+			po_id = #{poid} 
+			and uuid &lt;&gt; #{uuid}
+			<if test="ouid != null">
+				and ou_id = #{ouid}
+			</if>
+		</where>
+    </delete>  
+    
     <select id="findWhPoLineById" resultMap="WhPoLineCommand">
 	    select
 	    <include refid="whPoLineColumnsMapExt" />
@@ -191,10 +215,77 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				close=")">
 				#{id}
 			</foreach>
-			 and last_modify_time &lt;=  #{lastModifyTime} 
 			   <if test="ouid!=null">
 						and ou_id = #{ouid}
 				</if>
 		</where>
 	</update>
+	
+	<select id="findPoLineByAddPoLineParam" resultMap="WhPoLineResultExt">
+    	select <include refid="whPoLineColumnsExt" />
+	    from 
+	    t_wh_po_line 
+	    <where>
+	    	po_id = #{poid} 
+	    	and sku_id = #{skuid}
+	    	and is_iqc = #{isIqc} 
+	    	and inv_status = #{invStatus} 
+	    	and status in 
+	    	<foreach collection="status" item="id" open="(" separator=","
+				close=")">
+				#{id}
+			</foreach>
+	    	<if test="ouid != null">
+	    		and ou_id = #{ouid}
+	    	</if>
+	    	<if test="mfgDate != null">
+	    		and mfg_date = #{mfgDate}
+	    	</if>
+	    	<if test="expDate != null">
+	    		and exp_date = #{expDate}
+	    	</if>
+	    	<if test="validDate != null">
+	    		and valid_date = #{validDate}
+	    	</if>
+	    	<if test="batchNo != null and batchNo != ''">
+	    		and batch_no = #{batchNo}
+	    	</if>
+	    	<if test="coo != null and coo != ''">
+	    		and country_of_origin = #{coo}
+	    	</if>
+	    	<if test="invStatus != null">
+	    		and inv_status = #{invStatus}
+	    	</if>
+	    	<if test="uuid != null">
+	    		and uuid = #{uuid}
+	    	</if>
+	    </where>
+    </select>
+    
+	<select id="findWhPoLineByPoIdOuId" resultMap="WhPoLineResultExt">
+    	select <include refid="whPoLineColumnsExt" />
+	    from 
+	    t_wh_po_line 
+	    <where>
+	    	po_id = #{poid} 
+	    	<if test="ouid != null">
+	    		and ou_id = #{ouid}
+	    	</if>
+	    	<if test="uuid != null and uuid != ''">
+	    		and uuid = #{uuid}
+	    	</if>
+	    </where>
+    </select>
+    
+    <select id="findWhPoLineByIdWhPoLine" resultMap="WhPoLineResultExt">
+	    select
+	    <include refid="whPoLineColumnsExt" />
+	    from t_wh_po_line
+	    where id=#{id}
+	    <if test="ouid!=null">
+	  			 and ou_id = #{ouid}
+		</if>
+    </select>
+    
+    
 </mapper>

@@ -69,7 +69,7 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
             // 查询t_wh_check_pocode
             // 有:查询对应
             rm = this.insertPoWithCheck(whPo, whPoLines, rm);
-         // rm = poManager.createPoAndLine(whPo, whPoLines, rm);
+        // rm = poManager.createPoAndLine(whPo, whPoLines, rm);
         } catch (Exception e) {
             if (e instanceof BusinessException) {
                 throw e;

@@ -1,6 +1,8 @@
 package com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import lark.common.annotation.MoreDB;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoLineCommand;
+import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoLineDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
@@ -127,5 +130,144 @@ public class PoLineManagerImpl implements PoLineManager {
             throw new BusinessException(ErrorCodes.UPDATE_DATA_QUANTITYERROR, new Object[] {command.getIds().size(), result});
         }
         return result;
+    }
+
+    /**
+     * 通过创建POLINE信息查找是否该PO单下有对应明细信息(基础库)
+     */
+    @Override
+    @MoreDB("infoSource")
+    public WhPoLine findPoLineByAddPoLineParamToInfo(WhPoLine line, Boolean type) {
+        List<Integer> statusList = new ArrayList<Integer>();
+        statusList.add(PoAsnStatus.POLINE_NEW);
+        statusList.add(PoAsnStatus.POLINE_CREATE_ASN);
+        statusList.add(PoAsnStatus.POLINE_RCVD);
+        String uuid = line.getUuid();
+        if (type) {
+            // 查询POLINE单正式数据
+            uuid = null;
+        }
+        return whPoLineDao.findPoLineByAddPoLineParam(statusList, line.getPoId(), null, line.getSkuId(), line.getIsIqc() == true ? 1 : 0, line.getMfgDate(), line.getExpDate(), line.getValidDate(), line.getBatchNo(), line.getCountryOfOrigin(),
+                line.getInvStatus(), uuid);
+    }
+
+    /**
+     * 通过创建POLINE信息查找是否该PO单下有对应明细信息(拆库)
+     */
+    @Override
+    @MoreDB("shardSource")
+    public WhPoLine findPoLineByAddPoLineParamToShare(WhPoLine line, Boolean type) {
+        List<Integer> statusList = new ArrayList<Integer>();
+        statusList.add(PoAsnStatus.POLINE_NEW);
+        statusList.add(PoAsnStatus.POLINE_CREATE_ASN);
+        statusList.add(PoAsnStatus.POLINE_RCVD);
+        String uuid = line.getUuid();
+        if (type) {
+            // 查询POLINE单正式数据
+            uuid = null;
+        }
+        return whPoLineDao.findPoLineByAddPoLineParam(statusList, line.getPoId(), null, line.getSkuId(), line.getIsIqc() == true ? 1 : 0, line.getMfgDate(), line.getExpDate(), line.getValidDate(), line.getBatchNo(), line.getCountryOfOrigin(),
+                line.getInvStatus(), uuid);
+    }
+
+    /**
+     * 修改POLINE明细
+     */
+    @Override
+    @MoreDB("infoSource")
+    public void updatePoLineSingleToInfo(WhPoLine whPoLine) {
+        int result = whPoLineDao.saveOrUpdateByVersion(whPoLine);
+        if (result <= 0) {
+            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+        }
+    }
+
+    /**
+     * 修改POLINE明细
+     */
+    @Override
+    @MoreDB("shardSource")
+    public void updatePoLineSingleToShare(WhPoLine whPoLine) {
+        int result = whPoLineDao.saveOrUpdateByVersion(whPoLine);
+        if (result <= 0) {
+            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+        }
+
+    }
+
+    /**
+     * 保存临时创建POLINE信息为正式数据
+     */
+    @Override
+    @MoreDB("infoSource")
+    public void createPoLineBatchToInfo(WhPoLineCommand whPoLine) {
+        // 先删除此次保存UUID以外的数据
+        whPoLineDao.deletePoLineByNotUuid(whPoLine.getPoId(), whPoLine.getOuId(), whPoLine.getUuid());
+        // 查询对应PO单下有UUID的数据
+        List<WhPoLine> poLineList = whPoLineDao.findWhPoLineByPoIdOuId(whPoLine.getPoId(), whPoLine.getOuId(), whPoLine.getUuid());
+        for (WhPoLine p : poLineList) {
+            if (null == p.getPoLineId()) {
+                // 如果对应的polineid is null 直接去除这条的uuid数据 保存为正式数据
+                p.setUuid(null);
+                p.setModifiedId(whPoLine.getModifiedId());
+                int count = whPoLineDao.saveOrUpdateByVersion(p);
+                if (count <= 0) {
+                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                }
+            } else {
+                // 如果对应的polineid is not null 直接合并相关信息 删除对应uuid数据
+                WhPoLine w = whPoLineDao.findWhPoLineByIdWhPoLine(p.getPoLineId(), p.getOuId());
+                if (null != w) {
+                    // 合并数量
+                    w.setQtyPlanned(w.getQtyPlanned() + p.getQtyPlanned());// 计划数量
+                    w.setAvailableQty(w.getAvailableQty() + p.getQtyPlanned());// 可用数量=原可用数量+新计划数量
+                    w.setModifiedId(whPoLine.getModifiedId());
+                    int count = whPoLineDao.saveOrUpdateByVersion(w);
+                    if (count <= 0) {
+                        throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                    }
+                }
+                // 删除对应UUID临时数据
+                whPoLineDao.deletePoLineByIdOuId(p.getId(), p.getOuId());
+            }
+        }
+    }
+
+    /**
+     * 保存临时创建POLINE信息为正式数据
+     */
+    @Override
+    @MoreDB("shardSource")
+    public void createPoLineBatchToShare(WhPoLineCommand whPoLine) {
+        // 先删除此次保存UUID以外的数据
+        whPoLineDao.deletePoLineByNotUuid(whPoLine.getPoId(), whPoLine.getOuId(), whPoLine.getUuid());
+        // 查询对应PO单下有UUID的数据
+        List<WhPoLine> poLineList = whPoLineDao.findWhPoLineByPoIdOuId(whPoLine.getPoId(), whPoLine.getOuId(), whPoLine.getUuid());
+        for (WhPoLine p : poLineList) {
+            if (null == p.getPoLineId()) {
+                // 如果对应的polineid is null 直接去除这条的uuid数据 保存为正式数据
+                p.setUuid(null);
+                p.setModifiedId(whPoLine.getModifiedId());
+                int count = whPoLineDao.saveOrUpdateByVersion(p);
+                if (count <= 0) {
+                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                }
+            } else {
+                // 如果对应的polineid is not null 直接合并相关信息 删除对应uuid数据
+                WhPoLine w = whPoLineDao.findWhPoLineByIdWhPoLine(p.getPoLineId(), p.getOuId());
+                if (null != w) {
+                    // 合并数量
+                    w.setQtyPlanned(w.getQtyPlanned() + p.getQtyPlanned());// 计划数量
+                    w.setAvailableQty(w.getAvailableQty() + p.getQtyPlanned());// 可用数量=原可用数量+新计划数量
+                    w.setModifiedId(whPoLine.getModifiedId());
+                    int count = whPoLineDao.saveOrUpdateByVersion(w);
+                    if (count <= 0) {
+                        throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                    }
+                }
+                // 删除对应UUID临时数据
+                whPoLineDao.deletePoLineByIdOuId(p.getId(), p.getOuId());
+            }
+        }
     }
 }

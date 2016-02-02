@@ -189,7 +189,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				close=")">
 				#{id}
 			</foreach>
-			 and last_modify_time &lt;=  #{lastModifyTime} 
 			   <if test="ouid!=null">
 						and ou_id = #{ouid}
 				</if>
@@ -212,6 +211,17 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
     </select>
 	
-	
+	 <select id="findWhPoListByPoCode" resultMap="WhPoCommand">
+	    select <include refid="whPoColumnsExt" />
+		    from t_wh_po 
+		   <where>
+			    po_code like #{poCode} 
+			    and ou_id = #{ouid} 
+			    and status in 
+			   	<foreach collection="statusList" item="status" open="(" separator="," close=")">
+					#{status}
+				</foreach>
+			</where>
+    </select>
 	
 </mapper>

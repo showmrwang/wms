@@ -224,4 +224,22 @@ public class PoManagerImpl implements PoManager {
         return rm;
 
     }
+
+    /**
+     * 通过po单code 状态 ouid 模糊查询对应po单信息 公共库
+     */
+    @Override
+    @MoreDB("infoSource")
+    public List<WhPoCommand> findWhPoListByPoCodeToInfo(String asnCode, List<Integer> status, Long ouid) {
+        return null;
+    }
+
+    /**
+     * 通过po单code 状态 ouid 模糊查询对应po单信息 拆库
+     */
+    @Override
+    @MoreDB("shardSource")
+    public List<WhPoCommand> findWhPoListByPoCodeToShard(String asnCode, List<Integer> status, Long ouid) {
+        return null;
+    }
 }
