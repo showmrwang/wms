@@ -13,10 +13,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.baozun.scm.primservice.whoperation.command.poasn.AsnCheckCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnDao;
+import com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnLineDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
+import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine;
 
 
 /**
@@ -31,6 +36,9 @@ public class AsnManagerImpl implements AsnManager {
 
     @Autowired
     private WhAsnDao whAsnDao;
+
+    @Autowired
+    private WhAsnLineDao whAsnLineDao;
 
     /**
      * 通过asncode查询出asn列表
@@ -88,6 +96,65 @@ public class AsnManagerImpl implements AsnManager {
     @MoreDB("shardSource")
     public Pagination<WhAsnCommand> findListByQueryMapWithPageExtByShard(Page page, Sort[] sorts, Map<String, Object> params) {
         return whAsnDao.findListByQueryMapWithPageExt(page, sorts, params);
+    }
+
+    /**
+     * 保存asn单信息
+     * 
+     */
+    @Override
+    @MoreDB("shardSource")
+    public ResponseMsg createAsnAndLineToShare(WhAsn asn, List<WhAsnLine> whAsnLines, ResponseMsg rm) {
+        long i = whAsnDao.insert(asn);
+        if (0 == i) {
+            throw new BusinessException(ErrorCodes.SAVE_PO_FAILED);
+        }
+        if (whAsnLines.size() > 0) {
+            // 有line信息保存
+            for (WhAsnLine whAsnLine : whAsnLines) {
+                whAsnLine.setAsnId(asn.getId());
+                whAsnLineDao.insert(whAsnLine);
+            }
+        }
+        rm.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
+        rm.setMsg(asn.getId() + "");
+        return rm;
+
+    }
+
+    @Override
+    @MoreDB("shardSource")
+    public ResponseMsg insertAsnWithOuId(AsnCheckCommand asnCheckCommand) {
+        WhAsn whAsn = asnCheckCommand.getWhAsn();
+        List<WhAsnLine> whAsnLines = asnCheckCommand.getWhAsnLines();
+        ResponseMsg rm = asnCheckCommand.getRm();
+        String asnExtCode = whAsn.getAsnExtCode();
+        Long storeId = whAsn.getStoreId();
+        Long ouId = whAsn.getOuId();
+        /* 查找在性对应的拆库表中是否有此asn单信息 */
+        long count = whAsnDao.findAsnByCodeAndStore(asnExtCode, storeId, ouId);
+        /* 没有此asn单信息 */
+        if (0 == count) {
+            long i = whAsnDao.insert(whAsn);
+            if (0 == i) {
+                throw new BusinessException(ErrorCodes.SAVE_CHECK_TABLE_FAILED);
+            }
+            // whPoDao.saveOrUpdate(whpo);
+            if (whAsnLines.size() > 0) {
+                // 有line信息保存
+                for (WhAsnLine whAsnLine : whAsnLines) {
+                    whAsnLine.setAsnId(whAsn.getId());
+                    whAsnLineDao.insert(whAsnLine);
+                }
+            }
+            rm.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
+            rm.setMsg(whAsn.getId() + "");
+        } else {
+            /* 存在此asn单信息 */
+            throw new BusinessException(ErrorCodes.PO_EXIST);
+        }
+        return rm;
+
     }
 
 }

@@ -51,4 +51,6 @@ public interface WhAsnDao extends BaseDao<WhAsn, Long> {
 
     int editAsnStatus(@Param("ids") List<Long> ids, @Param("status") Integer status, @Param("userid") Long userid, @Param("ouid") Long ouid, @Param("lastModifyTime") Date lastModifyTime);
 
+    long findAsnByCodeAndStore(@Param("asnExtCode") String asnExtCode, @Param("storeId") Long storeId, @Param("ouId") Long ouId);
+
 }

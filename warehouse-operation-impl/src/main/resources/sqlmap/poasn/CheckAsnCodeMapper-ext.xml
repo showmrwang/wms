@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.poasn.CheckAsnCodeDao">
+	<resultMap id="CheckAsnCodeResultExt" type="com.baozun.scm.primservice.whoperation.model.poasn.CheckAsnCode">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="checkAsnCodeColumnsExt">
+	    <![CDATA[
+	        	id as id,
+	        	asn_code as asnCode,
+	        	asn_ext_code as asnExtCode,
+	        	store_id as storeId,
+	        	ou_id as ouId
+	    ]]>
+	</sql>
+	
+	<sql id="checkAsnCodeDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+	       
+		       <if test="asnCode!=null and asnCode!=''">
+					and asn_code = #{asnCode}
+				</if>
+	       
+	       
+		       <if test="asnExtCode!=null and asnExtCode!=''">
+					and asn_ext_code = #{asnExtCode}
+				</if>
+	       
+				<if test="storeId!=null">
+					and store_id = #{storeId}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+		</where>
+	</sql>
+	
+	<select id="findAsnByCodeAndStore" resultType="long">
+        select count(*) from 
+        t_wh_po
+		<where>
+			<if test="ouId!=null">
+				and ou_id = #{ouId}
+			</if>
+			<if test="asnExtCode!=null and asnExtCode!=''">
+				and asn_ext_code = #{asnExtCode}
+			</if>
+			<if test="storeId!=null">
+				and store_id = #{storeId}
+			</if>
+		</where>
+    </select>
+	
+</mapper>

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.baozun.scm.baseservice.sac.manager.CodeManager;
+import com.baozun.scm.primservice.whoperation.command.poasn.AsnCheckCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.PoCheckCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
@@ -19,11 +20,16 @@ import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
+import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnCheckManager;
+import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoCheckManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoLineManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoManager;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
+import com.baozun.scm.primservice.whoperation.model.poasn.CheckAsnCode;
 import com.baozun.scm.primservice.whoperation.model.poasn.CheckPoCode;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 import com.baozun.scm.primservice.whoperation.util.StringUtil;
@@ -48,6 +54,10 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
     private CodeManager codeManager;
     @Autowired
     private PoLineManager poLineManager;
+    @Autowired
+    private AsnCheckManager asnCheckManager;
+    @Autowired
+    private AsnManager asnManager;
 
     /**
      * 创建PO单据
@@ -69,7 +79,7 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
             // 查询t_wh_check_pocode
             // 有:查询对应
             rm = this.insertPoWithCheck(whPo, whPoLines, rm);
-        // rm = poManager.createPoAndLine(whPo, whPoLines, rm);
+            // rm = poManager.createPoAndLine(whPo, whPoLines, rm);
         } catch (Exception e) {
             if (e instanceof BusinessException) {
                 throw e;
@@ -146,6 +156,14 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
      */
     @Override
     public ResponseMsg createAsn(WhAsnCommand asn) {
+        ResponseMsg rm = new ResponseMsg();
+        try {
+            WhAsn whAsn = new WhAsn();
+            List<WhAsnLine> whAsnLines = new ArrayList<WhAsnLine>();
+            rm = this.insertAsnWithCheck(whAsn, whAsnLines, rm);
+        } catch (Exception e) {
+            throw new BusinessException("testAsn");
+        }
         return null;
     }
 
@@ -164,11 +182,11 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
             response.setMsg("po is null");
             return response;
         }
-         if (StringUtil.isEmpty(po.getExtCode())) {
-             response.setResponseStatus(ResponseMsg.DATA_ERROR);
-             response.setMsg("extCode is null");
-             return response;
-         }
+        if (StringUtil.isEmpty(po.getExtCode())) {
+            response.setResponseStatus(ResponseMsg.DATA_ERROR);
+            response.setMsg("extCode is null");
+            return response;
+        }
         if (null == po.getPoType()) {
             response.setResponseStatus(ResponseMsg.DATA_ERROR);
             response.setMsg("PoType is null");
@@ -197,7 +215,8 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
     private ResponseMsg insertPoWithCheck(WhPo whPo, List<WhPoLine> whPoLines, ResponseMsg rm) {
         log.info("InsertPoWithCheck start =======================");
         /**
-         * 流程: 1.封装poCheckCommand对象,包含了WhPo,List<WhPoLine>,ResponseMsg,CheckPoCode
+         * 流程: 
+         * 1.封装poCheckCommand对象,包含了WhPo,List<WhPoLine>,ResponseMsg,CheckPoCode
          * 2.没有传入ouId,查找中间表t_wh_check_pocode是否有此PO单,在同一事务中执行以下两步:
          * function==>poCheckManager.insertPoWithCheckWithoutOuId(); i)
          * 如果有则去基础信息表查找此PO单。有PO则抛出异常,没有PO则添加一条数据. ii) 如果没有则在t_wh_check_pocode添加一条数据,并在PO表中添加一条数据.
@@ -341,5 +360,54 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
         return rm;
     }
 
+    /**
+     * 检验是否可以插入t_wh_po表
+     */
+    private ResponseMsg insertAsnWithCheck(WhAsn whAsn, List<WhAsnLine> whAsnLines, ResponseMsg rm) {
+        log.info("InsertAsnWithCheck start =======================");
+        /**
+         * 流程: 
+         * 1.封装asnCheckCommand对象,包含了WhAsn,List<WhAsnLine>,ResponseMsg,CheckAsnCode
+         * 2.没有传入ouId,查找中间表t_wh_check_asncode是否有此ASN单,在同一事务中执行以下两步:
+         * function==>asnCheckManager.insertAsnWithCheckWithoutOuId(); i)
+         * 如果有则去基础信息表查找此ASN单。有ASN则抛出异常,没有ASN则添加一条数据. ii) 如果没有则在t_wh_check_asncode添加一条数据,并在ASN表中添加一条数据.
+         * 3.有传入ouId,查找中间表t_wh_check_asncode是否有此ASN单,在两个事务中分别执行以下两步:
+         * function==>asnManager.createAsnAndLineToShare(); i) 如果有则去对应的拆库表查找此ASN单。有ASN则抛出异常,没有ASN则添加一条数据.
+         * function==>asnManager.insertAsnWithOuId(); ii) 如果没有则在t_wh_check_asncode添加一条数据,并在ASN表中添加一条数据.
+         */
+        CheckAsnCode checkAsnCode = new CheckAsnCode();
+        // asnCode为编码服务器生成 extCode为外围服务器传入或WMS创建ASN单时填写
+        checkAsnCode.setAsnExtCode(whAsn.getAsnExtCode());
+        checkAsnCode.setAsnCode(whAsn.getAsnCode());
+        checkAsnCode.setOuId(whAsn.getOuId());
+        checkAsnCode.setStoreId(whAsn.getStoreId());
+        Long ouId = whAsn.getOuId();
+
+        /* 封装asnCheckCommand对象 */
+        AsnCheckCommand asnCheckCommand = new AsnCheckCommand();
+        asnCheckCommand.setRm(rm);
+        asnCheckCommand.setWhAsn(whAsn);
+        asnCheckCommand.setWhAsnLines(whAsnLines);
+        asnCheckCommand.setCheckAsnCode(checkAsnCode);
+        if (null == ouId) {
+            /* asn单不带ouId */
+            /* 查找并插入asn数据 */
+            rm = asnCheckManager.insertAsnWithCheckWithoutOuId(asnCheckCommand);
+        } else {
+            /* asn单带ouId */
+            /* 查找check表中是否有数据 */
+            boolean flag = asnCheckManager.insertAsnWithCheckAndOuId(checkAsnCode);
+            if (!flag) {
+                /* 在check表中不存在asn单 */
+                rm = asnManager.createAsnAndLineToShare(whAsn, whAsnLines, rm);
+            } else {
+                /* 在check表中存在此asn单,则去asn表中查找是否有这单. 如果有就抛出异常,没有就插入 */
+                rm = asnManager.insertAsnWithOuId(asnCheckCommand);
+                /* 如果抛出异常,此处会有补偿机制 */
+            }
+        }
+        log.info("InsertAsnWithCheck end =======================");
+        return rm;
+    }
 
 }
