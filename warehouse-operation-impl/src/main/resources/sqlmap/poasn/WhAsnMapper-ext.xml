@@ -35,7 +35,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	create_time as createTime,
 	        	created_id as createdId,
 	        	last_modify_time as lastModifyTime,
-	        	modified_id as modifiedId
+	        	modified_id as modifiedId,
+	        	asn_ext_code as asnExtCode
 	    ]]>
 	</sql>
 	
@@ -151,8 +152,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    <![CDATA[
 		        UPDATE t_wh_asn SET
 			        asn_code = #{asnCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        asn_ext_code = #{asnExtCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        po_id = #{poId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-			        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        customer_id = #{customerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        store_id = #{storeId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        po_date = #{poDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
@@ -188,6 +189,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    <![CDATA[
 				asn.id as id,
 				asn.asn_code as asnCode,
+				asn.asn_ext_code as asnExtCode,
 				asn.po_id as poId,
 				asn.ou_id as ouId,
 				asn.customer_id as customerId,

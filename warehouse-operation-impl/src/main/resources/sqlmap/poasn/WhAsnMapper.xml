@@ -35,7 +35,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	create_time as createTime,
 	        	created_id as createdId,
 	        	last_modify_time as lastModifyTime,
-	        	modified_id as modifiedId
+	        	modified_id as modifiedId,
+	        	asn_ext_code as asnExtCode
 	    ]]>
 	</sql>
 		<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
@@ -46,6 +47,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        t_wh_asn (
 	        	id,
 	        	asn_code ,
+	        	asn_ext_code ,
 	        	po_id ,
 	        	ou_id ,
 	        	customer_id ,
@@ -72,6 +74,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        ) VALUES (
 	        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{asnCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{asnExtCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 	        	#{poId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{customerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -104,6 +107,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    <![CDATA[
 	        UPDATE t_wh_asn SET
 		        asn_code = #{asnCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        asn_ext_code = #{asnExtCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        po_id = #{poId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        customer_id = #{customerId,javaType=java.lang.Long,jdbcType=BIGINT} ,

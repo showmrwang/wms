@@ -20,6 +20,7 @@ import com.baozun.scm.primservice.whoperation.model.BaseModel;
 
 /**
  * ASN单据信息
+ * 
  * @author larkark
  * 
  */
@@ -32,6 +33,8 @@ public class WhAsn extends BaseModel {
 
     /** asn单号 */
     private String asnCode;
+    /** asn相关单据号 */
+    private String asnExtCode;
     /** 对应PO_ID */
     private Long poId;
     /** 所属仓库ID */
@@ -271,4 +274,13 @@ public class WhAsn extends BaseModel {
     public void setModifiedId(Long value) {
         this.modifiedId = value;
     }
+
+    public String getAsnExtCode() {
+        return asnExtCode;
+    }
+
+    public void setAsnExtCode(String asnExtCode) {
+        this.asnExtCode = asnExtCode;
+    }
+
 }

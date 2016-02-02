@@ -27,6 +27,8 @@ public class WhAsnCommand implements Serializable {
     private Long id;
     /** asn单号 */
     private String asnCode;
+    /** asn相关单据号 */
+    private String asnExtCode;
     /** 对应PO_ID */
     private Long poId;
     /** 所属仓库ID */
@@ -313,6 +315,14 @@ public class WhAsnCommand implements Serializable {
 
     public void setStatusName(String statusName) {
         this.statusName = statusName;
+    }
+
+    public String getAsnExtCode() {
+        return asnExtCode;
+    }
+
+    public void setAsnExtCode(String asnExtCode) {
+        this.asnExtCode = asnExtCode;
     }
 
 
