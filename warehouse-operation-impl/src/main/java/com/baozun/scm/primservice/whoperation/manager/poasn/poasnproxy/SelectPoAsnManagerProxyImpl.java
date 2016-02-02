@@ -49,7 +49,7 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
      * @return
      */
     @Override
-    public Pagination<WhPoCommand> findListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params, Integer sourceType) {
+    public Pagination<WhPoCommand> findWhPoListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params, Integer sourceType) {
         Pagination<WhPoCommand> whPoCommandList = null;
         if (null == sourceType) {
             sourceType = Constants.SHARD_SOURCE;
@@ -125,6 +125,27 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
             whpoLine = poLineManager.findPoLinebyIdToShard(Command);
         }
         return whpoLine;
+    }
+
+    /**
+     * 查询ASN单列表(带分页)
+     */
+    @Override
+    public Pagination<WhAsnCommand> findWhAsnListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params, Integer sourceType) {
+        Pagination<WhAsnCommand> whAsnCommandList = null;
+        if (null == sourceType) {
+            sourceType = Constants.SHARD_SOURCE;
+        }
+        // 判断读取那个库的数据
+        if (sourceType == Constants.SHARD_SOURCE) {
+            // 拆分库
+            whAsnCommandList = asnManager.findListByQueryMapWithPageExtByShard(page, sorts, params);
+        }
+        if (sourceType == Constants.INFO_SOURCE) {
+            // 公共库
+            whAsnCommandList = asnManager.findListByQueryMapWithPageExtByInfo(page, sorts, params);
+        }
+        return whAsnCommandList;
     }
 
 }

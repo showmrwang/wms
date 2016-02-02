@@ -184,6 +184,60 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	</resultMap>
 	
 	
+	<sql id="whAsnColumnsMapExt">
+	    <![CDATA[
+				asn.id as id,
+				asn.asn_code as asnCode,
+				asn.po_id as poId,
+				asn.ou_id as ouId,
+				asn.customer_id as customerId,
+				asn.store_id as storeId,
+				asn.po_date as poDate,
+				asn.eta as eta,
+				asn.delivery_time as deliveryTime,
+				asn.qty_planned as qtyPlanned,
+				asn.qty_rcvd as qtyRcvd,
+				asn.ctn_planned as ctnPlanned,
+				asn.ctn_rcvd as ctnRcvd,
+				asn.supplier_id as supplierId,
+				asn.logistics_provider_id as logisticsProviderId,
+				asn.asn_type as asnType,
+				asn.status as status,
+				asn.is_iqc as isIqc,
+				asn.start_time as startTime,
+				asn.stop_time as stopTime,
+				asn.inbound_time as inboundTime,
+				asn.create_time as createTime,
+				asn.created_id as createdId,
+				asn.last_modify_time as lastModifyTime,
+				asn.modified_id as modifiedId,
+				c.customer_name as customerName,
+				s.store_name as storeName,
+				sys.dic_label as statusName
+	    ]]>
+	</sql>
+	
+	<select id="findListByQueryMapWithPageExt" resultMap="whAsnCommand">
+    	select <include refid="whAsnColumnsMapExt" />
+		    from 
+		    t_wh_asn asn 
+		    left join t_bi_customer c on asn.customer_id = c.id
+			left join t_bi_store s on asn.store_id = s.id 
+			left join sys_dictionary sys on sys.dic_value = asn.status and sys.group_value = 'ASNSTATUS'
+		<include refid="whPoDynamicWhereExt"/>
+    </select>
+    		
+		
+	<select id="findListCountByQueryMapExt" resultType="long">
+        select count(*) from 
+		    t_wh_asn asn 
+		    left join t_bi_customer c on asn.customer_id = c.id
+			left join t_bi_store s on asn.store_id = s.id 
+			left join sys_dictionary sys on sys.dic_value = asn.status and sys.group_value = 'ASNSTATUS'
+		<include refid="whPoDynamicWhereExt"/>
+    </select>
+	
+	
 	 <select id="findWhAsnListByAsnCode" resultMap="whAsnCommand">
 	    	select <include refid="whAsnColumnsExt" />
 		    from t_wh_asn 

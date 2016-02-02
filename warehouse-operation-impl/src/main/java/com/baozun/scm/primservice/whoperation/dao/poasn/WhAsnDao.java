@@ -38,6 +38,9 @@ public interface WhAsnDao extends BaseDao<WhAsn, Long> {
     @QueryPage("findListCountByQueryMap")
     Pagination<WhAsn> findListByQueryMapWithPage(Page page, Sort[] sorts, Map<String, Object> params);
 
+    @QueryPage("findListCountByQueryMapExt")
+    Pagination<WhAsnCommand> findListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params);
+
     @CommonQuery
     int saveOrUpdate(WhAsn o);
 
