@@ -148,4 +148,12 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
         return whAsnCommandList;
     }
 
+    /**
+     * 通过po单code 状态 ouid 模糊查询对应po单信息
+     */
+    @Override
+    public List<WhPoCommand> findWhPoListByPoCode(String asnCode, List<Integer> status, Long ouid) {
+        return null;
+    }
+
 }
