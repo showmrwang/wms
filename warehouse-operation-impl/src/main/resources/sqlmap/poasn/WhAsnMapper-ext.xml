@@ -41,110 +41,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	</sql>
 	
 	<sql id="whAsnDynamicWhereExt">
-		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
-		<where>
-	       
-				<if test="id!=null">
-					and id = #{id}
-				</if>
-	       
-	       
-		       <if test="asnCode!=null and asnCode!=''">
-					and asn_code = #{asnCode}
-				</if>
-	       
-				<if test="poId!=null">
-					and po_id = #{poId}
-				</if>
-	       
-				<if test="ouId!=null">
-					and ou_id = #{ouId}
-				</if>
-	       
-				<if test="customerId!=null">
-					and customer_id = #{customerId}
-				</if>
-	       
-				<if test="storeId!=null">
-					and store_id = #{storeId}
-				</if>
-	       
-				<if test="poDate!=null">
-					and po_date = #{poDate}
-				</if>
-	       
-				<if test="eta!=null">
-					and eta = #{eta}
-				</if>
-	       
-				<if test="deliveryTime!=null">
-					and delivery_time = #{deliveryTime}
-				</if>
-	       
-				<if test="qtyPlanned!=null">
-					and qty_planned = #{qtyPlanned}
-				</if>
-	       
-				<if test="qtyRcvd!=null">
-					and qty_rcvd = #{qtyRcvd}
-				</if>
-	       
-				<if test="ctnPlanned!=null">
-					and ctn_planned = #{ctnPlanned}
-				</if>
-	       
-				<if test="ctnRcvd!=null">
-					and ctn_rcvd = #{ctnRcvd}
-				</if>
-	       
-				<if test="supplierId!=null">
-					and supplier_id = #{supplierId}
-				</if>
-	       
-				<if test="logisticsProviderId!=null">
-					and logistics_provider_id = #{logisticsProviderId}
-				</if>
-	       
-				<if test="asnType!=null">
-					and asn_type = #{asnType}
-				</if>
-	       
-				<if test="status!=null">
-					and status = #{status}
-				</if>
-	       
-				<if test="isIqc!=null">
-					and is_iqc = #{isIqc}
-				</if>
-	       
-				<if test="startTime!=null">
-					and start_time = #{startTime}
-				</if>
-	       
-				<if test="stopTime!=null">
-					and stop_time = #{stopTime}
-				</if>
-	       
-				<if test="inboundTime!=null">
-					and inbound_time = #{inboundTime}
-				</if>
-	       
-				<if test="createTime!=null">
-					and create_time = #{createTime}
-				</if>
-	       
-				<if test="createdId!=null">
-					and created_id = #{createdId}
-				</if>
-	       
-				<if test="lastModifyTime!=null">
-					and last_modify_time = #{lastModifyTime}
-				</if>
-	       
-				<if test="modifiedId!=null">
-					and modified_id = #{modifiedId}
-				</if>
-		</where>
+	
 	</sql>
 	
 
@@ -226,7 +123,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    left join t_bi_customer c on asn.customer_id = c.id
 			left join t_bi_store s on asn.store_id = s.id 
 			left join sys_dictionary sys on sys.dic_value = asn.status and sys.group_value = 'ASNSTATUS'
-		<include refid="whPoDynamicWhereExt"/>
     </select>
     		
 		
@@ -236,7 +132,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    left join t_bi_customer c on asn.customer_id = c.id
 			left join t_bi_store s on asn.store_id = s.id 
 			left join sys_dictionary sys on sys.dic_value = asn.status and sys.group_value = 'ASNSTATUS'
-		<include refid="whPoDynamicWhereExt"/>
     </select>
 	
 	
