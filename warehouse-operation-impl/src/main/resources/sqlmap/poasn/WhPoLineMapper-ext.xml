@@ -269,20 +269,20 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    <where>
 	    	po_id = #{poid} 
 	    	<if test="ouid != null">
-	    		ou_id = #{ouid}
+	    		and ou_id = #{ouid}
 	    	</if>
 	    	<if test="uuid != null and uuid != ''">
-	    		uuid = #{uuid}
+	    		and uuid = #{uuid}
 	    	</if>
 	    </where>
     </select>
     
-    <select id="findWhPoLineByIdWhPoLine" resultMap="WhPoLineCommand">
+    <select id="findWhPoLineByIdWhPoLine" resultMap="WhPoLineResultExt">
 	    select
 	    <include refid="whPoLineColumnsExt" />
 	    from t_wh_po_line
 	    where id=#{id}
-	    <if test="ouId!=null">
+	    <if test="ouid!=null">
 	  			 and ou_id = #{ouid}
 		</if>
     </select>
