@@ -229,8 +229,8 @@ public class PoManagerImpl implements PoManager {
      */
     @Override
     @MoreDB("infoSource")
-    public List<WhPoCommand> findWhPoListByPoCodeToInfo(String asnCode, List<Integer> status, Long ouid) {
-        return null;
+    public List<WhPoCommand> findWhPoListByPoCodeToInfo(String poCode, List<Integer> status, Long ouid) {
+        return whPoDao.findWhPoListByPoCode(status, poCode, ouid);
     }
 
     /**
@@ -238,7 +238,7 @@ public class PoManagerImpl implements PoManager {
      */
     @Override
     @MoreDB("shardSource")
-    public List<WhPoCommand> findWhPoListByPoCodeToShard(String asnCode, List<Integer> status, Long ouid) {
-        return null;
+    public List<WhPoCommand> findWhPoListByPoCodeToShard(String poCode, List<Integer> status, Long ouid) {
+        return whPoDao.findWhPoListByPoCode(status, poCode, ouid);
     }
 }

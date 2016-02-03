@@ -105,7 +105,7 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
         String poCode = codeManager.generateCode(Constants.WMS, Constants.WHPO_MODEL_URL, null, null, null);
         if (StringUtil.isEmpty(poCode)) {
             log.warn("CreatePo warn poCode generateCode is null");
-            throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
+            throw new BusinessException(ErrorCodes.GET_GENERATECODE_NULL, new Object[] {"po"});
         }
         whPo.setPoCode(poCode);
         // 采购时间为空默认为当前时间
@@ -191,7 +191,7 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
         String asnCode = codeManager.generateCode(Constants.WMS, Constants.WHASN_MODEL_URL, Constants.WMS_ASN_INNER, null, null);
         if (StringUtil.isEmpty(asnCode)) {
             log.warn("CreateAsn warn asnCode generateCode is null");
-            throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
+            throw new BusinessException(ErrorCodes.GET_GENERATECODE_NULL, new Object[] {"asn"});
         }
         whAsn.setAsnCode(asnCode);
         // 采购时间为空默认为当前时间

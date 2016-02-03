@@ -38,8 +38,8 @@ public interface PoManager extends BaseManager {
 
     ResponseMsg insertPoWithOuId(PoCheckCommand poCheckCommand);
 
-    List<WhPoCommand> findWhPoListByPoCodeToInfo(String asnCode, List<Integer> status, Long ouid);
+    List<WhPoCommand> findWhPoListByPoCodeToInfo(String poCode, List<Integer> status, Long ouid);
 
-    List<WhPoCommand> findWhPoListByPoCodeToShard(String asnCode, List<Integer> status, Long ouid);
+    List<WhPoCommand> findWhPoListByPoCodeToShard(String poCode, List<Integer> status, Long ouid);
 
 }

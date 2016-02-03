@@ -21,7 +21,7 @@ public class ErrorCodes {
     /** 输入参数不正确 */
     public static final Integer PARAMS_ERROR = 5;
 
-    /** 传入的参数{0}不能为空,确保传入数据的完整性**/
+    /** 传入的参数{0}不能为空,确保传入数据的完整性 **/
     public static final Integer PARAM_IS_NULL = 6;
 
     /** 更新支付信息失败(t_so_payinfo) **/
@@ -75,7 +75,7 @@ public class ErrorCodes {
     /** 更新的数据数量({0})与实际更新数量({1})不一致，请刷新页面后重试 **/
     public static final int UPDATE_DATA_QUANTITYERROR = 1016;
 
-    /** ASN号编码({0})在系统中未找到**/
+    /** ASN号编码({0})在系统中未找到 **/
     public static final int ASN_CODE_IS_NOT_FOUND = 1017;
 
     /** 用户角色id为空 **/
@@ -91,17 +91,19 @@ public class ErrorCodes {
 
     /** 页面会话错误 请刷新页面后重试 **/
     public static final int SESSION_DATA_ERROR = 2001;
-    /** 保存至po_check信息失败*/
+    /** 保存至po_check信息失败 */
     public static final int SAVE_CHECK_TABLE_FAILED = 3001;
-    /** po单已存在*/
+    /** po单已存在 */
     public static final int PO_EXIST = 3002;
-    /** 保存至po单信息失败*/
-    public static final int SAVE_PO_FAILED = 3003; 
-    /** 保存至asn_check信息失败*/
+    /** 保存至po单信息失败 */
+    public static final int SAVE_PO_FAILED = 3003;
+    /** 保存至asn_check信息失败 */
     public static final int SAVE_CHECK_TABLE_FAILED_ASN = 3004;
-    /** asn单已存在*/
+    /** asn单已存在 */
     public static final int ASN_EXIST = 3005;
-    /** 保存至asn单信息失败*/
-    public static final int SAVE_PO_FAILED_ASN = 3006; 
+    /** 保存至asn单信息失败 */
+    public static final int SAVE_PO_FAILED_ASN = 3006;
+    /**调用编码生成器获取 {0} 编码出错*/
+    public static final int GET_GENERATECODE_NULL = 3007;
 
 }
