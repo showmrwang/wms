@@ -85,6 +85,8 @@ public class WhAsnCommand implements Serializable {
     /** ASN状态名称 */
     private String statusName;
 
+    private List<WhAsnLineCommand> asnLineList;
+
     public Long getId() {
         return this.id;
     }
@@ -323,6 +325,14 @@ public class WhAsnCommand implements Serializable {
 
     public void setAsnExtCode(String asnExtCode) {
         this.asnExtCode = asnExtCode;
+    }
+
+    public List<WhAsnLineCommand> getAsnLineList() {
+        return asnLineList;
+    }
+
+    public void setAsnLineList(List<WhAsnLineCommand> asnLineList) {
+        this.asnLineList = asnLineList;
     }
 
 
