@@ -89,7 +89,10 @@ public class WhAsnCommand implements Serializable {
 
     /** 操作员工ID */
     private Long userId;
-
+    /** 采购时间 */
+    private String poDateStr;
+    /** 计划到货时间 */
+    private String etaStr;
 
     public Long getUserId() {
         return userId;
@@ -345,6 +348,22 @@ public class WhAsnCommand implements Serializable {
 
     public void setAsnExtCode(String asnExtCode) {
         this.asnExtCode = asnExtCode;
+    }
+
+    public String getPoDateStr() {
+        return poDateStr;
+    }
+
+    public void setPoDateStr(String poDateStr) {
+        this.poDateStr = poDateStr;
+    }
+
+    public String getEtaStr() {
+        return etaStr;
+    }
+
+    public void setEtaStr(String etaStr) {
+        this.etaStr = etaStr;
     }
 
 
