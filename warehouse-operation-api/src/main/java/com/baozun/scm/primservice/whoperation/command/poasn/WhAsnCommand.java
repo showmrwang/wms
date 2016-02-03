@@ -84,6 +84,16 @@ public class WhAsnCommand implements Serializable {
     private String storeName;
     /** ASN状态名称 */
     private String statusName;
+    /** po单据号 */
+    private String poCode;
+
+    public String getPoCode() {
+        return poCode;
+    }
+
+    public void setPoCode(String poCode) {
+        this.poCode = poCode;
+    }
 
     public Long getId() {
         return this.id;
