@@ -69,22 +69,6 @@ public class PoManagerImpl implements PoManager {
     }
 
 
-    @Override
-    public ResponseMsg createPoAndLine(WhPo po, List<WhPoLine> whPoLines, ResponseMsg rm) {
-        whPoDao.saveOrUpdate(po);
-        if (whPoLines.size() > 0) {
-            // 有line信息保存
-            for (WhPoLine whPoLine : whPoLines) {
-                whPoLine.setPoId(po.getId());
-                whPoLineDao.saveOrUpdate(whPoLine);
-            }
-        }
-        rm.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
-        rm.setMsg(po.getId() + "");
-        return rm;
-
-    }
-
     /**
      * 保存po单信息
      * 

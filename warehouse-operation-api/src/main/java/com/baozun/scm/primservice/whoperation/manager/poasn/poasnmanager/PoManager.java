@@ -16,8 +16,6 @@ import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 
 public interface PoManager extends BaseManager {
 
-    ResponseMsg createPoAndLine(WhPo po, List<WhPoLine> whPoLines, ResponseMsg rm);
-
     ResponseMsg createPoAndLineToShare(WhPo po, List<WhPoLine> whPoLines, ResponseMsg rm);
 
     WhPoCommand findWhPoByIdToInfo(WhPoCommand whPo);
