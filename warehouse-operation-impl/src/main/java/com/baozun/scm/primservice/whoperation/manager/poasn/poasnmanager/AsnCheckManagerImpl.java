@@ -8,71 +8,53 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.baozun.scm.primservice.whoperation.command.poasn.AsnCheckCommand;
 import com.baozun.scm.primservice.whoperation.dao.poasn.CheckAsnCodeDao;
-import com.baozun.scm.primservice.whoperation.dao.poasn.CheckPoCodeDao;
-import com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnDao;
-import com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnLineDao;
-import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoDao;
-import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoLineDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
-import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
 import com.baozun.scm.primservice.whoperation.model.poasn.CheckAsnCode;
-import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
-import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine;
 
 @Service("asnCheckManager")
 @Transactional
 public class AsnCheckManagerImpl implements AsnCheckManager {
 
     @Autowired
-    private CheckPoCodeDao checkPoCodeDao;
-    @Autowired
-    private WhPoDao whPoDao;
-    @Autowired
-    private WhPoLineDao whPoLineDao;
-    @Autowired
     private CheckAsnCodeDao checkAsnCodeDao;
-    @Autowired
-    private WhAsnDao whAsnDao;
-    @Autowired
-    private WhAsnLineDao whAsnLineDao;
 
-    @Override
-    @MoreDB("infoSource")
-    public ResponseMsg insertAsnWithCheckWithoutOuId(AsnCheckCommand asnCheckCommand) {
-        CheckAsnCode checkAsnCode = asnCheckCommand.getCheckAsnCode();
-        WhAsn whAsn = asnCheckCommand.getWhAsn();
-        List<WhAsnLine> whAsnLines = asnCheckCommand.getWhAsnLines();
-        ResponseMsg rm = asnCheckCommand.getRm();
-        /* 校验asn单是否在t_wh_asn_check中存在 */
-        List<CheckAsnCode> asn = checkAsnCodeDao.findListByParam(checkAsnCode);
-        /* 不存在则在asn中间表中创建 */
-        if (asn.isEmpty()) {
-            /* 中间表创建asn */
-            Long i = checkAsnCodeDao.insert(checkAsnCode);
-            if (i != 0) {
-                /* asn表创建asn */
-                rm = this.createAsnAndLineToInfo(whAsn, whAsnLines, rm);
-            } else {
-                throw new BusinessException(ErrorCodes.SAVE_CHECK_TABLE_FAILED);
-            }
-
-        } else {
-            /* 从asn表中根据extCode和store id查找asn单号 */
-            long count = whAsnDao.findAsnByCodeAndStore(checkAsnCode.getAsnExtCode(), checkAsnCode.getStoreId(), null);
-            /* 如果找不到则调用asn manager插入asn表 */
-            if (0 == count) {
-                /* 插入asn表 */
-                rm = this.createAsnAndLineToInfo(whAsn, whAsnLines, rm);
-            } else {
-                /* asn单已经存在 */
-                throw new BusinessException(ErrorCodes.PO_EXIST);
-            }
-        }
-        return rm;
-    }
+    // @Override
+    // @MoreDB("infoSource")
+    // public ResponseMsg insertAsnWithCheckWithoutOuId(AsnCheckCommand asnCheckCommand) {
+    // CheckAsnCode checkAsnCode = asnCheckCommand.getCheckAsnCode();
+    // WhAsn whAsn = asnCheckCommand.getWhAsn();
+    // List<WhAsnLine> whAsnLines = asnCheckCommand.getWhAsnLines();
+    // ResponseMsg rm = asnCheckCommand.getRm();
+    // /* 校验asn单是否在t_wh_asn_check中存在 */
+    // List<CheckAsnCode> asn = checkAsnCodeDao.findListByParam(checkAsnCode);
+    // /* 不存在则在asn中间表中创建 */
+    // if (asn.isEmpty()) {
+    // /* 中间表创建asn */
+    // Long i = checkAsnCodeDao.insert(checkAsnCode);
+    // if (i != 0) {
+    // /* asn表创建asn */
+    // rm = this.createAsnAndLineToInfo(whAsn, whAsnLines, rm);
+    // } else {
+    // throw new BusinessException(ErrorCodes.SAVE_CHECK_TABLE_FAILED);
+    // }
+    //
+    // } else {
+    // /* 从asn表中根据extCode和store id查找asn单号 */
+    // long count = whAsnDao.findAsnByCodeAndStore(checkAsnCode.getAsnExtCode(),
+    // checkAsnCode.getStoreId(), null);
+    // /* 如果找不到则调用asn manager插入asn表 */
+    // if (0 == count) {
+    // /* 插入asn表 */
+    // rm = this.createAsnAndLineToInfo(whAsn, whAsnLines, rm);
+    // } else {
+    // /* asn单已经存在 */
+    // throw new BusinessException(ErrorCodes.PO_EXIST);
+    // }
+    // }
+    // return rm;
+    // }
 
     @Override
     @MoreDB("infoSource")
@@ -100,20 +82,21 @@ public class AsnCheckManagerImpl implements AsnCheckManager {
         return flag;
     }
 
-    private ResponseMsg createAsnAndLineToInfo(WhAsn asn, List<WhAsnLine> whAsnLines, ResponseMsg rm) {
-        long i = whAsnDao.insert(asn);
-        if (0 == i) {
-            throw new BusinessException(ErrorCodes.SAVE_PO_FAILED);
-        }
-        if (whAsnLines.size() > 0) {
-            // 有line信息保存
-            for (WhAsnLine whAsnLine : whAsnLines) {
-                whAsnLine.setAsnId(asn.getId());
-                whAsnLineDao.insert(whAsnLine);
-            }
-        }
-        rm.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
-        rm.setMsg(asn.getId() + "");
-        return rm;
-    }
+    // private ResponseMsg createAsnAndLineToInfo(WhAsn asn, List<WhAsnLine> whAsnLines, ResponseMsg
+    // rm) {
+    // long i = whAsnDao.insert(asn);
+    // if (0 == i) {
+    // throw new BusinessException(ErrorCodes.SAVE_PO_FAILED);
+    // }
+    // if (whAsnLines.size() > 0) {
+    // // 有line信息保存
+    // for (WhAsnLine whAsnLine : whAsnLines) {
+    // whAsnLine.setAsnId(asn.getId());
+    // whAsnLineDao.insert(whAsnLine);
+    // }
+    // }
+    // rm.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
+    // rm.setMsg(asn.getId() + "");
+    // return rm;
+    // }
 }

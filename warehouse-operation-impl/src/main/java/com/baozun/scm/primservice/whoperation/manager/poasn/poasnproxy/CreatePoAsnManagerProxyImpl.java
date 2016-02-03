@@ -215,8 +215,7 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
     private ResponseMsg insertPoWithCheck(WhPo whPo, List<WhPoLine> whPoLines, ResponseMsg rm) {
         log.info("InsertPoWithCheck start =======================");
         /**
-         * 流程: 
-         * 1.封装poCheckCommand对象,包含了WhPo,List<WhPoLine>,ResponseMsg,CheckPoCode
+         * 流程: 1.封装poCheckCommand对象,包含了WhPo,List<WhPoLine>,ResponseMsg,CheckPoCode
          * 2.没有传入ouId,查找中间表t_wh_check_pocode是否有此PO单,在同一事务中执行以下两步:
          * function==>poCheckManager.insertPoWithCheckWithoutOuId(); i)
          * 如果有则去基础信息表查找此PO单。有PO则抛出异常,没有PO则添加一条数据. ii) 如果没有则在t_wh_check_pocode添加一条数据,并在PO表中添加一条数据.
@@ -366,14 +365,15 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
     private ResponseMsg insertAsnWithCheck(WhAsn whAsn, List<WhAsnLine> whAsnLines, ResponseMsg rm) {
         log.info("InsertAsnWithCheck start =======================");
         /**
-         * 流程: 
-         * 1.封装asnCheckCommand对象,包含了WhAsn,List<WhAsnLine>,ResponseMsg,CheckAsnCode
+         * 流程: 1.封装asnCheckCommand对象,包含了WhAsn,List<WhAsnLine>,ResponseMsg,CheckAsnCode
          * 2.没有传入ouId,查找中间表t_wh_check_asncode是否有此ASN单,在同一事务中执行以下两步:
          * function==>asnCheckManager.insertAsnWithCheckWithoutOuId(); i)
-         * 如果有则去基础信息表查找此ASN单。有ASN则抛出异常,没有ASN则添加一条数据. ii) 如果没有则在t_wh_check_asncode添加一条数据,并在ASN表中添加一条数据.
+         * 如果有则去基础信息表查找此ASN单。有ASN则抛出异常,没有ASN则添加一条数据. ii)
+         * 如果没有则在t_wh_check_asncode添加一条数据,并在ASN表中添加一条数据.
          * 3.有传入ouId,查找中间表t_wh_check_asncode是否有此ASN单,在两个事务中分别执行以下两步:
-         * function==>asnManager.createAsnAndLineToShare(); i) 如果有则去对应的拆库表查找此ASN单。有ASN则抛出异常,没有ASN则添加一条数据.
-         * function==>asnManager.insertAsnWithOuId(); ii) 如果没有则在t_wh_check_asncode添加一条数据,并在ASN表中添加一条数据.
+         * function==>asnManager.createAsnAndLineToShare(); i)
+         * 如果有则去对应的拆库表查找此ASN单。有ASN则抛出异常,没有ASN则添加一条数据. function==>asnManager.insertAsnWithOuId(); ii)
+         * 如果没有则在t_wh_check_asncode添加一条数据,并在ASN表中添加一条数据.
          */
         CheckAsnCode checkAsnCode = new CheckAsnCode();
         // asnCode为编码服务器生成 extCode为外围服务器传入或WMS创建ASN单时填写
@@ -381,7 +381,7 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
         checkAsnCode.setAsnCode(whAsn.getAsnCode());
         checkAsnCode.setOuId(whAsn.getOuId());
         checkAsnCode.setStoreId(whAsn.getStoreId());
-        Long ouId = whAsn.getOuId();
+        // Long ouId = whAsn.getOuId();
 
         /* 封装asnCheckCommand对象 */
         AsnCheckCommand asnCheckCommand = new AsnCheckCommand();
@@ -389,23 +389,23 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
         asnCheckCommand.setWhAsn(whAsn);
         asnCheckCommand.setWhAsnLines(whAsnLines);
         asnCheckCommand.setCheckAsnCode(checkAsnCode);
-        if (null == ouId) {
-            /* asn单不带ouId */
-            /* 查找并插入asn数据 */
-            rm = asnCheckManager.insertAsnWithCheckWithoutOuId(asnCheckCommand);
+        // if (null == ouId) {
+        // /* asn单不带ouId */
+        // /* 查找并插入asn数据 */
+        // rm = asnCheckManager.insertAsnWithCheckWithoutOuId(asnCheckCommand);
+        // } else {
+        /* asn单带ouId */
+        /* 查找check表中是否有数据 */
+        boolean flag = asnCheckManager.insertAsnWithCheckAndOuId(checkAsnCode);
+        if (!flag) {
+            /* 在check表中不存在asn单 */
+            rm = asnManager.createAsnAndLineToShare(whAsn, whAsnLines, rm);
         } else {
-            /* asn单带ouId */
-            /* 查找check表中是否有数据 */
-            boolean flag = asnCheckManager.insertAsnWithCheckAndOuId(checkAsnCode);
-            if (!flag) {
-                /* 在check表中不存在asn单 */
-                rm = asnManager.createAsnAndLineToShare(whAsn, whAsnLines, rm);
-            } else {
-                /* 在check表中存在此asn单,则去asn表中查找是否有这单. 如果有就抛出异常,没有就插入 */
-                rm = asnManager.insertAsnWithOuId(asnCheckCommand);
-                /* 如果抛出异常,此处会有补偿机制 */
-            }
+            /* 在check表中存在此asn单,则去asn表中查找是否有这单. 如果有就抛出异常,没有就插入 */
+            rm = asnManager.insertAsnWithOuId(asnCheckCommand);
+            /* 如果抛出异常,此处会有补偿机制 */
         }
+        // }
         log.info("InsertAsnWithCheck end =======================");
         return rm;
     }
