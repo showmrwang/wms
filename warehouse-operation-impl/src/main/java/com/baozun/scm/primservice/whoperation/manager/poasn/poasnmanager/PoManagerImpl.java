@@ -92,7 +92,6 @@ public class PoManagerImpl implements PoManager {
     @Override
     @MoreDB("shardSource")
     public ResponseMsg createPoAndLineToShare(WhPo po, List<WhPoLine> whPoLines, ResponseMsg rm) {
-        // whPoDao.saveOrUpdate(po);
         long i = whPoDao.insert(po);
         if (0 == i) {
             throw new BusinessException(ErrorCodes.SAVE_PO_FAILED);

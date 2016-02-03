@@ -76,7 +76,7 @@ public class AsnCheckManagerImpl implements AsnCheckManager {
                 flag = false;
             } else {
                 /* 插入check表失败 */
-                throw new BusinessException(ErrorCodes.SAVE_CHECK_TABLE_FAILED);
+                throw new BusinessException(ErrorCodes.SAVE_CHECK_TABLE_FAILED_ASN);
             }
         }
         return flag;

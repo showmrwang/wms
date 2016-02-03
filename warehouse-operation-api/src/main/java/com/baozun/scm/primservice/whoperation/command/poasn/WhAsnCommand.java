@@ -87,6 +87,18 @@ public class WhAsnCommand implements Serializable {
     /** po单据号 */
     private String poCode;
 
+    /** 操作员工ID */
+    private Long userId;
+
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
     public String getPoCode() {
         return poCode;
     }
@@ -94,8 +106,6 @@ public class WhAsnCommand implements Serializable {
     public void setPoCode(String poCode) {
         this.poCode = poCode;
     }
-
-    private List<WhAsnLineCommand> asnLineList;
 
     public Long getId() {
         return this.id;
@@ -335,14 +345,6 @@ public class WhAsnCommand implements Serializable {
 
     public void setAsnExtCode(String asnExtCode) {
         this.asnExtCode = asnExtCode;
-    }
-
-    public List<WhAsnLineCommand> getAsnLineList() {
-        return asnLineList;
-    }
-
-    public void setAsnLineList(List<WhAsnLineCommand> asnLineList) {
-        this.asnLineList = asnLineList;
     }
 
 

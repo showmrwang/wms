@@ -89,17 +89,19 @@ public class ErrorCodes {
     /** 店铺id为空 **/
     public static final int STORE_EMPTY = 1024;
 
-
     /** 页面会话错误 请刷新页面后重试 **/
     public static final int SESSION_DATA_ERROR = 2001;
-
-    /** 保存至po_check表失败*/
+    /** 保存至po_check信息失败*/
     public static final int SAVE_CHECK_TABLE_FAILED = 3001;
-
     /** po单已存在*/
     public static final int PO_EXIST = 3002;
-
-    /** 保存至po表失败*/
-    public static final int SAVE_PO_FAILED = 3003;
+    /** 保存至po单信息失败*/
+    public static final int SAVE_PO_FAILED = 3003; 
+    /** 保存至asn_check信息失败*/
+    public static final int SAVE_CHECK_TABLE_FAILED_ASN = 3004;
+    /** asn单已存在*/
+    public static final int ASN_EXIST = 3005;
+    /** 保存至asn单信息失败*/
+    public static final int SAVE_PO_FAILED_ASN = 3006; 
 
 }
