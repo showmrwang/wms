@@ -40,6 +40,7 @@ public class AsnManagerImpl implements AsnManager {
      * 通过asncode查询出asn列表
      */
     @Override
+    @MoreDB("shardSource")
     public List<WhAsnCommand> findWhAsnListByAsnCode(String asnCode, Integer status, Long ouid) {
         return whAsnDao.findWhAsnListByAsnCode(asnCode, status, ouid);
     }
