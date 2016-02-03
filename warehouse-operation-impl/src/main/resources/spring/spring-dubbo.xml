@@ -30,6 +30,7 @@
     <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.poasn.poasnproxy.SelectPoAsnManagerProxy"  ref="selectPoAsnManagerProxy" />
     <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.poasn.poasnproxy.EditPoAsnManagerProxy"  ref="editPoAsnManagerProxy" />
     <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoCheckManager"  ref="poCheckManager" />
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnCheckManager"  ref="asnCheckManager" />
     
 	
     <!--生成远程服务代理，可以和本地bean一样使用demoService-->

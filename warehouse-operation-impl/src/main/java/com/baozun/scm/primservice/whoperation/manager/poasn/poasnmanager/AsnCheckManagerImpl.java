@@ -22,7 +22,7 @@ import com.baozun.scm.primservice.whoperation.model.poasn.CheckAsnCode;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine;
 
-@Service("poCheckManager")
+@Service("asnCheckManager")
 @Transactional
 public class AsnCheckManagerImpl implements AsnCheckManager {
 
