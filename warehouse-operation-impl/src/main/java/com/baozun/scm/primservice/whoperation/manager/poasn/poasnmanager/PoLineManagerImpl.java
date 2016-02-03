@@ -55,11 +55,13 @@ public class PoLineManagerImpl implements PoLineManager {
     }
 
     @Override
+    @MoreDB("infoSource")
     public Pagination<WhPoLineCommand> findListByQueryMapWithPageExtByInfo(Page page, Sort[] sorts, Map<String, Object> params) {
         return this.whPoLineDao.findListByQueryMapWithPageExt(page, sorts, params);
     }
 
     @Override
+    @MoreDB("shardSource")
     public Pagination<WhPoLineCommand> findListByQueryMapWithPageExtByShard(Page page, Sort[] sorts, Map<String, Object> params) {
         return this.whPoLineDao.findListByQueryMapWithPageExt(page, sorts, params);
     }
