@@ -46,7 +46,10 @@ public class PoCheckManagerImpl implements PoCheckManager {
             if (i != 0) {
                 rm = this.createPoAndLineToInfo(whPo, whPoLines, rm);
             } else {
-                throw new BusinessException(ErrorCodes.SAVE_CHECK_TABLE_FAILED);
+                rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
+                rm.setMsg(ErrorCodes.SAVE_CHECK_TABLE_FAILED + "");// 保存至po_check信息失败
+                // throw new BusinessException(ErrorCodes.SAVE_CHECK_TABLE_FAILED);
+                return rm;
             }
 
         } else {
@@ -58,7 +61,9 @@ public class PoCheckManagerImpl implements PoCheckManager {
                 rm = this.createPoAndLineToInfo(whPo, whPoLines, rm);
             } else {
                 /* po单已经存在 */
-                throw new BusinessException(ErrorCodes.PO_EXIST);
+                rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
+                rm.setMsg(ErrorCodes.PO_EXIST + "");// po单已存在
+                return rm;
             }
         }
         return rm;
@@ -78,14 +83,15 @@ public class PoCheckManagerImpl implements PoCheckManager {
             flag = true;
         } else {
             /* 不存在此po单号则在check表中插入此po信息 */
-            long i = checkPoCodeDao.insert(checkPoCode);
-            if (0 != i) {
-                /* 插入check表成功 */
-                flag = false;
-            } else {
-                /* 插入check表失败 */
-                throw new BusinessException(ErrorCodes.SAVE_CHECK_TABLE_FAILED);
-            }
+            // long i = checkPoCodeDao.insert(checkPoCode);
+            checkPoCodeDao.insert(checkPoCode);
+            // if (0 != i) {
+            /* 插入check表成功 */
+            flag = false;
+            // } else {
+            // /* 插入check表失败 */
+            // throw new BusinessException(ErrorCodes.SAVE_CHECK_TABLE_FAILED);
+            // }
         }
         return flag;
     }

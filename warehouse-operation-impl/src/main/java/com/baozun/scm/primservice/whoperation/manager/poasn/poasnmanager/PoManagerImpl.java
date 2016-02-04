@@ -78,7 +78,10 @@ public class PoManagerImpl implements PoManager {
     public ResponseMsg createPoAndLineToShare(WhPo po, List<WhPoLine> whPoLines, ResponseMsg rm) {
         long i = whPoDao.insert(po);
         if (0 == i) {
-            throw new BusinessException(ErrorCodes.SAVE_PO_FAILED);
+            rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
+            rm.setMsg(ErrorCodes.SAVE_PO_FAILED + "");// 保存至po单信息失败
+            // throw new BusinessException(ErrorCodes.SAVE_PO_FAILED);
+            return rm;
         }
         if (whPoLines.size() > 0) {
             // 有line信息保存
@@ -188,7 +191,9 @@ public class PoManagerImpl implements PoManager {
         if (0 == count) {
             long i = whPoDao.insert(whPo);
             if (0 == i) {
-                throw new BusinessException(ErrorCodes.SAVE_CHECK_TABLE_FAILED);
+                rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
+                rm.setMsg(ErrorCodes.SAVE_CHECK_TABLE_FAILED + "");// 保存至po_check信息失败
+                return rm;
             }
             // whPoDao.saveOrUpdate(whpo);
             if (whPoLines.size() > 0) {
@@ -202,7 +207,9 @@ public class PoManagerImpl implements PoManager {
             rm.setMsg(whPo.getId() + "");
         } else {
             /* 存在此po单信息 */
-            throw new BusinessException(ErrorCodes.PO_EXIST);
+            rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
+            rm.setMsg(ErrorCodes.PO_EXIST + "");
+            return rm;
         }
         return rm;
 
