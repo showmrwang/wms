@@ -70,14 +70,14 @@ public class AsnCheckManagerImpl implements AsnCheckManager {
             flag = true;
         } else {
             /* 不存在此asn单号则在check表中插入此asn信息 */
-            long i = checkAsnCodeDao.insert(checkAsnCode);
-            if (1 == i) {
-                /* 插入check表成功 */
-                flag = false;
-            } else {
-                /* 插入check表失败 */
-                throw new BusinessException(ErrorCodes.SAVE_CHECK_TABLE_FAILED_ASN);
-            }
+            checkAsnCodeDao.insert(checkAsnCode);
+            // if (1 != i) {
+            /* 插入check表成功 */
+            flag = false;
+            // } else {
+            // /* 插入check表失败 */
+            // throw new BusinessException(ErrorCodes.SAVE_CHECK_TABLE_FAILED_ASN);
+            // }
         }
         return flag;
     }
