@@ -16,9 +16,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoLineCommand;
 import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
+import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoLineDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 
 
@@ -34,6 +36,8 @@ public class PoLineManagerImpl implements PoLineManager {
 
     @Autowired
     private WhPoLineDao whPoLineDao;
+    @Autowired
+    private WhPoDao whPoDao;
 
 
     /**
@@ -207,7 +211,9 @@ public class PoLineManagerImpl implements PoLineManager {
         whPoLineDao.deletePoLineByNotUuid(whPoLine.getPoId(), whPoLine.getOuId(), whPoLine.getUuid());
         // 查询对应PO单下有UUID的数据
         List<WhPoLine> poLineList = whPoLineDao.findWhPoLineByPoIdOuId(whPoLine.getPoId(), whPoLine.getOuId(), whPoLine.getUuid());
+        Integer qtyPlannedCount = 0;
         for (WhPoLine p : poLineList) {
+            qtyPlannedCount = qtyPlannedCount + p.getQtyPlanned();// 整合计划数量
             if (null == p.getPoLineId()) {
                 // 如果对应的polineid is null 直接去除这条的uuid数据 保存为正式数据
                 p.setUuid(null);
@@ -232,6 +238,14 @@ public class PoLineManagerImpl implements PoLineManager {
                 // 删除对应UUID临时数据
                 whPoLineDao.deletePoLineByIdOuId(p.getId(), p.getOuId());
             }
+        }
+        // 修改po表头计划数量和可用数量
+        WhPo po = whPoDao.findWhPoById(whPoLine.getPoId(), whPoLine.getOuId());
+        po.setQtyPlanned(po.getQtyPlanned() + qtyPlannedCount);// 计划数量
+        po.setModifiedId(whPoLine.getModifiedId());
+        int count = whPoDao.saveOrUpdateByVersion(po);
+        if (count <= 0) {
+            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
         }
     }
 

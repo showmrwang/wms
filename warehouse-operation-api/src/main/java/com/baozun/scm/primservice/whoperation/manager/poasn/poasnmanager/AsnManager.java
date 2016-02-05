@@ -9,6 +9,7 @@ import lark.common.dao.Sort;
 
 import com.baozun.scm.primservice.whoperation.command.poasn.AsnCheckCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
+import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnLineCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
@@ -25,7 +26,7 @@ public interface AsnManager extends BaseManager {
 
     Pagination<WhAsnCommand> findListByQueryMapWithPageExtByShard(Page page, Sort[] sorts, Map<String, Object> params);
 
-    ResponseMsg createAsnAndLineToShare(WhAsn whAsn, ResponseMsg rm);
+    ResponseMsg createAsnAndLineToShare(WhAsn whAsn, List<WhAsnLineCommand> asnLineList, ResponseMsg rm);
 
     ResponseMsg insertAsnWithOuId(AsnCheckCommand asnCheckCommand);
 

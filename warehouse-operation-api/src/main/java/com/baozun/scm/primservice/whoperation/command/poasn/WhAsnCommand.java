@@ -105,6 +105,18 @@ public class WhAsnCommand implements Serializable {
     /** 运输商ID */
     private String logisticsProviderName;
 
+    private List<WhAsnLineCommand> asnLineList;
+
+
+
+    public List<WhAsnLineCommand> getAsnLineList() {
+        return asnLineList;
+    }
+
+    public void setAsnLineList(List<WhAsnLineCommand> asnLineList) {
+        this.asnLineList = asnLineList;
+    }
+
     public Long getUserId() {
         return userId;
     }

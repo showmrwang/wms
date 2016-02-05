@@ -14,6 +14,7 @@ import com.baozun.scm.baseservice.sac.manager.CodeManager;
 import com.baozun.scm.primservice.whoperation.command.poasn.AsnCheckCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.PoCheckCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
+import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnLineCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoLineCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
@@ -177,7 +178,7 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
                 return rm;
             }
             whAsn.setAsnCode(asnCode);
-            rm = this.insertAsnWithCheck(whAsn, rm);
+            rm = this.insertAsnWithCheck(whAsn, asn.getAsnLineList(), rm);
         } catch (Exception e) {
             if (e instanceof BusinessException) {
                 throw e;
@@ -443,7 +444,7 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
     /**
      * 检验是否可以插入t_wh_po表
      */
-    private ResponseMsg insertAsnWithCheck(WhAsn whAsn, ResponseMsg rm) {
+    private ResponseMsg insertAsnWithCheck(WhAsn whAsn, List<WhAsnLineCommand> asnLineList, ResponseMsg rm) {
         log.info("InsertAsnWithCheck start =======================");
         /**
          * 流程: 1.封装asnCheckCommand对象,包含了WhAsn,List<WhAsnLine>,ResponseMsg,CheckAsnCode
@@ -479,7 +480,7 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
         boolean flag = asnCheckManager.insertAsnWithCheckAndOuId(checkAsnCode);
         if (!flag) {
             /* 在check表中不存在asn单 */
-            rm = asnManager.createAsnAndLineToShare(whAsn, rm);
+            rm = asnManager.createAsnAndLineToShare(whAsn, asnLineList, rm);
         } else {
             /* 在check表中存在此asn单,则去asn表中查找是否有这单. 如果有就抛出异常,没有就插入 */
             rm = asnManager.insertAsnWithOuId(asnCheckCommand);

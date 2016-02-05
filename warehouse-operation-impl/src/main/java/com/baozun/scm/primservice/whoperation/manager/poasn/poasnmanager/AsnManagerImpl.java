@@ -9,17 +9,23 @@ import lark.common.dao.Page;
 import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.whoperation.command.poasn.AsnCheckCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
+import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnLineCommand;
+import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnDao;
+import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoLineDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 
 
 /**
@@ -34,6 +40,8 @@ public class AsnManagerImpl implements AsnManager {
 
     @Autowired
     private WhAsnDao whAsnDao;
+    @Autowired
+    private WhPoLineDao whPoLineDao;
 
 
     /**
@@ -101,12 +109,24 @@ public class AsnManagerImpl implements AsnManager {
      */
     @Override
     @MoreDB("shardSource")
-    public ResponseMsg createAsnAndLineToShare(WhAsn asn, ResponseMsg rm) {
-        long i = whAsnDao.insert(asn);
-        if (0 == i) {
-            rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
-            rm.setMsg(ErrorCodes.SAVE_PO_FAILED_ASN + "");
-            return rm;
+    public ResponseMsg createAsnAndLineToShare(WhAsn asn, List<WhAsnLineCommand> asnLineList, ResponseMsg rm) {
+        // 如果有asnline信息 asn表头信息需要查询po表头信息
+        if (null != asnLineList) {
+            for (WhAsnLineCommand asnline : asnLineList) {
+                WhAsnLine asnLine = new WhAsnLine();
+                // 查询对应poline信息
+                WhPoLine whPoLine = whPoLineDao.findWhPoLineByIdWhPoLine(asnline.getPoLineId(), asn.getOuId());
+                BeanUtils.copyProperties(whPoLine, asnLine);
+                asnLine.setAsnId(asn.getId());
+                asnLine.setPoLineId(whPoLine.getId());
+                asnLine.setStatus(PoAsnStatus.ASNLINE_NOT_RCVD);
+                asnLine.setCreatedId(asn.getCreatedId());
+                asnLine.setCreateTime(new Date());
+                asnLine.setModifiedId(asn.getCreatedId());
+                asnLine.setLastModifyTime(new Date());
+            }
+        } else {
+            whAsnDao.insert(asn);
         }
         rm.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
         rm.setMsg(asn.getId() + "");

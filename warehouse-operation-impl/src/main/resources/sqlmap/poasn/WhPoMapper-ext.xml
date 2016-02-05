@@ -169,7 +169,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		<include refid="whPoDynamicWhereExt"/>
     </select>
     
-    <select id="findWhPoById" resultMap="WhPoCommand">
+    <select id="findWhPoById" resultMap="WhPoResultExt">
     	select <include refid="whPoColumnsExt" />
 		    from 
 		    t_wh_po 
