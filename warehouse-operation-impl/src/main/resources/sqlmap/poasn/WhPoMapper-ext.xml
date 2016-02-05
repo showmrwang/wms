@@ -24,6 +24,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	is_iqc as isIqc,
 	        	date_format(po_date,'%Y-%m-%d') as poDateStr,
 	        	date_format(eta,'%Y-%m-%d %T') as etaStr,
+	        	po_date as poDate,
+	        	eta as eta,
 	        	delivery_time as deliveryTime,
 	        	qty_planned as qtyPlanned,
 	        	qty_rcvd as qtyRcvd,

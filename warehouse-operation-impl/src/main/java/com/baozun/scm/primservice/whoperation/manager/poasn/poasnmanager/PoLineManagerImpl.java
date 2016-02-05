@@ -93,13 +93,14 @@ public class PoLineManagerImpl implements PoLineManager {
             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
         }
         // 修改PO表头计划数量
-        WhPo whPo = whPoDao.findWhPoById(whPoLine.getPoId(), whPoLine.getOuId());
-        whPo.setQtyPlanned(whPo.getQtyPlanned() + differenceQty);// 计划数量
-        whPo.setModifiedId(whPoLine.getModifiedId());
-        whPo.setLastModifyTime(new Date());
-        int count = whPoDao.saveOrUpdateByVersion(whPo);
-        if (count <= 0) {
-            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+        if (null == whPoLine.getUuid()) {
+            WhPo whPo = whPoDao.findWhPoById(whPoLine.getPoId(), whPoLine.getOuId());
+            whPo.setQtyPlanned(whPo.getQtyPlanned() - differenceQty);// 计划数量
+            whPo.setModifiedId(whPoLine.getModifiedId());
+            int count = whPoDao.saveOrUpdateByVersion(whPo);
+            if (count <= 0) {
+                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            }
         }
     }
 
@@ -114,13 +115,14 @@ public class PoLineManagerImpl implements PoLineManager {
             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
         }
         // 修改PO表头计划数量
-        WhPo whPo = whPoDao.findWhPoById(whPoLine.getPoId(), whPoLine.getOuId());
-        whPo.setQtyPlanned(whPo.getQtyPlanned() + differenceQty);// 计划数量
-        whPo.setModifiedId(whPoLine.getModifiedId());
-        whPo.setLastModifyTime(new Date());
-        int count = whPoDao.saveOrUpdateByVersion(whPo);
-        if (count <= 0) {
-            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+        if (null == whPoLine.getUuid()) {
+            WhPo whPo = whPoDao.findWhPoById(whPoLine.getPoId(), whPoLine.getOuId());
+            whPo.setQtyPlanned(whPo.getQtyPlanned() - differenceQty);// 计划数量
+            whPo.setModifiedId(whPoLine.getModifiedId());
+            int count = whPoDao.saveOrUpdateByVersion(whPo);
+            if (count <= 0) {
+                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            }
         }
     }
 
@@ -265,6 +267,9 @@ public class PoLineManagerImpl implements PoLineManager {
         }
         // 修改po表头计划数量和可用数量
         WhPo po = whPoDao.findWhPoById(whPoLine.getPoId(), whPoLine.getOuId());
+        if (null == po.getQtyPlanned()) {
+            po.setQtyPlanned(0);
+        }
         po.setQtyPlanned(po.getQtyPlanned() + qtyPlannedCount);// 计划数量
         po.setModifiedId(whPoLine.getModifiedId());
         int count = whPoDao.saveOrUpdateByVersion(po);
@@ -313,6 +318,9 @@ public class PoLineManagerImpl implements PoLineManager {
         }
         // 修改po表头计划数量和可用数量
         WhPo po = whPoDao.findWhPoById(whPoLine.getPoId(), whPoLine.getOuId());
+        if (null == po.getQtyPlanned()) {
+            po.setQtyPlanned(0);
+        }
         po.setQtyPlanned(po.getQtyPlanned() + qtyPlannedCount);// 计划数量
         po.setModifiedId(whPoLine.getModifiedId());
         int count = whPoDao.saveOrUpdateByVersion(po);
