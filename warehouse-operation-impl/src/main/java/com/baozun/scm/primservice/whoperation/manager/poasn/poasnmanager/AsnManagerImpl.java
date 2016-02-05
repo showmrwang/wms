@@ -126,6 +126,7 @@ public class AsnManagerImpl implements AsnManager {
                 asnLine.setLastModifyTime(new Date());
             }
         } else {
+            // 没有ASNLINE信息直接保存ASN表头
             whAsnDao.insert(asn);
         }
         rm.setResponseStatus(ResponseMsg.STATUS_SUCCESS);

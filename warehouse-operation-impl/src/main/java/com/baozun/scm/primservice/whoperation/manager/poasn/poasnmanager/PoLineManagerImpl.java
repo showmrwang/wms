@@ -85,8 +85,20 @@ public class PoLineManagerImpl implements PoLineManager {
     @Override
     @MoreDB("infoSource")
     public void editPoLineToInfo(WhPoLine whPoLine) {
+        // 查询原始POLINE数据
+        WhPoLine poLine = whPoLineDao.findWhPoLineByIdWhPoLine(whPoLine.getId(), whPoLine.getOuId());
+        int differenceQty = poLine.getQtyPlanned() - whPoLine.getQtyPlanned();// 计算原始和这次改动的差额
         int result = whPoLineDao.saveOrUpdateByVersion(whPoLine);
         if (result <= 0) {
+            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+        }
+        // 修改PO表头计划数量
+        WhPo whPo = whPoDao.findWhPoById(whPoLine.getPoId(), whPoLine.getOuId());
+        whPo.setQtyPlanned(whPo.getQtyPlanned() + differenceQty);// 计划数量
+        whPo.setModifiedId(whPoLine.getModifiedId());
+        whPo.setLastModifyTime(new Date());
+        int count = whPoDao.saveOrUpdateByVersion(whPo);
+        if (count <= 0) {
             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
         }
     }
@@ -94,8 +106,20 @@ public class PoLineManagerImpl implements PoLineManager {
     @Override
     @MoreDB("shardSource")
     public void editPoLineToShare(WhPoLine whPoLine) {
+        // 查询原始POLINE数据
+        WhPoLine poLine = whPoLineDao.findWhPoLineByIdWhPoLine(whPoLine.getId(), whPoLine.getOuId());
+        int differenceQty = poLine.getQtyPlanned() - whPoLine.getQtyPlanned();// 计算原始和这次改动的差额
         int result = whPoLineDao.saveOrUpdateByVersion(whPoLine);
         if (result <= 0) {
+            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+        }
+        // 修改PO表头计划数量
+        WhPo whPo = whPoDao.findWhPoById(whPoLine.getPoId(), whPoLine.getOuId());
+        whPo.setQtyPlanned(whPo.getQtyPlanned() + differenceQty);// 计划数量
+        whPo.setModifiedId(whPoLine.getModifiedId());
+        whPo.setLastModifyTime(new Date());
+        int count = whPoDao.saveOrUpdateByVersion(whPo);
+        if (count <= 0) {
             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
         }
     }
