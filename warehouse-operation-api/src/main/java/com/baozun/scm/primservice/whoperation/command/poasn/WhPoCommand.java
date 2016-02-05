@@ -108,6 +108,7 @@ public class WhPoCommand implements Serializable {
     private String supplierName;
     /** 运输商ID */
     private String logisticsProviderName;
+
     public Long getId() {
         return this.id;
     }

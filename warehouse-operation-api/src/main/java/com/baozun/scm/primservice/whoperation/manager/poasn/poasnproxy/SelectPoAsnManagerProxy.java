@@ -29,4 +29,6 @@ public interface SelectPoAsnManagerProxy extends BaseManager {
     List<WhPoCommand> findWhPoListByPoCode(String poCode, List<Integer> status, Long ouid);
 
     String getAsnExtCode();
+
+    WhAsnCommand findWhAsnById(WhAsnCommand whAsnCommand);
 }

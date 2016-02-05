@@ -36,7 +36,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	created_id as createdId,
 	        	last_modify_time as lastModifyTime,
 	        	modified_id as modifiedId,
-	        	asn_ext_code as asnExtCode
+	        	asn_ext_code as asnExtCode,
+	        	date_format(po_date,'%Y-%m-%d') as poDateStr,
+	        	date_format(eta,'%Y-%m-%d %T') as etaStr
 	    ]]>
 	</sql>
 	
@@ -70,12 +72,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        inbound_time = #{inboundTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-			        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+			        last_modify_time = now() ,
 			        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
-		        WHERE 
-			        id = #{id} 
-			        and last_modify_time	<=  #{lastModifyTime}    
 		    ]]>
+		     <where>
+		    		id = #{id} 
+			        and last_modify_time	=  #{lastModifyTime}    
+			        <if test="ouId != null">
+			        	and ou_id = #{ouId}
+			        </if>
+		    </where>
 		</update>
 	
 	<resultMap id="whAsnCommand" type="com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand">
@@ -164,4 +170,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
 	</update>
 	
+	<select id="findWhAsnById" resultMap="whAsnCommand">
+    	select <include refid="whAsnColumnsExt" />
+		    from 
+		    t_wh_asn
+		    <where>
+		    	id = #{id}
+				<if test="ouid!=null">
+		   			 and ou_id = #{ouid}
+				</if>
+			</where>
+    </select>
 </mapper>

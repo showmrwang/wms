@@ -29,4 +29,12 @@ public interface AsnManager extends BaseManager {
 
     ResponseMsg insertAsnWithOuId(AsnCheckCommand asnCheckCommand);
 
+    WhAsnCommand findWhAsnByIdToInfo(WhAsnCommand whAsn);
+
+    WhAsnCommand findWhAsnByIdToShard(WhAsnCommand whAsn);
+
+    void editAsnToInfo(WhAsn whasn);
+
+    void editAsnToShard(WhAsn whasn);
+
 }

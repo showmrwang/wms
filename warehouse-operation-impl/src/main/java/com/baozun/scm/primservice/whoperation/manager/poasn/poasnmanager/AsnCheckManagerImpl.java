@@ -71,7 +71,7 @@ public class AsnCheckManagerImpl implements AsnCheckManager {
         } else {
             /* 不存在此asn单号则在check表中插入此asn信息 */
             long i = checkAsnCodeDao.insert(checkAsnCode);
-            if (1 != i) {
+            if (1 == i) {
                 /* 插入check表成功 */
                 flag = false;
             } else {

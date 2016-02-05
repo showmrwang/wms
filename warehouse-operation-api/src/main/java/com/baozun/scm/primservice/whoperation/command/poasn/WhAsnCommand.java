@@ -94,6 +94,17 @@ public class WhAsnCommand implements Serializable {
     /** 计划到货时间 */
     private String etaStr;
 
+    /** 仓库名称 */
+    private String ouName;
+    /** 单据类型名称 */
+    private String poTypeName;
+    /** 是否 */
+    private String isIqcName;
+    /** 供应商ID */
+    private String supplierName;
+    /** 运输商ID */
+    private String logisticsProviderName;
+
     public Long getUserId() {
         return userId;
     }
@@ -364,6 +375,46 @@ public class WhAsnCommand implements Serializable {
 
     public void setEtaStr(String etaStr) {
         this.etaStr = etaStr;
+    }
+
+    public String getOuName() {
+        return ouName;
+    }
+
+    public void setOuName(String ouName) {
+        this.ouName = ouName;
+    }
+
+    public String getPoTypeName() {
+        return poTypeName;
+    }
+
+    public void setPoTypeName(String poTypeName) {
+        this.poTypeName = poTypeName;
+    }
+
+    public String getIsIqcName() {
+        return isIqcName;
+    }
+
+    public void setIsIqcName(String isIqcName) {
+        this.isIqcName = isIqcName;
+    }
+
+    public String getSupplierName() {
+        return supplierName;
+    }
+
+    public void setSupplierName(String supplierName) {
+        this.supplierName = supplierName;
+    }
+
+    public String getLogisticsProviderName() {
+        return logisticsProviderName;
+    }
+
+    public void setLogisticsProviderName(String logisticsProviderName) {
+        this.logisticsProviderName = logisticsProviderName;
     }
 
 

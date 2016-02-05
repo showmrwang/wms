@@ -137,4 +137,41 @@ public class AsnManagerImpl implements AsnManager {
 
     }
 
+    /**
+     * 通过OP单ID查询相关信息 基础表
+     */
+    @Override
+    @MoreDB("infoSource")
+    public WhAsnCommand findWhAsnByIdToInfo(WhAsnCommand whPo) {
+        return whAsnDao.findWhAsnById(whPo.getId(), whPo.getOuId());
+    }
+
+    /**
+     * 通过OP单ID查询相关信息 拆库表
+     */
+    @Override
+    @MoreDB("shardSource")
+    public WhAsnCommand findWhAsnByIdToShard(WhAsnCommand whPo) {
+        return whAsnDao.findWhAsnById(whPo.getId(), whPo.getOuId());
+    }
+
+    @Override
+    @MoreDB("infoSource")
+    public void editAsnToInfo(WhAsn whasn) {
+        int count = 0;
+        count = whAsnDao.saveOrUpdateByVersion(whasn);
+        if (count == 0) {
+            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+        }
+    }
+
+    @Override
+    @MoreDB("shardSource")
+    public void editAsnToShard(WhAsn whasn) {
+        int count = 0;
+        count = whAsnDao.saveOrUpdateByVersion(whasn);
+        if (count == 0) {
+            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+        }
+    }
 }

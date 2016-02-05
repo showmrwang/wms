@@ -15,6 +15,7 @@ import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnMana
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoLineManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoManager;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 
@@ -155,5 +156,27 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
             result = poLineManager.editPoLineStatusToShard(command);
         }
         return result;
+    }
+
+    @Override
+    public ResponseMsg editAsn(WhAsn asn) {
+        log.info("EditAsn start =======================");
+        ResponseMsg rm = new ResponseMsg();
+        rm.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
+        if (asn.getStatus() != PoAsnStatus.PO_NEW) {
+            rm.setResponseStatus(ResponseMsg.DATA_ERROR);
+            rm.setMsg("po status is error status is: " + asn.getStatus());
+            log.warn("EditPo warn ResponseStatus: " + rm.getResponseStatus() + " msg: " + rm.getMsg());
+            return rm;
+        }
+        if (null == asn.getOuId()) {
+            // OUID为空更新基础表内信息
+            asnManager.editAsnToInfo(asn);
+        } else {
+            // OUID不为空更新拆库表内信息
+            asnManager.editAsnToShard(asn);
+        }
+        log.info("EditAsn end  =======================");
+        return rm;
     }
 }

@@ -53,4 +53,6 @@ public interface WhAsnDao extends BaseDao<WhAsn, Long> {
 
     long findAsnByCodeAndStore(@Param("asnExtCode") String asnExtCode, @Param("storeId") Long storeId, @Param("ouId") Long ouId);
 
+    WhAsnCommand findWhAsnById(@Param("id") Long id, @Param("ouid") Long ouid);
+
 }

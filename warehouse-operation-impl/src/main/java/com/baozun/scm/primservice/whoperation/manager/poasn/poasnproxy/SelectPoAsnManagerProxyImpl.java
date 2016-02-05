@@ -179,4 +179,17 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
         return extCode;
     }
 
+    @Override
+    public WhAsnCommand findWhAsnById(WhAsnCommand whAsnCommand) {
+        WhAsnCommand whasn = null;
+        if (null == whAsnCommand.getOuId()) {
+            // 查询基本库内信息
+            whasn = asnManager.findWhAsnByIdToInfo(whAsnCommand);
+        } else {
+            // 查询拆库内信息
+            whasn = asnManager.findWhAsnByIdToShard(whAsnCommand);
+        }
+        return whasn;
+    }
+
 }
