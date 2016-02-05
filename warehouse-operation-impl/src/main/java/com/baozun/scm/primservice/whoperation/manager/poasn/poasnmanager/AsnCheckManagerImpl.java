@@ -9,8 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.whoperation.dao.poasn.CheckAsnCodeDao;
-import com.baozun.scm.primservice.whoperation.exception.BusinessException;
-import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.model.poasn.CheckAsnCode;
 
 @Service("asnCheckManager")

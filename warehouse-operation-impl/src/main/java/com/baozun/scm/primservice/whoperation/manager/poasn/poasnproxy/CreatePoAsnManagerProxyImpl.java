@@ -73,6 +73,16 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
         try {
             // 创建PO单数据
             WhPo whPo = copyPropertiesPo(po);
+            // 相关单据号 调用HUB编码生成器获得
+            String poCode = codeManager.generateCode(Constants.WMS, Constants.WHPO_MODEL_URL, null, null, null);
+            if (StringUtil.isEmpty(poCode)) {
+                log.warn("CreatePo warn poCode generateCode is null");
+                rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
+                rm.setMsg(ErrorCodes.GET_GENERATECODE_NULL + "");
+                log.warn("CreatePo warn ResponseStatus: " + rm.getResponseStatus() + " msg: " + rm.getMsg());
+                return rm;
+            }
+            whPo.setPoCode(poCode);
             List<WhPoLine> whPoLines = copyPropertiesPoLine(po);
             // 判断OU_ID
             // 查询t_wh_check_pocode
@@ -101,13 +111,6 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
     public WhPo copyPropertiesPo(WhPoCommand po) {
         WhPo whPo = new WhPo();
         BeanUtils.copyProperties(po, whPo);
-        // 相关单据号 调用HUB编码生成器获得
-        String poCode = codeManager.generateCode(Constants.WMS, Constants.WHPO_MODEL_URL, null, null, null);
-        if (StringUtil.isEmpty(poCode)) {
-            log.warn("CreatePo warn poCode generateCode is null");
-            throw new BusinessException(ErrorCodes.GET_GENERATECODE_NULL, new Object[] {"po"});
-        }
-        whPo.setPoCode(poCode);
         // 采购时间为空默认为当前时间
         if (null == po.getPoDate()) {
             whPo.setPoDate(new Date());
@@ -164,6 +167,16 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
         try {
             // 创建ASN单数据
             WhAsn whAsn = copyPropertiesAsn(asn);
+            // 相关单据号 调用HUB编码生成器获得
+            String asnCode = codeManager.generateCode(Constants.WMS, Constants.WHASN_MODEL_URL, Constants.WMS_ASN_INNER, null, null);
+            if (StringUtil.isEmpty(asnCode)) {
+                log.warn("CreateAsn warn asnCode generateCode is null");
+                rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
+                rm.setMsg(ErrorCodes.GET_GENERATECODE_NULL + "");
+                log.warn("CreateAsn warn ResponseStatus: " + rm.getResponseStatus() + " msg: " + rm.getMsg());
+                return rm;
+            }
+            whAsn.setAsnCode(asnCode);
             rm = this.insertAsnWithCheck(whAsn, rm);
         } catch (Exception e) {
             if (e instanceof BusinessException) {
@@ -187,13 +200,6 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
     public WhAsn copyPropertiesAsn(WhAsnCommand asn) {
         WhAsn whAsn = new WhAsn();
         BeanUtils.copyProperties(asn, whAsn);
-        // 相关单据号 调用HUB编码生成器获得
-        String asnCode = codeManager.generateCode(Constants.WMS, Constants.WHASN_MODEL_URL, Constants.WMS_ASN_INNER, null, null);
-        if (StringUtil.isEmpty(asnCode)) {
-            log.warn("CreateAsn warn asnCode generateCode is null");
-            throw new BusinessException(ErrorCodes.GET_GENERATECODE_NULL, new Object[] {"asn"});
-        }
-        whAsn.setAsnCode(asnCode);
         // 采购时间为空默认为当前时间
         if (null == asn.getPoDate()) {
             whAsn.setPoDate(new Date());

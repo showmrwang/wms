@@ -103,7 +103,7 @@ public class ErrorCodes {
     public static final int ASN_EXIST = 3005;
     /** 保存至asn单信息失败 */
     public static final int SAVE_PO_FAILED_ASN = 3006;
-    /**调用编码生成器获取 {0} 编码出错*/
+    /** 调用编码生成器获取编码出错 */
     public static final int GET_GENERATECODE_NULL = 3007;
 
 }
