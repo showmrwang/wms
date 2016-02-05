@@ -40,6 +40,7 @@ public class AsnManagerImpl implements AsnManager {
      * 通过asncode查询出asn列表
      */
     @Override
+    @MoreDB("shardSource")
     public List<WhAsnCommand> findWhAsnListByAsnCode(String asnCode, Integer status, Long ouid) {
         return whAsnDao.findWhAsnListByAsnCode(asnCode, status, ouid);
     }
@@ -103,7 +104,9 @@ public class AsnManagerImpl implements AsnManager {
     public ResponseMsg createAsnAndLineToShare(WhAsn asn, ResponseMsg rm) {
         long i = whAsnDao.insert(asn);
         if (0 == i) {
-            throw new BusinessException(ErrorCodes.SAVE_PO_FAILED_ASN);
+            rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
+            rm.setMsg(ErrorCodes.SAVE_PO_FAILED_ASN + "");
+            return rm;
         }
         rm.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
         rm.setMsg(asn.getId() + "");
@@ -125,13 +128,17 @@ public class AsnManagerImpl implements AsnManager {
         if (0 == count) {
             long i = whAsnDao.insert(whAsn);
             if (0 == i) {
-                throw new BusinessException(ErrorCodes.SAVE_CHECK_TABLE_FAILED_ASN);
+                rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
+                rm.setMsg(ErrorCodes.SAVE_CHECK_TABLE_FAILED_ASN + "");
+                return rm;
             }
             rm.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
             rm.setMsg(whAsn.getId() + "");
         } else {
             /* 存在此asn单信息 */
-            throw new BusinessException(ErrorCodes.ASN_EXIST);
+            rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
+            rm.setMsg(ErrorCodes.ASN_EXIST + "");
+            return rm;
         }
         return rm;
 
