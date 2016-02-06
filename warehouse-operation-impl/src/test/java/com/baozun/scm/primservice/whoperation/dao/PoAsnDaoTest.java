@@ -52,10 +52,10 @@ public class PoAsnDaoTest extends AbstractTransactionalJUnit4SpringContextTests{
 	
 		
 		
-		WhAsn wp=whAsnDao.findById(7l);
+		WhAsn wp=whAsnDao.findById(2l);
 		Date date=new Date();
 		
-		if(date.getMinutes()<12){
+		if(date.getMinutes()<41){
 			System.out.println("sleep..");
 			try {
 				Thread.sleep(120000);
