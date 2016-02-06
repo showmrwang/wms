@@ -87,7 +87,8 @@ public class PoLineManagerImpl implements PoLineManager {
     public void editPoLineToInfo(WhPoLine whPoLine) {
         // 查询原始POLINE数据
         WhPoLine poLine = whPoLineDao.findWhPoLineByIdWhPoLine(whPoLine.getId(), whPoLine.getOuId());
-        int differenceQty = poLine.getQtyPlanned() - whPoLine.getQtyPlanned();// 计算原始和这次改动的差额
+        int differenceQty = poLine.getQtyPlanned() - whPoLine.getQtyPlanned();// 计算计划数量原始和这次改动的差额
+        whPoLine.setAvailableQty(whPoLine.getAvailableQty() - differenceQty);// 修改可用数量
         int result = whPoLineDao.saveOrUpdateByVersion(whPoLine);
         if (result <= 0) {
             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
@@ -109,7 +110,8 @@ public class PoLineManagerImpl implements PoLineManager {
     public void editPoLineToShare(WhPoLine whPoLine) {
         // 查询原始POLINE数据
         WhPoLine poLine = whPoLineDao.findWhPoLineByIdWhPoLine(whPoLine.getId(), whPoLine.getOuId());
-        int differenceQty = poLine.getQtyPlanned() - whPoLine.getQtyPlanned();// 计算原始和这次改动的差额
+        int differenceQty = poLine.getQtyPlanned() - whPoLine.getQtyPlanned();// 计算计划数量原始和这次改动的差额
+        whPoLine.setAvailableQty(whPoLine.getAvailableQty() - differenceQty);// 修改可用数量
         int result = whPoLineDao.saveOrUpdateByVersion(whPoLine);
         if (result <= 0) {
             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
@@ -267,9 +269,6 @@ public class PoLineManagerImpl implements PoLineManager {
         }
         // 修改po表头计划数量和可用数量
         WhPo po = whPoDao.findWhPoById(whPoLine.getPoId(), whPoLine.getOuId());
-        if (null == po.getQtyPlanned()) {
-            po.setQtyPlanned(0);
-        }
         po.setQtyPlanned(po.getQtyPlanned() + qtyPlannedCount);// 计划数量
         po.setModifiedId(whPoLine.getModifiedId());
         int count = whPoDao.saveOrUpdateByVersion(po);
@@ -318,9 +317,6 @@ public class PoLineManagerImpl implements PoLineManager {
         }
         // 修改po表头计划数量和可用数量
         WhPo po = whPoDao.findWhPoById(whPoLine.getPoId(), whPoLine.getOuId());
-        if (null == po.getQtyPlanned()) {
-            po.setQtyPlanned(0);
-        }
         po.setQtyPlanned(po.getQtyPlanned() + qtyPlannedCount);// 计划数量
         po.setModifiedId(whPoLine.getModifiedId());
         int count = whPoDao.saveOrUpdateByVersion(po);

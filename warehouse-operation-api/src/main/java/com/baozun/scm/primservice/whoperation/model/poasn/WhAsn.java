@@ -50,13 +50,13 @@ public class WhAsn extends BaseModel {
     /** 实际到货时间 */
     private Date deliveryTime;
     /** 计划数量 */
-    private Integer qtyPlanned;
+    private Integer qtyPlanned = 0;
     /** 实际数量 */
-    private Integer qtyRcvd;
+    private Integer qtyRcvd = 0;
     /** 计划箱数 */
-    private Integer ctnPlanned;
+    private Integer ctnPlanned = 0;
     /** 实际箱数 */
-    private Integer ctnRcvd;
+    private Integer ctnRcvd = 0;
     /** 供应商ID */
     private Long supplierId;
     /** 运输商ID */

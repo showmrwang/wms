@@ -56,13 +56,13 @@ public class WhPo extends BaseModel {
     /** 实际到货时间 */
     private Date deliveryTime;
     /** 计划到货数量 */
-    private Integer qtyPlanned;
+    private Integer qtyPlanned = 0;
     /** 实际到货数量 */
-    private Integer qtyRcvd;
+    private Integer qtyRcvd = 0;
     /** 计划箱数 */
-    private Integer ctnPlanned;
+    private Integer ctnPlanned = 0;
     /** 实际箱数 */
-    private Integer ctnRcvd;
+    private Integer ctnRcvd = 0;
     /** 开始收货时间 */
     private Date startTime;
     /** 结束收货时间 */
