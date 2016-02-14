@@ -108,7 +108,8 @@ public class WhPoCommand implements Serializable {
     private String supplierName;
     /** 运输商ID */
     private String logisticsProviderName;
-
+    /** Asn相关单据号 */
+    private String asnExtCode;
     public Long getId() {
         return this.id;
     }
@@ -427,6 +428,14 @@ public class WhPoCommand implements Serializable {
 
     public void setLogisticsProviderName(String logisticsProviderName) {
         this.logisticsProviderName = logisticsProviderName;
+    }
+
+    public String getAsnExtCode() {
+        return asnExtCode;
+    }
+
+    public void setAsnExtCode(String asnExtCode) {
+        this.asnExtCode = asnExtCode;
     }
 
 
