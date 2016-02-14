@@ -133,6 +133,7 @@ public class AsnManagerImpl implements AsnManager {
             WhAsn whAsn = new WhAsn();
             // 把PO单有的信息copy到whasn表头内
             BeanUtils.copyProperties(whPo, whAsn);
+            whAsn.setId(null);
             whAsn.setPoId(whPo.getId());
             whAsn.setQtyPlanned(asn.getQtyPlanned());
             whAsn.setStatus(PoAsnStatus.ASN_NEW);
@@ -149,7 +150,7 @@ public class AsnManagerImpl implements AsnManager {
                 // 查询对应poline信息
                 WhPoLine whPoLine = whPoLineDao.findWhPoLineByIdWhPoLine(asnline.getPoLineId(), asn.getOuId());
                 BeanUtils.copyProperties(whPoLine, asnLine);
-                asnLine.setAsnId(asn.getId());
+                asnLine.setAsnId(whAsn.getId());
                 asnLine.setPoLineId(whPoLine.getId());
                 asnLine.setStatus(PoAsnStatus.ASNLINE_NOT_RCVD);
                 asnLine.setQtyPlanned(asnline.getQtyPlanned());
@@ -159,7 +160,7 @@ public class AsnManagerImpl implements AsnManager {
                 asnLine.setLastModifyTime(new Date());
                 whAsnLineDao.insert(asnLine);
                 // 修改poline的可用数量
-                whPoLine.setAvailableQty(whPoLine.getAvailableQty() + asnline.getQtyPlanned());
+                whPoLine.setAvailableQty(whPoLine.getAvailableQty() - asnline.getQtyPlanned());
                 whPoLine.setModifiedId(asn.getModifiedId());
                 if (whPoLine.getStatus() == PoAsnStatus.POLINE_NEW) {
                     // 如果明细状态为新建的话 改成已创建ASN状态
@@ -207,6 +208,8 @@ public class AsnManagerImpl implements AsnManager {
                 WhAsn whAsn = new WhAsn();
                 // 把PO单有的信息copy到whasn表头内
                 BeanUtils.copyProperties(whPo, whAsn);
+                whAsn.setId(null);
+                whAsn.setPoId(whPo.getId());
                 whAsn.setQtyPlanned(asn.getQtyPlanned());
                 whAsn.setStatus(PoAsnStatus.ASN_NEW);
                 whAsn.setAsnCode(asn.getAsnCode());
@@ -222,7 +225,7 @@ public class AsnManagerImpl implements AsnManager {
                     // 查询对应poline信息
                     WhPoLine whPoLine = whPoLineDao.findWhPoLineByIdWhPoLine(asnline.getPoLineId(), asn.getOuId());
                     BeanUtils.copyProperties(whPoLine, asnLine);
-                    asnLine.setAsnId(asn.getId());
+                    asnLine.setAsnId(whAsn.getId());
                     asnLine.setPoLineId(whPoLine.getId());
                     asnLine.setStatus(PoAsnStatus.ASNLINE_NOT_RCVD);
                     asnLine.setQtyPlanned(asnline.getQtyPlanned());
@@ -232,7 +235,7 @@ public class AsnManagerImpl implements AsnManager {
                     asnLine.setLastModifyTime(new Date());
                     whAsnLineDao.insert(asnLine);
                     // 修改poline的可用数量
-                    whPoLine.setAvailableQty(whPoLine.getAvailableQty() + asnline.getQtyPlanned());
+                    whPoLine.setAvailableQty(whPoLine.getAvailableQty() - asnline.getQtyPlanned());
                     whPoLine.setModifiedId(asn.getModifiedId());
                     if (whPoLine.getStatus() == PoAsnStatus.POLINE_NEW) {
                         // 如果明细状态为新建的话 改成已创建ASN状态
