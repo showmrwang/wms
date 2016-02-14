@@ -66,7 +66,7 @@ public class WhAsn extends BaseModel {
     /** 状态 */
     private Integer status;
     /** 是否质检 1:是 0:否 */
-    private Integer isIqc;
+    private Boolean isIqc;
     /** 开始收货时间 */
     private Date startTime;
     /** 结束收获时间 */
@@ -211,12 +211,12 @@ public class WhAsn extends BaseModel {
         this.status = value;
     }
 
-    public Integer getIsIqc() {
-        return this.isIqc;
+    public Boolean getIsIqc() {
+        return isIqc;
     }
 
-    public void setIsIqc(Integer value) {
-        this.isIqc = value;
+    public void setIsIqc(Boolean isIqc) {
+        this.isIqc = isIqc;
     }
 
     public Date getStartTime() {
