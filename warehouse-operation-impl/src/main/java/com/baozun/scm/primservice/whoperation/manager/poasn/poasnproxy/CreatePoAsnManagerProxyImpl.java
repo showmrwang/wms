@@ -270,16 +270,16 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
             response.setMsg("asnExtCode is null");
             return response;
         }
-        if (null == asn.getAsnType()) {
-            response.setResponseStatus(ResponseMsg.DATA_ERROR);
-            response.setMsg("AsnType is null");
-            return response;
-        }
-        if (null == asn.getStatus()) {
-            response.setResponseStatus(ResponseMsg.DATA_ERROR);
-            response.setMsg("Status is null");
-            return response;
-        }
+        // if (null == asn.getAsnType()) {
+        // response.setResponseStatus(ResponseMsg.DATA_ERROR);
+        // response.setMsg("AsnType is null");
+        // return response;
+        // }
+        // if (null == asn.getStatus()) {
+        // response.setResponseStatus(ResponseMsg.DATA_ERROR);
+        // response.setMsg("Status is null");
+        // return response;
+        // }
         // 创建ASN单 OUID为必须值
         if (null == asn.getOuId()) {
             response.setResponseStatus(ResponseMsg.DATA_ERROR);
