@@ -19,6 +19,7 @@ import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnLineCommand;
 import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnDao;
+import com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnLineDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoLineDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
@@ -42,6 +43,8 @@ public class AsnManagerImpl implements AsnManager {
     private WhAsnDao whAsnDao;
     @Autowired
     private WhPoLineDao whPoLineDao;
+    @Autowired
+    private WhAsnLineDao whAsnLineDao;
 
 
     /**
@@ -112,6 +115,7 @@ public class AsnManagerImpl implements AsnManager {
     public ResponseMsg createAsnAndLineToShare(WhAsn asn, List<WhAsnLineCommand> asnLineList, ResponseMsg rm) {
         // 如果有asnline信息 asn表头信息需要查询po表头信息
         if (null != asnLineList) {
+            whAsnDao.insert(asn);
             for (WhAsnLineCommand asnline : asnLineList) {
                 WhAsnLine asnLine = new WhAsnLine();
                 // 查询对应poline信息
@@ -124,6 +128,7 @@ public class AsnManagerImpl implements AsnManager {
                 asnLine.setCreateTime(new Date());
                 asnLine.setModifiedId(asn.getCreatedId());
                 asnLine.setLastModifyTime(new Date());
+                whAsnLineDao.insert(asnLine);
             }
         } else {
             // 没有ASNLINE信息直接保存ASN表头
@@ -137,24 +142,35 @@ public class AsnManagerImpl implements AsnManager {
 
     @Override
     @MoreDB("shardSource")
-    public ResponseMsg insertAsnWithOuId(AsnCheckCommand asnCheckCommand) {
-        WhAsn whAsn = asnCheckCommand.getWhAsn();
-        ResponseMsg rm = asnCheckCommand.getRm();
-        String asnExtCode = whAsn.getAsnExtCode();
-        Long storeId = whAsn.getStoreId();
-        Long ouId = whAsn.getOuId();
+    public ResponseMsg insertAsnWithOuId(WhAsn asn, List<WhAsnLineCommand> asnLineList, ResponseMsg rm) {
+        String asnExtCode = asn.getAsnExtCode();
+        Long storeId = asn.getStoreId();
+        Long ouId = asn.getOuId();
         /* 查找在性对应的拆库表中是否有此asn单信息 */
         long count = whAsnDao.findAsnByCodeAndStore(asnExtCode, storeId, ouId);
         /* 没有此asn单信息 */
         if (0 == count) {
-            long i = whAsnDao.insert(whAsn);
-            if (0 == i) {
-                rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
-                rm.setMsg(ErrorCodes.SAVE_CHECK_TABLE_FAILED_ASN + "");
-                return rm;
+            // 如果有asnline信息 asn表头信息需要查询po表头信息
+            if (null != asnLineList) {
+                whAsnDao.insert(asn);
+                for (WhAsnLineCommand asnline : asnLineList) {
+                    WhAsnLine asnLine = new WhAsnLine();
+                    // 查询对应poline信息
+                    WhPoLine whPoLine = whPoLineDao.findWhPoLineByIdWhPoLine(asnline.getPoLineId(), asn.getOuId());
+                    BeanUtils.copyProperties(whPoLine, asnLine);
+                    asnLine.setAsnId(asn.getId());
+                    asnLine.setPoLineId(whPoLine.getId());
+                    asnLine.setStatus(PoAsnStatus.ASNLINE_NOT_RCVD);
+                    asnLine.setCreatedId(asn.getCreatedId());
+                    asnLine.setCreateTime(new Date());
+                    asnLine.setModifiedId(asn.getCreatedId());
+                    asnLine.setLastModifyTime(new Date());
+                    whAsnLineDao.insert(asnLine);
+                }
+            } else {
+                // 没有ASNLINE信息直接保存ASN表头
+                whAsnDao.insert(asn);
             }
-            rm.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
-            rm.setMsg(whAsn.getId() + "");
         } else {
             /* 存在此asn单信息 */
             rm.setResponseStatus(ResponseMsg.STATUS_ERROR);

@@ -46,21 +46,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				</if>
 		</where>
 	</sql>
-	
-	<select id="findAsnByCodeAndStore" resultType="long">
-        select count(*) from 
-        t_wh_po
-		<where>
-			<if test="ouId!=null">
-				and ou_id = #{ouId}
-			</if>
-			<if test="asnExtCode!=null and asnExtCode!=''">
-				and asn_ext_code = #{asnExtCode}
-			</if>
-			<if test="storeId!=null">
-				and store_id = #{storeId}
-			</if>
-		</where>
-    </select>
+
 	
 </mapper>

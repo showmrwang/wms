@@ -7,7 +7,6 @@ import lark.common.dao.Page;
 import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 
-import com.baozun.scm.primservice.whoperation.command.poasn.AsnCheckCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnLineCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
@@ -28,7 +27,7 @@ public interface AsnManager extends BaseManager {
 
     ResponseMsg createAsnAndLineToShare(WhAsn whAsn, List<WhAsnLineCommand> asnLineList, ResponseMsg rm);
 
-    ResponseMsg insertAsnWithOuId(AsnCheckCommand asnCheckCommand);
+    ResponseMsg insertAsnWithOuId(WhAsn whAsn, List<WhAsnLineCommand> asnLineList, ResponseMsg rm);
 
     WhAsnCommand findWhAsnByIdToInfo(WhAsnCommand whAsn);
 

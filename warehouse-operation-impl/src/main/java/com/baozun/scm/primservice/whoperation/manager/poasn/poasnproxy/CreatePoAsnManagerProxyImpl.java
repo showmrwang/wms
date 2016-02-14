@@ -483,7 +483,7 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
             rm = asnManager.createAsnAndLineToShare(whAsn, asnLineList, rm);
         } else {
             /* 在check表中存在此asn单,则去asn表中查找是否有这单. 如果有就抛出异常,没有就插入 */
-            rm = asnManager.insertAsnWithOuId(asnCheckCommand);
+            rm = asnManager.insertAsnWithOuId(whAsn, asnLineList, rm);
             /* 如果抛出异常,此处会有补偿机制 */
         }
         // }
