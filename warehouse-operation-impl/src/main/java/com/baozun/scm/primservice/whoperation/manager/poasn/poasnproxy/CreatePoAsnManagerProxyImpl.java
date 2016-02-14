@@ -205,9 +205,7 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
         if (null == asn.getPoDate()) {
             whAsn.setPoDate(new Date());
         }
-        whAsn.setCreateTime(new Date());
         whAsn.setCreatedId(asn.getUserId());
-        whAsn.setLastModifyTime(new Date());
         whAsn.setModifiedId(asn.getUserId());
         return whAsn;
     }
