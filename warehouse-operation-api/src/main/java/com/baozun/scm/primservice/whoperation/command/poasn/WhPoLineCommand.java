@@ -100,6 +100,10 @@ public class WhPoLineCommand implements Serializable {
 
     private List<Long> ids;
 
+    private String skuCode;
+
+    private String skuName;
+
     public Long getId() {
         return this.id;
     }
@@ -394,6 +398,22 @@ public class WhPoLineCommand implements Serializable {
 
     public void setPoLineId(Long poLineId) {
         this.poLineId = poLineId;
+    }
+
+    public String getSkuCode() {
+        return skuCode;
+    }
+
+    public void setSkuCode(String skuCode) {
+        this.skuCode = skuCode;
+    }
+
+    public String getSkuName() {
+        return skuName;
+    }
+
+    public void setSkuName(String skuName) {
+        this.skuName = skuName;
     }
 
 
