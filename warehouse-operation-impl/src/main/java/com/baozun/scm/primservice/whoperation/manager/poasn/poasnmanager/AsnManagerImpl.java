@@ -133,6 +133,7 @@ public class AsnManagerImpl implements AsnManager {
             WhAsn whAsn = new WhAsn();
             // 把PO单有的信息copy到whasn表头内
             BeanUtils.copyProperties(whPo, whAsn);
+            whAsn.setPoId(whPo.getId());
             whAsn.setQtyPlanned(asn.getQtyPlanned());
             whAsn.setStatus(PoAsnStatus.ASN_NEW);
             whAsn.setAsnCode(asn.getAsnCode());
