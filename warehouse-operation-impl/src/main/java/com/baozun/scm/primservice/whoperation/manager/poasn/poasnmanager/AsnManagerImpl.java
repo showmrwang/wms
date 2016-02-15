@@ -154,6 +154,7 @@ public class AsnManagerImpl implements AsnManager {
                     throw new BusinessException(ErrorCodes.ASNLINE_QTYPLANNED_ERROR);
                 }
                 BeanUtils.copyProperties(whPoLine, asnLine);
+                asnLine.setId(null);
                 asnLine.setAsnId(whAsn.getId());
                 asnLine.setPoLineId(whPoLine.getId());
                 asnLine.setStatus(PoAsnStatus.ASNLINE_NOT_RCVD);
@@ -233,6 +234,7 @@ public class AsnManagerImpl implements AsnManager {
                         throw new BusinessException(ErrorCodes.ASNLINE_QTYPLANNED_ERROR);
                     }
                     BeanUtils.copyProperties(whPoLine, asnLine);
+                    asnLine.setId(null);
                     asnLine.setAsnId(whAsn.getId());
                     asnLine.setPoLineId(whPoLine.getId());
                     asnLine.setStatus(PoAsnStatus.ASNLINE_NOT_RCVD);
