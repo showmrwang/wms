@@ -149,6 +149,10 @@ public class AsnManagerImpl implements AsnManager {
                 WhAsnLine asnLine = new WhAsnLine();
                 // 查询对应poline信息
                 WhPoLine whPoLine = whPoLineDao.findWhPoLineByIdWhPoLine(asnline.getPoLineId(), asn.getOuId());
+                if (asnline.getQtyPlanned() > whPoLine.getAvailableQty()) {
+                    // 如果asnline计划数量 > poline的可用数量抛出异常
+                    throw new BusinessException(ErrorCodes.ASNLINE_QTYPLANNED_ERROR);
+                }
                 BeanUtils.copyProperties(whPoLine, asnLine);
                 asnLine.setAsnId(whAsn.getId());
                 asnLine.setPoLineId(whPoLine.getId());
@@ -224,6 +228,10 @@ public class AsnManagerImpl implements AsnManager {
                     WhAsnLine asnLine = new WhAsnLine();
                     // 查询对应poline信息
                     WhPoLine whPoLine = whPoLineDao.findWhPoLineByIdWhPoLine(asnline.getPoLineId(), asn.getOuId());
+                    if (asnline.getQtyPlanned() > whPoLine.getAvailableQty()) {
+                        // 如果asnline计划数量 > poline的可用数量抛出异常
+                        throw new BusinessException(ErrorCodes.ASNLINE_QTYPLANNED_ERROR);
+                    }
                     BeanUtils.copyProperties(whPoLine, asnLine);
                     asnLine.setAsnId(whAsn.getId());
                     asnLine.setPoLineId(whPoLine.getId());

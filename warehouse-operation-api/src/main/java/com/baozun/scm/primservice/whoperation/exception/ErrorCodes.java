@@ -105,5 +105,7 @@ public class ErrorCodes {
     public static final int SAVE_PO_FAILED_ASN = 3006;
     /** 调用编码生成器获取编码出错 */
     public static final int GET_GENERATECODE_NULL = 3007;
+    /**ASN计划数量大于PO可用数量*/
+    public static final int ASNLINE_QTYPLANNED_ERROR = 3008;
 
 }
