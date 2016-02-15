@@ -15,4 +15,6 @@ public interface CreatePoAsnManagerProxy extends BaseManager {
     ResponseMsg createPoLineSingle(WhPoLineCommand whPoLine);
 
     ResponseMsg createPoLineBatch(WhPoLineCommand whPoLine);
+
+    ResponseMsg createAsnBatch(WhAsnCommand asn);
 }

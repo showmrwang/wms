@@ -40,4 +40,8 @@ public interface PoManager extends BaseManager {
 
     List<WhPoCommand> findWhPoListByPoCodeToShard(String poCode, List<Integer> status, Long ouid);
 
+    WhPo findWhAsnByIdToInfo(Long id, Long ouid);
+
+    WhPo findWhAsnByIdToShard(Long id, Long ouid);
+
 }

@@ -1,5 +1,6 @@
 package com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager;
 
+import java.util.List;
 import java.util.Map;
 
 import lark.common.dao.Page;
@@ -47,4 +48,8 @@ public interface PoLineManager extends BaseManager {
     void createPoLineBatchToInfo(WhPoLineCommand whPoLine);
 
     void createPoLineBatchToShare(WhPoLineCommand whPoLine);
+
+    List<WhPoLine> findWhPoLineListByPoIdToInfo(Long poid, Long ouid);
+
+    List<WhPoLine> findWhPoLineListByPoIdToShard(Long poid, Long ouid);
 }

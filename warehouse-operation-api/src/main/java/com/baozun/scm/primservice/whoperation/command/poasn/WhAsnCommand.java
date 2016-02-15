@@ -106,7 +106,8 @@ public class WhAsnCommand implements Serializable {
     private String logisticsProviderName;
 
     private List<WhAsnLineCommand> asnLineList;
-
+    /** po单对应的ou_id */
+    private Long poOuId;
 
 
     public List<WhAsnLineCommand> getAsnLineList() {
@@ -429,5 +430,12 @@ public class WhAsnCommand implements Serializable {
         this.logisticsProviderName = logisticsProviderName;
     }
 
+    public Long getPoOuId() {
+        return poOuId;
+    }
+
+    public void setPoOuId(Long poOuId) {
+        this.poOuId = poOuId;
+    }
 
 }

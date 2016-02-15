@@ -115,10 +115,10 @@ public class AsnManagerImpl implements AsnManager {
      */
     @Override
     @MoreDB("shardSource")
-    public ResponseMsg createAsnAndLineToShare(WhAsn asn, List<WhAsnLineCommand> asnLineList, ResponseMsg rm) {
+    public ResponseMsg createAsnAndLineToShare(WhAsn asn, List<WhAsnLineCommand> asnLineList, WhPo whPo, Map<Long, WhPoLine> poLineMap, ResponseMsg rm) {
         // 如果有asnline信息 asn表头信息需要查询po表头信息
         // 查询对应的PO单信息
-        WhPo whPo = whPoDao.findWhPoById(asn.getPoId(), asn.getOuId());
+        // WhPo whPo = whPoDao.findWhPoById(asn.getPoId(), asn.getPoOuId());
         if (whPo.getStatus() == PoAsnStatus.PO_NEW) {
             // 如果是新建状态 改状态为已创建ASN
             whPo.setStatus(PoAsnStatus.PO_CREATE_ASN);
@@ -148,7 +148,7 @@ public class AsnManagerImpl implements AsnManager {
             for (WhAsnLineCommand asnline : asnLineList) {
                 WhAsnLine asnLine = new WhAsnLine();
                 // 查询对应poline信息
-                WhPoLine whPoLine = whPoLineDao.findWhPoLineByIdWhPoLine(asnline.getPoLineId(), asn.getOuId());
+                WhPoLine whPoLine = poLineMap.get(asnline.getPoLineId());
                 if (asnline.getQtyPlanned() > whPoLine.getAvailableQty()) {
                     // 如果asnline计划数量 > poline的可用数量抛出异常
                     throw new BusinessException(ErrorCodes.ASNLINE_QTYPLANNED_ERROR);
@@ -157,6 +157,7 @@ public class AsnManagerImpl implements AsnManager {
                 asnLine.setId(null);
                 asnLine.setAsnId(whAsn.getId());
                 asnLine.setPoLineId(whPoLine.getId());
+                asnLine.setPoLinenum(whPoLine.getLinenum());
                 asnLine.setStatus(PoAsnStatus.ASNLINE_NOT_RCVD);
                 asnLine.setQtyPlanned(asnline.getQtyPlanned());
                 asnLine.setCreatedId(asn.getCreatedId());
@@ -189,7 +190,7 @@ public class AsnManagerImpl implements AsnManager {
 
     @Override
     @MoreDB("shardSource")
-    public ResponseMsg insertAsnWithOuId(WhAsn asn, List<WhAsnLineCommand> asnLineList, ResponseMsg rm) {
+    public ResponseMsg insertAsnWithOuId(WhAsn asn, List<WhAsnLineCommand> asnLineList, WhPo whPo, Map<Long, WhPoLine> poLineMap, ResponseMsg rm) {
         String asnExtCode = asn.getAsnExtCode();
         Long storeId = asn.getStoreId();
         Long ouId = asn.getOuId();
@@ -198,7 +199,7 @@ public class AsnManagerImpl implements AsnManager {
         /* 没有此asn单信息 */
         if (0 == count) {
             // 查询对应的PO单信息
-            WhPo whPo = whPoDao.findWhPoById(asn.getPoId(), asn.getOuId());
+            // WhPo whPo = whPoDao.findWhPoById(asn.getPoId(), asn.getOuId());
             if (whPo.getStatus() == PoAsnStatus.PO_NEW) {
                 // 如果是新建状态 改状态为已创建ASN
                 whPo.setStatus(PoAsnStatus.PO_CREATE_ASN);
@@ -228,7 +229,9 @@ public class AsnManagerImpl implements AsnManager {
                 for (WhAsnLineCommand asnline : asnLineList) {
                     WhAsnLine asnLine = new WhAsnLine();
                     // 查询对应poline信息
-                    WhPoLine whPoLine = whPoLineDao.findWhPoLineByIdWhPoLine(asnline.getPoLineId(), asn.getOuId());
+                    // WhPoLine whPoLine =
+                    // whPoLineDao.findWhPoLineByIdWhPoLine(asnline.getPoLineId(), asn.getOuId());
+                    WhPoLine whPoLine = poLineMap.get(asnline.getPoLineId());
                     if (asnline.getQtyPlanned() > whPoLine.getAvailableQty()) {
                         // 如果asnline计划数量 > poline的可用数量抛出异常
                         throw new BusinessException(ErrorCodes.ASNLINE_QTYPLANNED_ERROR);
@@ -237,6 +240,7 @@ public class AsnManagerImpl implements AsnManager {
                     asnLine.setId(null);
                     asnLine.setAsnId(whAsn.getId());
                     asnLine.setPoLineId(whPoLine.getId());
+                    asnLine.setPoLinenum(whPoLine.getLinenum());
                     asnLine.setStatus(PoAsnStatus.ASNLINE_NOT_RCVD);
                     asnLine.setQtyPlanned(asnline.getQtyPlanned());
                     asnLine.setCreatedId(asn.getCreatedId());
@@ -307,4 +311,14 @@ public class AsnManagerImpl implements AsnManager {
             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
         }
     }
+
+    @Override
+    @MoreDB("shardSource")
+    public ResponseMsg createAsnBatch(WhAsnCommand asn, ResponseMsg rm) {
+        WhAsn whAsn = new WhAsn();
+        rm.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
+        // rm.setMsg(po.getId() + "");
+        return rm;
+    }
+
 }

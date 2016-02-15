@@ -2,7 +2,9 @@ package com.baozun.scm.primservice.whoperation.manager.poasn.poasnproxy;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -168,7 +170,7 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
         try {
             // 创建ASN单数据
             WhAsn whAsn = copyPropertiesAsn(asn);
-            // 相关单据号 调用HUB编码生成器获得
+            // WMS单据号 调用HUB编码生成器获得
             String asnCode = codeManager.generateCode(Constants.WMS, Constants.WHASN_MODEL_URL, Constants.WMS_ASN_INNER, null, null);
             if (StringUtil.isEmpty(asnCode)) {
                 log.warn("CreateAsn warn asnCode generateCode is null");
@@ -208,6 +210,86 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
         whAsn.setCreatedId(asn.getUserId());
         whAsn.setModifiedId(asn.getUserId());
         return whAsn;
+    }
+
+    /**
+     * 批量创建ASN&ASNLINE数据 一键批量创建
+     */
+    @Override
+    public ResponseMsg createAsnBatch(WhAsnCommand asn) {
+        log.info("CreateAsnBatch start =======================");
+        ResponseMsg rm = new ResponseMsg();
+        CheckAsnCode checkAsnCode = new CheckAsnCode();
+        try {
+            // WMS单据号 调用HUB编码生成器获得
+            String asnCode = codeManager.generateCode(Constants.WMS, Constants.WHASN_MODEL_URL, Constants.WMS_ASN_INNER, null, null);
+            if (StringUtil.isEmpty(asnCode)) {
+                log.warn("CreateAsnBatch warn asnCode generateCode is null");
+                rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
+                rm.setMsg(ErrorCodes.GET_GENERATECODE_NULL + "");
+                log.warn("CreateAsnBatch warn ResponseStatus: " + rm.getResponseStatus() + " msg: " + rm.getMsg());
+                return rm;
+            }
+            asn.setAsnCode(asnCode);
+            // 相关单据号 调用HUB编码生成器获得
+            String asnExtCode = null;
+            boolean isSuccess = false;
+            // 验证asnextcode是否存在 最多调用接口5次
+            for (int i = 0; i <= 5; i++) {
+                if (true == isSuccess) {
+                    break;
+                }
+                asnExtCode = codeManager.generateCode(Constants.WMS, Constants.WHASN_MODEL_URL, Constants.WMS_ASN_EXT, null, null);
+                if (StringUtil.isEmpty(asnExtCode)) {
+                    log.warn("CreateAsnBatch warn asnExtCode generateCode is null");
+                    rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
+                    rm.setMsg(ErrorCodes.GET_GENERATECODE_NULL + "");
+                    log.warn("CreateAsnBatch warn ResponseStatus: " + rm.getResponseStatus() + " msg: " + rm.getMsg());
+                    return rm;
+                }
+                asn.setAsnExtCode(asnExtCode);
+                checkAsnCode.setAsnExtCode(asnExtCode);
+                checkAsnCode.setOuId(asn.getOuId());
+                checkAsnCode.setStoreId(asn.getStoreId());
+                List<CheckAsnCode> checkAsnCodeList = asnCheckManager.findCheckAsnCodeListByParam(checkAsnCode);
+                // 如果没有 直接结束
+                if (checkAsnCodeList.size() == 0) {
+                    isSuccess = true;
+                }
+            }
+            if (!isSuccess) {
+                // 如果5次获取都失败了 直接返回失败
+                log.warn("CreateAsnBatch warn asnExtCode generateCode CheckAsnCode is not null");
+                rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
+                rm.setMsg(ErrorCodes.GET_GENERATECODE_NULL + "");
+                log.warn("CreateAsnBatch warn ResponseStatus: " + rm.getResponseStatus() + " msg: " + rm.getMsg());
+                return rm;
+            }
+            rm = checkAsnParameter(asn);
+            // 验证数据完整性
+            if (rm.getResponseStatus() != ResponseMsg.STATUS_SUCCESS) {
+                log.warn("CreatePo warn ResponseStatus: " + rm.getResponseStatus() + " msg: " + rm.getMsg());
+                return rm;
+            }
+            // 插入checkAsnCode表
+            checkAsnCode.setAsnExtCode(asn.getAsnExtCode());
+            checkAsnCode.setOuId(asn.getOuId());
+            checkAsnCode.setStoreId(asn.getStoreId());
+            asnCheckManager.insertAsnWithCheckAndOuId(checkAsnCode);
+            // 创建ASN&ASNLINE信息
+            // poManager.f
+            rm = asnManager.createAsnBatch(asn, rm);
+        } catch (Exception e) {
+            if (e instanceof BusinessException) {
+                throw e;
+            }
+            rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
+            log.error("CreateAsnBatch error poid: " + asn.getPoId() + " ouid: " + asn.getOuId());
+            log.error("" + e);
+            return rm;
+        }
+        log.info("CreateAsnBatch end =======================");
+        return rm;
     }
 
     /**
@@ -270,16 +352,16 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
             response.setMsg("asnExtCode is null");
             return response;
         }
-        // if (null == asn.getAsnType()) {
-        // response.setResponseStatus(ResponseMsg.DATA_ERROR);
-        // response.setMsg("AsnType is null");
-        // return response;
-        // }
-        // if (null == asn.getStatus()) {
-        // response.setResponseStatus(ResponseMsg.DATA_ERROR);
-        // response.setMsg("Status is null");
-        // return response;
-        // }
+        if (null == asn.getCustomerId()) {
+            response.setResponseStatus(ResponseMsg.DATA_ERROR);
+            response.setMsg("CustomerId is null");
+            return response;
+        }
+        if (null == asn.getStoreId()) {
+            response.setResponseStatus(ResponseMsg.DATA_ERROR);
+            response.setMsg("StoreId is null");
+            return response;
+        }
         // 创建ASN单 OUID为必须值
         if (null == asn.getOuId()) {
             response.setResponseStatus(ResponseMsg.DATA_ERROR);
@@ -476,12 +558,28 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
         /* asn单带ouId */
         /* 查找check表中是否有数据 */
         boolean flag = asnCheckManager.insertAsnWithCheckAndOuId(checkAsnCode);
+        WhPo whPo = null;
+        Map<Long, WhPoLine> poLineMap = new HashMap<Long, WhPoLine>();
+        List<WhPoLine> poLineList = new ArrayList<WhPoLine>();
+        // 封装数据
+        if (null == whAsn.getPoOuId()) {
+            // 如果对应的po_ou_id为空去基础库查询
+            whPo = poManager.findWhAsnByIdToInfo(whAsn.getPoId(), whAsn.getPoOuId());
+            poLineList = poLineManager.findWhPoLineListByPoIdToInfo(whAsn.getPoId(), whAsn.getPoOuId());
+        } else {
+            // 如果对应的po_ou_id不为空 去对应库查询
+            whPo = poManager.findWhAsnByIdToShard(whAsn.getPoId(), whAsn.getPoOuId());
+            poLineList = poLineManager.findWhPoLineListByPoIdToShard(whAsn.getPoId(), whAsn.getPoOuId());
+        }
+        for (WhPoLine whPoLine : poLineList) {
+            poLineMap.put(whPoLine.getId(), whPoLine);
+        }
         if (!flag) {
             /* 在check表中不存在asn单 */
-            rm = asnManager.createAsnAndLineToShare(whAsn, asnLineList, rm);
+            rm = asnManager.createAsnAndLineToShare(whAsn, asnLineList, whPo, poLineMap, rm);
         } else {
             /* 在check表中存在此asn单,则去asn表中查找是否有这单. 如果有就抛出异常,没有就插入 */
-            rm = asnManager.insertAsnWithOuId(whAsn, asnLineList, rm);
+            rm = asnManager.insertAsnWithOuId(whAsn, asnLineList, whPo, poLineMap, rm);
             /* 如果抛出异常,此处会有补偿机制 */
         }
         // }

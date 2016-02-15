@@ -36,7 +36,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	created_id as createdId,
 	        	last_modify_time as lastModifyTime,
 	        	modified_id as modifiedId,
-	        	asn_ext_code as asnExtCode
+	        	asn_ext_code as asnExtCode,
+	        	po_ou_id as poOuId
 	    ]]>
 	</sql>
 		<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
@@ -70,7 +71,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	create_time ,
 	        	created_id ,
 	        	last_modify_time ,
-	        	modified_id 
+	        	modified_id,
+	        	po_ou_id 
 	        ) VALUES (
 	        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{asnCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -97,7 +99,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 	        	#{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-	        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
+	        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{poOuId,javaType=java.lang.Long,jdbcType=BIGINT} 
 	        )
 	    ]]>
 
@@ -130,7 +133,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        po_ou_id = #{poOuId,javaType=java.lang.Long,jdbcType=BIGINT} 
 	        WHERE 
 		        id = #{id} 
 	    ]]>

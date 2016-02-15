@@ -81,6 +81,8 @@ public class WhAsn extends BaseModel {
     private Date lastModifyTime;
     /** modifiedId */
     private Long modifiedId;
+    /** PO单对应的ou_id */
+    private Long poOuId;
 
 
     public String getAsnCode() {
@@ -282,5 +284,14 @@ public class WhAsn extends BaseModel {
     public void setAsnExtCode(String asnExtCode) {
         this.asnExtCode = asnExtCode;
     }
+
+    public Long getPoOuId() {
+        return poOuId;
+    }
+
+    public void setPoOuId(Long poOuId) {
+        this.poOuId = poOuId;
+    }
+
 
 }

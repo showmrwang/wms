@@ -324,4 +324,16 @@ public class PoLineManagerImpl implements PoLineManager {
             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
         }
     }
+
+    @Override
+    @MoreDB("infoSource")
+    public List<WhPoLine> findWhPoLineListByPoIdToInfo(Long poid, Long ouid) {
+        return whPoLineDao.findWhPoLineByPoIdOuId(poid, ouid, null);
+    }
+
+    @Override
+    @MoreDB("shardSource")
+    public List<WhPoLine> findWhPoLineListByPoIdToShard(Long poid, Long ouid) {
+        return whPoLineDao.findWhPoLineByPoIdOuId(poid, ouid, null);
+    }
 }

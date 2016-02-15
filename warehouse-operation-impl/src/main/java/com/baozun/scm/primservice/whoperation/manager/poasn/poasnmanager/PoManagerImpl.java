@@ -239,4 +239,16 @@ public class PoManagerImpl implements PoManager {
     public List<WhPoCommand> findWhPoListByPoCodeToShard(String poCode, List<Integer> status, Long ouid) {
         return whPoDao.findWhPoListByPoCode(status, poCode, ouid);
     }
+
+    @Override
+    @MoreDB("infoSource")
+    public WhPo findWhAsnByIdToInfo(Long id, Long ouid) {
+        return whPoDao.findWhPoById(id, ouid);
+    }
+
+    @Override
+    @MoreDB("shardSource")
+    public WhPo findWhAsnByIdToShard(Long id, Long ouid) {
+        return whPoDao.findWhPoById(id, ouid);
+    }
 }
