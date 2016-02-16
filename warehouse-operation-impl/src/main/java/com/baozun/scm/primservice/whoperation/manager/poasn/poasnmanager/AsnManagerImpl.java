@@ -8,7 +8,6 @@ import lark.common.annotation.MoreDB;
 import lark.common.dao.Page;
 import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
-import lark.orm.util.SpringUtil;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -341,6 +340,18 @@ public class AsnManagerImpl implements AsnManager {
         whAsn.setLastModifyTime(new Date());
         whAsn.setModifiedId(asn.getUserId());
         whAsnDao.insert(whAsn);
+        if (null != whpo.getOuId()) {
+            // 如果ouid不为空 在一个事务里修改PO单状态
+            if (whpo.getStatus() == PoAsnStatus.PO_NEW) {
+                // 如果是新建状态 改状态为已创建ASN
+                whpo.setStatus(PoAsnStatus.PO_CREATE_ASN);
+                whpo.setModifiedId(asn.getModifiedId());
+                int result = whPoDao.saveOrUpdateByVersion(whpo);
+                if (result <= 0) {
+                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                }
+            }
+        }
         int qty = 0;// 计算计划数量
         // 插入asnline明细
         for (WhPoLine pl : whPoLines) {
@@ -348,9 +359,38 @@ public class AsnManagerImpl implements AsnManager {
                 // 计划数量比如大于可用数量并且UUID为空才能创建
                 WhAsnLine al = new WhAsnLine();
                 BeanUtils.copyProperties(pl, al);
+                qty = qty + pl.getAvailableQty();// 计算计划数量
                 al.setId(null);
                 al.setAsnId(whAsn.getId());
+                al.setStatus(PoAsnStatus.ASNLINE_NOT_RCVD);
+                al.setPoLinenum(pl.getLinenum());
+                al.setPoLineId(pl.getId());
+                al.setQtyPlanned(pl.getAvailableQty());// 一键创建asnline的计划数量=poline的可用数量
+                al.setCreatedId(asn.getUserId());
+                al.setCreateTime(new Date());
+                al.setModifiedId(asn.getUserId());
+                al.setLastModifyTime(new Date());
+                whAsnLineDao.insert(al);
+                if (null != whpo.getOuId()) {
+                    // 修改poline的可用数量
+                    pl.setAvailableQty(pl.getQtyPlanned());// 一键创建asnline poline的可用数量=计划数量
+                    pl.setModifiedId(asn.getModifiedId());
+                    if (pl.getStatus() == PoAsnStatus.POLINE_NEW) {
+                        // 如果明细状态为新建的话 改成已创建ASN状态
+                        pl.setStatus(PoAsnStatus.POLINE_CREATE_ASN);
+                    }
+                    int result = whPoLineDao.saveOrUpdateByVersion(pl);
+                    if (result <= 0) {
+                        throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                    }
+                }
             }
+        }
+        // 最后修改ASN的计划数量
+        whAsn.setQtyPlanned(qty);
+        int result = whAsnDao.saveOrUpdateByVersion(whAsn);
+        if (result <= 0) {
+            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
         }
         rm.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
         rm.setMsg(whAsn.getId() + "");
