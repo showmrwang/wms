@@ -276,9 +276,26 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
             checkAsnCode.setOuId(asn.getOuId());
             checkAsnCode.setStoreId(asn.getStoreId());
             asnCheckManager.insertAsnWithCheckAndOuId(checkAsnCode);
+            /**
+             * 查询对应po_ou_id对应的po&poline数据
+             */
+            WhPo whPo = null;
+            List<WhPoLine> poLineList = new ArrayList<WhPoLine>();
+            if (null == asn.getPoOuId()) {
+                // 如果对应的po_ou_id为空去基础库查询
+                whPo = poManager.findWhAsnByIdToInfo(asn.getPoId(), asn.getPoOuId());
+                // 删除UUID不为空的数据
+                poLineManager.deletePoLineByUuidNotNullToInfo(asn.getPoId(), asn.getPoOuId());
+                poLineList = poLineManager.findWhPoLineListByPoIdToInfo(asn.getPoId(), asn.getPoOuId());
+            } else {
+                // 如果对应的po_ou_id不为空 去对应库查询
+                whPo = poManager.findWhAsnByIdToShard(asn.getPoId(), asn.getPoOuId());
+                // 删除UUID不为空的数据
+                poLineManager.deletePoLineByUuidNotNullToShard(asn.getPoId(), asn.getPoOuId());
+                poLineList = poLineManager.findWhPoLineListByPoIdToShard(asn.getPoId(), asn.getPoOuId());
+            }
             // 创建ASN&ASNLINE信息
-            // poManager.f
-            rm = asnManager.createAsnBatch(asn, rm);
+            rm = asnManager.createAsnBatch(asn, whPo, poLineList, rm);
         } catch (Exception e) {
             if (e instanceof BusinessException) {
                 throw e;
@@ -572,6 +589,7 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
             poLineList = poLineManager.findWhPoLineListByPoIdToShard(whAsn.getPoId(), whAsn.getPoOuId());
         }
         for (WhPoLine whPoLine : poLineList) {
+            // 查询到的lineList放入map等到后续处理
             poLineMap.put(whPoLine.getId(), whPoLine);
         }
         if (!flag) {

@@ -8,6 +8,7 @@ import lark.common.annotation.MoreDB;
 import lark.common.dao.Page;
 import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
+import lark.orm.util.SpringUtil;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,7 @@ import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
+import com.baozun.scm.primservice.whoperation.util.StringUtil;
 
 
 /**
@@ -119,13 +121,16 @@ public class AsnManagerImpl implements AsnManager {
         // 如果有asnline信息 asn表头信息需要查询po表头信息
         // 查询对应的PO单信息
         // WhPo whPo = whPoDao.findWhPoById(asn.getPoId(), asn.getPoOuId());
-        if (whPo.getStatus() == PoAsnStatus.PO_NEW) {
-            // 如果是新建状态 改状态为已创建ASN
-            whPo.setStatus(PoAsnStatus.PO_CREATE_ASN);
-            whPo.setModifiedId(asn.getModifiedId());
-            int result = whPoDao.saveOrUpdateByVersion(whPo);
-            if (result <= 0) {
-                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+        if (null != whPo.getOuId()) {
+            // 如果有ouid一个事务更新PO单状态
+            if (whPo.getStatus() == PoAsnStatus.PO_NEW) {
+                // 如果是新建状态 改状态为已创建ASN
+                whPo.setStatus(PoAsnStatus.PO_CREATE_ASN);
+                whPo.setModifiedId(asn.getModifiedId());
+                int result = whPoDao.saveOrUpdateByVersion(whPo);
+                if (result <= 0) {
+                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                }
             }
         }
         if (null != asnLineList) {
@@ -165,16 +170,18 @@ public class AsnManagerImpl implements AsnManager {
                 asnLine.setModifiedId(asn.getCreatedId());
                 asnLine.setLastModifyTime(new Date());
                 whAsnLineDao.insert(asnLine);
-                // 修改poline的可用数量
-                whPoLine.setAvailableQty(whPoLine.getAvailableQty() - asnline.getQtyPlanned());
-                whPoLine.setModifiedId(asn.getModifiedId());
-                if (whPoLine.getStatus() == PoAsnStatus.POLINE_NEW) {
-                    // 如果明细状态为新建的话 改成已创建ASN状态
-                    whPoLine.setStatus(PoAsnStatus.POLINE_CREATE_ASN);
-                }
-                int result = whPoLineDao.saveOrUpdateByVersion(whPoLine);
-                if (result <= 0) {
-                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                if (null != whPo.getOuId()) {
+                    // 修改poline的可用数量
+                    whPoLine.setAvailableQty(whPoLine.getAvailableQty() - asnline.getQtyPlanned());
+                    whPoLine.setModifiedId(asn.getModifiedId());
+                    if (whPoLine.getStatus() == PoAsnStatus.POLINE_NEW) {
+                        // 如果明细状态为新建的话 改成已创建ASN状态
+                        whPoLine.setStatus(PoAsnStatus.POLINE_CREATE_ASN);
+                    }
+                    int result = whPoLineDao.saveOrUpdateByVersion(whPoLine);
+                    if (result <= 0) {
+                        throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                    }
                 }
             }
         } else {
@@ -200,13 +207,15 @@ public class AsnManagerImpl implements AsnManager {
         if (0 == count) {
             // 查询对应的PO单信息
             // WhPo whPo = whPoDao.findWhPoById(asn.getPoId(), asn.getOuId());
-            if (whPo.getStatus() == PoAsnStatus.PO_NEW) {
-                // 如果是新建状态 改状态为已创建ASN
-                whPo.setStatus(PoAsnStatus.PO_CREATE_ASN);
-                whPo.setModifiedId(asn.getModifiedId());
-                int result = whPoDao.saveOrUpdateByVersion(whPo);
-                if (result <= 0) {
-                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            if (null != whPo.getOuId()) {
+                if (whPo.getStatus() == PoAsnStatus.PO_NEW) {
+                    // 如果是新建状态 改状态为已创建ASN
+                    whPo.setStatus(PoAsnStatus.PO_CREATE_ASN);
+                    whPo.setModifiedId(asn.getModifiedId());
+                    int result = whPoDao.saveOrUpdateByVersion(whPo);
+                    if (result <= 0) {
+                        throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                    }
                 }
             }
             if (null != asnLineList) {
@@ -248,16 +257,18 @@ public class AsnManagerImpl implements AsnManager {
                     asnLine.setModifiedId(asn.getCreatedId());
                     asnLine.setLastModifyTime(new Date());
                     whAsnLineDao.insert(asnLine);
-                    // 修改poline的可用数量
-                    whPoLine.setAvailableQty(whPoLine.getAvailableQty() - asnline.getQtyPlanned());
-                    whPoLine.setModifiedId(asn.getModifiedId());
-                    if (whPoLine.getStatus() == PoAsnStatus.POLINE_NEW) {
-                        // 如果明细状态为新建的话 改成已创建ASN状态
-                        whPoLine.setStatus(PoAsnStatus.POLINE_CREATE_ASN);
-                    }
-                    int result = whPoLineDao.saveOrUpdateByVersion(whPoLine);
-                    if (result <= 0) {
-                        throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                    if (null != whPo.getOuId()) {
+                        // 修改poline的可用数量
+                        whPoLine.setAvailableQty(whPoLine.getAvailableQty() - asnline.getQtyPlanned());
+                        whPoLine.setModifiedId(asn.getModifiedId());
+                        if (whPoLine.getStatus() == PoAsnStatus.POLINE_NEW) {
+                            // 如果明细状态为新建的话 改成已创建ASN状态
+                            whPoLine.setStatus(PoAsnStatus.POLINE_CREATE_ASN);
+                        }
+                        int result = whPoLineDao.saveOrUpdateByVersion(whPoLine);
+                        if (result <= 0) {
+                            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                        }
                     }
                 }
             } else {
@@ -314,10 +325,35 @@ public class AsnManagerImpl implements AsnManager {
 
     @Override
     @MoreDB("shardSource")
-    public ResponseMsg createAsnBatch(WhAsnCommand asn, ResponseMsg rm) {
+    public ResponseMsg createAsnBatch(WhAsnCommand asn, WhPo whpo, List<WhPoLine> whPoLines, ResponseMsg rm) {
         WhAsn whAsn = new WhAsn();
+        BeanUtils.copyProperties(whpo, whAsn);
+        // 创建whasn表头信息
+        whAsn.setId(null);
+        whAsn.setAsnCode(asn.getAsnCode());
+        whAsn.setAsnExtCode(asn.getAsnExtCode());
+        whAsn.setPoId(whpo.getId());
+        whAsn.setPoOuId(whpo.getOuId());
+        whAsn.setAsnType(whpo.getPoType());
+        whAsn.setStatus(PoAsnStatus.ASN_NEW);
+        whAsn.setCreateTime(new Date());
+        whAsn.setCreatedId(asn.getUserId());
+        whAsn.setLastModifyTime(new Date());
+        whAsn.setModifiedId(asn.getUserId());
+        whAsnDao.insert(whAsn);
+        int qty = 0;// 计算计划数量
+        // 插入asnline明细
+        for (WhPoLine pl : whPoLines) {
+            if (pl.getQtyPlanned() > pl.getAvailableQty() && StringUtil.isEmpty(pl.getUuid())) {
+                // 计划数量比如大于可用数量并且UUID为空才能创建
+                WhAsnLine al = new WhAsnLine();
+                BeanUtils.copyProperties(pl, al);
+                al.setId(null);
+                al.setAsnId(whAsn.getId());
+            }
+        }
         rm.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
-        // rm.setMsg(po.getId() + "");
+        rm.setMsg(whAsn.getId() + "");
         return rm;
     }
 

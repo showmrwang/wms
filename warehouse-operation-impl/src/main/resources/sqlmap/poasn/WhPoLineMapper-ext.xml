@@ -194,6 +194,17 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
     </delete>  
     
+   <delete id="deletePoLineByUuidNotNull" parameterType="int">  
+		delete from t_wh_po_line
+		<where>
+			po_id = #{poid} 
+			and uuid is not null 
+			<if test="ouid != null">
+				and ou_id = #{ouid}
+			</if>
+		</where>
+    </delete>  
+    
     <select id="findWhPoLineById" resultMap="WhPoLineCommand">
 	    select
 	    <include refid="whPoLineColumnsMapExt" />

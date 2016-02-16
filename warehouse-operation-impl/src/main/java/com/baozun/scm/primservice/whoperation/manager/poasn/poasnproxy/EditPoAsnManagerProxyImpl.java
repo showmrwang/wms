@@ -107,7 +107,7 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
                 poLineManager.deletePoLineByUuidToInfo(whPoLine);
             } else {
                 // OUID不为空删除拆库表内信息
-                poLineManager.deletePoLineByUuidToShare(whPoLine);
+                poLineManager.deletePoLineByUuidToShard(whPoLine);
             }
         } catch (Exception e) {
             log.error("DeletePoLineByUuid Error PoId: " + whPoLine.getPoId() + " OuId: " + whPoLine.getOuId() + " UUID: " + whPoLine.getUuid());

@@ -78,7 +78,7 @@ public class PoLineManagerImpl implements PoLineManager {
 
     @Override
     @MoreDB("shardSource")
-    public void deletePoLineByUuidToShare(WhPoLineCommand WhPoLine) {
+    public void deletePoLineByUuidToShard(WhPoLineCommand WhPoLine) {
         whPoLineDao.deletePoLineByUuid(WhPoLine.getPoId(), WhPoLine.getOuId(), WhPoLine.getUuid());
     }
 
@@ -335,5 +335,23 @@ public class PoLineManagerImpl implements PoLineManager {
     @MoreDB("shardSource")
     public List<WhPoLine> findWhPoLineListByPoIdToShard(Long poid, Long ouid) {
         return whPoLineDao.findWhPoLineByPoIdOuId(poid, ouid, null);
+    }
+
+    /**
+     * 删除对应poid+ouid uuid不为空的数据
+     */
+    @Override
+    @MoreDB("infoSource")
+    public void deletePoLineByUuidNotNullToInfo(Long poid, Long ouid) {
+        whPoLineDao.deletePoLineByUuidNotNull(poid, ouid);
+    }
+
+    /**
+     * 删除对应poid+ouid uuid不为空的数据
+     */
+    @Override
+    @MoreDB("shardSource")
+    public void deletePoLineByUuidNotNullToShard(Long poid, Long ouid) {
+        whPoLineDao.deletePoLineByUuidNotNull(poid, ouid);
     }
 }

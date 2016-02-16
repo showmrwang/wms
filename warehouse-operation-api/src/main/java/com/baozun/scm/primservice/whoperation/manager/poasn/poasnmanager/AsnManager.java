@@ -39,6 +39,6 @@ public interface AsnManager extends BaseManager {
 
     void editAsnToShard(WhAsn whasn);
 
-    ResponseMsg createAsnBatch(WhAsnCommand asn, ResponseMsg rm);
+    ResponseMsg createAsnBatch(WhAsnCommand asn, WhPo whpo, List<WhPoLine> whPoLines, ResponseMsg rm);
 
 }
