@@ -272,6 +272,7 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
                 return rm;
             }
             // 插入checkAsnCode表
+            checkAsnCode.setAsnCode(asnCode);
             checkAsnCode.setAsnExtCode(asn.getAsnExtCode());
             checkAsnCode.setOuId(asn.getOuId());
             checkAsnCode.setStoreId(asn.getStoreId());
