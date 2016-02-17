@@ -373,7 +373,7 @@ public class AsnManagerImpl implements AsnManager {
                 whAsnLineDao.insert(al);
                 if (null != whpo.getOuId()) {
                     // 修改poline的可用数量
-                    pl.setAvailableQty(pl.getQtyPlanned());// 一键创建asnline poline的可用数量=计划数量
+                    pl.setAvailableQty(0);// 一键创建asnline poline的可用数量=计划数量
                     pl.setModifiedId(asn.getModifiedId());
                     if (pl.getStatus() == PoAsnStatus.POLINE_NEW) {
                         // 如果明细状态为新建的话 改成已创建ASN状态
