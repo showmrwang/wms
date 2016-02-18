@@ -79,6 +79,12 @@ public class WhAsnLineCommand implements Serializable {
     private Date lastModifyTime;
     /** 操作人ID */
     private Long modifiedId;
+    /** 对应ASNCODE */
+    private String asnCode;
+    /** 对应ASN 相关单据号 */
+    private String asnExtCode;
+    /** 状态名称 */
+    private String statusName;
 
     public Long getId() {
         return this.id;
@@ -302,6 +308,30 @@ public class WhAsnLineCommand implements Serializable {
 
     public void setOuId(Long ouId) {
         this.ouId = ouId;
+    }
+
+    public String getAsnCode() {
+        return asnCode;
+    }
+
+    public void setAsnCode(String asnCode) {
+        this.asnCode = asnCode;
+    }
+
+    public String getAsnExtCode() {
+        return asnExtCode;
+    }
+
+    public void setAsnExtCode(String asnExtCode) {
+        this.asnExtCode = asnExtCode;
+    }
+
+    public String getStatusName() {
+        return statusName;
+    }
+
+    public void setStatusName(String statusName) {
+        this.statusName = statusName;
     }
 
 

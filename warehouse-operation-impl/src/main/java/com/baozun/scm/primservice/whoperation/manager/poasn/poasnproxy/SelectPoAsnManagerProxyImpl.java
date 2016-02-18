@@ -14,11 +14,13 @@ import org.springframework.stereotype.Service;
 
 import com.baozun.scm.baseservice.sac.manager.CodeManager;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
+import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnLineCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoLineCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
+import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnLineManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoLineManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoManager;
@@ -43,6 +45,8 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
     private PoLineManager poLineManager;
     @Autowired
     private CodeManager codeManager;
+    @Autowired
+    private AsnLineManager asnLineManager;
 
     /**
      * 
@@ -190,6 +194,27 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
             whasn = asnManager.findWhAsnByIdToShard(whAsnCommand);
         }
         return whasn;
+    }
+
+    /**
+     * ASNLINE 列表(带分页)
+     */
+    @Override
+    public Pagination<WhAsnLineCommand> findAsnLineListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params, Integer sourceType) {
+        Pagination<WhAsnLineCommand> whAsnLineCommandList = null;
+        if (null == sourceType) {
+            sourceType = Constants.SHARD_SOURCE;
+        }
+        // 判断读取那个库的数据
+        if (sourceType == Constants.SHARD_SOURCE) {
+            // 拆分库
+            whAsnLineCommandList = asnLineManager.findListByQueryMapWithPageExtByShard(page, sorts, params);
+        }
+        if (sourceType == Constants.INFO_SOURCE) {
+            // 公共库
+            whAsnLineCommandList = asnLineManager.findListByQueryMapWithPageExtByInfo(page, sorts, params);
+        }
+        return whAsnLineCommandList;
     }
 
 }

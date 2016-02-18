@@ -94,7 +94,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    <![CDATA[
 				asn.id as id,
 				asn.asn_code as asnCode,
-				po.po_code as poCode,
 				asn.asn_ext_code as asnExtCode,
 				asn.po_id as poId,
 				asn.ou_id as ouId,
@@ -130,7 +129,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     	select <include refid="whAsnColumnsMapExt" />
 		    from 
 		    t_wh_asn asn
-		    left join t_wh_po po on po.id=asn.po_id 
 		    left join t_bi_customer c on asn.customer_id = c.id
 			left join t_bi_store s on asn.store_id = s.id 
 			left join sys_dictionary sys on sys.dic_value = asn.status and sys.group_value = 'ASNSTATUS'
@@ -140,7 +138,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<select id="findListCountByQueryMapExt" resultType="long">
         select count(*) from 
 		    t_wh_asn asn 
-		    left join t_wh_po po on po.id=asn.po_id
 		    left join t_bi_customer c on asn.customer_id = c.id
 			left join t_bi_store s on asn.store_id = s.id 
 			left join sys_dictionary sys on sys.dic_value = asn.status and sys.group_value = 'ASNSTATUS'
