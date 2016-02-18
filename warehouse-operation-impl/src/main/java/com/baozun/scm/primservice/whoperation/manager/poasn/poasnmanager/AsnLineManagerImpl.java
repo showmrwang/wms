@@ -6,9 +6,14 @@ import lark.common.dao.Page;
 import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnLineCommand;
 
-public class AsnLineManagerInpl implements AsnLineManager {
+@Service("asnLineManager")
+@Transactional
+public class AsnLineManagerImpl implements AsnLineManager {
 
 
     @Override
