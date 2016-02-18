@@ -86,6 +86,10 @@ public class WhAsnLineCommand implements Serializable {
     /** 状态名称 */
     private String statusName;
 
+    private String mfgDateStr;
+
+    private String expDateStr;
+
     public Long getId() {
         return this.id;
     }
@@ -332,6 +336,22 @@ public class WhAsnLineCommand implements Serializable {
 
     public void setStatusName(String statusName) {
         this.statusName = statusName;
+    }
+
+    public String getMfgDateStr() {
+        return mfgDateStr;
+    }
+
+    public void setMfgDateStr(String mfgDateStr) {
+        this.mfgDateStr = mfgDateStr;
+    }
+
+    public String getExpDateStr() {
+        return expDateStr;
+    }
+
+    public void setExpDateStr(String expDateStr) {
+        this.expDateStr = expDateStr;
     }
 
 
