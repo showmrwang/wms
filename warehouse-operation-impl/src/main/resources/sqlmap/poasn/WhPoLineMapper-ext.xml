@@ -194,6 +194,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
     </delete>  
     
+   <delete id="deletePoLineByPoId" parameterType="int">  
+		delete from t_wh_po_line where po_id = #{id}
+    </delete>  
+    
    <delete id="deletePoLineByUuidNotNull" parameterType="int">  
 		delete from t_wh_po_line
 		<where>

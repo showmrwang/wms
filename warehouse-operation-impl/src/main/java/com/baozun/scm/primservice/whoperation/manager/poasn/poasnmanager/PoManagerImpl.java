@@ -251,4 +251,26 @@ public class PoManagerImpl implements PoManager {
     public WhPo findWhAsnByIdToShard(Long id, Long ouid) {
         return whPoDao.findWhPoById(id, ouid);
     }
+
+    @Override
+    @MoreDB("infoSource")
+    public void deletePoAndPoLineToInfo(List<WhPoCommand> whPoCommand) {
+        for (WhPoCommand po : whPoCommand) {
+            // 删除PO表头信息
+            whPoDao.delete(po.getId());
+            // 删除POLINE明细信息
+            whPoLineDao.deletePoLineByPoId(po.getId());
+        }
+    }
+
+    @Override
+    @MoreDB("shardSource")
+    public void deletePoAndPoLineToShard(List<WhPoCommand> whPoCommand) {
+        for (WhPoCommand po : whPoCommand) {
+            // 删除PO表头信息
+            whPoDao.delete(po.getId());
+            // 删除POLINE明细信息
+            whPoLineDao.deletePoLineByPoId(po.getId());
+        }
+    }
 }

@@ -44,4 +44,8 @@ public interface PoManager extends BaseManager {
 
     WhPo findWhAsnByIdToShard(Long id, Long ouid);
 
+    void deletePoAndPoLineToInfo(List<WhPoCommand> whPoCommand);
+
+    void deletePoAndPoLineToShard(List<WhPoCommand> whPoCommand);
+
 }

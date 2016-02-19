@@ -1,5 +1,7 @@
 package com.baozun.scm.primservice.whoperation.manager.poasn.poasnproxy;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -178,5 +180,45 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
         }
         log.info("EditAsn end  =======================");
         return rm;
+    }
+
+    /**
+     * 删除PO单及其PO明细
+     */
+    @Override
+    public void deletePoAndPoLine(List<WhPoCommand> whPoCommand) {
+        log.info("DeletePoAndPoLine start =======================");
+        for (WhPoCommand po : whPoCommand) {
+            WhPoCommand whpo = null;
+            if (null == po.getOuId()) {
+                // 查询基本库内信息
+                whpo = poManager.findWhPoByIdToInfo(po);
+                if (whpo.getStatus() != PoAsnStatus.PO_NEW) {
+                    // 如果状态不是新建不允许修改 抛错
+                    log.warn("DeletePoAndPoLine warn WhPo status NE PO_NEW");
+                    throw new BusinessException(ErrorCodes.PO_DELETE_STATUS_ERROR, new Object[] {whpo.getPoCode()});
+                }
+            } else {
+                // 查询拆库内信息
+                whpo = poManager.findWhPoByIdToShard(po);
+                if (whpo.getStatus() != PoAsnStatus.PO_NEW) {
+                    // 如果状态不是新建不允许修改 抛错
+                    log.warn("DeletePoAndPoLine warn WhPo status NE PO_NEW");
+                    throw new BusinessException(ErrorCodes.PO_DELETE_STATUS_ERROR, new Object[] {whpo.getPoCode()});
+                }
+            }
+        }
+
+        try {
+            // 删除对应PO单和POLINE明细
+            if (null == whPoCommand.get(0).getOuId()) {
+                // 删除基础库PO单信息
+            } else {
+                // 删除拆库PO单信息
+            }
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCodes.DELETE_FAILURE);
+        }
+        log.info("DeletePoAndPoLine end =======================");
     }
 }
