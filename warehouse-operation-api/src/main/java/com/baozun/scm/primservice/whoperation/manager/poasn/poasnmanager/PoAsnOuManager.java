@@ -15,9 +15,10 @@
 package com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager;
 
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
+import com.baozun.scm.primservice.whoperation.model.poasn.PoAsnOu;
 
 
 public interface PoAsnOuManager extends BaseManager {
 
-
+    void insertPoAsnOu(PoAsnOu poAsnOu);
 }

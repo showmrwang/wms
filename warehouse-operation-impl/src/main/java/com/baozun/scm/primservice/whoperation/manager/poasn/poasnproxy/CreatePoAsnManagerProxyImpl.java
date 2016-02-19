@@ -25,12 +25,14 @@ import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnCheckManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnManager;
+import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoAsnOuManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoCheckManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoLineManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoManager;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
 import com.baozun.scm.primservice.whoperation.model.poasn.CheckAsnCode;
 import com.baozun.scm.primservice.whoperation.model.poasn.CheckPoCode;
+import com.baozun.scm.primservice.whoperation.model.poasn.PoAsnOu;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
@@ -60,6 +62,8 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
     private AsnCheckManager asnCheckManager;
     @Autowired
     private AsnManager asnManager;
+    @Autowired
+    private PoAsnOuManager poAsnOuManager;
 
     /**
      * 创建PO单据
@@ -580,14 +584,19 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
         Map<Long, WhPoLine> poLineMap = new HashMap<Long, WhPoLine>();
         List<WhPoLine> poLineList = new ArrayList<WhPoLine>();
         // 封装数据
+        PoAsnOu poAsnOu = new PoAsnOu();// 中间表数据
+        poAsnOu.setOuId(whAsn.getOuId());
+        poAsnOu.setPoId(whAsn.getPoId());
         if (null == whAsn.getPoOuId()) {
             // 如果对应的po_ou_id为空去基础库查询
             whPo = poManager.findWhAsnByIdToInfo(whAsn.getPoId(), whAsn.getPoOuId());
             poLineList = poLineManager.findWhPoLineListByPoIdToInfo(whAsn.getPoId(), whAsn.getPoOuId());
+            poAsnOuManager.insertPoAsnOu(poAsnOu);
         } else {
             // 如果对应的po_ou_id不为空 去对应库查询
             whPo = poManager.findWhAsnByIdToShard(whAsn.getPoId(), whAsn.getPoOuId());
             poLineList = poLineManager.findWhPoLineListByPoIdToShard(whAsn.getPoId(), whAsn.getPoOuId());
+            poAsnOuManager.insertPoAsnOu(poAsnOu);
         }
         for (WhPoLine whPoLine : poLineList) {
             // 查询到的lineList放入map等到后续处理

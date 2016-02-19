@@ -16,6 +16,8 @@ package com.baozun.scm.primservice.whoperation.dao.poasn;
 
 import java.util.Map;
 
+import org.apache.ibatis.annotations.Param;
+
 import lark.common.annotation.CommonQuery;
 import lark.common.annotation.QueryPage;
 import lark.common.dao.Page;
@@ -35,5 +37,7 @@ public interface PoAsnOuDao extends BaseDao<PoAsnOu, Long> {
 
     @CommonQuery
     int saveOrUpdate(PoAsnOu o);
+
+    PoAsnOu findPoAsnOuByPoIdOuId(@Param("poid") Long poid, @Param("ouid") Long ouid);
 
 }

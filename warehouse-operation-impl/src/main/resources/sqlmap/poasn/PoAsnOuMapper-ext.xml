@@ -35,4 +35,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
 	</sql>
 	
+	<select id="findPoAsnOuByPoIdOuId" resultMap="PoAsnOuResultExt">
+    	select <include refid="poAsnOuColumnsExt" />
+			from t_wh_poasn_ou 
+			where po_id = #{poid} and ou_id = #{ouid}
+    </select>
+	
 </mapper>

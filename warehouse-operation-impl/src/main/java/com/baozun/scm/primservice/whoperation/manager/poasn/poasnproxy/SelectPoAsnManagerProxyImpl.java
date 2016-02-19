@@ -201,19 +201,7 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
      */
     @Override
     public Pagination<WhAsnLineCommand> findAsnLineListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params, Integer sourceType) {
-        Pagination<WhAsnLineCommand> whAsnLineCommandList = null;
-        if (null == sourceType) {
-            sourceType = Constants.SHARD_SOURCE;
-        }
-        // 判断读取那个库的数据
-        if (sourceType == Constants.SHARD_SOURCE) {
-            // 拆分库
-            whAsnLineCommandList = asnLineManager.findListByQueryMapWithPageExtByShard(page, sorts, params);
-        }
-        if (sourceType == Constants.INFO_SOURCE) {
-            // 公共库
-            whAsnLineCommandList = asnLineManager.findListByQueryMapWithPageExtByInfo(page, sorts, params);
-        }
+        Pagination<WhAsnLineCommand> whAsnLineCommandList = asnLineManager.findListByQueryMapWithPageExtByShard(page, sorts, params);
         return whAsnLineCommandList;
     }
 
