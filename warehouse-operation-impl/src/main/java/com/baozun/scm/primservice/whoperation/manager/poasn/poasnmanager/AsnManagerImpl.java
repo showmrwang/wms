@@ -144,6 +144,7 @@ public class AsnManagerImpl implements AsnManager {
                 whAsn.setQtyPlanned(asn.getQtyPlanned());
                 whAsn.setStatus(PoAsnStatus.ASN_NEW);
                 whAsn.setAsnCode(asn.getAsnCode());
+                whAsn.setOuId(asn.getOuId());
                 whAsn.setAsnExtCode(asn.getAsnExtCode());
                 whAsn.setAsnType(whPo.getPoType());
                 whAsn.setCreateTime(new Date());
