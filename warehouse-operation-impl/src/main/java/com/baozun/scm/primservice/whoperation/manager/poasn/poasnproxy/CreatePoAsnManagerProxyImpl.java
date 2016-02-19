@@ -286,6 +286,10 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
              */
             WhPo whPo = null;
             List<WhPoLine> poLineList = new ArrayList<WhPoLine>();
+            PoAsnOu poAsnOu = new PoAsnOu();// 中间表数据
+            poAsnOu.setOuId(asn.getOuId());
+            poAsnOu.setPoId(asn.getPoId());
+            poAsnOuManager.insertPoAsnOu(poAsnOu);
             if (null == asn.getPoOuId()) {
                 // 如果对应的po_ou_id为空去基础库查询
                 whPo = poManager.findWhAsnByIdToInfo(asn.getPoId(), asn.getPoOuId());
@@ -301,6 +305,10 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
             }
             // 创建ASN&ASNLINE信息
             rm = asnManager.createAsnBatch(asn, whPo, poLineList, rm);
+            if (null == asn.getPoOuId()) {
+                // 如果对应po单没有指定仓库 修改PO&POLINE状态及可用数量
+                rm = poManager.updatePoStatusByAsnBatch(asn, whPo, poLineList, rm);
+            }
         } catch (Exception e) {
             if (e instanceof BusinessException) {
                 throw e;
@@ -544,7 +552,7 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
     }
 
     /**
-     * 检验是否可以插入t_wh_po表
+     * 检验是否可以插入t_wh_asn表
      */
     private ResponseMsg insertAsnWithCheck(WhAsn whAsn, List<WhAsnLineCommand> asnLineList, ResponseMsg rm) {
         log.info("InsertAsnWithCheck start =======================");
@@ -587,16 +595,15 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
         PoAsnOu poAsnOu = new PoAsnOu();// 中间表数据
         poAsnOu.setOuId(whAsn.getOuId());
         poAsnOu.setPoId(whAsn.getPoId());
+        poAsnOuManager.insertPoAsnOu(poAsnOu);
         if (null == whAsn.getPoOuId()) {
             // 如果对应的po_ou_id为空去基础库查询
             whPo = poManager.findWhAsnByIdToInfo(whAsn.getPoId(), whAsn.getPoOuId());
             poLineList = poLineManager.findWhPoLineListByPoIdToInfo(whAsn.getPoId(), whAsn.getPoOuId());
-            poAsnOuManager.insertPoAsnOu(poAsnOu);
         } else {
             // 如果对应的po_ou_id不为空 去对应库查询
             whPo = poManager.findWhAsnByIdToShard(whAsn.getPoId(), whAsn.getPoOuId());
             poLineList = poLineManager.findWhPoLineListByPoIdToShard(whAsn.getPoId(), whAsn.getPoOuId());
-            poAsnOuManager.insertPoAsnOu(poAsnOu);
         }
         for (WhPoLine whPoLine : poLineList) {
             // 查询到的lineList放入map等到后续处理
@@ -609,6 +616,10 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
             /* 在check表中存在此asn单,则去asn表中查找是否有这单. 如果有就抛出异常,没有就插入 */
             rm = asnManager.insertAsnWithOuId(whAsn, asnLineList, whPo, poLineMap, rm);
             /* 如果抛出异常,此处会有补偿机制 */
+        }
+        if (null == whAsn.getPoOuId()) {
+            // 如果对应po单没有指定仓库 修改PO&POLINE状态及可用数量
+            rm = poManager.updatePoStatusByAsn(whAsn, asnLineList, whPo, poLineMap, rm);
         }
         // }
         log.info("InsertAsnWithCheck end =======================");

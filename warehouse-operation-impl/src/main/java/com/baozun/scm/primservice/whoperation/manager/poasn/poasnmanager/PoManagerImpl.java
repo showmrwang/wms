@@ -15,12 +15,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.whoperation.command.poasn.PoCheckCommand;
+import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
+import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnLineCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
+import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoLineDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 
@@ -272,5 +276,76 @@ public class PoManagerImpl implements PoManager {
             // 删除POLINE明细信息
             whPoLineDao.deletePoLineByPoId(po.getId());
         }
+    }
+
+    /**
+     * 通过asn数据修改对应po单状态 只针对没有ouid的po单
+     */
+    @Override
+    @MoreDB("infoSource")
+    public ResponseMsg updatePoStatusByAsn(WhAsn asn, List<WhAsnLineCommand> asnLineList, WhPo whPo, Map<Long, WhPoLine> poLineMap, ResponseMsg rm) {
+        // 修改表头状态
+        if (whPo.getStatus() == PoAsnStatus.PO_NEW) {
+            // 如果是新建状态 改状态为已创建ASN
+            whPo.setStatus(PoAsnStatus.PO_CREATE_ASN);
+            whPo.setModifiedId(asn.getModifiedId());
+            int result = whPoDao.saveOrUpdateByVersion(whPo);
+            if (result <= 0) {
+                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            }
+        }
+        // 修改明细状态及可用数量
+        for (WhAsnLineCommand asnline : asnLineList) {
+            WhPoLine whPoLine = poLineMap.get(asnline.getPoLineId());
+            // 修改poline的可用数量
+            whPoLine.setAvailableQty(whPoLine.getAvailableQty() - asnline.getQtyPlanned());
+            whPoLine.setModifiedId(asn.getModifiedId());
+            if (whPoLine.getStatus() == PoAsnStatus.POLINE_NEW) {
+                // 如果明细状态为新建的话 改成已创建ASN状态
+                whPoLine.setStatus(PoAsnStatus.POLINE_CREATE_ASN);
+            }
+            int result = whPoLineDao.saveOrUpdateByVersion(whPoLine);
+            if (result <= 0) {
+                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            }
+        }
+        rm.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
+        rm.setMsg(asn.getId() + "");
+        return rm;
+    }
+
+    /**
+     * 通过asn数据修改对应po单状态 只针对没有ouid的po单 一键创建ASN
+     */
+    @Override
+    @MoreDB("infoSource")
+    public ResponseMsg updatePoStatusByAsnBatch(WhAsnCommand asn, WhPo whpo, List<WhPoLine> whPoLines, ResponseMsg rm) {
+        // 修改表头状态
+        if (whpo.getStatus() == PoAsnStatus.PO_NEW) {
+            // 如果是新建状态 改状态为已创建ASN
+            whpo.setStatus(PoAsnStatus.PO_CREATE_ASN);
+            whpo.setModifiedId(asn.getModifiedId());
+            int result = whPoDao.saveOrUpdateByVersion(whpo);
+            if (result <= 0) {
+                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            }
+        }
+        // 修改明细状态和可用数量
+        for (WhPoLine pl : whPoLines) {
+            // 修改poline的可用数量
+            pl.setAvailableQty(0);// 一键创建asnline poline的可用数量0
+            pl.setModifiedId(asn.getModifiedId());
+            if (pl.getStatus() == PoAsnStatus.POLINE_NEW) {
+                // 如果明细状态为新建的话 改成已创建ASN状态
+                pl.setStatus(PoAsnStatus.POLINE_CREATE_ASN);
+            }
+            int result = whPoLineDao.saveOrUpdateByVersion(pl);
+            if (result <= 0) {
+                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            }
+        }
+        rm.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
+        rm.setMsg(asn.getId() + "");
+        return rm;
     }
 }
