@@ -235,7 +235,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				al.modified_id as modifiedId,
 				asn.asn_code as asnCode,
 				asn.asn_ext_code as asnExtCode,
-				sys.dic_label as statusName
+				sys.dic_label as statusName,
+				sku.code as skuCode,
+				sku.ext_code as skuExtCode,
+				sku.bar_code as skuBarCode,
+				sku.name as skuName
 	    ]]>
 	</sql>	
 		
@@ -246,6 +250,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    t_wh_asn_line al
 		    left join t_wh_asn asn on asn.id = al.asn_id
 			left join sys_dictionary sys on sys.dic_value = al.status and sys.group_value = 'ASNLINESTATUS'
+			left join t_wh_sku sku on al.sku_id = sku.id 
 			where 
 			al.asn_id = #{asnId}
     </select>
@@ -256,6 +261,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    t_wh_asn_line al
 		   	left join t_wh_asn asn on asn.id = al.asn_id
 			left join sys_dictionary sys on sys.dic_value = al.status and sys.group_value = 'ASNLINESTATUS'
+			left join t_wh_sku sku on al.sku_id = sku.id 
 			where 
 			al.asn_id = #{asnId}
     </select>

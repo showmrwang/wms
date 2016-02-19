@@ -100,9 +100,14 @@ public class WhPoLineCommand implements Serializable {
 
     private List<Long> ids;
 
+    /** 商品编码 */
     private String skuCode;
-
+    /** 商品名称 */
     private String skuName;
+    /** 商品对接码 */
+    private String skuExtCode;
+    /** 商品条码 */
+    private String skuBarCode;
 
     public Long getId() {
         return this.id;
@@ -414,6 +419,22 @@ public class WhPoLineCommand implements Serializable {
 
     public void setSkuName(String skuName) {
         this.skuName = skuName;
+    }
+
+    public String getSkuExtCode() {
+        return skuExtCode;
+    }
+
+    public void setSkuExtCode(String skuExtCode) {
+        this.skuExtCode = skuExtCode;
+    }
+
+    public String getSkuBarCode() {
+        return skuBarCode;
+    }
+
+    public void setSkuBarCode(String skuBarCode) {
+        this.skuBarCode = skuBarCode;
     }
 
 

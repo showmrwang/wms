@@ -89,6 +89,14 @@ public class WhAsnLineCommand implements Serializable {
     private String mfgDateStr;
 
     private String expDateStr;
+    /** 商品编码 */
+    private String skuCode;
+    /** 商品名称 */
+    private String skuName;
+    /** 商品对接码 */
+    private String skuExtCode;
+    /** 商品条码 */
+    private String skuBarCode;
 
     public Long getId() {
         return this.id;
@@ -352,6 +360,38 @@ public class WhAsnLineCommand implements Serializable {
 
     public void setExpDateStr(String expDateStr) {
         this.expDateStr = expDateStr;
+    }
+
+    public String getSkuCode() {
+        return skuCode;
+    }
+
+    public void setSkuCode(String skuCode) {
+        this.skuCode = skuCode;
+    }
+
+    public String getSkuName() {
+        return skuName;
+    }
+
+    public void setSkuName(String skuName) {
+        this.skuName = skuName;
+    }
+
+    public String getSkuExtCode() {
+        return skuExtCode;
+    }
+
+    public void setSkuExtCode(String skuExtCode) {
+        this.skuExtCode = skuExtCode;
+    }
+
+    public String getSkuBarCode() {
+        return skuBarCode;
+    }
+
+    public void setSkuBarCode(String skuBarCode) {
+        this.skuBarCode = skuBarCode;
     }
 
 

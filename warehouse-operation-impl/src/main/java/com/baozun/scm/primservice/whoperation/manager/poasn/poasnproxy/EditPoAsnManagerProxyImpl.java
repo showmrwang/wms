@@ -160,6 +160,9 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
         return result;
     }
 
+    /**
+     * 修改ASN信息
+     */
     @Override
     public ResponseMsg editAsn(WhAsn asn) {
         log.info("EditAsn start =======================");
@@ -213,8 +216,10 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
             // 删除对应PO单和POLINE明细
             if (null == whPoCommand.get(0).getOuId()) {
                 // 删除基础库PO单信息
+                poManager.deletePoAndPoLineToInfo(whPoCommand);
             } else {
                 // 删除拆库PO单信息
+                poManager.deletePoAndPoLineToShard(whPoCommand);
             }
         } catch (Exception e) {
             throw new BusinessException(ErrorCodes.DELETE_FAILURE);
