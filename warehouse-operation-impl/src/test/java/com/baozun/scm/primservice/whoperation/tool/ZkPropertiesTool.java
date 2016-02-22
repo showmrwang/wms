@@ -46,16 +46,16 @@ public class ZkPropertiesTool implements Watcher{
 		String path=ZkPropertiesTool.class.getResource("/"+forlder).getPath();
 		
 		File dir=new File(path);
-		
-		for(File cd:dir.listFiles()){
-			//list.add(child.getAbsolutePath());
-			
-			int index2=cd.getName().lastIndexOf(".");
-			String fileName=cd.getName().substring(0,index2);
-			run(root+fileName,forlder+"/"+cd.getName());
+		File[] tmps = dir.listFiles();
+		if(tmps != null){
+		      for(File cd:tmps){
+		            //list.add(child.getAbsolutePath());
+		            
+		            int index2=cd.getName().lastIndexOf(".");
+		            String fileName=cd.getName().substring(0,index2);
+		            run(root+fileName,forlder+"/"+cd.getName());
+		        }
 		}
-		
-	
 	}
 	
 	
