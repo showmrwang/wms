@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.system.GlobalLogDao">
+	<resultMap id="GlobalLogResultExt" type="com.baozun.scm.primservice.whoperation.model.system.GlobalLog">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="globalLogColumnsExt">
+	    <![CDATA[
+	        	id as id,
+	        	type as type,
+	        	object_type as objectType,
+	        	modified_values as modifiedValues,
+	        	parent_code as parentCode,
+	        	ou_id as ouId,
+	        	modified_id as modifiedId,
+	        	modify_time as modifyTime
+	    ]]>
+	</sql>
+	
+	<sql id="globalLogDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+	       
+		       <if test="type!=null and type!=''">
+					and type = #{type}
+				</if>
+	       	       
+		       <if test="objectType!=null and objectType!=''">
+					and object_type = #{objectType}
+				</if>
+	       
+				<if test="modifiedId!=null">
+					and modified_id = #{modifiedId}
+				</if>
+	       
+				<if test="modifyTime!=null">
+					and modify_time = #{modifyTime}
+				</if>
+		</where>
+	</sql>
+	
+	
+</mapper>
