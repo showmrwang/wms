@@ -30,6 +30,7 @@ public class GlobalLogManagerImpl implements GlobalLogManager {
         gl.setModifiedId(globalLogCommand.getModifiedId());
         gl.setOuId(globalLogCommand.getOuId());
         gl.setType(globalLogCommand.getType());
+        gl.setParentCode(globalLogCommand.getParentCode());
         gl.setObjectType(formatClassName(globalLogCommand.getObjectType()));
         gl.setModifyTime(new Date());
         globalLogDao.insert(gl);
