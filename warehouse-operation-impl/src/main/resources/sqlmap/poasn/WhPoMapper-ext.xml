@@ -183,6 +183,18 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			</where>
     </select>
     
+    <select id="findWhPoCommandById" resultMap="WhPoCommand">
+    	select <include refid="whPoColumnsExt" />
+		    from 
+		    t_wh_po 
+		    <where>
+		    	id = #{id}
+				<if test="ouid!=null">
+		   			 and ou_id = #{ouid}
+				</if>
+			</where>
+    </select>
+    
 	<update id="editPoStatus" parameterType="com.baozun.scm.primservice.whoperation.model.poasn.WhPo">
 		UPDATE t_wh_po SET status = #{status},modified_id = #{userid},last_modify_time = now() 
 		<where>

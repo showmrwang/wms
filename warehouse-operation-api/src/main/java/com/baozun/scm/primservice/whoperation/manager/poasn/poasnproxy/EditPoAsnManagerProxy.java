@@ -28,4 +28,8 @@ public interface EditPoAsnManagerProxy extends BaseManager {
     ResponseMsg editAsn(WhAsn asn);
 
     void deletePoAndPoLine(List<WhPoCommand> whPoCommand);
+
+    void auditPo(WhPoCommand poCommand);
+
+    void auditAsn(WhAsnCommand asnCommand);
 }

@@ -41,4 +41,6 @@ public interface AsnManager extends BaseManager {
 
     ResponseMsg createAsnBatch(WhAsnCommand asn, WhPo whpo, List<WhPoLine> whPoLines, ResponseMsg rm);
 
+    List<WhAsn> findWhAsnByPoToShard(WhAsn whAsn);
+
 }

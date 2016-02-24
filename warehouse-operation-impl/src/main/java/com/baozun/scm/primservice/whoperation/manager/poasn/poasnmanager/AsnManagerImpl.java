@@ -411,4 +411,10 @@ public class AsnManagerImpl implements AsnManager {
         return rm;
     }
 
+    @Override
+    @MoreDB("shardSource")
+    public List<WhAsn> findWhAsnByPoToShard(WhAsn whAsn) {
+        return this.whAsnDao.findListByParam(whAsn);
+    }
+
 }

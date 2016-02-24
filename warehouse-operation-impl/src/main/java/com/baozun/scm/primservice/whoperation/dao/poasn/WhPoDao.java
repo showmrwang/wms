@@ -48,6 +48,8 @@ public interface WhPoDao extends BaseDao<WhPo, Long> {
 
     WhPo findWhPoById(@Param("id") Long id, @Param("ouid") Long ouid);
 
+    WhPoCommand findWhPoCommandById(@Param("id") Long id, @Param("ouid") Long ouid);
+
     int editPoStatus(@Param("ids") List<Long> ids, @Param("status") Integer status, @Param("userid") Long userid, @Param("ouid") Long ouid, @Param("lastModifyTime") Date lastModifyTime);
 
     long findPoByCodeAndStore(@Param("extCode") String extCode, @Param("storeId") Long storeId, @Param("ouId") Long ouId);

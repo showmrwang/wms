@@ -9,7 +9,6 @@ import lark.common.dao.Page;
 import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -139,9 +138,7 @@ public class PoManagerImpl implements PoManager {
     @Override
     @MoreDB("infoSource")
     public WhPoCommand findWhPoByIdToInfo(WhPoCommand whPo) {
-        WhPoCommand whPoCommand = new WhPoCommand();
-        WhPo po = whPoDao.findWhPoById(whPo.getId(), whPo.getOuId());
-        BeanUtils.copyProperties(po, whPoCommand);
+        WhPoCommand whPoCommand = whPoDao.findWhPoCommandById(whPo.getId(), whPo.getOuId());
         return whPoCommand;
     }
 
@@ -151,9 +148,7 @@ public class PoManagerImpl implements PoManager {
     @Override
     @MoreDB("shardSource")
     public WhPoCommand findWhPoByIdToShard(WhPoCommand whPo) {
-        WhPoCommand whPoCommand = new WhPoCommand();
-        WhPo po = whPoDao.findWhPoById(whPo.getId(), whPo.getOuId());
-        BeanUtils.copyProperties(po, whPoCommand);
+        WhPoCommand whPoCommand = whPoDao.findWhPoCommandById(whPo.getId(), whPo.getOuId());
         return whPoCommand;
     }
 

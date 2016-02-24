@@ -109,5 +109,16 @@ public class ErrorCodes {
     public static final int ASNLINE_QTYPLANNED_ERROR = 3008;
     /** PO单号 [{0}] 状态为新建不允许删除 */
     public static final int PO_DELETE_STATUS_ERROR = 3009;
-
+    /** PO单数据不存在 */
+    public static final int PO_NULL = 3010;
+    /** ASN单数据不存在 */
+    public static final int ASN_NULL = 3012;
+    /** PO单状态为【取消】，PO单不允许审核成功 */
+    public static final int PO_AUDIT_STATUS_ERROR = 3011;
+    /** PO单所包含的ASN状态不全为【关闭】，PO单不允许审核成功 */
+    public static final int PO_AUDIT_ASNSTATUS_ERROR = 3013;
+    /** ASN单状态为【取消】，PO单不允许审核成功 */
+    public static final int ASN_AUDIT_STATUS_ERROR = 3014;
+    /** ASN单所包含的明细状态有未收货，ASN单不允许审核成功 */
+    public static final int ASN_AUDIT_LineSTATUS_ERROR = 3015;
 }

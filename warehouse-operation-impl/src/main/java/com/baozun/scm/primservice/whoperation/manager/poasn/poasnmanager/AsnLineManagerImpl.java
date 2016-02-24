@@ -1,5 +1,6 @@
 package com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager;
 
+import java.util.List;
 import java.util.Map;
 
 import lark.common.annotation.MoreDB;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnLineCommand;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnLineDao;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine;
 
 @Service("asnLineManager")
 @Transactional
@@ -25,6 +27,12 @@ public class AsnLineManagerImpl implements AsnLineManager {
     @MoreDB("shardSource")
     public Pagination<WhAsnLineCommand> findListByQueryMapWithPageExtByShard(Page page, Sort[] sorts, Map<String, Object> params) {
         return whAsnLineDao.findListByQueryMapWithPageExt(page, sorts, params);
+    }
+
+    @Override
+    @MoreDB("shardSource")
+    public List<WhAsnLine> findListByShard(WhAsnLine asnLine) {
+        return this.whAsnLineDao.findListByParam(asnLine);
     }
 
 
