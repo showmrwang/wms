@@ -17,6 +17,7 @@ import com.baozun.scm.primservice.whoperation.command.poasn.PoCheckCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnLineCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
+import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoLineDao;
@@ -53,7 +54,7 @@ public class PoManagerImpl implements PoManager {
      * @return
      */
     @Override
-    @MoreDB("infoSource")
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public Pagination<WhPoCommand> findListByQueryMapWithPageExtByInfo(Page page, Sort[] sorts, Map<String, Object> params) {
         return whPoDao.findListByQueryMapWithPageExt(page, sorts, params);
     }
@@ -67,7 +68,7 @@ public class PoManagerImpl implements PoManager {
      * @return
      */
     @Override
-    @MoreDB("shardSource")
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public Pagination<WhPoCommand> findListByQueryMapWithPageExtByShard(Page page, Sort[] sorts, Map<String, Object> params) {
         return whPoDao.findListByQueryMapWithPageExt(page, sorts, params);
     }
@@ -78,7 +79,7 @@ public class PoManagerImpl implements PoManager {
      * 
      */
     @Override
-    @MoreDB("shardSource")
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public ResponseMsg createPoAndLineToShare(WhPo po, List<WhPoLine> whPoLines, ResponseMsg rm) {
         long i = whPoDao.insert(po);
         if (0 == i) {
@@ -104,7 +105,7 @@ public class PoManagerImpl implements PoManager {
      * 修改公共库PO单状态
      */
     @Override
-    @MoreDB("infoSource")
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public int editPoStatusToInfo(WhPoCommand whPo) {
         int result = whPoDao.editPoStatus(whPo.getPoIds(), whPo.getStatus(), whPo.getModifiedId(), whPo.getOuId(), new Date());
         if (result <= 0) {
@@ -120,7 +121,7 @@ public class PoManagerImpl implements PoManager {
      * 修改拆库PO单状态
      */
     @Override
-    @MoreDB("shardSource")
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public int editPoStatusToShard(WhPoCommand whPo) {
         int result = whPoDao.editPoStatus(whPo.getPoIds(), whPo.getStatus(), whPo.getModifiedId(), whPo.getOuId(), new Date());
         if (result <= 0) {
@@ -136,7 +137,7 @@ public class PoManagerImpl implements PoManager {
      * 通过OP单ID查询相关信息 基础表
      */
     @Override
-    @MoreDB("infoSource")
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public WhPoCommand findWhPoByIdToInfo(WhPoCommand whPo) {
         WhPoCommand whPoCommand = whPoDao.findWhPoCommandById(whPo.getId(), whPo.getOuId());
         return whPoCommand;
@@ -146,7 +147,7 @@ public class PoManagerImpl implements PoManager {
      * 通过OP单ID查询相关信息 拆库表
      */
     @Override
-    @MoreDB("shardSource")
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public WhPoCommand findWhPoByIdToShard(WhPoCommand whPo) {
         WhPoCommand whPoCommand = whPoDao.findWhPoCommandById(whPo.getId(), whPo.getOuId());
         return whPoCommand;
@@ -158,7 +159,7 @@ public class PoManagerImpl implements PoManager {
      * @param whPo
      */
     @Override
-    @MoreDB("infoSource")
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public void editPoToInfo(WhPo whPo) {
         int count = 0;
         count = whPoDao.saveOrUpdateByVersion(whPo);
@@ -173,7 +174,7 @@ public class PoManagerImpl implements PoManager {
      * @param whPo
      */
     @Override
-    @MoreDB("shardSource")
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void editPoToShard(WhPo whPo) {
         int count = 0;
         count = whPoDao.saveOrUpdateByVersion(whPo);
@@ -183,7 +184,7 @@ public class PoManagerImpl implements PoManager {
     }
 
     @Override
-    @MoreDB("shardSource")
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public ResponseMsg insertPoWithOuId(PoCheckCommand poCheckCommand) {
         WhPo whPo = poCheckCommand.getWhPo();
         List<WhPoLine> whPoLines = poCheckCommand.getWhPoLines();
@@ -225,7 +226,7 @@ public class PoManagerImpl implements PoManager {
      * 通过po单code 状态 ouid 模糊查询对应po单信息 公共库
      */
     @Override
-    @MoreDB("infoSource")
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public List<WhPoCommand> findWhPoListByPoCodeToInfo(String poCode, List<Integer> status, Long ouid) {
         return whPoDao.findWhPoListByPoCode(status, poCode, ouid);
     }
@@ -234,25 +235,25 @@ public class PoManagerImpl implements PoManager {
      * 通过po单code 状态 ouid 模糊查询对应po单信息 拆库
      */
     @Override
-    @MoreDB("shardSource")
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<WhPoCommand> findWhPoListByPoCodeToShard(String poCode, List<Integer> status, Long ouid) {
         return whPoDao.findWhPoListByPoCode(status, poCode, ouid);
     }
 
     @Override
-    @MoreDB("infoSource")
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public WhPo findWhAsnByIdToInfo(Long id, Long ouid) {
         return whPoDao.findWhPoById(id, ouid);
     }
 
     @Override
-    @MoreDB("shardSource")
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public WhPo findWhAsnByIdToShard(Long id, Long ouid) {
         return whPoDao.findWhPoById(id, ouid);
     }
 
     @Override
-    @MoreDB("infoSource")
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public void deletePoAndPoLineToInfo(List<WhPoCommand> whPoCommand) {
         for (WhPoCommand po : whPoCommand) {
             // 删除PO表头信息
@@ -263,7 +264,7 @@ public class PoManagerImpl implements PoManager {
     }
 
     @Override
-    @MoreDB("shardSource")
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void deletePoAndPoLineToShard(List<WhPoCommand> whPoCommand) {
         for (WhPoCommand po : whPoCommand) {
             // 删除PO表头信息
@@ -277,7 +278,7 @@ public class PoManagerImpl implements PoManager {
      * 通过asn数据修改对应po单状态 只针对没有ouid的po单
      */
     @Override
-    @MoreDB("infoSource")
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public ResponseMsg updatePoStatusByAsn(WhAsn asn, List<WhAsnLineCommand> asnLineList, WhPo whPo, Map<Long, WhPoLine> poLineMap, ResponseMsg rm) {
         // 修改表头状态
         if (whPo.getStatus() == PoAsnStatus.PO_NEW) {
@@ -313,7 +314,7 @@ public class PoManagerImpl implements PoManager {
      * 通过asn数据修改对应po单状态 只针对没有ouid的po单 一键创建ASN
      */
     @Override
-    @MoreDB("infoSource")
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public ResponseMsg updatePoStatusByAsnBatch(WhAsnCommand asn, WhPo whpo, List<WhPoLine> whPoLines, ResponseMsg rm) {
         // 修改表头状态
         if (whpo.getStatus() == PoAsnStatus.PO_NEW) {

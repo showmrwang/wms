@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.dao.poasn.CheckAsnCodeDao;
 import com.baozun.scm.primservice.whoperation.model.poasn.CheckAsnCode;
 
@@ -19,7 +20,7 @@ public class AsnCheckManagerImpl implements AsnCheckManager {
     private CheckAsnCodeDao checkAsnCodeDao;
 
     @Override
-    @MoreDB("infoSource")
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public boolean insertAsnWithCheckAndOuId(CheckAsnCode checkAsnCode) {
         /**
          * true:不存在此asn单号 false:存在此asn
@@ -45,7 +46,7 @@ public class AsnCheckManagerImpl implements AsnCheckManager {
     }
 
     @Override
-    @MoreDB("infoSource")
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public List<CheckAsnCode> findCheckAsnCodeListByParam(CheckAsnCode checkAsnCode) {
         /* 查找check表中是否有此asn单信息 */
         List<CheckAsnCode> asn = checkAsnCodeDao.findListByParam(checkAsnCode);

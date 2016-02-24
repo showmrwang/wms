@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoLineCommand;
+import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoLineDao;
@@ -44,7 +45,7 @@ public class PoLineManagerImpl implements PoLineManager {
      * 插入poline数据进基本库
      */
     @Override
-    @MoreDB("infoSource")
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public void createPoLineSingleToInfo(WhPoLine whPoLine) {
         whPoLineDao.insert(whPoLine);
     }
@@ -53,37 +54,37 @@ public class PoLineManagerImpl implements PoLineManager {
      * 插入poline数据进拆库
      */
     @Override
-    @MoreDB("shardSource")
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void createPoLineSingleToShare(WhPoLine whPoLine) {
         whPoLineDao.insert(whPoLine);
     }
 
     @Override
-    @MoreDB("infoSource")
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public Pagination<WhPoLineCommand> findListByQueryMapWithPageExtByInfo(Page page, Sort[] sorts, Map<String, Object> params) {
         return this.whPoLineDao.findListByQueryMapWithPageExt(page, sorts, params);
     }
 
     @Override
-    @MoreDB("shardSource")
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public Pagination<WhPoLineCommand> findListByQueryMapWithPageExtByShard(Page page, Sort[] sorts, Map<String, Object> params) {
         return this.whPoLineDao.findListByQueryMapWithPageExt(page, sorts, params);
     }
 
     @Override
-    @MoreDB("infoSource")
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public void deletePoLineByUuidToInfo(WhPoLineCommand WhPoLine) {
         whPoLineDao.deletePoLineByUuid(WhPoLine.getPoId(), WhPoLine.getOuId(), WhPoLine.getUuid());
     }
 
     @Override
-    @MoreDB("shardSource")
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void deletePoLineByUuidToShard(WhPoLineCommand WhPoLine) {
         whPoLineDao.deletePoLineByUuid(WhPoLine.getPoId(), WhPoLine.getOuId(), WhPoLine.getUuid());
     }
 
     @Override
-    @MoreDB("infoSource")
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public void editPoLineToInfo(WhPoLine whPoLine) {
         // 查询原始POLINE数据
         WhPoLine poLine = whPoLineDao.findWhPoLineByIdWhPoLine(whPoLine.getId(), whPoLine.getOuId());
@@ -106,7 +107,7 @@ public class PoLineManagerImpl implements PoLineManager {
     }
 
     @Override
-    @MoreDB("shardSource")
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void editPoLineToShare(WhPoLine whPoLine) {
         // 查询原始POLINE数据
         WhPoLine poLine = whPoLineDao.findWhPoLineByIdWhPoLine(whPoLine.getId(), whPoLine.getOuId());
@@ -129,19 +130,19 @@ public class PoLineManagerImpl implements PoLineManager {
     }
 
     @Override
-    @MoreDB("infoSource")
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public WhPoLineCommand findPoLinebyIdToInfo(WhPoLineCommand command) {
         return this.whPoLineDao.findWhPoLineById(command.getId(), command.getOuId());
     }
 
     @Override
-    @MoreDB("shardSource")
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public WhPoLineCommand findPoLinebyIdToShard(WhPoLineCommand command) {
         return this.whPoLineDao.findWhPoLineById(command.getId(), command.getOuId());
     }
 
     @Override
-    @MoreDB("infoSource")
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public int editPoLineStatusToInfo(WhPoLineCommand command) {
         int result = whPoLineDao.editPoLineStatus(command.getIds(), command.getStatus(), command.getModifiedId(), command.getOuId(), new Date());
         if (result <= 0) {
@@ -154,7 +155,7 @@ public class PoLineManagerImpl implements PoLineManager {
     }
 
     @Override
-    @MoreDB("shardSource")
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public int editPoLineStatusToShard(WhPoLineCommand command) {
         int result = whPoLineDao.editPoLineStatus(command.getIds(), command.getStatus(), command.getModifiedId(), command.getOuId(), new Date());
         if (result <= 0) {
@@ -170,7 +171,7 @@ public class PoLineManagerImpl implements PoLineManager {
      * 通过创建POLINE信息查找是否该PO单下有对应明细信息(基础库)
      */
     @Override
-    @MoreDB("infoSource")
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public WhPoLine findPoLineByAddPoLineParamToInfo(WhPoLine line, Boolean type) {
         List<Integer> statusList = new ArrayList<Integer>();
         statusList.add(PoAsnStatus.POLINE_NEW);
@@ -189,7 +190,7 @@ public class PoLineManagerImpl implements PoLineManager {
      * 通过创建POLINE信息查找是否该PO单下有对应明细信息(拆库)
      */
     @Override
-    @MoreDB("shardSource")
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public WhPoLine findPoLineByAddPoLineParamToShare(WhPoLine line, Boolean type) {
         List<Integer> statusList = new ArrayList<Integer>();
         statusList.add(PoAsnStatus.POLINE_NEW);
@@ -208,7 +209,7 @@ public class PoLineManagerImpl implements PoLineManager {
      * 修改POLINE明细
      */
     @Override
-    @MoreDB("infoSource")
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public void updatePoLineSingleToInfo(WhPoLine whPoLine) {
         int result = whPoLineDao.saveOrUpdateByVersion(whPoLine);
         if (result <= 0) {
@@ -220,7 +221,7 @@ public class PoLineManagerImpl implements PoLineManager {
      * 修改POLINE明细
      */
     @Override
-    @MoreDB("shardSource")
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void updatePoLineSingleToShare(WhPoLine whPoLine) {
         int result = whPoLineDao.saveOrUpdateByVersion(whPoLine);
         if (result <= 0) {
@@ -233,7 +234,7 @@ public class PoLineManagerImpl implements PoLineManager {
      * 保存临时创建POLINE信息为正式数据
      */
     @Override
-    @MoreDB("infoSource")
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public void createPoLineBatchToInfo(WhPoLineCommand whPoLine) {
         // 先删除此次保存UUID以外的数据
         whPoLineDao.deletePoLineByNotUuid(whPoLine.getPoId(), whPoLine.getOuId(), whPoLine.getUuid());
@@ -281,7 +282,7 @@ public class PoLineManagerImpl implements PoLineManager {
      * 保存临时创建POLINE信息为正式数据
      */
     @Override
-    @MoreDB("shardSource")
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void createPoLineBatchToShare(WhPoLineCommand whPoLine) {
         // 先删除此次保存UUID以外的数据
         whPoLineDao.deletePoLineByNotUuid(whPoLine.getPoId(), whPoLine.getOuId(), whPoLine.getUuid());
@@ -326,13 +327,13 @@ public class PoLineManagerImpl implements PoLineManager {
     }
 
     @Override
-    @MoreDB("infoSource")
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public List<WhPoLine> findWhPoLineListByPoIdToInfo(Long poid, Long ouid) {
         return whPoLineDao.findWhPoLineByPoIdOuId(poid, ouid, null);
     }
 
     @Override
-    @MoreDB("shardSource")
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<WhPoLine> findWhPoLineListByPoIdToShard(Long poid, Long ouid) {
         return whPoLineDao.findWhPoLineByPoIdOuId(poid, ouid, null);
     }
@@ -341,7 +342,7 @@ public class PoLineManagerImpl implements PoLineManager {
      * 删除对应poid+ouid uuid不为空的数据
      */
     @Override
-    @MoreDB("infoSource")
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public void deletePoLineByUuidNotNullToInfo(Long poid, Long ouid) {
         whPoLineDao.deletePoLineByUuidNotNull(poid, ouid);
     }
@@ -350,7 +351,7 @@ public class PoLineManagerImpl implements PoLineManager {
      * 删除对应poid+ouid uuid不为空的数据
      */
     @Override
-    @MoreDB("shardSource")
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void deletePoLineByUuidNotNullToShard(Long poid, Long ouid) {
         whPoLineDao.deletePoLineByUuidNotNull(poid, ouid);
     }

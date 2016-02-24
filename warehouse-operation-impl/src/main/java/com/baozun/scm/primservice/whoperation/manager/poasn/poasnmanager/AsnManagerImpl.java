@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnLineCommand;
+import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnLineDao;
@@ -55,7 +56,7 @@ public class AsnManagerImpl implements AsnManager {
      * 通过asncode查询出asn列表
      */
     @Override
-    @MoreDB("shardSource")
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<WhAsnCommand> findWhAsnListByAsnCode(String asnCode, Integer status, Long ouid) {
         return whAsnDao.findWhAsnListByAsnCode(asnCode, status, ouid);
     }
@@ -64,7 +65,7 @@ public class AsnManagerImpl implements AsnManager {
      * 修改公共库ASN单状态
      */
     @Override
-    @MoreDB("infoSource")
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public int editAsnStatusByInfo(WhAsnCommand whAsn) {
         int result = whAsnDao.editAsnStatus(whAsn.getAsnIds(), whAsn.getStatus(), whAsn.getModifiedId(), whAsn.getOuId(), new Date());
         if (result <= 0) {
@@ -80,7 +81,7 @@ public class AsnManagerImpl implements AsnManager {
      * 修改拆库ASN单状态
      */
     @Override
-    @MoreDB("shardSource")
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public int editAsnStatusByShard(WhAsnCommand whAsn) {
         int result = whAsnDao.editAsnStatus(whAsn.getAsnIds(), whAsn.getStatus(), whAsn.getModifiedId(), whAsn.getOuId(), new Date());
         if (result <= 0) {
@@ -96,7 +97,7 @@ public class AsnManagerImpl implements AsnManager {
      * 读取公共库ASN单信息
      */
     @Override
-    @MoreDB("infoSource")
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public Pagination<WhAsnCommand> findListByQueryMapWithPageExtByInfo(Page page, Sort[] sorts, Map<String, Object> params) {
         return whAsnDao.findListByQueryMapWithPageExt(page, sorts, params);
     }
@@ -105,7 +106,7 @@ public class AsnManagerImpl implements AsnManager {
      * 读取拆库
      */
     @Override
-    @MoreDB("shardSource")
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public Pagination<WhAsnCommand> findListByQueryMapWithPageExtByShard(Page page, Sort[] sorts, Map<String, Object> params) {
         return whAsnDao.findListByQueryMapWithPageExt(page, sorts, params);
     }
@@ -115,7 +116,7 @@ public class AsnManagerImpl implements AsnManager {
      * 
      */
     @Override
-    @MoreDB("shardSource")
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public ResponseMsg createAsnAndLineToShare(WhAsn asn, List<WhAsnLineCommand> asnLineList, WhPo whPo, Map<Long, WhPoLine> poLineMap, ResponseMsg rm) {
         // 如果有asnline信息 asn表头信息需要查询po表头信息
         // 查询对应的PO单信息
@@ -203,7 +204,7 @@ public class AsnManagerImpl implements AsnManager {
     }
 
     @Override
-    @MoreDB("shardSource")
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public ResponseMsg insertAsnWithOuId(WhAsn asn, List<WhAsnLineCommand> asnLineList, WhPo whPo, Map<Long, WhPoLine> poLineMap, ResponseMsg rm) {
         String asnExtCode = asn.getAsnExtCode();
         Long storeId = asn.getStoreId();
@@ -302,7 +303,7 @@ public class AsnManagerImpl implements AsnManager {
      * 通过OP单ID查询相关信息 基础表
      */
     @Override
-    @MoreDB("infoSource")
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public WhAsnCommand findWhAsnByIdToInfo(WhAsnCommand whPo) {
         return whAsnDao.findWhAsnById(whPo.getId(), whPo.getOuId());
     }
@@ -311,13 +312,13 @@ public class AsnManagerImpl implements AsnManager {
      * 通过OP单ID查询相关信息 拆库表
      */
     @Override
-    @MoreDB("shardSource")
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public WhAsnCommand findWhAsnByIdToShard(WhAsnCommand whPo) {
         return whAsnDao.findWhAsnById(whPo.getId(), whPo.getOuId());
     }
 
     @Override
-    @MoreDB("infoSource")
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public void editAsnToInfo(WhAsn whasn) {
         int count = 0;
         count = whAsnDao.saveOrUpdateByVersion(whasn);
@@ -327,7 +328,7 @@ public class AsnManagerImpl implements AsnManager {
     }
 
     @Override
-    @MoreDB("shardSource")
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void editAsnToShard(WhAsn whasn) {
         int count = 0;
         count = whAsnDao.saveOrUpdateByVersion(whasn);
@@ -337,7 +338,7 @@ public class AsnManagerImpl implements AsnManager {
     }
 
     @Override
-    @MoreDB("shardSource")
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public ResponseMsg createAsnBatch(WhAsnCommand asn, WhPo whpo, List<WhPoLine> whPoLines, ResponseMsg rm) {
         WhAsn whAsn = new WhAsn();
         BeanUtils.copyProperties(whpo, whAsn);
@@ -412,7 +413,7 @@ public class AsnManagerImpl implements AsnManager {
     }
 
     @Override
-    @MoreDB("shardSource")
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<WhAsn> findWhAsnByPoToShard(WhAsn whAsn) {
         return this.whAsnDao.findListByParam(whAsn);
     }

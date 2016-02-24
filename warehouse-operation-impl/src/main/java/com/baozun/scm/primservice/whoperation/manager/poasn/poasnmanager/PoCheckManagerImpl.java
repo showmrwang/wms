@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.whoperation.command.poasn.PoCheckCommand;
+import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.dao.poasn.CheckPoCodeDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoLineDao;
@@ -31,7 +32,7 @@ public class PoCheckManagerImpl implements PoCheckManager {
     private WhPoLineDao whPoLineDao;
 
     @Override
-    @MoreDB("infoSource")
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public ResponseMsg insertPoWithCheckWithoutOuId(PoCheckCommand poCheckCommand) {
         CheckPoCode checkPoCode = poCheckCommand.getCheckPoCode();
         WhPo whPo = poCheckCommand.getWhPo();
@@ -70,7 +71,7 @@ public class PoCheckManagerImpl implements PoCheckManager {
     }
 
     @Override
-    @MoreDB("infoSource")
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public boolean insertPoWithCheckAndOuId(CheckPoCode checkPoCode) {
         /**
          * true:不存在此po单号 false:存在此po
