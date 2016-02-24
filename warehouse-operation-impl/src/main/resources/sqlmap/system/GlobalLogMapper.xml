@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.system.GlobalLogDao">
+	<resultMap id="GlobalLogResult" type="com.baozun.scm.primservice.whoperation.model.system.GlobalLog">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="globalLogColumns">
+	    <![CDATA[
+	        	id as id,
+	        	type as type,
+	        	object_type as objectType,
+	        	modified_values as modifiedValues,
+	        	parent_code as parentCode,
+	        	ou_id as ouId,
+	        	modified_id as modifiedId,
+	        	modify_time as modifyTime
+	    ]]>
+	</sql>
+
+			<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+		<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.system.GlobalLog" 
+			 flushCache="true">
+		    <![CDATA[
+		        INSERT INTO
+		        t_bi_global_log (
+		 		    id,
+		        	type ,
+		        	object_type ,
+		        	modified_values ,
+		        	parent_code ,
+		        	ou_id ,
+		        	modified_id ,
+		        	modify_time 
+		        ) VALUES (
+			        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{type,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{objectType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{modifiedValues,javaType=java.lang.String,jdbcType=LONGVARCHAR} ,
+		        	#{parentCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{modifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} 
+		        )
+		    ]]>
+		</insert>
+		
+		
+		<update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.system.GlobalLog">
+	    <![CDATA[
+	        UPDATE t_bi_global_log SET
+		        type = #{type,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        object_type = #{objectType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        modified_values = #{modifiedValues,javaType=java.lang.String,jdbcType=LONGVARCHAR} ,
+		        parent_code = #{parentCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        modify_time = #{modifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} 
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+		</update>
+	   <delete id="delete" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from t_bi_global_log where
+		        id = #{id} 
+	    ]]>
+	    </delete> 
+	    
+	     <delete id="deleteByIds" parameterType="list">
+	    
+	        delete from t_bi_global_log 
+	        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>	
+	  
+	    </delete>  
+	         
+	    <select id="findById" parameterType="java.lang.Long" resultMap="GlobalLogResult" flushCache="false">
+			select <include refid="globalLogColumns" />
+		    <![CDATA[
+			    from t_bi_global_log 
+		        where 
+		        id = #{id} 
+		    ]]>
+		</select>	
+		<select id="getByIds" parameterType="list"  resultMap="GlobalLogResult" flushCache="false">
+			select <include refid="globalLogColumns" />
+			    from t_bi_global_log 
+		        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>					
+		</select>	
+	<sql id="globalLogDynamicWhere">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+	       
+		       <if test="type!=null and type!=''">
+					and type = #{type}
+				</if>
+	       
+	       
+		       <if test="objectType!=null and objectType!=''">
+					and object_type = #{objectType}
+				</if>
+	       	       
+				<if test="modifiedId!=null">
+					and modified_id = #{modifiedId}
+				</if>
+	       
+				<if test="modifyTime!=null">
+					and modify_time = #{modifyTime}
+				</if>
+		</where>
+	</sql>
+	
+
+	<select id="getCount" resultType="long">
+        select count(*) from t_bi_global_log 
+    </select>
+    <select id="findListCountByQueryMap" resultType="long">
+        select count(*) from t_bi_global_log 
+		<include refid="globalLogDynamicWhere"/>    
+    </select>
+    
+    <select id="findListCountByParam" resultType="long">
+        select count(*) from t_bi_global_log 
+		<include refid="globalLogDynamicWhere"/>    
+    </select>
+    
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPage" resultMap="GlobalLogResult">
+    	select <include refid="globalLogColumns" />
+	    from t_bi_global_log 
+		<include refid="globalLogDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByQueryMap" resultMap="GlobalLogResult">
+    	select <include refid="globalLogColumns" />
+	    from t_bi_global_log 
+		<include refid="globalLogDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByParam" resultMap="GlobalLogResult">
+    	select <include refid="globalLogColumns" />
+	    from t_bi_global_log 
+		<include refid="globalLogDynamicWhere"/>
+		
+    </select>
+
+	
+</mapper>
