@@ -14,15 +14,16 @@
  */
 package com.baozun.scm.primservice.whoperation.command.system;
 
-import java.io.Serializable;
 import java.util.Date;
+
+import com.baozun.scm.primservice.whoperation.command.BaseCommand;
 
 /**
  * 
  * @author 全局日志
  * 
  */
-public class GlobalLogCommand implements Serializable {
+public class GlobalLogCommand extends BaseCommand {
 
     private static final long serialVersionUID = 9026646643332638341L;
     /** 主键ID */

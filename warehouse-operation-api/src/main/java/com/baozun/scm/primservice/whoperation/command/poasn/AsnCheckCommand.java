@@ -1,14 +1,14 @@
 package com.baozun.scm.primservice.whoperation.command.poasn;
 
-import java.io.Serializable;
 import java.util.List;
 
+import com.baozun.scm.primservice.whoperation.command.BaseCommand;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
 import com.baozun.scm.primservice.whoperation.model.poasn.CheckAsnCode;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine;
 
-public class AsnCheckCommand implements Serializable {
+public class AsnCheckCommand extends BaseCommand {
 
     /**
      * 

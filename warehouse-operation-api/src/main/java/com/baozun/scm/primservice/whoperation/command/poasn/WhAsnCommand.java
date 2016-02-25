@@ -14,12 +14,13 @@
  */
 package com.baozun.scm.primservice.whoperation.command.poasn;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+import com.baozun.scm.primservice.whoperation.command.BaseCommand;
 
-public class WhAsnCommand implements Serializable {
+
+public class WhAsnCommand extends BaseCommand {
 
     private static final long serialVersionUID = -3374771897459764303L;
 

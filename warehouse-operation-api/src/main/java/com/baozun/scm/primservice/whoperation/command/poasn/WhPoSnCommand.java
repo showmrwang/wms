@@ -14,11 +14,12 @@
  */
 package com.baozun.scm.primservice.whoperation.command.poasn;
 
-import java.io.Serializable;
 import java.util.Date;
 
+import com.baozun.scm.primservice.whoperation.command.BaseCommand;
 
-public class WhPoSnCommand implements Serializable {
+
+public class WhPoSnCommand extends BaseCommand {
 
 
     /**
