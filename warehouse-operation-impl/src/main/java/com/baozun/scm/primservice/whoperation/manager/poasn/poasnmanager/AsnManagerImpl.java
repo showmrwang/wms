@@ -67,6 +67,7 @@ public class AsnManagerImpl implements AsnManager {
     @Override
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public int editAsnStatusByInfo(WhAsnCommand whAsn) {
+        //FIXME editAsnStatusByInfo log日志，方法doc说明
         int result = whAsnDao.editAsnStatus(whAsn.getAsnIds(), whAsn.getStatus(), whAsn.getModifiedId(), whAsn.getOuId(), new Date());
         if (result <= 0) {
             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);

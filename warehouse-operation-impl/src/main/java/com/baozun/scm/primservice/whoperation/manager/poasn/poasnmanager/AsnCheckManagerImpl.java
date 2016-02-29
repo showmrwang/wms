@@ -22,6 +22,7 @@ public class AsnCheckManagerImpl implements AsnCheckManager {
     @Override
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public boolean insertAsnWithCheckAndOuId(CheckAsnCode checkAsnCode) {
+        //FIXME insertAsnWithCheckAndOuId log日志，方法doc说明
         /**
          * true:不存在此asn单号 false:存在此asn
          */
@@ -48,6 +49,7 @@ public class AsnCheckManagerImpl implements AsnCheckManager {
     @Override
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public List<CheckAsnCode> findCheckAsnCodeListByParam(CheckAsnCode checkAsnCode) {
+      //FIXME findCheckAsnCodeListByParam log日志，方法doc说明
         /* 查找check表中是否有此asn单信息 */
         List<CheckAsnCode> asn = checkAsnCodeDao.findListByParam(checkAsnCode);
         return asn;
