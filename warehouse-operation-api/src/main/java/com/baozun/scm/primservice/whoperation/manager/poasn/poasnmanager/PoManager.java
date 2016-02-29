@@ -55,4 +55,12 @@ public interface PoManager extends BaseManager {
 
     ResponseMsg updatePoStatusByAsnBatch(WhAsnCommand asn, WhPo whPo, List<WhPoLine> whPoLines, ResponseMsg rm);
 
+    void saveOrUpdateByVersionToInfo(WhPo o);
+
+    void saveOrUpdateByVersionToShard(WhPo o);
+
+    void cancelPoToInfo(List<WhPo> poList);
+
+    void cancelPoToShard(List<WhPo> poList);
+
 }

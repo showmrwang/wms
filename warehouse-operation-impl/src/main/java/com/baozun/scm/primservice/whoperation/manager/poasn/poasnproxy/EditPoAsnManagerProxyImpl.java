@@ -1,10 +1,12 @@
 package com.baozun.scm.primservice.whoperation.manager.poasn.poasnproxy;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -62,19 +64,40 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
     }
 
     /**
-     * 修改PO单状态(可批量)
+     * 修改PO单状态为取消
      */
     @Override
-    public int editPoStatus(WhPoCommand whPo) {
-        int result = 0;
-        if (null == whPo.getOuId()) {
-            // OUID为空更新基础表内信息
-            result = poManager.editPoStatusToInfo(whPo);
-        } else {
-            // OUID不为空更新拆库表内信息
-            result = poManager.editPoStatusToShard(whPo);
+    public void cancelPo(WhPoCommand whPo) {
+        log.info("EidtPoAsnManagerProxyImpl.editPoStatus: start====================== ");
+        List<WhPo> poList = new ArrayList<WhPo>();
+        // 循环需要更新的po.id
+        for (Long id : whPo.getPoIds()) {
+            WhPoCommand updateCommand = new WhPoCommand();
+            WhPoCommand poCommand = new WhPoCommand();
+            poCommand.setId(id);
+            poCommand.setOuId(whPo.getOuId());
+            // 根据id和ouId分库查询数据
+            if (null == poCommand.getOuId()) {
+                updateCommand = poManager.findWhPoByIdToInfo(poCommand);
+            } else {
+                updateCommand = poManager.findWhPoByIdToShard(poCommand);
+            }
+            if (null == updateCommand) {
+                throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
+            }
+            // 组装数据：修改者ID和修改的状态
+            updateCommand.setModifiedId(whPo.getModifiedId());
+            WhPo po = new WhPo();
+            BeanUtils.copyProperties(updateCommand, po);
+            poList.add(po);
         }
-        return result;
+        if (poList.size() > 0) {
+            if (null == whPo.getOuId()) {
+                this.poManager.cancelPoToInfo(poList);
+            } else {
+                this.poManager.cancelPoToShard(poList);
+            }
+        }
     }
 
     /**
@@ -150,19 +173,42 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
     }
 
     /**
-     * 修改PO单明细状态(可批量)
+     * 删除Po单明细
      */
     @Override
-    public int editPoLineStatus(WhPoLineCommand command) {
-        int result = 0;
-        if (null == command.getOuId()) {
-            // OUID为空更新基础表内信息
-            result = poLineManager.editPoLineStatusToInfo(command);
-        } else {
-            // OUID不为空更新拆库表内信息
-            result = poLineManager.editPoLineStatusToShard(command);
+    public void deletePoLines(WhPoLineCommand command) {
+        log.info("EidtPoAsnManagerProxyImpl.deletePoLines: start====================== ");
+        List<WhPoLine> lineList = new ArrayList<WhPoLine>();
+        // 循环需要更新的poline.id
+        for (Long id : command.getIds()) {
+            WhPoLineCommand updateCommand = new WhPoLineCommand();
+            WhPoLineCommand lineCommand = new WhPoLineCommand();
+            lineCommand.setId(id);
+            lineCommand.setOuId(command.getOuId());
+            // 根据id和ouId分库查询数据
+            if (null == lineCommand.getOuId()) {
+                updateCommand = poLineManager.findPoLinebyIdToInfo(lineCommand);
+            } else {
+                updateCommand = poLineManager.findPoLinebyIdToShard(lineCommand);
+            }
+            if (null == updateCommand) {
+                throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
+            }
+            // 组装数据：修改者ID和修改的状态
+            updateCommand.setModifiedId(command.getModifiedId());
+            WhPoLine poline = new WhPoLine();
+            BeanUtils.copyProperties(updateCommand, poline);
+            lineList.add(poline);
         }
-        return result;
+        int deletecount = 0;
+        if (lineList.size() > 0) {
+            if (null == command.getOuId()) {
+                deletecount = this.poLineManager.deletePoLinesToInfo(lineList);
+            } else {
+                deletecount = this.poLineManager.deletePoLinesToShard(lineList);
+            }
+        }
+        log.info("EidtPoAsnManagerProxyImpl.deletePoLines: end; delete " + deletecount + " rows====================== ");
     }
 
     /**
@@ -275,13 +321,16 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
             }
         }
         // 修改PO单状态为关闭
-        poCommand.setStatus(PoAsnStatus.PO_CLOSE);
-        poCommand.setPoIds(Arrays.asList(new Long[] {poCommand.getId()}));
-        int updateCount = this.editPoStatus(poCommand);
-        if (updateCount == 0) {
-            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+        WhPo po = new WhPo();
+        BeanUtils.copyProperties(whpo, po);
+        po.setStatus(PoAsnStatus.PO_CLOSE);
+        po.setModifiedId(poCommand.getUserId());
+        if (null == po.getOuId()) {
+            this.poManager.saveOrUpdateByVersionToInfo(po);
+        } else {
+            this.poManager.saveOrUpdateByVersionToShard(po);
         }
-        log.info("auditPo end =======================");
+        log.info("EditPoAsnManager.auditPo end =======================");
     }
 
     /**

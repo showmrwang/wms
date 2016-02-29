@@ -13,6 +13,7 @@ import lark.common.dao.Sort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoLineCommand;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
@@ -354,5 +355,75 @@ public class PoLineManagerImpl implements PoLineManager {
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void deletePoLineByUuidNotNullToShard(Long poid, Long ouid) {
         whPoLineDao.deletePoLineByUuidNotNull(poid, ouid);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
+    public void saveOrUpdateByVersionToInfo(WhPoLine o) {
+        int count = this.whPoLineDao.saveOrUpdateByVersion(o);
+        if (count <= 0) {
+            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+        }
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void saveOrUpdateByVersionToShard(WhPoLine o) {
+        int count = this.whPoLineDao.saveOrUpdateByVersion(o);
+        if (count <= 0) {
+            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+        }
+    }
+
+    @Override
+    public int deletePoLinesToInfo(List<WhPoLine> lineList) {
+        WhPo whpo = this.whPoDao.findWhPoById(lineList.get(0).getPoId(), lineList.get(0).getOuId());
+        if (null == whpo) {
+            throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
+        }
+        whpo.setModifiedId(lineList.get(0).getModifiedId());
+        int deleteCount=0;
+        for(WhPoLine line:lineList){
+            if (StringUtils.hasText(line.getUuid())) {
+                this.whPoLineDao.deletePoLineByIdOuId(line.getId(), line.getOuId());
+                deleteCount++;
+            }else{
+                if(PoAsnStatus.POLINE_NEW==line.getStatus()){
+                    whpo.setQtyPlanned(whpo.getQtyPlanned() - line.getQtyPlanned());
+                    this.whPoLineDao.deletePoLineByIdOuId(line.getId(), line.getOuId());
+                    deleteCount++;
+                }else{
+                    throw new BusinessException(ErrorCodes.POLINE_DELETE_STATUS_ERROR,new Object[]{line.getId()});
+                }
+            }
+        }
+        this.whPoDao.saveOrUpdateByVersion(whpo);
+        return deleteCount;
+    }
+
+    @Override
+    public int deletePoLinesToShard(List<WhPoLine> lineList) {
+        WhPo whpo = this.whPoDao.findWhPoById(lineList.get(0).getPoId(), lineList.get(0).getOuId());
+        if (null == whpo) {
+            throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
+        }
+        whpo.setModifiedId(lineList.get(0).getModifiedId());
+        int deleteCount = 0;
+        for (WhPoLine line : lineList) {
+            if (StringUtils.hasText(line.getUuid())) {
+                this.whPoLineDao.deletePoLineByIdOuId(line.getId(), line.getOuId());
+                deleteCount++;
+            } else {
+                if (PoAsnStatus.POLINE_NEW == line.getStatus()) {
+                    whpo.setQtyPlanned(whpo.getQtyPlanned() - line.getQtyPlanned());
+                    this.whPoLineDao.deletePoLineByIdOuId(line.getId(), line.getOuId());
+                    deleteCount++;
+                } else {
+                    throw new BusinessException(ErrorCodes.POLINE_DELETE_STATUS_ERROR, new Object[] {line.getId()});
+                }
+            }
+        }
+        this.whPoDao.saveOrUpdateByVersion(whpo);
+        return deleteCount;
     }
 }

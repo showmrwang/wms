@@ -107,7 +107,7 @@ public class ErrorCodes {
     public static final int GET_GENERATECODE_NULL = 3007;
     /** ASN计划数量大于PO可用数量 */
     public static final int ASNLINE_QTYPLANNED_ERROR = 3008;
-    /** PO单号 [{0}] 状态为新建不允许删除 */
+    /** PO单号 [poCode:{0}] 状态为新建才允许删除或取消 */
     public static final int PO_DELETE_STATUS_ERROR = 3009;
     /** PO单数据不存在 */
     public static final int PO_NULL = 3010;
@@ -121,4 +121,6 @@ public class ErrorCodes {
     public static final int ASN_AUDIT_STATUS_ERROR = 3014;
     /** ASN单所包含的明细状态有未收货，ASN单不允许审核成功 */
     public static final int ASN_AUDIT_LineSTATUS_ERROR = 3015;
+    /** PO单明细 [id:{0}] 状态为新建才允许删除 */
+    public static final int POLINE_DELETE_STATUS_ERROR = 3016;
 }

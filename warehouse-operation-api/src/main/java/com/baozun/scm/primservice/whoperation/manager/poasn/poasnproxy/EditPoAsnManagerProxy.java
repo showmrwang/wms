@@ -15,7 +15,7 @@ public interface EditPoAsnManagerProxy extends BaseManager {
 
     int editAsnStatus(WhAsnCommand whAsnCommand);
 
-    int editPoStatus(WhPoCommand whPoCommand);
+    void cancelPo(WhPoCommand whPoCommand);
 
     ResponseMsg editPo(WhPo po);
 
@@ -23,7 +23,7 @@ public interface EditPoAsnManagerProxy extends BaseManager {
 
     ResponseMsg editPoLine(WhPoLine whPoLine);
 
-    int editPoLineStatus(WhPoLineCommand command);
+    void deletePoLines(WhPoLineCommand command);
 
     ResponseMsg editAsn(WhAsn asn);
 

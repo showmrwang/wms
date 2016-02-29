@@ -344,4 +344,72 @@ public class PoManagerImpl implements PoManager {
         rm.setMsg(asn.getId() + "");
         return rm;
     }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
+    public void saveOrUpdateByVersionToInfo(WhPo o) {
+        int count = this.whPoDao.saveOrUpdateByVersion(o);
+        if (count <= 0) {
+            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+        }
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void saveOrUpdateByVersionToShard(WhPo o) {
+        int count = this.whPoDao.saveOrUpdateByVersion(o);
+        if (count <= 0) {
+            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+        }
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
+    public void cancelPoToInfo(List<WhPo> poList) {
+        for (WhPo whPo : poList) {
+            if (PoAsnStatus.PO_NEW == whPo.getStatus()) {
+                whPo.setStatus(PoAsnStatus.PO_CANCELED);
+                int poCount = this.whPoDao.saveOrUpdateByVersion(whPo);
+                if (poCount == 0) {
+                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                }
+                List<WhPoLine> lineList = this.whPoLineDao.findWhPoLineByPoIdOuId(whPo.getId(), whPo.getOuId(), null);
+                for (WhPoLine line : lineList) {
+                    line.setStatus(PoAsnStatus.POLINE_CANCELED);
+                    line.setModifiedId(whPo.getModifiedId());
+                    int lineCount = this.whPoLineDao.saveOrUpdateByVersion(line);
+                    if (lineCount == 0) {
+                        throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                    }
+                }
+            } else {
+                throw new BusinessException(ErrorCodes.PO_DELETE_STATUS_ERROR, new Object[] {whPo.getPoCode()});
+            }
+        }
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void cancelPoToShard(List<WhPo> poList) {
+        for (WhPo whPo : poList) {
+            if (PoAsnStatus.PO_NEW == whPo.getStatus()) {
+                whPo.setStatus(PoAsnStatus.PO_CANCELED);
+                int poCount = this.whPoDao.saveOrUpdateByVersion(whPo);
+                if (poCount == 0) {
+                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                }
+                List<WhPoLine> lineList = this.whPoLineDao.findWhPoLineByPoIdOuId(whPo.getId(), whPo.getOuId(), null);
+                for (WhPoLine line : lineList) {
+                    line.setStatus(PoAsnStatus.POLINE_CANCELED);
+                    line.setModifiedId(whPo.getModifiedId());
+                    int lineCount = this.whPoLineDao.saveOrUpdateByVersion(line);
+                    if (lineCount == 0) {
+                        throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                    }
+                }
+            } else {
+                throw new BusinessException(ErrorCodes.PO_DELETE_STATUS_ERROR, new Object[] {whPo.getPoCode()});
+            }
+        }
+    }
 }

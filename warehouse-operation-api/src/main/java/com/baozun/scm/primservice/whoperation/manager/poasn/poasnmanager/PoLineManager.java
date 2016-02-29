@@ -56,4 +56,12 @@ public interface PoLineManager extends BaseManager {
     List<WhPoLine> findWhPoLineListByPoIdToInfo(Long poid, Long ouid);
 
     List<WhPoLine> findWhPoLineListByPoIdToShard(Long poid, Long ouid);
+
+    void saveOrUpdateByVersionToInfo(WhPoLine o);
+
+    void saveOrUpdateByVersionToShard(WhPoLine o);
+
+    int deletePoLinesToInfo(List<WhPoLine> lineList);
+
+    int deletePoLinesToShard(List<WhPoLine> lineList);
 }
