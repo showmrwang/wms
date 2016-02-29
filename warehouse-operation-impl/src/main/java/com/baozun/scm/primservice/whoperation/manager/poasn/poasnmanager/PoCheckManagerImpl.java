@@ -9,12 +9,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.whoperation.command.poasn.PoCheckCommand;
+import com.baozun.scm.primservice.whoperation.command.system.GlobalLogCommand;
+import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.dao.poasn.CheckPoCodeDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoLineDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
+import com.baozun.scm.primservice.whoperation.manager.system.GlobalLogManager;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
 import com.baozun.scm.primservice.whoperation.model.poasn.CheckPoCode;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
@@ -30,6 +33,8 @@ public class PoCheckManagerImpl implements PoCheckManager {
     private WhPoDao whPoDao;
     @Autowired
     private WhPoLineDao whPoLineDao;
+    @Autowired
+    private GlobalLogManager globalLogManager;
 
     @Override
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
@@ -45,7 +50,7 @@ public class PoCheckManagerImpl implements PoCheckManager {
             /* 创建po */
             Long i = checkPoCodeDao.insert(checkPoCode);
             if (i != 0) {
-                rm = this.createPoAndLineToInfo(whPo, whPoLines, rm);
+                rm = createPoAndLineToInfo(whPo, whPoLines, rm);
             } else {
                 rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
                 rm.setMsg(ErrorCodes.SAVE_CHECK_TABLE_FAILED + "");// 保存至po_check信息失败
@@ -59,7 +64,7 @@ public class PoCheckManagerImpl implements PoCheckManager {
             /* 如果找不到则调用po manager插入po表 */
             if (0 == count) {
                 /* 插入po表 */
-                rm = this.createPoAndLineToInfo(whPo, whPoLines, rm);
+                rm = createPoAndLineToInfo(whPo, whPoLines, rm);
             } else {
                 /* po单已经存在 */
                 rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
@@ -99,6 +104,13 @@ public class PoCheckManagerImpl implements PoCheckManager {
 
     private ResponseMsg createPoAndLineToInfo(WhPo po, List<WhPoLine> whPoLines, ResponseMsg rm) {
         long i = whPoDao.insert(po);
+        // 插入系统日志表
+        GlobalLogCommand gl = new GlobalLogCommand();
+        gl.setModifiedId(po.getCreatedId());
+        gl.setObjectType(po.getClass().getName());
+        gl.setModifiedValues(po);
+        gl.setType(Constants.GLOBAL_LOG_INSERT);
+        globalLogManager.insertGlobalLog(gl);
         if (0 == i) {
             throw new BusinessException(ErrorCodes.SAVE_PO_FAILED);
         }
@@ -107,6 +119,10 @@ public class PoCheckManagerImpl implements PoCheckManager {
             for (WhPoLine whPoLine : whPoLines) {
                 whPoLine.setPoId(po.getId());
                 whPoLineDao.insert(whPoLine);
+                gl.setModifiedId(po.getCreatedId());
+                gl.setObjectType(whPoLine.getClass().getName());
+                gl.setModifiedValues(whPoLine);
+                gl.setType(Constants.GLOBAL_LOG_INSERT);
             }
         }
         rm.setResponseStatus(ResponseMsg.STATUS_SUCCESS);

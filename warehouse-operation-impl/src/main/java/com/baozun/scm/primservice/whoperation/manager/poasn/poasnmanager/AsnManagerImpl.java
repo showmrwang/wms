@@ -16,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnLineCommand;
+import com.baozun.scm.primservice.whoperation.command.system.GlobalLogCommand;
+import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnDao;
@@ -24,6 +26,7 @@ import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoLineDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
+import com.baozun.scm.primservice.whoperation.manager.system.GlobalLogManager;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine;
@@ -50,6 +53,8 @@ public class AsnManagerImpl implements AsnManager {
     private WhAsnLineDao whAsnLineDao;
     @Autowired
     private WhPoDao whPoDao;
+    @Autowired
+    private GlobalLogManager globalLogManager;
 
 
     /**
@@ -122,6 +127,8 @@ public class AsnManagerImpl implements AsnManager {
         // 如果有asnline信息 asn表头信息需要查询po表头信息
         // 查询对应的PO单信息
         // WhPo whPo = whPoDao.findWhPoById(asn.getPoId(), asn.getPoOuId());
+        // 插入系统日志表
+        GlobalLogCommand gl = new GlobalLogCommand();
         if (null != whPo.getOuId()) {
             // 如果有ouid一个事务更新PO单状态
             if (whPo.getStatus() == PoAsnStatus.PO_NEW) {
@@ -132,6 +139,11 @@ public class AsnManagerImpl implements AsnManager {
                 if (result <= 0) {
                     throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
                 }
+                gl.setModifiedId(whPo.getModifiedId());
+                gl.setObjectType(whPo.getClass().getName());
+                gl.setModifiedValues(whPo);
+                gl.setType(Constants.GLOBAL_LOG_UPDATE);
+                globalLogManager.insertGlobalLog(gl);
             }
         }
         if (null != asnLineList) {
@@ -154,6 +166,11 @@ public class AsnManagerImpl implements AsnManager {
                 whAsn.setLastModifyTime(new Date());
                 whAsn.setModifiedId(asn.getModifiedId());
                 whAsnDao.insert(whAsn);
+                gl.setModifiedId(whAsn.getModifiedId());
+                gl.setObjectType(whAsn.getClass().getName());
+                gl.setModifiedValues(whAsn);
+                gl.setType(Constants.GLOBAL_LOG_INSERT);
+                globalLogManager.insertGlobalLog(gl);
             }
             for (WhAsnLineCommand asnline : asnLineList) {
                 WhAsnLine asnLine = new WhAsnLine();
@@ -179,6 +196,11 @@ public class AsnManagerImpl implements AsnManager {
                 asnLine.setModifiedId(asn.getCreatedId());
                 asnLine.setLastModifyTime(new Date());
                 whAsnLineDao.insert(asnLine);
+                gl.setModifiedId(asnLine.getModifiedId());
+                gl.setObjectType(asnLine.getClass().getName());
+                gl.setModifiedValues(asnLine);
+                gl.setType(Constants.GLOBAL_LOG_INSERT);
+                globalLogManager.insertGlobalLog(gl);
                 if (null != whPo.getOuId()) {
                     // 修改poline的可用数量
                     whPoLine.setAvailableQty(whPoLine.getAvailableQty() - asnline.getQtyPlanned());
@@ -191,12 +213,22 @@ public class AsnManagerImpl implements AsnManager {
                     if (result <= 0) {
                         throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
                     }
+                    gl.setModifiedId(whPoLine.getModifiedId());
+                    gl.setObjectType(whPoLine.getClass().getName());
+                    gl.setModifiedValues(whPoLine);
+                    gl.setType(Constants.GLOBAL_LOG_UPDATE);
+                    globalLogManager.insertGlobalLog(gl);
                 }
             }
         } else {
             // 如果没有asnline信息的话就是ASN列表创建
             // 没有ASNLINE信息直接保存ASN表头
             whAsnDao.insert(asn);
+            gl.setModifiedId(asn.getModifiedId());
+            gl.setObjectType(asn.getClass().getName());
+            gl.setModifiedValues(asn);
+            gl.setType(Constants.GLOBAL_LOG_INSERT);
+            globalLogManager.insertGlobalLog(gl);
         }
         rm.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
         rm.setMsg(asn.getId() + "");
@@ -212,6 +244,7 @@ public class AsnManagerImpl implements AsnManager {
         Long ouId = asn.getOuId();
         /* 查找在性对应的拆库表中是否有此asn单信息 */
         long count = whAsnDao.findAsnByCodeAndStore(asnExtCode, storeId, ouId);
+        GlobalLogCommand gl = new GlobalLogCommand();
         /* 没有此asn单信息 */
         if (0 == count) {
             // 查询对应的PO单信息
@@ -225,6 +258,11 @@ public class AsnManagerImpl implements AsnManager {
                     if (result <= 0) {
                         throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
                     }
+                    gl.setModifiedId(whPo.getModifiedId());
+                    gl.setObjectType(whPo.getClass().getName());
+                    gl.setModifiedValues(whPo);
+                    gl.setType(Constants.GLOBAL_LOG_UPDATE);
+                    globalLogManager.insertGlobalLog(gl);
                 }
             }
             if (null != asnLineList) {
@@ -233,7 +271,6 @@ public class AsnManagerImpl implements AsnManager {
                     // 如果有asnline信息的话就是PO单明细页面创建ASN单数据
                     // 把PO单有的信息copy到whasn表头内
                     BeanUtils.copyProperties(whPo, whAsn);
-                    whAsn.setId(null);
                     whAsn.setPoId(whPo.getId());
                     whAsn.setQtyPlanned(asn.getQtyPlanned());
                     whAsn.setStatus(PoAsnStatus.ASN_NEW);
@@ -245,6 +282,11 @@ public class AsnManagerImpl implements AsnManager {
                     whAsn.setLastModifyTime(new Date());
                     whAsn.setModifiedId(asn.getModifiedId());
                     whAsnDao.insert(whAsn);
+                    gl.setModifiedId(whAsn.getModifiedId());
+                    gl.setObjectType(whAsn.getClass().getName());
+                    gl.setModifiedValues(whAsn);
+                    gl.setType(Constants.GLOBAL_LOG_INSERT);
+                    globalLogManager.insertGlobalLog(gl);
                 }
                 for (WhAsnLineCommand asnline : asnLineList) {
                     WhAsnLine asnLine = new WhAsnLine();
@@ -259,9 +301,9 @@ public class AsnManagerImpl implements AsnManager {
                     BeanUtils.copyProperties(whPoLine, asnLine);
                     asnLine.setId(null);
                     if (null == asn.getId()) {
-                        asnLine.setAsnId(asn.getId());
-                    } else {
                         asnLine.setAsnId(whAsn.getId());
+                    } else {
+                        asnLine.setAsnId(asn.getId());
                     }
                     asnLine.setPoLineId(whPoLine.getId());
                     asnLine.setPoLinenum(whPoLine.getLinenum());
@@ -272,6 +314,11 @@ public class AsnManagerImpl implements AsnManager {
                     asnLine.setModifiedId(asn.getCreatedId());
                     asnLine.setLastModifyTime(new Date());
                     whAsnLineDao.insert(asnLine);
+                    gl.setModifiedId(asnLine.getModifiedId());
+                    gl.setObjectType(asnLine.getClass().getName());
+                    gl.setModifiedValues(asnLine);
+                    gl.setType(Constants.GLOBAL_LOG_INSERT);
+                    globalLogManager.insertGlobalLog(gl);
                     if (null != whPo.getOuId()) {
                         // 修改poline的可用数量
                         whPoLine.setAvailableQty(whPoLine.getAvailableQty() - asnline.getQtyPlanned());
@@ -284,11 +331,21 @@ public class AsnManagerImpl implements AsnManager {
                         if (result <= 0) {
                             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
                         }
+                        gl.setModifiedId(whPoLine.getModifiedId());
+                        gl.setObjectType(whPoLine.getClass().getName());
+                        gl.setModifiedValues(whPoLine);
+                        gl.setType(Constants.GLOBAL_LOG_UPDATE);
+                        globalLogManager.insertGlobalLog(gl);
                     }
                 }
             } else {
                 // 没有ASNLINE信息直接保存ASN表头
                 whAsnDao.insert(asn);
+                gl.setModifiedId(asn.getModifiedId());
+                gl.setObjectType(asn.getClass().getName());
+                gl.setModifiedValues(asn);
+                gl.setType(Constants.GLOBAL_LOG_INSERT);
+                globalLogManager.insertGlobalLog(gl);
             }
         } else {
             /* 存在此asn单信息 */

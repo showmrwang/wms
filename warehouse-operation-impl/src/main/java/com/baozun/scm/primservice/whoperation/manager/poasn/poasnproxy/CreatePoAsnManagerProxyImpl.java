@@ -94,7 +94,7 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
             // 判断OU_ID
             // 查询t_wh_check_pocode
             // 有:查询对应
-            rm = this.insertPoWithCheck(whPo, whPoLines, rm);
+            rm = insertPoWithCheck(whPo, whPoLines, rm);
         } catch (Exception e) {
             if (e instanceof BusinessException) {
                 throw e;
@@ -184,7 +184,7 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
                 return rm;
             }
             whAsn.setAsnCode(asnCode);
-            rm = this.insertAsnWithCheck(whAsn, asn.getAsnLineList(), rm);
+            rm = insertAsnWithCheck(whAsn, asn.getAsnLineList(), rm);
         } catch (Exception e) {
             if (e instanceof BusinessException) {
                 throw e;
@@ -583,7 +583,7 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
         // if (null == ouId) {
         // /* asn单不带ouId */
         // /* 查找并插入asn数据 */
-            // rm = asnCheckManager.insertAsnWithCheckWithoutOuId(asnCheckCommand);
+        // rm = asnCheckManager.insertAsnWithCheckWithoutOuId(asnCheckCommand);
         // } else {
         /* asn单带ouId */
         /* 查找check表中是否有数据 */
