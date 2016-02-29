@@ -87,18 +87,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</select>	
 	<sql id="checkAsnCodeDynamicWhere">
 		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
-		<where>
-	       
-				<if test="id!=null">
-					and id = #{id}
-				</if>
-	       
-	       
-		       <if test="asnCode!=null and asnCode!=''">
-					and asn_code = #{asnCode}
-				</if>
-	       
-	       
+		<where>      
+			       
 		       <if test="asnExtCode!=null and asnExtCode!=''">
 					and asn_ext_code = #{asnExtCode}
 				</if>

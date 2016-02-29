@@ -8,15 +8,16 @@ import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 
 import com.baozun.scm.primservice.whoperation.command.poasn.PoCheckCommand;
+import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
+import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnLineCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 
 public interface PoManager extends BaseManager {
-
-    ResponseMsg createPoAndLine(WhPo po, List<WhPoLine> whPoLines, ResponseMsg rm);
 
     ResponseMsg createPoAndLineToShare(WhPo po, List<WhPoLine> whPoLines, ResponseMsg rm);
 
@@ -38,8 +39,28 @@ public interface PoManager extends BaseManager {
 
     ResponseMsg insertPoWithOuId(PoCheckCommand poCheckCommand);
 
-    List<WhPoCommand> findWhPoListByPoCodeToInfo(String asnCode, List<Integer> status, Long ouid);
+    List<WhPoCommand> findWhPoListByPoCodeToInfo(String poCode, List<Integer> status, Long ouid);
 
-    List<WhPoCommand> findWhPoListByPoCodeToShard(String asnCode, List<Integer> status, Long ouid);
+    List<WhPoCommand> findWhPoListByPoCodeToShard(String poCode, List<Integer> status, Long ouid);
+
+    WhPo findWhAsnByIdToInfo(Long id, Long ouid);
+
+    WhPo findWhAsnByIdToShard(Long id, Long ouid);
+
+    void deletePoAndPoLineToInfo(List<WhPoCommand> whPoCommand);
+
+    void deletePoAndPoLineToShard(List<WhPoCommand> whPoCommand);
+
+    ResponseMsg updatePoStatusByAsn(WhAsn asn, List<WhAsnLineCommand> asnLineList, WhPo whPo, Map<Long, WhPoLine> poLineMap, ResponseMsg rm);
+
+    ResponseMsg updatePoStatusByAsnBatch(WhAsnCommand asn, WhPo whPo, List<WhPoLine> whPoLines, ResponseMsg rm);
+
+    void saveOrUpdateByVersionToInfo(WhPo o);
+
+    void saveOrUpdateByVersionToShard(WhPo o);
+
+    void cancelPoToInfo(List<WhPo> poList);
+
+    void cancelPoToShard(List<WhPo> poList);
 
 }

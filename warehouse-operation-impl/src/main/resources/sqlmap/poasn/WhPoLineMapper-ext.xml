@@ -137,7 +137,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				sys.dic_label as statusName,
 				inv.name as invName,
 				po.po_code as poCode,
-				po.ext_code as extCode
+				po.ext_code as extCode,
+				sku.code as skuCode,
+				sku.ext_code as skuExtCode,
+				sku.bar_code as skuBarCode,
+				sku.name as skuName
 	    ]]>
 	</sql>	
 	
@@ -147,7 +151,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    from 
 	    t_wh_po_line line 
 		left join sys_dictionary sys on sys.dic_value = line.status and sys.group_value = 'POSTATUS'
-		left join t_wh_inventory_status inv on inv.id = line.inv_status,
+		left join t_wh_inventory_status inv on inv.id = line.inv_status 
+		left join t_wh_sku sku on line.sku_id = sku.id ,
 		t_wh_po po 
 		<include refid="whPoLineDynamicWhereExt"/>
     </select>
@@ -157,7 +162,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         select count(*) from 
 	        t_wh_po_line line 
 			left join sys_dictionary sys on sys.dic_value = line.status and sys.group_value = 'POSTATUS'
-			left join t_wh_inventory_status inv on inv.id = line.inv_status,
+			left join t_wh_inventory_status inv on inv.id = line.inv_status
+			left join t_wh_sku sku on line.sku_id = sku.id,
 			t_wh_po po 
 		<include refid="whPoLineDynamicWhereExt"/>
     </select>
@@ -194,6 +200,21 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
     </delete>  
     
+   <delete id="deletePoLineByPoId" parameterType="int">  
+		delete from t_wh_po_line where po_id = #{id}
+    </delete>  
+    
+   <delete id="deletePoLineByUuidNotNull" parameterType="int">  
+		delete from t_wh_po_line
+		<where>
+			po_id = #{poid} 
+			and uuid is not null 
+			<if test="ouid != null">
+				and ou_id = #{ouid}
+			</if>
+		</where>
+    </delete>  
+    
     <select id="findWhPoLineById" resultMap="WhPoLineCommand">
 	    select
 	    <include refid="whPoLineColumnsMapExt" />
@@ -201,6 +222,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    left join sys_dictionary sys on sys.dic_value = line.status and sys.group_value = 'POSTATUS'
 		left join t_wh_inventory_status inv on inv.id = line.inv_status
 	    left join t_wh_po po on po.id=line.po_id
+	    left join t_wh_sku sku on line.sku_id = sku.id
 	    where line.id=#{id}
 	    <if test="ouId!=null">
 	  			 and line.ou_id = #{ouId}

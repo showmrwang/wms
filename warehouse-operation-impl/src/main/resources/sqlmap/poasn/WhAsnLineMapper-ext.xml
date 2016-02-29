@@ -199,5 +199,71 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        and last_modify_time	<=  #{lastModifyTime}    
 		    ]]>
 		</update>
+		
+	<resultMap id="whAsnLineCommand" type="com.baozun.scm.primservice.whoperation.command.poasn.WhAsnLineCommand">
+	</resultMap>
+		
+		<sql id="whAsnLineColumnsMapExt">
+	    <![CDATA[
+				al.id as id,
+				al.asn_id as asnId,
+				al.po_line_id as poLineId,
+				al.ou_id as ouId,
+				al.po_linenum as poLinenum,
+				al.sku_id as skuId,
+				al.qty_planned as qtyPlanned,
+				al.overshipped as overshipped,
+				al.ctn_planned as ctnPlanned,
+				al.qty_rcvd as qtyRcvd,
+				al.ctn_rcvd as ctnRcvd,
+				al.status as status,
+				al.is_iqc as isIqc,
+				date_format(al.mfg_date,'%Y-%m-%d') as mfgDateStr,
+				date_format(al.exp_date,'%Y-%m-%d') as expDateStr,
+				al.valid_date as validDate,
+				al.batch_no as batchNo,
+				al.country_of_origin as countryOfOrigin,
+				al.inv_status as invStatus,
+				al.inv_attr1 as invAttr1,
+				al.inv_attr2 as invAttr2,
+				al.inv_attr3 as invAttr3,
+				al.inv_attr4 as invAttr4,
+				al.inv_attr5 as invAttr5,
+				al.create_time as createTime,
+				al.created_id as createdId,
+				al.last_modify_time as lastModifyTime,
+				al.modified_id as modifiedId,
+				asn.asn_code as asnCode,
+				asn.asn_ext_code as asnExtCode,
+				sys.dic_label as statusName,
+				sku.code as skuCode,
+				sku.ext_code as skuExtCode,
+				sku.bar_code as skuBarCode,
+				sku.name as skuName
+	    ]]>
+	</sql>	
+		
+		
+	<select id="findListByQueryMapWithPageExt" resultMap="whAsnLineCommand">
+    	select <include refid="whAsnLineColumnsMapExt" />
+		    from 
+		    t_wh_asn_line al
+		    left join t_wh_asn asn on asn.id = al.asn_id
+			left join sys_dictionary sys on sys.dic_value = al.status and sys.group_value = 'ASNLINESTATUS'
+			left join t_wh_sku sku on al.sku_id = sku.id 
+			where 
+			al.asn_id = #{asnId}
+    </select>
+    		
+		
+	<select id="findListCountByQueryMapExt" resultType="long">
+        select count(*) from 
+		    t_wh_asn_line al
+		   	left join t_wh_asn asn on asn.id = al.asn_id
+			left join sys_dictionary sys on sys.dic_value = al.status and sys.group_value = 'ASNLINESTATUS'
+			left join t_wh_sku sku on al.sku_id = sku.id 
+			where 
+			al.asn_id = #{asnId}
+    </select>
 	
 </mapper>

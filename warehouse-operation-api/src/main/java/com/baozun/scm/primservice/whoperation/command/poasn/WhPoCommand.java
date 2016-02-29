@@ -14,12 +14,13 @@
  */
 package com.baozun.scm.primservice.whoperation.command.poasn;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+import com.baozun.scm.primservice.whoperation.command.BaseCommand;
 
-public class WhPoCommand implements Serializable {
+
+public class WhPoCommand extends BaseCommand {
 
 
     private static final long serialVersionUID = 3673631265516485464L;
@@ -108,6 +109,8 @@ public class WhPoCommand implements Serializable {
     private String supplierName;
     /** 运输商ID */
     private String logisticsProviderName;
+    /** Asn相关单据号 */
+    private String asnExtCode;
     public Long getId() {
         return this.id;
     }
@@ -426,6 +429,14 @@ public class WhPoCommand implements Serializable {
 
     public void setLogisticsProviderName(String logisticsProviderName) {
         this.logisticsProviderName = logisticsProviderName;
+    }
+
+    public String getAsnExtCode() {
+        return asnExtCode;
+    }
+
+    public void setAsnExtCode(String asnExtCode) {
+        this.asnExtCode = asnExtCode;
     }
 
 

@@ -12,13 +12,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.baozun.scm.baseservice.sac.manager.CodeManager;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
+import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnLineCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoLineCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
+import com.baozun.scm.primservice.whoperation.exception.BusinessException;
+import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
+import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnLineManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoLineManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoManager;
+import com.baozun.scm.primservice.whoperation.util.StringUtil;
 
 /**
  * 查询PoAsn相关数据
@@ -37,6 +43,10 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
     private AsnManager asnManager;
     @Autowired
     private PoLineManager poLineManager;
+    @Autowired
+    private CodeManager codeManager;
+    @Autowired
+    private AsnLineManager asnLineManager;
 
     /**
      * 
@@ -152,8 +162,47 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
      * 通过po单code 状态 ouid 模糊查询对应po单信息
      */
     @Override
-    public List<WhPoCommand> findWhPoListByPoCode(String asnCode, List<Integer> status, Long ouid) {
-        return null;
+    public List<WhPoCommand> findWhPoListByPoCode(String poCode, List<Integer> status, Long ouid) {
+        if (null == ouid) {
+            return poManager.findWhPoListByPoCodeToInfo(poCode, status, ouid);
+        } else {
+            return poManager.findWhPoListByPoCodeToShard(poCode, status, ouid);
+        }
+    }
+
+    /**
+     * 通过编码生成器接口获取asn相关单据号
+     */
+    @Override
+    public String getAsnExtCode() {
+        String extCode = codeManager.generateCode(Constants.WMS, Constants.WHASN_MODEL_URL, Constants.WMS_ASN_EXT, null, null);
+        if (StringUtil.isEmpty(extCode)) {
+            log.warn("getAsnExtCode warn generateCode is null");
+            throw new BusinessException(ErrorCodes.GET_GENERATECODE_NULL, new Object[] {"asn"});
+        }
+        return extCode;
+    }
+
+    @Override
+    public WhAsnCommand findWhAsnById(WhAsnCommand whAsnCommand) {
+        WhAsnCommand whasn = null;
+        if (null == whAsnCommand.getOuId()) {
+            // 查询基本库内信息
+            whasn = asnManager.findWhAsnByIdToInfo(whAsnCommand);
+        } else {
+            // 查询拆库内信息
+            whasn = asnManager.findWhAsnByIdToShard(whAsnCommand);
+        }
+        return whasn;
+    }
+
+    /**
+     * ASNLINE 列表(带分页)
+     */
+    @Override
+    public Pagination<WhAsnLineCommand> findAsnLineListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params, Integer sourceType) {
+        Pagination<WhAsnLineCommand> whAsnLineCommandList = asnLineManager.findListByQueryMapWithPageExtByShard(page, sorts, params);
+        return whAsnLineCommandList;
     }
 
 }

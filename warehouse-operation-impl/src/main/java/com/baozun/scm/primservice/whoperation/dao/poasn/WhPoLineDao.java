@@ -49,9 +49,26 @@ public interface WhPoLineDao extends BaseDao<WhPoLine, Long> {
 
     int deletePoLineByUuid(@Param("poid") Long poid, @Param("ouid") Long ouid, @Param("uuid") String uuid);
 
+    /**
+     * 删除不是此次UUID的数据
+     * 
+     * @param poid
+     * @param ouid
+     * @param uuid
+     * @return
+     */
     int deletePoLineByNotUuid(@Param("poid") Long poid, @Param("ouid") Long ouid, @Param("uuid") String uuid);
 
     int deletePoLineByIdOuId(@Param("id") Long id, @Param("ouid") Long ouid);
+
+    /**
+     * 删除UUID不为空的数据
+     * 
+     * @param id
+     * @param ouid
+     * @return
+     */
+    int deletePoLineByUuidNotNull(@Param("poid") Long id, @Param("ouid") Long ouid);
 
     WhPoLineCommand findWhPoLineById(@Param("id") Long id, @Param("ouId") Long ouid);
 
@@ -63,5 +80,7 @@ public interface WhPoLineDao extends BaseDao<WhPoLine, Long> {
     List<WhPoLine> findWhPoLineByPoIdOuId(@Param("poid") Long poid, @Param("ouid") Long ouid, @Param("uuid") String uuid);
 
     WhPoLine findWhPoLineByIdWhPoLine(@Param("id") Long id, @Param("ouid") Long ouid);
+
+    int deletePoLineByPoId(@Param("id") Long id);
 
 }

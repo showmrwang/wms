@@ -1,5 +1,6 @@
 package com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager;
 
+import java.util.List;
 import java.util.Map;
 
 import lark.common.dao.Page;
@@ -22,7 +23,11 @@ public interface PoLineManager extends BaseManager {
 
     void deletePoLineByUuidToInfo(WhPoLineCommand WhPoLine);
 
-    void deletePoLineByUuidToShare(WhPoLineCommand WhPoLine);
+    void deletePoLineByUuidToShard(WhPoLineCommand WhPoLine);
+
+    void deletePoLineByUuidNotNullToInfo(Long poid, Long ouid);
+
+    void deletePoLineByUuidNotNullToShard(Long poid, Long ouid);
 
     void editPoLineToInfo(WhPoLine whPoLine);
 
@@ -47,4 +52,16 @@ public interface PoLineManager extends BaseManager {
     void createPoLineBatchToInfo(WhPoLineCommand whPoLine);
 
     void createPoLineBatchToShare(WhPoLineCommand whPoLine);
+
+    List<WhPoLine> findWhPoLineListByPoIdToInfo(Long poid, Long ouid);
+
+    List<WhPoLine> findWhPoLineListByPoIdToShard(Long poid, Long ouid);
+
+    void saveOrUpdateByVersionToInfo(WhPoLine o);
+
+    void saveOrUpdateByVersionToShard(WhPoLine o);
+
+    int deletePoLinesToInfo(List<WhPoLine> lineList);
+
+    int deletePoLinesToShard(List<WhPoLine> lineList);
 }

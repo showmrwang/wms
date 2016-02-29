@@ -50,13 +50,13 @@ public class WhAsn extends BaseModel {
     /** 实际到货时间 */
     private Date deliveryTime;
     /** 计划数量 */
-    private Integer qtyPlanned;
+    private Integer qtyPlanned = 0;
     /** 实际数量 */
-    private Integer qtyRcvd;
+    private Integer qtyRcvd = 0;
     /** 计划箱数 */
-    private Integer ctnPlanned;
+    private Integer ctnPlanned = 0;
     /** 实际箱数 */
-    private Integer ctnRcvd;
+    private Integer ctnRcvd = 0;
     /** 供应商ID */
     private Long supplierId;
     /** 运输商ID */
@@ -66,7 +66,7 @@ public class WhAsn extends BaseModel {
     /** 状态 */
     private Integer status;
     /** 是否质检 1:是 0:否 */
-    private Integer isIqc;
+    private Boolean isIqc;
     /** 开始收货时间 */
     private Date startTime;
     /** 结束收获时间 */
@@ -81,6 +81,8 @@ public class WhAsn extends BaseModel {
     private Date lastModifyTime;
     /** modifiedId */
     private Long modifiedId;
+    /** PO单对应的ou_id */
+    private Long poOuId;
 
 
     public String getAsnCode() {
@@ -211,12 +213,12 @@ public class WhAsn extends BaseModel {
         this.status = value;
     }
 
-    public Integer getIsIqc() {
-        return this.isIqc;
+    public Boolean getIsIqc() {
+        return isIqc;
     }
 
-    public void setIsIqc(Integer value) {
-        this.isIqc = value;
+    public void setIsIqc(Boolean isIqc) {
+        this.isIqc = isIqc;
     }
 
     public Date getStartTime() {
@@ -282,5 +284,14 @@ public class WhAsn extends BaseModel {
     public void setAsnExtCode(String asnExtCode) {
         this.asnExtCode = asnExtCode;
     }
+
+    public Long getPoOuId() {
+        return poOuId;
+    }
+
+    public void setPoOuId(Long poOuId) {
+        this.poOuId = poOuId;
+    }
+
 
 }

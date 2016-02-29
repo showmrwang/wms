@@ -21,7 +21,7 @@ public class ErrorCodes {
     /** 输入参数不正确 */
     public static final Integer PARAMS_ERROR = 5;
 
-    /** 传入的参数{0}不能为空,确保传入数据的完整性**/
+    /** 传入的参数{0}不能为空,确保传入数据的完整性 **/
     public static final Integer PARAM_IS_NULL = 6;
 
     /** 更新支付信息失败(t_so_payinfo) **/
@@ -75,7 +75,7 @@ public class ErrorCodes {
     /** 更新的数据数量({0})与实际更新数量({1})不一致，请刷新页面后重试 **/
     public static final int UPDATE_DATA_QUANTITYERROR = 1016;
 
-    /** ASN号编码({0})在系统中未找到**/
+    /** ASN号编码({0})在系统中未找到 **/
     public static final int ASN_CODE_IS_NOT_FOUND = 1017;
 
     /** 用户角色id为空 **/
@@ -89,17 +89,38 @@ public class ErrorCodes {
     /** 店铺id为空 **/
     public static final int STORE_EMPTY = 1024;
 
-
     /** 页面会话错误 请刷新页面后重试 **/
     public static final int SESSION_DATA_ERROR = 2001;
-
-    /** 保存至po_check表失败*/
+    /** 保存至po_check信息失败 */
     public static final int SAVE_CHECK_TABLE_FAILED = 3001;
-
-    /** po单已存在*/
+    /** po单已存在 */
     public static final int PO_EXIST = 3002;
-
-    /** 保存至po表失败*/
+    /** 保存至po单信息失败 */
     public static final int SAVE_PO_FAILED = 3003;
-
+    /** 保存至asn_check信息失败 */
+    public static final int SAVE_CHECK_TABLE_FAILED_ASN = 3004;
+    /** asn单已存在 */
+    public static final int ASN_EXIST = 3005;
+    /** 保存至asn单信息失败 */
+    public static final int SAVE_PO_FAILED_ASN = 3006;
+    /** 调用编码生成器获取编码出错 */
+    public static final int GET_GENERATECODE_NULL = 3007;
+    /** ASN计划数量大于PO可用数量 */
+    public static final int ASNLINE_QTYPLANNED_ERROR = 3008;
+    /** PO单号 [poCode:{0}] 状态为新建才允许删除或取消 */
+    public static final int PO_DELETE_STATUS_ERROR = 3009;
+    /** PO单数据不存在 */
+    public static final int PO_NULL = 3010;
+    /** ASN单数据不存在 */
+    public static final int ASN_NULL = 3012;
+    /** PO单状态为【取消】，PO单不允许审核成功 */
+    public static final int PO_AUDIT_STATUS_ERROR = 3011;
+    /** PO单所包含的ASN状态不全为【关闭】，PO单不允许审核成功 */
+    public static final int PO_AUDIT_ASNSTATUS_ERROR = 3013;
+    /** ASN单状态为【取消】，PO单不允许审核成功 */
+    public static final int ASN_AUDIT_STATUS_ERROR = 3014;
+    /** ASN单所包含的明细状态有未收货，ASN单不允许审核成功 */
+    public static final int ASN_AUDIT_LineSTATUS_ERROR = 3015;
+    /** PO单明细 [id:{0}] 状态为新建才允许删除 */
+    public static final int POLINE_DELETE_STATUS_ERROR = 3016;
 }

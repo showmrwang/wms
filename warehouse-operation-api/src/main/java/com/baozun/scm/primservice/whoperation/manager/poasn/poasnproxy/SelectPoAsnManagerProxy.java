@@ -8,6 +8,7 @@ import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
+import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnLineCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoLineCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
@@ -26,5 +27,11 @@ public interface SelectPoAsnManagerProxy extends BaseManager {
 
     Pagination<WhAsnCommand> findWhAsnListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params, Integer sourceType);
 
-    List<WhPoCommand> findWhPoListByPoCode(String asnCode, List<Integer> status, Long ouid);
+    List<WhPoCommand> findWhPoListByPoCode(String poCode, List<Integer> status, Long ouid);
+
+    String getAsnExtCode();
+
+    WhAsnCommand findWhAsnById(WhAsnCommand whAsnCommand);
+
+    Pagination<WhAsnLineCommand> findAsnLineListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params, Integer sourceType);
 }

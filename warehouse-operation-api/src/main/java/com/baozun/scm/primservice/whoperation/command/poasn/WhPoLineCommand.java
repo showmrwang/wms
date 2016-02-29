@@ -14,12 +14,13 @@
  */
 package com.baozun.scm.primservice.whoperation.command.poasn;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+import com.baozun.scm.primservice.whoperation.command.BaseCommand;
 
-public class WhPoLineCommand implements Serializable {
+
+public class WhPoLineCommand extends BaseCommand {
 
     private static final long serialVersionUID = -2406000061598125009L;
 
@@ -99,6 +100,15 @@ public class WhPoLineCommand implements Serializable {
     private String extCode;
 
     private List<Long> ids;
+
+    /** 商品编码 */
+    private String skuCode;
+    /** 商品名称 */
+    private String skuName;
+    /** 商品对接码 */
+    private String skuExtCode;
+    /** 商品条码 */
+    private String skuBarCode;
 
     public Long getId() {
         return this.id;
@@ -394,6 +404,38 @@ public class WhPoLineCommand implements Serializable {
 
     public void setPoLineId(Long poLineId) {
         this.poLineId = poLineId;
+    }
+
+    public String getSkuCode() {
+        return skuCode;
+    }
+
+    public void setSkuCode(String skuCode) {
+        this.skuCode = skuCode;
+    }
+
+    public String getSkuName() {
+        return skuName;
+    }
+
+    public void setSkuName(String skuName) {
+        this.skuName = skuName;
+    }
+
+    public String getSkuExtCode() {
+        return skuExtCode;
+    }
+
+    public void setSkuExtCode(String skuExtCode) {
+        this.skuExtCode = skuExtCode;
+    }
+
+    public String getSkuBarCode() {
+        return skuBarCode;
+    }
+
+    public void setSkuBarCode(String skuBarCode) {
+        this.skuBarCode = skuBarCode;
     }
 
 

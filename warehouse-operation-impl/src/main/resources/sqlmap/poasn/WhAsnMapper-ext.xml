@@ -36,7 +36,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	created_id as createdId,
 	        	last_modify_time as lastModifyTime,
 	        	modified_id as modifiedId,
-	        	asn_ext_code as asnExtCode
+	        	asn_ext_code as asnExtCode,
+	        	date_format(po_date,'%Y-%m-%d') as poDateStr,
+	        	date_format(eta,'%Y-%m-%d %T') as etaStr,
+	        	po_ou_id as poOuId
 	    ]]>
 	</sql>
 	
@@ -64,18 +67,23 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        logistics_provider_id = #{logisticsProviderId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        asn_type = #{asnType,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 			        status = #{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-			        is_iqc = #{isIqc,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        is_iqc = #{isIqc,javaType=java.lang.Boolean,jdbcType=BIT} ,
 			        start_time = #{startTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        stop_time = #{stopTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        inbound_time = #{inboundTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-			        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-			        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
-		        WHERE 
-			        id = #{id} 
-			        and last_modify_time	<=  #{lastModifyTime}    
+			        last_modify_time = now() ,
+			        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			       	po_ou_id = #{poOuId,javaType=java.lang.Long,jdbcType=BIGINT} 
 		    ]]>
+		     <where>
+		    		id = #{id} 
+			        and last_modify_time	=  #{lastModifyTime}    
+			        <if test="ouId != null">
+			        	and ou_id = #{ouId}
+			        </if>
+		    </where>
 		</update>
 	
 	<resultMap id="whAsnCommand" type="com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand">
@@ -110,6 +118,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				asn.created_id as createdId,
 				asn.last_modify_time as lastModifyTime,
 				asn.modified_id as modifiedId,
+				asn.po_ou_id as poOuId,
 				c.customer_name as customerName,
 				s.store_name as storeName,
 				sys.dic_label as statusName
@@ -119,7 +128,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<select id="findListByQueryMapWithPageExt" resultMap="whAsnCommand">
     	select <include refid="whAsnColumnsMapExt" />
 		    from 
-		    t_wh_asn asn 
+		    t_wh_asn asn
 		    left join t_bi_customer c on asn.customer_id = c.id
 			left join t_bi_store s on asn.store_id = s.id 
 			left join sys_dictionary sys on sys.dic_value = asn.status and sys.group_value = 'ASNSTATUS'
@@ -161,4 +170,31 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
 	</update>
 	
+	<select id="findWhAsnById" resultMap="whAsnCommand">
+    	select <include refid="whAsnColumnsExt" />
+		    from 
+		    t_wh_asn
+		    <where>
+		    	id = #{id}
+				<if test="ouid!=null">
+		   			 and ou_id = #{ouid}
+				</if>
+			</where>
+    </select>
+    
+    <select id="findAsnByCodeAndStore" resultType="long">
+        select count(*) from 
+        t_wh_asn
+		<where>
+			<if test="ouId!=null">
+				and ou_id = #{ouId}
+			</if>
+			<if test="asnExtCode!=null and asnExtCode!=''">
+				and asn_ext_code = #{asnExtCode}
+			</if>
+			<if test="storeId!=null">
+				and store_id = #{storeId}
+			</if>
+		</where>
+    </select>
 </mapper>

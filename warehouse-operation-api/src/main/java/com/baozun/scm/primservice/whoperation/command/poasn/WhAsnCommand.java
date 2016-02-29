@@ -14,12 +14,13 @@
  */
 package com.baozun.scm.primservice.whoperation.command.poasn;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+import com.baozun.scm.primservice.whoperation.command.BaseCommand;
 
-public class WhAsnCommand implements Serializable {
+
+public class WhAsnCommand extends BaseCommand {
 
     private static final long serialVersionUID = -3374771897459764303L;
 
@@ -60,7 +61,7 @@ public class WhAsnCommand implements Serializable {
     /** 状态 */
     private Integer status;
     /** 是否质检 1:是 0:否 */
-    private Integer isIqc;
+    private Boolean isIqc;
     /** 开始收货时间 */
     private Date startTime;
     /** 结束收获时间 */
@@ -84,6 +85,55 @@ public class WhAsnCommand implements Serializable {
     private String storeName;
     /** ASN状态名称 */
     private String statusName;
+    /** po单据号 */
+    private String poCode;
+
+    /** 操作员工ID */
+    private Long userId;
+    /** 采购时间 */
+    private String poDateStr;
+    /** 计划到货时间 */
+    private String etaStr;
+
+    /** 仓库名称 */
+    private String ouName;
+    /** 单据类型名称 */
+    private String poTypeName;
+    /** 是否 */
+    private String isIqcName;
+    /** 供应商ID */
+    private String supplierName;
+    /** 运输商ID */
+    private String logisticsProviderName;
+
+    private List<WhAsnLineCommand> asnLineList;
+    /** po单对应的ou_id */
+    private Long poOuId;
+
+
+    public List<WhAsnLineCommand> getAsnLineList() {
+        return asnLineList;
+    }
+
+    public void setAsnLineList(List<WhAsnLineCommand> asnLineList) {
+        this.asnLineList = asnLineList;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public String getPoCode() {
+        return poCode;
+    }
+
+    public void setPoCode(String poCode) {
+        this.poCode = poCode;
+    }
 
     public Long getId() {
         return this.id;
@@ -221,12 +271,12 @@ public class WhAsnCommand implements Serializable {
         this.status = value;
     }
 
-    public Integer getIsIqc() {
-        return this.isIqc;
+    public Boolean getIsIqc() {
+        return isIqc;
     }
 
-    public void setIsIqc(Integer value) {
-        this.isIqc = value;
+    public void setIsIqc(Boolean isIqc) {
+        this.isIqc = isIqc;
     }
 
     public Date getStartTime() {
@@ -325,5 +375,68 @@ public class WhAsnCommand implements Serializable {
         this.asnExtCode = asnExtCode;
     }
 
+    public String getPoDateStr() {
+        return poDateStr;
+    }
+
+    public void setPoDateStr(String poDateStr) {
+        this.poDateStr = poDateStr;
+    }
+
+    public String getEtaStr() {
+        return etaStr;
+    }
+
+    public void setEtaStr(String etaStr) {
+        this.etaStr = etaStr;
+    }
+
+    public String getOuName() {
+        return ouName;
+    }
+
+    public void setOuName(String ouName) {
+        this.ouName = ouName;
+    }
+
+    public String getPoTypeName() {
+        return poTypeName;
+    }
+
+    public void setPoTypeName(String poTypeName) {
+        this.poTypeName = poTypeName;
+    }
+
+    public String getIsIqcName() {
+        return isIqcName;
+    }
+
+    public void setIsIqcName(String isIqcName) {
+        this.isIqcName = isIqcName;
+    }
+
+    public String getSupplierName() {
+        return supplierName;
+    }
+
+    public void setSupplierName(String supplierName) {
+        this.supplierName = supplierName;
+    }
+
+    public String getLogisticsProviderName() {
+        return logisticsProviderName;
+    }
+
+    public void setLogisticsProviderName(String logisticsProviderName) {
+        this.logisticsProviderName = logisticsProviderName;
+    }
+
+    public Long getPoOuId() {
+        return poOuId;
+    }
+
+    public void setPoOuId(Long poOuId) {
+        this.poOuId = poOuId;
+    }
 
 }

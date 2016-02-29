@@ -14,11 +14,12 @@
  */
 package com.baozun.scm.primservice.whoperation.command.poasn;
 
-import java.io.Serializable;
 import java.util.Date;
 
+import com.baozun.scm.primservice.whoperation.command.BaseCommand;
 
-public class WhAsnLineCommand implements Serializable {
+
+public class WhAsnLineCommand extends BaseCommand {
 
 
     private static final long serialVersionUID = 1258888820659436722L;
@@ -79,6 +80,24 @@ public class WhAsnLineCommand implements Serializable {
     private Date lastModifyTime;
     /** 操作人ID */
     private Long modifiedId;
+    /** 对应ASNCODE */
+    private String asnCode;
+    /** 对应ASN 相关单据号 */
+    private String asnExtCode;
+    /** 状态名称 */
+    private String statusName;
+
+    private String mfgDateStr;
+
+    private String expDateStr;
+    /** 商品编码 */
+    private String skuCode;
+    /** 商品名称 */
+    private String skuName;
+    /** 商品对接码 */
+    private String skuExtCode;
+    /** 商品条码 */
+    private String skuBarCode;
 
     public Long getId() {
         return this.id;
@@ -302,6 +321,78 @@ public class WhAsnLineCommand implements Serializable {
 
     public void setOuId(Long ouId) {
         this.ouId = ouId;
+    }
+
+    public String getAsnCode() {
+        return asnCode;
+    }
+
+    public void setAsnCode(String asnCode) {
+        this.asnCode = asnCode;
+    }
+
+    public String getAsnExtCode() {
+        return asnExtCode;
+    }
+
+    public void setAsnExtCode(String asnExtCode) {
+        this.asnExtCode = asnExtCode;
+    }
+
+    public String getStatusName() {
+        return statusName;
+    }
+
+    public void setStatusName(String statusName) {
+        this.statusName = statusName;
+    }
+
+    public String getMfgDateStr() {
+        return mfgDateStr;
+    }
+
+    public void setMfgDateStr(String mfgDateStr) {
+        this.mfgDateStr = mfgDateStr;
+    }
+
+    public String getExpDateStr() {
+        return expDateStr;
+    }
+
+    public void setExpDateStr(String expDateStr) {
+        this.expDateStr = expDateStr;
+    }
+
+    public String getSkuCode() {
+        return skuCode;
+    }
+
+    public void setSkuCode(String skuCode) {
+        this.skuCode = skuCode;
+    }
+
+    public String getSkuName() {
+        return skuName;
+    }
+
+    public void setSkuName(String skuName) {
+        this.skuName = skuName;
+    }
+
+    public String getSkuExtCode() {
+        return skuExtCode;
+    }
+
+    public void setSkuExtCode(String skuExtCode) {
+        this.skuExtCode = skuExtCode;
+    }
+
+    public String getSkuBarCode() {
+        return skuBarCode;
+    }
+
+    public void setSkuBarCode(String skuBarCode) {
+        this.skuBarCode = skuBarCode;
     }
 
 

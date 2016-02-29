@@ -24,6 +24,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	is_iqc as isIqc,
 	        	date_format(po_date,'%Y-%m-%d') as poDateStr,
 	        	date_format(eta,'%Y-%m-%d %T') as etaStr,
+	        	po_date as poDate,
+	        	eta as eta,
 	        	delivery_time as deliveryTime,
 	        	qty_planned as qtyPlanned,
 	        	qty_rcvd as qtyRcvd,
@@ -169,7 +171,19 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		<include refid="whPoDynamicWhereExt"/>
     </select>
     
-    <select id="findWhPoById" resultMap="WhPoCommand">
+    <select id="findWhPoById" resultMap="WhPoResultExt">
+    	select <include refid="whPoColumnsExt" />
+		    from 
+		    t_wh_po 
+		    <where>
+		    	id = #{id}
+				<if test="ouid!=null">
+		   			 and ou_id = #{ouid}
+				</if>
+			</where>
+    </select>
+    
+    <select id="findWhPoCommandById" resultMap="WhPoCommand">
     	select <include refid="whPoColumnsExt" />
 		    from 
 		    t_wh_po 
