@@ -232,7 +232,6 @@ public class AsnManagerImpl implements AsnManager {
                     // 如果有asnline信息的话就是PO单明细页面创建ASN单数据
                     // 把PO单有的信息copy到whasn表头内
                     BeanUtils.copyProperties(whPo, whAsn);
-                    whAsn.setId(null);
                     whAsn.setPoId(whPo.getId());
                     whAsn.setQtyPlanned(asn.getQtyPlanned());
                     whAsn.setStatus(PoAsnStatus.ASN_NEW);
@@ -258,9 +257,9 @@ public class AsnManagerImpl implements AsnManager {
                     BeanUtils.copyProperties(whPoLine, asnLine);
                     asnLine.setId(null);
                     if (null == asn.getId()) {
-                        asnLine.setAsnId(asn.getId());
-                    } else {
                         asnLine.setAsnId(whAsn.getId());
+                    } else {
+                        asnLine.setAsnId(asn.getId());
                     }
                     asnLine.setPoLineId(whPoLine.getId());
                     asnLine.setPoLinenum(whPoLine.getLinenum());
