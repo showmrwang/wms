@@ -21,7 +21,6 @@ public class ZkDateChangeManagerImpl implements ZkDateChangeManager {
 	
 	@Override
 	public void changeData(String dataPath, Object data) {
-		// TODO Auto-generated method stub
 		
 		
 		if(dataPath.equals(sysconfigPath)){
@@ -32,7 +31,6 @@ public class ZkDateChangeManagerImpl implements ZkDateChangeManager {
 
 	@Override
 	public void deleteData(String dataPath) {
-		// TODO Auto-generated method stub
 
 	}
 

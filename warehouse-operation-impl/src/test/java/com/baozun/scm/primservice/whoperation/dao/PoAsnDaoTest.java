@@ -60,7 +60,6 @@ public class PoAsnDaoTest extends AbstractTransactionalJUnit4SpringContextTests{
 			try {
 				Thread.sleep(120000);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			

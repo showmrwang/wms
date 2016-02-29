@@ -16,7 +16,6 @@ public class ZkStateChangeManagerImpl implements ZkStateChangeManager {
 	private TaskLockCustomStateManager taskLockCustomStateManager;
 	@Override
 	public void handleNewSession() throws Exception {
-		// TODO Auto-generated method stub
 		
 		//断后重连需要再次注册
 		//ZkClientInitBean.afterPropertiesSet();
@@ -28,28 +27,23 @@ public class ZkStateChangeManagerImpl implements ZkStateChangeManager {
 
 	@Override
 	public void handleStateChanged(KeeperState arg0) throws Exception {
-		// TODO Auto-generated method stub
 		taskLockCustomStateManager.handleStateChanged(arg0);
 		LOGGER.info("zk stateChange:"+arg0);
 	}
 
 	@Override
 	public void handlerDisconnected() throws Exception {
-		// TODO Auto-generated method stub
 		LOGGER.info("zk Disconnected");
 	}
 
 	@Override
 	public void handlerExpired() throws Exception {
-		// TODO Auto-generated method stub
-		
 		
 		LOGGER.info("zk Expired");
 	}
 
 	@Override
 	public void handlerSyncConnected() throws Exception {
-		// TODO Auto-generated method stub
 		LOGGER.info("zk SyncConnected");
 		
 		

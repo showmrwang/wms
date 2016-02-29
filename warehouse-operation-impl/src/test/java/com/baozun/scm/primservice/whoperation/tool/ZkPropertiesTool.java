@@ -75,7 +75,6 @@ public class ZkPropertiesTool implements Watcher{
 				pro.load(is);
 				
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 	
@@ -176,7 +175,6 @@ public class ZkPropertiesTool implements Watcher{
 	}
 
 	public static void main(String[] args) throws Exception, InterruptedException {
-		// TODO Auto-generated method stub
 
 	
 		
@@ -195,7 +193,6 @@ public class ZkPropertiesTool implements Watcher{
 
 	@Override
 	public void process(WatchedEvent event) {
-		// TODO Auto-generated method stub
 		
 	}
 
