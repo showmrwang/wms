@@ -583,7 +583,7 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
         // if (null == ouId) {
         // /* asn单不带ouId */
         // /* 查找并插入asn数据 */
-        // rm = asnCheckManager.insertAsnWithCheckWithoutOuId(asnCheckCommand);
+            // rm = asnCheckManager.insertAsnWithCheckWithoutOuId(asnCheckCommand);
         // } else {
         /* asn单带ouId */
         /* 查找check表中是否有数据 */
