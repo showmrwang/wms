@@ -2,8 +2,6 @@ package com.baozun.scm.primservice.whoperation.manager.system;
 
 import java.util.Date;
 
-import net.sf.json.JSONObject;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.baozun.scm.primservice.whoperation.command.system.GlobalLogCommand;
 import com.baozun.scm.primservice.whoperation.dao.system.GlobalLogDao;
 import com.baozun.scm.primservice.whoperation.model.system.GlobalLog;
+import com.baozun.utilities.type.JsonUtil;
 
 
 @Transactional
@@ -43,8 +42,7 @@ public class GlobalLogManagerImpl implements GlobalLogManager {
      * @return
      */
     private static String objectToJson(Object object) {
-        JSONObject jsonObject = JSONObject.fromObject(object);
-        return jsonObject.toString();
+        return JsonUtil.buildNormalBinder().toJson(object);
     }
 
     /**
