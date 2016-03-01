@@ -168,6 +168,7 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
             // OUID不为空修改拆库表内信息
             poLineManager.editPoLineToShare(whPoLine);
         }
+        rm.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
         log.info("EditPoLine start =======================");
         return rm;
     }

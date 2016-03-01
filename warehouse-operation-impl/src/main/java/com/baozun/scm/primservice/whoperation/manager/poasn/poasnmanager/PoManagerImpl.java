@@ -257,9 +257,9 @@ public class PoManagerImpl implements PoManager {
     public void deletePoAndPoLineToInfo(List<WhPoCommand> whPoCommand) {
         for (WhPoCommand po : whPoCommand) {
             // 删除PO表头信息
-            whPoDao.delete(po.getId());
+            whPoDao.deleteByIdOuId(po.getId(), po.getOuId());
             // 删除POLINE明细信息
-            whPoLineDao.deletePoLineByPoId(po.getId());
+            whPoLineDao.deleteByPoIdOuId(po.getId(), po.getOuId());
         }
     }
 
@@ -268,9 +268,9 @@ public class PoManagerImpl implements PoManager {
     public void deletePoAndPoLineToShard(List<WhPoCommand> whPoCommand) {
         for (WhPoCommand po : whPoCommand) {
             // 删除PO表头信息
-            whPoDao.delete(po.getId());
+            whPoDao.deleteByIdOuId(po.getId(), po.getOuId());
             // 删除POLINE明细信息
-            whPoLineDao.deletePoLineByPoId(po.getId());
+            whPoLineDao.deleteByPoIdOuId(po.getId(), po.getOuId());
         }
     }
 

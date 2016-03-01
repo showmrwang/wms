@@ -71,6 +71,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				<if test="isIqc!=null">
 					and po.is_iqc = #{isIqc}
 				</if>
+				<if test="poType!=null">
+					and po.po_type = #{poType}
+				</if>
+				<if test="status!=null">
+					and po.status = #{status}
+				</if>
 		</where>
 	</sql>
 	
@@ -238,4 +244,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			</where>
     </select>
 	
+	 <delete id="deleteByIdOuId" parameterType="map">
+	    <![CDATA[
+	        delete from t_wh_po where
+		        id = #{id} and ou_id=#{ouid} 
+	    ]]>
+	 </delete>
 </mapper>

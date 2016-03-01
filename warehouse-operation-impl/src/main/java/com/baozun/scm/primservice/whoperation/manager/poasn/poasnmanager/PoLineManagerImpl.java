@@ -240,7 +240,10 @@ public class PoLineManagerImpl implements PoLineManager {
         // 先删除此次保存UUID以外的数据
         whPoLineDao.deletePoLineByNotUuid(whPoLine.getPoId(), whPoLine.getOuId(), whPoLine.getUuid());
         // 查询对应PO单下有UUID的数据
-        List<WhPoLine> poLineList = whPoLineDao.findWhPoLineByPoIdOuId(whPoLine.getPoId(), whPoLine.getOuId(), whPoLine.getUuid());
+        List<WhPoLine> poLineList = new ArrayList<WhPoLine>();
+        if (StringUtils.hasText(whPoLine.getUuid())) {
+            poLineList = whPoLineDao.findWhPoLineByPoIdOuId(whPoLine.getPoId(), whPoLine.getOuId(), whPoLine.getUuid());
+        }
         Integer qtyPlannedCount = 0;
         for (WhPoLine p : poLineList) {
             qtyPlannedCount = qtyPlannedCount + p.getQtyPlanned();// 整合计划数量
@@ -288,7 +291,10 @@ public class PoLineManagerImpl implements PoLineManager {
         // 先删除此次保存UUID以外的数据
         whPoLineDao.deletePoLineByNotUuid(whPoLine.getPoId(), whPoLine.getOuId(), whPoLine.getUuid());
         // 查询对应PO单下有UUID的数据
-        List<WhPoLine> poLineList = whPoLineDao.findWhPoLineByPoIdOuId(whPoLine.getPoId(), whPoLine.getOuId(), whPoLine.getUuid());
+        List<WhPoLine> poLineList = new ArrayList<WhPoLine>();
+        if (StringUtils.hasText(whPoLine.getUuid())) {
+            poLineList = whPoLineDao.findWhPoLineByPoIdOuId(whPoLine.getPoId(), whPoLine.getOuId(), whPoLine.getUuid());
+        }
         Integer qtyPlannedCount = 0;
         for (WhPoLine p : poLineList) {
             qtyPlannedCount = qtyPlannedCount + p.getQtyPlanned();// 整合计划数量

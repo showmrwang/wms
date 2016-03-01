@@ -39,8 +39,7 @@
 					<value>com.baozun.scm.primservice.whoperation.model.poasn.WhPo</value>
 					<value>com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine</value>
 					<value>com.baozun.scm.primservice.whoperation.model.poasn.WhPoSn</value>
-					
-				
+					<value>com.baozun.scm.primservice.whoperation.model.system.GlobalLog</value>
 				</list>
 			</property>
 		</bean>

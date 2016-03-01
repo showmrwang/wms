@@ -308,6 +308,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	  			 and ou_id = #{ouid}
 		</if>
     </select>
-    
+    <delete id="deleteByPoIdOuId" parameterType="map">
+	    <![CDATA[
+	        delete from t_wh_po_line where
+		        po_id = #{poid} and ou_id=#{ouid} 
+	    ]]>
+	 </delete>
     
 </mapper>

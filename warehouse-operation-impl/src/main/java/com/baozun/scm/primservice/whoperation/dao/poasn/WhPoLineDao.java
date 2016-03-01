@@ -83,4 +83,6 @@ public interface WhPoLineDao extends BaseDao<WhPoLine, Long> {
 
     int deletePoLineByPoId(@Param("id") Long id);
 
+    int deleteByPoIdOuId(@Param("poid") Long id, @Param("ouid") Long ouid);
+
 }

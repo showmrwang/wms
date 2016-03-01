@@ -140,6 +140,7 @@ public class AsnManagerImpl implements AsnManager {
                     throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
                 }
                 gl.setModifiedId(whPo.getModifiedId());
+                gl.setOuId(whPo.getOuId());
                 gl.setObjectType(whPo.getClass().getName());
                 gl.setModifiedValues(whPo);
                 gl.setType(Constants.GLOBAL_LOG_UPDATE);
@@ -259,6 +260,7 @@ public class AsnManagerImpl implements AsnManager {
                         throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
                     }
                     gl.setModifiedId(whPo.getModifiedId());
+                    gl.setOuId(whPo.getOuId());
                     gl.setObjectType(whPo.getClass().getName());
                     gl.setModifiedValues(whPo);
                     gl.setType(Constants.GLOBAL_LOG_UPDATE);

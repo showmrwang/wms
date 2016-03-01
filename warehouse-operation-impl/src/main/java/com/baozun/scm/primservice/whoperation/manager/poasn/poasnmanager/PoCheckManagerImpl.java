@@ -107,6 +107,7 @@ public class PoCheckManagerImpl implements PoCheckManager {
         // 插入系统日志表
         GlobalLogCommand gl = new GlobalLogCommand();
         gl.setModifiedId(po.getCreatedId());
+        gl.setOuId(po.getOuId());
         gl.setObjectType(po.getClass().getName());
         gl.setModifiedValues(po);
         gl.setType(Constants.GLOBAL_LOG_INSERT);

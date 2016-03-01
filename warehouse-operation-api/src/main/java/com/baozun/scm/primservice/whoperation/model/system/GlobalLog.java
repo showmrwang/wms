@@ -27,8 +27,6 @@ public class GlobalLog extends BaseModel {
 
 
     private static final long serialVersionUID = 96989294591931744L;
-    /** 主键ID */
-    private Long id;
     /** 类型 INSERT UPDATE DELETE */
     private String type;
     /** 对象名称 */
