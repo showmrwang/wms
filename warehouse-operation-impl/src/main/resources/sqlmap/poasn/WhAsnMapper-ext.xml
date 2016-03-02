@@ -7,7 +7,42 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnDao">
 	<resultMap id="WhAsnResultExt" type="com.baozun.scm.primservice.whoperation.model.poasn.WhAsn">
 	</resultMap>
-	
+	<sql id="whAsnDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+				asn.status &lt;&gt; 0 
+				<if test="ouId!=null">
+					and asn.ou_id = #{ouId}
+				</if>
+				<if test="asnCode!=null and asnCode!=''">
+					and asn.asn_code like #{asnCode}
+				</if>
+				<if test="extCode!=null and extCode!=''">
+					and asn.asn_ext_code like #{asnExtCode}
+				</if>
+				<if test="customerId!=null">
+					and asn.customer_id = #{customerId}
+				</if>
+				<if test="storeId!=null">
+					and asn.store_id = #{storeId}
+				</if>
+				<if test="supplierId!=null">
+					and asn.supplier_id = #{supplierId}
+				</if>
+				<if test="logisticsProviderId!=null">
+					and asn.logistics_provider_id = #{logisticsProviderId}
+				</if>
+				<if test="isIqc!=null">
+					and asn.is_iqc = #{isIqc}
+				</if>
+				<if test="asnType!=null">
+					and asn.asn_type = #{asnType}
+				</if>
+				<if test="status!=null">
+					and asn.status = #{status}
+				</if>
+		</where>
+	</sql>
 	<!-- 用于select查询公用抽取的列 -->
 	<sql id="whAsnColumnsExt">
 	    <![CDATA[
@@ -132,6 +167,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    left join t_bi_customer c on asn.customer_id = c.id
 			left join t_bi_store s on asn.store_id = s.id 
 			left join sys_dictionary sys on sys.dic_value = asn.status and sys.group_value = 'ASNSTATUS'
+			<include refid="whAsnDynamicWhereExt"/>
     </select>
     		
 		
@@ -141,6 +177,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    left join t_bi_customer c on asn.customer_id = c.id
 			left join t_bi_store s on asn.store_id = s.id 
 			left join sys_dictionary sys on sys.dic_value = asn.status and sys.group_value = 'ASNSTATUS'
+			<include refid="whAsnDynamicWhereExt"/>
     </select>
 	
 	
@@ -197,4 +234,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			</if>
 		</where>
     </select>
+    
+    <delete id="deleteByIdOuId" parameterType="map">
+	    <![CDATA[
+	        delete from t_wh_asn where
+		        id = #{id} and ou_id=#{ouid} 
+	    ]]>
+	 </delete>
 </mapper>

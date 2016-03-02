@@ -266,4 +266,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			al.asn_id = #{asnId}
     </select>
 	
+	 <delete id="deleteByAsnIdOuId" parameterType="map">
+	    <![CDATA[
+	        delete from t_wh_asn_line where
+		        asn_id = #{asnid} and ou_id=#{ouid} 
+	    ]]>
+	 </delete>
 </mapper>

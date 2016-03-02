@@ -23,6 +23,8 @@ import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnLineCommand;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine;
 
@@ -42,5 +44,7 @@ public interface WhAsnLineDao extends BaseDao<WhAsnLine, Long> {
 
     @CommonQuery
     int saveOrUpdateByVersion(WhAsnLine o);
+
+    int deleteByAsnIdOuId(@Param("asnid") Long id, @Param("ouid") Long ouid);
 
 }

@@ -55,4 +55,6 @@ public interface WhAsnDao extends BaseDao<WhAsn, Long> {
 
     WhAsnCommand findWhAsnById(@Param("id") Long id, @Param("ouid") Long ouid);
 
+    int deleteByIdOuId(@Param("id") Long id, @Param("ouid") Long ouid);
+
 }

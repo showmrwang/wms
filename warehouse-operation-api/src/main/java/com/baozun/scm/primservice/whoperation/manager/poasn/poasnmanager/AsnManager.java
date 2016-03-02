@@ -43,4 +43,6 @@ public interface AsnManager extends BaseManager {
 
     List<WhAsn> findWhAsnByPoToShard(WhAsn whAsn);
 
+    void deleteAsnAndAsnLineToShard(List<WhAsnCommand> asnList);
+
 }

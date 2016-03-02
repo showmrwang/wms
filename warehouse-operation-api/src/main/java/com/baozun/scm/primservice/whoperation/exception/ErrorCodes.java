@@ -123,4 +123,6 @@ public class ErrorCodes {
     public static final int ASN_AUDIT_LineSTATUS_ERROR = 3015;
     /** PO单明细 [id:{0}] 状态为新建才允许删除 */
     public static final int POLINE_DELETE_STATUS_ERROR = 3016;
+    /** ASN单状态为新建才允许删除 */
+    public static final int ASN_DELETE_STATUS_ERROR = 3017;
 }

@@ -32,4 +32,6 @@ public interface EditPoAsnManagerProxy extends BaseManager {
     void auditPo(WhPoCommand poCommand);
 
     void auditAsn(WhAsnCommand asnCommand);
+
+    void deleteAsnAndAsnLine(List<WhAsnCommand> WhAsnCommand);
 }

@@ -373,4 +373,28 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
         }
         log.info("auditPo end =======================");
     }
+
+    @Override
+    public void deleteAsnAndAsnLine(List<WhAsnCommand> WhAsnCommandList) {
+        log.info("deleteAsnAndAsnLine start =======================");
+        for (WhAsnCommand asn : WhAsnCommandList) {
+            WhAsnCommand whasn = null;
+            // 查询拆库内信息
+            whasn = asnManager.findWhAsnByIdToShard(asn);
+            if (whasn.getStatus() != PoAsnStatus.PO_NEW) {
+                // 如果状态不是新建不允许修改 抛错
+                log.warn("DeletePoAndPoLine warn WhPo status NE PO_NEW");
+                throw new BusinessException(ErrorCodes.ASN_DELETE_STATUS_ERROR, new Object[] {whasn.getPoCode()});
+            }
+        }
+        try {
+            // 删除对应ASN单和ASNLINE明细
+            // 删除拆库ASN单信息
+            asnManager.deleteAsnAndAsnLineToShard(WhAsnCommandList);
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCodes.DELETE_FAILURE);
+        }
+        log.info("deleteAsnAndAsnLine end =======================");
+
+    }
 }

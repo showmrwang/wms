@@ -488,4 +488,16 @@ public class AsnManagerImpl implements AsnManager {
         return this.whAsnDao.findListByParam(whAsn);
     }
 
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void deleteAsnAndAsnLineToShard(List<WhAsnCommand> asnList) {
+        for (WhAsnCommand asn : asnList) {
+            // 删除Asn表头信息
+            whAsnDao.deleteByIdOuId(asn.getId(), asn.getOuId());
+            // 删除AsnLINE明细信息
+            whAsnLineDao.deleteByAsnIdOuId(asn.getId(), asn.getOuId());
+        }
+
+    }
+
 }
