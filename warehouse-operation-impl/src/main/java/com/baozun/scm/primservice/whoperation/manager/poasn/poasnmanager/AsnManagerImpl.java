@@ -185,9 +185,9 @@ public class AsnManagerImpl implements AsnManager {
                 BeanUtils.copyProperties(whPoLine, asnLine);
                 asnLine.setId(null);
                 if (null == asn.getId()) {
-                    asnLine.setAsnId(asn.getId());
-                } else {
                     asnLine.setAsnId(whAsn.getId());
+                } else {
+                    asnLine.setAsnId(asn.getId());
                 }
                 asnLine.setPoLineId(whPoLine.getId());
                 asnLine.setPoLinenum(whPoLine.getLinenum());
@@ -313,6 +313,7 @@ public class AsnManagerImpl implements AsnManager {
                     } else {
                         asnLine.setAsnId(asn.getId());
                     }
+                    asnLine.setAsnId(asn.getId());
                     asnLine.setPoLineId(whPoLine.getId());
                     asnLine.setPoLinenum(whPoLine.getLinenum());
                     asnLine.setStatus(PoAsnStatus.ASNLINE_NOT_RCVD);
