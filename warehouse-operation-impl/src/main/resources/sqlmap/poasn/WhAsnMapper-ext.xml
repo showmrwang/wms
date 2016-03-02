@@ -78,11 +78,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    ]]>
 	</sql>
 	
-	<sql id="whAsnDynamicWhereExt">
-	
-	</sql>
-	
-
 		<update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.poasn.WhAsn">
 		    <![CDATA[
 		        UPDATE t_wh_asn SET
