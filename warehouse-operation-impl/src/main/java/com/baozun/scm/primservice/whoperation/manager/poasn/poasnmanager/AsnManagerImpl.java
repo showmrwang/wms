@@ -171,6 +171,7 @@ public class AsnManagerImpl implements AsnManager {
                 gl.setObjectType(whAsn.getClass().getName());
                 gl.setModifiedValues(whAsn);
                 gl.setType(Constants.GLOBAL_LOG_INSERT);
+                gl.setOuId(whAsn.getOuId());
                 globalLogManager.insertGlobalLog(gl);
             }
             for (WhAsnLineCommand asnline : asnLineList) {
@@ -200,6 +201,7 @@ public class AsnManagerImpl implements AsnManager {
                 gl.setModifiedId(asnLine.getModifiedId());
                 gl.setObjectType(asnLine.getClass().getName());
                 gl.setModifiedValues(asnLine);
+                gl.setOuId(asnLine.getOuId());
                 gl.setType(Constants.GLOBAL_LOG_INSERT);
                 globalLogManager.insertGlobalLog(gl);
                 if (null != whPo.getOuId()) {
@@ -218,6 +220,7 @@ public class AsnManagerImpl implements AsnManager {
                     gl.setObjectType(whPoLine.getClass().getName());
                     gl.setModifiedValues(whPoLine);
                     gl.setType(Constants.GLOBAL_LOG_UPDATE);
+                    gl.setOuId(whPoLine.getOuId());
                     globalLogManager.insertGlobalLog(gl);
                 }
             }
@@ -229,6 +232,7 @@ public class AsnManagerImpl implements AsnManager {
             gl.setObjectType(asn.getClass().getName());
             gl.setModifiedValues(asn);
             gl.setType(Constants.GLOBAL_LOG_INSERT);
+            gl.setOuId(asn.getOuId());
             globalLogManager.insertGlobalLog(gl);
         }
         rm.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
@@ -274,6 +278,7 @@ public class AsnManagerImpl implements AsnManager {
                     // 把PO单有的信息copy到whasn表头内
                     BeanUtils.copyProperties(whPo, whAsn);
                     whAsn.setPoId(whPo.getId());
+                    whAsn.setPoOuId(whPo.getOuId());
                     whAsn.setQtyPlanned(asn.getQtyPlanned());
                     whAsn.setStatus(PoAsnStatus.ASN_NEW);
                     whAsn.setAsnCode(asn.getAsnCode());
@@ -285,6 +290,7 @@ public class AsnManagerImpl implements AsnManager {
                     whAsn.setModifiedId(asn.getModifiedId());
                     whAsnDao.insert(whAsn);
                     gl.setModifiedId(whAsn.getModifiedId());
+                    gl.setOuId(whAsn.getOuId());
                     gl.setObjectType(whAsn.getClass().getName());
                     gl.setModifiedValues(whAsn);
                     gl.setType(Constants.GLOBAL_LOG_INSERT);
@@ -317,6 +323,7 @@ public class AsnManagerImpl implements AsnManager {
                     asnLine.setLastModifyTime(new Date());
                     whAsnLineDao.insert(asnLine);
                     gl.setModifiedId(asnLine.getModifiedId());
+                    gl.setOuId(asnLine.getOuId());
                     gl.setObjectType(asnLine.getClass().getName());
                     gl.setModifiedValues(asnLine);
                     gl.setType(Constants.GLOBAL_LOG_INSERT);
@@ -337,6 +344,7 @@ public class AsnManagerImpl implements AsnManager {
                         gl.setObjectType(whPoLine.getClass().getName());
                         gl.setModifiedValues(whPoLine);
                         gl.setType(Constants.GLOBAL_LOG_UPDATE);
+                        gl.setOuId(whPoLine.getOuId());
                         globalLogManager.insertGlobalLog(gl);
                     }
                 }
@@ -347,6 +355,7 @@ public class AsnManagerImpl implements AsnManager {
                 gl.setObjectType(asn.getClass().getName());
                 gl.setModifiedValues(asn);
                 gl.setType(Constants.GLOBAL_LOG_INSERT);
+                gl.setOuId(asn.getOuId());
                 globalLogManager.insertGlobalLog(gl);
             }
         } else {

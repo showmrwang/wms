@@ -113,7 +113,7 @@ public class ErrorCodes {
     public static final int PO_NULL = 3010;
     /** ASN单数据不存在 */
     public static final int ASN_NULL = 3012;
-    /** PO单状态为【取消】，PO单不允许审核成功 */
+    /** PO单状态为【收货中、收货完成】，PO单才允许审核成功 */
     public static final int PO_AUDIT_STATUS_ERROR = 3011;
     /** PO单所包含的ASN状态不全为【关闭】，PO单不允许审核成功 */
     public static final int PO_AUDIT_ASNSTATUS_ERROR = 3013;

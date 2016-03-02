@@ -299,7 +299,7 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
         if(null==whpo){
             throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
         }
-        if (PoAsnStatus.PO_CANCELED == whpo.getStatus() || PoAsnStatus.PO_CLOSE == whpo.getStatus()) {
+        if (PoAsnStatus.PO_RCVD != whpo.getStatus() && PoAsnStatus.PO_RCVD_FINISH != whpo.getStatus()) {
             throw new BusinessException(ErrorCodes.PO_AUDIT_STATUS_ERROR);
         }
         // ASN校验：po单下Asn不存在可以审核成功;或者存在asn，但是asn状态为取消或者关闭时候。可以审核成功
