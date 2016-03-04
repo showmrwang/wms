@@ -231,11 +231,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
     </select>
 	
-	 <select id="findWhPoListByPoCode" resultMap="WhPoCommand">
+	 <select id="findWhPoListByExtCode" resultMap="WhPoCommand">
 	    select <include refid="whPoColumnsExt" />
 		    from t_wh_po 
 		   <where>
-			    po_code like #{poCode} 
+			    ext_code like #{extCode} 
 			    and ou_id = #{ouid} 
 			    and status in 
 			   	<foreach collection="statusList" item="status" open="(" separator="," close=")">

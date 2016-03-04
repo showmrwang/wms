@@ -83,7 +83,8 @@ public class WhAsn extends BaseModel {
     private Long modifiedId;
     /** PO单对应的ou_id */
     private Long poOuId;
-
+    /** 对应PO单相关编码 */
+    private String extCode;
 
     public String getAsnCode() {
         return this.asnCode;
@@ -291,6 +292,14 @@ public class WhAsn extends BaseModel {
 
     public void setPoOuId(Long poOuId) {
         this.poOuId = poOuId;
+    }
+
+    public String getExtCode() {
+        return extCode;
+    }
+
+    public void setExtCode(String extCode) {
+        this.extCode = extCode;
     }
 
 

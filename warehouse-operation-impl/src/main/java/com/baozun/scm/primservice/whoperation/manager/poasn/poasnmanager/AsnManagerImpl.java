@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnLineCommand;
+import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
 import com.baozun.scm.primservice.whoperation.command.system.GlobalLogCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
@@ -251,7 +252,8 @@ public class AsnManagerImpl implements AsnManager {
         long count = whAsnDao.findAsnByCodeAndStore(asnExtCode, storeId, ouId);
         GlobalLogCommand gl = new GlobalLogCommand();
         /* 没有此asn单信息 */
-        if (0 == count) {
+        // @mender:yimin.lu 用于添加新的逻辑：ASN页面创建明细
+        if (0 == count || asn.getId() != null) {
             // 查询对应的PO单信息
             // WhPo whPo = whPoDao.findWhPoById(asn.getPoId(), asn.getOuId());
             if (null != whPo.getOuId()) {
@@ -490,12 +492,39 @@ public class AsnManagerImpl implements AsnManager {
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void deleteAsnAndAsnLineToShard(List<WhAsnCommand> asnList) {
-        for (WhAsnCommand asn : asnList) {
-            // 删除Asn表头信息
-            whAsnDao.deleteByIdOuId(asn.getId(), asn.getOuId());
-            // 删除AsnLINE明细信息
-            whAsnLineDao.deleteByAsnIdOuId(asn.getId(), asn.getOuId());
+    public void deleteAsnAndAsnLineToShard(WhAsnCommand asn) {
+        // 删除Asn表头信息
+        whAsnDao.deleteByIdOuId(asn.getId(), asn.getOuId());
+        // 删除AsnLINE明细信息
+        whAsnLineDao.deleteByAsnIdOuId(asn.getId(), asn.getOuId());
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void deleteAsnAndAsnLineWhenPoOuIdNullToShard(WhAsnCommand whAsnCommand) {
+        // 删除Asn表头信息
+        whAsnDao.deleteByIdOuId(whAsnCommand.getId(), whAsnCommand.getOuId());
+        // 删除AsnLINE明细信息
+        whAsnLineDao.deleteByAsnIdOuId(whAsnCommand.getId(), whAsnCommand.getOuId());
+
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void deleteAsnAndAsnLineToShard(WhAsnCommand whAsnCommand, WhPoCommand whpo, List<WhPoLine> polineList) {
+        // 删除Asn表头信息
+        whAsnDao.deleteByIdOuId(whAsnCommand.getId(), whAsnCommand.getOuId());
+        // 删除AsnLINE明细信息
+        whAsnLineDao.deleteByAsnIdOuId(whAsnCommand.getId(), whAsnCommand.getOuId());
+
+        WhPo po = new WhPo();
+        BeanUtils.copyProperties(whpo, po);
+        int updatePoCount = this.whPoDao.saveOrUpdateByVersion(po);
+        if (updatePoCount <= 0) {
+            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+        }
+        for (WhPoLine poLine : polineList) {
+            this.whPoLineDao.saveOrUpdateByVersion(poLine);
         }
 
     }

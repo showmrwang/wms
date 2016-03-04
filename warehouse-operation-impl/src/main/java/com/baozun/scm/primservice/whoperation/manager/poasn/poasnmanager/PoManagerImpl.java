@@ -9,6 +9,7 @@ import lark.common.dao.Page;
 import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,12 +18,15 @@ import com.baozun.scm.primservice.whoperation.command.poasn.PoCheckCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnLineCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
+import com.baozun.scm.primservice.whoperation.command.system.GlobalLogCommand;
+import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoLineDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
+import com.baozun.scm.primservice.whoperation.manager.system.GlobalLogManager;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
@@ -43,6 +47,8 @@ public class PoManagerImpl implements PoManager {
     private WhPoDao whPoDao;
     @Autowired
     private WhPoLineDao whPoLineDao;
+    @Autowired
+    private GlobalLogManager globalLogManager;
 
 
     /**
@@ -227,8 +233,8 @@ public class PoManagerImpl implements PoManager {
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
-    public List<WhPoCommand> findWhPoListByPoCodeToInfo(String poCode, List<Integer> status, Long ouid) {
-        return whPoDao.findWhPoListByPoCode(status, poCode, ouid);
+    public List<WhPoCommand> findWhPoListByExtCodeToInfo(String poCode, List<Integer> status, Long ouid) {
+        return whPoDao.findWhPoListByExtCode(status, poCode, ouid);
     }
 
     /**
@@ -236,8 +242,8 @@ public class PoManagerImpl implements PoManager {
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public List<WhPoCommand> findWhPoListByPoCodeToShard(String poCode, List<Integer> status, Long ouid) {
-        return whPoDao.findWhPoListByPoCode(status, poCode, ouid);
+    public List<WhPoCommand> findWhPoListByExtCodeToShard(String poCode, List<Integer> status, Long ouid) {
+        return whPoDao.findWhPoListByExtCode(status, poCode, ouid);
     }
 
     @Override
@@ -352,6 +358,8 @@ public class PoManagerImpl implements PoManager {
         if (count <= 0) {
             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
         }
+        // 插入操作日志
+        this.insertGlobalLog(o.getModifiedId(), new Date(), o.getClass().getSimpleName(), o, Constants.GLOBAL_LOG_UPDATE, o.getOuId());
     }
 
     @Override
@@ -361,55 +369,124 @@ public class PoManagerImpl implements PoManager {
         if (count <= 0) {
             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
         }
+        // 插入操作日志
+        this.insertGlobalLog(o.getModifiedId(), new Date(), o.getClass().getSimpleName(), o, Constants.GLOBAL_LOG_UPDATE, o.getOuId());
+    }
+
+    /**
+     * INFO库取消PO单;取消PO单的同时需要取消所有的明细；PO单状态为新建的时候可以取消
+     * 
+     * @author yimin.lu
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
+    public void cancelPoToInfo(List<WhPo> poList) {
+        // 循环需要更新的PO单集合
+        for (WhPo whPo : poList) {
+            if (PoAsnStatus.PO_NEW == whPo.getStatus()) {
+                // 将对应的PO单更新状态为取消
+                whPo.setStatus(PoAsnStatus.PO_CANCELED);
+                int poCount = this.whPoDao.saveOrUpdateByVersion(whPo);
+                if (poCount == 0) {
+                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                }
+                // 插入操作日志
+                this.insertGlobalLog(whPo.getModifiedId(), new Date(), whPo.getClass().getSimpleName(), whPo, Constants.GLOBAL_LOG_UPDATE, whPo.getOuId());
+                // 循环取消对应的Po单明细
+                List<WhPoLine> lineList = this.whPoLineDao.findWhPoLineByPoIdOuId(whPo.getId(), whPo.getOuId(), null);
+                for (WhPoLine line : lineList) {
+                    line.setStatus(PoAsnStatus.POLINE_CANCELED);
+                    line.setModifiedId(whPo.getModifiedId());
+                    int lineCount = this.whPoLineDao.saveOrUpdateByVersion(line);
+                    if (lineCount == 0) {
+                        throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                    }
+                    // 插入操作日志
+                    this.insertGlobalLog(line.getModifiedId(), new Date(), line.getClass().getSimpleName(), line, Constants.GLOBAL_LOG_UPDATE, line.getOuId());
+                }
+            } else {
+                throw new BusinessException(ErrorCodes.PO_DELETE_STATUS_ERROR, new Object[] {whPo.getPoCode()});
+            }
+        }
+    }
+
+    /**
+     * INFO库取消PO单;取消PO单的同时需要取消所有的明细
+     * 
+     * @author yimin.lu
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void cancelPoToShard(List<WhPo> poList) {
+        // 循环需要更新的PO单集合
+        for (WhPo whPo : poList) {
+            if (PoAsnStatus.PO_NEW == whPo.getStatus()) {
+                // 将对应的PO单更新状态为取消
+                whPo.setStatus(PoAsnStatus.PO_CANCELED);
+                int poCount = this.whPoDao.saveOrUpdateByVersion(whPo);
+                if (poCount == 0) {
+                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                }
+                // 插入操作日志
+                this.insertGlobalLog(whPo.getModifiedId(), new Date(), whPo.getClass().getSimpleName(), whPo, Constants.GLOBAL_LOG_UPDATE, whPo.getOuId());
+                // 循环取消对应的Po单明细
+                List<WhPoLine> lineList = this.whPoLineDao.findWhPoLineByPoIdOuId(whPo.getId(), whPo.getOuId(), null);
+                for (WhPoLine line : lineList) {
+                    line.setStatus(PoAsnStatus.POLINE_CANCELED);
+                    line.setModifiedId(whPo.getModifiedId());
+                    int lineCount = this.whPoLineDao.saveOrUpdateByVersion(line);
+                    if (lineCount <= 0) {
+                        throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                    }
+                    // 插入操作日志
+                    this.insertGlobalLog(line.getModifiedId(), new Date(), line.getClass().getSimpleName(), line, Constants.GLOBAL_LOG_UPDATE, line.getOuId());
+                }
+            } else {
+                throw new BusinessException(ErrorCodes.PO_DELETE_STATUS_ERROR, new Object[] {whPo.getPoCode()});
+            }
+        }
     }
 
     @Override
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
-    public void cancelPoToInfo(List<WhPo> poList) {
-        for (WhPo whPo : poList) {
-            if (PoAsnStatus.PO_NEW == whPo.getStatus()) {
-                whPo.setStatus(PoAsnStatus.PO_CANCELED);
-                int poCount = this.whPoDao.saveOrUpdateByVersion(whPo);
-                if (poCount == 0) {
-                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-                }
-                List<WhPoLine> lineList = this.whPoLineDao.findWhPoLineByPoIdOuId(whPo.getId(), whPo.getOuId(), null);
-                for (WhPoLine line : lineList) {
-                    line.setStatus(PoAsnStatus.POLINE_CANCELED);
-                    line.setModifiedId(whPo.getModifiedId());
-                    int lineCount = this.whPoLineDao.saveOrUpdateByVersion(line);
-                    if (lineCount == 0) {
-                        throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-                    }
-                }
-            } else {
-                throw new BusinessException(ErrorCodes.PO_DELETE_STATUS_ERROR, new Object[] {whPo.getPoCode()});
+    public void editPoAdnPoLineWhenDeleteAsnToInfo(WhPoCommand whpo, List<WhPoLine> polineList) {
+        WhPo po = new WhPo();
+        BeanUtils.copyProperties(whpo, po);
+        int poUpdateCount = this.whPoDao.saveOrUpdateByVersion(po);
+        if (poUpdateCount <= 0) {
+            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+        }
+        // 插入操作日志
+        this.insertGlobalLog(po.getModifiedId(), new Date(), po.getClass().getSimpleName(), po, Constants.GLOBAL_LOG_UPDATE, po.getOuId());
+        for (WhPoLine poLine : polineList) {
+            int lineCount = this.whPoLineDao.saveOrUpdateByVersion(poLine);
+            if (lineCount <= 0) {
+                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
             }
+            // 插入操作日志
+            this.insertGlobalLog(poLine.getModifiedId(), new Date(), poLine.getClass().getSimpleName(), poLine, Constants.GLOBAL_LOG_UPDATE, poLine.getOuId());
         }
     }
 
-    @Override
-    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void cancelPoToShard(List<WhPo> poList) {
-        for (WhPo whPo : poList) {
-            if (PoAsnStatus.PO_NEW == whPo.getStatus()) {
-                whPo.setStatus(PoAsnStatus.PO_CANCELED);
-                int poCount = this.whPoDao.saveOrUpdateByVersion(whPo);
-                if (poCount == 0) {
-                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-                }
-                List<WhPoLine> lineList = this.whPoLineDao.findWhPoLineByPoIdOuId(whPo.getId(), whPo.getOuId(), null);
-                for (WhPoLine line : lineList) {
-                    line.setStatus(PoAsnStatus.POLINE_CANCELED);
-                    line.setModifiedId(whPo.getModifiedId());
-                    int lineCount = this.whPoLineDao.saveOrUpdateByVersion(line);
-                    if (lineCount == 0) {
-                        throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-                    }
-                }
-            } else {
-                throw new BusinessException(ErrorCodes.PO_DELETE_STATUS_ERROR, new Object[] {whPo.getPoCode()});
-            }
-        }
+    /**
+     * 用于插入日志操作
+     * 
+     * @param userId
+     * @param modifyTime
+     * @param objectType
+     * @param modifiedValues
+     * @param type
+     * @param ouId
+     */
+    private void insertGlobalLog(Long userId, Date modifyTime, String objectType, Object modifiedValues, String type, Long ouId) {
+        GlobalLogCommand gl = new GlobalLogCommand();
+        gl.setModifiedId(userId);
+        gl.setModifyTime(modifyTime);
+        gl.setObjectType(objectType);
+        gl.setModifiedValues(modifiedValues);
+        gl.setType(type);
+        gl.setOuId(ouId);
+        globalLogManager.insertGlobalLog(gl);
+
     }
 }

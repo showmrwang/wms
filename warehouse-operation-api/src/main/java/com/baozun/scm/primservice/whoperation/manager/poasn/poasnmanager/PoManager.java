@@ -39,9 +39,9 @@ public interface PoManager extends BaseManager {
 
     ResponseMsg insertPoWithOuId(PoCheckCommand poCheckCommand);
 
-    List<WhPoCommand> findWhPoListByPoCodeToInfo(String poCode, List<Integer> status, Long ouid);
+    List<WhPoCommand> findWhPoListByExtCodeToInfo(String poCode, List<Integer> status, Long ouid);
 
-    List<WhPoCommand> findWhPoListByPoCodeToShard(String poCode, List<Integer> status, Long ouid);
+    List<WhPoCommand> findWhPoListByExtCodeToShard(String poCode, List<Integer> status, Long ouid);
 
     WhPo findWhAsnByIdToInfo(Long id, Long ouid);
 
@@ -62,5 +62,7 @@ public interface PoManager extends BaseManager {
     void cancelPoToInfo(List<WhPo> poList);
 
     void cancelPoToShard(List<WhPo> poList);
+
+    void editPoAdnPoLineWhenDeleteAsnToInfo(WhPoCommand whpo, List<WhPoLine> polineList);
 
 }

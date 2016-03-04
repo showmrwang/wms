@@ -111,6 +111,8 @@ public class WhPoCommand extends BaseCommand {
     private String logisticsProviderName;
     /** Asn相关单据号 */
     private String asnExtCode;
+
+    private List<Integer> statusList;
     public Long getId() {
         return this.id;
     }
@@ -437,6 +439,14 @@ public class WhPoCommand extends BaseCommand {
 
     public void setAsnExtCode(String asnExtCode) {
         this.asnExtCode = asnExtCode;
+    }
+
+    public List<Integer> getStatusList() {
+        return statusList;
+    }
+
+    public void setStatusList(List<Integer> statusList) {
+        this.statusList = statusList;
     }
 
 

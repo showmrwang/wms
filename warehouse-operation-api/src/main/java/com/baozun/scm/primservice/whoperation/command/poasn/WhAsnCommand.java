@@ -76,6 +76,8 @@ public class WhAsnCommand extends BaseCommand {
     private Date lastModifyTime;
     /** modifiedId */
     private Long modifiedId;
+    /** 对应PO单相关编码 */
+    private String extCode;
 
     /** asnid list */
     private List<Long> asnIds;
@@ -437,6 +439,14 @@ public class WhAsnCommand extends BaseCommand {
 
     public void setPoOuId(Long poOuId) {
         this.poOuId = poOuId;
+    }
+
+    public String getExtCode() {
+        return extCode;
+    }
+
+    public void setExtCode(String extCode) {
+        this.extCode = extCode;
     }
 
 }

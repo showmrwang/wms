@@ -64,7 +64,7 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
     }
 
     /**
-     * 修改PO单状态为取消
+     * 修改PO单状态为取消; 传递参数：poIds,ouId,status,modifiedId,status
      */
     @Override
     public void cancelPo(WhPoCommand whPo) {
@@ -72,7 +72,9 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
         List<WhPo> poList = new ArrayList<WhPo>();
         // 循环需要更新的po.id
         for (Long id : whPo.getPoIds()) {
+            // 根据ID查询到PO单
             WhPoCommand updateCommand = new WhPoCommand();
+            // 查询条件Command
             WhPoCommand poCommand = new WhPoCommand();
             poCommand.setId(id);
             poCommand.setOuId(whPo.getOuId());
@@ -296,7 +298,7 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
             // 查询拆库内信息
             whpo = poManager.findWhPoByIdToShard(poCommand);
         }
-        if(null==whpo){
+        if (null == whpo) {
             throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
         }
         if (PoAsnStatus.PO_RCVD != whpo.getStatus() && PoAsnStatus.PO_RCVD_FINISH != whpo.getStatus()) {
@@ -348,18 +350,18 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
             throw new BusinessException(ErrorCodes.ASN_AUDIT_STATUS_ERROR);
         }
         // ASN明细校验：只有明细处于收货中或者收货完成可以关闭
-        WhAsnLine whAsnLine=new WhAsnLine();
+        WhAsnLine whAsnLine = new WhAsnLine();
         whAsnLine.setAsnId(whAsnCommand.getId());
         whAsnLine.setOuId(whAsnCommand.getOuId());
-        List<WhAsnLine> asnLineList=this.asnLineManager.findListByShard(whAsnLine);
-        if(null==asnLineList||asnLineList.size()==0){
+        List<WhAsnLine> asnLineList = this.asnLineManager.findListByShard(whAsnLine);
+        if (null == asnLineList || asnLineList.size() == 0) {
             throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
         }
-        for(WhAsnLine line:asnLineList){
-            if(null==line){
+        for (WhAsnLine line : asnLineList) {
+            if (null == line) {
                 throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
-            }else{
-                if(null==line.getStatus()||PoAsnStatus.ASNLINE_NOT_RCVD==line.getStatus()){
+            } else {
+                if (null == line.getStatus() || PoAsnStatus.ASNLINE_NOT_RCVD == line.getStatus()) {
                     throw new BusinessException(ErrorCodes.ASN_AUDIT_STATUS_ERROR);
                 }
             }
@@ -375,24 +377,99 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
     }
 
     @Override
-    public void deleteAsnAndAsnLine(List<WhAsnCommand> WhAsnCommandList) {
+    public void deleteAsnAndAsnLine(WhAsnCommand whAsnCommand) {
         log.info("deleteAsnAndAsnLine start =======================");
-        for (WhAsnCommand asn : WhAsnCommandList) {
-            WhAsnCommand whasn = null;
-            // 查询拆库内信息
-            whasn = asnManager.findWhAsnByIdToShard(asn);
-            if (whasn.getStatus() != PoAsnStatus.PO_NEW) {
-                // 如果状态不是新建不允许修改 抛错
-                log.warn("DeletePoAndPoLine warn WhPo status NE PO_NEW");
-                throw new BusinessException(ErrorCodes.ASN_DELETE_STATUS_ERROR, new Object[] {whasn.getPoCode()});
-            }
+        WhAsnCommand whasn = null;
+        // 查询拆库内信息
+        whasn = asnManager.findWhAsnByIdToShard(whAsnCommand);
+        // 业务逻辑：获取到的asn的状态不为新建状态，不能够删除
+        if (null == whasn || null == whasn.getStatus()) {
+            throw new BusinessException(ErrorCodes.DELETE_CODE_ERROR);
         }
-        try {
-            // 删除对应ASN单和ASNLINE明细
-            // 删除拆库ASN单信息
-            asnManager.deleteAsnAndAsnLineToShard(WhAsnCommandList);
-        } catch (Exception e) {
-            throw new BusinessException(ErrorCodes.DELETE_FAILURE);
+        if (whasn.getStatus() != PoAsnStatus.PO_NEW) {
+            log.warn("deleteAsnAndAsnLine warn WhPo status NE PO_NEW");
+            throw new BusinessException(ErrorCodes.ASN_DELETE_STATUS_ERROR, new Object[] {whasn.getAsnExtCode()});
+        }
+        
+        WhAsnLine asnLineSearch=new WhAsnLine();
+        asnLineSearch.setAsnId(whasn.getId());
+        asnLineSearch.setOuId(whasn.getOuId());
+        List<WhAsnLine> asnLineList=this.asnLineManager.findListByShard(asnLineSearch);
+        // 修改asn要对应修改po单、po单明细的数据
+        WhPoCommand poSearch=new WhPoCommand();
+        poSearch.setId(whasn.getPoId());
+        poSearch.setOuId(whasn.getPoOuId());
+        List<WhPoLine> polineList = new ArrayList<WhPoLine>();
+        if(null==whasn.getPoOuId()){
+            WhPoCommand whpo = this.poManager.findWhPoByIdToInfo(poSearch);
+            if (null == whpo) {
+                throw new BusinessException(ErrorCodes.DELETE_CODE_ERROR);
+            }
+            List<WhPoLine> whpolineList = this.poLineManager.findWhPoLineListByPoIdToInfo(whpo.getId(), whpo.getOuId());
+            boolean poStatusFlag = true;
+            if (asnLineList != null && asnLineList.size() > 0) {
+                for(WhAsnLine asnLine:asnLineList){
+                    if (whpolineList != null && whpolineList.size() > 0) {
+                        for (WhPoLine whpoline : whpolineList) {
+
+                            if (whpoline.getId().equals(asnLine.getPoLineId())) {
+                                whpoline.setAvailableQty(whpoline.getAvailableQty() + asnLine.getQtyPlanned());
+                                if (whpoline.getAvailableQty() == whpoline.getQtyPlanned()) {
+                                    whpoline.setStatus(PoAsnStatus.POLINE_NEW);
+                                }
+                                polineList.add(whpoline);
+                            }
+                            if (PoAsnStatus.POLINE_CREATE_ASN == whpoline.getStatus()) {
+                                if (poStatusFlag) {
+                                    poStatusFlag = false;
+                                }
+                            }
+                        }
+                    }
+
+
+                }
+                if (poStatusFlag) {
+                    whpo.setStatus(PoAsnStatus.PO_NEW);
+                }
+             // TODO 需要补偿机制
+                this.poManager.editPoAdnPoLineWhenDeleteAsnToInfo(whpo, polineList);
+                this.asnManager.deleteAsnAndAsnLineWhenPoOuIdNullToShard(whAsnCommand);
+            }
+        } else {
+            WhPoCommand whpo = this.poManager.findWhPoByIdToShard(poSearch);
+            if (null == whpo) {
+                throw new BusinessException(ErrorCodes.DELETE_CODE_ERROR);
+            }
+            List<WhPoLine> whpolineList = this.poLineManager.findWhPoLineListByPoIdToShard(whpo.getId(), whpo.getOuId());
+            boolean poStatusFlag = true;
+            if (asnLineList != null && asnLineList.size() > 0) {
+                for (WhAsnLine asnLine : asnLineList) {
+                    if (whpolineList != null && whpolineList.size() > 0) {
+                        for (WhPoLine whpoline : whpolineList) {
+
+                            if (whpoline.getId().equals(asnLine.getPoLineId())) {
+                                whpoline.setAvailableQty(whpoline.getAvailableQty() + asnLine.getQtyPlanned());
+                                if (whpoline.getAvailableQty() == whpoline.getQtyPlanned()) {
+                                    whpoline.setStatus(PoAsnStatus.POLINE_NEW);
+                                }
+                                polineList.add(whpoline);
+                            }
+                            if (PoAsnStatus.POLINE_CREATE_ASN == whpoline.getStatus()) {
+                                if (poStatusFlag) {
+                                    poStatusFlag = false;
+                                }
+                            }
+                        }
+                    }
+
+
+                }
+                if (poStatusFlag) {
+                    whpo.setStatus(PoAsnStatus.PO_NEW);
+                }
+                this.asnManager.deleteAsnAndAsnLineToShard(whAsnCommand, whpo, polineList);
+            }
         }
         log.info("deleteAsnAndAsnLine end =======================");
 

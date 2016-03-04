@@ -9,6 +9,7 @@ import lark.common.dao.Sort;
 
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnLineCommand;
+import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
@@ -43,6 +44,10 @@ public interface AsnManager extends BaseManager {
 
     List<WhAsn> findWhAsnByPoToShard(WhAsn whAsn);
 
-    void deleteAsnAndAsnLineToShard(List<WhAsnCommand> asnList);
+    void deleteAsnAndAsnLineToShard(WhAsnCommand asn);
+
+    void deleteAsnAndAsnLineWhenPoOuIdNullToShard(WhAsnCommand whAsnCommand);
+
+    void deleteAsnAndAsnLineToShard(WhAsnCommand whAsnCommand, WhPoCommand whpo, List<WhPoLine> polineList);
 
 }

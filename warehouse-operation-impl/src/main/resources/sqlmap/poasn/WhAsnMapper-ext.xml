@@ -41,6 +41,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				<if test="status!=null">
 					and asn.status = #{status}
 				</if>
+				<if test="extCode!=null and extCode!=''">
+					and asn.ext_code = #{extCode}
+				</if>
 		</where>
 	</sql>
 	<!-- 用于select查询公用抽取的列 -->
@@ -74,7 +77,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	asn_ext_code as asnExtCode,
 	        	date_format(po_date,'%Y-%m-%d') as poDateStr,
 	        	date_format(eta,'%Y-%m-%d %T') as etaStr,
-	        	po_ou_id as poOuId
+	        	po_ou_id as poOuId,
+	        	ext_code as extCode
 	    ]]>
 	</sql>
 	
@@ -105,7 +109,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        last_modify_time = now() ,
 			        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-			       	po_ou_id = #{poOuId,javaType=java.lang.Long,jdbcType=BIGINT} 
+			       	po_ou_id = #{poOuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			       	ext_code = #{extCode,javaType=java.lang.String,jdbcType=VARCHAR} 
 		    ]]>
 		     <where>
 		    		id = #{id} 
@@ -149,6 +154,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				asn.last_modify_time as lastModifyTime,
 				asn.modified_id as modifiedId,
 				asn.po_ou_id as poOuId,
+				asn.ext_code as extCode,
 				c.customer_name as customerName,
 				s.store_name as storeName,
 				sys.dic_label as statusName

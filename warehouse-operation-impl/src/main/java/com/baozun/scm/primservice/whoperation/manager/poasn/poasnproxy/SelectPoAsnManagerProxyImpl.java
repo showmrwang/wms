@@ -162,11 +162,11 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
      * 通过po单code 状态 ouid 模糊查询对应po单信息
      */
     @Override
-    public List<WhPoCommand> findWhPoListByPoCode(String poCode, List<Integer> status, Long ouid) {
+    public List<WhPoCommand> findWhPoListByExtCode(String poCode, List<Integer> status, Long ouid) {
         if (null == ouid) {
-            return poManager.findWhPoListByPoCodeToInfo(poCode, status, ouid);
+            return poManager.findWhPoListByExtCodeToInfo(poCode, status, ouid);
         } else {
-            return poManager.findWhPoListByPoCodeToShard(poCode, status, ouid);
+            return poManager.findWhPoListByExtCodeToShard(poCode, status, ouid);
         }
     }
 
