@@ -18,64 +18,61 @@ import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"classpath*:mybatis-config.xml",
-			"classpath*:lark-aop-context.xml",
-			"classpath*:spring.xml"})
+@ContextConfiguration(locations = {"classpath*:mybatis-config.xml", "classpath*:lark-aop-context.xml", "classpath*:spring.xml"})
 @ActiveProfiles("dev")
-public class PoAsnDaoTest extends AbstractTransactionalJUnit4SpringContextTests{
-//	@Autowired(required=false)
-//	private SysSchedulerTaskDao sysSchedulerTaskDao;
-	
+public class PoAsnDaoTest extends AbstractTransactionalJUnit4SpringContextTests {
+    // @Autowired(required=false)
+    // private SysSchedulerTaskDao sysSchedulerTaskDao;
 
-	@Autowired
-	private WhPoLineDao whPoLineDao;
-	
-	@Autowired
-	private WhAsnDao whAsnDao;
 
-	
-	private static int i=16;
-	
-	private static Long currendId=2l;
-	
-	@BeforeClass
-	public static void init(){
-//		ProfileConfigUtil.setMode("dev");
-		
-		
-	}
-	
-	
-	@Test
-	@Rollback(false)
-	public void testInsert() {
-	
-		
-		
-		WhAsn wp=whAsnDao.findById(2l);
-		Date date=new Date();
-		
-		if(date.getMinutes()<41){
-			System.out.println("sleep..");
-			try {
-				Thread.sleep(120000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			
-			wp.setAsnCode("sleep");
-		}
-		else{
-			wp.setAsnCode("no sleep");
-		}
-		
-		int count=whAsnDao.saveOrUpdateByVersion(wp);
-		System.out.println("test1:"+count);
-	}
-	
-	
+    @Autowired
+    private WhPoLineDao whPoLineDao;
 
-	
-	
-	
+    @Autowired
+    private WhAsnDao whAsnDao;
+
+
+    @SuppressWarnings("unused")
+    private static int i = 16;
+
+    @SuppressWarnings("unused")
+    private static Long currendId = 2l;
+
+    @BeforeClass
+    public static void init() {
+        // ProfileConfigUtil.setMode("dev");
+
+
+    }
+
+
+    @SuppressWarnings("deprecation")
+    @Test
+    @Rollback(false)
+    public void testInsert() {
+
+
+
+        WhAsn wp = whAsnDao.findById(2l);
+        Date date = new Date();
+
+        if (date.getMinutes() < 41) {
+            System.out.println("sleep..");
+            try {
+                Thread.sleep(120000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            wp.setAsnCode("sleep");
+        } else {
+            wp.setAsnCode("no sleep");
+        }
+
+        int count = whAsnDao.saveOrUpdateByVersion(wp);
+        System.out.println("test1:" + count);
+    }
+
+
+
 }
