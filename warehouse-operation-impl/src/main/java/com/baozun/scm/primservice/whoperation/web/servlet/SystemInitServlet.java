@@ -12,22 +12,23 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  * @author Justin Hu
  *
  */
-public class SystemInitServlet extends HttpServlet{
-	
-	private static final long serialVersionUID = 4724299124899039939L;
+public class SystemInitServlet extends HttpServlet {
 
-	@Override
-	public void init(ServletConfig config) throws ServletException {
-		initZookeeper(config);
-	}
-	
+    private static final long serialVersionUID = 4724299124899039939L;
 
-	
-	private void initZookeeper(ServletConfig config){
-		ApplicationContext applicationContext = WebApplicationContextUtils.getRequiredWebApplicationContext(config.getServletContext());
-		
-//		WatchControl zo=(WatchControl)applicationContext.getBean("watchControl");
-//		zo.initWatch();
-	}
-	
+    @Override
+    public void init(ServletConfig config) throws ServletException {
+        initZookeeper(config);
+    }
+
+
+
+    @SuppressWarnings("unused")
+    private void initZookeeper(ServletConfig config) {
+        ApplicationContext applicationContext = WebApplicationContextUtils.getRequiredWebApplicationContext(config.getServletContext());
+
+        // WatchControl zo=(WatchControl)applicationContext.getBean("watchControl");
+        // zo.initWatch();
+    }
+
 }
