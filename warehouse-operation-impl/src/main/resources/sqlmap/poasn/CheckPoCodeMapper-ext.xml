@@ -47,4 +47,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
 	</sql>
 	
+	<delete id="deleteByParams" parameterType="com.baozun.scm.primservice.whoperation.model.poasn.CheckPoCode">
+	    <![CDATA[
+	        delete from t_wh_check_pocode 
+	    ]]>
+	    <include refid="checkPoCodeDynamicWhereExt"/>
+	 </delete>
 </mapper>

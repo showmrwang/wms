@@ -37,5 +37,7 @@ public interface CheckPoCodeDao extends BaseDao<CheckPoCode, Long> {
     int saveOrUpdate(CheckPoCode o);
 
     CheckPoCode findPoFromPoCheck(CheckPoCode o);
+    
+    int deleteByParams(CheckPoCode o);
 
 }

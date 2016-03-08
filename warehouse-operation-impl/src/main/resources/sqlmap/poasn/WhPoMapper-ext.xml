@@ -247,7 +247,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	 <delete id="deleteByIdOuId" parameterType="map">
 	    <![CDATA[
 	        delete from t_wh_po where
-		        id = #{id} and ou_id=#{ouid} 
+		        id = #{id} 
 	    ]]>
+	    <if test="ouid!=null">
+		   			<![CDATA[ and ou_id = #{ouid} ]]>
+				</if>
 	 </delete>
 </mapper>

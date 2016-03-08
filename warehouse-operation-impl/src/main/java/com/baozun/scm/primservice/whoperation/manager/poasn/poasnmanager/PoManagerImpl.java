@@ -22,12 +22,14 @@ import com.baozun.scm.primservice.whoperation.command.system.GlobalLogCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
+import com.baozun.scm.primservice.whoperation.dao.poasn.CheckPoCodeDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoLineDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.system.GlobalLogManager;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
+import com.baozun.scm.primservice.whoperation.model.poasn.CheckPoCode;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
@@ -49,6 +51,8 @@ public class PoManagerImpl implements PoManager {
     private WhPoLineDao whPoLineDao;
     @Autowired
     private GlobalLogManager globalLogManager;
+    @Autowired
+    private CheckPoCodeDao checkPoCodeDao;
 
 
     /**
@@ -266,6 +270,12 @@ public class PoManagerImpl implements PoManager {
             whPoDao.deleteByIdOuId(po.getId(), po.getOuId());
             // 删除POLINE明细信息
             whPoLineDao.deleteByPoIdOuId(po.getId(), po.getOuId());
+            // 删除校验表数据
+            CheckPoCode cpCode = new CheckPoCode();
+            cpCode.setOuId(po.getOuId());
+            cpCode.setPoCode(po.getPoCode());
+            cpCode.setStoreId(po.getStoreId());
+            checkPoCodeDao.deleteByParams(cpCode);
         }
     }
 
@@ -277,6 +287,12 @@ public class PoManagerImpl implements PoManager {
             whPoDao.deleteByIdOuId(po.getId(), po.getOuId());
             // 删除POLINE明细信息
             whPoLineDao.deleteByPoIdOuId(po.getId(), po.getOuId());
+            // 删除校验表数据
+            CheckPoCode cpCode = new CheckPoCode();
+            cpCode.setOuId(po.getOuId());
+            cpCode.setPoCode(po.getPoCode());
+            cpCode.setStoreId(po.getStoreId());
+            checkPoCodeDao.deleteByParams(cpCode);
         }
     }
 
