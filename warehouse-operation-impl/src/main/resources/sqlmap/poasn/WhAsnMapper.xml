@@ -38,7 +38,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	modified_id as modifiedId,
 	        	asn_ext_code as asnExtCode,
 	        	po_ou_id as poOuId,
-	        	ext_code as extCode
+	        	ext_code as extCode,
+	        	urgent_status as urgentStatus
 	    ]]>
 	</sql>
 		<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
@@ -74,7 +75,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	last_modify_time ,
 	        	modified_id,
 	        	po_ou_id ,
-	        	ext_code
+	        	ext_code,
+	        	urgent_status
 	        ) VALUES (
 	        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{asnCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -103,7 +105,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 	        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{poOuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-	        	#{extCode,javaType=java.lang.String,jdbcType=VARCHAR} 
+	        	#{extCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{urgentStatus,javaType=java.lang.String,jdbcType=VARCHAR}
 	        )
 	    ]]>
 
@@ -138,7 +141,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        po_ou_id = #{poOuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        ext_code = #{extCode,javaType=java.lang.String,jdbcType=VARCHAR} 
+		        ext_code = #{extCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        urgent_status = #{urgentStatus,javaType=java.lang.String,jdbcType=VARCHAR} 
 	        WHERE 
 		        id = #{id} 
 	    ]]>
@@ -280,6 +284,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				</if>
 				<if test="extCode!=null and extCode!=''">
 					and ext_code = #{extCode}
+				</if>
+				<if test="urgentStatus!=null and urgentStatus!=''">
+					and urgent_status = #{urgentStatus}
 				</if>
 		</where>
 	</sql>
