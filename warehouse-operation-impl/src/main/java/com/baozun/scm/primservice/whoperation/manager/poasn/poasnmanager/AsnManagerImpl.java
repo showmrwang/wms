@@ -157,6 +157,7 @@ public class AsnManagerImpl implements AsnManager {
                 BeanUtils.copyProperties(whPo, whAsn);
                 whAsn.setId(null);
                 whAsn.setPoId(whPo.getId());
+                whAsn.setPoOuId(whPo.getOuId());
                 whAsn.setQtyPlanned(asn.getQtyPlanned());
                 whAsn.setStatus(PoAsnStatus.ASN_NEW);
                 whAsn.setAsnCode(asn.getAsnCode());
@@ -317,7 +318,7 @@ public class AsnManagerImpl implements AsnManager {
                     } else {
                         asnLine.setAsnId(asn.getId());
                     }
-                    asnLine.setAsnId(asn.getId());
+                    asnLine.setOuId(whAsn.getOuId());
                     asnLine.setPoLineId(whPoLine.getId());
                     asnLine.setPoLinenum(whPoLine.getLinenum());
                     asnLine.setStatus(PoAsnStatus.ASNLINE_NOT_RCVD);
@@ -418,6 +419,7 @@ public class AsnManagerImpl implements AsnManager {
         BeanUtils.copyProperties(whpo, whAsn);
         // 创建whasn表头信息
         whAsn.setId(null);
+        whAsn.setOuId(asn.getOuId());
         whAsn.setAsnCode(asn.getAsnCode());
         whAsn.setAsnExtCode(asn.getAsnExtCode());
         whAsn.setPoId(whpo.getId());
