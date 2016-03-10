@@ -182,11 +182,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     </select>
 	
 	
-	 <select id="findWhAsnListByAsnCode" resultMap="whAsnCommand">
+	 <select id="findWhAsnListByAsnExtCode" resultMap="whAsnCommand">
 	    	select <include refid="whAsnColumnsExt" />
 		    from t_wh_asn 
 		   <where>
-			    asn_code like #{asnCode} 
+			    asn_ext_code like #{asnExtCode} 
 			    and ou_id = #{ouid}
 			   <if test="status!=null">
 						and status = #{status}

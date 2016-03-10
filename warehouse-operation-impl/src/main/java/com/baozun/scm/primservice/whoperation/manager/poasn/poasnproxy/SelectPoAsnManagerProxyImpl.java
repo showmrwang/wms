@@ -77,11 +77,11 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
     }
 
     /**
-     * 通过asnCode查询对应数据 ASN预约时模糊查询对应数据
+     * 通过asnextCode查询对应数据 ASN预约时模糊查询对应数据
      */
     @Override
-    public List<WhAsnCommand> findWhAsnListByAsnCode(String asnCode, Integer status, Long ouid) {
-        return asnManager.findWhAsnListByAsnCode(asnCode, status, ouid);
+    public List<WhAsnCommand> findWhAsnListByAsnExtCode(String asnExtCode, Integer status, Long ouid) {
+        return asnManager.findWhAsnListByAsnExtCode(asnExtCode, status, ouid);
     }
 
     /**

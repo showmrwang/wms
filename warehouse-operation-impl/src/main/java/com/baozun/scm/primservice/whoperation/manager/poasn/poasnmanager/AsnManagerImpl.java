@@ -59,12 +59,12 @@ public class AsnManagerImpl implements AsnManager {
 
 
     /**
-     * 通过asncode查询出asn列表
+     * 通过asnextcode查询出asn列表
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public List<WhAsnCommand> findWhAsnListByAsnCode(String asnCode, Integer status, Long ouid) {
-        return whAsnDao.findWhAsnListByAsnCode(asnCode, status, ouid);
+    public List<WhAsnCommand> findWhAsnListByAsnExtCode(String asnCode, Integer status, Long ouid) {
+        return whAsnDao.findWhAsnListByAsnExtCode(asnCode, status, ouid);
     }
 
     /**

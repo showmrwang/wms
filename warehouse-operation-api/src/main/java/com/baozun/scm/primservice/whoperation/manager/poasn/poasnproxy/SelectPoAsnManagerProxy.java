@@ -17,7 +17,7 @@ public interface SelectPoAsnManagerProxy extends BaseManager {
 
     Pagination<WhPoCommand> findWhPoListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params, Integer sourceType);
 
-    List<WhAsnCommand> findWhAsnListByAsnCode(String asnCode, Integer status, Long ouid);
+    List<WhAsnCommand> findWhAsnListByAsnExtCode(String asnExtCode, Integer status, Long ouid);
 
     WhPoCommand findWhPoById(WhPoCommand whPoCommand);
 
