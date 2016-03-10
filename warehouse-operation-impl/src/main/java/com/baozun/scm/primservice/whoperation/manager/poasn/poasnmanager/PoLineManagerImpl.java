@@ -382,6 +382,7 @@ public class PoLineManagerImpl implements PoLineManager {
     }
 
     @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public int deletePoLinesToInfo(List<WhPoLine> lineList) {
         WhPo whpo = this.whPoDao.findWhPoById(lineList.get(0).getPoId(), lineList.get(0).getOuId());
         if (null == whpo) {
@@ -408,6 +409,7 @@ public class PoLineManagerImpl implements PoLineManager {
     }
 
     @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public int deletePoLinesToShard(List<WhPoLine> lineList) {
         WhPo whpo = this.whPoDao.findWhPoById(lineList.get(0).getPoId(), lineList.get(0).getOuId());
         if (null == whpo) {
