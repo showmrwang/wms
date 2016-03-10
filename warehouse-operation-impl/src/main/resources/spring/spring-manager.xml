@@ -42,5 +42,12 @@
 					<value>com.baozun.scm.primservice.whoperation.model.system.GlobalLog</value>
 				</list>
 			</property>
+			
+			<!-- 如果有配置，表示这个实体使用配制的实体标识查询主键   key表示实体的package, value 表示获取主键的实体标识-->
+			<property name="modelMapppingMap">
+			<map>
+				<entry key="com.baozun.scm.primservice.whoperation.model.system.GlobalLog" value="com.baozun.scm.primservice.whinfo.model.system.GlobalLog">	</entry>
+			</map>
+			</property>
 		</bean>
 </beans>

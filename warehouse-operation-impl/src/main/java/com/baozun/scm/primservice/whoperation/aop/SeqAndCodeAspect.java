@@ -37,6 +37,11 @@ public class SeqAndCodeAspect implements Ordered, InitializingBean {
 
     private Map<String, Boolean> modelMap = new HashMap<String, Boolean>();
 
+    /**
+     * 映射关系
+     * 如果有配置，表示这个实体使用定制的实体标识查询主键
+     */
+    private Map<String, String> modelMapppingMap = new HashMap<String, String>();
 
     // 配置实体列表
     public void setModelList(List<String> modelList) {
@@ -45,6 +50,10 @@ public class SeqAndCodeAspect implements Ordered, InitializingBean {
             modelMap.put(str, true);
         }
     }
+    
+    public void setModelMapppingMap(Map<String, String> modelMapppingMap) {
+		this.modelMapppingMap = modelMapppingMap;
+	}
 
     // private NamedQueryHandler namedQueryHandler;
     // private QueryHandler queryHandler;
@@ -95,8 +104,15 @@ public class SeqAndCodeAspect implements Ordered, InitializingBean {
                     Long id = (Long) ReflectionUtils.invokeGetterMethod(model, "id");
 
                     if (id == null) {
-                        // 此处需要调用主键服务
-                        id = pkManager.generatePk("wms", processClass(model.getClass()));
+                        
+                    	String classPath=processClass(model.getClass());
+                    	//实体标识
+                    	String pkMark=modelMapppingMap.get(classPath);
+                    	//如果没有配置实体标识，则使用classpath做为实体标识
+                    	if(pkMark==null)	pkMark=classPath;
+                    	// 此处需要调用主键服务
+                        id = pkManager.generatePk("wms",pkMark );
+
 
                         // 最后果将数据写到对象中
                         ReflectionUtils.invokeSetterMethod(model, "id", id);
