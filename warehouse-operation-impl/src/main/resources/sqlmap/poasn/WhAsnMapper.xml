@@ -142,7 +142,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        po_ou_id = #{poOuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        ext_code = #{extCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        urgent_status = #{urgentStatus,javaType=java.lang.String,jdbcType=VARCHAR} 
+		        urgent_status = #{urgentStatus,javaType=java.lang.String,jdbcType=VARCHAR}
 	        WHERE 
 		        id = #{id} 
 	    ]]>

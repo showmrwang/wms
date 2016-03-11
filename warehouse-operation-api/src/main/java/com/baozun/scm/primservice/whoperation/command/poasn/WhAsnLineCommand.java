@@ -98,6 +98,16 @@ public class WhAsnLineCommand extends BaseCommand {
     private String skuExtCode;
     /** 商品条码 */
     private String skuBarCode;
+    /** 库存类型 */
+    private Long invType;
+
+    public Long getInvType() {
+        return invType;
+    }
+
+    public void setInvType(Long invType) {
+        this.invType = invType;
+    }
 
     public Long getId() {
         return this.id;

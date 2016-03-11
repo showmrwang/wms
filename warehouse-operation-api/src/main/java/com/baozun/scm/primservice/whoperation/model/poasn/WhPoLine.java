@@ -89,6 +89,16 @@ public class WhPoLine extends BaseModel {
     private String uuid;
     /** POLINE明细ID IT逻辑用 */
     private Long poLineId;
+    /** 库存类型 */
+    private String invType;
+
+    public String getInvType() {
+        return invType;
+    }
+
+    public void setInvType(String invType) {
+        this.invType = invType;
+    }
 
     public Long getId() {
         return this.id;

@@ -30,6 +30,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	batch_no as batchNo,
 	        	country_of_origin as countryOfOrigin,
 	        	inv_status as invStatus,
+	        	inv_type as invType,
 	        	inv_attr1 as invAttr1,
 	        	inv_attr2 as invAttr2,
 	        	inv_attr3 as invAttr3,
@@ -67,6 +68,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	batch_no ,
 	        	country_of_origin ,
 	        	inv_status ,
+	        	inv_type,
 	        	inv_attr1 ,
 	        	inv_attr2 ,
 	        	inv_attr3 ,
@@ -98,6 +100,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	#{batchNo,javaType=java.lang.String,jdbcType=VARCHAR} ,
 	        	#{countryOfOrigin,javaType=java.lang.String,jdbcType=VARCHAR} ,
 	        	#{invStatus,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{invType,javaType=java.lang.String,jdbcType=VARCHAR},
 	        	#{invAttr1,javaType=java.lang.String,jdbcType=VARCHAR} ,
 	        	#{invAttr2,javaType=java.lang.String,jdbcType=VARCHAR} ,
 	        	#{invAttr3,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -136,6 +139,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        batch_no = #{batchNo,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        country_of_origin = #{countryOfOrigin,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        inv_status = #{invStatus,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        inv_type = #{invType,javaType=java.lang.String,jdbcType=VARCHAR},
 		        inv_attr1 = #{invAttr1,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        inv_attr2 = #{invAttr2,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        inv_attr3 = #{invAttr3,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -256,6 +260,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					and inv_status = #{invStatus}
 				</if>
 	       
+	       
+		       <if test="invType!=null and invType!=''">
+					and inv_type = #{invType}
+				</if>
 	       
 		       <if test="invAttr1!=null and invAttr1!=''">
 					and inv_attr1 = #{invAttr1}

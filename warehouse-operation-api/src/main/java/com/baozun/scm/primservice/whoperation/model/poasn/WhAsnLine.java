@@ -86,6 +86,16 @@ public class WhAsnLine extends BaseModel {
     private Date lastModifyTime;
     /** 操作人ID */
     private Long modifiedId;
+    /** 库存类型 */
+    private Long invType;
+
+    public Long getInvType() {
+        return invType;
+    }
+
+    public void setInvType(Long invType) {
+        this.invType = invType;
+    }
 
     public Long getAsnId() {
         return this.asnId;

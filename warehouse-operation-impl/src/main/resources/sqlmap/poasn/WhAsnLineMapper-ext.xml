@@ -30,6 +30,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	batch_no as batchNo,
 	        	country_of_origin as countryOfOrigin,
 	        	inv_status as invStatus,
+	        	inv_type as invType,
 	        	inv_attr1 as invAttr1,
 	        	inv_attr2 as invAttr2,
 	        	inv_attr3 as invAttr3,
@@ -121,6 +122,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				</if>
 	       
 	       
+		       <if test="invType!=null and invType!=''">
+					and inv_type = #{invType}
+				</if>
+	       
 		       <if test="invAttr1!=null and invAttr1!=''">
 					and inv_attr1 = #{invAttr1}
 				</if>
@@ -185,6 +190,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        batch_no = #{batchNo,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        country_of_origin = #{countryOfOrigin,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        inv_status = #{invStatus,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        inv_type = #{invType,javaType=java.lang.String,jdbcType=VARCHAR},
 			        inv_attr1 = #{invAttr1,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        inv_attr2 = #{invAttr2,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        inv_attr3 = #{invAttr3,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -224,6 +230,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				al.batch_no as batchNo,
 				al.country_of_origin as countryOfOrigin,
 				al.inv_status as invStatus,
+				al.inv_type as invType,
 				al.inv_attr1 as invAttr1,
 				al.inv_attr2 as invAttr2,
 				al.inv_attr3 as invAttr3,
