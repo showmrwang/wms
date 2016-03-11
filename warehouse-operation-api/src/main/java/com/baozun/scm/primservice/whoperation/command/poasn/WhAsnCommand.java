@@ -111,7 +111,8 @@ public class WhAsnCommand extends BaseCommand {
     private List<WhAsnLineCommand> asnLineList;
     /** po单对应的ou_id */
     private Long poOuId;
-
+    /** 紧急状态 */
+    private String urgentStatus;
 
     public List<WhAsnLineCommand> getAsnLineList() {
         return asnLineList;
@@ -448,5 +449,14 @@ public class WhAsnCommand extends BaseCommand {
     public void setExtCode(String extCode) {
         this.extCode = extCode;
     }
+
+    public String getUrgentStatus() {
+        return urgentStatus;
+    }
+
+    public void setUrgentStatus(String urgentStatus) {
+        this.urgentStatus = urgentStatus;
+    }
+
 
 }

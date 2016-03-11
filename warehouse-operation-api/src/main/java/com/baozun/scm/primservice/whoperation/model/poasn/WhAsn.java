@@ -85,6 +85,8 @@ public class WhAsn extends BaseModel {
     private Long poOuId;
     /** 对应PO单相关编码 */
     private String extCode;
+    /** 紧急状态 */
+    private String urgentStatus;
 
     public String getAsnCode() {
         return this.asnCode;
@@ -300,6 +302,14 @@ public class WhAsn extends BaseModel {
 
     public void setExtCode(String extCode) {
         this.extCode = extCode;
+    }
+
+    public String getUrgentStatus() {
+        return urgentStatus;
+    }
+
+    public void setUrgentStatus(String urgentStatus) {
+        this.urgentStatus = urgentStatus;
     }
 
 
