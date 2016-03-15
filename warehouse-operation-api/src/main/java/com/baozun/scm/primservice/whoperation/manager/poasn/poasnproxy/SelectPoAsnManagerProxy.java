@@ -24,6 +24,8 @@ public interface SelectPoAsnManagerProxy extends BaseManager {
     Pagination<WhPoLineCommand> findPoLineListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params, Integer sourceType);
 
     WhPoLineCommand findWhPoLineById(WhPoLineCommand Command);
+    
+    WhAsnLineCommand findWhAsnLineById(WhAsnLineCommand Command);
 
     Pagination<WhAsnCommand> findWhAsnListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params, Integer sourceType);
 

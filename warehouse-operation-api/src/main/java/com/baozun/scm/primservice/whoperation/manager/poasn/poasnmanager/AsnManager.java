@@ -32,8 +32,6 @@ public interface AsnManager extends BaseManager {
 
     ResponseMsg insertAsnWithOuId(WhAsn whAsn, List<WhAsnLineCommand> asnLineList, WhPo whPo, Map<Long, WhPoLine> poLineMap, ResponseMsg rm);
 
-    WhAsnCommand findWhAsnByIdToInfo(WhAsnCommand whAsn);
-
     WhAsnCommand findWhAsnByIdToShard(WhAsnCommand whAsn);
 
     void editAsnToInfo(WhAsn whasn);

@@ -3,6 +3,7 @@ package com.baozun.scm.primservice.whoperation.manager.poasn.poasnproxy;
 import java.util.List;
 
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
+import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnLineCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoLineCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
@@ -23,6 +24,8 @@ public interface EditPoAsnManagerProxy extends BaseManager {
 
     ResponseMsg editPoLine(WhPoLine whPoLine);
 
+    ResponseMsg editAsnLine(WhAsnLineCommand whAsnLineCommand);
+
     void deletePoLines(WhPoLineCommand command);
 
     ResponseMsg editAsn(WhAsn asn);
@@ -34,4 +37,6 @@ public interface EditPoAsnManagerProxy extends BaseManager {
     void auditAsn(WhAsnCommand asnCommand);
 
     void deleteAsnAndAsnLine(WhAsnCommand WhAsnCommand);
+
+    void deleteAsnLines(WhAsnLineCommand command);
 }

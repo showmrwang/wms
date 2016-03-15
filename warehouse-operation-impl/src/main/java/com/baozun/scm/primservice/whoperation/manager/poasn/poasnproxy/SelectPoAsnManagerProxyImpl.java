@@ -185,15 +185,7 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
 
     @Override
     public WhAsnCommand findWhAsnById(WhAsnCommand whAsnCommand) {
-        WhAsnCommand whasn = null;
-        if (null == whAsnCommand.getOuId()) {
-            // 查询基本库内信息
-            whasn = asnManager.findWhAsnByIdToInfo(whAsnCommand);
-        } else {
-            // 查询拆库内信息
-            whasn = asnManager.findWhAsnByIdToShard(whAsnCommand);
-        }
-        return whasn;
+        return asnManager.findWhAsnByIdToShard(whAsnCommand);
     }
 
     /**
@@ -203,6 +195,11 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
     public Pagination<WhAsnLineCommand> findAsnLineListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params, Integer sourceType) {
         Pagination<WhAsnLineCommand> whAsnLineCommandList = asnLineManager.findListByQueryMapWithPageExtByShard(page, sorts, params);
         return whAsnLineCommandList;
+    }
+
+    @Override
+    public WhAsnLineCommand findWhAsnLineById(WhAsnLineCommand Command) {
+        return this.asnLineManager.findWhAsnLineByIdToShard(Command);
     }
 
 }

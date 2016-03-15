@@ -279,4 +279,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        asn_id = #{asnid} and ou_id=#{ouid} 
 	    ]]>
 	 </delete>
+	 
+	 <select id="findWhAsnLineById" parameterType="map" resultMap="whAsnLineCommand">
+	 select <include refid="whAsnLineColumnsMapExt" />
+	 from 
+		    t_wh_asn_line al
+		    left join t_wh_asn asn on asn.id = al.asn_id
+			left join sys_dictionary sys on sys.dic_value = al.status and sys.group_value = 'ASNLINESTATUS'
+			left join t_wh_sku sku on al.sku_id = sku.id 
+			where al.id=#{id}
+	  			 and al.ou_id = #{ouid}
+	 </select>
 </mapper>

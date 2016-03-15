@@ -287,12 +287,6 @@ public class PoManagerImpl implements PoManager {
             whPoDao.deleteByIdOuId(po.getId(), po.getOuId());
             // 删除POLINE明细信息
             whPoLineDao.deleteByPoIdOuId(po.getId(), po.getOuId());
-            // 删除校验表数据
-            CheckPoCode cpCode = new CheckPoCode();
-            cpCode.setOuId(po.getOuId());
-            cpCode.setPoCode(po.getPoCode());
-            cpCode.setStoreId(po.getStoreId());
-            checkPoCodeDao.deleteByParams(cpCode);
         }
     }
 
@@ -503,6 +497,15 @@ public class PoManagerImpl implements PoManager {
         gl.setType(type);
         gl.setOuId(ouId);
         globalLogManager.insertGlobalLog(gl);
+
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
+    public void deleteCheckPoCodeToInfo(List<CheckPoCode> poCodeList) {
+        for (CheckPoCode poCode : poCodeList) {
+            checkPoCodeDao.deleteByParams(poCode);
+        }
 
     }
 }

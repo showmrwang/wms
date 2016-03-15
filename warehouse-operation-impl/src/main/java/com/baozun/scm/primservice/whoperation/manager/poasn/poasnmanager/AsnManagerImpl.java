@@ -318,7 +318,7 @@ public class AsnManagerImpl implements AsnManager {
                     } else {
                         asnLine.setAsnId(asn.getId());
                     }
-                    asnLine.setOuId(whAsn.getOuId());
+                    asnLine.setOuId(asn.getOuId());
                     asnLine.setPoLineId(whPoLine.getId());
                     asnLine.setPoLinenum(whPoLine.getLinenum());
                     asnLine.setStatus(PoAsnStatus.ASNLINE_NOT_RCVD);
@@ -375,21 +375,12 @@ public class AsnManagerImpl implements AsnManager {
     }
 
     /**
-     * 通过OP单ID查询相关信息 基础表
-     */
-    @Override
-    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
-    public WhAsnCommand findWhAsnByIdToInfo(WhAsnCommand whPo) {
-        return whAsnDao.findWhAsnById(whPo.getId(), whPo.getOuId());
-    }
-
-    /**
      * 通过OP单ID查询相关信息 拆库表
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public WhAsnCommand findWhAsnByIdToShard(WhAsnCommand whPo) {
-        return whAsnDao.findWhAsnById(whPo.getId(), whPo.getOuId());
+    public WhAsnCommand findWhAsnByIdToShard(WhAsnCommand whAsn) {
+        return whAsnDao.findWhAsnById(whAsn.getId(), whAsn.getOuId());
     }
 
     @Override
