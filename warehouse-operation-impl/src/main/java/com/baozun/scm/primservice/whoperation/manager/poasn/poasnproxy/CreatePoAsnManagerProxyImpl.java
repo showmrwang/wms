@@ -461,7 +461,9 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
         BeanUtils.copyProperties(whPoLine, line);
         WhPoLine wpl = null;
         // 通过传入的值预先查找该PO单下是否存在对应UUID的商品数据
-        log.debug("CreatePoLineSingle findPoLineByAddPoLineParam poid: " + line.getPoId() + " ou_id: " + line.getOuId() + " uuid: " + line.getUuid());
+        if (log.isDebugEnabled()) {
+            log.debug("CreatePoLineSingle findPoLineByAddPoLineParam poid: " + line.getPoId() + " ou_id: " + line.getOuId() + " uuid: " + line.getUuid());
+        }
         if (null == line.getOuId()) {
             // ouid is null to info mycat 需要带uuid
             wpl = poLineManager.findPoLineByAddPoLineParamToInfo(line, false);

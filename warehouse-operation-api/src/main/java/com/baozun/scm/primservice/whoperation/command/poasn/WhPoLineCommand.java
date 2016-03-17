@@ -111,6 +111,18 @@ public class WhPoLineCommand extends BaseCommand {
     private String skuExtCode;
     /** 商品条码 */
     private String skuBarCode;
+    /** 操作人 */
+    private Long userId;
+    /** 保质期单位 */
+    private String validDateUom;
+
+    public String getValidDateUom() {
+        return validDateUom;
+    }
+
+    public void setValidDateUom(String validDateUom) {
+        this.validDateUom = validDateUom;
+    }
 
     public String getInvType() {
         return invType;
@@ -118,10 +130,6 @@ public class WhPoLineCommand extends BaseCommand {
 
     public void setInvType(String invType) {
         this.invType = invType;
-    }
-
-    public static long getSerialversionuid() {
-        return serialVersionUID;
     }
 
     public Long getId() {
@@ -450,6 +458,14 @@ public class WhPoLineCommand extends BaseCommand {
 
     public void setSkuBarCode(String skuBarCode) {
         this.skuBarCode = skuBarCode;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
 

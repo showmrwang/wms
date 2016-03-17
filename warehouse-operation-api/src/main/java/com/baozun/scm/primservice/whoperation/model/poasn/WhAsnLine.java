@@ -43,15 +43,15 @@ public class WhAsnLine extends BaseModel {
     /** SKU_ID */
     private Long skuId;
     /** 计划数量 */
-    private Integer qtyPlanned = 0;
+    private Integer qtyPlanned;
     /** 超收数量 */
-    private Integer overshipped = 0;
+    private Integer overshipped;
     /** 计划箱数 */
-    private Integer ctnPlanned = 0;
+    private Integer ctnPlanned;
     /** 已收数量 */
-    private Integer qtyRcvd = 0;
+    private Integer qtyRcvd;
     /** 已收箱数 */
-    private Integer ctnRcvd = 0;
+    private Integer ctnRcvd;
     /** 状态 */
     private Integer status;
     /** 是否质检 1:是 0:否 */
@@ -88,6 +88,16 @@ public class WhAsnLine extends BaseModel {
     private Long modifiedId;
     /** 库存类型 */
     private Long invType;
+    /** 保质期单位 */
+    private String validDateUom;
+
+    public String getValidDateUom() {
+        return validDateUom;
+    }
+
+    public void setValidDateUom(String validDateUom) {
+        this.validDateUom = validDateUom;
+    }
 
     public Long getInvType() {
         return invType;

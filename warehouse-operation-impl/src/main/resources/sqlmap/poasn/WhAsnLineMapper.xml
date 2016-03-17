@@ -39,7 +39,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	create_time as createTime,
 	        	created_id as createdId,
 	        	last_modify_time as lastModifyTime,
-	        	modified_id as modifiedId
+	        	modified_id as modifiedId,
+	        	valid_date_uom as validDateUom
 	    ]]>
 	</sql>
 		<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
@@ -76,7 +77,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	created_id ,
 	        	last_modify_time ,
 	        	modified_id,
-	        	ou_id 
+	        	ou_id ,
+	        	valid_date_uom
 	        ) VALUES (
 	        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{asnId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -106,7 +108,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	#{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 	        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-	        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+	        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{validDateUom,javaType=java.lang.String,jdbcType=VARCHAR}
 	        )
 	    ]]>
 
@@ -142,7 +145,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        valid_date_uom=#{validDateUom,javaType=java.lang.String,jdbcType=VARCHAR} 
 	        WHERE 
 		        id = #{id} 
 	    ]]>
@@ -185,7 +189,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				<if test="id!=null">
 					and id = #{id}
 				</if>
-	       
+	       <if test="ouId!=null and ouId!=''">
+					and ou_id = #{ouId}
+				</if>
 				<if test="asnId!=null">
 					and asn_id = #{asnId}
 				</if>
@@ -194,8 +200,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					and po_line_id = #{poLineId}
 				</if>
 	       
-				<if test="linenum!=null">
-					and linenum = #{linenum}
+				<if test="poLinenum!=null">
+					and poLinenum = #{poLinenum}
 				</if>
 	       
 				<if test="skuId!=null">
@@ -298,6 +304,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	       
 				<if test="modifiedId!=null">
 					and modified_id = #{modifiedId}
+				</if>
+				
+				<if test="validDateUom!=null and validDateUom!=''">
+					and valid_date_uom = #{validDateUom}
 				</if>
 		</where>
 	</sql>

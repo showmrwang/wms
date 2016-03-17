@@ -39,7 +39,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	create_time as createTime,
 	        	created_id as createdId,
 	        	last_modify_time as lastModifyTime,
-	        	modified_id as modifiedId
+	        	modified_id as modifiedId,
+	        	valid_date_uom as validDateUom
 	    ]]>
 	</sql>
 	
@@ -165,6 +166,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				<if test="modifiedId!=null">
 					and modified_id = #{modifiedId}
 				</if>
+				
+				<if test="validDateUom!=null and validDateUom!=''">
+					and valid_date_uom = #{validDateUom}
+				</if>
 		</where>
 	</sql>
 	
@@ -199,7 +204,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-			        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
+			        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        valid_date_uom=#{validDateUom,javaType=java.lang.String,jdbcType=VARCHAR}
 		        WHERE 
 			        id = #{id} 
 			        and last_modify_time	<=  #{lastModifyTime}    
@@ -236,6 +242,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				al.inv_attr3 as invAttr3,
 				al.inv_attr4 as invAttr4,
 				al.inv_attr5 as invAttr5,
+				al.valid_date_uom as validDateUom,
 				al.create_time as createTime,
 				al.created_id as createdId,
 				al.last_modify_time as lastModifyTime,

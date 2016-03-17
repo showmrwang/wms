@@ -107,6 +107,16 @@ public class WhAsnLineCommand extends BaseCommand {
     private Long invType;
     /** 批量操作时候，记录主键集合 */
     private List<Long> ids;
+    /** 保质期单位 */
+    private String validDateUom;
+
+    public String getValidDateUom() {
+        return validDateUom;
+    }
+
+    public void setValidDateUom(String validDateUom) {
+        this.validDateUom = validDateUom;
+    }
 
     public Long getInvType() {
         return invType;
