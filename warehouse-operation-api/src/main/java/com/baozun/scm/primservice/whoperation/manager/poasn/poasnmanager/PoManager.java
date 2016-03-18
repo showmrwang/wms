@@ -56,7 +56,7 @@ public interface PoManager extends BaseManager {
 
     ResponseMsg updatePoStatusByAsnBatch(WhAsnCommand asn, WhPo whPo, List<WhPoLine> whPoLines, ResponseMsg rm);
 
-    void deleteCheckPoCodeToInfo(List<CheckPoCode> poCodeList);
+    void deleteCheckPoCodeToInfo(List<CheckPoCode> poCodeList, Long userId);
 
     void saveOrUpdateByVersionToInfo(WhPo o);
 
