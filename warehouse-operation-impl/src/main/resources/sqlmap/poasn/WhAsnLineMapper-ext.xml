@@ -30,6 +30,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	batch_no as batchNo,
 	        	country_of_origin as countryOfOrigin,
 	        	inv_status as invStatus,
+	        	inv_type as invType,
 	        	inv_attr1 as invAttr1,
 	        	inv_attr2 as invAttr2,
 	        	inv_attr3 as invAttr3,
@@ -38,7 +39,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	create_time as createTime,
 	        	created_id as createdId,
 	        	last_modify_time as lastModifyTime,
-	        	modified_id as modifiedId
+	        	modified_id as modifiedId,
+	        	valid_date_uom as validDateUom
 	    ]]>
 	</sql>
 	
@@ -121,6 +123,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				</if>
 	       
 	       
+		       <if test="invType!=null and invType!=''">
+					and inv_type = #{invType}
+				</if>
+	       
 		       <if test="invAttr1!=null and invAttr1!=''">
 					and inv_attr1 = #{invAttr1}
 				</if>
@@ -160,6 +166,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				<if test="modifiedId!=null">
 					and modified_id = #{modifiedId}
 				</if>
+				
+				<if test="validDateUom!=null and validDateUom!=''">
+					and valid_date_uom = #{validDateUom}
+				</if>
 		</where>
 	</sql>
 	
@@ -185,6 +195,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        batch_no = #{batchNo,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        country_of_origin = #{countryOfOrigin,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        inv_status = #{invStatus,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        inv_type = #{invType,javaType=java.lang.String,jdbcType=VARCHAR},
 			        inv_attr1 = #{invAttr1,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        inv_attr2 = #{invAttr2,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        inv_attr3 = #{invAttr3,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -193,7 +204,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-			        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
+			        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        valid_date_uom=#{validDateUom,javaType=java.lang.String,jdbcType=VARCHAR}
 		        WHERE 
 			        id = #{id} 
 			        and last_modify_time	<=  #{lastModifyTime}    
@@ -224,11 +236,13 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				al.batch_no as batchNo,
 				al.country_of_origin as countryOfOrigin,
 				al.inv_status as invStatus,
+				al.inv_type as invType,
 				al.inv_attr1 as invAttr1,
 				al.inv_attr2 as invAttr2,
 				al.inv_attr3 as invAttr3,
 				al.inv_attr4 as invAttr4,
 				al.inv_attr5 as invAttr5,
+				al.valid_date_uom as validDateUom,
 				al.create_time as createTime,
 				al.created_id as createdId,
 				al.last_modify_time as lastModifyTime,
@@ -272,4 +286,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        asn_id = #{asnid} and ou_id=#{ouid} 
 	    ]]>
 	 </delete>
+	 
+	 <select id="findWhAsnLineById" parameterType="map" resultMap="whAsnLineCommand">
+	 select <include refid="whAsnLineColumnsMapExt" />
+	 from 
+		    t_wh_asn_line al
+		    left join t_wh_asn asn on asn.id = al.asn_id
+			left join sys_dictionary sys on sys.dic_value = al.status and sys.group_value = 'ASNLINESTATUS'
+			left join t_wh_sku sku on al.sku_id = sku.id 
+			where al.id=#{id}
+	  			 and al.ou_id = #{ouid}
+	 </select>
 </mapper>

@@ -16,12 +16,15 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoLineCommand;
+import com.baozun.scm.primservice.whoperation.command.system.GlobalLogCommand;
+import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoLineDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
+import com.baozun.scm.primservice.whoperation.manager.system.GlobalLogManager;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 
@@ -40,7 +43,8 @@ public class PoLineManagerImpl implements PoLineManager {
     private WhPoLineDao whPoLineDao;
     @Autowired
     private WhPoDao whPoDao;
-
+    @Autowired
+    private GlobalLogManager globalLogManager;
 
     /**
      * 插入poline数据进基本库
@@ -370,6 +374,7 @@ public class PoLineManagerImpl implements PoLineManager {
         if (count <= 0) {
             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
         }
+        this.insertGlobalLog(o.getModifiedId(), new Date(), o.getClass().getSimpleName(), o, Constants.GLOBAL_LOG_UPDATE, o.getOuId());
     }
 
     @Override
@@ -433,5 +438,40 @@ public class PoLineManagerImpl implements PoLineManager {
         }
         this.whPoDao.saveOrUpdateByVersion(whpo);
         return deleteCount;
+    }
+
+    /**
+     * 用于插入日志操作
+     * 
+     * @param userId
+     * @param modifyTime
+     * @param objectType
+     * @param modifiedValues
+     * @param type
+     * @param ouId
+     */
+    private void insertGlobalLog(Long userId, Date modifyTime, String objectType, Object modifiedValues, String type, Long ouId) {
+        GlobalLogCommand gl = new GlobalLogCommand();
+        gl.setModifiedId(userId);
+        gl.setModifyTime(modifyTime);
+        gl.setObjectType(objectType);
+        gl.setModifiedValues(modifiedValues);
+        gl.setType(type);
+        gl.setOuId(ouId);
+        globalLogManager.insertGlobalLog(gl);
+
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
+    public void batchUpdatePoLine(List<WhPoLine> polineList) {
+        for (WhPoLine poline : polineList) {
+            int count = this.whPoLineDao.saveOrUpdateByVersion(poline);
+            if (count <= 0) {
+                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            }
+            this.insertGlobalLog(poline.getModifiedId(), new Date(), poline.getClass().getSimpleName(), poline, Constants.GLOBAL_LOG_UPDATE, poline.getOuId());
+        }
+
     }
 }

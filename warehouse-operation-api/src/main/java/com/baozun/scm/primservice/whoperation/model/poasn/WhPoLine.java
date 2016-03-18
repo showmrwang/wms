@@ -40,17 +40,17 @@ public class WhPoLine extends BaseModel {
     /** SKU_ID */
     private Long skuId;
     /** 计划数量 */
-    private Integer qtyPlanned = 0;
+    private Integer qtyPlanned;
     /** 超收数量 */
-    private Integer overshipped = 0;
+    private Integer overshipped;
     /** 可用数量 */
-    private Integer availableQty = 0;
+    private Integer availableQty;
     /** 计划箱数 */
-    private Integer ctnPlanned = 0;
+    private Integer ctnPlanned;
     /** 已收数量 */
-    private Integer qtyRcvd = 0;
+    private Integer qtyRcvd;
     /** 已收箱数 */
-    private Integer ctnRcvd = 0;
+    private Integer ctnRcvd;
     /** 状态 */
     private Integer status;
     /** 是否质检 1:是 0:否 */
@@ -89,6 +89,18 @@ public class WhPoLine extends BaseModel {
     private String uuid;
     /** POLINE明细ID IT逻辑用 */
     private Long poLineId;
+    /** 库存类型 */
+    private String invType;
+    /** 保质期单位 */
+    private String validDateUom;
+
+    public String getInvType() {
+        return invType;
+    }
+
+    public void setInvType(String invType) {
+        this.invType = invType;
+    }
 
     public Long getId() {
         return this.id;
@@ -328,6 +340,14 @@ public class WhPoLine extends BaseModel {
 
     public void setPoLineId(Long poLineId) {
         this.poLineId = poLineId;
+    }
+
+    public String getValidDateUom() {
+        return validDateUom;
+    }
+
+    public void setValidDateUom(String validDateUom) {
+        this.validDateUom = validDateUom;
     }
 
 }

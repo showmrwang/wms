@@ -15,6 +15,7 @@
 package com.baozun.scm.primservice.whoperation.command.poasn;
 
 import java.util.Date;
+import java.util.List;
 
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
 
@@ -32,12 +33,16 @@ public class WhAsnLineCommand extends BaseCommand {
     private Long ouId;
     /** 对应po单lineid */
     private Long poLineId;
+    /** 对应po单line的ouid */
+    private Long poOuId;
     /** POLine行号 */
     private Integer poLinenum;
     /** SKU_ID */
     private Long skuId;
     /** 计划数量 */
     private Integer qtyPlanned;
+    /** 原计划数量 */
+    private Integer qtyPlannedOld;
     /** 超收数量 */
     private Integer overshipped;
     /** 计划箱数 */
@@ -98,6 +103,28 @@ public class WhAsnLineCommand extends BaseCommand {
     private String skuExtCode;
     /** 商品条码 */
     private String skuBarCode;
+    /** 库存类型 */
+    private Long invType;
+    /** 批量操作时候，记录主键集合 */
+    private List<Long> ids;
+    /** 保质期单位 */
+    private String validDateUom;
+
+    public String getValidDateUom() {
+        return validDateUom;
+    }
+
+    public void setValidDateUom(String validDateUom) {
+        this.validDateUom = validDateUom;
+    }
+
+    public Long getInvType() {
+        return invType;
+    }
+
+    public void setInvType(Long invType) {
+        this.invType = invType;
+    }
 
     public Long getId() {
         return this.id;
@@ -393,6 +420,30 @@ public class WhAsnLineCommand extends BaseCommand {
 
     public void setSkuBarCode(String skuBarCode) {
         this.skuBarCode = skuBarCode;
+    }
+
+    public Long getPoOuId() {
+        return poOuId;
+    }
+
+    public void setPoOuId(Long poOuId) {
+        this.poOuId = poOuId;
+    }
+
+    public Integer getQtyPlannedOld() {
+        return qtyPlannedOld;
+    }
+
+    public void setQtyPlannedOld(Integer qtyPlannedOld) {
+        this.qtyPlannedOld = qtyPlannedOld;
+    }
+
+    public List<Long> getIds() {
+        return ids;
+    }
+
+    public void setIds(List<Long> ids) {
+        this.ids = ids;
     }
 
 

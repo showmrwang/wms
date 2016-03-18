@@ -62,6 +62,8 @@ public class WhPoLineCommand extends BaseCommand {
     private String countryOfOrigin;
     /** 库存状态 */
     private Long invStatus;
+    /** 库存类型 */
+    private String invType;
     /** 库存属性1 */
     private String invAttr1;
     /** 库存属性2 */
@@ -109,6 +111,26 @@ public class WhPoLineCommand extends BaseCommand {
     private String skuExtCode;
     /** 商品条码 */
     private String skuBarCode;
+    /** 操作人 */
+    private Long userId;
+    /** 保质期单位 */
+    private String validDateUom;
+
+    public String getValidDateUom() {
+        return validDateUom;
+    }
+
+    public void setValidDateUom(String validDateUom) {
+        this.validDateUom = validDateUom;
+    }
+
+    public String getInvType() {
+        return invType;
+    }
+
+    public void setInvType(String invType) {
+        this.invType = invType;
+    }
 
     public Long getId() {
         return this.id;
@@ -436,6 +458,14 @@ public class WhPoLineCommand extends BaseCommand {
 
     public void setSkuBarCode(String skuBarCode) {
         this.skuBarCode = skuBarCode;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
 

@@ -111,6 +111,24 @@ public class WhPoCommand extends BaseCommand {
     private String logisticsProviderName;
     /** Asn相关单据号 */
     private String asnExtCode;
+    /** 收货开始时间字符串类型 */
+    private String startTimeStr;
+    /** 收货结束时间字符串类型 */
+    private String stopTimeStr;
+    /** 上架完成时间字符串类型 */
+    private String inboundTimeStr;
+    /** 修改者名称 */
+    private String modifiedUserName;
+
+
+
+    public String getModifiedUserName() {
+        return modifiedUserName;
+    }
+
+    public void setModifiedUserName(String modifiedUserName) {
+        this.modifiedUserName = modifiedUserName;
+    }
 
     private List<Integer> statusList;
     public Long getId() {
@@ -447,6 +465,30 @@ public class WhPoCommand extends BaseCommand {
 
     public void setStatusList(List<Integer> statusList) {
         this.statusList = statusList;
+    }
+
+    public String getStartTimeStr() {
+        return startTimeStr;
+    }
+
+    public void setStartTimeStr(String startTimeStr) {
+        this.startTimeStr = startTimeStr;
+    }
+
+    public String getStopTimeStr() {
+        return stopTimeStr;
+    }
+
+    public void setStopTimeStr(String stopTimeStr) {
+        this.stopTimeStr = stopTimeStr;
+    }
+
+    public String getInboundTimeStr() {
+        return inboundTimeStr;
+    }
+
+    public void setInboundTimeStr(String inboundTimeStr) {
+        this.inboundTimeStr = inboundTimeStr;
     }
 
 

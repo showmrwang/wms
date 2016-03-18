@@ -18,7 +18,7 @@ import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 
 public interface AsnManager extends BaseManager {
 
-    List<WhAsnCommand> findWhAsnListByAsnCode(String asnCode, Integer status, Long ouid);
+    List<WhAsnCommand> findWhAsnListByAsnExtCode(String asnCode, Integer status, Long ouid);
 
     int editAsnStatusByInfo(WhAsnCommand whAsn);
 
@@ -31,8 +31,6 @@ public interface AsnManager extends BaseManager {
     ResponseMsg createAsnAndLineToShare(WhAsn whAsn, List<WhAsnLineCommand> asnLineList, WhPo whPo, Map<Long, WhPoLine> poLineMap, ResponseMsg rm);
 
     ResponseMsg insertAsnWithOuId(WhAsn whAsn, List<WhAsnLineCommand> asnLineList, WhPo whPo, Map<Long, WhPoLine> poLineMap, ResponseMsg rm);
-
-    WhAsnCommand findWhAsnByIdToInfo(WhAsnCommand whAsn);
 
     WhAsnCommand findWhAsnByIdToShard(WhAsnCommand whAsn);
 

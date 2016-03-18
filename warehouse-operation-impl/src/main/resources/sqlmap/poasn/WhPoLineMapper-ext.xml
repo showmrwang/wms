@@ -30,6 +30,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	batch_no as batchNo,
 	        	country_of_origin as countryOfOrigin,
 	        	inv_status as invStatus,
+	        	inv_type as invType,
 	        	inv_attr1 as invAttr1,
 	        	inv_attr2 as invAttr2,
 	        	inv_attr3 as invAttr3,
@@ -40,7 +41,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	last_modify_time as lastModifyTime,
 	        	modified_id as modifiedId,
 	        	uuid as uuid,
-	        	po_line_id as poLineId
+	        	po_line_id as poLineId,
+	        	valid_date_uom as validDateUom
 	    ]]>
 	</sql>
 	
@@ -78,6 +80,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        batch_no = #{batchNo,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        country_of_origin = #{countryOfOrigin,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        inv_status = #{invStatus,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        inv_type = #{invType,javaType=java.lang.String,jdbcType=VARCHAR},
 			        inv_attr1 = #{invAttr1,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        inv_attr2 = #{invAttr2,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        inv_attr3 = #{invAttr3,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -88,7 +91,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        last_modify_time = now(),
 			        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        uuid = #{uuid,javaType=java.lang.String,jdbcType=VARCHAR} , 
-			        po_line_id = #{poLineId,javaType=java.lang.Long,jdbcType=BIGINT}  
+			        po_line_id = #{poLineId,javaType=java.lang.Long,jdbcType=BIGINT}  ,
+			        valid_date_uom = #{validDateUom,javaType=java.lang.String,jdbcType=VARCHAR}
 		    ]]>
 		    <where>
 		    		id = #{id} 
@@ -123,6 +127,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				line.batch_no as batchNo,
 				line.country_of_origin as countryOfOrigin,
 				line.inv_status as invStatus,
+				line.inv_type as invType,
 				line.inv_attr1 as invAttr1,
 				line.inv_attr2 as invAttr2,
 				line.inv_attr3 as invAttr3,
@@ -134,6 +139,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				line.modified_id as modifiedId,
 				line.uuid as uuid,
 				line.po_line_id as poLineId,
+				line.valid_date_uom  as validDateUom,
 				sys.dic_label as statusName,
 				inv.name as invName,
 				po.po_code as poCode,

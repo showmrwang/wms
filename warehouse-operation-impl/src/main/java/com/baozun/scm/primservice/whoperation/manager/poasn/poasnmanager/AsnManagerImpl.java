@@ -59,12 +59,12 @@ public class AsnManagerImpl implements AsnManager {
 
 
     /**
-     * 通过asncode查询出asn列表
+     * 通过asnextcode查询出asn列表
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public List<WhAsnCommand> findWhAsnListByAsnCode(String asnCode, Integer status, Long ouid) {
-        return whAsnDao.findWhAsnListByAsnCode(asnCode, status, ouid);
+    public List<WhAsnCommand> findWhAsnListByAsnExtCode(String asnCode, Integer status, Long ouid) {
+        return whAsnDao.findWhAsnListByAsnExtCode(asnCode, status, ouid);
     }
 
     /**
@@ -157,6 +157,7 @@ public class AsnManagerImpl implements AsnManager {
                 BeanUtils.copyProperties(whPo, whAsn);
                 whAsn.setId(null);
                 whAsn.setPoId(whPo.getId());
+                whAsn.setPoOuId(whPo.getOuId());
                 whAsn.setQtyPlanned(asn.getQtyPlanned());
                 whAsn.setStatus(PoAsnStatus.ASN_NEW);
                 whAsn.setAsnCode(asn.getAsnCode());
@@ -317,7 +318,7 @@ public class AsnManagerImpl implements AsnManager {
                     } else {
                         asnLine.setAsnId(asn.getId());
                     }
-                    asnLine.setAsnId(asn.getId());
+                    asnLine.setOuId(asn.getOuId());
                     asnLine.setPoLineId(whPoLine.getId());
                     asnLine.setPoLinenum(whPoLine.getLinenum());
                     asnLine.setStatus(PoAsnStatus.ASNLINE_NOT_RCVD);
@@ -374,21 +375,12 @@ public class AsnManagerImpl implements AsnManager {
     }
 
     /**
-     * 通过OP单ID查询相关信息 基础表
-     */
-    @Override
-    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
-    public WhAsnCommand findWhAsnByIdToInfo(WhAsnCommand whPo) {
-        return whAsnDao.findWhAsnById(whPo.getId(), whPo.getOuId());
-    }
-
-    /**
      * 通过OP单ID查询相关信息 拆库表
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public WhAsnCommand findWhAsnByIdToShard(WhAsnCommand whPo) {
-        return whAsnDao.findWhAsnById(whPo.getId(), whPo.getOuId());
+    public WhAsnCommand findWhAsnByIdToShard(WhAsnCommand whAsn) {
+        return whAsnDao.findWhAsnById(whAsn.getId(), whAsn.getOuId());
     }
 
     @Override
@@ -418,6 +410,7 @@ public class AsnManagerImpl implements AsnManager {
         BeanUtils.copyProperties(whpo, whAsn);
         // 创建whasn表头信息
         whAsn.setId(null);
+        whAsn.setOuId(asn.getOuId());
         whAsn.setAsnCode(asn.getAsnCode());
         whAsn.setAsnExtCode(asn.getAsnExtCode());
         whAsn.setPoId(whpo.getId());

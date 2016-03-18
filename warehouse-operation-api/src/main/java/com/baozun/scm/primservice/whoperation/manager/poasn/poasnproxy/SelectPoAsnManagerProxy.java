@@ -17,13 +17,15 @@ public interface SelectPoAsnManagerProxy extends BaseManager {
 
     Pagination<WhPoCommand> findWhPoListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params, Integer sourceType);
 
-    List<WhAsnCommand> findWhAsnListByAsnCode(String asnCode, Integer status, Long ouid);
+    List<WhAsnCommand> findWhAsnListByAsnExtCode(String asnExtCode, Integer status, Long ouid);
 
     WhPoCommand findWhPoById(WhPoCommand whPoCommand);
 
     Pagination<WhPoLineCommand> findPoLineListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params, Integer sourceType);
 
     WhPoLineCommand findWhPoLineById(WhPoLineCommand Command);
+    
+    WhAsnLineCommand findWhAsnLineById(WhAsnLineCommand Command);
 
     Pagination<WhAsnCommand> findWhAsnListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params, Integer sourceType);
 

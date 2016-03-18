@@ -30,6 +30,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	batch_no as batchNo,
 	        	country_of_origin as countryOfOrigin,
 	        	inv_status as invStatus,
+	        	inv_type as invType,
 	        	inv_attr1 as invAttr1,
 	        	inv_attr2 as invAttr2,
 	        	inv_attr3 as invAttr3,
@@ -40,7 +41,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	last_modify_time as lastModifyTime,
 	        	modified_id as modifiedId,
 	        	uuid as uuid,
-	        	po_line_id as poLineId
+	        	po_line_id as poLineId,
+	        	valid_date_uom as validDateUom
 	    ]]>
 	</sql>
 		<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
@@ -67,6 +69,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	batch_no ,
 	        	country_of_origin ,
 	        	inv_status ,
+	        	inv_type,
 	        	inv_attr1 ,
 	        	inv_attr2 ,
 	        	inv_attr3 ,
@@ -78,7 +81,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	modified_id ,
 	        	uuid,
 	        	ou_id,
-	        	po_line_id 
+	        	po_line_id ,
+	        	valid_date_uom
 	        ) VALUES (
 	        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{poId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -98,6 +102,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	#{batchNo,javaType=java.lang.String,jdbcType=VARCHAR} ,
 	        	#{countryOfOrigin,javaType=java.lang.String,jdbcType=VARCHAR} ,
 	        	#{invStatus,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{invType,javaType=java.lang.String,jdbcType=VARCHAR},
 	        	#{invAttr1,javaType=java.lang.String,jdbcType=VARCHAR} ,
 	        	#{invAttr2,javaType=java.lang.String,jdbcType=VARCHAR} ,
 	        	#{invAttr3,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -109,7 +114,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{uuid,javaType=java.lang.String,jdbcType=VARCHAR} ,
 	        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-	        	#{poLineId,javaType=java.lang.Long,jdbcType=BIGINT} 
+	        	#{poLineId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{validDateUom,javaType=java.lang.String,jdbcType=VARCHAR}
 	        )
 	    ]]>
 
@@ -136,6 +142,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        batch_no = #{batchNo,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        country_of_origin = #{countryOfOrigin,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        inv_status = #{invStatus,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        inv_type = #{invType,javaType=java.lang.String,jdbcType=VARCHAR},
 		        inv_attr1 = #{invAttr1,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        inv_attr2 = #{invAttr2,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        inv_attr3 = #{invAttr3,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -146,7 +153,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        uuid = #{uuid,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        po_line_id = #{poLineId,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        po_line_id = #{poLineId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        valid_date_uom=inv_attr1 = #{validDateUom,javaType=java.lang.String,jdbcType=VARCHAR}
 	        WHERE 
 		        id = #{id} 
 	    ]]>
@@ -257,6 +265,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				</if>
 	       
 	       
+		       <if test="invType!=null and invType!=''">
+					and inv_type = #{invType}
+				</if>
+	       
 		       <if test="invAttr1!=null and invAttr1!=''">
 					and inv_attr1 = #{invAttr1}
 				</if>
@@ -300,6 +312,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	       
 		       <if test="uuid!=null and uuid!=''">
 					and uuid = #{uuid}
+				</if>
+	       
+		       <if test="validDateUom!=null and validDateUom!=''">
+					and valid_date_uom = #{validDateUom}
 				</if>
 		</where>
 	</sql>

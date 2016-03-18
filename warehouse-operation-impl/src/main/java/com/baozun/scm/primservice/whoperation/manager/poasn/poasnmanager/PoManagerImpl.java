@@ -9,6 +9,8 @@ import lark.common.dao.Page;
 import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,7 +46,7 @@ import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 @Service("poManager")
 @Transactional
 public class PoManagerImpl implements PoManager {
-
+    protected static final Logger log = LoggerFactory.getLogger(PoManager.class);
     @Autowired
     private WhPoDao whPoDao;
     @Autowired
@@ -287,12 +289,6 @@ public class PoManagerImpl implements PoManager {
             whPoDao.deleteByIdOuId(po.getId(), po.getOuId());
             // 删除POLINE明细信息
             whPoLineDao.deleteByPoIdOuId(po.getId(), po.getOuId());
-            // 删除校验表数据
-            CheckPoCode cpCode = new CheckPoCode();
-            cpCode.setOuId(po.getOuId());
-            cpCode.setPoCode(po.getPoCode());
-            cpCode.setStoreId(po.getStoreId());
-            checkPoCodeDao.deleteByParams(cpCode);
         }
     }
 
@@ -397,13 +393,17 @@ public class PoManagerImpl implements PoManager {
     @Override
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public void cancelPoToInfo(List<WhPo> poList) {
+        log.info(this.getClass().getSimpleName() + ".cancelPoToInfo method begin");
+        if (log.isDebugEnabled()) {
+            log.debug(this.getClass().getSimpleName() + ".cancelPoToInfo params:{}", poList);
+        }
         // 循环需要更新的PO单集合
         for (WhPo whPo : poList) {
             if (PoAsnStatus.PO_NEW == whPo.getStatus()) {
                 // 将对应的PO单更新状态为取消
                 whPo.setStatus(PoAsnStatus.PO_CANCELED);
                 int poCount = this.whPoDao.saveOrUpdateByVersion(whPo);
-                if (poCount == 0) {
+                if (poCount <= 0) {
                     throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
                 }
                 // 插入操作日志
@@ -414,7 +414,7 @@ public class PoManagerImpl implements PoManager {
                     line.setStatus(PoAsnStatus.POLINE_CANCELED);
                     line.setModifiedId(whPo.getModifiedId());
                     int lineCount = this.whPoLineDao.saveOrUpdateByVersion(line);
-                    if (lineCount == 0) {
+                    if (lineCount <= 0) {
                         throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
                     }
                     // 插入操作日志
@@ -434,6 +434,10 @@ public class PoManagerImpl implements PoManager {
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void cancelPoToShard(List<WhPo> poList) {
+        log.info(this.getClass().getSimpleName() + ".cancelPoToShard method begin");
+        if (log.isDebugEnabled()) {
+            log.debug(this.getClass().getSimpleName() + ".cancelPoToShard params:{}", poList);
+        }
         // 循环需要更新的PO单集合
         for (WhPo whPo : poList) {
             if (PoAsnStatus.PO_NEW == whPo.getStatus()) {
@@ -503,6 +507,21 @@ public class PoManagerImpl implements PoManager {
         gl.setType(type);
         gl.setOuId(ouId);
         globalLogManager.insertGlobalLog(gl);
+
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
+    public void deleteCheckPoCodeToInfo(List<CheckPoCode> poCodeList, Long userId) {
+        log.info(this.getClass().getSimpleName() + ".deleteCheckPoCodeToInfo method begin");
+        if (log.isDebugEnabled()) {
+            log.debug(this.getClass().getSimpleName() + ".deleteCheckPoCodeToInfo params:{}", poCodeList);
+        }
+        for (CheckPoCode poCode : poCodeList) {
+            checkPoCodeDao.deleteByParams(poCode);
+            // 插入操作日志
+            this.insertGlobalLog(userId, new Date(), poCode.getClass().getSimpleName(), poCode, Constants.GLOBAL_LOG_DELETE, poCode.getOuId());
+        }
 
     }
 }

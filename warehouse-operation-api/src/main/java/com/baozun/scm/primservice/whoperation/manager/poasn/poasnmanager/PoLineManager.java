@@ -64,4 +64,6 @@ public interface PoLineManager extends BaseManager {
     int deletePoLinesToInfo(List<WhPoLine> lineList);
 
     int deletePoLinesToShard(List<WhPoLine> lineList);
+
+    void batchUpdatePoLine(List<WhPoLine> polineList);
 }
