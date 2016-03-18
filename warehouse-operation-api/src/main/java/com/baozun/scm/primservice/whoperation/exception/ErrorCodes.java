@@ -23,6 +23,12 @@ public class ErrorCodes {
 
     /** 传入的参数{0}不能为空,确保传入数据的完整性 **/
     public static final Integer PARAM_IS_NULL = 6;
+    
+    /** 系统异常 **/
+    public static final Integer SYSTEM_EXCEPTION = 11;
+    
+    /** 数据访问层异常 **/
+    public static final Integer DAO_EXCEPTION = 12;
 
     /** 更新支付信息失败(t_so_payinfo) **/
     public static final Integer UPDATE_PAYINFO_FAILURE = 30001;
