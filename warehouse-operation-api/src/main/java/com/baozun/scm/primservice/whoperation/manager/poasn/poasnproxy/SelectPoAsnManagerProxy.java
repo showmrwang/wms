@@ -14,7 +14,9 @@ import com.baozun.scm.primservice.whoperation.command.poasn.WhPoLineCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 
 public interface SelectPoAsnManagerProxy extends BaseManager {
-
+    /**
+     * 一览查询
+     */
     Pagination<WhPoCommand> findWhPoListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params, Integer sourceType);
 
     List<WhAsnCommand> findWhAsnListByAsnExtCode(String asnExtCode, Integer status, Long ouid);
