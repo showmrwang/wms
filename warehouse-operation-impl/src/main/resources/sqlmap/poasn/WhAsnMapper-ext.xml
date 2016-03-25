@@ -17,7 +17,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				<if test="asnCode!=null and asnCode!=''">
 					and asn.asn_code like #{asnCode}
 				</if>
-				<if test="extCode!=null and extCode!=''">
+				<if test="asnExtCode!=null and ansExtCode!=''">
 					and asn.asn_ext_code like #{asnExtCode}
 				</if>
 				<if test="customerId!=null">
@@ -40,6 +40,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				</if>
 				<if test="status!=null">
 					and asn.status = #{status}
+				</if>
+				<if test="qtyPlanned!=null">
+					and asn.qty_planned = #{qtyPlanned}
+				</if>
+				<if test="qtyRcvd!=null">
+					and asn.qty_rcvd = #{qtyRcvd}
+				</if>
+				<if test="ctnRcvd!=null">
+					and asn.ctn_rcvd = #{ctnRcvd}
 				</if>
 				<if test="extCode!=null and extCode!=''">
 					and asn.ext_code = #{extCode}
@@ -71,8 +80,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	status as status,
 	        	is_iqc as isIqc,
 	        	start_time as startTime,
+	        	date_format(start_time,'%Y-%m-%d') as startTimeStr,
 	        	stop_time as stopTime,
+	        	date_format(stop_time,'%Y-%m-%d') as stopTimeStr,
 	        	inbound_time as inboundTime,
+	        	date_format(inbound_time,'%Y-%m-%d') as inboundTimeStr,
 	        	create_time as createTime,
 	        	created_id as createdId,
 	        	last_modify_time as lastModifyTime,

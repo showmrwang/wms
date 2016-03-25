@@ -107,6 +107,12 @@ public class WhAsnCommand extends BaseCommand {
     private String supplierName;
     /** 运输商ID */
     private String logisticsProviderName;
+    /** 收货开始时间字符串类型 */
+    private String startTimeStr;
+    /** 收货结束时间字符串类型 */
+    private String stopTimeStr;
+    /** 上架完成时间字符串类型 */
+    private String inboundTimeStr;
 
     private List<WhAsnLineCommand> asnLineList;
     /** po单对应的ou_id */
@@ -456,6 +462,30 @@ public class WhAsnCommand extends BaseCommand {
 
     public void setUrgentStatus(String urgentStatus) {
         this.urgentStatus = urgentStatus;
+    }
+
+    public String getStartTimeStr() {
+        return startTimeStr;
+    }
+
+    public void setStartTimeStr(String startTimeStr) {
+        this.startTimeStr = startTimeStr;
+    }
+
+    public String getStopTimeStr() {
+        return stopTimeStr;
+    }
+
+    public void setStopTimeStr(String stopTimeStr) {
+        this.stopTimeStr = stopTimeStr;
+    }
+
+    public String getInboundTimeStr() {
+        return inboundTimeStr;
+    }
+
+    public void setInboundTimeStr(String inboundTimeStr) {
+        this.inboundTimeStr = inboundTimeStr;
     }
 
 

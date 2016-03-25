@@ -520,7 +520,7 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
         Integer changeCount = whAsnLineCommand.getQtyPlanned() - whAsnLineCommand.getQtyPlannedOld();
         // 这个IF的逻辑：
         // TODO:需求待确认，ASN只能修改数量的时候有此段逻辑
-        if (changeCount != null && changeCount == 0) {
+        if (changeCount != null || changeCount == 0) {
             if (null == whAsnLineCommand.getPoOuId()) {
                 WhPoLineCommand polineCommand = new WhPoLineCommand();
                 polineCommand.setId(whAsnLineCommand.getPoLineId());
@@ -535,7 +535,7 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
                 WhPoLine poline = new WhPoLine();
                 BeanUtils.copyProperties(polineCommand, poline);
                 poline.setModifiedId(whAsnLineCommand.getModifiedId());
-                poline.setAvailableQty(poline.getAvailableQty() + changeCount);
+                poline.setAvailableQty(poline.getAvailableQty() - changeCount);
                 // TODO yimin.lu 需要补偿机制
                 this.asnLineManager.editAsnLineToShard(asnLine);
                 this.poLineManager.saveOrUpdateByVersionToInfo(poline);
@@ -551,7 +551,7 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
                     return rm;
                 }
                 WhPoLine poline = new WhPoLine();
-                BeanUtils.copyProperties(polineCommand, poline);
+                BeanUtils.copyProperties(newPolineCommand, poline);
                 poline.setModifiedId(whAsnLineCommand.getModifiedId());
                 poline.setAvailableQty(poline.getAvailableQty() + changeCount);
                 this.asnLineManager.editAsnLineWhenPoToShard(asnLine, poline);

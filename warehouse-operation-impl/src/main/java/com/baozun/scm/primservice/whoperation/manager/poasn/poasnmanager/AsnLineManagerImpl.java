@@ -106,7 +106,7 @@ public class AsnLineManagerImpl implements AsnLineManager {
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void batchDeleteWhenPoToInfo(List<WhAsnLine> asnlineList) {
         for (WhAsnLine asnLine : asnlineList) {
-            int updateCount = this.whAsnLineDao.saveOrUpdateByVersion(asnLine);
+            int updateCount = this.whAsnLineDao.deleteByIdOuId(asnLine.getId(), asnLine.getOuId());
             if (updateCount <= 0) {
                 throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
             }
@@ -118,7 +118,7 @@ public class AsnLineManagerImpl implements AsnLineManager {
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void batchDeleteWhenPoToShard(List<WhAsnLine> asnlineList, List<WhPoLine> polineList) {
         for (WhAsnLine asnLine : asnlineList) {
-            int updateCount = this.whAsnLineDao.saveOrUpdateByVersion(asnLine);
+            int updateCount = this.whAsnLineDao.deleteByIdOuId(asnLine.getId(), asnLine.getOuId());
             if (updateCount <= 0) {
                 throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
             }

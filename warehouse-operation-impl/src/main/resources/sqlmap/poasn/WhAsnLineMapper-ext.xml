@@ -179,7 +179,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        UPDATE t_wh_asn_line SET
 			        asn_id = #{asnId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        po_line_id = #{poLineId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-			        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        po_linenum = #{poLinenum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 			        sku_id = #{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        qty_planned = #{qtyPlanned,javaType=java.lang.Integer,jdbcType=INTEGER} ,
@@ -207,8 +206,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        valid_date_uom=#{validDateUom,javaType=java.lang.String,jdbcType=VARCHAR}
 		        WHERE 
-			        id = #{id} 
-			        and last_modify_time	<=  #{lastModifyTime}    
+			        id = #{id} and ou_id=#{ouId}
+			        and last_modify_time	=  #{lastModifyTime}    
 		    ]]>
 		</update>
 		
@@ -253,7 +252,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				sku.code as skuCode,
 				sku.ext_code as skuExtCode,
 				sku.bar_code as skuBarCode,
-				sku.name as skuName
+				sku.name as skuName,
+				inv.name as invName
 	    ]]>
 	</sql>	
 		
@@ -264,6 +264,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    t_wh_asn_line al
 		    left join t_wh_asn asn on asn.id = al.asn_id
 			left join sys_dictionary sys on sys.dic_value = al.status and sys.group_value = 'ASNLINESTATUS'
+			left join t_wh_inventory_status inv on inv.id = al.inv_status
 			left join t_wh_sku sku on al.sku_id = sku.id 
 			where 
 			al.asn_id = #{asnId}
@@ -275,6 +276,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    t_wh_asn_line al
 		   	left join t_wh_asn asn on asn.id = al.asn_id
 			left join sys_dictionary sys on sys.dic_value = al.status and sys.group_value = 'ASNLINESTATUS'
+			left join t_wh_inventory_status inv on inv.id = al.inv_status
 			left join t_wh_sku sku on al.sku_id = sku.id 
 			where 
 			al.asn_id = #{asnId}
@@ -287,12 +289,20 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    ]]>
 	 </delete>
 	 
+	 <delete id="deleteByIdOuId" parameterType="map">
+	    <![CDATA[
+	        delete from t_wh_asn_line where
+		        id = #{id} and ou_id=#{ouid} 
+	    ]]>
+	 </delete>
+	 
 	 <select id="findWhAsnLineById" parameterType="map" resultMap="whAsnLineCommand">
 	 select <include refid="whAsnLineColumnsMapExt" />
 	 from 
 		    t_wh_asn_line al
 		    left join t_wh_asn asn on asn.id = al.asn_id
 			left join sys_dictionary sys on sys.dic_value = al.status and sys.group_value = 'ASNLINESTATUS'
+			left join t_wh_inventory_status inv on inv.id = al.inv_status
 			left join t_wh_sku sku on al.sku_id = sku.id 
 			where al.id=#{id}
 	  			 and al.ou_id = #{ouid}
