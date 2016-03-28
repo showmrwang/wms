@@ -54,6 +54,10 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
      */
     @Override
     public int editAsnStatus(WhAsnCommand whAsn) {
+        log.info(this.getClass().getSimpleName() + ".editAsnStatus method begin!");
+        if (log.isDebugEnabled()) {
+            log.debug(this.getClass().getSimpleName() + ".editAsnStatus method params:{}", whAsn);
+        }
         int result = 0;
         if (null == whAsn.getOuId()) {
             // OUID为空更新基础表内信息
@@ -61,6 +65,9 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
         } else {
             // OUID不为空更新拆库表内信息
             result = asnManager.editAsnStatusByShard(whAsn);
+        }
+        if (log.isDebugEnabled()) {
+            log.debug(this.getClass().getSimpleName() + ".editAsnStatus method returns:{}", result);
         }
         return result;
     }
@@ -71,8 +78,14 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
     @Override
     public ResponseMsg cancelPo(WhPoCommand whPo) {
         log.info("EidtPoAsnManagerProxyImpl.cancelPo: start====================== ");
+        if (log.isDebugEnabled()) {
+            log.debug(this.getClass().getSimpleName() + ".cancelPo method params:{}", whPo);
+        }
         List<WhPo> poList = new ArrayList<WhPo>();
         // 循环需要更新的po.id
+        if (log.isDebugEnabled()) {
+            log.debug("cancelPo method first step: foreach==>poids:{}", whPo.getPoIds());
+        }
         for (Long id : whPo.getPoIds()) {
             // 根据ID查询到PO单
             WhPoCommand updateCommand = new WhPoCommand();
@@ -87,6 +100,7 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
                 updateCommand = poManager.findWhPoByIdToShard(poCommand);
             }
             if (null == updateCommand) {
+                log.error("cancelPo method,the id :{} of poids can not find po!", id);
                 return getResponseMsg("Can not find po!", ResponseMsg.DATA_ERROR, null);
             }
             // 组装数据：修改者ID和修改的状态
@@ -95,10 +109,8 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
             BeanUtils.copyProperties(updateCommand, po);
             poList.add(po);
         }
-        if (log.isDebugEnabled()) {
-            log.debug(this.getClass().getSimpleName() + ".cancelPo params:{}", poList);
-        }
         if (poList.size() == 0) {
+            log.error("no po found to be cancelled!");
             return getResponseMsg("no po to be cancelled!", ResponseMsg.DATA_ERROR, null);
         }
         try{
@@ -109,8 +121,10 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
             }
         }catch(Exception e){
             if(e instanceof BusinessException){
+                log.error(e + "");
                 throw e;
             } else {
+                log.error("Cancel Po throws exceptions!");
                 return getResponseMsg("Cancel Po failure! please retry it!", ResponseMsg.DATA_ERROR, null);
             }
         }

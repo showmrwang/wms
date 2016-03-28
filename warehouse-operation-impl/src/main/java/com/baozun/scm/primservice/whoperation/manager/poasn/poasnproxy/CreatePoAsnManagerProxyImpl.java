@@ -116,6 +116,7 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
      * @return
      */
     public WhPo copyPropertiesPo(WhPoCommand po) {
+        log.info(this.getClass().getSimpleName() + ".copyPropertiesPo method begin!");
         WhPo whPo = new WhPo();
         BeanUtils.copyProperties(po, whPo);
         // 采购时间为空默认为当前时间
@@ -126,6 +127,9 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
         whPo.setCreatedId(po.getUserId());
         whPo.setLastModifyTime(new Date());
         whPo.setModifiedId(po.getUserId());
+        if (log.isDebugEnabled()) {
+            log.debug(this.getClass().getSimpleName() + ".copyPropertiesPo method returns:{}", whPo);
+        }
         return whPo;
     }
 
@@ -136,6 +140,7 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
      * @return
      */
     public List<WhPoLine> copyPropertiesPoLine(WhPoCommand po) {
+        log.info(this.getClass().getSimpleName() + ".copyPropertiesPoLine method begin!");
         List<WhPoLine> whPoLine = new ArrayList<WhPoLine>();
         if (null != po.getPoLineList()) {
             // 有line信息保存
@@ -155,6 +160,9 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
                 poline.setModifiedId(po.getUserId());
                 whPoLine.add(poline);
             }
+        }
+        if (log.isDebugEnabled()) {
+            log.debug(this.getClass().getSimpleName() + ".copyPropertiesPoLine method returns:{}", whPoLine);
         }
         return whPoLine;
     }
@@ -205,6 +213,7 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
      * @return
      */
     public WhAsn copyPropertiesAsn(WhAsnCommand asn) {
+        log.info(this.getClass().getSimpleName() + ".copyPropertiesAsn method begin!");
         WhAsn whAsn = new WhAsn();
         BeanUtils.copyProperties(asn, whAsn);
         // 采购时间为空默认为当前时间
@@ -213,6 +222,9 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
         }
         whAsn.setCreatedId(asn.getUserId());
         whAsn.setModifiedId(asn.getUserId());
+        if (log.isDebugEnabled()) {
+            log.debug(this.getClass().getSimpleName() + ".copyPropertiesAsn method returns:{}", whAsn);
+        }
         return whAsn;
     }
 
