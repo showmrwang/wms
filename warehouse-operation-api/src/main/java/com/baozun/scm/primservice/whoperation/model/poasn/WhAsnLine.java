@@ -87,7 +87,7 @@ public class WhAsnLine extends BaseModel {
     /** 操作人ID */
     private Long modifiedId;
     /** 库存类型 */
-    private Long invType;
+    private String invType;
     /** 保质期单位 */
     private String validDateUom;
 
@@ -99,11 +99,12 @@ public class WhAsnLine extends BaseModel {
         this.validDateUom = validDateUom;
     }
 
-    public Long getInvType() {
+
+    public String getInvType() {
         return invType;
     }
 
-    public void setInvType(Long invType) {
+    public void setInvType(String invType) {
         this.invType = invType;
     }
 

@@ -20,9 +20,9 @@ public interface AsnManager extends BaseManager {
 
     List<WhAsnCommand> findWhAsnListByAsnExtCode(String asnCode, Integer status, Long ouid);
 
-    int editAsnStatusByInfo(WhAsnCommand whAsn);
+    void editAsnStatusByInfo(WhAsnCommand whAsn);
 
-    int editAsnStatusByShard(WhAsnCommand whAsn);
+    void editAsnStatusByShard(WhAsnCommand whAsn);
 
     Pagination<WhAsnCommand> findListByQueryMapWithPageExtByInfo(Page page, Sort[] sorts, Map<String, Object> params);
 
@@ -42,7 +42,7 @@ public interface AsnManager extends BaseManager {
 
     List<WhAsn> findWhAsnByPoToShard(WhAsn whAsn);
 
-    void deleteAsnAndAsnLineToShard(WhAsnCommand asn);
+    ResponseMsg deleteAsnAndAsnLineToShard(WhAsnCommand asn);
 
     void deleteAsnAndAsnLineWhenPoOuIdNullToShard(WhAsnCommand whAsnCommand);
 

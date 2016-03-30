@@ -119,8 +119,16 @@ public class WhPoCommand extends BaseCommand {
     private String inboundTimeStr;
     /** 修改者名称 */
     private String modifiedUserName;
+    /** 模糊查询限定行数 */
+    private Integer linenum;
 
+    public Integer getLinenum() {
+        return linenum;
+    }
 
+    public void setLinenum(Integer linenum) {
+        this.linenum = linenum;
+    }
 
     public String getModifiedUserName() {
         return modifiedUserName;

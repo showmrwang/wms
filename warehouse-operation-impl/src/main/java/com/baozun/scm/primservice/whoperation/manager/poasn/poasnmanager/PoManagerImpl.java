@@ -239,8 +239,8 @@ public class PoManagerImpl implements PoManager {
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
-    public List<WhPoCommand> findWhPoListByExtCodeToInfo(String poCode, List<Integer> status, Long ouid) {
-        return whPoDao.findWhPoListByExtCode(status, poCode, ouid);
+    public List<WhPoCommand> findWhPoListByExtCodeToInfo(String poCode, List<Integer> status, Long ouid, Integer linenum) {
+        return whPoDao.findWhPoListByExtCode(status, poCode, ouid, linenum);
     }
 
     /**
@@ -248,8 +248,8 @@ public class PoManagerImpl implements PoManager {
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public List<WhPoCommand> findWhPoListByExtCodeToShard(String poCode, List<Integer> status, Long ouid) {
-        return whPoDao.findWhPoListByExtCode(status, poCode, ouid);
+    public List<WhPoCommand> findWhPoListByExtCodeToShard(String poCode, List<Integer> status, Long ouid, Integer linenum) {
+        return whPoDao.findWhPoListByExtCode(status, poCode, ouid, linenum);
     }
 
     @Override
@@ -462,30 +462,47 @@ public class PoManagerImpl implements PoManager {
                     this.insertGlobalLog(line.getModifiedId(), new Date(), line.getClass().getSimpleName(), line, Constants.GLOBAL_LOG_UPDATE, line.getOuId());
                 }
             } else {
-                throw new BusinessException(ErrorCodes.PO_DELETE_STATUS_ERROR, new Object[] {whPo.getPoCode()});
+                throw new BusinessException(ErrorCodes.PO_DELETE_STATUS_ERROR);
             }
         }
     }
 
+    /**
+     * @author yimin.lu 删除ASN单的时候，对应的PO单在INFO库的情况下，更新PO单和对应的PO单明细
+     */
     @Override
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public void editPoAdnPoLineWhenDeleteAsnToInfo(WhPoCommand whpo, List<WhPoLine> polineList) {
-        WhPo po = new WhPo();
-        BeanUtils.copyProperties(whpo, po);
-        int poUpdateCount = this.whPoDao.saveOrUpdateByVersion(po);
-        if (poUpdateCount <= 0) {
-            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-        }
-        // 插入操作日志
-        this.insertGlobalLog(po.getModifiedId(), new Date(), po.getClass().getSimpleName(), po, Constants.GLOBAL_LOG_UPDATE, po.getOuId());
-        for (WhPoLine poLine : polineList) {
-            int lineCount = this.whPoLineDao.saveOrUpdateByVersion(poLine);
-            if (lineCount <= 0) {
+        log.info(this.getClass().getSimpleName() + ".editPoAdnPoLineWhenDeleteAsnToInfo method begin!");
+        try {
+            // 保存PO
+            WhPo po = new WhPo();
+            BeanUtils.copyProperties(whpo, po);
+            int poUpdateCount = this.whPoDao.saveOrUpdateByVersion(po);
+            if (poUpdateCount <= 0) {
+                log.warn("edit linked po error!");
                 throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
             }
             // 插入操作日志
-            this.insertGlobalLog(poLine.getModifiedId(), new Date(), poLine.getClass().getSimpleName(), poLine, Constants.GLOBAL_LOG_UPDATE, poLine.getOuId());
+            this.insertGlobalLog(po.getModifiedId(), new Date(), po.getClass().getSimpleName(), po, Constants.GLOBAL_LOG_UPDATE, po.getOuId());
+            for (WhPoLine poLine : polineList) {
+                int lineCount = this.whPoLineDao.saveOrUpdateByVersion(poLine);
+                if (lineCount <= 0) {
+                    log.warn("edit linked poline error!");
+                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                }
+                // 插入操作日志
+                this.insertGlobalLog(poLine.getModifiedId(), new Date(), poLine.getClass().getSimpleName(), poLine, Constants.GLOBAL_LOG_UPDATE, poLine.getOuId());
+            }
+        } catch (Exception e) {
+            log.error(" update info.po and info.poline when deleting asn throws error:{}!", e);
+            if (e instanceof BusinessException) {
+                throw e;
+            } else {
+                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            }
         }
+        log.info(this.getClass().getSimpleName() + ".editPoAdnPoLineWhenDeleteAsnToInfo method end!");
     }
 
     /**
@@ -499,15 +516,22 @@ public class PoManagerImpl implements PoManager {
      * @param ouId
      */
     private void insertGlobalLog(Long userId, Date modifyTime, String objectType, Object modifiedValues, String type, Long ouId) {
-        GlobalLogCommand gl = new GlobalLogCommand();
-        gl.setModifiedId(userId);
-        gl.setModifyTime(modifyTime);
-        gl.setObjectType(objectType);
-        gl.setModifiedValues(modifiedValues);
-        gl.setType(type);
-        gl.setOuId(ouId);
-        globalLogManager.insertGlobalLog(gl);
+        log.info(this.getClass().getSimpleName() + ".insertGlobalLog method begin!");
+        try {
+            GlobalLogCommand gl = new GlobalLogCommand();
+            gl.setModifiedId(userId);
+            gl.setModifyTime(modifyTime);
+            gl.setObjectType(objectType);
+            gl.setModifiedValues(modifiedValues);
+            gl.setType(type);
+            gl.setOuId(ouId);
+            globalLogManager.insertGlobalLog(gl);
+        } catch (Exception e) {
+            log.error(" insert into global log error:{}!", e);
+            throw new BusinessException(ErrorCodes.INSERT_LOG_ERROR);
+        }
 
+        log.info(this.getClass().getSimpleName() + ".insertGlobalLog method end!");
     }
 
     @Override

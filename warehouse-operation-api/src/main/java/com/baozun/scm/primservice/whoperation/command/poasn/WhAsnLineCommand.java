@@ -104,11 +104,21 @@ public class WhAsnLineCommand extends BaseCommand {
     /** 商品条码 */
     private String skuBarCode;
     /** 库存类型 */
-    private Long invType;
+    private String invType;
     /** 批量操作时候，记录主键集合 */
     private List<Long> ids;
     /** 保质期单位 */
     private String validDateUom;
+    /** 库存状态名称 */
+    private String invName;
+
+    public String getInvName() {
+        return invName;
+    }
+
+    public void setInvName(String invName) {
+        this.invName = invName;
+    }
 
     public String getValidDateUom() {
         return validDateUom;
@@ -118,11 +128,12 @@ public class WhAsnLineCommand extends BaseCommand {
         this.validDateUom = validDateUom;
     }
 
-    public Long getInvType() {
+
+    public String getInvType() {
         return invType;
     }
 
-    public void setInvType(Long invType) {
+    public void setInvType(String invType) {
         this.invType = invType;
     }
 
