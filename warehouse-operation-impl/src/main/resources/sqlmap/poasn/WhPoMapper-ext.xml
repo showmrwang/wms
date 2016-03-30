@@ -236,7 +236,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	
 	 <select id="findWhPoListByExtCode" resultMap="WhPoCommand">
 	    select <include refid="whPoColumnsExt" />
-		    from t_wh_po 
+		    from t_wh_po po
 		   <where>
 			    ext_code like #{extCode} 
 			    and ou_id = #{ouid} 
@@ -244,6 +244,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			   	<foreach collection="statusList" item="status" open="(" separator="," close=")">
 					#{status}
 				</foreach>
+				<if test="linenum!=null">
+				and  exists(select 1 from t_wh_po_line line where line.ou_id=po.ou_id and line.po_id=po.id and line.available_qty>0)
+				</if>
+				<if test="linenum!=null">
+				limit 0,#{linenum}
+				</if>
 			</where>
     </select>
 	

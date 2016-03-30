@@ -2,7 +2,10 @@ package com.baozun.scm.primservice.whoperation.manager.poasn.poasnproxy;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,23 +56,29 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
      * 修改ASN单状态(可批量)
      */
     @Override
-    public int editAsnStatus(WhAsnCommand whAsn) {
+    public ResponseMsg editAsnStatus(WhAsnCommand whAsn) {
         log.info(this.getClass().getSimpleName() + ".editAsnStatus method begin!");
         if (log.isDebugEnabled()) {
             log.debug(this.getClass().getSimpleName() + ".editAsnStatus method params:{}", whAsn);
         }
-        int result = 0;
-        if (null == whAsn.getOuId()) {
-            // OUID为空更新基础表内信息
-            result = asnManager.editAsnStatusByInfo(whAsn);
-        } else {
-            // OUID不为空更新拆库表内信息
-            result = asnManager.editAsnStatusByShard(whAsn);
+        try {
+            if (null == whAsn.getOuId()) {
+                // OUID为空更新基础表内信息
+                asnManager.editAsnStatusByInfo(whAsn);
+            } else {
+                // OUID不为空更新拆库表内信息
+                asnManager.editAsnStatusByShard(whAsn);
+            }
+        } catch (Exception e) {
+            if (e instanceof BusinessException) {
+                log.error(e + "");
+                throw e;
+            } else {
+                log.error("edit Asn Status throws Exception!");
+                return getResponseMsg("edit Asn Status failure! please retry it!", ResponseMsg.STATUS_ERROR, null);
+            }
         }
-        if (log.isDebugEnabled()) {
-            log.debug(this.getClass().getSimpleName() + ".editAsnStatus method returns:{}", result);
-        }
-        return result;
+        return getResponseMsg("edit asn status success!", ResponseMsg.STATUS_SUCCESS, null);
     }
 
     /**
@@ -90,18 +99,18 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
             // 根据ID查询到PO单
             WhPoCommand updateCommand = new WhPoCommand();
             // 查询条件Command
-            WhPoCommand poCommand = new WhPoCommand();
-            poCommand.setId(id);
-            poCommand.setOuId(whPo.getOuId());
+            WhPoCommand poCommandForSearch = new WhPoCommand();
+            poCommandForSearch.setId(id);
+            poCommandForSearch.setOuId(whPo.getOuId());
             // 根据id和ouId分库查询数据
-            if (null == poCommand.getOuId()) {
-                updateCommand = poManager.findWhPoByIdToInfo(poCommand);
+            if (null == poCommandForSearch.getOuId()) {
+                updateCommand = poManager.findWhPoByIdToInfo(poCommandForSearch);
             } else {
-                updateCommand = poManager.findWhPoByIdToShard(poCommand);
+                updateCommand = poManager.findWhPoByIdToShard(poCommandForSearch);
             }
             if (null == updateCommand) {
                 log.error("cancelPo method,the id :{} of poids can not find po!", id);
-                return getResponseMsg("Can not find po!", ResponseMsg.DATA_ERROR, null);
+                return getResponseMsg("Can not find po!", ResponseMsg.STATUS_ERROR, null);
             }
             // 组装数据：修改者ID和修改的状态
             updateCommand.setModifiedId(whPo.getModifiedId());
@@ -111,7 +120,7 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
         }
         if (poList.size() == 0) {
             log.error("no po found to be cancelled!");
-            return getResponseMsg("no po to be cancelled!", ResponseMsg.DATA_ERROR, null);
+            return getResponseMsg("no po to be cancelled!", ResponseMsg.STATUS_ERROR, null);
         }
         try{
             if (null == whPo.getOuId()) {
@@ -125,7 +134,7 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
                 throw e;
             } else {
                 log.error("Cancel Po throws exceptions!");
-                return getResponseMsg("Cancel Po failure! please retry it!", ResponseMsg.DATA_ERROR, null);
+                return getResponseMsg("Cancel Po failure! please retry it!", ResponseMsg.STATUS_ERROR, null);
             }
         }
         return this.getResponseMsg("cancel po success", ResponseMsg.STATUS_SUCCESS, null);
@@ -145,12 +154,22 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
             log.warn("EditPo warn ResponseStatus: " + rm.getResponseStatus() + " msg: " + rm.getMsg());
             return rm;
         }
-        if (null == po.getOuId()) {
-            // OUID为空更新基础表内信息
-            poManager.editPoToInfo(po);
-        } else {
-            // OUID不为空更新拆库表内信息
-            poManager.editPoToShard(po);
+        try{
+            if (null == po.getOuId()) {
+                // OUID为空更新基础表内信息
+                poManager.editPoToInfo(po);
+            } else {
+                // OUID不为空更新拆库表内信息
+                poManager.editPoToShard(po);
+            }
+        }catch(Exception e){
+            if (e instanceof BusinessException) {
+                log.error(e+"");
+                throw e;
+            }else{
+                log.error("update po throws Exception!");
+                return getResponseMsg("edit Po failure! please retry it!", ResponseMsg.DATA_ERROR, null);
+            }
         }
         log.info("EditPo end  =======================");
         return rm;
@@ -383,57 +402,90 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
      * 审核ASN:收货中、收货完成的ASN就允许审核成功
      */
     @Override
-    public void auditAsn(WhAsnCommand asnCommand) {
+    public ResponseMsg auditAsn(WhAsnCommand asnCommand) {
         log.info("auditAsn start =======================");
+        if (log.isDebugEnabled()) {
+            log.debug(this.getClass().getSimpleName() + ".auditAsn method params:{}", asnCommand);
+        }
+        // 查找对应的ASN
         WhAsnCommand whAsnCommand = this.asnManager.findWhAsnByIdToShard(asnCommand);
         if (null == whAsnCommand) {
-            throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
+            log.warn("no asn found [id:{},ouId:{}]", asnCommand.getId(), asnCommand.getOuId());
+            return getResponseMsg(ErrorCodes.ASN_NULL + "", ResponseMsg.DATA_ERROR, null);
         }
         if (PoAsnStatus.ASN_CANCELED == whAsnCommand.getStatus() || PoAsnStatus.ASN_CLOSE == whAsnCommand.getStatus()) {
-            throw new BusinessException(ErrorCodes.ASN_AUDIT_STATUS_ERROR);
+            log.warn("asn'status error [id:{},ouId:{}]", asnCommand.getId(), asnCommand.getOuId());
+            return getResponseMsg(ErrorCodes.ASN_AUDIT_STATUS_ERROR + "", ResponseMsg.DATA_ERROR, null);
         }
         // ASN明细校验：只有明细处于收货中或者收货完成可以关闭
+        // 查找所有的asn明细
         WhAsnLine whAsnLine = new WhAsnLine();
         whAsnLine.setAsnId(whAsnCommand.getId());
         whAsnLine.setOuId(whAsnCommand.getOuId());
         List<WhAsnLine> asnLineList = this.asnLineManager.findListByShard(whAsnLine);
         if (null == asnLineList || asnLineList.size() == 0) {
-            throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
+            log.warn("no asnLine found!", asnCommand.getId(), asnCommand.getOuId());
+            return getResponseMsg(ErrorCodes.ASNLINE_NULL + "", ResponseMsg.DATA_ERROR, null);
         }
         for (WhAsnLine line : asnLineList) {
             if (null == line) {
-                throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
+                log.warn("asnLine is null!");
+                return getResponseMsg(ErrorCodes.ASNLINE_NULL + "", ResponseMsg.DATA_ERROR, null);
             } else {
                 if (null == line.getStatus() || PoAsnStatus.ASNLINE_NOT_RCVD == line.getStatus()) {
-                    throw new BusinessException(ErrorCodes.ASN_AUDIT_STATUS_ERROR);
+                    log.warn("asn'status error [id:{},ouId:{}!", line.getId(), line.getOuId());
+                    return getResponseMsg(ErrorCodes.ASN_AUDIT_STATUS_ERROR + "", ResponseMsg.DATA_ERROR, null);
                 }
             }
         }
         // 修改ASN单状态为关闭
         whAsnCommand.setStatus(PoAsnStatus.ASN_CLOSE);
         whAsnCommand.setAsnIds(Arrays.asList(new Long[] {asnCommand.getId()}));
-        int updateCount = this.editAsnStatus(whAsnCommand);
-        if (updateCount == 0) {
-            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+
+        try {
+            if (null == whAsnCommand.getOuId()) {
+                // OUID为空更新基础表内信息
+                asnManager.editAsnStatusByInfo(whAsnCommand);
+            } else {
+                // OUID不为空更新拆库表内信息
+                asnManager.editAsnStatusByShard(whAsnCommand);
+            }
+        } catch (Exception e) {
+            if (e instanceof BusinessException) {
+                log.error(e + "");
+                throw e;
+            } else {
+                log.error("edit Asn Status throws Exception!");
+                return getResponseMsg("audit Asn Status failure! please retry it!", ResponseMsg.STATUS_ERROR, null);
+            }
         }
-        log.info("auditPo end =======================");
+
+        log.info("auditASN end =======================");
+        return getResponseMsg("auditAsn success!", ResponseMsg.STATUS_SUCCESS, null);
     }
 
+    /**
+     * @author yimin.lu
+     */
     @Override
-    public void deleteAsnAndAsnLine(WhAsnCommand whAsnCommand) {
+    public ResponseMsg deleteAsnAndAsnLine(WhAsnCommand whAsnCommand) {
+        /**
+         * 逻辑：1.需要删除ASN表头信息；2.需要删除ASN单明细；3.需要更新对应的PO单明细并可能需要回滚状态；4.需要更新对应的PO单表头信息并可能需要回滚状态
+         */
         log.info("deleteAsnAndAsnLine start =======================");
-        WhAsnCommand whasn = null;
         // 查询拆库内信息
-        whasn = asnManager.findWhAsnByIdToShard(whAsnCommand);
+        WhAsnCommand whasn = asnManager.findWhAsnByIdToShard(whAsnCommand);
         // 业务逻辑：获取到的asn的状态不为新建状态，不能够删除
-        if (null == whasn || null == whasn.getStatus()) {
-            throw new BusinessException(ErrorCodes.DELETE_CODE_ERROR);
+        if (null == whasn) {
+            log.warn("no asn to be delete!");
+            return getResponseMsg("no asn to be delete!", ResponseMsg.STATUS_ERROR, null);
         }
-        if (whasn.getStatus() != PoAsnStatus.PO_NEW) {
+        if (null == whasn.getStatus() || whasn.getStatus() != PoAsnStatus.PO_NEW) {
             log.warn("deleteAsnAndAsnLine warn WhPo status NE PO_NEW");
-            throw new BusinessException(ErrorCodes.ASN_DELETE_STATUS_ERROR, new Object[] {whasn.getAsnExtCode()});
+            return getResponseMsg(ErrorCodes.ASN_DELETE_STATUS_ERROR + "", ResponseMsg.DATA_ERROR, null);
         }
-        
+        whasn.setModifiedId(whAsnCommand.getUserId());// 操作人更新
+        // 检索需要删除的明细
         WhAsnLine asnLineSearch=new WhAsnLine();
         asnLineSearch.setAsnId(whasn.getId());
         asnLineSearch.setOuId(whasn.getOuId());
@@ -443,79 +495,62 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
         poSearch.setId(whasn.getPoId());
         poSearch.setOuId(whasn.getPoOuId());
         List<WhPoLine> polineList = new ArrayList<WhPoLine>();
-        if(null==whasn.getPoOuId()){
-            WhPoCommand whpo = this.poManager.findWhPoByIdToInfo(poSearch);
-            if (null == whpo) {
-                throw new BusinessException(ErrorCodes.DELETE_CODE_ERROR);
-            }
-            List<WhPoLine> whpolineList = this.poLineManager.findWhPoLineListByPoIdToInfo(whpo.getId(), whpo.getOuId());
-            boolean poStatusFlag = true;
-            if (asnLineList != null && asnLineList.size() > 0) {
-                for(WhAsnLine asnLine:asnLineList){
-                    if (whpolineList != null && whpolineList.size() > 0) {
-                        for (WhPoLine whpoline : whpolineList) {
-
-                            if (whpoline.getId().equals(asnLine.getPoLineId())) {
-                                whpoline.setAvailableQty(whpoline.getAvailableQty() + asnLine.getQtyPlanned());
-                                if (whpoline.getAvailableQty() == whpoline.getQtyPlanned()) {
-                                    whpoline.setStatus(PoAsnStatus.POLINE_NEW);
-                                }
-                                polineList.add(whpoline);
+        // asn对应的po单
+        WhPoCommand whpo = null == whasn.getPoOuId() ? this.poManager.findWhPoByIdToInfo(poSearch) : this.poManager.findWhPoByIdToShard(poSearch);
+        if (null == whpo) {
+            log.warn("no po found!");
+            return getResponseMsg("no po found!", ResponseMsg.STATUS_ERROR, null);
+        }
+        // po单对应的明细
+        List<WhPoLine> whpolineList = null == whasn.getPoOuId() ? this.poLineManager.findWhPoLineListByPoIdToInfo(whpo.getId(), whpo.getOuId()) : this.poLineManager.findWhPoLineListByPoIdToShard(whpo.getId(), whpo.getOuId());
+        boolean poStatusFlag = true;// 判断是否需要回滚PO单状态：从已创建ASN回滚到新建状态
+        // 对应的ASN明细修改对应的PO单明细
+        /**
+         * 逻辑：当明细的可用数量=明细的计划数量时候，将明细的状态置为新建状态
+         */
+        if (whpolineList != null && whpolineList.size() > 0) {
+            for (WhPoLine whpoline : whpolineList) {
+                if (asnLineList != null && asnLineList.size() > 0) {
+                    for (WhAsnLine asnLine : asnLineList) {
+                        if (whpoline.getId().equals(asnLine.getPoLineId())) {
+                            whpoline.setAvailableQty(whpoline.getAvailableQty() + asnLine.getQtyPlanned());
+                            if (whpoline.getAvailableQty() == whpoline.getQtyPlanned()) {
+                                whpoline.setStatus(PoAsnStatus.POLINE_NEW);
                             }
-                            if (PoAsnStatus.POLINE_CREATE_ASN == whpoline.getStatus()) {
-                                if (poStatusFlag) {
-                                    poStatusFlag = false;
-                                }
-                            }
+                            whpoline.setModifiedId(whasn.getModifiedId());
+                            polineList.add(whpoline);
+                            break;
                         }
                     }
-
-
                 }
-                if (poStatusFlag) {
-                    whpo.setStatus(PoAsnStatus.PO_NEW);
+                if (PoAsnStatus.POLINE_NEW != whpoline.getStatus()) {
+                    poStatusFlag = false;
                 }
-             // TODO 需要补偿机制
+            }
+        }
+        if (poStatusFlag) {
+            whpo.setStatus(PoAsnStatus.PO_NEW);
+        }
+        // 数据库操作
+        try{
+            if(null==whasn.getPoOuId()){
+                // TODO 需要补偿机制
                 this.poManager.editPoAdnPoLineWhenDeleteAsnToInfo(whpo, polineList);
-                this.asnManager.deleteAsnAndAsnLineWhenPoOuIdNullToShard(whAsnCommand);
+                this.asnManager.deleteAsnAndAsnLineWhenPoOuIdNullToShard(whasn);
+                // 对应的PO单在拆库中
+            } else {
+                this.asnManager.deleteAsnAndAsnLineToShard(whasn, whpo, polineList);
             }
-        } else {
-            WhPoCommand whpo = this.poManager.findWhPoByIdToShard(poSearch);
-            if (null == whpo) {
-                throw new BusinessException(ErrorCodes.DELETE_CODE_ERROR);
-            }
-            List<WhPoLine> whpolineList = this.poLineManager.findWhPoLineListByPoIdToShard(whpo.getId(), whpo.getOuId());
-            boolean poStatusFlag = true;
-            if (asnLineList != null && asnLineList.size() > 0) {
-                for (WhAsnLine asnLine : asnLineList) {
-                    if (whpolineList != null && whpolineList.size() > 0) {
-                        for (WhPoLine whpoline : whpolineList) {
-
-                            if (whpoline.getId().equals(asnLine.getPoLineId())) {
-                                whpoline.setAvailableQty(whpoline.getAvailableQty() + asnLine.getQtyPlanned());
-                                if (whpoline.getAvailableQty() == whpoline.getQtyPlanned()) {
-                                    whpoline.setStatus(PoAsnStatus.POLINE_NEW);
-                                }
-                                polineList.add(whpoline);
-                            }
-                            if (PoAsnStatus.POLINE_CREATE_ASN == whpoline.getStatus()) {
-                                if (poStatusFlag) {
-                                    poStatusFlag = false;
-                                }
-                            }
-                        }
-                    }
-
-
-                }
-                if (poStatusFlag) {
-                    whpo.setStatus(PoAsnStatus.PO_NEW);
-                }
-                this.asnManager.deleteAsnAndAsnLineToShard(whAsnCommand, whpo, polineList);
+        } catch (Exception e) {
+            if (e instanceof BusinessException) {
+                return getResponseMsg(String.valueOf(((BusinessException) e).getErrorCode()), ResponseMsg.DATA_ERROR, null);
+            } else {
+                log.error("delete asn failed:{}!", e);
+                return getResponseMsg("delete asn failed!", ResponseMsg.STATUS_ERROR, null);
             }
         }
         log.info("deleteAsnAndAsnLine end =======================");
-
+        return getResponseMsg("delete asn success!", ResponseMsg.STATUS_SUCCESS, null);
     }
 
     @Override
@@ -523,77 +558,96 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
         log.info("EditAsnLine start =======================");
         WhAsnLine asnLine = new WhAsnLine();
         BeanUtils.copyProperties(whAsnLineCommand, asnLine);
-        ResponseMsg rm = new ResponseMsg();
         // ASNLINE状态必须为未收货 收货中才能修改
         if (whAsnLineCommand.getStatus() != PoAsnStatus.ASNLINE_NOT_RCVD) {
-            rm.setResponseStatus(ResponseMsg.DATA_ERROR);
-            rm.setMsg("asnLine status is error status is: " + whAsnLineCommand.getStatus());
-            log.warn("EditAsnLine warn ResponseStatus: " + rm.getResponseStatus() + " msg: " + rm.getMsg());
-            return rm;
+            log.warn("EditAsnLine warn：asnLine status is error status is: " + whAsnLineCommand.getStatus());
+            return this.getResponseMsg("asnLine status is error status is: " + whAsnLineCommand.getStatus(), ResponseMsg.STATUS_ERROR, null);
         }
-        Integer changeCount = whAsnLineCommand.getQtyPlanned() - whAsnLineCommand.getQtyPlannedOld();
-        // 这个IF的逻辑：
-        // TODO:需求待确认，ASN只能修改数量的时候有此段逻辑
-        if (changeCount != null || changeCount == 0) {
+        if (null == whAsnLineCommand.getQtyPlannedOld() || whAsnLineCommand.getQtyPlannedOld() <= 0) {
+            log.warn("asnline's qtyPlanned may cause numerical error!");
+            return this.getResponseMsg(ErrorCodes.NUMBER_ERROR + "", ResponseMsg.DATA_ERROR, null);
+        }
+        int changeCount = whAsnLineCommand.getQtyPlanned() - whAsnLineCommand.getQtyPlannedOld();
+        WhPoLineCommand polineCommand = new WhPoLineCommand();
+        polineCommand.setId(whAsnLineCommand.getPoLineId());
+        polineCommand.setOuId(whAsnLineCommand.getPoOuId());
+        // 获取ASN单表头信息
+        WhAsnCommand searchAsnCommand = new WhAsnCommand();
+        searchAsnCommand.setId(asnLine.getAsnId());
+        searchAsnCommand.setOuId(asnLine.getOuId());
+        WhAsnCommand returnAsnCommand = this.asnManager.findWhAsnByIdToShard(searchAsnCommand);
+        WhAsn asn = new WhAsn();
+        BeanUtils.copyProperties(returnAsnCommand, asn);
+        asn.setModifiedId(whAsnLineCommand.getModifiedId());
+        asn.setQtyPlanned(asn.getQtyPlanned() + changeCount);
+        // 获取PO单明细
+        WhPoLineCommand newPolineCommand = null == whAsnLineCommand.getPoOuId() ? this.poLineManager.findPoLinebyIdToInfo(polineCommand) : this.poLineManager.findPoLinebyIdToShard(polineCommand);
+        if (null == newPolineCommand) {
+            log.warn("editAsnLine warn ResponseStatus: asnLine can not Related to poLine,when asnLine.polineid is" + whAsnLineCommand.getPoLineId());
+            return this.getResponseMsg("asnLine status is error status is: " + whAsnLineCommand.getStatus(), ResponseMsg.STATUS_ERROR, null);
+        }
+        WhPoLine poline = new WhPoLine();
+        BeanUtils.copyProperties(newPolineCommand, poline);
+        poline.setModifiedId(whAsnLineCommand.getModifiedId());
+        if (poline.getAvailableQty() - changeCount < 0) {
+            log.warn("asnline's  qtyPlanned beyond the limit of poline's availableQty!");
+            return this.getResponseMsg(ErrorCodes.ASNLINE_QTYPLANNED_ERROR + "", ResponseMsg.DATA_ERROR, null);
+        }
+        poline.setAvailableQty(poline.getAvailableQty() - changeCount);
+        try{
             if (null == whAsnLineCommand.getPoOuId()) {
-                WhPoLineCommand polineCommand = new WhPoLineCommand();
-                polineCommand.setId(whAsnLineCommand.getPoLineId());
-                polineCommand.setOuId(whAsnLineCommand.getPoOuId());
-                WhPoLineCommand newPolineCommand = this.poLineManager.findPoLinebyIdToInfo(polineCommand);
-                if (null == newPolineCommand) {
-                    rm.setResponseStatus(ResponseMsg.DATA_ERROR);
-                    rm.setMsg("asnLine can not Related to poLine,when asnLine.polineid is" + whAsnLineCommand.getPoLineId());
-                    log.warn("EditPoLine warn ResponseStatus: " + rm.getResponseStatus() + " msg: " + rm.getMsg());
-                    return rm;
-                }
-                WhPoLine poline = new WhPoLine();
-                BeanUtils.copyProperties(polineCommand, poline);
-                poline.setModifiedId(whAsnLineCommand.getModifiedId());
-                poline.setAvailableQty(poline.getAvailableQty() - changeCount);
                 // TODO yimin.lu 需要补偿机制
-                this.asnLineManager.editAsnLineToShard(asnLine);
+                this.asnLineManager.editAsnLineToShard(asn, asnLine);
                 this.poLineManager.saveOrUpdateByVersionToInfo(poline);
             } else {
-                WhPoLineCommand polineCommand = new WhPoLineCommand();
-                polineCommand.setId(whAsnLineCommand.getPoLineId());
-                polineCommand.setOuId(whAsnLineCommand.getPoOuId());
-                WhPoLineCommand newPolineCommand = this.poLineManager.findPoLinebyIdToShard(polineCommand);
-                if (null == newPolineCommand) {
-                    rm.setResponseStatus(ResponseMsg.DATA_ERROR);
-                    rm.setMsg("asnLine can not Related to poLine,when asnLine.polineid is" + whAsnLineCommand.getPoLineId());
-                    log.warn("EditPoLine warn ResponseStatus: " + rm.getResponseStatus() + " msg: " + rm.getMsg());
-                    return rm;
-                }
-                WhPoLine poline = new WhPoLine();
-                BeanUtils.copyProperties(newPolineCommand, poline);
-                poline.setModifiedId(whAsnLineCommand.getModifiedId());
-                poline.setAvailableQty(poline.getAvailableQty() + changeCount);
-                this.asnLineManager.editAsnLineWhenPoToShard(asnLine, poline);
+                this.asnLineManager.editAsnLineWhenPoToShard(asn, asnLine, poline);
+            }
+        }catch(Exception e){
+            if( e instanceof BusinessException){
+                return this.getResponseMsg(((BusinessException) e).getErrorCode()+"", ResponseMsg.DATA_ERROR, null);
+            }else{
+                log.error("editAsnLine failed!");
+                return this.getResponseMsg("editAsnLine failed! please try again!", ResponseMsg.STATUS_ERROR, null);
             }
         }
-        rm.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
-        log.info("EditAsnLine start =======================");
-        return rm;
+        log.info("EditAsnLine end =======================");
+        return this.getResponseMsg("editAsnLine success!", ResponseMsg.STATUS_SUCCESS, null);
     }
 
+    /**
+     * @author yimin.lu
+     */
     @Override
     public void deleteAsnLines(WhAsnLineCommand command) {
-        List<WhPoLine> polineList=new ArrayList<WhPoLine>();
-        List<WhAsnLine> asnlineList=new ArrayList<WhAsnLine>();
+        List<WhPoLine> polineList = new ArrayList<WhPoLine>();// 用于保存删除asn明细所需对应修改的po单明细行
+        List<WhAsnLine> asnlineList = new ArrayList<WhAsnLine>();// 用于保存需要修改的asn单明细
+        int asnPlanCount = 0;// 用于记录ASN单中删除明细所对应的数量，从而修改asn单表头的计划数量
+        Map<Long, Integer> poLineIdMaps = new HashMap<Long, Integer>();// 用于保存PO单明细ID和对应修改的数量MAP
         for(Long id:command.getIds()){
-            int changeCount=0;
+            int changeCount = 0;// 对应的asn单明细中的SKU数量
             WhAsnLineCommand searchCommand=new WhAsnLineCommand();
+            // 查询对应的ASN明细
             searchCommand.setId(id);
             searchCommand.setOuId(command.getOuId());
             WhAsnLineCommand returnCommand = this.asnLineManager.findWhAsnLineByIdToShard(searchCommand);
+
             changeCount=returnCommand.getQtyPlanned();
+            asnPlanCount += changeCount;
             WhAsnLine asnline=new WhAsnLine();
             BeanUtils.copyProperties(returnCommand, asnline);
             asnline.setModifiedId(command.getModifiedId());
             asnlineList.add(asnline);
-
+            // put
+            if (poLineIdMaps.containsKey(returnCommand.getPoLineId())) {
+                poLineIdMaps.put(returnCommand.getPoLineId(), poLineIdMaps.get(returnCommand.getPoLineId()) + changeCount);
+            } else {
+                poLineIdMaps.put(returnCommand.getPoLineId(), changeCount);
+            }
+        }
+        // PO单明细的更新
+        for (Entry<Long, Integer> entry : poLineIdMaps.entrySet()) {
             WhPoLineCommand serachPoCommand = new WhPoLineCommand();
-            serachPoCommand.setId(returnCommand.getPoLineId());
+            serachPoCommand.setId(entry.getKey());
             serachPoCommand.setOuId(command.getPoOuId());
             WhPoLineCommand returnPoCommand = null;
             if (null == command.getPoOuId()) {
@@ -603,17 +657,40 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
             }
             WhPoLine poline = new WhPoLine();
             BeanUtils.copyProperties(returnPoCommand, poline);
+            // PO单明细需更新内容
             poline.setModifiedId(command.getModifiedId());
-            poline.setAvailableQty(poline.getAvailableQty() + changeCount);
+            poline.setAvailableQty(poline.getAvailableQty() + entry.getValue());
+            // 如果计划数量==可用数量，则回滚PO单明细
+            if (poline.getQtyPlanned().intValue() == poline.getAvailableQty().intValue()) {
+                poline.setStatus(PoAsnStatus.POLINE_NEW);
+            }
             polineList.add(poline);
         }
+        if (asnlineList.size() == 0) {
+            log.warn("no asnlines selected to delete!");
+            throw new BusinessException(ErrorCodes.ASN_NULL);
+        }
+        WhAsnCommand asnSearchCommand = new WhAsnCommand();// asn单表头的检索对象
+        asnSearchCommand.setId(asnlineList.get(0).getAsnId());
+        asnSearchCommand.setOuId(asnlineList.get(0).getOuId());
+        WhAsnCommand whAsnCommand = this.asnManager.findWhAsnByIdToShard(asnSearchCommand);
+        if (null == whAsnCommand) {
+            throw new BusinessException(ErrorCodes.ASN_NULL);
+        }
+
+        WhAsn whAsn = new WhAsn();// 所需修改的asn单
+        BeanUtils.copyProperties(whAsnCommand, whAsn);
+        whAsn.setModifiedId(asnlineList.get(0).getModifiedId());
+        // 修改ASN单表头计划数量
+        whAsn.setQtyPlanned(whAsn.getQtyPlanned() - asnPlanCount);
         if (null == command.getPoOuId()) {
             // TODO yimin.lu
-            this.asnLineManager.batchDeleteWhenPoToInfo(asnlineList);
+            this.asnLineManager.batchDeleteWhenPoToInfo(asnlineList, whAsn);
             this.poLineManager.batchUpdatePoLine(polineList);
         } else {
-            this.asnLineManager.batchDeleteWhenPoToShard(asnlineList, polineList);
+            this.asnLineManager.batchDeleteWhenPoToShard(asnlineList, polineList, whAsn);
         }
+
     }
 
     /**
@@ -625,6 +702,7 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
      * @return
      */
     private ResponseMsg getResponseMsg(String message, Integer responseStatus, Integer reasonStatus) {
+        log.info(this.getClass().getSimpleName() + ".getResponseMsg method begin!");
         ResponseMsg rm = new ResponseMsg();
         rm.setMsg(message);
         if (null != reasonStatus) {
@@ -635,6 +713,10 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
         } else {
             rm.setResponseStatus(responseStatus);
         }
+        if (log.isDebugEnabled()) {
+            log.debug(this.getClass().getSimpleName() + ".getResponseMsg method params:{}", rm);
+        }
+        log.info(this.getClass().getSimpleName() + ".getResponseMsg method end!");
         return rm;
     }
 }

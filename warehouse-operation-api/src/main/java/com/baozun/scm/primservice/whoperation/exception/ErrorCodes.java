@@ -120,11 +120,29 @@ public class ErrorCodes {
     /** ASN单状态为【取消】，PO单不允许审核成功 */
     public static final int ASN_AUDIT_STATUS_ERROR = 3014;
     /** ASN单所包含的明细状态有未收货，ASN单不允许审核成功 */
-    public static final int ASN_AUDIT_LineSTATUS_ERROR = 3015;
+    public static final int ASN_AUDIT_LINESTATUS_ERROR = 3015;
     /** PO单明细 [id:{0}] 状态为新建才允许删除 */
     public static final int POLINE_DELETE_STATUS_ERROR = 3016;
     /** ASN单状态为新建才允许删除 */
     public static final int ASN_DELETE_STATUS_ERROR = 3017;
     /** 封装数据失败 */
     public static final int PACKAGING_ERROR = 3018;
+    /** 插入数据失败，请刷新页面重试 */
+    public static final int INSERT_DATA_ERROR = 3019;
+    /** 删除数据失败，请刷新页面重试 */
+    public static final int DELETE_DATA_ERROR = 3020;
+    /** 校验数据失败，请刷新页面重试 */
+    public static final int CHECK_DATA_ERROR = 3021;
+    /** 插入{}数据失败，请刷新页面重试 */
+    public static final int INSERT_ERROR = 3022;
+    /** 删除{}数据失败，请刷新页面重试 */
+    public static final int DELETE_ERROR = 3023;
+    /** 更新{}数据失败，请刷新页面重试 */
+    public static final int UPDATE_ERROR = 3024;
+    /** 插入操作日志失败，请刷新页面重试 */
+    public static final int INSERT_LOG_ERROR = 3025;
+    /** ASN单明细数据不存在 */
+    public static final int ASNLINE_NULL = 3026;
+    /** 数值异常！ */
+    public static final int NUMBER_ERROR = 3027;
 }

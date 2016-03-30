@@ -40,9 +40,9 @@ public interface PoManager extends BaseManager {
 
     ResponseMsg insertPoWithOuId(PoCheckCommand poCheckCommand);
 
-    List<WhPoCommand> findWhPoListByExtCodeToInfo(String poCode, List<Integer> status, Long ouid);
+    List<WhPoCommand> findWhPoListByExtCodeToInfo(String poCode, List<Integer> status, Long ouid, Integer linenum);
 
-    List<WhPoCommand> findWhPoListByExtCodeToShard(String poCode, List<Integer> status, Long ouid);
+    List<WhPoCommand> findWhPoListByExtCodeToShard(String poCode, List<Integer> status, Long ouid, Integer linenum);
 
     WhPo findWhAsnByIdToInfo(Long id, Long ouid);
 

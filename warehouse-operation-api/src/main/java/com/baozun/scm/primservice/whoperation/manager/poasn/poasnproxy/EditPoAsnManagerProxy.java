@@ -14,7 +14,7 @@ import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 
 public interface EditPoAsnManagerProxy extends BaseManager {
 
-    int editAsnStatus(WhAsnCommand whAsnCommand);
+    ResponseMsg editAsnStatus(WhAsnCommand whAsnCommand);
 
     ResponseMsg cancelPo(WhPoCommand whPoCommand);
 
@@ -34,9 +34,9 @@ public interface EditPoAsnManagerProxy extends BaseManager {
 
     void auditPo(WhPoCommand poCommand);
 
-    void auditAsn(WhAsnCommand asnCommand);
+    ResponseMsg auditAsn(WhAsnCommand asnCommand);
 
-    void deleteAsnAndAsnLine(WhAsnCommand WhAsnCommand);
+    ResponseMsg deleteAsnAndAsnLine(WhAsnCommand WhAsnCommand);
 
     void deleteAsnLines(WhAsnLineCommand command);
 }

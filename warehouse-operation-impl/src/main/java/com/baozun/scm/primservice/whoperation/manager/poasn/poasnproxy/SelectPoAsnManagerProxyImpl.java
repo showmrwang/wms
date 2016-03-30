@@ -179,12 +179,12 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
      * 通过po单code 状态 ouid 模糊查询对应po单信息
      */
     @Override
-    public List<WhPoCommand> findWhPoListByExtCode(String poCode, List<Integer> status, Long ouid) {
+    public List<WhPoCommand> findWhPoListByExtCode(WhPoCommand command) {
         log.info(this.getClass().getSimpleName() + ".findWhPoListByExtCode method begin!");
-        if (null == ouid) {
-            return poManager.findWhPoListByExtCodeToInfo(poCode, status, ouid);
+        if (null == command.getOuId()) {
+            return poManager.findWhPoListByExtCodeToInfo(command.getExtCode(), command.getStatusList(), command.getOuId(), command.getLinenum());
         } else {
-            return poManager.findWhPoListByExtCodeToShard(poCode, status, ouid);
+            return poManager.findWhPoListByExtCodeToShard(command.getExtCode(), command.getStatusList(), command.getOuId(), command.getLinenum());
         }
     }
 

@@ -9,6 +9,8 @@ import lark.common.dao.Page;
 import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,7 +47,7 @@ import com.baozun.scm.primservice.whoperation.util.StringUtil;
 @Service("asnManager")
 @Transactional
 public class AsnManagerImpl implements AsnManager {
-
+    protected static final Logger log = LoggerFactory.getLogger(AsnManager.class);
     @Autowired
     private WhAsnDao whAsnDao;
     @Autowired
@@ -72,16 +74,25 @@ public class AsnManagerImpl implements AsnManager {
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
-    public int editAsnStatusByInfo(WhAsnCommand whAsn) {
-        //FIXME editAsnStatusByInfo log日志，方法doc说明
-        int result = whAsnDao.editAsnStatus(whAsn.getAsnIds(), whAsn.getStatus(), whAsn.getModifiedId(), whAsn.getOuId(), new Date());
-        if (result <= 0) {
-            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+    public void editAsnStatusByInfo(WhAsnCommand whAsn) {
+        log.info(this.getClass().getSimpleName() + ".editAsnStatusByInfo method begin!");
+        if (log.isDebugEnabled()) {
+            log.debug(this.getClass().getSimpleName() + ".editAsnStatusByInfo method params {}", whAsn);
         }
-        if (result != whAsn.getAsnIds().size()) {
-            throw new BusinessException(ErrorCodes.UPDATE_DATA_QUANTITYERROR, new Object[] {whAsn.getAsnIds().size(), result});
+        for (Long id : whAsn.getAsnIds()) {
+            WhAsnCommand command = this.whAsnDao.findWhAsnById(id, whAsn.getOuId());
+            WhAsn asn = new WhAsn();
+            BeanUtils.copyProperties(command, asn);
+            asn.setStatus(whAsn.getStatus());
+            asn.setModifiedId(whAsn.getModifiedId());
+            int count = this.whAsnDao.saveOrUpdateByVersion(asn);
+            if (count <= 0) {
+                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            }
+            // 插入操作日志
+            this.insertGlobalLog(asn.getModifiedId(), new Date(), asn.getClass().getSimpleName(), asn, Constants.GLOBAL_LOG_UPDATE, asn.getOuId());
         }
-        return result;
+        log.info(this.getClass().getSimpleName() + ".editAsnStatusByInfo method end!");
     }
 
     /**
@@ -89,15 +100,26 @@ public class AsnManagerImpl implements AsnManager {
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public int editAsnStatusByShard(WhAsnCommand whAsn) {
-        int result = whAsnDao.editAsnStatus(whAsn.getAsnIds(), whAsn.getStatus(), whAsn.getModifiedId(), whAsn.getOuId(), new Date());
-        if (result <= 0) {
-            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+    public void editAsnStatusByShard(WhAsnCommand whAsn) {
+        log.info(this.getClass().getSimpleName() + ".editAsnStatusByShard method begin!");
+        if (log.isDebugEnabled()) {
+            log.debug(this.getClass().getSimpleName() + ".editAsnStatusByShard method params {}", whAsn);
         }
-        if (result != whAsn.getAsnIds().size()) {
-            throw new BusinessException(ErrorCodes.UPDATE_DATA_QUANTITYERROR, new Object[] {whAsn.getAsnIds().size(), result});
+        for (Long id : whAsn.getAsnIds()) {
+            WhAsnCommand command = this.whAsnDao.findWhAsnById(id, whAsn.getOuId());
+            WhAsn asn = new WhAsn();
+            BeanUtils.copyProperties(command, asn);
+            asn.setStatus(whAsn.getStatus());
+            asn.setModifiedId(whAsn.getModifiedId());
+            int count = this.whAsnDao.saveOrUpdateByVersion(asn);
+            if (count <= 0) {
+                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            }
+            // 插入日志
+            this.insertGlobalLog(asn.getModifiedId(), new Date(), asn.getClass().getSimpleName(), asn, Constants.GLOBAL_LOG_UPDATE, asn.getOuId());
         }
-        return result;
+
+        log.info(this.getClass().getSimpleName() + ".editAsnStatusByShard method end!");
     }
 
     /**
@@ -175,6 +197,19 @@ public class AsnManagerImpl implements AsnManager {
                 gl.setType(Constants.GLOBAL_LOG_INSERT);
                 gl.setOuId(whAsn.getOuId());
                 globalLogManager.insertGlobalLog(gl);
+            } else {
+                WhAsnCommand whAsnCommand = this.whAsnDao.findWhAsnById(asn.getId(), asn.getOuId());
+                BeanUtils.copyProperties(whAsnCommand, whAsn);
+                whAsn.setModifiedId(asn.getModifiedId());
+                whAsn.setQtyPlanned(whAsn.getQtyPlanned() + asn.getQtyPlanned());// 已有ASN时候添加明细，修改已有ASN的计划数量
+                this.whAsnDao.saveOrUpdateByVersion(whAsn);
+                gl.setModifiedId(whAsn.getModifiedId());
+                gl.setOuId(whAsn.getOuId());
+                gl.setObjectType(whAsn.getClass().getName());
+                gl.setModifiedValues(whAsn);
+                gl.setType(Constants.GLOBAL_LOG_UPDATE);
+                globalLogManager.insertGlobalLog(gl);
+
             }
             for (WhAsnLineCommand asnline : asnLineList) {
                 WhAsnLine asnLine = new WhAsnLine();
@@ -300,6 +335,19 @@ public class AsnManagerImpl implements AsnManager {
                     gl.setModifiedValues(whAsn);
                     gl.setType(Constants.GLOBAL_LOG_INSERT);
                     globalLogManager.insertGlobalLog(gl);
+                } else {
+                    WhAsnCommand whAsnCommand = this.whAsnDao.findWhAsnById(asn.getId(), asn.getOuId());
+                    BeanUtils.copyProperties(whAsnCommand, whAsn);
+                    whAsn.setModifiedId(asn.getModifiedId());
+                    whAsn.setQtyPlanned(whAsn.getQtyPlanned() + asn.getQtyPlanned());// 已有ASN时候添加明细，修改已有ASN的计划数量
+                    this.whAsnDao.saveOrUpdateByVersion(whAsn);
+                    gl.setModifiedId(whAsn.getModifiedId());
+                    gl.setOuId(whAsn.getOuId());
+                    gl.setObjectType(whAsn.getClass().getName());
+                    gl.setModifiedValues(whAsn);
+                    gl.setType(Constants.GLOBAL_LOG_UPDATE);
+                    globalLogManager.insertGlobalLog(gl);
+
                 }
                 for (WhAsnLineCommand asnline : asnLineList) {
                     WhAsnLine asnLine = new WhAsnLine();
@@ -485,43 +533,210 @@ public class AsnManagerImpl implements AsnManager {
         return this.whAsnDao.findListByParam(whAsn);
     }
 
+    /**
+     * @author yimin.lu
+     */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void deleteAsnAndAsnLineToShard(WhAsnCommand asn) {
-        // 删除Asn表头信息
-        whAsnDao.deleteByIdOuId(asn.getId(), asn.getOuId());
-        // 删除AsnLINE明细信息
-        whAsnLineDao.deleteByAsnIdOuId(asn.getId(), asn.getOuId());
+    public ResponseMsg deleteAsnAndAsnLineToShard(WhAsnCommand whAsnCommand) {
+        log.info(this.getClass().getSimpleName() + ".deleteAsnAndAsnLineToShard method begin");
+        if (log.isDebugEnabled()) {
+            log.debug(this.getClass().getSimpleName() + ".deleteAsnAndAsnLineToShard method params:{}", whAsnCommand);
+        }
+        try {
+            // 删除Asn表头信息
+            int deleteAsnCount = whAsnDao.deleteByIdOuId(whAsnCommand.getId(), whAsnCommand.getOuId());
+            if (deleteAsnCount <= 0) {
+                log.warn("method deleteAsnAndAsnLineToShard delete asn error: no asn to be deleted![params:-->id:{},ouId:{},returns:{}] ", whAsnCommand.getId(), whAsnCommand.getOuId(), deleteAsnCount);
+                throw new BusinessException(ErrorCodes.DELETE_ERROR, new Object[] {"ASN"});
+            }
+            this.insertGlobalLog(whAsnCommand.getModifiedId(), new Date(), whAsnCommand.getClass().getSimpleName(), whAsnCommand, Constants.GLOBAL_LOG_DELETE, whAsnCommand.getOuId());
+            // 删除AsnLINE明细信息
+            WhAsnLine whAsnline = new WhAsnLine();
+            whAsnline.setAsnId(whAsnCommand.getId());
+            whAsnline.setOuId(whAsnCommand.getOuId());
+            List<WhAsnLine> asnLineList = this.whAsnLineDao.findListByParam(whAsnline);
+            if (asnLineList != null && asnLineList.size() > 0) {
+                for (WhAsnLine asnLine : asnLineList) {
+                    int deleteAsnlineCount = whAsnLineDao.deleteByIdOuId(asnLine.getId(), asnLine.getOuId());
+                    if (deleteAsnlineCount <= 0) {
+                        log.warn("method deleteAsnAndAsnLineToShard delete asnline error: delete asnline error[params:-->id:{},ouId:{},returns:{}]  ", asnLine.getId(), asnLine.getOuId(), deleteAsnlineCount);
+                        throw new BusinessException(ErrorCodes.DELETE_DATA_ERROR);
+                    }
+                    this.insertGlobalLog(asnLine.getModifiedId(), new Date(), asnLine.getClass().getSimpleName(), asnLine, Constants.GLOBAL_LOG_DELETE, asnLine.getOuId());
+                }
+            }
+        } catch (Exception e) {
+            if (e instanceof BusinessException) {
+                throw e;
+            } else {
+                log.error(e + "");
+                return getResponseMsg("error for delete asn!", ResponseMsg.STATUS_ERROR, null);
+            }
+        }
+        return getResponseMsg("success for delete asn!", ResponseMsg.STATUS_SUCCESS, null);
     }
 
+    /**
+     * @author yimin.lu
+     */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void deleteAsnAndAsnLineWhenPoOuIdNullToShard(WhAsnCommand whAsnCommand) {
-        // 删除Asn表头信息
-        whAsnDao.deleteByIdOuId(whAsnCommand.getId(), whAsnCommand.getOuId());
-        // 删除AsnLINE明细信息
-        whAsnLineDao.deleteByAsnIdOuId(whAsnCommand.getId(), whAsnCommand.getOuId());
+        try {
+            // 删除Asn表头信息
+            int deleteAsnCount = whAsnDao.deleteByIdOuId(whAsnCommand.getId(), whAsnCommand.getOuId());
+            if (deleteAsnCount <= 0) {
+                log.warn("method deleteAsnAndAsnLineWhenPoOuIdNullToShard delete asn error: no asn to be deleted![params:-->id:{},ouId:{},returns:{}] ", whAsnCommand.getId(), whAsnCommand.getOuId(), deleteAsnCount);
+                throw new BusinessException(ErrorCodes.DELETE_DATA_ERROR);
+            }
+            this.insertGlobalLog(whAsnCommand.getModifiedId(), new Date(), whAsnCommand.getClass().getSimpleName(), whAsnCommand, Constants.GLOBAL_LOG_DELETE, whAsnCommand.getOuId());
+            // 删除AsnLINE明细信息
+            WhAsnLine whAsnline = new WhAsnLine();
+            whAsnline.setAsnId(whAsnCommand.getId());
+            whAsnline.setOuId(whAsnCommand.getOuId());
+            List<WhAsnLine> asnLineList = this.whAsnLineDao.findListByParam(whAsnline);
+            if (asnLineList != null && asnLineList.size() > 0) {
+                for (WhAsnLine asnLine : asnLineList) {
+                    int deleteAsnlineCount = whAsnLineDao.deleteByIdOuId(asnLine.getId(), asnLine.getOuId());
+                    if (deleteAsnlineCount <= 0) {
+                        log.warn("method deleteAsnAndAsnLineWhenPoOuIdNullToShard delete asnline error: delete asnline error[params:-->id:{},ouId:{},returns:{}]  ", asnLine.getId(), asnLine.getOuId(), deleteAsnlineCount);
+                        throw new BusinessException(ErrorCodes.DELETE_DATA_ERROR);
+                    }
+                    this.insertGlobalLog(asnLine.getModifiedId(), new Date(), asnLine.getClass().getSimpleName(), asnLine, Constants.GLOBAL_LOG_DELETE, asnLine.getOuId());
+                }
+            }
+        } catch (Exception e) {
+            if (e instanceof BusinessException) {
+                throw e;
+            } else {
+                log.error(e + "");
+                throw new BusinessException(ErrorCodes.DELETE_DATA_ERROR);
+            }
+        }
 
     }
 
+    /**
+     * @author yimin.lu
+     */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void deleteAsnAndAsnLineToShard(WhAsnCommand whAsnCommand, WhPoCommand whpo, List<WhPoLine> polineList) {
-        // 删除Asn表头信息
-        whAsnDao.deleteByIdOuId(whAsnCommand.getId(), whAsnCommand.getOuId());
-        // 删除AsnLINE明细信息
-        whAsnLineDao.deleteByAsnIdOuId(whAsnCommand.getId(), whAsnCommand.getOuId());
-
-        WhPo po = new WhPo();
-        BeanUtils.copyProperties(whpo, po);
-        int updatePoCount = this.whPoDao.saveOrUpdateByVersion(po);
-        if (updatePoCount <= 0) {
-            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+        log.info(this.getClass().getSimpleName() + ".deleteAsnAndAsnLineToShard method begin!");
+        if (log.isDebugEnabled()) {
+            log.debug(this.getClass().getSimpleName() + ".deleteAsnAndAsnLineToShard method params:[asnId:{},ouId:{},operator:{},asn:{},po:{},polineList:{}]", whAsnCommand.getId(), whAsnCommand.getOuId(), whAsnCommand.getModifiedId(), whAsnCommand, whpo,
+                    polineList);
         }
-        for (WhPoLine poLine : polineList) {
-            this.whPoLineDao.saveOrUpdateByVersion(poLine);
+        try {
+            // 删除Asn表头信息
+            int deleteAsnCount = whAsnDao.deleteByIdOuId(whAsnCommand.getId(), whAsnCommand.getOuId());
+            if (deleteAsnCount <= 0) {
+                log.warn("method deleteAsnAndAsnLineToShard delete asn error: no asn to be deleted![params:-->id:{},ouId:{},returns:{}] ", whAsnCommand.getId(), whAsnCommand.getOuId(), deleteAsnCount);
+                throw new BusinessException(ErrorCodes.DELETE_DATA_ERROR);
+            }
+            // 写入日志
+            WhAsn asn = new WhAsn();
+            BeanUtils.copyProperties(whAsnCommand, asn);
+            this.insertGlobalLog(asn.getModifiedId(), new Date(), asn.getClass().getSimpleName(), asn, Constants.GLOBAL_LOG_DELETE, asn.getOuId());
+            // 删除AsnLINE明细信息
+            WhAsnLine whAsnline = new WhAsnLine();
+            whAsnline.setAsnId(whAsnCommand.getId());
+            whAsnline.setOuId(whAsnCommand.getOuId());
+            List<WhAsnLine> asnLineList = this.whAsnLineDao.findListByParam(whAsnline);
+            if (asnLineList != null && asnLineList.size() > 0) {
+                for (WhAsnLine asnLine : asnLineList) {
+                    int deleteAsnlineCount = whAsnLineDao.deleteByIdOuId(asnLine.getId(), asnLine.getOuId());
+                    if (deleteAsnlineCount <= 0) {
+                        log.warn("method deleteAsnAndAsnLineToShard delete asnline error: delete asnline error[params:-->id:{},ouId:{},returns:{}]  ", asnLine.getId(), asnLine.getOuId(), deleteAsnlineCount);
+                        throw new BusinessException(ErrorCodes.DELETE_DATA_ERROR);
+                    }
+                    this.insertGlobalLog(asnLine.getModifiedId(), new Date(), asnLine.getClass().getSimpleName(), asnLine, Constants.GLOBAL_LOG_DELETE, asnLine.getOuId());
+                }
+            }
+            // 更改PO单信息
+            WhPo po = new WhPo();
+            BeanUtils.copyProperties(whpo, po);
+            int updatePoCount = this.whPoDao.saveOrUpdateByVersion(po);
+            if (updatePoCount <= 0) {
+                log.warn("method deleteAsnAndAsnLineToShard update po error: update po error[params:-->id:{},ouId:{},returns:{}]  ", po.getId(), po.getOuId(), updatePoCount);
+                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            }
+            this.insertGlobalLog(po.getModifiedId(), new Date(), po.getClass().getSimpleName(), po, Constants.GLOBAL_LOG_DELETE, po.getOuId());
+            // 更改POLINE单信息
+            for (WhPoLine poLine : polineList) {
+                int polineCount = this.whPoLineDao.saveOrUpdateByVersion(poLine);
+                if (polineCount <= 0) {
+                    log.warn("method deleteAsnAndAsnLineToShard update poline error: update poline error[params:-->id:{},ouId:{},returns:{}]  ", poLine.getId(), poLine.getOuId(), polineCount);
+                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                }
+                this.insertGlobalLog(poLine.getModifiedId(), new Date(), poLine.getClass().getSimpleName(), poLine, Constants.GLOBAL_LOG_DELETE, poLine.getOuId());
+            }
+        } catch (Exception e) {
+            if (e instanceof BusinessException) {
+                throw e;
+            } else {
+                log.error(e + "");
+                throw new BusinessException(ErrorCodes.DELETE_DATA_ERROR);
+            }
+        }
+        log.info(this.getClass().getSimpleName() + ".deleteAsnAndAsnLineToShard method end!");
+    }
+
+    /**
+     * 返回值设定
+     * 
+     * @param message
+     * @param responseStatus
+     * @param reasonStatus
+     * @return
+     */
+    private ResponseMsg getResponseMsg(String message, Integer responseStatus, Integer reasonStatus) {
+        log.info(this.getClass().getSimpleName() + ".getResponseMsg method begin");
+        ResponseMsg rm = new ResponseMsg();
+        rm.setMsg(message);
+        if (null != reasonStatus) {
+            rm.setReasonStatus(reasonStatus);
+        }
+        if (null == responseStatus) {
+            rm.setResponseStatus(ResponseMsg.DATA_ERROR);
+        } else {
+            rm.setResponseStatus(responseStatus);
+        }
+        if (log.isDebugEnabled()) {
+            log.debug(this.getClass().getSimpleName() + ".getResponseMsg method returns:{}", rm);
+        }
+        return rm;
+    }
+
+    /**
+     * 用于插入日志操作
+     * 
+     * @param userId
+     * @param modifyTime
+     * @param objectType
+     * @param modifiedValues
+     * @param type
+     * @param ouId
+     */
+    private void insertGlobalLog(Long userId, Date modifyTime, String objectType, Object modifiedValues, String type, Long ouId) {
+        log.info(this.getClass().getSimpleName() + ".insertGlobalLog method begin");
+        try {
+            GlobalLogCommand gl = new GlobalLogCommand();
+            gl.setModifiedId(userId);
+            gl.setModifyTime(modifyTime);
+            gl.setObjectType(objectType);
+            gl.setModifiedValues(modifiedValues);
+            gl.setType(type);
+            gl.setOuId(ouId);
+            if (log.isDebugEnabled()) {
+                log.debug(this.getClass().getSimpleName() + ".insertGlobalLog method params:{}", gl);
+            }
+            globalLogManager.insertGlobalLog(gl);
+        } catch (Exception e) {
+            log.error(" insert into global log error:{}!", e);
+            throw new BusinessException(ErrorCodes.INSERT_LOG_ERROR);
         }
 
     }
-
 }

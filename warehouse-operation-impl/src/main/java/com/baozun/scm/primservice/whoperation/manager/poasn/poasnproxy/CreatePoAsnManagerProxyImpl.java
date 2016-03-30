@@ -315,6 +315,17 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
                 poLineManager.deletePoLineByUuidNotNullToShard(asn.getPoId(), asn.getPoOuId());
                 poLineList = poLineManager.findWhPoLineListByPoIdToShard(asn.getPoId(), asn.getPoOuId());
             }
+            // 先期校验：polineList没有可用数量的时候，不能保存
+            boolean flag = false;
+            for (WhPoLine line : poLineList) {
+                if (line.getAvailableQty() > 0) {
+                    flag = true;
+                    break;
+                }
+            }
+            if (!flag) {
+                throw new BusinessException(ErrorCodes.CHECK_DATA_ERROR);
+            }
             // 创建ASN&ASNLINE信息
             rm = asnManager.createAsnBatch(asn, whPo, poLineList, rm);
             if (null == asn.getPoOuId()) {

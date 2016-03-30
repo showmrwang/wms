@@ -46,4 +46,36 @@ public final class Constants {
     /** 删除全局日志表 */
     public static final String GLOBAL_LOG_DELETE = "DELETE";
 
+    /** PO单类型 */
+    public static final String PO_TYPE = "PO_TYPE";
+
+    /** ASN单状态 */
+    public static final String ASNSTATUS = "ASNSTATUS";
+
+    /** ASN单紧急状态 */
+    public static final String URGENT_STATUS = "URGENT_STATUS";
+
+    /** 库存类型 */
+    public static final String INVENTORY_TYPE = "INVENTORY_TYPE";
+
+    /** 库存属性1 */
+    public static final String INVENTORY_ATTR_1 = "INVENTORY_ATTR_1";
+
+    /** 库存属性2 */
+    public static final String INVENTORY_ATTR_2 = "INVENTORY_ATTR_2";
+
+    /** 库存属性3 */
+    public static final String INVENTORY_ATTR_3 = "INVENTORY_ATTR_3";
+
+    /** 库存属性4 */
+    public static final String INVENTORY_ATTR_4 = "INVENTORY_ATTR_4";
+
+    /** 库存属性5 */
+    public static final String INVENTORY_ATTR_5 = "INVENTORY_ATTR_5";
+
+    /** 时间单位类型 */
+    public static final String TIME_UOM = "TIME_UOM";
+
+
+
 }
