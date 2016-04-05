@@ -10,6 +10,8 @@ import lark.common.dao.Page;
 import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,6 +47,8 @@ public class PoLineManagerImpl implements PoLineManager {
     private WhPoDao whPoDao;
     @Autowired
     private GlobalLogManager globalLogManager;
+
+    protected static final Logger log = LoggerFactory.getLogger(PoLineManager.class);
 
     /**
      * 插入poline数据进基本库
@@ -451,6 +455,7 @@ public class PoLineManagerImpl implements PoLineManager {
      * @param ouId
      */
     private void insertGlobalLog(Long userId, Date modifyTime, String objectType, Object modifiedValues, String type, Long ouId) {
+        log.info(this.getClass().getSimpleName() + ".insertGlobalLog method begin!");
         GlobalLogCommand gl = new GlobalLogCommand();
         gl.setModifiedId(userId);
         gl.setModifyTime(modifyTime);
@@ -458,20 +463,34 @@ public class PoLineManagerImpl implements PoLineManager {
         gl.setModifiedValues(modifiedValues);
         gl.setType(type);
         gl.setOuId(ouId);
-        globalLogManager.insertGlobalLog(gl);
+        if (log.isDebugEnabled()) {
+            log.debug("insertGlobalLog methdo returns:{}", gl);
+        }
+        log.info(this.getClass().getSimpleName() + ".insertGlobalLog method end!");
+        try {
+            globalLogManager.insertGlobalLog(gl);
+        } catch (Exception e) {
+            log.error("insert into global log error:{}", e);
+            throw new BusinessException(ErrorCodes.INSERT_LOG_ERROR);
+        }
 
     }
 
     @Override
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public void batchUpdatePoLine(List<WhPoLine> polineList) {
+        log.info(this.getClass().getSimpleName() + ".batchUpdatePoLine method begin!");
         for (WhPoLine poline : polineList) {
+            if (log.isDebugEnabled()) {
+                log.debug("batchUpdatePoLine-->foreach(polinelist);poLineId:{},poline:{}", poline.getId(), poline);
+            }
             int count = this.whPoLineDao.saveOrUpdateByVersion(poline);
             if (count <= 0) {
+                log.warn("saveorupdatebyVersion po line returns:{};details: [poline_id:{},poline:{}]", count, poline.getId(), poline);
                 throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
             }
             this.insertGlobalLog(poline.getModifiedId(), new Date(), poline.getClass().getSimpleName(), poline, Constants.GLOBAL_LOG_UPDATE, poline.getOuId());
         }
-
+        log.info(this.getClass().getSimpleName() + ".batchUpdatePoLine method end!");
     }
 }
