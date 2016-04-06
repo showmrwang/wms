@@ -484,8 +484,9 @@ public class AsnManagerImpl implements AsnManager {
         }
         int qty = 0;// 计算计划数量
         // 插入asnline明细
+        // @mender yimin.lu 可用数量为零的不创建ASN明细
         for (WhPoLine pl : whPoLines) {
-            if (pl.getQtyPlanned() >= pl.getAvailableQty() && StringUtil.isEmpty(pl.getUuid())) {
+            if (pl.getQtyPlanned() >= pl.getAvailableQty() && StringUtil.isEmpty(pl.getUuid()) && pl.getAvailableQty() > 0) {
                 // 计划数量比如大于可用数量并且UUID为空才能创建
                 WhAsnLine al = new WhAsnLine();
                 BeanUtils.copyProperties(pl, al);
