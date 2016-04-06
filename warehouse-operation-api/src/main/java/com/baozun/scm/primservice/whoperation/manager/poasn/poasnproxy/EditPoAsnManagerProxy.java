@@ -38,5 +38,5 @@ public interface EditPoAsnManagerProxy extends BaseManager {
 
     ResponseMsg deleteAsnAndAsnLine(WhAsnCommand WhAsnCommand);
 
-    void deleteAsnLines(WhAsnLineCommand command);
+    ResponseMsg deleteAsnLines(WhAsnLineCommand command);
 }
