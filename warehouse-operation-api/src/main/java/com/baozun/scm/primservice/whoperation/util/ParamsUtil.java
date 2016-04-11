@@ -29,9 +29,10 @@ import lark.common.dao.Sort;
  */
 public class ParamsUtil {
     private static final String NULL = "null";
-    
+
     /**
      * Page对象toString
+     * 
      * @author lichuan
      * @param page
      * @return
@@ -42,44 +43,61 @@ public class ParamsUtil {
         result = bean2String(page);
         return result;
     }
-    
+
+    /**
+     * Page对象toString
+     * 
+     * @author lichuan
+     * @param page
+     * @return
+     */
+    public static String page2String(Page page, boolean isNull) {
+        String result = NULL;
+        if (null == page) return result;
+        result = bean2String(page, isNull);
+        return result;
+    }
+
     /**
      * Sort对象toString
+     * 
      * @author lichuan
      * @param sort
      * @return
      */
-    public static String sort2String(Sort sort){
+    public static String sort2String(Sort sort) {
         String result = NULL;
-        if(null == sort) return result;
+        if (null == sort) return result;
         result = bean2String(sort);
         return result;
     }
-    
+
     /**
      * Sort数组toString
+     * 
      * @author lichuan
      * @param sorts
      * @return
      */
-    public static String sorts2String(Sort[] sorts){
+    public static String sorts2String(Sort[] sorts) {
         StringBuilder result = new StringBuilder();
-        if(null == sorts || 0 == sorts.length) return result.toString();
-        for(Sort s : sorts){
+        if (null == sorts || 0 == sorts.length) return result.toString();
+        for (Sort s : sorts) {
             result.append(sort2String(s));
         }
         return result.toString();
     }
-    
+
     /**
      * 对象toString
+     * 
      * @author lichuan
      * @param obj
      * @return
      */
     public static String bean2String(Object obj) {
         StringBuffer bf = new StringBuffer();
-        if (null == obj) return bf.toString();
+        if (null == obj) return NULL;
         bf.append(obj.getClass().getSimpleName()).append("[");
         Method[] fs = obj.getClass().getMethods();
         if (fs != null) {
@@ -104,14 +122,56 @@ public class ParamsUtil {
         return bf.toString();
     }
 
+    /**
+     * 对象toString
+     * 
+     * @author lichuan
+     * @param obj
+     * @return
+     */
+    public static String bean2String(Object obj, boolean isNull) {
+        StringBuffer bf = new StringBuffer();
+        if (null == obj) return NULL;
+        bf.append(obj.getClass().getSimpleName()).append("[");
+        Method[] fs = obj.getClass().getMethods();
+        if (fs != null) {
+            for (Method f : fs) {
+                if (f.getName().startsWith("get") && !f.getName().equals("getClass")) {
+                    try {
+                        Object rs = f.invoke(obj);
+                        if (!isNull) {
+                            if (null != rs) {
+                                bf.append(firstLetterToUpper(f.getName().replaceFirst("get", ""))).append(":");
+                                bf.append(rs).append(",");
+                            }
+                        } else {
+                            bf.append(firstLetterToUpper(f.getName().replaceFirst("get", ""))).append(":");
+                            bf.append(rs).append(",");
+                        }
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    } catch (IllegalArgumentException e) {
+                        e.printStackTrace();
+                    } catch (InvocationTargetException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+        bf.deleteCharAt(bf.length() - 1);
+        bf.append("]");
+        return bf.toString();
+    }
+
     public static String firstLetterToUpper(String string) {
         char[] buffer = string.toCharArray();
         buffer[0] = Character.toLowerCase(string.charAt(0));
         return new String(buffer);
     }
-    
+
     /**
      * Map对象toString
+     * 
      * @author lichuan
      * @param map
      * @return
