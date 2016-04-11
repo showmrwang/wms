@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.baozun.scm.primservice.whoperation.command.BaseCommand;
 import com.baozun.scm.primservice.whoperation.command.system.GlobalLogCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.manager.system.GlobalLogManager;
@@ -37,7 +38,44 @@ public abstract class BaseManagerImpl implements BaseManager {
     private GlobalLogManager globalLogManager;
 
 
+    /**
+     * 全局日志
+     * 
+     * @author lichuan
+     * @param ddl
+     * @param model
+     * @param ouId
+     * @param userId
+     */
     protected void insertGlobalLog(String ddl, BaseModel model, Long ouId, Long userId) {
+        GlobalLogCommand gl = new GlobalLogCommand();
+        gl.setOuId(ouId);
+        gl.setModifiedId(userId);
+        gl.setObjectType(model.getClass().getSimpleName());
+        gl.setModifiedValues(model);
+        if (Constants.GLOBAL_LOG_UPDATE.equals(ddl)) {
+            gl.setType(Constants.GLOBAL_LOG_UPDATE);
+        } else if (Constants.GLOBAL_LOG_INSERT.equals(ddl)) {
+            gl.setType(Constants.GLOBAL_LOG_INSERT);
+        } else {
+            gl.setType(Constants.GLOBAL_LOG_DELETE);
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("save globalLog, model is:[{}], param globalLogCommand is:[{}]", gl.getObjectType(), ParamsUtil.bean2String(gl));
+        }
+        globalLogManager.insertGlobalLog(gl);
+    }
+
+    /**
+     * 全局日志
+     * 
+     * @author lichuan
+     * @param ddl
+     * @param model
+     * @param ouId
+     * @param userId
+     */
+    protected void insertGlobalLog(String ddl, BaseCommand model, Long ouId, Long userId) {
         GlobalLogCommand gl = new GlobalLogCommand();
         gl.setOuId(ouId);
         gl.setModifiedId(userId);
