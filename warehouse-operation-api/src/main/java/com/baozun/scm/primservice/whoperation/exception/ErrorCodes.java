@@ -18,7 +18,7 @@ public class ErrorCodes {
     /** dataBind error */
     public static final Integer DATA_BIND_EXCEPTION = 4;
 
-    /** 输入参数不正确 */
+    /** 参数不正确 */
     public static final Integer PARAMS_ERROR = 5;
 
     /** 传入的参数{0}不能为空,确保传入数据的完整性 **/
