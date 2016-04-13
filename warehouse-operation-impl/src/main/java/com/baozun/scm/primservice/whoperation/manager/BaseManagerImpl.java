@@ -20,6 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.baozun.scm.primservice.whoperation.command.system.GlobalLogCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
+import com.baozun.scm.primservice.whoperation.exception.BusinessException;
+import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.system.GlobalLogManager;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.util.LogUtil;
@@ -46,18 +48,24 @@ public abstract class BaseManagerImpl implements BaseManager {
      * @param ouId
      * @param userId
      */
-    protected void insertGlobalLog(String dml, BaseModel model, Long ouId, Long userId) {
+    protected void insertGlobalLog(String dml, BaseModel model, Long ouId, Long userId, String parentCode) {
+        if (null == model) {
+            throw new BusinessException(ErrorCodes.PARAM_IS_NULL, "model");
+        }
         GlobalLogCommand gl = new GlobalLogCommand();
         gl.setOuId(ouId);
         gl.setModifiedId(userId);
         gl.setObjectType(model.getClass().getSimpleName());
         gl.setModifiedValues(model);
+        gl.setParentCode(parentCode);
         if (Constants.GLOBAL_LOG_UPDATE.equals(dml)) {
             gl.setType(Constants.GLOBAL_LOG_UPDATE);
         } else if (Constants.GLOBAL_LOG_INSERT.equals(dml)) {
             gl.setType(Constants.GLOBAL_LOG_INSERT);
         } else if (Constants.GLOBAL_LOG_DELETE.equals(dml)) {
             gl.setType(Constants.GLOBAL_LOG_DELETE);
+        } else {
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
         if (log.isDebugEnabled()) {
             log.debug("save globalLog, model is:[{}], param globalLogCommand is:[{}]", gl.getObjectType(), ParamsUtil.bean2String(gl, false));
