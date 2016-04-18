@@ -740,4 +740,9 @@ public class AsnManagerImpl implements AsnManager {
         }
 
     }
+
+    @Override
+    public WhAsn getAsnByAsnExtCode(String asnExtCoce, Long ouId) {
+        return null;
+    }
 }

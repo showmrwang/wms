@@ -123,7 +123,7 @@ public class ErrorCodes {
     public static final int PO_AUDIT_STATUS_ERROR = 3011;
     /** PO单所包含的ASN状态不全为【关闭】，PO单不允许审核成功 */
     public static final int PO_AUDIT_ASNSTATUS_ERROR = 3013;
-    /** ASN单状态为【取消】，PO单不允许审核成功 */
+    /** ASN单状态错误，不允许审核成功 */
     public static final int ASN_AUDIT_STATUS_ERROR = 3014;
     /** ASN单所包含的明细状态有未收货，ASN单不允许审核成功 */
     public static final int ASN_AUDIT_LINESTATUS_ERROR = 3015;
@@ -151,4 +151,8 @@ public class ErrorCodes {
     public static final int ASNLINE_NULL = 3026;
     /** 数值异常！ */
     public static final int NUMBER_ERROR = 3027;
+    /** 客户数据过期！ */
+    public static final int CUSTOMER_DATA_EXPIRED = 3028;
+    /** ASN单明细状态为未收货才允许删除 */
+    public static final int ASNLINE_DELETE_STATUS_ERROR = 3029;
 }

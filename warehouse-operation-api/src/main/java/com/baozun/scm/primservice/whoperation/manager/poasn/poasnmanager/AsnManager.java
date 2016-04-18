@@ -18,12 +18,33 @@ import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 
 public interface AsnManager extends BaseManager {
 
+    /**
+     * ASN模糊查询使用
+     * 
+     * @param asnCode
+     * @param status
+     * @param ouid
+     * @return
+     */
     List<WhAsnCommand> findWhAsnListByAsnExtCode(String asnCode, Integer status, Long ouid);
 
+    /**
+     * 编辑ASN状态
+     * 
+     * @param whAsn
+     */
     void editAsnStatusByInfo(WhAsnCommand whAsn);
 
     void editAsnStatusByShard(WhAsnCommand whAsn);
 
+    /**
+     * ASN分页查询
+     * 
+     * @param page
+     * @param sorts
+     * @param params
+     * @return
+     */
     Pagination<WhAsnCommand> findListByQueryMapWithPageExtByInfo(Page page, Sort[] sorts, Map<String, Object> params);
 
     Pagination<WhAsnCommand> findListByQueryMapWithPageExtByShard(Page page, Sort[] sorts, Map<String, Object> params);
@@ -47,5 +68,7 @@ public interface AsnManager extends BaseManager {
     void deleteAsnAndAsnLineWhenPoOuIdNullToShard(WhAsnCommand whAsnCommand);
 
     void deleteAsnAndAsnLineToShard(WhAsnCommand whAsnCommand, WhPoCommand whpo, List<WhPoLine> polineList);
+
+    WhAsn getAsnByAsnExtCode(String asnExtCoce, Long ouId);
 
 }

@@ -24,6 +24,8 @@ import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnLine
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoLineManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoManager;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine;
 import com.baozun.scm.primservice.whoperation.util.StringUtil;
 
 /**
@@ -226,6 +228,30 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
     public WhAsnLineCommand findWhAsnLineById(WhAsnLineCommand Command) {
         log.info(this.getClass().getSimpleName() + ".findWhAsnLineById method begin!");
         return this.asnLineManager.findWhAsnLineByIdToShard(Command);
+    }
+
+    @Override
+    public WhAsn getAsnByAsnExtCode(String asnExtCode, Long ouId) {
+        return null;
+    }
+
+    @Override
+    public long getSkuCountInAsnBySkuId(Long asnId, Long ouId, Long skuId) {
+        log.info(this.getClass().getSimpleName() + ".getSkuCountInAsnBySkuId method begin!");
+        if (log.isDebugEnabled()) {
+            log.debug("params: [asnId:{},ouId:{},skuId:{}]", asnId, ouId, skuId);
+        }
+        WhAsnLine asnline = new WhAsnLine();
+        asnline.setAsnId(asnId);
+        asnline.setAsnId(ouId);
+        asnline.setAsnId(skuId);
+        List<WhAsnLine> lineList = this.asnLineManager.findListByShard(asnline);
+        long count = 0;
+        for (WhAsnLine line : lineList) {
+            count += line.getQtyPlanned();
+        }
+        log.info(this.getClass().getSimpleName() + ".getSkuCountInAsnBySkuId method END!");
+        return count;
     }
 
 }

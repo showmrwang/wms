@@ -12,6 +12,7 @@ import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnLineCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoLineCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 
 public interface SelectPoAsnManagerProxy extends BaseManager {
     /**
@@ -114,4 +115,20 @@ public interface SelectPoAsnManagerProxy extends BaseManager {
      * @return
      */
     Pagination<WhAsnLineCommand> findAsnLineListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params, Integer sourceType);
+
+    /**
+     * 根据ASN的ASNEXTCODE和OUID查找
+     */
+    WhAsn getAsnByAsnExtCode(String asnExtCode, Long ouId);
+
+    /**
+     * 查找ASN中某个商品的数量
+     * 
+     * @param asnId
+     * @param ouId
+     * @param skuId
+     * @return
+     */
+    long getSkuCountInAsnBySkuId(Long asnId, Long ouId, Long skuId);
+
 }

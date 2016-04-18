@@ -413,7 +413,7 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
             log.warn("no asn found [id:{},ouId:{}]", asnCommand.getId(), asnCommand.getOuId());
             return getResponseMsg(ErrorCodes.ASN_NULL + "", ResponseMsg.DATA_ERROR, null);
         }
-        if (PoAsnStatus.ASN_CANCELED == whAsnCommand.getStatus() || PoAsnStatus.ASN_CLOSE == whAsnCommand.getStatus()) {
+        if (PoAsnStatus.ASN_RCVD != whAsnCommand.getStatus() && PoAsnStatus.ASN_RCVD_FINISH != whAsnCommand.getStatus()) {
             log.warn("asn'status error [id:{},ouId:{}]", asnCommand.getId(), asnCommand.getOuId());
             return getResponseMsg(ErrorCodes.ASN_AUDIT_STATUS_ERROR + "", ResponseMsg.DATA_ERROR, null);
         }
@@ -524,7 +524,7 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
                     }
                 }
                 if (PoAsnStatus.POLINE_NEW != whpoline.getStatus()) {
-                    poStatusFlag = false;
+                    poStatusFlag = poStatusFlag & false;
                 }
             }
         }
@@ -634,7 +634,9 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
             searchCommand.setId(id);
             searchCommand.setOuId(command.getOuId());
             WhAsnLineCommand returnCommand = this.asnLineManager.findWhAsnLineByIdToShard(searchCommand);
-
+            if (PoAsnStatus.ASNLINE_NOT_RCVD != returnCommand.getStatus()) {
+                throw new BusinessException(ErrorCodes.ASNLINE_DELETE_STATUS_ERROR);
+            }
             changeCount=returnCommand.getQtyPlanned();
             asnPlanCount += changeCount;
             WhAsnLine asnline=new WhAsnLine();
@@ -689,7 +691,7 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
             throw new BusinessException(ErrorCodes.ASN_NULL);
         }
         //@mender:yimin.lu 只有新建状态下的ASN的明细才可以删除
-        if (PoAsnStatus.ASN_NEW == whAsnCommand.getStatus()) {
+        if (PoAsnStatus.ASN_NEW != whAsnCommand.getStatus()) {
             throw new BusinessException(ErrorCodes.ASN_DELETE_STATUS_ERROR);
         }
 
