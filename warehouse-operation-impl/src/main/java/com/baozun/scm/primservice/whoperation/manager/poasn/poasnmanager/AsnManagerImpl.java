@@ -65,8 +65,8 @@ public class AsnManagerImpl implements AsnManager {
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public List<WhAsnCommand> findWhAsnListByAsnExtCode(String asnCode, Integer status, Long ouid) {
-        return whAsnDao.findWhAsnListByAsnExtCode(asnCode, status, ouid);
+    public List<WhAsnCommand> findWhAsnListByAsnExtCode(String asnCode, Integer[] statuses, Long ouid) {
+        return whAsnDao.findWhAsnListByAsnExtCode(asnCode, statuses, ouid);
     }
 
     /**

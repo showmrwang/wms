@@ -26,7 +26,7 @@ public interface AsnManager extends BaseManager {
      * @param ouid
      * @return
      */
-    List<WhAsnCommand> findWhAsnListByAsnExtCode(String asnCode, Integer status, Long ouid);
+    List<WhAsnCommand> findWhAsnListByAsnExtCode(String asnCode, Integer[] status, Long ouid);
 
     /**
      * 编辑ASN状态

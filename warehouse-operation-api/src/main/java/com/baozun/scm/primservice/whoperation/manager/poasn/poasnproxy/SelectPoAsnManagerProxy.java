@@ -34,7 +34,7 @@ public interface SelectPoAsnManagerProxy extends BaseManager {
      * @param ouid
      * @return
      */
-    List<WhAsnCommand> findWhAsnListByAsnExtCode(String asnExtCode, Integer status, Long ouid);
+    List<WhAsnCommand> findWhAsnListByAsnExtCode(String asnExtCode, Integer[] status, Long ouid);
 
     /**
      * 更加PO单ID，OUID查找PO

@@ -47,7 +47,7 @@ public interface WhAsnDao extends BaseDao<WhAsn, Long> {
     @CommonQuery
     int saveOrUpdateByVersion(WhAsn o);
 
-    List<WhAsnCommand> findWhAsnListByAsnExtCode(@Param("asnExtCode") String asnExtCode, @Param("status") Integer status, @Param("ouid") Long ouid);
+    List<WhAsnCommand> findWhAsnListByAsnExtCode(@Param("asnExtCode") String asnExtCode, @Param("statusList") Integer[] status, @Param("ouid") Long ouid);
 
     int editAsnStatus(@Param("ids") List<Long> ids, @Param("status") Integer status, @Param("userid") Long userid, @Param("ouid") Long ouid, @Param("lastModifyTime") Date lastModifyTime);
 

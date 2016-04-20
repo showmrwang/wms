@@ -207,7 +207,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			    asn_ext_code like #{asnExtCode} 
 			    and ou_id = #{ouid}
 			   <if test="status!=null">
-						and status = #{status}
+						and status in
+						<foreach collection="statusList" item="sta" open="("
+									separator="," close=")">
+									#{sta}
+								</foreach>
 				</if>
 			</where>
     </select>

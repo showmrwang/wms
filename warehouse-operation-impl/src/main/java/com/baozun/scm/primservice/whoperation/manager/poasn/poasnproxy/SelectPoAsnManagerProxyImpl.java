@@ -82,12 +82,12 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
      * 通过asnextCode查询对应数据 ASN预约时模糊查询对应数据
      */
     @Override
-    public List<WhAsnCommand> findWhAsnListByAsnExtCode(String asnExtCode, Integer status, Long ouid) {
+    public List<WhAsnCommand> findWhAsnListByAsnExtCode(String asnExtCode, Integer[] statuses, Long ouid) {
         log.info(this.getClass().getSimpleName() + ".findWhAsnListByAsnExtCode method begin!");
         if (log.isDebugEnabled()) {
-            log.debug(this.getClass().getSimpleName() + ".findWhAsnListByAsnExtCode params:asnExtCode:{},status:{},ouid:{}", asnExtCode, status, ouid);
+            log.debug(this.getClass().getSimpleName() + ".findWhAsnListByAsnExtCode params:asnExtCode:{},status:{},ouid:{}", asnExtCode, statuses, ouid);
         }
-        return asnManager.findWhAsnListByAsnExtCode(asnExtCode, status, ouid);
+        return asnManager.findWhAsnListByAsnExtCode(asnExtCode, statuses, ouid);
     }
 
     /**
