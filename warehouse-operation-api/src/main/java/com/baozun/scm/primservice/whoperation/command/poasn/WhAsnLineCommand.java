@@ -51,6 +51,8 @@ public class WhAsnLineCommand extends BaseCommand {
     private Integer qtyRcvd;
     /** 已收箱数 */
     private Integer ctnRcvd;
+    /** 已拆箱数量 */
+    private Integer devanningQty;
     /** 状态 */
     private Integer status;
     /** 是否质检 1:是 0:否 */
@@ -91,9 +93,9 @@ public class WhAsnLineCommand extends BaseCommand {
     private String asnExtCode;
     /** 状态名称 */
     private String statusName;
-
+    /** 生产日期String */
     private String mfgDateStr;
-
+    /** 失效日期String */
     private String expDateStr;
     /** 商品编码 */
     private String skuCode;
@@ -105,12 +107,26 @@ public class WhAsnLineCommand extends BaseCommand {
     private String skuBarCode;
     /** 库存类型 */
     private String invType;
+    /** 库存类型label */
+    private String invTypeLabel;
     /** 批量操作时候，记录主键集合 */
     private List<Long> ids;
     /** 保质期单位 */
     private String validDateUom;
     /** 库存状态名称 */
     private String invName;
+    /** 商品ID */
+    private Long skuid;
+    /** 库存属性1 */
+    private String inv1Str;
+    /** 库存属性2 */
+    private String inv2Str;
+    /** 库存属性3 */
+    private String inv3Str;
+    /** 库存属性4 */
+    private String inv4Str;
+    /** 库存属性5 */
+    private String inv5Str;
 
     public String getInvName() {
         return invName;
@@ -455,6 +471,70 @@ public class WhAsnLineCommand extends BaseCommand {
 
     public void setIds(List<Long> ids) {
         this.ids = ids;
+    }
+
+    public Long getSkuid() {
+        return skuid;
+    }
+
+    public void setSkuid(Long skuid) {
+        this.skuid = skuid;
+    }
+
+    public String getInv1Str() {
+        return inv1Str;
+    }
+
+    public void setInv1Str(String inv1Str) {
+        this.inv1Str = inv1Str;
+    }
+
+    public String getInv2Str() {
+        return inv2Str;
+    }
+
+    public void setInv2Str(String inv2Str) {
+        this.inv2Str = inv2Str;
+    }
+
+    public String getInv3Str() {
+        return inv3Str;
+    }
+
+    public void setInv3Str(String inv3Str) {
+        this.inv3Str = inv3Str;
+    }
+
+    public String getInv4Str() {
+        return inv4Str;
+    }
+
+    public void setInv4Str(String inv4Str) {
+        this.inv4Str = inv4Str;
+    }
+
+    public String getInv5Str() {
+        return inv5Str;
+    }
+
+    public void setInv5Str(String inv5Str) {
+        this.inv5Str = inv5Str;
+    }
+
+    public Integer getDevanningQty() {
+        return devanningQty;
+    }
+
+    public void setDevanningQty(Integer devanningQty) {
+        this.devanningQty = devanningQty;
+    }
+
+    public String getInvTypeLabel() {
+        return invTypeLabel;
+    }
+
+    public void setInvTypeLabel(String invTypeLabel) {
+        this.invTypeLabel = invTypeLabel;
     }
 
 

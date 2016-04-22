@@ -45,13 +45,15 @@ public class WhAsnLine extends BaseModel {
     /** 计划数量 */
     private Integer qtyPlanned;
     /** 超收数量 */
-    private Integer overshipped;
+    private Integer overshipped = 0;
     /** 计划箱数 */
-    private Integer ctnPlanned;
+    private Integer ctnPlanned = 0;
     /** 已收数量 */
-    private Integer qtyRcvd;
+    private Integer qtyRcvd = 0;
     /** 已收箱数 */
-    private Integer ctnRcvd;
+    private Integer ctnRcvd = 0;
+    /** 已拆箱数量 */
+    private Integer devanningQty = 0;
     /** 状态 */
     private Integer status;
     /** 是否质检 1:是 0:否 */
@@ -322,6 +324,14 @@ public class WhAsnLine extends BaseModel {
 
     public void setOuId(Long ouId) {
         this.ouId = ouId;
+    }
+
+    public Integer getDevanningQty() {
+        return devanningQty;
+    }
+
+    public void setDevanningQty(Integer devanningQty) {
+        this.devanningQty = devanningQty;
     }
 
 

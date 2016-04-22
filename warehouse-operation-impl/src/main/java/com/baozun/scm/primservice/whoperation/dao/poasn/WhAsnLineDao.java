@@ -14,6 +14,7 @@
  */
 package com.baozun.scm.primservice.whoperation.dao.poasn;
 
+import java.util.List;
 import java.util.Map;
 
 import lark.common.annotation.CommonQuery;
@@ -50,5 +51,7 @@ public interface WhAsnLineDao extends BaseDao<WhAsnLine, Long> {
     int deleteByIdOuId(@Param("id") Long id, @Param("ouid") Long ouid);
 
     WhAsnLineCommand findWhAsnLineById(@Param("id") Long id, @Param("ouid") Long ouId);
+
+    List<WhAsnLineCommand> findWhAsnLineCommandDevanningList(@Param("id") Long id, @Param("asnid") Long asnid, @Param("ouid") Long ouid, @Param("skuid") Long skuid);
 
 }

@@ -22,6 +22,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	ctn_planned as ctnPlanned,
 	        	qty_rcvd as qtyRcvd,
 	        	ctn_rcvd as ctnRcvd,
+	        	devanning_qty as devanningQty,
 	        	status as status,
 	        	is_iqc as isIqc,
 	        	mfg_date as mfgDate,
@@ -186,6 +187,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        ctn_planned = #{ctnPlanned,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 			        qty_rcvd = #{qtyRcvd,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 			        ctn_rcvd = #{ctnRcvd,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        devanning_qty = #{devanningQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 			        status = #{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 			        is_iqc = #{isIqc,javaType=java.lang.Boolean,jdbcType=BIT} ,
 			        mfg_date = #{mfgDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
@@ -227,6 +229,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				al.ctn_planned as ctnPlanned,
 				al.qty_rcvd as qtyRcvd,
 				al.ctn_rcvd as ctnRcvd,
+				al.devanning_qty as devanningQty,
 				al.status as status,
 				al.is_iqc as isIqc,
 				date_format(al.mfg_date,'%Y-%m-%d') as mfgDateStr,
@@ -304,7 +307,71 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			left join sys_dictionary sys on sys.dic_value = al.status and sys.group_value = 'ASNLINESTATUS'
 			left join t_wh_inventory_status inv on inv.id = al.inv_status
 			left join t_wh_sku sku on al.sku_id = sku.id 
-			where al.id=#{id}
-	  			 and al.ou_id = #{ouid}
+			where 
+			al.id=#{id}  and al.ou_id = #{ouid}
 	 </select>
+	 
+	<select id="findWhAsnLineCommandDevanningList" resultMap="whAsnLineCommand">
+				select 
+						line.id as id,
+						line.asn_id as asnId,
+						line.po_line_id as poLineId,
+						line.ou_id as ouId,
+						line.po_linenum as poLinenum,
+						line.sku_id as skuId,
+						line.qty_planned as qtyPlanned,
+						line.overshipped as overshipped,
+						line.ctn_planned as ctnPlanned,
+						line.qty_rcvd as qtyRcvd,
+						line.ctn_rcvd as ctnRcvd,
+						line.devanning_qty as devanningQty,
+						line.status as status,
+						line.is_iqc as isIqc,
+						date_format(line.mfg_date,'%Y-%m-%d') as mfgDateStr,
+						date_format(line.exp_date,'%Y-%m-%d') as expDateStr,
+						line.mfg_date as mfgDate,
+						line.exp_date as expDate,
+						line.valid_date as validDate,
+						line.batch_no as batchNo,
+						line.country_of_origin as countryOfOrigin,
+						line.inv_status as invStatus,
+						line.inv_type as invType,
+						line.inv_attr1 as invAttr1,
+						line.inv_attr2 as invAttr2,
+						line.inv_attr3 as invAttr3,
+						line.inv_attr4 as invAttr4,
+						line.inv_attr5 as invAttr5,
+						line.create_time as createTime,
+						line.created_id as createdId,
+						line.last_modify_time as lastModifyTime,
+						line.modified_id as modifiedId,
+						line.valid_date_uom as validDateUom,
+						sku.id as skuid,
+						sku.code as skuCode,
+						sku.name as skuName,
+						inv.name as invName,
+						type.dic_label as invTypeLabel,
+						inv1.dic_label as inv1Str,
+						inv2.dic_label as inv2Str,
+						inv3.dic_label as inv3Str,
+						inv4.dic_label as inv4Str,
+						inv5.dic_label as inv5Str
+						from t_wh_asn_line line 
+						left join t_wh_sku sku on line.sku_id = sku.id
+						left join t_wh_inventory_status inv on inv.id = line.inv_status
+						left join sys_dictionary type on type.dic_value = line.inv_type and type.group_value = 'INVENTORY_TYPE' 
+						left join sys_dictionary inv1 on inv1.dic_value = line.inv_attr1 and inv1.group_value = 'INVENTORY_ATTR_1' 
+						left join sys_dictionary inv2 on inv2.dic_value = line.inv_attr2 and inv2.group_value = 'INVENTORY_ATTR_2' 
+						left join sys_dictionary inv3 on inv3.dic_value = line.inv_attr3 and inv3.group_value = 'INVENTORY_ATTR_3' 
+						left join sys_dictionary inv4 on inv4.dic_value = line.inv_attr4 and inv4.group_value = 'INVENTORY_ATTR_4' 
+						left join sys_dictionary inv5 on inv5.dic_value = line.inv_attr5 and inv5.group_value = 'INVENTORY_ATTR_5' 
+						where 
+							line.id = #{id}
+							and line.asn_id = #{asnid} 
+							and line.ou_id = #{ouid} 
+							and line.sku_id = #{skuid} 
+							and line.qty_planned &gt; line.devanning_qty
+							and line.status = 1
+    </select>
+	 
 </mapper>

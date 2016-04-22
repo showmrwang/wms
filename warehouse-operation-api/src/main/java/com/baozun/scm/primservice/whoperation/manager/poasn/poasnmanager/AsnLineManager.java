@@ -29,4 +29,6 @@ public interface AsnLineManager extends BaseManager {
 
     void batchDeleteWhenPoToShard(List<WhAsnLine> asnlineList, List<WhPoLine> polineList, WhAsn whAsn);
 
+    List<WhAsnLineCommand> findWhAsnLineCommandDevanningList(Long asnid, Long ouid, Long skuid, Long id);
+
 }
