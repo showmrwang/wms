@@ -243,8 +243,8 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
         }
         WhAsnLine asnline = new WhAsnLine();
         asnline.setAsnId(asnId);
-        asnline.setAsnId(ouId);
-        asnline.setAsnId(skuId);
+        asnline.setOuId(ouId);
+        asnline.setSkuId(skuId);
         List<WhAsnLine> lineList = this.asnLineManager.findListByShard(asnline);
         long count = 0;
         for (WhAsnLine line : lineList) {
