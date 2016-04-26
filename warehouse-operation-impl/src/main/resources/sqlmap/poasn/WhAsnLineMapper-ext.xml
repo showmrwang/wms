@@ -374,4 +374,68 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 							and line.status = 1
     </select>
 	 
+	 	<select id="findWhAsnLineCommandEditDevanning" resultMap="whAsnLineCommand">
+						select 
+							line.id as id,
+							line.asn_id as asnId,
+							line.po_line_id as poLineId,
+							line.ou_id as ouId,
+							line.po_linenum as poLinenum,
+							line.sku_id as skuId,
+							line.qty_planned as qtyPlanned,
+							line.overshipped as overshipped,
+							line.ctn_planned as ctnPlanned,
+							line.qty_rcvd as qtyRcvd,
+							line.ctn_rcvd as ctnRcvd,
+							line.devanning_qty as devanningQty,
+							line.status as status,
+							line.is_iqc as isIqc,
+							date_format(line.mfg_date,'%Y-%m-%d') as mfgDateStr,
+							date_format(line.exp_date,'%Y-%m-%d') as expDateStr,
+							line.mfg_date as mfgDate,
+							line.exp_date as expDate,
+							line.valid_date as validDate,
+							line.batch_no as batchNo,
+							line.country_of_origin as countryOfOrigin,
+							line.inv_status as invStatus,
+							line.inv_type as invType,
+							line.inv_attr1 as invAttr1,
+							line.inv_attr2 as invAttr2,
+							line.inv_attr3 as invAttr3,
+							line.inv_attr4 as invAttr4,
+							line.inv_attr5 as invAttr5,
+							line.create_time as createTime,
+							line.created_id as createdId,
+							line.last_modify_time as lastModifyTime,
+							line.modified_id as modifiedId,
+							line.valid_date_uom as validDateUom,
+							sku.id as skuid,
+							sku.code as skuCode,
+							sku.name as skuName,
+							uom.uom_code as uomCode,
+							uom.uom_name as uomName,
+							mgmt.is_valid as isValid,
+							mgmt.is_batch_no as isBatchNo,
+							mgmt.is_country_of_origin as isCountryOfOrigin,
+							mgmt.is_inv_type as isInvType,
+							ext.inv_attr1 as invAttr1Boolean,
+							ext.inv_attr2 as invAttr2Boolean,
+							ext.inv_attr3 as invAttr3Boolean,
+							ext.inv_attr4 as invAttr4Boolean,
+							ext.inv_attr5 as invAttr5Boolean
+						from 
+						t_wh_asn_line line 
+						left join t_wh_sku sku
+						left join t_wh_sku_extattr ext on ext.sku_id = sku.id
+						left join t_wh_sku_mgmt mgmt on mgmt.sku_id = sku.id 
+						on sku.id = line.sku_id 
+						left join t_wh_uom uom on uom.uom_code = line.valid_date_uom 
+						where 
+							line.id = #{id}
+							and line.asn_id = #{asnid} 
+							and line.ou_id = #{ouid} 
+							and line.sku_id = #{skuid} 
+    </select>
+	 
+	 
 </mapper>

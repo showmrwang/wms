@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnLineCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
+import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnLineDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoLineDao;
@@ -202,5 +203,29 @@ public class AsnLineManagerImpl extends BaseManagerImpl implements AsnLineManage
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<WhAsnLineCommand> findWhAsnLineCommandDevanningList(Long asnid, Long ouid, Long skuid, Long id) {
         return whAsnLineDao.findWhAsnLineCommandDevanningList(id, asnid, ouid, skuid);
+    }
+
+    /**
+     * 获取ASN拆箱对应商品明细
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public WhAsnLineCommand findWhAsnLineCommandEditDevanning(WhAsnLine whAsnLine) {
+        log.info(this.getClass().getSimpleName() + ".findWhAsnLineCommandEditDevanning method begin!");
+        if (log.isDebugEnabled()) {
+            log.debug("params:[whAsnLine:{}]", whAsnLine.toString());
+        }
+        WhAsnLineCommand asn = whAsnLineDao.findWhAsnLineById(whAsnLine.getId(), whAsnLine.getOuId());
+        if (null == asn) {
+            log.warn("findWhAsnLineCommandEditDevanning asn is null");
+            throw new BusinessException(ErrorCodes.ASNLINE_NULL);
+        }
+        if (!asn.getStatus().equals(PoAsnStatus.ASNLINE_NOT_RCVD)) {
+            // 如果ASNLINE单据状态不为未收货 抛出异常
+            log.warn("findWhAsnLineCommandEditDevanning asn Status error asn.getStatus():" + asn.getStatus());
+            throw new BusinessException(ErrorCodes.ASNLINE_STATUS_ERROR);
+        }
+        log.info(this.getClass().getSimpleName() + ".findWhAsnLineCommandEditDevanning method begin!");
+        return whAsnLineDao.findWhAsnLineCommandEditDevanning(whAsnLine.getId(), whAsnLine.getAsnId(), whAsnLine.getOuId(), whAsnLine.getSkuId());
     }
 }

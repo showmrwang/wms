@@ -31,4 +31,6 @@ public interface AsnLineManager extends BaseManager {
 
     List<WhAsnLineCommand> findWhAsnLineCommandDevanningList(Long asnid, Long ouid, Long skuid, Long id);
 
+    WhAsnLineCommand findWhAsnLineCommandEditDevanning(WhAsnLine whAsnLine);
+
 }

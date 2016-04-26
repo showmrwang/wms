@@ -23,10 +23,10 @@ public class ErrorCodes {
 
     /** 传入的参数{0}不能为空,确保传入数据的完整性 **/
     public static final Integer PARAM_IS_NULL = 6;
-    
+
     /** 系统异常 **/
     public static final Integer SYSTEM_EXCEPTION = 11;
-    
+
     /** 数据访问层异常 **/
     public static final Integer DAO_EXCEPTION = 12;
 
@@ -155,4 +155,6 @@ public class ErrorCodes {
     public static final int CUSTOMER_DATA_EXPIRED = 3028;
     /** ASN单明细状态为未收货才允许删除 */
     public static final int ASNLINE_DELETE_STATUS_ERROR = 3029;
+    /** ASN单明细状态不是 [未收货] 状态，请刷新页面重试 */
+    public static final int ASNLINE_STATUS_ERROR = 3030;
 }
