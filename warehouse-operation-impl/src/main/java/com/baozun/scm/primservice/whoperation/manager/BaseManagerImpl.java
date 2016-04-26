@@ -34,6 +34,9 @@ import com.baozun.scm.primservice.whoperation.util.ParamsUtil;
 public abstract class BaseManagerImpl implements BaseManager {
     // log不支持继承
     private static final Logger log = LoggerFactory.getLogger(BaseManagerImpl.class);
+    protected static final String GLOBAL_LOG_UPDATE = Constants.GLOBAL_LOG_UPDATE;
+    protected static final String GLOBAL_LOG_INSERT = Constants.GLOBAL_LOG_INSERT;
+    protected static final String GLOBAL_LOG_DELETE = Constants.GLOBAL_LOG_DELETE;
     protected String logId = "";
     @Autowired
     private GlobalLogManager globalLogManager;
@@ -48,7 +51,7 @@ public abstract class BaseManagerImpl implements BaseManager {
      * @param ouId
      * @param userId
      */
-    protected void insertGlobalLog(String dml, BaseModel model, Long ouId, Long userId, String parentCode) {
+    protected void insertGlobalLog(String dml, BaseModel model, Long ouId, Long userId, String parentCode, String dataSource) {
         if (null == model) {
             throw new BusinessException(ErrorCodes.PARAM_IS_NULL, "model");
         }
@@ -68,9 +71,13 @@ public abstract class BaseManagerImpl implements BaseManager {
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
         if (log.isDebugEnabled()) {
-            log.debug("save globalLog, model is:[{}], param globalLogCommand is:[{}]", gl.getObjectType(), ParamsUtil.bean2String(gl, false));
+            log.debug("save globalLog, dataSource is:[{}], model is:[{}], param globalLogCommand is:[{}]", dataSource, gl.getObjectType(), ParamsUtil.bean2String(gl, false));
         }
-        globalLogManager.insertGlobalLog(gl);
+        if (null == dataSource) {
+            globalLogManager.insertGlobalLog(gl);
+        } else {
+            globalLogManager.insertGlobalLog(gl, dataSource);
+        }
     }
 
     /**

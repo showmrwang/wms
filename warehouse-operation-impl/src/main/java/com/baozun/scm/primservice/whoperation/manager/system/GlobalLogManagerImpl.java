@@ -4,12 +4,18 @@ import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.whoperation.command.system.GlobalLogCommand;
+import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.dao.system.GlobalLogDao;
+import com.baozun.scm.primservice.whoperation.exception.BusinessException;
+import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.model.system.GlobalLog;
 import com.baozun.utilities.type.JsonUtil;
+
+import lark.common.annotation.MoreDB;
 
 
 @Transactional
@@ -26,6 +32,50 @@ public class GlobalLogManagerImpl implements GlobalLogManager {
     public void insertGlobalLog(GlobalLogCommand globalLogCommand) {
         GlobalLog gl = new GlobalLog();
         gl.setModifiedValues(objectToJson(globalLogCommand.getModifiedValues()));
+        gl.setModifiedId(globalLogCommand.getModifiedId());
+        gl.setOuId(globalLogCommand.getOuId());
+        gl.setType(globalLogCommand.getType());
+        gl.setParentCode(globalLogCommand.getParentCode());
+        gl.setObjectType(formatClassName(globalLogCommand.getObjectType()));
+        gl.setModifyTime(new Date());
+        globalLogDao.insert(gl);
+    }
+    
+    /**
+     * 将全局表数据源的日志信息插入基础库日志表
+     * 
+     * @author lichuan
+     * @param globalLogCommand
+     * @param ds
+     */
+    @Override
+    public void insertGlobalLog(GlobalLogCommand globalLogCommand, String ds) {
+        if (null == ds) {
+            ds = "null";
+        } else {
+            ds = ds.trim();
+        }
+        switch (ds) {
+            case "null":
+            case DbDataSource.MOREDB_INFOSOURCE:
+            case DbDataSource.MOREDB_SHARDSOURCE:
+                // 不切换新数据源
+                this.insertGlobalLog(globalLogCommand);
+                break;
+            case DbDataSource.MOREDB_GLOBALSOURCE:
+                // 切换新数据源
+                this.insertGlobalLog2Info(globalLogCommand, ds);
+                break;
+            default:
+                throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+        }
+    }
+    
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
+    private void insertGlobalLog2Info(GlobalLogCommand globalLogCommand, String ds) {
+        GlobalLog gl = new GlobalLog();
+        gl.setModifiedValues(JsonUtil.buildNormalBinder().toJson(globalLogCommand.getModifiedValues()));
         gl.setModifiedId(globalLogCommand.getModifiedId());
         gl.setOuId(globalLogCommand.getOuId());
         gl.setType(globalLogCommand.getType());

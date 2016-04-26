@@ -75,7 +75,7 @@ public class AsnLineManagerImpl extends BaseManagerImpl implements AsnLineManage
             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
         }
         // 写入日志
-        insertGlobalLog(Constants.GLOBAL_LOG_UPDATE, asnLine, asnLine.getOuId(), asnLine.getModifiedId(), asn.getAsnCode());
+        insertGlobalLog(GLOBAL_LOG_UPDATE, asnLine, asnLine.getOuId(), asnLine.getModifiedId(), asn.getAsnCode(), null);
         // 更新ASN单表头数据
         updateCount = this.whAsnDao.saveOrUpdateByVersion(asn);
         if (updateCount <= 0) {
@@ -83,7 +83,7 @@ public class AsnLineManagerImpl extends BaseManagerImpl implements AsnLineManage
             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
         }
         // 写入操作日志
-        insertGlobalLog(Constants.GLOBAL_LOG_UPDATE, asn, asn.getOuId(), asn.getModifiedId(), null);
+        insertGlobalLog(GLOBAL_LOG_UPDATE, asn, asn.getOuId(), asn.getModifiedId(), null, null);
         log.info(this.getClass().getSimpleName() + ".editAsnLineToShard method end!");
     }
 
@@ -104,7 +104,7 @@ public class AsnLineManagerImpl extends BaseManagerImpl implements AsnLineManage
             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
         }
         // 写入操作日志
-        insertGlobalLog(Constants.GLOBAL_LOG_UPDATE, asnLine, asnLine.getOuId(), asnLine.getModifiedId(), asn.getAsnCode());
+        insertGlobalLog(GLOBAL_LOG_UPDATE, asnLine, asnLine.getOuId(), asnLine.getModifiedId(), asn.getAsnCode(), null);
         // 更新asn
         updateCount = this.whAsnDao.saveOrUpdateByVersion(asn);
         if (updateCount <= 0) {
@@ -112,7 +112,7 @@ public class AsnLineManagerImpl extends BaseManagerImpl implements AsnLineManage
             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
         }
         // 写入操作日志
-        insertGlobalLog(Constants.GLOBAL_LOG_UPDATE, asn, asn.getOuId(), asn.getModifiedId(), null);
+        insertGlobalLog(GLOBAL_LOG_UPDATE, asn, asn.getOuId(), asn.getModifiedId(), null, null);
         // 更新poline
         int count = this.whPoLineDao.saveOrUpdateByVersion(poline);
         if (count <= 0) {
@@ -120,7 +120,7 @@ public class AsnLineManagerImpl extends BaseManagerImpl implements AsnLineManage
             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
         }
         // 写入操作日志
-        insertGlobalLog(Constants.GLOBAL_LOG_UPDATE, poline, poline.getOuId(), poline.getModifiedId(), null);
+        insertGlobalLog(GLOBAL_LOG_UPDATE, poline, poline.getOuId(), poline.getModifiedId(), null, null);
         log.info(this.getClass().getSimpleName() + ".editAsnLineWhenPoToShard method end!");
     }
 
@@ -141,7 +141,7 @@ public class AsnLineManagerImpl extends BaseManagerImpl implements AsnLineManage
             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
         }
         // 插入操作日志
-        insertGlobalLog(Constants.GLOBAL_LOG_UPDATE, asn, asn.getOuId(), asn.getModifiedId(), null);
+        insertGlobalLog(GLOBAL_LOG_UPDATE, asn, asn.getOuId(), asn.getModifiedId(), null, null);
         // 循环更新ASNLINE
         for (WhAsnLine asnLine : asnlineList) {
             int updateCount = this.whAsnLineDao.deleteByIdOuId(asnLine.getId(), asnLine.getOuId());
@@ -150,7 +150,7 @@ public class AsnLineManagerImpl extends BaseManagerImpl implements AsnLineManage
                 throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
             }
             // 插入操作日志
-            insertGlobalLog(Constants.GLOBAL_LOG_UPDATE, asnLine, asnLine.getOuId(), asnLine.getModifiedId(), asn.getAsnCode());
+            insertGlobalLog(GLOBAL_LOG_UPDATE, asnLine, asnLine.getOuId(), asnLine.getModifiedId(), asn.getAsnCode(), null);
         }
         log.info(this.getClass().getSimpleName() + ".batchDeleteWhenPoToInfo method end!");
     }
@@ -172,7 +172,7 @@ public class AsnLineManagerImpl extends BaseManagerImpl implements AsnLineManage
             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
         }
         // 写入操作日志
-        insertGlobalLog(Constants.GLOBAL_LOG_UPDATE, asn, asn.getOuId(), asn.getModifiedId(), null);
+        insertGlobalLog(GLOBAL_LOG_UPDATE, asn, asn.getOuId(), asn.getModifiedId(), null, null);
         // 循环更新ASNLINE
         for (WhAsnLine asnLine : asnlineList) {
             int updateCount = this.whAsnLineDao.deleteByIdOuId(asnLine.getId(), asnLine.getOuId());
@@ -180,7 +180,7 @@ public class AsnLineManagerImpl extends BaseManagerImpl implements AsnLineManage
                 log.warn("saveorupdatebyVersion asn line returns:{};details: [poline_id:{},poline:{}]", updateCount, asnLine.getId(), asnLine);
                 throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
             }
-            insertGlobalLog(Constants.GLOBAL_LOG_DELETE, asnLine, asnLine.getOuId(), asnLine.getModifiedId(), asn.getAsnCode());
+            insertGlobalLog(GLOBAL_LOG_DELETE, asnLine, asnLine.getOuId(), asnLine.getModifiedId(), asn.getAsnCode(), null);
         }
         // 循环更新POLINE
         for (WhPoLine poline : polineList) {
@@ -189,7 +189,7 @@ public class AsnLineManagerImpl extends BaseManagerImpl implements AsnLineManage
                 log.warn("saveorupdatebyVersion po line returns:{};details: [poline_id:{},poline:{}]", count, poline.getId(), poline);
                 throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
             }
-            insertGlobalLog(Constants.GLOBAL_LOG_UPDATE, poline, poline.getOuId(), poline.getModifiedId(), null);
+            insertGlobalLog(GLOBAL_LOG_UPDATE, poline, poline.getOuId(), poline.getModifiedId(), null, null);
         }
         log.info(this.getClass().getSimpleName() + ".batchDeleteWhenPoToShard method end!");
     }

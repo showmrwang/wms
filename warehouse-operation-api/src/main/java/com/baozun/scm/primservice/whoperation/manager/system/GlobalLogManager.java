@@ -7,4 +7,6 @@ import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 public interface GlobalLogManager extends BaseManager {
 
     void insertGlobalLog(GlobalLogCommand globalLogCommand);
+    
+    void insertGlobalLog(GlobalLogCommand globalLogCommand, String dataSource);
 }
