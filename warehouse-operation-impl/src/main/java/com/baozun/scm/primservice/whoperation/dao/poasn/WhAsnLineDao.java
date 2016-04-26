@@ -54,4 +54,15 @@ public interface WhAsnLineDao extends BaseDao<WhAsnLine, Long> {
 
     List<WhAsnLineCommand> findWhAsnLineCommandDevanningList(@Param("id") Long id, @Param("asnid") Long asnid, @Param("ouid") Long ouid, @Param("skuid") Long skuid);
 
+    /***
+     * 获取ASN拆箱编辑页面相关数据
+     * 
+     * @param id
+     * @param asnid
+     * @param ouid
+     * @param skuid
+     * @return
+     */
+    WhAsnLineCommand findWhAsnLineCommandEditDevanning(@Param("id") Long id, @Param("asnid") Long asnid, @Param("ouid") Long ouid, @Param("skuid") Long skuid);
+
 }

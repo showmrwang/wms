@@ -128,6 +128,26 @@ public class WhAsnLineCommand extends BaseCommand {
     /** 库存属性5 */
     private String inv5Str;
 
+    /** =============商品相关属性================== */
+    /** 是否管理效期 有效期商品 */
+    private Boolean isValid;
+    /** 是否管理批次号 */
+    private Boolean isBatchNo;
+    /** 是否管理原产地 */
+    private Boolean isCountryOfOrigin;
+    /** 是否管理库存类型 */
+    private Boolean isInvType;
+    /** 是否库存属性1 */
+    private Boolean invAttr1Boolean;
+    /** 是否库存属性2 */
+    private Boolean invAttr2Boolean;
+    /** 是否库存属性3 */
+    private Boolean invAttr3Boolean;
+    /** 是否库存属性4 */
+    private Boolean invAttr4Boolean;
+    /** 是否库存属性5 */
+    private Boolean invAttr5Boolean;
+
     public String getInvName() {
         return invName;
     }
@@ -535,6 +555,78 @@ public class WhAsnLineCommand extends BaseCommand {
 
     public void setInvTypeLabel(String invTypeLabel) {
         this.invTypeLabel = invTypeLabel;
+    }
+
+    public Boolean getIsValid() {
+        return isValid;
+    }
+
+    public void setIsValid(Boolean isValid) {
+        this.isValid = isValid;
+    }
+
+    public Boolean getIsBatchNo() {
+        return isBatchNo;
+    }
+
+    public void setIsBatchNo(Boolean isBatchNo) {
+        this.isBatchNo = isBatchNo;
+    }
+
+    public Boolean getIsCountryOfOrigin() {
+        return isCountryOfOrigin;
+    }
+
+    public void setIsCountryOfOrigin(Boolean isCountryOfOrigin) {
+        this.isCountryOfOrigin = isCountryOfOrigin;
+    }
+
+    public Boolean getIsInvType() {
+        return isInvType;
+    }
+
+    public void setIsInvType(Boolean isInvType) {
+        this.isInvType = isInvType;
+    }
+
+    public Boolean getInvAttr1Boolean() {
+        return invAttr1Boolean;
+    }
+
+    public void setInvAttr1Boolean(Boolean invAttr1Boolean) {
+        this.invAttr1Boolean = invAttr1Boolean;
+    }
+
+    public Boolean getInvAttr2Boolean() {
+        return invAttr2Boolean;
+    }
+
+    public void setInvAttr2Boolean(Boolean invAttr2Boolean) {
+        this.invAttr2Boolean = invAttr2Boolean;
+    }
+
+    public Boolean getInvAttr3Boolean() {
+        return invAttr3Boolean;
+    }
+
+    public void setInvAttr3Boolean(Boolean invAttr3Boolean) {
+        this.invAttr3Boolean = invAttr3Boolean;
+    }
+
+    public Boolean getInvAttr4Boolean() {
+        return invAttr4Boolean;
+    }
+
+    public void setInvAttr4Boolean(Boolean invAttr4Boolean) {
+        this.invAttr4Boolean = invAttr4Boolean;
+    }
+
+    public Boolean getInvAttr5Boolean() {
+        return invAttr5Boolean;
+    }
+
+    public void setInvAttr5Boolean(Boolean invAttr5Boolean) {
+        this.invAttr5Boolean = invAttr5Boolean;
     }
 
 
