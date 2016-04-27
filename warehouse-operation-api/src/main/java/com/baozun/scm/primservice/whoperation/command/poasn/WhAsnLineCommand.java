@@ -43,8 +43,8 @@ public class WhAsnLineCommand extends BaseCommand {
     private Integer qtyPlanned;
     /** 原计划数量 */
     private Integer qtyPlannedOld;
-    /** 超收数量 */
-    private Integer overshipped;
+    /** 可拆数量 */
+    private Integer usableDevanningQty;
     /** 计划箱数 */
     private Integer ctnPlanned;
     /** 已收数量 */
@@ -147,6 +147,10 @@ public class WhAsnLineCommand extends BaseCommand {
     private Boolean invAttr4Boolean;
     /** 是否库存属性5 */
     private Boolean invAttr5Boolean;
+    /** 单位名称 */
+    private String uomName;
+    /** 单位CODE */
+    private String uomCode;
 
     public String getInvName() {
         return invName;
@@ -219,14 +223,6 @@ public class WhAsnLineCommand extends BaseCommand {
 
     public void setQtyPlanned(Integer value) {
         this.qtyPlanned = value;
-    }
-
-    public Integer getOvershipped() {
-        return this.overshipped;
-    }
-
-    public void setOvershipped(Integer value) {
-        this.overshipped = value;
     }
 
     public Integer getCtnPlanned() {
@@ -627,6 +623,30 @@ public class WhAsnLineCommand extends BaseCommand {
 
     public void setInvAttr5Boolean(Boolean invAttr5Boolean) {
         this.invAttr5Boolean = invAttr5Boolean;
+    }
+
+    public String getUomName() {
+        return uomName;
+    }
+
+    public void setUomName(String uomName) {
+        this.uomName = uomName;
+    }
+
+    public String getUomCode() {
+        return uomCode;
+    }
+
+    public void setUomCode(String uomCode) {
+        this.uomCode = uomCode;
+    }
+
+    public Integer getUsableDevanningQty() {
+        return usableDevanningQty;
+    }
+
+    public void setUsableDevanningQty(Integer usableDevanningQty) {
+        this.usableDevanningQty = usableDevanningQty;
     }
 
 

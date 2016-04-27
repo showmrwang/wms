@@ -44,8 +44,6 @@ public class WhAsnLine extends BaseModel {
     private Long skuId;
     /** 计划数量 */
     private Integer qtyPlanned;
-    /** 超收数量 */
-    private Integer overshipped = 0;
     /** 计划箱数 */
     private Integer ctnPlanned = 0;
     /** 已收数量 */
@@ -148,14 +146,6 @@ public class WhAsnLine extends BaseModel {
 
     public void setQtyPlanned(Integer value) {
         this.qtyPlanned = value;
-    }
-
-    public Integer getOvershipped() {
-        return this.overshipped;
-    }
-
-    public void setOvershipped(Integer value) {
-        this.overshipped = value;
     }
 
     public Integer getCtnPlanned() {

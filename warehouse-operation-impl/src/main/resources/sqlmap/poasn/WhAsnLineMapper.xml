@@ -18,7 +18,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	po_linenum as poLinenum,
 	        	sku_id as skuId,
 	        	qty_planned as qtyPlanned,
-	        	overshipped as overshipped,
 	        	ctn_planned as ctnPlanned,
 	        	qty_rcvd as qtyRcvd,
 	        	ctn_rcvd as ctnRcvd,
@@ -56,7 +55,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	po_linenum ,
 	        	sku_id ,
 	        	qty_planned ,
-	        	overshipped ,
 	        	ctn_planned ,
 	        	qty_rcvd ,
 	        	ctn_rcvd ,
@@ -88,7 +86,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	#{poLinenum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 	        	#{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{qtyPlanned,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-	        	#{overshipped,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 	        	#{ctnPlanned,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 	        	#{qtyRcvd,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 	        	#{ctnRcvd,javaType=java.lang.Integer,jdbcType=INTEGER} ,
@@ -127,7 +124,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        po_linenum = #{poLinenum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        sku_id = #{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        qty_planned = #{qtyPlanned,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-		        overshipped = #{overshipped,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        ctn_planned = #{ctnPlanned,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        qty_rcvd = #{qtyRcvd,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        ctn_rcvd = #{ctnRcvd,javaType=java.lang.Integer,jdbcType=INTEGER} ,
@@ -214,10 +210,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	       
 				<if test="qtyPlanned!=null">
 					and qty_planned = #{qtyPlanned}
-				</if>
-	       
-				<if test="overshipped!=null">
-					and overshipped = #{overshipped}
 				</if>
 	       
 				<if test="ctnPlanned!=null">
