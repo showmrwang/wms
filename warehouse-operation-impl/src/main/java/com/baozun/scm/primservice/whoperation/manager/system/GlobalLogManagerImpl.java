@@ -42,7 +42,7 @@ public class GlobalLogManagerImpl implements GlobalLogManager {
     }
     
     /**
-     * 将全局表数据源的日志信息插入基础库日志表
+     * 将全局表数据源的日志信息插入公共库日志表
      * 
      * @author lichuan
      * @param globalLogCommand
@@ -64,16 +64,21 @@ public class GlobalLogManagerImpl implements GlobalLogManager {
                 break;
             case DbDataSource.MOREDB_GLOBALSOURCE:
                 // 切换新数据源
-                this.insertGlobalLog2Info(globalLogCommand, ds);
+                this.insertGlobalLog2Info(globalLogCommand);
                 break;
             default:
                 throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
     }
     
+    /**
+     * 日志插入到公共库
+     * @author lichuan
+     * @param globalLogCommand
+     */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
-    private void insertGlobalLog2Info(GlobalLogCommand globalLogCommand, String ds) {
+    private void insertGlobalLog2Info(GlobalLogCommand globalLogCommand) {
         GlobalLog gl = new GlobalLog();
         gl.setModifiedValues(JsonUtil.buildNormalBinder().toJson(globalLogCommand.getModifiedValues()));
         gl.setModifiedId(globalLogCommand.getModifiedId());
