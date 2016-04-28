@@ -28,6 +28,9 @@ public final class Constants {
     /** 调编码生成器 po单实体标识 */
     public static final String WHPO_MODEL_URL = "com.baozun.scm.primservice.whoperation.model.poasn.WhPo";
 
+    /** 调编码生成器 bipo单实体标识 */
+    public static final String BIPO_MODEL_URL = "com.baozun.scm.primservice.whoperation.model.poasn.BiPo";
+
     /** 调编码生成器 asn单实体标识 */
     public static final String WHASN_MODEL_URL = "com.baozun.scm.primservice.whoperation.model.poasn.WhAsn";
 
