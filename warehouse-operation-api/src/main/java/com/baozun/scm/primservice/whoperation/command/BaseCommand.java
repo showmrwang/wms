@@ -6,14 +6,23 @@ import java.lang.reflect.Method;
 
 
 
-
 public class BaseCommand implements Serializable {
 
     /**
      * 
      */
     private static final long serialVersionUID = 580811071956562523L;
-    
+
+    protected String logId;
+
+    public String getLogId() {
+        return logId;
+    }
+
+    public void setLogId(String logId) {
+        this.logId = logId;
+    }
+
     @Override
     public String toString() {
         StringBuffer bf = new StringBuffer();

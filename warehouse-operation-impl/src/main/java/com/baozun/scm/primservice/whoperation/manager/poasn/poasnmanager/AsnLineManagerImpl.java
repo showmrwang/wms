@@ -209,19 +209,19 @@ public class AsnLineManagerImpl extends BaseManagerImpl implements AsnLineManage
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public WhAsnLineCommand findWhAsnLineCommandEditDevanning(WhAsnLine whAsnLine) {
+    public WhAsnLineCommand findWhAsnLineCommandEditDevanning(WhAsnLineCommand whAsnLine) {
         log.info(this.getClass().getSimpleName() + ".findWhAsnLineCommandEditDevanning method begin!");
         if (log.isDebugEnabled()) {
             log.debug("params:[whAsnLine:{}]", whAsnLine.toString());
         }
         WhAsnLineCommand asn = whAsnLineDao.findWhAsnLineById(whAsnLine.getId(), whAsnLine.getOuId());
         if (null == asn) {
-            log.warn("findWhAsnLineCommandEditDevanning asn is null");
+            log.warn("findWhAsnLineCommandEditDevanning asn is null logid: " + whAsnLine.getLogId());
             throw new BusinessException(ErrorCodes.ASNLINE_NULL);
         }
         if (!asn.getStatus().equals(PoAsnStatus.ASNLINE_NOT_RCVD)) {
             // 如果ASNLINE单据状态不为未收货 抛出异常
-            log.warn("findWhAsnLineCommandEditDevanning asn Status error asn.getStatus():" + asn.getStatus());
+            log.warn("findWhAsnLineCommandEditDevanning asn Status error asn.getStatus():" + asn.getStatus() + " logid: " + whAsnLine.getLogId());
             throw new BusinessException(ErrorCodes.ASNLINE_STATUS_ERROR);
         }
         log.info(this.getClass().getSimpleName() + ".findWhAsnLineCommandEditDevanning method begin!");
