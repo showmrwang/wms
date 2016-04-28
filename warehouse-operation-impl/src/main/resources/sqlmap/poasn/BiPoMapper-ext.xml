@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.poasn.BiPoDao">
+	<resultMap id="BiPoResultExt" type="com.baozun.scm.primservice.whoperation.command.poasn.BiPoCommand">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="biPoColumnsExt">
+	    <![CDATA[
+	        	id as id,
+	        	po_code as poCode,
+	        	ext_code as extCode,
+	        	customer_id as customerId,
+	        	store_id as storeId,
+	        	supplier_id as supplierId,
+	        	logistics_provider_id as logisticsProviderId,
+	        	po_type as poType,
+	        	status as status,
+	        	is_iqc as isIqc,
+	        	date_format(po_date,'%Y-%m-%d') as poDateStr,
+	        	date_format(eta,'%Y-%m-%d %T') as etaStr,
+	        	po_date as poDate,
+	        	eta as eta,
+	        	delivery_time as deliveryTime,
+	        	qty_planned as qtyPlanned,
+	        	qty_rcvd as qtyRcvd,
+	        	ctn_planned as ctnPlanned,
+	        	ctn_rcvd as ctnRcvd,
+	        	start_time as startTime,
+	        	date_format(start_time,'%Y-%m-%d') as startTimeStr,
+	        	stop_time as stopTime,
+	        	date_format(stop_time,'%Y-%m-%d') as stopTimeStr,
+	        	inbound_time as inboundTime,
+	        	date_format(inbound_time,'%Y-%m-%d') as inboundTimeStr,
+	        	is_wms as isWms,
+	        	is_vmi as isVmi,
+	        	create_time as createTime,
+	        	created_id as createdId,
+	        	last_modify_time as lastModifyTime,
+	        	modified_id as modifiedId,
+	        	ou_id as ouId
+	    ]]>
+	</sql>
+	
+	<sql id="biPoColumnsRelatedExt">
+	    <![CDATA[
+	        	bipo.id as id,
+	        	bipo.ou_id as ouId,
+				bipo.po_code as poCode,
+				bipo.ext_code as extCode,
+				bipo.customer_id as customerId,
+				bipo.store_id as storeId,
+				bipo.supplier_id as supplierId,
+				bipo.logistics_provider_id as logisticsProviderId,
+				bipo.po_type as poType,
+				bipo.status as status,
+				bipo.is_iqc as isIqc,
+				date_format(bipo.po_date,'%Y-%m-%d') as poDateStr,
+				date_format(bipo.eta,'%Y-%m-%d %T') as etaStr,
+				bipo.po_date as poDate,
+				bipo.eta as eta,
+				bipo.delivery_time as deliveryTime,
+				bipo.qty_planned as qtyPlanned,
+				bipo.qty_rcvd as qtyRcvd,
+				bipo.ctn_planned as ctnPlanned,
+				bipo.ctn_rcvd as ctnRcvd,
+				bipo.start_time as startTime,
+				date_format(bipo.start_time,'%Y-%m-%d') as startTimeStr,
+				bipo.stop_time as stopTime,
+				date_format(bipo.stop_time,'%Y-%m-%d') as stopTimeStr,
+				bipo.inbound_time as inboundTime,
+				date_format(bipo.inbound_time,'%Y-%m-%d') as inboundTimeStr,
+				bipo.is_wms as isWms,
+				bipo.is_vmi as isVmi,
+				bipo.create_time as createTime,
+				bipo.created_id as createdId,
+				bipo.last_modify_time as lastModifyTime,
+				bipo.modified_id as modifiedId,
+				customer.customer_name as customerName,
+				store.store_name as storeName,
+				provider.name as logisticsProviderName,
+				supplier.name as supplierName,
+				potypedic.dic_label as poTypeName,
+				postatusdic.dic_label as statusName
+	    ]]>
+	</sql>
+	 <sql id="biPoDynamicPageWhereExt">
+	    <where>
+					bipo.status &lt;&gt; 0 
+					<if test="poCode!=null and poCode!=''">
+						and bipo.po_code like #{poCode}
+					</if>
+					<if test="extCode!=null and extCode!=''">
+						and bipo.ext_code like #{extCode}
+					</if>
+					<if test="customerId!=null">
+						and bipo.customer_id = #{customerId}
+					</if>
+					<if test="storeId!=null">
+						and bipo.store_id = #{storeId}
+					</if>
+					<if test="supplierId!=null">
+						and bipo.supplier_id = #{supplierId}
+					</if>
+					<if test="logisticsProviderId!=null">
+						and bipo.logistics_provider_id = #{logisticsProviderId}
+					</if>
+					<if test="isIqc!=null">
+						and bipo.is_iqc = #{isIqc}
+					</if>
+					<if test="poType!=null">
+						and bipo.po_type = #{poType}
+					</if>
+					<if test="status!=null">
+						and bipo.status = #{status}
+					</if>
+			</where>
+    </sql>
+	<sql id="biPoDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+	       
+		       <if test="poCode!=null and poCode!=''">
+					and po_code = #{poCode}
+				</if>
+	       
+	       
+		       <if test="extCode!=null and extCode!=''">
+					and ext_code = #{extCode}
+				</if>
+	       
+				<if test="customerId!=null">
+					and customer_id = #{customerId}
+				</if>
+	       
+				<if test="storeId!=null">
+					and store_id = #{storeId}
+				</if>
+	       
+				<if test="supplierId!=null">
+					and supplier_id = #{supplierId}
+				</if>
+	       
+				<if test="logisticsProviderId!=null">
+					and logistics_provider_id = #{logisticsProviderId}
+				</if>
+	       
+				<if test="poType!=null">
+					and po_type = #{poType}
+				</if>
+	       
+				<if test="status!=null">
+					and status = #{status}
+				</if>
+	       
+				<if test="isIqc!=null">
+					and is_iqc = #{isIqc}
+				</if>
+	       
+				<if test="poDate!=null">
+					and po_date = #{poDate}
+				</if>
+	       
+				<if test="eta!=null">
+					and eta = #{eta}
+				</if>
+	       
+				<if test="deliveryTime!=null">
+					and delivery_time = #{deliveryTime}
+				</if>
+	       
+				<if test="qtyPlanned!=null">
+					and qty_planned = #{qtyPlanned}
+				</if>
+	       
+				<if test="qtyRcvd!=null">
+					and qty_rcvd = #{qtyRcvd}
+				</if>
+	       
+				<if test="ctnPlanned!=null">
+					and ctn_planned = #{ctnPlanned}
+				</if>
+	       
+				<if test="ctnRcvd!=null">
+					and ctn_rcvd = #{ctnRcvd}
+				</if>
+	       
+				<if test="startTime!=null">
+					and start_time = #{startTime}
+				</if>
+	       
+				<if test="stopTime!=null">
+					and stop_time = #{stopTime}
+				</if>
+	       
+				<if test="inboundTime!=null">
+					and inbound_time = #{inboundTime}
+				</if>
+	       
+				<if test="isWms!=null">
+					and is_wms = #{isWms}
+				</if>
+	       
+				<if test="isVmi!=null">
+					and is_vmi = #{isVmi}
+				</if>
+	       
+				<if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="createdId!=null">
+					and created_id = #{createdId}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="modifiedId!=null">
+					and modified_id = #{modifiedId}
+				</if>
+				
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+		</where>
+	</sql>
+	<select id="findBiPoByCodeAndStore" resultType="long">
+        select count(*) from 
+        t_bi_po
+		<where>
+			<if test="ouId!=null">
+				and ou_id = #{ouId}
+			</if>
+			<if test="extCode!=null and extCode!=''">
+				and ext_code = #{extCode}
+			</if>
+			<if test="storeId!=null">
+				and store_id = #{storeId}
+			</if>
+		</where>
+    </select>
+    
+     <select id="findbyPoCode" parameterType="java.lang.String" resultMap="BiPoResult" flushCache="false">
+			select <include refid="biPoColumns" />
+		    <![CDATA[
+			    from t_bi_po 
+		        where 
+		        po_code = #{code}  
+		    ]]>
+		</select>
+		
+    <select id="findCommandbyPoCode" parameterType="java.lang.String" resultMap="BiPoResultExt" flushCache="false">
+			select <include refid="biPoColumnsRelatedExt" />
+		    <![CDATA[
+			from t_bi_po bipo
+			left join t_bi_customer customer on customer.ID=bipo.customer_id
+			left join t_bi_store store on store.id=bipo.store_id
+			left join t_wh_logistics_provider provider on provider.id=bipo.logistics_provider_id
+			left join t_wh_supplier supplier on supplier.id=bipo.supplier_id
+			left join sys_dictionary potypedic on potypedic.group_value='PO_TYPE' and potypedic.dic_value=bipo.po_type
+			left join sys_dictionary postatusdic on postatusdic.group_value = 'POSTATUS' and  postatusdic.dic_value = bipo.status
+	        where 
+	        bipo.po_code = #{code} 
+		    ]]>
+		</select>
+    <select id="findCommandbyId" parameterType="java.lang.Long" resultMap="BiPoResultExt" flushCache="false">
+			select <include refid="biPoColumnsRelatedExt" />
+			 <![CDATA[
+			from t_bi_po bipo
+			left join t_bi_customer customer on customer.ID=bipo.customer_id
+			left join t_bi_store store on store.id=bipo.store_id
+			left join t_wh_logistics_provider provider on provider.id=bipo.logistics_provider_id
+			left join t_wh_supplier supplier on supplier.id=bipo.supplier_id
+			left join sys_dictionary potypedic on potypedic.group_value='PO_TYPE' and potypedic.dic_value=bipo.po_type
+			left join sys_dictionary postatusdic on postatusdic.group_value = 'POSTATUS' and  postatusdic.dic_value = bipo.status
+	        where 
+	        bipo.id = #{id} 
+		    ]]>
+		</select>
+		
+		<select id="findListByQueryMapWithPageExt" resultMap="BiPoResultExt">
+    	select <include refid="biPoColumnsRelatedExt" />
+			from t_bi_po bipo
+			left join t_bi_customer customer on customer.ID=bipo.customer_id
+			left join t_bi_store store on store.id=bipo.store_id
+			left join t_wh_logistics_provider provider on provider.id=bipo.logistics_provider_id
+			left join t_wh_supplier supplier on supplier.id=bipo.supplier_id
+			left join sys_dictionary potypedic on potypedic.group_value='PO_TYPE' and potypedic.dic_value=bipo.po_type
+			left join sys_dictionary postatusdic on postatusdic.group_value = 'POSTATUS' and  postatusdic.dic_value = bipo.status
+		<include refid="biPoDynamicPageWhereExt"/>
+    </select>
+    		
+		
+	<select id="findListCountByQueryMapExt" resultType="long">
+        select count(*) from 
+            t_bi_po bipo
+			left join t_bi_customer customer on customer.ID=bipo.customer_id
+			left join t_bi_store store on store.id=bipo.store_id
+			left join t_wh_logistics_provider provider on provider.id=bipo.logistics_provider_id
+			left join t_wh_supplier supplier on supplier.id=bipo.supplier_id
+			left join sys_dictionary potypedic on potypedic.group_value='PO_TYPE' and potypedic.dic_value=bipo.po_type
+			left join sys_dictionary postatusdic on postatusdic.group_value = 'POSTATUS' and  postatusdic.dic_value = bipo.status
+		<include refid="biPoDynamicPageWhereExt"/>
+    </select>
+   
+   
+  <!--  <resultMap id="BiPoCommandRelatedExt" type="com.baozun.scm.primservice.whoperation.command.poasn.BiPoCommand">
+		<collection property="whPoList" ofType="com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand" column="po_code">注意此处的work_id是work_area表的外键  
+            <id column="id" property="id"/>  
+            <result column="area_id" property="areaId"/>  
+            <result column="work_id" property="workId"/>  
+            <result column="work_type_id" property="workTypeId"/>  
+            <result column="ou_id" property="ouId"/>  
+        </collection>
+	</resultMap> -->
+   
+</mapper>
