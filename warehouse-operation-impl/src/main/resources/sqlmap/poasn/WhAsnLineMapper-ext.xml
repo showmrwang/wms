@@ -406,6 +406,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 							sku.name as skuName,
 							uom.uom_code as uomCode,
 							uom.uom_name as uomName,
+							uom.conversion_rate as conversionRate,
 							mgmt.is_valid as isValid,
 							mgmt.is_batch_no as isBatchNo,
 							mgmt.is_country_of_origin as isCountryOfOrigin,

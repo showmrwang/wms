@@ -201,7 +201,6 @@ public class AsnLineManagerImpl extends BaseManagerImpl implements AsnLineManage
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<WhAsnLineCommand> findWhAsnLineCommandDevanningList(Long asnid, Long ouid, Long skuid, Long id) {
-        Long.parseLong("d");
         return whAsnLineDao.findWhAsnLineCommandDevanningList(id, asnid, ouid, skuid);
     }
 

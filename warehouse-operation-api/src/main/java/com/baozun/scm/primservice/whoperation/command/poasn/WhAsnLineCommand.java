@@ -113,6 +113,8 @@ public class WhAsnLineCommand extends BaseCommand {
     private List<Long> ids;
     /** 保质期单位 */
     private String validDateUom;
+    /** 单位换算率 */
+    private Double conversionRate;
     /** 库存状态名称 */
     private String invName;
     /** 商品ID */
@@ -647,6 +649,14 @@ public class WhAsnLineCommand extends BaseCommand {
 
     public void setUsableDevanningQty(Integer usableDevanningQty) {
         this.usableDevanningQty = usableDevanningQty;
+    }
+
+    public Double getConversionRate() {
+        return conversionRate;
+    }
+
+    public void setConversionRate(Double conversionRate) {
+        this.conversionRate = conversionRate;
     }
 
 
