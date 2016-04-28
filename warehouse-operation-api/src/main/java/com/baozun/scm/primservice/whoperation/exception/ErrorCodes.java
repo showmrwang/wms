@@ -155,6 +155,8 @@ public class ErrorCodes {
     public static final int CUSTOMER_DATA_EXPIRED = 3028;
     /** ASN单明细状态为未收货才允许删除 */
     public static final int ASNLINE_DELETE_STATUS_ERROR = 3029;
+    /** 数据已经失效，请确保数据处于可用状态 */
+    public static final int DATA_EXPRIE_ERROR = 3030;
     /** ASN单明细状态不是 [未收货] 状态，请刷新页面重试 */
-    public static final int ASNLINE_STATUS_ERROR = 3030;
+    public static final int ASNLINE_STATUS_ERROR = 3031;
 }
