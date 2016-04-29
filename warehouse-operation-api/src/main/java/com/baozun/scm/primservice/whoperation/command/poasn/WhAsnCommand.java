@@ -45,9 +45,9 @@ public class WhAsnCommand extends BaseCommand {
     /** 实际到货时间 */
     private Date deliveryTime;
     /** 计划数量 */
-    private Integer qtyPlanned;
+    private Double qtyPlanned;
     /** 实际数量 */
-    private Integer qtyRcvd;
+    private Double qtyRcvd;
     /** 计划箱数 */
     private Integer ctnPlanned;
     /** 实际箱数 */
@@ -216,20 +216,20 @@ public class WhAsnCommand extends BaseCommand {
         this.deliveryTime = value;
     }
 
-    public Integer getQtyPlanned() {
-        return this.qtyPlanned;
+    public Double getQtyPlanned() {
+        return qtyPlanned;
     }
 
-    public void setQtyPlanned(Integer value) {
-        this.qtyPlanned = value;
+    public void setQtyPlanned(Double qtyPlanned) {
+        this.qtyPlanned = qtyPlanned;
     }
 
-    public Integer getQtyRcvd() {
-        return this.qtyRcvd;
+    public Double getQtyRcvd() {
+        return qtyRcvd;
     }
 
-    public void setQtyRcvd(Integer value) {
-        this.qtyRcvd = value;
+    public void setQtyRcvd(Double qtyRcvd) {
+        this.qtyRcvd = qtyRcvd;
     }
 
     public Integer getCtnPlanned() {

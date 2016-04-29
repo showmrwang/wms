@@ -50,9 +50,9 @@ public class WhAsn extends BaseModel {
     /** 实际到货时间 */
     private Date deliveryTime;
     /** 计划数量 */
-    private Integer qtyPlanned = 0;
+    private Double qtyPlanned = 0.0;
     /** 实际数量 */
-    private Integer qtyRcvd = 0;
+    private Double qtyRcvd = 0.0;
     /** 计划箱数 */
     private Integer ctnPlanned = 0;
     /** 实际箱数 */
@@ -152,20 +152,20 @@ public class WhAsn extends BaseModel {
         this.deliveryTime = value;
     }
 
-    public Integer getQtyPlanned() {
-        return this.qtyPlanned;
+    public Double getQtyPlanned() {
+        return qtyPlanned;
     }
 
-    public void setQtyPlanned(Integer value) {
-        this.qtyPlanned = value;
+    public void setQtyPlanned(Double qtyPlanned) {
+        this.qtyPlanned = qtyPlanned;
     }
 
-    public Integer getQtyRcvd() {
-        return this.qtyRcvd;
+    public Double getQtyRcvd() {
+        return qtyRcvd;
     }
 
-    public void setQtyRcvd(Integer value) {
-        this.qtyRcvd = value;
+    public void setQtyRcvd(Double qtyRcvd) {
+        this.qtyRcvd = qtyRcvd;
     }
 
     public Integer getCtnPlanned() {
