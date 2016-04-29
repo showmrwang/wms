@@ -44,7 +44,9 @@ public class WhAsnLineCommand extends BaseCommand {
     /** 原计划数量 */
     private Double qtyPlannedOld;
     /** 可拆数量 */
-    private Integer usableDevanningQty;
+    private Double usableDevanningQty;
+    /** 已拆数量 */
+    private Double devanningQty;
     /** 计划箱数 */
     private Integer ctnPlanned;
     /** 已收数量 */
@@ -609,14 +611,6 @@ public class WhAsnLineCommand extends BaseCommand {
         this.uomCode = uomCode;
     }
 
-    public Integer getUsableDevanningQty() {
-        return usableDevanningQty;
-    }
-
-    public void setUsableDevanningQty(Integer usableDevanningQty) {
-        this.usableDevanningQty = usableDevanningQty;
-    }
-
     public Double getConversionRate() {
         return conversionRate;
     }
@@ -647,6 +641,22 @@ public class WhAsnLineCommand extends BaseCommand {
 
     public void setQtyPlannedOld(Double qtyPlannedOld) {
         this.qtyPlannedOld = qtyPlannedOld;
+    }
+
+    public Double getUsableDevanningQty() {
+        return usableDevanningQty;
+    }
+
+    public void setUsableDevanningQty(Double usableDevanningQty) {
+        this.usableDevanningQty = usableDevanningQty;
+    }
+
+    public Double getDevanningQty() {
+        return devanningQty;
+    }
+
+    public void setDevanningQty(Double devanningQty) {
+        this.devanningQty = devanningQty;
     }
 
 

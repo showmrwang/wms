@@ -315,6 +315,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 						line.qty_rcvd as qtyRcvd,
 						line.ctn_rcvd as ctnRcvd,
 						line.qty_planned-c.qty as usableDevanningQty,
+						c.qty as devanningQty,
 						line.status as status,
 						line.is_iqc as isIqc,
 						date_format(line.mfg_date,'%Y-%m-%d') as mfgDateStr,
