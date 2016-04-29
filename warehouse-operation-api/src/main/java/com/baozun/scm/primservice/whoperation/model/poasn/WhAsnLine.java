@@ -43,15 +43,13 @@ public class WhAsnLine extends BaseModel {
     /** SKU_ID */
     private Long skuId;
     /** 计划数量 */
-    private Integer qtyPlanned;
+    private Double qtyPlanned = 0.0;
     /** 计划箱数 */
     private Integer ctnPlanned = 0;
     /** 已收数量 */
-    private Integer qtyRcvd = 0;
+    private Double qtyRcvd = 0.0;
     /** 已收箱数 */
     private Integer ctnRcvd = 0;
-    /** 已拆箱数量 */
-    private Integer devanningQty = 0;
     /** 状态 */
     private Integer status;
     /** 是否质检 1:是 0:否 */
@@ -140,28 +138,12 @@ public class WhAsnLine extends BaseModel {
         this.skuId = value;
     }
 
-    public Integer getQtyPlanned() {
-        return this.qtyPlanned;
-    }
-
-    public void setQtyPlanned(Integer value) {
-        this.qtyPlanned = value;
-    }
-
     public Integer getCtnPlanned() {
         return this.ctnPlanned;
     }
 
     public void setCtnPlanned(Integer value) {
         this.ctnPlanned = value;
-    }
-
-    public Integer getQtyRcvd() {
-        return this.qtyRcvd;
-    }
-
-    public void setQtyRcvd(Integer value) {
-        this.qtyRcvd = value;
     }
 
     public Integer getCtnRcvd() {
@@ -316,13 +298,22 @@ public class WhAsnLine extends BaseModel {
         this.ouId = ouId;
     }
 
-    public Integer getDevanningQty() {
-        return devanningQty;
+    public Double getQtyPlanned() {
+        return qtyPlanned;
     }
 
-    public void setDevanningQty(Integer devanningQty) {
-        this.devanningQty = devanningQty;
+    public void setQtyPlanned(Double qtyPlanned) {
+        this.qtyPlanned = qtyPlanned;
     }
+
+    public Double getQtyRcvd() {
+        return qtyRcvd;
+    }
+
+    public void setQtyRcvd(Double qtyRcvd) {
+        this.qtyRcvd = qtyRcvd;
+    }
+
 
 
 }

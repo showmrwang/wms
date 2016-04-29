@@ -40,7 +40,7 @@ public class WhAsnLineCommand extends BaseCommand {
     /** SKU_ID */
     private Long skuId;
     /** 计划数量 */
-    private Integer qtyPlanned;
+    private Double qtyPlanned;
     /** 原计划数量 */
     private Integer qtyPlannedOld;
     /** 可拆数量 */
@@ -48,11 +48,9 @@ public class WhAsnLineCommand extends BaseCommand {
     /** 计划箱数 */
     private Integer ctnPlanned;
     /** 已收数量 */
-    private Integer qtyRcvd;
+    private Double qtyRcvd;
     /** 已收箱数 */
     private Integer ctnRcvd;
-    /** 已拆箱数量 */
-    private Integer devanningQty;
     /** 状态 */
     private Integer status;
     /** 是否质检 1:是 0:否 */
@@ -219,28 +217,12 @@ public class WhAsnLineCommand extends BaseCommand {
         this.skuId = value;
     }
 
-    public Integer getQtyPlanned() {
-        return this.qtyPlanned;
-    }
-
-    public void setQtyPlanned(Integer value) {
-        this.qtyPlanned = value;
-    }
-
     public Integer getCtnPlanned() {
         return this.ctnPlanned;
     }
 
     public void setCtnPlanned(Integer value) {
         this.ctnPlanned = value;
-    }
-
-    public Integer getQtyRcvd() {
-        return this.qtyRcvd;
-    }
-
-    public void setQtyRcvd(Integer value) {
-        this.qtyRcvd = value;
     }
 
     public Integer getCtnRcvd() {
@@ -539,14 +521,6 @@ public class WhAsnLineCommand extends BaseCommand {
         this.inv5Str = inv5Str;
     }
 
-    public Integer getDevanningQty() {
-        return devanningQty;
-    }
-
-    public void setDevanningQty(Integer devanningQty) {
-        this.devanningQty = devanningQty;
-    }
-
     public String getInvTypeLabel() {
         return invTypeLabel;
     }
@@ -657,6 +631,22 @@ public class WhAsnLineCommand extends BaseCommand {
 
     public void setConversionRate(Double conversionRate) {
         this.conversionRate = conversionRate;
+    }
+
+    public Double getQtyPlanned() {
+        return qtyPlanned;
+    }
+
+    public void setQtyPlanned(Double qtyPlanned) {
+        this.qtyPlanned = qtyPlanned;
+    }
+
+    public Double getQtyRcvd() {
+        return qtyRcvd;
+    }
+
+    public void setQtyRcvd(Double qtyRcvd) {
+        this.qtyRcvd = qtyRcvd;
     }
 
 
