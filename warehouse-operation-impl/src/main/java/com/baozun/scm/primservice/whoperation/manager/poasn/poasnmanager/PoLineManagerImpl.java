@@ -1,5 +1,6 @@
 package com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -97,8 +98,10 @@ public class PoLineManagerImpl implements PoLineManager {
     public void editPoLineToInfo(WhPoLine whPoLine) {
         // 查询原始POLINE数据
         WhPoLine poLine = whPoLineDao.findWhPoLineByIdWhPoLine(whPoLine.getId(), whPoLine.getOuId());
-        int differenceQty = poLine.getQtyPlanned() - whPoLine.getQtyPlanned();// 计算计划数量原始和这次改动的差额
-        whPoLine.setAvailableQty(whPoLine.getAvailableQty() - differenceQty);// 修改可用数量
+        double differenceQty = new BigDecimal(Double.toString(poLine.getQtyPlanned())).subtract(new BigDecimal(Double.toString(whPoLine.getQtyPlanned()))).doubleValue();// 计算计划数量原始和这次改动的差额
+        // double differenceQty = poLine.getQtyPlanned() - whPoLine.getQtyPlanned();//
+        // 计算计划数量原始和这次改动的差额
+        whPoLine.setAvailableQty(new BigDecimal(Double.toString(whPoLine.getAvailableQty())).subtract(new BigDecimal(Double.toString(differenceQty))).doubleValue());// 修改可用数量
         int result = whPoLineDao.saveOrUpdateByVersion(whPoLine);
         if (result <= 0) {
             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
@@ -120,7 +123,8 @@ public class PoLineManagerImpl implements PoLineManager {
     public void editPoLineToShare(WhPoLine whPoLine) {
         // 查询原始POLINE数据
         WhPoLine poLine = whPoLineDao.findWhPoLineByIdWhPoLine(whPoLine.getId(), whPoLine.getOuId());
-        int differenceQty = poLine.getQtyPlanned() - whPoLine.getQtyPlanned();// 计算计划数量原始和这次改动的差额
+        double differenceQty = new BigDecimal(Double.toString(poLine.getQtyPlanned())).subtract(new BigDecimal(Double.toString(whPoLine.getQtyPlanned()))).doubleValue();// 计算计划数量原始和这次改动的差额
+        // int differenceQty = poLine.getQtyPlanned() - whPoLine.getQtyPlanned();// 计算计划数量原始和这次改动的差额
         whPoLine.setAvailableQty(whPoLine.getAvailableQty() - differenceQty);// 修改可用数量
         int result = whPoLineDao.saveOrUpdateByVersion(whPoLine);
         if (result <= 0) {
@@ -252,9 +256,11 @@ public class PoLineManagerImpl implements PoLineManager {
         if (StringUtils.hasText(whPoLine.getUuid())) {
             poLineList = whPoLineDao.findWhPoLineByPoIdOuId(whPoLine.getPoId(), whPoLine.getOuId(), whPoLine.getUuid());
         }
-        Integer qtyPlannedCount = 0;
+        double qtyPlannedCount = 0.0;
         for (WhPoLine p : poLineList) {
-            qtyPlannedCount = qtyPlannedCount + p.getQtyPlanned();// 整合计划数量
+            // 整合计划数量
+            qtyPlannedCount = new BigDecimal(Double.toString(qtyPlannedCount)).add(new BigDecimal(Double.toString(p.getQtyPlanned()))).doubleValue();
+            // qtyPlannedCount = qtyPlannedCount + p.getQtyPlanned();
             if (null == p.getPoLineId()) {
                 // 如果对应的polineid is null 直接去除这条的uuid数据 保存为正式数据
                 p.setUuid(null);
@@ -303,9 +309,10 @@ public class PoLineManagerImpl implements PoLineManager {
         if (StringUtils.hasText(whPoLine.getUuid())) {
             poLineList = whPoLineDao.findWhPoLineByPoIdOuId(whPoLine.getPoId(), whPoLine.getOuId(), whPoLine.getUuid());
         }
-        Integer qtyPlannedCount = 0;
+        double qtyPlannedCount = 0.0;
         for (WhPoLine p : poLineList) {
-            qtyPlannedCount = qtyPlannedCount + p.getQtyPlanned();// 整合计划数量
+            qtyPlannedCount = new BigDecimal(Double.toString(qtyPlannedCount)).add(new BigDecimal(Double.toString(p.getQtyPlanned()))).doubleValue();// 整合计划数量
+            // qtyPlannedCount = qtyPlannedCount + p.getQtyPlanned();
             if (null == p.getPoLineId()) {
                 // 如果对应的polineid is null 直接去除这条的uuid数据 保存为正式数据
                 p.setUuid(null);
@@ -398,18 +405,18 @@ public class PoLineManagerImpl implements PoLineManager {
             throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
         }
         whpo.setModifiedId(lineList.get(0).getModifiedId());
-        int deleteCount=0;
-        for(WhPoLine line:lineList){
+        int deleteCount = 0;
+        for (WhPoLine line : lineList) {
             if (StringUtils.hasText(line.getUuid())) {
                 this.whPoLineDao.deletePoLineByIdOuId(line.getId(), line.getOuId());
                 deleteCount++;
-            }else{
-                if(PoAsnStatus.POLINE_NEW==line.getStatus()){
+            } else {
+                if (PoAsnStatus.POLINE_NEW == line.getStatus()) {
                     whpo.setQtyPlanned(whpo.getQtyPlanned() - line.getQtyPlanned());
                     this.whPoLineDao.deletePoLineByIdOuId(line.getId(), line.getOuId());
                     deleteCount++;
-                }else{
-                    throw new BusinessException(ErrorCodes.POLINE_DELETE_STATUS_ERROR,new Object[]{line.getId()});
+                } else {
+                    throw new BusinessException(ErrorCodes.POLINE_DELETE_STATUS_ERROR, new Object[] {line.getId()});
                 }
             }
         }

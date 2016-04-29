@@ -42,7 +42,7 @@ public class WhAsnLineCommand extends BaseCommand {
     /** 计划数量 */
     private Double qtyPlanned;
     /** 原计划数量 */
-    private Integer qtyPlannedOld;
+    private Double qtyPlannedOld;
     /** 可拆数量 */
     private Integer usableDevanningQty;
     /** 计划箱数 */
@@ -457,14 +457,6 @@ public class WhAsnLineCommand extends BaseCommand {
         this.poOuId = poOuId;
     }
 
-    public Integer getQtyPlannedOld() {
-        return qtyPlannedOld;
-    }
-
-    public void setQtyPlannedOld(Integer qtyPlannedOld) {
-        this.qtyPlannedOld = qtyPlannedOld;
-    }
-
     public List<Long> getIds() {
         return ids;
     }
@@ -647,6 +639,14 @@ public class WhAsnLineCommand extends BaseCommand {
 
     public void setQtyRcvd(Double qtyRcvd) {
         this.qtyRcvd = qtyRcvd;
+    }
+
+    public Double getQtyPlannedOld() {
+        return qtyPlannedOld;
+    }
+
+    public void setQtyPlannedOld(Double qtyPlannedOld) {
+        this.qtyPlannedOld = qtyPlannedOld;
     }
 
 

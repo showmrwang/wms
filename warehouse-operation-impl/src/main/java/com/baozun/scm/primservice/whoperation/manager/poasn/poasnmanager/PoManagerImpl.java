@@ -347,7 +347,7 @@ public class PoManagerImpl implements PoManager {
         // 修改明细状态和可用数量
         for (WhPoLine pl : whPoLines) {
             // 修改poline的可用数量
-            pl.setAvailableQty(0);// 一键创建asnline poline的可用数量0
+            pl.setAvailableQty(0.0);// 一键创建asnline poline的可用数量0
             pl.setModifiedId(asn.getModifiedId());
             if (pl.getStatus() == PoAsnStatus.POLINE_NEW) {
                 // 如果明细状态为新建的话 改成已创建ASN状态

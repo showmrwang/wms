@@ -1,5 +1,6 @@
 package com.baozun.scm.primservice.whoperation.manager.poasn.poasnproxy;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -122,14 +123,14 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
             log.error("no po found to be cancelled!");
             return getResponseMsg("no po to be cancelled!", ResponseMsg.STATUS_ERROR, null);
         }
-        try{
+        try {
             if (null == whPo.getOuId()) {
                 this.poManager.cancelPoToInfo(poList);
             } else {
                 this.poManager.cancelPoToShard(poList);
             }
-        }catch(Exception e){
-            if(e instanceof BusinessException){
+        } catch (Exception e) {
+            if (e instanceof BusinessException) {
                 log.error(e + "");
                 throw e;
             } else {
@@ -154,7 +155,7 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
             log.warn("EditPo warn ResponseStatus: " + rm.getResponseStatus() + " msg: " + rm.getMsg());
             return rm;
         }
-        try{
+        try {
             if (null == po.getOuId()) {
                 // OUID为空更新基础表内信息
                 poManager.editPoToInfo(po);
@@ -162,11 +163,11 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
                 // OUID不为空更新拆库表内信息
                 poManager.editPoToShard(po);
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             if (e instanceof BusinessException) {
-                log.error(e+"");
+                log.error(e + "");
                 throw e;
-            }else{
+            } else {
                 log.error("update po throws Exception!");
                 return getResponseMsg("edit Po failure! please retry it!", ResponseMsg.DATA_ERROR, null);
             }
@@ -486,12 +487,12 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
         }
         whasn.setModifiedId(whAsnCommand.getUserId());// 操作人更新
         // 检索需要删除的明细
-        WhAsnLine asnLineSearch=new WhAsnLine();
+        WhAsnLine asnLineSearch = new WhAsnLine();
         asnLineSearch.setAsnId(whasn.getId());
         asnLineSearch.setOuId(whasn.getOuId());
-        List<WhAsnLine> asnLineList=this.asnLineManager.findListByShard(asnLineSearch);
+        List<WhAsnLine> asnLineList = this.asnLineManager.findListByShard(asnLineSearch);
         // 修改asn要对应修改po单、po单明细的数据
-        WhPoCommand poSearch=new WhPoCommand();
+        WhPoCommand poSearch = new WhPoCommand();
         poSearch.setId(whasn.getPoId());
         poSearch.setOuId(whasn.getPoOuId());
         List<WhPoLine> polineList = new ArrayList<WhPoLine>();
@@ -532,8 +533,8 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
             whpo.setStatus(PoAsnStatus.PO_NEW);
         }
         // 数据库操作
-        try{
-            if(null==whasn.getPoOuId()){
+        try {
+            if (null == whasn.getPoOuId()) {
                 // TODO 需要补偿机制
                 this.poManager.editPoAdnPoLineWhenDeleteAsnToInfo(whpo, polineList);
                 this.asnManager.deleteAsnAndAsnLineWhenPoOuIdNullToShard(whasn);
@@ -567,7 +568,9 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
             log.warn("asnline's qtyPlanned may cause numerical error!");
             return this.getResponseMsg(ErrorCodes.NUMBER_ERROR + "", ResponseMsg.DATA_ERROR, null);
         }
-        int changeCount = whAsnLineCommand.getQtyPlanned() - whAsnLineCommand.getQtyPlannedOld();
+        // double changeCount = whAsnLineCommand.getQtyPlanned() -
+        // whAsnLineCommand.getQtyPlannedOld();
+        double changeCount = new BigDecimal(Double.toString(whAsnLineCommand.getQtyPlanned())).subtract(new BigDecimal(Double.toString(whAsnLineCommand.getQtyPlannedOld()))).doubleValue();
         WhPoLineCommand polineCommand = new WhPoLineCommand();
         polineCommand.setId(whAsnLineCommand.getPoLineId());
         polineCommand.setOuId(whAsnLineCommand.getPoOuId());
@@ -594,7 +597,7 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
             return this.getResponseMsg(ErrorCodes.ASNLINE_QTYPLANNED_ERROR + "", ResponseMsg.DATA_ERROR, null);
         }
         poline.setAvailableQty(poline.getAvailableQty() - changeCount);
-        try{
+        try {
             if (null == whAsnLineCommand.getPoOuId()) {
                 // TODO yimin.lu 需要补偿机制
                 this.asnLineManager.editAsnLineToShard(asn, asnLine);
@@ -602,10 +605,10 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
             } else {
                 this.asnLineManager.editAsnLineWhenPoToShard(asn, asnLine, poline);
             }
-        }catch(Exception e){
-            if( e instanceof BusinessException){
-                return this.getResponseMsg(((BusinessException) e).getErrorCode()+"", ResponseMsg.DATA_ERROR, null);
-            }else{
+        } catch (Exception e) {
+            if (e instanceof BusinessException) {
+                return this.getResponseMsg(((BusinessException) e).getErrorCode() + "", ResponseMsg.DATA_ERROR, null);
+            } else {
                 log.error("editAsnLine failed!");
                 return this.getResponseMsg("editAsnLine failed! please try again!", ResponseMsg.STATUS_ERROR, null);
             }
@@ -626,10 +629,10 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
         List<WhPoLine> polineList = new ArrayList<WhPoLine>();// 用于保存删除asn明细所需对应修改的po单明细行
         List<WhAsnLine> asnlineList = new ArrayList<WhAsnLine>();// 用于保存需要修改的asn单明细
         int asnPlanCount = 0;// 用于记录ASN单中删除明细所对应的数量，从而修改asn单表头的计划数量
-        Map<Long, Integer> poLineIdMaps = new HashMap<Long, Integer>();// 用于保存PO单明细ID和对应修改的数量MAP
-        for(Long id:command.getIds()){
-            int changeCount = 0;// 对应的asn单明细中的SKU数量
-            WhAsnLineCommand searchCommand=new WhAsnLineCommand();
+        Map<Long, Double> poLineIdMaps = new HashMap<Long, Double>();// 用于保存PO单明细ID和对应修改的数量MAP
+        for (Long id : command.getIds()) {
+            double changeCount = 0.0;// 对应的asn单明细中的SKU数量
+            WhAsnLineCommand searchCommand = new WhAsnLineCommand();
             // 查询对应的ASN明细
             searchCommand.setId(id);
             searchCommand.setOuId(command.getOuId());
@@ -637,9 +640,9 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
             if (PoAsnStatus.ASNLINE_NOT_RCVD != returnCommand.getStatus()) {
                 throw new BusinessException(ErrorCodes.ASNLINE_DELETE_STATUS_ERROR);
             }
-            changeCount=returnCommand.getQtyPlanned();
+            changeCount = returnCommand.getQtyPlanned();
             asnPlanCount += changeCount;
-            WhAsnLine asnline=new WhAsnLine();
+            WhAsnLine asnline = new WhAsnLine();
             BeanUtils.copyProperties(returnCommand, asnline);
             asnline.setModifiedId(command.getModifiedId());
             if (log.isDebugEnabled()) {
@@ -658,7 +661,7 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
             throw new BusinessException(ErrorCodes.ASN_NULL);
         }
         // 对应修改的PO单明细的集合
-        for (Entry<Long, Integer> entry : poLineIdMaps.entrySet()) {
+        for (Entry<Long, Double> entry : poLineIdMaps.entrySet()) {
             WhPoLineCommand serachPoCommand = new WhPoLineCommand();
             serachPoCommand.setId(entry.getKey());
             serachPoCommand.setOuId(command.getPoOuId());
@@ -690,7 +693,7 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
         if (null == whAsnCommand) {
             throw new BusinessException(ErrorCodes.ASN_NULL);
         }
-        //@mender:yimin.lu 只有新建状态下的ASN的明细才可以删除
+        // @mender:yimin.lu 只有新建状态下的ASN的明细才可以删除
         if (PoAsnStatus.ASN_NEW != whAsnCommand.getStatus()) {
             throw new BusinessException(ErrorCodes.ASN_DELETE_STATUS_ERROR);
         }
