@@ -99,8 +99,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        po_date = #{poDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        eta = #{eta,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        delivery_time = #{deliveryTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-			        qty_planned = #{qtyPlanned,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-			        qty_rcvd = #{qtyRcvd,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        qty_planned = #{qtyPlanned,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+			        qty_rcvd = #{qtyRcvd,javaType=java.lang.Double,jdbcType=DECIMAL} ,
 			        ctn_planned = #{ctnPlanned,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 			        ctn_rcvd = #{ctnRcvd,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 			        start_time = #{startTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
@@ -250,6 +250,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				<if test="linenum!=null">
 				limit 0,#{linenum}
 				</if>
+			</where>
+    </select>
+    
+	 <select id="findByPoCodeAndOuId" resultMap="WhPoResult">
+	    select <include refid="whPoColumns" />
+		    from t_wh_po po
+		   <where>
+			    po_code = #{poCode} 
+			    and ou_id = #{ouId} 
 			</where>
     </select>
 	

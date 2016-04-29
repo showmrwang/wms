@@ -56,9 +56,9 @@ public class WhPo extends BaseModel {
     /** 实际到货时间 */
     private Date deliveryTime;
     /** 计划到货数量 */
-    private Integer qtyPlanned = 0;
+    private Double qtyPlanned;
     /** 实际到货数量 */
-    private Integer qtyRcvd = 0;
+    private Double qtyRcvd;
     /** 计划箱数 */
     private Integer ctnPlanned = 0;
     /** 实际箱数 */
@@ -81,6 +81,26 @@ public class WhPo extends BaseModel {
     private Date lastModifyTime;
     /** 操作人ID */
     private Long modifiedId;
+    /** 对应BIPO的ID */
+    private Long BiPoId;
+    /** 对应INFOPO的ID */
+    private Long InfoPoId;
+
+    public Long getBiPoId() {
+        return BiPoId;
+    }
+
+    public void setBiPoId(Long biPoId) {
+        BiPoId = biPoId;
+    }
+
+    public Long getInfoPoId() {
+        return InfoPoId;
+    }
+
+    public void setInfoPoId(Long infoPoId) {
+        InfoPoId = infoPoId;
+    }
 
     public String getPoCode() {
         return this.poCode;
@@ -178,20 +198,21 @@ public class WhPo extends BaseModel {
         this.deliveryTime = value;
     }
 
-    public Integer getQtyPlanned() {
-        return this.qtyPlanned;
+
+    public Double getQtyPlanned() {
+        return qtyPlanned;
     }
 
-    public void setQtyPlanned(Integer value) {
-        this.qtyPlanned = value;
+    public void setQtyPlanned(Double qtyPlanned) {
+        this.qtyPlanned = qtyPlanned;
     }
 
-    public Integer getQtyRcvd() {
-        return this.qtyRcvd;
+    public Double getQtyRcvd() {
+        return qtyRcvd;
     }
 
-    public void setQtyRcvd(Integer value) {
-        this.qtyRcvd = value;
+    public void setQtyRcvd(Double qtyRcvd) {
+        this.qtyRcvd = qtyRcvd;
     }
 
     public Integer getCtnPlanned() {

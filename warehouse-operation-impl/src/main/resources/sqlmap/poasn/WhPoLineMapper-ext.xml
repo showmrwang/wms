@@ -66,11 +66,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        po_id = #{poId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        linenum = #{linenum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 			        sku_id = #{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,        
-			        qty_planned = #{qtyPlanned,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-			        overshipped = #{overshipped,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-			        available_qty = #{availableQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        qty_planned = #{qtyPlanned,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+			        overshipped = #{overshipped,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+			        available_qty = #{availableQty,javaType=java.lang.Double,jdbcType=DECIMAL} ,
 			        ctn_planned = #{ctnPlanned,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-			        qty_rcvd = #{qtyRcvd,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        qty_rcvd = #{qtyRcvd,javaType=java.lang.Double,jdbcType=DECIMAL} ,
 			        ctn_rcvd = #{ctnRcvd,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 			        status = #{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 			        is_iqc = #{isIqc,javaType=java.lang.Boolean,jdbcType=BIT} ,
@@ -323,5 +323,13 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	  		 <![CDATA[and ou_id = #{ouid}]]>
 		</if>
 	 </delete>
+    <select id="findByPoCodeAndOuIdAndPoLineId" resultMap="WhPoLineResultExt">
+	    select
+	    <include refid="whPoLineColumnsExt" />
+	    from t_wh_po_line
+	    where po_code=#{poCode}
+	  	and ou_id = #{ouId}
+	  	and po_line_id=#{poLineId}
+    </select>
     
 </mapper>
