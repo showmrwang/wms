@@ -94,6 +94,8 @@ public class ErrorCodes {
     public static final int SAVE_FAILURE = 1023;
     /** 店铺id为空 **/
     public static final int STORE_EMPTY = 1024;
+    /**拆箱信息不存在*/
+    public static final int CARTONNULL_ERROR = 1079;
 
     /** 页面会话错误 请刷新页面后重试 **/
     public static final int SESSION_DATA_ERROR = 2001;

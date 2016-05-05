@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.carton.WhCartonDao">
+	<resultMap id="WhCartonResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.carton.WhCarton">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whCartonColumnsExt">
+	    <![CDATA[
+	        	id as id,
+	        	asn_id as asnId,
+	        	asn_line_id as asnLineId,
+	        	sku_id as skuId,
+	        	container_id as containerId,
+	        	ext_container_code as extContainerCode,
+	        	quantity as quantity,
+	        	mfg_date as mfgDate,
+	        	exp_date as expDate,
+	        	batch_no as batchNo,
+	        	country_of_origin as countryOfOrigin,
+	        	inv_status as invStatus,
+	        	inv_attr1 as invAttr1,
+	        	inv_attr2 as invAttr2,
+	        	inv_attr3 as invAttr3,
+	        	inv_attr4 as invAttr4,
+	        	inv_attr5 as invAttr5,
+	        	inv_type as invType,
+	        	ou_id as ouId,
+	        	is_caselevel as isCaselevel,
+	        	create_time as createTime,
+	        	created_id as createdId,
+	        	last_modify_time as lastModifyTime,
+	        	modified_id as modifiedId
+	    ]]>
+	</sql>
+	
+	<sql id="whCartonDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+				<if test="asnId!=null">
+					and asn_id = #{asnId}
+				</if>
+	       
+				<if test="asnLineId!=null">
+					and asn_line_id = #{asnLineId}
+				</if>
+	       
+				<if test="skuId!=null">
+					and sku_id = #{skuId}
+				</if>
+	       
+				<if test="containerId!=null">
+					and container_id = #{containerId}
+				</if>
+	       
+				<if test="quantity!=null">
+					and quantity = #{quantity}
+				</if>
+	       
+				<if test="mfgDate!=null">
+					and mfg_date = #{mfgDate}
+				</if>
+	       
+				<if test="expDate!=null">
+					and exp_date = #{expDate}
+				</if>
+	       
+	       
+		       <if test="batchNo!=null and batchNo!=''">
+					and batch_no = #{batchNo}
+				</if>
+	       
+	       
+		       <if test="countryOfOrigin!=null and countryOfOrigin!=''">
+					and country_of_origin = #{countryOfOrigin}
+				</if>
+	       
+				<if test="invStatus!=null">
+					and inv_status = #{invStatus}
+				</if>
+	       
+	       
+		       <if test="invAttr1!=null and invAttr1!=''">
+					and inv_attr1 = #{invAttr1}
+				</if>
+	       
+	       
+		       <if test="invAttr2!=null and invAttr2!=''">
+					and inv_attr2 = #{invAttr2}
+				</if>
+	       
+	       
+		       <if test="invAttr3!=null and invAttr3!=''">
+					and inv_attr3 = #{invAttr3}
+				</if>
+	       
+	       
+		       <if test="invAttr4!=null and invAttr4!=''">
+					and inv_attr4 = #{invAttr4}
+				</if>
+	       
+	       
+		       <if test="invAttr5!=null and invAttr5!=''">
+					and inv_attr5 = #{invAttr5}
+				</if>
+	       
+	       
+		       <if test="invType!=null and invType!=''">
+					and inv_type = #{invType}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+	       
+				<if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="createdId!=null">
+					and created_id = #{createdId}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="modifiedId!=null">
+					and modified_id = #{modifiedId}
+				</if>
+		</where>
+	</sql>
+	
+
+		<update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.carton.WhCarton">
+		    <![CDATA[
+		        UPDATE t_wh_carton SET
+			       			 asn_id = #{asnId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			       			 asn_line_id = #{asnLineId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			       			 sku_id = #{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			       			 container_id = #{containerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			       			 ext_container_code = #{extContainerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			       			 quantity = #{quantity,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+			       			 mfg_date = #{mfgDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+			       			 exp_date = #{expDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+			       			 batch_no = #{batchNo,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			       			 country_of_origin = #{countryOfOrigin,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			       			 inv_status = #{invStatus,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			       			 inv_attr1 = #{invAttr1,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			       			 inv_attr2 = #{invAttr2,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			       			 inv_attr3 = #{invAttr3,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			       			 inv_attr4 = #{invAttr4,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			       			 inv_attr5 = #{invAttr5,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			       			 inv_type = #{invType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			       			 is_caselevel = #{isCaselevel,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			       			 create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+			       			 created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			       		 	 last_modify_time = now() ,	
+			       			 modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        WHERE 
+			        id = #{id} 
+			        and last_modify_time	=  #{lastModifyTime}  
+			        and ou_id = #{ouId}
+		    ]]>
+		</update>
+	
+		<resultMap id="WhCartonResultCommand" type="com.baozun.scm.primservice.whoperation.command.warehouse.carton.WhCartonCommand">
+	</resultMap>
+	
+<select id="findWhCartonDevanningList" resultMap="WhCartonResultCommand">
+			select
+			c.id as id,
+			c.asn_id as asnId,
+			c.asn_line_id as asnLineId,
+			c.sku_id as skuId,
+			c.container_id as containerId,
+			c.ext_container_code as extContainerCode,
+			c.quantity as quantity,
+			c.mfg_date as mfgDate,
+			c.exp_date as expDate,
+			date_format(c.mfg_date,'%Y-%m-%d %T') as mfgDateStr,
+			date_format(c.exp_date,'%Y-%m-%d %T') as expDateStr,
+			c.batch_no as batchNo,
+			c.country_of_origin as countryOfOrigin,
+			c.inv_status as invStatus,
+			c.inv_attr1 as invAttr1,
+			c.inv_attr2 as invAttr2,
+			c.inv_attr3 as invAttr3,
+			c.inv_attr4 as invAttr4,
+			c.inv_attr5 as invAttr5,
+			c.inv_type as invType,
+			c.ou_id as ouId,
+			c.is_caselevel as isCaselevel,
+			c.create_time as createTime,
+			c.created_id as createdId,
+			c.last_modify_time as lastModifyTime,
+			c.modified_id as modifiedId,
+			sku.code as skuCode,
+			sku.name as skuName,
+			inv.name as invName,
+			type.dic_label as invTypeLabel,
+			inv1.dic_label as invAttr1Str,
+			inv2.dic_label as invAttr2Str,
+			inv3.dic_label as invAttr3Str,
+			inv4.dic_label as invAttr4Str,
+			inv5.dic_label as invAttr5Str,
+			cont.code as containerCode,
+			nd.category_name as categoryName,
+			line.status as asnLineStatus
+			from t_wh_carton c 
+			left join t_wh_sku sku on sku.id = c.sku_id 
+			left join t_wh_container cont 
+			left join t_wh_container_2nd_category nd on nd.id = cont.two_level_type 
+			on cont.id = c.container_id 
+			left join t_wh_inventory_status inv on inv.id = c.inv_status
+			left join sys_dictionary type on type.dic_value = c.inv_type and type.group_value = 'INVENTORY_TYPE' 
+			left join sys_dictionary inv1 on inv1.dic_value = c.inv_attr1 and inv1.group_value = 'INVENTORY_ATTR_1' 
+			left join sys_dictionary inv2 on inv2.dic_value = c.inv_attr2 and inv2.group_value = 'INVENTORY_ATTR_2' 
+			left join sys_dictionary inv3 on inv3.dic_value = c.inv_attr3 and inv3.group_value = 'INVENTORY_ATTR_3' 
+			left join sys_dictionary inv4 on inv4.dic_value = c.inv_attr4 and inv4.group_value = 'INVENTORY_ATTR_4' 
+			left join sys_dictionary inv5 on inv5.dic_value = c.inv_attr5 and inv5.group_value = 'INVENTORY_ATTR_5'
+			left join t_wh_asn_line line on line.id = c.asn_line_id
+			<where>
+				c.ou_id = #{ouid}
+				<if test="asnid!=null">
+					and c.asn_id = #{asnid}
+				</if>
+				<if test="asnlineid!=null">
+					and c.asn_line_id = #{asnlineid}
+				</if>
+				<if test="skuid!=null">
+					and c.sku_id = #{skuid}
+				</if>
+			</where>
+ </select>
+ 
+<select id="findWhCatonById" resultMap="WhCartonResultExt">
+    	select <include refid="whCartonColumnsExt" />
+	    from t_wh_carton 
+	    where id = #{id} and ou_id = #{ouid}
+ </select>
+	
+	
+</mapper>
