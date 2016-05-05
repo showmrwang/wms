@@ -12,11 +12,11 @@
  * DERIVATIVES.
  * 
  */
-package com.baozun.scm.primservice.whoperation.command.warehouse.inventory;
+package com.baozun.scm.primservice.whoperation.model.warehouse.inventory;
 
 import java.util.Date;
 
-import com.baozun.scm.primservice.whoperation.command.BaseCommand;
+import com.baozun.scm.primservice.whoperation.model.BaseModel;
 
 /**
  * 商品库存表
@@ -24,12 +24,14 @@ import com.baozun.scm.primservice.whoperation.command.BaseCommand;
  * @author larkark
  * 
  */
-public class InventoryCommand extends BaseCommand {
+public class WhSkuInventory extends BaseModel {
 
-    private static final long serialVersionUID = -635262476522169659L;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -263625851030926135L;
 
-    /** 主键ID */
-    private Long id;
+
     /** 商品ID */
     private Long skuId;
     /** 库位ID 库位号 */
@@ -44,8 +46,6 @@ public class InventoryCommand extends BaseCommand {
     private Long storeId;
     /** 占用单据号 */
     private String occupationCode;
-    /** 调整数量 */
-    private Double modifyQty;
     /** 在库库存 */
     private Double onHandQty;
     /** 已分配库存 */
@@ -84,60 +84,6 @@ public class InventoryCommand extends BaseCommand {
     private Long ouId;
     /** 占用单据号来源 */
     private String occupationCodeSource;
-    /** 生产日期 String */
-    private String mfgDateStr;
-    /** 失效日期 String */
-    private String expDateStr;
-
-    /** 商品编码 */
-    private String skuCode;
-    /** 商品名称 */
-    private String skuName;
-    /** 库位号 */
-    private String locationCode;
-    /** 外部容器号 */
-    private String outerContainerCode;
-    /** 内部容器号 */
-    private String insideContainerCode;
-    /** 客户名称 */
-    private String customerName;
-    /** 店铺名称 */
-    private String storeName;
-    /** 库存类型 */
-    private String invTypeName;
-    /** 可用数量 */
-    private Double qty;
-    /** 库存状态 */
-    private String invstatusName;
-    /** 库存属性1 lable */
-    private String invAttr1Str;
-    /** 库存属性2 lable */
-    private String invAttr2Str;
-    /** 库存属性3 lable */
-    private String invAttr3Str;
-    /** 库存属性4 lable */
-    private String invAttr4Str;
-    /** 库存属性5 lable */
-    private String invAttr5Str;
-
-    // pda-general-receiving
-    private Long occupationId;
-
-    public Long getOccupationId() {
-        return occupationId;
-    }
-
-    public void setOccupationId(Long occupationId) {
-        this.occupationId = occupationId;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public Long getSkuId() {
         return skuId;
@@ -193,20 +139,6 @@ public class InventoryCommand extends BaseCommand {
 
     public void setOccupationCode(String occupationCode) {
         this.occupationCode = occupationCode;
-    }
-    
-    /**
-     * @return the modifyQty
-     */
-    public Double getModifyQty() {
-        return modifyQty;
-    }
-
-    /**
-     * @param modifyQty the modifyQty to set
-     */
-    public void setModifyQty(Double modifyQty) {
-        this.modifyQty = modifyQty;
     }
 
     public Double getOnHandQty() {
@@ -351,142 +283,6 @@ public class InventoryCommand extends BaseCommand {
 
     public void setOuId(Long ouId) {
         this.ouId = ouId;
-    }
-
-    public String getSkuCode() {
-        return skuCode;
-    }
-
-    public void setSkuCode(String skuCode) {
-        this.skuCode = skuCode;
-    }
-
-    public String getSkuName() {
-        return skuName;
-    }
-
-    public void setSkuName(String skuName) {
-        this.skuName = skuName;
-    }
-
-    public String getLocationCode() {
-        return locationCode;
-    }
-
-    public void setLocationCode(String locationCode) {
-        this.locationCode = locationCode;
-    }
-
-    public String getOuterContainerCode() {
-        return outerContainerCode;
-    }
-
-    public void setOuterContainerCode(String outerContainerCode) {
-        this.outerContainerCode = outerContainerCode;
-    }
-
-    public String getInsideContainerCode() {
-        return insideContainerCode;
-    }
-
-    public void setInsideContainerCode(String insideContainerCode) {
-        this.insideContainerCode = insideContainerCode;
-    }
-
-    public String getCustomerName() {
-        return customerName;
-    }
-
-    public void setCustomerName(String customerName) {
-        this.customerName = customerName;
-    }
-
-    public String getStoreName() {
-        return storeName;
-    }
-
-    public void setStoreName(String storeName) {
-        this.storeName = storeName;
-    }
-
-    public String getInvTypeName() {
-        return invTypeName;
-    }
-
-    public void setInvTypeName(String invTypeName) {
-        this.invTypeName = invTypeName;
-    }
-
-    public Double getQty() {
-        return qty;
-    }
-
-    public void setQty(Double qty) {
-        this.qty = qty;
-    }
-
-    public String getInvstatusName() {
-        return invstatusName;
-    }
-
-    public void setInvstatusName(String invstatusName) {
-        this.invstatusName = invstatusName;
-    }
-
-    public String getMfgDateStr() {
-        return mfgDateStr;
-    }
-
-    public void setMfgDateStr(String mfgDateStr) {
-        this.mfgDateStr = mfgDateStr;
-    }
-
-    public String getExpDateStr() {
-        return expDateStr;
-    }
-
-    public void setExpDateStr(String expDateStr) {
-        this.expDateStr = expDateStr;
-    }
-
-    public String getInvAttr1Str() {
-        return invAttr1Str;
-    }
-
-    public void setInvAttr1Str(String invAttr1Str) {
-        this.invAttr1Str = invAttr1Str;
-    }
-
-    public String getInvAttr2Str() {
-        return invAttr2Str;
-    }
-
-    public void setInvAttr2Str(String invAttr2Str) {
-        this.invAttr2Str = invAttr2Str;
-    }
-
-    public String getInvAttr3Str() {
-        return invAttr3Str;
-    }
-
-    public void setInvAttr3Str(String invAttr3Str) {
-        this.invAttr3Str = invAttr3Str;
-    }
-
-    public String getInvAttr4Str() {
-        return invAttr4Str;
-    }
-
-    public void setInvAttr4Str(String invAttr4Str) {
-        this.invAttr4Str = invAttr4Str;
-    }
-
-    public String getInvAttr5Str() {
-        return invAttr5Str;
-    }
-
-    public void setInvAttr5Str(String invAttr5Str) {
-        this.invAttr5Str = invAttr5Str;
     }
 
     public String getOccupationCodeSource() {

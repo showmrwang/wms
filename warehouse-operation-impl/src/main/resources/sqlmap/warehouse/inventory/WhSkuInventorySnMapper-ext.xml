@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventorySnDao">
+	<resultMap id="WhSkuInventorySnResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventorySn">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whSkuInventorySnColumnsExt">
+	    <![CDATA[
+	        	id as id,
+	        	inv_id as invId,
+	        	sku_id as skuId,
+	        	sn as sn,
+	        	occupation_code as occupationCode,
+	        	defect_ware_barcode as defectWareBarcode,
+	        	defect_source as defectSource,
+	        	defect_type_id as defectTypeId,
+	        	defect_reasons_id as defectReasonsId,
+	        	status as status,
+	        	inv_attr as invAttr,
+	        	uuid as uuid,
+	        	ou_id as ouId
+	    ]]>
+	</sql>
+	
+	<resultMap id="WhSkuInventorySnCommandResultExt" type="com.baozun.scm.primservice.whoperation.command.warehouse.inventory.InventorySnCommand">
+	</resultMap>
+	
+	<sql id="findListByQueryMapWithPageWhereExt">
+		<where>
+	       		sn.ou_id = #{ouId}
+				<if test="uuid!=null and uuid!=''">
+					and sn.uuid = #{uuid}
+				</if>
+				<if test="sn!=null and sn!=''">
+					and sn.sn like #{sn}
+				</if>
+				<if test="snData!=null and snData!=''">
+					and sn.sn like #{snData}
+				</if>
+				<if test="defectWareBarcode!=null and defectWareBarcode!=''">
+					and sn.defect_ware_barcode like #{defectWareBarcode}
+				</if>
+				<if test="defectWareBarcodeData!=null and defectWareBarcodeData!=''">
+					and sn.defect_ware_barcode like #{defectWareBarcodeData}
+				</if>
+				<if test="occupationCode!=null and occupationCode!=''">
+					and sn.occupation_code like #{occupationCode}
+				</if>
+				<if test="occupationCodeData!=null and occupationCodeData!=''">
+					and sn.occupation_code like #{occupationCodeData}
+				</if>
+				<if test="defectSource!=null and defectSource!=''">
+					and sn.defect_source = #{defectSource} and sn.defect_type_id = #{typeId}
+				</if>
+				<if test="defectReasons!=null and defectReasons!=''">
+					and sn.defect_reasons_id = #{defectReasons}
+				</if>
+				<if test="status!=null ">
+					and sn.status = #{status}
+				</if>
+		</where>
+	</sql>
+	
+	<sql id="findListByQueryMapWithPageCommandExt">
+	    <![CDATA[
+				sn.id as id,
+				sn.inv_id as invId,
+				sn.sku_id as skuId,
+				sn.sn as sn,
+				sn.occupation_code as occupationCode,
+				sn.defect_ware_barcode as defectWareBarcode,
+				sn.defect_source as defectSource,
+				sn.defect_type_id as defectTypeId,
+				sn.defect_reasons_id as defectReasonsId,
+				sn.status as status,
+				sn.inv_attr as invAttr,
+				sn.uuid as uuid,
+				sn.ou_id as ouId,
+				sku.code as skuCode,
+				sku.name as skuName,
+				sys.dic_label as statusStr,
+				stype.name as storeDefectTypeName,
+				srea.name as storeDefectReasonsName,
+				wtype.name as whDefectTypeName,
+				wrea.name as whDefectReasonsName
+	    ]]>
+	</sql>
+	
+
+	
+	<select id="findListCountByQueryMapExt" resultType="long">
+        select count(*) 
+			from t_wh_sku_inventory_sn sn 
+			left join t_wh_sku sku on sn.sku_id = sku.id 
+			left join sys_dictionary sys on sn.status = sys.dic_value and sys.group_value = 'INVENTORY_SN_STATUS' 
+			left join t_bi_store_defect_type stype on stype.id = sn.defect_type_id 
+			left join t_bi_store_defect_reasons srea on srea.id = sn.defect_reasons_id
+			left join t_wh_defect_type wtype on wtype.id = sn.defect_type_id 
+			left join t_wh_defect_reasons wrea on wrea.id = sn.defect_reasons_id
+		<include refid="findListByQueryMapWithPageWhereExt"/>    
+    </select>
+	
+	<select id="findListByQueryMapWithPageExt" resultMap="WhSkuInventorySnCommandResultExt">
+    	select <include refid="findListByQueryMapWithPageCommandExt" />
+			from t_wh_sku_inventory_sn sn 
+			left join t_wh_sku sku on sn.sku_id = sku.id 
+			left join sys_dictionary sys on sn.status = sys.dic_value and sys.group_value = 'INVENTORY_SN_STATUS' 
+			left join t_bi_store_defect_type stype on stype.id = sn.defect_type_id 
+			left join t_bi_store_defect_reasons srea on srea.id = sn.defect_reasons_id
+			left join t_wh_defect_type wtype on wtype.id = sn.defect_type_id 
+			left join t_wh_defect_reasons wrea on wrea.id = sn.defect_reasons_id
+		<include refid="findListByQueryMapWithPageWhereExt"/>
+    </select>
+	
+</mapper>

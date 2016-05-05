@@ -1,0 +1,461 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao">
+	<resultMap id="WhSkuInventoryResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whSkuInventoryColumnsExt">
+	    <![CDATA[
+	        	id as id,
+	        	sku_id as skuId,
+	        	location_id as locationId,
+	        	outer_container_id as outerContainerId,
+	        	inside_container_id as insideContainerId,
+	        	customer_id as customerId,
+	        	store_id as storeId,
+	        	occupation_code as occupationCode,
+	        	on_hand_qty as onHandQty,
+	        	allocated_qty as allocatedQty,
+	        	to_be_filled_qty as toBeFilledQty,
+	        	frozen_qty as frozenQty,
+	        	inv_status as invStatus,
+	        	inv_type as invType,
+	        	batch_number as batchNumber,
+	        	mfg_date as mfgDate,
+	        	exp_date as expDate,
+	        	country_of_origin as countryOfOrigin,
+	        	inv_attr1 as invAttr1,
+	        	inv_attr2 as invAttr2,
+	        	inv_attr3 as invAttr3,
+	        	inv_attr4 as invAttr4,
+	        	inv_attr5 as invAttr5,
+	        	uuid as uuid,
+	        	is_locked as isLocked,
+	        	ou_id as ouId,
+	        	occupation_code_source as occupationCodeSource
+	    ]]>
+	</sql>
+	
+	<sql id="whSkuInventoryDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+				<if test="skuId!=null">
+					and sku_id = #{skuId}
+				</if>
+	       
+				<if test="locationId!=null">
+					and location_id = #{locationId}
+				</if>
+	       
+				<if test="outerContainerId!=null">
+					and outer_container_id = #{outerContainerId}
+				</if>
+	       
+				<if test="insideContainerId!=null">
+					and inside_container_id = #{insideContainerId}
+				</if>
+	       
+				<if test="customerId!=null">
+					and customer_id = #{customerId}
+				</if>
+	       
+				<if test="storeId!=null">
+					and store_id = #{storeId}
+				</if>
+	       
+	       
+		       <if test="occupationCode!=null and occupationCode!=''">
+					and occupation_code = #{occupationCode}
+				</if>
+	       
+				<if test="onHandQty!=null">
+					and on_hand_qty = #{onHandQty}
+				</if>
+	       
+				<if test="allocatedQty!=null">
+					and allocated_qty = #{allocatedQty}
+				</if>
+	       
+				<if test="toBeFilledQty!=null">
+					and to_be_filled_qty = #{toBeFilledQty}
+				</if>
+	       
+				<if test="frozenQty!=null">
+					and frozen_qty = #{frozenQty}
+				</if>
+	       
+				<if test="invStatus!=null">
+					and inv_status = #{invStatus}
+				</if>
+	       
+	       
+		       <if test="invType!=null and invType!=''">
+					and inv_type = #{invType}
+				</if>
+	       
+	       
+		       <if test="batchNumber!=null and batchNumber!=''">
+					and batch_number = #{batchNumber}
+				</if>
+	       
+				<if test="mfgDate!=null">
+					and mfg_date = #{mfgDate}
+				</if>
+	       
+				<if test="expDate!=null">
+					and exp_date = #{expDate}
+				</if>
+	       
+	       
+		       <if test="countryOfOrigin!=null and countryOfOrigin!=''">
+					and country_of_origin = #{countryOfOrigin}
+				</if>
+	       
+	       
+		       <if test="invAttr1!=null and invAttr1!=''">
+					and inv_attr1 = #{invAttr1}
+				</if>
+	       
+	       
+		       <if test="invAttr2!=null and invAttr2!=''">
+					and inv_attr2 = #{invAttr2}
+				</if>
+	       
+	       
+		       <if test="invAttr3!=null and invAttr3!=''">
+					and inv_attr3 = #{invAttr3}
+				</if>
+	       
+	       
+		       <if test="invAttr4!=null and invAttr4!=''">
+					and inv_attr4 = #{invAttr4}
+				</if>
+	       
+	       
+		       <if test="invAttr5!=null and invAttr5!=''">
+					and inv_attr5 = #{invAttr5}
+				</if>
+	       
+	       
+		       <if test="uuid!=null and uuid!=''">
+					and uuid = #{uuid}
+				</if>
+	       
+				<if test="isLocked!=null">
+					and is_locked = #{isLocked}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+		</where>
+	</sql>
+	
+	
+	<sql id="whSkuInventoryCommandMapExt">
+	    <![CDATA[
+			t.id as id,
+			t.sku_id as sku_id,
+			t.location_id as location_id,
+			t.outer_container_id as outer_container_id,
+			t.inside_container_id as inside_container_id,
+			t.customer_id as customer_id,
+			t.store_id as store_id,
+			t.occupation_code as occupation_code,
+			t.on_hand_qty as on_hand_qty,
+			t.allocated_qty as allocated_qty,
+			t.to_be_filled_qty as to_be_filled_qty,
+			t.frozen_qty as frozen_qty,
+			t.inv_status as inv_status,
+			t.on_hand_qty+t.to_be_filled_qty-t.allocated_qty-t.frozen_qty as qty,
+			t.inv_type as inv_type,
+			t.batch_number as batch_number,
+			t.mfg_date as mfg_date,
+			t.exp_date as exp_date,
+			t.country_of_origin as country_of_origin,
+			t.inv_attr1 as inv_attr1,
+			t.inv_attr2 as inv_attr2,
+			t.inv_attr3 as inv_attr3,
+			t.inv_attr4 as inv_attr4,
+			t.inv_attr5 as inv_attr5,
+			t.uuid as uuid,
+			t.is_locked as is_locked,
+			t.ou_id as ou_id,
+			t.occupation_code_source as occupation_code_source,
+			sku.code as skuCode,
+			sku.name as skuName,
+			l.code as locationCode,
+			cout.code as outerContainerCode,
+			iout.code as insideContainerCode,
+			cust.customer_name as customerName,
+			store.store_name as storeName,
+			sys.dic_label as invTypeName,
+			invstatus.name as invstatusName,
+			inva1.dic_label as invAttr1Str,
+			inva2.dic_label as invAttr2Str,
+			inva3.dic_label as invAttr3Str,
+			inva4.dic_label as invAttr4Str,
+			inva5.dic_label as invAttr5Str
+	    ]]>
+	</sql>
+	
+	<sql id="whSkuInventoryCommandMergeExt">
+	    <![CDATA[
+	    	t.id as id,
+			t.sku_id as skuId,
+			t.location_id as locationId,
+			t.outer_container_id as outerContainerId,
+			t.inside_container_id as insideContainerId,
+			t.customer_id as customerId,
+			t.store_id as storeId,
+			t.occupation_code as occupationCode,
+			sum(t.on_hand_qty) as onHandQty,
+			sum(t.allocated_qty) as allocatedQty,
+			sum(t.to_be_filled_qty) as toBeFilledQty,
+			sum(t.frozen_qty) as frozenQty,
+			t.inv_status as invStatus,
+			sum(t.qty) as qty,
+			t.inv_type as invType,
+			t.batch_number as batchNumber,
+			date_format(t.mfg_date,'%Y-%m-%d %T') as mfgDateStr,
+			date_format(t.exp_date,'%Y-%m-%d %T') as expDateStr,
+			t.mfg_date as mfgDate,
+			t.exp_date as expDate,
+			t.country_of_origin as countryOfOrigin,
+			t.inv_attr1 as invAttr1,
+			t.inv_attr2 as invAttr2,
+			t.inv_attr3 as invAttr3,
+			t.inv_attr4 as invAttr4,
+			t.inv_attr5 as invAttr5,
+			t.uuid as uuid,
+			t.is_locked as isLocked,
+			t.ou_id as ouId,
+			t.occupation_code_source as occupationCodeSource,
+			t.skuCode as skuCode,
+			t.skuName as skuName,
+			t.locationCode as locationCode,
+			t.outerContainerCode as outerContainerCode,
+			t.insideContainerCode as insideContainerCode,
+			t.customerName as customerName,
+			t.storeName as storeName,
+			t.invTypeName as invTypeName,
+			t.invstatusName as invstatusName,
+			t.invAttr1Str as invAttr1Str,
+			t.invAttr2Str as invAttr2Str,
+			t.invAttr3Str as invAttr3Str,
+			t.invAttr4Str as invAttr4Str,
+			t.invAttr5Str as invAttr5Str
+	    ]]>
+	</sql>
+	
+		<sql id="findListByQueryMapWithPageWhereExt">
+		<where>
+	       		t.ou_id = #{ouId}
+	       		<!-- 库位号 -->
+				<if test="locationCode!=null and locationCode!=''">
+					 and l.code like #{locationCode}
+				</if>
+	       		<!-- 库位号 -->
+				<if test="locationCodeData!=null and locationCodeData!=''">
+					 and l.code like #{locationCodeData}
+				</if>
+				<!-- 外部容器号 -->
+				<if test="outerContainer!=null and outerContainer!=''">
+					 and cout.code like #{outerContainer}
+				</if>
+				<!-- 外部容器号 -->
+				<if test="outerContainerData!=null and outerContainerData!=''">
+					 and cout.code like #{outerContainerData}
+				</if>
+				<!-- 内部容器号 -->
+				<if test="insideContainer!=null and insideContainer!=''">
+					 and iout.code like #{insideContainer}
+				</if>
+				<!-- 内部容器号 -->
+				<if test="insideContainerData!=null and insideContainerData!=''">
+					 and iout.code like #{insideContainerData}
+				</if>
+				<!-- 商品编码 -->
+				<if test="skuCode!=null and skuCode!=''">
+					 and sku.code like #{skuCode}
+				</if>
+				<!-- 商品名称 -->
+				<if test="skuName!=null  and skuName!=''">
+					 and sku.name like #{skuName}
+				</if>
+				<!-- 客户名称 -->
+				<if test="customerName!=null and customerName!=''">
+					 and cust.customer_name like #{customerName}
+				</if>
+				<!-- 店铺名称 -->
+				<if test="storeName!=null and storeName!=''">
+					 and store.store_name like #{storeName}
+				</if>
+				<!-- 库存状态 -->
+				<if test="invsStatus!=null and invsStatus!=''">
+					 and t.inv_status = #{invsStatus}
+				</if>
+				<!-- 库存类型 -->
+				<if test="invType!=null and invType!=''">
+					 and t.inv_type = #{invType}
+				</if>
+				<!-- 批次号 -->
+				<if test="batchNumber!=null and batchNumber!=''">
+					 and t.batch_number like #{batchNumber}
+				</if>
+				<!-- 生产日期 -->
+				<if test="mfgDate!=null and mfgDate!=''">
+					 and t.mfg_date &gt;= #{mfgDate}
+				</if>
+				<!-- 失效日期 -->
+				<if test="expDate!=null and expDate!=''">
+					 and t.exp_date &lt;= #{expDate}
+				</if>
+				<!-- 原产地 -->
+				<if test="countryOfOrigin!=null and countryOfOrigin!=''">
+					 and t.country_of_origin = #{countryOfOrigin}
+				</if>
+				<!-- 库存属性1 -->
+				<if test="invattr1!=null and invattr1!=''">
+					 and t.inv_attr1 = #{invattr1}
+				</if>
+				<!-- 库存属性2 -->
+				<if test="invattr2!=null and invattr2!=''">
+					 and t.inv_attr2 = #{invattr2}
+				</if>
+				<!-- 库存属性3 -->
+				<if test="invattr3!=null and invattr3!=''">
+					 and t.inv_attr3 = #{invattr3}
+				</if>
+				<!-- 库存属性4 -->
+				<if test="invattr4!=null and invattr4!=''">
+					 and t.inv_attr4 = #{invattr4}
+				</if>
+				<!-- 库存属性5 -->
+				<if test="invattr5!=null and invattr5!=''">
+					 and t.inv_attr5 = #{invattr5}
+				</if>
+		</where>
+	</sql>
+	
+	
+	<resultMap id="WhSkuInventoryCommandResultExt" type="com.baozun.scm.primservice.whoperation.command.warehouse.inventory.InventoryCommand">
+	</resultMap>
+	
+	<select id="findListCountByQueryMapExt" resultType="long">
+		select count(t.uuid) from (
+			select <include refid="whSkuInventoryCommandMergeExt" />
+		from (
+		    	select <include refid="whSkuInventoryCommandMapExt" />
+					from 
+						t_wh_sku_inventory t 
+						left join t_wh_sku sku on t.sku_id = sku.id 
+						left join t_wh_location l on t.location_id = l.id 
+						left join t_wh_container cout on t.outer_container_id = cout.id 
+						left join t_wh_container iout on t.inside_container_id = iout.id 
+						left join t_bi_customer cust on t.customer_id = cust.id 
+						left join t_bi_store store on t.store_id = store.id 
+						left join t_wh_inventory_status invstatus on t.inv_status = invstatus.id
+						left join sys_dictionary sys on t.inv_type = sys.dic_value and sys.group_value = 'INVENTORY_TYPE'
+						left join sys_dictionary inva1 on t.inv_attr1 = inva1.dic_value and inva1.group_value = 'INVENTORY_ATTR_1' 
+						left join sys_dictionary inva2 on t.inv_attr2 = inva2.dic_value and inva2.group_value = 'INVENTORY_ATTR_2' 
+						left join sys_dictionary inva3 on t.inv_attr3 = inva3.dic_value and inva3.group_value = 'INVENTORY_ATTR_3' 
+						left join sys_dictionary inva4 on t.inv_attr4 = inva4.dic_value and inva4.group_value = 'INVENTORY_ATTR_4' 
+						left join sys_dictionary inva5 on t.inv_attr5 = inva5.dic_value and inva5.group_value = 'INVENTORY_ATTR_5' 
+						<include refid="findListByQueryMapWithPageWhereExt"/> )
+			t group by t.uuid) t
+    </select>
+	
+	
+	<select id="findListByQueryMapWithPageExt" resultMap="WhSkuInventoryCommandResultExt">
+		select <include refid="whSkuInventoryCommandMergeExt" />
+			from (
+			    	select <include refid="whSkuInventoryCommandMapExt" />
+						from 
+							t_wh_sku_inventory t 
+							left join t_wh_sku sku on t.sku_id = sku.id 
+							left join t_wh_location l on t.location_id = l.id 
+							left join t_wh_container cout on t.outer_container_id = cout.id 
+							left join t_wh_container iout on t.inside_container_id = iout.id 
+							left join t_bi_customer cust on t.customer_id = cust.id 
+							left join t_bi_store store on t.store_id = store.id 
+							left join t_wh_inventory_status invstatus on t.inv_status = invstatus.id
+							left join sys_dictionary sys on t.inv_type = sys.dic_value and sys.group_value = 'INVENTORY_TYPE'
+							left join sys_dictionary inva1 on t.inv_attr1 = inva1.dic_value and inva1.group_value = 'INVENTORY_ATTR_1' 
+							left join sys_dictionary inva2 on t.inv_attr2 = inva2.dic_value and inva2.group_value = 'INVENTORY_ATTR_2' 
+							left join sys_dictionary inva3 on t.inv_attr3 = inva3.dic_value and inva3.group_value = 'INVENTORY_ATTR_3' 
+							left join sys_dictionary inva4 on t.inv_attr4 = inva4.dic_value and inva4.group_value = 'INVENTORY_ATTR_4' 
+							left join sys_dictionary inva5 on t.inv_attr5 = inva5.dic_value and inva5.group_value = 'INVENTORY_ATTR_5' 
+						<include refid="findListByQueryMapWithPageWhereExt"/> )
+			t group by t.uuid
+    </select>
+    
+    <sql id="findWhSkuInventoryByIdAndUuidColumns">
+	    <![CDATA[
+			inv.id as id,
+			inv.sku_id as skuId,
+			inv.location_id as locationId,
+			inv.outer_container_id as outerContainerId,
+			inv.inside_container_id as insideContainerId,
+			inv.customer_id as customerId,
+			inv.store_id as storeId,
+			inv.occupation_code as occupationCode,
+			inv.on_hand_qty as onHandQty,
+			inv.allocated_qty as allocatedQty,
+			inv.to_be_filled_qty as toBeFilledQty,
+			inv.frozen_qty as frozenQty,
+			inv.inv_status as invStatus,
+			inv.inv_type as invType,
+			inv.batch_number as batchNumber,
+			inv.mfg_date as mfgDate,
+			inv.exp_date as expDate,
+			inv.country_of_origin as countryOfOrigin,
+			inv.inv_attr1 as invAttr1,
+			inv.inv_attr2 as invAttr2,
+			inv.inv_attr3 as invAttr3,
+			inv.inv_attr4 as invAttr4,
+			inv.inv_attr5 as invAttr5,
+			inv.uuid as uuid,
+			inv.is_locked as isLocked,
+			inv.ou_id as ouId,
+			inv.occupation_code_source as occupationCodeSource,
+			l.code as locationCode,
+			cout.code as outerContainerCode,
+			iout.code as insideContainerCode,
+			cust.customer_name as customerName,
+			store.store_name as storeName,
+			sku.code as skuCode,
+			sku.name as skuName
+	    ]]>
+	</sql>
+    
+    
+	<select id="findWhSkuInventoryByIdAndUuid" resultMap="WhSkuInventoryCommandResultExt">
+		select <include refid="findWhSkuInventoryByIdAndUuidColumns" />
+			from t_wh_sku_inventory inv 
+				left join t_wh_location l on inv.location_id = l.id 
+				left join t_wh_container cout on inv.outer_container_id = cout.id 
+				left join t_wh_container iout on inv.inside_container_id = iout.id 
+				left join t_bi_customer cust on inv.customer_id = cust.id 
+				left join t_bi_store store on inv.store_id = store.id 
+				left join t_wh_sku sku on inv.sku_id = sku.id 
+				<where>
+				inv.id = #{id} 
+	       		and inv.ou_id = #{ouid} 
+				<if test="uuid!=null and uuid!=''">
+					 and inv.uuid = #{uuid}
+				</if>
+		</where>
+    </select>
+	
+</mapper>

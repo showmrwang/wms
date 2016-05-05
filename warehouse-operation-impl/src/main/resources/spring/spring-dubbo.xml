@@ -37,6 +37,12 @@
     <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.InventoryModifyManager"  ref="inventoryModifyManager" />
     <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.InventoryOccupyManager"  ref="inventoryOccupyManager" />
     <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.InventoryLogManager"  ref="inventoryLogManager" />
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.InventoryLockManager"  ref="inventoryLockManager" />
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.InventoryValidateManager"  ref="inventoryValidateManager" />
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.outbound.InventoryModifyOutboundManager"  ref="inventoryModifyOutboundManager" />
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.outbound.CommonOutboundManager"  ref="commonOutboundManager" />
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.inbound.InventoryModifyInboundManager"  ref="inventoryModifyInboundManager" />
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.inbound.CommonInboundManager"  ref="commonInboundManager" />
     
 	
     <!--生成远程服务代理，可以和本地bean一样使用demoService-->
