@@ -227,4 +227,12 @@ public class AsnLineManagerImpl extends BaseManagerImpl implements AsnLineManage
         log.info(this.getClass().getSimpleName() + ".findWhAsnLineCommandEditDevanning method begin!");
         return whAsnLineDao.findWhAsnLineCommandEditDevanning(whAsnLine.getId(), whAsnLine.getAsnId(), whAsnLine.getOuId(), whAsnLine.getSkuId());
     }
+
+    /**
+     * 通过asnlineid+ouid查询对应asnline信息
+     */
+    @Override
+    public WhAsnLineCommand findWhAsnLineById(Long id, Long ouid) {
+        return whAsnLineDao.findWhAsnLineById(id, ouid);
+    }
 }
