@@ -61,5 +61,12 @@ public interface WhCartonDao extends BaseDao<WhCarton, Long> {
      */
     WhCarton findWhCatonById(@Param("id") Long id, @Param("ouid") Long ouid);
 
+    /**
+     * 删除对应拆箱信息
+     * 
+     * @return
+     */
+    int deleteCartonById(@Param("id") Long id, @Param("ouid") Long ouid);
+
 
 }

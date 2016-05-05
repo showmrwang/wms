@@ -10,8 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.carton.WhCartonCommand;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
+import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
+import com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnLineDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.carton.WhCartonDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
@@ -26,6 +29,8 @@ public class WhCartonManagerImpl extends BaseManagerImpl implements WhCartonMana
 
     @Autowired
     private WhCartonDao whCartonDao;
+    @Autowired
+    private WhAsnLineDao whAsnLineDao;
 
     /**
      * 通过ASN相关信息查询对用拆箱信息
@@ -49,11 +54,29 @@ public class WhCartonManagerImpl extends BaseManagerImpl implements WhCartonMana
         // 查询对应拆箱信息
         WhCarton c = whCartonDao.findWhCatonById(whCartonCommand.getId(), whCartonCommand.getOuId());
         if (null == c) {
-            log.warn("deleteCarton asn is null logid: " + whCartonCommand.getLogId());
+            log.warn("deleteCarton WhCarton is null logid: " + whCartonCommand.getLogId());
             throw new BusinessException(ErrorCodes.CARTONNULL_ERROR);
         }
+        WhAsnLineCommand whAsnLineCommand = whAsnLineDao.findWhAsnLineById(c.getAsnLineId(), c.getOuId());
+        if (null == whAsnLineCommand) {
+            log.warn("deleteCarton asnLine is null logid: " + whCartonCommand.getLogId());
+            throw new BusinessException(ErrorCodes.ASNLINE_NULL);
+        }
+        // 验证对应ASNLINE状态是否是未收货状态
+        if (!whAsnLineCommand.getStatus().equals(PoAsnStatus.ASNLINE_NOT_RCVD)) {
+            log.warn("deleteCarton asnLine status is " + whAsnLineCommand.getStatus() + " error logid: " + whCartonCommand.getLogId());
+            throw new BusinessException(ErrorCodes.ASNLINE_STATUS_ERROR);
+        }
+        // 删除对应拆箱信息
+        int count = whCartonDao.deleteCartonById(c.getId(), c.getOuId());
+        if (count == 0) {
+            // 删除失败
+            log.warn("deleteCarton WhCarton count=0 logid: " + whCartonCommand.getLogId());
+            throw new BusinessException(ErrorCodes.DELETE_ERROR);
+        }
+        // 插入系统日志表
+        insertGlobalLog(GLOBAL_LOG_DELETE, c, c.getOuId(), whCartonCommand.getModifiedId(), whAsnLineCommand.getAsnCode(), null);
         log.info(this.getClass().getSimpleName() + ".findWhAsnLineCommandEditDevanning method end! logid: " + whCartonCommand.getLogId());
-
     }
 
     /**

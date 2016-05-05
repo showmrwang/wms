@@ -44,6 +44,8 @@
     <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.inbound.InventoryModifyInboundManager"  ref="inventoryModifyInboundManager" />
     <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.inbound.CommonInboundManager"  ref="commonInboundManager" />
     
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.carton.WhCartonManager" ref="whCartonManager" />  
+    
 	
     <!--生成远程服务代理，可以和本地bean一样使用demoService-->
 <!--     <dubbo:reference id="demoManager" interface="com.baozun.scm.primservice.whoperation.manager.DemoManager" cluster="failfast" loadbalance="consistenthash"/> -->

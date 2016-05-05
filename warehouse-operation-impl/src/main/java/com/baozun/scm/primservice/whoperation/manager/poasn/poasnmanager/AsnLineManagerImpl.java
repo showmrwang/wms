@@ -232,6 +232,7 @@ public class AsnLineManagerImpl extends BaseManagerImpl implements AsnLineManage
      * 通过asnlineid+ouid查询对应asnline信息
      */
     @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public WhAsnLineCommand findWhAsnLineById(Long id, Long ouid) {
         return whAsnLineDao.findWhAsnLineById(id, ouid);
     }
