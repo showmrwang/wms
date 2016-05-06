@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao">
+	<resultMap id="ContainerResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.Container">
+	</resultMap>
+	
+	<resultMap id="ContainerCommandResultExt" type="com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand">
+	</resultMap>
+	
+	<select id="findListByQueryMapWithPageExt" resultMap="ContainerCommandResultExt">
+	    	select <include refid="containerColumnsExt" />
+		    from t_wh_container as s
+		    left join sys_dictionary as syst on s.one_level_type = syst.id
+		    left join sys_dictionary as sysl on s.two_level_type = sysl.id
+			<include refid="containerDynamicWhereExt"/>
+    </select>
+	    
+	<select id="findListCountByQueryMapExt" resultType="long">
+	        select count(*) from t_wh_container as s
+		    left join sys_dictionary as syst on s.one_level_type = syst.id
+		    left join sys_dictionary as sysl on s.two_level_type = sysl.id
+			<include refid="containerDynamicWhereExt"/> 
+	</select>
+	
+	<select id="findListCountByParamAndId" resultType="long">
+        	select count(*) from t_wh_container 
+			<include refid="containerDynamicWhereNotIdExt"/>    
+    </select>
+	
+	<sql id="containerDynamicWhereNotIdExt">
+		<where>
+			<if test="id!=null">
+				and id != #{id}
+			</if>
+			
+			<if test="code!=null and code!=''">
+				and code like #{code}
+			</if>
+			<if test="name!=null and name!=''">
+				and name like #{name}
+			</if>
+			<if test="ouId!=null and ouId!=''">
+				and ou_id = #{ouId}
+			</if>
+		</where>
+   </sql>
+   
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="containerColumnsExt">
+	    <![CDATA[
+	        	s.id as id,
+	        	s.name as name,
+	        	s.code as code,
+	        	s.one_level_type as oneLevelType,
+	        	s.two_level_type as twoLevelType,
+	        	s.create_time as createTime,
+	        	s.last_modify_time as lastModifyTime,
+	        	s.operator_id as operatorId,
+	        	s.lifecycle as lifecycle,
+	        	s.ou_id as ouId,
+	        	syst.dic_label as oneLevelTypeName,
+                sysl.dic_label as twoLevelTypeName
+	    ]]>
+	</sql>
+	
+	<sql id="containerDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and s.id = #{id}
+				</if>
+	       
+	       
+		       <if test="name!=null and name!=''">
+					and s.name like #{name}
+				</if>
+	       
+       			<if test="name1!=null and name1!=''">
+					and s.name like #{name1}
+				</if>
+	       
+		       <if test="code!=null and code!=''">
+					and s.code like #{code}
+				</if>
+				
+				<if test="code1!=null and code1!=''">
+					and s.code like #{code1}
+				</if>
+	       
+				<if test="oneLevelType!=null">
+					and s.one_level_type like #{oneLevelType}
+				</if>
+	       
+				<if test="twoLevelType!=null">
+					and s.two_level_type like #{twoLevelType}
+				</if>
+	       
+				<if test="createTime!=null">
+					and s.create_time = #{createTime}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and s.last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="operatorId!=null">
+					and s.operator_id = #{operatorId}
+				</if>
+	       
+				<if test="lifecycle!=null">
+					and s.lifecycle = #{lifecycle}
+				</if>
+				<if test="ouId!=null">
+					and s.ou_id = #{ouId}
+				</if>
+		</where>
+	</sql>
+	
+
+		<update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Container">
+		    <![CDATA[
+		         UPDATE t_wh_container SET
+			        name = #{name,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        code = #{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        one_level_type = #{oneLevelType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        two_level_type = #{twoLevelType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+			        last_modify_time = now(),
+			        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
+		        WHERE 
+			        id = #{id} 
+			        and ou_id = #{ouId}
+			        and last_modify_time	=  #{lastModifyTime}    
+		    ]]>
+		</update>
+	
+		<update id="updateLifeCycle" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Container">
+			UPDATE t_wh_container SET lifecycle = #{lifecycle},operator_id = #{userid},last_modify_time = now()  
+			WHERE id in
+			<foreach collection="ids" item="id" open="(" separator=","
+				close=")">
+				#{id}
+			</foreach>
+			and ou_id = #{ouId}
+	    </update>
+	    
+	    <delete id="deleteExt" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from t_wh_container where
+		        id = #{id} 
+		        and ou_id = #{ouId}
+	    ]]>
+	    </delete>
+	    
+	    <delete id="deleteByIdsExt" parameterType="list">
+	    
+	        delete from t_wh_container 
+	        where id in
+				<foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
+			#{item}			
+			</foreach>	
+	  		and ou_id = #{ouId}
+	    </delete>  
+	    
+	    <select id="findByIdExt" parameterType="java.lang.Long" resultMap="ContainerResult" flushCache="false">
+			select <include refid="containerColumns" />
+		    <![CDATA[
+			    from t_wh_container 
+		        where 
+		        id = #{id} 
+		        and ou_id = #{ouId}
+		    ]]>
+		</select>
+		
+		<update id="updateExt" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Container">
+	    <![CDATA[
+	        UPDATE t_wh_container SET
+		        name = #{name,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        code = #{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        one_level_type = #{oneLevelType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        two_level_type = #{twoLevelType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
+	        WHERE 
+		        id = #{id} 
+		        and ou_id = #{ouId}
+	    ]]>
+		</update>
+		
+		<insert id="batchInsert" parameterType="map"> 
+			<![CDATA[
+				insert into
+			    t_wh_container (
+			    		id,
+			        	name ,
+			        	code ,
+			        	one_level_type ,
+			        	two_level_type ,
+			        	create_time ,
+			        	last_modify_time ,
+			        	operator_id ,
+			        	lifecycle ,
+			        	ou_id 
+				        ) VALUES 
+				]]>
+				<foreach collection="list" item="item" index="index"
+					separator=",">
+					(
+			        #{item.id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{item.name,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{item.code,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{item.oneLevelType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{item.twoLevelType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{item.createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{item.lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{item.operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{item.lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{item.ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+					)
+				</foreach>
+		</insert>
+		
+		 <select id="getContainerByCode" parameterType="map" resultMap="ContainerCommandResultExt" flushCache="false">
+			select
+				s.id as id,
+	        	s.name as name,
+	        	s.code as code,
+	        	s.one_level_type as oneLevelType,
+	        	s.two_level_type as twoLevelType,
+	        	s.create_time as createTime,
+	        	s.last_modify_time as lastModifyTime,
+	        	s.operator_id as operatorId,
+	        	s.lifecycle as lifecycle,
+	        	s.ou_id as ouId,
+				dic.lifecycle as oneLevelTypeLifecycle,
+				c2c.lifecycle as twoLevelTypeLifecycle
+		    <![CDATA[
+			    from t_wh_container s
+			    left join sys_dictionary dic on dic.id=s.one_level_type
+			    left join t_wh_container_2nd_category c2c on c2c.id=s.two_level_type
+		        where 
+		        s.code = #{code} 
+		        and s.ou_id = #{ouId}
+		    ]]>
+		</select>
+</mapper>

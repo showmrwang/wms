@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao">
+	<resultMap id="ContainerResult" type="com.baozun.scm.primservice.whoperation.model.warehouse.Container">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="containerColumns">
+	    <![CDATA[
+	        	id as id,
+	        	name as name,
+	        	code as code,
+	        	one_level_type as oneLevelType,
+	        	two_level_type as twoLevelType,
+	        	create_time as createTime,
+	        	last_modify_time as lastModifyTime,
+	        	operator_id as operatorId,
+	        	lifecycle as lifecycle,
+	        	ou_id as ouId
+	    ]]>
+	</sql>
+	
+		<!-- 如果有自增字段 -->
+		
+			<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+			<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Container"  flushCache="true">
+		    <![CDATA[
+		        INSERT INTO
+		        t_wh_container (
+		        	id,
+		        	name ,
+		        	code ,
+		        	one_level_type ,
+		        	two_level_type ,
+		        	create_time ,
+		        	last_modify_time ,
+		        	operator_id ,
+		        	lifecycle ,
+		        	ou_id 
+		        ) VALUES (
+		        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{name,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{oneLevelType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{twoLevelType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        )
+		    ]]>
+
+		</insert>
+		
+		
+		<update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Container">
+	    <![CDATA[
+	        UPDATE t_wh_container SET
+		        name = #{name,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        code = #{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        one_level_type = #{oneLevelType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        two_level_type = #{twoLevelType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+		</update>
+	   <delete id="delete" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from t_wh_container where
+		        id = #{id} 
+	    ]]>
+	    </delete> 
+	    
+	     <delete id="deleteByIds" parameterType="list">
+	    
+	        delete from t_wh_container 
+	        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>	
+	  
+	    </delete>  
+	         
+	    <select id="findById" parameterType="java.lang.Long" resultMap="ContainerResult" flushCache="false">
+			select <include refid="containerColumns" />
+		    <![CDATA[
+			    from t_wh_container 
+		        where 
+		        id = #{id} 
+		    ]]>
+		</select>	
+		<select id="getByIds" parameterType="list"  resultMap="ContainerResult" flushCache="false">
+			select <include refid="containerColumns" />
+			    from t_wh_container 
+		        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>					
+		</select>	
+	<sql id="containerDynamicWhere">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+	       
+		       <if test="name!=null and name!=''">
+					and name = #{name}
+				</if>
+	       
+	       
+		       <if test="code!=null and code!=''">
+					and code = #{code}
+				</if>
+	       
+				<if test="oneLevelType!=null">
+					and one_level_type = #{oneLevelType}
+				</if>
+	       
+				<if test="twoLevelType!=null">
+					and two_level_type = #{twoLevelType}
+				</if>
+	       
+				<if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="operatorId!=null">
+					and operator_id = #{operatorId}
+				</if>
+	       
+				<if test="lifecycle!=null">
+					and lifecycle = #{lifecycle}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+		</where>
+	</sql>
+	
+
+	<select id="getCount" resultType="long">
+        select count(*) from t_wh_container 
+    </select>
+    <select id="findListCountByQueryMap" resultType="long">
+        select count(*) from t_wh_container 
+		<include refid="containerDynamicWhere"/>    
+    </select>
+    
+    <select id="findListCountByParam" resultType="long">
+        select count(*) from t_wh_container 
+		<include refid="containerDynamicWhere"/>    
+    </select>
+    
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPage" resultMap="ContainerResult">
+    	select <include refid="containerColumns" />
+	    from t_wh_container 
+		<include refid="containerDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByQueryMap" resultMap="ContainerResult">
+    	select <include refid="containerColumns" />
+	    from t_wh_container 
+		<include refid="containerDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByParam" resultMap="ContainerResult">
+    	select <include refid="containerColumns" />
+	    from t_wh_container 
+		<include refid="containerDynamicWhere"/>
+		
+    </select>
+
+    <select id="getByCode" resultMap="ContainerResult" parameterType="java.lang.String">
+	    select <include refid="containerColumns"/>
+	    <![CDATA[
+	        from t_wh_container where code = #{code}
+	    ]]>
+    </select>
+    
+	
+</mapper>

@@ -43,6 +43,8 @@
 					<value>com.baozun.scm.primservice.whoperation.model.poasn.BiPoLine</value>
 					<value>com.baozun.scm.primservice.whoperation.model.poasn.BiPoSn</value>
 					<value>com.baozun.scm.primservice.whoperation.model.system.GlobalLog</value>
+					<value>com.baozun.scm.primservice.whoperation.model.warehouse.carton.WhCarton</value>
+					<value>com.baozun.scm.primservice.whoperation.model.warehouse.Container</value>
 				</list>
 			</property>
 			
@@ -50,6 +52,8 @@
 			<property name="modelMapppingMap">
 			<map>
 				<entry key="com.baozun.scm.primservice.whoperation.model.system.GlobalLog" value="com.baozun.scm.primservice.whinfo.model.system.GlobalLog">	</entry>
+				<entry key="com.baozun.scm.primservice.whoperation.model.warehouse.carton.WhCarton" value="com.baozun.scm.primservice.whinfo.model.warehouse.carton.WhCarton">	</entry>
+				<entry key="com.baozun.scm.primservice.whinfo.model.warehouse.Container" value="com.baozun.scm.primservice.whoperation.model.warehouse.Container">	</entry>
 			</map>
 			</property>
 		</bean>
