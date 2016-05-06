@@ -76,6 +76,10 @@ public class WhCartonCommand extends BaseCommand {
     private String extContainerCode;
     /** 是否caselevel */
     private Boolean isCaselevel;
+    /** 本次拆箱数量 */
+    private Double bcdevanningQty;
+    /** 容器个数 */
+    private Integer binQty;
 
     /** 商品编码 */
     private String skuCode;
@@ -429,6 +433,22 @@ public class WhCartonCommand extends BaseCommand {
 
     public void setIsCaselevel(Boolean isCaselevel) {
         this.isCaselevel = isCaselevel;
+    }
+
+    public Double getBcdevanningQty() {
+        return bcdevanningQty;
+    }
+
+    public void setBcdevanningQty(Double bcdevanningQty) {
+        this.bcdevanningQty = bcdevanningQty;
+    }
+
+    public Integer getBinQty() {
+        return binQty;
+    }
+
+    public void setBinQty(Integer binQty) {
+        this.binQty = binQty;
     }
 
 

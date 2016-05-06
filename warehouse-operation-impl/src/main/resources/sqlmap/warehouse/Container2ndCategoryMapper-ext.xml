@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.Container2ndCategoryDao">
+	<resultMap id="Container2ndCategoryResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.Container2ndCategory">
+	</resultMap>
+	<resultMap id="Container2ndCategoryCommandResultExt" type="com.baozun.scm.primservice.whoperation.command.warehouse.Container2ndCategoryCommand">
+	</resultMap>
+	
+    <select id="findListByQueryMapWithPageExt" resultMap="Container2ndCategoryCommandResultExt">
+	    	select <include refid="container2ndCategoryColumnsExt" />
+		    from t_wh_container_2nd_category as s
+		    left join sys_dictionary as syst on s.one_level_type = syst.id
+			<include refid="container2ndCategoryDynamicWhereExt"/>
+    </select>
+    
+    <select id="findListCountByQueryMapExt" resultType="long">
+	        select count(*) from t_wh_container_2nd_category as s
+		    left join sys_dictionary as syst on s.one_level_type = syst.id
+			<include refid="container2ndCategoryDynamicWhereExt"/> 
+	</select>
+	
+	<select id="findC2ndCategoryByOuIdAndCid"  resultMap="Container2ndCategoryCommandResultExt" >
+			select <include refid="container2ndCategoryColumnsExt" />
+			    from t_wh_container_2nd_category as s
+			    left join sys_dictionary as syst on s.one_level_type = syst.id
+			    where s.lifecycle = #{lifecycle}
+			     <if test="oneLevelType!=null and oneLevelType!=''">
+					and s.one_level_type = #{oneLevelType}
+				 </if>
+				 <if test="ouId!=null">
+					and s.ou_id = #{ouId}
+				  </if>
+ 	</select>
+ 	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="container2ndCategoryColumnsExt">
+	    <![CDATA[
+	        	s.id as id,
+	        	s.category_code as categoryCode,
+	        	s.category_name as categoryName,
+	        	s.one_level_type as oneLevelType,
+	        	s.code_generator as codeGenerator,
+	        	s.prefix as prefix,
+	        	s.suffix as suffix,
+	        	s.length as length,
+	        	s.width as width,
+	        	s.high as high,
+	        	s.length_uom as lengthUom,
+	        	s.volume as volume,
+	        	s.volume_uom as volumeUom,
+	        	s.weight as weight,
+	        	s.weight_uom as weightUom,
+	        	s.ou_id as ouId,
+	        	s.create_time as createTime,
+	        	s.last_modify_time as lastModifyTime,
+	        	s.operator_id as operatorId,
+	        	s.lifecycle as lifecycle,
+                syst.dic_label as oneLevelTypeName
+	    ]]>
+	</sql>
+	
+	<sql id="container2ndCategoryDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       		
+	       		<if test="id!=null">
+					and s.id = #{id}
+				</if>
+	       
+				<if test="categoryCode!=null and categoryCode!=''">
+					and s.category_code like #{categoryCode}
+				</if>
+	       
+	       		<if test="categoryCode1!=null and categoryCode1!=''">
+					and s.category_code like #{categoryCode1}
+				</if>
+	       
+		        <if test="categoryName!=null and categoryName!=''">
+					and s.category_name like #{categoryName}
+				</if>
+	       
+	        	<if test="categoryName1!=null and categoryName1!=''">
+					and s.category_name like #{categoryName1}
+				</if>
+	       
+				<if test="oneLevelType!=null">
+					and s.one_level_type = #{oneLevelType}
+				</if>
+	       
+		        <if test="codeGenerator!=null and codeGenerator!=''">
+					and s.code_generator = #{codeGenerator}
+				</if>
+	       
+		        <if test="prefix!=null and prefix!=''">
+					and s.prefix like #{prefix}
+				</if>
+	       
+		        <if test="suffix!=null and suffix!=''">
+					and s.suffix like #{suffix}
+				</if>
+	       
+				<if test="length!=null">
+					and s.length = #{length}
+				</if>
+	       
+				<if test="width!=null">
+					and s.width = #{width}
+				</if>
+	       
+				<if test="high!=null">
+					and s.high = #{high}
+				</if>
+	       
+	       
+		       <if test="lengthUom!=null and lengthUom!=''">
+					and s.length_uom = #{lengthUom}
+				</if>
+	       
+				<if test="volume!=null">
+					and s.volume = #{volume}
+				</if>
+	       
+	       
+		       <if test="volumeUom!=null and volumeUom!=''">
+					and s.volume_uom = #{volumeUom}
+				</if>
+	       
+				<if test="weight!=null">
+					and s.weight = #{weight}
+				</if>
+	       
+	       
+		       <if test="weightUom!=null and weightUom!=''">
+					and s.weight_uom = #{weightUom}
+				</if>
+	       
+				<if test="ouId!=null">
+					and s.ou_id = #{ouId}
+				</if>
+	       
+				<if test="createTime!=null">
+					and s.create_time = #{createTime}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and s.last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="operatorId!=null">
+					and s.operator_id = #{operatorId}
+				</if>
+	       
+				<if test="lifecycle!=null">
+					and s.lifecycle = #{lifecycle}
+				</if>
+				
+		</where>
+	</sql>
+	
+
+		<update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Container2ndCategory">
+		    <![CDATA[
+		        UPDATE t_wh_container_2nd_category SET
+		        	category_code = #{categoryCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        category_name = #{categoryName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        one_level_type = #{oneLevelType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        code_generator = #{codeGenerator,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        prefix = #{prefix,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        suffix = #{suffix,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        length = #{length,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+			        width = #{width,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+			        high = #{high,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+			        length_uom = #{lengthUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        volume = #{volume,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+			        volume_uom = #{volumeUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        weight = #{weight,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+			        weight_uom = #{weightUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+			        last_modify_time = now(),
+			        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
+		        WHERE 
+			        id = #{id} 
+			        and ou_id = #{ouId}
+			        and last_modify_time	=  #{lastModifyTime}   
+		    ]]>
+		</update>
+		
+		<update id="updateLifeCycle" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Container2ndCategory">
+			UPDATE t_wh_container_2nd_category SET lifecycle = #{lifecycle},operator_id = #{userid},last_modify_time = now()   
+			WHERE id in
+			<foreach collection="ids" item="id" open="(" separator=","
+				close=")">
+				#{id}
+			</foreach>
+			and ou_id = #{ouId}
+	    </update>
+	    
+	    <delete id="deleteExt" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from t_wh_container_2nd_category where
+		        id = #{id} 
+		        and ou_id = #{ouId}
+	    ]]>
+	    </delete>
+	    
+	    <delete id="deleteByIdsExt" parameterType="list">
+	    
+	        delete from t_wh_container_2nd_category 
+	        where id in
+				<foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
+			#{item}			
+			</foreach>	
+	  		and ou_id = #{ouId}
+	    </delete>  
+	    
+	    <select id="findByIdExt" parameterType="java.lang.Long" resultMap="Container2ndCategoryResult" flushCache="false">
+			select <include refid="container2ndCategoryColumns" />
+		    <![CDATA[
+			    from t_wh_container_2nd_category 
+		        where 
+		        id = #{id} 
+		        and ou_id = #{ouId}
+		    ]]>
+		</select>
+	
+		<select id="uniqueCodeOrName" resultType="long">
+			select count(*) from t_wh_container_2nd_category
+			<where>
+				<if test="id!=null">
+					and id != #{id}
+				</if>
+			
+				<if test="categoryCode!=null and categoryCode!=''">
+					and category_code like #{categoryCode}
+				</if>
+				<if test="categoryName!=null and categoryName!=''">
+					and category_name like #{categoryName}
+				</if>
+				<if test="ouId!=null and ouId!=''">
+					and ou_id = #{ouId}
+				</if>
+			</where>
+		</select>
+		
+		<update id="updateExt" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Container2ndCategory">
+	    <![CDATA[
+	        UPDATE t_wh_container_2nd_category SET
+	        	category_code = #{categoryCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        category_name = #{categoryName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        one_level_type = #{oneLevelType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        code_generator = #{codeGenerator,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        prefix = #{prefix,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        suffix = #{suffix,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        length = #{length,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+		        width = #{width,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+		        high = #{high,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+		        length_uom = #{lengthUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        volume = #{volume,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+		        volume_uom = #{volumeUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        weight = #{weight,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+		        weight_uom = #{weightUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        last_modify_time =  #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
+	        WHERE 
+		        id = #{id} 
+		        and ou_id = #{ouId}
+	    ]]>
+		</update>
+		
+</mapper>

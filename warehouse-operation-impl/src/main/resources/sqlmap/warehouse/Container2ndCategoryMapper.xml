@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.Container2ndCategoryDao">
+	<resultMap id="Container2ndCategoryResult" type="com.baozun.scm.primservice.whoperation.model.warehouse.Container2ndCategory">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="container2ndCategoryColumns">
+	    <![CDATA[
+	        	id as id,
+	        	category_code as categoryCode,
+	        	category_name as categoryName,
+	        	one_level_type as oneLevelType,
+	        	code_generator as codeGenerator,
+	        	prefix as prefix,
+	        	suffix as suffix,
+	        	length as length,
+	        	width as width,
+	        	high as high,
+	        	length_uom as lengthUom,
+	        	volume as volume,
+	        	volume_uom as volumeUom,
+	        	weight as weight,
+	        	weight_uom as weightUom,
+	        	ou_id as ouId,
+	        	create_time as createTime,
+	        	last_modify_time as lastModifyTime,
+	        	operator_id as operatorId,
+	        	lifecycle as lifecycle
+	    ]]>
+	</sql>
+	
+		<!-- 如果有自增字段 -->
+		
+			<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+			<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Container2ndCategory" flushCache="true">
+		    <![CDATA[
+		        INSERT INTO
+		        t_wh_container_2nd_category (
+		        	id,
+		        	category_code ,
+		        	category_name ,
+		        	one_level_type ,
+		        	code_generator ,
+		        	prefix ,
+		        	suffix ,
+		        	length ,
+		        	width ,
+		        	high ,
+		        	length_uom ,
+		        	volume ,
+		        	volume_uom ,
+		        	weight ,
+		        	weight_uom ,
+		        	ou_id ,
+		        	create_time ,
+		        	last_modify_time ,
+		        	operator_id ,
+		        	lifecycle 
+		        ) VALUES (
+		        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{categoryCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{categoryName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{oneLevelType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{codeGenerator,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{prefix,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{suffix,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{length,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+		        	#{width,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+		        	#{high,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+		        	#{lengthUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{volume,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+		        	#{volumeUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{weight,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+		        	#{weightUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
+		        )
+		    ]]>
+
+		</insert>
+		
+		
+		<update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Container2ndCategory">
+	    <![CDATA[
+	        UPDATE t_wh_container_2nd_category SET
+		        category_code = #{categoryCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        category_name = #{categoryName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        one_level_type = #{oneLevelType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        code_generator = #{codeGenerator,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        prefix = #{prefix,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        suffix = #{suffix,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        length = #{length,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+		        width = #{width,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+		        high = #{high,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+		        length_uom = #{lengthUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        volume = #{volume,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+		        volume_uom = #{volumeUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        weight = #{weight,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+		        weight_uom = #{weightUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+		</update>
+	   <delete id="delete" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from t_wh_container_2nd_category where
+		        id = #{id} 
+	    ]]>
+	    </delete> 
+	    
+	     <delete id="deleteByIds" parameterType="list">
+	    
+	        delete from t_wh_container_2nd_category 
+	        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>	
+	  
+	    </delete>  
+	         
+	    <select id="findById" parameterType="java.lang.Long" resultMap="Container2ndCategoryResult" flushCache="false">
+			select <include refid="container2ndCategoryColumns" />
+		    <![CDATA[
+			    from t_wh_container_2nd_category 
+		        where 
+		        id = #{id} 
+		    ]]>
+		</select>	
+		<select id="getByIds" parameterType="list"  resultMap="Container2ndCategoryResult" flushCache="false">
+			select <include refid="container2ndCategoryColumns" />
+			    from t_wh_container_2nd_category 
+		        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>					
+		</select>	
+	<sql id="container2ndCategoryDynamicWhere">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+	       
+		       <if test="categoryCode!=null and categoryCode!=''">
+					and category_code = #{categoryCode}
+				</if>
+	       
+	       
+		       <if test="categoryName!=null and categoryName!=''">
+					and category_name = #{categoryName}
+				</if>
+	       
+				<if test="oneLevelType!=null">
+					and one_level_type = #{oneLevelType}
+				</if>
+	       
+	       
+		       <if test="codeGenerator!=null and codeGenerator!=''">
+					and code_generator = #{codeGenerator}
+				</if>
+	       
+	       
+		       <if test="prefix!=null and prefix!=''">
+					and prefix = #{prefix}
+				</if>
+	       
+	       
+		       <if test="suffix!=null and suffix!=''">
+					and suffix = #{suffix}
+				</if>
+	       
+				<if test="length!=null">
+					and length = #{length}
+				</if>
+	       
+				<if test="width!=null">
+					and width = #{width}
+				</if>
+	       
+				<if test="high!=null">
+					and high = #{high}
+				</if>
+	       
+	       
+		       <if test="lengthUom!=null and lengthUom!=''">
+					and length_uom = #{lengthUom}
+				</if>
+	       
+				<if test="volume!=null">
+					and volume = #{volume}
+				</if>
+	       
+	       
+		       <if test="volumeUom!=null and volumeUom!=''">
+					and volume_uom = #{volumeUom}
+				</if>
+	       
+				<if test="weight!=null">
+					and weight = #{weight}
+				</if>
+	       
+	       
+		       <if test="weightUom!=null and weightUom!=''">
+					and weight_uom = #{weightUom}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+	       
+				<if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="operatorId!=null">
+					and operator_id = #{operatorId}
+				</if>
+	       
+				<if test="lifecycle!=null">
+					and lifecycle = #{lifecycle}
+				</if>
+		</where>
+	</sql>
+	
+
+	<select id="getCount" resultType="long">
+        select count(*) from t_wh_container_2nd_category 
+    </select>
+    <select id="findListCountByQueryMap" resultType="long">
+        select count(*) from t_wh_container_2nd_category 
+		<include refid="container2ndCategoryDynamicWhere"/>    
+    </select>
+    
+    <select id="findListCountByParam" resultType="long">
+        select count(*) from t_wh_container_2nd_category 
+		<include refid="container2ndCategoryDynamicWhere"/>    
+    </select>
+    
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPage" resultMap="Container2ndCategoryResult">
+    	select <include refid="container2ndCategoryColumns" />
+	    from t_wh_container_2nd_category 
+		<include refid="container2ndCategoryDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByQueryMap" resultMap="Container2ndCategoryResult">
+    	select <include refid="container2ndCategoryColumns" />
+	    from t_wh_container_2nd_category 
+		<include refid="container2ndCategoryDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByParam" resultMap="Container2ndCategoryResult">
+    	select <include refid="container2ndCategoryColumns" />
+	    from t_wh_container_2nd_category 
+		<include refid="container2ndCategoryDynamicWhere"/>
+		
+    </select>
+
+	
+</mapper>
