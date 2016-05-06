@@ -88,4 +88,41 @@ public class WhCartonManagerImpl extends BaseManagerImpl implements WhCartonMana
         return whCartonDao.findWhCatonById(id, ouid);
     }
 
+    /**
+     * 新增ASN拆箱明细信息
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void addDevanningList(WhCartonCommand whCartonCommand) {
+        log.info(this.getClass().getSimpleName() + ".addDevanningList method begin! logid: " + whCartonCommand.getLogId());
+        if (log.isDebugEnabled()) {
+            log.debug("params:[whCartonCommand:{}]", whCartonCommand.toString());
+        }
+        if (null == whCartonCommand.getCartonList()) {
+            // 没有新增拆箱商品明细
+            log.warn("addDevanningList CartonList() is null logid: " + whCartonCommand.getLogId());
+            throw new BusinessException(ErrorCodes.ADD_CARTONLIST_NULL_ERROR);
+        }
+        List<WhCartonCommand> cartonList = whCartonCommand.getCartonList();
+        // 获取这单可拆数量
+        WhAsnLineCommand usableDevanningQty = whAsnLineDao.findWhAsnLineCommandEditDevanning(whCartonCommand.getAsnLineId(), whCartonCommand.getAsnId(), whCartonCommand.getOuId(), whCartonCommand.getSkuId());
+        checkAddCartonListQty(cartonList, usableDevanningQty.getUsableDevanningQty(), whCartonCommand.getLogId());// 验证本次拆箱数量是否超过可拆箱数量
+        log.info(this.getClass().getSimpleName() + ".addDevanningList method begin! end: " + whCartonCommand.getLogId());
+    }
+
+    /***
+     * 验证本次拆箱数量是否超过可拆箱数量 每箱数量是否相同等数量信息
+     */
+    private static void checkAddCartonListQty(List<WhCartonCommand> cartonList, Double usableDevanningQty, String logid) {
+        Double qty = 0.0;
+        for (WhCartonCommand carton : cartonList) {
+            qty = qty + carton.getBcdevanningQty();// 累加本次拆箱商品数量
+        }
+        if (qty.compareTo(usableDevanningQty) > 0) {
+            // 本次总拆箱商品数量大于可拆商品数量
+            log.warn("addDevanningList qty > usableDevanningQty error logid: " + logid);
+            throw new BusinessException(ErrorCodes.ADD_CARTONLIST_QTY_ERROR, new Object[] {qty, usableDevanningQty});
+        }
+    }
+
 }

@@ -94,7 +94,7 @@ public class ErrorCodes {
     public static final int SAVE_FAILURE = 1023;
     /** 店铺id为空 **/
     public static final int STORE_EMPTY = 1024;
-    /**拆箱信息不存在*/
+    /** 拆箱信息不存在 */
     public static final int CARTONNULL_ERROR = 1079;
 
     /** 页面会话错误 请刷新页面后重试 **/
@@ -161,4 +161,8 @@ public class ErrorCodes {
     public static final int DATA_EXPRIE_ERROR = 3030;
     /** ASN单明细状态不是 [未收货] 状态，请刷新页面重试 */
     public static final int ASNLINE_STATUS_ERROR = 3031;
+    /** 请新增拆箱商品明细 */
+    public static final int ADD_CARTONLIST_NULL_ERROR = 3032;
+    /** 新增拆箱商品总数量为 [{0}] 超过可拆箱商品数量 [{1}]，请刷新页面重试 */
+    public static final int ADD_CARTONLIST_QTY_ERROR = 3033;
 }
