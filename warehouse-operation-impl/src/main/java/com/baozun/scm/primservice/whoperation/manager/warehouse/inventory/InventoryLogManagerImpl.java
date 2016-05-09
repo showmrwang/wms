@@ -16,6 +16,8 @@
  */
 package com.baozun.scm.primservice.whoperation.manager.warehouse.inventory;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,5 +30,6 @@ import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 @Transactional
 @Service("inventoryLogManager")
 public class InventoryLogManagerImpl extends BaseManagerImpl implements InventoryLogManager {
-
+    protected static final Logger log = LoggerFactory.getLogger(InventoryLogManagerImpl.class);
+    
 }

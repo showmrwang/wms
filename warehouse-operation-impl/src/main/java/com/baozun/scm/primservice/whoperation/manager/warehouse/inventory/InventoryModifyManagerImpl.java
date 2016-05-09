@@ -79,8 +79,21 @@ public class InventoryModifyManagerImpl extends BaseManagerImpl implements Inven
         String uuid = invCmd.getUuid();
         Long skuId = invCmd.getSkuId();
         Double modifyQty = invCmd.getModifyQty();
+        //校验
+        if(null == uuid || "".equals(uuid)){
+            log.error("uuid is null error, logId is:[{}]", logId);
+            throw new BusinessException(ErrorCodes.PARAM_IS_NULL, "invCmd");
+        }
+        if(null == skuId){
+            log.error("skuId is null error, logId is:[{}]", logId);
+            throw new BusinessException(ErrorCodes.PARAM_IS_NULL, "userId");
+        }
+        if(null == modifyQty || (-1 == new Double("0.0").compareTo(modifyQty))){
+            log.error("modifyQty is null or negative error, logId is:[{}]", logId);
+            throw new BusinessException(ErrorCodes.PARAM_IS_NULL, "userId");
+        }
         //在库数量校验
-        boolean isQtyValid = inventoryValidateManager.onHandQtyValidate(uuid, skuId, modifyQty, logId);
+        boolean isQtyValid = inventoryValidateManager.onHandQtyValidate(uuid, skuId, ouId, modifyQty, logId);
         if (!isQtyValid) {
             log.error("inventory onHandQty is not enough, uuid is:[{}], skuId is:[{}], logId is:[{}]", new Object[] {invCmd.getUuid(), invCmd.getSkuId(), logId});
             throw new BusinessException(ErrorCodes.SYSTEM_ERROR);

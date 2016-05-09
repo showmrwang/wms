@@ -119,6 +119,9 @@ public class InventoryCommand extends BaseCommand {
     private String invAttr4Str;
     /** 库存属性5 lable */
     private String invAttr5Str;
+    /** 占用Key */
+    private String occupyKey;
+    private Double expectQty;
 
     // pda-general-receiving
     private Long occupationId;
@@ -495,6 +498,34 @@ public class InventoryCommand extends BaseCommand {
 
     public void setOccupationCodeSource(String occupationCodeSource) {
         this.occupationCodeSource = occupationCodeSource;
+    }
+
+    /**
+     * @return the occupyKey
+     */
+    public String getOccupyKey() {
+        return occupyKey;
+    }
+
+    /**
+     * @param occupyKey the occupyKey to set
+     */
+    public void setOccupyKey(String occupyKey) {
+        this.occupyKey = occupyKey;
+    }
+
+    /**
+     * @return the expectQty
+     */
+    public Double getExpectQty() {
+        return expectQty;
+    }
+
+    /**
+     * @param expectQty the expectQty to set
+     */
+    public void setExpectQty(Double expectQty) {
+        this.expectQty = expectQty;
     }
 
 

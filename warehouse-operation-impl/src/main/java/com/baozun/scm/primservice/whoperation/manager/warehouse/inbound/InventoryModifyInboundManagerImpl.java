@@ -16,11 +16,13 @@
  */
 package com.baozun.scm.primservice.whoperation.manager.warehouse.inbound;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.InventoryCommand;
-import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
+import com.baozun.scm.primservice.whoperation.manager.BaseInventoryManagerImpl;
 
 /**
  * @author lichuan
@@ -28,8 +30,8 @@ import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
  */
 @Transactional
 @Service("inventoryModifyInboundManager")
-public class InventoryModifyInboundManagerImpl extends BaseManagerImpl implements InventoryModifyInboundManager {
-    
+public class InventoryModifyInboundManagerImpl extends BaseInventoryManagerImpl implements InventoryModifyInboundManager {
+    protected static final Logger log = LoggerFactory.getLogger(InventoryModifyInboundManagerImpl.class);
     /**
      * @author lichuan
      * @param invCmd
@@ -40,7 +42,7 @@ public class InventoryModifyInboundManagerImpl extends BaseManagerImpl implement
     @Override
     public void inbound(InventoryCommand invCmd, Long ouId, Long userId, String logId) {
         // 创po单
-
+        
         // 创asn单
 
         // 入库

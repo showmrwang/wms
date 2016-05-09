@@ -54,6 +54,8 @@
 				<entry key="com.baozun.scm.primservice.whoperation.model.system.GlobalLog" value="com.baozun.scm.primservice.whinfo.model.system.GlobalLog">	</entry>
 				<entry key="com.baozun.scm.primservice.whoperation.model.warehouse.carton.WhCarton" value="com.baozun.scm.primservice.whinfo.model.warehouse.carton.WhCarton">	</entry>
 				<entry key="com.baozun.scm.primservice.whinfo.model.warehouse.Container" value="com.baozun.scm.primservice.whoperation.model.warehouse.Container">	</entry>
+				<entry key="com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory" value="com.baozun.scm.primservice.whinfo.model.warehouse.inventory.WhSkuInventory"></entry>
+				<entry key="com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventorySn" value="com.baozun.scm.primservice.whinfo.model.warehouse.inventory.WhSkuInventorySn"></entry>
 			</map>
 			</property>
 		</bean>
