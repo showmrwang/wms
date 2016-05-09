@@ -1,0 +1,713 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.sku.SkuDao">
+
+	<resultMap id="SkuResultExt"
+		type="com.baozun.scm.primservice.whoperation.model.sku.Sku">
+	</resultMap>
+	<resultMap id="SkuCommand"
+		type="com.baozun.scm.primservice.whoperation.command.sku.skucommand.SkuCommand">
+	</resultMap>
+	<!-- 
+	<resultMap id="SkuResultAll" type="com.baozun.scm.primservice.whoperation.command.sku.skushared.SkuCommand2Shared">
+		<association property="sku" resultMap="skuExt" />
+		<association property="skuExtattr" resultMap="skuExtattrExt" />
+		<association property="skuMgmt" resultMap="skuMgmtExt" />
+	</resultMap> -->
+	
+	
+
+	<resultMap id="skuExt" type="com.baozun.scm.primservice.whoperation.model.sku.Sku">
+	</resultMap>
+<!-- 	<resultMap id="skuExtattrExt" type="com.baozun.scm.primservice.whoperation.model.sku.SkuExtattr">
+	</resultMap>
+	<resultMap id="skuMgmtExt" type="com.baozun.scm.primservice.whoperation.model.sku.SkuMgmt">
+	</resultMap> -->
+
+
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="skuColumnsExt">
+        <![CDATA[
+                sku.id as id,
+                sku.code as code,
+                sku.bar_code as barCode,
+                sku.name as name,
+                sku.en_name as enName,
+                sku.description as description,
+                sku.color as color,
+                sku.length as length,
+                sku.width as width,
+                sku.height as height,
+                sku.volume as volume,
+                sku.weight as weight,
+                sku.type_of_goods as typeOfGoods,
+                sku.brand_id as brandId,
+                sku.customer_id as customerId,
+                sku.create_time as createTime,
+                sku.created_id as createdId,
+                sku.last_modify_time as lastModifyTime,
+                sku.modified_id as modifiedId, 
+                sku.style as style,
+                sku.size as size,
+                sku.lifecycle as lifecycle,
+                sku.ext_code as extCode,
+                sku.length_uom as lengthUom,
+                sku.volume_uom as volumeUom,
+                sku.weight_uom as weightUom,
+                brand.name as brandName,
+                customer.customer_name as customerName
+        ]]>
+	</sql>
+
+
+	<sql id="skuDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+
+			<if test="id!=null">
+				and sku.id = #{id}
+			</if>
+
+
+			<if test="code!=null and code!=''">
+				and sku.code like #{code}
+			</if>
+
+
+			<if test="barCode!=null and barCode!=''">
+				and sku.bar_code like #{barCode}
+			</if>
+
+
+			<if test="name!=null and name!=''">
+				and sku.name like #{name}
+			</if>
+
+
+			<if test="enName!=null and enName!=''">
+				and sku.en_name like #{enName}
+			</if>
+
+
+			<if test="description!=null and description!=''">
+				and sku.description like #{description}
+			</if>
+
+
+			<if test="color!=null and color!=''">
+				and sku.color like #{color}
+			</if>
+
+			<if test="length!=null">
+				and sku.length = #{length}
+			</if>
+
+			<if test="width!=null">
+				and sku.width = #{width}
+			</if>
+
+			<if test="height!=null">
+				and sku.height = #{height}
+			</if>
+
+			<if test="volume!=null">
+				and sku.volume = #{volume}
+			</if>
+
+			<if test="weight!=null">
+				and sku.weight = #{weight}
+			</if>
+			
+			<if test="typeOfGoods!=null">
+				and sku.type_of_goods = #{typeOfGoods}
+			</if>
+
+			<if test="brandId!=null">
+				and sku.brand_id = #{brandId}
+			</if>
+
+			<if test="customerId!=null">
+				and sku.customer_id = #{customerId}
+			</if>
+
+			<if test="createTime!=null">
+				and sku.create_time = #{createTime}
+			</if>
+
+			<if test="createdId!=null">
+				and sku.created_id = #{createdId}
+			</if>
+
+			<if test="lastModifyTime!=null">
+				and sku.last_modify_time = #{lastModifyTime}
+			</if>
+
+			<if test="modifiedId!=null">
+				and sku.modified_id = #{modifiedId}
+			</if>
+
+			<if test="style!=null and style!=''">
+				and sku.style = #{style}
+			</if>
+
+			<if test="size!=null and size!=''">
+				and sku.size = #{size}
+			</if>
+			
+			<if test="lifecycle!=null">
+				and sku.lifecycle = #{lifecycle}
+			</if>
+			
+			<if test="extCode!=null and extCode!=''">
+                and sku.ext_code like #{extCode}
+            </if>
+            
+            <if test="lengthUom!=null and lengthUom!=''">
+                and sku.length_uom = #{lengthUom}
+            </if>
+            
+            <if test="volumeUom!=null and volumeUom!=''">
+                and sku.volume_uom = #{volumeUom}
+            </if>
+            
+            <if test="weightUom!=null and weightUom!=''">
+                and sku.weight_uom = #{weightUom}
+            </if>
+		</where>
+	</sql>
+	
+	<sql id="skuLimit">
+		<if test="lineNum!=null">
+            limit #{lineNum}
+        </if>
+	</sql>
+
+
+	<update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.sku.Sku">
+        <![CDATA[
+                UPDATE t_wh_sku SET
+                    code = #{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    bar_code = #{barCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    name = #{name,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    en_name = #{enName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    description = #{description,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    color = #{color,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    length = #{length,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+                    width = #{width,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+                    height = #{height,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+                    volume = #{volume,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+                    weight = #{weight,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+                    type_of_goods = #{typeOfGoods,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    brand_id = #{brandId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    customer_id = #{customerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                    created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    last_modify_time = now() ,
+                    modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT}, 
+                    style = #{style,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    size = #{size,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                    ext_code = #{extCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	                length_uom = #{lengthUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	                volume_uom = #{volumeUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	                weight_uom = #{weightUom,javaType=java.lang.String,jdbcType=VARCHAR} 
+                WHERE 
+                    id = #{id} 
+                    and last_modify_time = #{lastModifyTime}   
+            ]]>
+	</update>
+
+	<update id="updateByVersionExt" parameterType="com.baozun.scm.primservice.whoperation.model.sku.Sku">
+        <![CDATA[
+                UPDATE t_wh_sku SET
+                    code = #{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    bar_code = #{barCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    name = #{name,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    en_name = #{enName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    description = #{description,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    color = #{color,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    length = #{length,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+                    width = #{width,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+                    height = #{height,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+                    volume = #{volume,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+                    weight = #{weight,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+                    type_of_goods = #{typeOfGoods,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    brand_id = #{brandId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    customer_id = #{customerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                    created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    last_modify_time = now() ,
+                    modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    style = #{style,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    size = #{size,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                    ext_code = #{extCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	                length_uom = #{lengthUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	                volume_uom = #{volumeUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	                weight_uom = #{weightUom,javaType=java.lang.String,jdbcType=VARCHAR} 
+                WHERE 
+                    id = #{id} 
+                    
+                    and last_modify_time = #{lastModifyTime}    
+            ]]>
+	</update>
+
+	<select id="findListCountByQueryMapExt" resultType="long">
+		select count(*) from t_wh_sku sku
+		<include refid="skuDynamicWhereExt" />
+	</select>
+	
+	<select id="findListByQueryMapWithPageExt" resultMap="SkuCommand">
+		select
+		<include refid="skuColumnsExt" />
+		from t_wh_sku sku 
+		left join t_bi_brand brand on sku.brand_id = brand.id
+		left join t_bi_customer customer on sku.customer_id = customer.id
+		<include refid="skuDynamicWhereExt" />
+	</select>
+
+
+
+	<sql id="skuColumnsSharedExt">
+        <![CDATA[
+            sku.id as id,
+            sku.code as code,
+            sku.bar_code as barCode,
+            sku.name as name,
+            sku.en_name as enName,
+            sku.description as description,
+            sku.color as color,
+            sku.length as length,
+            sku.width as width,
+            sku.height as height,
+            sku.volume as volume,
+            sku.weight as weight,
+            sku.type_of_goods as typeOfGoods,
+            sku.brand_id as brandId,
+            sku.customer_id as customerId,
+            sku.ou_id as ouId,
+            sku.create_time as createTime,
+            sku.created_id as createdId,
+            sku.last_modify_time as lastModifyTime,
+            sku.modified_id as modifiedId,
+            sku.style as style,
+            sku.size as size,
+            sku.lifecycle as lifecycle,
+            sku.ext_code as extCode,
+            sku.length_uom as lengthUom,
+            sku.volume_uom as volumeUom,
+            sku.weight_uom as weightUom
+        ]]>
+	</sql>
+
+    <select id="findByIdShared" resultMap="SkuResultExt">
+        select
+        <include refid="skuColumnsSharedExt" />
+        <![CDATA[
+                from t_wh_sku sku
+            where
+                sku.id = #{id}
+                and sku.ou_id = #{ouId}
+        ]]>
+    </select>
+
+    <sql id="skuDynamicWhereSharedExt">
+        <where>
+
+            <if test="id!=null">
+                and sku.id = #{id}
+            </if>
+
+            <if test="code!=null and code!=''">
+                and sku.code = #{code}
+            </if>
+
+            <if test="extCode!=null and extCode!=''">
+                and sku.ext_code = #{extCode}
+            </if>
+
+            <if test="barCode!=null and barCode!=''">
+                and sku.bar_code = #{barCode}
+            </if>
+
+            <if test="name!=null and name!=''">
+                and sku.name = #{name}
+            </if>
+
+            <if test="enName!=null and enName!=''">
+                and sku.en_name = #{enName}
+            </if>
+
+            <if test="description!=null and description!=''">
+                and sku.description = #{description}
+            </if>
+
+            <if test="color!=null and color!=''">
+                and sku.color = #{color}
+            </if>
+
+            <if test="length!=null">
+                and sku.length = #{length}
+            </if>
+
+            <if test="width!=null">
+                and sku.width = #{width}
+            </if>
+
+            <if test="height!=null">
+                and sku.height = #{height}
+            </if>
+
+            <if test="lengthUom!=null and lengthUom!=''">
+                and sku.length_uom = #{lengthUom}
+            </if>
+
+            <if test="volume!=null">
+                and sku.volume = #{volume}
+            </if>
+
+            <if test="volumeUom!=null and volumeUom!=''">
+                and sku.volume_uom = #{volumeUom}
+            </if>
+
+            <if test="weight!=null">
+                and sku.weight = #{weight}
+            </if>
+
+            <if test="weightUom!=null and weightUom!=''">
+                and sku.weight_uom = #{weightUom}
+            </if>
+
+			<if test="typeOfGoods!=null">
+                and sku.type_of_goods = #{typeOfGoods}
+            </if>
+            
+            <if test="brandId!=null">
+                and sku.brand_id = #{brandId}
+            </if>
+
+            <if test="customerId!=null">
+                and sku.customer_id = #{customerId}
+            </if>
+
+            <if test="ouId!=null">
+                and sku.ou_id = #{ouId}
+            </if>
+
+            <if test="createTime!=null">
+                and sku.create_time = #{createTime}
+            </if>
+
+            <if test="createdId!=null">
+                and sku.created_id = #{createdId}
+            </if>
+
+            <if test="lastModifyTime!=null">
+                and sku.last_modify_time = #{lastModifyTime}
+            </if>
+
+            <if test="modifiedId!=null">
+                and sku.modified_id = #{modifiedId}
+            </if>
+
+            <if test="style!=null and style!=''">
+                and sku.style = #{style}
+            </if>
+
+            <if test="size!=null and size!=''">
+                and sku.size = #{size}
+            </if>
+
+            <if test="lifecycle!=null">
+                and sku.lifecycle = #{lifecycle}
+            </if>
+
+        </where>
+    </sql>
+
+    <sql id="skuDynamicWhereLikeSharedExt">
+        <where>
+
+            <if test="id!=null">
+                and sku.id = #{id}
+            </if>
+
+            <if test="code!=null and code!=''">
+                and sku.code like #{code}
+            </if>
+
+            <if test="extCode!=null and extCode!=''">
+                and sku.ext_code like #{extCode}
+            </if>
+
+            <if test="barCode!=null and barCode!=''">
+                and sku.bar_code like #{barCode}
+            </if>
+
+            <if test="name!=null and name!=''">
+                and sku.name like #{name}
+            </if>
+
+            <if test="enName!=null and enName!=''">
+                and sku.en_name like #{enName}
+            </if>
+
+            <if test="description!=null and description!=''">
+                and sku.description like #{description}
+            </if>
+
+            <if test="color!=null and color!=''">
+                and sku.color like #{color}
+            </if>
+
+            <if test="length!=null">
+                and sku.length like #{length}
+            </if>
+
+            <if test="width!=null">
+                and sku.width like #{width}
+            </if>
+
+            <if test="height!=null">
+                and sku.height like #{height}
+            </if>
+
+            <if test="lengthUom!=null and lengthUom!=''">
+                and sku.length_uom like #{lengthUom}
+            </if>
+
+            <if test="volume!=null">
+                and sku.volume like #{volume}
+            </if>
+
+            <if test="volumeUom!=null and volumeUom!=''">
+                and sku.volume_uom like #{volumeUom}
+            </if>
+
+            <if test="weight!=null">
+                and sku.weight = #{weight}
+            </if>
+
+            <if test="weightUom!=null and weightUom!=''">
+                and sku.weight_uom = #{weightUom}
+            </if>
+            
+            <if test="typeOfGoods!=null">
+                and sku.type_of_goods = #{typeOfGoods}
+            </if>
+
+            <if test="brandId!=null">
+                and sku.brand_id = #{brandId}
+            </if>
+
+            <if test="customerId!=null">
+                and sku.customer_id = #{customerId}
+            </if>
+
+            <if test="ouId!=null">
+                and sku.ou_id = #{ouId}
+            </if>
+
+            <if test="createTime!=null">
+                and sku.create_time = #{createTime}
+            </if>
+
+            <if test="createdId!=null">
+                and sku.created_id = #{createdId}
+            </if>
+
+            <if test="lastModifyTime!=null">
+                and sku.last_modify_time = #{lastModifyTime}
+            </if>
+
+            <if test="modifiedId!=null">
+                and sku.modified_id = #{modifiedId}
+            </if>
+
+            <if test="style!=null and style!=''">
+                and sku.style = #{style}
+            </if>
+
+            <if test="size!=null and size!=''">
+                and sku.size = #{size}
+            </if>
+
+            <if test="lifecycle!=null">
+                and sku.lifecycle = #{lifecycle}
+            </if>
+        </where>
+    </sql>
+
+    <select id="findListByParamShared" resultMap="SkuCommand">
+        select
+        <include refid="skuColumnsSharedExt"/>
+        ,
+        customer.customer_name as customerName
+        from t_wh_sku sku
+        left join t_bi_customer customer on sku.customer_id = customer.id
+        <include refid="skuDynamicWhereLikeSharedExt"/>
+        <include refid="skuLimit" />
+    </select>
+
+    <select id="findSkuAllInfoListByParamShared" resultMap="SkuResultExt">
+        select
+        <include refid="skuColumnsSharedExt"/>
+        from t_wh_sku sku
+        <include refid="skuDynamicWhereLikeSharedExt"/>
+        <include refid="skuLimit" />
+    </select>
+    
+    <select id="uniqueCodeOrName" resultType="long">
+			select count(*) from t_wh_sku
+			<where>
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+			
+				<if test="code!=null and code!=''">
+					and code like #{code}
+				</if>
+				<if test="name!=null and name!=''">
+					and name like #{name}
+				</if>
+				
+				<if test="barCode!=null and barCode!=''">
+					and bar_code like #{barCode}
+				</if>
+			</where>
+	</select>
+	
+    <insert id="insertShared" parameterType="com.baozun.scm.primservice.whoperation.model.sku.Sku">
+        <![CDATA[
+                INSERT INTO
+                t_wh_sku (
+                    id ,
+                    code ,
+                    bar_code ,
+                    name ,
+                    en_name ,
+                    description ,
+                    color ,
+                    length ,
+                    width ,
+                    height ,
+                    volume ,
+                    weight ,
+                    type_of_goods,
+                    brand_id ,
+                    customer_id ,
+                    ou_id ,
+                    create_time ,
+                    created_id ,
+                    last_modify_time ,
+                    modified_id ,
+                    style ,
+                    size ,
+                    lifecycle,
+                    ext_code ,
+                    length_uom ,
+                    volume_uom ,
+                    weight_uom
+                ) VALUES (
+                    #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{barCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{name,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{enName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{description,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{color,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{length,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+                    #{width,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+                    #{height,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+                    #{volume,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+                    #{weight,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+                    #{typeOfGoods,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{brandId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{customerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                    #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                    #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{style,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{size,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                    #{extCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{lengthUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{volumeUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{weightUom,javaType=java.lang.String,jdbcType=VARCHAR}
+                )
+            ]]>
+    </insert>
+
+    <update id="updateShared" parameterType="com.baozun.scm.primservice.whoperation.model.sku.Sku">
+        UPDATE t_wh_sku SET
+            code = #{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
+            bar_code = #{barCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+            name = #{name,javaType=java.lang.String,jdbcType=VARCHAR} ,
+            en_name = #{enName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+            description = #{description,javaType=java.lang.String,jdbcType=VARCHAR} ,
+            color = #{color,javaType=java.lang.String,jdbcType=VARCHAR} ,
+            length = #{length,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+            width = #{width,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+            height = #{height,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+            volume = #{volume,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+            weight = #{weight,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+            type_of_goods = #{typeOfGoods,javaType=java.lang.Long,jdbcType=BIGINT} ,
+            brand_id = #{brandId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+            customer_id = #{customerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+            create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+            created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+            last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+            modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+            style = #{style,javaType=java.lang.String,jdbcType=VARCHAR} ,
+            size = #{size,javaType=java.lang.String,jdbcType=VARCHAR} ,
+            lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+            ext_code = #{extCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+            length_uom = #{lengthUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
+            volume_uom = #{volumeUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
+            weight_uom = #{weightUom,javaType=java.lang.String,jdbcType=VARCHAR}
+        WHERE
+            id = #{id}
+            and ou_id = #{ouId}
+    </update>
+
+
+
+	<update id="batchUpdateStatus" parameterType="com.baozun.scm.primservice.whoperation.model.sku.Sku">
+		UPDATE t_wh_sku SET lifecycle = #{lifecycle}, modified_id = #{operatorId}, last_modify_time = #{lastModifyDate}
+		WHERE id in
+		<foreach collection="skuIds" item="id" open="(" separator=","
+			close=")">
+			#{id}
+			</foreach>
+	</update>
+	
+	<select id="findListByParamExt" resultMap="SkuCommand">
+        select
+        <include refid="skuColumnsExt"/>
+        from t_wh_sku sku 
+        left join t_bi_customer customer on sku.customer_id = customer.id
+        left join t_bi_brand brand on sku.brand_id = brand.id
+        <include refid="skuDynamicWhereExt"/>
+        <include refid="skuLimit" />
+    
+    </select>
+
+    <select id="findSkuAllInfoListByParamExt" resultMap="SkuResultExt">
+        select
+        <include refid="skuColumnsExt"/>
+        from t_wh_sku sku
+        left join t_bi_customer customer on sku.customer_id = customer.id
+        left join t_bi_brand brand on sku.brand_id = brand.id
+        <include refid="skuDynamicWhereExt"/>
+        <include refid="skuLimit" />
+
+    </select>
+	
+
+</mapper>

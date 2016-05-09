@@ -94,6 +94,10 @@ public class ErrorCodes {
     public static final int SAVE_FAILURE = 1023;
     /** 店铺id为空 **/
     public static final int STORE_EMPTY = 1024;
+    /** 商品Id{0},未查询到相应的商品信息! */
+    public static final int SKU_IS_NULL_BY_ID = 1045;
+    /** 商品编码 [{0}] 商品名称 [{1}] 状态为不可用，请重新设置 */
+    public static final int SKU_IS_LIFECYCLE_ERROR = 1082;
     /** 拆箱信息不存在 */
     public static final int CARTONNULL_ERROR = 1079;
 
@@ -165,4 +169,6 @@ public class ErrorCodes {
     public static final int ADD_CARTONLIST_NULL_ERROR = 3032;
     /** 新增拆箱商品总数量为 [{0}] 超过可拆箱商品数量 [{1}]，请刷新页面重试 */
     public static final int ADD_CARTONLIST_QTY_ERROR = 3033;
+    /** 拆箱商品数量 [{0}] 容器内商品数量[{1}] 容器个数 [{2}]，每箱分配数量不相同，请重新设置 */
+    public static final int ADD_CARTONLIST_BINQTY_ERROR = 3034;
 }

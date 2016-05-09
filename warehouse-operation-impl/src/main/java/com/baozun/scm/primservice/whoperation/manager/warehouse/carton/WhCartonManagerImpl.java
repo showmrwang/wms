@@ -15,10 +15,12 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.carton.WhCartonC
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnLineDao;
+import com.baozun.scm.primservice.whoperation.dao.sku.SkuDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.carton.WhCartonDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
+import com.baozun.scm.primservice.whoperation.model.sku.Sku;
 import com.baozun.scm.primservice.whoperation.model.warehouse.carton.WhCarton;
 
 @Service("whCartonManager")
@@ -31,6 +33,8 @@ public class WhCartonManagerImpl extends BaseManagerImpl implements WhCartonMana
     private WhCartonDao whCartonDao;
     @Autowired
     private WhAsnLineDao whAsnLineDao;
+    @Autowired
+    private SkuDao skuDao;
 
     /**
      * 通过ASN相关信息查询对用拆箱信息
@@ -100,13 +104,26 @@ public class WhCartonManagerImpl extends BaseManagerImpl implements WhCartonMana
         }
         if (null == whCartonCommand.getCartonList()) {
             // 没有新增拆箱商品明细
-            log.warn("addDevanningList CartonList() is null logid: " + whCartonCommand.getLogId());
+            log.warn("addDevanningList CartonList is null logid: " + whCartonCommand.getLogId());
             throw new BusinessException(ErrorCodes.ADD_CARTONLIST_NULL_ERROR);
+        }
+        Sku sku = skuDao.findByIdShared(whCartonCommand.getSkuId(), whCartonCommand.getOuId());
+        if (null == sku) {
+            // 商品不存在
+            log.warn("addDevanningList Sku is null logid: " + whCartonCommand.getLogId());
+            throw new BusinessException(ErrorCodes.SKU_IS_NULL_BY_ID, new Object[] {whCartonCommand.getSkuId()});
+        }
+        if (!sku.getLifecycle().equals(Sku.LIFECYCLE_NORMAL)) {
+            // 判断商品是否可用
+            log.warn("addDevanningList Sku lifecycle not normal error logid: " + whCartonCommand.getLogId());
+            throw new BusinessException(ErrorCodes.SKU_IS_LIFECYCLE_ERROR, new Object[] {sku.getCode(), sku.getName()});
         }
         List<WhCartonCommand> cartonList = whCartonCommand.getCartonList();
         // 获取这单可拆数量
         WhAsnLineCommand usableDevanningQty = whAsnLineDao.findWhAsnLineCommandEditDevanning(whCartonCommand.getAsnLineId(), whCartonCommand.getAsnId(), whCartonCommand.getOuId(), whCartonCommand.getSkuId());
         checkAddCartonListQty(cartonList, usableDevanningQty.getUsableDevanningQty(), whCartonCommand.getLogId());// 验证本次拆箱数量是否超过可拆箱数量
+        // 验证SKU是否可用状态
+
         log.info(this.getClass().getSimpleName() + ".addDevanningList method begin! end: " + whCartonCommand.getLogId());
     }
 
@@ -116,6 +133,11 @@ public class WhCartonManagerImpl extends BaseManagerImpl implements WhCartonMana
     private static void checkAddCartonListQty(List<WhCartonCommand> cartonList, Double usableDevanningQty, String logid) {
         Double qty = 0.0;
         for (WhCartonCommand carton : cartonList) {
+            // 验证每箱数量是否相同
+            if (carton.getBcdevanningQty() % carton.getQuantity() != 0.0) {
+                log.warn("addDevanningList carton.getBcdevanningQty() % carton.getQuantity() != 0.0 error logid: " + logid);
+                throw new BusinessException(ErrorCodes.ADD_CARTONLIST_BINQTY_ERROR, new Object[] {carton.getBcdevanningQty(), carton.getQuantity(), carton.getBinQty()});
+            }
             qty = qty + carton.getBcdevanningQty();// 累加本次拆箱商品数量
         }
         if (qty.compareTo(usableDevanningQty) > 0) {

@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.sku.SkuDao">
+    <resultMap id="SkuResult" type="com.baozun.scm.primservice.whoperation.model.sku.Sku">
+    </resultMap>
+    
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="skuColumns">
+        <![CDATA[
+                id as id,
+                code as code,
+                bar_code as barCode,
+                name as name,
+                en_name as enName,
+                description as description,
+                color as color,
+                length as length,
+                width as width,
+                height as height,
+                volume as volume,
+                weight as weight,
+                type_of_goods as typeOfGoods,
+                brand_id as brandId,
+                customer_id as customerId,
+                create_time as createTime,
+                created_id as createdId,
+                last_modify_time as lastModifyTime,
+                modified_id as modifiedId, 
+                style as style,
+                size as size, 
+                lifecycle as lifecycle,
+                ext_code as extCode,
+                length_uom as lengthUom,
+                volume_uom as volumeUom,
+                weight_uom as weightUom
+        ]]>
+    </sql>
+    
+    <!-- 如果有自增字段 -->
+    
+    <!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+    <insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.sku.Sku"
+            useGeneratedKeys="true" keyProperty="id"
+            flushCache="true">
+        <![CDATA[
+                INSERT INTO
+                t_wh_sku (
+                    id ,
+                    code ,
+                    bar_code ,
+                    name ,
+                    en_name ,
+                    description ,
+                    color ,
+                    length ,
+                    width ,
+                    height ,
+                    volume ,
+                    weight ,
+                    type_of_goods,
+                    brand_id ,
+                    customer_id ,
+                    create_time ,
+                    created_id ,
+                    last_modify_time ,
+                    modified_id , 
+                    style ,
+                    size ,
+                    lifecycle ,
+                    ext_code ,
+					length_uom ,
+					volume_uom ,
+					weight_uom
+                ) VALUES (
+                    #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{barCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{name,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{enName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{description,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{color,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{length,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+                    #{width,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+                    #{height,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+                    #{volume,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+                    #{weight,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+                    #{typeOfGoods,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{brandId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{customerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                    #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                    #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{style,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{size,javaType=java.lang.String,jdbcType=VARCHAR} ,
+					#{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+					#{extCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+					#{lengthUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
+					#{volumeUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
+					#{weightUom,javaType=java.lang.String,jdbcType=VARCHAR} 
+                )
+            ]]>
+    
+    </insert>
+    
+    <update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.sku.Sku">
+        <![CDATA[
+            UPDATE t_wh_sku SET
+                code = #{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                bar_code = #{barCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                name = #{name,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                en_name = #{enName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                description = #{description,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                color = #{color,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                length = #{length,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+                width = #{width,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+                height = #{height,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+                volume = #{volume,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+                weight = #{weight,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+                type_of_goods = #{typeOfGoods,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                brand_id = #{brandId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                customer_id = #{customerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                style = #{style,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                size = #{size,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                ext_code = #{extCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                length_uom = #{lengthUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                volume_uom = #{volumeUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                weight_uom = #{weightUom,javaType=java.lang.String,jdbcType=VARCHAR} 
+            WHERE 
+                id = #{id} 
+        ]]>
+    </update>
+
+    <delete id="delete" parameterType="java.lang.Long">
+        <![CDATA[
+            delete from t_wh_sku where
+                id = #{id} 
+        ]]>
+    </delete>
+    
+    <delete id="deleteByIds" parameterType="list">
+        
+        delete from t_wh_sku
+        where id in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    
+    </delete>
+    
+    <select id="findById" parameterType="java.lang.Long" resultMap="SkuResult" flushCache="false">
+        select
+        <include refid="skuColumns"/>
+        <![CDATA[
+                from t_wh_sku 
+                where 
+                id = #{id} 
+            ]]>
+    </select>
+
+    <select id="getByIds" parameterType="list" resultMap="SkuResult" flushCache="false">
+        select
+        <include refid="skuColumns"/>
+        from t_wh_sku
+        where id in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <sql id="skuDynamicWhere">
+        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+            
+            <if test="id!=null">
+                and id = #{id}
+            </if>
+            
+            
+            <if test="code!=null and code!=''">
+                and code like #{code}
+            </if>
+            
+            
+            <if test="barCode!=null and barCode!=''">
+                and bar_code like #{barCode}
+            </if>
+            
+            
+            <if test="name!=null and name!=''">
+                and name like #{name}
+            </if>
+            
+            
+            <if test="enName!=null and enName!=''">
+                and en_name like #{enName}
+            </if>
+            
+            
+            <if test="description!=null and description!=''">
+                and description like #{description}
+            </if>
+            
+            
+            <if test="color!=null and color!=''">
+                and color like #{color}
+            </if>
+            
+            <if test="length!=null">
+                and length = #{length}
+            </if>
+            
+            <if test="width!=null">
+                and width = #{width}
+            </if>
+            
+            <if test="height!=null">
+                and height = #{height}
+            </if>
+            
+            <if test="volume!=null">
+                and volume = #{volume}
+            </if>
+            
+            <if test="weight!=null">
+                and weight = #{weight}
+            </if>
+            
+            <if test="typeOfGoods!=null">
+                and type_of_goods = #{typeOfGoods}
+            </if>
+            
+            <if test="brandId!=null">
+                and brand_id = #{brandId}
+            </if>
+            
+            <if test="customerId!=null">
+                and customer_id = #{customerId}
+            </if>
+            
+            <if test="createTime!=null">
+                and create_time = #{createTime}
+            </if>
+            
+            <if test="createdId!=null">
+                and created_id = #{createdId}
+            </if>
+            
+            <if test="lastModifyTime!=null">
+                and last_modify_time = #{lastModifyTime}
+            </if>
+            
+            <if test="modifiedId!=null">
+                and modified_id = #{modifiedId}
+            </if>
+            
+            <if test="style!=null and style!=''">
+                and style = #{style}
+            </if>
+            
+            <if test="size!=null and size!=''">
+                and size = #{size}
+            </if>
+            
+            <if test="lifecycle!=null">
+					and lifecycle = #{lifecycle}
+			</if>
+			
+			<if test="extCode!=null and extCode!=''">
+                and ext_code like #{extCode}
+            </if>
+            
+            <if test="lengthUom!=null and lengthUom!=''">
+                and length_uom = #{lengthUom}
+            </if>
+            
+            <if test="volumeUom!=null and volumeUom!=''">
+                and volume_uom = #{volumeUom}
+            </if>
+            
+            <if test="weightUom!=null and weightUom!=''">
+                and weight_uom = #{weightUom}
+            </if>
+        </where>
+    </sql>
+    
+    
+    <select id="getCount" resultType="long">
+        select count(*) from t_wh_sku
+    </select>
+
+    <select id="findListCountByQueryMap" resultType="long">
+        select count(*) from t_wh_sku
+        <include refid="skuDynamicWhere"/>
+    </select>
+    
+    <select id="findListCountByParam" resultType="long">
+        select count(*) from t_wh_sku
+        <include refid="skuDynamicWhere"/>
+    </select>
+    
+    <!--
+        分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+        因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPage" resultMap="SkuResult">
+        select
+        <include refid="skuColumns"/>
+        from t_wh_sku
+        <include refid="skuDynamicWhere"/>
+    
+    </select>
+    
+    <select id="findListByQueryMap" resultMap="SkuResult">
+        select
+        <include refid="skuColumns"/>
+        from t_wh_sku
+        <include refid="skuDynamicWhere"/>
+    
+    </select>
+    
+    <select id="findListByParam" resultMap="SkuResult">
+        select
+        <include refid="skuColumns"/>
+        from t_wh_sku
+        <include refid="skuDynamicWhere"/>
+    
+    </select>
+
+</mapper>
