@@ -80,9 +80,7 @@ public class AsnManagerImpl implements AsnManager {
             log.debug(this.getClass().getSimpleName() + ".editAsnStatusByInfo method params {}", whAsn);
         }
         for (Long id : whAsn.getAsnIds()) {
-            WhAsnCommand command = this.whAsnDao.findWhAsnById(id, whAsn.getOuId());
-            WhAsn asn = new WhAsn();
-            BeanUtils.copyProperties(command, asn);
+            WhAsn asn = this.whAsnDao.findWhAsnById(id, whAsn.getOuId());
             asn.setStatus(whAsn.getStatus());
             asn.setModifiedId(whAsn.getModifiedId());
             int count = this.whAsnDao.saveOrUpdateByVersion(asn);
@@ -106,9 +104,7 @@ public class AsnManagerImpl implements AsnManager {
             log.debug(this.getClass().getSimpleName() + ".editAsnStatusByShard method params {}", whAsn);
         }
         for (Long id : whAsn.getAsnIds()) {
-            WhAsnCommand command = this.whAsnDao.findWhAsnById(id, whAsn.getOuId());
-            WhAsn asn = new WhAsn();
-            BeanUtils.copyProperties(command, asn);
+            WhAsn asn = this.whAsnDao.findWhAsnById(id, whAsn.getOuId());
             asn.setStatus(whAsn.getStatus());
             asn.setModifiedId(whAsn.getModifiedId());
             int count = this.whAsnDao.saveOrUpdateByVersion(asn);
@@ -198,8 +194,7 @@ public class AsnManagerImpl implements AsnManager {
                 gl.setOuId(whAsn.getOuId());
                 globalLogManager.insertGlobalLog(gl);
             } else {
-                WhAsnCommand whAsnCommand = this.whAsnDao.findWhAsnById(asn.getId(), asn.getOuId());
-                BeanUtils.copyProperties(whAsnCommand, whAsn);
+                whAsn = this.whAsnDao.findWhAsnById(asn.getId(), asn.getOuId());
                 whAsn.setModifiedId(asn.getModifiedId());
                 whAsn.setQtyPlanned(whAsn.getQtyPlanned() + asn.getQtyPlanned());// 已有ASN时候添加明细，修改已有ASN的计划数量
                 this.whAsnDao.saveOrUpdateByVersion(whAsn);
@@ -336,8 +331,7 @@ public class AsnManagerImpl implements AsnManager {
                     gl.setType(Constants.GLOBAL_LOG_INSERT);
                     globalLogManager.insertGlobalLog(gl);
                 } else {
-                    WhAsnCommand whAsnCommand = this.whAsnDao.findWhAsnById(asn.getId(), asn.getOuId());
-                    BeanUtils.copyProperties(whAsnCommand, whAsn);
+                    whAsn = this.whAsnDao.findWhAsnById(asn.getId(), asn.getOuId());
                     whAsn.setModifiedId(asn.getModifiedId());
                     whAsn.setQtyPlanned(whAsn.getQtyPlanned() + asn.getQtyPlanned());// 已有ASN时候添加明细，修改已有ASN的计划数量
                     this.whAsnDao.saveOrUpdateByVersion(whAsn);
@@ -428,7 +422,7 @@ public class AsnManagerImpl implements AsnManager {
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public WhAsnCommand findWhAsnByIdToShard(WhAsnCommand whAsn) {
-        return whAsnDao.findWhAsnById(whAsn.getId(), whAsn.getOuId());
+        return whAsnDao.findWhAsnByIdCommand(whAsn.getId(), whAsn.getOuId());
     }
 
     @Override

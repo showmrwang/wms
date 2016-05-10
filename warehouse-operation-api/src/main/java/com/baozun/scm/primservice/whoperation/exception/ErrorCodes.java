@@ -24,6 +24,9 @@ public class ErrorCodes {
     /** 传入的参数{0}不能为空,确保传入数据的完整性 **/
     public static final Integer PARAM_IS_NULL = 6;
 
+    /** 编码生成器接口异常！ **/
+    public static final Integer CODE_INTERFACE_REEOR = 9;
+
     /** 系统异常 **/
     public static final Integer SYSTEM_EXCEPTION = 11;
 
@@ -96,10 +99,12 @@ public class ErrorCodes {
     public static final int STORE_EMPTY = 1024;
     /** 商品Id{0},未查询到相应的商品信息! */
     public static final int SKU_IS_NULL_BY_ID = 1045;
-    /** 商品编码 [{0}] 商品名称 [{1}] 状态为不可用，请重新设置 */
-    public static final int SKU_IS_LIFECYCLE_ERROR = 1082;
     /** 拆箱信息不存在 */
     public static final int CARTONNULL_ERROR = 1079;
+    /** 商品编码 [{0}] 商品名称 [{1}] 状态不可用，请去商品维护页面重新设置 */
+    public static final int SKU_IS_LIFECYCLE_ERROR = 1082;
+    /**二级容器不存在*/
+    public static final int CONTAINER2NDCATEGORY_NULL_ERROR = 1083;
 
     /** 页面会话错误 请刷新页面后重试 **/
     public static final int SESSION_DATA_ERROR = 2001;

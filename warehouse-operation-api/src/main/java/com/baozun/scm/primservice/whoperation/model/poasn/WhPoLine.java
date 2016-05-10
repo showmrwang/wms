@@ -40,17 +40,17 @@ public class WhPoLine extends BaseModel {
     /** SKU_ID */
     private Long skuId;
     /** 计划数量 */
-    private Double qtyPlanned;
+    private Double qtyPlanned = 0.0;
     /** 超收数量 */
     private Double overshipped;
     /** 可用数量 */
-    private Double availableQty;
+    private Double availableQty = 0.0;
     /** 计划箱数 */
-    private Integer ctnPlanned;
+    private Integer ctnPlanned = 0;
     /** 已收数量 */
-    private Double qtyRcvd;
+    private Double qtyRcvd = 0.0;
     /** 已收箱数 */
-    private Integer ctnRcvd;
+    private Integer ctnRcvd = 0;
     /** 状态 */
     private Integer status;
     /** 是否质检 1:是 0:否 */

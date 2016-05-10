@@ -60,7 +60,7 @@ public class Container extends BaseModel {
     /**
      * 1.可用;2.已删除;0.禁用
      */
-    private Integer lifecycle;
+    private Integer lifecycle = 1;
 
     private Long ouId;
 

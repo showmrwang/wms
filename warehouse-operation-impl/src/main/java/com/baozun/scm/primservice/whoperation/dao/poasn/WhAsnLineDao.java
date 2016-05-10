@@ -50,7 +50,9 @@ public interface WhAsnLineDao extends BaseDao<WhAsnLine, Long> {
 
     int deleteByIdOuId(@Param("id") Long id, @Param("ouid") Long ouid);
 
-    WhAsnLineCommand findWhAsnLineById(@Param("id") Long id, @Param("ouid") Long ouId);
+    WhAsnLineCommand findWhAsnLineByIdCommand(@Param("id") Long id, @Param("ouid") Long ouId);
+
+    WhAsnLine findWhAsnLineById(@Param("id") Long id, @Param("ouid") Long ouId);
 
     List<WhAsnLineCommand> findWhAsnLineCommandDevanningList(@Param("id") Long id, @Param("asnid") Long asnid, @Param("ouid") Long ouid, @Param("skuid") Long skuid);
 

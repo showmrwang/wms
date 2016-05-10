@@ -180,7 +180,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	       			ctn_planned = #{ctnPlanned,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 	       			qty_rcvd = #{qtyRcvd,javaType=java.lang.Double,jdbcType=DECIMAL} ,
 	       			ctn_rcvd = #{ctnRcvd,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-			        devanning_qty = #{devanningQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 			        status = #{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 			        is_iqc = #{isIqc,javaType=java.lang.Boolean,jdbcType=BIT} ,
 			        mfg_date = #{mfgDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
@@ -290,7 +289,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    ]]>
 	 </delete>
 	 
-	 <select id="findWhAsnLineById" parameterType="map" resultMap="whAsnLineCommand">
+	 <select id="findWhAsnLineByIdCommand" parameterType="map" resultMap="whAsnLineCommand">
 	 select <include refid="whAsnLineColumnsMapExt" />
 	 from 
 		    t_wh_asn_line al
@@ -300,6 +299,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			left join t_wh_sku sku on al.sku_id = sku.id 
 			where 
 			al.id=#{id}  and al.ou_id = #{ouid}
+	 </select>
+	 
+	 <select id="findWhAsnLineById"  resultMap="WhAsnLineResultExt">
+	 select <include refid="whAsnLineColumnsExt" />
+	 from 
+		    t_wh_asn_line 
+			where 
+			id=#{id}  and ou_id = #{ouid}
 	 </select>
 	 
 	<select id="findWhAsnLineCommandDevanningList" resultMap="whAsnLineCommand">
@@ -357,7 +364,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 						left join sys_dictionary inv4 on inv4.dic_value = line.inv_attr4 and inv4.group_value = 'INVENTORY_ATTR_4' 
 						left join sys_dictionary inv5 on inv5.dic_value = line.inv_attr5 and inv5.group_value = 'INVENTORY_ATTR_5',
 						(
-							select sum(c.quantity) as qty 
+							select ifnull(sum(c.quantity),0) as qty 
 								from t_wh_carton c 
 								where
 									c.asn_id = #{asnid}  
@@ -432,7 +439,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 						on sku.id = line.sku_id 
 						left join t_wh_uom uom on uom.uom_code = line.valid_date_uom,
 						(
-							select sum(c.quantity) as qty 
+							select ifnull(sum(c.quantity),0) as qty 
 								from t_wh_carton c 
 								where
 									c.asn_id = #{asnid}  

@@ -29,7 +29,7 @@ public interface WhCartonManager extends BaseManager {
 
     WhCarton findWhCatonById(Long id, Long ouid);
 
-    void addDevanningList(WhCartonCommand whCartonCommand);
+    void addDevanningList(WhCartonCommand whCartonCommand) throws Exception;
 
 
 }

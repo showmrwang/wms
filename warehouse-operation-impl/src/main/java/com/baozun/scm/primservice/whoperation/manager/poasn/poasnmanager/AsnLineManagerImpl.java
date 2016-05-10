@@ -55,7 +55,7 @@ public class AsnLineManagerImpl extends BaseManagerImpl implements AsnLineManage
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public WhAsnLineCommand findWhAsnLineByIdToShard(WhAsnLineCommand command) {
-        return this.whAsnLineDao.findWhAsnLineById(command.getId(), command.getOuId());
+        return this.whAsnLineDao.findWhAsnLineByIdCommand(command.getId(), command.getOuId());
     }
 
     /**
@@ -214,7 +214,7 @@ public class AsnLineManagerImpl extends BaseManagerImpl implements AsnLineManage
         if (log.isDebugEnabled()) {
             log.debug("params:[whAsnLine:{}]", whAsnLine.toString());
         }
-        WhAsnLineCommand asn = whAsnLineDao.findWhAsnLineById(whAsnLine.getId(), whAsnLine.getOuId());
+        WhAsnLineCommand asn = whAsnLineDao.findWhAsnLineByIdCommand(whAsnLine.getId(), whAsnLine.getOuId());
         if (null == asn) {
             log.warn("findWhAsnLineCommandEditDevanning asn is null logid: " + whAsnLine.getLogId());
             throw new BusinessException(ErrorCodes.ASNLINE_NULL);
@@ -234,6 +234,6 @@ public class AsnLineManagerImpl extends BaseManagerImpl implements AsnLineManage
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public WhAsnLineCommand findWhAsnLineById(Long id, Long ouid) {
-        return whAsnLineDao.findWhAsnLineById(id, ouid);
+        return whAsnLineDao.findWhAsnLineByIdCommand(id, ouid);
     }
 }

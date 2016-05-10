@@ -58,6 +58,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				</if>
 		</where>
 	</sql>
+
+	
 	<!-- 用于select查询公用抽取的列 -->
 	<sql id="whAsnColumnsExt">
 	    <![CDATA[
@@ -232,7 +234,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
 	</update>
 	
-	<select id="findWhAsnById" resultMap="whAsnCommand">
+	<select id="findWhAsnByIdCommand" resultMap="whAsnCommand">
     	select <include refid="whAsnColumnsExt" />
 		    from 
 		    t_wh_asn asn
@@ -241,6 +243,47 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    	asn.id = #{id}
 				<if test="ouid!=null">
 		   			 and asn.ou_id = #{ouid}
+				</if>
+			</where>
+    </select>
+    
+	<select id="findWhAsnById" resultMap="WhAsnResultExt">
+    	select 
+    		    id as id,
+	        	asn_code as asnCode,
+	        	po_id as poId,
+	        	ou_id as ouId,
+	        	customer_id as customerId,
+	        	store_id as storeId,
+	        	po_date as poDate,
+	        	eta as eta,
+	        	delivery_time as deliveryTime,
+	        	qty_planned as qtyPlanned,
+	        	qty_rcvd as qtyRcvd,
+	        	ctn_planned as ctnPlanned,
+	        	ctn_rcvd as ctnRcvd,
+	        	supplier_id as supplierId,
+	        	logistics_provider_id as logisticsProviderId,
+	        	asn_type as asnType,
+	        	status as status,
+	        	is_iqc as isIqc,
+	        	start_time as startTime,
+	        	stop_time as stopTime,
+	        	inbound_time as inboundTime,
+	        	create_time as createTime,
+	        	created_id as createdId,
+	        	last_modify_time as lastModifyTime,
+	        	modified_id as modifiedId,
+	        	asn_ext_code as asnExtCode,
+	        	po_ou_id as poOuId,
+	        	ext_code as extCode,
+	        	urgent_status as urgentStatus
+		    from 
+		    t_wh_asn 
+		    <where>
+		    	id = #{id}
+				<if test="ouid!=null">
+		   			 and ou_id = #{ouid}
 				</if>
 			</where>
     </select>

@@ -34,6 +34,9 @@ public final class Constants {
     /** 调编码生成器 asn单实体标识 */
     public static final String WHASN_MODEL_URL = "com.baozun.scm.primservice.whoperation.model.poasn.WhAsn";
 
+    /** 调编码生成器 容器实体标识 */
+    public static final String CONTAINER_MODEL_URL = "com.baozun.scm.primservice.whinfo.model.warehouse.Container";
+
     /** 调编码生成器 ASN单WMS内部单号分组 */
     public static final String WMS_ASN_INNER = "WMS_ASN_INNER";
 
