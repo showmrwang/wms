@@ -109,6 +109,49 @@ public class WhCartonManagerImpl extends BaseManagerImpl implements WhCartonMana
         }
         // 插入系统日志表
         insertGlobalLog(GLOBAL_LOG_DELETE, c, c.getOuId(), whCartonCommand.getModifiedId(), whAsnLineCommand.getAsnCode(), null);
+
+        // 修改对应po poline asn asnline计划箱数
+        WhAsn asn = whAsnDao.findWhAsnById(c.getAsnId(), c.getOuId());
+        asn.setCtnPlanned(asn.getCtnPlanned() - 1);// 计划箱数
+        asn.setModifiedId(whCartonCommand.getModifiedId());
+        int asnCount = whAsnDao.saveOrUpdateByVersion(asn);
+        if (asnCount == 0) {
+            log.warn("addDevanningList update Asn CtnPlanned error logid: " + whCartonCommand.getLogId());
+            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+        }
+
+        WhPo whPo = whPoDao.findWhPoById(asn.getPoId(), asn.getOuId());
+        whPo.setCtnPlanned(whPo.getCtnPlanned() - 1);// 计划箱数
+        whPo.setModifiedId(whCartonCommand.getModifiedId());
+        int poCount = whPoDao.saveOrUpdateByVersion(whPo);
+        if (poCount == 0) {
+            log.warn("addDevanningList update Po CtnPlanned error logid: " + whCartonCommand.getLogId());
+            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+        }
+
+        WhAsnLine whAsnLine = whAsnLineDao.findWhAsnLineById(c.getAsnLineId(), asn.getOuId());
+        whAsnLine.setCtnPlanned(whAsnLine.getCtnPlanned() - 1);
+        whAsnLine.setModifiedId(whCartonCommand.getModifiedId());
+        int whAsnLineCount = whAsnLineDao.saveOrUpdateByVersion(whAsnLine);
+        if (whAsnLineCount == 0) {
+            log.warn("addDevanningList update WhAsnLine CtnPlanned error logid: " + whCartonCommand.getLogId());
+            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+        }
+
+        WhPoLine whPoLine = whPoLineDao.findWhPoLineByIdWhPoLine(whAsnLine.getPoLineId(), whCartonCommand.getOuId());
+        whPoLine.setCtnPlanned(whPoLine.getCtnPlanned() - 1);
+        whPoLine.setModifiedId(whCartonCommand.getModifiedId());
+        int whPoLineCount = whPoLineDao.saveOrUpdateByVersion(whPoLine);
+        if (whPoLineCount == 0) {
+            log.warn("addDevanningList update WhPoLine CtnPlanned error logid: " + whCartonCommand.getLogId());
+            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+        }
+
+        // 插入系统日志表
+        insertGlobalLog(GLOBAL_LOG_UPDATE, asn, asn.getOuId(), asn.getModifiedId(), whPo.getPoCode(), null);// asn
+        insertGlobalLog(GLOBAL_LOG_UPDATE, whAsnLine, whAsnLine.getOuId(), whAsnLine.getModifiedId(), asn.getAsnCode(), null);// asnline
+        insertGlobalLog(GLOBAL_LOG_UPDATE, whPo, whPo.getOuId(), whPo.getModifiedId(), null, null);// po
+        insertGlobalLog(GLOBAL_LOG_UPDATE, whPoLine, whPoLine.getOuId(), whPoLine.getModifiedId(), whPo.getPoCode(), null);// poline
         log.info(this.getClass().getSimpleName() + ".findWhAsnLineCommandEditDevanning method end! logid: " + whCartonCommand.getLogId());
     }
 
@@ -181,7 +224,11 @@ public class WhCartonManagerImpl extends BaseManagerImpl implements WhCartonMana
                 c.setCreateTime(new Date());
                 c.setLastModifyTime(new Date());
                 c.setOperatorId(whCartonCommand.getCreatedId());
-                containerDao.insert(c);
+                long tcount = containerDao.insert(c);
+                if (tcount == 0) {
+                    log.warn("addDevanningList insert Container error logid: " + whCartonCommand.getLogId());
+                    throw new BusinessException(ErrorCodes.INSERT_DATA_ERROR);
+                }
                 // 插入系统日志表
                 insertGlobalLog(GLOBAL_LOG_INSERT, c, c.getOuId(), c.getOperatorId(), null, null);
                 // 插入ASN拆箱表
@@ -215,7 +262,11 @@ public class WhCartonManagerImpl extends BaseManagerImpl implements WhCartonMana
                 carton.setModifiedId(whCartonCommand.getCreatedId());
                 carton.setCreateTime(new Date());
                 carton.setLastModifyTime(new Date());
-                whCartonDao.insert(carton);
+                long ccount = whCartonDao.insert(carton);
+                if (ccount == 0) {
+                    log.warn("addDevanningList insert Carton error logid: " + whCartonCommand.getLogId());
+                    throw new BusinessException(ErrorCodes.INSERT_DATA_ERROR);
+                }
                 // 插入系统日志表
                 insertGlobalLog(GLOBAL_LOG_INSERT, carton, carton.getOuId(), carton.getCreatedId(), null, null);
             }

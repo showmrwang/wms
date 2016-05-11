@@ -50,7 +50,7 @@ public class ErrorCodes {
 
     /** 交易关闭 **/
     public static final int transaction_closed = 60008;
-
+    
     /** 修改数据失败 请刷新页面后重试 **/
     public static final int UPDATE_DATA_ERROR = 1006;
 
