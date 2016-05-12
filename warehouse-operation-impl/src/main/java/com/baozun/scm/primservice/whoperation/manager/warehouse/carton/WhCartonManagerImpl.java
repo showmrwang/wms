@@ -322,6 +322,16 @@ public class WhCartonManagerImpl extends BaseManagerImpl implements WhCartonMana
     private static void checkAddCartonListQty(List<WhCartonCommand> cartonList, Double usableDevanningQty, String logid) {
         Double qty = 0.0;
         for (WhCartonCommand carton : cartonList) {
+            // 验证本次拆箱数量是否>0
+            if (carton.getBcdevanningQty() <= 0) {
+                log.warn("addDevanningList carton.getBcdevanningQty() <= 0.0 error logid: " + logid);
+                throw new BusinessException(ErrorCodes.ADD_CARTONLIST_BCDEVANNINGQTY_ERROR);
+            }
+            // 验证每箱商品数量是否>0
+            if (carton.getQuantity() <= 0) {
+                log.warn("addDevanningList carton.getQuantity() <= 0.0 error logid: " + logid);
+                throw new BusinessException(ErrorCodes.ADD_CARTONLIST_QUANTITY_ERROR);
+            }
             // 验证每箱数量是否相同
             if (carton.getBcdevanningQty() % carton.getQuantity() != 0.0) {
                 log.warn("addDevanningList carton.getBcdevanningQty() % carton.getQuantity() != 0.0 error logid: " + logid);
@@ -349,7 +359,7 @@ public class WhCartonManagerImpl extends BaseManagerImpl implements WhCartonMana
         try {
             for (int i = 1; i <= 5; i++) {
                 // 每次获取5次 5次都失败直接抛错
-                code = codeManager.generateCode(Constants.WMS, Constants.CONTAINER_MODEL_URL, c2c.getCodeGenerator(), c2c.getPrefix(), c2c.getSuffix());// GenerateUtil.recoveryCode();
+                code = codeManager.generateCode(Constants.WMS, Constants.CONTAINER_MODEL_URL, c2c.getCodeGenerator(), c2c.getPrefix(), c2c.getSuffix());
                 if (null == code) {
                     // 为空记录失败次数
                     log.warn("addDevanningList Interface codeManager generateCode code is null count: " + i + " logid: " + logid);

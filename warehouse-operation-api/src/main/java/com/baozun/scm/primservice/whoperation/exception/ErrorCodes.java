@@ -98,13 +98,13 @@ public class ErrorCodes {
     /** 店铺id为空 **/
     public static final int STORE_EMPTY = 1024;
     /** 商品Id{0},未查询到相应的商品信息! */
-    public static final int SKU_IS_NULL_BY_ID = 1045;
-    /** 拆箱信息不存在 */
-    public static final int CARTONNULL_ERROR = 1079;
+    public static final int SKU_IS_NULL_BY_ID = 1045; 
     /** 商品编码 [{0}] 商品名称 [{1}] 状态不可用，请去商品维护页面重新设置 */
     public static final int SKU_IS_LIFECYCLE_ERROR = 1082;
-    /**二级容器不存在*/
+    /** 二级容器不存在 */
     public static final int CONTAINER2NDCATEGORY_NULL_ERROR = 1083;
+    /** 拆箱信息不存在 */
+    public static final int CARTONNULL_ERROR = 1084;
 
     /** 页面会话错误 请刷新页面后重试 **/
     public static final int SESSION_DATA_ERROR = 2001;
@@ -178,4 +178,8 @@ public class ErrorCodes {
     public static final int ADD_CARTONLIST_BINQTY_ERROR = 3034;
     /** 取消PO单失败 */
     public static final int CANCEL_PO_ERROR = 3035;
+    /** 拆箱商品数量不能小于等于0，请重新设置 */
+    public static final int ADD_CARTONLIST_BCDEVANNINGQTY_ERROR = 3036;
+    /** 每箱商品数量不能小于等于0，请重新设置 */
+    public static final int ADD_CARTONLIST_QUANTITY_ERROR = 3037;
 }
