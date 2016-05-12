@@ -20,11 +20,17 @@ import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 
 public interface PoManager extends BaseManager {
 
+    ResponseMsg createPoAndLineToInfo(WhPo po, List<WhPoLine> whPoLines, ResponseMsg rm);
+
     ResponseMsg createPoAndLineToShare(WhPo po, List<WhPoLine> whPoLines, ResponseMsg rm);
 
-    WhPoCommand findWhPoByIdToInfo(WhPoCommand whPo);
+    WhPoCommand findWhPoByIdToInfo(WhPoCommand command);
 
-    WhPoCommand findWhPoByIdToShard(WhPoCommand whPo);
+    WhPoCommand findWhPoByIdToShard(WhPoCommand command);
+
+    WhPoCommand findWhPoCommandByIdToInfo(Long id, Long ouId);
+
+    WhPoCommand findWhPoCommandByIdToShard(Long id, Long ouId);
 
     Pagination<WhPoCommand> findListByQueryMapWithPageExtByInfo(Page page, Sort[] sorts, Map<String, Object> params);
 
@@ -67,5 +73,35 @@ public interface PoManager extends BaseManager {
     void cancelPoToShard(List<WhPo> poList);
 
     void editPoAdnPoLineWhenDeleteAsnToInfo(WhPoCommand whpo, List<WhPoLine> polineList);
+
+    /**
+     * 逻辑：poCode+ouId能唯一确定一条PO；poCode,ouId不能为空
+     * 
+     * @param poCode
+     * @param ouId
+     * @return
+     */
+    WhPo findWhPoByPoCodeOuIdToShard(String poCode, Long ouId);
+
+    /**
+     * 逻辑：poCode+ouId能唯一确定一条非取消状态的PO；poCode,ouId不能为空
+     * 
+     * @param poCode
+     * @param ouId
+     * @return
+     */
+    WhPo findWhPoByPoCodeOuIdToInfo(String poCode, Long ouId);
+
+    void createWhPoToInfo(WhPo shardpo, List<WhPoLine> whpolineList);
+
+    void createWhPoToShard(WhPo shardpo, List<WhPoLine> whpolineList);
+
+    /**
+     * info库中，poCode会对应多条Po;
+     * 
+     * @param poCode
+     * @return
+     */
+    List<WhPo> findWhPoByPoCodeToInfo(String poCode);
 
 }

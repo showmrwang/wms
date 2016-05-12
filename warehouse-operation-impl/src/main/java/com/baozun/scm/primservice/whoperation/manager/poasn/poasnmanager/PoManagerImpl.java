@@ -24,13 +24,18 @@ import com.baozun.scm.primservice.whoperation.command.system.GlobalLogCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
+import com.baozun.scm.primservice.whoperation.dao.poasn.BiPoDao;
+import com.baozun.scm.primservice.whoperation.dao.poasn.BiPoLineDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.CheckPoCodeDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoLineDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
+import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.system.GlobalLogManager;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
+import com.baozun.scm.primservice.whoperation.model.poasn.BiPo;
+import com.baozun.scm.primservice.whoperation.model.poasn.BiPoLine;
 import com.baozun.scm.primservice.whoperation.model.poasn.CheckPoCode;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
@@ -45,7 +50,7 @@ import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
  */
 @Service("poManager")
 @Transactional
-public class PoManagerImpl implements PoManager {
+public class PoManagerImpl extends BaseManagerImpl implements PoManager {
     protected static final Logger log = LoggerFactory.getLogger(PoManager.class);
     @Autowired
     private WhPoDao whPoDao;
@@ -55,6 +60,10 @@ public class PoManagerImpl implements PoManager {
     private GlobalLogManager globalLogManager;
     @Autowired
     private CheckPoCodeDao checkPoCodeDao;
+    @Autowired
+    private BiPoDao biPoDao;
+    @Autowired
+    private BiPoLineDao biPoLineDao;
 
 
     /**
@@ -93,6 +102,7 @@ public class PoManagerImpl implements PoManager {
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public ResponseMsg createPoAndLineToShare(WhPo po, List<WhPoLine> whPoLines, ResponseMsg rm) {
+        po.setId(null);
         long i = whPoDao.insert(po);
         if (0 == i) {
             rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
@@ -100,17 +110,55 @@ public class PoManagerImpl implements PoManager {
             // throw new BusinessException(ErrorCodes.SAVE_PO_FAILED);
             return rm;
         }
-        if (whPoLines.size() > 0) {
+        if (whPoLines != null && whPoLines.size() > 0) {
             // 有line信息保存
             for (WhPoLine whPoLine : whPoLines) {
+                whPoLine.setId(null);
                 whPoLine.setPoId(po.getId());
                 whPoLineDao.insert(whPoLine);
             }
         }
         rm.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
-        rm.setMsg(po.getId() + "");
         return rm;
 
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
+    public ResponseMsg createPoAndLineToInfo(WhPo po, List<WhPoLine> whPoLines, ResponseMsg rm) {
+        try {
+            BiPo biPo = new BiPo();
+            BeanUtils.copyProperties(po, biPo);
+            biPo.setId(po.getBiPoId());
+            biPoDao.insert(biPo);
+            this.insertGlobalLog(GLOBAL_LOG_INSERT, biPo, po.getOuId(), po.getCreatedId(), null, DbDataSource.MOREDB_INFOSOURCE);
+            if (po.getOuId() != null) {
+
+                whPoDao.insert(po);
+            }
+            // 有line信息保存
+            if (whPoLines != null && whPoLines.size() > 0) {
+                for (WhPoLine whPoLine : whPoLines) {
+                    whPoLine.setPoId(po.getId());
+                    BiPoLine biPoLine = new BiPoLine();
+                    BeanUtils.copyProperties(whPoLine, biPoLine);
+                    biPoLineDao.insert(biPoLine);
+                    // whPoLineDao.insert(whPoLine);
+                    this.insertGlobalLog(GLOBAL_LOG_INSERT, biPoLine, po.getOuId(), po.getCreatedId(), po.getPoCode(), DbDataSource.MOREDB_INFOSOURCE);
+                }
+            }
+
+
+        } catch (Exception e) {
+            if (e instanceof BusinessException) {
+                throw (BusinessException) e;
+            } else {
+                throw new BusinessException(ErrorCodes.SAVE_PO_FAILED);
+            }
+        }
+        rm.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
+        rm.setMsg(po.getId() + "");
+        return rm;
     }
 
     /**
@@ -150,8 +198,8 @@ public class PoManagerImpl implements PoManager {
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
-    public WhPoCommand findWhPoByIdToInfo(WhPoCommand whPo) {
-        WhPoCommand whPoCommand = whPoDao.findWhPoCommandById(whPo.getId(), whPo.getOuId());
+    public WhPoCommand findWhPoCommandByIdToInfo(Long id, Long ouId) {
+        WhPoCommand whPoCommand = whPoDao.findWhPoCommandById(id, ouId);
         return whPoCommand;
     }
 
@@ -160,8 +208,8 @@ public class PoManagerImpl implements PoManager {
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public WhPoCommand findWhPoByIdToShard(WhPoCommand whPo) {
-        WhPoCommand whPoCommand = whPoDao.findWhPoCommandById(whPo.getId(), whPo.getOuId());
+    public WhPoCommand findWhPoCommandByIdToShard(Long id, Long ouId) {
+        WhPoCommand whPoCommand = whPoDao.findWhPoCommandById(id, ouId);
         return whPoCommand;
     }
 
@@ -548,4 +596,129 @@ public class PoManagerImpl implements PoManager {
         }
 
     }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public WhPo findWhPoByPoCodeOuIdToShard(String poCode, Long ouId) {
+        return this.whPoDao.findByPoCodeAndOuId(poCode, ouId);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
+    public WhPo findWhPoByPoCodeOuIdToInfo(String poCode, Long ouId) {
+        return this.whPoDao.findByPoCodeAndOuId(poCode, ouId);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
+    public void createWhPoToInfo(WhPo shardpo, List<WhPoLine> whpolineList) {
+        // 集团下BIPO创建子PO单
+        // 1.如果po单状态为新建的话，置为已分配到仓库状态；其余状态不变】
+
+        // 更改BIPO状态
+        BiPo bipo = this.biPoDao.findbyPoCode(shardpo.getPoCode());
+        if (PoAsnStatus.BIPO_NEW == bipo.getStatus()) {
+            bipo.setStatus(PoAsnStatus.BIPO_ALLOT);
+            int bipoCount = this.biPoDao.saveOrUpdateByVersion(bipo);
+            if (bipoCount < 1) {
+                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            }
+        }
+
+        // IF逻辑：如果仓库没有分配过
+        if (null == shardpo.getId()) {
+            this.whPoDao.insert(shardpo);
+            for (WhPoLine line : whpolineList) {
+                // 更改BIPO明细
+                BiPoLine bipoline = this.biPoLineDao.findById(line.getPoLineId());
+                if (bipoline.getAvailableQty() < line.getQtyPlanned()) {
+                    throw new BusinessException(ErrorCodes.CHECK_DATA_ERROR);
+                }
+                bipoline.setAvailableQty(bipoline.getAvailableQty() - line.getQtyPlanned());
+                if (PoAsnStatus.BIPOLINE_NEW == bipoline.getStatus()) {
+                    bipoline.setStatus(PoAsnStatus.BIPO_ALLOT);
+                }
+                bipoline.setModifiedId(shardpo.getModifiedId());
+                this.biPoLineDao.saveOrUpdateByVersion(bipoline);
+
+                // 更改INFO.WHPO明细
+                line.setPoId(shardpo.getId());
+                this.whPoLineDao.insert(line);
+            }
+            // ELSE:此仓库已经分配过PO
+        } else {
+            int pocount = this.whPoDao.saveOrUpdateByVersion(shardpo);
+            if (pocount < 1) {
+                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            }
+            for (WhPoLine line : whpolineList) {
+
+                BiPoLine bipoline = this.biPoLineDao.findById(line.getPoLineId());
+                bipoline.setAvailableQty(bipoline.getAvailableQty() - line.getQtyPlanned());
+                bipoline.setModifiedId(shardpo.getModifiedId());
+                if (PoAsnStatus.BIPOLINE_NEW == bipoline.getStatus()) {
+                    bipoline.setStatus(PoAsnStatus.BIPO_ALLOT);
+                }
+                this.biPoLineDao.saveOrUpdateByVersion(bipoline);
+
+                if (null == line.getId()) {
+                    line.setPoId(shardpo.getId());
+                    this.whPoLineDao.insert(line);
+                } else {
+                    int linecount = this.whPoLineDao.saveOrUpdateByVersion(line);
+                    if (linecount < 1) {
+                        throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void createWhPoToShard(WhPo shardpo, List<WhPoLine> whpolineList) {
+        if (null == shardpo.getId()) {
+            this.whPoDao.insert(shardpo);
+            for (WhPoLine line : whpolineList) {
+                line.setPoId(shardpo.getId());
+                this.whPoLineDao.insert(line);
+            }
+        } else {
+            int pocount = this.whPoDao.saveOrUpdateByVersion(shardpo);
+            if (pocount < 1) {
+                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            }
+            for (WhPoLine line : whpolineList) {
+                if (null == line.getId()) {
+                    line.setPoId(shardpo.getId());
+                    this.whPoLineDao.insert(line);
+                } else {
+                    int linecount = this.whPoLineDao.saveOrUpdateByVersion(line);
+                    if (linecount < 1) {
+                        throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
+    public List<WhPo> findWhPoByPoCodeToInfo(String poCode) {
+        return this.whPoDao.findWhPoByPoCodeToInfo(poCode);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
+    public WhPoCommand findWhPoByIdToInfo(WhPoCommand command) {
+        return this.whPoDao.findWhPoCommandById(command.getId(), command.getOuId());
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public WhPoCommand findWhPoByIdToShard(WhPoCommand command) {
+        return this.whPoDao.findWhPoCommandById(command.getId(), command.getOuId());
+    }
+
+
 }
