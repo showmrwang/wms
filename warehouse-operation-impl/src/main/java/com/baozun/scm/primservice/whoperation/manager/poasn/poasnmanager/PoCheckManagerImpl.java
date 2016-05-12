@@ -4,28 +4,32 @@ import java.util.List;
 
 import lark.common.annotation.MoreDB;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.whoperation.command.poasn.PoCheckCommand;
-import com.baozun.scm.primservice.whoperation.command.system.GlobalLogCommand;
-import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
+import com.baozun.scm.primservice.whoperation.dao.poasn.BiPoDao;
+import com.baozun.scm.primservice.whoperation.dao.poasn.BiPoLineDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.CheckPoCodeDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoLineDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
+import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.system.GlobalLogManager;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
+import com.baozun.scm.primservice.whoperation.model.poasn.BiPo;
+import com.baozun.scm.primservice.whoperation.model.poasn.BiPoLine;
 import com.baozun.scm.primservice.whoperation.model.poasn.CheckPoCode;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 
 @Service("poCheckManager")
 @Transactional
-public class PoCheckManagerImpl implements PoCheckManager {
+public class PoCheckManagerImpl extends BaseManagerImpl implements PoCheckManager {
 
     @Autowired
     private CheckPoCodeDao checkPoCodeDao;
@@ -35,6 +39,10 @@ public class PoCheckManagerImpl implements PoCheckManager {
     private WhPoLineDao whPoLineDao;
     @Autowired
     private GlobalLogManager globalLogManager;
+    @Autowired
+    private BiPoDao biPoDao;
+    @Autowired
+    private BiPoLineDao biPoLineDao;
 
     @Override
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
@@ -60,7 +68,7 @@ public class PoCheckManagerImpl implements PoCheckManager {
 
         } else {
             /* 从po表中根据extCode和store id查找po单号 */
-            long count = whPoDao.findPoByCodeAndStore(checkPoCode.getExtCode(), checkPoCode.getStoreId(), null);
+            long count = biPoDao.findBiPoByCodeAndStore(checkPoCode.getExtCode(), checkPoCode.getStoreId(), null);
             /* 如果找不到则调用po manager插入po表 */
             if (0 == count) {
                 /* 插入po表 */
@@ -103,31 +111,40 @@ public class PoCheckManagerImpl implements PoCheckManager {
     }
 
     private ResponseMsg createPoAndLineToInfo(WhPo po, List<WhPoLine> whPoLines, ResponseMsg rm) {
-        long i = whPoDao.insert(po);
-        // 插入系统日志表
-        GlobalLogCommand gl = new GlobalLogCommand();
-        gl.setModifiedId(po.getCreatedId());
-        gl.setOuId(po.getOuId());
-        gl.setObjectType(po.getClass().getName());
-        gl.setModifiedValues(po);
-        gl.setType(Constants.GLOBAL_LOG_INSERT);
-        globalLogManager.insertGlobalLog(gl);
-        if (0 == i) {
-            throw new BusinessException(ErrorCodes.SAVE_PO_FAILED);
-        }
-        if (whPoLines.size() > 0) {
+        try {
+            BiPo biPo = new BiPo();
+            BeanUtils.copyProperties(po, biPo);
+            biPoDao.insert(biPo);
+            this.insertGlobalLog(GLOBAL_LOG_INSERT, biPo, po.getOuId(), po.getCreatedId(), null, DbDataSource.MOREDB_INFOSOURCE);
+            if (po.getOuId() != null) {
+                whPoDao.insert(po);
+                this.insertGlobalLog(GLOBAL_LOG_INSERT, po, po.getOuId(), po.getCreatedId(), null, DbDataSource.MOREDB_INFOSOURCE);
+            }
             // 有line信息保存
-            for (WhPoLine whPoLine : whPoLines) {
-                whPoLine.setPoId(po.getId());
-                whPoLineDao.insert(whPoLine);
-                gl.setModifiedId(po.getCreatedId());
-                gl.setObjectType(whPoLine.getClass().getName());
-                gl.setModifiedValues(whPoLine);
-                gl.setType(Constants.GLOBAL_LOG_INSERT);
+            if (whPoLines != null && whPoLines.size() > 0) {
+                for (WhPoLine whPoLine : whPoLines) {
+                    whPoLine.setPoId(biPo.getId());
+                    BiPoLine biPoLine = new BiPoLine();
+                    BeanUtils.copyProperties(whPoLine, biPoLine);
+                    biPoLineDao.insert(biPoLine);
+                    this.insertGlobalLog(GLOBAL_LOG_INSERT, biPoLine, po.getOuId(), po.getCreatedId(), po.getPoCode(), DbDataSource.MOREDB_INFOSOURCE);
+                    if (po.getOuId() != null) {
+                        whPoLine.setId(null);
+                        whPoLine.setPoId(po.getId());
+                        whPoLineDao.insert(whPoLine);
+                        this.insertGlobalLog(GLOBAL_LOG_INSERT, whPoLine, po.getOuId(), po.getCreatedId(), po.getPoCode(), DbDataSource.MOREDB_INFOSOURCE);
+
+                    }
+                }
+            }
+        } catch (Exception e) {
+            if (e instanceof BusinessException) {
+                throw (BusinessException) e;
+            } else {
+                throw new BusinessException(ErrorCodes.SAVE_PO_FAILED);
             }
         }
         rm.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
-        rm.setMsg(po.getId() + "");
         return rm;
     }
 }
