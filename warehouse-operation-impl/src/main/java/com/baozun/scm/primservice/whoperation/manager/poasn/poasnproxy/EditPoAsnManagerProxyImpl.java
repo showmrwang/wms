@@ -14,6 +14,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.baozun.scm.primservice.whoperation.command.poasn.BiPoCommand;
+import com.baozun.scm.primservice.whoperation.command.poasn.BiPoLineCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnLineCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
@@ -23,9 +25,13 @@ import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnLineManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnManager;
+import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.BiPoLineManager;
+import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.BiPoManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoLineManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoManager;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
+import com.baozun.scm.primservice.whoperation.model.poasn.BiPo;
+import com.baozun.scm.primservice.whoperation.model.poasn.BiPoLine;
 import com.baozun.scm.primservice.whoperation.model.poasn.CheckPoCode;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine;
@@ -52,6 +58,10 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
     private PoManager poManager;
     @Autowired
     private PoLineManager poLineManager;
+    @Autowired
+    private BiPoManager biPoManager;
+    @Autowired
+    private BiPoLineManager biPoLineManager;
 
     /**
      * 修改ASN单状态(可批量)
@@ -219,6 +229,27 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
             // OUID不为空修改拆库表内信息
             poLineManager.editPoLineToShare(whPoLine);
         }
+        rm.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
+        log.info("EditPoLine start =======================");
+        return rm;
+    }
+
+
+    /**
+     * 修改POLINE 信息
+     */
+    @Override
+    public ResponseMsg editBiPoLine(BiPoLine biPoLine) {
+        log.info("EditPoLine start =======================");
+        ResponseMsg rm = new ResponseMsg();
+        // POLINE状态必须为新建 已创建ASN 收货中才能修改
+        if (biPoLine.getStatus() != PoAsnStatus.BIPOLINE_NEW ) {
+            rm.setResponseStatus(ResponseMsg.DATA_ERROR);
+            rm.setMsg("poLine status is error status is: " + biPoLine.getStatus());
+            log.warn("EditPoLine warn ResponseStatus: " + rm.getResponseStatus() + " msg: " + rm.getMsg());
+            return rm;
+        }
+        this.biPoLineManager.editBiPoLineSingle(biPoLine);
         rm.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
         log.info("EditPoLine start =======================");
         return rm;
@@ -750,5 +781,58 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
         }
         log.info(this.getClass().getSimpleName() + ".getResponseMsg method end!");
         return rm;
+    }
+
+    @Override
+    public ResponseMsg deleteBiPo(BiPoCommand poCommand) {
+        ResponseMsg rm = new ResponseMsg();
+        BiPo bipo = this.biPoManager.findBiPoById(poCommand.getId());
+        if (null == bipo) {
+            rm.setMsg("BiPo is null!");
+            rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
+            return rm;
+        }
+        if (PoAsnStatus.BIPO_NEW != bipo.getStatus()) {
+            rm.setMsg("BIPO STATUS IS  WRONG FOR DELETE");
+            rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
+            return rm;
+        }
+        return this.biPoManager.deleteBiPoAndLine(poCommand.getId(), poCommand.getUserId());
+    }
+
+    @Override
+    public ResponseMsg cancelBiPo(BiPoCommand command) {
+        ResponseMsg rm = new ResponseMsg();
+        BiPo bipo = this.biPoManager.findBiPoById(command.getId());
+        if (null == bipo) {
+            rm.setMsg("BiPo is null!");
+            rm.setResponseStatus(ResponseMsg.DATA_ERROR);
+            return rm;
+        }
+        if (PoAsnStatus.BIPO_NEW != bipo.getStatus()) {
+            List<WhPo> whpoList = this.poManager.findWhPoByPoCodeToInfo(bipo.getPoCode());
+            if (whpoList != null) {
+                for (WhPo whpo : whpoList) {
+                    if (PoAsnStatus.PO_CANCELED != whpo.getStatus()) {
+                        rm.setMsg("WHPO status error");
+                        rm.setResponseStatus(ResponseMsg.DATA_ERROR);
+                        return rm;
+                    }
+                }
+            }
+
+        }
+        return this.biPoManager.cancelBiPo(command.getId(), command.getUserId());
+
+    }
+
+    @Override
+    public void deleteBiPoLineByPoIdAndUuid(BiPoLineCommand command) {
+        this.biPoLineManager.deleteBiPoLineByPoIdAndUuidToInfo(command.getPoId(), command.getUuid(), command.getUserId());
+    }
+
+    @Override
+    public ResponseMsg editBiPo(BiPo updatePo) {
+        return this.biPoManager.editBiPo(updatePo);
     }
 }

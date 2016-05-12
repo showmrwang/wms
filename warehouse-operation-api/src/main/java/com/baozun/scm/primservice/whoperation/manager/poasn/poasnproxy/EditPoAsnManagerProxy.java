@@ -2,12 +2,16 @@ package com.baozun.scm.primservice.whoperation.manager.poasn.poasnproxy;
 
 import java.util.List;
 
+import com.baozun.scm.primservice.whoperation.command.poasn.BiPoCommand;
+import com.baozun.scm.primservice.whoperation.command.poasn.BiPoLineCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnLineCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoLineCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
+import com.baozun.scm.primservice.whoperation.model.poasn.BiPo;
+import com.baozun.scm.primservice.whoperation.model.poasn.BiPoLine;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
@@ -114,4 +118,45 @@ public interface EditPoAsnManagerProxy extends BaseManager {
      * @return
      */
     ResponseMsg deleteAsnLines(WhAsnLineCommand command);
+
+    /**
+     * BIPO明细页面 编辑单条明细
+     * 
+     * @param biPoLine
+     * @return
+     */
+    ResponseMsg editBiPoLine(BiPoLine biPoLine);
+
+    /**
+     * 删除BiPO，并关联删除明细； 逻辑：当处于新建状态下，才允许删除
+     * 
+     * @param poCommand
+     * @return
+     */
+    ResponseMsg deleteBiPo(BiPoCommand poCommand);
+
+    /**
+     * 取消BIPO，并置明细状态为取消;逻辑：1.当处于新建状态下时，允许取消；2.当已分配到仓库，并且每个仓库的都是取消的时候，才允许取消
+     * 
+     * @param command
+     * @return
+     */
+
+    ResponseMsg cancelBiPo(BiPoCommand command);
+
+    /**
+     * 根据PoId,uuid删除BiPo
+     * 
+     * @param poId
+     * @param uuid
+     */
+    void deleteBiPoLineByPoIdAndUuid(BiPoLineCommand command);
+
+    /**
+     * 编辑BIPO单表头；逻辑：未分配仓库之前可以编辑
+     * 
+     * @param updatePo
+     * @return
+     */
+    ResponseMsg editBiPo(BiPo updatePo);
 }

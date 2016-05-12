@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.baozun.scm.baseservice.sac.manager.CodeManager;
+import com.baozun.scm.primservice.whoperation.command.poasn.BiPoCommand;
+import com.baozun.scm.primservice.whoperation.command.poasn.BiPoLineCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnLineCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
@@ -22,8 +24,12 @@ import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnLineManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnManager;
+import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.BiPoLineManager;
+import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.BiPoManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoLineManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoManager;
+import com.baozun.scm.primservice.whoperation.model.poasn.BiPo;
+import com.baozun.scm.primservice.whoperation.model.poasn.BiPoLine;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine;
 import com.baozun.scm.primservice.whoperation.util.StringUtil;
@@ -42,6 +48,8 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
     @Autowired
     private PoManager poManager;
     @Autowired
+    private BiPoManager biPoManager;
+    @Autowired
     private AsnManager asnManager;
     @Autowired
     private PoLineManager poLineManager;
@@ -49,6 +57,8 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
     private CodeManager codeManager;
     @Autowired
     private AsnLineManager asnLineManager;
+    @Autowired
+    private BiPoLineManager biPoLineManager;
 
     /**
      * 
@@ -76,6 +86,21 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
             whPoCommandList = poManager.findListByQueryMapWithPageExtByInfo(page, sorts, params);
         }
         return whPoCommandList;
+    }
+
+    /**
+     * 
+     * 查询bipo单列表(带分页)
+     * 
+     * @param page
+     * @param sorts
+     * @param params
+     * @param sourceType
+     * @return
+     */
+    @Override
+    public Pagination<BiPoCommand> findBiPoListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params) {
+        return biPoManager.findListByQueryMapWithPageExtByInfo(page, sorts, params);
     }
 
     /**
@@ -113,6 +138,19 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
         return whpo;
     }
 
+    @Override
+    public BiPo findBiPoById(Long id) {
+        log.info(this.getClass().getSimpleName() + ".findBiPoById method begin!");
+        if (log.isDebugEnabled()) {
+            log.debug(this.getClass().getSimpleName() + ".findWhPoById method params:{}", id);
+        }
+        BiPo bipo = biPoManager.findBiPoById(id);
+        if (log.isDebugEnabled()) {
+            log.debug(this.getClass().getSimpleName() + ".findBiPoById method returns {}!", bipo);
+        }
+        return bipo;
+    }
+
     /**
      * 查询PO单明细行 包括保存和未保存的数据
      */
@@ -134,6 +172,14 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
         }
         log.info(this.getClass().getSimpleName() + ".findPoLineListByQueryMapWithPageExt method end!");
         return whPoLineCommandList;
+    }
+
+    /**
+     * 查询PO单明细行 包括保存和未保存的数据
+     */
+    @Override
+    public Pagination<BiPoLineCommand> findBiPoLineListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params) {
+        return biPoLineManager.findListByQueryMapWithPageExt(page, sorts, params);
     }
 
     /**
@@ -252,6 +298,59 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
         }
         log.info(this.getClass().getSimpleName() + ".getSkuCountInAsnBySkuId method END!");
         return count;
+    }
+
+    @Override
+    public List<WhAsnLine> findWhAsnLineByAsnId(Long asnId, Long ouId) {
+        WhAsnLine asnLine = new WhAsnLine();
+        asnLine.setAsnId(asnId);
+        asnLine.setOuId(ouId);
+        return this.asnLineManager.findListByShard(asnLine);
+    }
+
+    @Override
+    public BiPo findBiPoByPoCode(String poCode) {
+        return this.biPoManager.findBiPoByPoCode(poCode);
+    }
+
+    @Override
+    public BiPoCommand findBiPoCommandById(Long id) {
+        return this.biPoManager.findBiPoCommandById(id);
+    }
+
+    @Override
+    public BiPoCommand findBiPoCommandByPoCode(String poCode) {
+        return this.biPoManager.findBiPoCommandByPoCode(poCode);
+    }
+
+    @Override
+    public BiPoLineCommand findBiPoLineCommandById(Long id) {
+        return this.biPoLineManager.findBiPoLineCommandById(id);
+    }
+
+    @Override
+    public BiPoLine findBiPoLineById(Long id) {
+        return this.biPoLineManager.findBiPoLineById(id);
+    }
+
+    @Override
+    public WhPoCommand findWhPoCommandById(Long id, Long ouId) {
+        log.info(this.getClass().getSimpleName() + ".findWhPoById method begin!");
+        if (log.isDebugEnabled()) {
+            log.debug(this.getClass().getSimpleName() + ".findWhPoById method params:[id:{},ouId:{}]", id, ouId);
+        }
+        WhPoCommand whpo = null;
+        if (null == ouId) {
+            // 查询基本库内信息
+            whpo = poManager.findWhPoCommandByIdToInfo(id, ouId);
+        } else {
+            // 查询拆库内信息
+            whpo = poManager.findWhPoCommandByIdToShard(id, ouId);
+        }
+        if (log.isDebugEnabled()) {
+            log.debug(this.getClass().getSimpleName() + ".findWhPoById method returns {}!", whpo);
+        }
+        return whpo;
     }
 
 }

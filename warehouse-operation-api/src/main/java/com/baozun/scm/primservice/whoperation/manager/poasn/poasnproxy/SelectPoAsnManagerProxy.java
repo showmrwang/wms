@@ -7,12 +7,17 @@ import lark.common.dao.Page;
 import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 
+import com.baozun.scm.primservice.whoperation.command.poasn.BiPoCommand;
+import com.baozun.scm.primservice.whoperation.command.poasn.BiPoLineCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnLineCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoLineCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
+import com.baozun.scm.primservice.whoperation.model.poasn.BiPo;
+import com.baozun.scm.primservice.whoperation.model.poasn.BiPoLine;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine;
 
 public interface SelectPoAsnManagerProxy extends BaseManager {
     /**
@@ -27,6 +32,17 @@ public interface SelectPoAsnManagerProxy extends BaseManager {
     Pagination<WhPoCommand> findWhPoListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params, Integer sourceType);
 
     /**
+     * BiPO的分页查询
+     * 
+     * @param page
+     * @param sorts
+     * @param params
+     * @param sourceType
+     * @return
+     */
+    Pagination<BiPoCommand> findBiPoListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params);
+
+    /**
      * 模糊查询方法。 根据asnExtCode,asn状态，仓库查找asn
      * 
      * @param asnExtCode
@@ -37,12 +53,20 @@ public interface SelectPoAsnManagerProxy extends BaseManager {
     List<WhAsnCommand> findWhAsnListByAsnExtCode(String asnExtCode, Integer[] status, Long ouid);
 
     /**
-     * 更加PO单ID，OUID查找PO
+     * 根据PO单ID，OUID查找PO
      * 
      * @param whPoCommand
      * @return
      */
     WhPoCommand findWhPoById(WhPoCommand whPoCommand);
+
+    /**
+     * 根据PO单ID，OUID查找PO
+     * 
+     * @param whPoCommand
+     * @return
+     */
+    WhPoCommand findWhPoCommandById(Long id, Long ouId);
 
     /**
      * PO单明细的分页查询
@@ -54,6 +78,17 @@ public interface SelectPoAsnManagerProxy extends BaseManager {
      * @return
      */
     Pagination<WhPoLineCommand> findPoLineListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params, Integer sourceType);
+
+    /**
+     * PO单明细的分页查询
+     * 
+     * @param page
+     * @param sorts
+     * @param params
+     * @param sourceType
+     * @return
+     */
+    Pagination<BiPoLineCommand> findBiPoLineListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params);
 
     /**
      * 根据POLINE的ID,OUID查找PO单明细
@@ -70,6 +105,14 @@ public interface SelectPoAsnManagerProxy extends BaseManager {
      * @return
      */
     WhAsnLineCommand findWhAsnLineById(WhAsnLineCommand Command);
+
+    /**
+     * 根据WhAsnLine的ASNID,OUID查找ASN单明细
+     * 
+     * @param Command
+     * @return
+     */
+    List<WhAsnLine> findWhAsnLineByAsnId(Long asnId, Long ouId);
 
     /**
      * ASN的分页查询
@@ -130,5 +173,17 @@ public interface SelectPoAsnManagerProxy extends BaseManager {
      * @return
      */
     long getSkuCountInAsnBySkuId(Long asnId, Long ouId, Long skuId);
+
+    BiPo findBiPoById(Long id);
+
+    BiPo findBiPoByPoCode(String poCode);
+
+    BiPoCommand findBiPoCommandById(Long id);
+
+    BiPoCommand findBiPoCommandByPoCode(String poCode);
+
+    BiPoLineCommand findBiPoLineCommandById(Long id);
+
+    BiPoLine findBiPoLineById(Long id);
 
 }
