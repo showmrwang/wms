@@ -82,6 +82,43 @@ public final class Constants {
     /** 时间单位类型 */
     public static final String TIME_UOM = "TIME_UOM";
 
+    /** 集团组织 */
+    public static final Long OU_TYPE_ROOT = 1L;
+
+    /** 物流中心组织 */
+    public static final Long OU_TYPE_OPERATIONCENTER = 2L;
+
+    /** 仓库组织 */
+    public static final Long OU_TYPE_WAREHOUSE = 3L;
+
+    /** 系统异常 */
+    public static final Integer SYSTEM_EXCEPTION = 11;
+
+    /** 系统错误 */
+    public static final Integer SYSTEM_ERROR = 1;
+
+    /** 异常前缀 */
+    public static final String BUSINESS_EXCEPTION_PREFIX = "business_exception_";
+
+    /** po单状态 */
+    public static final String POSTATUS = "POSTATUS";
+
+    /** 默认Double数值 */
+    public static final Double DEFAULT_DOUBLE = 0d;
+
+    /** 默认Integer数值 */
+    public static final Integer DEFAULT_INTEGER = 0;
+
+    /** BIpo单状态 */
+    public static final String BIPO_STATUS = "BIPO_STATUS";
+
+    /** BIpo单明细状态 */
+    public static final String BIPOLINE_STATUS = "BIPOLINE_STATUS";
+
+    /** 日期format格式 */
+    public static final String DATE_PATTERN_YMD = "yyyy-MM-dd";
+
+    public static final String DATE_PATTERN_YMDHM = "yyyy-MM-dd HH:mm";
 
 
 }

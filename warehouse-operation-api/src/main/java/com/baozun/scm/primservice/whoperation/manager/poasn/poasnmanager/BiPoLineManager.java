@@ -20,4 +20,26 @@ public interface BiPoLineManager extends BaseManager {
 
     Pagination<BiPoLineCommand> findListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params);
 
+    void createPoLineBatchToInfo(BiPoLineCommand biPoLineCommand);
+
+    BiPoLine findBiPoLineById(Long id);
+
+    BiPoLineCommand findBiPoLineCommandById(Long id);
+
+    /**
+     * BIPO明细界面编辑BIPO明细
+     * 
+     * @param biPoLine
+     */
+    void editBiPoLineSingle(BiPoLine biPoLine);
+
+    /**
+     * 
+     * @param poId
+     * @param uuid
+     * @param userId
+     * @return
+     */
+    void deleteBiPoLineByPoIdAndUuidToInfo(Long poId, String uuid, Long userId);
+
 }

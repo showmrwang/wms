@@ -59,4 +59,22 @@ public class PoAsnStatus implements Serializable {
 
 
 
+    /** BIPO */
+    public static final int BIPO_DELETE = 0; // 删除
+    public static final int BIPO_NEW = 1; // 新建
+    public static final int BIPO_RCVD = 3;// 收货中
+    public static final int BIPO_RCVD_FINISH = 10;// 收货完成
+    public static final int BIPO_CANCELED = 17;// 取消
+    public static final int BIPO_CLOSE = 20;// 关闭
+    public static final int BIPO_ALLOT = 5;// 已分配仓库
+    /** PO */
+
+    /** BIPO LINE */
+    public static final int BIPOLINE_NEW = 1; // 新建
+    public static final int BIPOLINE_RCVD = 3;// 收货中
+    public static final int BIPOLINE_RCVD_FINISH = 10; // 收货完成
+    public static final int BIPOLINE_CANCELED = 17;// 取消
+    public static final int BIPOLINE_CLOSE = 20;// 关闭
+    public static final int BIPOLINE_ALLOT = 5;// 已分配仓库
+
 }

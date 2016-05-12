@@ -13,11 +13,13 @@ import lark.common.dao.Sort;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import com.baozun.scm.primservice.whoperation.command.poasn.BiPoLineCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoLineCommand;
 import com.baozun.scm.primservice.whoperation.command.system.GlobalLogCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
@@ -499,5 +501,43 @@ public class PoLineManagerImpl implements PoLineManager {
             this.insertGlobalLog(poline.getModifiedId(), new Date(), poline.getClass().getSimpleName(), poline, Constants.GLOBAL_LOG_UPDATE, poline.getOuId());
         }
         log.info(this.getClass().getSimpleName() + ".batchUpdatePoLine method end!");
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
+    public List<WhPoLine> findInfoPoLineByPoCodeOuId(String poCode, Long ouId) {
+
+        return this.whPoLineDao.findInfoPoLineByPoCodeOuId(poCode, ouId);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void createPoLineBatchToShareNew(BiPoLineCommand biPoLineCommand, List<WhPoLine> infoPolineList) {
+        WhPo whpo = this.whPoDao.findByPoCodeAndOuId(biPoLineCommand.getPoCode(), biPoLineCommand.getOuId());
+        for (WhPoLine infoPoline : infoPolineList) {
+            WhPoLine shardPoline = this.whPoLineDao.findByPoCodeAndOuIdAndPoLineId(biPoLineCommand.getPoCode(), biPoLineCommand.getOuId(), infoPoline.getPoLineId());
+            if (shardPoline != null) {
+                BeanUtils.copyProperties(infoPoline, shardPoline, "id", "lastModifyTime", "poId");
+                this.whPoLineDao.saveOrUpdateByVersion(shardPoline);
+            } else {
+                infoPoline.setId(null);
+                infoPoline.setLastModifyTime(new Date());
+                infoPoline.setPoId(whpo.getId());
+                this.whPoLineDao.insert(infoPoline);
+            }
+
+        }
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public WhPoLine findPoLineByPolineIdAndStatusListAndPoIdAndOuIdToShared(Long poLineId, List<Integer> statusList, Long poId, Long ouId) {
+        return this.whPoLineDao.findPoLineByPolineIdAndStatusListAndPoIdAndOuId(poLineId, statusList, poId, ouId);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
+    public WhPoLine findPoLineByPolineIdAndStatusListAndPoIdAndOuIdToInfo(Long poLineId, List<Integer> statusList, Long poId, Long ouId) {
+        return this.whPoLineDao.findPoLineByPolineIdAndStatusListAndPoIdAndOuId(poLineId, statusList, poId, ouId);
     }
 }

@@ -85,4 +85,17 @@ public interface WhPoLineDao extends BaseDao<WhPoLine, Long> {
 
     int deleteByPoIdOuId(@Param("poid") Long id, @Param("ouid") Long ouid);
 
+    /**
+     * @author YIMIN.LU 根据POCODE，OUID,POLINEID找到对应的行
+     * @param poCode
+     * @param ouId
+     * @param id
+     * @return
+     */
+    WhPoLine findByPoCodeAndOuIdAndPoLineId(@Param("poCode") String poCode, @Param("ouId") Long ouId, @Param("poLineId") Long id);
+
+    List<WhPoLine> findInfoPoLineByPoCodeOuId(@Param("poCode") String poCode, @Param("ouId") Long ouId);
+
+    WhPoLine findPoLineByPolineIdAndStatusListAndPoIdAndOuId(@Param("poLineId") Long poLineId, @Param("statusList") List<Integer> statusList, @Param("poId") Long poId, @Param("ouId") Long ouId);
+
 }

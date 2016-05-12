@@ -176,4 +176,6 @@ public class ErrorCodes {
     public static final int ADD_CARTONLIST_QTY_ERROR = 3033;
     /** 拆箱商品数量 [{0}] 容器内商品数量[{1}] 容器个数 [{2}]，每箱分配数量不相同，请重新设置 */
     public static final int ADD_CARTONLIST_BINQTY_ERROR = 3034;
+    /** 取消PO单失败 */
+    public static final int CANCEL_PO_ERROR = 3035;
 }

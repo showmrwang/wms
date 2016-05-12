@@ -37,15 +37,15 @@ public class BiPoLineCommand extends BaseCommand {
     /** SKU_ID */
     private Long skuId;
     /** 计划数量 */
-    private Integer qtyPlanned;
+    private Double qtyPlanned;
     /** 超收数量 */
-    private Integer overshipped;
+    private Double overshipped;
     /** 可用数量 */
-    private Integer availableQty;
+    private Double availableQty;
     /** 计划箱数 */
     private Integer ctnPlanned;
     /** 已收数量 */
-    private Integer qtyRcvd;
+    private Double qtyRcvd;
     /** 已收箱数 */
     private Integer ctnRcvd;
     /** 状态 */
@@ -119,6 +119,67 @@ public class BiPoLineCommand extends BaseCommand {
     private String validDateUom;
     /** 保质期单位名称 */
     private String validDateUomName;
+    // 商品辅助信息
+    /** 是否管理库存类型 */
+    private Boolean isInvType;
+    /** 是否管理库存属性一 */
+    private Boolean isInvAttr1;
+    /** 是否管理库存属性一 */
+    private Boolean isInvAttr2;
+    /** 是否管理库存属性一 */
+    private Boolean isInvAttr3;
+    /** 是否管理库存属性一 */
+    private Boolean isInvAttr4;
+    /** 是否管理库存属性一 */
+    private Boolean isInvAttr5;
+
+    public Boolean getIsInvType() {
+        return isInvType;
+    }
+
+    public void setIsInvType(Boolean isInvType) {
+        this.isInvType = isInvType;
+    }
+
+    public Boolean getIsInvAttr1() {
+        return isInvAttr1;
+    }
+
+    public void setIsInvAttr1(Boolean isInvAttr1) {
+        this.isInvAttr1 = isInvAttr1;
+    }
+
+    public Boolean getIsInvAttr2() {
+        return isInvAttr2;
+    }
+
+    public void setIsInvAttr2(Boolean isInvAttr2) {
+        this.isInvAttr2 = isInvAttr2;
+    }
+
+    public Boolean getIsInvAttr3() {
+        return isInvAttr3;
+    }
+
+    public void setIsInvAttr3(Boolean isInvAttr3) {
+        this.isInvAttr3 = isInvAttr3;
+    }
+
+    public Boolean getIsInvAttr4() {
+        return isInvAttr4;
+    }
+
+    public void setIsInvAttr4(Boolean isInvAttr4) {
+        this.isInvAttr4 = isInvAttr4;
+    }
+
+    public Boolean getIsInvAttr5() {
+        return isInvAttr5;
+    }
+
+    public void setIsInvAttr5(Boolean isInvAttr5) {
+        this.isInvAttr5 = isInvAttr5;
+    }
 
     public String getValidDateUomName() {
         return validDateUomName;
@@ -184,21 +245,6 @@ public class BiPoLineCommand extends BaseCommand {
         this.skuId = value;
     }
 
-    public Integer getQtyPlanned() {
-        return this.qtyPlanned;
-    }
-
-    public void setQtyPlanned(Integer value) {
-        this.qtyPlanned = value;
-    }
-
-    public Integer getOvershipped() {
-        return this.overshipped;
-    }
-
-    public void setOvershipped(Integer value) {
-        this.overshipped = value;
-    }
 
     public Integer getCtnPlanned() {
         return this.ctnPlanned;
@@ -208,12 +254,33 @@ public class BiPoLineCommand extends BaseCommand {
         this.ctnPlanned = value;
     }
 
-    public Integer getQtyRcvd() {
-        return this.qtyRcvd;
+
+    public Double getQtyPlanned() {
+        return qtyPlanned;
     }
 
-    public void setQtyRcvd(Integer value) {
-        this.qtyRcvd = value;
+    public void setQtyPlanned(Double qtyPlanned) {
+        this.qtyPlanned = qtyPlanned;
+    }
+
+    public Double getOvershipped() {
+        return overshipped;
+    }
+
+    public void setOvershipped(Double overshipped) {
+        this.overshipped = overshipped;
+    }
+
+    public Double getQtyRcvd() {
+        return qtyRcvd;
+    }
+
+    public void setQtyRcvd(Double qtyRcvd) {
+        this.qtyRcvd = qtyRcvd;
+    }
+
+    public void setAvailableQty(Double availableQty) {
+        this.availableQty = availableQty;
     }
 
     public Integer getCtnRcvd() {
@@ -368,12 +435,9 @@ public class BiPoLineCommand extends BaseCommand {
         this.uuid = value;
     }
 
-    public Integer getAvailableQty() {
-        return availableQty;
-    }
 
-    public void setAvailableQty(Integer availableQty) {
-        this.availableQty = availableQty;
+    public Double getAvailableQty() {
+        return availableQty;
     }
 
     public Long getOuId() {

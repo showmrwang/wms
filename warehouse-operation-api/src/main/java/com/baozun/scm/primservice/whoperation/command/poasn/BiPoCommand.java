@@ -55,9 +55,9 @@ public class BiPoCommand extends BaseCommand {
     /** 实际到货时间 */
     private Date deliveryTime;
     /** 计划到货数量 */
-    private Integer qtyPlanned;
+    private Double qtyPlanned;
     /** 实际到货数量 */
-    private Integer qtyRcvd;
+    private Double qtyRcvd;
     /** 计划箱数 */
     private Integer ctnPlanned;
     /** 实际箱数 */
@@ -83,7 +83,7 @@ public class BiPoCommand extends BaseCommand {
     private String etaStr;
 
     /** poLine数据 */
-    private List<WhPoLineCommand> poLineList;
+    private List<BiPoLineCommand> poLineList;
 
     /** 是否WMS创建PO单 true:wms创建 false:上位系统创建 */
     private Boolean isWms = false;
@@ -124,6 +124,14 @@ public class BiPoCommand extends BaseCommand {
     private Integer linenum;
     /** 公共库列表集合 */
     List<WhPoCommand> whPoList;
+
+    public List<WhPoCommand> getWhPoList() {
+        return whPoList;
+    }
+
+    public void setWhPoList(List<WhPoCommand> whPoList) {
+        this.whPoList = whPoList;
+    }
 
     public Integer getLinenum() {
         return linenum;
@@ -246,20 +254,21 @@ public class BiPoCommand extends BaseCommand {
         this.deliveryTime = value;
     }
 
-    public Integer getQtyPlanned() {
-        return this.qtyPlanned;
+
+    public Double getQtyPlanned() {
+        return qtyPlanned;
     }
 
-    public void setQtyPlanned(Integer value) {
-        this.qtyPlanned = value;
+    public void setQtyPlanned(Double qtyPlanned) {
+        this.qtyPlanned = qtyPlanned;
     }
 
-    public Integer getQtyRcvd() {
-        return this.qtyRcvd;
+    public Double getQtyRcvd() {
+        return qtyRcvd;
     }
 
-    public void setQtyRcvd(Integer value) {
-        this.qtyRcvd = value;
+    public void setQtyRcvd(Double qtyRcvd) {
+        this.qtyRcvd = qtyRcvd;
     }
 
     public Integer getCtnPlanned() {
@@ -350,11 +359,12 @@ public class BiPoCommand extends BaseCommand {
         this.etaStr = etaStr;
     }
 
-    public List<WhPoLineCommand> getPoLineList() {
+
+    public List<BiPoLineCommand> getPoLineList() {
         return poLineList;
     }
 
-    public void setPoLineList(List<WhPoLineCommand> poLineList) {
+    public void setPoLineList(List<BiPoLineCommand> poLineList) {
         this.poLineList = poLineList;
     }
 

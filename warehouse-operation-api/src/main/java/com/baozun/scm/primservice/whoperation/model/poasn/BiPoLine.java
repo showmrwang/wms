@@ -40,17 +40,17 @@ public class BiPoLine extends BaseModel {
 	/** SKU_ID */
     private Long skuId;
 	/** 计划数量 */
-    private Integer qtyPlanned;
+    private Double qtyPlanned = 0.0d;
 	/** 超收数量 */
-    private Integer overshipped;
+    private Double overshipped = 0.0d;
 	/** 可用数量 */
-    private Integer availableQty;
+    private Double availableQty = 0.0d;
 	/** 计划箱数 */
-    private Integer ctnPlanned;
+    private Integer ctnPlanned = 0;
 	/** 已收数量 */
-    private Integer qtyRcvd;
+    private Double qtyRcvd = 0.0d;
 	/** 已收箱数 */
-    private Integer ctnRcvd;
+    private Integer ctnRcvd = 0;
 	/** 状态 */
     private Integer status;
 	/** 是否质检 1:是 0:否 */
@@ -118,29 +118,6 @@ public class BiPoLine extends BaseModel {
         this.skuId = skuId;
     }
 
-    public Integer getQtyPlanned() {
-        return qtyPlanned;
-    }
-
-    public void setQtyPlanned(Integer qtyPlanned) {
-        this.qtyPlanned = qtyPlanned;
-    }
-
-    public Integer getOvershipped() {
-        return overshipped;
-    }
-
-    public void setOvershipped(Integer overshipped) {
-        this.overshipped = overshipped;
-    }
-
-    public Integer getAvailableQty() {
-        return availableQty;
-    }
-
-    public void setAvailableQty(Integer availableQty) {
-        this.availableQty = availableQty;
-    }
 
     public Integer getCtnPlanned() {
         return ctnPlanned;
@@ -150,11 +127,36 @@ public class BiPoLine extends BaseModel {
         this.ctnPlanned = ctnPlanned;
     }
 
-    public Integer getQtyRcvd() {
+
+    public Double getQtyPlanned() {
+        return qtyPlanned;
+    }
+
+    public void setQtyPlanned(Double qtyPlanned) {
+        this.qtyPlanned = qtyPlanned;
+    }
+
+    public Double getOvershipped() {
+        return overshipped;
+    }
+
+    public void setOvershipped(Double overshipped) {
+        this.overshipped = overshipped;
+    }
+
+    public Double getAvailableQty() {
+        return availableQty;
+    }
+
+    public void setAvailableQty(Double availableQty) {
+        this.availableQty = availableQty;
+    }
+
+    public Double getQtyRcvd() {
         return qtyRcvd;
     }
 
-    public void setQtyRcvd(Integer qtyRcvd) {
+    public void setQtyRcvd(Double qtyRcvd) {
         this.qtyRcvd = qtyRcvd;
     }
 

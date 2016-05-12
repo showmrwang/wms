@@ -48,6 +48,9 @@ public interface BiPoDao extends BaseDao<BiPo,Long>{
 	@CommonQuery
 	int saveOrUpdate(BiPo o);
 	
+    @CommonQuery
+    int saveOrUpdateByVersion(BiPo o);
+
     /**
      * @deprecated
      * @param extCode

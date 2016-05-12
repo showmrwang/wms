@@ -46,10 +46,46 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    ]]>
 	</sql>
 	
+	<sql id="whPoLineColumnsRelatedExt">
+	    <![CDATA[
+	        	line.id as id,
+	        	line.po_id as poId,
+	        	line.linenum as linenum,
+	        	line.ou_id as ouId,	        	
+	        	line.sku_id as skuId,
+	        	line.qty_planned as qtyPlanned,
+	        	line.overshipped as overshipped,
+	        	line.available_qty as availableQty,
+	        	line.ctn_planned as ctnPlanned,
+	        	line.qty_rcvd as qtyRcvd,
+	        	line.ctn_rcvd as ctnRcvd,
+	        	line.status as status,
+	        	line.is_iqc as isIqc,
+	        	line.mfg_date as mfgDate,
+	        	line.exp_date as expDate,
+	        	line.valid_date as validDate,
+	        	line.batch_no as batchNo,
+	        	line.country_of_origin as countryOfOrigin,
+	        	line.inv_status as invStatus,
+	        	line.inv_type as invType,
+	        	line.inv_attr1 as invAttr1,
+	        	line.inv_attr2 as invAttr2,
+	        	line.inv_attr3 as invAttr3,
+	        	line.inv_attr4 as invAttr4,
+	        	line.inv_attr5 as invAttr5,
+	        	line.create_time as createTime,
+	        	line.created_id as createdId,
+	        	line.last_modify_time as lastModifyTime,
+	        	line.modified_id as modifiedId,
+	        	line.uuid as uuid,
+	        	line.po_line_id as poLineId,
+	        	line.valid_date_uom as validDateUom
+	    ]]>
+	</sql>
+	
 	<sql id="whPoLineDynamicWhereExt">
 		<where>
 				(line.uuid = '' or line.uuid is null or line.uuid = #{uuid}) 
-				and po.id = line.po_id 
 				<if test="ouId!=null">
 					and line.ou_id = #{ouId}
 				</if>
@@ -147,7 +183,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				sku.code as skuCode,
 				sku.ext_code as skuExtCode,
 				sku.bar_code as skuBarCode,
-				sku.name as skuName
+				sku.name as skuName,
+				uom.uom_name as validDateUomName
 	    ]]>
 	</sql>	
 	
@@ -156,10 +193,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     	select <include refid="whPoLineColumnsMapExt" />
 	    from 
 	    t_wh_po_line line 
-		left join sys_dictionary sys on sys.dic_value = line.status and sys.group_value = 'POSTATUS'
+	    inner join t_wh_po po on po.id=line.po_id
+		left join sys_dictionary sys on sys.dic_value = line.status and sys.group_value = 'POLINESTATUS'
 		left join t_wh_inventory_status inv on inv.id = line.inv_status 
-		left join t_wh_sku sku on line.sku_id = sku.id ,
-		t_wh_po po 
+		left join t_wh_sku sku on line.sku_id = sku.id 
+		left join t_wh_uom uom on uom.uom_code=line.valid_date_uom
 		<include refid="whPoLineDynamicWhereExt"/>
     </select>
     		
@@ -167,10 +205,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<select id="findListCountByQueryMapExt" resultType="long">
         select count(*) from 
 	        t_wh_po_line line 
-			left join sys_dictionary sys on sys.dic_value = line.status and sys.group_value = 'POSTATUS'
+	        inner join t_wh_po po on po.id=line.po_id
+			left join sys_dictionary sys on sys.dic_value = line.status and sys.group_value = 'POLINESTATUS'
 			left join t_wh_inventory_status inv on inv.id = line.inv_status
-			left join t_wh_sku sku on line.sku_id = sku.id,
-			t_wh_po po 
+			left join t_wh_sku sku on line.sku_id = sku.id
+			left join t_wh_uom uom on uom.uom_code=line.valid_date_uom
 		<include refid="whPoLineDynamicWhereExt"/>
     </select>
     
@@ -225,7 +264,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    select
 	    <include refid="whPoLineColumnsMapExt" />
 	    from t_wh_po_line line
-	    left join sys_dictionary sys on sys.dic_value = line.status and sys.group_value = 'POSTATUS'
+	    left join sys_dictionary sys on sys.dic_value = line.status and sys.group_value = 'POLINESTATUS'
 		left join t_wh_inventory_status inv on inv.id = line.inv_status
 	    left join t_wh_po po on po.id=line.po_id
 	    left join t_wh_sku sku on line.sku_id = sku.id
@@ -325,11 +364,38 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	 </delete>
     <select id="findByPoCodeAndOuIdAndPoLineId" resultMap="WhPoLineResultExt">
 	    select
+	    <include refid="whPoLineColumnsRelatedExt" />
+	    from t_wh_po_line line
+	    inner join t_wh_po po on po.ou_id=line.ou_id and po.id=line.po_id
+	    where po.po_code=#{poCode}
+	  	and line.ou_id = #{ouId}
+	  	and line.po_line_id=#{poLineId}
+    </select>
+    
+    <select id="findInfoPoLineByPoCodeOuId" resultMap="WhPoLineResultExt">
+	    select
+	    <include refid="whPoLineColumnsRelatedExt" />
+	    from t_wh_po_line line
+	    inner join t_wh_po po on po.ou_id=line.ou_id and po.id=line.po_id
+	    where po.po_code=#{poCode}
+	  	and line.ou_id = #{ouId}
+    </select>
+    
+    <select id="findPoLineByPolineIdAndStatusListAndPoIdAndOuId" parameterType="map" resultMap="WhPoLineResultExt">
+	    select
 	    <include refid="whPoLineColumnsExt" />
-	    from t_wh_po_line
-	    where po_code=#{poCode}
+	    from t_wh_po_line 
+	    where po_id=#{poId}
+	    <if test="ouid!=null">
+	  			 and ou_id = #{ouId}
+		</if>
 	  	and ou_id = #{ouId}
 	  	and po_line_id=#{poLineId}
+	  	and status in
+			<foreach collection="statusList" item="status" open="(" separator=","
+				close=")">
+				#{status}
+			</foreach>
     </select>
     
 </mapper>

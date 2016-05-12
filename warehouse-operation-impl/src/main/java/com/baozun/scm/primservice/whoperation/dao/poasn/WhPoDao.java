@@ -57,4 +57,16 @@ public interface WhPoDao extends BaseDao<WhPo, Long> {
     List<WhPoCommand> findWhPoListByExtCode(@Param("statusList") List<Integer> statusList, @Param("extCode") String extCode, @Param("ouid") Long ouid, @Param("linenum") Integer linenum);
 
     int deleteByIdOuId(@Param("id") Long id, @Param("ouid") Long ouid);
+
+    /**
+     * 查看非取消状态中的PO单
+     * 
+     * @param poCode
+     * @param ouId
+     * @return
+     */
+    WhPo findByPoCodeAndOuId(@Param("poCode") String poCode, @Param("ouId") Long ouId);
+
+    List<WhPo> findWhPoByPoCodeToInfo(@Param("poCode") String poCode);
+
 }

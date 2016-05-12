@@ -28,6 +28,8 @@ import lark.common.dao.QueryCondition;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.baozun.scm.primservice.whoperation.command.poasn.BiPoLineCommand;
 import com.baozun.scm.primservice.whoperation.model.poasn.BiPoLine;
 
@@ -47,11 +49,36 @@ public interface BiPoLineDao extends BaseDao<BiPoLine,Long>{
 	@CommonQuery
 	int saveOrUpdate(BiPoLine o);
 
-    BiPoLine findPoLineByAddPoLineParam(List<Integer> statusList, Long poId, Object object, Long skuId, int i, Date mfgDate, Date expDate, Integer validDate, String batchNo, String countryOfOrigin, Long invStatus, String uuid);
 
+    BiPoLine findPoLineByAddPoLineParam(@Param("status") List<Integer> status, @Param("poid") Long poid, @Param("ouid") Long ouid, @Param("skuid") Long skuid, @Param("isIqc") Integer isIqck, @Param("mfgDate") Date mfgDate, @Param("expDate") Date expDate,
+            @Param("validDate") Integer validDate, @Param("batchNo") String batchNo, @Param("coo") String coo, @Param("invStatus") Long invStatus, @Param("uuid") String uuid);
+
+    @CommonQuery
     int saveOrUpdateByVersion(BiPoLine wpl);
 
     @QueryPage("findListCountByQueryMapExt")
     Pagination<BiPoLineCommand> findListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params);
+
+    long deleteBiPoLineByPoIdAndNotUuid(@Param("poId") Long poId, @Param("uuid") String uuid);
+
+    /**
+     * 根据POId [,uuid]查找BIPOLine ;可替换findBiPoLineByPoId
+     * 
+     * @param poId
+     * @param uuid
+     * @return
+     */
+    List<BiPoLine> findBiPoLineByPoIdAndUuid(@Param("poId") Long poId, @Param("uuid") String uuid);
+
+
+    /**
+     * 根据id关联查询 关联
+     * customer,store,sysdictionary[potype],t_wh_logistics_provider,t_wh_supplier,sku,sku_mgmt
+     * ,sku_extattr
+     * 
+     * @param code
+     * @return
+     */
+    BiPoLineCommand findCommandbyId(@Param("id") Long id);
 	
 }

@@ -57,13 +57,13 @@ public class BiPo extends BaseModel {
 	/** 实际到货时间 */
 	private Date deliveryTime;
 	/** 计划到货数量 */
-	private Integer qtyPlanned;
+    private Double qtyPlanned = 0.0d;
 	/** 实际到货数量 */
-	private Integer qtyRcvd;
+    private Double qtyRcvd = 0.0d;
 	/** 计划箱数 */
-	private Integer ctnPlanned;
+    private Integer ctnPlanned = 0;
 	/** 实际箱数 */
-	private Integer ctnRcvd;
+    private Integer ctnRcvd = 0;
 	/** 开始收货时间 */
 	private Date startTime;
 	/** 结束收货时间 */
@@ -157,16 +157,20 @@ public class BiPo extends BaseModel {
     public void setDeliveryTime(Date deliveryTime) {
         this.deliveryTime = deliveryTime;
     }
-    public Integer getQtyPlanned() {
+
+    public Double getQtyPlanned() {
         return qtyPlanned;
     }
-    public void setQtyPlanned(Integer qtyPlanned) {
+
+    public void setQtyPlanned(Double qtyPlanned) {
         this.qtyPlanned = qtyPlanned;
     }
-    public Integer getQtyRcvd() {
+
+    public Double getQtyRcvd() {
         return qtyRcvd;
     }
-    public void setQtyRcvd(Integer qtyRcvd) {
+
+    public void setQtyRcvd(Double qtyRcvd) {
         this.qtyRcvd = qtyRcvd;
     }
     public Integer getCtnPlanned() {

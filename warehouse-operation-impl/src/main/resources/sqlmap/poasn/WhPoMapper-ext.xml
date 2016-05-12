@@ -46,6 +46,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    ]]>
 	</sql>
 	
+	
 	<sql id="whPoDynamicWhereExt">
 		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
 		<where>
@@ -153,7 +154,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				po.modified_id as modifiedId,
 				c.customer_name as customerName,
 				s.store_name as storeName,
-				sys.dic_label as statusName
+				sys.dic_label as statusName,
+				provider.name as logisticsProviderName,
+				supplier.name as supplierName,
+				potypedic.dic_label as poTypeName
 	    ]]>
 	</sql>	
 		
@@ -167,6 +171,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    left join t_bi_customer c on po.customer_id = c.id
 		left join t_bi_store s on po.store_id = s.id 
 		left join sys_dictionary sys on sys.dic_value = po.status and sys.group_value = 'POSTATUS'
+		left join t_wh_logistics_provider provider on provider.id=po.logistics_provider_id
+		left join t_wh_supplier supplier on supplier.id=po.supplier_id
+		left join sys_dictionary potypedic on potypedic.group_value='PO_TYPE' and potypedic.dic_value=po.po_type
 		<include refid="whPoDynamicWhereExt"/>
     </select>
     		
@@ -177,6 +184,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         left join t_bi_customer c on po.customer_id = c.id
 		left join t_bi_store s on po.store_id = s.id 
 		left join sys_dictionary sys on sys.dic_value = po.status and sys.group_value = 'POSTATUS'
+		left join t_wh_logistics_provider provider on provider.id=po.logistics_provider_id
+		left join t_wh_supplier supplier on supplier.id=po.supplier_id
+		left join sys_dictionary potypedic on potypedic.group_value='PO_TYPE' and potypedic.dic_value=po.po_type
 		<include refid="whPoDynamicWhereExt"/>
     </select>
     
@@ -193,14 +203,18 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     </select>
     
     <select id="findWhPoCommandById" resultMap="WhPoCommand">
-    	select <include refid="whPoColumnsExt" />
+    	select <include refid="whPoColumnsMapExt" />
 		    from 
-		    t_wh_po 
+		    t_wh_po po
+		    left join t_bi_customer c on po.customer_id = c.id
+			left join t_bi_store s on po.store_id = s.id 
+			left join sys_dictionary sys on sys.dic_value = po.status and sys.group_value = 'POSTATUS'
+			left join t_wh_logistics_provider provider on provider.id=po.logistics_provider_id
+			left join t_wh_supplier supplier on supplier.id=po.supplier_id
+			left join sys_dictionary potypedic on potypedic.group_value='PO_TYPE' and potypedic.dic_value=po.po_type 
 		    <where>
-		    	id = #{id}
-				<if test="ouid!=null">
-		   			 and ou_id = #{ouid}
-				</if>
+		    	po.id = #{id}
+		   		and po.ou_id = #{ouid}
 			</where>
     </select>
     
@@ -259,6 +273,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		   <where>
 			    po_code = #{poCode} 
 			    and ou_id = #{ouId} 
+			</where>
+    </select>
+    
+     <select id="findWhPoByPoCodeToInfo" resultMap="WhPoResult">
+	    select <include refid="whPoColumns" />
+		    from t_wh_po
+		   <where>
+			    po_code = #{poCode} 
 			</where>
     </select>
 	

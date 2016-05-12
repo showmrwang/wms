@@ -156,16 +156,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	po_line_id ,
 		        	inv_type ,
 		        	valid_date_uom 
-		        ) VALUES (
+		        ) select
 		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{poId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        	#{linenum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	ifnull(#{linenum,javaType=java.lang.Integer,jdbcType=INTEGER},ifnull((select max(linenum) from t_bi_po_line),0)+1),
 		        	#{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        	#{qtyPlanned,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-		        	#{overshipped,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-		        	#{availableQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{qtyPlanned,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+		        	#{overshipped,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+		        	#{availableQty,javaType=java.lang.Double,jdbcType=DECIMAL} ,
 		        	#{ctnPlanned,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-		        	#{qtyRcvd,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{qtyRcvd,javaType=java.lang.Double,jdbcType=DECIMAL} ,
 		        	#{ctnRcvd,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        	#{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        	#{isIqc,javaType=java.lang.Boolean,jdbcType=BIT} ,
@@ -174,7 +174,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{validDate,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        	#{batchNo,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{countryOfOrigin,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        	#{invStatus,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{invStatus,javaType=java.lang.Long,jdbcType=BIGINT} , 
 		        	#{invAttr1,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{invAttr2,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{invAttr3,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -188,7 +188,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{poLineId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{invType,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{validDateUom,javaType=java.lang.String,jdbcType=VARCHAR} 
-		        )
+		        
 		    ]]>
 
 		</insert>
@@ -200,11 +200,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        po_id = #{poId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        linenum = #{linenum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        sku_id = #{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        qty_planned = #{qtyPlanned,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-		        overshipped = #{overshipped,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-		        available_qty = #{availableQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        qty_planned = #{qtyPlanned,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+		        overshipped = #{overshipped,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+		        available_qty = #{availableQty,javaType=java.lang.Double,jdbcType=DECIMAL} ,
 		        ctn_planned = #{ctnPlanned,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-		        qty_rcvd = #{qtyRcvd,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        qty_rcvd = #{qtyRcvd,javaType=java.lang.Double,jdbcType=DECIMAL} ,
 		        ctn_rcvd = #{ctnRcvd,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        status = #{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        is_iqc = #{isIqc,javaType=java.lang.Boolean,jdbcType=BIT} ,
@@ -462,6 +462,5 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		select count(*) from t_bi_po_line  
 		<include refid="biPoLineConditionWhereExt"/>
     </select>
-
 	
 </mapper>

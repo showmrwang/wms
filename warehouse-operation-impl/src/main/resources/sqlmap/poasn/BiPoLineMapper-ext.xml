@@ -229,11 +229,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        po_id = #{poId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        linenum = #{linenum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 			        sku_id = #{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,        
-			        qty_planned = #{qtyPlanned,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-			        overshipped = #{overshipped,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-			        available_qty = #{availableQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        qty_planned = #{qtyPlanned,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+			        overshipped = #{overshipped,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+			        available_qty = #{availableQty,javaType=java.lang.Double,jdbcType=DECIMAL} ,
 			        ctn_planned = #{ctnPlanned,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-			        qty_rcvd = #{qtyRcvd,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        qty_rcvd = #{qtyRcvd,javaType=java.lang.Double,jdbcType=DECIMAL} ,
 			        ctn_rcvd = #{ctnRcvd,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 			        status = #{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 			        is_iqc = #{isIqc,javaType=java.lang.Boolean,jdbcType=BIT} ,
@@ -262,6 +262,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        and last_modify_time	=  #{lastModifyTime}    
 		    </where>
 		</update>
+		
 		<sql id="biPoLineDynamicPageWhereExt">
 			<where>
 					(line.uuid = '' or line.uuid is null or line.uuid = #{uuid}) 
@@ -270,6 +271,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					</if>
 			</where>
 		</sql>
+		
 		<sql id="BiPoLineRelatedColumnsMapExt">
 	    <![CDATA[
 				line.id as id,
@@ -311,17 +313,26 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				sku.ext_code as skuExtCode,
 				sku.bar_code as skuBarCode,
 				sku.name as skuName,
-				uom.uom_name as validDateUomName
+				uom.uom_name as validDateUomName,
+				mgmt.is_inv_type as isInvType,
+				extattr.inv_attr1 as isInvAttr1,
+				extattr.inv_attr2 as isInvAttr2,
+				extattr.inv_attr3 as isInvAttr3,
+				extattr.inv_attr4 as isInvAttr4,
+				extattr.inv_attr5 as isInvAttr5
 	    ]]>
 	</sql>	
+	
 		<select id="findListByQueryMapWithPageExt" resultMap="BiPoLineResultExt">
     	select <include refid="BiPoLineRelatedColumnsMapExt" />
 	    from 
 	    t_bi_po_line line 
 	    inner join t_bi_po po on po.id = line.po_id 
-		left join sys_dictionary sys on sys.dic_value = line.status and sys.group_value = 'POSTATUS'
+		left join sys_dictionary sys on sys.dic_value = line.status and sys.group_value = 'BIPOLINE_STATUS'
 		left join t_wh_inventory_status inv on inv.id = line.inv_status 
 		left join t_wh_sku sku on line.sku_id = sku.id
+		left join t_wh_sku_mgmt mgmt on mgmt.sku_id=sku.id
+		left join t_wh_sku_extattr extattr on extattr.sku_id=sku.id
 		left join t_wh_uom uom on uom.uom_code=line.valid_date_uom
 		<include refid="biPoLineDynamicPageWhereExt"/>
     </select>
@@ -332,11 +343,43 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         from 
 	    t_bi_po_line line 
 	    inner join t_bi_po po on po.id = line.po_id 
-		left join sys_dictionary sys on sys.dic_value = line.status and sys.group_value = 'POSTATUS'
+		left join sys_dictionary sys on sys.dic_value = line.status and sys.group_value = 'BIPOLINE_STATUS'
 		left join t_wh_inventory_status inv on inv.id = line.inv_status 
 		left join t_wh_sku sku on line.sku_id = sku.id
+		left join t_wh_sku_mgmt mgmt on mgmt.sku_id=sku.id
+		left join t_wh_sku_extattr extattr on extattr.sku_id=sku.id
 		left join t_wh_uom uom on uom.uom_code=line.valid_date_uom
 		<include refid="biPoLineDynamicPageWhereExt"/>
     </select>
 	
+	<select id="findBiPoLineByPoIdAndUuid" parameterType="map" resultMap="BiPoLineResult" flushCache="false">
+			select <include refid="biPoLineColumns" />
+			    from t_bi_po_line 
+		        where 
+		        po_id = #{poId}  
+		        <if test="uuid!=null and uuid!=''">
+					 and uuid=#{uuid}
+				</if>
+		</select>
+				
+		 <delete id="deleteBiPoLineByPoIdAndNotUuid">
+			delete  from t_bi_po_line where po_id=#{poId} 
+				and uuid !=#{uuid}
+		</delete>
+		
+		
+		<select id="findCommandbyId" resultMap="BiPoLineResultExt">
+    	select <include refid="BiPoLineRelatedColumnsMapExt" />
+	    from 
+	    t_bi_po_line line 
+	    inner join t_bi_po po on po.id = line.po_id 
+		left join sys_dictionary sys on sys.dic_value = line.status and sys.group_value = 'BIPOLINE_STATUS'
+		left join t_wh_inventory_status inv on inv.id = line.inv_status 
+		left join t_wh_sku sku on line.sku_id = sku.id
+		left join t_wh_sku_mgmt mgmt on mgmt.sku_id=sku.id
+		left join t_wh_sku_extattr extattr on extattr.sku_id=sku.id
+		left join t_wh_uom uom on uom.uom_code=line.valid_date_uom
+		where line.id=#{id}
+    </select>
+		
 </mapper>

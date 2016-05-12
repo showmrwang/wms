@@ -269,7 +269,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			left join t_wh_logistics_provider provider on provider.id=bipo.logistics_provider_id
 			left join t_wh_supplier supplier on supplier.id=bipo.supplier_id
 			left join sys_dictionary potypedic on potypedic.group_value='PO_TYPE' and potypedic.dic_value=bipo.po_type
-			left join sys_dictionary postatusdic on postatusdic.group_value = 'POSTATUS' and  postatusdic.dic_value = bipo.status
+			left join sys_dictionary postatusdic on postatusdic.group_value = 'BIPO_STATUS' and  postatusdic.dic_value = bipo.status
 	        where 
 	        bipo.po_code = #{code} 
 		    ]]>
@@ -283,7 +283,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			left join t_wh_logistics_provider provider on provider.id=bipo.logistics_provider_id
 			left join t_wh_supplier supplier on supplier.id=bipo.supplier_id
 			left join sys_dictionary potypedic on potypedic.group_value='PO_TYPE' and potypedic.dic_value=bipo.po_type
-			left join sys_dictionary postatusdic on postatusdic.group_value = 'POSTATUS' and  postatusdic.dic_value = bipo.status
+			left join sys_dictionary postatusdic on postatusdic.group_value = 'BIPO_STATUS' and  postatusdic.dic_value = bipo.status
 	        where 
 	        bipo.id = #{id} 
 		    ]]>
@@ -297,7 +297,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			left join t_wh_logistics_provider provider on provider.id=bipo.logistics_provider_id
 			left join t_wh_supplier supplier on supplier.id=bipo.supplier_id
 			left join sys_dictionary potypedic on potypedic.group_value='PO_TYPE' and potypedic.dic_value=bipo.po_type
-			left join sys_dictionary postatusdic on postatusdic.group_value = 'POSTATUS' and  postatusdic.dic_value = bipo.status
+			left join sys_dictionary postatusdic on postatusdic.group_value = 'BIPO_STATUS' and  postatusdic.dic_value = bipo.status
 		<include refid="biPoDynamicPageWhereExt"/>
     </select>
     		
@@ -310,11 +310,44 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			left join t_wh_logistics_provider provider on provider.id=bipo.logistics_provider_id
 			left join t_wh_supplier supplier on supplier.id=bipo.supplier_id
 			left join sys_dictionary potypedic on potypedic.group_value='PO_TYPE' and potypedic.dic_value=bipo.po_type
-			left join sys_dictionary postatusdic on postatusdic.group_value = 'POSTATUS' and  postatusdic.dic_value = bipo.status
+			left join sys_dictionary postatusdic on postatusdic.group_value = 'BIPO_STATUS' and  postatusdic.dic_value = bipo.status
 		<include refid="biPoDynamicPageWhereExt"/>
     </select>
    
-   
+   <update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.poasn.BiPo">
+		    <![CDATA[
+		         UPDATE t_bi_po SET
+		        po_code = #{poCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        ext_code = #{extCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        customer_id = #{customerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        store_id = #{storeId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        supplier_id = #{supplierId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        logistics_provider_id = #{logisticsProviderId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        po_type = #{poType,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        status = #{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        is_iqc = #{isIqc,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        po_date = #{poDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        eta = #{eta,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        delivery_time = #{deliveryTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        qty_planned = #{qtyPlanned,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+		        qty_rcvd = #{qtyRcvd,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+		        ctn_planned = #{ctnPlanned,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        ctn_rcvd = #{ctnRcvd,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        start_time = #{startTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        stop_time = #{stopTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        inbound_time = #{inboundTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        is_wms = #{isWms,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        is_vmi = #{isVmi,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        last_modify_time = now() ,
+		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
+		    ]]>
+		    <where>
+		    		id = #{id} 
+			        and last_modify_time	=  #{lastModifyTime}    
+		    </where>
+		</update>
   <!--  <resultMap id="BiPoCommandRelatedExt" type="com.baozun.scm.primservice.whoperation.command.poasn.BiPoCommand">
 		<collection property="whPoList" ofType="com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand" column="po_code">注意此处的work_id是work_area表的外键  
             <id column="id" property="id"/>  
