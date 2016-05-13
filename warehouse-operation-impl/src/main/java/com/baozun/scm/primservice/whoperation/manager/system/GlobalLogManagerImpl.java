@@ -40,6 +40,7 @@ public class GlobalLogManagerImpl implements GlobalLogManager {
         gl.setObjectType(formatClassName(globalLogCommand.getObjectType()));
         gl.setModifyTime(new Date());
         gl.setSysDate(getSysDate());
+        gl.setIsTranslate(false);
         globalLogDao.insert(gl);
     }
 
@@ -100,6 +101,8 @@ public class GlobalLogManagerImpl implements GlobalLogManager {
         gl.setParentCode(globalLogCommand.getParentCode());
         gl.setObjectType(formatClassName(globalLogCommand.getObjectType()));
         gl.setModifyTime(new Date());
+        gl.setSysDate(getSysDate());
+        gl.setIsTranslate(false);
         globalLogDao.insert(gl);
     }
 
