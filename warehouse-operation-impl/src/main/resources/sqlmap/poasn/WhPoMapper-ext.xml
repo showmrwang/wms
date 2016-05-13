@@ -42,7 +42,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	create_time as createTime,
 	        	created_id as createdId,
 	        	last_modify_time as lastModifyTime,
-	        	modified_id as modifiedId
+	        	modified_id as modifiedId,
+	        	uuid as uuid
 	    ]]>
 	</sql>
 	
@@ -152,6 +153,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				po.created_id as createdId,
 				po.last_modify_time as lastModifyTime,
 				po.modified_id as modifiedId,
+				po.uuid as uuid,
 				c.customer_name as customerName,
 				s.store_name as storeName,
 				sys.dic_label as statusName,
@@ -273,6 +275,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		   <where>
 			    po_code = #{poCode} 
 			    and ou_id = #{ouId} 
+			    and status!='17'
 			</where>
     </select>
     

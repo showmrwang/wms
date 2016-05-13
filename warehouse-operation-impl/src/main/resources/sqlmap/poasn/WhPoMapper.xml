@@ -37,7 +37,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	create_time as createTime,
 	        	created_id as createdId,
 	        	last_modify_time as lastModifyTime,
-	        	modified_id as modifiedId
+	        	modified_id as modifiedId,
+	        	uuid as uuid
 	    ]]>
 	</sql>
 		<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
@@ -72,7 +73,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	create_time ,
 	        	created_id ,
 	        	last_modify_time ,
-	        	modified_id 
+	        	modified_id ,
+	        	uuid
 	        ) VALUES (
 	            #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{poCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -100,7 +102,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 	        	#{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-	        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
+	        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{uuid,javaType=java.lang.String,jdbcType=VARCHAR} 
 	        )
 	    ]]>
 
@@ -134,7 +137,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        uuid= #{uuid,javaType=java.lang.String,jdbcType=VARCHAR} 
 	        WHERE 
 		        id = #{id} 
 	    ]]>
@@ -229,6 +233,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	       
 				<if test="modifiedId!=null">
 					and modified_id = #{modifiedId}
+				</if>
+				 <if test="uuid!=null and uuid!=''">
+					and uuid = #{uuid}
 				</if>
 		</where>
 	</sql>

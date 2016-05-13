@@ -336,7 +336,56 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		left join t_wh_uom uom on uom.uom_code=line.valid_date_uom
 		<include refid="biPoLineDynamicPageWhereExt"/>
     </select>
+    
+		<select id="findListByQueryMapWithPageExtForCreateSubPo" resultMap="BiPoLineResultExt">
+    	select <include refid="BiPoLineRelatedColumnsMapExt" />,
+    	line.available_qty-IFNULL((select SUM(IFNULL(pline.qty_planned,0) ) from t_wh_po_line pline where pline.po_line_id=line.id and pline.uuid is not null),0) as availableSub
+	    from 
+	    t_bi_po_line line 
+	    inner join t_bi_po po on po.id = line.po_id 
+		left join sys_dictionary sys on sys.dic_value = line.status and sys.group_value = 'BIPOLINE_STATUS'
+		left join t_wh_inventory_status inv on inv.id = line.inv_status 
+		left join t_wh_sku sku on line.sku_id = sku.id
+		left join t_wh_sku_mgmt mgmt on mgmt.sku_id=sku.id
+		left join t_wh_sku_extattr extattr on extattr.sku_id=sku.id
+		left join t_wh_uom uom on uom.uom_code=line.valid_date_uom
+		<where>
+			line.uuid is  null
+			and line.po_id = #{poId}
+			and line.available_qty>0
+			<if test="skuName!=null and skuName!=''">
+				and sku.name like #{skuName}
+			</if>
+			<if test="skuCode!=null and skuCode!=''">
+				and sku.code = #{skuCode}
+			</if>
+			</where>
+    </select>
     		
+		
+	<select id="findListCountByQueryMapExtForCreateSubPo" resultType="long">
+        select count(*) 
+        from 
+	    t_bi_po_line line 
+	    inner join t_bi_po po on po.id = line.po_id 
+		left join sys_dictionary sys on sys.dic_value = line.status and sys.group_value = 'BIPOLINE_STATUS'
+		left join t_wh_inventory_status inv on inv.id = line.inv_status 
+		left join t_wh_sku sku on line.sku_id = sku.id
+		left join t_wh_sku_mgmt mgmt on mgmt.sku_id=sku.id
+		left join t_wh_sku_extattr extattr on extattr.sku_id=sku.id
+		left join t_wh_uom uom on uom.uom_code=line.valid_date_uom
+		<where>
+			(line.uuid = '' or line.uuid is null or line.uuid = #{uuid}) 
+			and line.po_id = #{poId}
+			and line.available_qty>0
+			<if test="skuName!=null and skuName!=''">
+				and sku.name like #{skuName}
+			</if>
+			<if test="skuCode!=null and skuCode!=''">
+				and sku.code = #{skuCode}
+			</if>
+			</where>
+		</select>
 		
 	<select id="findListCountByQueryMapExt" resultType="long">
         select count(*) 

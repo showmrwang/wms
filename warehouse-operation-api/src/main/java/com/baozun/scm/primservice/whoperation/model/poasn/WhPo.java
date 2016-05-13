@@ -81,25 +81,15 @@ public class WhPo extends BaseModel {
     private Date lastModifyTime;
     /** 操作人ID */
     private Long modifiedId;
-    /** 对应BIPO的ID */
-    private Long BiPoId;
-    /** 对应INFOPO的ID */
-    private Long InfoPoId;
+    /** 用于保存拆分PO的临时数据 */
+    private String uuid;
 
-    public Long getBiPoId() {
-        return BiPoId;
+    public String getUuid() {
+        return uuid;
     }
 
-    public void setBiPoId(Long biPoId) {
-        BiPoId = biPoId;
-    }
-
-    public Long getInfoPoId() {
-        return InfoPoId;
-    }
-
-    public void setInfoPoId(Long infoPoId) {
-        InfoPoId = infoPoId;
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
     public String getPoCode() {

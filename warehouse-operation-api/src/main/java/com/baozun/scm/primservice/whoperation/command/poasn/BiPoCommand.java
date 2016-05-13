@@ -124,6 +124,16 @@ public class BiPoCommand extends BaseCommand {
     private Integer linenum;
     /** 公共库列表集合 */
     List<WhPoCommand> whPoList;
+    /** Uuid */
+    private String uuid;
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
 
     public List<WhPoCommand> getWhPoList() {
         return whPoList;

@@ -532,12 +532,43 @@ public class PoLineManagerImpl implements PoLineManager {
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public WhPoLine findPoLineByPolineIdAndStatusListAndPoIdAndOuIdToShared(Long poLineId, List<Integer> statusList, Long poId, Long ouId) {
-        return this.whPoLineDao.findPoLineByPolineIdAndStatusListAndPoIdAndOuId(poLineId, statusList, poId, ouId);
+        return this.whPoLineDao.findPoLineByPolineIdAndStatusListAndPoIdAndOuId(poLineId, statusList, poId, ouId, null);
     }
 
     @Override
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
-    public WhPoLine findPoLineByPolineIdAndStatusListAndPoIdAndOuIdToInfo(Long poLineId, List<Integer> statusList, Long poId, Long ouId) {
-        return this.whPoLineDao.findPoLineByPolineIdAndStatusListAndPoIdAndOuId(poLineId, statusList, poId, ouId);
+    public WhPoLine findPoLineByPolineIdAndStatusListAndPoIdAndOuIdToInfo(Long poLineId, List<Integer> statusList, Long poId, Long ouId, String uuid, boolean uuidFlag) {
+        if (!uuidFlag) {
+            uuid = "";
+        }
+        return this.whPoLineDao.findPoLineByPolineIdAndStatusListAndPoIdAndOuId(poLineId, statusList, poId, ouId, uuid);
     }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
+    public List<WhPoLine> findWhPoLineByPoIdOuIdUuIdToInfo(Long id, Long ouId, String uuid) {
+        WhPoLine line = new WhPoLine();
+        line.setId(id);
+        line.setOuId(ouId);
+        line.setUuid(uuid);
+        return this.whPoLineDao.findListByParam(line);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
+    public void deletePoLineByPoIdOuIdAndUuidNotNullNotEqual(Long id, Long ouId, String uuid) {
+        List<WhPoLine> lineList = this.whPoLineDao.PoLineByPoIdOuIdAndUuidNotNullNotEqual(id, ouId, uuid);
+        if (lineList != null) {
+            for (WhPoLine l : lineList) {
+                this.whPoLineDao.delete(l.getId());
+            }
+        }
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
+    public Pagination<WhPoLineCommand> findPoLineListByQueryMapWithPageExtForCreateSubPoToInfo(Page page, Sort[] sorts, Map<String, Object> paraMap) {
+        return this.whPoLineDao.findPoLineListByQueryMapWithPageExtForCreateSubPoToInfo(page, sorts, paraMap);
+    }
+
 }
