@@ -15,7 +15,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	type as type,
 	        	object_type as objectType,
 	        	modified_values as modifiedValues,
+	        	modified_values_translate as modifiedValuesTranslate,
 	        	parent_code as parentCode,
+	        	is_translate as isTranslate,
 	        	ou_id as ouId,
 	        	modified_id as modifiedId,
 	        	modify_time as modifyTime
@@ -27,21 +29,25 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			 flushCache="true">
 		    <![CDATA[
 		        INSERT INTO
-		        t_bi_global_log (
-		 		    id,
+		        t_bi_global_log${sysDate} (
+		        id,
 		        	type ,
 		        	object_type ,
 		        	modified_values ,
+		        	modified_values_translate ,
 		        	parent_code ,
+		        	is_translate ,
 		        	ou_id ,
 		        	modified_id ,
 		        	modify_time 
 		        ) VALUES (
-			        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		      		#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{type,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{objectType,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{modifiedValues,javaType=java.lang.String,jdbcType=LONGVARCHAR} ,
+		        	#{modifiedValuesTranslate,javaType=java.lang.String,jdbcType=LONGVARCHAR} ,
 		        	#{parentCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{isTranslate,javaType=java.lang.Boolean,jdbcType=BIT} ,
 		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{modifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} 
@@ -56,8 +62,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        type = #{type,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        object_type = #{objectType,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        modified_values = #{modifiedValues,javaType=java.lang.String,jdbcType=LONGVARCHAR} ,
+		        modified_values_translate = #{modifiedValuesTranslate,javaType=java.lang.String,jdbcType=LONGVARCHAR} ,
 		        parent_code = #{parentCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        is_translate = #{isTranslate,javaType=java.lang.Boolean,jdbcType=BIT} ,
 		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        modify_time = #{modifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} 
 	        WHERE 

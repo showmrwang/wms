@@ -27,20 +27,27 @@ public class GlobalLog extends BaseModel {
 
 
     private static final long serialVersionUID = 96989294591931744L;
+
     /** 类型 INSERT UPDATE DELETE */
     private String type;
     /** 对象名称 */
     private String objectType;
     /** 操作值 */
     private String modifiedValues;
+    /** 解疑文本 */
+    private String modifiedValuesTranslate;
     /** 对应表头code */
     private String parentCode;
+    /** 是否解疑0:否 1:是 */
+    private Boolean isTranslate = false;
     /** 对应仓库 */
     private Long ouId;
     /** 操作人ID */
     private Long modifiedId;
     /** 操作时间 */
     private Date modifyTime;
+    /** 对应月份表 */
+    private String sysDate;
 
     public Long getId() {
         return id;
@@ -104,6 +111,30 @@ public class GlobalLog extends BaseModel {
 
     public void setParentCode(String parentCode) {
         this.parentCode = parentCode;
+    }
+
+    public String getModifiedValuesTranslate() {
+        return modifiedValuesTranslate;
+    }
+
+    public void setModifiedValuesTranslate(String modifiedValuesTranslate) {
+        this.modifiedValuesTranslate = modifiedValuesTranslate;
+    }
+
+    public Boolean getIsTranslate() {
+        return isTranslate;
+    }
+
+    public void setIsTranslate(Boolean isTranslate) {
+        this.isTranslate = isTranslate;
+    }
+
+    public String getSysDate() {
+        return sysDate;
+    }
+
+    public void setSysDate(String sysDate) {
+        this.sysDate = sysDate;
     }
 
 

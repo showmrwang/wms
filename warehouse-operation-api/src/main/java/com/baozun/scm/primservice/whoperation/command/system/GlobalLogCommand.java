@@ -30,12 +30,16 @@ public class GlobalLogCommand extends BaseCommand {
     private Long id;
     /** 类型 INSERT UPDATE DELETE */
     private String type;
-    /** 对象名称 类.getClass().getName() */
+    /** 对象名称 */
     private String objectType;
-    /** 操作值 整个类对象 */
+    /** 操作值 */
     private Object modifiedValues;
+    /** 解疑文本 */
+    private String modifiedValuesTranslate;
     /** 对应表头code */
     private String parentCode;
+    /** 是否解疑0:否 1:是 */
+    private Boolean isTranslate;
     /** 对应仓库 */
     private Long ouId;
     /** 操作人ID */
@@ -105,6 +109,22 @@ public class GlobalLogCommand extends BaseCommand {
 
     public void setParentCode(String parentCode) {
         this.parentCode = parentCode;
+    }
+
+    public String getModifiedValuesTranslate() {
+        return modifiedValuesTranslate;
+    }
+
+    public void setModifiedValuesTranslate(String modifiedValuesTranslate) {
+        this.modifiedValuesTranslate = modifiedValuesTranslate;
+    }
+
+    public Boolean getIsTranslate() {
+        return isTranslate;
+    }
+
+    public void setIsTranslate(Boolean isTranslate) {
+        this.isTranslate = isTranslate;
     }
 
 

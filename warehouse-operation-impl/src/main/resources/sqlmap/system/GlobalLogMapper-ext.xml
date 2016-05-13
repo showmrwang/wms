@@ -15,7 +15,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	type as type,
 	        	object_type as objectType,
 	        	modified_values as modifiedValues,
+	        	modified_values_translate as modifiedValuesTranslate,
 	        	parent_code as parentCode,
+	        	is_translate as isTranslate,
 	        	ou_id as ouId,
 	        	modified_id as modifiedId,
 	        	modify_time as modifyTime

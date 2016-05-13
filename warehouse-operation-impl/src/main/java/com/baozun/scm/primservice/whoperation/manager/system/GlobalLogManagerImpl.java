@@ -1,6 +1,9 @@
 package com.baozun.scm.primservice.whoperation.manager.system;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import lark.common.annotation.MoreDB;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,8 +17,6 @@ import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.model.system.GlobalLog;
 import com.baozun.utilities.type.JsonUtil;
-
-import lark.common.annotation.MoreDB;
 
 
 @Transactional
@@ -38,9 +39,10 @@ public class GlobalLogManagerImpl implements GlobalLogManager {
         gl.setParentCode(globalLogCommand.getParentCode());
         gl.setObjectType(formatClassName(globalLogCommand.getObjectType()));
         gl.setModifyTime(new Date());
+        gl.setSysDate(getSysDate());
         globalLogDao.insert(gl);
     }
-    
+
     /**
      * 将全局表数据源的日志信息插入公共库日志表
      * 
@@ -70,9 +72,20 @@ public class GlobalLogManagerImpl implements GlobalLogManager {
                 throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
     }
-    
+
+    /**
+     * 获取当前时间用于判断插入月份LOG表
+     * 
+     * @return
+     */
+    public String getSysDate() {
+        SimpleDateFormat df = new SimpleDateFormat("yyyyMM");// 设置日期格式
+        return df.format(new Date());// new Date()为获取当前系统时间
+    }
+
     /**
      * 日志插入到公共库
+     * 
      * @author lichuan
      * @param globalLogCommand
      */
