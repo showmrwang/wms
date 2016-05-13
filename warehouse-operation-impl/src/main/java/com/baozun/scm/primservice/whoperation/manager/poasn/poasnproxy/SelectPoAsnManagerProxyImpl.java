@@ -183,6 +183,14 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
     }
 
     /**
+     * 拆分BIPO时查询PO单明细行
+     */
+    @Override
+    public Pagination<BiPoLineCommand> findListByQueryMapWithPageExtForCreateSubPo(Page page, Sort[] sorts, Map<String, Object> params) {
+        return biPoLineManager.findListByQueryMapWithPageExtForCreateSubPo(page, sorts, params);
+    }
+
+    /**
      * 通过id+ou_id 查询PO单信息
      */
     @Override
@@ -351,6 +359,11 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
             log.debug(this.getClass().getSimpleName() + ".findWhPoById method returns {}!", whpo);
         }
         return whpo;
+    }
+
+    @Override
+    public Pagination<WhPoLineCommand> findPoLineListByQueryMapWithPageExtForCreateSubPo(Page page, Sort[] sorts, Map<String, Object> paraMap, Integer infoSource) {
+        return this.poLineManager.findPoLineListByQueryMapWithPageExtForCreateSubPoToInfo(page, sorts, paraMap);
     }
 
 }
