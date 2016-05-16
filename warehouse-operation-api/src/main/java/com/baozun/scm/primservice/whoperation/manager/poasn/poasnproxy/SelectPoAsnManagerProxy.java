@@ -200,4 +200,25 @@ public interface SelectPoAsnManagerProxy extends BaseManager {
      */
     Integer returnReceiptMode(WhAsnCommand whCommand);
 
+    /**
+     * 分页查询可以拆分PO的明细行；可以：1.可用数量大于0；2.可用数量-已经拆分的数量>0
+     * 
+     * @param page
+     * @param sorts
+     * @param params
+     * @return
+     */
+    Pagination<BiPoLineCommand> findListByQueryMapWithPageExtForCreateSubPo(Page page, Sort[] sorts, Map<String, Object> params);
+
+    /**
+     * 拆分PO时uuid明细的分页查询
+     * 
+     * @param page
+     * @param sorts
+     * @param params
+     * @param sourceType
+     * @return
+     */
+    Pagination<WhPoLineCommand> findPoLineListByQueryMapWithPageExtForCreateSubPo(Page page, Sort[] sorts, Map<String, Object> paraMap, Integer infoSource);
+
 }

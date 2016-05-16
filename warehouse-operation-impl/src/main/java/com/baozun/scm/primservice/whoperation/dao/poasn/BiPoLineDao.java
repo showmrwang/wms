@@ -59,6 +59,9 @@ public interface BiPoLineDao extends BaseDao<BiPoLine,Long>{
     @QueryPage("findListCountByQueryMapExt")
     Pagination<BiPoLineCommand> findListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params);
 
+    @QueryPage("findListCountByQueryMapExtForCreateSubPo")
+    Pagination<BiPoLineCommand> findListByQueryMapWithPageExtForCreateSubPo(Page page, Sort[] sorts, Map<String, Object> params);
+
     long deleteBiPoLineByPoIdAndNotUuid(@Param("poId") Long poId, @Param("uuid") String uuid);
 
     /**

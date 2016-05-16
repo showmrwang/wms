@@ -4,20 +4,10 @@ import com.baozun.scm.primservice.whoperation.command.BaseCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.BiPoCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
-import com.baozun.scm.primservice.whoperation.command.poasn.WhPoLineCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
 
 public interface CreatePoAsnManagerProxy extends BaseManager {
-
-    /**
-     * 创建PO单
-     * 
-     * @deprecated
-     * @param po
-     * @return
-     */
-    ResponseMsg createPo(WhPoCommand po);
 
     /**
      * 创建PO单
@@ -35,14 +25,6 @@ public interface CreatePoAsnManagerProxy extends BaseManager {
     ResponseMsg createAsn(WhAsnCommand asn);
 
     /**
-     * 创建POLINE 这个方法因为逻辑更改已不再使用
-     * @deprecated
-     * @param whPoLine
-     * @return
-     */
-    ResponseMsg createPoLineSingle(WhPoLineCommand whPoLine);
-
-    /**
      * 创建POLINE明细
      * 
      * @param biPoLine
@@ -51,12 +33,36 @@ public interface CreatePoAsnManagerProxy extends BaseManager {
     ResponseMsg createPoLineSingleNew(BaseCommand poLine);
 
     /**
-     * 将POLINE明细批量保存
+     * 保存PO单明细
      * 
-     * @param whPoLine
+     * @param command
      * @return
      */
-    ResponseMsg createPoLineBatch(WhPoLineCommand whPoLine);
+    ResponseMsg createPoLineBatchNew(BaseCommand command);
+
+    /**
+     * 创建子PO流程：将数据写入INFO——WHPO中，并用UUID标识为同一批次的临时数据
+     * 
+     * @param command
+     * @return
+     */
+    void createSubPoToInfo(BiPoCommand command);
+
+    /**
+     * 创建子PO流程：撤销已写入INFO——WHPO中选定数据，并用UUID标识为同一批次的临时数据
+     * 
+     * @param command
+     * @return
+     */
+    void revokeSubPoToInfo(WhPoCommand command);
+
+    /**
+     * 创建子PO流程：将数据写入仓库。并修改INFO>WHPO/WHPOLINE数据
+     * 
+     * @param command
+     * @return
+     */
+    void createSubPoToShard(WhPoCommand command);
 
     /**
      * 一键创建ASN；添加ASN明细
@@ -65,15 +71,5 @@ public interface CreatePoAsnManagerProxy extends BaseManager {
      * @return
      */
     ResponseMsg createAsnBatch(WhAsnCommand asn);
-
-    ResponseMsg createPoLineBatchNew(BaseCommand command);
-
-    /**
-     * 创建子Po
-     * 
-     * @param command
-     * @return
-     */
-    ResponseMsg createSubPo(BiPoCommand command);
 
 }

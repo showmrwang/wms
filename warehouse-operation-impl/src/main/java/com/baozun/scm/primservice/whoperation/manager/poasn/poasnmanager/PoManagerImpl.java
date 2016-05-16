@@ -129,7 +129,7 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
         try {
             BiPo biPo = new BiPo();
             BeanUtils.copyProperties(po, biPo);
-            biPo.setId(po.getBiPoId());
+            // biPo.setId(po.getBiPoId());
             biPoDao.insert(biPo);
             this.insertGlobalLog(GLOBAL_LOG_INSERT, biPo, po.getOuId(), po.getCreatedId(), null, DbDataSource.MOREDB_INFOSOURCE);
             if (po.getOuId() != null) {
@@ -720,5 +720,45 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
         return this.whPoDao.findWhPoCommandById(command.getId(), command.getOuId());
     }
 
+    @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
+    public void createSubPoWithLineToInfo(WhPo po, List<WhPoLine> whPoLineList) {
+        if (null == po) {
+            throw new BusinessException(ErrorCodes.PACKAGING_ERROR);
+        }
+        if (null == po.getId()) {
+            this.whPoDao.insert(po);
+        } else {
+            int count = this.whPoDao.saveOrUpdateByVersion(po);
+            if (count <= 0) {
+                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            }
+        }
+        for (WhPoLine line : whPoLineList) {
+            line.setPoId(po.getId());
+            if (null == line.getId()) {
+                this.whPoLineDao.insert(line);
+            } else {
+                int count = this.whPoLineDao.saveOrUpdateByVersion(line);
+                if (count <= 0) {
+                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                }
+            }
+        }
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
+    public void revokeSubPoToInfo(List<WhPoLine> lineList) {
+        if (null == lineList || lineList.size() == 0) {
+            throw new BusinessException(ErrorCodes.PACKAGING_ERROR);
+        }
+        for (WhPoLine line : lineList) {
+            int count = this.whPoLineDao.saveOrUpdateByVersion(line);
+            if (count < 0) {
+                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            }
+        }
+    }
 
 }

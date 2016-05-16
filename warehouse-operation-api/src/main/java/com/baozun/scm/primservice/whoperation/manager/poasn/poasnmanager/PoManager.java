@@ -104,4 +104,19 @@ public interface PoManager extends BaseManager {
      */
     List<WhPo> findWhPoByPoCodeToInfo(String poCode);
 
+    /**
+     * 插入拆分的明细到INFO.WHPO/WHPOLINE
+     * 
+     * @param po
+     * @param whPoLineList
+     */
+    void createSubPoWithLineToInfo(WhPo po, List<WhPoLine> whPoLineList);
+
+    /**
+     * 撤销拆分的明细数量
+     * 
+     * @param lineList
+     */
+    void revokeSubPoToInfo(List<WhPoLine> lineList);
+
 }

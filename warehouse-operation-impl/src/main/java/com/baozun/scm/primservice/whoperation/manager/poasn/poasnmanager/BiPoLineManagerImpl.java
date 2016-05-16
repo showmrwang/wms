@@ -238,4 +238,10 @@ public class BiPoLineManagerImpl extends BaseManagerImpl implements BiPoLineMana
             }
         }
     }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
+    public Pagination<BiPoLineCommand> findListByQueryMapWithPageExtForCreateSubPo(Page page, Sort[] sorts, Map<String, Object> params) {
+        return this.biPoLineDao.findListByQueryMapWithPageExtForCreateSubPo(page, sorts, params);
+    }
 }

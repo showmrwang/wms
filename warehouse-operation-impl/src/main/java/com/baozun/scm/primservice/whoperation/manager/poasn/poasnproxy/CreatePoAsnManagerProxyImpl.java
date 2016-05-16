@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import com.baozun.scm.baseservice.sac.manager.CodeManager;
 import com.baozun.scm.baseservice.sac.manager.PkManager;
@@ -25,7 +26,6 @@ import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnLineCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoLineCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
-import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
@@ -77,51 +77,6 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
     private PkManager pkManager;
     @Autowired
     private BiPoLineManager biPoLineManager;
-    /**
-     * 创建PO单据
-     */
-    @Override
-    public ResponseMsg createPo(WhPoCommand po) {
-        log.info("CreatePo start =======================");
-        String poCode = null;
-        // 验证数据完整性
-        ResponseMsg rm = checkPoParameter(po);
-        if (rm.getResponseStatus() != ResponseMsg.STATUS_SUCCESS) {
-            log.warn("CreatePo warn ResponseStatus: " + rm.getResponseStatus() + " msg: " + rm.getMsg());
-            return rm;
-        }
-        try {
-            // 创建PO单数据
-            WhPo whPo = copyPropertiesPo(po);
-            // 相关单据号 调用HUB编码生成器获得
-            poCode = getUniqueCode(0);
-            if (StringUtil.isEmpty(poCode)) {
-                log.warn("CreatePo warn poCode generateCode is null");
-                rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
-                rm.setMsg(ErrorCodes.GET_GENERATECODE_NULL + "");
-                log.warn("CreatePo warn ResponseStatus: " + rm.getResponseStatus() + " msg: " + rm.getMsg());
-                return rm;
-            }
-            whPo.setPoCode(poCode);
-            List<WhPoLine> whPoLines = null != po.getPoLineList() ? copyPropertiesPoLine(po) : null;
-            // 判断OU_ID
-            // 查询t_wh_check_pocode
-            // 有:查询对应
-            rm = insertPoWithCheck(whPo, whPoLines, rm);
-        } catch (Exception e) {
-            if (e instanceof BusinessException) {
-                throw e;
-            }
-            rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
-            log.error("CreatePo error poCode: " + po.getExtCode());
-            log.error("" + e);
-            return rm;
-        }
-        log.info("CreatePo end =======================");
-        rm.setMsg(poCode);
-        return rm;
-    }
-
 
     /**
      * 封装创建PO单数据
@@ -520,82 +475,6 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
         return rm;
     }
 
-    /**
-     * 创建POLine明细信息 业务缓存在表数据
-     */
-    @Override
-    public ResponseMsg createPoLineSingle(WhPoLineCommand whPoLine) {
-        log.info("CreatePoLineSingle start =======================");
-        ResponseMsg rm = new ResponseMsg();
-        WhPoLine line = new WhPoLine();
-        BeanUtils.copyProperties(whPoLine, line);
-        WhPoLine wpl = null;
-        // 通过传入的值预先查找该PO单下是否存在对应UUID的商品数据
-        if (log.isDebugEnabled()) {
-            log.debug("CreatePoLineSingle findPoLineByAddPoLineParam poid: " + line.getPoId() + " ou_id: " + line.getOuId() + " uuid: " + line.getUuid());
-        }
-        if (null == line.getOuId()) {
-            // ouid is null to info mycat 需要带uuid
-            wpl = poLineManager.findPoLineByAddPoLineParamToInfo(line, false);
-        } else {
-            // ouid is not null to share mycat 需要带uuid
-            wpl = poLineManager.findPoLineByAddPoLineParamToShare(line, false);
-        }
-        if (null == wpl) {
-            // 根据POLINE信息查询POLINE正式数据
-            if (null == line.getOuId()) {
-                // ouid is null to info mycat 不需要带uuid
-                wpl = poLineManager.findPoLineByAddPoLineParamToInfo(line, true);
-            } else {
-                // ouid is not null to share mycat 不需要带uuid
-                wpl = poLineManager.findPoLineByAddPoLineParamToShare(line, true);
-            }
-            if (null != wpl) {
-                // 存在正式数据 需要在新数据的polineid赋值 等保存poline信息后合并信息用
-                line.setPoLineId(wpl.getId());
-            }
-            // 如果不存在插入一条数据
-            line.setStatus(PoAsnStatus.POLINE_NEW);
-            line.setCreateTime(new Date());
-            line.setLastModifyTime(new Date());
-            try {
-                if (null == line.getOuId()) {
-                    // 没有ou_id插入基础表数据
-                    poLineManager.createPoLineSingleToInfo(line);
-                } else {
-                    // 有ou_id插入拆库表数据
-                    poLineManager.createPoLineSingleToShare(line);
-                }
-            } catch (Exception e) {
-                rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
-                log.error("CreatePoLineSingle Error PoId: " + whPoLine.getPoId());
-                log.error(e + "");
-                return rm;
-            }
-        } else {
-            // 如果数据存在 合并数据
-            wpl.setQtyPlanned(wpl.getQtyPlanned() + line.getQtyPlanned());// 计划数量
-            wpl.setAvailableQty(wpl.getAvailableQty() + line.getQtyPlanned());// 可用数量=原可用数量+新计划数量
-            // wpl.setLastModifyTime(new Date());
-            wpl.setModifiedId(line.getModifiedId());
-            try {
-                if (null == line.getOuId()) {
-                    // 没有ou_id更新基础表数据
-                    poLineManager.updatePoLineSingleToInfo(wpl);
-                } else {
-                    // 有ou_id更新拆库表数据
-                    poLineManager.updatePoLineSingleToShare(wpl);
-                }
-            } catch (Exception e) {
-                rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
-                log.error("CreatePoLineSingle Error PoId: " + whPoLine.getPoId());
-                log.error(e + "");
-                return rm;
-            }
-        }
-        log.info("CreatePoLineSingle end =======================");
-        return rm;
-    }
 
     @Override
     public ResponseMsg createPoLineSingleNew(BaseCommand whPoLine) {
@@ -661,30 +540,6 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
         return rm;
     }
 
-    /**
-     * 批量保存POLINE信息
-     */
-    @Override
-    public ResponseMsg createPoLineBatch(WhPoLineCommand whPoLine) {
-        log.info("CreatePoLineBatch start =======================");
-        ResponseMsg rm = new ResponseMsg();
-        try {
-            if (null == whPoLine.getOuId()) {
-                // 没有ou_id更新基础表数据
-                poLineManager.createPoLineBatchToInfo(whPoLine);
-            } else {
-                // 有ou_id更新拆库表数据
-                poLineManager.createPoLineBatchToShare(whPoLine);
-            }
-        } catch (Exception e) {
-            rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
-            log.error("CreatePoLineBatch Error PoId: " + whPoLine.getPoId());
-            log.error(e + "");
-            return rm;
-        }
-        log.info("CreatePoLineBatch end =======================");
-        return rm;
-    }
 
     /**
      * 批量保存POLINE信息
@@ -819,123 +674,6 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
     }
 
 
-    /**
-     * #TODO
-     */
-    @Override
-    public ResponseMsg createSubPo(BiPoCommand command) {
-        ResponseMsg rm=new ResponseMsg();
-        // 将拆分数据写入到仓库
-        // 更新集团数据
-        try{
-            this.createSubPoByDbSource(command, DbDataSource.MOREDB_INFOSOURCE);
-        } catch (Exception e) {
-            if (e instanceof BusinessException) {
-                rm.setMsg(((BusinessException) e).getErrorCode() + "");
-                rm.setResponseStatus(ResponseMsg.DATA_ERROR);
-                return rm;
-            } else {
-                rm.setMsg(ErrorCodes.DAO_EXCEPTION + "");
-                rm.setResponseStatus(ResponseMsg.DATA_ERROR);
-                return rm;
-            }
-        }
-        // 将拆分数据写入到仓库
-        try {
-            this.createSubPoByDbSource(command, DbDataSource.MOREDB_SHARDSOURCE);
-        } catch (Exception e) {
-            if (e instanceof BusinessException) {
-                rm.setMsg(((BusinessException) e).getErrorCode() + "");
-                rm.setResponseStatus(ResponseMsg.DATA_ERROR);
-                return rm;
-            } else {
-                rm.setMsg(ErrorCodes.DAO_EXCEPTION + "");
-                rm.setResponseStatus(ResponseMsg.DATA_ERROR);
-                return rm;
-            }
-        }
-
-        rm.setMsg("success");
-        rm.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
-        return rm;
-    }
-
-    private void createSubPoByDbSource(BiPoCommand command, String dbSource) {
-        BiPo bipo = this.biPoManager.findBiPoById(command.getId());
-        if (null == bipo) {
-            throw new BusinessException(ErrorCodes.DELETE_ERROR);
-        }
-
-        WhPo shardpo = null;
-        if (DbDataSource.MOREDB_INFOSOURCE.equals(dbSource)) {
-            shardpo = this.poManager.findWhPoByPoCodeOuIdToInfo(bipo.getPoCode(), command.getOuId());
-        } else {
-            shardpo = this.poManager.findWhPoByPoCodeOuIdToShard(bipo.getPoCode(), command.getOuId());
-        }
-
-        boolean shardpoFlag = null == shardpo ? false : true;// 如果已有此PO单，为true;没有 false
-        List<WhPoLine> whpolineList = new ArrayList<WhPoLine>();// 用于存储whpo修改数据
-        double skuCount = 0d;
-        if (command.getPoLineList() != null) {
-            for (BiPoLineCommand bipolinecommand : command.getPoLineList()) {
-                skuCount += null == bipolinecommand.getQtyPlanned() ? 0d : bipolinecommand.getQtyPlanned();
-                BiPoLine bipoline = this.biPoLineManager.findBiPoLineById(bipolinecommand.getId());
-                WhPoLine whpoline = null;
-                if (shardpoFlag) {
-                    if (DbDataSource.MOREDB_INFOSOURCE.equals(dbSource)) {
-                        whpoline =
-                                this.poLineManager.findPoLineByPolineIdAndStatusListAndPoIdAndOuIdToShared(bipoline.getId(), Arrays.asList(new Integer[] {PoAsnStatus.POLINE_NEW, PoAsnStatus.POLINE_CREATE_ASN, PoAsnStatus.POLINE_RCVD}), shardpo.getId(),
-                                        shardpo.getOuId());
-                    } else {
-                        whpoline =
-                                this.poLineManager.findPoLineByPolineIdAndStatusListAndPoIdAndOuIdToInfo(bipoline.getId(), Arrays.asList(new Integer[] {PoAsnStatus.POLINE_NEW, PoAsnStatus.POLINE_CREATE_ASN, PoAsnStatus.POLINE_RCVD}), shardpo.getId(),
-                                    shardpo.getOuId());
-                    }
-                }
-                if (null == whpoline) {
-                    whpoline = new WhPoLine();
-                    BeanUtils.copyProperties(bipoline, whpoline);
-                    whpoline.setPoId(shardpoFlag ? shardpo.getId() : null);
-                    whpoline.setOuId(command.getOuId());
-                    whpoline.setQtyPlanned(bipolinecommand.getQtyPlanned());
-                    whpoline.setAvailableQty(bipolinecommand.getQtyPlanned());
-                    whpoline.setModifiedId(command.getUserId());
-                    whpoline.setLastModifyTime(new Date());
-                    whpoline.setCreatedId(command.getUserId());
-                    whpoline.setCreateTime(new Date());
-                    whpoline.setPoLineId(bipoline.getId());
-                    whpoline.setId(null);
-                    whpoline.setStatus(PoAsnStatus.POLINE_NEW);
-                } else {
-                    whpoline.setModifiedId(command.getUserId());
-                    whpoline.setQtyPlanned(whpoline.getQtyPlanned() + bipolinecommand.getQtyPlanned());
-                    whpoline.setAvailableQty(whpoline.getAvailableQty() + bipolinecommand.getQtyPlanned());
-                }
-                whpolineList.add(whpoline);
-
-            }
-        }
-        if (!shardpoFlag) {
-            shardpo = new WhPo();
-            BeanUtils.copyProperties(bipo, shardpo);
-            shardpo.setId(null);
-            shardpo.setOuId(command.getOuId());
-            shardpo.setStatus(PoAsnStatus.PO_NEW);
-            shardpo.setCreatedId(command.getUserId());
-            shardpo.setCreateTime(new Date());
-            shardpo.setLastModifyTime(new Date());
-            shardpo.setModifiedId(command.getUserId());
-            shardpo.setQtyPlanned(skuCount);
-        } else {
-            shardpo.setModifiedId(command.getUserId());
-            shardpo.setQtyPlanned(shardpo.getQtyPlanned() + skuCount);
-        }
-        if (DbDataSource.MOREDB_INFOSOURCE.equals(dbSource)) {
-            this.poManager.createWhPoToInfo(shardpo, whpolineList);
-        } else {
-            this.poManager.createWhPoToShard(shardpo, whpolineList);
-        }
-    }
 
     /**
      * 创建PO单据
@@ -1007,5 +745,148 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
         log.info("CreatePo end =======================");
         rm.setMsg(poCode);
         return rm;
+    }
+
+
+    @Override
+    public void createSubPoToInfo(BiPoCommand command) {
+        //这边的逻辑如下：
+        // 先删除对应仓库中有uuid且uuid不同的数据
+        //1.如果拆分的仓库已有此po单的话
+        // 1.1 PO单头信息不改 。
+        //1.2.1 已有对应的明细，则记录明细行的polineId-》polineId和uuid
+        //1.2.2 没有对应的明细，则生成新的明细行或者合并已有的明细行【uuid】
+        //2.如果没有此PO单的话
+        //2.1 生成新的PO单头信息
+        //2.2.1 生成新的PO单明细
+        // 3.最后的同步机制：由INFO->shard#TODO
+        Long ouId = command.getOuId();
+        String uuid=command.getUuid();
+        Long userId = command.getUserId();
+        BiPo bipo = this.biPoManager.findBiPoById(command.getId());
+        if (null == bipo) {
+            throw new BusinessException(ErrorCodes.PACKAGING_ERROR);
+        }
+        // 查找非取消状态下的拆单
+        WhPo po = this.poManager.findWhPoByPoCodeOuIdToInfo(bipo.getPoCode(), ouId);
+        // 这边的逻辑：
+        // 没有对应的PO的时候，则重新生成PO
+        // 如果有对应的PO，那么查找这个PO有没有uuid；如果没有，则赋值uuid；如果有的话，看有没有对应的uuid的明细；如果有对应的uuid的明细，表明此单在一个仓库中同事被操作，则抛错；否则将此uuid赋予PO
+        // 防止非正常关闭页面导致UUID不能及时更新
+        if (null == po) {
+            po = new WhPo();
+            BeanUtils.copyProperties(bipo, po);
+            po.setId(null);
+            po.setOuId(command.getOuId());
+            po.setUuid(uuid);
+            po.setCreatedId(userId);
+            po.setModifiedId(userId);
+            po.setCreateTime(new Date());
+            po.setLastModifyTime(new Date());
+            po.setQtyPlanned(Constants.DEFAULT_DOUBLE);
+            po.setQtyRcvd(Constants.DEFAULT_DOUBLE);
+            po.setCtnPlanned(Constants.DEFAULT_INTEGER);
+            po.setCtnRcvd(Constants.DEFAULT_INTEGER);
+            po.setStatus(PoAsnStatus.POLINE_NEW);
+        } else {
+            if (StringUtils.hasText(po.getUuid()) && !uuid.equals(po.getUuid())) {
+                this.poLineManager.deletePoLineByPoIdOuIdAndUuidNotNullNotEqual(po.getId(), po.getOuId(), po.getUuid());
+            }
+            po.setUuid(uuid);
+            po.setModifiedId(userId);
+        }
+
+        if (null == command.getPoLineList()) {
+            throw new BusinessException(ErrorCodes.PACKAGING_ERROR);
+        }
+        List<WhPoLine> whPoLineList = new ArrayList<WhPoLine>();
+        for (BiPoLineCommand bipolineCommand : command.getPoLineList()) {
+            if(null==bipolineCommand.getQtyPlanned()){
+                throw new BusinessException(ErrorCodes.PACKAGING_ERROR);
+            }
+            BiPoLine line = this.biPoLineManager.findBiPoLineById(bipolineCommand.getId());
+            if(null==line){
+                throw new BusinessException(ErrorCodes.PACKAGING_ERROR);
+            }
+            if (line.getAvailableQty() < bipolineCommand.getQtyPlanned()) {
+                throw new BusinessException(ErrorCodes.PACKAGING_ERROR);
+            }
+            WhPoLine whpoline = this.poLineManager.findPoLineByPolineIdAndStatusListAndPoIdAndOuIdToInfo(line.getId(), Arrays.asList(new Integer[] {PoAsnStatus.POLINE_NEW, PoAsnStatus.POLINE_CREATE_ASN, PoAsnStatus.POLINE_RCVD}), po.getId(), ouId,uuid,true);
+            if (null == whpoline) {
+                whpoline = new WhPoLine();
+                BeanUtils.copyProperties(line, whpoline);
+                whpoline.setId(null);
+                whpoline.setCreatedId(userId);
+                whpoline.setOuId(ouId);
+                whpoline.setCreateTime(new Date());
+                whpoline.setModifiedId(userId);
+                whpoline.setLastModifyTime(new Date());
+                whpoline.setQtyPlanned(bipolineCommand.getQtyPlanned());
+                whpoline.setAvailableQty(bipolineCommand.getQtyPlanned());
+                whpoline.setQtyRcvd(Constants.DEFAULT_DOUBLE);
+                whpoline.setCtnPlanned(Constants.DEFAULT_INTEGER);
+                whpoline.setCtnRcvd(Constants.DEFAULT_INTEGER);
+                whpoline.setPoLineId(line.getId());
+                whpoline.setUuid(uuid);
+            } else {
+                whpoline.setQtyPlanned(whpoline.getQtyPlanned() + bipolineCommand.getQtyPlanned());
+                whpoline.setAvailableQty(whpoline.getAvailableQty() + bipolineCommand.getQtyPlanned());
+                whpoline.setModifiedId(userId);
+            }
+            whPoLineList.add(whpoline);
+        }
+        this.poManager.createSubPoWithLineToInfo(po, whPoLineList);
+    }
+
+
+    @Override
+    public void revokeSubPoToInfo(WhPoCommand command) {
+        // 逻辑：
+        // 根据pocode,uuid查找对应的明细行；
+        // 修改明细行的qtyPlanned,
+        if (null == command) {
+            throw new BusinessException(ErrorCodes.PACKAGING_ERROR);
+        }
+        if (null == command.getPoLineList()) {
+            throw new BusinessException(ErrorCodes.PACKAGING_ERROR);
+        }
+        List<WhPoLine> lineList = new ArrayList<WhPoLine>();
+        for (WhPoLineCommand lineCommand : command.getPoLineList()) {
+            if (lineCommand.getQtyPlanned() < 0) {
+                throw new BusinessException(ErrorCodes.PACKAGING_ERROR);
+            }
+            WhPoLineCommand searchCommand = new WhPoLineCommand();
+            searchCommand.setId(lineCommand.getId());
+            searchCommand.setOuId(command.getOuId());
+            WhPoLineCommand line = this.poLineManager.findPoLinebyIdToInfo(searchCommand);
+            if (null == line) {
+                throw new BusinessException(ErrorCodes.DATA_EXPRIE_ERROR);
+            }
+            WhPoLine poLine = new WhPoLine();
+            BeanUtils.copyProperties(line, poLine);
+            poLine.setModifiedId(command.getUserId());
+            poLine.setQtyPlanned(command.getQtyPlanned());
+
+            lineList.add(poLine);
+        }
+        this.poManager.revokeSubPoToInfo(lineList);
+    }
+
+
+    @Override
+    public void createSubPoToShard(WhPoCommand command) {
+        // 逻辑：
+        // 1.INFO.WHPO/WHPOLINE
+        // 1.1删除可用数量为0的临时数据
+        // 1.2合并明细；当已有明细为新建，已创建ASN，收货中，合并明细行
+        // 1.2修改表头中数量
+        // 2.INFO.BIPO/BIPOLINE
+        // 2.1修改BIPOLINE对应明细行的数量
+        // 3.SHARD.WHPO/WHPOLINE
+        // 3.1新增或修改po单表头的数量
+        // 3.2新增或修改明细
+        // this.poManager.findWhPoByPoCodeOuIdUuid(Command.getPoCode,command.get)
+        this.poLineManager.findWhPoLineByPoIdOuIdUuIdToInfo(command.getId(), command.getOuId(), command.getUuid());
+
     }
 }

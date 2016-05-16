@@ -106,4 +106,6 @@ public interface BiPoManager extends BaseManager {
      */
     ResponseMsg editBiPo(BiPo updatePo);
 
+    void createSubPoToInfo(WhPo po, List<WhPoLine> whPoLineList);
+
 }

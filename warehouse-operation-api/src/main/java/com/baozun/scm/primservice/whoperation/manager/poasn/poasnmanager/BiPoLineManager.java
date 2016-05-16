@@ -42,4 +42,14 @@ public interface BiPoLineManager extends BaseManager {
      */
     void deleteBiPoLineByPoIdAndUuidToInfo(Long poId, String uuid, Long userId);
 
+    /**
+     * 可以拆分PO单的明细分页
+     * 
+     * @param page
+     * @param sorts
+     * @param params
+     * @return
+     */
+    Pagination<BiPoLineCommand> findListByQueryMapWithPageExtForCreateSubPo(Page page, Sort[] sorts, Map<String, Object> params);
+
 }

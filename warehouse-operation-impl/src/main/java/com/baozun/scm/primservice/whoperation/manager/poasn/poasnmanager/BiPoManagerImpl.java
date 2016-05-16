@@ -265,4 +265,23 @@ public class BiPoManagerImpl extends BaseManagerImpl implements BiPoManager {
         return rm;
     }
 
+    @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
+    public void createSubPoToInfo(WhPo po, List<WhPoLine> whPoLineList) {
+        if (null == po.getId()) {
+            this.whPoDao.insert(po);
+        } else {
+            this.whPoDao.saveOrUpdateByVersion(po);
+        }
+        for (WhPoLine line : whPoLineList) {
+            if (null == line.getId()) {
+                line.setPoId(po.getId());
+                this.whPoLineDao.insert(line);
+            } else {
+                this.whPoLineDao.saveOrUpdateByVersion(line);
+            }
+        }
+
+    }
+
 }

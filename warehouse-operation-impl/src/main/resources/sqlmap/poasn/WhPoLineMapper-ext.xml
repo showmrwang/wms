@@ -212,6 +212,37 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			left join t_wh_uom uom on uom.uom_code=line.valid_date_uom
 		<include refid="whPoLineDynamicWhereExt"/>
     </select>
+	<select id="findPoLineListByQueryMapWithPageExtForCreateSubPoToInfo" resultMap="WhPoLineCommand">
+    	select <include refid="whPoLineColumnsMapExt" />
+	    from 
+	    t_wh_po_line line 
+	    inner join t_wh_po po on po.id=line.po_id 
+		left join sys_dictionary sys on sys.dic_value = line.status and sys.group_value = 'POLINESTATUS'
+		left join t_wh_inventory_status inv on inv.id = line.inv_status 
+		left join t_wh_sku sku on line.sku_id = sku.id 
+		left join t_wh_uom uom on uom.uom_code=line.valid_date_uom
+		<where>
+			po.po_code=#{poCode}
+			and po.uuid=#{uuid}
+			and line.uuid=#{uuid}
+		</where>
+    </select>
+    		
+		
+	<select id="findListCountByQueryMapExtForCreateSubPoToInfo" resultType="long">
+        select count(*) from 
+	        t_wh_po_line line 
+	        inner join t_wh_po po on po.id=line.po_id
+			left join sys_dictionary sys on sys.dic_value = line.status and sys.group_value = 'POLINESTATUS'
+			left join t_wh_inventory_status inv on inv.id = line.inv_status
+			left join t_wh_sku sku on line.sku_id = sku.id
+			left join t_wh_uom uom on uom.uom_code=line.valid_date_uom
+		<where>
+			po.po_code=#{poCode}
+			and po.uuid=#{uuid}
+			and line.uuid=#{uuid}
+		</where>
+    </select>
     
    <delete id="deletePoLineByUuid" parameterType="int">  
 		delete from t_wh_po_line
@@ -370,6 +401,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    where po.po_code=#{poCode}
 	  	and line.ou_id = #{ouId}
 	  	and line.po_line_id=#{poLineId}
+	  	and line.status!='17'
     </select>
     
     <select id="findInfoPoLineByPoCodeOuId" resultMap="WhPoLineResultExt">
@@ -386,8 +418,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    <include refid="whPoLineColumnsExt" />
 	    from t_wh_po_line 
 	    where po_id=#{poId}
-	    <if test="ouid!=null">
+	    <if test="ouId!=null">
 	  			 and ou_id = #{ouId}
+		</if>
+	    <if test="uuid!=null and uuid!=''">
+	  			 and uuid = #{uuid}
 		</if>
 	  	and ou_id = #{ouId}
 	  	and po_line_id=#{poLineId}
@@ -398,4 +433,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			</foreach>
     </select>
     
+     <select id="PoLineByPoIdOuIdAndUuidNotNullNotEqual" resultMap="WhPoLineResult">
+    	select <include refid="whPoLineColumns" />
+	    from t_wh_po_line 
+		where id=#{id}
+		and ou_id=#{ouId}
+		and uuid!='' and uuid!=#{uuid}
+    </select>
 </mapper>

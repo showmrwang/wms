@@ -132,6 +132,16 @@ public class BiPoLineCommand extends BaseCommand {
     private Boolean isInvAttr4;
     /** 是否管理库存属性一 */
     private Boolean isInvAttr5;
+    /** 用于记录明细行可以拆分到仓库的剩余数量 */
+    private Double availableSub;
+
+    public Double getAvailableSub() {
+        return availableSub;
+    }
+
+    public void setAvailableSub(Double availableSub) {
+        this.availableSub = availableSub;
+    }
 
     public Boolean getIsInvType() {
         return isInvType;

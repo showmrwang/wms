@@ -75,7 +75,6 @@ public class WhPoCommand extends BaseCommand {
     private Date lastModifyTime;
     /** 操作人ID */
     private Long modifiedId;
-
     /** 采购时间Str */
     private String poDateStr;
     /** 计划到货时间Str */
@@ -121,6 +120,17 @@ public class WhPoCommand extends BaseCommand {
     private String modifiedUserName;
     /** 模糊查询限定行数 */
     private Integer linenum;
+    /** 用于保存拆分PO的临时数据 */
+    private String uuid;
+
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
 
     public Integer getLinenum() {
         return linenum;
