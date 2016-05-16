@@ -185,5 +185,19 @@ public interface SelectPoAsnManagerProxy extends BaseManager {
     BiPoLineCommand findBiPoLineCommandById(Long id);
 
     BiPoLine findBiPoLineById(Long id);
+    
+    /**
+     * PDA ASN预收货
+     * @param whCommand
+     * @return
+     */
+    WhAsnCommand findWhAsnCommandByAsnId(WhAsnCommand whCommand);
+    
+    /**
+     * PDA ASN预收货,返回预收货模式
+     * @param whCommand
+     * @return
+     */
+    Integer returnReceiptMode(WhAsnCommand whCommand);
 
 }

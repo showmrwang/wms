@@ -22,16 +22,22 @@ import com.baozun.scm.primservice.whoperation.command.poasn.WhPoLineCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
+import com.baozun.scm.primservice.whoperation.manager.auth.OperationUnitManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnLineManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.BiPoLineManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.BiPoManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoLineManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.StoreManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.WarehouseManager;
+import com.baozun.scm.primservice.whoperation.model.auth.OperationUnit;
 import com.baozun.scm.primservice.whoperation.model.poasn.BiPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.BiPoLine;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 import com.baozun.scm.primservice.whoperation.util.StringUtil;
 
 /**
@@ -59,6 +65,12 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
     private AsnLineManager asnLineManager;
     @Autowired
     private BiPoLineManager biPoLineManager;
+    @Autowired
+    private StoreManager storeManager;
+    @Autowired
+    private OperationUnitManager operationUnitManager;
+    @Autowired
+    private WarehouseManager warehouseManager;
 
     /**
      * 
@@ -109,6 +121,9 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
     @Override
     public List<WhAsnCommand> findWhAsnListByAsnExtCode(String asnExtCode, Integer[] statuses, Long ouid) {
         log.info(this.getClass().getSimpleName() + ".findWhAsnListByAsnExtCode method begin!");
+        if (null == asnExtCode) {
+            throw new BusinessException(ErrorCodes.PARAM_IS_NULL, new Object[] {"asnExtCode"});
+        }
         if (log.isDebugEnabled()) {
             log.debug(this.getClass().getSimpleName() + ".findWhAsnListByAsnExtCode params:asnExtCode:{},status:{},ouid:{}", asnExtCode, statuses, ouid);
         }
@@ -351,6 +366,76 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
             log.debug(this.getClass().getSimpleName() + ".findWhPoById method returns {}!", whpo);
         }
         return whpo;
+    }
+
+    @Override
+    public WhAsnCommand findWhAsnCommandByAsnId(WhAsnCommand whCommand) {
+        log.info(this.getClass().getSimpleName() + ".findWhAsnCommandByAsnId method begin!");
+        if (null == whCommand.getAsnExtCode()) {
+            log.error("SelectPoAsnManagerProxy.findWhAsnCommandByAsnId,params asnExtCode is null exception");
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+        }
+
+        if (null == whCommand.getId()) {
+            log.error("SelectPoAsnManagerProxy.findWhAsnCommandByAsnId,params id is null exception");
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+        }
+
+        WhAsnCommand wac = this.findWhAsnById(whCommand);
+        if (wac == null) {
+            log.error("SelectPoAsnManagerProxy.findWhAsnCommandByAsnId,object wac is null exception");
+            throw new BusinessException(ErrorCodes.OBJECT_IS_NULL);
+        }
+        log.info(this.getClass().getSimpleName() + ".findWhAsnCommandByAsnId method end!");
+        return wac;
+    }
+
+    @Override
+    public Integer returnReceiptMode(WhAsnCommand whCommand) {
+        // 查看店铺上的预收货模式，1为总数，2为总箱数，3为商品总数，优先级高于仓库
+        boolean configureStore = false;
+        boolean configureWh = false;
+        Integer receiptMode = -1;
+        if (whCommand != null && whCommand.getStoreId() != null) {
+            Store s = storeManager.getStoreById(whCommand.getStoreId());
+            if (null == s) {
+                log.error("SelectPoAsnManagerProxy.returnReceiptMode,object store is null exception");
+                throw new BusinessException(ErrorCodes.OBJECT_IS_NULL);
+            }
+            receiptMode = s.getGoodsReceiptMode();
+            if (null == receiptMode) {
+                configureStore = true;
+            }
+        } else {
+            log.error("SelectPoAsnManagerProxy.returnReceiptMode,WhAsn has no Store");
+            throw new BusinessException(ErrorCodes.WH_ASN_STORE_EMPTY, new Object[] {whCommand.getAsnExtCode()});
+        }
+        // 查看仓库上的预收货模式，1为总数，2为总箱数，3为商品总数
+        if (configureStore) {
+            if (whCommand != null && whCommand.getOuId() != null) {
+                OperationUnit ou = operationUnitManager.findOperationUnitById(whCommand.getOuId());
+                if (null == ou) {
+                    log.error("SelectPoAsnManagerProxy.returnReceiptMode,OperationUnit not find By Id " + whCommand.getOuId());
+                    throw new BusinessException(ErrorCodes.OBJECT_IS_NULL);
+                }
+                Warehouse wh = warehouseManager.findWarehouseByCode(ou.getCode());
+                if (null == wh) {
+                    log.error("SelectPoAsnManagerProxy.returnReceiptMode,Warehouse not find By Code " + ou.getCode());
+                    throw new BusinessException(ErrorCodes.OBJECT_IS_NULL);
+                }
+                receiptMode = wh.getGoodsReceiptMode();
+                if (null == receiptMode) {
+                    configureWh = true;
+                }
+            }
+        }
+
+        // 两个都未维护，提示维护相应功能
+        if (configureWh) {
+            log.error("SelectPoAsnManagerProxy.returnReceiptMode,Store and warehouse not config asnPreReceipt mode");
+            throw new BusinessException(ErrorCodes.STORE_WAREHOUSE_IS_CONFIG);
+        }
+        return receiptMode;
     }
 
 }
