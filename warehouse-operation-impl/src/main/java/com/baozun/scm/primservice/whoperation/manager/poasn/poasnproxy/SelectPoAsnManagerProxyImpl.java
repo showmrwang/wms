@@ -1,6 +1,5 @@
 package com.baozun.scm.primservice.whoperation.manager.poasn.poasnproxy;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 

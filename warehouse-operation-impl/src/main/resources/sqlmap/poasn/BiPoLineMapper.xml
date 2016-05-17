@@ -159,7 +159,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        ) select
 		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{poId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        	ifnull(#{linenum,javaType=java.lang.Integer,jdbcType=INTEGER},ifnull((select max(linenum) from t_bi_po_line),0)+1),
+		        	ifnull(#{linenum,javaType=java.lang.Integer,jdbcType=INTEGER},ifnull((select max(linenum) from t_bi_po_line line where line.po_id=#{poId}),0)+1),
 		        	#{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{qtyPlanned,javaType=java.lang.Double,jdbcType=DECIMAL} ,
 		        	#{overshipped,javaType=java.lang.Double,jdbcType=DECIMAL} ,
