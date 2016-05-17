@@ -1,5 +1,6 @@
 package com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -754,9 +755,52 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
             throw new BusinessException(ErrorCodes.PACKAGING_ERROR);
         }
         for (WhPoLine line : lineList) {
+            if (line.getQtyPlanned() <= Constants.DEFAULT_DOUBLE) {
+                this.whPoLineDao.delete(line.getId());
+            }
             int count = this.whPoLineDao.saveOrUpdateByVersion(line);
             if (count < 0) {
                 throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            }
+        }
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void saveSubPoToShard(String poCode, Long ouId, Long userId, WhPo infoPo, List<WhPoLine> infoPoLineList) {
+        WhPo shardPo = this.whPoDao.findByPoCodeAndOuId(poCode, ouId);
+        if (null == shardPo) {
+            shardPo = new WhPo();
+            BeanUtils.copyProperties(infoPo, shardPo);
+            shardPo.setModifiedId(userId);
+            shardPo.setCreatedId(userId);
+            shardPo.setCreateTime(new Date());
+            shardPo.setLastModifyTime(new Date());
+            shardPo.setId(null);
+            this.whPoDao.insert(shardPo);
+        } else {
+            shardPo.setModifiedId(userId);
+            shardPo.setQtyPlanned(infoPo.getQtyPlanned());
+            this.saveOrUpdateByVersionToInfo(shardPo);
+        }
+        List<Integer> statusList = Arrays.asList(new Integer[] {PoAsnStatus.POLINE_NEW, PoAsnStatus.POLINE_CREATE_ASN, PoAsnStatus.POLINE_RCVD});
+        for (WhPoLine infoLine : infoPoLineList) {
+            WhPoLine shardLine = this.whPoLineDao.findPoLineByPolineIdAndStatusListAndPoIdAndOuId(infoLine.getPoLineId(), statusList, shardPo.getId(), ouId, null);
+            if (null == shardLine) {
+                shardLine = new WhPoLine();
+                BeanUtils.copyProperties(infoLine, shardLine);
+                shardLine.setId(null);
+                shardLine.setCreatedId(userId);
+                shardLine.setCreateTime(new Date());
+                shardLine.setModifiedId(userId);
+                shardLine.setLastModifyTime(new Date());
+                shardLine.setPoId(shardPo.getId());
+                this.whPoLineDao.insert(shardLine);
+            } else {
+                shardLine.setAvailableQty(shardLine.getAvailableQty() + infoLine.getQtyPlanned() - shardLine.getQtyPlanned());
+                shardLine.setQtyPlanned(infoLine.getQtyPlanned());
+                shardLine.setModifiedId(userId);
+                this.whPoLineDao.saveOrUpdateByVersion(shardLine);
             }
         }
     }

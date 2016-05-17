@@ -115,5 +115,15 @@ public interface PoLineManager extends BaseManager {
      */
     Pagination<WhPoLineCommand> findPoLineListByQueryMapWithPageExtForCreateSubPoToInfo(Page page, Sort[] sorts, Map<String, Object> paraMap);
 
+    /**
+     * 查找PO单指定状态下的明细
+     * 
+     * @param id
+     * @param ouId
+     * @param integers
+     * @return
+     */
+    List<WhPoLine> findWhPoLineListByPoIdOuIdStatusListToInfo(Long poId, Long ouId, List<Integer> statusList);
+
 
 }

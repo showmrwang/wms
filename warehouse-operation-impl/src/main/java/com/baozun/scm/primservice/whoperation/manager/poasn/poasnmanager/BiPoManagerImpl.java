@@ -1,5 +1,6 @@
 package com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -8,12 +9,17 @@ import lark.common.dao.Page;
 import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.baozun.scm.primservice.whoperation.command.poasn.BiPoCommand;
+import com.baozun.scm.primservice.whoperation.command.poasn.WhPoLineCommand;
+import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
 import com.baozun.scm.primservice.whoperation.dao.poasn.BiPoDao;
@@ -40,6 +46,8 @@ public class BiPoManagerImpl extends BaseManagerImpl implements BiPoManager {
     private WhPoDao whPoDao;
     @Autowired
     private WhPoLineDao whPoLineDao;
+
+    protected static final Logger log = LoggerFactory.getLogger(BiPoManager.class);
 
     @Override
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
@@ -85,34 +93,54 @@ public class BiPoManagerImpl extends BaseManagerImpl implements BiPoManager {
         // 1.没有指定仓库，则只需要插入BIPO
         // 2.指定仓库,则需要插入BIPO，并将数据同步到INFO的WHPO中；
         // 3.指定了仓库，状态为已分配仓库状态。而仓库为新建状态
+        log.info("BiPoManager.createPoAndLineToInfo method begin! params:[po:{},whPoLines:{}]", po, whPoLines);
         try {
+            if (log.isDebugEnabled()) {
+                log.debug("BiPoManager.createPoAndLineToInfo start inserting data to info.bipo/info.whpo!orgin:[data:{}]", po);
+            }
             BiPo biPo = new BiPo();// biPo为插入到BIPO的实体对象;po为插入到INFO.WHPO的对象
             BeanUtils.copyProperties(po, biPo);
             biPo.setStatus(null == po.getOuId() ? PoAsnStatus.BIPO_NEW : PoAsnStatus.BIPO_ALLOT);
             // 插入BIPO
-            biPoDao.insert(biPo);
+            long bipocount = biPoDao.insert(biPo);
+            if (bipocount <= Constants.DEFAULT_LONG) {
+                log.error("BiPoManager.createPoAndLineToInfo method insert into BIPO error:[insertCount:{},insertData:{}]", bipocount, biPo);
+                throw new BusinessException(ErrorCodes.INSERT_DATA_ERROR);
+            }
             this.insertGlobalLog(GLOBAL_LOG_INSERT, biPo, po.getOuId(), po.getCreatedId(), null, DbDataSource.MOREDB_INFOSOURCE);
             if (po.getOuId() != null) {
                 // 插入WHPO
                 po.setStatus(PoAsnStatus.PO_NEW);
-                whPoDao.insert(po);
+                // 插入info.whpo
+                long whpocount = whPoDao.insert(po);
+                if (whpocount <= Constants.DEFAULT_LONG) {
+                    log.error("BiPoManager.createPoAndLineToInfo method insert into BIPO error:[insertCount:{},insertData:{}]", whpocount, po);
+                    throw new BusinessException(ErrorCodes.INSERT_DATA_ERROR);
+                }
                 this.insertGlobalLog(GLOBAL_LOG_INSERT, po, po.getOuId(), po.getCreatedId(), null, DbDataSource.MOREDB_INFOSOURCE);
             }
             // 有line信息保存
-            if (whPoLines != null && whPoLines.size() > 0) {
+            if (whPoLines != null && whPoLines.size() > Constants.DEFAULT_INTEGER) {
+                if (log.isDebugEnabled()) {
+                    log.debug("BiPoManager.createPoAndLineToInfo start iterating lines to insert to info.bipoLine/info.whpoLine. origin:[data:{}]", whPoLines);
+                }
                 for (WhPoLine whPoLine : whPoLines) {
                     // 插入BIPOLINE
                     whPoLine.setPoId(biPo.getId());
                     BiPoLine biPoLine = new BiPoLine();
                     BeanUtils.copyProperties(whPoLine, biPoLine);
                     if (po.getOuId() != null) {
-                        biPoLine.setAvailableQty(0d);
+                        biPoLine.setAvailableQty(Constants.DEFAULT_DOUBLE);
                         biPoLine.setStatus(PoAsnStatus.BIPOLINE_ALLOT);
                     } else {
                         biPoLine.setAvailableQty(biPoLine.getQtyPlanned());
                         biPoLine.setStatus(PoAsnStatus.BIPOLINE_NEW);
                     }
-                    biPoLineDao.insert(biPoLine);
+                    long bipoLineCount = biPoLineDao.insert(biPoLine);
+                    if (bipoLineCount <= Constants.DEFAULT_LONG) {
+                        log.error("BiPoManager.createPoAndLineToInfo method insert into BIPOLINE error:[insertCount:{},insertData:{}]", bipoLineCount, biPoLine);
+                        throw new BusinessException(ErrorCodes.INSERT_DATA_ERROR);
+                    }
                     this.insertGlobalLog(GLOBAL_LOG_INSERT, biPoLine, po.getOuId(), po.getCreatedId(), po.getPoCode(), DbDataSource.MOREDB_INFOSOURCE);
                     if (po.getOuId() != null) {
                         // 插入WHPOLINE
@@ -121,33 +149,48 @@ public class BiPoManagerImpl extends BaseManagerImpl implements BiPoManager {
                         whPoLine.setPoLineId(biPoLine.getId());
                         whPoLine.setStatus(PoAsnStatus.POLINE_NEW);
                         whPoLine.setAvailableQty(whPoLine.getQtyPlanned());
-                        whPoLineDao.insert(whPoLine);
+                        long whPoLineCount = whPoLineDao.insert(whPoLine);
+                        if (whPoLineCount <= Constants.DEFAULT_LONG) {
+                            log.error("BiPoManager.createPoAndLineToInfo method insert into INFO.WHPOLINE error:[insertCount:{},insertData:{}]", whPoLineCount, whPoLine);
+                            throw new BusinessException(ErrorCodes.INSERT_DATA_ERROR);
+                        }
                         this.insertGlobalLog(GLOBAL_LOG_INSERT, whPoLine, po.getOuId(), po.getCreatedId(), po.getPoCode(), DbDataSource.MOREDB_INFOSOURCE);
 
                     }
                 }
             }
         } catch (Exception e) {
+            log.error("BiPoManager.createPoAndLineToInfo error:[exception:{}]", e);
             if (e instanceof BusinessException) {
-                throw (BusinessException) e;
+                rm.setMsg(((BusinessException) e).getErrorCode() + "");
             } else {
-                throw new BusinessException(ErrorCodes.SAVE_PO_FAILED);
+                rm.setMsg(ErrorCodes.DAO_EXCEPTION + "");
             }
+            rm.setResponseStatus(ResponseMsg.DATA_ERROR);
+            log.info("BiPoManager.createPoAndLineToInfo method end!");
+            return rm;
         }
         rm.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
+        log.info("BiPoManager.createPoAndLineToInfo method end!");
         return rm;
     }
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public ResponseMsg createPoAndLineToShared(WhPo po, List<WhPoLine> whPoLines, ResponseMsg rm) {
+        // 逻辑:
+        // 将INFO.WHPO数据同步到SHARD.WHPO中
+        // 1.头信息同步：po
+        // 2.明细信息同步：whpoLines
+        log.info("BiPoManagerImpl.createPoAndLineToShared method begin!");
         try{
             // 插入SHARD.WHPO
             po.setId(null);
             po.setStatus(PoAsnStatus.PO_NEW);
             long i = whPoDao.insert(po);
-            if (i < 0) {
-                throw new BusinessException(ErrorCodes.SAVE_PO_FAILED);
+            if (i <= 0) {
+                log.error("BiPoManagerImpl.createPoAndLineToShared method insert data to shard.whpoerror!message:[insertCount:{},insertData:{}]", i, po);
+                throw new BusinessException(ErrorCodes.INSERT_DATA_ERROR);
             }
             this.insertGlobalLog(GLOBAL_LOG_INSERT, po, po.getOuId(), po.getModifiedId(), null, DbDataSource.MOREDB_SHARDSOURCE);
             // 插入SHARD.WHPOLINE
@@ -159,18 +202,26 @@ public class BiPoManagerImpl extends BaseManagerImpl implements BiPoManager {
                     whPoLine.setStatus(PoAsnStatus.POLINE_NEW);
                     whPoLine.setAvailableQty(whPoLine.getQtyPlanned());
                     long il = whPoLineDao.insert(whPoLine);
-                    if (il < 0) {
-                        throw new BusinessException(ErrorCodes.SAVE_PO_FAILED);
+                    if (il <= 0) {
+                        log.error("BiPoManagerImpl.createPoAndLineToShared method iterate data for inserting data to shard.whpoline error!message:[insertCount:{},insertData:{}]", il, whPoLine);
+                        throw new BusinessException(ErrorCodes.INSERT_DATA_ERROR);
                     }
                     this.insertGlobalLog(GLOBAL_LOG_INSERT, whPoLine, whPoLine.getOuId(), whPoLine.getModifiedId(), null, DbDataSource.MOREDB_SHARDSOURCE);
                 }
             }
         } catch (Exception e) {
-            rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
-            rm.setMsg(ErrorCodes.SAVE_PO_FAILED + "");// 保存至po单信息失败
+            log.error("BiPoManager.createPoAndLineToShared error:[exception:{}]", e);
+            if (e instanceof BusinessException) {
+                rm.setMsg(((BusinessException) e).getErrorCode() + "");
+            } else {
+                rm.setMsg(ErrorCodes.DAO_EXCEPTION + "");
+            }
+            rm.setResponseStatus(ResponseMsg.DATA_ERROR);
+            log.info("BiPoManager.createPoAndLineToInfo method end!");
             return rm;
         }
         rm.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
+        log.info("BiPoManagerImpl.createPoAndLineToShared method end!");
         return rm;
     }
 
@@ -279,6 +330,105 @@ public class BiPoManagerImpl extends BaseManagerImpl implements BiPoManager {
                 this.whPoLineDao.insert(line);
             } else {
                 this.whPoLineDao.saveOrUpdateByVersion(line);
+            }
+        }
+
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
+    public void saveSubPoToInfo(Long id, String poCode, Long ouId, String uuid, Long userId) {
+        // 逻辑：
+        // 1.删除可用数量为0的临时数据
+        // 2.1保存临时数据【info.whpo.polineId 不为空，则合并明细 并清除数据；如果为空则清除UUID】
+        // 2.2占用对应明细的可用数量和修改状态
+        // 3.修改BIPO头信息【状态】
+        WhPo whpo = this.whPoDao.findByPoCodeAndOuId(poCode, ouId);
+        List<WhPoLine> whpoLineList = this.whPoLineDao.findWhPoLineByPoIdOuId(whpo.getId(), ouId, uuid);
+        Double count = Constants.DEFAULT_DOUBLE;
+        for (WhPoLine whpoline : whpoLineList) {
+            if (Constants.DEFAULT_DOUBLE >= whpoline.getQtyPlanned()) {
+                this.whPoLineDao.deletePoLineByIdOuId(whpoline.getId(), ouId);
+            } else {
+                double lineQtyPlanned=whpoline.getQtyPlanned();
+
+                BiPoLine biPoLine = this.biPoLineDao.findById(whpoline.getPoLineId());
+                if (biPoLine.getAvailableQty() < lineQtyPlanned) {
+                    throw new BusinessException(ErrorCodes.CHECK_DATA_ERROR);
+                }
+                count += lineQtyPlanned;
+                WhPoLine savedPoLine =
+                        this.whPoLineDao
+                                .findPoLineByPolineIdAndStatusListAndPoIdAndOuId(whpoline.getPoLineId(), Arrays.asList(new Integer[] {PoAsnStatus.POLINE_NEW, PoAsnStatus.POLINE_CREATE_ASN, PoAsnStatus.POLINE_RCVD}), whpoline.getPoId(), ouId, null);
+                if (null == savedPoLine) {
+                    whpoline.setUuid(null);
+                    whpoline.setModifiedId(userId);
+                    this.whPoLineDao.saveOrUpdateByVersion(whpoline);
+                } else {
+                    savedPoLine.setQtyPlanned(savedPoLine.getQtyPlanned() + whpoline.getQtyPlanned());
+                    savedPoLine.setAvailableQty(savedPoLine.getAvailableQty() + whpoline.getQtyPlanned());
+                    savedPoLine.setModifiedId(userId);
+                    this.whPoLineDao.saveOrUpdateByVersion(savedPoLine);
+                    this.whPoLineDao.delete(whpoline.getId());
+                }
+                biPoLine.setAvailableQty(biPoLine.getAvailableQty() - lineQtyPlanned);
+                biPoLine.setModifiedId(userId);
+                this.biPoLineDao.saveOrUpdateByVersion(biPoLine);
+            }
+        }
+        whpo.setModifiedId(userId);
+        whpo.setQtyPlanned(whpo.getQtyPlanned() + count);
+        whpo.setUuid(null);
+        if (PoAsnStatus.PO_RCVD_FINISH == whpo.getStatus()) {
+            whpo.setStatus(PoAsnStatus.PO_RCVD);
+        } else if (PoAsnStatus.PO_CLOSE == whpo.getStatus()) {
+            //这边的逻辑：
+            //如果有实际收货数量的时候，则回滚到收货中状态，否则新建状态
+            if (Constants.DEFAULT_DOUBLE == whpo.getQtyRcvd()) {
+                whpo.setStatus(PoAsnStatus.PO_NEW);
+            } else {
+                whpo.setStatus(PoAsnStatus.PO_RCVD);
+            }
+        }
+        this.whPoDao.saveOrUpdateByVersion(whpo);
+        BiPo bipo = this.biPoDao.findById(id);
+        if (PoAsnStatus.BIPO_NEW == bipo.getStatus()) {
+            bipo.setStatus(PoAsnStatus.BIPO_ALLOT);
+            this.biPoDao.saveOrUpdateByVersion(bipo);
+        }
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
+    public void closeSubPoToInfo(String poCode, Long ouId, Long userId) {
+        WhPo infoPo = this.whPoDao.findByPoCodeAndOuId(poCode, ouId);
+        if (infoPo != null) {
+            WhPoLineCommand searchCommand = new WhPoLineCommand();
+            searchCommand.setPoId(infoPo.getId());
+            searchCommand.setOuId(ouId);
+            WhPoLine searchLine = new WhPoLine();
+            BeanUtils.copyProperties(searchCommand, searchLine);
+            List<WhPoLine> lineList = this.whPoLineDao.findListByParam(searchLine);
+            boolean flag = true;
+            if (lineList != null && lineList.size() > 0) {
+                for (WhPoLine line : lineList) {
+                    if (StringUtils.hasText(line.getUuid())) {
+                        this.whPoLineDao.delete(line.getId());
+                    } else {
+                        if (flag) {
+                            flag = false;
+                        }
+                    }
+                }
+            }
+            if (flag) {
+                this.whPoDao.delete(infoPo.getId());
+            } else {
+                if (StringUtils.hasText(infoPo.getUuid())) {
+                    infoPo.setUuid(null);
+                    infoPo.setModifiedId(userId);
+                    this.whPoDao.saveOrUpdateByVersion(infoPo);
+                }
             }
         }
 

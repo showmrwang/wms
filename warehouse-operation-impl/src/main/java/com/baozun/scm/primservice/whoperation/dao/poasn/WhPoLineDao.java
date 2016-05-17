@@ -98,9 +98,11 @@ public interface WhPoLineDao extends BaseDao<WhPoLine, Long> {
 
     WhPoLine findPoLineByPolineIdAndStatusListAndPoIdAndOuId(@Param("poLineId") Long poLineId, @Param("statusList") List<Integer> statusList, @Param("poId") Long poId, @Param("ouId") Long ouId, @Param("uuid") String uuid);
 
-    List<WhPoLine> PoLineByPoIdOuIdAndUuidNotNullNotEqual(@Param("id") Long id, @Param("ouId") Long ouId, @Param("uuid") String uuid);
+    List<WhPoLine> findPoLineByPoIdOuIdAndUuidNotNullNotEqual(@Param("poId") Long poId, @Param("ouId") Long ouId, @Param("uuid") String uuid);
 
     @QueryPage("findListCountByQueryMapExtForCreateSubPoToInfo")
     Pagination<WhPoLineCommand> findPoLineListByQueryMapWithPageExtForCreateSubPoToInfo(Page page, Sort[] sorts, Map<String, Object> paraMap);
+
+    List<WhPoLine> findListByParamExt(WhPoLineCommand command);
 
 }

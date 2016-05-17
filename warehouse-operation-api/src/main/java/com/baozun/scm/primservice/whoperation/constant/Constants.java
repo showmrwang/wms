@@ -120,5 +120,6 @@ public final class Constants {
 
     public static final String DATE_PATTERN_YMDHM = "yyyy-MM-dd HH:mm";
 
-
+    /** 默认Long数值 */
+    public static final Long DEFAULT_LONG = 0l;
 }

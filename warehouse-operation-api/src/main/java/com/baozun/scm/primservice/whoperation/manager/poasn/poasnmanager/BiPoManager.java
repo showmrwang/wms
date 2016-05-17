@@ -106,6 +106,33 @@ public interface BiPoManager extends BaseManager {
      */
     ResponseMsg editBiPo(BiPo updatePo);
 
+    /**
+     * 创建子PO操作分支一
+     * 
+     * @param po
+     * @param whPoLineList
+     */
     void createSubPoToInfo(WhPo po, List<WhPoLine> whPoLineList);
+
+    /**
+     * 创建子PO操作分支一：将INFO临时数据保存。
+     * 
+     * @param id
+     * @param poCode
+     * @param ouId
+     * @param uuid
+     * @param userId
+     */
+    void saveSubPoToInfo(Long id, String poCode, Long ouId, String uuid, Long userId);
+
+    /**
+     * 创建子PO操作分支一:将临时数据删除
+     * 
+     * @param poCode
+     * @param ouId
+     * @param id
+     */
+    void closeSubPoToInfo(String poCode, Long ouId, Long id);
+
 
 }

@@ -557,7 +557,7 @@ public class PoLineManagerImpl implements PoLineManager {
     @Override
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public void deletePoLineByPoIdOuIdAndUuidNotNullNotEqual(Long id, Long ouId, String uuid) {
-        List<WhPoLine> lineList = this.whPoLineDao.PoLineByPoIdOuIdAndUuidNotNullNotEqual(id, ouId, uuid);
+        List<WhPoLine> lineList = this.whPoLineDao.findPoLineByPoIdOuIdAndUuidNotNullNotEqual(id, ouId, uuid);
         if (lineList != null) {
             for (WhPoLine l : lineList) {
                 this.whPoLineDao.delete(l.getId());
@@ -570,5 +570,16 @@ public class PoLineManagerImpl implements PoLineManager {
     public Pagination<WhPoLineCommand> findPoLineListByQueryMapWithPageExtForCreateSubPoToInfo(Page page, Sort[] sorts, Map<String, Object> paraMap) {
         return this.whPoLineDao.findPoLineListByQueryMapWithPageExtForCreateSubPoToInfo(page, sorts, paraMap);
     }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
+    public List<WhPoLine> findWhPoLineListByPoIdOuIdStatusListToInfo(Long poId, Long ouId, List<Integer> statusList) {
+        WhPoLineCommand command=new WhPoLineCommand();
+        command.setPoId(poId);
+        command.setOuId(ouId);
+        command.setStatusList(statusList);
+        return this.whPoLineDao.findListByParamExt(command);
+    }
+
 
 }

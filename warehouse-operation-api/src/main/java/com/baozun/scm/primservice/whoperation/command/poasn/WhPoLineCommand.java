@@ -117,6 +117,16 @@ public class WhPoLineCommand extends BaseCommand {
     private String validDateUom;
     /** 保质期单位中文名 */
     private String validDateUomName;
+    /** 状态集合 */
+    private List<Integer> statusList;
+
+    public List<Integer> getStatusList() {
+        return statusList;
+    }
+
+    public void setStatusList(List<Integer> statusList) {
+        this.statusList = statusList;
+    }
 
     public String getValidDateUomName() {
         return validDateUomName;

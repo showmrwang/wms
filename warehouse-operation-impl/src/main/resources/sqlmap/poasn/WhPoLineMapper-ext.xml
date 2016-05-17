@@ -95,6 +95,145 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
 	</sql>
 	
+	<sql id="whPoLineQueryDynamicWhereExt">
+		<where>
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+	       
+				<if test="poId!=null">
+					and po_id = #{poId}
+				</if>
+	       
+				<if test="linenum!=null">
+					and linenum = #{linenum}
+				</if>
+	       
+				<if test="skuId!=null">
+					and sku_id = #{skuId}
+				</if>
+	       
+				<if test="qtyPlanned!=null">
+					and qty_planned = #{qtyPlanned}
+				</if>
+	       
+				<if test="overshipped!=null">
+					and overshipped = #{overshipped}
+				</if>
+	       
+				<if test="ctnPlanned!=null">
+					and ctn_planned = #{ctnPlanned}
+				</if>
+	       
+				<if test="qtyRcvd!=null">
+					and qty_rcvd = #{qtyRcvd}
+				</if>
+	       
+				<if test="ctnRcvd!=null">
+					and ctn_rcvd = #{ctnRcvd}
+				</if>
+	       
+				<if test="status!=null">
+					and status = #{status}
+				</if>
+	       
+				<if test="isIqc!=null">
+					and is_iqc = #{isIqc}
+				</if>
+	       
+				<if test="mfgDate!=null">
+					and mfg_date = #{mfgDate}
+				</if>
+	       
+				<if test="expDate!=null">
+					and exp_date = #{expDate}
+				</if>
+	       
+				<if test="validDate!=null">
+					and valid_date = #{validDate}
+				</if>
+	       
+	       
+		       <if test="batchNo!=null and batchNo!=''">
+					and batch_no = #{batchNo}
+				</if>
+	       
+	       
+		       <if test="countryOfOrigin!=null and countryOfOrigin!=''">
+					and country_of_origin = #{countryOfOrigin}
+				</if>
+	       
+				<if test="invStatus!=null">
+					and inv_status = #{invStatus}
+				</if>
+	       
+	       
+		       <if test="invType!=null and invType!=''">
+					and inv_type = #{invType}
+				</if>
+	       
+		       <if test="invAttr1!=null and invAttr1!=''">
+					and inv_attr1 = #{invAttr1}
+				</if>
+	       
+	       
+		       <if test="invAttr2!=null and invAttr2!=''">
+					and inv_attr2 = #{invAttr2}
+				</if>
+	       
+	       
+		       <if test="invAttr3!=null and invAttr3!=''">
+					and inv_attr3 = #{invAttr3}
+				</if>
+	       
+	       
+		       <if test="invAttr4!=null and invAttr4!=''">
+					and inv_attr4 = #{invAttr4}
+				</if>
+	       
+	       
+		       <if test="invAttr5!=null and invAttr5!=''">
+					and inv_attr5 = #{invAttr5}
+				</if>
+	       
+				<if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="createdId!=null">
+					and created_id = #{createdId}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="modifiedId!=null">
+					and modified_id = #{modifiedId}
+				</if>
+	       
+	       
+		       <if test="uuid!=null and uuid!=''">
+					and uuid = #{uuid}
+				</if>
+	       
+		       <if test="validDateUom!=null and validDateUom!=''">
+					and valid_date_uom = #{validDateUom}
+				</if>
+				<if test="statusList!=null">
+					status in
+					<foreach collection="statusList" item="status" open="(" separator=","
+						close=")">
+						#{status}
+					</foreach>	
+				</if>
+						
+		</where>
+	</sql>
+	
 
 		<update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine">
 		    <![CDATA[
@@ -299,6 +438,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		left join t_wh_inventory_status inv on inv.id = line.inv_status
 	    left join t_wh_po po on po.id=line.po_id
 	    left join t_wh_sku sku on line.sku_id = sku.id
+	    left join t_wh_uom uom on uom.uom_code=line.valid_date_uom
 	    where line.id=#{id}
 	    <if test="ouId!=null">
 	  			 and line.ou_id = #{ouId}
@@ -424,7 +564,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    <if test="uuid!=null and uuid!=''">
 	  			 and uuid = #{uuid}
 		</if>
-	  	and ou_id = #{ouId}
+		<if test="uuid==null">
+		and uuid is null
+		</if>
+		<if test="uuid==''">
+		and uuid is null
+		</if>
 	  	and po_line_id=#{poLineId}
 	  	and status in
 			<foreach collection="statusList" item="status" open="(" separator=","
@@ -433,11 +578,18 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			</foreach>
     </select>
     
-     <select id="PoLineByPoIdOuIdAndUuidNotNullNotEqual" resultMap="WhPoLineResult">
+     <select id="findPoLineByPoIdOuIdAndUuidNotNullNotEqual" resultMap="WhPoLineResult">
     	select <include refid="whPoLineColumns" />
 	    from t_wh_po_line 
-		where id=#{id}
+		where po_id=#{poId}
 		and ou_id=#{ouId}
-		and uuid!='' and uuid!=#{uuid}
+		and uuid!=#{uuid}
+    </select>
+    
+     <select id="findListByParamExt" resultMap="WhPoLineResult">
+    	select <include refid="whPoLineColumns" />
+	    from t_wh_po_line 
+		<include refid="whPoLineDynamicWhere"/>
+		
     </select>
 </mapper>

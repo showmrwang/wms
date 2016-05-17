@@ -119,4 +119,15 @@ public interface PoManager extends BaseManager {
      */
     void revokeSubPoToInfo(List<WhPoLine> lineList);
 
+    /**
+     * 将创建子PO的临时数据推送到仓库
+     * 
+     * @param poCode
+     * @param ouId
+     * @param userId
+     * @param infoPoLineList
+     * @param infoPo
+     */
+    void saveSubPoToShard(String poCode, Long ouId, Long userId, WhPo infoPo, List<WhPoLine> infoPoLineList);
+
 }
