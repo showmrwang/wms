@@ -72,4 +72,11 @@ public interface CreatePoAsnManagerProxy extends BaseManager {
      */
     ResponseMsg createAsnBatch(WhAsnCommand asn);
 
+    /**
+     * 创建子po流程：清除掉所有临时数据
+     * 
+     * @param command
+     */
+    void closeSubPoToInfo(WhPoCommand command);
+
 }

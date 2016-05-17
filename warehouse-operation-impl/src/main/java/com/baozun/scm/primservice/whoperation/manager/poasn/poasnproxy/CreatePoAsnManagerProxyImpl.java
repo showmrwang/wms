@@ -706,6 +706,7 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
                 log.warn("check extcode returns failure when createPo!");
                 rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
                 rm.setMsg(" check extcode returns failure when createPo!");
+                return rm;
             }
 
             // 相关单据号 调用HUB编码生成器获得
@@ -732,14 +733,19 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
                 if (ouId != null) {
                     rm = biPoManager.createPoAndLineToShared(whPo, whPoLines, rm);
                 }
+            } else {
+                log.warn("create po and line to info failed!responseMsg:[responseMsg:{}]", rm);
+                return rm;
             }
         } catch (Exception e) {
+            log.error("CreatePoAsnManagerProxyImpl.createPoNew error:[exception:{}]", e);
             if (e instanceof BusinessException) {
-                throw e;
+                rm.setMsg(((BusinessException) e).getErrorCode() + "");
+            } else {
+                rm.setMsg(ErrorCodes.SAVE_PO_FAILED + "");
             }
-            rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
-            log.error("CreatePo error poCode: " + po.getExtCode());
-            log.error("" + e);
+            rm.setResponseStatus(ResponseMsg.DATA_ERROR);
+            log.info("BiPoManager.createPoAndLineToInfo method end!");
             return rm;
         }
         log.info("CreatePo end =======================");
@@ -790,7 +796,7 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
             po.setStatus(PoAsnStatus.POLINE_NEW);
         } else {
             if (StringUtils.hasText(po.getUuid()) && !uuid.equals(po.getUuid())) {
-                this.poLineManager.deletePoLineByPoIdOuIdAndUuidNotNullNotEqual(po.getId(), po.getOuId(), po.getUuid());
+                this.poLineManager.deletePoLineByPoIdOuIdAndUuidNotNullNotEqual(po.getId(), po.getOuId(), uuid);
             }
             po.setUuid(uuid);
             po.setModifiedId(userId);
@@ -828,6 +834,7 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
                 whpoline.setCtnRcvd(Constants.DEFAULT_INTEGER);
                 whpoline.setPoLineId(line.getId());
                 whpoline.setUuid(uuid);
+                whpoline.setStatus(PoAsnStatus.POLINE_NEW);
             } else {
                 whpoline.setQtyPlanned(whpoline.getQtyPlanned() + bipolineCommand.getQtyPlanned());
                 whpoline.setAvailableQty(whpoline.getAvailableQty() + bipolineCommand.getQtyPlanned());
@@ -865,7 +872,8 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
             WhPoLine poLine = new WhPoLine();
             BeanUtils.copyProperties(line, poLine);
             poLine.setModifiedId(command.getUserId());
-            poLine.setQtyPlanned(command.getQtyPlanned());
+            poLine.setQtyPlanned(lineCommand.getQtyPlanned());
+            poLine.setAvailableQty(lineCommand.getQtyPlanned());
 
             lineList.add(poLine);
         }
@@ -886,7 +894,16 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
         // 3.1新增或修改po单表头的数量
         // 3.2新增或修改明细
         // this.poManager.findWhPoByPoCodeOuIdUuid(Command.getPoCode,command.get)
-        this.poLineManager.findWhPoLineByPoIdOuIdUuIdToInfo(command.getId(), command.getOuId(), command.getUuid());
+        this.biPoManager.saveSubPoToInfo(command.getId(), command.getPoCode(), command.getOuId(), command.getUuid(), command.getUserId());
+        WhPo infoPo = this.poManager.findWhPoByPoCodeOuIdToInfo(command.getPoCode(), command.getOuId());
+        List<Integer> statusList = Arrays.asList(new Integer[] {PoAsnStatus.POLINE_NEW, PoAsnStatus.POLINE_CREATE_ASN, PoAsnStatus.POLINE_RCVD});
+        List<WhPoLine> infoPoLineList = this.poLineManager.findWhPoLineListByPoIdOuIdStatusListToInfo(infoPo.getId(), command.getOuId(), statusList);
+        this.poManager.saveSubPoToShard(command.getPoCode(), command.getOuId(), command.getUserId(), infoPo, infoPoLineList);
 
+    }
+
+    @Override
+    public void closeSubPoToInfo(WhPoCommand command) {
+        this.biPoManager.closeSubPoToInfo(command.getPoCode(), command.getOuId(), command.getId());
     }
 }
