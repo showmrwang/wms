@@ -182,4 +182,16 @@ public class ErrorCodes {
     public static final int ADD_CARTONLIST_BCDEVANNINGQTY_ERROR = 3036;
     /** 每箱商品数量不能小于等于0，请重新设置 */
     public static final int ADD_CARTONLIST_QUANTITY_ERROR = 3037;
+    
+    
+  //20000-30000 start
+    /** 未查询到结果！ **/
+    public static final Integer OBJECT_IS_NULL = 20004;
+    /** ASN单据[{0}]未绑定店铺 **/
+    public static final int WH_ASN_STORE_EMPTY = 20006;
+    /**Asn单据店面和仓库没有配置预收货模式*/
+    public static final int STORE_WAREHOUSE_IS_CONFIG = 20007;
+    /**商品不存在*/
+    public static final int SKU_NOT_FOUND=20008;
+  //20000-30000 end
 }

@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.StoreDao">
+	<resultMap id="StoreResult" type="com.baozun.scm.primservice.whoperation.model.warehouse.Store">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="storeColumns">
+	    <![CDATA[
+	        	id as id,
+	        	store_code as storeCode,
+	        	store_name as storeName,
+	        	description as description,
+	        	pic as pic,
+	        	pic_contact as picContact,
+	        	invoice_type as invoiceType,
+	        	payment_term as paymentTerm,
+	        	is_mandatorily_reserved as isMandatorilyReserved,
+	        	is_po_overcharge as isPoOvercharge,
+	        	po_overcharge_proportion as poOverchargeProportion,
+	        	is_asn_overcharge as isAsnOvercharge,
+	        	asn_overcharge_proportion as asnOverchargeProportion,
+	        	is_po_auto_verify as isPoAutoVerify,
+	        	is_asn_auto_verify as isAsnAutoVerify,
+	        	goods_receipt_mode as goodsReceiptMode,
+	        	is_auto_print_bintag as isAutoPrintBintag,
+	        	is_auto_generation_cn as isAutoGenerationCn,
+	        	is_allow_blocked as isAllowBlocked,
+	        	inv_attr_mgmt as invAttrMgmt,
+	        	is_allow_collect_diff as isAllowCollectDiff,
+	        	is_auto_print_diff as isAutoPrintDiff,
+	        	is_hint_quality_testing as isHintQualityTesting,
+	        	is_auto_print_goods_receipt as isAutoPrintGoodsReceipt,
+	        	customer_id as customerId,
+	        	create_time as createTime,
+	        	last_modify_time as lastModifyTime,
+	        	operator_id as operatorId,
+	        	lifecycle as lifecycle
+	    ]]>
+	</sql>
+		<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+		<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Store"   flushCache="true">
+	    <![CDATA[
+	        INSERT INTO
+	        t_bi_store (
+	        	id,
+	        	store_code ,
+	        	store_name ,
+	        	description ,
+	        	pic ,
+	        	pic_contact ,
+	        	invoice_type ,
+	        	payment_term ,
+	        	is_mandatorily_reserved ,
+	        	is_po_overcharge ,
+	        	po_overcharge_proportion ,
+	        	is_asn_overcharge ,
+	        	asn_overcharge_proportion ,
+	        	is_po_auto_verify ,
+	        	is_asn_auto_verify ,
+	        	goods_receipt_mode ,
+	        	is_auto_print_bintag ,
+	        	is_auto_generation_cn ,
+	        	is_allow_blocked ,
+	        	inv_attr_mgmt ,
+	        	is_allow_collect_diff,
+	        	is_auto_print_diff ,
+	        	is_hint_quality_testing ,
+	        	is_auto_print_goods_receipt ,
+	        	customer_id ,
+	        	create_time ,
+	        	last_modify_time ,
+	        	operator_id ,
+	        	lifecycle 
+	        ) VALUES (
+	        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{storeCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{storeName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{description,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{pic,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{picContact,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{invoiceType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{paymentTerm,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{isMandatorilyReserved,javaType=java.lang.Boolean,jdbcType=BIT} ,
+	        	#{isPoOvercharge,javaType=java.lang.Boolean,jdbcType=BIT} ,
+	        	#{poOverchargeProportion,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+	        	#{isAsnOvercharge,javaType=java.lang.Boolean,jdbcType=BIT} ,
+	        	#{asnOverchargeProportion,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+	        	#{isPoAutoVerify,javaType=java.lang.Boolean,jdbcType=BIT} ,
+	        	#{isAsnAutoVerify,javaType=java.lang.Boolean,jdbcType=BIT} ,
+	        	#{goodsReceiptMode,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+	        	#{isAutoPrintBintag,javaType=java.lang.Boolean,jdbcType=BIT} ,
+	        	#{isAutoGenerationCn,javaType=java.lang.Boolean,jdbcType=BIT} ,
+	        	#{isAllowBlocked,javaType=java.lang.Boolean,jdbcType=BIT} ,
+	        	#{invAttrMgmt,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{isAllowCollectDiff,javaType=java.lang.Boolean,jdbcType=BIT} ,
+	        	#{isAutoPrintDiff,javaType=java.lang.Boolean,jdbcType=BIT} ,
+	        	#{isHintQualityTesting,javaType=java.lang.Boolean,jdbcType=BIT} ,
+	        	#{isAutoPrintGoodsReceipt,javaType=java.lang.Boolean,jdbcType=BIT} ,
+	        	#{customerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+	        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+	        	#{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
+	        )
+	    ]]>
+
+		</insert>
+	    
+		<update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Store">
+	    <![CDATA[
+	        UPDATE t_bi_store SET
+		        store_code = #{storeCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        store_name = #{storeName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        description = #{description,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        pic = #{pic,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        pic_contact = #{picContact,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        invoice_type = #{invoiceType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        payment_term = #{paymentTerm,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        is_mandatorily_reserved = #{isMandatorilyReserved,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        is_po_overcharge = #{isPoOvercharge,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        po_overcharge_proportion = #{poOverchargeProportion,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        is_asn_overcharge = #{isAsnOvercharge,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        asn_overcharge_proportion = #{asnOverchargeProportion,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        is_po_auto_verify = #{isPoAutoVerify,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        is_asn_auto_verify = #{isAsnAutoVerify,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        goods_receipt_mode = #{goodsReceiptMode,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        is_auto_print_bintag = #{isAutoPrintBintag,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        is_auto_generation_cn = #{isAutoGenerationCn,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        is_allow_blocked = #{isAllowBlocked,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        inv_attr_mgmt = #{invAttrMgmt,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        is_allow_collect_diff = #{isAllowCollectDiff,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        is_auto_print_diff = #{isAutoPrintDiff,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        is_hint_quality_testing = #{isHintQualityTesting,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        is_auto_print_goods_receipt = #{isAutoPrintGoodsReceipt,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        customer_id = #{customerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+		</update>
+	   <delete id="delete" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from t_bi_store where
+		        id = #{id} 
+	    ]]>
+	    </delete> 
+	    
+	     <delete id="deleteByIds" parameterType="list">
+	    
+	        delete from t_bi_store 
+	        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>	
+	  
+	    </delete>  
+	         
+	    <select id="findById" parameterType="java.lang.Long" resultMap="StoreResult" flushCache="false">
+			select <include refid="storeColumns" />
+		    <![CDATA[
+			    from t_bi_store 
+		        where 
+		        id = #{id} 
+		    ]]>
+		</select>	
+		<select id="getByIds" parameterType="list"  resultMap="StoreResult" flushCache="false">
+			select <include refid="storeColumns" />
+			    from t_bi_store 
+		        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>					
+		</select>	
+	<sql id="storeDynamicWhere">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+	       
+		       <if test="storeCode!=null and storeCode!=''">
+					and store_code = #{storeCode}
+				</if>
+	       
+	       
+		       <if test="storeName!=null and storeName!=''">
+					and store_name = #{storeName}
+				</if>
+	       
+	       
+		       <if test="description!=null and description!=''">
+					and description = #{description}
+				</if>
+	       
+	       
+		       <if test="pic!=null and pic!=''">
+					and pic = #{pic}
+				</if>
+	       
+	       
+		       <if test="picContact!=null and picContact!=''">
+					and pic_contact = #{picContact}
+				</if>
+	       
+				<if test="invoiceType!=null">
+					and invoice_type = #{invoiceType}
+				</if>
+	       
+				<if test="paymentTerm!=null">
+					and payment_term = #{paymentTerm}
+				</if>
+	       
+				<if test="isMandatorilyReserved!=null">
+					and is_mandatorily_reserved = #{isMandatorilyReserved}
+				</if>
+	       
+				<if test="isPoOvercharge!=null">
+					and is_po_overcharge = #{isPoOvercharge}
+				</if>
+	       
+				<if test="poOverchargeProportion!=null">
+					and po_overcharge_proportion = #{poOverchargeProportion}
+				</if>
+	       
+				<if test="isAsnOvercharge!=null">
+					and is_asn_overcharge = #{isAsnOvercharge}
+				</if>
+	       
+				<if test="asnOverchargeProportion!=null">
+					and asn_overcharge_proportion = #{asnOverchargeProportion}
+				</if>
+	       
+				<if test="customerId!=null">
+					and customer_id = #{customerId}
+				</if>
+	       
+				<if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="operatorId!=null">
+					and operator_id = #{operatorId}
+				</if>
+	       
+				<if test="lifecycle!=null">
+					and lifecycle = #{lifecycle}
+				</if>
+		</where>
+	</sql>
+	
+
+	<select id="getCount" resultType="long">
+        select count(*) from t_bi_store 
+    </select>
+    <select id="findListCountByQueryMap" resultType="long">
+        select count(*) from t_bi_store 
+		<include refid="storeDynamicWhere"/>    
+    </select>
+    
+    <select id="findListCountByParam" resultType="long">
+        select count(*) from t_bi_store 
+		<include refid="storeDynamicWhere"/>    
+    </select>
+    
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPage" resultMap="StoreResult">
+    	select <include refid="storeColumns" />
+	    from t_bi_store 
+		<include refid="storeDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByQueryMap" resultMap="StoreResult">
+    	select <include refid="storeColumns" />
+	    from t_bi_store 
+		<include refid="storeDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByParam" resultMap="StoreResult">
+    	select <include refid="storeColumns" />
+	    from t_bi_store 
+		<include refid="storeDynamicWhere"/>
+		
+    </select>
+
+    <select id="getByStoreCode" resultMap="StoreResult" parameterType="java.lang.String">
+	    select <include refid="storeColumns"/>
+	    <![CDATA[
+	        from t_bi_store where store_code = #{storeCode}
+	    ]]>
+    </select>
+    
+    <select id="getByStoreName" resultMap="StoreResult" parameterType="java.lang.String">
+	    select <include refid="storeColumns"/>
+	    <![CDATA[
+	        from t_bi_store where store_name = #{storeName}
+	    ]]>
+    </select>
+    
+	
+</mapper>

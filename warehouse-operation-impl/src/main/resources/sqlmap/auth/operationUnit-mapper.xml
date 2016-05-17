@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.auth.OperationUnitDao">
+	<resultMap id="OperationUnitResult" type="com.baozun.scm.primservice.whoperation.model.auth.OperationUnit">
+		<id property="id" column="id"/>
+	</resultMap>
+	<resultMap id="OpUnitTreeCommand" type="com.baozun.scm.primservice.whoperation.manager.auth.OpUnitTreeCommand">
+		<id property="id" column="id"/>
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="operationUnitColumns">
+	    <![CDATA[
+	        	id as id,
+	        	CODE as code,
+	        	NAME as name,
+	        	full_name as fullName,
+	        	lifecycle as lifecycle,
+	        	ou_type_id as ouTypeId,
+	        	parent_ou_id as parentUnitId,
+	        	ou_comment as comment,
+	        	last_modify_time as lastModifyTime
+	    ]]>
+	</sql>
+		<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+		<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.auth.OperationUnit" 
+			useGeneratedKeys="true" keyProperty="id" 
+		 flushCache="true">
+	    <![CDATA[
+	        INSERT INTO
+	        au_operation_unit (
+	        	CODE ,
+	        	NAME ,
+	        	full_name ,
+	        	lifecycle ,
+	        	ou_type_id ,
+	        	parent_ou_id ,
+	        	ou_comment ,
+	        	last_modify_time 
+	        ) VALUES (
+	        	#{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{name,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{fullName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+	        	#{ouTypeId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{parentUnitId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{comment,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} 
+	        )
+	    ]]>
+
+		</insert>
+	    
+		<update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.auth.OperationUnit">
+	    <![CDATA[
+	        UPDATE au_operation_unit SET
+		        CODE = #{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        NAME = #{name,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        full_name = #{fullName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        ou_type_id = #{ouTypeId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        parent_ou_id = #{parentUnitId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        ou_comment = #{comment,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} 
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+		</update>
+	   <delete id="delete" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from au_operation_unit where
+		        id = #{id} 
+	    ]]>
+	    </delete> 
+	    
+	     <delete id="deleteByIds" parameterType="list">
+	    
+	        delete from au_operation_unit 
+	        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>	
+	  
+	    </delete>  
+	         
+	    <select id="findById" parameterType="java.lang.Long" resultMap="OperationUnitResult" flushCache="false">
+			select <include refid="operationUnitColumns" />
+		    <![CDATA[
+			    from au_operation_unit 
+		        where 
+		        id = #{id} 
+		    ]]>
+		</select>	
+		<select id="getByIds" parameterType="list"  resultMap="OperationUnitResult" flushCache="false">
+			select <include refid="operationUnitColumns" />
+			    from au_operation_unit 
+		        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>					
+		</select>	
+	<sql id="operationUnitDynamicWhere">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       <if test="id!=null and id!=''">
+				and id = #{id}
+			</if>
+	       <if test="code!=null and code!=''">
+				and CODE = #{code}
+			</if>
+	       <if test="name!=null and name!=''">
+				and NAME = #{name}
+			</if>
+	       <if test="fullName!=null and fullName!=''">
+				and full_name = #{fullName}
+			</if>
+	       <if test="lifecycle!=null and lifecycle!=''">
+				and lifecycle = #{lifecycle}
+			</if>
+	       <if test="ouTypeId!=null and ouTypeId!=''">
+				and ou_type_id = #{ouTypeId}
+			</if>
+	       <if test="parentUnitId!=null and parentUnitId!=''">
+				and parent_ou_id = #{parentUnitId}
+			</if>
+	       <if test="comment!=null and comment!=''">
+				and ou_comment = #{comment}
+			</if>
+	       <if test="lastModifyTime!=null and lastModifyTime!=''">
+				and last_modify_time = #{lastModifyTime}
+			</if>
+		</where>
+	</sql>
+	
+
+	<select id="getCount" resultType="long">
+        select count(*) from au_operation_unit 
+    </select>
+    <select id="findListCountByQueryMap" resultType="long">
+        select count(*) from au_operation_unit 
+		<include refid="operationUnitDynamicWhere"/>    
+    </select>
+    
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPage" resultMap="OperationUnitResult">
+    	select <include refid="operationUnitColumns" />
+	    from au_operation_unit 
+		<include refid="operationUnitDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByQueryMap" resultMap="OperationUnitResult">
+    	select <include refid="operationUnitColumns" />
+	    from au_operation_unit 
+		<include refid="operationUnitDynamicWhere"/>
+		
+    </select>
+    
+    
+     <select id="findListByParam" resultMap="OperationUnitResult">
+    	select <include refid="operationUnitColumns" />
+	    from au_operation_unit 
+		<include refid="operationUnitDynamicWhere"/>
+		
+    </select>
+    
+    <sql id="operationUnitTreeColumns">
+	    <![CDATA[
+	        	ou.id as id,
+    			ou.CODE as code,
+    			ou.NAME as name,
+    			ou.ou_type_id as ouTypeId,
+    			ou.parent_ou_id as parentUnitId
+	    ]]>
+	</sql>
+    
+    <select id="findListByParentId" resultMap="OpUnitTreeCommand">
+    	select <include refid="operationUnitTreeColumns" />
+    	from au_operation_unit ou 
+    	<where>
+			<if test="parentId!=null and parentId!=''">
+					and ou.parent_ou_id = #{parentId}
+			</if>
+			<if test="parentId==null or parentId==''">
+					and ou.parent_ou_id is null
+			</if>
+    	</where>
+    </select>
+
+	<select id="findUnitTreeByUserId" resultMap="OpUnitTreeCommand">
+    	select distinct <include refid="operationUnitTreeColumns" />
+    	from au_user_role ur,au_operation_unit ou 
+    	where ur.ou_id=ou.id
+				and ou.lifecycle=1
+				and ur.user_id=#{userId}
+		order by ou.id asc
+    </select>
+    
+    <select id="findCommandList" resultMap="OpUnitTreeCommand">
+    	select <include refid="operationUnitTreeColumns" />
+    	from au_operation_unit ou 
+    	<include refid="operationUnitDynamicWhere"/>
+    </select>
+    
+    <update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.auth.OperationUnit">
+	    <![CDATA[
+	        UPDATE au_operation_unit SET
+		        CODE = #{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        NAME = #{name,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        full_name = #{fullName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        ou_type_id = #{ouTypeId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        parent_ou_id = #{parentUnitId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        ou_comment = #{comment,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        last_modify_time = now() 
+	        WHERE 
+		        id = #{id} 
+		        and last_modify_time	=  #{lastModifyTime}    
+	    ]]>
+		</update>
+	
+</mapper>

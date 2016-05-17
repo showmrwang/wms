@@ -1,5 +1,6 @@
 package com.baozun.scm.primservice.whoperation.manager.poasn.poasnproxy;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 
@@ -9,6 +10,7 @@ import lark.common.dao.Sort;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -310,11 +312,27 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
         if (log.isDebugEnabled()) {
             log.debug("params: [asnId:{},ouId:{},skuId:{}]", asnId, ouId, skuId);
         }
-        WhAsnLine asnline = new WhAsnLine();
+        if (null == asnId) {
+            log.error("SelectPoAsnManagerProxy.getSkuCountInAsnBySkuId,params AsnId is null exception");
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+        }
+
+        if (null == skuId) {
+            log.error("SelectPoAsnManagerProxy.getSkuCountInAsnBySkuId,params skuId is null exception");
+            throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
+        }
+
+        if (null == ouId) {
+            log.error("SelectPoAsnManagerProxy.getSkuCountInAsnBySkuId,params ouId is null exception");
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+        }
+        WhAsnLineCommand asnline = new WhAsnLineCommand();
         asnline.setAsnId(asnId);
         asnline.setOuId(ouId);
         asnline.setSkuId(skuId);
-        List<WhAsnLine> lineList = this.asnLineManager.findListByShard(asnline);
+        WhAsnLine wa = new WhAsnLine();
+        BeanUtils.copyProperties(asnline, wa);
+        List<WhAsnLine> lineList = this.asnLineManager.findListByShard(wa);
         long count = 0;
         for (WhAsnLine line : lineList) {
             count += line.getQtyPlanned();
@@ -374,6 +392,11 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
             log.debug(this.getClass().getSimpleName() + ".findWhPoById method returns {}!", whpo);
         }
         return whpo;
+    }
+    
+    @Override
+    public Pagination<WhPoLineCommand> findPoLineListByQueryMapWithPageExtForCreateSubPo(Page page, Sort[] sorts, Map<String, Object> paraMap, Integer infoSource) {
+        return this.poLineManager.findPoLineListByQueryMapWithPageExtForCreateSubPoToInfo(page, sorts, paraMap);
     }
 
     @Override

@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.StoreDao">
+	<resultMap id="StoreResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.Store">
+	</resultMap>
+	<resultMap id="storeCommand" type="com.baozun.scm.primservice.whoperation.command.warehouse.StoreCommand">
+	</resultMap>
+    
+    <select id="findListByQueryMapWithPageExt" resultMap="storeCommand">
+	    	select <include refid="storeColumnsExt" />
+		    from t_bi_store as s
+		    left join sys_dictionary as syst on s.invoice_type = syst.id
+		    left join sys_dictionary as sysl on s.payment_term = sysl.id
+		    left join t_bi_customer as c on c.id = s.customer_id  
+			<include refid="storeDynamicWhereExt"/>
+    </select>
+    
+    <select id="findListCountByQueryMapExt" resultType="long">
+	        select count(*) from t_bi_store as s
+		    left join sys_dictionary as syst on s.invoice_type = syst.id
+		    left join sys_dictionary as sysl on s.payment_term = sysl.id 
+		    left join t_bi_customer as c on c.id = s.customer_id  
+			<include refid="storeDynamicWhereExt"/> 
+	</select>
+    
+	<select id="uniqueCodeOrName" resultType="long">
+		select count(*) from t_bi_store 
+		<where>
+			<if test="id!=null">
+				and id != #{id}
+			</if>
+			
+			<if test="storeCode!=null and storeCode!=''">
+				and store_code like #{storeCode}
+			</if>
+		    <if test="storeName!=null and storeName!=''">
+				and store_name like #{storeName}
+			</if>
+		</where>
+	</select>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="storeColumnsExt">
+	    <![CDATA[
+	        	s.id as id,
+	        	s.store_code as storeCode,
+	        	s.store_name as storeName,
+	        	s.description as description,
+	        	s.pic as pic,
+	        	s.pic_contact as picContact,
+	        	s.invoice_type as invoiceType,
+	        	s.payment_term as paymentTerm,
+	        	s.is_mandatorily_reserved as isMandatorilyReserved,
+	        	s.is_po_overcharge as isPoOvercharge,
+	        	s.po_overcharge_proportion as poOverchargeProportion,
+	        	s.is_asn_overcharge as isAsnOvercharge,
+	        	s.asn_overcharge_proportion as asnOverchargeProportion,
+	        	s.is_po_auto_verify as isPoAutoVerify,
+	        	s.is_asn_auto_verify as isAsnAutoVerify,
+	        	s.goods_receipt_mode as goodsReceiptMode,
+	        	s.is_auto_print_bintag as isAutoPrintBintag,
+	        	s.is_auto_generation_cn as isAutoGenerationCn,
+	        	s.is_allow_blocked as isAllowBlocked,
+	        	s.inv_attr_mgmt as invAttrMgmt,
+	        	s.is_allow_collect_diff as isAllowCollectDiff,
+	        	s.is_auto_print_diff as isAutoPrintDiff,
+	        	s.is_hint_quality_testing as isHintQualityTesting,
+	        	s.is_auto_print_goods_receipt as isAutoPrintGoodsReceipt,
+	        	s.customer_id as customerId,
+	        	s.create_time as createTime,
+	        	s.last_modify_time as lastModifyTime,
+	        	s.operator_id as operatorId,
+	        	s.lifecycle as lifecycle,
+	        	syst.dic_label as invoiceTypeName,
+	        	sysl.dic_label as paymentTermName,
+	        	c.customer_name as customerName
+	        	
+	    ]]>
+	</sql>
+	
+	<sql id="storeDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and s.id = #{id}
+				</if>
+	       
+	       
+		       <if test="storeCode!=null and storeCode!=''">
+					and s.store_code like #{storeCode}
+				</if>
+				
+			   <if test="storeCode1!=null and storeCode1!=''">
+					and s.store_code like #{storeCode1}
+				</if>	
+	       
+		       <if test="storeName!=null and storeName!=''">
+					and s.store_name like #{storeName}
+				</if>
+	       
+	           <if test="storeName1!=null and storeName1!=''">
+					and s.store_name like #{storeName1}
+				</if>
+	       
+		       <if test="description!=null and description!=''">
+					and s.description like #{description}
+				</if>
+	       
+	       
+		       <if test="pic!=null and pic!=''">
+					and s.pic like #{pic}
+				</if>
+	       
+	       
+		       <if test="picContact!=null and picContact!=''">
+					and s.pic_contact like #{picContact}
+				</if>
+	       
+				<if test="invoiceType!=null">
+					and s.invoice_type = #{invoiceType}
+				</if>
+	       
+				<if test="paymentTerm!=null">
+					and s.payment_term = #{paymentTerm}
+				</if>
+	       		<if test="isMandatorilyReserved!=null">
+					and s.is_mandatorily_reserved = #{isMandatorilyReserved}
+				</if>
+	       
+				<if test="isPoOvercharge!=null">
+					and s.is_po_overcharge = #{isPoOvercharge}
+				</if>
+	       
+				<if test="poOverchargeProportion!=null">
+					and s.po_overcharge_proportion like #{poOverchargeProportion}
+				</if>
+	       
+				<if test="isAsnOvercharge!=null">
+					and s.is_asn_overcharge = #{isAsnOvercharge}
+				</if>
+	       
+				<if test="asnOverchargeProportion!=null">
+					and s.asn_overcharge_proportion like #{asnOverchargeProportion}
+				</if>
+				<if test="customerId!=null">
+					and s.customer_id = #{customerId}
+				</if>
+				<if test="createTime!=null">
+					and s.create_time = #{createTime}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and s.last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="operatorId!=null">
+					and s.operator_id = #{operatorId}
+				</if>
+	       
+				<if test="lifecycle!=null">
+					and s.lifecycle = #{lifecycle}
+				</if>
+				
+				<if test="userId!=null">
+					and exists(select 1 from t_bi_user_customer uc where uc.user_id=#{userId} and uc.customer_id=#{customerId} and uc.store_id=s.id)
+				</if>
+		</where>
+	</sql>
+	
+
+		<update id="updateByVersion"  parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Store">
+		    <![CDATA[
+		        UPDATE t_bi_store SET
+			        store_code = #{storeCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        store_name = #{storeName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        description = #{description,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        pic = #{pic,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        pic_contact = #{picContact,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        invoice_type = #{invoiceType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        payment_term = #{paymentTerm,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        is_mandatorily_reserved = #{isMandatorilyReserved,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        is_po_overcharge = #{isPoOvercharge,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        po_overcharge_proportion = #{poOverchargeProportion,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        is_asn_overcharge = #{isAsnOvercharge,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        asn_overcharge_proportion = #{asnOverchargeProportion,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        is_po_auto_verify = #{isPoAutoVerify,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        is_asn_auto_verify = #{isAsnAutoVerify,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        goods_receipt_mode = #{goodsReceiptMode,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        is_auto_print_bintag = #{isAutoPrintBintag,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        is_auto_generation_cn = #{isAutoGenerationCn,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        is_allow_blocked = #{isAllowBlocked,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        inv_attr_mgmt = #{invAttrMgmt,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        is_allow_collect_diff = #{isAllowCollectDiff,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        is_auto_print_diff = #{isAutoPrintDiff,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        is_hint_quality_testing = #{isHintQualityTesting,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        is_auto_print_goods_receipt = #{isAutoPrintGoodsReceipt,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        customer_id = #{customerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+			        last_modify_time = #{globalLastModifyTime} ,
+			        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
+		        WHERE 
+			        id = #{id} 
+			        
+			         and last_modify_time	=  #{lastModifyTime}     
+		    ]]>
+		</update>
+		
+		<update id="updateLifeCycle" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Store">
+			UPDATE t_bi_store SET lifecycle = #{lifecycle},operator_id = #{userid},last_modify_time = #{lastModifyTime}
+			WHERE id in
+			<foreach collection="ids" item="id" open="(" separator=","
+				close=")">
+				#{id}
+			</foreach>
+	   </update>
+	   
+	<sql id="storeColumnsExpand">
+	    <![CDATA[
+	        	id as id,
+	        	store_code as storeCode,
+	        	store_name as storeName,
+	        	description as description,
+	        	pic as pic,
+	        	pic_contact as picContact,
+	        	invoice_type as invoiceType,
+	        	payment_term as paymentTerm,
+	        	is_mandatorily_reserved as isMandatorilyReserved,
+	        	is_po_overcharge as isPoOvercharge,
+	        	po_overcharge_proportion as poOverchargeProportion,
+	        	is_asn_overcharge as isAsnOvercharge,
+	        	asn_overcharge_proportion as asnOverchargeProportion,
+	        	is_po_auto_verify as isPoAutoVerify,
+	        	is_asn_auto_verify as isAsnAutoVerify,
+	        	goods_receipt_mode as goodsReceiptMode,
+	        	is_auto_print_bintag as isAutoPrintBintag,
+	        	is_auto_generation_cn as isAutoGenerationCn,
+	        	is_allow_blocked as isAllowBlocked,
+	        	inv_attr_mgmt as invAttrMgmt,
+	        	is_allow_collect_diff as isAllowCollectDiff,
+	        	is_auto_print_diff as isAutoPrintDiff,
+	        	is_hint_quality_testing as isHintQualityTesting,
+	        	is_auto_print_goods_receipt as isAutoPrintGoodsReceipt,
+	        	customer_id as customerId,
+	        	create_time as createTime,
+	        	last_modify_time as lastModifyTime,
+	        	operator_id as operatorId,
+	        	lifecycle as lifecycle
+	    ]]>
+	</sql>
+	<sql id="storeDynamicWhereExpand">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and s.id = #{id}
+				</if>
+	       
+	       
+		       <if test="storeCode!=null and storeCode!=''">
+					and s.store_code like #{storeCode}
+				</if>
+				
+		       <if test="storeName!=null and storeName!=''">
+					and s.store_name like #{storeName}
+				</if>
+	       
+		       <if test="description!=null and description!=''">
+					and s.description like #{description}
+				</if>
+	       
+	       
+		       <if test="pic!=null and pic!=''">
+					and s.pic like #{pic}
+				</if>
+	       
+	       
+		       <if test="picContact!=null and picContact!=''">
+					and s.pic_contact like #{picContact}
+				</if>
+	       
+				<if test="invoiceType!=null">
+					and s.invoice_type = #{invoiceType}
+				</if>
+	       
+				<if test="paymentTerm!=null">
+					and s.payment_term = #{paymentTerm}
+				</if>
+	       		<if test="isMandatorilyReserved!=null">
+					and s.is_mandatorily_reserved = #{isMandatorilyReserved}
+				</if>
+	       
+				<if test="isPoOvercharge!=null">
+					and s.is_po_overcharge = #{isPoOvercharge}
+				</if>
+	       
+				<if test="poOverchargeProportion!=null">
+					and s.po_overcharge_proportion like #{poOverchargeProportion}
+				</if>
+	       
+				<if test="isAsnOvercharge!=null">
+					and s.is_asn_overcharge = #{isAsnOvercharge}
+				</if>
+	       
+				<if test="asnOverchargeProportion!=null">
+					and s.asn_overcharge_proportion like #{asnOverchargeProportion}
+				</if>
+				<if test="customerId!=null">
+					and s.customer_id = #{customerId}
+				</if>
+				<if test="createTime!=null">
+					and s.create_time = #{createTime}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and s.last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="operatorId!=null">
+					and s.operator_id = #{operatorId}
+				</if>
+	       
+				<if test="lifecycle!=null">
+					and s.lifecycle = #{lifecycle}
+				</if>
+				
+				<if test="userId!=null">
+					and exists(select 1 from t_bi_user_customer uc where uc.user_id=#{userId} and uc.customer_id=#{customerId} and uc.store_id=s.id)
+				</if>
+		</where>
+	</sql>
+	<select id="findStoreListByParams" resultMap="StoreResultExt" parameterType="com.baozun.scm.primservice.whoperation.command.warehouse.StoreCommand">
+	    	select <include refid="storeColumnsExpand" />
+	    from t_bi_store  s
+		<include refid="storeDynamicWhereExpand"/>
+		</select>
+		
+		<select id="findDataPrivilegeListByParams" resultMap="storeCommand" parameterType="com.baozun.scm.primservice.whoperation.command.warehouse.StoreCommand">
+	    	select uc.id, s.store_name as storeName, c.customer_name as customerName, au.user_name as userName
+		    from t_bi_store  s 
+		    inner join t_bi_user_customer uc on s.id = uc.store_id
+		    inner join t_bi_customer c on s.customer_id = c.id
+		    inner join au_user au on uc.user_id = au.id
+		    where
+			au.id = #{userId}
+    </select>
+</mapper>

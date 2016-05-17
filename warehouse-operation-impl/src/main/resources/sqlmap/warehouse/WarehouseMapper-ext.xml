@@ -1,0 +1,374 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.WarehouseDao">
+	<resultMap id="WarehouseResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="warehouseColumnsExt">
+	    <![CDATA[
+		        id as id,
+	        	code as code,
+	        	name as name,
+	        	op_mode as opMode,
+	        	manage_mode as manageMode,
+	        	pic as pic,
+	        	pic_contact as picContact,
+	        	phone as phone,
+	        	fax as fax,
+	        	other_contact1 as otherContact1,
+	        	other_contact2 as otherContact2,
+	        	other_contact3 as otherContact3,
+	        	country_id as countryId,
+	        	province_id as provinceId,
+	        	city_id as cityId,
+	        	address as address,
+	        	zip_code as zipCode,
+	        	size as size,
+	        	size_uom as sizeUom,
+	        	rent_price as rentPrice,
+	        	rent_price_uom as rentPriceUom,
+	        	description as description,
+	        	is_mandatorily_reserved as isMandatorilyReserved,
+	        	is_po_overcharge as isPoOvercharge,
+	        	po_overcharge_proportion as poOverchargeProportion,
+	        	is_asn_overcharge as isAsnOvercharge,
+	        	asn_overcharge_proportion as asnOverchargeProportion,
+	        	is_po_auto_verify as isPoAutoVerify,
+	        	is_asn_auto_verify as isAsnAutoVerify,
+	        	goods_receipt_mode as goodsReceiptMode,
+	        	is_auto_print_bintag as isAutoPrintBintag,
+	        	is_auto_generation_cn as isAutoGenerationCn,
+	        	is_allow_blocked as isAllowBlocked,
+	        	is_sku_needs_scan as isSkuNeedsScan,
+	        	inv_attr_mgmt as invAttrMgmt,
+	        	is_auto_print_diff as isAutoPrintDiff,
+	        	is_hint_quality_testing as isHintQualityTesting,
+	        	is_auto_print_goods_receipt as isAutoPrintGoodsReceipt,
+	        	is_auto_print_platformtag as isAutoPrintPlatformtag,
+	        	sku_mix_number as skuMixNumber,
+	        	create_time as createTime,
+	        	last_modify_time as lastModifyTime,
+	        	operator_id as operatorId,
+	        	lifecycle as lifecycle
+	    ]]>
+	</sql>
+	
+	<sql id="warehouseDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+	       
+		       <if test="code!=null and code!=''">
+					and code = #{code}
+				</if>
+	       
+	       
+		       <if test="name!=null and name!=''">
+					and name = #{name}
+				</if>
+	       
+				<if test="opMode!=null">
+					and op_mode = #{opMode}
+				</if>
+	       
+				<if test="manageMode!=null">
+					and manage_mode = #{manageMode}
+				</if>
+	       
+	       
+		       <if test="pic!=null and pic!=''">
+					and pic = #{pic}
+				</if>
+	       
+	       
+		       <if test="picContact!=null and picContact!=''">
+					and pic_contact = #{picContact}
+				</if>
+	       
+	       
+		       <if test="phone!=null and phone!=''">
+					and phone = #{phone}
+				</if>
+	       
+	       
+		       <if test="fax!=null and fax!=''">
+					and fax = #{fax}
+				</if>
+	       
+	       
+		       <if test="otherContact1!=null and otherContact1!=''">
+					and other_contact1 = #{otherContact1}
+				</if>
+	       
+	       
+		       <if test="otherContact2!=null and otherContact2!=''">
+					and other_contact2 = #{otherContact2}
+				</if>
+	       
+	       
+		       <if test="otherContact3!=null and otherContact3!=''">
+					and other_contact3 = #{otherContact3}
+				</if>
+	       
+				<if test="countryId!=null">
+					and country_id = #{countryId}
+				</if>
+	       
+				<if test="provinceId!=null">
+					and province_id = #{provinceId}
+				</if>
+	       
+				<if test="cityId!=null">
+					and city_id = #{cityId}
+				</if>
+	       
+	       
+		       <if test="address!=null and address!=''">
+					and address = #{address}
+				</if>
+	       
+	       
+		       <if test="zipCode!=null and zipCode!=''">
+					and zip_code = #{zipCode}
+				</if>
+	       
+				<if test="size!=null">
+					and size = #{size}
+				</if>
+	       
+	       
+		       <if test="sizeUom!=null and sizeUom!=''">
+					and size_uom = #{sizeUom}
+				</if>
+	       
+				<if test="rentPrice!=null">
+					and rent_price = #{rentPrice}
+				</if>
+	       
+	       
+		       <if test="rentPriceUom!=null and rentPriceUom!=''">
+					and rent_price_uom = #{rentPriceUom}
+				</if>
+	       
+	       
+		       <if test="description!=null and description!=''">
+					and description = #{description}
+				</if>
+	       
+				<if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="operatorId!=null">
+					and operator_id = #{operatorId}
+				</if>
+	       
+				<if test="lifecycle!=null">
+					and lifecycle = #{lifecycle}
+				</if>
+		</where>
+	</sql>
+	
+	
+	
+	
+<resultMap type="com.baozun.scm.primservice.whoperation.command.warehouse.WarehouseCommand" id="warehouseCommand">
+</resultMap>
+
+	<select id="checkNameOrCode" resultMap="warehouseCommand">
+		SELECT <include refid="warehouseColumnsExt"></include> 
+			from t_bi_warehouse 
+		<where>
+			<if test="name!=null">
+				and name = #{name}
+			</if>
+			<if test="code!=null">
+				and code = #{code}
+			</if>
+		</where>
+	</select>
+
+<sql id="warehouseDynamicWhereLikeExt">
+		<where>
+			w.code = ou.code 
+			<if test="name!=null and name!=''">
+				and w.name like #{name}
+			</if>		       
+			<if test="code!=null and code!=''">
+					and w.code like #{code}
+			</if>
+			<if test="whName!=null and whName!=''">
+				and w.name like #{whName}
+			</if>		       
+			<if test="whCode!=null and whCode!=''">
+					and w.code like #{whCode}
+			</if>
+			<if test="ouid!=null and ouid!=''">
+					and ou.parent_ou_id = #{ouid}
+			</if>
+			<if test="lifecycle!=null">
+					and w.lifecycle = #{lifecycle}
+			</if>
+			<if test="inputCommSearch!=null and inputCommSearch!=''">
+					and w.name like #{inputCommSearch} 
+					and w.code like #{inputCommSearch} 
+			</if>
+		</where>
+</sql>	
+	<sql id="warehouseListColumnsExt">
+	    <![CDATA[
+				w.id as id,
+				w.code as code,
+				w.name as name,
+				w.op_mode as opMode,
+				w.manage_mode as manageMode,
+				w.pic as pic,
+				w.pic_contact as picContact,
+				w.phone as phone,
+				w.fax as fax,
+				w.other_contact1 as otherContact1,
+				w.other_contact2 as otherContact2,
+				w.other_contact3 as otherContact3,
+				w.country_id as countryId,
+				w.province_id as provinceId,
+				w.city_id as cityId,
+				w.address as address,
+				w.zip_code as zipCode,
+				w.size as size,
+				w.size_uom as sizeUom,
+				w.rent_price as rentPrice,
+				w.rent_price_uom as rentPriceUom,
+				w.description as description,
+				w.is_mandatorily_reserved as isMandatorilyReserved,
+	        	w.is_po_overcharge as isPoOvercharge,
+	        	w.po_overcharge_proportion as poOverchargeProportion,
+	        	w.is_asn_overcharge as isAsnOvercharge,
+	        	w.asn_overcharge_proportion as asnOverchargeProportion,
+	        	w.is_po_auto_verify as isPoAutoVerify,
+				w.is_asn_auto_verify as isAsnAutoVerify,
+				w.goods_receipt_mode as goodsReceiptMode,
+				w.is_auto_print_bintag as isAutoPrintBintag,
+				w.is_auto_generation_cn as isAutoGenerationCn,
+				w.is_allow_blocked as isAllowBlocked,
+				w.is_sku_needs_scan as isSkuNeedsScan,
+				w.inv_attr_mgmt as invAttrMgmt,
+				w.is_auto_print_diff as isAutoPrintDiff,
+				w.is_hint_quality_testing as isHintQualityTesting,
+				w.is_auto_print_goods_receipt as isAutoPrintGoodsReceipt,
+				w.is_auto_print_platformtag as isAutoPrintPlatformtag,
+				w.create_time as createTime,
+				w.sku_mix_number as skuMixNumber,
+				w.last_modify_time as lastModifyTime,
+				w.operator_id as operatorId,
+				w.lifecycle as lifecycle,
+	        	ou.parent_ou_id as parentOuId,
+	        	ou.id as ouId
+	    ]]>
+	</sql>
+ <select id="findListByQueryMapWithPageExt" resultMap="warehouseCommand">
+		SELECT <include refid="warehouseListColumnsExt"></include> 		
+			from t_bi_warehouse w,
+			au_operation_unit ou 
+		<include refid="warehouseDynamicWhereLikeExt"/>    
+	</select>
+	
+	<select id="findListCountByQueryMapExt" resultType="long">
+		select count(*) 
+			from t_bi_warehouse w,
+			au_operation_unit ou 
+	<include refid="warehouseDynamicWhereLikeExt"/>    
+	</select>
+	
+ <select id="findWarehouseById" resultMap="WarehouseResultExt">
+		SELECT <include refid="warehouseColumnsExt"></include> 
+			from t_bi_warehouse
+			where id = #{id} 
+	</select>
+	
+ <select id="findWarehouseByCode" resultMap="WarehouseResultExt">
+		SELECT <include refid="warehouseColumnsExt"></include> 
+			from t_bi_warehouse  where code = #{code}
+	</select>
+	
+	
+    <update id="updateLifeCycle" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse">
+		UPDATE t_bi_warehouse SET lifecycle = #{lifecycle},operator_id = #{userid},last_modify_time = now() 
+		WHERE id in
+		<foreach collection="ids" item="id" open="(" separator=","
+			close=")">
+			#{id}
+		</foreach>
+	</update>
+	
+			<update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse">
+		    <![CDATA[
+		        UPDATE t_bi_warehouse SET
+			        code = #{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        name = #{name,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        op_mode = #{opMode,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        manage_mode = #{manageMode,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        pic = #{pic,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        pic_contact = #{picContact,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        phone = #{phone,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        fax = #{fax,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        other_contact1 = #{otherContact1,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        other_contact2 = #{otherContact2,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        other_contact3 = #{otherContact3,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        country_id = #{countryId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        province_id = #{provinceId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        city_id = #{cityId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        address = #{address,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        zip_code = #{zipCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        size = #{size,javaType=Double,jdbcType=DECIMAL} ,
+			        size_uom = #{sizeUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        rent_price = #{rentPrice,javaType=Double,jdbcType=DECIMAL} ,
+			        rent_price_uom = #{rentPriceUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        description = #{description,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        is_mandatorily_reserved = #{isMandatorilyReserved,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        is_po_overcharge = #{isPoOvercharge,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        po_overcharge_proportion = #{poOverchargeProportion,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        is_asn_overcharge = #{isAsnOvercharge,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        asn_overcharge_proportion = #{asnOverchargeProportion,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			       	is_po_auto_verify = #{isPoAutoVerify,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        is_asn_auto_verify = #{isAsnAutoVerify,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        goods_receipt_mode = #{goodsReceiptMode,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        is_auto_print_bintag = #{isAutoPrintBintag,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        is_auto_generation_cn = #{isAutoGenerationCn,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        is_allow_blocked = #{isAllowBlocked,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        is_sku_needs_scan = #{isSkuNeedsScan,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        inv_attr_mgmt = #{invAttrMgmt,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        is_auto_print_diff = #{isAutoPrintDiff,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        is_hint_quality_testing = #{isHintQualityTesting,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        is_auto_print_goods_receipt = #{isAutoPrintGoodsReceipt,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        is_auto_print_platformtag = #{isAutoPrintPlatformtag,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        sku_mix_number = #{skuMixNumber,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+			        last_modify_time = now(),
+			        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
+		        WHERE 
+			        id = #{id} 
+			        and last_modify_time	=  #{lastModifyTime}    
+		    ]]>
+		</update>
+
+	<select id="findListByLifecycle" resultType="com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse">
+        SELECT <include refid="warehouseColumnsExt"></include>
+        from t_bi_warehouse
+        where lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER}
+    </select>
+    
+</mapper>
