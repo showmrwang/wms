@@ -194,4 +194,28 @@ public class ErrorCodes {
     /**商品不存在*/
     public static final int SKU_NOT_FOUND=20008;
   //20000-30000 end
+    
+    // 10001-20000 luyimin
+    // 10001-20000 luyimin
+
+    // 20001-30000 shenjian
+    // 20001-30000 shenjian
+
+    // 30001-40000 zhanglei
+    // 30001-40000 zhanglei
+
+    // 40001-50000 lichuan
+    // 40001-50000 lichuan
+
+    // 50001-60000 hubin
+    // 50001-60000 hubin
+
+    // 60001-70000 xiemingwei
+    // 60001-70000 xiemingwei
+
+    // 70001-80000 tangming
+    // 70001-80000 tangming
+
+    // 80001-90000 shenlijun
+    // 80001-90000 shenlijun
 }
