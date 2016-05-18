@@ -45,6 +45,10 @@ public class Container extends BaseModel {
      * 二级容器类型
      */
     private Long twoLevelType;
+    
+    /** 是否满箱 0:否 1:是 */
+    private Boolean isFull = false;
+    
     /**
      * 创建时间
      */
@@ -134,6 +138,14 @@ public class Container extends BaseModel {
 
     public void setOuId(Long ouId) {
         this.ouId = ouId;
+    }
+
+    public Boolean getIsFull() {
+        return isFull;
+    }
+
+    public void setIsFull(Boolean isFull) {
+        this.isFull = isFull;
     }
 
 

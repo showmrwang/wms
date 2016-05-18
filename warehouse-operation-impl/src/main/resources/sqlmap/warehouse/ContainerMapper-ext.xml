@@ -4,11 +4,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
 
 
-<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao">
-	<resultMap id="ContainerResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.Container">
+<mapper namespace="com.baozun.scm.primservice.whinfo.dao.warehouse.ContainerDao">
+	<resultMap id="ContainerResultExt" type="com.baozun.scm.primservice.whinfo.model.warehouse.Container">
 	</resultMap>
 	
-	<resultMap id="ContainerCommandResultExt" type="com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand">
+	<resultMap id="ContainerCommandResultExt" type="com.baozun.scm.primservice.whinfo.command.warehouse.ContainerCommand">
 	</resultMap>
 	
 	<select id="findListByQueryMapWithPageExt" resultMap="ContainerCommandResultExt">
@@ -57,6 +57,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	s.code as code,
 	        	s.one_level_type as oneLevelType,
 	        	s.two_level_type as twoLevelType,
+	        	s.is_full as isFull,
 	        	s.create_time as createTime,
 	        	s.last_modify_time as lastModifyTime,
 	        	s.operator_id as operatorId,
@@ -122,13 +123,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	</sql>
 	
 
-		<update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Container">
+		<update id="updateByVersion" parameterType="com.baozun.scm.primservice.whinfo.model.warehouse.Container">
 		    <![CDATA[
 		         UPDATE t_wh_container SET
 			        name = #{name,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        code = #{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        one_level_type = #{oneLevelType,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        two_level_type = #{twoLevelType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        is_full = #{isFull,javaType=java.lang.Boolean,jdbcType=BIT} ,
 			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        last_modify_time = now(),
 			        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -140,7 +142,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    ]]>
 		</update>
 	
-		<update id="updateLifeCycle" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Container">
+		<update id="updateLifeCycle" parameterType="com.baozun.scm.primservice.whinfo.model.warehouse.Container">
 			UPDATE t_wh_container SET lifecycle = #{lifecycle},operator_id = #{userid},last_modify_time = now()  
 			WHERE id in
 			<foreach collection="ids" item="id" open="(" separator=","
@@ -178,13 +180,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    ]]>
 		</select>
 		
-		<update id="updateExt" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Container">
+		<update id="updateExt" parameterType="com.baozun.scm.primservice.whinfo.model.warehouse.Container">
 	    <![CDATA[
 	        UPDATE t_wh_container SET
 		        name = #{name,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        code = #{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        one_level_type = #{oneLevelType,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        two_level_type = #{twoLevelType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        is_full = #{isFull,javaType=java.lang.Boolean,jdbcType=BIT} ,
 		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -204,6 +207,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        	code ,
 			        	one_level_type ,
 			        	two_level_type ,
+			        	is_full ,
 			        	create_time ,
 			        	last_modify_time ,
 			        	operator_id ,
@@ -219,6 +223,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{item.code,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{item.oneLevelType,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{item.twoLevelType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{item.isFull,javaType=java.lang.Boolean,jdbcType=BIT} ,
 		        	#{item.createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        	#{item.lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        	#{item.operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -235,6 +240,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	s.code as code,
 	        	s.one_level_type as oneLevelType,
 	        	s.two_level_type as twoLevelType,
+	        	s.is_full as isFull,
 	        	s.create_time as createTime,
 	        	s.last_modify_time as lastModifyTime,
 	        	s.operator_id as operatorId,

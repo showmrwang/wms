@@ -26,6 +26,9 @@ public class ContainerCommand extends BaseCommand {
      * 二级容器类型
      */
     private Long twoLevelType;
+
+    /** 是否满箱 0:否 1:是 */
+    private Boolean isFull;
     /**
      * 创建时间
      */
@@ -192,5 +195,15 @@ public class ContainerCommand extends BaseCommand {
     public void setTwoLevelTypeName(String twoLevelTypeName) {
         this.twoLevelTypeName = twoLevelTypeName;
     }
+
+    public Boolean getIsFull() {
+        return isFull;
+    }
+
+    public void setIsFull(Boolean isFull) {
+        this.isFull = isFull;
+    }
+
+
 
 }

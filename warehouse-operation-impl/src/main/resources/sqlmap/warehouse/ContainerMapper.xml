@@ -4,8 +4,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
 
 
-<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao">
-	<resultMap id="ContainerResult" type="com.baozun.scm.primservice.whoperation.model.warehouse.Container">
+<mapper namespace="com.baozun.scm.primservice.whinfo.dao.warehouse.ContainerDao">
+	<resultMap id="ContainerResult" type="com.baozun.scm.primservice.whinfo.model.warehouse.Container">
 	</resultMap>
 	
 	<!-- 用于select查询公用抽取的列 -->
@@ -16,6 +16,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	code as code,
 	        	one_level_type as oneLevelType,
 	        	two_level_type as twoLevelType,
+	        	is_full as isFull,
 	        	create_time as createTime,
 	        	last_modify_time as lastModifyTime,
 	        	operator_id as operatorId,
@@ -27,7 +28,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		<!-- 如果有自增字段 -->
 		
 			<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
-			<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Container"  flushCache="true">
+			<insert id="insert" parameterType="com.baozun.scm.primservice.whinfo.model.warehouse.Container"  flushCache="true">
 		    <![CDATA[
 		        INSERT INTO
 		        t_wh_container (
@@ -36,6 +37,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	code ,
 		        	one_level_type ,
 		        	two_level_type ,
+		        	is_full ,
 		        	create_time ,
 		        	last_modify_time ,
 		        	operator_id ,
@@ -47,6 +49,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{oneLevelType,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{twoLevelType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{isFull,javaType=java.lang.Boolean,jdbcType=BIT} ,
 		        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        	#{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -58,13 +61,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</insert>
 		
 		
-		<update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Container">
+		<update id="update" parameterType="com.baozun.scm.primservice.whinfo.model.warehouse.Container">
 	    <![CDATA[
 	        UPDATE t_wh_container SET
 		        name = #{name,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        code = #{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        one_level_type = #{oneLevelType,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        two_level_type = #{twoLevelType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        is_full = #{isFull,javaType=java.lang.Boolean,jdbcType=BIT} ,
 		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
