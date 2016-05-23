@@ -342,9 +342,11 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
 
     @Override
     public List<WhAsnLine> findWhAsnLineByAsnId(Long asnId, Long ouId) {
+        WhAsnLineCommand command = new WhAsnLineCommand();
+        command.setAsnId(asnId);
+        command.setOuId(ouId);
         WhAsnLine asnLine = new WhAsnLine();
-        asnLine.setAsnId(asnId);
-        asnLine.setOuId(ouId);
+        BeanUtils.copyProperties(command, asnLine);
         return this.asnLineManager.findListByShard(asnLine);
     }
 
@@ -469,31 +471,8 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
     }
 
     @Override
-    public void checkWhAsnLineBySkuId(List<WhAsnLine> whAsnLineList, Long skuId, Long ouId, String logId) {
-        if (log.isInfoEnabled()) {
-            log.info("checkWhAsnLineBySkuId start, params whAsnLineList is:[{}], ouId is:[{}], logId is:[{}],skuId is :[{}] ", new Object[] {whAsnLineList.toString(), ouId, logId, skuId});
-        }
-        if (null == skuId) {
-            log.error("params skuId is null exception, logId is:[{}]", logId);
-            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
-        }
-        if (null == ouId) {
-            log.error("params ouId is null exception, logId is:[{}]", logId);
-            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
-        }
-        if(whAsnLineList.size() <=0 ){
-            log.error("params whAsnLineList is null exception, logId is:[{}]", logId);
-            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
-        }
-        for (WhAsnLine whAsnLine : whAsnLineList) {
-            if(!skuId.equals(whAsnLine.getSkuId())){
-                throw new BusinessException(ErrorCodes.SKU_NOT_FOUND_IN_ASN);
-            }
-        }
-        
-        if (log.isInfoEnabled()) {
-            log.info("checkWhAsnLineBySkuId end, params whAsnLineList is:[{}], ouId is:[{}], logId is:[{}],skuId is :[{}] ", new Object[] {whAsnLineList.toString(), ouId, logId, skuId});
-        }
+    public WhAsn findWhAsnById(Long id, Long ouId) {
+        return this.asnManager.findWhAsnByIdToShard(id, ouId);
     }
 
 }

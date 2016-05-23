@@ -83,6 +83,16 @@ public class WhPo extends BaseModel {
     private Long modifiedId;
     /** 用于保存拆分PO的临时数据 */
     private String uuid;
+    /** 超收比例 */
+    private Double overChageRate;
+
+    public Double getOverChageRate() {
+        return overChageRate;
+    }
+
+    public void setOverChageRate(Double overChageRate) {
+        this.overChageRate = overChageRate;
+    }
 
     public String getUuid() {
         return uuid;

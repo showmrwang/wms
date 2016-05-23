@@ -126,6 +126,26 @@ public class BiPoCommand extends BaseCommand {
     List<WhPoCommand> whPoList;
     /** Uuid */
     private String uuid;
+    /** 商品编码 */
+    private String skuCode;
+    /** 商品编码 */
+    private String skuName;
+
+    public String getSkuCode() {
+        return skuCode;
+    }
+
+    public void setSkuCode(String skuCode) {
+        this.skuCode = skuCode;
+    }
+
+    public String getSkuName() {
+        return skuName;
+    }
+
+    public void setSkuName(String skuName) {
+        this.skuName = skuName;
+    }
 
     public String getUuid() {
         return uuid;

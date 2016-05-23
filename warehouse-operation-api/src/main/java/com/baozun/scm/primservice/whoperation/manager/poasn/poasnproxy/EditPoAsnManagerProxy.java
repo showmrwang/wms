@@ -1,5 +1,6 @@
 package com.baozun.scm.primservice.whoperation.manager.poasn.poasnproxy;
 
+import java.util.Date;
 import java.util.List;
 
 import com.baozun.scm.primservice.whoperation.command.poasn.BiPoCommand;
@@ -159,4 +160,25 @@ public interface EditPoAsnManagerProxy extends BaseManager {
      * @return
      */
     ResponseMsg editBiPo(BiPo updatePo);
+
+    /**
+     * 缓存锁使用
+     * 
+     * @param id
+     * @param ouid
+     * @param lastModifyTime
+     * @return
+     */
+    int updateByVersionForLock(Long id, Long ouid, Date lastModifyTime);
+
+    /**
+     * 释放缓存锁使用
+     * 
+     * @param id
+     * @param ouid
+     * @param lastModifyTime
+     * @return
+     */
+    int updateByVersionForUnLock(Long id, Long ouid);
+
 }

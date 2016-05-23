@@ -87,6 +87,16 @@ public class WhAsn extends BaseModel {
     private String extCode;
     /** 紧急状态 */
     private String urgentStatus;
+    /** 超收比例 */
+    private Double overChageRate;
+
+    public Double getOverChageRate() {
+        return overChageRate;
+    }
+
+    public void setOverChageRate(Double overChageRate) {
+        this.overChageRate = overChageRate;
+    }
 
     public String getAsnCode() {
         return this.asnCode;

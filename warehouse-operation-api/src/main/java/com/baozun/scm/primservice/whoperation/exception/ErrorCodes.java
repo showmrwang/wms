@@ -196,9 +196,18 @@ public class ErrorCodes {
     /**商品不在Asn收货明细中*/
     public static final int SKU_NOT_FOUND_IN_ASN=20011;
   //20000-30000 end
+
+
     
     // 10001-20000 luyimin
+    /** ASN没有可以收货的明细 */
+    public static final int ASN_NO_FOR_RCVD = 10001;
+    /** ASN数据初始化失败 */
+    public static final int ASN_CACHE_ERROR = 10002;
+    /** 商品数据初始化失败 */
+    public static final int SKU_CACHE_ERROR = 10003;
     // 10001-20000 luyimin
+
 
     // 20001-30000 shenjian
     // 20001-30000 shenjian

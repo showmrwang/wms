@@ -119,6 +119,17 @@ public class WhAsnCommand extends BaseCommand {
     private Long poOuId;
     /** 紧急状态 */
     private String urgentStatus;
+    /** 超收比例 */
+    private Double overChageRate;
+
+
+    public Double getOverChageRate() {
+        return overChageRate;
+    }
+
+    public void setOverChageRate(Double overChageRate) {
+        this.overChageRate = overChageRate;
+    }
 
     public List<WhAsnLineCommand> getAsnLineList() {
         return asnLineList;

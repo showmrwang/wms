@@ -230,4 +230,13 @@ public interface SelectPoAsnManagerProxy extends BaseManager {
      */
     void checkWhAsnLineBySkuId(List<WhAsnLine> whAsnLineList, Long skuId, Long ouId, String logId);
 
+    /**
+     * 根据ID和OUID查找WHASN
+     * 
+     * @param occupationId
+     * @param ouId
+     * @return
+     */
+    WhAsn findWhAsnById(Long occupationId, Long ouId);
+
 }

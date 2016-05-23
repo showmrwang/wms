@@ -29,6 +29,7 @@ import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
+import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnCheckManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.BiPoLineManager;
@@ -54,7 +55,7 @@ import com.baozun.scm.primservice.whoperation.util.StringUtil;
  * 
  */
 @Service("createPoAsnManagerProxy")
-public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
+public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements CreatePoAsnManagerProxy {
 
     protected static final Logger log = LoggerFactory.getLogger(CreatePoAsnManagerProxy.class);
 

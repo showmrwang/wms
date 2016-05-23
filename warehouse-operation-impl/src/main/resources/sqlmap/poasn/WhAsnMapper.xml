@@ -39,7 +39,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	asn_ext_code as asnExtCode,
 	        	po_ou_id as poOuId,
 	        	ext_code as extCode,
-	        	urgent_status as urgentStatus
+	        	urgent_status as urgentStatus,
+	        	version as version
 	    ]]>
 	</sql>
 		<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
