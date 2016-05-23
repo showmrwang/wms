@@ -59,4 +59,24 @@ public interface WhAsnDao extends BaseDao<WhAsn, Long> {
 
     int deleteByIdOuId(@Param("id") Long id, @Param("ouid") Long ouid);
 
+    /**
+     * 缓存锁使用
+     * 
+     * @param id
+     * @param ouid
+     * @param lastModifyTime
+     * @return
+     */
+    int updateByVersionForLock(@Param("id") Long id, @Param("ouid") Long ouid, @Param("lastModifyTime") Date lastModifyTime);
+
+    /**
+     * 释放缓存锁使用
+     * 
+     * @param id
+     * @param ouid
+     * @param lastModifyTime
+     * @return
+     */
+    int updateByVersionForUnLock(@Param("id") Long id, @Param("ouid") Long ouid);
+
 }

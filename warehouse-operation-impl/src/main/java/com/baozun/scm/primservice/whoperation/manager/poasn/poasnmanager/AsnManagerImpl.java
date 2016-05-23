@@ -736,7 +736,26 @@ public class AsnManagerImpl implements AsnManager {
     }
 
     @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public WhAsn getAsnByAsnExtCode(String asnExtCoce, Long ouId) {
         return null;
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public WhAsn findWhAsnByIdToShard(Long id, Long ouId) {
+        return this.whAsnDao.findWhAsnById(id, ouId);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public int updateByVersionForLock(Long id, Long ouid, Date lastModifyTime) {
+        return this.whAsnDao.updateByVersionForLock(id, ouid, lastModifyTime);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public int updateByVersionForUnLock(Long id, Long ouid) {
+        return this.whAsnDao.updateByVersionForUnLock(id, ouid);
     }
 }

@@ -342,9 +342,11 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
 
     @Override
     public List<WhAsnLine> findWhAsnLineByAsnId(Long asnId, Long ouId) {
+        WhAsnLineCommand command = new WhAsnLineCommand();
+        command.setAsnId(asnId);
+        command.setOuId(ouId);
         WhAsnLine asnLine = new WhAsnLine();
-        asnLine.setAsnId(asnId);
-        asnLine.setOuId(ouId);
+        BeanUtils.copyProperties(command, asnLine);
         return this.asnLineManager.findListByShard(asnLine);
     }
 
@@ -466,6 +468,11 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
             throw new BusinessException(ErrorCodes.STORE_WAREHOUSE_IS_CONFIG);
         }
         return receiptMode;
+    }
+
+    @Override
+    public WhAsn findWhAsnById(Long id, Long ouId) {
+        return this.asnManager.findWhAsnByIdToShard(id, ouId);
     }
 
 }

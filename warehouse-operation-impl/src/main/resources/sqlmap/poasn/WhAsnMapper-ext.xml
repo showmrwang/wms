@@ -97,7 +97,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	asn.po_ou_id as poOuId,
 	        	asn.ext_code as extCode,
 	        	asn.urgent_status as urgentStatus,
-	        	s.store_name as storeName
+	        	s.store_name as storeName,
+	        	asn.version as version
 	    ]]>
 	</sql>
 	
@@ -310,4 +311,17 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        id = #{id} and ou_id=#{ouid} 
 	    ]]>
 	 </delete>
+	 
+	 <update id="updateByVersionForLock">
+	 	 <![CDATA[
+	        update t_wh_asn set version=1 and last_modify_time=now() where
+		        id = #{id} and ou_id=#{ouid} and last_modify_time=#{lastModifyTime} and version=0
+	    ]]>
+	 </update>
+	 <update id="updateByVersionForUnLock">
+	 	 <![CDATA[
+	        update t_wh_asn set version=0 and last_modify_time=now() where
+		        id = #{id} and ou_id=#{ouid}and version=1
+	    ]]>
+	 </update>
 </mapper>

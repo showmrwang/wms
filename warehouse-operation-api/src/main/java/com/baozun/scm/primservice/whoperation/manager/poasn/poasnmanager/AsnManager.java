@@ -1,5 +1,6 @@
 package com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -70,5 +71,35 @@ public interface AsnManager extends BaseManager {
     void deleteAsnAndAsnLineToShard(WhAsnCommand whAsnCommand, WhPoCommand whpo, List<WhPoLine> polineList);
 
     WhAsn getAsnByAsnExtCode(String asnExtCoce, Long ouId);
+
+    /**
+     * 根据ID和OUID查找WHASN
+     * 
+     * @param id
+     * @param ouId
+     * @return
+     */
+    WhAsn findWhAsnByIdToShard(Long id, Long ouId);
+
+    /**
+     * 缓存锁使用
+     * 
+     * @param id
+     * @param ouid
+     * @param lastModifyTime
+     * @return
+     */
+    int updateByVersionForLock(Long id, Long ouid, Date lastModifyTime);
+
+    /**
+     * 释放缓存锁使用
+     * 
+     * @param id
+     * @param ouid
+     * @param lastModifyTime
+     * @return
+     */
+    int updateByVersionForUnLock(Long id, Long ouid);
+
 
 }
