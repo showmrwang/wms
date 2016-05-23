@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.baozun.redis.manager.CacheManager;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
@@ -21,6 +22,7 @@ import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnMana
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine;
 
+@Service("pdaRcvdManagerProxy")
 public class PdaRcvdManagerProxyImpl implements PdaRcvdManagerProxy {
     @Autowired
     private AsnManager asnManager;
