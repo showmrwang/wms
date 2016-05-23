@@ -28,7 +28,7 @@
 	<import resource="spring/spring-dao.xml" />
 	<import resource="spring/spring-manager.xml" />
 	<import resource="spring/spring-mail.xml" />
-<!-- 	<import resource="spring/spring-redis.xml" /> -->
+	<import resource="spring/spring-redis.xml" />
 	<import resource="spring/spring-zk.xml" />
 	<import resource="spring/spring-dubbo.xml"/>
 
