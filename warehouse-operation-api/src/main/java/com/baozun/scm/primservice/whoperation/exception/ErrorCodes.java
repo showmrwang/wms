@@ -193,6 +193,8 @@ public class ErrorCodes {
     public static final int STORE_WAREHOUSE_IS_CONFIG = 20007;
     /**商品不存在*/
     public static final int SKU_NOT_FOUND=20008;
+    /**商品不在Asn收货明细中*/
+    public static final int SKU_NOT_FOUND_IN_ASN=20011;
   //20000-30000 end
     
     // 10001-20000 luyimin

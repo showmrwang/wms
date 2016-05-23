@@ -220,5 +220,14 @@ public interface SelectPoAsnManagerProxy extends BaseManager {
      * @return
      */
     Pagination<WhPoLineCommand> findPoLineListByQueryMapWithPageExtForCreateSubPo(Page page, Sort[] sorts, Map<String, Object> paraMap, Integer infoSource);
+    
+    /**
+     * 校验此收货Asn是否存在该商品收货明细
+     * @param asnId
+     * @param skuId
+     * @param ouId
+     * @param logId
+     */
+    void checkWhAsnLineBySkuId(List<WhAsnLine> whAsnLineList, Long skuId, Long ouId, String logId);
 
 }
