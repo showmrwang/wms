@@ -6,6 +6,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.redis.manager.CacheConfigManager;
 
+
+
 @Service("cacheConfigManager")
 @Transactional
 public class CacheConfigManagerImpl implements CacheConfigManager {
