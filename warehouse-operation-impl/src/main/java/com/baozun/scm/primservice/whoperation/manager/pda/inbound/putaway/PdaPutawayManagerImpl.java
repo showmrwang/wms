@@ -83,7 +83,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
             throw new BusinessException(ErrorCodes.COMMON_CONTAINER_LIFECYCLE_IS_NOT_NORMAL);
         }
         
-        // 判断该容器是否有符合的入库分拣规则
+        // 判断该容器是否有符合的上架规则
         RuleAfferCommand ruleAffer = new RuleAfferCommand();
         ruleAffer.setLogId(logId);
         ruleAffer.setOuid(ouId);
