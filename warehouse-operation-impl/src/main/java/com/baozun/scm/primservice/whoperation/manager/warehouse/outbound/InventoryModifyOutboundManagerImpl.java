@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.InventoryCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseInventoryManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.InventoryOccupyManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.InventoryValidateManager;
@@ -55,7 +56,7 @@ public class InventoryModifyOutboundManagerImpl extends BaseInventoryManagerImpl
         //创出库单
         String orderCode = "O" + new Date().getTime();//虚拟出库单
         //查询库存明细
-        List<InventoryCommand> invs = new ArrayList<InventoryCommand>();
+        List<WhSkuInventoryCommand> invs = new ArrayList<WhSkuInventoryCommand>();
         Long skuId = invCmd.getSkuId();
         String uuid = invCmd.getUuid();
         Double expectQty = invCmd.getModifyQty();

@@ -15,8 +15,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<sql id="whSkuInventorySnColumns">
 	    <![CDATA[
 	        	id as id,
-	        	inv_id as invId,
-	        	sku_id as skuId,
 	        	sn as sn,
 	        	occupation_code as occupationCode,
 	        	defect_ware_barcode as defectWareBarcode,
@@ -101,15 +99,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		<!-- 如果有自增字段 -->
 		
 			<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
-			<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventorySn" 
-				
+			<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventorySn" 	
 			 flushCache="true">
 		    <![CDATA[
 		        INSERT INTO
 		        t_wh_sku_inventory_sn (
-		        id,
-		        	inv_id ,
-		        	sku_id ,
+		        	id ,
 		        	sn ,
 		        	occupation_code ,
 		        	defect_ware_barcode ,
@@ -121,9 +116,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	uuid ,
 		        	ou_id 
 		        ) VALUES (
-		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        	#{invId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        	#{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		     	    #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{sn,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{occupationCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{defectWareBarcode,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -143,8 +136,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		<update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventorySn">
 	    <![CDATA[
 	        UPDATE t_wh_sku_inventory_sn SET
-		        inv_id = #{invId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        sku_id = #{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        sn = #{sn,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        occupation_code = #{occupationCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        defect_ware_barcode = #{defectWareBarcode,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -207,16 +198,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	       
 				<if test="id!=null">
 					and id = #{id}
-				</if>
-	       
-				<if test="invId!=null">
-					and inv_id = #{invId}
-				</if>
-	       
-				<if test="skuId!=null">
-					and sku_id = #{skuId}
-				</if>
-	       
+				</if>	       
 	       
 		       <if test="sn!=null and sn!=''">
 					and sn = #{sn}

@@ -41,6 +41,38 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    ]]>
 	</sql>
 	
+	<sql id="whSkuInventoryColumnsInvExt">
+	    <![CDATA[
+			inv.id as id,
+			inv.sku_id as skuId,
+			inv.location_id as locationId,
+			inv.outer_container_id as outerContainerId,
+			inv.inside_container_id as insideContainerId,
+			inv.customer_id as customerId,
+			inv.store_id as storeId,
+			inv.occupation_code as occupationCode,
+			inv.on_hand_qty as onHandQty,
+			inv.allocated_qty as allocatedQty,
+			inv.to_be_filled_qty as toBeFilledQty,
+			inv.frozen_qty as frozenQty,
+			inv.inv_status as invStatus,
+			inv.inv_type as invType,
+			inv.batch_number as batchNumber,
+			inv.mfg_date as mfgDate,
+			inv.exp_date as expDate,
+			inv.country_of_origin as countryOfOrigin,
+			inv.inv_attr1 as invAttr1,
+			inv.inv_attr2 as invAttr2,
+			inv.inv_attr3 as invAttr3,
+			inv.inv_attr4 as invAttr4,
+			inv.inv_attr5 as invAttr5,
+			inv.uuid as uuid,
+			inv.is_locked as isLocked,
+			inv.ou_id as ouId,
+			inv.occupation_code_source as occupationCodeSource
+	    ]]>
+	</sql>
+	
 	<sql id="whSkuInventoryDynamicWhereExt">
 		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
 		<where>
@@ -349,7 +381,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	</sql>
 	
 	
-	<resultMap id="WhSkuInventoryCommandResultExt" type="com.baozun.scm.primservice.whoperation.command.warehouse.inventory.InventoryCommand">
+	<resultMap id="WhSkuInventoryCommandResultExt" type="com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand">
 	</resultMap>
 	
 	<select id="findListCountByQueryMapExt" resultType="long">
@@ -398,6 +430,148 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 							left join sys_dictionary inva5 on t.inv_attr5 = inva5.dic_value and inva5.group_value = 'INVENTORY_ATTR_5' 
 						<include refid="findListByQueryMapWithPageWhereExt"/> )
 			t group by t.uuid
+    </select>
+    
+    <sql id="findwWhSkuInventoryByIdAndUuidColumns">
+	    <![CDATA[
+			inv.id as id,
+			inv.sku_id as skuId,
+			inv.location_id as locationId,
+			inv.outer_container_id as outerContainerId,
+			inv.inside_container_id as insideContainerId,
+			inv.customer_id as customerId,
+			inv.store_id as storeId,
+			inv.occupation_code as occupationCode,
+			inv.on_hand_qty as onHandQty,
+			inv.allocated_qty as allocatedQty,
+			inv.to_be_filled_qty as toBeFilledQty,
+			inv.frozen_qty as frozenQty,
+			inv.inv_status as invStatus,
+			inv.inv_type as invType,
+			inv.batch_number as batchNumber,
+			inv.mfg_date as mfgDate,
+			inv.exp_date as expDate,
+			inv.country_of_origin as countryOfOrigin,
+			inv.inv_attr1 as invAttr1,
+			inv.inv_attr2 as invAttr2,
+			inv.inv_attr3 as invAttr3,
+			inv.inv_attr4 as invAttr4,
+			inv.inv_attr5 as invAttr5,
+			inv.uuid as uuid,
+			inv.is_locked as isLocked,
+			inv.ou_id as ouId,
+			inv.occupation_code_source as occupationCodeSource,
+			l.code as locationCode,
+			cout.code as outerContainerCode,
+			iout.code as insideContainerCode,
+			cust.customer_name as customerName,
+			store.store_name as storeName,
+			sku.code as skuCode,
+			sku.name as skuName
+	    ]]>
+	</sql>
+    
+    
+	<select id="findwWhSkuInventoryByIdAndUuid" resultMap="WhSkuInventoryCommandResultExt">
+		select <include refid="findwWhSkuInventoryByIdAndUuidColumns" />
+			from t_wh_sku_inventory inv 
+				left join t_wh_location l on inv.location_id = l.id 
+				left join t_wh_container cout on inv.outer_container_id = cout.id 
+				left join t_wh_container iout on inv.inside_container_id = iout.id 
+				left join t_bi_customer cust on inv.customer_id = cust.id 
+				left join t_bi_store store on inv.store_id = store.id 
+				left join t_wh_sku sku on inv.sku_id = sku.id 
+				<where>
+				inv.id = #{id} 
+	       		and inv.ou_id = #{ouid} 
+				<if test="uuid!=null and uuid!=''">
+					 and inv.uuid = #{uuid}
+				</if>
+		</where>
+    </select>
+    
+    <select id="findWhSkuInventoryByContainerId" resultMap="WhSkuInventoryCommandResultExt">
+		select <include refid="findwWhSkuInventoryByIdAndUuidColumns" />
+			from t_wh_sku_inventory inv 
+				left join t_wh_location l on inv.location_id = l.id 
+				left join t_wh_container cout on inv.outer_container_id = cout.id 
+				left join t_wh_container iout on inv.inside_container_id = iout.id 
+				left join t_bi_customer cust on inv.customer_id = cust.id 
+				left join t_bi_store store on inv.store_id = store.id 
+				left join t_wh_sku sku on inv.sku_id = sku.id 
+				<where>
+	       		inv.ou_id = #{ouid}
+	       		<if test="containerId!=null and containerId!=''">
+	       			<!-- containerFlag==0查询外部容器 -->
+		       		<if test="containerFlag==0">
+						 and inv.outer_container_id = #{containerId}
+					</if>
+					<!-- containerFlag==0查询内部容器 -->
+					<if test="containerFlag==1">
+						 and inv.inside_container_id = #{containerId}
+					</if>
+	       		</if>
+				</where>
+    </select>
+    
+    <select id="findWhSkuInventoryByContainerCode" resultMap="WhSkuInventoryCommandResultExt">
+			select 
+					inv.id as id,
+					inv.sku_id as skuId,
+					inv.location_id as locationId,
+					inv.outer_container_id as outerContainerId,
+					inv.inside_container_id as insideContainerId,
+					inv.customer_id as customerId,
+					inv.store_id as storeId,
+					inv.occupation_code as occupationCode,
+					inv.on_hand_qty as onHandQty,
+					inv.allocated_qty as allocatedQty,
+					inv.to_be_filled_qty as toBeFilledQty,
+					inv.frozen_qty as frozenQty,
+					inv.inv_status as invStatus,
+					inv.inv_type as invType,
+					inv.batch_number as batchNumber,
+					inv.mfg_date as mfgDate,
+					inv.exp_date as expDate,
+					inv.country_of_origin as countryOfOrigin,
+					inv.inv_attr1 as invAttr1,
+					inv.inv_attr2 as invAttr2,
+					inv.inv_attr3 as invAttr3,
+					inv.inv_attr4 as invAttr4,
+					inv.inv_attr5 as invAttr5,
+					inv.uuid as uuid,
+					inv.is_locked as isLocked,
+					inv.ou_id as ouId,
+					inv.occupation_code_source as occupationCodeSource
+					from 
+					t_wh_sku_inventory inv 
+					left join t_wh_container c on c.id = inv.inside_container_id
+					where 
+					inv.ou_id = #{ouid}
+					and c.code in 
+					<foreach item="item" index="index" collection="containerList" open="(" separator="," close=")">
+			            #{item}
+			        </foreach>
+    </select>
+    
+    <select id="findWhSkuInventoryBySkuCodeAndContainerId" resultMap="WhSkuInventoryCommandResultExt">
+				select  <include refid="whSkuInventoryColumnsInvExt" />
+					from 
+					t_wh_sku_inventory inv 
+					left join t_wh_sku sku on inv.sku_id = sku.id
+					where 
+					sku.bar_code = #{skuCode}
+					and inv.inside_container_id = #{containerId}  
+					and inv.ou_id = #{ouid}
+				union all
+				select  <include refid="whSkuInventoryColumnsInvExt" />
+					from 
+					t_wh_sku_inventory inv 
+					left join t_wh_sku_barcode sku on inv.sku_id = sku.sku_id
+					where 
+					sku.bar_code = #{skuCode}
+					and inv.inside_container_id = #{containerId} 
+					and inv.ou_id = #{ouid}
     </select>
     
     <sql id="findWhSkuInventoryByIdAndUuidColumns">
@@ -509,6 +683,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     <select id="releaseOccupiedInventory" resultType="long">
     	
     </select>
-    
 	
+	
+	<update id="updateWhSkuInventoryByContainerId" parameterType="com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand">
+			UPDATE t_wh_sku_inventory SET outer_container_id = #{outerContainerId}
+			WHERE inside_container_id  = #{insideContainerId}
+			and ou_id = #{ouId}
+	</update>
 </mapper>

@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.InventoryCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
@@ -55,7 +56,7 @@ public class InventoryValidateManagerImpl extends BaseManagerImpl implements Inv
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public boolean onHandQtyValidate(String uuid, Long skuId, Long ouId, Double expectQty, String logId) {
         boolean result = true;
-        InventoryCommand inv = inventoryDao.findWhSkuInventoryByIdGroupByUuid(skuId, uuid, ouId);
+        WhSkuInventoryCommand inv = inventoryDao.findWhSkuInventoryByIdGroupByUuid(skuId, uuid, ouId);
         if (null == inv) {
             result = false;
         }

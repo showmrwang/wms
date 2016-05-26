@@ -18,7 +18,7 @@ package com.baozun.scm.primservice.whoperation.manager.warehouse.inventory;
 
 import java.util.List;
 
-import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.InventoryCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 
 /**
@@ -32,6 +32,6 @@ public interface InventoryOccupyManager extends BaseManager {
      * @author lichuan
      * @param invCmds
      */
-    void simpleOccupy(List<InventoryCommand> invCmds, String occupyCode, String logId);
+    void simpleOccupy(List<WhSkuInventoryCommand> invCmds, String occupyCode, String logId);
 
 }

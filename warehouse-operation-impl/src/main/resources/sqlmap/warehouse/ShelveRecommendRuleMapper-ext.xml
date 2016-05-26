@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.ShelveRecommendRuleDao">
+    <resultMap id="ShelveRecommendRuleResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.ShelveRecommendRule">
+    </resultMap>
+    <resultMap id="ShelveRecommendRuleCommand"
+               type="com.baozun.scm.primservice.whoperation.command.warehouse.ShelveRecommendRuleCommand">
+    </resultMap>
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="shelveRecommendRuleColumnsExt">
+        <![CDATA[
+            id as id,
+            rule_name as ruleName,
+            rule_code as ruleCode,
+            rule as rule,
+            rule_sql as ruleSql,
+            ou_id as ouId,
+            priority as priority,
+            description as description,
+            create_time as createTime,
+            last_modify_time as lastModifyTime,
+            created_id as createdId,
+            modified_id as modifiedId,
+            lifecycle as lifecycle
+        ]]>
+    </sql>
+
+    <sql id="shelveRecommendRuleDynamicWhereExt">
+        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+
+            <if test="id!=null">
+                and srr.id = #{id}
+            </if>
+
+            <if test="ruleName!=null and ruleName!=''">
+                and srr.rule_name = #{ruleName}
+            </if>
+
+            <if test="ruleCode!=null and ruleCode!=''">
+                and srr.rule_code = #{ruleCode}
+            </if>
+
+            <if test="rule!=null and rule!=''">
+                and srr.rule = #{rule}
+            </if>
+
+            <if test="ruleSql!=null and ruleSql!=''">
+                and srr.rule_sql = #{ruleSql}
+            </if>
+
+            <if test="ouId!=null">
+                and srr.ou_id = #{ouId}
+            </if>
+
+            <if test="priority!=null">
+                and srr.priority = #{priority}
+            </if>
+
+            <if test="description!=null and description!=''">
+                and srr.description = #{description}
+            </if>
+
+            <if test="createTime!=null">
+                and srr.create_time = #{createTime}
+            </if>
+
+            <if test="lastModifyTime!=null">
+                and srr.last_modify_time = #{lastModifyTime}
+            </if>
+
+            <if test="createdId!=null">
+                and srr.created_id = #{createdId}
+            </if>
+
+            <if test="modifiedId!=null">
+                and srr.modified_id = #{modifiedId}
+            </if>
+
+            <if test="lifecycle!=null">
+                and srr.lifecycle = #{lifecycle}
+            </if>
+        </where>
+    </sql>
+
+
+    <sql id="shelveRecommendRuleCommandColumnsExt">
+        <![CDATA[
+            srr.id as id,
+            srr.rule_name as ruleName,
+            srr.rule_code as ruleCode,
+            srr.rule as rule,
+            srr.rule_sql as ruleSql,
+            srr.ou_id as ouId,
+            srr.priority as priority,
+            srr.description as description,
+            srr.create_time as createTime,
+            srr.last_modify_time as lastModifyTime,
+            srr.created_id as createdId,
+            srr.modified_id as modifiedId,
+            srr.lifecycle as lifecycle
+        ]]>
+    </sql>
+
+
+    <sql id="shelveRecommendRuleDynamicLikeWhereExt">
+        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+
+            <if test="id!=null">
+                and id = #{id}
+            </if>
+
+            <if test="ruleName!=null and ruleName!=''">
+                and rule_name like #{ruleName}
+            </if>
+
+            <if test="ruleNameByCriteriasData!=null and ruleNameByCriteriasData!=''">
+                and rule_name like #{ruleNameByCriteriasData}
+            </if>
+
+            <if test="ruleCode!=null and ruleCode!=''">
+                and rule_code like #{ruleCode}
+            </if>
+
+            <if test="ruleCodeByCriteriasData!=null and ruleCodeByCriteriasData!=''">
+                and rule_code like #{ruleCodeByCriteriasData}
+            </if>
+
+            <if test="rule!=null and rule!=''">
+                and rule = #{rule}
+            </if>
+
+            <if test="ruleSql!=null and ruleSql!=''">
+                and rule_sql = #{ruleSql}
+            </if>
+
+            <if test="ouId!=null">
+                and ou_id = #{ouId}
+            </if>
+
+            <if test="priority!=null">
+                and priority = #{priority}
+            </if>
+
+
+            <if test="description!=null and description!=''">
+                and description like #{description}
+            </if>
+
+            <if test="descriptionByCriteriasData!=null and descriptionByCriteriasData!=''">
+                and description like #{descriptionByCriteriasData}
+            </if>
+
+            <if test="createTime!=null">
+                and create_time = #{createTime}
+            </if>
+
+            <if test="lastModifyTime!=null">
+                and last_modify_time = #{lastModifyTime}
+            </if>
+
+            <if test="createdId!=null">
+                and created_id = #{createdId}
+            </if>
+
+            <if test="modifiedId!=null">
+                and modified_id = #{modifiedId}
+            </if>
+
+            <if test="lifecycle!=null">
+                and lifecycle = #{lifecycle}
+            </if>
+        </where>
+    </sql>
+
+
+
+    <select id="findCountByQueryMapWithPageExt" resultType="long">
+        select count(1)
+        from t_wh_shelve_recommend_rule as srr
+        <include refid="shelveRecommendRuleDynamicLikeWhereExt"/>
+    </select>
+
+    <select id="findListByQueryMapWithPageExt" resultMap="ShelveRecommendRuleCommand">
+        select
+        <include refid="shelveRecommendRuleCommandColumnsExt"/>
+        from t_wh_shelve_recommend_rule as srr
+        <include refid="shelveRecommendRuleDynamicLikeWhereExt"/>
+    </select>
+
+    <select id="findByIdExt" resultMap="ShelveRecommendRuleResultExt">
+        select
+        <include refid="shelveRecommendRuleCommandColumnsExt"/>
+        <![CDATA[
+            from t_wh_shelve_recommend_rule as srr
+            where
+            srr.id = #{id}
+            and srr.ou_id = #{ouId}
+        ]]>
+    </select>
+
+    <select id="findCommandById" resultMap="ShelveRecommendRuleCommand">
+        select
+        <include refid="shelveRecommendRuleCommandColumnsExt"/>
+        <![CDATA[
+            from t_wh_shelve_recommend_rule as srr
+            where
+            srr.id = #{id}
+            and srr.ou_id = #{ouId}
+        ]]>
+    </select>
+    
+    <select id="findShelveRecommendRuleByOuid" resultMap="ShelveRecommendRuleCommand">
+        select
+        <include refid="shelveRecommendRuleColumnsExt"/>
+            from t_wh_shelve_recommend_rule
+            where
+            ou_id = #{ouId} 
+            and lifecycle = 1
+            order by priority asc
+    </select>
+
+
+    <select id="checkUnique" resultType="long">
+        select count(1) from t_wh_shelve_recommend_rule as srr
+        <where>
+            <if test="id!=null">
+                and srr.id != #{id}
+            </if>
+            <if test="(ruleName!=null and ruleName!='')
+                    or (ruleCode!=null and ruleCode!='')
+                    or (priority!=null and priority!='')">
+                and (
+                <trim prefix="" prefixOverrides="or">
+                    <if test="ruleName!=null and ruleName!=''">
+                        or srr.rule_name = #{ruleName}
+                    </if>
+                    <if test="ruleCode!=null and ruleCode!=''">
+                        or srr.rule_code = #{ruleCode}
+                    </if>
+                    <if test="priority!=null and priority!=''">
+                        or srr.priority = #{priority}
+                    </if>
+                </trim>
+                )
+            </if>
+            and srr.ou_id = #{ouId}
+        </where>
+    </select>
+
+    <select id="executeRuleSql" resultType="Long">
+        ${ruleSql}
+    </select>
+
+    <update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.ShelveRecommendRule">
+        <![CDATA[
+
+            UPDATE t_wh_shelve_recommend_rule SET
+                rule_name = #{ruleName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                rule_code = #{ruleCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                rule = #{rule,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                rule_sql = #{ruleSql,javaType=java.lang.String,jdbcType=LONGVARCHAR} ,
+                priority = #{priority,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                description = #{description,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                last_modify_time = now() ,
+                created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER}
+            WHERE
+                id = #{id}
+                and ou_id = #{ouId}
+                and last_modify_time	=  #{lastModifyTime}
+        ]]>
+    </update>
+
+</mapper>

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.RecommendShelveDao">
+    <resultMap id="RecommendShelveResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.RecommendShelve">
+    </resultMap>
+    <resultMap id="RecommendShelveCommand"
+               type="com.baozun.scm.primservice.whoperation.command.warehouse.RecommendShelveCommand">
+    </resultMap>
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="recommendShelveColumnsExt">
+        <![CDATA[
+                id as id,
+                shelve_recommend_rule_id as shelveRecommendRuleId,
+                shelve_area_id as shelveAreaId,
+                location_rule as locationRule,
+                priority as priority,
+                ou_id as ouId,
+                create_time as createTime,
+                last_modify_time as lastModifyTime,
+                created_id as createdId,
+                modified_id as modifiedId
+        ]]>
+    </sql>
+
+    <sql id="recommendShelveDynamicWhereExt">
+        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+
+            <if test="id!=null">
+                and id = #{id}
+            </if>
+
+            <if test="shelveRecommendRuleId!=null">
+                and shelve_recommend_rule_id = #{shelveRecommendRuleId}
+            </if>
+
+            <if test="shelveAreaId!=null">
+                and shelve_area_id = #{shelveAreaId}
+            </if>
+
+            <if test="locationRule!=null">
+                and location_rule = #{locationRule}
+            </if>
+
+            <if test="priority!=null">
+                and priority = #{priority}
+            </if>
+
+            <if test="ouId!=null">
+                and ou_id = #{ouId}
+            </if>
+
+            <if test="createTime!=null">
+                and create_time = #{createTime}
+            </if>
+
+            <if test="lastModifyTime!=null">
+                and last_modify_time = #{lastModifyTime}
+            </if>
+
+            <if test="createdId!=null">
+                and created_id = #{createdId}
+            </if>
+
+            <if test="modifiedId!=null">
+                and modified_id = #{modifiedId}
+            </if>
+        </where>
+    </sql>
+
+    <select id="findCommandByRuleId" resultMap="RecommendShelveCommand">
+        select
+        <include refid="recommendShelveColumnsExt"/>
+        <![CDATA[
+            from t_wh_recommend_shelve
+            where
+                shelve_recommend_rule_id = #{shelveRecommendRuleId}
+                and ou_id = #{ouId}
+        ]]>
+    </select>
+
+    <select id="findListCountByRuleId" resultType="long">
+        select count(*) from t_wh_recommend_shelve
+        where
+            shelve_recommend_rule_id = #{shelveRuleId}
+            and ou_id = #{ouId}
+    </select>
+
+    <delete id="deleteByRuleId">
+        delete from t_wh_recommend_shelve
+        where
+            shelve_recommend_rule_id = #{shelveRuleId}
+            and ou_id = #{ouId}
+    </delete>
+</mapper>

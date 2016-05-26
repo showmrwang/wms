@@ -119,7 +119,20 @@ public final class Constants {
     public static final String DATE_PATTERN_YMD = "yyyy-MM-dd";
 
     public static final String DATE_PATTERN_YMDHM = "yyyy-MM-dd HH:mm";
+    
+    /** 月台规则TYPE */
+    public static final String PLATFORM_RECOMMEND_RULE = "platform_recommend_rule";
+
+    /** 入库分拣规则TYPE */
+    public static final String INBOUND_RULE = "inbound_rule";
+
+    /** 上架推荐规则TYPE 整托盘 整箱 */
+    public static final String SHELVE_RECOMMEND_RULE_ALL = "shelve_recommend_rule_all";
+
+    /** 上架推荐规则TYPE 拆箱 */
+    public static final String SHELVE_RECOMMEND_RULE = "shelve_recommend_rule";
 
     /** 默认Long数值 */
     public static final Long DEFAULT_LONG = 0l;
+    
 }

@@ -12,8 +12,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<sql id="whSkuInventorySnColumnsExt">
 	    <![CDATA[
 	        	id as id,
-	        	inv_id as invId,
-	        	sku_id as skuId,
 	        	sn as sn,
 	        	occupation_code as occupationCode,
 	        	defect_ware_barcode as defectWareBarcode,
@@ -27,7 +25,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    ]]>
 	</sql>
 	
-	<resultMap id="WhSkuInventorySnCommandResultExt" type="com.baozun.scm.primservice.whoperation.command.warehouse.inventory.InventorySnCommand">
+	<resultMap id="WhSkuInventorySnCommandResultExt" type="com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand">
 	</resultMap>
 	
 	<sql id="findListByQueryMapWithPageWhereExt">
@@ -69,8 +67,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<sql id="findListByQueryMapWithPageCommandExt">
 	    <![CDATA[
 				sn.id as id,
-				sn.inv_id as invId,
-				sn.sku_id as skuId,
 				sn.sn as sn,
 				sn.occupation_code as occupationCode,
 				sn.defect_ware_barcode as defectWareBarcode,
@@ -96,7 +92,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<select id="findListCountByQueryMapExt" resultType="long">
         select count(*) 
 			from t_wh_sku_inventory_sn sn 
-			left join t_wh_sku sku on sn.sku_id = sku.id 
+			left join t_wh_sku_inventory inv 
+			left join t_wh_sku sku on inv.sku_id = sku.id
+			on inv.uuid = sn.uuid 
 			left join sys_dictionary sys on sn.status = sys.dic_value and sys.group_value = 'INVENTORY_SN_STATUS' 
 			left join t_bi_store_defect_type stype on stype.id = sn.defect_type_id 
 			left join t_bi_store_defect_reasons srea on srea.id = sn.defect_reasons_id
@@ -108,7 +106,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<select id="findListByQueryMapWithPageExt" resultMap="WhSkuInventorySnCommandResultExt">
     	select <include refid="findListByQueryMapWithPageCommandExt" />
 			from t_wh_sku_inventory_sn sn 
-			left join t_wh_sku sku on sn.sku_id = sku.id 
+			left join t_wh_sku_inventory inv 
+			left join t_wh_sku sku on inv.sku_id = sku.id
+			on inv.uuid = sn.uuid 
 			left join sys_dictionary sys on sn.status = sys.dic_value and sys.group_value = 'INVENTORY_SN_STATUS' 
 			left join t_bi_store_defect_type stype on stype.id = sn.defect_type_id 
 			left join t_bi_store_defect_reasons srea on srea.id = sn.defect_reasons_id

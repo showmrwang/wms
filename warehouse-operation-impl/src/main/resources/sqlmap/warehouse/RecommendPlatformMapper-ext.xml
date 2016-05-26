@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.RecommendPlatformDao">
+    <resultMap id="RecommendPlatformResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.RecommendPlatform">
+    </resultMap>
+    <resultMap id="recommendPlatformCommand"
+               type="com.baozun.scm.primservice.whoperation.command.warehouse.RecommendPlatformCommand">
+    </resultMap>
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="recommendPlatformColumnsExt">
+        <![CDATA[
+                id as id,
+                platform_recommend_rule_id as platformRecommendRuleId,
+                platform_id as platformId,
+                priority as priority,
+                ou_id as ouId,
+                create_time as createTime,
+                created_id as createdId,
+                last_modify_time as lastModifyTime,
+                modified_id as modifiedId
+        ]]>
+    </sql>
+
+    <sql id="recommendPlatformDynamicWhereExt">
+        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+
+            <if test="id!=null">
+                and id = #{id}
+            </if>
+
+            <if test="platformRecommendRuleId!=null">
+                and platform_recommend_rule_id = #{platformRecommendRuleId}
+            </if>
+
+            <if test="platformId!=null">
+                and platform_id = #{platformId}
+            </if>
+
+            <if test="priority!=null">
+                and priority = #{priority}
+            </if>
+
+            <if test="ouId!=null">
+                and ou_id = #{ouId}
+            </if>
+
+            <if test="createTime!=null">
+                and create_time = #{createTime}
+            </if>
+
+            <if test="createdId!=null">
+                and created_id = #{createdId}
+            </if>
+
+            <if test="lastModifyTime!=null">
+                and last_modify_time = #{lastModifyTime}
+            </if>
+
+            <if test="modifiedId!=null">
+                and modified_id = #{modifiedId}
+            </if>
+        </where>
+    </sql>
+
+    <select id="findCommandByRuleId" resultMap="recommendPlatformCommand">
+        select
+        <include refid="recommendPlatformColumnsExt"/>
+        <![CDATA[
+            from t_wh_recommend_platform
+            where
+            platform_recommend_rule_id = #{platformRecommendRuleId}
+            and ou_id = #{ouId}
+        ]]>
+    </select>
+    
+    <select id="findCommandByRuleIdOrderByPriority" resultMap="recommendPlatformCommand">
+        select
+        	    r.id as id,
+                r.platform_recommend_rule_id as platformRecommendRuleId,
+                r.platform_id as platformId,
+                r.priority as priority,
+                r.ou_id as ouId,
+                r.create_time as createTime,
+                r.created_id as createdId,
+                r.last_modify_time as lastModifyTime,
+                r.modified_id as modifiedId,
+                p.platform_code as platformCode
+			from 
+				t_wh_recommend_platform r 
+				left join t_wh_platform p on r.platform_id = p.id
+            where
+	            r.platform_recommend_rule_id = #{platformRecommendRuleId}
+	            and r.ou_id = #{ouId} and p.lifecycle = 1
+	            order by r.priority asc limit 1
+    </select>
+
+    <select id="findListCountByRuleId" resultType="long">
+        select count(*) from t_wh_recommend_platform
+        where
+        platform_recommend_rule_id = #{platformRecommendRuleId}
+        and ou_id = #{ouId}
+    </select>
+
+    <delete id="deleteByRuleId">
+        delete from t_wh_recommend_platform
+        where
+        platform_recommend_rule_id = #{platformRecommendRuleId}
+        and ou_id = #{ouId}
+    </delete>
+
+</mapper>

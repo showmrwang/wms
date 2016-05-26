@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.ShelveRecommendRuleDao">
+    <resultMap id="ShelveRecommendRuleResult" type="com.baozun.scm.primservice.whoperation.model.warehouse.ShelveRecommendRule">
+    </resultMap>
+    <resultMap id="ShelveRecommendRulePaginationResult" type="lark.common.dao.Pagination">
+        <collection property="items" javaType="ArrayList" resultMap="ShelveRecommendRuleResult"/>
+    </resultMap>
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="shelveRecommendRuleColumns">
+        <![CDATA[
+                id as id,
+                rule_name as ruleName,
+                rule_code as ruleCode,
+                rule as rule,
+                rule_sql as ruleSql,
+                ou_id as ouId,
+                priority as priority,
+                description as description,
+                create_time as createTime,
+                last_modify_time as lastModifyTime,
+                created_id as createdId,
+                modified_id as modifiedId,
+                lifecycle as lifecycle
+        ]]>
+    </sql>
+    <sql id="shelveRecommendRuleConditionWhereExt">
+        <where>
+            <if test="likeEqualsMap != null">
+                <foreach collection="likeEqualsMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} like CONCAT('%',#{value},'%')
+                </foreach>
+            </if>
+            <if test="equalsMap != null">
+                <foreach collection="equalsMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} = #{value}
+                </foreach>
+            </if>
+            <if test="notEqualsMap != null">
+                <foreach collection="notEqualsMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} != #{value}
+                </foreach>
+            </if>
+            <if test="greateMap != null">
+                <foreach collection="greateMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} &gt; #{value}
+                </foreach>
+            </if>
+            <if test="greateEqualsMap != null">
+                <foreach collection="greateEqualsMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} &gt;= #{value}
+                </foreach>
+            </if>
+            <if test="lessMap != null">
+                <foreach collection="lessMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} &lt; #{value}
+                </foreach>
+            </if>
+            <if test="lessEqualsMap != null">
+                <foreach collection="lessEqualsMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} &lt;= #{value}
+                </foreach>
+            </if>
+            <if test="nullMap != null">
+                <foreach collection="nullMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} is null
+                </foreach>
+            </if>
+            <if test="notNullMap != null">
+                <foreach collection="notNullMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} is not null
+                </foreach>
+            </if>
+            <if test="inMap != null">
+                <foreach collection="inMap" index="key" item="value" separator="and" open=" and (" close=")">
+                    <foreach collection="value" item="itemin" index="index" separator="or">
+                        ${key} = #{itemin}
+                    </foreach>
+                </foreach>
+            </if>
+            <if test="notInMap != null">
+                <foreach collection="notInMap" index="key" item="value" separator="and" open=" and (" close=")">
+                    <foreach collection="value" item="itemin" index="index" separator="and">
+                        ${key} != #{itemin}
+                    </foreach>
+                </foreach>
+            </if>
+        </where>
+        <if test="sortBy != null">
+            <foreach collection="sortBy" item="item" separator="," open=" order by ">
+                ${item.field} ${item.type}
+            </foreach>
+        </if>
+    </sql>
+
+    <!-- 如果有自增字段 -->
+
+    <!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+    <insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.ShelveRecommendRule"
+            useGeneratedKeys="true" keyProperty="id"
+            flushCache="true">
+        <![CDATA[
+                INSERT INTO
+                t_wh_shelve_recommend_rule (
+                    id,
+                    rule_name ,
+                    rule_code ,
+                    rule ,
+                    rule_sql ,
+                    ou_id ,
+                    priority ,
+                    description ,
+                    create_time ,
+                    last_modify_time ,
+                    created_id ,
+                    modified_id ,
+                    lifecycle 
+                ) VALUES (
+                    #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{ruleName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{ruleCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{rule,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{ruleSql,javaType=java.lang.String,jdbcType=LONGVARCHAR} ,
+                    #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{priority,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                    #{description,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                    #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                    #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
+                )
+        ]]>
+
+    </insert>
+
+    <update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.ShelveRecommendRule">
+        <![CDATA[
+            UPDATE t_wh_shelve_recommend_rule SET
+                rule_name = #{ruleName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                rule_code = #{ruleCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                rule = #{rule,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                rule_sql = #{ruleSql,javaType=java.lang.String,jdbcType=LONGVARCHAR} ,
+                ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                priority = #{priority,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                description = #{description,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
+            WHERE 
+                id = #{id}
+        ]]>
+    </update>
+    <update id="batchUpdate">
+        UPDATE t_wh_shelve_recommend_rule SET
+        <foreach collection="batchUpdateMap" index="key" item="value" separator=",">
+            ${key} = #{value}
+        </foreach>
+        <include refid="shelveRecommendRuleConditionWhereExt"/>
+    </update>
+
+    <delete id="delete" parameterType="java.lang.Long">
+        <![CDATA[
+            delete from t_wh_shelve_recommend_rule where
+                id = #{id}
+        ]]>
+    </delete>
+
+    <delete id="deleteByIds" parameterType="list">
+
+        delete from t_wh_shelve_recommend_rule
+        where id in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+
+    </delete>
+    <update id="batchDelete">
+        delete from t_wh_shelve_recommend_rule
+        <include refid="shelveRecommendRuleConditionWhereExt"/>
+    </update>
+
+    <select id="findById" parameterType="java.lang.Long" resultMap="ShelveRecommendRuleResult" flushCache="false">
+        select
+        <include refid="shelveRecommendRuleColumns"/>
+        <![CDATA[
+                from t_wh_shelve_recommend_rule 
+                where 
+                id = #{id} 
+            ]]>
+    </select>
+    <select id="getByIds" parameterType="list" resultMap="ShelveRecommendRuleResult" flushCache="false">
+        select
+        <include refid="shelveRecommendRuleColumns"/>
+        from t_wh_shelve_recommend_rule
+        where id in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+    <sql id="shelveRecommendRuleDynamicWhere">
+        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+
+            <if test="id!=null">
+                and id = #{id}
+            </if>
+
+
+            <if test="ruleName!=null and ruleName!=''">
+                and rule_name = #{ruleName}
+            </if>
+
+
+            <if test="ruleCode!=null and ruleCode!=''">
+                and rule_code = #{ruleCode}
+            </if>
+
+
+            <if test="rule!=null and rule!=''">
+                and rule = #{rule}
+            </if>
+
+
+            <if test="ruleSql!=null and ruleSql!=''">
+                and rule_sql = #{ruleSql}
+            </if>
+
+            <if test="ouId!=null">
+                and ou_id = #{ouId}
+            </if>
+
+            <if test="priority!=null">
+                and priority = #{priority}
+            </if>
+
+
+            <if test="description!=null and description!=''">
+                and description = #{description}
+            </if>
+
+            <if test="createTime!=null">
+                and create_time = #{createTime}
+            </if>
+
+            <if test="lastModifyTime!=null">
+                and last_modify_time = #{lastModifyTime}
+            </if>
+
+            <if test="createdId!=null">
+                and created_id = #{createdId}
+            </if>
+
+            <if test="modifiedId!=null">
+                and modified_id = #{modifiedId}
+            </if>
+
+            <if test="lifecycle!=null">
+                and lifecycle = #{lifecycle}
+            </if>
+        </where>
+    </sql>
+
+
+    <select id="getCount" resultType="long">
+        select count(*) from t_wh_shelve_recommend_rule
+    </select>
+    <select id="findListCountByQueryMap" resultType="long">
+        select count(*) from t_wh_shelve_recommend_rule
+        <include refid="shelveRecommendRuleDynamicWhere"/>
+    </select>
+
+    <select id="findListCountByParam" resultType="long">
+        select count(*) from t_wh_shelve_recommend_rule
+        <include refid="shelveRecommendRuleDynamicWhere"/>
+    </select>
+
+    <!--
+        分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+        因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPage" resultMap="ShelveRecommendRuleResult">
+        select
+        <include refid="shelveRecommendRuleColumns"/>
+        from t_wh_shelve_recommend_rule
+        <include refid="shelveRecommendRuleDynamicWhere"/>
+
+    </select>
+
+    <select id="findListByQueryMap" resultMap="ShelveRecommendRuleResult">
+        select
+        <include refid="shelveRecommendRuleColumns"/>
+        from t_wh_shelve_recommend_rule
+        <include refid="shelveRecommendRuleDynamicWhere"/>
+
+    </select>
+
+    <select id="findListByParam" resultMap="ShelveRecommendRuleResult">
+        select
+        <include refid="shelveRecommendRuleColumns"/>
+        from t_wh_shelve_recommend_rule
+        <include refid="shelveRecommendRuleDynamicWhere"/>
+
+    </select>
+
+    <select id="query" resultMap="ShelveRecommendRuleResult">
+        select
+        <include refid="shelveRecommendRuleColumns"/>
+        from t_wh_shelve_recommend_rule
+        <include refid="shelveRecommendRuleConditionWhereExt"/>
+    </select>
+
+    <select id="queryCount" resultType="long">
+        select count(*) from t_wh_shelve_recommend_rule
+        <include refid="shelveRecommendRuleConditionWhereExt"/>
+    </select>
+
+
+</mapper>

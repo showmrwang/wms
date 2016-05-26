@@ -197,7 +197,16 @@ public class ErrorCodes {
     public static final int SKU_NOT_FOUND_IN_ASN=20011;
   //20000-30000 end
 
-
+    //5001-10000 common start
+    /** 容器号不能为空 */
+    public static final int COMMON_CONTAINER_CODE_IS_NULL_ERROR = 5001;
+    /** 托盘号不能为空 */
+    public static final int COMMON_PALLET_CODE_IS_NULL_ERROR = 5002;
+    /** 容器信息不存在 */
+    public static final int COMMON_CONTAINER_IS_NOT_EXISTS = 5003;
+    /** 容器状态不可用 */
+    public static final int COMMON_CONTAINER_LIFECYCLE_IS_NOT_NORMAL = 5004;
+    //5001-10000  common end
     
     // 10001-20000 luyimin
     /** ASN没有可以收货的明细 */
@@ -216,6 +225,7 @@ public class ErrorCodes {
     // 30001-40000 zhanglei
 
     // 40001-50000 lichuan
+    
     // 40001-50000 lichuan
 
     // 50001-60000 hubin

@@ -1,0 +1,407 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.PlatformRecommendRuleDao">
+    <resultMap id="PlatformRecommendRuleResultExt"
+               type="com.baozun.scm.primservice.whoperation.model.warehouse.PlatformRecommendRule">
+    </resultMap>
+    <resultMap id="platformRecommendRuleCommand"
+               type="com.baozun.scm.primservice.whoperation.command.warehouse.PlatformRecommendRuleCommand">
+    </resultMap>
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="platformRecommendRuleColumnsExt">
+        <![CDATA[
+                id as id,
+                platform_recommend_rule_name as platformRecommendRuleName,
+                platform_recommend_rule_code as platformRecommendRuleCode,
+                rule as rule,
+                rule_sql as ruleSql,
+                ou_id as ouId,
+                priority as priority,
+                description as description,
+                create_time as createTime,
+                created_id as createdId,
+                last_modify_time as lastModifyTime,
+                modified_id as modifiedId,
+                lifecycle as lifecycle
+        ]]>
+    </sql>
+
+    <sql id="platformRecommendRuleDynamicWhereExt">
+        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+
+            <if test="id!=null">
+                and id = #{id}
+            </if>
+
+
+            <if test="platformRecommendRuleName!=null and platformRecommendRuleName!=''">
+                and platform_recommend_rule_name = #{platformRecommendRuleName}
+            </if>
+
+
+            <if test="platformRecommendRuleCode!=null and platformRecommendRuleCode!=''">
+                and platform_recommend_rule_code = #{platformRecommendRuleCode}
+            </if>
+
+
+            <if test="rule!=null and rule!=''">
+                and rule = #{rule}
+            </if>
+
+
+            <if test="ruleSql!=null and ruleSql!=''">
+                and rule_sql = #{ruleSql}
+            </if>
+
+            <if test="ouId!=null">
+                and ou_id = #{ouId}
+            </if>
+
+            <if test="priority!=null">
+                and priority = #{priority}
+            </if>
+
+
+            <if test="description!=null and description!=''">
+                and description = #{description}
+            </if>
+
+            <if test="createTime!=null">
+                and create_time = #{createTime}
+            </if>
+
+            <if test="createdId!=null">
+                and created_id = #{createdId}
+            </if>
+
+            <if test="lastModifyTime!=null">
+                and last_modify_time = #{lastModifyTime}
+            </if>
+
+            <if test="modifiedId!=null">
+                and modified_id = #{modifiedId}
+            </if>
+
+            <if test="lifecycle!=null">
+                and lifecycle = #{lifecycle}
+            </if>
+        </where>
+    </sql>
+
+    <sql id="platformRecommendRuleCommandColumnsExt">
+        <![CDATA[
+            prr.id as id,
+            prr.platform_recommend_rule_name as platformRecommendRuleName,
+            prr.platform_recommend_rule_code as platformRecommendRuleCode,
+            prr.rule as rule,
+            prr.rule_sql as ruleSql,
+            prr.ou_id as ouId,
+            prr.priority as priority,
+            prr.description as description,
+            prr.create_time as createTime,
+            prr.created_id as createdId,
+            prr.last_modify_time as lastModifyTime,
+            prr.modified_id as modifiedId,
+            prr.lifecycle as lifecycle
+        ]]>
+    </sql>
+
+    <sql id="platformRecommendRuleDynamicLikeWhereExt">
+        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+
+            <if test="id!=null">
+                and prr.id = #{id}
+            </if>
+
+
+            <if test="platformRecommendRuleName!=null and platformRecommendRuleName!=''">
+                and prr.platform_recommend_rule_name like #{platformRecommendRuleName}
+            </if>
+
+            <if test="platformRecommendRuleNameByCriteriasData!=null and platformRecommendRuleNameByCriteriasData!=''">
+                and prr.platform_recommend_rule_name like #{platformRecommendRuleNameByCriteriasData}
+            </if>
+
+            <if test="platformRecommendRuleCode!=null and platformRecommendRuleCode!=''">
+                and platform_recommend_rule_code like #{platformRecommendRuleCode}
+            </if>
+
+            <if test="platformRecommendRuleCodeByCriteriasData!=null and platformRecommendRuleCodeByCriteriasData!=''">
+                and prr.platform_recommend_rule_code like #{platformRecommendRuleCodeByCriteriasData}
+            </if>
+
+
+            <if test="rule!=null and rule!=''">
+                and prr.rule = #{rule}
+            </if>
+
+
+            <if test="ruleSql!=null and ruleSql!=''">
+                and prr.rule_sql = #{ruleSql}
+            </if>
+
+            <if test="ouId!=null">
+                and prr.ou_id = #{ouId}
+            </if>
+
+            <if test="priority!=null">
+                and prr.priority like #{priority}
+            </if>
+
+
+            <if test="description!=null and description!=''">
+                and prr.description like #{description}
+            </if>
+
+            <if test="descriptionByCriteriasData!=null and descriptionByCriteriasData!=''">
+                and prr.description like #{descriptionByCriteriasData}
+            </if>
+
+            <if test="createTime!=null">
+                and prr.create_time = #{createTime}
+            </if>
+
+            <if test="createdId!=null">
+                and prr.created_id = #{createdId}
+            </if>
+
+            <if test="lastModifyTime!=null">
+                and prr.last_modify_time = #{lastModifyTime}
+            </if>
+
+            <if test="modifiedId!=null">
+                and prr.modified_id = #{modifiedId}
+            </if>
+
+            <if test="lifecycle!=null">
+                and prr.lifecycle = #{lifecycle}
+            </if>
+        </where>
+    </sql>
+
+    <select id="findByIdExt" resultMap="PlatformRecommendRuleResultExt">
+        select
+        <include refid="platformRecommendRuleCommandColumnsExt"/>
+        <![CDATA[
+            from t_wh_platform_recommend_rule as prr
+            where 
+            prr.id = #{id}
+            and prr.ou_id = #{ouId}
+        ]]>
+    </select>
+
+    <!--
+    <select id="findCommandById" resultMap="platformRecommendRuleCommand">
+        select
+        <include refid="platformRecommendRuleCommandColumnsExt"/>
+        <![CDATA[
+            from t_wh_platform_recommend_rule as prr
+            where
+            prr.id = #{id}
+            and prr.ou_id = #{ouId}
+        ]]>
+    </select>
+    -->
+
+    <resultMap id="ruleCommandGlobalAttribute"
+               type="com.baozun.scm.primservice.whoperation.command.warehouse.PlatformRecommendRuleCommand">
+        <result property="id" column="prr_id"/>
+        <result property="platformRecommendRuleName" column="prr_rule_name"/>
+        <result property="platformRecommendRuleCode" column="prr_rule_code"/>
+        <result property="rule" column="prr_rule"/>
+        <result property="ruleSql" column="prr_rule_sql"/>
+        <result property="ouId" column="prr_ou_id"/>
+        <result property="priority" column="prr_priority"/>
+        <result property="description" column="prr_description"/>
+        <result property="createTime" column="prr_create_time"/>
+        <result property="createdId" column="prr_created_id"/>
+        <result property="lastModifyTime" column="prr_last_modify_time"/>
+        <result property="modifiedId" column="prr_modified_id"/>
+        <result property="lifecycle" column="prr_lifecycle"/>
+        <collection property="recommendPlatformCommandsList"
+                    ofType="com.baozun.scm.primservice.whoperation.command.warehouse.RecommendPlatformCommand">
+            <id property="id" column="rp_id"/>
+            <result property="platformRecommendRuleId" column="rp_rule_id"/>
+            <result property="platformId" column="rp_platform_id"/>
+            <result property="priority" column="rp_priority"/>
+            <result property="ouId" column="rp_ou_id"/>
+            <result property="createTime" column="rp_create_time"/>
+            <result property="createdId" column="rp_created_id"/>
+            <result property="lastModifyTime" column="rp_last_modify_time"/>
+            <result property="modifiedId" column="rp_modified_id"/>
+            <association property="platform" javaType="com.baozun.scm.primservice.whoperation.model.warehouse.Platform">
+                <id property="id" column="p_id"/>
+                <result property="platformCode" column="p_platform_code"/>
+                <result property="platformName" column="p_platform_name"/>
+                <result property="occupationCode" column="p_occupation_code"/>
+                <result property="isOccupied" column="p_is_occupied"/>
+                <result property="ouId" column="p_ou_id"/>
+                <result property="platformType" column="p_platform_type"/>
+                <result property="createTime" column="p_create_time"/>
+                <result property="createdId" column="p_created_id"/>
+                <result property="lastModifyTime" column="p_last_modify_time"/>
+                <result property="modifiedId" column="p_modified_id"/>
+                <result property="lifecycle" column="p_lifecycle"/>
+            </association>
+            <collection property="typeGroupPlatformList"
+                        ofType="com.baozun.scm.primservice.whoperation.model.warehouse.Platform">
+                <id property="id" column="p2_id"/>
+                <result property="platformCode" column="p2_platform_code"/>
+                <result property="platformName" column="p2_platform_name"/>
+                <result property="occupationCode" column="p2_occupation_code"/>
+                <result property="isOccupied" column="p2_is_occupied"/>
+                <result property="ouId" column="p2_ou_id"/>
+                <result property="platformType" column="p2_platform_type"/>
+                <result property="createTime" column="p2_create_time"/>
+                <result property="createdId" column="p2_created_id"/>
+                <result property="lastModifyTime" column="p2_last_modify_time"/>
+                <result property="modifiedId" column="p2_modified_id"/>
+                <result property="lifecycle" column="p2_lifecycle"/>
+            </collection>
+        </collection>
+    </resultMap>
+
+    <select id="findCommandById" resultMap="ruleCommandGlobalAttribute">
+        <![CDATA[
+            select
+                prr.id as prr_id,
+                prr.platform_recommend_rule_name as prr_rule_name,
+                prr.platform_recommend_rule_code as prr_rule_code,
+                prr.rule as prr_rule,
+                prr.rule_sql as prr_rule_sql,
+                prr.ou_id as prr_ou_id,
+                prr.priority as prr_priority,
+                prr.description as prr_description,
+                prr.create_time as prr_create_time,
+                prr.created_id as prr_created_id,
+                prr.last_modify_time as prr_last_modify_time,
+                prr.modified_id as prr_modified_id,
+                prr.lifecycle as prr_lifecycle,
+                rp.id as rp_id,
+                rp.platform_recommend_rule_id as rp_rule_id,
+                rp.platform_id as rp_platform_id,
+                rp.priority as rp_priority,
+                rp.ou_id as rp_ou_id,
+                rp.create_time as rp_create_time,
+                rp.created_id as rp_created_id,
+                rp.last_modify_time as rp_last_modify_time,
+                rp.modified_id as rp_modified_id,
+                p.id as p_id,
+                p.platform_code as p_platform_code,
+                p.platform_name as p_platform_name,
+                p.occupation_code as p_occupation_code,
+                p.is_occupied as p_is_occupied,
+                p.ou_id as p_ou_id,
+                p.platform_type as p_platform_type,
+                p.create_time as p_create_time,
+                p.created_id as p_created_id,
+                p.last_modify_time as p_last_modify_time,
+                p.modified_id as p_modified_id,
+                p.lifecycle as p_lifecycle,
+                p2.id as p2_id,
+                p2.platform_code as p2_platform_code,
+                p2.platform_name as p2_platform_name,
+                p2.occupation_code as p2_occupation_code,
+                p2.is_occupied as p2_is_occupied,
+                p2.ou_id as p2_ou_id,
+                p2.platform_type as p2_platform_type,
+                p2.create_time as p2_create_time,
+                p2.created_id as p2_created_id,
+                p2.last_modify_time as p2_last_modify_time,
+                p2.modified_id as p2_modified_id,
+                p2.lifecycle as p2_lifecycle
+            from t_wh_platform_recommend_rule as prr
+            left join t_wh_recommend_platform as rp
+                on prr.id = rp.platform_recommend_rule_id and prr.ou_id = rp.ou_id
+            left join t_wh_platform p
+                on rp.platform_id = p.id and p.ou_id = rp.ou_id
+            left join t_wh_platform as p2
+                on p.platform_type = p2.platform_type and p.ou_id = p2.ou_id and p2.lifecycle = 1
+            where
+                prr.id = #{id}
+                and prr.ou_id = #{ouId}
+        ]]>
+    </select>
+
+    <select id="checkUnique" resultType="long">
+        select count(*) from t_wh_platform_recommend_rule as prr
+        <where>
+            <if test="id!=null">
+                and prr.id != #{id}
+            </if>
+            <if test="(platformRecommendRuleCode!=null and platformRecommendRuleCode!='')
+                    or (platformRecommendRuleName!=null and platformRecommendRuleName!='')
+                    or (priority!=null and priority!='')">
+                and (
+                <trim prefix="" prefixOverrides="or">
+                    <if test="platformRecommendRuleCode!=null and platformRecommendRuleCode!=''">
+                        or prr.platform_recommend_rule_code = #{platformRecommendRuleCode}
+                    </if>
+                    <if test="platformRecommendRuleName!=null and platformRecommendRuleName!=''">
+                        or prr.platform_recommend_rule_name = #{platformRecommendRuleName}
+                    </if>
+                    <if test="priority!=null and priority!=''">
+                        or prr.priority = #{priority}
+                    </if>
+                </trim>
+                )
+            </if>
+                and prr.ou_id = #{ouId}
+        </where>
+    </select>
+
+    <select id="executeRuleSql" resultType="string">
+        ${ruleSql}
+    </select>
+
+    <select id="findListCountByQueryMapExt" resultType="long">
+        select count(*) from t_wh_platform_recommend_rule as prr
+        <include refid="platformRecommendRuleDynamicLikeWhereExt"/>
+    </select>
+
+    <select id="findListByQueryMapWithPageExt" resultMap="platformRecommendRuleCommand">
+        select
+        <include refid="platformRecommendRuleCommandColumnsExt"/>
+        from t_wh_platform_recommend_rule as prr
+        <include refid="platformRecommendRuleDynamicLikeWhereExt"/>
+    </select>
+
+    <update id="updateByVersion"
+            parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.PlatformRecommendRule">
+        <![CDATA[
+            UPDATE t_wh_platform_recommend_rule SET
+                platform_recommend_rule_name = #{platformRecommendRuleName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                platform_recommend_rule_code = #{platformRecommendRuleCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                rule = #{rule,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                rule_sql = #{ruleSql,javaType=java.lang.String,jdbcType=LONGVARCHAR} ,
+                priority = #{priority,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                description = #{description,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                last_modify_time = now() ,
+                modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER}
+            WHERE
+                id = #{id}
+                and ou_id = #{ouId}
+                and last_modify_time	=  #{lastModifyTime}
+        ]]>
+    </update>
+    
+    <select id="findPlatformRecommendRuleByOuId" resultMap="platformRecommendRuleCommand">
+        select <include refid="platformRecommendRuleColumnsExt"/>
+			from 
+			t_wh_platform_recommend_rule 
+			where 
+			ou_id = #{ouid} and lifecycle = 1
+			order by priority asc
+    </select>
+
+</mapper>

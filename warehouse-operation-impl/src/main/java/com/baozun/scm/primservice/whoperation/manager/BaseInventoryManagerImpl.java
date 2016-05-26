@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.InventoryCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.BaseInventoryManager;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
@@ -46,11 +46,11 @@ public abstract class BaseInventoryManagerImpl extends BaseManagerImpl implement
      * @param logId
      * @return
      */
-    public List<InventoryCommand> findAllValidInventoryBySkuAndUuid(Long skuId, String uuid, Long ouId, Double expectQty, String logId){
+    public List<WhSkuInventoryCommand> findAllValidInventoryBySkuAndUuid(Long skuId, String uuid, Long ouId, Double expectQty, String logId){
         if(log.isInfoEnabled()){
             log.info("baseInventoryManager.findAllValidInventoryBySkuAndUuid start, logId is:[{}]", logId);
         }
-        List<InventoryCommand> list = null;
+        List<WhSkuInventoryCommand> list = null;
         list = inventoryDao.findAllValidInventoryBySkuAndUuid(skuId, uuid, ouId, expectQty);
         if(log.isInfoEnabled()){
             log.info("baseInventoryManager.findAllValidInventoryBySkuAndUuid end, logId is:[{}]", logId);
@@ -64,7 +64,7 @@ public abstract class BaseInventoryManagerImpl extends BaseManagerImpl implement
      * @param invCmd
      * @param qty
      */
-    public void insertShareInventory(InventoryCommand invCmd, Double qty, String logId){
+    public void insertShareInventory(WhSkuInventoryCommand invCmd, Double qty, String logId){
         if(log.isInfoEnabled()){
             log.info("baseInventoryManager.insertShareInventory start, logId is:[{}]", logId);
         }

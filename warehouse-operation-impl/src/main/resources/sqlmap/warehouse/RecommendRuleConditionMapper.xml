@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.RecommendRuleConditionDao">
+    <resultMap id="RecommendRuleConditionResult" type="com.baozun.scm.primservice.whoperation.model.warehouse.RecommendRuleCondition">
+    </resultMap>
+    <resultMap id="RecommendRuleConditionPaginationResult" type="lark.common.dao.Pagination">
+        <collection property="items" javaType="ArrayList" resultMap="RecommendRuleConditionResult"/>
+    </resultMap>
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="recommendRuleConditionColumns">
+        <![CDATA[
+                id as id,
+                table_name as tableName,
+                table_code as tableCode,
+                column_name as columnName,
+                column_code as columnCode,
+                column_property as columnProperty,
+                rule_type as ruleType,
+                gorup_code as gorupCode,
+                gorup_name as gorupName,
+                gorup_id as gorupId,
+                create_time as createTime,
+                created_id as createdId,
+                last_modify_time as lastModifyTime,
+                modified_id as modifiedId
+        ]]>
+    </sql>
+    <sql id="recommendRuleConditionConditionWhereExt">
+        <where>
+            <if test="likeEqualsMap != null">
+                <foreach collection="likeEqualsMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} like CONCAT('%',#{value},'%')
+                </foreach>
+            </if>
+            <if test="equalsMap != null">
+                <foreach collection="equalsMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} = #{value}
+                </foreach>
+            </if>
+            <if test="notEqualsMap != null">
+                <foreach collection="notEqualsMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} != #{value}
+                </foreach>
+            </if>
+            <if test="greateMap != null">
+                <foreach collection="greateMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} &gt; #{value}
+                </foreach>
+            </if>
+            <if test="greateEqualsMap != null">
+                <foreach collection="greateEqualsMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} &gt;= #{value}
+                </foreach>
+            </if>
+            <if test="lessMap != null">
+                <foreach collection="lessMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} &lt; #{value}
+                </foreach>
+            </if>
+            <if test="lessEqualsMap != null">
+                <foreach collection="lessEqualsMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} &lt;= #{value}
+                </foreach>
+            </if>
+            <if test="nullMap != null">
+                <foreach collection="nullMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} is null
+                </foreach>
+            </if>
+            <if test="notNullMap != null">
+                <foreach collection="notNullMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} is not null
+                </foreach>
+            </if>
+            <if test="inMap != null">
+                <foreach collection="inMap" index="key" item="value" separator="and" open=" and (" close=")">
+                    <foreach collection="value" item="itemin" index="index" separator="or">
+                        ${key} = #{itemin}
+                    </foreach>
+                </foreach>
+            </if>
+            <if test="notInMap != null">
+                <foreach collection="notInMap" index="key" item="value" separator="and" open=" and (" close=")">
+                    <foreach collection="value" item="itemin" index="index" separator="and">
+                        ${key} != #{itemin}
+                    </foreach>
+                </foreach>
+            </if>
+        </where>
+        <if test="sortBy != null">
+            <foreach collection="sortBy" item="item" separator="," open=" order by ">
+                ${item.field} ${item.type}
+            </foreach>
+        </if>
+    </sql>
+
+    <!-- 如果有自增字段 -->
+
+    <!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+    <insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.RecommendRuleCondition"
+            useGeneratedKeys="true" keyProperty="id"
+            flushCache="true">
+        <![CDATA[
+                INSERT INTO
+                t_wh_recommend_rule_condition (
+                    table_name ,
+                    table_code ,
+                    column_name ,
+                    column_code ,
+                    column_property ,
+                    rule_type ,
+                    gorup_code ,
+                    gorup_name ,
+                    gorup_id ,
+                    create_time ,
+                    created_id ,
+                    last_modify_time ,
+                    modified_id 
+                ) VALUES (
+                    #{tableName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{tableCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{columnName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{columnCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{columnProperty,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{ruleType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{gorupCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{gorupName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{gorupId,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                    #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                    #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                    #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
+                )
+            ]]>
+
+    </insert>
+
+    <update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.RecommendRuleCondition">
+        <![CDATA[
+            UPDATE t_wh_recommend_rule_condition SET
+                table_name = #{tableName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                table_code = #{tableCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                column_name = #{columnName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                column_code = #{columnCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                column_property = #{columnProperty,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                rule_type = #{ruleType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                gorup_code = #{gorupCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                gorup_name = #{gorupName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                gorup_id = #{gorupId,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
+            WHERE 
+                id = #{id} 
+        ]]>
+    </update>
+    <update id="batchUpdate">
+        UPDATE t_wh_recommend_rule_condition SET
+        <foreach collection="batchUpdateMap" index="key" item="value" separator=",">
+            ${key} = #{value}
+        </foreach>
+        <include refid="recommendRuleConditionConditionWhereExt"/>
+    </update>
+
+    <delete id="delete" parameterType="java.lang.Long">
+        <![CDATA[
+            delete from t_wh_recommend_rule_condition where
+                id = #{id}
+        ]]>
+    </delete>
+
+    <delete id="deleteByIds" parameterType="list">
+
+        delete from t_wh_recommend_rule_condition
+        where id in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+
+    </delete>
+    <update id="batchDelete">
+        delete from t_wh_recommend_rule_condition
+        <include refid="recommendRuleConditionConditionWhereExt"/>
+    </update>
+
+    <select id="findById" parameterType="java.lang.Long" resultMap="RecommendRuleConditionResult" flushCache="false">
+        select
+        <include refid="recommendRuleConditionColumns"/>
+        <![CDATA[
+                from t_wh_recommend_rule_condition
+                where
+                id = #{id}
+            ]]>
+    </select>
+    <select id="getByIds" parameterType="list" resultMap="RecommendRuleConditionResult" flushCache="false">
+        select
+        <include refid="recommendRuleConditionColumns"/>
+        from t_wh_recommend_rule_condition
+        where id in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+    <sql id="recommendRuleConditionDynamicWhere">
+        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+
+            <if test="id!=null">
+                and id = #{id}
+            </if>
+
+
+            <if test="tableName!=null and tableName!=''">
+                and table_name = #{tableName}
+            </if>
+
+
+            <if test="tableCode!=null and tableCode!=''">
+                and table_code = #{tableCode}
+            </if>
+
+
+            <if test="columnName!=null and columnName!=''">
+                and column_name = #{columnName}
+            </if>
+
+
+            <if test="columnCode!=null and columnCode!=''">
+                and column_code = #{columnCode}
+            </if>
+
+
+            <if test="columnProperty!=null and columnProperty!=''">
+                and column_property = #{columnProperty}
+            </if>
+
+
+            <if test="ruleType!=null and ruleType!=''">
+                and rule_type = #{ruleType}
+            </if>
+
+
+            <if test="gorupCode!=null and gorupCode!=''">
+                and gorup_code = #{gorupCode}
+            </if>
+
+
+            <if test="gorupName!=null and gorupName!=''">
+                and gorup_name = #{gorupName}
+            </if>
+
+            <if test="gorupId!=null">
+                and gorup_id = #{gorupId}
+            </if>
+
+            <if test="createTime!=null">
+                and create_time = #{createTime}
+            </if>
+
+            <if test="createdId!=null">
+                and created_id = #{createdId}
+            </if>
+
+            <if test="lastModifyTime!=null">
+                and last_modify_time = #{lastModifyTime}
+            </if>
+
+            <if test="modifiedId!=null">
+                and modified_id = #{modifiedId}
+            </if>
+        </where>
+    </sql>
+
+
+    <select id="getCount" resultType="long">
+        select count(*) from t_wh_recommend_rule_condition
+    </select>
+    <select id="findListCountByQueryMap" resultType="long">
+        select count(*) from t_wh_recommend_rule_condition
+        <include refid="recommendRuleConditionDynamicWhere"/>
+    </select>
+
+    <select id="findListCountByParam" resultType="long">
+        select count(*) from t_wh_recommend_rule_condition
+        <include refid="recommendRuleConditionDynamicWhere"/>
+    </select>
+
+    <!--
+        分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+        因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPage" resultMap="RecommendRuleConditionResult">
+        select
+        <include refid="recommendRuleConditionColumns"/>
+        from t_wh_recommend_rule_condition
+        <include refid="recommendRuleConditionDynamicWhere"/>
+
+    </select>
+
+    <select id="findListByQueryMap" resultMap="RecommendRuleConditionResult">
+        select
+        <include refid="recommendRuleConditionColumns"/>
+        from t_wh_recommend_rule_condition
+        <include refid="recommendRuleConditionDynamicWhere"/>
+
+    </select>
+
+    <select id="findListByParam" resultMap="RecommendRuleConditionResult">
+        select
+        <include refid="recommendRuleConditionColumns"/>
+        from t_wh_recommend_rule_condition
+        <include refid="recommendRuleConditionDynamicWhere"/>
+
+    </select>
+
+    <select id="query" resultMap="RecommendRuleConditionResult">
+        select
+        <include refid="recommendRuleConditionColumns"/>
+        from t_wh_recommend_rule_condition
+        <include refid="recommendRuleConditionConditionWhereExt"/>
+    </select>
+
+    <select id="queryCount" resultType="long">
+        select count(*) from t_wh_recommend_rule_condition
+        <include refid="recommendRuleConditionConditionWhereExt"/>
+    </select>
+
+
+</mapper>

@@ -25,7 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.baseservice.sac.exception.BusinessException;
-import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.InventoryCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
@@ -50,10 +50,10 @@ public class InventoryOccupyManagerImpl extends BaseInventoryManagerImpl impleme
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void simpleOccupy(List<InventoryCommand> invCmds, String occupyCode, String logId) {
+    public void simpleOccupy(List<WhSkuInventoryCommand> invCmds, String occupyCode, String logId) {
         String occupyKey = null;
         Double eQty = null;
-        for(InventoryCommand invCmd : invCmds){
+        for(WhSkuInventoryCommand invCmd : invCmds){
             if(null == occupyKey || !occupyKey.equals(invCmd.getOccupyKey())){
                 occupyKey = invCmd.getOccupyKey();
                 eQty = (null == invCmd.getExpectQty() ? 0.0 : invCmd.getExpectQty());
