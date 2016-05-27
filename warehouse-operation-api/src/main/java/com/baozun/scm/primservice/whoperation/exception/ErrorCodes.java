@@ -24,6 +24,9 @@ public class ErrorCodes {
     /** 传入的参数{0}不能为空,确保传入数据的完整性 **/
     public static final Integer PARAM_IS_NULL = 6;
 
+    /** 集合对象{0}不能为空！ **/
+    public static final Integer LIST_IS_NULL = 7;
+
     /** 编码生成器接口异常！ **/
     public static final Integer CODE_INTERFACE_REEOR = 9;
 
@@ -50,7 +53,7 @@ public class ErrorCodes {
 
     /** 交易关闭 **/
     public static final int transaction_closed = 60008;
-    
+
     /** 修改数据失败 请刷新页面后重试 **/
     public static final int UPDATE_DATA_ERROR = 1006;
 
@@ -87,6 +90,9 @@ public class ErrorCodes {
     /** ASN号编码({0})在系统中未找到 **/
     public static final int ASN_CODE_IS_NOT_FOUND = 1017;
 
+    /** 数据解析失败！ */
+    public static final int PARSE_EXCEPTION_ERROR = 1018;
+
     /** 用户角色id为空 **/
     public static final int USER_EMPTY = 1020;
     /** 所选ucid与当前用户不符 **/
@@ -98,7 +104,7 @@ public class ErrorCodes {
     /** 店铺id为空 **/
     public static final int STORE_EMPTY = 1024;
     /** 商品Id{0},未查询到相应的商品信息! */
-    public static final int SKU_IS_NULL_BY_ID = 1045; 
+    public static final int SKU_IS_NULL_BY_ID = 1045;
     /** 商品编码 [{0}] 商品名称 [{1}] 状态不可用，请去商品维护页面重新设置 */
     public static final int SKU_IS_LIFECYCLE_ERROR = 1082;
     /** 二级容器不存在 */
@@ -182,22 +188,22 @@ public class ErrorCodes {
     public static final int ADD_CARTONLIST_BCDEVANNINGQTY_ERROR = 3036;
     /** 每箱商品数量不能小于等于0，请重新设置 */
     public static final int ADD_CARTONLIST_QUANTITY_ERROR = 3037;
-    
-    
-  //20000-30000 start
+
+
+    // 20000-30000 start
     /** 未查询到结果！ **/
     public static final Integer OBJECT_IS_NULL = 20004;
     /** ASN单据[{0}]未绑定店铺 **/
     public static final int WH_ASN_STORE_EMPTY = 20006;
-    /**Asn单据店面和仓库没有配置预收货模式*/
+    /** Asn单据店面和仓库没有配置预收货模式 */
     public static final int STORE_WAREHOUSE_IS_CONFIG = 20007;
-    /**商品不存在*/
-    public static final int SKU_NOT_FOUND=20008;
-    /**商品不在Asn收货明细中*/
-    public static final int SKU_NOT_FOUND_IN_ASN=20011;
-  //20000-30000 end
+    /** 商品不存在 */
+    public static final int SKU_NOT_FOUND = 20008;
+    /** 商品不在Asn收货明细中 */
+    public static final int SKU_NOT_FOUND_IN_ASN = 20011;
+    // 20000-30000 end
 
-    //5001-10000 common start
+    // 5001-10000 common start
     /** 容器号不能为空 */
     public static final int COMMON_CONTAINER_CODE_IS_NULL_ERROR = 5001;
     /** 托盘号不能为空 */
@@ -206,8 +212,8 @@ public class ErrorCodes {
     public static final int COMMON_CONTAINER_IS_NOT_EXISTS = 5003;
     /** 容器状态不可用 */
     public static final int COMMON_CONTAINER_LIFECYCLE_IS_NOT_NORMAL = 5004;
-    //5001-10000  common end
-    
+    // 5001-10000 common end
+
     // 10001-20000 luyimin
     /** ASN没有可以收货的明细 */
     public static final int ASN_NO_FOR_RCVD = 10001;

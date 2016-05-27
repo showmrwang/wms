@@ -37,7 +37,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	uuid as uuid,
 	        	is_locked as isLocked,
 	        	ou_id as ouId,
-	        	occupation_code_source as occupationCodeSource
+	        	occupation_code_source as occupationCodeSource,
+	        	inbound_time as inboundTime,
+	        	last_modify_time as lastModifyTime
 	    ]]>
 	</sql>
 	
@@ -69,7 +71,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			inv.uuid as uuid,
 			inv.is_locked as isLocked,
 			inv.ou_id as ouId,
-			inv.occupation_code_source as occupationCodeSource
+			inv.occupation_code_source as occupationCodeSource,
+			inv.inbound_time as inboundTime,
+	       	inv.last_modify_time as lastModifyTime
 	    ]]>
 	</sql>
 	
@@ -224,6 +228,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			t.is_locked as is_locked,
 			t.ou_id as ou_id,
 			t.occupation_code_source as occupation_code_source,
+			t.inbound_time as inbound_time,
+	        t.last_modify_time as last_modify_time,
 			sku.code as skuCode,
 			sku.name as skuName,
 			l.code as locationCode,
@@ -273,6 +279,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			t.is_locked as isLocked,
 			t.ou_id as ouId,
 			t.occupation_code_source as occupationCodeSource,
+			t.inbound_time as inboundTime,
+	        t.last_modify_time as lastModifyTime,
 			t.skuCode as skuCode,
 			t.skuName as skuName,
 			t.locationCode as locationCode,
@@ -461,6 +469,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			inv.is_locked as isLocked,
 			inv.ou_id as ouId,
 			inv.occupation_code_source as occupationCodeSource,
+			inv.inbound_time as inboundTime,
+	        inv.last_modify_time as lastModifyTime,
 			l.code as locationCode,
 			cout.code as outerContainerCode,
 			iout.code as insideContainerCode,
@@ -542,7 +552,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					inv.uuid as uuid,
 					inv.is_locked as isLocked,
 					inv.ou_id as ouId,
-					inv.occupation_code_source as occupationCodeSource
+					inv.occupation_code_source as occupationCodeSource,
+					inv.inbound_time as inboundTime,
+	        		inv.last_modify_time as lastModifyTime
 					from 
 					t_wh_sku_inventory inv 
 					left join t_wh_container c on c.id = inv.inside_container_id
@@ -603,6 +615,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			inv.is_locked as isLocked,
 			inv.ou_id as ouId,
 			inv.occupation_code_source as occupationCodeSource,
+			inv.t.inbound_time as inboundTime,
+	        inv.last_modify_time as lastModifyTime,
 			l.code as locationCode,
 			cout.code as outerContainerCode,
 			iout.code as insideContainerCode,
@@ -683,11 +697,65 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     <select id="releaseOccupiedInventory" resultType="long">
     	
     </select>
-	
+    
+	<select id="findwWhSkuInventoryById" resultMap="WhSkuInventoryResultExt">
+				select  <include refid="whSkuInventoryColumnsExt" />
+					from 
+					t_wh_sku_inventory 
+					where 
+					id = #{id} 
+					and ou_id = #{ouid}
+    </select>
+    
+    <select id="findwWhSkuInventoryByUuid" resultMap="WhSkuInventoryResultExt">
+				select  <include refid="whSkuInventoryColumnsExt" />
+					from 
+					t_wh_sku_inventory 
+					where 
+					uuid = #{uuid} 
+					and ou_id = #{ouid}
+    </select>
 	
 	<update id="updateWhSkuInventoryByContainerId" parameterType="com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand">
 			UPDATE t_wh_sku_inventory SET outer_container_id = #{outerContainerId}
 			WHERE inside_container_id  = #{insideContainerId}
 			and ou_id = #{ouId}
 	</update>
+	
+			<update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory">
+		    <![CDATA[
+		        UPDATE t_wh_sku_inventory SET
+			       			 sku_id = #{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			       			 location_id = #{locationId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			       			 outer_container_id = #{outerContainerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			       			 inside_container_id = #{insideContainerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			       			 customer_id = #{customerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			       			 store_id = #{storeId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			       			 occupation_code = #{occupationCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			       			 on_hand_qty = #{onHandQty,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+			       			 allocated_qty = #{allocatedQty,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+			       			 to_be_filled_qty = #{toBeFilledQty,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+			       			 frozen_qty = #{frozenQty,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+			       			 inv_status = #{invStatus,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			       			 inv_type = #{invType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			       			 batch_number = #{batchNumber,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			       			 mfg_date = #{mfgDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+			       			 exp_date = #{expDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+			       			 country_of_origin = #{countryOfOrigin,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			       			 inv_attr1 = #{invAttr1,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			       			 inv_attr2 = #{invAttr2,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			       			 inv_attr3 = #{invAttr3,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			       			 inv_attr4 = #{invAttr4,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			       			 inv_attr5 = #{invAttr5,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			       			 uuid = #{uuid,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			       			 is_locked = #{isLocked,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			       			 occupation_code_source = #{occupationCodeSource,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			       			 inbound_time = #{inboundTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+			       		 	 last_modify_time = now() 	
+		        WHERE 
+			        id = #{id} 
+			        and last_modify_time	=  #{lastModifyTime}  
+			        and ou_id = #{ouId}
+		    ]]>
+		</update>
 </mapper>

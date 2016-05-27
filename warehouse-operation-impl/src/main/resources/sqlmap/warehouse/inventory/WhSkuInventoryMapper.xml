@@ -40,7 +40,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	uuid as uuid,
 	        	is_locked as isLocked,
 	        	ou_id as ouId,
-	        	occupation_code_source as occupationCodeSource
+	        	occupation_code_source as occupationCodeSource,
+	        	inbound_time as inboundTime,
+	        	last_modify_time as lastModifyTime
 	    ]]>
 	</sql>
 	<sql id="whSkuInventoryConditionWhereExt">
@@ -147,7 +149,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	uuid ,
 		        	is_locked ,
 		        	ou_id ,
-		        	occupation_code_source 
+		        	occupation_code_source ,
+		        	inbound_time ,
+		        	last_modify_time 
 		        ) VALUES (
 		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -175,7 +179,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{uuid,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{isLocked,javaType=java.lang.Boolean,jdbcType=BIT} ,
 		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        	#{occupationCodeSource,javaType=java.lang.String,jdbcType=VARCHAR} 
+		        	#{occupationCodeSource,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{inboundTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} 
 		        )
 		    ]]>
 
@@ -209,7 +215,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        inv_attr5 = #{invAttr5,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        uuid = #{uuid,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        is_locked = #{isLocked,javaType=java.lang.Boolean,jdbcType=BIT} ,
-		        occupation_code_source = #{occupationCodeSource,javaType=java.lang.String,jdbcType=VARCHAR} 
+		        occupation_code_source = #{occupationCodeSource,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        inbound_time = #{inboundTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} 
 	        WHERE 
 		        id = #{id} 
 		        and ou_id = #{ouId}

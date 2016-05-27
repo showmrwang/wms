@@ -37,6 +37,10 @@ public final class Constants {
     /** 调编码生成器 容器实体标识 */
     public static final String CONTAINER_MODEL_URL = "com.baozun.scm.primservice.whinfo.model.warehouse.Container";
 
+    /** 调编码生成器Asn预约实体标识 */
+    public static final String ASN_RESERVE_MODEL_URL = "com.baozun.scm.primservice.whinfo.model.warehouse.AsnReserve";
+
+
     /** 调编码生成器 ASN单WMS内部单号分组 */
     public static final String WMS_ASN_INNER = "WMS_ASN_INNER";
 
@@ -60,6 +64,9 @@ public final class Constants {
 
     /** ASN单紧急状态 */
     public static final String URGENT_STATUS = "URGENT_STATUS";
+
+    /** 预约状态 */
+    public static final String ASN_RESERVE_STATUS = "ASN_RESERVE_STATUS";
 
     /** 库存类型 */
     public static final String INVENTORY_TYPE = "INVENTORY_TYPE";
@@ -143,5 +150,8 @@ public final class Constants {
 
     /** 默认Long数值 */
     public static final Long DEFAULT_LONG = 0l;
-    
+
+    /** Asn预约紧急 */
+    public static final Long ASN_RESERVE_URGENT = 84L;
+
 }

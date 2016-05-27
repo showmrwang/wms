@@ -123,9 +123,13 @@ public class WhSkuInventoryCommand extends BaseCommand {
     /** 占用Key */
     private String occupyKey;
     private Double expectQty;
-    
+
     // pda-general-receiving
     private Long occupationId;
+    /** 入库时间 */
+    private Date inboundTime;
+    /** 最后操作时间 */
+    private Date lastModifyTime;
 
     // 用于通用收货的流程
     /** 通用收货所选择的功能 */
@@ -579,7 +583,7 @@ public class WhSkuInventoryCommand extends BaseCommand {
     public void setOccupationCodeSource(String occupationCodeSource) {
         this.occupationCodeSource = occupationCodeSource;
     }
-    
+
     /**
      * @return the occupyKey
      */
@@ -606,6 +610,22 @@ public class WhSkuInventoryCommand extends BaseCommand {
      */
     public void setExpectQty(Double expectQty) {
         this.expectQty = expectQty;
+    }
+
+    public Date getInboundTime() {
+        return inboundTime;
+    }
+
+    public void setInboundTime(Date inboundTime) {
+        this.inboundTime = inboundTime;
+    }
+
+    public Date getLastModifyTime() {
+        return lastModifyTime;
+    }
+
+    public void setLastModifyTime(Date lastModifyTime) {
+        this.lastModifyTime = lastModifyTime;
     }
 
 
