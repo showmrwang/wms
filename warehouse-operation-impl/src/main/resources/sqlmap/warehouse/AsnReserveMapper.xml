@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.AsnReserveDao">
+	<resultMap id="AsnReserveResult" type="com.baozun.scm.primservice.whoperation.model.warehouse.AsnReserve">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="asnReserveColumns">
+	    <![CDATA[
+	        	id as id,
+	        	code as code,
+	        	asn_code as asnCode,
+	        	asn_id as asnId,
+	        	eta as eta,
+	        	delivery_time as deliveryTime,
+	        	est_parking_time as estParkingTime,
+	        	level as level,
+	        	ou_id as ouId,
+	        	status as status,
+	        	sort as sort,
+	        	create_time as createTime,
+	        	created_id as createdId,
+	        	last_modify_time as lastModifyTime,
+	        	modified_id as modifiedId
+	    ]]>
+	</sql>
+		<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+		<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.AsnReserve" flushCache="true">
+	    <![CDATA[
+	        INSERT INTO
+	        t_wh_asn_reserve (
+	        	id,
+	        	code ,
+	        	asn_code ,
+	        	asn_id ,
+	        	eta ,
+	        	delivery_time ,
+	        	est_parking_time ,
+	        	level ,
+	        	ou_id ,
+	        	status ,
+	        	sort ,
+	        	create_time ,
+	        	created_id ,
+	        	last_modify_time ,
+	        	modified_id 
+	        ) VALUES (
+	        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{asnCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{asnId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{eta,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+	        	#{deliveryTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+	        	#{estParkingTime,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+	        	#{level,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+	        	#{sort,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+	        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+	        	#{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+	        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
+	        )
+	    ]]>
+
+		</insert>
+	    
+		<update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.AsnReserve">
+	    <![CDATA[
+	        UPDATE t_wh_asn_reserve SET
+		        code = #{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        asn_code = #{asnCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        asn_id = #{asnId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        eta = #{eta,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        delivery_time = #{deliveryTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        est_parking_time = #{estParkingTime,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        level = #{level,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        status = #{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        sort = #{sort,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+		</update>
+	   <delete id="delete" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from t_wh_asn_reserve where
+		        id = #{id} 
+	    ]]>
+	    </delete> 
+	    
+	     <delete id="deleteByIds" parameterType="list">
+	    
+	        delete from t_wh_asn_reserve 
+	        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>	
+	  
+	    </delete>  
+	         
+	    <select id="findById" parameterType="java.lang.Long" resultMap="AsnReserveResult" flushCache="false">
+			select <include refid="asnReserveColumns" />
+		    <![CDATA[
+			    from t_wh_asn_reserve 
+		        where 
+		        id = #{id} 
+		    ]]>
+		</select>	
+		<select id="getByIds" parameterType="list"  resultMap="AsnReserveResult" flushCache="false">
+			select <include refid="asnReserveColumns" />
+			    from t_wh_asn_reserve 
+		        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>					
+		</select>	
+	<sql id="asnReserveDynamicWhere">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+	       
+		       <if test="code!=null and code!=''">
+					and code = #{code}
+				</if>
+	       
+	       
+		       <if test="asnCode!=null and asnCode!=''">
+					and asn_code = #{asnCode}
+				</if>
+	       
+				<if test="asnId!=null">
+					and asn_id = #{asnId}
+				</if>
+	       
+				<if test="eta!=null">
+					and eta = #{eta}
+				</if>
+	       
+				<if test="deliveryTime!=null">
+					and delivery_time = #{deliveryTime}
+				</if>
+	       
+				<if test="estParkingTime!=null">
+					and est_parking_time = #{estParkingTime}
+				</if>
+	       
+				<if test="level!=null">
+					and level = #{level}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+	       
+				<if test="status!=null">
+					and status = #{status}
+				</if>
+	       
+				<if test="sort!=null">
+					and sort = #{sort}
+				</if>
+	       
+				<if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="createdId!=null">
+					and created_id = #{createdId}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="modifiedId!=null">
+					and modified_id = #{modifiedId}
+				</if>
+		</where>
+	</sql>
+	
+
+	<select id="getCount" resultType="long">
+        select count(*) from t_wh_asn_reserve 
+    </select>
+    <select id="findListCountByQueryMap" resultType="long">
+        select count(*) from t_wh_asn_reserve 
+		<include refid="asnReserveDynamicWhere"/>    
+    </select>
+    
+    <select id="findListCountByParam" resultType="long">
+        select count(*) from t_wh_asn_reserve 
+		<include refid="asnReserveDynamicWhere"/>    
+    </select>
+    
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPage" resultMap="AsnReserveResult">
+    	select <include refid="asnReserveColumns" />
+	    from t_wh_asn_reserve 
+		<include refid="asnReserveDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByQueryMap" resultMap="AsnReserveResult">
+    	select <include refid="asnReserveColumns" />
+	    from t_wh_asn_reserve 
+		<include refid="asnReserveDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByParam" resultMap="AsnReserveResult">
+    	select <include refid="asnReserveColumns" />
+	    from t_wh_asn_reserve 
+		<include refid="asnReserveDynamicWhere"/>
+		
+    </select>
+
+    <select id="getByCode" resultMap="AsnReserveResult" parameterType="java.lang.String">
+	    select <include refid="asnReserveColumns"/>
+	    <![CDATA[
+	        from t_wh_asn_reserve where code = #{code}
+	    ]]>
+    </select>
+    
+	
+</mapper>
