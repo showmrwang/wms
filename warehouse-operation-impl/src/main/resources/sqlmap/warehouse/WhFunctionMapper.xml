@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.WhFunctionDao">
+	<resultMap id="WhFunctionResult" type="com.baozun.scm.primservice.whoperation.model.warehouse.WhFunction">
+	</resultMap>
+	<resultMap id="WhFunctionPaginationResult" type="lark.common.dao.Pagination">
+    	<collection property="items" javaType="ArrayList" resultMap="WhFunctionResult"/>
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whFunctionColumns">
+	    <![CDATA[
+	        	id as id,
+	        	function_code as functionCode,
+	        	function_name as functionName,
+	        	function_templet as functionTemplet,
+	        	platform_type as platformType,
+	        	sku_attr_mgmt as skuAttrMgmt,
+	        	ou_id as ouId,
+	        	is_sys as isSys,
+	        	create_time as createTime,
+	        	create_id as createId,
+	        	last_modify_time as lastModifyTime,
+	        	operator_id as operatorId,
+	        	lifecycle as lifecycle
+	    ]]>
+	</sql>
+	<sql id="whFunctionConditionWhereExt">
+		<where>
+			<if test="likeEqualsMap != null">
+				<foreach collection="likeEqualsMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} like CONCAT('%',#{value},'%') 
+				</foreach> 
+			</if> 
+			<if test="equalsMap != null"> 
+				<foreach collection="equalsMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} = #{value} 
+				</foreach> 
+			</if> 
+			<if test="notEqualsMap != null"> 
+				<foreach collection="notEqualsMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} != #{value} 
+				</foreach> 
+			</if> 
+			<if test="greateMap != null"> 
+				<foreach collection="greateMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} &gt; #{value} 
+				</foreach> 
+			</if> 
+			<if test="greateEqualsMap != null"> 
+				<foreach collection="greateEqualsMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} &gt;= #{value} 
+				</foreach> 
+			</if> 
+			<if test="lessMap != null"> 
+				<foreach collection="lessMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} &lt; #{value} 
+				</foreach> 
+			</if> 
+			<if test="lessEqualsMap != null"> 
+				<foreach collection="lessEqualsMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} &lt;= #{value} 
+				</foreach> 
+			</if> 
+			<if test="nullMap != null"> 
+				<foreach collection="nullMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} is null 
+				</foreach> 
+			</if> 
+			<if test="notNullMap != null"> 
+				<foreach collection="notNullMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} is not null 
+				</foreach> 
+			</if> 
+			<if test="inMap != null"> 
+				<foreach collection="inMap" index="key"  item="value" separator="and" open=" and (" close=")"> 
+					<foreach collection="value" item="itemin" index="index" separator="or"> 
+						${key} = #{itemin} 
+					</foreach> 
+				</foreach> 
+			</if> 
+			<if test="notInMap != null"> 
+				<foreach collection="notInMap" index="key"  item="value" separator="and" open=" and (" close=")"> 
+					<foreach collection="value" item="itemin" index="index" separator="and"> 
+						${key} != #{itemin} 
+					</foreach> 
+				</foreach> 
+			</if> 
+		</where>
+		<if test="sortBy != null"> 
+			<foreach collection="sortBy" item="item" separator=","  open=" order by "> 
+				${item.field} ${item.type}
+			</foreach> 
+		</if>
+	</sql>
+	
+		<!-- 如果有自增字段 -->
+		
+			<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+			<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhFunction" 
+				
+			 flushCache="true">
+		    <![CDATA[
+		        INSERT INTO
+		        t_wh_function (
+		            id,
+		        	function_code ,
+		        	function_name ,
+		        	function_templet ,
+		        	platform_type ,
+		        	sku_attr_mgmt ,
+		        	ou_id ,
+		        	is_sys ,
+		        	create_time ,
+		        	create_id ,
+		        	last_modify_time ,
+		        	operator_id ,
+		        	lifecycle 
+		        ) VALUES (
+		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{functionCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{functionName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{functionTemplet,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{platformType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{skuAttrMgmt,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{isSys,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{createId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
+		        )
+		    ]]>
+
+		</insert>
+		
+		
+		<update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhFunction">
+	    <![CDATA[
+	        UPDATE t_wh_function SET
+		        function_code = #{functionCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        function_name = #{functionName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        function_templet = #{functionTemplet,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        platform_type = #{platformType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        sku_attr_mgmt = #{skuAttrMgmt,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        is_sys = #{isSys,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        create_id = #{createId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
+	        WHERE 
+		        id = #{id} 
+		       	and ou_id = #{ouId}
+	    ]]>
+		</update>
+		<update id="batchUpdate">
+	        UPDATE t_wh_function SET
+	        	<foreach collection="batchUpdateMap" index="key"  item="value" separator=",">
+	        		${key} = #{value}
+	        	</foreach>
+	        	<include refid="whFunctionConditionWhereExt"/>
+		</update>
+		
+	   <delete id="delete" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from t_wh_function where
+		        id = #{id} 
+	    ]]>
+	    </delete> 
+	    
+	     <delete id="deleteByIds" parameterType="list">
+	    
+	        delete from t_wh_function 
+	        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>	
+	  
+	    </delete>  
+	    <update id="batchDelete">
+	        delete from t_wh_function <include refid="whFunctionConditionWhereExt"/>
+		</update>
+	         
+	    <select id="findById" parameterType="java.lang.Long" resultMap="WhFunctionResult" flushCache="false">
+			select <include refid="whFunctionColumns" />
+		    <![CDATA[
+			    from t_wh_function 
+		        where 
+		        id = #{id} 
+		    ]]>
+		</select>	
+		<select id="getByIds" parameterType="list"  resultMap="WhFunctionResult" flushCache="false">
+			select <include refid="whFunctionColumns" />
+			    from t_wh_function 
+		        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>					
+		</select>	
+	<sql id="whFunctionDynamicWhere">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+	       
+		       <if test="functionCode!=null and functionCode!=''">
+					and function_code = #{functionCode}
+				</if>
+	       
+	       
+		       <if test="functionName!=null and functionName!=''">
+					and function_name = #{functionName}
+				</if>
+	       
+	       
+		       <if test="functionTemplet!=null and functionTemplet!=''">
+					and function_templet = #{functionTemplet}
+				</if>
+	       
+	       
+		       <if test="platformType!=null and platformType!=''">
+					and platform_type = #{platformType}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+	       
+				<if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="createId!=null">
+					and create_id = #{createId}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="operatorId!=null">
+					and operator_id = #{operatorId}
+				</if>
+		</where>
+	</sql>
+	
+
+	<select id="getCount" resultType="long">
+        select count(*) from t_wh_function 
+    </select>
+    <select id="findListCountByQueryMap" resultType="long">
+        select count(*) from t_wh_function 
+		<include refid="whFunctionDynamicWhere"/>    
+    </select>
+    
+    <select id="findListCountByParam" resultType="long">
+        select count(*) from t_wh_function 
+		<include refid="whFunctionDynamicWhere"/>    
+    </select>
+    
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPage" resultMap="WhFunctionResult">
+    	select <include refid="whFunctionColumns" />
+	    from t_wh_function 
+		<include refid="whFunctionDynamicWhere"/>
+    </select>
+    
+    <select id="findListByQueryMap" resultMap="WhFunctionResult">
+    	select <include refid="whFunctionColumns" />
+	    from t_wh_function 
+		<include refid="whFunctionDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByParam" resultMap="WhFunctionResult">
+    	select <include refid="whFunctionColumns" />
+	    from t_wh_function 
+		<include refid="whFunctionDynamicWhere"/>
+		
+    </select>
+    
+    <select id="query" resultMap="WhFunctionResult">
+		select <include refid="whFunctionColumns" />
+	    from t_wh_function  
+		<include refid="whFunctionConditionWhereExt"/>
+    </select>
+    
+    <select id="queryCount" resultType="long">
+		select count(*) from t_wh_function  
+		<include refid="whFunctionConditionWhereExt"/>
+    </select>
+
+	
+</mapper>

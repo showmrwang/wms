@@ -39,6 +39,9 @@ public class RuleAfferCommand extends BaseCommand {
 
     /** 规则ID */
     private Long ruleId;
+    
+    /** 功能ID */
+    private Long funcId;
 
 
     public String getRuleType() {
@@ -103,6 +106,20 @@ public class RuleAfferCommand extends BaseCommand {
 
     public void setRuleId(Long ruleId) {
         this.ruleId = ruleId;
+    }
+
+    /**
+     * @return the funcId
+     */
+    public Long getFuncId() {
+        return funcId;
+    }
+
+    /**
+     * @param funcId the funcId to set
+     */
+    public void setFuncId(Long funcId) {
+        this.funcId = funcId;
     }
 
 

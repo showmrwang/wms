@@ -88,11 +88,11 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         ruleAffer.setLogId(logId);
         ruleAffer.setOuid(ouId);
         ruleAffer.setAfferContainerCode(containerCode);
+        ruleAffer.setFuncId(funcId);
         List<String> list = new ArrayList<String>();
         list.add(containerCode);
         ruleAffer.setAfferContainerCodeList(list);
         ruleAffer.setRuleType(Constants.SHELVE_RECOMMEND_RULE_ALL);// 整托 、货箱上架规则
-        ruleAffer.setRuleId(funcId);
         RuleExportCommand export = ruleManager.ruleExport(ruleAffer);
         
         if(log.isInfoEnabled()){

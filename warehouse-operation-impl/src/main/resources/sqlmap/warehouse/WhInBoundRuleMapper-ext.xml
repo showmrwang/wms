@@ -1,0 +1,375 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.WhInBoundRuleDao">
+    <resultMap id="WhInBoundRuleResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.WhInBoundRule">
+    </resultMap>
+
+    <resultMap id="whInBoundRuleCommand" type="com.baozun.scm.primservice.whoperation.command.warehouse.WhInBoundRuleCommand">
+    </resultMap>
+
+    <resultMap id="whInBoundRuleResultCommand" type="com.baozun.scm.primservice.whoperation.command.warehouse.WhInBoundRuleResultCommand">
+    </resultMap>
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="whInBoundRuleColumnsExt">
+        <![CDATA[
+            id as id,
+            inbound_rule_name as inboundRuleName,
+            inbound_rule_code as inboundRuleCode,
+            rule as rule,
+            rule_sql as ruleSql,
+            result_conditionIds as resultConditionIds,
+            result_sql as resultSql,
+            ou_id as ouId,
+            priority as priority,
+            description as description,
+            create_time as createTime,
+            created_id as createdId,
+            last_modify_time as lastModifyTime,
+            modified_id as modifiedId,
+            lifecycle as lifecycle
+    ]]>
+    </sql>
+
+    <sql id="whInBoundRuleDynamicWhereExt">
+        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+
+            <if test="id!=null">
+                and id = #{id}
+            </if>
+
+
+            <if test="inboundRuleName!=null and inboundRuleName!=''">
+                and inbound_rule_name = #{inboundRuleName}
+            </if>
+
+
+            <if test="inboundRuleCode!=null and inboundRuleCode!=''">
+                and inbound_rule_code = #{inboundRuleCode}
+            </if>
+
+
+            <if test="rule!=null and rule!=''">
+                and rule = #{rule}
+            </if>
+
+
+            <if test="ruleSql!=null and ruleSql!=''">
+                and rule_sql = #{ruleSql}
+            </if>
+
+
+            <if test="resultConditionIds!=null and resultConditionIds!=''">
+                and result_conditionIds = #{resultConditionIds}
+            </if>
+
+
+            <if test="resultSql!=null and resultSql!=''">
+                and result_sql = #{resultSql}
+            </if>
+
+            <if test="ouId!=null">
+                and ou_id = #{ouId}
+            </if>
+
+            <if test="priority!=null">
+                and priority = #{priority}
+            </if>
+
+
+            <if test="description!=null and description!=''">
+                and description = #{description}
+            </if>
+
+            <if test="createTime!=null">
+                and create_time = #{createTime}
+            </if>
+
+            <if test="createdId!=null">
+                and created_id = #{createdId}
+            </if>
+
+            <if test="lastModifyTime!=null">
+                and last_modify_time = #{lastModifyTime}
+            </if>
+
+            <if test="modifiedId!=null">
+                and modified_id = #{modifiedId}
+            </if>
+
+            <if test="lifecycle!=null">
+                and lifecycle = #{lifecycle}
+            </if>
+        </where>
+    </sql>
+
+
+        <update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhInBoundRule">
+            <![CDATA[
+                UPDATE t_wh_inbound_rule SET
+                                inbound_rule_name = #{inboundRuleName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                                inbound_rule_code = #{inboundRuleCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                                rule = #{rule,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                                rule_sql = #{ruleSql,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                                result_conditionIds = #{resultConditionIds,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                                result_sql = #{resultSql,javaType=java.lang.String,jdbcType=LONGVARCHAR} ,
+                                priority = #{priority,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                                description = #{description,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                                create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                                created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                                last_modify_time = now() ,
+                                modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                                lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER}
+                WHERE
+                    id = #{id}
+                    and ou_id = #{ouId}
+                    and last_modify_time    =  #{lastModifyTime}
+            ]]>
+        </update>
+
+    <select id="findBoundRulesList" resultMap="WhInBoundRuleResultExt">
+        select
+        <include refid="whInBoundRuleColumnsExt"/>
+        from t_wh_inbound_rule where lifecycle = 1 and ou_id = #{ouid}
+    </select>
+
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="whInBoundRuleCommandColumnsExt">
+        <![CDATA[
+                ibr.id as id,
+                ibr.inbound_rule_name as inboundRuleName,
+                ibr.inbound_rule_code as inboundRuleCode,
+                ibr.rule as rule,
+                ibr.rule_sql as ruleSql,
+                ibr.result_conditionIds as resultConditionIds,
+                ibr.result_sql as resultSql,
+                ibr.ou_id as ouId,
+                ibr.priority as priority,
+                ibr.description as description,
+                ibr.create_time as createTime,
+                ibr.created_id as createdId,
+                ibr.last_modify_time as lastModifyTime,
+                ibr.modified_id as modifiedId,
+                ibr.lifecycle as lifecycle
+        ]]>
+    </sql>
+
+    <sql id="whInBoundRuleDynamicLikeWhereExt">
+        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+
+            <if test="id!=null">
+                and ibr.id = #{id}
+            </if>
+
+
+            <if test="inboundRuleName!=null and inboundRuleName!=''">
+                and ibr.inbound_rule_name like #{inboundRuleName}
+            </if>
+
+            <if test="whInboundRuleNameByCriteriasData!=null and whInboundRuleNameByCriteriasData!=''">
+                and ibr.inbound_rule_name like #{whInboundRuleNameByCriteriasData}
+            </if>
+
+
+            <if test="inboundRuleCode!=null and inboundRuleCode!=''">
+                and ibr.inbound_rule_code like #{inboundRuleCode}
+            </if>
+
+            <if test="whInboundRuleCodeByCriteriasData!=null and whInboundRuleCodeByCriteriasData!=''">
+                and ibr.inbound_rule_code like #{whInboundRuleCodeByCriteriasData}
+            </if>
+
+            <if test="ouId!=null">
+                and ibr.ou_id = #{ouId}
+            </if>
+
+            <if test="priority!=null">
+                and ibr.priority like #{priority}
+            </if>
+
+
+            <if test="description!=null and description!=''">
+                and ibr.description like #{description}
+            </if>
+
+            <if test="descriptionByCriteriasData!=null and descriptionByCriteriasData!=''">
+                and ibr.description like #{descriptionByCriteriasData}
+            </if>
+
+            <if test="modifiedId!=null">
+                and ibr.modified_id = #{modifiedId}
+            </if>
+
+            <if test="lifecycle!=null">
+                and ibr.lifecycle = #{lifecycle}
+            </if>
+        </where>
+    </sql>
+
+
+    <select id="findByIdExt" resultMap="WhInBoundRuleResultExt">
+        select
+        <include refid="whInBoundRuleColumnsExt"/>
+        <![CDATA[
+                from t_wh_inbound_rule
+                where
+                id = #{id}
+                and ou_id = #{ouId}
+            ]]>
+    </select>
+
+    <select id="executeRuleSql" resultType="string">
+        ${ruleSql}
+    </select>
+
+    <select id="findListCountByQueryMapExt" resultType="long">
+        select count(*) from t_wh_inbound_rule as ibr
+        <include refid="whInBoundRuleDynamicLikeWhereExt"/>
+    </select>
+
+    <select id="findListByQueryMapWithPageExt" resultMap="whInBoundRuleCommand">
+        select
+        <include refid="whInBoundRuleCommandColumnsExt"/>
+        from t_wh_inbound_rule as ibr
+        <include refid="whInBoundRuleDynamicLikeWhereExt"/>
+    </select>
+
+    <select id="findWhInBoundRuleCommandById" resultMap="whInBoundRuleCommand">
+        select
+        <include refid="whInBoundRuleCommandColumnsExt"/>
+        from t_wh_inbound_rule as ibr
+        where ibr.id = #{id}
+        and ibr.ou_id = #{ouId}
+    </select>
+
+    <select id="checkUnique" resultType="long">
+        select count(1) from t_wh_inbound_rule as ibr
+        <where>
+            <if test="id!=null">
+                and ibr.id != #{id}
+            </if>
+            <if test="(inboundRuleCode!=null and inboundRuleCode!='')
+                    or (inboundRuleName!=null and inboundRuleName!='')
+                    or (priority!=null and priority!='')">
+                and (
+                <trim prefix="" prefixOverrides="or">
+                    <if test="inboundRuleCode!=null and inboundRuleCode!=''">
+                        or ibr.inbound_rule_code = #{inboundRuleCode}
+                    </if>
+                    <if test="inboundRuleName!=null and inboundRuleName!=''">
+                        or ibr.inbound_rule_name = #{inboundRuleName}
+                    </if>
+                    <if test="priority!=null and priority!=''">
+                        or ibr.priority = #{priority}
+                    </if>
+                </trim>
+                )
+            </if>
+            and ibr.ou_id = #{ouId}
+        </where>
+    </select>
+
+
+    <select id="findResultConditionByInventoryId" resultMap="whInBoundRuleResultCommand">
+        select
+            ${selectColumnsPropertyStr},
+            t_wh_container.code as containerCode
+        from
+        t_wh_sku_inventory
+            left join t_wh_container
+                on t_wh_sku_inventory.inside_container_id = t_wh_container.id
+            left join t_bi_customer
+                on t_bi_customer.id = t_wh_sku_inventory.customer_id
+            left join t_bi_store
+                on t_bi_store.id = t_wh_sku_inventory.store_id
+            left join t_wh_sku
+                on t_wh_sku.id = t_wh_sku_inventory.sku_id
+            left join t_wh_sku_extattr
+                on t_wh_sku_extattr.sku_id = t_wh_sku.id
+            left join t_wh_sku_mgmt
+                on t_wh_sku_mgmt.sku_id = t_wh_sku.id
+        where t_wh_sku_inventory.id = #{inventoryId}
+        and t_wh_sku_inventory.ou_id = #{ouId}
+        <!--and t_wh_container.isFull = "未满状态"-->
+    </select>
+
+    <select id="findResultConditionByContainerCode" resultMap="whInBoundRuleResultCommand">
+        select select_result_table.* from
+        (
+            select
+                ${selectColumnsPropertyStr},
+                t_wh_container.code as containerCode,
+                count(1) as select_count
+            from
+                t_wh_sku_inventory
+                left join  t_wh_container
+                    on t_wh_sku_inventory.inside_container_id = t_wh_container.id
+                left join t_wh_container as outer_container
+                    on t_wh_sku_inventory.outer_container_id = outer_container.id
+                left join t_bi_customer
+                    on t_bi_customer.id = t_wh_sku_inventory.customer_id
+                left join t_bi_store
+                    on t_bi_store.id = t_wh_sku_inventory.store_id
+                left join t_wh_sku
+                    on t_wh_sku.id = t_wh_sku_inventory.sku_id
+                left join t_wh_sku_extattr
+                    on t_wh_sku_extattr.sku_id = t_wh_sku.id
+                left join t_wh_sku_mgmt
+                    on t_wh_sku_mgmt.sku_id = t_wh_sku.id
+                where outer_container.code = #{containerCode}
+                and t_wh_container.is_full = 0 
+                and t_wh_container.ou_id = #{ouId}
+                group by t_wh_container.code, ${selectColumnsStr}
+        ) as select_result_table,
+        (
+            select
+                t_wh_container.code as origin_code,
+                count(1) as origin_count
+            from
+                t_wh_sku_inventory
+                left join t_wh_container
+                    on t_wh_sku_inventory.inside_container_id = t_wh_container.id
+                left join t_wh_container as outer_container
+                    on t_wh_sku_inventory.outer_container_id = outer_container.id
+                where outer_container.code = #{containerCode}
+            and t_wh_container.is_full = 0 
+            and t_wh_container.ou_id = #{ouId}
+            group by t_wh_container.code
+        ) as origin_result_table
+        where origin_result_table.origin_code = select_result_table.containerCode
+        and origin_result_table.origin_count = select_result_table.select_count
+    </select>
+    
+    
+    <select id="findInboundRuleByOuId" resultMap="whInBoundRuleCommand">
+		select 
+            id as id,
+            inbound_rule_name as inboundRuleName,
+            inbound_rule_code as inboundRuleCode,
+            rule as rule,
+            rule_sql as ruleSql,
+            result_conditionIds as resultConditionIds,
+            result_sql as resultSql,
+            ou_id as ouId,
+            priority as priority,
+            description as description,
+            create_time as createTime,
+            created_id as createdId,
+            last_modify_time as lastModifyTime,
+            modified_id as modifiedId,
+            lifecycle as lifecycle
+			from 
+			t_wh_inbound_rule 
+			where 
+			ou_id = #{ouid} and lifecycle = 1 
+			order by priority asc
+    </select>
+
+</mapper>

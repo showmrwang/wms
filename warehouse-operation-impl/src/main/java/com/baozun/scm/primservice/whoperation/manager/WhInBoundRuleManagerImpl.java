@@ -1,0 +1,382 @@
+package com.baozun.scm.primservice.whoperation.manager;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.baozun.scm.primservice.whoperation.command.system.GlobalLogCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhInBoundRuleCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhInBoundRuleResultCommand;
+import com.baozun.scm.primservice.whoperation.constant.Constants;
+import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhInBoundRuleDao;
+import com.baozun.scm.primservice.whoperation.exception.BusinessException;
+import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
+import com.baozun.scm.primservice.whoperation.manager.system.GlobalLogManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.WhInBoundRuleManager;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhInBoundRule;
+import com.baozun.scm.primservice.whoperation.util.ParamsUtil;
+
+import lark.common.annotation.MoreDB;
+import lark.common.dao.Page;
+import lark.common.dao.Pagination;
+import lark.common.dao.Sort;
+
+@Service("whInBoundRuleManager")
+@Transactional
+public class WhInBoundRuleManagerImpl implements WhInBoundRuleManager {
+    public static final Logger log = LoggerFactory.getLogger(WhInBoundRuleManagerImpl.class);
+
+    @Autowired
+    private WhInBoundRuleDao whInBoundRuleDao;
+
+    @Autowired
+    private GlobalLogManager globalLogManager;
+
+    /**
+     * 获取状态为可用的入库分拣规则列表
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<WhInBoundRule> findBoundRulesList(Long ouid) {
+        return whInBoundRuleDao.findBoundRulesList(ouid);
+    }
+
+    /**
+     * 通过参数查询入库分拣规则列表
+     *
+     * @author mingwei.xie
+     * @param page
+     * @param sorts
+     * @param param
+     * @return
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public Pagination<WhInBoundRuleCommand> getListByParams(Page page, Sort[] sorts, Map<String, Object> param) {
+        if (log.isInfoEnabled()) {
+            log.info("WhInBoundRuleManagerImpl getListByParams is start");
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("getListByParams param [page:{}, sorts:{}, param:{}] ", ParamsUtil.page2String(page), ParamsUtil.sorts2String(sorts), param);
+        }
+        Pagination<WhInBoundRuleCommand> pagination = whInBoundRuleDao.findListByQueryMapWithPageExt(page, sorts, param);
+        if (log.isInfoEnabled()) {
+            log.info("WhInBoundRuleManagerImpl getListByParams is end");
+        }
+        return pagination;
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public WhInBoundRuleCommand findWhInBoundRuleCommandById(Long id, Long ouId) {
+        if (log.isInfoEnabled()) {
+            log.info("WhInBoundRuleManagerImpl findWhInBoundRuleCommandById is start");
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("findWhInBoundRuleCommandById param [id:{}, ouId:{}] ", id, ouId);
+        }
+        WhInBoundRuleCommand whInBoundRuleCommand = whInBoundRuleDao.findWhInBoundRuleCommandById(id, ouId);
+        if (log.isInfoEnabled()) {
+            log.info("WhInBoundRuleManagerImpl findWhInBoundRuleCommandById is end");
+        }
+        return whInBoundRuleCommand;
+    }
+
+    /**
+     * 验证规则名称或编码、优先级是否唯一
+     *
+     * @author mingwei.xie
+     * @param ouId
+     * @param whInBoundRule
+     * @return
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public Boolean checkUnique(WhInBoundRule whInBoundRule, Long ouId) {
+        if (log.isInfoEnabled()) {
+            log.info("WhInBoundRuleManagerImpl checkUnique is start");
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("checkUnique param [whInBoundRule:{}, ouId:{}] ", whInBoundRule, ouId);
+        }
+        if (null == whInBoundRule || null == ouId) {
+            log.error("WhInBoundRuleManagerImpl checkUnique failed, param is  null, param [whInBoundRule:{}, ouId:{}] ", whInBoundRule, ouId);
+            throw new BusinessException(ErrorCodes.PARAM_IS_NULL);
+        }
+        whInBoundRule.setOuId(ouId);
+        long count = whInBoundRuleDao.checkUnique(whInBoundRule);
+        boolean result = true;
+        if (0 != count) {
+            result = false;
+        }
+        if (log.isInfoEnabled()) {
+            log.info("WhInBoundRuleManagerImpl checkUnique is end");
+        }
+        return result;
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public WhInBoundRuleCommand testRuleSql(WhInBoundRule whInBoundRule, Long ouId, String originContainerCode) {
+        if (log.isInfoEnabled()) {
+            log.info("WhInBoundRuleManagerImpl testRuleSql is start");
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("testRuleSql param [whInBoundRule:{}, ouId:{], originContainerCode:{} ", whInBoundRule, ouId, originContainerCode);
+        }
+        if (null == whInBoundRule || null == whInBoundRule.getRuleSql() || null == ouId || null == originContainerCode) {
+            log.error("WhInBoundRuleManagerImpl testRuleSql failed, param is null, param [whInBoundRule:{}, ouId:{], originContainerCode:{} ", whInBoundRule, ouId, originContainerCode);
+            throw new BusinessException(ErrorCodes.PARAM_IS_NULL);
+        }
+        WhInBoundRuleCommand command = new WhInBoundRuleCommand();
+        String containerCode = null;
+        Boolean testResult = true;
+        try {
+            containerCode = whInBoundRuleDao.executeRuleSql(whInBoundRule.getRuleSql(), ouId, originContainerCode);
+        } catch (Exception e) {
+            log.error("WhInBoundRuleManagerImpl testRuleSql failed, param [whInBoundRule:{}, ouId:{}, originContainerCode:{}, exception:{}]", whInBoundRule, ouId, originContainerCode, e.getMessage());
+            testResult = false;
+        }
+        command.setContainerCode(containerCode);
+        command.setRuleSqlTestResult(testResult);
+        if (log.isDebugEnabled()) {
+            log.debug("testRuleSql result, param [whInBoundRule:{}, ouId:{}, originContainerCode:{}, containerCode:{}]", whInBoundRule, ouId, originContainerCode, containerCode);
+        }
+        if (log.isInfoEnabled()) {
+            log.info("WhInBoundRuleManagerImpl testRuleSql is end");
+        }
+        return command;
+    }
+
+    /**
+     * 新建/修改入库分拣规则
+     *
+     * @author mingwei.xie
+     * @param ruleCommand
+     * @param userId
+     * @param ouId
+     * @return
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public WhInBoundRule saveOrUpdate(WhInBoundRuleCommand ruleCommand, Long userId, Long ouId) {
+        if (log.isInfoEnabled()) {
+            log.info("WhInBoundRuleManagerImpl saveOrUpdate is start");
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("saveOrUpdate param [ruleCommand:{}, userId:{}, ouId:{}] ", ruleCommand, userId, ouId);
+        }
+        if (null == ruleCommand || null == userId || null == ouId) {
+            log.error("WhInBoundRuleManagerImpl saveOrUpdate failed, param is null, param [ruleCommand:{}, userId:{}, ouId:{}] ", ruleCommand, userId, ouId);
+            throw new BusinessException(ErrorCodes.PARAM_IS_NULL);
+        }
+
+        WhInBoundRule updateRule = new WhInBoundRule();
+        if (null != ruleCommand.getId()) {
+            if (log.isDebugEnabled()) {
+                log.debug("saveOrUpdate, originRuleId  is exists,update to sharedDB, param [ruleCommand:{}, userId:{}, ouId:{}] ", ruleCommand, userId, ouId);
+            }
+            WhInBoundRule originalRule = whInBoundRuleDao.findByIdExt(ruleCommand.getId(), ouId);
+            if (null == originalRule) {
+                log.error("WhInBoundRuleManagerImpl saveOrUpdate failed, originalRule is null, param [ruleCommand:{}, userId:{}, ouId:{}] ", ruleCommand, userId, ouId);
+                throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
+            }
+            originalRule.setInboundRuleCode(ruleCommand.getInboundRuleCode());
+            originalRule.setInboundRuleName(ruleCommand.getInboundRuleName());
+            originalRule.setDescription(ruleCommand.getDescription());
+            originalRule.setPriority(ruleCommand.getPriority());
+            originalRule.setRule(ruleCommand.getRule());
+            originalRule.setRuleSql(ruleCommand.getRuleSql());
+            originalRule.setResultConditionIds(ruleCommand.getResultConditionIds());
+            originalRule.setResultSql(ruleCommand.getResultSql());
+            originalRule.setLifecycle(ruleCommand.getLifecycle());
+            originalRule.setModifiedId(userId);
+            if (log.isDebugEnabled()) {
+                log.debug("saveOrUpdate,update to sharedDB, param [ruleCommand:{}, userId:{}, ouId:{}, originRule:{}] ", ruleCommand, userId, ouId, originalRule);
+            }
+            int count = whInBoundRuleDao.saveOrUpdateByVersion(originalRule);
+            if (1 != count) {
+                log.error("WhInBoundRuleManagerImpl saveOrUpdate failed,updateCount != 1, param [ruleCommand:{}, userId:{}, ouId:{}, originalRule:{}, count:{}] ", ruleCommand, userId, ouId, originalRule, count);
+                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            }
+            updateRule = originalRule;
+        } else {
+            if (log.isDebugEnabled()) {
+                log.debug("saveOrUpdate, originalRule  is null,insert to sharedDB, param [ruleCommand:{}, userId:{}, ouId:{}] ", ruleCommand, userId, ouId);
+            }
+            updateRule.setOuId(ouId);
+            updateRule.setInboundRuleName(ruleCommand.getInboundRuleName());
+            updateRule.setInboundRuleCode(ruleCommand.getInboundRuleCode());
+            updateRule.setPriority(ruleCommand.getPriority());
+            updateRule.setDescription(ruleCommand.getDescription());
+            updateRule.setLifecycle(ruleCommand.getLifecycle());
+            updateRule.setRule(ruleCommand.getRule());
+            updateRule.setRuleSql(ruleCommand.getRuleSql());
+            updateRule.setResultConditionIds(ruleCommand.getResultConditionIds());
+            updateRule.setResultSql(ruleCommand.getResultSql());
+            updateRule.setCreateTime(new Date());
+            updateRule.setCreatedId(userId);
+            updateRule.setLastModifyTime(new Date());
+            updateRule.setModifiedId(userId);
+            if (log.isDebugEnabled()) {
+                log.debug("saveOrUpdate,insert to sharedDB, param [ruleCommand:{}, userId:{}, ouId:{}, updateRule:{}] ", ruleCommand, userId, ouId, updateRule);
+            }
+            whInBoundRuleDao.insert(updateRule);
+        }
+        WhInBoundRule returnRule = whInBoundRuleDao.findByIdExt(updateRule.getId(), ouId);
+        if (null == returnRule) {
+            log.error("WhInBoundRuleManagerImpl saveOrUpdate failed, param [ruleCommand:{}, userId:{}, ouId:{}, updateRule:{}] ", ruleCommand, userId, ouId, updateRule);
+            throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
+        }
+        GlobalLogCommand gl = new GlobalLogCommand();
+        gl.setModifiedId(returnRule.getModifiedId());
+        gl.setObjectType(returnRule.getClass().getSimpleName());
+        gl.setModifiedValues(returnRule);
+        gl.setOuId(returnRule.getOuId());
+        if (null != ruleCommand.getId()) {
+            gl.setType(Constants.GLOBAL_LOG_UPDATE);
+        } else {
+            gl.setType(Constants.GLOBAL_LOG_INSERT);
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("WhInBoundRuleManagerImpl saveOrUpdate, save globalLog to sharedDB, param [globalLogCommand:{}]", gl);
+        }
+        globalLogManager.insertGlobalLog(gl);
+        if (log.isInfoEnabled()) {
+            log.info("WhInBoundRuleManagerImpl saveOrUpdate is end");
+        }
+        return returnRule;
+    }
+
+    /**
+     * 启用/停用入库分拣规则
+     *
+     * @author mingwei.xie
+     * @param ids
+     * @param lifeCycle
+     * @param userId
+     * @param ouId
+     * @return
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void updateLifeCycle(List<Long> ids, Integer lifeCycle, Long userId, Long ouId) {
+        if (log.isInfoEnabled()) {
+            log.info("WhInBoundRuleManagerImpl updateLifeCycle is start");
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("updateLifeCycle param [ids:{}, lifeCycle:{}, userId:{}, ouId:{}] ", ids, lifeCycle, userId, ouId);
+        }
+        if (null == ids || ids.contains(null) || null == lifeCycle || null == userId || null == ouId) {
+            log.error("WhInBoundRuleManagerImpl updateLifeCycle failed, param is null, param [ids:{}, lifeCycle:{}, userId:{}, ouId:{}] ", ids, lifeCycle, userId, ouId);
+            throw new BusinessException(ErrorCodes.PARAM_IS_NULL);
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("updateLifeCycle loop ids, param [ids:{}, lifeCycle:{}, userId:{}, ouId:{}] ", ids, lifeCycle, userId, ouId);
+        }
+        for (Long id : ids) {
+            WhInBoundRule originalRule = whInBoundRuleDao.findByIdExt(id, ouId);
+            if (null == originalRule) {
+                log.error("WhInBoundRuleManagerImpl updateLifeCycle failed, originalRule is null, param [ids:{}, lifeCycle:{}, userId:{}, ouId:{}, id:{}] ", ids, lifeCycle, userId, ouId, id);
+                throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
+            }
+            originalRule.setLifecycle(lifeCycle);
+            originalRule.setModifiedId(userId);
+            if (log.isDebugEnabled()) {
+                log.debug("updateLifeCycle , param [ids:{}, lifeCycle:{}, userId:{}, ouId:{}, originalRule:{}] ", ids, lifeCycle, userId, ouId, originalRule);
+            }
+            int count = whInBoundRuleDao.saveOrUpdateByVersion(originalRule);
+            if (1 != count) {
+                log.error("WhInBoundRuleManagerImpl updateLifeCycle failed, update count != 1, param [ids:{}, lifeCycle:{}, userId:{}, ouId:{}, id:{}, count:{}] ", ids, lifeCycle, userId, ouId, id, count);
+                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            }
+
+            WhInBoundRule returnRule = whInBoundRuleDao.findByIdExt(originalRule.getId(), ouId);
+            if (null == returnRule) {
+                log.error("WhInBoundRuleManagerImpl updateLifeCycle failed, select result is null, param [ids:{}, lifeCycle:{}, userId:{}, ouId:{}, id:{}, ruleId:{}] ", ids, lifeCycle, userId, ouId, id, originalRule.getId());
+                throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
+            }
+            GlobalLogCommand gl = new GlobalLogCommand();
+            gl.setModifiedId(returnRule.getModifiedId());
+            gl.setObjectType(returnRule.getClass().getSimpleName());
+            gl.setModifiedValues(returnRule);
+            gl.setOuId(returnRule.getOuId());
+            gl.setType(Constants.GLOBAL_LOG_UPDATE);
+            if (log.isDebugEnabled()) {
+                log.debug("WhInBoundRuleManagerImpl updateLifeCycle, save globalLog to sharedDB, param [globalLogCommand:{}]", gl);
+            }
+            globalLogManager.insertGlobalLog(gl);
+
+        }
+        if (log.isInfoEnabled()) {
+            log.info("WhInBoundRuleManagerImpl updateLifeCycle is end");
+        }
+    }
+
+    /**
+     * 根据待分拣的商品获取分拣条件值
+     *
+     * @author mingwei.xie
+     * @param inventoryId
+     * @param ouId
+     * @param selectColumnsPropertyStr
+     * @return
+     */
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    @Override
+    public WhInBoundRuleResultCommand findResultConditionByInventoryId(Long inventoryId, Long ouId, String selectColumnsPropertyStr) {
+        if (log.isInfoEnabled()) {
+            log.info("WhInBoundRuleManagerImpl findResultConditionBySku is start");
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("findResultConditionBySku param [inventoryId:{}, ouId:{}, selectColumnsStr:{}] ", inventoryId, ouId, selectColumnsPropertyStr);
+        }
+        if (null == inventoryId || null == ouId || null == selectColumnsPropertyStr) {
+            log.error("WhInBoundRuleManagerImpl findResultConditionBySku failed, param [inventoryId:{}, ouId:{}, selectColumnsStr:{}] ", inventoryId, ouId, selectColumnsPropertyStr);
+            throw new BusinessException(ErrorCodes.PARAM_IS_NULL);
+        }
+        WhInBoundRuleResultCommand whInBoundRuleResultCommand = whInBoundRuleDao.findResultConditionByInventoryId(inventoryId, ouId, selectColumnsPropertyStr);
+        if (log.isInfoEnabled()) {
+            log.info("WhInBoundRuleManagerImpl findResultConditionBySku is end");
+        }
+        return whInBoundRuleResultCommand;
+    }
+
+    /**
+     * 根据待分拣的商品获取分拣条件值
+     *
+     * @author mingwei.xie
+     * @param containerCode
+     * @param ouId
+     * @param selectColumnsPropertyStr
+     * @param selectColumnsStr
+     * @return
+     */
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    @Override
+    public List<WhInBoundRuleResultCommand> findResultConditionByContainerCode(String containerCode, Long ouId, String selectColumnsPropertyStr, String selectColumnsStr) {
+        if (log.isInfoEnabled()) {
+            log.info("WhInBoundRuleManagerImpl findResultConditionByContainerCode is start");
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("findResultConditionByContainerCode param [containerCode:{}, ouId:{}, selectColumnsStr:{}, selectColumnsPropertyStr:{}] ", containerCode, ouId, selectColumnsStr, selectColumnsPropertyStr);
+        }
+        if (null == containerCode || null == ouId || null == selectColumnsStr || null == selectColumnsPropertyStr) {
+            log.error("WhInBoundRuleManagerImpl findResultConditionByContainerCode failed, param [containerCode:{}, ouId:{}, selectColumnsStr:{}, selectColumnsPropertyStr:{}] ", containerCode, ouId, selectColumnsStr, selectColumnsPropertyStr);
+            throw new BusinessException(ErrorCodes.PARAM_IS_NULL);
+        }
+        List<WhInBoundRuleResultCommand> whInBoundRuleResultCommandList = whInBoundRuleDao.findResultConditionByContainerCode(containerCode, ouId, selectColumnsPropertyStr, selectColumnsStr);
+        if (log.isInfoEnabled()) {
+            log.info("WhInBoundRuleManagerImpl findResultConditionByContainerCode is end");
+        }
+        return whInBoundRuleResultCommandList;
+    }
+
+}

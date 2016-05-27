@@ -120,6 +120,15 @@ public final class Constants {
 
     public static final String DATE_PATTERN_YMDHM = "yyyy-MM-dd HH:mm";
     
+    /** 功能模板 入库分拣功能 */
+    public static final String FUNCTION_TEMPLET_INBOUND = "inbound";
+
+    /** 功能模板 收货功能 */
+    public static final String FUNCTION_TEMPLET_RECEIVE = "receive";
+
+    /** 功能模板 上架功能 */
+    public static final String FUNCTION_TEMPLET_SHELF = "shelf";
+    
     /** 月台规则TYPE */
     public static final String PLATFORM_RECOMMEND_RULE = "platform_recommend_rule";
 

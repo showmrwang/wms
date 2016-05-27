@@ -1,0 +1,399 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.WhFunctionRcvdDao">
+	<resultMap id="WhFunctionRcvdResult" type="com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionRcvd">
+	</resultMap>
+	<resultMap id="WhFunctionRcvdPaginationResult" type="lark.common.dao.Pagination">
+    	<collection property="items" javaType="ArrayList" resultMap="WhFunctionRcvdResult"/>
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whFunctionRcvdColumns">
+	    <![CDATA[
+	        	id as id,
+	        	function_id as functionId,
+	        	rcvd_pattern as rcvdPattern,
+	        	scan_pattern as scanPattern,
+	        	skip_url as skipUrl,
+	        	tag_lock as tagLock,
+	        	inv_type as invType,
+	        	inv_status as invStatus,
+	        	norm_inc_pointout_rcvd as normIncPointoutRcvd,
+	        	is_limit_unique_batch as isLimitUniqueBatch,
+	        	is_limit_unique_inv_type as isLimitUniqueInvType,
+	        	is_limit_unique_inv_status as isLimitUniqueInvStatus,
+	        	is_limit_unique_inv_attr1 as isLimitUniqueInvAttr1,
+	        	is_limit_unique_inv_attr2 as isLimitUniqueInvAttr2,
+	        	is_limit_unique_inv_attr3 as isLimitUniqueInvAttr3,
+	        	is_limit_unique_inv_attr4 as isLimitUniqueInvAttr4,
+	        	is_limit_unique_inv_attr5 as isLimitUniqueInvAttr5,
+	        	is_limit_unique_placeoforigin as isLimitUniquePlaceoforigin,
+	        	is_limit_unique_date_of_manufacture as isLimitUniqueDateOfManufacture,
+	        	is_limit_unique_expiry_date as isLimitUniqueExpiryDate,
+	        	is_mixing_sku as isMixingSku,
+	        	ou_id as ouId,
+	        	is_invattr_asn_pointout_user as isInvattrAsnPointoutUser,
+	        	is_invattr_discrepancy_allowrcvd as isInvattrDiscrepancyAllowrcvd,
+	        	is_caselevel_scan_sku as isCaselevelScanSku
+	    ]]>
+	</sql>
+	<sql id="whFunctionRcvdConditionWhereExt">
+		<where>
+			<if test="likeEqualsMap != null">
+				<foreach collection="likeEqualsMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} like CONCAT('%',#{value},'%') 
+				</foreach> 
+			</if> 
+			<if test="equalsMap != null"> 
+				<foreach collection="equalsMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} = #{value} 
+				</foreach> 
+			</if> 
+			<if test="notEqualsMap != null"> 
+				<foreach collection="notEqualsMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} != #{value} 
+				</foreach> 
+			</if> 
+			<if test="greateMap != null"> 
+				<foreach collection="greateMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} &gt; #{value} 
+				</foreach> 
+			</if> 
+			<if test="greateEqualsMap != null"> 
+				<foreach collection="greateEqualsMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} &gt;= #{value} 
+				</foreach> 
+			</if> 
+			<if test="lessMap != null"> 
+				<foreach collection="lessMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} &lt; #{value} 
+				</foreach> 
+			</if> 
+			<if test="lessEqualsMap != null"> 
+				<foreach collection="lessEqualsMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} &lt;= #{value} 
+				</foreach> 
+			</if> 
+			<if test="nullMap != null"> 
+				<foreach collection="nullMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} is null 
+				</foreach> 
+			</if> 
+			<if test="notNullMap != null"> 
+				<foreach collection="notNullMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} is not null 
+				</foreach> 
+			</if> 
+			<if test="inMap != null"> 
+				<foreach collection="inMap" index="key"  item="value" separator="and" open=" and (" close=")"> 
+					<foreach collection="value" item="itemin" index="index" separator="or"> 
+						${key} = #{itemin} 
+					</foreach> 
+				</foreach> 
+			</if> 
+			<if test="notInMap != null"> 
+				<foreach collection="notInMap" index="key"  item="value" separator="and" open=" and (" close=")"> 
+					<foreach collection="value" item="itemin" index="index" separator="and"> 
+						${key} != #{itemin} 
+					</foreach> 
+				</foreach> 
+			</if> 
+		</where>
+		<if test="sortBy != null"> 
+			<foreach collection="sortBy" item="item" separator=","  open=" order by "> 
+				${item.field} ${item.type}
+			</foreach> 
+		</if>
+	</sql>
+	
+		<!-- 如果有自增字段 -->
+		
+			<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+			<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionRcvd" 
+				
+			 flushCache="true">
+		    <![CDATA[
+		        INSERT INTO
+		        t_wh_function_rcvd (
+		    	    id,
+		        	function_id ,
+		        	rcvd_pattern ,
+		        	scan_pattern ,
+		        	skip_url ,
+		        	tag_lock ,
+		        	inv_type ,
+		        	inv_status ,
+		        	norm_inc_pointout_rcvd ,
+		        	is_limit_unique_batch ,
+		        	is_limit_unique_inv_type ,
+		        	is_limit_unique_inv_status ,
+		        	is_limit_unique_inv_attr1 ,
+		        	is_limit_unique_inv_attr2 ,
+		        	is_limit_unique_inv_attr3 ,
+		        	is_limit_unique_inv_attr4 ,
+		        	is_limit_unique_inv_attr5 ,
+		        	is_limit_unique_placeoforigin ,
+		        	is_limit_unique_date_of_manufacture ,
+		        	is_limit_unique_expiry_date ,
+		        	is_mixing_sku ,
+		        	ou_id ,
+		        	is_invattr_asn_pointout_user ,
+		        	is_invattr_discrepancy_allowrcvd ,
+		        	is_caselevel_scan_sku 
+		        ) VALUES (
+		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{functionId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{rcvdPattern,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{scanPattern,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{skipUrl,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{tagLock,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invStatus,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{normIncPointoutRcvd,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	#{isLimitUniqueBatch,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	#{isLimitUniqueInvType,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	#{isLimitUniqueInvStatus,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	#{isLimitUniqueInvAttr1,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	#{isLimitUniqueInvAttr2,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	#{isLimitUniqueInvAttr3,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	#{isLimitUniqueInvAttr4,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	#{isLimitUniqueInvAttr5,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	#{isLimitUniquePlaceoforigin,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	#{isLimitUniqueDateOfManufacture,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	#{isLimitUniqueExpiryDate,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	#{isMixingSku,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{isInvattrAsnPointoutUser,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	#{isInvattrDiscrepancyAllowrcvd,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	#{isCaselevelScanSku,javaType=java.lang.Boolean,jdbcType=BIT} 
+		        )
+		    ]]>
+
+		</insert>
+		
+		
+		<update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionRcvd">
+	    <![CDATA[
+	        UPDATE t_wh_function_rcvd SET
+		        function_id = #{functionId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        rcvd_pattern = #{rcvdPattern,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        scan_pattern = #{scanPattern,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        skip_url = #{skipUrl,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        tag_lock = #{tagLock,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        inv_type = #{invType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        inv_status = #{invStatus,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        norm_inc_pointout_rcvd = #{normIncPointoutRcvd,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        is_limit_unique_batch = #{isLimitUniqueBatch,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        is_limit_unique_inv_type = #{isLimitUniqueInvType,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        is_limit_unique_inv_status = #{isLimitUniqueInvStatus,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        is_limit_unique_inv_attr1 = #{isLimitUniqueInvAttr1,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        is_limit_unique_inv_attr2 = #{isLimitUniqueInvAttr2,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        is_limit_unique_inv_attr3 = #{isLimitUniqueInvAttr3,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        is_limit_unique_inv_attr4 = #{isLimitUniqueInvAttr4,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        is_limit_unique_inv_attr5 = #{isLimitUniqueInvAttr5,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        is_limit_unique_placeoforigin = #{isLimitUniquePlaceoforigin,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        is_limit_unique_date_of_manufacture = #{isLimitUniqueDateOfManufacture,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        is_limit_unique_expiry_date = #{isLimitUniqueExpiryDate,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        is_mixing_sku = #{isMixingSku,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        is_invattr_asn_pointout_user = #{isInvattrAsnPointoutUser,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        is_invattr_discrepancy_allowrcvd = #{isInvattrDiscrepancyAllowrcvd,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        is_caselevel_scan_sku = #{isCaselevelScanSku,javaType=java.lang.Boolean,jdbcType=BIT} 
+	        WHERE 
+		        id = #{id} 
+		        and ou_id = #{ouId}
+	    ]]>
+		</update>
+		<update id="batchUpdate">
+	        UPDATE t_wh_function_rcvd SET
+	        	<foreach collection="batchUpdateMap" index="key"  item="value" separator=",">
+	        		${key} = #{value}
+	        	</foreach>
+	        	<include refid="whFunctionRcvdConditionWhereExt"/>
+		</update>
+		
+	   <delete id="delete" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from t_wh_function_rcvd where
+		        id = #{id} 
+	    ]]>
+	    </delete> 
+	    
+	     <delete id="deleteByIds" parameterType="list">
+	    
+	        delete from t_wh_function_rcvd 
+	        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>	
+	  
+	    </delete>  
+	    <update id="batchDelete">
+	        delete from t_wh_function_rcvd <include refid="whFunctionRcvdConditionWhereExt"/>
+		</update>
+	         
+	    <select id="findById" parameterType="java.lang.Long" resultMap="WhFunctionRcvdResult" flushCache="false">
+			select <include refid="whFunctionRcvdColumns" />
+		    <![CDATA[
+			    from t_wh_function_rcvd 
+		        where 
+		        id = #{id} 
+		    ]]>
+		</select>	
+		<select id="getByIds" parameterType="list"  resultMap="WhFunctionRcvdResult" flushCache="false">
+			select <include refid="whFunctionRcvdColumns" />
+			    from t_wh_function_rcvd 
+		        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>					
+		</select>	
+	<sql id="whFunctionRcvdDynamicWhere">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+				<if test="functionId!=null">
+					and function_id = #{functionId}
+				</if>
+	       
+				<if test="rcvdPattern!=null">
+					and rcvd_pattern = #{rcvdPattern}
+				</if>
+	       
+				<if test="scanPattern!=null">
+					and scan_pattern = #{scanPattern}
+				</if>
+	       
+				<if test="skipUrl!=null">
+					and skip_url = #{skipUrl}
+				</if>
+	       
+	       
+		       <if test="tagLock!=null and tagLock!=''">
+					and tag_lock = #{tagLock}
+				</if>
+	       
+	       
+		       <if test="invType!=null and invType!=''">
+					and inv_type = #{invType}
+				</if>
+	       
+				<if test="invStatus!=null">
+					and inv_status = #{invStatus}
+				</if>
+	       
+				<if test="normIncPointoutRcvd!=null">
+					and norm_inc_pointout_rcvd = #{normIncPointoutRcvd}
+				</if>
+	       
+				<if test="isLimitUniqueBatch!=null">
+					and is_limit_unique_batch = #{isLimitUniqueBatch}
+				</if>
+	       
+				<if test="isLimitUniqueInvType!=null">
+					and is_limit_unique_inv_type = #{isLimitUniqueInvType}
+				</if>
+	       
+				<if test="isLimitUniqueInvStatus!=null">
+					and is_limit_unique_inv_status = #{isLimitUniqueInvStatus}
+				</if>
+	       
+				<if test="isLimitUniqueInvAttr1!=null">
+					and is_limit_unique_inv_attr1 = #{isLimitUniqueInvAttr1}
+				</if>
+	       
+				<if test="isLimitUniqueInvAttr2!=null">
+					and is_limit_unique_inv_attr2 = #{isLimitUniqueInvAttr2}
+				</if>
+	       
+				<if test="isLimitUniqueInvAttr3!=null">
+					and is_limit_unique_inv_attr3 = #{isLimitUniqueInvAttr3}
+				</if>
+	       
+				<if test="isLimitUniqueInvAttr4!=null">
+					and is_limit_unique_inv_attr4 = #{isLimitUniqueInvAttr4}
+				</if>
+	       
+				<if test="isLimitUniqueInvAttr5!=null">
+					and is_limit_unique_inv_attr5 = #{isLimitUniqueInvAttr5}
+				</if>
+	       
+				<if test="isLimitUniquePlaceoforigin!=null">
+					and is_limit_unique_placeoforigin = #{isLimitUniquePlaceoforigin}
+				</if>
+	       
+				<if test="isLimitUniqueDateOfManufacture!=null">
+					and is_limit_unique_date_of_manufacture = #{isLimitUniqueDateOfManufacture}
+				</if>
+	       
+				<if test="isLimitUniqueExpiryDate!=null">
+					and is_limit_unique_expiry_date = #{isLimitUniqueExpiryDate}
+				</if>
+	       
+				<if test="isMixingSku!=null">
+					and is_mixing_sku = #{isMixingSku}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+		</where>
+	</sql>
+	
+
+	<select id="getCount" resultType="long">
+        select count(*) from t_wh_function_rcvd 
+    </select>
+    <select id="findListCountByQueryMap" resultType="long">
+        select count(*) from t_wh_function_rcvd 
+		<include refid="whFunctionRcvdDynamicWhere"/>    
+    </select>
+    
+    <select id="findListCountByParam" resultType="long">
+        select count(*) from t_wh_function_rcvd 
+		<include refid="whFunctionRcvdDynamicWhere"/>    
+    </select>
+    
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPage" resultMap="WhFunctionRcvdResult">
+    	select <include refid="whFunctionRcvdColumns" />
+	    from t_wh_function_rcvd 
+		<include refid="whFunctionRcvdDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByQueryMap" resultMap="WhFunctionRcvdResult">
+    	select <include refid="whFunctionRcvdColumns" />
+	    from t_wh_function_rcvd 
+		<include refid="whFunctionRcvdDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByParam" resultMap="WhFunctionRcvdResult">
+    	select <include refid="whFunctionRcvdColumns" />
+	    from t_wh_function_rcvd 
+		<include refid="whFunctionRcvdDynamicWhere"/>
+		
+    </select>
+    
+    <select id="query" resultMap="WhFunctionRcvdResult">
+		select <include refid="whFunctionRcvdColumns" />
+	    from t_wh_function_rcvd  
+		<include refid="whFunctionRcvdConditionWhereExt"/>
+    </select>
+    
+    <select id="queryCount" resultType="long">
+		select count(*) from t_wh_function_rcvd  
+		<include refid="whFunctionRcvdConditionWhereExt"/>
+    </select>
+
+	
+</mapper>

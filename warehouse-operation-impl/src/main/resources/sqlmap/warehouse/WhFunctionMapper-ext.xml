@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.WhFunctionDao">
+	<resultMap id="WhFunctionResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.WhFunction">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whFunctionColumnsExt">
+	    <![CDATA[
+	        	id as id,
+	        	function_code as functionCode,
+	        	function_name as functionName,
+	        	function_templet as functionTemplet,
+	        	platform_type as platformType,
+	        	sku_attr_mgmt as skuAttrMgmt,
+	        	ou_id as ouId,
+	        	is_sys as isSys,
+	        	create_time as createTime,
+	        	create_id as createId,
+	        	last_modify_time as lastModifyTime,
+	        	operator_id as operatorId,
+	        	lifecycle as lifecycle
+	    ]]>
+	</sql>
+	
+	<sql id="whFunctionDynamicWhereExt">
+		<where>
+	       		t.ou_id = #{ouId}
+		       <if test="functionName!=null and functionName!=''">
+					and t.function_name like #{functionName}
+				</if>
+		       <if test="functionCode!=null and functionCode!=''">
+					and t.function_code like #{functionCode}
+				</if>
+		       <if test="name!=null and name!=''">
+					and t.function_name like #{name}
+				</if>
+		       <if test="code!=null and code!=''">
+					and t.function_code like #{code}
+				</if>
+		       <if test="functionTemplet!=null and functionTemplet!=''">
+					and t.function_templet = #{functionTemplet}
+				</if>
+		       <if test="platformType!=null and platformType!=''">
+					and t.platform_type = #{platformType}
+				</if>
+				<if test="lifecycle!=null">
+					and t.lifecycle = #{lifecycle}
+			</if>
+		</where>
+	</sql>
+	
+
+		<update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhFunction">
+		    <![CDATA[
+		        UPDATE t_wh_function SET
+			       			 function_code = #{functionCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			       			 function_name = #{functionName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			       			 function_templet = #{functionTemplet,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			       			 platform_type = #{platformType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			       			 sku_attr_mgmt = #{skuAttrMgmt,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			       			 is_sys = #{isSys,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			       			 create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+			       			 create_id = #{createId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			       		 	 last_modify_time = now() ,	
+			       			 operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			       			 lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
+		        WHERE 
+			        id = #{id} 
+			        and last_modify_time	=  #{lastModifyTime}   
+		    ]]>
+		</update>
+		
+	<resultMap id="WhFunctionCommandResultExt" type="com.baozun.scm.primservice.whoperation.command.warehouse.WhFunctionCommand">
+	</resultMap>
+		
+	<sql id="whFunctionCommandColumnsExt">
+	    <![CDATA[
+	        	t.id as id,
+	        	t.function_code as functionCode,
+	        	t.function_name as functionName,
+	        	t.function_templet as functionTemplet,
+	        	t.platform_type as platformType,
+	        	t.sku_attr_mgmt as skuAttrMgmt,
+	        	t.ou_id as ouId,
+	        	t.is_sys as isSys,
+	        	t.create_time as createTime,
+	        	t.create_id as createId,
+	        	t.last_modify_time as lastModifyTime,
+	        	t.operator_id as operatorId,
+	        	t.lifecycle as lifecycle,
+	        	sys.dic_label as functionTempletName
+	    ]]>
+	</sql>
+	
+	<select id="findListCountByQueryMapExt" resultType="long">
+        select count(*) from t_wh_function t 
+ 	       left join sys_dictionary sys on sys.dic_value = t.function_templet and sys.group_value = 'FUNCTION_TEMPLET'
+		<include refid="whFunctionDynamicWhereExt"/>    
+    </select>
+	
+	<select id="findListByQueryMapWithPageExt" resultMap="WhFunctionCommandResultExt">
+    	select <include refid="whFunctionCommandColumnsExt" />
+		    from t_wh_function t 
+		    left join sys_dictionary sys on sys.dic_value = t.function_templet and sys.group_value = 'FUNCTION_TEMPLET'
+		<include refid="whFunctionDynamicWhereExt"/>
+    </select>
+    
+	<select id="findWhFunctionById" resultMap="WhFunctionResultExt">
+    	select <include refid="whFunctionColumnsExt" />
+		    from t_wh_function t 
+		    where id = #{id} and ou_id = #{ouid}
+    </select>
+
+	<select id="checkNameOrCode" resultMap="WhFunctionCommandResultExt">
+		SELECT <include refid="whFunctionColumnsExt"></include> 
+			from t_wh_function 
+		<where>
+			<if test="name!=null">
+				and function_name = #{name}
+			</if>
+			<if test="code!=null">
+				and function_code = #{code}
+			</if> 
+			and ou_id = #{ouid}
+			and function_templet = #{templet} 
+			and is_sys = 0
+		</where>
+	</select>
+	
+	<select id="findWhFunctionListNotIsSys" resultMap="WhFunctionResultExt">
+		SELECT <include refid="whFunctionColumnsExt"></include> 
+			from t_wh_function 
+			where ou_id = #{ouid} and lifecycle = 1 and is_sys = 0 order by function_templet
+	</select>
+	
+	<delete id="deleteFunction" parameterType="java.lang.Long">
+		delete from t_wh_function 
+			where id = #{id} and ou_id = #{ouid}
+	</delete> 
+
+	
+</mapper>

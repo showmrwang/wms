@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.WhFunctionInBoundDao">
+	<resultMap id="WhFunctionInBoundResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionInBound">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whFunctionInBoundColumnsExt">
+	    <![CDATA[
+	        	id as id,
+	        	function_id as functionId,
+	        	inbound_rule_id as inboundRuleId,
+	        	scan_pattern as scanPattern,
+	        	is_scan_container as isScanContainer,
+	        	ou_id as ouId
+	    ]]>
+	</sql>
+	
+	<sql id="whFunctionInBoundDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+				<if test="functionId!=null">
+					and function_id = #{functionId}
+				</if>
+	       
+				<if test="inboundRuleId!=null">
+					and inbound_rule_id = #{inboundRuleId}
+				</if>
+	       
+				<if test="scanPattern!=null">
+					and scan_pattern = #{scanPattern}
+				</if>
+	       
+				<if test="isScanSku!=null">
+					and is_scan_sku = #{isScanSku}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+		</where>
+	</sql>
+	
+	 <select id="findwFunctionInBoundByFunctionId" resultMap="WhFunctionInBoundResultExt">
+		select <include refid="whFunctionInBoundColumnsExt" />
+	    from t_wh_function_inbound  
+	    where function_id = #{id} and ou_id = #{ouid}
+    </select>
+    
+    <delete id="deleteWhFunctionInBoundByFunctionId" parameterType="java.lang.Long">
+	 	delete from t_wh_function_inbound
+			where function_id = #{id} and ou_id = #{ouid}
+	</delete> 
+
+	
+	
+</mapper>

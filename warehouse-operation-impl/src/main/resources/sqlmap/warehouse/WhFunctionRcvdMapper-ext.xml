@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.WhFunctionRcvdDao">
+	<resultMap id="WhFunctionRcvdResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionRcvd">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whFunctionRcvdColumnsExt">
+	    <![CDATA[
+	        	id as id,
+	        	function_id as functionId,
+	        	rcvd_pattern as rcvdPattern,
+	        	scan_pattern as scanPattern,
+	        	skip_url as skipUrl,
+	        	tag_lock as tagLock,
+	        	inv_type as invType,
+	        	inv_status as invStatus,
+	        	norm_inc_pointout_rcvd as normIncPointoutRcvd,
+	        	is_limit_unique_batch as isLimitUniqueBatch,
+	        	is_limit_unique_inv_type as isLimitUniqueInvType,
+	        	is_limit_unique_inv_status as isLimitUniqueInvStatus,
+	        	is_limit_unique_inv_attr1 as isLimitUniqueInvAttr1,
+	        	is_limit_unique_inv_attr2 as isLimitUniqueInvAttr2,
+	        	is_limit_unique_inv_attr3 as isLimitUniqueInvAttr3,
+	        	is_limit_unique_inv_attr4 as isLimitUniqueInvAttr4,
+	        	is_limit_unique_inv_attr5 as isLimitUniqueInvAttr5,
+	        	is_limit_unique_placeoforigin as isLimitUniquePlaceoforigin,
+	        	is_limit_unique_date_of_manufacture as isLimitUniqueDateOfManufacture,
+	        	is_limit_unique_expiry_date as isLimitUniqueExpiryDate,
+	        	is_mixing_sku as isMixingSku,
+	        	ou_id as ouId,
+	        	is_invattr_asn_pointout_user as isInvattrAsnPointoutUser,
+	        	is_invattr_discrepancy_allowrcvd as isInvattrDiscrepancyAllowrcvd,
+	        	is_caselevel_scan_sku as isCaselevelScanSku
+	    ]]>
+	</sql>
+	
+	<sql id="whFunctionRcvdDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+				<if test="functionId!=null">
+					and function_id = #{functionId}
+				</if>
+	       
+				<if test="rcvdPattern!=null">
+					and rcvd_pattern = #{rcvdPattern}
+				</if>
+	       
+				<if test="scanPattern!=null">
+					and scan_pattern = #{scanPattern}
+				</if>
+	       
+				<if test="skipUrl!=null">
+					and skip_url = #{skipUrl}
+				</if>
+	       
+	       
+		       <if test="tagLock!=null and tagLock!=''">
+					and tag_lock = #{tagLock}
+				</if>
+	       
+	       
+		       <if test="invType!=null and invType!=''">
+					and inv_type = #{invType}
+				</if>
+	       
+				<if test="invStatus!=null">
+					and inv_status = #{invStatus}
+				</if>
+	       
+				<if test="normIncPointoutRcvd!=null">
+					and norm_inc_pointout_rcvd = #{normIncPointoutRcvd}
+				</if>
+	       
+				<if test="isLimitUniqueBatch!=null">
+					and is_limit_unique_batch = #{isLimitUniqueBatch}
+				</if>
+	       
+				<if test="isLimitUniqueInvType!=null">
+					and is_limit_unique_inv_type = #{isLimitUniqueInvType}
+				</if>
+	       
+				<if test="isLimitUniqueInvStatus!=null">
+					and is_limit_unique_inv_status = #{isLimitUniqueInvStatus}
+				</if>
+	       
+				<if test="isLimitUniqueInvAttr1!=null">
+					and is_limit_unique_inv_attr1 = #{isLimitUniqueInvAttr1}
+				</if>
+	       
+				<if test="isLimitUniqueInvAttr2!=null">
+					and is_limit_unique_inv_attr2 = #{isLimitUniqueInvAttr2}
+				</if>
+	       
+				<if test="isLimitUniqueInvAttr3!=null">
+					and is_limit_unique_inv_attr3 = #{isLimitUniqueInvAttr3}
+				</if>
+	       
+				<if test="isLimitUniqueInvAttr4!=null">
+					and is_limit_unique_inv_attr4 = #{isLimitUniqueInvAttr4}
+				</if>
+	       
+				<if test="isLimitUniqueInvAttr5!=null">
+					and is_limit_unique_inv_attr5 = #{isLimitUniqueInvAttr5}
+				</if>
+	       
+				<if test="isLimitUniquePlaceoforigin!=null">
+					and is_limit_unique_placeoforigin = #{isLimitUniquePlaceoforigin}
+				</if>
+	       
+				<if test="isLimitUniqueDateOfManufacture!=null">
+					and is_limit_unique_date_of_manufacture = #{isLimitUniqueDateOfManufacture}
+				</if>
+	       
+				<if test="isLimitUniqueExpiryDate!=null">
+					and is_limit_unique_expiry_date = #{isLimitUniqueExpiryDate}
+				</if>
+	       
+				<if test="isMixingSku!=null">
+					and is_mixing_sku = #{isMixingSku}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+		</where>
+	</sql>
+	
+	<select id="findwFunctionRcvdByFunctionId" resultMap="WhFunctionRcvdResultExt">
+		select <include refid="whFunctionRcvdColumnsExt" />
+	    from t_wh_function_rcvd  
+	    where function_id = #{id} and ou_id = #{ouid}
+    </select>
+    
+    <delete id="deleteWhFunctionRcvdByFunctionId" parameterType="java.lang.Long">
+	    delete from t_wh_function_rcvd  
+		    where function_id = #{id} and ou_id = #{ouid}
+	</delete>
+	
+</mapper>

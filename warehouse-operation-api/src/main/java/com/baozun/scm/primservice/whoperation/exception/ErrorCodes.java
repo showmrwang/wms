@@ -225,7 +225,7 @@ public class ErrorCodes {
     // 30001-40000 zhanglei
 
     // 40001-50000 lichuan
-    
+    public static final int RECOMMEND_LOCATION_NO_RULE_ERROR = 40001;
     // 40001-50000 lichuan
 
     // 50001-60000 hubin

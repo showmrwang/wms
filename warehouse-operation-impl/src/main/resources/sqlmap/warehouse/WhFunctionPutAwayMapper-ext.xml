@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.WhFunctionPutAwayDao">
+	<resultMap id="WhFunctionPutAwayResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionPutAway">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whFunctionPutAwayColumnsExt">
+	    <![CDATA[
+	        	id as id,
+	        	function_id as functionId,
+	        	putaway_pattern as putawayPattern,
+	        	scan_pattern as scanPattern,
+	        	is_entire_tray_putaway as isEntireTrayPutaway,
+	        	is_entire_bin_putaway as isEntireBinPutaway,
+	        	is_caselevel_scan_sku as isCaselevelScanSku,
+	        	is_notcaselevel_scan_sku as isNotcaselevelScanSku,
+	        	ou_id as ouId
+	    ]]>
+	</sql>
+	
+	<sql id="whFunctionPutAwayDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+				<if test="functionId!=null">
+					and function_id = #{functionId}
+				</if>
+	       
+				<if test="putawayPattern!=null">
+					and putaway_pattern = #{putawayPattern}
+				</if>
+	       
+				<if test="scanPattern!=null">
+					and scan_pattern = #{scanPattern}
+				</if>
+	       
+				<if test="isEntireTrayPutaway!=null">
+					and is_entire_tray_putaway = #{isEntireTrayPutaway}
+				</if>
+	       
+				<if test="isEntireBinPutaway!=null">
+					and is_entire_bin_putaway = #{isEntireBinPutaway}
+				</if>
+	       
+				<if test="isCaselevelScanSku!=null">
+					and is_caselevel_scan_sku = #{isCaselevelScanSku}
+				</if>
+	       
+				<if test="isNotcaselevelScanSku!=null">
+					and is_notcaselevel_scan_sku = #{isNotcaselevelScanSku}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+		</where>
+	</sql>
+	
+	<select id="findWhFunctionPutAwayByFunctionId" resultMap="WhFunctionPutAwayResultExt">
+		select <include refid="whFunctionPutAwayColumnsExt" />
+	    from t_wh_function_putaway  
+	    where function_id = #{id} and ou_id = #{ouid}
+    </select>
+    
+    <delete id="deleteWhFunctionPutAwayByFunctionId" parameterType="java.lang.Long">
+	    delete from t_wh_function_putaway  
+		    where function_id = #{id} and ou_id = #{ouid}
+	</delete>
+	
+</mapper>
