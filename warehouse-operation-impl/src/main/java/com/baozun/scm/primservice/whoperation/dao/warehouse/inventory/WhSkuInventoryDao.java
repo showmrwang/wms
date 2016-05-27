@@ -49,7 +49,7 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
 
     @CommonQuery
     int saveOrUpdate(WhSkuInventory o);
-    
+
     @CommonQuery
     int saveOrUpdateByVersion(WhSkuInventory o);
 
@@ -57,9 +57,10 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * 根据库存ID+UUID+OUID查询对应库存
      */
     WhSkuInventoryCommand findWhSkuInventoryByIdAndUuid(@Param("id") Long id, @Param("uuid") String uuid, @Param("ouid") Long ouid);
-    
+
     /**
      * 根据skuId uuid ouId统计商品库存
+     * 
      * @author lichuan
      * @param skuId
      * @param uuid
@@ -67,9 +68,10 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @return
      */
     WhSkuInventoryCommand findWhSkuInventoryByIdGroupByUuid(@Param("skuId") Long skuId, @Param("uuid") String uuid, @Param("ouId") Long ouId);
-    
+
     /**
      * 获取所有可用库存行
+     * 
      * @author lichuan
      * @param skuId
      * @param uuid
@@ -77,9 +79,10 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @return
      */
     List<WhSkuInventoryCommand> findAllValidInventoryBySkuAndUuid(@Param("skuId") Long skuId, @Param("uuid") String uuid, @Param("ouId") Long ouId, @Param("expectQty") Double expectQty);
-    
+
     /**
      * 占用库存
+     * 
      * @author lichuan
      * @param eQty
      * @param occupyCode
@@ -87,24 +90,26 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @return
      */
     int occupyInvByCodeAndId(@Param("eQty") Double eQty, @Param("occupyCode") String occupyCode, @Param("id") Long id);
-    
+
     /**
      * 占用库存校验
+     * 
      * @author lichuan
      * @param eQty
      * @param occupyCode
      * @return
      */
     List<WhSkuInventoryCommand> validateOccupyByExpectQty(@Param("eQty") Double eQty, @Param("occupyCode") String occupyCode);
-    
+
     /**
      * 释放库存存
+     * 
      * @author lichuan
      * @param occupyCode
      * @return
      */
     long releaseOccupiedInventory(@Param("occupyCode") String occupyCode);
-    
+
     /**
      * 通过容器号查询对用的库存信息
      * 
@@ -123,6 +128,23 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @return
      */
     List<WhSkuInventoryCommand> findWhSkuInventoryBySkuCodeAndContainerId(@Param("ouid") Long ouid, @Param("skuCode") String skuCode, @Param("containerId") Long containerId);
-    
+
+    /**
+     * 通过ID+OUID查询对应库存记录
+     * 
+     * @param id
+     * @param ouid
+     * @return
+     */
+    WhSkuInventory findwWhSkuInventoryById(@Param("id") Long id, @Param("ouid") Long ouid);
+
+    /**
+     * 通过UUID+OUID查询对应库存信息
+     * 
+     * @param ouid
+     * @param uuid
+     * @return
+     */
+    WhSkuInventory findwWhSkuInventoryByUuid(@Param("ouid") Long ouid, @Param("uuid") String uuid);
 
 }

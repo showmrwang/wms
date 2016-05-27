@@ -706,6 +706,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					id = #{id} 
 					and ou_id = #{ouid}
     </select>
+    
+    <select id="findwWhSkuInventoryByUuid" resultMap="WhSkuInventoryResultExt">
+				select  <include refid="whSkuInventoryColumnsExt" />
+					from 
+					t_wh_sku_inventory 
+					where 
+					uuid = #{uuid} 
+					and ou_id = #{ouid}
+    </select>
 	
 	<update id="updateWhSkuInventoryByContainerId" parameterType="com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand">
 			UPDATE t_wh_sku_inventory SET outer_container_id = #{outerContainerId}
@@ -723,10 +732,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			       			 customer_id = #{customerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			       			 store_id = #{storeId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			       			 occupation_code = #{occupationCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			       			 on_hand_qty = #{onHandQty,javaType=Long,jdbcType=DECIMAL} ,
-			       			 allocated_qty = #{allocatedQty,javaType=Long,jdbcType=DECIMAL} ,
-			       			 to_be_filled_qty = #{toBeFilledQty,javaType=Long,jdbcType=DECIMAL} ,
-			       			 frozen_qty = #{frozenQty,javaType=Long,jdbcType=DECIMAL} ,
+			       			 on_hand_qty = #{onHandQty,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+			       			 allocated_qty = #{allocatedQty,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+			       			 to_be_filled_qty = #{toBeFilledQty,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+			       			 frozen_qty = #{frozenQty,javaType=java.lang.Double,jdbcType=DECIMAL} ,
 			       			 inv_status = #{invStatus,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			       			 inv_type = #{invType,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			       			 batch_number = #{batchNumber,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -740,10 +749,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			       			 inv_attr5 = #{invAttr5,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			       			 uuid = #{uuid,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			       			 is_locked = #{isLocked,javaType=java.lang.Boolean,jdbcType=BIT} ,
-			       			 ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			       			 occupation_code_source = #{occupationCodeSource,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			       			 inbound_time = #{inboundTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-			       		 	  last_modify_time = now() 	
+			       		 	 last_modify_time = now() 	
 		        WHERE 
 			        id = #{id} 
 			        and last_modify_time	=  #{lastModifyTime}  
