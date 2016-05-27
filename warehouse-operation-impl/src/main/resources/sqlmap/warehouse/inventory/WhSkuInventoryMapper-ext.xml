@@ -697,7 +697,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     <select id="releaseOccupiedInventory" resultType="long">
     	
     </select>
-	
+    
+	<select id="findwWhSkuInventoryById" resultMap="WhSkuInventoryResultExt">
+				select  <include refid="whSkuInventoryColumnsExt" />
+					from 
+					t_wh_sku_inventory 
+					where 
+					id = #{id} 
+					and ou_id = #{ouid}
+    </select>
 	
 	<update id="updateWhSkuInventoryByContainerId" parameterType="com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand">
 			UPDATE t_wh_sku_inventory SET outer_container_id = #{outerContainerId}
