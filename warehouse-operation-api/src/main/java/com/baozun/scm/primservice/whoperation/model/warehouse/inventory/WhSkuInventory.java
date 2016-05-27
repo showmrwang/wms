@@ -84,6 +84,10 @@ public class WhSkuInventory extends BaseModel {
     private Long ouId;
     /** 占用单据号来源 */
     private String occupationCodeSource;
+    /** 入库时间 */
+    private Date inboundTime;
+    /** 最后操作时间 */
+    private Date lastModifyTime;
 
     public Long getSkuId() {
         return skuId;
@@ -291,6 +295,22 @@ public class WhSkuInventory extends BaseModel {
 
     public void setOccupationCodeSource(String occupationCodeSource) {
         this.occupationCodeSource = occupationCodeSource;
+    }
+
+    public Date getInboundTime() {
+        return inboundTime;
+    }
+
+    public void setInboundTime(Date inboundTime) {
+        this.inboundTime = inboundTime;
+    }
+
+    public Date getLastModifyTime() {
+        return lastModifyTime;
+    }
+
+    public void setLastModifyTime(Date lastModifyTime) {
+        this.lastModifyTime = lastModifyTime;
     }
 
 
