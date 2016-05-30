@@ -225,6 +225,16 @@ public class ErrorCodes {
     public static final int SKU_OVERCHARGE_ERROR = 10004;
     /** 缓存数据失败 */
     public static final int RCVD_CACHE_ERROR = 10005;
+    /** 商品属性有差异，不允许差异收货! */
+    public static final int RCVD_DISCREPANCY_ERROR = 10006;
+    /** 数据异常，此商品找不到对应的ASN单明细 */
+    public static final int RCVD_SKU_ASNLINE_NOTFOUND_ERROR = 10007;
+    /** 商品库存属性找不到对应的明细行 */
+    public static final int RCVD_MATCH_ERROR = 10008;
+    /** 获取商品信息异常，商品数据已失效！ */
+    public static final int RCVD_SKU_EXPRIED_ERROR = 10009;
+    /** 商品收货失败，请点击重试 */
+    public static final int RCVD_SKU_SAVE_ERROR = 10010;
     // 10001-20000 luyimin
 
 

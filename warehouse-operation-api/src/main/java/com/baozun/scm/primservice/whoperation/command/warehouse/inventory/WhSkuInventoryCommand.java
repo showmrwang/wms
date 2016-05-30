@@ -19,7 +19,6 @@ import java.util.List;
 
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionRcvd;
-import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventorySn;
 
 /**
  * 商品库存表
@@ -146,8 +145,25 @@ public class WhSkuInventoryCommand extends BaseCommand {
     private Integer skuUrlOperator;
     /** 通用收货功能是否提示库存属性 */
     private Boolean isInvattrAsnPointoutUser;
+    /** 通用收货功能是否允许差异收货 */
+    private Boolean isInvattrDiscrepancyAllowrcvd;
     /** 通用收货功能匹配明细行 */
     private String lineIdListString;
+    /** 通用收货功能匹配明细行 */
+    private List<WhSkuInventorySnCommand> snList;
+    /** 通用收货收货数量 */
+    private Integer skuAddUpCount;
+    /** 通用收货userId */
+    private Long userId;
+
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
 
     public String getLineIdListString() {
         return lineIdListString;
@@ -163,16 +179,6 @@ public class WhSkuInventoryCommand extends BaseCommand {
 
     public void setIsInvattrAsnPointoutUser(Boolean isInvattrAsnPointoutUser) {
         this.isInvattrAsnPointoutUser = isInvattrAsnPointoutUser;
-    }
-
-    private List<WhSkuInventorySn> snList;
-
-    public List<WhSkuInventorySn> getSnList() {
-        return snList;
-    }
-
-    public void setSnList(List<WhSkuInventorySn> snList) {
-        this.snList = snList;
     }
 
     public Integer getSkuUrlOperator() {
@@ -626,6 +632,22 @@ public class WhSkuInventoryCommand extends BaseCommand {
 
     public void setLastModifyTime(Date lastModifyTime) {
         this.lastModifyTime = lastModifyTime;
+    }
+
+    public Boolean getIsInvattrDiscrepancyAllowrcvd() {
+        return isInvattrDiscrepancyAllowrcvd;
+    }
+
+    public void setIsInvattrDiscrepancyAllowrcvd(Boolean isInvattrDiscrepancyAllowrcvd) {
+        this.isInvattrDiscrepancyAllowrcvd = isInvattrDiscrepancyAllowrcvd;
+    }
+
+    public Integer getSkuAddUpCount() {
+        return skuAddUpCount;
+    }
+
+    public void setSkuAddUpCount(Integer skuAddUpCount) {
+        this.skuAddUpCount = skuAddUpCount;
     }
 
 
