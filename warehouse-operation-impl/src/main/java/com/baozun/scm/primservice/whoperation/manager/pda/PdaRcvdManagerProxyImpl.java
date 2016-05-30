@@ -179,30 +179,29 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
     @Override
     public void cacheScanedSkuWhenGeneralRcvd(RcvdCacheCommand rcvdCacheCommand) {
         String userId = rcvdCacheCommand.getCreatedId().toString();
-        // String key = UUID.randomUUID().toString();
         try{
             long lessCount = cacheManager.decr(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + rcvdCacheCommand.getOccupationId() + "_" + rcvdCacheCommand.getSkuId());
             Integer overchargeCount = cacheManager.getMapObject(CacheKeyConstant.CACHE_ASNLINE_OVERCHARGE_PREFIX + rcvdCacheCommand.getOccupationId(), rcvdCacheCommand.getLineId().toString());
-            if (lessCount + overchargeCount < 0 && false) {
-                throw new BusinessException("商品已超收，请刷新页面重试");
+            if (lessCount + overchargeCount < -1) {
+                throw new BusinessException(ErrorCodes.SKU_OVERCHARGE_ERROR);
             }
         } catch (BusinessException e) {
             throw e;
         } catch (Exception e) {
-            throw new BusinessException("缓存数据失败，请重试！");
+            throw new BusinessException(ErrorCodes.RCVD_CACHE_ERROR);
         }
         try{
             cacheManager.decr(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + rcvdCacheCommand.getOccupationId() + "_" + rcvdCacheCommand.getSkuId());
         } catch (Exception e) {
             cacheManager.incr(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + rcvdCacheCommand.getOccupationId() + "_" + rcvdCacheCommand.getSkuId());
-            throw new BusinessException("缓存数据失败，请重试！");
+            throw new BusinessException(ErrorCodes.RCVD_CACHE_ERROR);
         }
         try {
             cacheManager.decr(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + rcvdCacheCommand.getOccupationId() + "_" + rcvdCacheCommand.getLineId() + "_" + rcvdCacheCommand.getSkuId());
         } catch (Exception e) {
             cacheManager.incr(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + rcvdCacheCommand.getOccupationId() + "_" + rcvdCacheCommand.getLineId() + "_" + rcvdCacheCommand.getSkuId());
             cacheManager.incr(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + rcvdCacheCommand.getOccupationId() + "_" + rcvdCacheCommand.getSkuId());
-            throw new BusinessException("缓存数据失败，请重试！");
+            throw new BusinessException(ErrorCodes.RCVD_CACHE_ERROR);
         }
         try {
             // 缓存
@@ -217,7 +216,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
         } catch (Exception e) {
             cacheManager.incr(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + rcvdCacheCommand.getOccupationId() + "_" + rcvdCacheCommand.getSkuId());
             cacheManager.incr(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + rcvdCacheCommand.getOccupationId() + "_" + rcvdCacheCommand.getLineId() + "_" + rcvdCacheCommand.getSkuId());
-            throw new BusinessException("缓存数据失败，请重试！");
+            throw new BusinessException(ErrorCodes.RCVD_CACHE_ERROR);
         }
     }
 

@@ -221,6 +221,10 @@ public class ErrorCodes {
     public static final int ASN_CACHE_ERROR = 10002;
     /** 商品数据初始化失败 */
     public static final int SKU_CACHE_ERROR = 10003;
+    /** 商品已超收 */
+    public static final int SKU_OVERCHARGE_ERROR = 10004;
+    /** 缓存数据失败 */
+    public static final int RCVD_CACHE_ERROR = 10005;
     // 10001-20000 luyimin
 
 
