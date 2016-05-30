@@ -3,6 +3,7 @@ package com.baozun.scm.primservice.whoperation.manager.pda;
 import java.util.List;
 
 import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdCacheCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 
 public interface PdaRcvdManagerProxy extends BaseManager {
@@ -24,7 +25,7 @@ public interface PdaRcvdManagerProxy extends BaseManager {
      * 
      * @param rcvdCacheCommand
      */
-    void cacheScanedSkuWhenGeneralRcvd(RcvdCacheCommand rcvdCacheCommand);
+    void cacheScanedSkuWhenGeneralRcvd(WhSkuInventoryCommand command);
 
     /**
      * 刷新ASN缓存操作
@@ -32,5 +33,13 @@ public interface PdaRcvdManagerProxy extends BaseManager {
      * @param id
      */
     void freshAsnCacheForGeneralReceiving(Long occupationId, Double newChargeRate, Double oldChargeRate);
+
+    /**
+     * 获取匹配的明细行
+     * 
+     * @param command
+     * @return
+     */
+    String getMatchLineListStr(WhSkuInventoryCommand command);
 
 }

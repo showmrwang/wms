@@ -575,6 +575,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					sku.bar_code = #{skuCode}
 					and inv.inside_container_id = #{containerId}  
 					and inv.ou_id = #{ouid}
+					and inv.location_id is null
 				union all
 				select  <include refid="whSkuInventoryColumnsInvExt" />
 					from 
@@ -584,6 +585,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					sku.bar_code = #{skuCode}
 					and inv.inside_container_id = #{containerId} 
 					and inv.ou_id = #{ouid}
+					and inv.location_id is null
     </select>
     
     <sql id="findWhSkuInventoryByIdAndUuidColumns">
@@ -758,4 +760,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        and ou_id = #{ouId}
 		    ]]>
 		</update>
+		
+		<delete id="deleteWhSkuInventoryById" parameterType="java.lang.Integer">
+	        delete from t_wh_sku_inventory where
+		        id = #{id} and ou_id = #{ouid}
+		</delete>
 </mapper>

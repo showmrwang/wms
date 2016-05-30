@@ -1,6 +1,8 @@
 package com.baozun.scm.primservice.whoperation.manager.pda;
 
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -17,6 +19,7 @@ import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnLineCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.constant.CacheKeyConstant;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
@@ -29,6 +32,7 @@ import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnMana
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoManager;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine;
+import com.baozun.utilities.DateUtil;
 
 @Service("pdaRcvdManagerProxy")
 public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdManagerProxy {
@@ -176,38 +180,55 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
         this.generalRcvdManager.saveScanedSkuWhenGeneralRcvdForPda(commandList);
     }
 
+    /**
+     * 将数据推送到缓存
+     */
     @Override
-    public void cacheScanedSkuWhenGeneralRcvd(RcvdCacheCommand rcvdCacheCommand) {
+    public void cacheScanedSkuWhenGeneralRcvd(WhSkuInventoryCommand command) {
+        // 逻辑:
+        // 将数据按照格式放到缓存中：RcvdCacheCommand
+        /**
+         * 匹配到明细，具体做法是：每次设置ASN属性的时候，就进行过滤； 而且，功能菜单上有一个属性：是否允许库存差异收货，如果允许，则随机匹配；如果不允许，则需要进行完全匹配
+         */
+
+        RcvdCacheCommand rcvdCacheCommand = new RcvdCacheCommand();
+        BeanUtils.copyProperties(command, rcvdCacheCommand);
+        rcvdCacheCommand.setCreatedId(command.getUserId());
+        rcvdCacheCommand.setLastModifyTime(new Date());
+        rcvdCacheCommand.setOuId(command.getOuId());
+        rcvdCacheCommand.setLineId(Long.parseLong(command.getLineIdListString().split(",")[0]));
+        try {
+            if (StringUtils.hasText(command.getExpDateStr())) {
+                rcvdCacheCommand.setExpDate(DateUtil.parse(command.getExpDateStr(), Constants.DATE_PATTERN_YMD));
+            }
+            if (StringUtils.hasText(command.getMfgDateStr())) {
+                rcvdCacheCommand.setExpDate(DateUtil.parse(command.getMfgDateStr(), Constants.DATE_PATTERN_YMD));
+            }
+
+        } catch (ParseException e) {
+            throw new BusinessException(ErrorCodes.RCVD_CACHE_ERROR);
+        }
+
         String userId = rcvdCacheCommand.getCreatedId().toString();
-        // String key = UUID.randomUUID().toString();
-        try{
             long lessCount = cacheManager.decr(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + rcvdCacheCommand.getOccupationId() + "_" + rcvdCacheCommand.getSkuId());
             Integer overchargeCount = cacheManager.getMapObject(CacheKeyConstant.CACHE_ASNLINE_OVERCHARGE_PREFIX + rcvdCacheCommand.getOccupationId(), rcvdCacheCommand.getLineId().toString());
-            if (lessCount + overchargeCount < 0 && false) {
-                throw new BusinessException("商品已超收，请刷新页面重试");
+            if (lessCount + overchargeCount < -1) {
+                throw new BusinessException(ErrorCodes.SKU_OVERCHARGE_ERROR);
             }
-        } catch (BusinessException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new BusinessException("缓存数据失败，请重试！");
-        }
         try{
             cacheManager.decr(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + rcvdCacheCommand.getOccupationId() + "_" + rcvdCacheCommand.getSkuId());
         } catch (Exception e) {
             cacheManager.incr(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + rcvdCacheCommand.getOccupationId() + "_" + rcvdCacheCommand.getSkuId());
-            throw new BusinessException("缓存数据失败，请重试！");
+            throw new BusinessException(ErrorCodes.RCVD_CACHE_ERROR);
         }
         try {
             cacheManager.decr(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + rcvdCacheCommand.getOccupationId() + "_" + rcvdCacheCommand.getLineId() + "_" + rcvdCacheCommand.getSkuId());
         } catch (Exception e) {
             cacheManager.incr(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + rcvdCacheCommand.getOccupationId() + "_" + rcvdCacheCommand.getLineId() + "_" + rcvdCacheCommand.getSkuId());
             cacheManager.incr(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + rcvdCacheCommand.getOccupationId() + "_" + rcvdCacheCommand.getSkuId());
-            throw new BusinessException("缓存数据失败，请重试！");
+            throw new BusinessException(ErrorCodes.RCVD_CACHE_ERROR);
         }
         try {
-            // 缓存
-            // cacheManager.setMapObject(CacheKeyConstant.CACHE_RCVD_USER_PREFIX + userId, key,
-            // rcvdCacheCommand, 300);
             List<RcvdCacheCommand> list = cacheManager.getMapObject(CacheKeyConstant.CACHE_RCVD, userId);
             if (null == list) {
                 list = new ArrayList<RcvdCacheCommand>();
@@ -217,7 +238,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
         } catch (Exception e) {
             cacheManager.incr(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + rcvdCacheCommand.getOccupationId() + "_" + rcvdCacheCommand.getSkuId());
             cacheManager.incr(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + rcvdCacheCommand.getOccupationId() + "_" + rcvdCacheCommand.getLineId() + "_" + rcvdCacheCommand.getSkuId());
-            throw new BusinessException("缓存数据失败，请重试！");
+            throw new BusinessException(ErrorCodes.RCVD_CACHE_ERROR);
         }
     }
 
@@ -243,4 +264,120 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
         }
     }
 
+    /**
+     * 获取到匹配的明细行
+     */
+    @Override
+    public String getMatchLineListStr(WhSkuInventoryCommand command) {
+        String lineIdListStr = "";
+        try {
+            if (StringUtils.isEmpty(command.getLineIdListString())) {
+                Map<String, String> lineIdSet = this.cacheManager.getAllMap(CacheKeyConstant.CACHE_ASNLINE_PREFIX + command.getOccupationId());
+                if (null == lineIdSet || lineIdSet.size() == 0) {
+                    throw new BusinessException(ErrorCodes.RCVD_SKU_ASNLINE_NOTFOUND_ERROR);
+                }
+                Iterator<Entry<String, String>> it = lineIdSet.entrySet().iterator();
+                while (it.hasNext()) {
+                    Entry<String, String> entry = it.next();
+                    lineIdListStr += entry.getKey() + ",";
+                }
+            } else {
+                List<String> matchLineList = this.matchLineList(command.getSkuUrlOperator(), command);// 匹配行明细
+                if (null == matchLineList || matchLineList.size() == 0) {
+                    if (command.getIsInvattrDiscrepancyAllowrcvd()) {
+                        throw new BusinessException(ErrorCodes.RCVD_DISCREPANCY_ERROR);
+                    }
+                }
+                for (String lineId : matchLineList) {
+                    lineIdListStr += lineId + ",";
+                }
+
+            }
+            return lineIdListStr;
+
+        } catch (BusinessException e) {
+            throw e;
+        } catch (Exception ex) {
+            throw new BusinessException(ErrorCodes.RCVD_MATCH_ERROR);
+        }
+    }
+
+    /**
+     * 匹配明细行逻辑
+     * 
+     * @param operator
+     * @param isInvattrDiscrepancyAllowrcvd
+     * @param command
+     */
+    private List<String> matchLineList(int operator, WhSkuInventoryCommand command) {
+        // 匹配可用的明细
+        String[] lineIdArray = command.getLineIdListString().split(",");
+        // 如果只有一条明细
+        List<String> lineList = new ArrayList<String>();
+        for (String lineId : lineIdArray) {
+            WhAsnLine line = this.cacheManager.getMapObject(CacheKeyConstant.CACHE_ASNLINE_PREFIX + command.getOccupationId(), lineId + "");
+            switch (operator) {
+                case 0:
+                    String mfgDateStr = null == line.getMfgDate() ? "" : DateUtil.format(line.getMfgDate(), Constants.DATE_PATTERN_YMD);
+                    String expDateStr = null == line.getExpDate() ? "" : DateUtil.format(line.getExpDate(), Constants.DATE_PATTERN_YMD);
+                    if (mfgDateStr.equals(command.getMfgDateStr()) && expDateStr.equals(command.getExpDateStr())) {
+                        lineList.add(lineId);
+                    }
+                    break;
+                case 1:
+                    if (null == line.getBatchNo() || line.getBatchNo().equals(command.getBatchNumber())) {
+                        lineList.add(lineId);
+                    }
+                    break;
+                case 2:
+                    if (null == line.getCountryOfOrigin() || line.getCountryOfOrigin().equals(command.getCountryOfOrigin())) {
+                        lineList.add(lineId);
+                    }
+                    break;
+                case 3:
+                    if (null == line.getInvStatus() || line.getInvStatus().equals(command.getInvStatus())) {
+                        lineList.add(lineId);
+                    }
+                    break;
+                case 4:
+                    lineList.add(lineId);
+                    break;
+                case 5:
+                    if (null == line.getInvType() || line.getInvType().equals(command.getInvType())) {
+                        lineList.add(lineId);
+                    }
+                    break;
+                case 6:
+                    if (null == line.getInvAttr1() || line.getInvAttr1().equals(command.getInvAttr1())) {
+                        lineList.add(lineId);
+                    }
+                    break;
+                case 7:
+                    if (null == line.getInvAttr2() || line.getInvAttr2().equals(command.getInvAttr2())) {
+                        lineList.add(lineId);
+                    }
+                    break;
+                case 8:
+                    if (null == line.getInvAttr3() || line.getInvAttr3().equals(command.getInvAttr3())) {
+                        lineList.add(lineId);
+                    }
+                    break;
+                case 9:
+                    if (null == line.getInvAttr5() || line.getInvAttr4().equals(command.getInvAttr4())) {
+                        lineList.add(lineId);
+                    }
+                    break;
+                case 10:
+                    if (null == line.getInvAttr5() || line.getInvAttr5().equals(command.getInvAttr5())) {
+                        lineList.add(lineId);
+                    }
+                    break;
+                case 11:
+                    // 根据序列号确认lineList
+                    lineList.add(lineId);
+                    break;
+            }
+        }
+        return lineList;
+    }
 }
