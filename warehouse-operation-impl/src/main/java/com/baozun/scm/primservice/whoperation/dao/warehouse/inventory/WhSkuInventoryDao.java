@@ -147,4 +147,13 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      */
     WhSkuInventory findwWhSkuInventoryByUuid(@Param("ouid") Long ouid, @Param("uuid") String uuid);
 
+    /**
+     * 通过id+ouid删除对应库存记录
+     * 
+     * @param id
+     * @param ouid
+     * @return
+     */
+    int deleteWhSkuInventoryById(@Param("id") Long id, @Param("ouid") Long ouid);
+
 }
