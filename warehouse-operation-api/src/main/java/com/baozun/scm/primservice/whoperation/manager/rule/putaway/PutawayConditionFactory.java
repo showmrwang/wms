@@ -14,21 +14,14 @@
  * THIS SOFTWARE OR ITS DERIVATIVES.
  *
  */
-package com.baozun.scm.primservice.whoperation.manager.rule;
-
-import java.util.List;
-
-import com.baozun.scm.primservice.whoperation.command.rule.RuleAfferCommand;
-import com.baozun.scm.primservice.whoperation.command.warehouse.LocationCommand;
-import com.baozun.scm.primservice.whoperation.command.warehouse.ShelveRecommendRuleCommand;
-import com.baozun.scm.primservice.whoperation.manager.BaseManager;
+package com.baozun.scm.primservice.whoperation.manager.rule.putaway;
 
 /**
  * @author lichuan
  *
  */
-public interface WhLocationRecommendManager extends BaseManager {
+public interface PutawayConditionFactory {
     
-    List<LocationCommand> recommendLocationByShevleRule(RuleAfferCommand ruleAffer, List<ShelveRecommendRuleCommand> ruleList, int putawayPatternDetail, String logId);
+    PutawayCondition getPutawayCondition(int ppt, int ppdt, String logId);
 
 }

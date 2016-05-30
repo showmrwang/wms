@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.WhLocationDao">
+	<resultMap id="LocationResult" type="com.baozun.scm.primservice.whoperation.model.warehouse.Location">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="locationColumns">
+	    <![CDATA[
+	        	id as id,
+	        	code as code,
+	        	bar_code as barCode,
+	        	sys_compile_code as sysCompileCode,
+	        	manual_code as manualCode,
+	        	ou_id as ouId,
+	        	shelf_area_id as shelfAreaId,
+	        	allocate_area_id as allocateAreaId,
+	        	work_area_id as workAreaId,
+	        	status_id as statusId,
+	        	is_mix_stacking as isMixStacking,
+	        	mix_stacking_number as mixStackingNumber,
+	        	is_replenishment_barcode as isReplenishmentBarcode,
+	        	is_valid_mgt as isValidMgt,
+	        	is_batch_mgt as isBatchMgt,
+	        	is_track_vessel as isTrackVessel,
+	        	is_temporary_location as isTemporaryLocation,
+	        	templet_code as templetCode,
+	        	create_time as createTime,
+	        	last_modify_time as lastModifyTime,
+	        	operator_id as operatorId,
+	        	lifecycle as lifecycle,
+	        	shelf_sort as shelfSort,
+	        	pick_sort as pickSort,
+	        	replenishment_barcode as replenishmentBarcode,
+	        	temporary_code as temporaryCode,
+	        	latest_sku_code as latestSkuCode,
+	        	uuid as uuid,
+	        	dimension1 as dimension1,
+	        	dimension2 as dimension2,
+	        	dimension3 as dimension3,
+	        	dimension4 as dimension4,
+	        	dimension5 as dimension5,
+	        	dimension6 as dimension6,
+	        	dimension7 as dimension7,
+	        	dimension8 as dimension8,
+	        	is_static as isStatic,
+	        	upBound as upBound,
+	        	downBound as downBound
+	    ]]>
+	</sql>
+		<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+		<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Location" 
+		 flushCache="true">
+	    <![CDATA[
+	        INSERT INTO
+	        t_wh_location (
+	        id,
+	        	code ,
+	        	bar_code ,
+	        	sys_compile_code ,
+	        	manual_code ,
+	        	ou_id ,
+	        	shelf_area_id ,
+	        	allocate_area_id ,
+	        	work_area_id ,
+	        	status_id ,
+	        	is_mix_stacking ,
+	        	mix_stacking_number ,
+	        	is_replenishment_barcode ,
+	        	is_valid_mgt ,
+	        	is_batch_mgt ,
+	        	is_track_vessel ,
+	        	is_temporary_location ,
+	        	templet_code ,
+	        	create_time ,
+	        	last_modify_time ,
+	        	operator_id ,
+	        	lifecycle ,
+	        	shelf_sort ,
+	        	pick_sort ,
+	        	replenishment_barcode,
+	        	temporary_code,
+	        	latest_sku_code,
+	        	uuid,
+	        	dimension1,
+	        	dimension2,
+	        	dimension3,
+	        	dimension4,
+	        	dimension5,
+	        	dimension6,
+	        	dimension7,
+	        	dimension8,
+	        	is_static,
+	        	upBound,
+	        	downBound
+	        ) VALUES (
+	        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{barCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{sysCompileCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{manualCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{shelfAreaId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{allocateAreaId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{workAreaId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{statusId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{isMixStacking,javaType=java.lang.Boolean,jdbcType=BIT} ,
+	        	#{mixStackingNumber,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+	        	#{isReplenishmentBarcode,javaType=java.lang.Boolean,jdbcType=BIT} ,
+	        	#{isValidMgt,javaType=java.lang.Boolean,jdbcType=BIT} ,
+	        	#{isBatchMgt,javaType=java.lang.Boolean,jdbcType=BIT} ,
+	        	#{isTrackVessel,javaType=java.lang.Boolean,jdbcType=BIT} ,
+	        	#{isTemporaryLocation,javaType=java.lang.Boolean,jdbcType=BIT} ,
+	        	#{templetCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+	        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+	        	#{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+	        	#{shelfSort,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{pickSort,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{replenishmentBarcode,javaType=java.lang.String,jdbcType=VARCHAR},
+	        	#{temporaryCode,javaType=java.lang.String,jdbcType=VARCHAR},
+	        	#{latestSkuCode,javaType=java.lang.String,jdbcType=VARCHAR},
+	        	#{uuid,javaType=java.lang.String,jdbcType=VARCHAR},
+	        	#{dimension1,javaType=java.lang.String,jdbcType=VARCHAR},
+	        	#{dimension2,javaType=java.lang.String,jdbcType=VARCHAR},
+	        	#{dimension3,javaType=java.lang.String,jdbcType=VARCHAR},
+	        	#{dimension4,javaType=java.lang.String,jdbcType=VARCHAR},
+	        	#{dimension5,javaType=java.lang.String,jdbcType=VARCHAR},
+	        	#{dimension6,javaType=java.lang.String,jdbcType=VARCHAR},
+	        	#{dimension7,javaType=java.lang.String,jdbcType=VARCHAR},
+	        	#{dimension8,javaType=java.lang.String,jdbcType=VARCHAR},
+	        	#{isStatic,javaType=java.lang.Boolean,jdbcType=BIT}, 
+	        	#{upBound,javaType=java.lang.String,jdbcType=VARCHAR},
+	        	#{downBound,javaType=java.lang.String,jdbcType=VARCHAR} 
+	        )
+	    ]]>
+
+		</insert>
+	    
+		<update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Location">
+	    <![CDATA[
+	        UPDATE t_wh_location SET
+		        code = #{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        bar_code = #{barCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        sys_compile_code = #{sysCompileCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        manual_code = #{manualCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        shelf_area_id = #{shelfAreaId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        allocate_area_id = #{allocateAreaId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        work_area_id = #{workAreaId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        status_id = #{statusId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        is_mix_stacking = #{isMixStacking,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        mix_stacking_number = #{mixStackingNumber,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        is_replenishment_barcode = #{isReplenishmentBarcode,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        is_valid_mgt = #{isValidMgt,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        is_batch_mgt = #{isBatchMgt,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        is_track_vessel = #{isTrackVessel,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        is_temporary_location = #{isTemporaryLocation,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        templet_code = #{templetCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        shelf_sort = #{shelfSort,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        pick_sort = #{pickSort,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        replenishment_barcode = #{replenishmentBarcode,javaType=java.lang.String,jdbcType=VARCHAR},
+		        temporary_code = #{temporaryCode,javaType=java.lang.String,jdbcType=VARCHAR},
+		        latest_sku_code = #{latestSkuCode,javaType=java.lang.String,jdbcType=VARCHAR},
+		        uuid = #{uuid,javaType=java.lang.String,jdbcType=VARCHAR},
+		        dimension1=#{dimension1,javaType=java.lang.String,jdbcType=VARCHAR},
+	        	dimension2=#{dimension2,javaType=java.lang.String,jdbcType=VARCHAR},
+	        	dimension3=#{dimension3,javaType=java.lang.String,jdbcType=VARCHAR},
+	        	dimension4=#{dimension4,javaType=java.lang.String,jdbcType=VARCHAR},
+	        	dimension5=#{dimension5,javaType=java.lang.String,jdbcType=VARCHAR},
+	        	dimension6=#{dimension6,javaType=java.lang.String,jdbcType=VARCHAR},
+	        	dimension7=#{dimension7,javaType=java.lang.String,jdbcType=VARCHAR},
+	        	dimension8=#{dimension8,javaType=java.lang.String,jdbcType=VARCHAR},
+	        	isStatic=#{isStatic,javaType=java.lang.Boolean,jdbcType=BIT},
+	        	upBound=#{upBound,javaType=java.lang.String,jdbcType=VARCHAR},
+	        	downBound=#{downBound,javaType=java.lang.String,jdbcType=VARCHAR}  
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+		</update>
+	   <delete id="delete" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from t_wh_location where
+		        id = #{id} 
+	    ]]>
+	    </delete> 
+	    
+	     <delete id="deleteByIds" parameterType="list">
+	    
+	        delete from t_wh_location 
+	        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>	
+	  
+	    </delete>  
+	         
+	    <select id="findById" parameterType="java.lang.Long" resultMap="LocationResult" flushCache="false">
+			select <include refid="locationColumns" />
+		    <![CDATA[
+			    from t_wh_location 
+		        where 
+		        id = #{id} 
+		    ]]>
+		</select>	
+		<select id="getByIds" parameterType="map"  resultMap="LocationResult" flushCache="false">
+			select <include refid="locationColumns" />
+			    from t_wh_location 
+		        where ou_id=#{ouId} and id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>					
+		</select>	
+	<sql id="locationDynamicWhere">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+	       
+		       <if test="code!=null and code!=''">
+					and code like #{code}
+				</if>
+	       
+	       
+		       <if test="barCode!=null and barCode!=''">
+					and bar_code like #{barCode}
+				</if>
+	       
+	       
+		       <if test="sysCompileCode!=null and sysCompileCode!=''">
+					and sys_compile_code like #{sysCompileCode}
+				</if>
+	       
+	       
+		       <if test="manualCode!=null and manualCode!=''">
+					and manual_code like #{manualCode}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+	       
+				<if test="shelfAreaId!=null">
+					and shelf_area_id = #{shelfAreaId}
+				</if>
+	       
+				<if test="allocateAreaId!=null">
+					and allocate_area_id = #{allocateAreaId}
+				</if>
+	       
+				<if test="workAreaId!=null">
+					and work_area_id = #{workAreaId}
+				</if>
+	       
+				<if test="statusId!=null">
+					and status_id = #{statusId}
+				</if>
+	       
+				<if test="isMixStacking!=null">
+					and is_mix_stacking = #{isMixStacking}
+				</if>
+	       
+				<if test="mixStackingNumber!=null">
+					and mix_stacking_number = #{mixStackingNumber}
+				</if>
+	       
+				<if test="isReplenishmentBarcode!=null">
+					and is_replenishment_barcode = #{isReplenishmentBarcode}
+				</if>
+	       
+				<if test="isValidMgt!=null">
+					and is_valid_mgt = #{isValidMgt}
+				</if>
+	       
+				<if test="isBatchMgt!=null">
+					and is_batch_mgt = #{isBatchMgt}
+				</if>
+	       
+				<if test="isTrackVessel!=null">
+					and is_track_vessel = #{isTrackVessel}
+				</if>
+	       
+				<if test="isTemporaryLocation!=null">
+					and is_temporary_location = #{isTemporaryLocation}
+				</if>
+	       
+	       
+		       <if test="templetCode!=null and templetCode!=''">
+					and templet_code = #{templetCode}
+				</if>
+	       
+				<if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="operatorId!=null">
+					and operator_id = #{operatorId}
+				</if>
+	       
+				<if test="lifecycle!=null">
+					and lifecycle = #{lifecycle}
+				</if>
+	       
+		       <if test="shelfSort!=null and shelfSort!=''">
+					and shelf_sort = #{shelfSort}
+				</if>
+	              
+		       <if test="pickSort!=null and pickSort!=''">
+					and pick_sort = #{pickSort}
+				</if>				
+				
+				<if test="replenishmentBarcode!=null and replenishmentBarcode!=''">
+					and replenishment_barcode = #{replenishmentBarcode}
+				</if>
+				
+				<if test="temporaryCode!=null and temporaryCode!=''">
+					and temporary_code = #{temporaryCode}
+				</if>
+				
+				<if test="latestSkuCode!=null and latestSkuCode!=''">
+					and latest_sku_code = #{latestSkuCode}
+				</if>
+				
+				<if test="uuid!=null and uuid!=''">
+					and uuid = #{uuid}
+				</if>
+				
+				<if test="isStatic!=null">
+					and is_static = #{isStatic}
+				</if>
+		</where>
+	</sql>
+	
+
+	<select id="getCount" resultType="long">
+        select count(*) from t_wh_location 
+    </select>
+    <select id="findListCountByQueryMap" resultType="long">
+        select count(*) from t_wh_location 
+		<include refid="locationDynamicWhere"/>    
+    </select>
+    
+    <select id="findListCountByParam" resultType="long">
+        select count(*) from t_wh_location 
+		<include refid="locationDynamicWhere"/>    
+    </select>
+    
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPage" resultMap="LocationResult">
+    	select <include refid="locationColumns" />
+	    from t_wh_location 
+		<include refid="locationDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByQueryMap" resultMap="LocationResult">
+    	select <include refid="locationColumns" />
+	    from t_wh_location 
+		<include refid="locationDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByParam" resultMap="LocationResult">
+    	select <include refid="locationColumns" />
+	    from t_wh_location 
+		<include refid="locationDynamicWhere"/>
+		
+    </select>
+
+	
+</mapper>

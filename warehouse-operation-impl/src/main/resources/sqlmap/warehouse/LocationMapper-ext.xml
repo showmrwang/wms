@@ -1,0 +1,707 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.WhLocationDao">
+	<resultMap id="LocationResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.Location">
+	</resultMap>
+
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="locationColumnsExt">
+	    <![CDATA[
+	        	id as id,
+	        	code as code,
+	        	bar_code as barCode,
+	        	sys_compile_code as sysCompileCode,
+	        	manual_code as manualCode,
+	        	ou_id as ouId,
+	        	shelf_area_id as shelfAreaId,
+	        	allocate_area_id as allocateAreaId,
+	        	work_area_id as workAreaId,
+	        	status_id as statusId,
+	        	is_mix_stacking as isMixStacking,
+	        	mix_stacking_number as mixStackingNumber,
+	        	is_replenishment_barcode as isReplenishmentBarcode,
+	        	is_valid_mgt as isValidMgt,
+	        	is_batch_mgt as isBatchMgt,
+	        	is_track_vessel as isTrackVessel,
+	        	is_temporary_location as isTemporaryLocation,
+	        	templet_code as templetCode,
+	        	create_time as createTime,
+	        	last_modify_time as lastModifyTime,
+	        	operator_id as operatorId,
+	        	lifecycle as lifecycle,
+	        	shelf_sort as shelfSort,
+	        	pick_sort as pickSort,
+	        	replenishment_barcode as replenishmentBarcode,
+	        	temporary_code as temporaryCode,
+	        	latest_sku_code as latestSkuCode,
+	        	uuid as uuid,
+	        	dimension1 as dimension1,
+	        	dimension2 as dimension2,
+	        	dimension3 as dimension3,
+	        	dimension4 as dimension4,
+	        	dimension5 as dimension5,
+	        	dimension6 as dimension6,
+	        	dimension7 as dimension7,
+	        	dimension8 as dimension8,
+	        	is_static as isStatic,
+	        	upBound as upBound,
+	        	downBound as downBound
+	    ]]>
+	</sql>
+
+	<sql id="locationDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+
+			<if test="id!=null">
+				and id = #{id}
+			</if>
+
+			<if test="code!=null and code!=''">
+				and code like #{code}
+			</if>
+
+			<if test="barCode!=null and barCode!=''">
+				and bar_code = #{barCode}
+			</if>
+
+			<if test="sysCompileCode!=null and sysCompileCode!=''">
+				and sys_compile_code = #{sysCompileCode}
+			</if>
+
+			<if test="manualCode!=null and manualCode!=''">
+				and manual_code = #{manualCode}
+			</if>
+
+			<if test="ouId!=null">
+				and ou_id = #{ouId}
+			</if>
+
+			<if test="shelfAreaId!=null">
+				and shelf_area_id = #{shelfAreaId}
+			</if>
+
+			<if test="allocateAreaId!=null">
+				and allocate_area_id = #{allocateAreaId}
+			</if>
+
+			<if test="workAreaId!=null">
+				and work_area_id = #{workAreaId}
+			</if>
+
+			<if test="statusId!=null">
+				and status_id = #{statusId}
+			</if>
+
+			<if test="isMixStacking!=null">
+				and is_mix_stacking = #{isMixStacking}
+			</if>
+
+			<if test="mixStackingNumber!=null">
+				and mix_stacking_number = #{mixStackingNumber}
+			</if>
+
+			<if test="isReplenishmentBarcode!=null">
+				and is_replenishment_barcode = #{isReplenishmentBarcode}
+			</if>
+
+			<if test="isValidMgt!=null">
+				and is_valid_mgt = #{isValidMgt}
+			</if>
+
+			<if test="isBatchMgt!=null">
+				and is_batch_mgt = #{isBatchMgt}
+			</if>
+
+			<if test="isTrackVessel!=null">
+				and is_track_vessel = #{isTrackVessel}
+			</if>
+
+			<if test="isTemporaryLocation!=null">
+				and is_temporary_location = #{isTemporaryLocation}
+			</if>
+
+			<if test="templetCode!=null and templetCode!=''">
+				and templet_code = #{templetCode}
+			</if>
+
+			<if test="createTime!=null">
+				and create_time = #{createTime}
+			</if>
+
+			<if test="lastModifyTime!=null">
+				and last_modify_time = #{lastModifyTime}
+			</if>
+
+			<if test="operatorId!=null">
+				and operator_id = #{operatorId}
+			</if>
+
+			<if test="lifecycle!=null">
+				and lifecycle = #{lifecycle}
+			</if>
+
+			<if test="shelfSort!=null and shelfSort!=''">
+				and shelf_sort = #{shelfSort}
+			</if>
+
+			<if test="pickSort!=null and pickSort!=''">
+				and pick_sort = #{pickSort}
+			</if>
+
+
+			<if test="replenishmentBarcode!=null and replenishmentBarcode!=''">
+				and replenishment_barcode = #{replenishmentBarcode}
+			</if>
+			<if test="isStatic!=null">
+					and is_static = #{isStatic}
+				</if>
+		</where>
+	</sql>
+
+
+	<update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Location">
+		    <![CDATA[
+		        UPDATE t_wh_location SET
+			        code = #{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        bar_code = #{barCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        sys_compile_code = #{sysCompileCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        manual_code = #{manualCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        shelf_area_id = #{shelfAreaId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        allocate_area_id = #{allocateAreaId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        work_area_id = #{workAreaId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        status_id = #{statusId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        is_mix_stacking = #{isMixStacking,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        mix_stacking_number = #{mixStackingNumber,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        is_replenishment_barcode = #{isReplenishmentBarcode,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        is_valid_mgt = #{isValidMgt,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        is_batch_mgt = #{isBatchMgt,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        is_track_vessel = #{isTrackVessel,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        is_temporary_location = #{isTemporaryLocation,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        templet_code = #{templetCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+			        last_modify_time = now() ,
+			        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        shelf_sort = #{shelfSort,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        pick_sort = #{pickSort,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        replenishment_barcode = #{replenishmentBarcode,javaType=java.lang.String,jdbcType=VARCHAR},
+			        is_static=#{isStatic,javaType=java.lang.Boolean,jdbcType=BIT},
+			        upBound=#{upBound,javaType=java.lang.String,jdbcType=VARCHAR},
+	        	   downBound=#{downBound,javaType=java.lang.String,jdbcType=VARCHAR}   
+		        WHERE 
+			        id = #{id} 
+			        and ou_id = #{ouId}
+			        and last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP}
+		    ]]>
+	</update>
+
+
+	<resultMap id="locationCommondResult"
+		type="com.baozun.scm.primservice.whoperation.command.warehouse.LocationCommand">
+	</resultMap>
+
+
+	<insert id="batchInsert" parameterType="map"> 
+<![CDATA[
+	insert into
+    t_wh_location (
+    id,
+	        	code ,
+	        	bar_code ,
+	        	sys_compile_code ,
+	        	manual_code ,
+	        	ou_id ,
+	        	shelf_area_id ,
+	        	allocate_area_id ,
+	        	work_area_id ,
+	        	status_id ,
+	        	is_mix_stacking ,
+	        	mix_stacking_number ,
+	        	is_replenishment_barcode ,
+	        	is_valid_mgt ,
+	        	is_batch_mgt ,
+	        	is_track_vessel ,
+	        	is_temporary_location ,
+	        	templet_code ,
+	        	create_time ,
+	        	last_modify_time ,
+	        	operator_id ,
+	        	lifecycle ,
+	        	shelf_sort ,
+	        	pick_sort ,
+	        	replenishment_barcode,
+	        	temporary_code,
+	        	latest_sku_code,
+	        	uuid,
+	        	dimension1,
+	        	dimension2,
+	        	dimension3,
+	        	dimension4,
+	        	dimension5,
+	        	dimension6,
+	        	dimension7,
+	        	dimension8,
+	        	is_static
+	        ) VALUES 
+]]>
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(
+	        	#{item.id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			#{item.code,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{item.barCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{item.sysCompileCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{item.manualCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{item.ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{item.shelfAreaId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{item.allocateAreaId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{item.workAreaId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{item.statusId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{item.isMixStacking,javaType=java.lang.Boolean,jdbcType=BIT} ,
+	        	#{item.mixStackingNumber,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+	        	#{item.isReplenishmentBarcode,javaType=java.lang.Boolean,jdbcType=BIT} ,
+	        	#{item.isValidMgt,javaType=java.lang.Boolean,jdbcType=BIT} ,
+	        	#{item.isBatchMgt,javaType=java.lang.Boolean,jdbcType=BIT} ,
+	        	#{item.isTrackVessel,javaType=java.lang.Boolean,jdbcType=BIT} ,
+	        	#{item.isTemporaryLocation,javaType=java.lang.Boolean,jdbcType=BIT} ,
+	        	#{item.templetCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{item.createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+	        	#{item.lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+	        	#{item.operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{item.lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+	        	#{item.shelfSort,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{item.pickSort,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{item.replenishmentBarcode,javaType=java.lang.String,jdbcType=VARCHAR},
+	        	#{item.temporaryCode,javaType=java.lang.String,jdbcType=VARCHAR},
+	        	#{item.latestSkuCode,javaType=java.lang.String,jdbcType=VARCHAR},
+	        	#{item.uuid,javaType=java.lang.String,jdbcType=VARCHAR},
+	        	#{item.dimension1,javaType=java.lang.String,jdbcType=VARCHAR},
+	        	#{item.dimension2,javaType=java.lang.String,jdbcType=VARCHAR},
+	        	#{item.dimension3,javaType=java.lang.String,jdbcType=VARCHAR},
+	        	#{item.dimension4,javaType=java.lang.String,jdbcType=VARCHAR},
+	        	#{item.dimension5,javaType=java.lang.String,jdbcType=VARCHAR},
+	        	#{item.dimension6,javaType=java.lang.String,jdbcType=VARCHAR},
+	        	#{item.dimension7,javaType=java.lang.String,jdbcType=VARCHAR},
+	        	#{item.dimension8,javaType=java.lang.String,jdbcType=VARCHAR},
+	        	#{isStatic,javaType=java.lang.Boolean,jdbcType=BIT} 
+			)
+		</foreach>
+	</insert>
+
+	<sql id="locationCommandDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+
+			<if test="id!=null">
+				and l.id = #{id}
+			</if>
+
+
+			<if test="code!=null and code!=''">
+				and l.code like #{code}
+			</if>
+
+			<if test="templetName!=null and templetName!=''">
+				and temp.templet_name = #{templetName}
+			</if>
+
+			<if test="barCode!=null and barCode!=''">
+				and l.bar_code = #{barCode}
+			</if>
+
+			<if test="ouId!=null">
+				and l.ou_id = #{ouId}
+			</if>
+
+			<if test="shelfAreaId!=null">
+				and l.shelf_area_id = #{shelfAreaId}
+			</if>
+
+			<if test="allocateAreaId!=null">
+				and l.allocate_area_id = #{allocateAreaId}
+			</if>
+
+			<if test="workAreaId!=null">
+				and l.work_area_id = #{workAreaId}
+			</if>
+
+			<if test="statusId!=null">
+				and l.status_id = #{statusId}
+			</if>
+
+			<if test="isMixStacking!=null">
+				and l.is_mix_stacking = #{isMixStacking}
+			</if>
+
+			<if test="mixStackingNumber!=null">
+				and l.mix_stacking_number = #{mixStackingNumber}
+			</if>
+
+			<if test="isReplenishmentBarcode!=null">
+				and l.is_replenishment_barcode = #{isReplenishmentBarcode}
+			</if>
+
+			<if test="isValidMgt!=null">
+				and l.is_valid_mgt = #{isValidMgt}
+			</if>
+
+			<if test="isBatchMgt!=null">
+				and l.is_batch_mgt = #{isBatchMgt}
+			</if>
+
+			<if test="isTrackVessel!=null">
+				and l.is_track_vessel = #{isTrackVessel}
+			</if>
+			<if test="isTemporaryLocation!=null">
+				and l.is_temporary_location = #{isTemporaryLocation}
+			</if>
+			<if test="templetCode!=null and templetCode!=''">
+				and l.templet_code like #{templetCode}
+			</if>
+
+			<if test="createTime!=null">
+				and l.create_time = #{createTime}
+			</if>
+
+			<if test="lastModifyTime!=null">
+				and l.last_modify_time = #{lastModifyTime}
+			</if>
+
+			<if test="operatorId!=null">
+				and l.operator_id = #{operatorId}
+			</if>
+
+			<if test="lifecycle!=null">
+				and l.lifecycle = #{lifecycle}
+			</if>
+
+
+			<if test="shelfSort!=null and shelfSort!=''">
+				and l.shelf_sort = #{shelfSort}
+			</if>
+
+
+			<if test="pickSort!=null and pickSort!=''">
+				and l.pick_sort = #{pickSort}
+			</if>
+
+
+			<if test="replenishmentBarcode!=null and replenishmentBarcode!=''">
+				and l.replenishment_barcode = #{replenishmentBarcode}
+			</if>
+
+			<if test="temporaryCode!=null and temporaryCode!=''">
+				and l.temporary_code = #{temporaryCode}
+			</if>
+
+			<if test="latestSkuCode!=null and latestSkuCode!=''">
+				and l.latest_sku_code = #{latestSkuCode}
+			</if>
+
+			<if test="uuid!=null and uuid!=''">
+				and l.uuid = #{uuid}
+			</if>
+			
+			<if test="code1!=null and code1!=''">
+				and l.code like #{code1}
+			</if>
+			
+			<if test="templetName1!=null and templetName1!=''">
+				and temp.templet_name like #{templetName1}
+			</if>
+			
+			<if test="templetCode1!=null and templetCode1!=''">
+				and l.templet_code like #{templetCode1}
+			</if>
+			<if test="isStatic!=null">
+					and l.is_static = #{isStatic}
+				</if>
+		</where>
+	</sql>
+
+	<sql id="locationCommandColumnsExt">
+	    <![CDATA[
+	        	l.id as id,
+	        	l.code as code,
+	        	l.bar_code as barCode,
+	        	l.sys_compile_code as sysCompileCode,
+	        	l.manual_code as manualCode,
+	        	l.ou_id as ouId,
+	        	l.shelf_area_id as shelfAreaId,
+	        	l.allocate_area_id as allocateAreaId,
+	        	l.work_area_id as workAreaId,
+	        	l.status_id as statusId,
+	        	l.is_mix_stacking as isMixStacking,
+	        	l.mix_stacking_number as mixStackingNumber,
+	        	l.is_replenishment_barcode as isReplenishmentBarcode,
+	        	l.is_valid_mgt as isValidMgt,
+	        	l.is_batch_mgt as isBatchMgt,
+	        	l.is_track_vessel as isTrackVessel,
+	        	l.is_temporary_location as isTemporaryLocation,
+	        	l.templet_code as templetCode,
+	        	l.create_time as createTime,
+	        	l.last_modify_time as lastModifyTime,
+	        	l.operator_id as operatorId,
+	        	l.lifecycle as lifecycle,
+	        	l.shelf_sort as shelfSort,
+	        	l.pick_sort as pickSort,
+	        	l.replenishment_barcode as replenishmentBarcode,
+	        	l.temporary_code as temporaryCode,
+	        	l.latest_sku_code as latestSkuCode,
+	        	l.uuid as uuid,
+	        	l.is_static as isStatic,
+	        	temp.templet_name as templetName,
+	        	area1.area_name as shelfArea,
+	        	area2.area_name as allocateArea,
+	        	area3.area_name as workArea,
+	        	status.name as status,
+	        	upBound as upBound,
+	        	downBound as downBound
+	    ]]>
+	</sql>
+
+	<update id="batchUpdateLifeCycle" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Location">
+		UPDATE t_wh_location location SET location.lifecycle = #{lifecycle},
+		location.last_modify_time = #{modifyDate},
+		operator_id = #{userId}
+		WHERE location.id in
+		<foreach collection="locationIds" item="id" open="("
+			separator="," close=")">
+			#{id}
+		</foreach>
+		and ou_id = #{ouId}
+	</update>
+
+	<select id="findLocationListCountByQueryMapExt" resultType="long">
+		select count(*)
+		from t_wh_location l
+		left join t_wh_area area1
+		on l.shelf_area_id = area1.id
+		left join t_wh_area area2 on l.allocate_area_id = area2.id
+		left join
+		t_wh_area area3 on l.work_area_id = area3.id
+		left join
+		t_wh_inventory_status status on l.status_id = status.id
+		left join
+		t_wh_location_templet temp on l.templet_code = temp.templet_code
+		<include refid="locationCommandDynamicWhereExt" />
+	</select>
+
+	<select id="findLocationCommandListByQueryMapWithPage"
+		resultMap="locationCommondResult">
+		select
+		<include refid="locationCommandColumnsExt" />
+		from t_wh_location l
+		left join t_wh_area area1
+		on l.shelf_area_id = area1.id
+		left join t_wh_area area2 on l.allocate_area_id = area2.id
+		left join
+		t_wh_area area3 on l.work_area_id = area3.id
+		left join
+		t_wh_inventory_status status on l.status_id = status.id
+		left join
+		t_wh_location_templet temp on l.templet_code = temp.templet_code
+		<include refid="locationCommandDynamicWhereExt" />
+	</select>
+
+	<select id="findLocationCommandByParam" resultMap="locationCommondResult">
+		select
+		<include refid="locationCommandColumnsExt" />,
+		(case (select count(*) from t_wh_sku_inventory si where si.ou_id=l.ou_id and si.location_id=l.id) when 0 then 0 else 1 end) as isOccupiedInventory
+		from t_wh_location l
+		left join t_wh_area area1
+		on l.shelf_area_id = area1.id
+		left join t_wh_area area2 on l.allocate_area_id = area2.id
+		left join
+		t_wh_area area3 on l.work_area_id = area3.id
+		left join
+		t_wh_inventory_status status on l.status_id = status.id
+		left join
+		t_wh_location_templet temp on l.templet_code = temp.templet_code
+		where
+		l.id = #{id}
+		and l.ou_id = #{ouId}
+	</select>
+	<delete id="deleteByParams" parameterType="map">
+	        delete from t_wh_location 
+			where ou_id=#{ouId} and uuid=#{uuid}
+	</delete>
+	
+	<update id="batchUpdateByVersion" parameterType="map">
+	 <![CDATA[
+		UPDATE t_wh_location l
+		set 
+		]]>
+				<if test="#{isAllocated}">
+					 <![CDATA[allocate_area_id = #{location.allocateAreaId,javaType=java.lang.Long,jdbcType=BIGINT},]]>
+				</if>
+				<if test="#{isWorked}">
+					 <![CDATA[work_area_id = #{location.workAreaId,javaType=java.lang.Long,jdbcType=BIGINT},]]>
+				</if>
+				<if test="#{isShelfed}">
+					<![CDATA[ shelf_area_id = #{location.shelfAreaId,javaType=java.lang.Long,jdbcType=BIGINT},]]>
+				</if>
+				<![CDATA[
+				 status_id = IFNULL(#{location.statusId,javaType=java.lang.Long,jdbcType=BIGINT},status_id),
+				 is_mix_stacking = IFNULL(#{location.isMixStacking,javaType=java.lang.Boolean,jdbcType=BIT},is_mix_stacking),
+				 mix_stacking_number = IFNULL(#{location.mixStackingNumber,javaType=java.lang.Integer,jdbcType=INTEGER},mix_stacking_number),
+				 is_replenishment_barcode = IFNULL(#{location.isReplenishmentBarcode,javaType=java.lang.Boolean,jdbcType=BIT},is_replenishment_barcode),
+				 is_valid_mgt = IFNULL(#{location.isValidMgt,javaType=java.lang.Boolean,jdbcType=BIT},is_valid_mgt),
+				 is_batch_mgt = IFNULL(#{location.isBatchMgt,javaType=java.lang.Boolean,jdbcType=BIT},is_batch_mgt),
+				 is_track_vessel = IFNULL(#{location.isTrackVessel,javaType=java.lang.Boolean,jdbcType=BIT},is_track_vessel),
+				 last_modify_time =IFNULL( #{location.lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP},last_modify_time),
+				 is_static= IFNULL(#{location.isStatic,javaType=java.lang.Boolean,jdbcType=BIT},is_static),
+				 operator_id = IFNULL(#{location.operatorId,javaType=java.lang.Long,jdbcType=BIGINT},operator_id)
+				where ]]>
+				l.ou_id =#{ouId} 
+				<![CDATA[
+				and l.code in
+				]]>
+				 	<foreach collection="list" item="item" open="("
+						separator="," close=")">
+						<![CDATA[#{item}]]>
+					</foreach>
+			 <![CDATA[		
+					and last_modify_time < #{location.lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP}
+					]]>
+		
+	</update>
+	<select id="findByCodeRange" parameterType="map" resultMap="LocationResultExt">
+			select <include refid="locationColumnsExt" />
+			    from t_wh_location l
+		    where l.ou_id=#{ouId} and l.code in
+		    <foreach collection="list" item="item" open="("
+						separator="," close=")">
+						#{item}
+					</foreach>
+		</select>
+		
+	<select id="findLocationByCode" parameterType="map" resultMap="LocationResultExt">
+			select <include refid="locationColumnsExt" />
+			    from t_wh_location l
+		    where l.ou_id=#{ouId} and l.code=#{code}
+		</select>
+	
+	<select id="findWrongListbyCode" parameterType="map"  resultMap="LocationResultExt" flushCache="false">
+			select <include refid="locationColumnsExt" />
+			    from t_wh_location
+		        where ou_id=#{ouId} and code in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>					
+		</select>	
+		
+		
+		<update id="batchDeleteByVersion" parameterType="map">
+	 <![CDATA[
+		DELETE FROM t_wh_location 
+			WHERE ou_id=#{ouId} and code IN
+			]]>
+			 	<foreach collection="list" item="item" open="("
+					separator="," close=")">
+					<![CDATA[#{item}]]>
+				</foreach>
+		 <![CDATA[		
+				and last_modify_time < #{date,javaType=java.util.Date,jdbcType=TIMESTAMP}
+				]]>
+		
+	</update>
+	
+	<update id="batchDeleteSelected" parameterType="map">
+	 <![CDATA[
+		DELETE FROM t_wh_location 
+			WHERE ou_id=#{ouId} and id IN
+			]]>
+			 	<foreach collection="list" item="item" open="("
+					separator="," close=")">
+					<![CDATA[#{item}]]>
+				</foreach>
+		 <![CDATA[		
+				and last_modify_time < #{date,javaType=java.util.Date,jdbcType=TIMESTAMP}
+				]]>
+		
+	</update>
+	
+	<select id="findByIdExt" parameterType="java.lang.Long" resultMap="LocationResult" flushCache="false">
+			select <include refid="locationColumns" />
+		    <![CDATA[
+			    from t_wh_location 
+		        where 
+		        id = #{id} 
+		        and ou_id = #{ouId}
+		    ]]>
+		</select>
+	
+	 <select id="findListByParamExt" parameterType="com.baozun.scm.primservice.whoperation.command.warehouse.LocationCommand" resultMap="locationCommondResult">
+    	select <include refid="locationColumnsExt" />
+    	<if test="isFuzzy==1">
+    	,((case  l.is_mix_stacking  when 0 then 1 else IFNULL(l.mix_stacking_number,0) end )-(select count(1) from t_wh_sku_location sl where sl.location_id=l.id)) as availableMixCount
+    	</if>
+	    from t_wh_location l
+		<include refid="locationDynamicWhereExt"/>
+		
+		<if test="lineNum!=null and lineNum!=0 ">
+			limit 0,#{lineNum}
+		</if>
+    </select>
+    <delete id="deleteByIdOuId" parameterType="map">
+	        delete from t_wh_location 
+			where ou_id=#{ouId} and id=#{id}
+	</delete>
+	
+	<select id="findAllEmptyLocsByAreaId" parameterType="java.lang.Long" resultMap="LocationResult" flushCache="false">
+			select <include refid="locationColumns" />
+		    <![CDATA[
+			    from t_wh_location loc
+		        where 
+		        loc.shelf_area_id = #{areaId} 
+		        and loc.ou_id = #{ouId}
+		        and not exists (select 1 from t_wh_sku_inventory inv where inv.location_id = loc.id and inv.ou_id = #{ouId})
+		    ]]>
+	</select>
+	
+	<select id="findAllStaticLocsByAreaId" parameterType="java.lang.Long" resultMap="LocationResult" flushCache="false">
+			select <include refid="locationColumns" />
+		    <![CDATA[
+			    from t_wh_location loc
+		        where 
+		        loc.shelf_area_id = #{areaId} 
+		        and loc.ou_id = #{ouId}
+		        and loc.is_static = 1
+		        and ${cSql}
+		    ]]>
+	</select>
+	
+	
+	<select id="findAllInvLocsByAreaIdAndSameAttrs" parameterType="java.lang.Long" resultMap="LocationResult" flushCache="false">
+			select <include refid="locationColumns" />
+		    <![CDATA[
+			    from t_wh_location loc
+		        where 
+		        loc.shelf_area_id = #{areaId} 
+		        and loc.ou_id = #{ouId}
+		        and exists (select 1 from t_wh_sku_inventory inv where inv.location_id = loc.id and inv.ou_id = #{ouId} and ${cSql})
+		    ]]>
+	</select>
+	
+	<select id="findAllInvLocsByAreaIdAndDiffAttrs" parameterType="java.lang.Long" resultMap="LocationResult" flushCache="false">
+			select <include refid="locationColumns" />
+		    <![CDATA[
+			    from t_wh_location loc
+		        where 
+		        loc.shelf_area_id = #{areaId} 
+		        and loc.ou_id = #{ouId}
+		        and exists (
+		        select 1 from t_wh_sku_inventory inv where inv.location_id = loc.id and inv.ou_id = #{ouId} and inv.id not in
+		        (
+		        select id from t_wh_sku_inventory inv where inv.location_id = loc.id and inv.ou_id = #{ouId} and ${cSql}
+		        )
+		        )
+		    ]]>
+	</select>
+	
+</mapper>

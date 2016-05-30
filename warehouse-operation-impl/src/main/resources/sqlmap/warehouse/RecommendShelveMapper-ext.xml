@@ -82,6 +82,19 @@
                 and ou_id = #{ouId}
         ]]>
     </select>
+    
+    <select id="findCommandByRuleIdOrderByPriority" resultMap="RecommendShelveCommand">
+        select
+        <include refid="recommendShelveColumnsExt"/>
+        <![CDATA[
+            from t_wh_recommend_shelve
+            where
+                shelve_recommend_rule_id = #{shelveRecommendRuleId}
+                and ou_id = #{ouId}
+                and lifecycle = 1
+                order by r.priority asc
+        ]]>
+    </select>
 
     <select id="findListCountByRuleId" resultType="long">
         select count(*) from t_wh_recommend_shelve

@@ -55,6 +55,15 @@ public interface RecommendShelveDao extends BaseDao<RecommendShelve, Long> {
      * @return
      */
     List<RecommendShelveCommand> findCommandByRuleId(@Param("shelveRecommendRuleId") Long shelveRecommendRuleId, @Param("ouId") Long ouId);
+    
+    /**
+     * 根据规则编号查找规则
+     * @author lichuan
+     * @param shelveRecommendRuleId
+     * @param ouId
+     * @return
+     */
+    List<RecommendShelveCommand> findCommandByRuleIdOrderByPriority(@Param("shelveRecommendRuleId") Long shelveRecommendRuleId, @Param("ouId") Long ouId);
 
 
     /**

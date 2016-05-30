@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.AreaDao">
+	<resultMap id="AreaResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.Area">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="areaColumnsExt">
+	    <![CDATA[
+	        	id as id,
+	        	ou_id as ouId,
+	        	area_code as areaCode,
+	        	area_name as areaName,
+	        	area_type as areaType,
+	        	create_time as createTime,
+	        	last_modify_time as lastModifyTime,
+	        	operator_id as operatorId,
+	        	lifecycle as lifecycle
+	    ]]>
+	</sql>
+	
+	<sql id="areaDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+	       
+	       
+		       <if test="areaCode!=null and areaCode!=''">
+					and area_code = #{areaCode}
+				</if>
+	       
+	       
+		       <if test="areaName!=null and areaName!=''">
+					and area_name = #{areaName}
+				</if>
+	       
+	       
+		       <if test="areaType!=null and areaType!=''">
+					and area_type = #{areaType}
+				</if>
+	       
+				<if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="operatorId!=null">
+					and operator_id = #{operatorId}
+				</if>
+	       
+				<if test="lifecycle!=null">
+					and lifecycle = #{lifecycle}
+				</if>
+		</where>
+	</sql>
+	
+	<sql id="areaCheckUniqueWhere">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       	<if test="areaName!=null and areaName!=''">
+				and area1.area_name = #{areaName}
+			</if>
+			<if test="id==null or id==''">
+	       		<if test="areaCode!=null and areaCode!=''">
+					or area1.area_code = #{areaCode}
+				</if>
+			</if>
+		</where>
+	</sql>
+	
+	<update id="batchUpdateLifeCycle" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Area">
+		UPDATE t_wh_area SET lifecycle = #{lifecycle}, operator_id = #{userId}, last_modify_time = #{modifyDate}
+		WHERE id in
+		<foreach collection="areaIds" item="id" open="(" separator=","
+			close=")">
+			#{id}
+		</foreach>
+		and ou_id = #{ouId}
+	</update>
+	
+	
+	<select id="findAreaListCountByQueryMapExt" resultType="long">
+		select count(*) 
+			from t_wh_area area 
+		left join sys_dictionary sys on area.area_type = sys.dic_value
+		<where> 
+			<if test="areaCode!=null and areaCode!=''">
+				and area.area_code like #{areaCode}
+			</if>
+			<if test="lifecycle!=null">
+				and area.lifecycle = #{lifecycle}
+			</if>
+			<if test="areaName!=null and areaName!=''">
+				and area.area_name like #{areaName}
+			</if>
+			<if test="areaType!=null and areaType!=''">
+				and area.area_type = #{areaType}
+			</if>
+			<if test="ouId!=null">
+				and area.ou_id = #{ouId}
+				and sys.group_value = 'WAREHOUSE_AREA'
+			</if>
+			<if test="name1!=null and name1!=''">
+				and area.area_name like #{name1}
+			</if>
+			<if test="code1!=null and code1!=''">
+				and area.area_name like #{code1}
+			</if>
+		</where>
+	</select>
+	
+	<resultMap id="areaCommondResult" type="com.baozun.scm.primservice.whoperation.command.warehouse.AreaCommand">
+	</resultMap>
+	
+	<select id="findAreaListByQueryMapWithPage" resultMap="areaCommondResult">
+		select area.id as areaId,
+		area.area_name as areaName,
+		area.area_code as areaCode,
+		sys.dic_label as areaType, 
+		area.lifecycle as lifecycle
+		from t_wh_area area 
+		left join sys_dictionary sys on area.area_type = sys.dic_value
+		<where> 
+			<if test="areaCode!=null and areaCode!=''">
+				and area.area_code like #{areaCode}
+			</if>
+			<if test="lifecycle!=null">
+				and area.lifecycle = #{lifecycle}
+			</if>
+			<if test="areaName!=null and areaName!=''">
+				and area.area_name like #{areaName}
+			</if>
+			<if test="areaType!=null and areaType!=''">
+				and area.area_type = #{areaType}
+			</if>
+			<if test="ouId!=null">
+				and area.ou_id = #{ouId}
+				and sys.group_value = 'WAREHOUSE_AREA'
+			</if>
+			<if test="name1!=null and name1!=''">
+				and area.area_name like #{name1}
+			</if>
+			<if test="code1!=null and code1!=''">
+				and area.area_name like #{code1}
+			</if>
+		</where>
+	</select>
+	
+    <update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Area">
+		    <![CDATA[
+		        UPDATE t_wh_area SET
+			        area_code = #{areaCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        area_name = #{areaName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        area_type = #{areaType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+			        last_modify_time = now(),
+			        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
+		        WHERE 
+			        id = #{id} 
+			        and ou_id = #{ouId}
+			        and last_modify_time = #{lastModifyTime}    
+		    ]]>
+		</update>
+		
+		<select id="findByIdExt" parameterType="java.lang.Long" resultMap="AreaResultExt" flushCache="false">
+			select <include refid="areaColumnsExt" />
+			from t_wh_area 
+		    <where> 
+		        <if test="id!=null">
+		        	and id = #{id} 
+		        </if>
+		        <if test="ouId!=null">
+		        	and ou_id = #{ouId}
+		        </if>
+		    </where>
+		    
+		</select>
+		
+</mapper>
