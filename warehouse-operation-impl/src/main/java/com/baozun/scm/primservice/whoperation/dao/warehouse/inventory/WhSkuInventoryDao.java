@@ -118,9 +118,10 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @return
      */
     List<WhSkuInventoryCommand> findWhSkuInventoryByContainerCode(@Param("ouid") Long ouid, @Param("containerList") List<String> containerList);
-    
+
     /**
      * 通过外部容器号查询对用的库存信息
+     * 
      * @author lichuan
      * @param ouid
      * @param containerList
@@ -164,5 +165,15 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @return
      */
     int deleteWhSkuInventoryById(@Param("id") Long id, @Param("ouid") Long ouid);
+
+    /**
+     * 根据sku+内部容器号 查找容器库存数据 location is null
+     * 
+     * @param ouid
+     * @param skuid
+     * @param containerid
+     * @return
+     */
+    List<WhSkuInventoryCommand> findWhSkuInventoryBySkuIdAndContainerid(@Param("ouid") Long ouid, @Param("skuid") Long skuid, @Param("containerid") Long containerid);
 
 }
