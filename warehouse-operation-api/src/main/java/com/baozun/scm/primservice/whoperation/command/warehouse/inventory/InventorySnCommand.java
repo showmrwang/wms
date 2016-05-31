@@ -56,6 +56,8 @@ public class InventorySnCommand extends BaseCommand {
     private String uuid;
     /** 对应仓库ID */
     private Long ouId;
+    /** 系统uuid 用于逻辑处理 */
+    private String sysUuid;
 
     /** 商品编码 */
     private String skuCode;
@@ -301,6 +303,14 @@ public class InventorySnCommand extends BaseCommand {
 
     public void setWhDefectReasonsName(String whDefectReasonsName) {
         this.whDefectReasonsName = whDefectReasonsName;
+    }
+
+    public String getSysUuid() {
+        return sysUuid;
+    }
+
+    public void setSysUuid(String sysUuid) {
+        this.sysUuid = sysUuid;
     }
 
 

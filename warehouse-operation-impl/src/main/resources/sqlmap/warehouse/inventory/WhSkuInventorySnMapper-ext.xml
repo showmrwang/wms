@@ -21,7 +21,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	status as status,
 	        	inv_attr as invAttr,
 	        	uuid as uuid,
-	        	ou_id as ouId
+	        	ou_id as ouId,
+	        	sys_uuid as sysUuid
 	    ]]>
 	</sql>
 	
@@ -77,6 +78,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				sn.inv_attr as invAttr,
 				sn.uuid as uuid,
 				sn.ou_id as ouId,
+				sn.sys_uuid as sysUuid,
 				sku.code as skuCode,
 				sku.name as skuName,
 				sys.dic_label as statusStr,
