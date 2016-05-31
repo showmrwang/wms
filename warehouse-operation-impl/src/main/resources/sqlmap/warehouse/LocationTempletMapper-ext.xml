@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.LocationTempletDao">
+	<resultMap id="LocationTempletResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.LocationTemplet">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="locationTempletColumnsExt">
+	    <![CDATA[
+	        	id as id,
+	        	ou_id as ouId,
+	        	templet_code as templetCode,
+	        	templet_name as templetName,
+	        	length as length,
+	        	width as width,
+	        	high as high,
+	        	length_uom as lengthUom,
+	        	volume as volume,
+	        	volume_uom as volumeUom,
+	        	weight as weight,
+	        	weight_uom as weightUom,
+	        	size_type as sizeType,
+	        	split_mark as splitMark,
+	        	description as description,
+	        	create_time as createTime,
+	        	last_modify_time as lastModifyTime,
+	        	operator_id as operatorId,
+	        	lifecycle as lifecycle
+	    ]]>
+	</sql>
+	
+	<sql id="locationTempletDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+	       
+	       
+		       <if test="templetCode!=null and templetCode!=''">
+					and templet_code = #{templetCode}
+				</if>
+	       
+	       
+		       <if test="templetName!=null and templetName!=''">
+					and templet_name = #{templetName}
+				</if>
+	       
+				<if test="length!=null">
+					and length = #{length}
+				</if>
+	       
+				<if test="width!=null">
+					and width = #{width}
+				</if>
+	       
+				<if test="high!=null">
+					and high = #{high}
+				</if>
+	       
+	       
+		       <if test="lengthUom!=null and lengthUom!=''">
+					and length_uom = #{lengthUom}
+				</if>
+	       
+				<if test="volume!=null">
+					and volume = #{volume}
+				</if>
+	       
+	       
+		       <if test="volumeUom!=null and volumeUom!=''">
+					and volume_uom = #{volumeUom}
+				</if>
+	       
+				<if test="weight!=null">
+					and weight = #{weight}
+				</if>
+	       
+	       
+		       <if test="weightUom!=null and weightUom!=''">
+					and weight_uom = #{weightUom}
+				</if>
+	       
+	       
+		       <if test="sizeType!=null and sizeType!=''">
+					and size_type = #{sizeType}
+				</if>
+	       
+	       
+		       <if test="splitMark!=null and splitMark!=''">
+					and split_mark = #{splitMark}
+				</if>
+	       
+	       
+		       <if test="description!=null and description!=''">
+					and description = #{description}
+				</if>
+	       
+				<if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="operatorId!=null">
+					and operator_id = #{operatorId}
+				</if>
+	       
+				<if test="lifecycle!=null">
+					and lifecycle = #{lifecycle}
+				</if>
+				
+		</where>
+	</sql>
+	
+	<sql id="locationTempletDynamicWhereLikeExt">
+		<where>
+			<if test="templetName!=null and templetName!=''">
+				and templet_name like #{templetName}
+			</if>		       
+			<if test="templetCode!=null and templetCode!=''">
+					and templet_code like #{templetCode}
+			</if>
+			<if test="templetName1!=null and templetName1!=''">
+				and templet_name like #{templetName1}
+			</if>		       
+			<if test="templetCode1!=null and templetCode1!=''">
+					and templet_code like #{templetCode1}
+			</if>
+			
+			<if test="ouId!=null and ouId!=''">
+					and ou_id = #{ouId}
+			</if>
+			<if test="lifecycle!=null">
+					and lifecycle = #{lifecycle}
+			</if>
+		</where>
+   </sql>	
+   
+	
+	<resultMap type="com.baozun.scm.primservice.whoperation.command.warehouse.LocationTempletCommand" id="locationTempletCommand">
+    </resultMap>
+	
+    <select id="findListByQueryMapWithPageExt" resultMap="locationTempletCommand">
+		SELECT
+		<include refid="locationTempletColumnsExt"></include>
+		from t_wh_location_templet
+		<include refid="locationTempletDynamicWhereLikeExt" />
+	</select>
+	
+	<select id="findListCountByQueryMapExt" resultType="long">
+        select count(*)
+        from t_wh_location_templet
+        <include refid="locationTempletDynamicWhereLikeExt" />
+    </select>
+    
+    <select id="uniqueCodeOrName" resultType="long">
+			select count(*) from t_wh_location_templet
+			
+			<where>
+				<if test="id!=null">
+					and id != #{id}
+				</if>
+				
+				<if test="templetCode!=null and templetCode!=''">
+					and templet_code like #{templetCode}
+				</if>
+				<if test="templetName!=null and templetName!=''">
+					and templet_name like #{templetName}
+				</if>
+				<if test="ouId!=null and ouId!=''">
+					and ou_id = #{ouId}
+				</if>
+			</where>
+		</select>
+    
+		<update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.LocationTemplet">
+		    <![CDATA[
+		        UPDATE t_wh_location_templet SET
+			        templet_code = #{templetCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        templet_name = #{templetName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        length = #{length,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+			        width = #{width,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+			        high = #{high,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+			        length_uom = #{lengthUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        volume = #{volume,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+			        volume_uom = #{volumeUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        weight = #{weight,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+			        weight_uom = #{weightUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        size_type = #{sizeType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        split_mark = #{splitMark,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        description = #{description,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+			        last_modify_time = now(),
+			        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
+		        WHERE 
+			        id = #{id} 
+			        and ou_id = #{ouId}	
+			        and last_modify_time	=  #{lastModifyTime}    
+		    ]]>
+		</update>
+		<select id="findWrongListbyCode" parameterType="list"  resultMap="LocationTempletResult" flushCache="false">
+			select <include refid="locationTempletColumns" />
+			    from t_wh_location_templet 
+		        where templet_code in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+				#{item}				
+				</foreach>		
+				and ou_id = #{ouId}		
+		</select>
+		
+		<update id="updateLifeCycle" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.LocationTemplet">
+		UPDATE t_wh_location_templet SET lifecycle = #{lifecycle},operator_id = #{userid},last_modify_time = now() 
+		where id in
+		<foreach collection="ids" item="id" open="(" separator=","
+			close=")">
+			#{id}
+		</foreach>
+		and ou_id = #{ouId}	
+	   </update>
+	   
+	   <delete id="deleteExt" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from t_wh_location_templet where
+		        id = #{id} 
+		        and ou_id = #{ouId}
+	    ]]>
+	    </delete>
+	    
+	    <delete id="deleteByIdsExt" parameterType="list">
+	    
+	        delete from t_wh_location_templet 
+	        where id in
+				<foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
+			#{item}			
+			</foreach>	
+	  		and ou_id = #{ouId}
+	    </delete>  
+	    
+	    <select id="findByIdExt" parameterType="java.lang.Long" resultMap="LocationTempletResult" flushCache="false">
+			select <include refid="locationTempletColumns" />
+		    <![CDATA[
+			    from t_wh_location_templet 
+		        where 
+		        id = #{id} 
+		        and ou_id = #{ouId}
+		    ]]>
+		</select>	
+		<update id="updateExt" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.LocationTemplet">
+	    <![CDATA[
+	        UPDATE t_wh_location_templet SET
+		        templet_code = #{templetCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        templet_name = #{templetName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        length = #{length,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+		        width = #{width,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+		        high = #{high,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+		        length_uom = #{lengthUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        volume = #{volume,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+		        volume_uom = #{volumeUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        weight = #{weight,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+		        weight_uom = #{weightUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        size_type = #{sizeType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        split_mark = #{splitMark,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        description = #{description,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
+	        WHERE 
+		        id = #{id} 
+		        and ou_id = #{ouId}
+	    ]]>
+		</update>
+</mapper>

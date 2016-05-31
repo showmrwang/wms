@@ -16,6 +16,7 @@
  */
 package com.baozun.scm.primservice.whoperation.manager.rule;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -26,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.baseservice.sac.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.command.rule.RuleAfferCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.LocationCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.RecommendShelveCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ShelveRecommendRuleCommand;
@@ -34,6 +36,9 @@ import com.baozun.scm.primservice.whoperation.constant.WhLocationRecommendType;
 import com.baozun.scm.primservice.whoperation.constant.WhPutawayPatternDetailType;
 import com.baozun.scm.primservice.whoperation.constant.WhPutawayPatternType;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.AreaDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.Container2ndCategoryDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.LocationTempletDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.RecommendShelveDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhLocationDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
@@ -46,8 +51,11 @@ import com.baozun.scm.primservice.whoperation.manager.warehouse.StoreManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WarehouseManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhFunctionPutAwayManager;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Area;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Container2ndCategory;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Location;
+import com.baozun.scm.primservice.whoperation.model.warehouse.LocationTemplet;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionPutAway;
+import com.baozun.scm.primservice.whoperation.util.formula.SimpleCubeCalculator;
 
 /**
  * @author lichuan
@@ -74,6 +82,12 @@ public class WhLocationRecommandManagerImpl extends BaseManagerImpl implements W
     private WhLocationDao locationDao;
     @Autowired
     private PutawayConditionFactory putawayConditionFactory;
+    @Autowired
+    private ContainerDao containerDao;
+    @Autowired
+    private Container2ndCategoryDao container2ndCategoryDao;
+    @Autowired
+    private LocationTempletDao locationTempletDao;
     
     /**
      * @author lichuan
@@ -85,7 +99,7 @@ public class WhLocationRecommandManagerImpl extends BaseManagerImpl implements W
         if (log.isInfoEnabled()) {
             log.info("whLocationRecommandManager.recommendLocationByShevleRule start, logId is:[{}]", logId);
         }
-        List<LocationCommand> list = null;
+        List<LocationCommand> list = new ArrayList<LocationCommand>();
         if(null == ruleList || 0 == ruleList.size()){
             log.error("no available shelveRecommendRule, recommend location fail! logId is:[{}]", logId);
             throw new BusinessException(ErrorCodes.RECOMMEND_LOCATION_NO_RULE_ERROR);
@@ -96,11 +110,37 @@ public class WhLocationRecommandManagerImpl extends BaseManagerImpl implements W
         boolean isBM = false;// 是否批次管理
         boolean isVM = false;// 是否管理效期
         boolean isMS = false;// 是否允许混放
+        String containerCode = ruleAffer.getAfferContainerCode();
+        ContainerCommand containerCmd = containerDao.getContainerByCode(containerCode, ouId);
+        if(null == containerCmd){
+            log.error("container is null error, containerId is:[{}], logId is:[{}]", containerCmd.getId(), logId);
+            throw new BusinessException(ErrorCodes.COMMON_CONTAINER_IS_NOT_EXISTS);
+        }
+        if(1 != containerCmd.getLifecycle()){
+            log.error("container lifecycle is not normal error, containerId is:[{}], logId is:[{}]", containerCmd.getId(), logId);
+            throw new BusinessException(ErrorCodes.COMMON_CONTAINER_LIFECYCLE_IS_NOT_NORMAL);
+        }
+        Long containerCate = containerCmd.getTwoLevelType();
+        Container2ndCategory container2 = container2ndCategoryDao.findByIdExt(containerCate, ouId);
+        if(null == container2){
+            log.error("container2ndCategory is null error, 2endCategoryId is:[{}], logId is:[{}]", containerCate, logId);
+            throw new BusinessException(ErrorCodes.CONTAINER2NDCATEGORY_NULL_ERROR);
+        }
+        if(1 != container2.getLifecycle()){
+            log.error("container2ndCategory lifecycle is not normal error, containerId is:[{}], logId is:[{}]", container2.getId(), logId);
+            throw new BusinessException(ErrorCodes.COMMON_CONTAINER_LIFECYCLE_IS_NOT_NORMAL);
+        }
+        Double length = container2.getLength();
+        Double height = container2.getHigh();
+        Double width = container2.getWidth();
+        String lenUom = container2.getLengthUom();
+        Double weight = container2.getWeight();
+        String weightUom = container2.getWeightUom();
         List<WhSkuInventoryCommand> invList = null;
         WhFunctionPutAway putawayFunc = whFunctionPutAwayManager.findWhFunctionPutAwayByFunctionId(funcId, ouId, logId);;
         if (WhPutawayPatternDetailType.PALLET_PUTAWAY == putawayPatternDetail) {
             // 查询所有对应容器号的库存信息
-            invList = whSkuInventoryDao.findWhSkuInventoryByOuterContainerCode(ruleAffer.getOuid(), ruleAffer.getAfferContainerCodeList());
+            invList = whSkuInventoryDao.findWhSkuInventoryByContainerCode(ruleAffer.getOuid(), ruleAffer.getAfferContainerCodeList());
             isTV = true;
         }
         
@@ -121,19 +161,24 @@ public class WhLocationRecommandManagerImpl extends BaseManagerImpl implements W
                 if (null == area || 1 != area.getLifecycle()) {
                     continue;//库区不存在或不可用，则当前库区不能推荐
                 }
+                String cSql = "";
                 if (WhPutawayPatternDetailType.PALLET_PUTAWAY == putawayPatternDetail) {
                     AttrParams attrParams = new AttrParams();
                     attrParams.setIsTrackVessel(isTV);
-                    List<Location> avaliableLocs = null;
+                    List<LocationCommand> avaliableLocs = null;
                     if (WhLocationRecommendType.EMPTY_LOCATION.equals(locationRecommendRule)) {
                         attrParams.setLrt(WhLocationRecommendType.EMPTY_LOCATION);
                         PutawayCondition putawayCondition = putawayConditionFactory.getPutawayCondition(WhPutawayPatternType.SYS_GUIDE_PUTAWAY, WhPutawayPatternDetailType.PALLET_PUTAWAY, logId);
-                        String cSql = putawayCondition.getCondition(attrParams);
+                        if(null != putawayCondition){
+                            cSql = putawayCondition.getCondition(attrParams);
+                        }
                         avaliableLocs = locationDao.findAllEmptyLocsByAreaId(area.getId(), ouId, cSql);
                     } else if (WhLocationRecommendType.STATIC_LOCATION.equals(locationRecommendRule)) {
                         attrParams.setLrt(WhLocationRecommendType.STATIC_LOCATION);
                         PutawayCondition putawayCondition = putawayConditionFactory.getPutawayCondition(WhPutawayPatternType.SYS_GUIDE_PUTAWAY, WhPutawayPatternDetailType.PALLET_PUTAWAY, logId);
-                        String cSql = putawayCondition.getCondition(attrParams);
+                        if(null != putawayCondition){
+                            cSql = putawayCondition.getCondition(attrParams);
+                        }
                         avaliableLocs = locationDao.findAllStaticLocsByAreaId(area.getId(), ouId, cSql);
                     } else if (WhLocationRecommendType.MERGE_LOCATION_SAME_INV_ATTRS.equals(locationRecommendRule)) {
                         avaliableLocs = null;
@@ -142,7 +187,9 @@ public class WhLocationRecommandManagerImpl extends BaseManagerImpl implements W
                     } else if (WhLocationRecommendType.ONE_LOCATION_ONLY.equals(locationRecommendRule)) {
                         attrParams.setLrt(WhLocationRecommendType.ONE_LOCATION_ONLY);
                         PutawayCondition putawayCondition = putawayConditionFactory.getPutawayCondition(WhPutawayPatternType.SYS_GUIDE_PUTAWAY, WhPutawayPatternDetailType.PALLET_PUTAWAY, logId);
-                        String cSql = putawayCondition.getCondition(attrParams);
+                        if(null != putawayCondition){
+                            cSql = putawayCondition.getCondition(attrParams);
+                        }
                         avaliableLocs = locationDao.findAllEmptyLocsByAreaId(area.getId(), ouId, cSql);
                     } else {
                         avaliableLocs = null;
@@ -150,24 +197,40 @@ public class WhLocationRecommandManagerImpl extends BaseManagerImpl implements W
                     if (null == avaliableLocs || 0 == avaliableLocs.size()) {
                         continue;// 如果没有可用的库位，则遍历下一个上架规则
                     }
-                    for (Location al : avaliableLocs) {
-//                        Boolean isTrackVessel = al.getIsTrackVessel();// 是否跟踪容器
-//                        Boolean isBatchMgt = al.getIsBatchMgt();// 是否批次管理
-//                        Boolean isValidMgt = al.getIsValidMgt();// 是否管理效期
-//                        Boolean isMixStacking = al.getIsMixStacking();// 是否允许混放
-                        //计算体积和重量
+                    for (LocationCommand al : avaliableLocs) {
+                        String templetCode = al.getTempletCode();
+                        LocationTemplet locTemplet = locationTempletDao.findLocationTempletByCodeAndOuId(templetCode, ouId);
+                        //计算体积
+                        Double locLength = locTemplet.getLength();
+                        Double locHeight = locTemplet.getHigh();
+                        Double locWidth = locTemplet.getWidth();
+                        String locLenUom = locTemplet.getLengthUom();
+                        Double locWeight = locTemplet.getWeight();
+                        String locWeightUom = locTemplet.getWeightUom();
+                        SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, locLenUom, 0.8);
+                        calc.initInternalCube(length, width, height, lenUom);
+                        boolean cubageAvailable = calc.calculateAvailable();
+                        //计算重量
+                        
+                        if(cubageAvailable){
+                            list.add(al);
+                        }
+                        
+                        if(1 == list.size()){
+                            break;
+                        }
                     }
-
+                    if(1 == list.size()){
+                        break;
+                    }
                 }
             }
-            
+            if (WhPutawayPatternDetailType.PALLET_PUTAWAY == putawayPatternDetail){
+                if(1 == list.size()){
+                    break;
+                }
+            }
         }
-        
-       
-        
-        
-        
-        
         
         if (log.isInfoEnabled()) {
             log.info("whLocationRecommandManager.recommendLocationByShevleRule end, logId is:[{}]", logId);

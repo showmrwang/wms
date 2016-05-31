@@ -653,7 +653,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			where ou_id=#{ouId} and id=#{id}
 	</delete>
 	
-	<select id="findAllEmptyLocsByAreaId" parameterType="java.lang.Long" resultMap="LocationResult" flushCache="false">
+	<select id="findAllEmptyLocsByAreaId" resultMap="locationCommandColumnsExt" flushCache="false">
 			select <include refid="locationColumns" />
 		    <![CDATA[
 			    from t_wh_location loc
@@ -664,7 +664,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    ]]>
 	</select>
 	
-	<select id="findAllStaticLocsByAreaId" parameterType="java.lang.Long" resultMap="LocationResult" flushCache="false">
+	<select id="findAllStaticLocsByAreaId" resultMap="locationCommandColumnsExt" flushCache="false">
 			select <include refid="locationColumns" />
 		    <![CDATA[
 			    from t_wh_location loc
@@ -677,7 +677,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	</select>
 	
 	
-	<select id="findAllInvLocsByAreaIdAndSameAttrs" parameterType="java.lang.Long" resultMap="LocationResult" flushCache="false">
+	<select id="findAllInvLocsByAreaIdAndSameAttrs" resultMap="locationCommandColumnsExt" flushCache="false">
 			select <include refid="locationColumns" />
 		    <![CDATA[
 			    from t_wh_location loc
@@ -688,7 +688,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    ]]>
 	</select>
 	
-	<select id="findAllInvLocsByAreaIdAndDiffAttrs" parameterType="java.lang.Long" resultMap="LocationResult" flushCache="false">
+	<select id="findAllInvLocsByAreaIdAndDiffAttrs" resultMap="locationCommandColumnsExt" flushCache="false">
 			select <include refid="locationColumns" />
 		    <![CDATA[
 			    from t_wh_location loc

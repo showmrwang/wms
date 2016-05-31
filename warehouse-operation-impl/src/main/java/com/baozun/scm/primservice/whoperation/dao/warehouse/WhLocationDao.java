@@ -80,7 +80,7 @@ public interface WhLocationDao extends BaseDao<Location, Long> {
      * @param ouId
      * @return
      */
-    List<Location> findAllEmptyLocsByAreaId(@Param("areaId") Long id, @Param("ouId") Long ouId, @Param("cSql") String cSql);
+    List<LocationCommand> findAllEmptyLocsByAreaId(@Param("areaId") Long id, @Param("ouId") Long ouId, @Param("cSql") String cSql);
     
     /**
      * 获取指定库区的所有静态库位
@@ -89,7 +89,7 @@ public interface WhLocationDao extends BaseDao<Location, Long> {
      * @param ouId
      * @return
      */
-    List<Location> findAllStaticLocsByAreaId(@Param("areaId") Long id, @Param("ouId") Long ouId, @Param("cSql") String cSql);
+    List<LocationCommand> findAllStaticLocsByAreaId(@Param("areaId") Long id, @Param("ouId") Long ouId, @Param("cSql") String cSql);
     
     /**
      * 获取指定库区且库存属相相同的库位
@@ -99,5 +99,5 @@ public interface WhLocationDao extends BaseDao<Location, Long> {
      * @param invAttrsSql
      * @return
      */
-    List<Location> findAllInvLocsByAreaIdAndSameAttrs(@Param("areaId") Long id, @Param("ouId") Long ouId, @Param("cSql") String cSql);
+    List<LocationCommand> findAllInvLocsByAreaIdAndSameAttrs(@Param("areaId") Long id, @Param("ouId") Long ouId, @Param("cSql") String cSql);
 }

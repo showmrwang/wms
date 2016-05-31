@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper
+	namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.LocationTempletRulesDao">
+	<resultMap id="LocationTempletRulesResultExt"
+		type="com.baozun.scm.primservice.whoperation.model.warehouse.LocationTempletRules">
+	</resultMap>
+	<resultMap id="LocationTempletRulesCommandResultExt"
+		type="com.baozun.scm.primservice.whoperation.command.warehouse.LocationTempletRulesCommand">
+	</resultMap>
+
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="locationTempletRulesColumnsExt">
+	    <![CDATA[
+	        	id as id,
+	        	templet_id as templetId,
+	        	dimension as dimension,
+	        	sort_no as sortNo,
+	        	ou_id as ouId
+	    ]]>
+	</sql>
+
+	<sql id="locationTempletRulesDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+
+			<if test="id!=null">
+				and id = #{id}
+			</if>
+
+			<if test="templetId!=null">
+				and templet_id = #{templetId}
+			</if>
+
+
+			<if test="dimension!=null and dimension!=''">
+				and dimension = #{dimension}
+			</if>
+
+			<if test="sortNo!=null">
+				and sort_no = #{sortNo}
+			</if>
+
+			<if test="ouId!=null">
+				and ou_id = #{ouId}
+			</if>
+		</where>
+	</sql>
+	
+	<select id="findListByParamExt" resultMap="LocationTempletRulesCommandResultExt">
+		select
+		<include refid="locationTempletRulesColumnsExt" />
+		from t_wh_location_templet_rules
+		<where>
+			<if test="id!=null">
+				and id = #{id}
+			</if>
+
+			<if test="templetId!=null">
+				and templet_id = #{templetId}
+			</if>
+
+			<if test="ouId!=null">
+				and ou_id = #{ouId}
+			</if>
+		</where>
+		order by sort_no
+	</select>
+
+	<delete id="deleteByIdsExt" parameterType="list">
+		delete from t_wh_location_templet_rules
+		where id in
+		<foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+		and ou_id = #{ouId}
+	</delete>
+
+
+
+</mapper>
