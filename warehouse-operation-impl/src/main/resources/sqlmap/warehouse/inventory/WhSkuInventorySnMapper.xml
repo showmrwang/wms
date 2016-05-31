@@ -24,7 +24,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	status as status,
 	        	inv_attr as invAttr,
 	        	uuid as uuid,
-	        	ou_id as ouId
+	        	ou_id as ouId,
+	        	sys_uuid as sysUuid
 	    ]]>
 	</sql>
 	<sql id="whSkuInventorySnConditionWhereExt">
@@ -114,7 +115,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	status ,
 		        	inv_attr ,
 		        	uuid ,
-		        	ou_id 
+		        	ou_id ,
+		        	sys_uuid
 		        ) VALUES (
 		     	    #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{sn,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -126,7 +128,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        	#{invAttr,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{uuid,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{sysUuid,javaType=java.lang.String,jdbcType=VARCHAR} 
 		        )
 		    ]]>
 
@@ -144,7 +147,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        defect_reasons_id = #{defectReasonsId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        status = #{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        inv_attr = #{invAttr,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        uuid = #{uuid,javaType=java.lang.String,jdbcType=VARCHAR} 
+		        uuid = #{uuid,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        sys_uuid = #{sysUuid,javaType=java.lang.String,jdbcType=VARCHAR} 
 	        WHERE 
 		        id = #{id} 
 		        and ou_id = #{ouId}

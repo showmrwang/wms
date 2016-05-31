@@ -53,6 +53,8 @@ public class WhSkuInventorySn extends BaseModel {
     private String uuid;
     /** 对应仓库ID */
     private Long ouId;
+    /** 系统uuid 用于逻辑处理 */
+    private String sysUuid;
 
     public Long getInvId() {
         return invId;
@@ -148,6 +150,14 @@ public class WhSkuInventorySn extends BaseModel {
 
     public void setOuId(Long ouId) {
         this.ouId = ouId;
+    }
+
+    public String getSysUuid() {
+        return sysUuid;
+    }
+
+    public void setSysUuid(String sysUuid) {
+        this.sysUuid = sysUuid;
     }
 
 

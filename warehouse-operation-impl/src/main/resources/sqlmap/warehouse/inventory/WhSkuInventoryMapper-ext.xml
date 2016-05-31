@@ -807,4 +807,60 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        delete from t_wh_sku_inventory where
 		        id = #{id} and ou_id = #{ouid}
 		</delete>
+		
+	<select id="findWhSkuInventoryBySkuIdAndContainerid" resultMap="WhSkuInventoryCommandResultExt">
+		select 	    	
+					t.id as id,
+					t.sku_id as skuId,
+					t.location_id as locationId,
+					t.outer_container_id as outerContainerId,
+					t.inside_container_id as insideContainerId,
+					t.customer_id as customerId,
+					t.store_id as storeId,
+					t.occupation_code as occupationCode,
+					t.on_hand_qty as onHandQty,
+					t.allocated_qty as allocatedQty,
+					t.to_be_filled_qty as toBeFilledQty,
+					t.frozen_qty as frozenQty,
+					t.inv_status as invStatus,
+					t.inv_type as invType,
+					t.batch_number as batchNumber,
+					date_format(t.mfg_date,'%Y-%m-%d') as mfgDateStr,
+					date_format(t.exp_date,'%Y-%m-%d') as expDateStr,
+					t.mfg_date as mfgDate,
+					t.exp_date as expDate,
+					t.country_of_origin as countryOfOrigin,
+					t.inv_attr1 as invAttr1,
+					t.inv_attr2 as invAttr2,
+					t.inv_attr3 as invAttr3,
+					t.inv_attr4 as invAttr4,
+					t.inv_attr5 as invAttr5,
+					t.uuid as uuid,
+					t.is_locked as isLocked,
+					t.ou_id as ouId,
+					t.occupation_code_source as occupationCodeSource,
+					t.inbound_time as inboundTime,
+			 	    t.last_modify_time as lastModifyTime,
+					sys.dic_label as invTypeName,
+					invstatus.name as invstatusName,
+					inva1.dic_label as invAttr1Str,
+					inva2.dic_label as invAttr2Str,
+					inva3.dic_label as invAttr3Str,
+					inva4.dic_label as invAttr4Str,
+					inva5.dic_label as invAttr5Str			
+					from 
+						t_wh_sku_inventory t 
+						left join t_wh_inventory_status invstatus on t.inv_status = invstatus.id
+						left join sys_dictionary sys on t.inv_type = sys.dic_value and sys.group_value = 'INVENTORY_TYPE'
+						left join sys_dictionary inva1 on t.inv_attr1 = inva1.dic_value and inva1.group_value = 'INVENTORY_ATTR_1' 
+						left join sys_dictionary inva2 on t.inv_attr2 = inva2.dic_value and inva2.group_value = 'INVENTORY_ATTR_2' 
+						left join sys_dictionary inva3 on t.inv_attr3 = inva3.dic_value and inva3.group_value = 'INVENTORY_ATTR_3' 
+						left join sys_dictionary inva4 on t.inv_attr4 = inva4.dic_value and inva4.group_value = 'INVENTORY_ATTR_4' 
+						left join sys_dictionary inva5 on t.inv_attr5 = inva5.dic_value and inva5.group_value = 'INVENTORY_ATTR_5' 
+					where 
+					t.sku_id = #{skuid} 
+					and t.inside_container_id = #{containerid} 
+					and t.ou_id = #{ouid} 
+					and t.location_id is null 
+    </select>
 </mapper>

@@ -17,9 +17,6 @@ package com.baozun.scm.primservice.whoperation.dao.warehouse.inventory;
 import java.util.List;
 import java.util.Map;
 
-import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.InventorySnCommand;
-import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventorySn;
-
 import lark.common.annotation.CommonQuery;
 import lark.common.annotation.QueryPage;
 import lark.common.dao.Page;
@@ -27,6 +24,12 @@ import lark.common.dao.Pagination;
 import lark.common.dao.QueryCondition;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
+
+import org.apache.ibatis.annotations.Param;
+
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.InventorySnCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
+import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventorySn;
 
 public interface WhSkuInventorySnDao extends BaseDao<WhSkuInventorySn, Long> {
 
@@ -46,5 +49,14 @@ public interface WhSkuInventorySnDao extends BaseDao<WhSkuInventorySn, Long> {
 
     @CommonQuery
     int saveOrUpdate(WhSkuInventorySn o);
+
+    /**
+     * 根据库存UUID查找对应SN/残次信息
+     * 
+     * @param ouid
+     * @param uuid
+     * @return
+     */
+    List<WhSkuInventorySnCommand> findWhSkuInventoryByUuid(@Param("ouid") Long ouid, @Param("uuid") String uuid);
 
 }

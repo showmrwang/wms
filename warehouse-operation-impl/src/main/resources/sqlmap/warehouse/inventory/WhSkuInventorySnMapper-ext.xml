@@ -21,7 +21,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	status as status,
 	        	inv_attr as invAttr,
 	        	uuid as uuid,
-	        	ou_id as ouId
+	        	ou_id as ouId,
+	        	sys_uuid as sysUuid
 	    ]]>
 	</sql>
 	
@@ -77,6 +78,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				sn.inv_attr as invAttr,
 				sn.uuid as uuid,
 				sn.ou_id as ouId,
+				sn.sys_uuid as sysUuid,
 				sku.code as skuCode,
 				sku.name as skuName,
 				sys.dic_label as statusStr,
@@ -115,6 +117,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			left join t_wh_defect_type wtype on wtype.id = sn.defect_type_id 
 			left join t_wh_defect_reasons wrea on wrea.id = sn.defect_reasons_id
 		<include refid="findListByQueryMapWithPageWhereExt"/>
+    </select>
+    
+    <select id="findWhSkuInventoryByUuid" resultMap="WhSkuInventorySnCommandResultExt">
+    	select <include refid="whSkuInventorySnColumnsExt" />
+				from 
+				t_wh_sku_inventory_sn
+				where 
+				uuid = #{uuid}
+				and ou_id = #{ouid} 
     </select>
 	
 </mapper>
