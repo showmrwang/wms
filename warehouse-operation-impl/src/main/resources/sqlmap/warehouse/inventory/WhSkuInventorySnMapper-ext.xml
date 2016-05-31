@@ -118,5 +118,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			left join t_wh_defect_reasons wrea on wrea.id = sn.defect_reasons_id
 		<include refid="findListByQueryMapWithPageWhereExt"/>
     </select>
+    
+    <select id="findWhSkuInventoryByUuid" resultMap="WhSkuInventorySnCommandResultExt">
+    	select <include refid="whSkuInventorySnColumnsExt" />
+				from 
+				t_wh_sku_inventory_sn
+				where 
+				uuid = #{uuid}
+				and ou_id = #{ouid} 
+    </select>
 	
 </mapper>
