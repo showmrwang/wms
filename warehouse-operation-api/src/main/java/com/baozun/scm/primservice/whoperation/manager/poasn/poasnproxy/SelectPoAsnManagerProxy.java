@@ -227,6 +227,7 @@ public interface SelectPoAsnManagerProxy extends BaseManager {
      * @param skuId
      * @param ouId
      * @param logId
+     * @return 
      */
     void checkWhAsnLineBySkuId(List<WhAsnLine> whAsnLineList, Long skuId, Long ouId, String logId);
 

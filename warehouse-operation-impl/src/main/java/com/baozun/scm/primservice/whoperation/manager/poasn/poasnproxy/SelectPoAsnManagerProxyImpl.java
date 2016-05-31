@@ -477,6 +477,7 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
     
     @Override
     public void checkWhAsnLineBySkuId(List<WhAsnLine> whAsnLineList, Long skuId, Long ouId, String logId) {
+        boolean errorFlag = false;
         if (log.isInfoEnabled()) {
             log.info("checkWhAsnLineBySkuId start, params whAsnLineList is:[{}], ouId is:[{}], logId is:[{}],skuId is :[{}] ", new Object[] {whAsnLineList.toString(), ouId, logId, skuId});
         }
@@ -493,11 +494,17 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
         for (WhAsnLine whAsnLine : whAsnLineList) {
-            if(!skuId.equals(whAsnLine.getSkuId())){
-                throw new BusinessException(ErrorCodes.SKU_NOT_FOUND_IN_ASN);
+            if(skuId.equals(whAsnLine.getSkuId())){
+                errorFlag = true;
+                break;
+                //throw new BusinessException(ErrorCodes.SKU_NOT_FOUND_IN_ASN);
+            }else{
+                continue;
             }
         }
-        
+        if(!errorFlag){
+            throw new BusinessException(ErrorCodes.SKU_NOT_FOUND_IN_ASN);
+        }
         if (log.isInfoEnabled()) {
             log.info("checkWhAsnLineBySkuId end, params whAsnLineList is:[{}], ouId is:[{}], logId is:[{}],skuId is :[{}] ", new Object[] {whAsnLineList.toString(), ouId, logId, skuId});
         }
