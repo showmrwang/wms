@@ -56,6 +56,7 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.Location;
 import com.baozun.scm.primservice.whoperation.model.warehouse.LocationTemplet;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionPutAway;
 import com.baozun.scm.primservice.whoperation.util.formula.SimpleCubeCalculator;
+import com.baozun.scm.primservice.whoperation.util.formula.SimpleWeightCalculator;
 
 /**
  * @author lichuan
@@ -113,7 +114,7 @@ public class WhLocationRecommandManagerImpl extends BaseManagerImpl implements W
         String containerCode = ruleAffer.getAfferContainerCode();
         ContainerCommand containerCmd = containerDao.getContainerByCode(containerCode, ouId);
         if(null == containerCmd){
-            log.error("container is null error, containerId is:[{}], logId is:[{}]", containerCmd.getId(), logId);
+            log.error("container is null error, logId is:[{}]", logId);
             throw new BusinessException(ErrorCodes.COMMON_CONTAINER_IS_NOT_EXISTS);
         }
         if(1 != containerCmd.getLifecycle()){
@@ -181,9 +182,13 @@ public class WhLocationRecommandManagerImpl extends BaseManagerImpl implements W
                         }
                         avaliableLocs = locationDao.findAllStaticLocsByAreaId(area.getId(), ouId, cSql);
                     } else if (WhLocationRecommendType.MERGE_LOCATION_SAME_INV_ATTRS.equals(locationRecommendRule)) {
+                        //不考虑
                         avaliableLocs = null;
+                        continue;
                     } else if (WhLocationRecommendType.MERGE_LOCATION_DIFF_INV_ATTRS.equals(locationRecommendRule)) {
+                        //不考虑
                         avaliableLocs = null;
+                        continue;
                     } else if (WhLocationRecommendType.ONE_LOCATION_ONLY.equals(locationRecommendRule)) {
                         attrParams.setLrt(WhLocationRecommendType.ONE_LOCATION_ONLY);
                         PutawayCondition putawayCondition = putawayConditionFactory.getPutawayCondition(WhPutawayPatternType.SYS_GUIDE_PUTAWAY, WhPutawayPatternDetailType.PALLET_PUTAWAY, logId);
@@ -200,20 +205,33 @@ public class WhLocationRecommandManagerImpl extends BaseManagerImpl implements W
                     for (LocationCommand al : avaliableLocs) {
                         String templetCode = al.getTempletCode();
                         LocationTemplet locTemplet = locationTempletDao.findLocationTempletByCodeAndOuId(templetCode, ouId);
-                        //计算体积
                         Double locLength = locTemplet.getLength();
                         Double locHeight = locTemplet.getHigh();
                         Double locWidth = locTemplet.getWidth();
                         String locLenUom = locTemplet.getLengthUom();
                         Double locWeight = locTemplet.getWeight();
                         String locWeightUom = locTemplet.getWeightUom();
-                        SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, locLenUom, 0.8);
-                        calc.initInternalCube(length, width, height, lenUom);
-                        boolean cubageAvailable = calc.calculateAvailable();
-                        //计算重量
-                        
-                        if(cubageAvailable){
-                            list.add(al);
+                        if (WhLocationRecommendType.EMPTY_LOCATION.equals(locationRecommendRule)) {
+                            //计算体积
+                            SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, locLenUom, 0.8);
+                            calc.initStuffCube(length, width, height, lenUom);
+                            boolean cubageAvailable = calc.calculateAvailable();
+                            //计算重量
+                            SimpleWeightCalculator weightCal = new SimpleWeightCalculator(locWeight, locWeightUom);
+                            weightCal.initStuffWeight(weight, weightUom);
+                            boolean weightAvailable = weightCal.calculateAvailable();
+                            if(cubageAvailable & weightAvailable){
+                                list.add(al);
+                            }
+                        } else if (WhLocationRecommendType.STATIC_LOCATION.equals(locationRecommendRule)) {
+                            
+                        } else if (WhLocationRecommendType.MERGE_LOCATION_SAME_INV_ATTRS.equals(locationRecommendRule)) {
+                            break;
+                        } else if (WhLocationRecommendType.MERGE_LOCATION_DIFF_INV_ATTRS.equals(locationRecommendRule)) {
+                            break;
+                        } else if (WhLocationRecommendType.ONE_LOCATION_ONLY.equals(locationRecommendRule)) {
+                            
+                        } else {
                         }
                         
                         if(1 == list.size()){

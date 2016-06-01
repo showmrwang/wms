@@ -29,7 +29,7 @@ public class SimpleCubeCalculator {
      */
 
     private boolean isInit = false;
-    private boolean isInitInternalCube = false;
+    private boolean isInitStuffCube = false;
     private Double _x;
     private Double _y;
     private Double _z;
@@ -94,26 +94,37 @@ public class SimpleCubeCalculator {
         setInit(true);
     }
 
-    public Double getInitCubage() {
+    public Double getTotalCubage() {
         isInitialization();
         return get_cubage();
     }
 
-    public Double getInitAvailableCubage() {
+    public Double getTotalAvailableCubage() {
         isInitialization();
         return getAvailableCubage();
     }
 
-    public Double addCubeCubage(Double c) {
+    public Double addStuffCubage(Double c) {
         Double ret = getCubage();
         ret += c;
         setCubage(ret);
         return ret;
     }
 
-    public Double getCubeCubage() {
-        isInitialization();
+    public Double getStuffCubage() {
         return getCubage();
+    }
+
+    public Double calculateStuffCubage(Double actualX, Double actualY, Double actualZ, String actualUom) {
+        if (false == isInitStuffCube) {
+            setCubage(cubage);
+        }
+        Double ax = uomConversion(actualUom, actualX);
+        Double ay = uomConversion(actualUom, actualY);
+        Double az = uomConversion(actualUom, actualZ);
+        cubage += cubageFormula(ax, ay, az);
+        addStuffCubage(cubage);
+        return getStuffCubage();
     }
 
     private Double calculateRemainCubage(Double availableCubage, Double cubage) {
@@ -268,7 +279,7 @@ public class SimpleCubeCalculator {
         set_z(rz);
         set_cubage(cubageFormula(rx, ry, rz));
         setAvailability(availability);
-        setAvailableCubage(get_cubage() * availability);
+        setAvailableCubage(get_cubage() * getAvailability());
     }
 
     private void isLengthSupport(Double len) {
@@ -277,7 +288,7 @@ public class SimpleCubeCalculator {
         }
     }
 
-    public void initInternalCube(Double x, Double y, Double z, String uom) {
+    public void initStuffCube(Double x, Double y, Double z, String uom) {
         if (null == x) x = 0.0;
         if (null == y) y = 0.0;
         if (null == z) z = 0.0;
@@ -297,7 +308,7 @@ public class SimpleCubeCalculator {
         setY(ry);
         setZ(rz);
         setCubage(cubageFormula(rx, ry, rz));
-        setInitInternalCube(true);
+        setInitStuffCube(true);
     }
 
     private void isInitialization() {
@@ -309,8 +320,8 @@ public class SimpleCubeCalculator {
     public boolean calculateCubageAvailable(Double x, Double y, Double z, String uom) {
         boolean ret = false;
         isInitialization();
-        if (false == isInitInternalCube()) {
-            initInternalCube(x, y, z, uom);
+        if (false == isInitStuffCube()) {
+            initStuffCube(x, y, z, uom);
         }
         ret = isCubageAvailable();
         setCubageAvailable(ret);
@@ -365,7 +376,7 @@ public class SimpleCubeCalculator {
         if (coords_z.equals(coords)) {
             Double rx = get_x();
             Double ry = get_y();
-            set_remainZ(calculateRemainZ(calculateRemainCubage(getInitAvailableCubage(), getCubeCubage()), rx, ry));
+            set_remainZ(calculateRemainZ(calculateRemainCubage(getTotalAvailableCubage(), getStuffCubage()), rx, ry));
             Double rz = get_remainZ();
             Double ax = getX();
             Double ay = getY();
@@ -374,7 +385,7 @@ public class SimpleCubeCalculator {
         } else if (coords_y.equals(coords)) {
             Double rx = get_x();
             Double rz = get_z();
-            set_remainY(calculateRemainY(calculateRemainCubage(getInitAvailableCubage(), getCubeCubage()), rz, rx));
+            set_remainY(calculateRemainY(calculateRemainCubage(getTotalAvailableCubage(), getStuffCubage()), rz, rx));
             Double ry = get_remainY();
             Double ax = getX();
             Double ay = getY();
@@ -383,7 +394,7 @@ public class SimpleCubeCalculator {
         } else if (coords_x.equals(coords)) {
             Double ry = get_y();
             Double rz = get_z();
-            set_remainX(calculateRemainX(calculateRemainCubage(getInitAvailableCubage(), getCubeCubage()), ry, rz));
+            set_remainX(calculateRemainX(calculateRemainCubage(getTotalAvailableCubage(), getStuffCubage()), ry, rz));
             Double rx = get_remainX();
             Double ax = getX();
             Double ay = getY();
@@ -397,13 +408,11 @@ public class SimpleCubeCalculator {
         return ret;
     }
 
-    private boolean calculateLengthAvailable(Double x, Double y, Double z, String uom) {
+    public boolean calculateLengthAvailable(Double x, Double y, Double z, String uom) {
         boolean ret = false;
-        if (false == isInit()) {
-            throw new RuntimeException("not initailization error!");
-        }
-        if (false == isInitInternalCube()) {
-            initInternalCube(x, y, z, uom);
+        isInitialization();
+        if (false == isInitStuffCube()) {
+            initStuffCube(x, y, z, uom);
         }
         if (coords_z.equals(getCoordinate())) {
             ret = calculateLengthAvailable4Coords(coords_z);
@@ -437,12 +446,12 @@ public class SimpleCubeCalculator {
         this.isInit = isInit;
     }
 
-    public boolean isInitInternalCube() {
-        return isInitInternalCube;
+    public boolean isInitStuffCube() {
+        return isInitStuffCube;
     }
 
-    public void setInitInternalCube(boolean isInitCube) {
-        this.isInitInternalCube = isInitCube;
+    public void setInitStuffCube(boolean isInitStuffCube) {
+        this.isInitStuffCube = isInitStuffCube;
     }
 
     public Double get_x() {
