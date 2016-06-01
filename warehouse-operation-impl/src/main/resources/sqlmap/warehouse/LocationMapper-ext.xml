@@ -660,6 +660,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        where 
 		        loc.shelf_area_id = #{areaId} 
 		        and loc.ou_id = #{ouId}
+		        and loc.lifecycle = 1
 		        and not exists (select 1 from t_wh_sku_inventory inv where inv.location_id = loc.id and inv.ou_id = #{ouId})
 		    ]]>
 	</select>
@@ -672,6 +673,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        loc.shelf_area_id = #{areaId} 
 		        and loc.ou_id = #{ouId}
 		        and loc.is_static = 1
+		        and loc.lifecycle = 1
 		        and ${cSql}
 		    ]]>
 	</select>
@@ -684,6 +686,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        where 
 		        loc.shelf_area_id = #{areaId} 
 		        and loc.ou_id = #{ouId}
+		        and loc.lifecycle = 1
 		        and exists (select 1 from t_wh_sku_inventory inv where inv.location_id = loc.id and inv.ou_id = #{ouId} and ${cSql})
 		    ]]>
 	</select>
@@ -695,12 +698,24 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        where 
 		        loc.shelf_area_id = #{areaId} 
 		        and loc.ou_id = #{ouId}
+		        and loc.lifecycle = 1
 		        and exists (
 		        select 1 from t_wh_sku_inventory inv where inv.location_id = loc.id and inv.ou_id = #{ouId} and inv.id not in
 		        (
 		        select id from t_wh_sku_inventory inv where inv.location_id = loc.id and inv.ou_id = #{ouId} and ${cSql}
 		        )
 		        )
+		    ]]>
+	</select>
+	
+	<select id="findAllAvailableLocsByAreaId" resultMap="locationCommandColumnsExt" flushCache="false">
+			select <include refid="locationColumns" />
+		    <![CDATA[
+			    from t_wh_location loc
+		        where 
+		        loc.shelf_area_id = #{areaId} 
+		        and loc.ou_id = #{ouId}
+		        and loc.lifecycle = 1
 		    ]]>
 	</select>
 	

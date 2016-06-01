@@ -100,4 +100,25 @@ public interface WhLocationDao extends BaseDao<Location, Long> {
      * @return
      */
     List<LocationCommand> findAllInvLocsByAreaIdAndSameAttrs(@Param("areaId") Long id, @Param("ouId") Long ouId, @Param("cSql") String cSql);
+    
+    /**
+     * 获取指定库区且库存属相不同的库位
+     * @author lichuan
+     * @param id
+     * @param ouId
+     * @param cSql
+     * @return
+     */
+    List<LocationCommand> findAllInvLocsByAreaIdAndDiffAttrs(@Param("areaId") Long id, @Param("ouId") Long ouId, @Param("cSql") String cSql);
+    
+    /**
+     * 获取指定库区的所有可用库位
+     * @author lichuan
+     * @param id
+     * @param ouId
+     * @param cSql
+     * @return
+     */
+    List<LocationCommand> findAllAvailableLocsByAreaId(@Param("areaId") Long id, @Param("ouId") Long ouId, @Param("cSql") String cSql);
+    
 }
