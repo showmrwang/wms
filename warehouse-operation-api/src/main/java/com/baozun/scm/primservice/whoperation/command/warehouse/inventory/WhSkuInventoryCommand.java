@@ -15,9 +15,9 @@
 package com.baozun.scm.primservice.whoperation.command.warehouse.inventory;
 
 import java.util.Date;
-import java.util.List;
 
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
+import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdSnCacheCommand;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionRcvd;
 
 /**
@@ -150,12 +150,181 @@ public class WhSkuInventoryCommand extends BaseCommand {
     /** 通用收货功能匹配明细行 */
     private String lineIdListString;
     /** 通用收货功能匹配明细行 */
-    private List<WhSkuInventorySnCommand> snList;
-    /** 通用收货收货数量 */
+    private RcvdSnCacheCommand sn;
+    /** 通用收货累计收货数量 */
     private Integer skuAddUpCount;
     /** 通用收货userId */
     private Long userId;
+    /** 通用收货批量收货数量 */
+    private Integer skuBatchCount;
+    /** 残次数量 */
+    private Integer snCount;
+    /** 残次累计数量 */
+    private Integer snAddUpCount;
+    //
+    /** 按照标准装箱提示收货 */
+    private Boolean normIncPointoutRcvd;
+    /** 是否限定唯一库存类型 */
+    private Boolean isLimitUniqueInvType;
+    /** 是否限定唯一库存状态 */
+    private Boolean isLimitUniqueInvStatus;
+    /** 是否限定唯一库存属性1 */
+    private Boolean isLimitUniqueInvAttr1;
+    /** 是否限定唯一库存属性2 */
+    private Boolean isLimitUniqueInvAttr2;
+    /** 是否限定唯一库存属性3 */
+    private Boolean isLimitUniqueInvAttr3;
+    /** 是否限定唯一库存属性4 */
+    private Boolean isLimitUniqueInvAttr4;
+    /** 是否限定唯一库存属性5 */
+    private Boolean isLimitUniqueInvAttr5;
+    /** 是否限定唯一原产地 */
+    private Boolean isLimitUniquePlaceoforigin;
+    /** 是否限定唯一批次号 */
+    private Boolean isLimitUniqueBatch;
+    /** 是否限定唯一生产日期 */
+    private Boolean isLimitUniqueDateOfManufacture;
+    /** 是否限定唯一失效日期 */
+    private Boolean isLimitUniqueExpiryDate;
+    /** 是否支持混放SKU */
+    private Boolean isMixingSku;
 
+
+    public Boolean getNormIncPointoutRcvd() {
+        return normIncPointoutRcvd;
+    }
+
+    public void setNormIncPointoutRcvd(Boolean normIncPointoutRcvd) {
+        this.normIncPointoutRcvd = normIncPointoutRcvd;
+    }
+
+    public Boolean getIsLimitUniqueInvType() {
+        return isLimitUniqueInvType;
+    }
+
+    public void setIsLimitUniqueInvType(Boolean isLimitUniqueInvType) {
+        this.isLimitUniqueInvType = isLimitUniqueInvType;
+    }
+
+    public Boolean getIsLimitUniqueInvStatus() {
+        return isLimitUniqueInvStatus;
+    }
+
+    public void setIsLimitUniqueInvStatus(Boolean isLimitUniqueInvStatus) {
+        this.isLimitUniqueInvStatus = isLimitUniqueInvStatus;
+    }
+
+    public Boolean getIsLimitUniqueInvAttr1() {
+        return isLimitUniqueInvAttr1;
+    }
+
+    public void setIsLimitUniqueInvAttr1(Boolean isLimitUniqueInvAttr1) {
+        this.isLimitUniqueInvAttr1 = isLimitUniqueInvAttr1;
+    }
+
+    public Boolean getIsLimitUniqueInvAttr2() {
+        return isLimitUniqueInvAttr2;
+    }
+
+    public void setIsLimitUniqueInvAttr2(Boolean isLimitUniqueInvAttr2) {
+        this.isLimitUniqueInvAttr2 = isLimitUniqueInvAttr2;
+    }
+
+    public Boolean getIsLimitUniqueInvAttr3() {
+        return isLimitUniqueInvAttr3;
+    }
+
+    public void setIsLimitUniqueInvAttr3(Boolean isLimitUniqueInvAttr3) {
+        this.isLimitUniqueInvAttr3 = isLimitUniqueInvAttr3;
+    }
+
+    public Boolean getIsLimitUniqueInvAttr4() {
+        return isLimitUniqueInvAttr4;
+    }
+
+    public void setIsLimitUniqueInvAttr4(Boolean isLimitUniqueInvAttr4) {
+        this.isLimitUniqueInvAttr4 = isLimitUniqueInvAttr4;
+    }
+
+    public Boolean getIsLimitUniqueInvAttr5() {
+        return isLimitUniqueInvAttr5;
+    }
+
+    public void setIsLimitUniqueInvAttr5(Boolean isLimitUniqueInvAttr5) {
+        this.isLimitUniqueInvAttr5 = isLimitUniqueInvAttr5;
+    }
+
+    public Boolean getIsLimitUniquePlaceoforigin() {
+        return isLimitUniquePlaceoforigin;
+    }
+
+    public void setIsLimitUniquePlaceoforigin(Boolean isLimitUniquePlaceoforigin) {
+        this.isLimitUniquePlaceoforigin = isLimitUniquePlaceoforigin;
+    }
+
+    public Boolean getIsLimitUniqueBatch() {
+        return isLimitUniqueBatch;
+    }
+
+    public void setIsLimitUniqueBatch(Boolean isLimitUniqueBatch) {
+        this.isLimitUniqueBatch = isLimitUniqueBatch;
+    }
+
+    public Boolean getIsLimitUniqueDateOfManufacture() {
+        return isLimitUniqueDateOfManufacture;
+    }
+
+    public void setIsLimitUniqueDateOfManufacture(Boolean isLimitUniqueDateOfManufacture) {
+        this.isLimitUniqueDateOfManufacture = isLimitUniqueDateOfManufacture;
+    }
+
+    public Boolean getIsLimitUniqueExpiryDate() {
+        return isLimitUniqueExpiryDate;
+    }
+
+    public void setIsLimitUniqueExpiryDate(Boolean isLimitUniqueExpiryDate) {
+        this.isLimitUniqueExpiryDate = isLimitUniqueExpiryDate;
+    }
+
+    public Boolean getIsMixingSku() {
+        return isMixingSku;
+    }
+
+    public void setIsMixingSku(Boolean isMixingSku) {
+        this.isMixingSku = isMixingSku;
+    }
+
+    public Integer getSnCount() {
+        return snCount;
+    }
+
+    public void setSnCount(Integer snCount) {
+        this.snCount = snCount;
+    }
+
+    public Integer getSnAddUpCount() {
+        return snAddUpCount;
+    }
+
+    public void setSnAddUpCount(Integer snAddUpCount) {
+        this.snAddUpCount = snAddUpCount;
+    }
+
+    public RcvdSnCacheCommand getSn() {
+        return sn;
+    }
+
+    public void setSn(RcvdSnCacheCommand sn) {
+        this.sn = sn;
+    }
+
+    public Integer getSkuBatchCount() {
+        return skuBatchCount;
+    }
+
+    public void setSkuBatchCount(Integer skuBatchCount) {
+        this.skuBatchCount = skuBatchCount;
+    }
 
     public Long getUserId() {
         return userId;

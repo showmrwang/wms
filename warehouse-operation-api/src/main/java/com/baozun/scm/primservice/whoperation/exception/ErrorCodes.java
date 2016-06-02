@@ -235,6 +235,8 @@ public class ErrorCodes {
     public static final int RCVD_SKU_EXPRIED_ERROR = 10009;
     /** 商品收货失败，请点击重试 */
     public static final int RCVD_SKU_SAVE_ERROR = 10010;
+    /** 容器不可用，请更换容器 ! */
+    public static final int RCVD_CONTAINER_LIMIT_ERROR = 10011;
     // 10001-20000 luyimin
 
 
