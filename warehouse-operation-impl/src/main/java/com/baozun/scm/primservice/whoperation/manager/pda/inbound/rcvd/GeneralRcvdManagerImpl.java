@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdCacheCommand;
+import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdContainerCacheCommand;
+import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdSnCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnLineCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoLineCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
@@ -24,6 +26,7 @@ import com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnLineDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoLineDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
@@ -39,6 +42,8 @@ import com.baozun.scm.primservice.whoperation.util.SkuInventoryUuid;
 public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRcvdManager {
     @Autowired
     private WhSkuInventoryDao whSkuInventoryDao;
+    @Autowired
+    private ContainerDao containerDao;
     @Autowired
     private WhAsnDao whAsnDao;
     @Autowired
@@ -71,6 +76,7 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
             // 1.保存库存
             // 2.筛选ASN明细数据集合
             for (RcvdCacheCommand cacheInv : commandList) {
+                List<RcvdSnCacheCommand> cacheSn = cacheInv.getSnList();
                 if (lineMap.containsKey(cacheInv.getLineId())) {
                     lineMap.put(cacheInv.getLineId(), lineMap.get(cacheInv.getLineId()) + 1d);
                 } else {
@@ -84,7 +90,7 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
                 skuInv.setOnHandQty(1d);
                 skuInv.setOuId(cacheInv.getOuId());
                 // 测试用
-                skuInv.setId(123435345475L);
+                // skuInv.setId((long) Math.random() * 1000000);
                 try {
                     skuInv.setUuid(SkuInventoryUuid.invUuid(skuInv));
                 } catch (NoSuchAlgorithmException e) {
@@ -188,6 +194,21 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
                 throw new BusinessException("2");
             }
         }
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public long findContainerListCountByInsideContainerIdFromSkuInventory(Long insideContainerId, Long ouId) {
+        WhSkuInventory search = new WhSkuInventory();
+        search.setInsideContainerId(insideContainerId);
+        search.setOuId(ouId);
+        return this.whSkuInventoryDao.findListCountByParam(search);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public RcvdContainerCacheCommand getUniqueSkuAttrFromWhSkuInventory(Long insideContainerId, Long ouId) {
+        return this.whSkuInventoryDao.getUniqueSkuAttrFromWhSkuInventory(insideContainerId, ouId);
     }
 
 }
