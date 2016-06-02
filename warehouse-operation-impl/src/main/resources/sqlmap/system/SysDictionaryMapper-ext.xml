@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.system.SysDictionaryDao">
+	<resultMap id="SysDictionaryResultExt" type="com.baozun.scm.primservice.whoperation.model.system.SysDictionary">
+	</resultMap>
+	<resultMap id="SysDictionaryCommandResultExt" type="com.baozun.scm.primservice.whoperation.command.system.SysDictionaryCommand">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="sysDictionaryColumnsExt">
+	    <![CDATA[
+	        	id as id,
+	        	dic_label as dicLabel,
+	        	dic_value as dicValue,
+	        	description as description,
+	        	lifecycle as lifecycle,
+	        	group_value as groupValue,
+	        	group_name as groupName,
+	        	lang as lang,
+	        	function_name as functionName,
+	        	order_num as orderNum,
+	        	is_edit as isEdit,
+	        	create_time as createTime,
+	        	last_modify_time as lastModifyTime,
+	        	operator_id as operatorId,
+	        	group_id as groupId
+	    ]]>
+	</sql>
+	
+	<sql id="sysDictionaryCommandGroupColumnsExt">
+	    <![CDATA[
+	        	group_code as groupCode,
+	        	group_name as gName
+	    ]]>
+	</sql>
+	
+	<sql id="sysDictionaryDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+		       <if test="dicLabel1!=null and dicLabel1!=''">
+					and dic_label like #{dicLabel1}
+				</if>
+	       
+	       
+		       <if test="dicValue1!=null and dicValue1!=''">
+					and dic_value like #{dicValue1}
+				</if>
+	       
+	       
+				<if test="lifecycle1!=null">
+					and lifecycle = #{lifecycle1}
+				</if>
+	       
+	       
+		       <if test="groupCode!=null and groupCode!=''">
+					and group_value like #{groupCode}
+				</if>
+	       
+				<if test="isEdit1!=null">
+					and is_edit = #{isEdit1}
+				</if>
+				
+				 <if test="groupCode1!=null and groupCode1!=''">
+					and group_Code like #{groupCode1}
+				</if>
+				 <if test="gName1!=null and gName1!=''">
+					and g.group_name like #{gName1}
+				</if>
+				 <if test="gName!=null and gName!=''">
+					and g.group_name like #{gName}
+				</if>
+		</where>
+	</sql>
+	
+
+		<update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.system.SysDictionary">
+		    <![CDATA[
+		        UPDATE sys_dictionary SET
+			        dic_label = #{dicLabel,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        dic_value = #{dicValue,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        description = #{description,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        group_value = #{groupValue,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        group_name = #{groupName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        lang = #{lang,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        function_name = #{functionName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        order_num = #{orderNum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        is_edit = #{isEdit,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+			        last_modify_time = #{updateDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+			        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        group_id = #{groupId,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        WHERE 
+			        id = #{id} 
+			        
+			        and last_modify_time	<=  #{lastModifyTime}    
+		    ]]>
+		</update>
+		
+		<!-- 系统配置信息表group -->
+		<sql id="sysDictionaryGroupWhere">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+			<where>
+		       <if test="groupCode!=null and groupCode!=''">
+					and group_code = #{groupCode}
+				</if>
+		       <if test="gName!=null and gName!=''">
+					and group_name = #{groupName}
+				</if>
+		       <if test="isSys!=null">
+					and is_sys = #{isSys}
+			   </if>
+			</where>
+		</sql>
+		<select id="findGroupListbyParams" resultMap="SysDictionaryCommandResultExt" >
+			SELECT
+			 id,group_name as gName,group_code as groupCode
+			FROM sys_dictionary_group 
+			 <include refid="sysDictionaryGroupWhere"/>
+		</select>
+		
+		  <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPageExt" resultMap="SysDictionaryCommandResultExt">
+    	select 
+    	 <![CDATA[
+	        	d.id as id,
+	        	d.dic_label as dicLabel,
+	        	d.dic_value as dicValue,
+	        	d.description as description,
+	        	d.lifecycle as lifecycle,
+	        	d.group_value as groupValue,
+	        	d.group_name as groupName,
+	        	g.group_name as gName,
+	        	g.group_code as groupCode,
+	        	d.lang as lang,
+	        	d.function_name as functionName,
+	        	d.order_num as orderNum,
+	        	d.is_edit as isEdit,
+	        	d.create_time as createTime,
+	        	d.last_modify_time as lastModifyTime,
+	        	d.operator_id as operatorId,
+	        	d.group_id as groupId
+	    ]]>
+	    from sys_dictionary d
+	    INNER JOIN sys_dictionary_group G ON D.group_id=G.id
+		<include refid="sysDictionaryDynamicWhereExt"/>
+		
+    </select>
+    
+      <select id="findListCountByQueryMapExt" resultType="long">
+        select count(*) from sys_dictionary d
+        INNER JOIN sys_dictionary_group G ON D.group_id=G.id
+		<include refid="sysDictionaryDynamicWhereExt"/>    
+    </select>
+    
+    <update id="bacthUpdate" parameterType="map">
+
+		update sys_dictionary set
+		lifecycle=#{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER},
+		operator_id=#{operatorId,javaType=java.lang.Long,jdbcType=BIGINT},
+		last_modify_time=#{modifyDate,javaType=java.util.Date,jdbcType=TIMESTAMP}
+		<where>
+			<if test="ids!=null and ids.size()!=0">
+				id in
+				<foreach item="item" index="index" collection="ids" open="("
+					separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			and is_edit=1
+		</where>
+	</update>
+	
+<select id="checkUnique" parameterType="com.baozun.scm.primservice.whoperation.command.system.SysDictionaryCommand" resultType="int">
+		select count(*)
+		 from sys_dictionary 
+		 where
+		 	group_id=#{groupId} and
+		 	<if test="id==null">
+		 		(dic_label=#{dicLabel} or dic_value=#{dicValue})
+		 	</if>
+		 	<if test="id!=null">
+		 		(
+		 		(id!=#{id} and dic_label=#{dicLabel} and dic_value=#{dicValue})
+		 		OR
+		 		(id!=#{id} and dic_label=#{dicLabel}  and dic_value!=#{dicValue})
+		 		OR
+		 		(id!=#{id} and dic_label!=#{dicLabel}  and dic_value=#{dicValue})
+		 		)
+		 	</if>
+	</select>		
+	
+	<select id="getGroupbyId" resultMap="SysDictionaryCommandResultExt">
+		select
+		id as groupId,
+		group_code as groupCode,
+		group_name as gName
+		from sys_dictionary_group
+		where id=#{id}
+	</select>
+</mapper>
