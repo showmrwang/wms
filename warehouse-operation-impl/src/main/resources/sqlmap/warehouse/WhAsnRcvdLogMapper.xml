@@ -1,0 +1,422 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.WhAsnRcvdLogDao">
+	<resultMap id="WhAsnRcvdLogResult" type="com.baozun.scm.primservice.whoperation.model.warehouse.WhAsnRcvdLog">
+	</resultMap>
+	<resultMap id="WhAsnRcvdLogPaginationResult" type="lark.common.dao.Pagination">
+    	<collection property="items" javaType="ArrayList" resultMap="WhAsnRcvdLogResult"/>
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whAsnRcvdLogColumns">
+	    <![CDATA[
+	        	id as id,
+	        	asn_id as asnId,
+	        	asn_line_id as asnLineId,
+	        	asn_code as asnCode,
+	        	sku_code as skuCode,
+	        	sku_name as skuName,
+	        	quantity as quantity,
+	        	container_code as containerCode,
+	        	container_name as containerName,
+	        	mfg_date as mfgDate,
+	        	exp_date as expDate,
+	        	batch_no as batchNo,
+	        	country_of_origin as countryOfOrigin,
+	        	inv_status as invStatus,
+	        	inv_type as invType,
+	        	inv_attr1 as invAttr1,
+	        	inv_attr2 as invAttr2,
+	        	inv_attr3 as invAttr3,
+	        	inv_attr4 as invAttr4,
+	        	inv_attr5 as invAttr5,
+	        	ou_id as ouId,
+	        	create_time as createTime,
+	        	last_modify_time as lastModifyTime,
+	        	operator_id as operatorId
+	    ]]>
+	</sql>
+	<sql id="whAsnRcvdLogConditionWhereExt">
+		<where>
+			<if test="likeEqualsMap != null">
+				<foreach collection="likeEqualsMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} like CONCAT('%',#{value},'%') 
+				</foreach> 
+			</if> 
+			<if test="equalsMap != null"> 
+				<foreach collection="equalsMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} = #{value} 
+				</foreach> 
+			</if> 
+			<if test="notEqualsMap != null"> 
+				<foreach collection="notEqualsMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} != #{value} 
+				</foreach> 
+			</if> 
+			<if test="greateMap != null"> 
+				<foreach collection="greateMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} &gt; #{value} 
+				</foreach> 
+			</if> 
+			<if test="greateEqualsMap != null"> 
+				<foreach collection="greateEqualsMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} &gt;= #{value} 
+				</foreach> 
+			</if> 
+			<if test="lessMap != null"> 
+				<foreach collection="lessMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} &lt; #{value} 
+				</foreach> 
+			</if> 
+			<if test="lessEqualsMap != null"> 
+				<foreach collection="lessEqualsMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} &lt;= #{value} 
+				</foreach> 
+			</if> 
+			<if test="nullMap != null"> 
+				<foreach collection="nullMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} is null 
+				</foreach> 
+			</if> 
+			<if test="notNullMap != null"> 
+				<foreach collection="notNullMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} is not null 
+				</foreach> 
+			</if> 
+			<if test="inMap != null"> 
+				<foreach collection="inMap" index="key"  item="value" separator="and" open=" and (" close=")"> 
+					<foreach collection="value" item="itemin" index="index" separator="or"> 
+						${key} = #{itemin} 
+					</foreach> 
+				</foreach> 
+			</if> 
+			<if test="notInMap != null"> 
+				<foreach collection="notInMap" index="key"  item="value" separator="and" open=" and (" close=")"> 
+					<foreach collection="value" item="itemin" index="index" separator="and"> 
+						${key} != #{itemin} 
+					</foreach> 
+				</foreach> 
+			</if> 
+		</where>
+		<if test="sortBy != null"> 
+			<foreach collection="sortBy" item="item" separator=","  open=" order by "> 
+				${item.field} ${item.type}
+			</foreach> 
+		</if>
+	</sql>
+	
+		<!-- 如果有自增字段 -->
+	
+			<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+			<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhAsnRcvdLog" 
+				useGeneratedKeys="true" keyProperty="id" 
+			 flushCache="true">
+		    <![CDATA[
+		        INSERT INTO
+		        t_wh_asn_rcvd_log (
+		        	asn_id ,
+		        	asn_line_id ,
+		        	asn_code ,
+		        	sku_code ,
+		        	sku_name ,
+		        	quantity ,
+		        	container_code ,
+		        	container_name ,
+		        	mfg_date ,
+		        	exp_date ,
+		        	batch_no ,
+		        	country_of_origin ,
+		        	inv_status ,
+		        	inv_type ,
+		        	inv_attr1 ,
+		        	inv_attr2 ,
+		        	inv_attr3 ,
+		        	inv_attr4 ,
+		        	inv_attr5 ,
+		        	ou_id ,
+		        	create_time ,
+		        	last_modify_time ,
+		        	operator_id 
+		        ) VALUES (
+		        	#{asnId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{asnLineId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{asnCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{skuCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{skuName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{quantity,javaType=Long,jdbcType=DECIMAL} ,
+		        	#{containerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{containerName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{mfgDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{expDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{batchNo,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{countryOfOrigin,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invStatus,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invAttr1,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invAttr2,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invAttr3,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invAttr4,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invAttr5,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        )
+		    ]]>
+	
+			</insert>
+		
+		<update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhAsnRcvdLog">
+	    <![CDATA[
+	        UPDATE t_wh_asn_rcvd_log SET
+		        asn_id = #{asnId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        asn_line_id = #{asnLineId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        asn_code = #{asnCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        sku_code = #{skuCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        sku_name = #{skuName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        quantity = #{quantity,javaType=Long,jdbcType=DECIMAL} ,
+		        container_code = #{containerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        container_name = #{containerName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        mfg_date = #{mfgDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        exp_date = #{expDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        batch_no = #{batchNo,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        country_of_origin = #{countryOfOrigin,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        inv_status = #{invStatus,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        inv_type = #{invType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        inv_attr1 = #{invAttr1,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        inv_attr2 = #{invAttr2,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        inv_attr3 = #{invAttr3,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        inv_attr4 = #{invAttr4,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        inv_attr5 = #{invAttr5,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} 
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+		</update>
+		<update id="batchUpdate">
+	        UPDATE t_wh_asn_rcvd_log SET
+	        	<foreach collection="batchUpdateMap" index="key"  item="value" separator=",">
+	        		${key} = #{value}
+	        	</foreach>
+	        	<include refid="whAsnRcvdLogConditionWhereExt"/>
+		</update>
+		
+	   <delete id="delete" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from t_wh_asn_rcvd_log where
+		        id = #{id} 
+	    ]]>
+	    </delete> 
+	    
+	     <delete id="deleteByIds" parameterType="list">
+	    
+	        delete from t_wh_asn_rcvd_log 
+	        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>	
+	  
+	    </delete>  
+	    <update id="batchDelete">
+	        delete from t_wh_asn_rcvd_log <include refid="whAsnRcvdLogConditionWhereExt"/>
+		</update>
+	         
+	    <select id="findById" parameterType="java.lang.Long" resultMap="WhAsnRcvdLogResult" flushCache="false">
+			select <include refid="whAsnRcvdLogColumns" />
+		    <![CDATA[
+			    from t_wh_asn_rcvd_log 
+		        where 
+		        id = #{id} 
+		    ]]>
+		</select>	
+		<select id="getByIds" parameterType="list"  resultMap="WhAsnRcvdLogResult" flushCache="false">
+			select <include refid="whAsnRcvdLogColumns" />
+			    from t_wh_asn_rcvd_log 
+		        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>					
+		</select>	
+	<sql id="whAsnRcvdLogDynamicWhere">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+				<if test="asnId!=null">
+					and asn_id = #{asnId}
+				</if>
+	       
+				<if test="asnLineId!=null">
+					and asn_line_id = #{asnLineId}
+				</if>
+	       
+	       
+		       <if test="asnCode!=null and asnCode!=''">
+					and asn_code = #{asnCode}
+				</if>
+	       
+	       
+		       <if test="skuCode!=null and skuCode!=''">
+					and sku_code = #{skuCode}
+				</if>
+	       
+	       
+		       <if test="skuName!=null and skuName!=''">
+					and sku_name = #{skuName}
+				</if>
+	       
+				<if test="quantity!=null">
+					and quantity = #{quantity}
+				</if>
+	       
+	       
+		       <if test="containerCode!=null and containerCode!=''">
+					and container_code = #{containerCode}
+				</if>
+	       
+	       
+		       <if test="containerName!=null and containerName!=''">
+					and container_name = #{containerName}
+				</if>
+	       
+				<if test="mfgDate!=null">
+					and mfg_date = #{mfgDate}
+				</if>
+	       
+				<if test="expDate!=null">
+					and exp_date = #{expDate}
+				</if>
+	       
+	       
+		       <if test="batchNo!=null and batchNo!=''">
+					and batch_no = #{batchNo}
+				</if>
+	       
+	       
+		       <if test="countryOfOrigin!=null and countryOfOrigin!=''">
+					and country_of_origin = #{countryOfOrigin}
+				</if>
+	       
+	       
+		       <if test="invStatus!=null and invStatus!=''">
+					and inv_status = #{invStatus}
+				</if>
+	       
+	       
+		       <if test="invType!=null and invType!=''">
+					and inv_type = #{invType}
+				</if>
+	       
+	       
+		       <if test="invAttr1!=null and invAttr1!=''">
+					and inv_attr1 = #{invAttr1}
+				</if>
+	       
+	       
+		       <if test="invAttr2!=null and invAttr2!=''">
+					and inv_attr2 = #{invAttr2}
+				</if>
+	       
+	       
+		       <if test="invAttr3!=null and invAttr3!=''">
+					and inv_attr3 = #{invAttr3}
+				</if>
+	       
+	       
+		       <if test="invAttr4!=null and invAttr4!=''">
+					and inv_attr4 = #{invAttr4}
+				</if>
+	       
+	       
+		       <if test="invAttr5!=null and invAttr5!=''">
+					and inv_attr5 = #{invAttr5}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+	       
+				<if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="operatorId!=null">
+					and operator_id = #{operatorId}
+				</if>
+		</where>
+	</sql>
+	
+
+	<select id="getCount" resultType="long">
+        select count(*) from t_wh_asn_rcvd_log 
+    </select>
+    <select id="findListCountByQueryMap" resultType="long">
+        select count(*) from t_wh_asn_rcvd_log 
+		<include refid="whAsnRcvdLogDynamicWhere"/>    
+    </select>
+    
+    <select id="findListCountByParam" resultType="long">
+        select count(*) from t_wh_asn_rcvd_log 
+		<include refid="whAsnRcvdLogDynamicWhere"/>    
+    </select>
+    
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPage" resultMap="WhAsnRcvdLogResult">
+    	select <include refid="whAsnRcvdLogColumns" />
+	    from t_wh_asn_rcvd_log 
+		<include refid="whAsnRcvdLogDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByQueryMap" resultMap="WhAsnRcvdLogResult">
+    	select <include refid="whAsnRcvdLogColumns" />
+	    from t_wh_asn_rcvd_log 
+		<include refid="whAsnRcvdLogDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByParam" resultMap="WhAsnRcvdLogResult">
+    	select <include refid="whAsnRcvdLogColumns" />
+	    from t_wh_asn_rcvd_log 
+		<include refid="whAsnRcvdLogDynamicWhere"/>
+		
+    </select>
+    
+    <select id="getWhAsnRcvdLoglist" resultMap="WhAsnRcvdLogResult">
+		select <include refid="whAsnRcvdLogColumns" />
+	    from t_wh_asn_rcvd_log  
+		 <where>
+			 <if test="asnId!=null">
+				 and asn_id = #{asnId}
+			 </if>
+
+			 <if test="asnLineId!=null">
+				 and asn_line_id = #{asnLineId}
+			 </if>
+
+		 </where>
+    </select>
+    
+    <select id="findCountByAsnId" resultType="long">
+		select count(*) from t_wh_asn_rcvd_log  
+		where 
+		asn_id = #{asnId} 
+    </select>
+
+	
+</mapper>
