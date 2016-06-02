@@ -653,8 +653,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			where ou_id=#{ouId} and id=#{id}
 	</delete>
 	
-	<select id="findAllEmptyLocsByAreaId" resultMap="locationCommandColumnsExt" flushCache="false">
-			select <include refid="locationColumns" />
+	<select id="findAllEmptyLocsByAreaId" resultMap="locationCommondResult" flushCache="false">
+			select <include refid="locationColumnsExt" />
 		    <![CDATA[
 			    from t_wh_location loc
 		        where 
@@ -662,11 +662,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        and loc.ou_id = #{ouId}
 		        and loc.lifecycle = 1
 		        and not exists (select 1 from t_wh_sku_inventory inv where inv.location_id = loc.id and inv.ou_id = #{ouId})
+		        and ${cSql}
 		    ]]>
 	</select>
 	
-	<select id="findAllStaticLocsByAreaId" resultMap="locationCommandColumnsExt" flushCache="false">
-			select <include refid="locationColumns" />
+	<select id="findAllStaticLocsByAreaId" resultMap="locationCommondResult" flushCache="false">
+			select <include refid="locationColumnsExt" />
 		    <![CDATA[
 			    from t_wh_location loc
 		        where 
@@ -679,8 +680,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	</select>
 	
 	
-	<select id="findAllInvLocsByAreaIdAndSameAttrs" resultMap="locationCommandColumnsExt" flushCache="false">
-			select <include refid="locationColumns" />
+	<select id="findAllInvLocsByAreaIdAndSameAttrs" resultMap="locationCommondResult" flushCache="false">
+			select <include refid="locationColumnsExt" />
 		    <![CDATA[
 			    from t_wh_location loc
 		        where 
@@ -691,8 +692,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    ]]>
 	</select>
 	
-	<select id="findAllInvLocsByAreaIdAndDiffAttrs" resultMap="locationCommandColumnsExt" flushCache="false">
-			select <include refid="locationColumns" />
+	<select id="findAllInvLocsByAreaIdAndDiffAttrs" resultMap="locationCommondResult" flushCache="false">
+			select <include refid="locationColumnsExt" />
 		    <![CDATA[
 			    from t_wh_location loc
 		        where 
@@ -708,14 +709,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    ]]>
 	</select>
 	
-	<select id="findAllAvailableLocsByAreaId" resultMap="locationCommandColumnsExt" flushCache="false">
-			select <include refid="locationColumns" />
+	<select id="findAllAvailableLocsByAreaId" resultMap="locationCommondResult" flushCache="false">
+			select <include refid="locationColumnsExt" />
 		    <![CDATA[
 			    from t_wh_location loc
 		        where 
 		        loc.shelf_area_id = #{areaId} 
 		        and loc.ou_id = #{ouId}
 		        and loc.lifecycle = 1
+		        and ${cSql}
 		    ]]>
 	</select>
 	

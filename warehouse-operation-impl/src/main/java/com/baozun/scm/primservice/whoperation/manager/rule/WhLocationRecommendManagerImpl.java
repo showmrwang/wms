@@ -142,8 +142,13 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
         WhFunctionPutAway putawayFunc = whFunctionPutAwayManager.findWhFunctionPutAwayByFunctionId(funcId, ouId, logId);;
         if (WhPutawayPatternDetailType.PALLET_PUTAWAY == putawayPatternDetail) {
             // 查询所有对应容器号的库存信息
-            invList = whSkuInventoryDao.findWhSkuInventoryByContainerCode(ruleAffer.getOuid(), ruleAffer.getAfferContainerCodeList());
+            invList = whSkuInventoryDao.findWhSkuInventoryByOuterContainerCode(ruleAffer.getOuid(), ruleAffer.getAfferContainerCodeList());
             isTV = true;
+        }
+        
+        if (null == invList) {
+            log.error("container:[{}] rcvd inventory not found error!, logId is:[{}]", containerCode, logId);
+            throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_RCVD_INV_ERROR, new Object[] {containerCode});
         }
 
         for (ShelveRecommendRuleCommand rule : ruleList) {

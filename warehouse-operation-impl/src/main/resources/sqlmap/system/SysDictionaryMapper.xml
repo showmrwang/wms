@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.system.SysDictionaryDao">
+	<resultMap id="SysDictionaryResult" type="com.baozun.scm.primservice.whoperation.model.system.SysDictionary">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="sysDictionaryColumns">
+	    <![CDATA[
+	        	id as id,
+	        	dic_label as dicLabel,
+	        	dic_value as dicValue,
+	        	description as description,
+	        	lifecycle as lifecycle,
+	        	group_value as groupValue,
+	        	group_name as groupName,
+	        	lang as lang,
+	        	function_name as functionName,
+	        	order_num as orderNum,
+	        	is_edit as isEdit,
+	        	create_time as createTime,
+	        	last_modify_time as lastModifyTime,
+	        	operator_id as operatorId,
+	        	group_id as groupId
+	    ]]>
+	</sql>
+		<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+		<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.system.SysDictionary" 
+		 flushCache="true">
+	    <![CDATA[
+	        INSERT INTO
+	        sys_dictionary (
+	        	id,
+	        	dic_label ,
+	        	dic_value ,
+	        	description ,
+	        	lifecycle ,
+	        	group_value ,
+	        	group_name ,
+	        	lang ,
+	        	function_name ,
+	        	order_num ,
+	        	is_edit ,
+	        	create_time ,
+	        	last_modify_time ,
+	        	operator_id ,
+	        	group_id 
+	        ) VALUES (
+	            #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{dicLabel,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{dicValue,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{description,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+	        	#{groupValue,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{groupName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{lang,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{functionName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{orderNum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+	        	#{isEdit,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+	        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+	        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+	        	#{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{groupId,javaType=java.lang.Long,jdbcType=BIGINT} 
+	        )
+	    ]]>
+
+		</insert>
+	    
+		<update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.system.SysDictionary">
+	    <![CDATA[
+	        UPDATE sys_dictionary SET
+		        dic_label = #{dicLabel,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        dic_value = #{dicValue,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        description = #{description,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        group_value = #{groupValue,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        group_name = #{groupName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        lang = #{lang,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        function_name = #{functionName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        order_num = #{orderNum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        is_edit = #{isEdit,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        group_id = #{groupId,javaType=java.lang.Long,jdbcType=BIGINT} 
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+		</update>
+	   <delete id="delete" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from sys_dictionary where
+		        id = #{id} 
+	    ]]>
+	    </delete> 
+	    
+	     <delete id="deleteByIds" parameterType="list">
+	    
+	        delete from sys_dictionary 
+	        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>	
+	  
+	    </delete>  
+	         
+	    <select id="findById" parameterType="java.lang.Long" resultMap="SysDictionaryResult" flushCache="false">
+			select <include refid="sysDictionaryColumns" />
+		    <![CDATA[
+			    from sys_dictionary 
+		        where 
+		        id = #{id} 
+		    ]]>
+		</select>	
+		<select id="getByIds" parameterType="list"  resultMap="SysDictionaryResult" flushCache="false">
+			select <include refid="sysDictionaryColumns" />
+			    from sys_dictionary 
+		        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>					
+		</select>	
+	<sql id="sysDictionaryDynamicWhere">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+	       
+		       <if test="dicLabel!=null and dicLabel!=''">
+					and dic_label = #{dicLabel}
+				</if>
+	       
+	       
+		       <if test="dicValue!=null and dicValue!=''">
+					and dic_value = #{dicValue}
+				</if>
+	       
+	       
+		       <if test="description!=null and description!=''">
+					and description = #{description}
+				</if>
+	       
+				<if test="lifecycle!=null">
+					and lifecycle = #{lifecycle}
+				</if>
+	       
+	       
+		       <if test="groupValue!=null and groupValue!=''">
+					and group_value = #{groupValue}
+				</if>
+	       
+	       
+		       <if test="groupName!=null and groupName!=''">
+					and group_name = #{groupName}
+				</if>
+	       
+	       
+		       <if test="lang!=null and lang!=''">
+					and lang = #{lang}
+				</if>
+	       
+	       
+		       <if test="functionName!=null and functionName!=''">
+					and function_name = #{functionName}
+				</if>
+	       
+				<if test="orderNum!=null">
+					and order_num = #{orderNum}
+				</if>
+	       
+				<if test="isEdit!=null">
+					and is_edit = #{isEdit}
+				</if>
+	       
+				<if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="operatorId!=null">
+					and operator_id = #{operatorId}
+				</if>
+	       
+				<if test="groupId!=null">
+					and group_id = #{groupId}
+				</if>
+		</where>
+	</sql>
+	
+
+	<select id="getCount" resultType="long">
+        select count(*) from sys_dictionary 
+    </select>
+    <select id="findListCountByQueryMap" resultType="long">
+        select count(*) from sys_dictionary 
+		<include refid="sysDictionaryDynamicWhere"/>    
+    </select>
+    
+    <select id="findListCountByParam" resultType="long">
+        select count(*) from sys_dictionary 
+		<include refid="sysDictionaryDynamicWhere"/>    
+    </select>
+    
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPage" resultMap="SysDictionaryResult">
+    	select <include refid="sysDictionaryColumns" />
+	    from sys_dictionary 
+		<include refid="sysDictionaryDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByQueryMap" resultMap="SysDictionaryResult">
+    	select <include refid="sysDictionaryColumns" />
+	    from sys_dictionary 
+		<include refid="sysDictionaryDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByParam" resultMap="SysDictionaryResult">
+    	select <include refid="sysDictionaryColumns" />
+	    from sys_dictionary 
+		<include refid="sysDictionaryDynamicWhere"/>
+		
+    </select>
+
+	
+</mapper>

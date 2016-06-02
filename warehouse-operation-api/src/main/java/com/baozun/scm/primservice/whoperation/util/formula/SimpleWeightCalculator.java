@@ -115,6 +115,9 @@ public class SimpleWeightCalculator {
 
     public boolean calculateAvailable() {
         boolean ret = false;
+        if (false == isInitStuffWeight()) {
+            return ret;
+        }
         ret = calculateAvailable(getWeight(), getUom());
         return ret;
     }
@@ -171,7 +174,7 @@ public class SimpleWeightCalculator {
             for (String u : uomCache) {
                 if (currentIndex <= baseIndex) {
                     currentIndex++;
-                    if (currentIndex >= actualIndex) {
+                    if (currentIndex > actualIndex) {
                         int conver = uomConversion.get(u);
                         ret = ret / conver;
                     } else {
@@ -182,12 +185,11 @@ public class SimpleWeightCalculator {
                 }
             }
         } else {
-            // String[] reverseCahce = reverseUomCache();
             int currentIndex = 1;
             for (String u : uomCache) {
                 if (currentIndex <= actualIndex) {
                     currentIndex++;
-                    if (currentIndex >= baseIndex) {
+                    if (currentIndex > baseIndex) {
                         int conver = uomConversion.get(u);
                         ret = ret * conver;
                     } else {

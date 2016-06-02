@@ -43,13 +43,13 @@ public class SysGuidePalletPutawayCondition extends BaseManagerImpl implements P
         String lrt = attrParams.getLrt();
         switch (lrt) {
             case WhLocationRecommendType.EMPTY_LOCATION:
-                if(null != attrParams.getIsTrackVessel()){
-                    sql.append(" ").append(attrParams.getIsTrackVessel());
+                if (null != attrParams.getIsTrackVessel()) {
+                    sql.append(" ").append("loc.is_track_vessel = ").append((true == attrParams.getIsTrackVessel() ? "1" : "0"));
                 }
                 return sql.toString();
             case WhLocationRecommendType.STATIC_LOCATION:
-                if(null != attrParams.getIsTrackVessel()){
-                    sql.append(" ").append(attrParams.getIsTrackVessel());
+                if (null != attrParams.getIsTrackVessel()) {
+                    sql.append(" ").append("loc.is_track_vessel = ").append((true == attrParams.getIsTrackVessel() ? "1" : "0"));
                 }
                 return sql.toString();
             case WhLocationRecommendType.MERGE_LOCATION_SAME_INV_ATTRS:
@@ -57,8 +57,8 @@ public class SysGuidePalletPutawayCondition extends BaseManagerImpl implements P
             case WhLocationRecommendType.MERGE_LOCATION_DIFF_INV_ATTRS:
                 return sql.toString();
             case WhLocationRecommendType.ONE_LOCATION_ONLY:
-                if(null != attrParams.getIsTrackVessel()){
-                    sql.append(" ").append(attrParams.getIsTrackVessel());
+                if (null != attrParams.getIsTrackVessel()) {
+                    sql.append(" ").append("loc.is_track_vessel = ").append((true == attrParams.getIsTrackVessel() ? "1" : "0"));
                 }
                 return sql.toString();
             default:

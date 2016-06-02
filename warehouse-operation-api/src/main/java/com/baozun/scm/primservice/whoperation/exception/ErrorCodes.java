@@ -212,6 +212,8 @@ public class ErrorCodes {
     public static final int COMMON_CONTAINER_IS_NOT_EXISTS = 5003;
     /** 容器状态不可用 */
     public static final int COMMON_CONTAINER_LIFECYCLE_IS_NOT_NORMAL = 5004;
+    /** 推荐库位失败！ */
+    public static final int COMMON_LOCATION_RECOMMEND_ERROR = 5005;
     // 5001-10000 common end
 
     // 10001-20000 luyimin
@@ -245,7 +247,12 @@ public class ErrorCodes {
     // 30001-40000 zhanglei
 
     // 40001-50000 lichuan
+    /** 库位推荐失败，无可用上架规则 */
     public static final int RECOMMEND_LOCATION_NO_RULE_ERROR = 40001;
+    /** 当前容器不是托盘，此上架功能不支持！ */
+    public static final int CONTAINER_IS_NOT_PALLET_ERROR = 40002;
+    /** 容器号[{0}]未找到收货库存信息 */
+    public static final int CONTAINER_NOT_FOUND_RCVD_INV_ERROR = 40003;
     // 40001-50000 lichuan
 
     // 50001-60000 hubin

@@ -24,6 +24,7 @@ import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
 import com.baozun.scm.baseservice.sac.manager.PkManager;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
+import com.baozun.scm.primservice.whoperation.util.formula.SimpleCubeCalculator;
 
 /**
  * @author lichuan
@@ -52,5 +53,12 @@ public class PdaPutawayManagerTest extends AbstractJUnit4SpringContextTests {
        
        Long id = pkManager.generatePk(Constants.WMS, "com.baozun.scm.primservice.whinfo.model.warehouse.inventory.WhSkuInventory");
        System.out.println(id);
+    }
+    
+    public static void main(String[] args) {
+        SimpleCubeCalculator calc = new SimpleCubeCalculator(1.0, 0.8, 0.6, "km", 0.8);
+        calc.setCoordinate(SimpleCubeCalculator.COORDS_Z);
+        calc.initStuffCube(1.0, 0.48, 0.8, "km");
+        System.out.println(calc.calculateAvailable());
     }
 }

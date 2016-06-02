@@ -91,8 +91,7 @@
             where
                 shelve_recommend_rule_id = #{shelveRecommendRuleId}
                 and ou_id = #{ouId}
-                and lifecycle = 1
-                order by r.priority asc
+                order by priority asc
         ]]>
     </select>
 

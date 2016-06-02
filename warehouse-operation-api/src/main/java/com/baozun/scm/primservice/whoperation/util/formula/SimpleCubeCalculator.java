@@ -28,6 +28,10 @@ public class SimpleCubeCalculator {
      * 简单立方体计算器
      */
 
+    public static final String COORDS_X = "x";
+    public static final String COORDS_Y = "y";
+    public static final String COORDS_Z = "z";
+    public static final String COORDS_ALL = "";
     private boolean isInit = false;
     private boolean isInitStuffCube = false;
     private Double _x;
@@ -40,11 +44,12 @@ public class SimpleCubeCalculator {
     private Double _rawY;
     private Double _rawZ;
     private String coordinate;
-    private static final String coords_x = "x";
-    private static final String coords_y = "y";
-    private static final String coords_z = "z";
-    private static final String coords_all = "";
+    private static final String coords_x = COORDS_X;
+    private static final String coords_y = COORDS_Y;
+    private static final String coords_z = COORDS_Z;
+    private static final String coords_all = COORDS_ALL;
     private static final String[][] coordsCache = new String[][] {{"x", "y", "z"}, {"y", "z", "x"}, {"z", "x", "y"}};
+    private static final String[][] coordsCacheAll = new String[][] {{"x", "y", "z"}, {"x", "z", "y"}, {"y", "z", "x"}, {"y", "x", "z"}, {"z", "x", "y"}, {"z", "y", "x"}};
     private Double x;
     private Double y;
     private Double z;
@@ -60,6 +65,7 @@ public class SimpleCubeCalculator {
     private Double _cubage;
     private Double _rawCubage;
     private Double cubage;
+    private Double initStuffCubage;
     private Double rawCubage;
     private Double availability = 0.8;
     private Double availableCubage;
@@ -81,7 +87,7 @@ public class SimpleCubeCalculator {
         isCubageAvailable = false;
         isLengthAvailable = false;
         isAvailable = false;
-        coordinate = coords_z;
+        coordinate = coords_all;
     }
 
     public SimpleCubeCalculator() {
@@ -116,9 +122,10 @@ public class SimpleCubeCalculator {
     }
 
     public Double calculateStuffCubage(Double actualX, Double actualY, Double actualZ, String actualUom) {
-        if (false == isInitStuffCube) {
-            setCubage(cubage);
+        if (false == isInitStuffCube()) {
+            setCubage(0.0);
         }
+        Double cubage = getCubage();
         Double ax = uomConversion(actualUom, actualX);
         Double ay = uomConversion(actualUom, actualY);
         Double az = uomConversion(actualUom, actualZ);
@@ -128,7 +135,7 @@ public class SimpleCubeCalculator {
     }
 
     private Double calculateRemainCubage(Double availableCubage, Double cubage) {
-        return availableCubage - cubage;
+        return availableCubage - cubage + getInitStuffCubage();
     }
 
     private Double calculateRemainZ(Double remainCubage, Double x, Double y) {
@@ -212,7 +219,7 @@ public class SimpleCubeCalculator {
             for (String u : uomCache) {
                 if (currentIndex <= baseIndex) {
                     currentIndex++;
-                    if (currentIndex >= actualIndex) {
+                    if (currentIndex > actualIndex) {
                         int conver = uomConversion.get(u);
                         ret = ret / conver;
                     } else {
@@ -228,7 +235,7 @@ public class SimpleCubeCalculator {
             for (String u : uomCache) {
                 if (currentIndex <= actualIndex) {
                     currentIndex++;
-                    if (currentIndex >= baseIndex) {
+                    if (currentIndex > baseIndex) {
                         int conver = uomConversion.get(u);
                         ret = ret * conver;
                     } else {
@@ -308,6 +315,7 @@ public class SimpleCubeCalculator {
         setY(ry);
         setZ(rz);
         setCubage(cubageFormula(rx, ry, rz));
+        setInitStuffCubage(getCubage());
         setInitStuffCube(true);
     }
 
@@ -358,7 +366,7 @@ public class SimpleCubeCalculator {
             Double rxVal = rValues.get(coords_x);
             Double ryVal = rValues.get(coords_y);
             Double rzVal = rValues.get(coords_z);
-            for (String[] acds : coordsCache) {
+            for (String[] acds : coordsCacheAll) {
                 Map<String, Double> aValues = coordsValues(acds, ax, ay, az);
                 Double axVal = aValues.get(coords_x);
                 Double ayVal = aValues.get(coords_y);
@@ -435,6 +443,10 @@ public class SimpleCubeCalculator {
     }
 
     public boolean calculateAvailable() {
+        boolean ret = false;
+        if (false == isInitStuffCube()) {
+            return ret;
+        }
         return calculateAvailable(getX(), getY(), getZ(), getUom());
     }
 
@@ -624,6 +636,14 @@ public class SimpleCubeCalculator {
 
     public void setCubage(Double cubage) {
         this.cubage = cubage;
+    }
+    
+    public Double getInitStuffCubage() {
+        return initStuffCubage;
+    }
+
+    public void setInitStuffCubage(Double initStuffCubage) {
+        this.initStuffCubage = initStuffCubage;
     }
 
     public Double getRawCubage() {

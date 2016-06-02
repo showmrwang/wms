@@ -283,4 +283,13 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        and ou_id = #{ouId}
 	    ]]>
 		</update>
+		
+		
+		<select id="findLocationTempletByCodeAndOuId" resultMap="LocationTempletResultExt" flushCache="false">
+			select <include refid="locationTempletColumnsExt" />
+			    from t_wh_location_templet 
+		        where templet_code = #{templetCode}		
+				and ou_id = #{ouId}	
+				and lifecycle = 1	
+		</select>
 </mapper>
