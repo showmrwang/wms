@@ -154,4 +154,27 @@ public final class Constants {
     /** Asn预约紧急 */
     public static final Long ASN_RESERVE_URGENT = 84L;
 
+    // enum:通用收货商品属性扫描序列
+    public static final int GENERAL_RECEIVING_ISVALID = 0;// 0：是否管理效期
+    public static final int GENERAL_RECEIVING_ISBATCHNO = 1; // 1:是否管理批次号
+    public static final int GENERAL_RECEIVING_ISCOUNTRYOFORIGIN = 2;// 2:是否管理原产地
+    public static final int GENERAL_RECEIVING_ISINVTYPE = 3; // 3:是否管理库存类型
+    public static final int GENERAL_RECEIVING_INVATTR1 = 4; // 4:是否管理库存属性1
+    public static final int GENERAL_RECEIVING_INVATTR2 = 5; // 5:是否管理库存属性2
+    public static final int GENERAL_RECEIVING_INVATTR3 = 6;// 6:是否管理库存属性3
+    public static final int GENERAL_RECEIVING_INVATTR4 = 7; // 7:是否管理库存属性4
+    public static final int GENERAL_RECEIVING_INVATTR5 = 8;// 8:是否管理库存属性5
+    public static final int GENERAL_RECEIVING_ISINVSTATUS = 9; // 9:是否管理库存状态
+    public static final int GENERAL_RECEIVING_ISDEFEAT = 10;// 10:残次品类型及残次原因
+    public static final int GENERAL_RECEIVING_ISSERIALNUMBER = 11;// 11:是否管理序列号
+
+    // 库存状态
+    public static final Long INVENTORY_STATUS_GOOD = 3L;// 良品
+    public static final Long INVENTORY_STATUS_DEFEATSALE = 4L; // 残次可销售
+    public static final Long INVENTORY_STATUS_DEFEATNOTSALE = 5L; // 残次不可销售
+    public static final Long INVENTORY_STATUS_PENDING = 6L; // 待处理
+    public static final Long INVENTORY_STATUS_OBSOLESCENT = 7L; // 待报废
+    public static final Long INVENTORY_STATUS_DEADLINESALE = 8L; // 临近保质期
+
+
 }

@@ -7,6 +7,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao">
 	<resultMap id="WhSkuInventoryResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory">
 	</resultMap>
+	<resultMap id="RcvdContainerCacheCommand" type="com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdContainerCacheCommand">
+	</resultMap>
 	
 	<!-- 用于select查询公用抽取的列 -->
 	<sql id="whSkuInventoryColumnsExt">
@@ -807,6 +809,26 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        delete from t_wh_sku_inventory where
 		        id = #{id} and ou_id = #{ouid}
 		</delete>
+		
+		<select id="getUniqueSkuAttrFromWhSkuInventory" resultMap="RcvdContainerCacheCommand">
+		SELECT
+			INV.inside_container_id as insideContainerId,
+			group_concat(distinct INV.sku_id) as skuId,
+			group_concat(distinct INV.batch_number) as batchNumber,
+			group_concat(distinct INV.country_of_origin) as countryOfOrigin,
+			group_concat(distinct date_format(INV.exp_date,'%Y-%m-%d')) as expDate,
+			group_concat(distinct date_format(INV.mfg_date,'%Y-%m-%d')) as mfgDate,
+			group_concat(distinct INV.inv_attr1) as invAttr1,
+			group_concat(distinct INV.inv_attr2) as invAttr2,
+			group_concat(distinct INV.inv_attr3) as invAttr3,
+			group_concat(distinct INV.inv_attr4) as invAttr4,
+			group_concat(distinct INV.inv_attr5) as invAttr5,
+			group_concat(distinct INV.inv_status) as invStatus,
+			group_concat(distinct INV.inv_type) as invType
+			from t_wh_sku_inventory INV
+		where INV.inside_container_id=#{insideContainerId} and INV.ou_id=#{ouId}
+		
+		</select>
 		
 	<select id="findWhSkuInventoryBySkuIdAndContainerid" resultMap="WhSkuInventoryCommandResultExt">
 		select 	    	

@@ -22,6 +22,9 @@ public class CacheKeyConstant {
     /** 通用收货ASN缓存 */
     public static final String CACHE_ASN = "CACHE_ASN";
 
+    /** 通用收货ASN的Sn号缓存 */
+    public static final String CACHE_RCVD_SN = "CACHE_RCVD_SN";
+
     /** 通用收货ASNLINE缓存 规则:前缀+ASNID */
     public static final String CACHE_ASNLINE_PREFIX = "CACHE_ASNLINE_";
 
@@ -34,5 +37,8 @@ public class CacheKeyConstant {
 
     /** 明细超收数量 */
     public static final String CACHE_ASNLINE_OVERCHARGE_PREFIX = "CACHE_ASNLINE_OVERCHARGE_";
+
+    /** 容器商品属性缓存 */
+    public static final String CACHE_RCVD_CONTAINER = "CACHE_RCVD_CONTAINER";
 
 }
