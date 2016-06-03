@@ -27,6 +27,7 @@ import com.baozun.scm.primservice.whoperation.model.poasn.CheckAsnCode;
 
 
 
+@Deprecated
 public interface CheckAsnCodeDao extends BaseDao<CheckAsnCode, Long> {
 
 

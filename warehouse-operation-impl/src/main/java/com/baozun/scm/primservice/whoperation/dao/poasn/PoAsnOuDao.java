@@ -28,7 +28,7 @@ import lark.orm.dao.supports.BaseDao;
 import com.baozun.scm.primservice.whoperation.model.poasn.PoAsnOu;
 
 
-
+@Deprecated
 public interface PoAsnOuDao extends BaseDao<PoAsnOu, Long> {
 
 

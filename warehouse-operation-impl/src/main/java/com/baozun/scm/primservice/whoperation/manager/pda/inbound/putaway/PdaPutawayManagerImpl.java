@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,20 +29,28 @@ import com.baozun.scm.primservice.whoperation.command.rule.RuleAfferCommand;
 import com.baozun.scm.primservice.whoperation.command.rule.RuleExportCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.LocationCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
+import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
 import com.baozun.scm.primservice.whoperation.constant.WhContainerCategoryType;
 import com.baozun.scm.primservice.whoperation.constant.WhPutawayPatternDetailType;
+import com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnDao;
+import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoDao;
 import com.baozun.scm.primservice.whoperation.dao.system.SysDictionaryDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.Container2ndCategoryDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.rule.RuleManager;
 import com.baozun.scm.primservice.whoperation.manager.rule.WhLocationRecommendManager;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container2ndCategory;
+import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 
 /**
  * @author lichuan
@@ -62,6 +71,12 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
     private Container2ndCategoryDao container2ndCategoryDao;
     @Autowired
     private SysDictionaryDao sysDictionaryDao;
+    @Autowired
+    private WhSkuInventoryDao whSkuInventoryDao;
+    @Autowired
+    private WhPoDao whPoDao;
+    @Autowired
+    private WhAsnDao whAsnDao;
 
     /**
      * 系统指导上架扫托盘号
@@ -75,8 +90,10 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
      * @return
      */
     @Override
-    public String sysGuideScanPallet(String containerCode, Long funcId, Long ouId, Long userId, String logId) {
+    public LocationCommand sysGuideScanPallet(String containerCode, Long funcId, Long ouId, Long userId, String logId) {
+        LocationCommand locCmd = new LocationCommand();
         String locationCode = "";
+        String asnCode = "";
         if (log.isInfoEnabled()) {
             log.info("pdaPutawayManager.sysGuideScanPallet start, containerCode is:[{}], funcId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", new Object[] {containerCode, funcId, ouId, userId, logId});
         }
@@ -111,28 +128,90 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
             log.error("container2ndCategory is not pallet error!, LogId is:[{}]", logId);
             throw new BusinessException(ErrorCodes.CONTAINER_IS_NOT_PALLET_ERROR);
         }
+        List<String> cclist = new ArrayList<String>();
+        cclist.add(containerCode);
+        List<WhSkuInventoryCommand> invList = null;
+        // 查询所有对应容器号的库存信息
+        invList = whSkuInventoryDao.findWhSkuInventoryByOuterContainerCode(ouId, cclist);
+        if (null == invList) {
+            log.error("container:[{}] rcvd inventory not found error!, logId is:[{}]", containerCode, logId);
+            throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_RCVD_INV_ERROR, new Object[] {containerCode});
+        }
+        List<LocationCommand> locExistsList = whSkuInventoryDao.findWhSkuInventoryLocByOuterContainerCode(ouId, cclist);
+        if (null != locExistsList && 0 < locExistsList.size()) {
+            for (LocationCommand lc : locExistsList) {
+                locationCode = lc.getCode();
+                asnCode = lc.getOccupationCode();
+                break;
+            }
+        }
+        if (StringUtils.isEmpty(asnCode)) {
+            log.error("rcvd inv info error, containerCode is:[{}], logId is:[{}]", containerCode, logId);
+            throw new BusinessException(ErrorCodes.RCVD_INV_INFO_NOT_OCCUPY_ERROR);
+        }
+        WhAsn asn = whAsnDao.findAsnByCodeAndOuId(asnCode, ouId);
+        if (null == asn) {
+            log.error("asn is null error! containerCode is:[{}], logId is:[{}]", containerCode, logId);
+            throw new BusinessException(ErrorCodes.COMMON_ASN_IS_NULL_ERROR, new Object[] {asnCode});
+        }
+        if (PoAsnStatus.ASN_RCVD_FINISH != asn.getStatus()) {
+            log.error("asn status error! containerCode is:[{}], logId is:[{}]", containerCode, logId);
+            throw new BusinessException(ErrorCodes.COMMON_ASN_STATUS_ERROR, new Object[] {asnCode});
+        }
+        Long poId = asn.getPoId();
+        WhPo po = whPoDao.findWhPoById(poId, ouId);
+        if (null == po) {
+            log.error("po is null error! containerCode is:[{}], logId is:[{}]", containerCode, logId);
+            throw new BusinessException(ErrorCodes.PO_NULL);
+        }
+        String poCode = po.getPoCode();
+        if (PoAsnStatus.PO_RCVD != po.getStatus()) {
+            log.error("po status error! containerCode is:[{}], logId is:[{}]", containerCode, logId);
+            throw new BusinessException(ErrorCodes.COMMON_PO_STATUS_ERROR, new Object[] {poCode});
+        }
+        if (!StringUtils.isEmpty(locationCode)) {
+            // 已经推荐过库位
+            locCmd.setCode(locationCode);
+            locCmd.setOccupationCode(asnCode);
+            locCmd.setAsnId(asn.getId());
+            return locCmd;
+        }
         // 判断该容器是否有符合的上架规则
         RuleAfferCommand ruleAffer = new RuleAfferCommand();
         ruleAffer.setLogId(logId);
         ruleAffer.setOuid(ouId);
         ruleAffer.setAfferContainerCode(containerCode);
         ruleAffer.setFuncId(funcId);
-        List<String> list = new ArrayList<String>();
-        list.add(containerCode);
-        ruleAffer.setAfferContainerCodeList(list);
+        ruleAffer.setAfferContainerCodeList(cclist);
         ruleAffer.setRuleType(Constants.SHELVE_RECOMMEND_RULE_ALL);// 整托 、货箱上架规则
         RuleExportCommand export = ruleManager.ruleExport(ruleAffer);
+        //推荐库位
         List<LocationCommand> locList = whLocationRecommendManager.recommendLocationByShevleRule(ruleAffer, export.getShelveRecommendRuleList(), WhPutawayPatternDetailType.PALLET_PUTAWAY, logId);
         if (null == locList || 0 == locList.size()) {
             log.error("location recommend fail! containerCode is:[{}], logId is:[{}]", containerCode, logId);
             throw new BusinessException(ErrorCodes.COMMON_LOCATION_RECOMMEND_ERROR);
         }
+        // 取到库位
+        LocationCommand loc = locList.get(0);
+        locationCode = loc.getCode();
+        Long locationId = loc.getId();
         // 绑定库位
-
+        for (WhSkuInventoryCommand invCmd : invList) {
+            WhSkuInventory inv = new WhSkuInventory();
+            BeanUtils.copyProperties(invCmd, inv);
+            if (null != inv.getLocationId()) {
+                throw new BusinessException(ErrorCodes.CONTAINER_RCVD_INV_HAS_LOCATION_ERROR);
+            }
+            inv.setLocationId(locationId);
+            whSkuInventoryDao.saveOrUpdateByVersion(inv);
+        }
         if (log.isInfoEnabled()) {
             log.info("pdaPutawayManager.sysGuideScanPallet end, containerCode is:[{}], funcId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}], locactionCode is:[{}]", new Object[] {containerCode, funcId, ouId, userId, logId, locationCode});
         }
-        return locationCode;
+        locCmd.setCode(locationCode);
+        locCmd.setOccupationCode(asnCode);
+        locCmd.setAsnId(asn.getId());
+        return locCmd;
     }
 
 

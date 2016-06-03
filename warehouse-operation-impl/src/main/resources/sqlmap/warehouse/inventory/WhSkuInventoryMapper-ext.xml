@@ -9,6 +9,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	</resultMap>
 	<resultMap id="RcvdContainerCacheCommand" type="com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdContainerCacheCommand">
 	</resultMap>
+	<resultMap id="locationCommandResultExt" type="com.baozun.scm.primservice.whoperation.command.warehouse.LocationCommand">
+	</resultMap>
 	
 	<!-- 用于select查询公用抽取的列 -->
 	<sql id="whSkuInventoryColumnsExt">
@@ -608,6 +610,25 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					<foreach item="item" index="index" collection="containerList" open="(" separator="," close=")">
 			            #{item}
 			        </foreach>
+    </select>
+    
+     <select id="findWhSkuInventoryLocByOuterContainerCode" resultMap="locationCommandResultExt">
+			select 
+					loc.id as id,
+					inv.outer_container_id as outerContainerId,
+					inv.occupation_code as occupationCode,
+					loc.code as code
+					from 
+					t_wh_sku_inventory inv 
+					left join t_wh_container c on c.id = inv.outer_container_id
+					left join t_wh_location loc on inv.location_id = loc.id
+					where 
+					inv.ou_id = #{ouid}
+					and c.code in 
+					<foreach item="item" index="index" collection="containerList" open="(" separator="," close=")">
+			            #{item}
+			        </foreach>
+			        group by loc.id,inv.outer_container_id,inv.occupation_code,loc.code
     </select>
     
     <select id="findWhSkuInventoryBySkuCodeAndContainerId" resultMap="WhSkuInventoryCommandResultExt">

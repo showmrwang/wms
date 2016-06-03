@@ -16,6 +16,7 @@
  */
 package com.baozun.scm.primservice.whoperation.manager.pda.inbound.putaway;
 
+import com.baozun.scm.primservice.whoperation.command.warehouse.LocationCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 
 /**
@@ -34,6 +35,6 @@ public interface PdaPutawayManager extends BaseManager {
      * @param logId
      * @return
      */
-    String sysGuideScanPallet(String containerCode, Long funcId, Long ouId, Long userId, String logId);
+    LocationCommand sysGuideScanPallet(String containerCode, Long funcId, Long ouId, Long userId, String logId);
 
 }

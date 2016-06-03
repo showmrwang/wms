@@ -214,6 +214,14 @@ public class ErrorCodes {
     public static final int COMMON_CONTAINER_LIFECYCLE_IS_NOT_NORMAL = 5004;
     /** 推荐库位失败！ */
     public static final int COMMON_LOCATION_RECOMMEND_ERROR = 5005;
+    /** ASN单据[{0}]信息不存在 */
+    public static final int COMMON_ASN_IS_NULL_ERROR = 5006;
+    /** ASN单据[{0}]状态异常 */
+    public static final int COMMON_ASN_STATUS_ERROR = 5007;
+    /** PO单据[{0}]信息不存在 */
+    public static final int COMMON_PO_IS_NULL_ERROR = 5008;
+    /** PO单据[{0}]状态异常 */
+    public static final int COMMON_PO_STATUS_ERROR = 5009;
     // 5001-10000 common end
 
     // 10001-20000 luyimin
@@ -255,6 +263,10 @@ public class ErrorCodes {
     public static final int CONTAINER_IS_NOT_PALLET_ERROR = 40002;
     /** 容器号[{0}]未找到收货库存信息 */
     public static final int CONTAINER_NOT_FOUND_RCVD_INV_ERROR = 40003;
+    /** 库位绑定失败，该容器号对应的收货库存信息已有库位！ */
+    public static final int CONTAINER_RCVD_INV_HAS_LOCATION_ERROR = 40004;
+    /** 收货库存信息异常，未找到占用编码 */
+    public static final int RCVD_INV_INFO_NOT_OCCUPY_ERROR = 40005;
     // 40001-50000 lichuan
 
     // 50001-60000 hubin

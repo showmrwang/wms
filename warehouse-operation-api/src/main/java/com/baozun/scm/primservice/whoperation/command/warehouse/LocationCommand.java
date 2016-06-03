@@ -87,6 +87,9 @@ public class LocationCommand extends BaseCommand{
     private Boolean isModifiedWorkArea;
     private Boolean isModifiedShelfArea;
     
+    private Long outerContainerId;
+    private String occupationCode;
+    
     /* 维度 */
     private String dimension1;
     private String dimension2;
@@ -111,6 +114,8 @@ public class LocationCommand extends BaseCommand{
     private String upBound;
     /*下限*/
     private String downBound;
+    
+    private Long asnId;
 
     public Boolean getIsOccupiedInventory() {
         return isOccupiedInventory;
@@ -546,5 +551,29 @@ public class LocationCommand extends BaseCommand{
 		this.downBound = downBound;
 	}
 
+    public Long getOuterContainerId() {
+        return outerContainerId;
+    }
+
+    public void setOuterContainerId(Long outerContainerId) {
+        this.outerContainerId = outerContainerId;
+    }
+
+    public String getOccupationCode() {
+        return occupationCode;
+    }
+
+    public void setOccupationCode(String occupationCode) {
+        this.occupationCode = occupationCode;
+    }
+
+    public Long getAsnId() {
+        return asnId;
+    }
+
+    public void setAsnId(Long asnId) {
+        this.asnId = asnId;
+    }
+    
     
 }

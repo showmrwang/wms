@@ -26,7 +26,7 @@ import lark.orm.dao.supports.BaseDao;
 import com.baozun.scm.primservice.whoperation.model.poasn.CheckPoCode;
 
 
-
+@Deprecated
 public interface CheckPoCodeDao extends BaseDao<CheckPoCode, Long> {
 
 

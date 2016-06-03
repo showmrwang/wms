@@ -324,4 +324,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        id = #{id} and ou_id=#{ouid} and version='1'
 	    ]]>
 	 </update>
+	 
+	  <select id="findAsnByCodeAndOuId" resultMap="WhAsnResultExt">
+        select <include refid="whAsnColumnsExt" />
+        from 
+            t_wh_asn asn
+		    left join t_bi_store s on s.id = asn.store_id
+		<where>
+			and ou_id = #{ouId}
+			and asn_code = #{asnCode}
+		</where>
+    </select>
 </mapper>

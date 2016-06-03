@@ -78,5 +78,14 @@ public interface WhAsnDao extends BaseDao<WhAsn, Long> {
      * @return
      */
     int updateByVersionForUnLock(@Param("id") Long id, @Param("ouid") Long ouid);
+    
+    /**
+     * 根据Asn编码查询Asn信息
+     * @author lichuan
+     * @param asnCode
+     * @param ouId
+     * @return
+     */
+    WhAsn findAsnByCodeAndOuId(@Param("asnCode") String asnCode, @Param("ouId") Long ouId);
 
 }
