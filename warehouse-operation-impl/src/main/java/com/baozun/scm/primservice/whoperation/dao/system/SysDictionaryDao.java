@@ -32,7 +32,7 @@ import lark.orm.dao.supports.BaseDao;
 
 
 
-public interface SysDictionaryDao extends BaseDao<SysDictionary, Long> {
+public interface SysDictionaryDao extends BaseDao<SysDictionary, Long> { 
 
 
     @QueryPage("findListCountByQueryMap")
