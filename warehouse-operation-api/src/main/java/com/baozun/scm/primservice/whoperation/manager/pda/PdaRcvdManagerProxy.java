@@ -42,4 +42,19 @@ public interface PdaRcvdManagerProxy extends BaseManager {
      */
     String getMatchLineListStr(WhSkuInventoryCommand command);
 
+    /**
+     * 缓存SN号
+     * 
+     * @param command
+     * @param snCount
+     */
+    void cacheScanedSkuSnWhenGeneralRcvd(WhSkuInventoryCommand command, Integer snCount);
+
+    /**
+     * 从库存中初始化缓存
+     * 
+     * @param command
+     */
+    void initSkuAttrFromInventoryForCacheContainer(WhSkuInventoryCommand command, Long ouId);
+
 }

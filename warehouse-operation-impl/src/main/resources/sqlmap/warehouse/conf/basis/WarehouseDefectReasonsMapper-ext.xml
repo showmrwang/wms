@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.conf.basis.WarehouseDefectReasonsDao">
+	<resultMap id="WarehouseDefectReasonsResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.conf.basis.WarehouseDefectReasons">
+	</resultMap>
+	
+	<resultMap id="WarehouseDefectReasonsResultCommandExt" type="com.baozun.scm.primservice.whoperation.command.warehouse.conf.basis.WarehouseDefectReasonsCommand">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="warehouseDefectReasonsColumnsExt">
+	    <![CDATA[
+	        	id as id,
+	        	defect_type_id as defectTypeId,
+	        	name as name,
+	        	code as code,
+	        	description as description,
+	        	ou_id as ouId,
+	        	create_time as createTime,
+	        	last_modify_time as lastModifyTime,
+	        	created_id as createdId,
+	        	modified_id as modifiedId
+	    ]]>
+	</sql>
+	
+	<sql id="warehouseDefectReasonsDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+				<if test="defectTypeId!=null">
+					and defect_type_id = #{defectTypeId}
+				</if>
+	       
+	       
+		       <if test="name!=null and name!=''">
+					and name = #{name}
+				</if>
+	       
+	       
+		       <if test="code!=null and code!=''">
+					and code = #{code}
+				</if>
+	       
+	       
+		       <if test="description!=null and description!=''">
+					and description = #{description}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+	       
+				<if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="createdId!=null">
+					and created_id = #{createdId}
+				</if>
+	       
+				<if test="modifiedId!=null">
+					and modified_id = #{modifiedId}
+				</if>
+		</where>
+	</sql>
+	
+	<update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.conf.basis.WarehouseDefectReasons">
+	    <![CDATA[
+	        UPDATE t_wh_defect_reasons SET
+		        defect_type_id = #{defectTypeId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        name = #{name,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        code = #{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        description = #{description,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        --  ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+		</update>
+		
+	 <delete id="deleteByTypeIdExt" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from t_wh_defect_reasons where
+		        defect_type_id = #{typeId} 
+		        and ou_id = #{ouId} 
+	    ]]>
+	    </delete> 
+	
+	<select id="findWarehouseDefectReasonsByTypeId" resultMap="WarehouseDefectReasonsResultCommandExt">
+	        select
+       		 <include refid="warehouseDefectReasonsColumnsExt"/>
+      	  from t_wh_defect_reasons 
+      	  where defect_type_id = #{typeId} and ou_id = #{ouid} 
+	</select>
+</mapper>

@@ -62,8 +62,8 @@ public class Sku extends BaseModel {
     private Double volume;
     /** 重量 */
     private Double weight;
-    /** 货品类型 */
-    private Long typeOfGoods;
+    // /** 货品类型 */
+    // private Long typeOfGoods;
     /** 所属品牌ID */
     private Long brandId;
     /** 所属客户 */
@@ -179,13 +179,14 @@ public class Sku extends BaseModel {
         this.weight = weight;
     }
 
-    public Long getTypeOfGoods() {
-        return typeOfGoods;
-    }
-
-    public void setTypeOfGoods(Long typeOfGoods) {
-        this.typeOfGoods = typeOfGoods;
-    }
+    /* 2016-06-03 删除货品类型 */
+    // public Long getTypeOfGoods() {
+    // return typeOfGoods;
+    // }
+    //
+    // public void setTypeOfGoods(Long typeOfGoods) {
+    // this.typeOfGoods = typeOfGoods;
+    // }
 
     public Long getBrandId() {
         return brandId;

@@ -34,7 +34,7 @@ public class SkuCommand extends BaseCommand {
     /** 重量 */
     private Double weight;
     /** 货品类型 */
-    private Long typeOfGoods;
+    // private Long typeOfGoods;
     /** 所属品牌ID */
     private Long brandId;
     /** 所属客户 */
@@ -168,13 +168,11 @@ public class SkuCommand extends BaseCommand {
         this.weight = weight;
     }
 
-    public Long getTypeOfGoods() {
-        return typeOfGoods;
-    }
-
-    public void setTypeOfGoods(Long typeOfGoods) {
-        this.typeOfGoods = typeOfGoods;
-    }
+    /*
+     * public Long getTypeOfGoods() { return typeOfGoods; }
+     * 
+     * public void setTypeOfGoods(Long typeOfGoods) { this.typeOfGoods = typeOfGoods; }
+     */
 
     public Long getBrandId() {
         return brandId;

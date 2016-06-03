@@ -2,6 +2,7 @@ package com.baozun.scm.primservice.whoperation.command.pda.rcvd;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 
@@ -48,12 +49,6 @@ public class RcvdCacheCommand implements Serializable{
     private String invAttr4;
     /** 库存属性5 */
     private String invAttr5;
-    /** SN号 */
-    private String sn;
-    /** 残次类型ID */
-    private Long defectTypeId;
-    /** 残次原因ID */
-    private Long defectReasonsId;
     /** 匹配明细行ID */
     private Long lineId;
     /** 创建人ID */
@@ -62,6 +57,34 @@ public class RcvdCacheCommand implements Serializable{
     private Date lastModifyTime;
     /** OUID */
     private Long ouId;
+    /** 批量操作数 */
+    private Integer skuBatchCount;
+
+    public Long getLineId() {
+        return lineId;
+    }
+
+    public void setLineId(Long lineId) {
+        this.lineId = lineId;
+    }
+
+    public Integer getSkuBatchCount() {
+        return skuBatchCount;
+    }
+
+    public void setSkuBatchCount(Integer skuBatchCount) {
+        this.skuBatchCount = skuBatchCount;
+    }
+
+    private List<RcvdSnCacheCommand> snList;
+
+    public List<RcvdSnCacheCommand> getSnList() {
+        return snList;
+    }
+
+    public void setSnList(List<RcvdSnCacheCommand> snList) {
+        this.snList = snList;
+    }
 
     public Long getOuId() {
         return ouId;
@@ -197,38 +220,6 @@ public class RcvdCacheCommand implements Serializable{
 
     public void setInvAttr5(String invAttr5) {
         this.invAttr5 = invAttr5;
-    }
-
-    public String getSn() {
-        return sn;
-    }
-
-    public void setSn(String sn) {
-        this.sn = sn;
-    }
-
-    public Long getDefectTypeId() {
-        return defectTypeId;
-    }
-
-    public void setDefectTypeId(Long defectTypeId) {
-        this.defectTypeId = defectTypeId;
-    }
-
-    public Long getDefectReasonsId() {
-        return defectReasonsId;
-    }
-
-    public void setDefectReasonsId(Long defectReasonsId) {
-        this.defectReasonsId = defectReasonsId;
-    }
-
-    public Long getLineId() {
-        return lineId;
-    }
-
-    public void setLineId(Long lineId) {
-        this.lineId = lineId;
     }
 
     public Long getCreatedId() {
