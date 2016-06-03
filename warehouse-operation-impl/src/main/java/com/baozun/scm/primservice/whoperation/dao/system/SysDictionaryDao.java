@@ -20,15 +20,15 @@ import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.baozun.scm.primservice.whoperation.command.system.SysDictionaryCommand;
+import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
+
 import lark.common.annotation.CommonQuery;
 import lark.common.annotation.QueryPage;
 import lark.common.dao.Page;
 import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
-
-import com.baozun.scm.primservice.whoperation.command.system.SysDictionaryCommand;
-import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
 
 
 
