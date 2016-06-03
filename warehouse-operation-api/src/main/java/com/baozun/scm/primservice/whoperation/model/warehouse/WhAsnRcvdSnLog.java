@@ -43,36 +43,6 @@ public class WhAsnRcvdSnLog extends BaseModel {
     /** 对应组织ID */
     private Long ouId;
   
-    
-    private String skuName;
-    private String skuCode;
-    private String containerCode;
-    
-
-    public String getSkuName() {
-        return skuName;
-    }
-
-    public void setSkuName(String skuName) {
-        this.skuName = skuName;
-    }
-
-    public String getSkuCode() {
-        return skuCode;
-    }
-
-    public void setSkuCode(String skuCode) {
-        this.skuCode = skuCode;
-    }
-
-    public String getContainerCode() {
-        return containerCode;
-    }
-
-    public void setContainerCode(String containerCode) {
-        this.containerCode = containerCode;
-    }
-
     public WhAsnRcvdSnLog() {}
 
     public WhAsnRcvdSnLog(Long id) {

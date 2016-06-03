@@ -176,5 +176,14 @@ public final class Constants {
     public static final Long INVENTORY_STATUS_OBSOLESCENT = 7L; // 待报废
     public static final Long INVENTORY_STATUS_DEADLINESALE = 8L; // 临近保质期
 
+    // 商品库存
+    public static final int INVENTORY_SN_STATUS_ONHAND = 1;// 在库
+    public static final int INVENTORY_SN_STATUS_ALLOCATED = 2;// 分配
+    public static final int INVENTORY_SN_STATUS_FROZEN = 3;// 冻结
+
+    // 残次品条码编码生成实体
+    public static final String INVENTORY_SN_BARCODE = "SN";
+    // 残次品条码编码生成 前缀
+    public static final String INVENTORY_SN_BARCODE_PREFIX = "SN";
 
 }

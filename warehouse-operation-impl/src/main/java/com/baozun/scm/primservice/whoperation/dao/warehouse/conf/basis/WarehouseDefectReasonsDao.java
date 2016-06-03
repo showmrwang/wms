@@ -69,4 +69,6 @@ public interface WarehouseDefectReasonsDao extends BaseDao<WarehouseDefectReason
      */
     List<WarehouseDefectReasonsCommand> findWarehouseDefectReasonsByTypeId(@Param("typeId") Long typeId, @Param("ouid") Long ouid);
 
+    WarehouseDefectReasons findByIdExt(@Param("id") Long id, @Param("ouId") Long ouid);
+
 }

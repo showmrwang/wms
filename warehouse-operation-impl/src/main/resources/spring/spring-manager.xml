@@ -57,6 +57,7 @@
 				<entry key="com.baozun.scm.primservice.whoperation.model.warehouse.AsnReserve" value="com.baozun.scm.primservice.whinfo.model.warehouse.AsnReserve"> </entry>
 				<entry key="com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory" value="com.baozun.scm.primservice.whinfo.model.warehouse.inventory.WhSkuInventory"> </entry>
 				<entry key="com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventorySn" value="com.baozun.scm.primservice.whinfo.model.warehouse.inventory.WhSkuInventorySn"> </entry>
+				<entry key="com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventorySn" value="com.baozun.scm.primservice.whinfo.model.warehouse.inventory.WhSkuInventorySn"> </entry>
 				<entry key="com.baozun.scm.primservice.whoperation.model.warehouse.WhAsnRcvdLog" value="com.baozun.scm.primservice.whinfo.model.warehouse.WhAsnRcvdLog"> </entry>
 				<entry key="com.baozun.scm.primservice.whoperation.model.warehouse.WhAsnRcvdSnLog" value="com.baozun.scm.primservice.whinfo.model.warehouse.WhAsnRcvdSnLog"> </entry>
 			</map>

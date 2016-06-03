@@ -23,8 +23,9 @@ import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
 
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhAsnRcvdLogCommand;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhAsnRcvdLog;
 
-public interface WhAsnRcvdLogDao extends BaseDao<WhAsnRcvdLogCommand, Long> {
+public interface WhAsnRcvdLogDao extends BaseDao<WhAsnRcvdLog, Long> {
 
 
 

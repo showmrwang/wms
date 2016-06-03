@@ -107,4 +107,13 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
       	  from t_wh_defect_reasons 
       	  where defect_type_id = #{typeId} and ou_id = #{ouid} 
 	</select>
+	
+	 <select id="findByIdExt" parameterType="java.lang.Long" resultMap="WarehouseDefectReasonsResult" flushCache="false">
+			select <include refid="warehouseDefectReasonsColumns" />
+		    <![CDATA[
+			    from t_wh_defect_reasons 
+		        where 
+		        id = #{id}  and ou_id=#{ouId}
+		    ]]>
+		</select>	
 </mapper>

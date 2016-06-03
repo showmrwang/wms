@@ -15,16 +15,6 @@ public class RcvdSnCacheCommand implements Serializable{
     private Long defectTypeId;
     /** 残次原因ID */
     private Long defectReasonsId;
-    /** 当没有SN号时候，会有数量 */
-    private Integer count;
-
-    public Integer getCount() {
-        return count;
-    }
-
-    public void setCount(Integer count) {
-        this.count = count;
-    }
 
     public String getSn() {
         return sn;

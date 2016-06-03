@@ -194,13 +194,11 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
          * 匹配到明细，具体做法是：每次设置ASN属性的时候，就进行过滤； 而且，功能菜单上有一个属性：是否允许库存差异收货，如果允许，则随机匹配；如果不允许，则需要进行完全匹配
          */
 
-
         // rcvdCacheCommand.setLineId(Long.parseLong(command.getLineIdListString().split(",")[0]));
         Integer batchCount = command.getSkuBatchCount();
         Long occupationId = command.getOccupationId();
         Long skuId = command.getSkuId();
         String userId = command.getUserId().toString();
-        Map<Long, Integer> lineIdMap = new HashMap<Long, Integer>();
         List<RcvdSnCacheCommand> cacheSn = this.cacheManager.getMapObject(CacheKeyConstant.CACHE_RCVD_SN, command.getUserId().toString());
         if (null == cacheSn) {
             if (null != command.getSn()) {
@@ -223,6 +221,9 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                 try {
                     long lessCount = cacheManager.decrBy(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + occupationId + "_" + lineId + "_" + skuId, divCount);
                     Integer overchargeCount = cacheManager.getMapObject(CacheKeyConstant.CACHE_ASNLINE_OVERCHARGE_PREFIX + skuId, lineId.toString());
+                    if (null == overchargeCount) {
+                        overchargeCount = Constants.DEFAULT_INTEGER;
+                    }
                     if (lessCount + overchargeCount < 0) {
                         throw new BusinessException(ErrorCodes.SKU_OVERCHARGE_ERROR);
                     }
@@ -241,9 +242,16 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                 try {
                     rcvdCacheCommand.setLineId(lineId);
                     rcvdCacheCommand.setSkuBatchCount(divCount);
-                    List<RcvdSnCacheCommand> subSn = cacheSn.subList(0, divCount - 1);
+                    List<RcvdSnCacheCommand> subSn = cacheSn.subList(0, divCount);
+                    // 序列化问题
+                    List<RcvdSnCacheCommand> subCacheSn = new ArrayList<RcvdSnCacheCommand>();
+                    subCacheSn.addAll(subSn);
+                    rcvdCacheCommand.setSnList(subCacheSn);
                     cacheSn.removeAll(subSn);
-                    rcvdCacheCommand.setSnList(subSn);
+                    /*
+                     * 测试用 cacheManager.removeMapValue(CacheKeyConstant.CACHE_RCVD, userId);
+                     * Thread.sleep(1000);
+                     */
                     List<RcvdCacheCommand> list = cacheManager.getMapObject(CacheKeyConstant.CACHE_RCVD, userId);
                     if (null == list) {
                         list = new ArrayList<RcvdCacheCommand>();
@@ -254,11 +262,6 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                     this.cacheManager.incrBy(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + occupationId + "_" + skuId, divCount);
                     cacheManager.incrBy(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + occupationId + "_" + lineId + "_" + skuId, divCount);
                     throw new BusinessException(ErrorCodes.RCVD_CACHE_ERROR);
-                }
-                if (lineIdMap.containsKey(lineId)) {
-                    lineIdMap.put(lineId, lineIdMap.get(lineId) + divCount);
-                } else {
-                    lineIdMap.put(lineId, divCount);
                 }
                 batchCount -= divCount;
                 if (batchCount == 0) {
@@ -274,6 +277,9 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                 int divCount = batchCount;
                 long lessCount = cacheManager.decrBy(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + occupationId + "_" + lineId + "_" + skuId, divCount);
                 Integer overchargeCount = cacheManager.getMapObject(CacheKeyConstant.CACHE_ASNLINE_OVERCHARGE_PREFIX + skuId, lineId.toString());
+                if (lessCount + overchargeCount < 0) {
+                    throw new BusinessException(ErrorCodes.SKU_OVERCHARGE_ERROR);
+                }
                 if (lessCount + overchargeCount < 0) {
                     throw new BusinessException(ErrorCodes.SKU_OVERCHARGE_ERROR);
                 }
@@ -298,7 +304,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                 try {
                     rcvdCacheCommand.setLineId(lineId);
                     rcvdCacheCommand.setSkuBatchCount(divCount);
-                    List<RcvdSnCacheCommand> subSn = cacheSn.subList(0, divCount - 1);
+                    List<RcvdSnCacheCommand> subSn = cacheSn.subList(0, divCount);
                     cacheSn.removeAll(subSn);
                     rcvdCacheCommand.setSnList(subSn);
                     List<RcvdCacheCommand> list = cacheManager.getMapObject(CacheKeyConstant.CACHE_RCVD, userId);
@@ -311,11 +317,6 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                     this.cacheManager.incrBy(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + occupationId + "_" + skuId, divCount);
                     cacheManager.incrBy(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + occupationId + "_" + lineId + "_" + skuId, divCount);
                     throw new BusinessException(ErrorCodes.RCVD_CACHE_ERROR);
-                }
-                if (lineIdMap.containsKey(lineId)) {
-                    lineIdMap.put(lineId, lineIdMap.get(lineId) + divCount);
-                } else {
-                    lineIdMap.put(lineId, divCount);
                 }
                 batchCount -= divCount;
                 if (batchCount == 0) {
@@ -331,7 +332,9 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
 
     private RcvdCacheCommand initRcvdCacheCommand(WhSkuInventoryCommand command) {
         RcvdCacheCommand rcvdCacheCommand = new RcvdCacheCommand();
+        WhAsn cacheAsn = this.cacheManager.getMapObject(CacheKeyConstant.CACHE_ASN, command.getOccupationId().toString());
         BeanUtils.copyProperties(command, rcvdCacheCommand);
+        rcvdCacheCommand.setOccupationCode(cacheAsn.getAsnCode());
         rcvdCacheCommand.setCreatedId(command.getUserId());
         rcvdCacheCommand.setLastModifyTime(new Date());
         rcvdCacheCommand.setOuId(command.getOuId());
@@ -340,18 +343,13 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                 rcvdCacheCommand.setExpDate(DateUtil.parse(command.getExpDateStr(), Constants.DATE_PATTERN_YMD));
             }
             if (StringUtils.hasText(command.getMfgDateStr())) {
-                rcvdCacheCommand.setExpDate(DateUtil.parse(command.getMfgDateStr(), Constants.DATE_PATTERN_YMD));
+                rcvdCacheCommand.setMfgDate(DateUtil.parse(command.getMfgDateStr(), Constants.DATE_PATTERN_YMD));
             }
 
         } catch (ParseException e) {
             throw new BusinessException(ErrorCodes.RCVD_CACHE_ERROR);
         }
         return rcvdCacheCommand;
-    }
-
-    private Map<Long, Integer> getLineIdMap(String lineIdListString) {
-        // TODO Auto-generated method stub
-        return null;
     }
 
     /**
@@ -384,7 +382,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
         int skuPlannedCount = command.getSkuBatchCount();
         // 可用数量
         Integer asnSkuCount = Integer.parseInt(cacheManager.getValue(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + command.getOccupationId() + "_" + command.getSkuId()));
-        Integer asnlineSkuCount = 0;
+        Integer asnlineSkuCount = Constants.DEFAULT_INTEGER;
         String lineIdListStr = "";
         try {
             if (StringUtils.isEmpty(command.getLineIdListString())) {
@@ -402,15 +400,15 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                 if (null == lineIdSet || lineIdSet.size() == 0) {
                     throw new BusinessException(ErrorCodes.RCVD_SKU_ASNLINE_NOTFOUND_ERROR);
                 }
-                Iterator<Entry<String, String>> it = lineIdSet.entrySet().iterator();
+                Iterator<String> it = lineIdSet.keySet().iterator();
                 while (it.hasNext()) {
-                    Entry<String, String> entry = it.next();
-                    Integer lineSkuOverchargeCount = this.cacheManager.getMapObject(CacheKeyConstant.CACHE_ASNLINE_OVERCHARGE_PREFIX + command.getOccupationId(), entry.getKey());
+                    String entry = it.next();
+                    Integer lineSkuOverchargeCount = this.cacheManager.getMapObject(CacheKeyConstant.CACHE_ASNLINE_OVERCHARGE_PREFIX + command.getOccupationId(), entry);
                     if (null == lineSkuOverchargeCount) {
-                        lineSkuOverchargeCount = 0;
+                        lineSkuOverchargeCount = Constants.DEFAULT_INTEGER;
                     }
                     asnSkuCount = asnSkuCount + lineSkuOverchargeCount;
-                    lineIdListStr += entry.getKey() + ",";
+                    lineIdListStr += entry + ",";
                 }
                 if (asnSkuCount < skuPlannedCount) {
                     throw new BusinessException(ErrorCodes.SKU_OVERCHARGE_ERROR);
@@ -604,8 +602,9 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
             cacheSn = new ArrayList<RcvdSnCacheCommand>();
         }
         RcvdSnCacheCommand rcvdSn = command.getSn();
-        rcvdSn.setCount(snCount);
-        cacheSn.add(command.getSn());
+        for (int i = 0; i < snCount; i++) {
+            cacheSn.add(rcvdSn);
+        }
         this.cacheManager.setMapObject(CacheKeyConstant.CACHE_RCVD_SN, command.getUserId().toString(), cacheSn, 60 * 60);
         this.cacheContainerSkuAttr(command);
     }
@@ -649,6 +648,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
         //逻辑:
         //1.从库存中初始化容器的库存属性
         RcvdContainerCacheCommand rcvdContainerCacheCommand=this.cacheManager.getMapObject(CacheKeyConstant.CACHE_RCVD_CONTAINER, command.getInsideContainerId().toString());
+        // #TODO
         if (null == rcvdContainerCacheCommand || true) {
             long invContainerCount = this.generalRcvdManager.findContainerListCountByInsideContainerIdFromSkuInventory(command.getInsideContainerId(), ouId);
             if(Constants.DEFAULT_INTEGER!=invContainerCount){

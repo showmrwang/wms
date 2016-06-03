@@ -15,7 +15,7 @@ public class RcvdCacheCommand implements Serializable{
     /**
      * 
      */
-    private static final long serialVersionUID = -3121364734981632710L;
+    private static final long serialVersionUID = 3819879639917624436L;
     /** 外部容器ID 托盘 货箱 */
     private Long outerContainerId;
     /** 内部容器ID 托盘 货箱 */
@@ -59,7 +59,16 @@ public class RcvdCacheCommand implements Serializable{
     private Long ouId;
     /** 批量操作数 */
     private Integer skuBatchCount;
+    /** Sn号 */
+    private List<RcvdSnCacheCommand> snList;
 
+    public List<RcvdSnCacheCommand> getSnList() {
+        return snList;
+    }
+
+    public void setSnList(List<RcvdSnCacheCommand> snList) {
+        this.snList = snList;
+    }
     public Long getLineId() {
         return lineId;
     }
@@ -74,16 +83,6 @@ public class RcvdCacheCommand implements Serializable{
 
     public void setSkuBatchCount(Integer skuBatchCount) {
         this.skuBatchCount = skuBatchCount;
-    }
-
-    private List<RcvdSnCacheCommand> snList;
-
-    public List<RcvdSnCacheCommand> getSnList() {
-        return snList;
-    }
-
-    public void setSnList(List<RcvdSnCacheCommand> snList) {
-        this.snList = snList;
     }
 
     public Long getOuId() {

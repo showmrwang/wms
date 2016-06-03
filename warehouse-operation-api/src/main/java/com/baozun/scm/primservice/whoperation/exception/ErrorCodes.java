@@ -247,6 +247,8 @@ public class ErrorCodes {
     public static final int RCVD_SKU_SAVE_ERROR = 10010;
     /** 容器不可用，请更换容器 ! */
     public static final int RCVD_CONTAINER_LIMIT_ERROR = 10011;
+    /** 取消操作异常，请重试! */
+    public static final int RCVD_CANCEL_ERROR = 10012;
     // 10001-20000 luyimin
 
 

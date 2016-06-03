@@ -14,6 +14,8 @@
  */
 package com.baozun.scm.primservice.whoperation.model.warehouse;
 
+import java.util.Date;
+
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 
 /**
@@ -43,9 +45,9 @@ public class WhAsnRcvdLog extends BaseModel {
     /** 容器名称 */
     private String containerName;
     /** 生产日期 */
-    private String mfgDate;
+    private Date mfgDate;
     /** 失效日期 */
-    private String expDate;
+    private Date expDate;
     /** 批次号 */
     private String batchNo;
     /** 原产地 */
@@ -67,9 +69,9 @@ public class WhAsnRcvdLog extends BaseModel {
     /** 对应组织ID */
     private Long ouId;
     /** 创建时间 */
-    private String createTime;
+    private Date createTime;
     /** 最后修改时间 */
-    private String lastModifyTime;
+    private Date lastModifyTime;
     /** 操作人Id */
     private Long operatorId;
 
@@ -144,21 +146,20 @@ public class WhAsnRcvdLog extends BaseModel {
         return this.containerName;
     }
 
-
-    public String setMfgDate(String str) {
-        return this.mfgDate = str;
+    public Date getMfgDate() {
+        return mfgDate;
     }
 
-    public String getMfgDate() {
-        return this.mfgDate;
+    public void setMfgDate(Date mfgDate) {
+        this.mfgDate = mfgDate;
     }
 
-    public String getExpDate() {
+    public Date getExpDate() {
         return expDate;
     }
 
-    public String setExpDate(String expDate) {
-        return this.expDate = expDate;
+    public void setExpDate(Date expDate) {
+        this.expDate = expDate;
     }
 
     public void setBatchNo(String value) {
@@ -241,21 +242,20 @@ public class WhAsnRcvdLog extends BaseModel {
         return this.ouId;
     }
 
-
-    public void setCreateTime(String value) {
-        this.createTime = value;
+    public Date getCreateTime() {
+        return createTime;
     }
 
-    public String getCreateTime() {
-        return this.createTime;
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
     }
 
-    public void setLastModifyTime(String value) {
-        this.lastModifyTime = value;
+    public Date getLastModifyTime() {
+        return lastModifyTime;
     }
 
-    public String getLastModifyTime() {
-        return this.lastModifyTime;
+    public void setLastModifyTime(Date lastModifyTime) {
+        this.lastModifyTime = lastModifyTime;
     }
 
     public void setOperatorId(Long value) {
