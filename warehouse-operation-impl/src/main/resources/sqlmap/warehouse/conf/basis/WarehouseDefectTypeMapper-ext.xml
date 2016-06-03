@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.conf.basis.WarehouseDefectTypeDao">
+	<resultMap id="WarehouseDefectTypeResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.conf.basis.WarehouseDefectType">
+	</resultMap>
+	<resultMap id="WarehouseDefectTypeCommandResult"
+		type="com.baozun.scm.primservice.whoperation.command.warehouse.conf.basis.WarehouseDefectTypeCommand">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="warehouseDefectTypeColumnsExt">
+	    <![CDATA[
+	        	id as id,
+	        	name as name,
+	        	code as code,
+	        	description as description,
+	        	ou_id as ouId,
+	        	create_time as createTime,
+	        	last_modify_time as lastModifyTime,
+	        	created_id as createdId,
+	        	modified_id as modifiedId,
+	        	lifecycle as lifecycle
+	    ]]>
+	</sql>
+	
+	<sql id="warehouseDefectTypeDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+	       
+		       <if test="name!=null and name!=''">
+					and name = #{name}
+				</if>
+	       
+	       
+		       <if test="code!=null and code!=''">
+					and code = #{code}
+				</if>
+	       
+	       
+		       <if test="description!=null and description!=''">
+					and description = #{description}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+	       
+				<if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="createdId!=null">
+					and created_id = #{createdId}
+				</if>
+	       
+				<if test="modifiedId!=null">
+					and modified_id = #{modifiedId}
+				</if>
+	       
+				<if test="lifecycle!=null">
+					and lifecycle = #{lifecycle}
+				</if>
+		</where>
+	</sql>
+	
+	<select id="findCountByQueryMapWithPageExt" resultType="long">
+        select count(1)
+        from t_wh_defect_type as wdt
+        <include refid="warehouseDefectTypeDynamicWhereExt"/>
+    </select>
+    
+     <select id="findListByQueryMapWithPageExt" resultMap="WarehouseDefectTypeCommandResult">
+        select
+        <include refid="warehouseDefectTypeColumnsExt"/>
+        from t_wh_defect_type as wdt
+        <include refid="warehouseDefectTypeDynamicWhereExt"/>
+    </select>
+    
+    <resultMap id="whDefectCommandGlobalResult"
+               type="com.baozun.scm.primservice.whoperation.command.warehouse.conf.basis.WarehouseDefectTypeCommand">
+        <result property="id" column="wdt_id"/>
+        <result property="name" column="wdt_name"/>
+        <result property="code" column="wdt_code"/>
+        <result property="description" column="wdt_description"/>
+        <result property="ouId" column="wdt_ou_id"/>
+        <result property="createTime" column="wdt_create_time"/>
+        <result property="lastModifyTime" column="wdt_last_modify_time"/>
+        <result property="createdId" column="wdt_created_id"/>
+        <result property="modifiedId" column="wdt_modified_id"/>
+        <result property="lifecycle" column="wdt_lifecycle"/>
+        <collection property="reasonsList"
+                    ofType="com.baozun.scm.primservice.whoperation.command.warehouse.conf.basis.WarehouseDefectReasonsCommand">
+	        <result property="id" column="wdr_id"/>
+	        <result property="name" column="wdr_name"/>
+	        <result property="code" column="wdr_code"/>
+	        <result property="description" column="wdr_description"/>
+	        <result property="ouId" column="wdr_ou_id"/>
+	        <result property="defectTypeId" column="wdr_defect_type_id"/>
+	        <result property="createTime" column="wdr_create_time"/>
+	        <result property="lastModifyTime" column="wdr_last_modify_time"/>
+	        <result property="createdId" column="wdr_created_id"/>
+	        <result property="modifiedId" column="wdr_modified_id"/>
+        </collection>
+    </resultMap>
+
+    <select id="findDefectTypeByIdParams" resultMap="whDefectCommandGlobalResult">
+        <![CDATA[
+        select 
+			wdt.id as wdt_id,
+    		wdt.name as wdt_name,
+		    wdt.code as wdt_code,
+		    wdt.ou_id as wdt_ou_id,
+		    wdt.description as wdt_description,
+		    wdt.create_time as wdt_create_time,
+		    wdt.last_modify_time as wdt_last_modify_time,
+		    wdt.created_id as wdt_created_id,
+		    wdt.modified_id as wdt_modified_id,
+		    wdt.lifecycle as wdt_lifecycle,
+			wdr.id as wdr_id,
+		    wdr.name as wdr_name,
+		    wdr.code as wdr_code,
+		    wdr.ou_id as wdr_ou_id,
+		    wdr.defect_type_id as wdr_defect_type_id,
+		    wdr.description as wdr_description,
+		    wdr.create_time as wdr_create_time,
+		    wdr.last_modify_time as wdr_last_modify_time,
+		    wdr.created_id as wdr_created_id,
+		    wdr.modified_id as wdr_modified_id
+		from t_wh_defect_type wdt
+		left join t_wh_defect_reasons wdr 
+						on wdt.id = wdr.defect_type_id and wdt.ou_id = wdr.ou_id
+		where 
+		   wdt.id = #{id}
+		   and wdt.ou_id = #{ouId}
+        ]]>
+    </select>
+
+	<select id="checkUnique" resultType="long">
+		select count(*) from t_wh_defect_type as wdt
+		<where>
+			<if test="id!=null">
+				and wdt.id != #{id}
+			</if>
+			<if
+				test="(code!=null and code!='')
+                    or (name!=null and name!='')">
+				and (
+				<trim prefix="" prefixOverrides="or">
+					<if test="code!=null and code!=''">
+						or wdt.code = #{code}
+					</if>
+					<if test="name!=null and name!=''">
+						or wdt.name = #{name}
+					</if>
+				</trim>
+				)
+			</if>
+			and wdt.ou_id = #{ouId}
+		</where>
+	</select>
+	
+	<select id="findByIdExt" resultMap="WarehouseDefectTypeResultExt">
+        select
+        <include refid="warehouseDefectTypeColumnsExt"/>
+        <![CDATA[
+           from t_wh_defect_type wdt
+           where 
+            wdt.id = #{id}
+		   	and wdt.ou_id = #{ouId}
+        ]]>
+    </select>
+    
+    <update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.conf.basis.WarehouseDefectType">
+	    <![CDATA[
+	        UPDATE t_wh_defect_type SET
+		        name = #{name,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        code = #{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        description = #{description,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+	</update>
+		
+    
+     <select id="findWarehouseDefectTypeByOuId" resultMap="WarehouseDefectTypeCommandResult">
+        select
+        <include refid="warehouseDefectTypeColumnsExt"/>
+        from t_wh_defect_type 
+        <where>
+        	ou_id = #{ouid}
+        	<if test="lifecycle!=null">
+					and lifecycle = #{lifecycle}
+			</if>
+        </where>
+    </select>
+	
+</mapper>

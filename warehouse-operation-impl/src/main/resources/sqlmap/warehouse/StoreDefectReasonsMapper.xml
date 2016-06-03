@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.StoreDefectReasonsDao">
+	<resultMap id="StoreDefectReasonsResult" type="com.baozun.scm.primservice.whoperation.model.warehouse.StoreDefectReasons">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="storeDefectReasonsColumns">
+	    <![CDATA[
+	        	id as id,
+	        	defect_type_id as defectTypeId,
+	        	name as name,
+	        	code as code,
+	        	description as description,
+	        	create_time as createTime,
+	        	last_modify_time as lastModifyTime,
+	        	created_id as createdId,
+	        	modified_id as modifiedId
+	    ]]>
+	</sql>
+	
+		<!-- 如果有自增字段 -->
+	
+			<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+			<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.StoreDefectReasons" 
+			 flushCache="true">
+		    <![CDATA[
+		        INSERT INTO
+		        t_bi_store_defect_reasons (
+		        	id,
+		        	defect_type_id ,
+		        	name ,
+		        	code ,
+		        	description ,
+		        	create_time ,
+		        	last_modify_time ,
+		        	created_id ,
+		        	modified_id 
+		        ) VALUES (
+		        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{defectTypeId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{name,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{description,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        )
+		    ]]>
+	
+			</insert>
+		
+		<update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.StoreDefectReasons">
+	    <![CDATA[
+	        UPDATE t_bi_store_defect_reasons SET
+		        defect_type_id = #{defectTypeId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        name = #{name,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        code = #{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        description = #{description,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+		</update>
+	   <delete id="delete" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from t_bi_store_defect_reasons where
+		        id = #{id} 
+	    ]]>
+	    </delete> 
+	    
+	     <delete id="deleteByIds" parameterType="list">
+	    
+	        delete from t_bi_store_defect_reasons 
+	        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>	
+	  
+	    </delete>  
+	         
+	    <select id="findById" parameterType="java.lang.Long" resultMap="StoreDefectReasonsResult" flushCache="false">
+			select <include refid="storeDefectReasonsColumns" />
+		    <![CDATA[
+			    from t_bi_store_defect_reasons 
+		        where 
+		        id = #{id} 
+		    ]]>
+		</select>	
+		<select id="findByIds" parameterType="list"  resultMap="StoreDefectReasonsResult" flushCache="false">
+			select <include refid="storeDefectReasonsColumns" />
+			    from t_bi_store_defect_reasons 
+		        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>					
+		</select>	
+	<sql id="storeDefectReasonsDynamicWhere">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+				<if test="defectTypeId!=null">
+					and defect_type_id = #{defectTypeId}
+				</if>
+	       
+		       <if test="name!=null and name!=''">
+					and name = #{name}
+				</if>
+	       
+	       
+		       <if test="code!=null and code!=''">
+					and code = #{code}
+				</if>
+	       
+	       
+		       <if test="description!=null and description!=''">
+					and description = #{description}
+				</if>
+	       
+				<if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="createdId!=null">
+					and created_id = #{createdId}
+				</if>
+	       
+				<if test="modifiedId!=null">
+					and modified_id = #{modifiedId}
+				</if>
+		</where>
+	</sql>
+	
+
+	<select id="getCount" resultType="long">
+        select count(*) from t_bi_store_defect_reasons 
+    </select>
+    <select id="findListCountByQueryMap" resultType="long">
+        select count(*) from t_bi_store_defect_reasons 
+		<include refid="storeDefectReasonsDynamicWhere"/>    
+    </select>
+    
+    <select id="findListCountByParam" resultType="long">
+        select count(*) from t_bi_store_defect_reasons 
+		<include refid="storeDefectReasonsDynamicWhere"/>    
+    </select>
+    
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPage" resultMap="StoreDefectReasonsResult">
+    	select <include refid="storeDefectReasonsColumns" />
+	    from t_bi_store_defect_reasons 
+		<include refid="storeDefectReasonsDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByQueryMap" resultMap="StoreDefectReasonsResult">
+    	select <include refid="storeDefectReasonsColumns" />
+	    from t_bi_store_defect_reasons 
+		<include refid="storeDefectReasonsDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByParam" resultMap="StoreDefectReasonsResult">
+    	select <include refid="storeDefectReasonsColumns" />
+	    from t_bi_store_defect_reasons 
+		<include refid="storeDefectReasonsDynamicWhere"/>
+		
+    </select>
+
+	
+</mapper>
