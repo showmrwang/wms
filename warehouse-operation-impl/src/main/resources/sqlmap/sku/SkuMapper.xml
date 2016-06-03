@@ -23,7 +23,7 @@
                 height as height,
                 volume as volume,
                 weight as weight,
-                type_of_goods as typeOfGoods,
+                --type_of_goods as typeOfGoods,
                 brand_id as brandId,
                 customer_id as customerId,
                 create_time as createTime,
@@ -61,7 +61,7 @@
                     height ,
                     volume ,
                     weight ,
-                    type_of_goods,
+                    --type_of_goods,
                     brand_id ,
                     customer_id ,
                     create_time ,
@@ -121,7 +121,7 @@
                 height = #{height,javaType=java.lang.Double,jdbcType=DECIMAL} ,
                 volume = #{volume,javaType=java.lang.Double,jdbcType=DECIMAL} ,
                 weight = #{weight,javaType=java.lang.Double,jdbcType=DECIMAL} ,
-                type_of_goods = #{typeOfGoods,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                --type_of_goods = #{typeOfGoods,javaType=java.lang.Long,jdbcType=BIGINT} ,
                 brand_id = #{brandId,javaType=java.lang.Long,jdbcType=BIGINT} ,
                 customer_id = #{customerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
                 create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
@@ -235,9 +235,9 @@
                 and weight = #{weight}
             </if>
             
-            <if test="typeOfGoods!=null">
+            <!-- <if test="typeOfGoods!=null">
                 and type_of_goods = #{typeOfGoods}
-            </if>
+            </if> -->
             
             <if test="brandId!=null">
                 and brand_id = #{brandId}

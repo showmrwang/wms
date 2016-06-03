@@ -44,7 +44,7 @@
                 sku.height as height,
                 sku.volume as volume,
                 sku.weight as weight,
-                sku.type_of_goods as typeOfGoods,
+                --sku.type_of_goods as typeOfGoods,
                 sku.brand_id as brandId,
                 sku.customer_id as customerId,
                 sku.create_time as createTime,
@@ -122,9 +122,9 @@
 				and sku.weight = #{weight}
 			</if>
 			
-			<if test="typeOfGoods!=null">
+			<!-- <if test="typeOfGoods!=null">
 				and sku.type_of_goods = #{typeOfGoods}
-			</if>
+			</if> -->
 
 			<if test="brandId!=null">
 				and sku.brand_id = #{brandId}
@@ -201,7 +201,7 @@
                     height = #{height,javaType=java.lang.Double,jdbcType=DECIMAL} ,
                     volume = #{volume,javaType=java.lang.Double,jdbcType=DECIMAL} ,
                     weight = #{weight,javaType=java.lang.Double,jdbcType=DECIMAL} ,
-                    type_of_goods = #{typeOfGoods,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    --type_of_goods = #{typeOfGoods,javaType=java.lang.Long,jdbcType=BIGINT} ,
                     brand_id = #{brandId,javaType=java.lang.Long,jdbcType=BIGINT} ,
                     customer_id = #{customerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
                     create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
@@ -235,7 +235,7 @@
                     height = #{height,javaType=java.lang.Double,jdbcType=DECIMAL} ,
                     volume = #{volume,javaType=java.lang.Double,jdbcType=DECIMAL} ,
                     weight = #{weight,javaType=java.lang.Double,jdbcType=DECIMAL} ,
-                    type_of_goods = #{typeOfGoods,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    --type_of_goods = #{typeOfGoods,javaType=java.lang.Long,jdbcType=BIGINT} ,
                     brand_id = #{brandId,javaType=java.lang.Long,jdbcType=BIGINT} ,
                     customer_id = #{customerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
                     create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
@@ -286,7 +286,7 @@
             sku.height as height,
             sku.volume as volume,
             sku.weight as weight,
-            sku.type_of_goods as typeOfGoods,
+            --sku.type_of_goods as typeOfGoods,
             sku.brand_id as brandId,
             sku.customer_id as customerId,
             sku.ou_id as ouId,
@@ -382,9 +382,9 @@
                 and sku.weight_uom = #{weightUom}
             </if>
 
-			<if test="typeOfGoods!=null">
+			<!-- <if test="typeOfGoods!=null">
                 and sku.type_of_goods = #{typeOfGoods}
-            </if>
+            </if> -->
             
             <if test="brandId!=null">
                 and sku.brand_id = #{brandId}
@@ -496,9 +496,9 @@
                 and sku.weight_uom = #{weightUom}
             </if>
             
-            <if test="typeOfGoods!=null">
+            <!-- <if test="typeOfGoods!=null">
                 and sku.type_of_goods = #{typeOfGoods}
-            </if>
+            </if> -->
 
             <if test="brandId!=null">
                 and sku.brand_id = #{brandId}
@@ -597,7 +597,7 @@
                     height ,
                     volume ,
                     weight ,
-                    type_of_goods,
+                    --type_of_goods,
                     brand_id ,
                     customer_id ,
                     ou_id ,
@@ -657,7 +657,7 @@
             height = #{height,javaType=java.lang.Double,jdbcType=DECIMAL} ,
             volume = #{volume,javaType=java.lang.Double,jdbcType=DECIMAL} ,
             weight = #{weight,javaType=java.lang.Double,jdbcType=DECIMAL} ,
-            type_of_goods = #{typeOfGoods,javaType=java.lang.Long,jdbcType=BIGINT} ,
+            --type_of_goods = #{typeOfGoods,javaType=java.lang.Long,jdbcType=BIGINT} ,
             brand_id = #{brandId,javaType=java.lang.Long,jdbcType=BIGINT} ,
             customer_id = #{customerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
             create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
