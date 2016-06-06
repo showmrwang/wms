@@ -5,12 +5,31 @@ import java.util.List;
 import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdContainerCacheCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
+import com.baozun.scm.primservice.whoperation.model.sku.Sku;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
+import com.baozun.scm.primservice.whoperation.model.warehouse.StoreDefectReasons;
+import com.baozun.scm.primservice.whoperation.model.warehouse.StoreDefectType;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhAsnRcvdLog;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhAsnRcvdSnLog;
+import com.baozun.scm.primservice.whoperation.model.warehouse.conf.basis.WarehouseDefectReasons;
+import com.baozun.scm.primservice.whoperation.model.warehouse.conf.basis.WarehouseDefectType;
+import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
+import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventorySn;
 
+/**
+ * @author yimin.lu
+ *
+ */
 public interface GeneralRcvdManager extends BaseManager {
 
     /**
      * 通用收货：将扫描的商品数据从缓存中推送到数据库中
      * 
+     * @deprecated
      * @param commmand
      */
     void saveScanedSkuWhenGeneralRcvdForPda(List<RcvdCacheCommand> commmandList);
@@ -30,4 +49,55 @@ public interface GeneralRcvdManager extends BaseManager {
      * @return
      */
     RcvdContainerCacheCommand getUniqueSkuAttrFromWhSkuInventory(Long insideContainerId, Long ouId);
+
+    /**
+     * 查找商品信息
+     */
+    Sku findSkuByIdToShard(Long id, Long ouId);
+
+    /**
+     * 查找容器信息
+     */
+    Container findContainerByIdToShard(Long id, Long ouId);
+
+    /**
+     * 店铺的残次类型
+     */
+    StoreDefectType findStoreDefectTypeByIdToGlobal(Long id);
+    /**
+     * 店铺的残次原因
+     */
+    StoreDefectReasons findStoreDefectReasonsByIdToGlobal(Long id);
+    /**
+     * 仓库的残次类型
+     */
+    WarehouseDefectType findWarehouseDefectTypeByIdToShard(Long id, Long ouId);
+    /**
+     * 仓库的残次原因
+     */
+    WarehouseDefectReasons findWarehouseDefectReasonsByIdToShard(Long id, Long ouId);
+
+    /**
+     * 通用收货：将扫描的商品数据从缓存中推送到数据库中
+     * 
+     * @author yimin.lu
+     * @param saveSnList
+     * @param saveSnLogList
+     * @param saveInvList
+     * @param saveInvLogList
+     * @param saveAsnLineList
+     * @param asn
+     * @param savePoLineList
+     * @param po
+     */
+    void saveScanedSkuWhenGeneralRcvdForPda(List<WhSkuInventorySn> saveSnList, List<WhAsnRcvdSnLog> saveSnLogList, List<WhSkuInventory> saveInvList, List<WhAsnRcvdLog> saveInvLogList, List<WhAsnLine> saveAsnLineList, WhAsn asn,
+            List<WhPoLine> savePoLineList, WhPo po);
+
+    /**
+     * version更新容器
+     * 
+     * @param container
+     * @return
+     */
+    int updateContainerByVersion(Container container);
 }

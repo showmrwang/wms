@@ -581,5 +581,17 @@ public class PoLineManagerImpl implements PoLineManager {
         return this.whPoLineDao.findListByParamExt(command);
     }
 
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public WhPoLine findWhPoLineByIdOuIdToShard(Long id, Long ouId) {
+        return this.whPoLineDao.findWhPoLineByIdWhPoLine(id, ouId);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public long findListCountByParamToShard(WhPoLine searchPoLine) {
+        return this.whPoLineDao.findListCountByParam(searchPoLine);
+    }
+
 
 }

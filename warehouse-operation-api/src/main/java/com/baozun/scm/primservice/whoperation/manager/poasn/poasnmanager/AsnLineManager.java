@@ -35,6 +35,15 @@ public interface AsnLineManager extends BaseManager {
 
     WhAsnLineCommand findWhAsnLineById(Long id, Long ouid);
 
+    WhAsnLine findWhAsnLineByIdToShard(Long id, Long ouid);
+
     int updateByVersion(WhAsnLine line);
+
+    /**
+     * 
+     * @param searchAsnLine
+     * @return
+     */
+    long findListCountByParam(WhAsnLine searchAsnLine);
 
 }
