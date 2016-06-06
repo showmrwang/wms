@@ -256,4 +256,25 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    ]]>
 	 </delete>
 	
+<select id="findCartonNumsByOuterContainerCode" resultType="long">
+    	select count(c.id)
+	    from t_wh_carton c ,
+	    (
+	    	select 
+	    	       distinct
+					inv.inside_container_id as insideContainerId,
+					asn.id as asnId
+					from 
+					t_wh_sku_inventory inv 
+					left join t_wh_container c on c.id = inv.outer_container_id
+					left join t_wh_location loc on inv.location_id = loc.id
+					left join t_wh_asn asn on asn.asn_code = inv.occupation_code
+					where 
+					inv.ou_id = #{ouId}
+					and c.code = #{containerCode}
+	    ) container
+	    where ou_id = #{ouId}
+	    and container.insideContainerId = c.container_id 
+	    and container.asnId = c.asn_id
+ </select>
 </mapper>
