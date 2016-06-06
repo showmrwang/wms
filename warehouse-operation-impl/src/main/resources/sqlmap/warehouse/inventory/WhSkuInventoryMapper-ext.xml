@@ -900,10 +900,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 						left join sys_dictionary inva3 on t.inv_attr3 = inva3.dic_value and inva3.group_value = 'INVENTORY_ATTR_3' 
 						left join sys_dictionary inva4 on t.inv_attr4 = inva4.dic_value and inva4.group_value = 'INVENTORY_ATTR_4' 
 						left join sys_dictionary inva5 on t.inv_attr5 = inva5.dic_value and inva5.group_value = 'INVENTORY_ATTR_5' 
-					where 
-					t.sku_id = #{skuid} 
-					and t.inside_container_id = #{containerid} 
-					and t.ou_id = #{ouid} 
-					and t.location_id is null 
+					<where>
+						t.sku_id = #{skuid} 
+						and t.ou_id = #{ouid} 
+						and t.location_id is null 
+						<if test="insideContainerid != null">
+							and t.inside_container_id = #{insideContainerid} 
+						</if>
+						<if test="outerContainerid != null">
+							and t.outer_container_id = #{outerContainerid} 
+						</if>
+					</where>
     </select>
 </mapper>

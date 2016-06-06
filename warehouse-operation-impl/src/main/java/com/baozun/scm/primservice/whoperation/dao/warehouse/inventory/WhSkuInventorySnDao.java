@@ -59,4 +59,28 @@ public interface WhSkuInventorySnDao extends BaseDao<WhSkuInventorySn, Long> {
      */
     List<WhSkuInventorySnCommand> findWhSkuInventoryByUuid(@Param("ouid") Long ouid, @Param("uuid") String uuid);
 
+    /**
+     * 根据库存UUID+SYS_UUID修改对应UUID
+     * 
+     * @return
+     */
+    int updateWhSkuInventorySnUuid(@Param("ouid") Long ouid, @Param("uuid") String uuid, @Param("newuuid") String newuuid, @Param("sysuuid") String sysuuid);
+
+    /**
+     * 根据库存UUID+SN或者残次条码查找对应SN/残次信息
+     * 
+     * @param ouid
+     * @param uuid
+     * @param snCode
+     * @return
+     */
+    WhSkuInventorySn findWhSkuInventoryByUuidAndSnOrDefectWareBarcode(@Param("ouid") Long ouid, @Param("uuid") String uuid, @Param("snCode") String snCode);
+
+    /**
+     * 根据库存UUID+本次系统的UUID查找对应SN/残次信息
+     * 
+     * @return
+     */
+    List<WhSkuInventorySn> findWhSkuInventorySnByUuidAndSysUuid(@Param("ouid") Long ouid, @Param("uuid") String uuid, @Param("sysuuid") String sysuuid);
+
 }
