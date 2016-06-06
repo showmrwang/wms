@@ -127,5 +127,35 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				uuid = #{uuid}
 				and ou_id = #{ouid} 
     </select>
+    
+    <update id="updateWhSkuInventorySnUuid">
+		update t_wh_sku_inventory_sn sn 
+			set sn.uuid = #{newuuid},
+			sn.sys_uuid = null 
+			where 
+			sn.uuid = #{uuid} 
+			and sn.ou_id = #{ouid}
+			and sn.sys_uuid = #{sysuuid}
+	</update>
+	
+	<select id="findWhSkuInventoryByUuidAndSnOrDefectWareBarcode" resultMap="WhSkuInventorySnResultExt">
+    	select <include refid="whSkuInventorySnColumnsExt" />
+				from 
+				t_wh_sku_inventory_sn
+				where 
+				uuid = #{uuid}
+				and ou_id = #{ouid} 
+				and (sn = #{snCode} or defect_ware_barcode = #{snCode})
+    </select>
+    
+    <select id="findWhSkuInventorySnByUuidAndSysUuid" resultMap="WhSkuInventorySnResultExt">
+    	select <include refid="whSkuInventorySnColumnsExt" />
+				from 
+				t_wh_sku_inventory_sn
+				where 
+				uuid = #{uuid}
+				and ou_id = #{ouid} 
+				and sys_uuid = #{sysuuid}
+    </select>
 	
 </mapper>

@@ -276,6 +276,42 @@ public class ErrorCodes {
     // 40001-50000 lichuan
 
     // 50001-60000 hubin
+    /** 容器号不能为空 */
+    public static final int PDA_INBOUND_SORTATION_CONTAINERCODE_NULL = 50001;
+    /** 容器不存在 */
+    public static final int PDA_INBOUND_SORTATION_CONTAINER_NULL = 50002;
+    /** 容器状态不可用 */
+    public static final int PDA_INBOUND_SORTATION_LIFRCYCLE_ERROR = 50003;
+    /** 容器对应的库存信息不存在 */
+    public static final int PDA_INBOUND_SORTATION_CONTAINER_INV_NULL = 50004;
+    /** 容器找不到对应入库分拣规则 */
+    public static final int PDA_INBOUND_SORTATION_CONTAINER_USABLENESS_FALSE = 50005;
+    /** SKU不能为空 */
+    public static final int PDA_INBOUND_SORTATION_SKUCODE_NULL = 50006;
+    /** 此SKU在对应原始容器号无库存信息 */
+    public static final int PDA_INBOUND_SORTATION_SKUINV_NULL = 50007;
+    /** SKU状态不可用 */
+    public static final int PDA_INBOUND_SORTATION_SKULIFRCYCLE_ERROR = 50008;
+    /** 移入数量不能为空 shiftInQty */
+    public static final int PDA_INBOUND_SORTATION_SHIFTINQTY_NULL = 50009;
+    /** 移入数量不能小于等于0 */
+    public static final int PDA_INBOUND_SORTATION_SHIFTINQTY_ERROR = 50010;
+    /** 移入数量不能大于待移出数量 shiftOutQty */
+    public static final int PDA_INBOUND_SORTATION_SHIFTINOUTQTY_ERROR = 50011;
+    /** 确认容器号和目标容器号不相同 targetContainerCodeSelect */
+    public static final int PDA_INBOUND_SORTATION_TARGETCONTAINER_ERROR = 50012;
+    /** 此SN/残次条码不存在 */
+    public static final int PDA_INBOUND_SORTATION_SN_NULL = 50013;
+    /** 此SN/残次条码已扫描过 */
+    public static final int PDA_INBOUND_SORTATION_SN_DOUBLE_ERROR = 50014;
+    /** 移入数量【{0}】和SN/残次条码数量【{1}】不一致 */
+    public static final int PDA_INBOUND_SORTATION_SNLISTQTY_ERROR = 50015;
+    /** 目标容器已装满 请更换容器 */
+    public static final int PDA_INBOUND_SORTATION_CONTAINER_ISFULL_ERROR = 50016;
+    /** 原始容器号库存数量【{0}】小于本次移入数量【{1}】 OnHandQty */
+    public static final int PDA_INBOUND_SORTATION_ONHANDQTY_ERROR = 50017;
+    /** 库存属性对应库存不存在 请重新操作 */
+    public static final int PDA_INBOUND_SORTATION_SKUATTRINV_ERROR = 50018;
     // 50001-60000 hubin
 
     // 60001-70000 xiemingwei

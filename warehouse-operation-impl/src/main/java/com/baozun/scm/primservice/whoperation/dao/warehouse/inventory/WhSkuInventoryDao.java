@@ -184,15 +184,15 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @return
      */
     RcvdContainerCacheCommand getUniqueSkuAttrFromWhSkuInventory(@Param("insideContainerId") Long insideContainerId, @Param("ouId") Long ouId);
-
+    
     /**
-     * 根据sku+内部容器号 查找容器库存数据 location is null
+     * 根据sku+内部容器号或者外部容器号 查找容器库存数据 location is null
      * 
      * @param ouid
      * @param skuid
      * @param containerid
      * @return
      */
-    List<WhSkuInventoryCommand> findWhSkuInventoryBySkuIdAndContainerid(@Param("ouid") Long ouid, @Param("skuid") Long skuid, @Param("containerid") Long containerid);
+    List<WhSkuInventoryCommand> findWhSkuInventoryBySkuIdAndContainerid(@Param("ouid") Long ouid, @Param("skuid") Long skuid, @Param("insideContainerid") Long insideContainerid, @Param("outerContainerid") Long outerContainerid);
 
 }

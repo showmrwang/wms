@@ -609,7 +609,6 @@
                     #{height,javaType=java.lang.Double,jdbcType=DECIMAL} ,
                     #{volume,javaType=java.lang.Double,jdbcType=DECIMAL} ,
                     #{weight,javaType=java.lang.Double,jdbcType=DECIMAL} ,
-                    #{typeOfGoods,javaType=java.lang.Long,jdbcType=BIGINT} ,
                     #{brandId,javaType=java.lang.Long,jdbcType=BIGINT} ,
                     #{customerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
                     #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,

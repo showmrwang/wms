@@ -242,4 +242,16 @@ public class AsnLineManagerImpl extends BaseManagerImpl implements AsnLineManage
     public int updateByVersion(WhAsnLine line) {
         return this.whAsnLineDao.saveOrUpdateByVersion(line);
     }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public WhAsnLine findWhAsnLineByIdToShard(Long id, Long ouid) {
+        return this.whAsnLineDao.findWhAsnLineById(id, ouid);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public long findListCountByParam(WhAsnLine searchAsnLine) {
+        return this.whAsnLineDao.findListCountByParam(searchAsnLine);
+    }
 }

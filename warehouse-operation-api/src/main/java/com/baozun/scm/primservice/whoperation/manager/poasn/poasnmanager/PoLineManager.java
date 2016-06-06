@@ -125,5 +125,16 @@ public interface PoLineManager extends BaseManager {
      */
     List<WhPoLine> findWhPoLineListByPoIdOuIdStatusListToInfo(Long poId, Long ouId, List<Integer> statusList);
 
+    /**
+     * 
+     */
+    WhPoLine findWhPoLineByIdOuIdToShard(Long id, Long ouId);
+
+    /**
+     * 
+     * @param searchPoLine
+     * @return
+     */
+    long findListCountByParamToShard(WhPoLine searchPoLine);
 
 }

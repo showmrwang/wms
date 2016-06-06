@@ -40,6 +40,7 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.conf.basis.Warehouse
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventorySnDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
+import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine;
@@ -352,6 +353,102 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public RcvdContainerCacheCommand getUniqueSkuAttrFromWhSkuInventory(Long insideContainerId, Long ouId) {
         return this.whSkuInventoryDao.getUniqueSkuAttrFromWhSkuInventory(insideContainerId, ouId);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public Sku findSkuByIdToShard(Long id, Long ouId) {
+        return this.skuDao.findByIdShared(id, ouId);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public Container findContainerByIdToShard(Long id, Long ouId) {
+        return this.containerDao.findByIdExt(id, ouId);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_GLOBALSOURCE)
+    public StoreDefectType findStoreDefectTypeByIdToGlobal(Long id) {
+        return this.storeDefectTypeDao.findById(id);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_GLOBALSOURCE)
+    public StoreDefectReasons findStoreDefectReasonsByIdToGlobal(Long id) {
+        return this.storeDefectReasonsDao.findById(id);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public WarehouseDefectType findWarehouseDefectTypeByIdToShard(Long id, Long ouId) {
+        return this.warehouseDefectTypeDao.findByIdExt(id, ouId);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public WarehouseDefectReasons findWarehouseDefectReasonsByIdToShard(Long id, Long ouId) {
+        return this.warehouseDefectReasonsDao.findByIdExt(id, ouId);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void saveScanedSkuWhenGeneralRcvdForPda(List<WhSkuInventorySn> saveSnList, List<WhAsnRcvdSnLog> saveSnLogList, List<WhSkuInventory> saveInvList, List<WhAsnRcvdLog> saveInvLogList, List<WhAsnLine> saveAsnLineList, WhAsn asn,
+            List<WhPoLine> savePoLineList, WhPo po) {
+        try {
+
+            // 保存残次信息
+            for (WhSkuInventorySn sn : saveSnList) {
+                this.whSkuInventorySnDao.insert(sn);
+            }
+            // 保存残次日志
+            for (WhAsnRcvdSnLog snlog : saveSnLogList) {
+                this.whAsnRcvdSnLogDao.insert(snlog);
+            }
+            // 保存库存记录
+            for (WhSkuInventory inv : saveInvList) {
+                this.whSkuInventoryDao.insert(inv);
+            }
+            // 保存库存日志
+            for (WhAsnRcvdLog invLog : saveInvLogList) {
+                this.whAsnRcvdLogDao.insert(invLog);
+            }
+            // 更新ASN明细
+            for (WhAsnLine asnline : saveAsnLineList) {
+                int updateCount = this.whAsnLineDao.saveOrUpdateByVersion(asnline);
+                if (updateCount <= 0) {
+                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                }
+            }
+            // 更新ASN
+            int updateAsnCount = this.whAsnDao.saveOrUpdateByVersion(asn);
+            if (updateAsnCount <= 0) {
+                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            }
+            // 更新PO明细
+            for (WhPoLine poline : savePoLineList) {
+                int updateCount = this.whPoLineDao.saveOrUpdateByVersion(poline);
+                if (updateCount <= 0) {
+                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                }
+            }
+            // 更新PO
+            int updatePoCount = this.whPoDao.saveOrUpdateByVersion(po);
+            if (updatePoCount <= 0) {
+                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            }
+        } catch (BusinessException e) {
+            throw e;
+        } catch (Exception ex) {
+            throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
+        }
+
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public int updateContainerByVersion(Container container) {
+        return this.containerDao.saveOrUpdateByVersion(container);
     }
 
 }
