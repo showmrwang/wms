@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import lark.common.annotation.MoreDB;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -34,8 +36,6 @@ import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhInBoundRule;
 import com.baozun.scm.primservice.whoperation.util.StringUtil;
-
-import lark.common.annotation.MoreDB;
 
 @Service("ruleManager")
 @Transactional
@@ -111,8 +111,8 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
         }
         RuleExportCommand export = new RuleExportCommand();
         // 返回MAP值 key: 0:找不到规则 1:找到规则单月台不可用 2:找到对应月台
-        Map<Integer, String> returnMap = new HashMap<Integer, String>();
-        returnMap.put(0, "");
+        Map<Integer, RecommendPlatformCommand> returnMap = new HashMap<Integer, RecommendPlatformCommand>();
+        returnMap.put(Constants.NO_MATCHING_RULES, new RecommendPlatformCommand());
         List<PlatformRecommendRuleCommand> prList = platformRecommendRuleDao.findPlatformRecommendRuleByOuId(ruleAffer.getOuid());
         for (PlatformRecommendRuleCommand p : prList) {
             // 查询规则是否符合要求
@@ -120,12 +120,12 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
             if (!StringUtil.isEmpty(prr)) {
                 // 如果不为空 则该规则符合要求
                 returnMap.clear();// 去除0:找不到规则
-                returnMap.put(1, "");// 添加1:找到规则
+                returnMap.put(Constants.NONE_AVAILABLE_PLATFORMS, new RecommendPlatformCommand());// 添加1:找到规则
                 RecommendPlatformCommand rpc = recommendPlatformDao.findCommandByRuleIdOrderByPriority(p.getId(), ruleAffer.getOuid());
                 if (null != rpc) {
                     // 如果有可用月台 返回2:找到对应月台
                     returnMap.clear();// 去除1:找到规则
-                    returnMap.put(2, rpc.getPlatformCode());// 添加2:找到对应月台
+                    returnMap.put(Constants.AVAILABLE_PLATFORM, rpc);// 添加2:找到对应月台
                     break;
                 }
             }

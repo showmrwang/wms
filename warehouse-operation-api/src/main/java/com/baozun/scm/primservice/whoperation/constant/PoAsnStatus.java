@@ -53,7 +53,7 @@ public class PoAsnStatus implements Serializable {
     /** ASN RESERVE LINE */
     public static final int ASN_RESERVE_NEW = 1; // 创建
     public static final int ASN_RESERVE_CHECKIN = 2; // 签入
-    public static final int ASN_RESERVE_FINISH = 10; // 收货完成
+    public static final int ASN_RESERVE_FINISH = 10; // 签入完成
     public static final int ASN_RESERVE_CANCELED = 17;// 取消
     /** ASN RESERVE LINE */
 

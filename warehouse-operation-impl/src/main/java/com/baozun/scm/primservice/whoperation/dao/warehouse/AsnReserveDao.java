@@ -87,4 +87,15 @@ public interface AsnReserveDao extends BaseDao<AsnReserve, Long> {
      */
     int deleteByIdExt(@Param("id") Long id, @Param("ouId") Long ouId);
 
+    /**
+     * 根据asnId查找预约信息
+     *
+     * @author mingwei.xie
+     * @param asnId
+     * @param ouId
+     * @return
+     */
+    AsnReserve findAsnReserveByAsnId(@Param("asnId") Long asnId, @Param("ouId") Long ouId);
+
+
 }

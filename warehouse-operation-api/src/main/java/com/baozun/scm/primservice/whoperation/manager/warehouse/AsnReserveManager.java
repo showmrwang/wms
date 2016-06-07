@@ -77,19 +77,42 @@ public interface AsnReserveManager extends BaseManager {
 
 
     int findListByQueryMapWithExt(AsnReserve asnReserve, Long ouId);
-    
+
     int deleteAsnReserveById(Long id, Long ouId);
-    
+
     /**
      * 生成Asn预约号
+     * 
      * @return
      */
     String createAsnReserveCode();
-    
+
     /**
      * 校验Asn号是否已经被取消预约，如用户又要新建预约，提示用户该Asn号不可再新建预约，修改原Asn预约状态，即可重新预约
+     * 
      * @return
      */
     Boolean checkAsnCodeIsReserve(String asnCode, Integer status, Long ouId);
-    
+
+    /**
+     * 根据Id查找预约信息
+     *
+     * @author mingwei.xie
+     * @param asnId
+     * @param ouId
+     * @return
+     */
+    AsnReserve findByIdExt(Long asnId, Long ouId);
+
+
+    /**
+     * 根据asnId查找预约信息
+     *
+     * @author mingwei.xie
+     * @param id
+     * @param ouId
+     * @return
+     */
+    AsnReserve findAsnReserveByAsnId(Long id, Long ouId);
+
 }

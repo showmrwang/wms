@@ -272,4 +272,68 @@ public class PlatformManagerImpl implements PlatformManager {
         }
     }
 
+    /**
+     * 查找空闲月台
+     *
+     * @param ouId
+     * @param lifecycle
+     * @return
+     * @author mingwei.xie
+     */
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    @Override
+    public List<Platform> findVacantPlatform(Long ouId, Integer lifecycle) {
+        if (log.isInfoEnabled()) {
+            log.info("PlatformManagerImpl findVacantPlatform is start");
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("findVacantPlatform param [ouId:{}, lifecycle:{}]", ouId, lifecycle);
+        }
+
+        List<Platform> platformList = new ArrayList<>();
+        if (null != ouId && null != lifecycle) {
+            Platform platform = new Platform();
+            platform.setOuId(ouId);
+            platform.setLifecycle(lifecycle);
+            platform.setIsOccupied(false);
+
+            platformList = platformDao.findListByParam(platform);
+        }
+        if (log.isInfoEnabled()) {
+            log.info("PlatformManagerImpl findVacantPlatform is end");
+        }
+        return platformList;
+    }
+
+    /**
+     * @author mingwei.xie
+     * @param ouId
+     * @param lifecycle
+     * @param logId
+     * @return
+     */
+    public List<Platform> findOccupiedPlatform(Long ouId, Integer lifecycle, String logId){
+        if (log.isInfoEnabled()) {
+            log.info("PlatformManagerImpl findOccupiedPlatform is start");
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("findOccupiedPlatform param [ouId:{}, lifecycle:{}]", ouId, lifecycle);
+        }
+
+        List<Platform> platformList = new ArrayList<>();
+        if (null != ouId && null != lifecycle) {
+            Platform platform = new Platform();
+            platform.setOuId(ouId);
+            platform.setLifecycle(lifecycle);
+            platform.setIsOccupied(true);
+
+            platformList = platformDao.findListByParam(platform);
+        }
+        if (log.isInfoEnabled()) {
+            log.info("PlatformManagerImpl findOccupiedPlatform is end");
+        }
+        return platformList;
+    }
+
+
 }

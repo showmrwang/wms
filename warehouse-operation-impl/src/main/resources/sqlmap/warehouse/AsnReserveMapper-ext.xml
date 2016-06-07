@@ -15,7 +15,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 
 	<select id="findListByQueryMapWithPageExt" resultMap="asnReserveCommand">
 		select
-		<include refid="asnReserveColumnsExt" />
+		<include refid="asnReserveCommandColumnsExt" />
 		from t_wh_asn_reserve as s
 		left join sys_dictionary as syst on s.level = syst.id
 		left join sys_dictionary as sysl on s.status = sysl.dic_value
@@ -31,7 +31,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 
 	<select id="findListByQueryMapWithExt" resultMap="asnReserveCommand">
 		select
-		<include refid="asnReserveColumnsExt" />
+		<include refid="asnReserveCommandColumnsExt" />
 		from t_wh_asn_reserve as s
 		left join sys_dictionary as syst on s.level = syst.id
 		left join sys_dictionary as sysl on s.status = sysl.dic_value
@@ -41,7 +41,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 
 
 	<!-- 用于select查询公用抽取的列 -->
-	<sql id="asnReserveColumnsExt">
+	<sql id="asnReserveCommandColumnsExt">
 	    <![CDATA[
 	        	s.id as id,
 	        	s.code as code,
@@ -215,7 +215,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</foreach>
 		and ou_id = #{ouId}
 	</update>
-	
+
 	<select id="findAsnReserveByStatusExt" resultMap="AsnReserveResultExt">
 		select * from t_wh_asn_reserve as s
 		<where>
@@ -249,6 +249,37 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        id = #{id} 
 		        and ou_id = #{ouId}
 	    ]]>
-	 </delete> 
+	 </delete>
+
+    <sql id="asnReserveColumnsExt">
+        <![CDATA[
+            id as id,
+            code as code,
+            asn_code as asnCode,
+            asn_id as asnId,
+            eta as eta,
+            delivery_time as deliveryTime,
+            est_parking_time as estParkingTime,
+            level as level,
+            ou_id as ouId,
+            status as status,
+            sort as sort,
+            create_time as createTime,
+            created_id as createdId,
+            last_modify_time as lastModifyTime,
+            modified_id as modifiedId
+        ]]>
+    </sql>
+
+    <select id="findAsnReserveByAsnId" resultMap="AsnReserveResultExt">
+        select <include refid="asnReserveColumnsExt" />
+        <![CDATA[
+        from t_wh_asn_reserve
+        where
+            asn_id = #{asnId}
+            and ou_id = #{ouId}
+        ]]>
+    </select>
+
 
 </mapper>

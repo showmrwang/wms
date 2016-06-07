@@ -151,8 +151,27 @@ public final class Constants {
     /** 默认Long数值 */
     public static final Long DEFAULT_LONG = 0l;
 
+    /** Asn预约普通 */
+    public static final Long ASN_RESERVE_NORMAL = 83L;
     /** Asn预约紧急 */
     public static final Long ASN_RESERVE_URGENT = 84L;
+
+    /** 未匹配规则 */
+    public static final Integer NO_MATCHING_RULES = 0;
+
+    /** 无可用月台 */
+    public static final Integer NONE_AVAILABLE_PLATFORMS = 1;
+
+    /** 可用月台 */
+    public static final Integer AVAILABLE_PLATFORM = 2;
+
+    /** ASN预约优先级 */
+    public static final String ASN_RESERVE_LEVEL = "ASN_RESERVE_LEVEL";
+
+    /** asn签入类型 */
+    public static final String CHECK_IN_TYPE_NORMAL_CHECKIN = "normalCheckIn";
+    /** 分配月台签入类型 */
+    public static final String CHECK_IN_TYPE_MANUAL_CHECKIN = "manualCheckIn";
 
     // enum:通用收货商品属性扫描序列
     public static final int GENERAL_RECEIVING_ISVALID = 0;// 0：是否管理效期

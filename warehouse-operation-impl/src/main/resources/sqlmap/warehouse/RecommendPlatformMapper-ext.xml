@@ -96,7 +96,9 @@
 				left join t_wh_platform p on r.platform_id = p.id
             where
 	            r.platform_recommend_rule_id = #{platformRecommendRuleId}
-	            and r.ou_id = #{ouId} and p.lifecycle = 1
+	            and r.ou_id = #{ouId}
+                and p.lifecycle = 1
+                and p.is_occupied = 0
 	            order by r.priority asc limit 1
     </select>
 

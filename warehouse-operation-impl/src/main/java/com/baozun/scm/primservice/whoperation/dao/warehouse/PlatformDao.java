@@ -17,17 +17,17 @@ package com.baozun.scm.primservice.whoperation.dao.warehouse;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.ibatis.annotations.Param;
-
-import com.baozun.scm.primservice.whoperation.command.warehouse.PlatformCommand;
-import com.baozun.scm.primservice.whoperation.model.warehouse.Platform;
-
 import lark.common.annotation.CommonQuery;
 import lark.common.annotation.QueryPage;
 import lark.common.dao.Page;
 import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
+
+import org.apache.ibatis.annotations.Param;
+
+import com.baozun.scm.primservice.whoperation.command.warehouse.PlatformCommand;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Platform;
 
 public interface PlatformDao extends BaseDao<Platform, Long> {
 
@@ -79,6 +79,25 @@ public interface PlatformDao extends BaseDao<Platform, Long> {
      * @param ouId
      * @return
      */
-    List<Platform> findListByPlatformType(@Param("platformType") Long platformType, @Param("ouId") Long ouId, @Param("lifecycle")Integer lifecycle);
+    List<Platform> findListByPlatformType(@Param("platformType") Long platformType, @Param("ouId") Long ouId, @Param("lifecycle") Integer lifecycle);
+
+    /**
+     * 手工指定月台
+     *
+     * @author mingwei.xie
+     * @param platform
+     * @return
+     */
+    Long assignPlatform(Platform platform);
+
+
+    /**
+     * 释放月台
+     *
+     * @author mingwei.xie
+     * @param platform
+     * @return
+     */
+    Long freePlatform(Platform platform);
 
 }
