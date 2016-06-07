@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnLineCommand;
-import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
 import com.baozun.scm.primservice.whoperation.command.system.GlobalLogCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
@@ -617,7 +616,7 @@ public class AsnManagerImpl implements AsnManager {
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void deleteAsnAndAsnLineToShard(WhAsnCommand whAsnCommand, WhPoCommand whpo, List<WhPoLine> polineList) {
+    public void deleteAsnAndAsnLineToShard(WhAsnCommand whAsnCommand, WhPo whpo, List<WhPoLine> polineList) {
         log.info(this.getClass().getSimpleName() + ".deleteAsnAndAsnLineToShard method begin!");
         if (log.isDebugEnabled()) {
             log.debug(this.getClass().getSimpleName() + ".deleteAsnAndAsnLineToShard method params:[asnId:{},ouId:{},operator:{},asn:{},po:{},polineList:{}]", whAsnCommand.getId(), whAsnCommand.getOuId(), whAsnCommand.getModifiedId(), whAsnCommand, whpo,
@@ -650,14 +649,12 @@ public class AsnManagerImpl implements AsnManager {
                 }
             }
             // 更改PO单信息
-            WhPo po = new WhPo();
-            BeanUtils.copyProperties(whpo, po);
-            int updatePoCount = this.whPoDao.saveOrUpdateByVersion(po);
+            int updatePoCount = this.whPoDao.saveOrUpdateByVersion(whpo);
             if (updatePoCount <= 0) {
-                log.warn("method deleteAsnAndAsnLineToShard update po error: update po error[params:-->id:{},ouId:{},returns:{}]  ", po.getId(), po.getOuId(), updatePoCount);
+                log.warn("method deleteAsnAndAsnLineToShard update po error: update po error[params:-->id:{},ouId:{},returns:{}]  ", whpo.getId(), whpo.getOuId(), updatePoCount);
                 throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
             }
-            this.insertGlobalLog(po.getModifiedId(), new Date(), po.getClass().getSimpleName(), po, Constants.GLOBAL_LOG_DELETE, po.getOuId());
+            this.insertGlobalLog(whpo.getModifiedId(), new Date(), whpo.getClass().getSimpleName(), whpo, Constants.GLOBAL_LOG_DELETE, whpo.getOuId());
             // 更改POLINE单信息
             for (WhPoLine poLine : polineList) {
                 int polineCount = this.whPoLineDao.saveOrUpdateByVersion(poLine);
@@ -758,4 +755,5 @@ public class AsnManagerImpl implements AsnManager {
     public int updateByVersionForUnLock(Long id, Long ouid) {
         return this.whAsnDao.updateByVersionForUnLock(id, ouid);
     }
+
 }

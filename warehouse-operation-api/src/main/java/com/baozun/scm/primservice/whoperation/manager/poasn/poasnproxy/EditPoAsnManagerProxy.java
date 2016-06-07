@@ -38,6 +38,7 @@ public interface EditPoAsnManagerProxy extends BaseManager {
     /**
      * 修改PO单表头信息
      * 
+     * @deprecated
      * @param po
      * @return
      */
@@ -180,5 +181,13 @@ public interface EditPoAsnManagerProxy extends BaseManager {
      * @return
      */
     int updateByVersionForUnLock(Long id, Long ouid);
+
+    /**
+     * 业务方法： 更新仓库PO单头信息
+     * 
+     * @param command
+     * @return
+     */
+    ResponseMsg editPoNew(WhPoCommand command);
 
 }

@@ -18,6 +18,7 @@ import com.baozun.scm.primservice.whoperation.model.poasn.BiPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.BiPoLine;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 
 public interface SelectPoAsnManagerProxy extends BaseManager {
     /**
@@ -58,7 +59,7 @@ public interface SelectPoAsnManagerProxy extends BaseManager {
      * @param whPoCommand
      * @return
      */
-    WhPoCommand findWhPoById(WhPoCommand whPoCommand);
+    WhPo findWhPoById(WhPoCommand whPoCommand);
 
     /**
      * 根据PO单ID，OUID查找PO

@@ -37,6 +37,7 @@ import com.baozun.scm.primservice.whoperation.model.poasn.BiPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.BiPoLine;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 import com.baozun.scm.primservice.whoperation.util.StringUtil;
@@ -135,18 +136,18 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
      * 通过id+ou_id 查询PO单信息
      */
     @Override
-    public WhPoCommand findWhPoById(WhPoCommand whPoCommand) {
+    public WhPo findWhPoById(WhPoCommand whPoCommand) {
         log.info(this.getClass().getSimpleName() + ".findWhPoById method begin!");
         if (log.isDebugEnabled()) {
             log.debug(this.getClass().getSimpleName() + ".findWhPoById method params:{}", whPoCommand);
         }
-        WhPoCommand whpo = null;
+        WhPo whpo = null;
         if (null == whPoCommand.getOuId()) {
             // 查询基本库内信息
-            whpo = poManager.findWhPoByIdToInfo(whPoCommand);
+            whpo = poManager.findWhPoByIdToInfo(whPoCommand.getId(), whPoCommand.getOuId());
         } else {
             // 查询拆库内信息
-            whpo = poManager.findWhPoByIdToShard(whPoCommand);
+            whpo = poManager.findWhPoByIdToShard(whPoCommand.getId(), whPoCommand.getOuId());
         }
         if (log.isDebugEnabled()) {
             log.debug(this.getClass().getSimpleName() + ".findWhPoById method returns {}!", whpo);

@@ -71,13 +71,13 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
     @Autowired
     private AsnManager asnManager;
     @Autowired
-    private PoAsnOuManager poAsnOuManager;
-    @Autowired
     private BiPoManager biPoManager;
     @Autowired
     private PkManager pkManager;
     @Autowired
     private BiPoLineManager biPoLineManager;
+    @Autowired
+    private PoAsnOuManager poAsnOuManager;
 
     /**
      * 封装创建PO单数据

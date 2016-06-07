@@ -23,7 +23,6 @@ import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdContainerCach
 import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdSnCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnLineCommand;
-import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.constant.CacheKeyConstant;
@@ -100,10 +99,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
         if (PoAsnStatus.ASN_CANCELED == cacheAsn.getStatus()) {// ASN单状态校验：只校验了是未取消的数据
             throw new BusinessException(ErrorCodes.ASN_NULL);
         }
-        WhPoCommand poSearchCommand=new WhPoCommand();
-        poSearchCommand.setOuId(ouId);
-        poSearchCommand.setId(cacheAsn.getPoId());
-        WhPoCommand po=this.poManager.findWhPoByIdToShard(poSearchCommand);
+        WhPo po = this.poManager.findWhPoByIdToShard(cacheAsn.getPoId(), ouId);
         
         String cacheRate = cacheManager.getMapValue(CacheKeyConstant.CACHE_ASN_OVERCHARGE, occupationId.toString());
         if(StringUtils.isEmpty(cacheRate)){
