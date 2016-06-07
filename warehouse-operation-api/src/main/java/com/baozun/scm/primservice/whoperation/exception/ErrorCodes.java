@@ -251,6 +251,8 @@ public class ErrorCodes {
     public static final int RCVD_CONTAINER_LIMIT_ERROR = 10011;
     /** 取消操作异常，请重试! */
     public static final int RCVD_CANCEL_ERROR = 10012;
+    /** 仓库店铺超收比例缓存失败，请重试！ */
+    public static final int RCVD_WAREHOUSE_STORE_OVERCHAGE_CACHE_ERROR = 10013;
     // 10001-20000 luyimin
 
 
