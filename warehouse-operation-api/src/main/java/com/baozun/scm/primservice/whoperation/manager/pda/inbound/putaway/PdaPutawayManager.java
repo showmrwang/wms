@@ -50,7 +50,7 @@ public interface PdaPutawayManager extends BaseManager {
      * @param userId
      * @param logId
      */
-    void sysGuidePutaway(String containerCode, String locationCode, String asnCode, Long funcId, Integer putawayPatternDetailType, Integer caseMode, Long ouId, Long userId, String logId);
+    void sysGuidePutaway(String containerCode, String locationCode, Long funcId, Integer putawayPatternDetailType, Integer caseMode, Long ouId, Long userId, String logId);
     
     /**
      * 根据外部容器查询Caselevel箱数量

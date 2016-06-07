@@ -153,33 +153,32 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                     log.error("rcvd inv info error, containerCode is:[{}], logId is:[{}]", containerCode, logId);
                     throw new BusinessException(ErrorCodes.RCVD_INV_INFO_NOT_OCCUPY_ERROR);
                 }
+                WhAsn asn = whAsnDao.findAsnByCodeAndOuId(asnCode, ouId);
+                if (null == asn) {
+                    log.error("asn is null error! containerCode is:[{}], logId is:[{}]", containerCode, logId);
+                    throw new BusinessException(ErrorCodes.COMMON_ASN_IS_NULL_ERROR, new Object[] {asnCode});
+                }
+                if (PoAsnStatus.ASN_RCVD_FINISH != asn.getStatus()) {
+                    log.error("asn status error! containerCode is:[{}], logId is:[{}]", containerCode, logId);
+                    throw new BusinessException(ErrorCodes.COMMON_ASN_STATUS_ERROR, new Object[] {asnCode});
+                }
+                Long poId = asn.getPoId();
+                WhPo po = whPoDao.findWhPoById(poId, ouId);
+                if (null == po) {
+                    log.error("po is null error! containerCode is:[{}], logId is:[{}]", containerCode, logId);
+                    throw new BusinessException(ErrorCodes.PO_NULL);
+                }
+                String poCode = po.getPoCode();
+                if (PoAsnStatus.PO_RCVD != po.getStatus()) {
+                    log.error("po status error! containerCode is:[{}], logId is:[{}]", containerCode, logId);
+                    throw new BusinessException(ErrorCodes.COMMON_PO_STATUS_ERROR, new Object[] {poCode});
+                }
             }
         }
-        WhAsn asn = whAsnDao.findAsnByCodeAndOuId(asnCode, ouId);
-        if (null == asn) {
-            log.error("asn is null error! containerCode is:[{}], logId is:[{}]", containerCode, logId);
-            throw new BusinessException(ErrorCodes.COMMON_ASN_IS_NULL_ERROR, new Object[] {asnCode});
-        }
-        if (PoAsnStatus.ASN_RCVD_FINISH != asn.getStatus()) {
-            log.error("asn status error! containerCode is:[{}], logId is:[{}]", containerCode, logId);
-            throw new BusinessException(ErrorCodes.COMMON_ASN_STATUS_ERROR, new Object[] {asnCode});
-        }
-        Long poId = asn.getPoId();
-        WhPo po = whPoDao.findWhPoById(poId, ouId);
-        if (null == po) {
-            log.error("po is null error! containerCode is:[{}], logId is:[{}]", containerCode, logId);
-            throw new BusinessException(ErrorCodes.PO_NULL);
-        }
-        String poCode = po.getPoCode();
-        if (PoAsnStatus.PO_RCVD != po.getStatus()) {
-            log.error("po status error! containerCode is:[{}], logId is:[{}]", containerCode, logId);
-            throw new BusinessException(ErrorCodes.COMMON_PO_STATUS_ERROR, new Object[] {poCode});
-        }
+      
         if (!StringUtils.isEmpty(locationCode)) {
             // 已经推荐过库位
             locCmd.setCode(locationCode);
-            locCmd.setOccupationCode(asnCode);
-            locCmd.setAsnId(asn.getId());
             return locCmd;
         }
         // 判断该容器是否有符合的上架规则
@@ -217,8 +216,6 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
             log.info("pdaPutawayManager.sysGuideScanPallet end, containerCode is:[{}], funcId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}], locactionCode is:[{}]", new Object[] {containerCode, funcId, ouId, userId, logId, locationCode});
         }
         locCmd.setCode(locationCode);
-        locCmd.setOccupationCode(asnCode);
-        locCmd.setAsnId(asn.getId());
         return locCmd;
     }
 
@@ -235,7 +232,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
      * @param logId
      */
     @Override
-    public void sysGuidePutaway(String containerCode, String locationCode, String asnCode, Long funcId, Integer putawayPatternDetailType, Integer caseMode, Long ouId, Long userId, String logId) {
+    public void sysGuidePutaway(String containerCode, String locationCode, Long funcId, Integer putawayPatternDetailType, Integer caseMode, Long ouId, Long userId, String logId) {
         if (log.isInfoEnabled()) {
             log.info("pdaPutawayManager.sysGuidePutaway start, containerCode is:[{}], funcId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", new Object[] {containerCode, funcId, ouId, userId, logId});
         }
@@ -283,41 +280,38 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         if (null != locExistsList && 0 < locExistsList.size()) {
             for (LocationCommand lc : locExistsList) {
                 String locCode = lc.getCode();
-                String aCode = lc.getOccupationCode();
+                String asnCode = lc.getOccupationCode();
                 if (StringUtils.isEmpty(locCode)) {
                     log.error("location not recommend fail! containerCode is:[{}], logId is:[{}]", containerCode, logId);
                     throw new BusinessException(ErrorCodes.COMMON_LOCATION_NOT_RECOMMEND_ERROR);
                 }
-                if (StringUtils.isEmpty(aCode)) {
+                if (StringUtils.isEmpty(asnCode)) {
                     log.error("rcvd inv info error, containerCode is:[{}], logId is:[{}]", containerCode, logId);
                     throw new BusinessException(ErrorCodes.RCVD_INV_INFO_NOT_OCCUPY_ERROR);
                 }
+                WhAsn asn = whAsnDao.findAsnByCodeAndOuId(asnCode, ouId);
+                if (null == asn) {
+                    log.error("asn is null error! containerCode is:[{}], logId is:[{}]", containerCode, logId);
+                    throw new BusinessException(ErrorCodes.COMMON_ASN_IS_NULL_ERROR, new Object[] {asnCode});
+                }
+                if (PoAsnStatus.ASN_RCVD_FINISH != asn.getStatus()) {
+                    log.error("asn status error! containerCode is:[{}], logId is:[{}]", containerCode, logId);
+                    throw new BusinessException(ErrorCodes.COMMON_ASN_STATUS_ERROR, new Object[] {asnCode});
+                }
+                Long poId = asn.getPoId();
+                WhPo po = whPoDao.findWhPoById(poId, ouId);
+                if (null == po) {
+                    log.error("po is null error! containerCode is:[{}], logId is:[{}]", containerCode, logId);
+                    throw new BusinessException(ErrorCodes.PO_NULL);
+                }
+                String poCode = po.getPoCode();
+                if (PoAsnStatus.PO_RCVD != po.getStatus()) {
+                    log.error("po status error! containerCode is:[{}], logId is:[{}]", containerCode, logId);
+                    throw new BusinessException(ErrorCodes.COMMON_PO_STATUS_ERROR, new Object[] {poCode});
+                }
             }
         }
-        if (StringUtils.isEmpty(asnCode)) {
-            log.error("rcvd inv info error, containerCode is:[{}], logId is:[{}]", containerCode, logId);
-            throw new BusinessException(ErrorCodes.RCVD_INV_INFO_NOT_OCCUPY_ERROR);
-        }
-        WhAsn asn = whAsnDao.findAsnByCodeAndOuId(asnCode, ouId);
-        if (null == asn) {
-            log.error("asn is null error! containerCode is:[{}], logId is:[{}]", containerCode, logId);
-            throw new BusinessException(ErrorCodes.COMMON_ASN_IS_NULL_ERROR, new Object[] {asnCode});
-        }
-        if (PoAsnStatus.ASN_RCVD_FINISH != asn.getStatus()) {
-            log.error("asn status error! containerCode is:[{}], logId is:[{}]", containerCode, logId);
-            throw new BusinessException(ErrorCodes.COMMON_ASN_STATUS_ERROR, new Object[] {asnCode});
-        }
-        Long poId = asn.getPoId();
-        WhPo po = whPoDao.findWhPoById(poId, ouId);
-        if (null == po) {
-            log.error("po is null error! containerCode is:[{}], logId is:[{}]", containerCode, logId);
-            throw new BusinessException(ErrorCodes.PO_NULL);
-        }
-        String poCode = po.getPoCode();
-        if (PoAsnStatus.PO_RCVD != po.getStatus()) {
-            log.error("po status error! containerCode is:[{}], logId is:[{}]", containerCode, logId);
-            throw new BusinessException(ErrorCodes.COMMON_PO_STATUS_ERROR, new Object[] {poCode});
-        }
+      
         if (StringUtils.isEmpty(locationCode)) {
 
         }
