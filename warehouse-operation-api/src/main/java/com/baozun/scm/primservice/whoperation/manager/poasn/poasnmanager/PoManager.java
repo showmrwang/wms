@@ -24,9 +24,9 @@ public interface PoManager extends BaseManager {
 
     ResponseMsg createPoAndLineToShare(WhPo po, List<WhPoLine> whPoLines, ResponseMsg rm);
 
-    WhPoCommand findWhPoByIdToInfo(WhPoCommand command);
+    WhPo findWhPoByIdToInfo(Long id, Long ouId);
 
-    WhPoCommand findWhPoByIdToShard(WhPoCommand command);
+    WhPo findWhPoByIdToShard(Long id, Long ouId);
 
     WhPoCommand findWhPoCommandByIdToInfo(Long id, Long ouId);
 
@@ -72,7 +72,7 @@ public interface PoManager extends BaseManager {
 
     void cancelPoToShard(List<WhPo> poList);
 
-    void editPoAdnPoLineWhenDeleteAsnToInfo(WhPoCommand whpo, List<WhPoLine> polineList);
+    void editPoAdnPoLineWhenDeleteAsnToInfo(WhPo whpo, List<WhPoLine> polineList);
 
     /**
      * 逻辑：poCode+ouId能唯一确定一条PO；poCode,ouId不能为空

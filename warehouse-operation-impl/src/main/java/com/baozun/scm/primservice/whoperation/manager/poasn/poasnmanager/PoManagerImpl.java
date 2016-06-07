@@ -521,19 +521,17 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
-    public void editPoAdnPoLineWhenDeleteAsnToInfo(WhPoCommand whpo, List<WhPoLine> polineList) {
+    public void editPoAdnPoLineWhenDeleteAsnToInfo(WhPo whpo, List<WhPoLine> polineList) {
         log.info(this.getClass().getSimpleName() + ".editPoAdnPoLineWhenDeleteAsnToInfo method begin!");
         try {
             // 保存PO
-            WhPo po = new WhPo();
-            BeanUtils.copyProperties(whpo, po);
-            int poUpdateCount = this.whPoDao.saveOrUpdateByVersion(po);
+            int poUpdateCount = this.whPoDao.saveOrUpdateByVersion(whpo);
             if (poUpdateCount <= 0) {
                 log.warn("edit linked po error!");
                 throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
             }
             // 插入操作日志
-            this.insertGlobalLog(po.getModifiedId(), new Date(), po.getClass().getSimpleName(), po, Constants.GLOBAL_LOG_UPDATE, po.getOuId());
+            this.insertGlobalLog(whpo.getModifiedId(), new Date(), whpo.getClass().getSimpleName(), whpo, Constants.GLOBAL_LOG_UPDATE, whpo.getOuId());
             for (WhPoLine poLine : polineList) {
                 int lineCount = this.whPoLineDao.saveOrUpdateByVersion(poLine);
                 if (lineCount <= 0) {
@@ -711,14 +709,14 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
 
     @Override
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
-    public WhPoCommand findWhPoByIdToInfo(WhPoCommand command) {
-        return this.whPoDao.findWhPoCommandById(command.getId(), command.getOuId());
+    public WhPo findWhPoByIdToInfo(Long id, Long ouId) {
+        return this.whPoDao.findWhPoById(id, ouId);
     }
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public WhPoCommand findWhPoByIdToShard(WhPoCommand command) {
-        return this.whPoDao.findWhPoCommandById(command.getId(), command.getOuId());
+    public WhPo findWhPoByIdToShard(Long id, Long ouId) {
+        return this.whPoDao.findWhPoById(id, ouId);
     }
 
     @Override
