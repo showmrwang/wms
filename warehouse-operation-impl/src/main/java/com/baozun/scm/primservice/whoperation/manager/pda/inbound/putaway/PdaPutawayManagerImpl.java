@@ -342,7 +342,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
      * @return
      */
     @Override
-    public int findCaselevelCartonNumsByOuterContainerCode(String containerCode, Long ouId, String logId) {
+    public int findCaselevelCartonNumsByOuterContainerCode(String containerCode, Long ouId, String logId) { 
         if (log.isInfoEnabled()) {
             log.info("pdaPutawayManager.findCaselevelCartonNumsByOuterContainerCode start, containerCode is:[{}], ouId is:[{}], logId is:[{}]", containerCode, ouId, logId);
         }
