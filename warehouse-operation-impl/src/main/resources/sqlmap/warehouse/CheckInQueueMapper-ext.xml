@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.CheckInQueueDao">
+    <resultMap id="CheckInQueueResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.CheckInQueue">
+    </resultMap>
+    <resultMap id="checkInQueueCommand" type="com.baozun.scm.primservice.whoperation.command.warehouse.CheckInQueueCommand">
+    </resultMap>
+    
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="checkInQueueColumnsExt">
+        <![CDATA[
+                id as id,
+                reserve_id as reserveId,
+                ou_id as ouId,
+                sequence as sequence,
+                create_time as createTime,
+                created_id as createdId,
+                last_modify_time as lastModifyTime,
+                modified_id as modifiedId
+        ]]>
+    </sql>
+    
+    <sql id="checkInQueueDynamicWhereExt">
+        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+            
+            <if test="id!=null">
+                and id = #{id}
+            </if>
+            
+            <if test="reserveId!=null">
+                and reserve_id = #{reserveId}
+            </if>
+            
+            <if test="ouId!=null">
+                and ou_id = #{ouId}
+            </if>
+            
+            <if test="sequence!=null">
+                and sequence = #{sequence}
+            </if>
+            
+            <if test="createTime!=null">
+                and create_time = #{createTime}
+            </if>
+            
+            <if test="createdId!=null">
+                and created_id = #{createdId}
+            </if>
+            
+            <if test="lastModifyTime!=null">
+                and last_modify_time = #{lastModifyTime}
+            </if>
+            
+            <if test="modifiedId!=null">
+                and modified_id = #{modifiedId}
+            </if>
+        </where>
+    </sql>
+
+    <sql id="checkInQueueCommandColumnsExt">
+        <![CDATA[
+            cq.id as id,
+            cq.reserve_id as reserveId,
+            cq.ou_id as ouId,
+            cq.sequence as sequence,
+            cq.create_time as createTime,
+            cq.created_id as createdId,
+            cq.last_modify_time as lastModifyTime,
+            cq.modified_id as modifiedId,
+            ar.delivery_time as deliveryTime,
+            ar.level as level,
+            ar.eta as eta
+        ]]>
+    </sql>
+
+    <update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.CheckInQueue">
+        <![CDATA[
+            UPDATE t_wh_checkin_queue SET
+                reserve_id = #{reserveId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                sequence = #{sequence,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                last_modify_time = now() ,
+                modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT}
+            WHERE
+                id = #{id}
+                and ou_id = #{ouId}
+                and last_modify_time = #{lastModifyTime}
+        ]]>
+    </update>
+
+    <update id="updateByVersionExt" parameterType="com.baozun.scm.primservice.whoperation.command.warehouse.CheckInQueueCommand">
+        <![CDATA[
+            UPDATE t_wh_checkin_queue SET
+                sequence = #{sequence,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                last_modify_time = now() ,
+                modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT}
+            WHERE
+                id = #{id}
+                and ou_id = #{ouId}
+                and last_modify_time = #{lastModifyTime}
+        ]]>
+    </update>
+
+    <delete id="deleteById">
+        delete from t_wh_checkin_queue
+        where id = #{id}
+        and ou_id = #{ouId}
+    </delete>
+
+    <select id="getListOrderBySequenceAsc" resultMap="checkInQueueCommand">
+        select
+            <include refid="checkInQueueCommandColumnsExt"/>
+        from t_wh_checkin_queue as cq
+            left join t_wh_asn_reserve as ar
+            on ar.id = cq.reserve_id
+        where cq.ou_id = #{ouId}
+            order by cq.sequence ASC
+    </select>
+    <select id="findCheckInQueueByAsnReserveId" resultMap="checkInQueueCommand">
+        select
+            <include refid="checkInQueueCommandColumnsExt"/>
+        from t_wh_checkin_queue as cq
+            left join t_wh_asn_reserve as ar
+            on ar.id = cq.reserve_id
+        where cq.ou_id = #{ouId}
+        and cq.reserve_id = #{reserveId}
+    </select>
+
+</mapper>

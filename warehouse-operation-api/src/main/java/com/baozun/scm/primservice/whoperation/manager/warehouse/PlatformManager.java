@@ -91,4 +91,23 @@ public interface PlatformManager extends BaseManager {
      * @return
      */
     List<Platform> findListByPlatformType(Long platformType, Long ouId, Integer lifecycle);
+
+    /**
+     * 查找空闲月台
+     *
+     * @author mingwei.xie
+     * @param ouId
+     * @param lifecycle
+     * @return
+     */
+    List<Platform> findVacantPlatform(Long ouId, Integer lifecycle);
+
+    /**
+     * @author mingwei.xie
+     * @param ouId
+     * @param lifecycle
+     * @param logId
+     * @return
+     */
+    List<Platform> findOccupiedPlatform(Long ouId, Integer lifecycle, String logId);
 }

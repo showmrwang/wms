@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import lark.common.annotation.MoreDB;
 import lark.common.dao.Page;
 import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.whoperation.command.warehouse.WarehouseCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
+import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.dao.auth.OperationUnitDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WarehouseDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
@@ -89,6 +91,7 @@ public class WarehouseManagerImpl extends BaseManagerImpl implements WarehouseMa
      * 通过ID查询仓库信息
      */
     @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public Warehouse findWarehouseById(Long id) {
         return warehouseDao.findWarehouseById(id);
     }

@@ -51,7 +51,7 @@ public class AsnReserveManagerImpl implements AsnReserveManager {
 
     @Autowired
     private PkManager pkManager;
-    
+
     @Autowired
     private GlobalLogManager globalLogManager;
 
@@ -237,7 +237,7 @@ public class AsnReserveManagerImpl implements AsnReserveManager {
         if (result != ids.size()) {
             throw new BusinessException(ErrorCodes.UPDATE_DATA_QUANTITYERROR, new Object[] {ids.size(), result});
         }
-        //插入全局日志
+        // 插入全局日志
         for (Long id : ids) {
             AsnReserve asnReserve = asnReserveDao.findByIdExt(id, ouId);
             insertGlobalLog(asnReserve, Constants.GLOBAL_LOG_UPDATE);
@@ -250,7 +250,7 @@ public class AsnReserveManagerImpl implements AsnReserveManager {
      * 新建Asn预约，更新排序[紧急优先级>普通]、[当日时间早>当日时间迟] Date eta, Long level,Long userId,Long asnReserveId,
      */
 
-    public int updateAsnReserveSort(AsnReserve asnReserve, List<AsnReserveCommand> arcList,Long ouId) {
+    public int updateAsnReserveSort(AsnReserve asnReserve, List<AsnReserveCommand> arcList, Long ouId) {
         log.info("AsnReserveManagerImpl updateAsnReserveSort is start");
         if (null == asnReserve) {
             throw new BusinessException(ErrorCodes.OBJECT_IS_NULL, new Object[] {"asnReserve"});
@@ -270,7 +270,7 @@ public class AsnReserveManagerImpl implements AsnReserveManager {
         if (arcList.size() == BaseModel.LIFECYCLE_NORMAL) {
             asnReserve.setSort(sort);
             updateCount = asnReserveDao.saveOrUpdateByVersion(asnReserve);
-            insertGlobalLog(asnReserve, Constants.GLOBAL_LOG_UPDATE);//插入全局日志，更新sort
+            insertGlobalLog(asnReserve, Constants.GLOBAL_LOG_UPDATE);// 插入全局日志，更新sort
             return updateCount;
         }
         // others
@@ -488,7 +488,7 @@ public class AsnReserveManagerImpl implements AsnReserveManager {
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public int findListByQueryMapWithExt(AsnReserve asnReserve,Long ouId) {
+    public int findListByQueryMapWithExt(AsnReserve asnReserve, Long ouId) {
         log.info("AsnReserveManagerImpl findListByQueryMapWithExt is start");
         log.info("Switch to use data source {}", DbDataSource.MOREDB_SHARDSOURCE);
         if (null == asnReserve) {
@@ -514,10 +514,10 @@ public class AsnReserveManagerImpl implements AsnReserveManager {
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public int deleteAsnReserveById(Long id,Long ouId) {
+    public int deleteAsnReserveById(Long id, Long ouId) {
         log.info("AsnReserveManagerImpl deleteAsnReserveById is start");
         log.info("Switch to use data source {}", DbDataSource.MOREDB_SHARDSOURCE);
-        //插入全局日志
+        // 插入全局日志
         AsnReserve asnReserve = asnReserveDao.findByIdExt(id, ouId);
         int count = asnReserveDao.deleteByIdExt(id, ouId);
         insertGlobalLog(asnReserve, Constants.GLOBAL_LOG_DELETE);
@@ -546,7 +546,7 @@ public class AsnReserveManagerImpl implements AsnReserveManager {
         log.info("AsnReserveManagerImpl checkAsnCodeIsReserve is end");
         return false;
     }
-    
+
     // check 2016-03-03 14:14
     private void insertGlobalLog(AsnReserve asnReserve, String operator) {
         GlobalLogCommand gl = new GlobalLogCommand();
@@ -558,4 +558,33 @@ public class AsnReserveManagerImpl implements AsnReserveManager {
         globalLogManager.insertGlobalLog(gl);
     }
 
+    /**
+     * 根据Id查找预约信息
+     * 
+     * @author mingwei.xie
+     * @param asnId
+     * @param ouId
+     * @return
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public AsnReserve findByIdExt(Long asnId, Long ouId) {
+        AsnReserve asnReserve = asnReserveDao.findByIdExt(asnId, ouId);
+        return asnReserve;
+    }
+
+    /**
+     * 根据asnId查找预约信息
+     * 
+     * @author mingwei.xie
+     * @param asnId
+     * @param ouId
+     * @return
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public AsnReserve findAsnReserveByAsnId(Long asnId, Long ouId) {
+        AsnReserve asnReserve = asnReserveDao.findAsnReserveByAsnId(asnId, ouId);
+        return asnReserve;
+    }
 }

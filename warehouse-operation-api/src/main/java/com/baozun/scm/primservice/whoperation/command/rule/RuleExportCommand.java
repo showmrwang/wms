@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.RecommendPlatformCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ShelveRecommendRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhInBoundRuleCommand;
 
@@ -25,7 +26,7 @@ public class RuleExportCommand extends BaseCommand {
     private String exportContainerCode;
 
     /** 返回月台可用信息 key: 0:找不到规则 1:找到规则单月台不可用 2:找到对应月台 */
-    private Map<Integer, String> exportPlatformCode;
+    private Map<Integer, RecommendPlatformCommand> exportPlatformCode;
 
     /** 入库分拣规则对象 */
     private WhInBoundRuleCommand whInBoundRuleCommand;
@@ -55,11 +56,11 @@ public class RuleExportCommand extends BaseCommand {
         this.exportContainerCode = exportContainerCode;
     }
 
-    public Map<Integer, String> getExportPlatformCode() {
+    public Map<Integer, RecommendPlatformCommand> getExportPlatformCode() {
         return exportPlatformCode;
     }
 
-    public void setExportPlatformCode(Map<Integer, String> exportPlatformCode) {
+    public void setExportPlatformCode(Map<Integer, RecommendPlatformCommand> exportPlatformCode) {
         this.exportPlatformCode = exportPlatformCode;
     }
 

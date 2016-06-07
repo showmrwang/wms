@@ -244,10 +244,34 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         <![CDATA[
             from t_wh_platform
             where
-            platform_type = #{platformType}
-            and ou_id = #{ouId}
-            and lifecycle = #{lifecycle}
+                platform_type = #{platformType}
+                and ou_id = #{ouId}
+                and lifecycle = #{lifecycle}
         ]]>
     </select>
+
+    <update id="assignPlatform" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Platform">
+        UPDATE t_wh_platform SET
+            occupation_code = #{occupationCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+            is_occupied = #{isOccupied,javaType=java.lang.Boolean,jdbcType=BIT} ,
+            last_modify_time = now() ,
+            modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT}
+        WHERE
+            id = #{id}
+            and ou_id = #{ouId}
+            and last_modify_time =  #{lastModifyTime}
+    </update>
+
+    <update id="freePlatform" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Platform">
+        UPDATE t_wh_platform SET
+            occupation_code = null ,
+            is_occupied = 0 ,
+            last_modify_time = now() ,
+            modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT}
+        WHERE
+            id = #{id}
+            and ou_id = #{ouId}
+            and last_modify_time =  #{lastModifyTime}
+    </update>
 
 </mapper>
