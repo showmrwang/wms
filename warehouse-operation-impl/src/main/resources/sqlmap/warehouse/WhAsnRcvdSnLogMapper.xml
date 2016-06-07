@@ -9,6 +9,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<resultMap id="WhAsnRcvdSnLogResult"
 		type="com.baozun.scm.primservice.whoperation.model.warehouse.WhAsnRcvdSnLog">
 	</resultMap>
+	
+	
+	<resultMap id="WhAsnRcvdSnLogCommandResult"
+		type="com.baozun.scm.primservice.whoperation.command.warehouse.WhAsnRcvdSnLogCommand">
+	</resultMap>
+	
 	<resultMap id="WhAsnRcvdSnLogPaginationResult" type="lark.common.dao.Pagination">
 		<collection property="items" javaType="ArrayList"
 			resultMap="WhAsnRcvdSnLogResult" />
@@ -304,7 +310,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		<include refid="whAsnRcvdSnLogDynamicWhere" />
 	</select>
 
-	<select id="getWhAsnRcvdSnLoglistByParams" resultMap="WhAsnRcvdSnLogResult">
+	<select id="getWhAsnRcvdSnLoglistByParams" resultMap="WhAsnRcvdSnLogCommandResult">
 		SELECT
 		log.sku_name as skuName,
 		log.sku_code as skuCode,
