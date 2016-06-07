@@ -38,6 +38,8 @@ public class WhCarton extends BaseModel {
     private Long containerId;
     /** 装箱数量 */
     private Double quantity;
+    /** 已收数量 */
+    private Double qtyRcvd = 0.0;
     /** 生产日期 */
     private Date mfgDate;
     /** 失效日期 */
@@ -257,6 +259,14 @@ public class WhCarton extends BaseModel {
 
     public void setIsCaselevel(Boolean isCaselevel) {
         this.isCaselevel = isCaselevel;
+    }
+
+    public Double getQtyRcvd() {
+        return qtyRcvd;
+    }
+
+    public void setQtyRcvd(Double qtyRcvd) {
+        this.qtyRcvd = qtyRcvd;
     }
 
 

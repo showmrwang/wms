@@ -40,6 +40,8 @@ public class WhCartonCommand extends BaseCommand {
     private Long containerId;
     /** 装箱数量 */
     private Double quantity;
+    /** 已收数量 */
+    private Double qtyRcvd;
     /** 生产日期 */
     private Date mfgDate;
     /** 失效日期 */
@@ -449,6 +451,14 @@ public class WhCartonCommand extends BaseCommand {
 
     public void setBinQty(Integer binQty) {
         this.binQty = binQty;
+    }
+
+    public Double getQtyRcvd() {
+        return qtyRcvd;
+    }
+
+    public void setQtyRcvd(Double qtyRcvd) {
+        this.qtyRcvd = qtyRcvd;
     }
 
 
