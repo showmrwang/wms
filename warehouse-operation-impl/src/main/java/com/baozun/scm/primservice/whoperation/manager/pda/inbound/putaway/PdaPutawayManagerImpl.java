@@ -39,6 +39,7 @@ import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoDao;
 import com.baozun.scm.primservice.whoperation.dao.system.SysDictionaryDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.Container2ndCategoryDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.carton.WhCartonDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
@@ -77,6 +78,8 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
     private WhPoDao whPoDao;
     @Autowired
     private WhAsnDao whAsnDao;
+    @Autowired
+    private WhCartonDao whCartonDao;
 
     /**
      * 系统指导上架扫托盘号
@@ -90,7 +93,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
      * @return
      */
     @Override
-    public LocationCommand sysGuideScanPallet(String containerCode, Long funcId, Long ouId, Long userId, String logId) {
+    public LocationCommand sysGuideScanPallet(String containerCode, Long funcId, Integer putawayPatternDetailType, Long ouId, Long userId, String logId) {
         LocationCommand locCmd = new LocationCommand();
         String locationCode = "";
         String asnCode = "";
@@ -138,16 +141,19 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
             throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_RCVD_INV_ERROR, new Object[] {containerCode});
         }
         List<LocationCommand> locExistsList = whSkuInventoryDao.findWhSkuInventoryLocByOuterContainerCode(ouId, cclist);
+        boolean isLoc = false;
         if (null != locExistsList && 0 < locExistsList.size()) {
             for (LocationCommand lc : locExistsList) {
-                locationCode = lc.getCode();
+                if (!StringUtils.isEmpty(lc.getCode()) && false == isLoc) {
+                    locationCode = lc.getCode();
+                    isLoc = true;
+                }
                 asnCode = lc.getOccupationCode();
-                break;
+                if (StringUtils.isEmpty(asnCode)) {
+                    log.error("rcvd inv info error, containerCode is:[{}], logId is:[{}]", containerCode, logId);
+                    throw new BusinessException(ErrorCodes.RCVD_INV_INFO_NOT_OCCUPY_ERROR);
+                }
             }
-        }
-        if (StringUtils.isEmpty(asnCode)) {
-            log.error("rcvd inv info error, containerCode is:[{}], logId is:[{}]", containerCode, logId);
-            throw new BusinessException(ErrorCodes.RCVD_INV_INFO_NOT_OCCUPY_ERROR);
         }
         WhAsn asn = whAsnDao.findAsnByCodeAndOuId(asnCode, ouId);
         if (null == asn) {
@@ -185,7 +191,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         ruleAffer.setAfferContainerCodeList(cclist);
         ruleAffer.setRuleType(Constants.SHELVE_RECOMMEND_RULE_ALL);// 整托 、货箱上架规则
         RuleExportCommand export = ruleManager.ruleExport(ruleAffer);
-        //推荐库位
+        // 推荐库位
         List<LocationCommand> locList = whLocationRecommendManager.recommendLocationByShevleRule(ruleAffer, export.getShelveRecommendRuleList(), WhPutawayPatternDetailType.PALLET_PUTAWAY, logId);
         if (null == locList || 0 == locList.size()) {
             log.error("location recommend fail! containerCode is:[{}], logId is:[{}]", containerCode, logId);
@@ -202,6 +208,8 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
             if (null != inv.getLocationId()) {
                 throw new BusinessException(ErrorCodes.CONTAINER_RCVD_INV_HAS_LOCATION_ERROR);
             }
+            inv.setToBeFilledQty(inv.getOnHandQty());// 待移入
+            inv.setOnHandQty(null);
             inv.setLocationId(locationId);
             whSkuInventoryDao.saveOrUpdateByVersion(inv);
         }
@@ -212,6 +220,143 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         locCmd.setOccupationCode(asnCode);
         locCmd.setAsnId(asn.getId());
         return locCmd;
+    }
+
+    /**
+     * @author lichuan
+     * @param containerCode
+     * @param locationCode
+     * @param funcId
+     * @param asnId
+     * @param putawayPatternDetailType
+     * @param caseMode
+     * @param ouId
+     * @param userId
+     * @param logId
+     */
+    @Override
+    public void sysGuidePutaway(String containerCode, String locationCode, String asnCode, Long funcId, Integer putawayPatternDetailType, Integer caseMode, Long ouId, Long userId, String logId) {
+        if (log.isInfoEnabled()) {
+            log.info("pdaPutawayManager.sysGuidePutaway start, containerCode is:[{}], funcId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", new Object[] {containerCode, funcId, ouId, userId, logId});
+        }
+        if (StringUtils.isEmpty(containerCode)) {
+            log.error("containerCode is null error, logId is:[{}]", logId);
+            throw new BusinessException(ErrorCodes.COMMON_CONTAINER_CODE_IS_NULL_ERROR);
+        }
+        ContainerCommand containerCmd = containerDao.getContainerByCode(containerCode, ouId);
+        if (null == containerCmd) {
+            // 容器信息不存在
+            log.error("container is not exists, logId is:[{}]", logId);
+            throw new BusinessException(ErrorCodes.COMMON_CONTAINER_IS_NOT_EXISTS);
+        }
+        // 验证容器状态是否可用
+        if (!containerCmd.getLifecycle().equals(BaseModel.LIFECYCLE_NORMAL)) {
+            log.error("container lifecycle is not normal, logId is:[{}]", logId);
+            throw new BusinessException(ErrorCodes.COMMON_CONTAINER_LIFECYCLE_IS_NOT_NORMAL);
+        }
+        Long containerCate = containerCmd.getTwoLevelType();
+        Container2ndCategory container2 = container2ndCategoryDao.findByIdExt(containerCate, ouId);
+        if (null == container2) {
+            log.error("container2ndCategory is null error, 2endCategoryId is:[{}], logId is:[{}]", containerCate, logId);
+            throw new BusinessException(ErrorCodes.CONTAINER2NDCATEGORY_NULL_ERROR);
+        }
+        if (1 != container2.getLifecycle()) {
+            log.error("container2ndCategory lifecycle is not normal error, containerId is:[{}], logId is:[{}]", container2.getId(), logId);
+            throw new BusinessException(ErrorCodes.COMMON_CONTAINER_LIFECYCLE_IS_NOT_NORMAL);
+        }
+        Long containerCateId = containerCmd.getOneLevelType();
+        SysDictionary dic = sysDictionaryDao.findById(containerCateId);
+        if (!WhContainerCategoryType.PALLET.equals(dic.getDicValue())) {
+            log.error("container2ndCategory is not pallet error!, LogId is:[{}]", logId);
+            throw new BusinessException(ErrorCodes.CONTAINER_IS_NOT_PALLET_ERROR);
+        }
+        List<String> cclist = new ArrayList<String>();
+        cclist.add(containerCode);
+        List<WhSkuInventoryCommand> invList = null;
+        // 查询所有对应容器号的库存信息
+        invList = whSkuInventoryDao.findWhSkuInventoryByOuterContainerCode(ouId, cclist);
+        if (null == invList) {
+            log.error("container:[{}] rcvd inventory not found error!, logId is:[{}]", containerCode, logId);
+            throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_RCVD_INV_ERROR, new Object[] {containerCode});
+        }
+        List<LocationCommand> locExistsList = whSkuInventoryDao.findWhSkuInventoryLocByOuterContainerCode(ouId, cclist);
+        if (null != locExistsList && 0 < locExistsList.size()) {
+            for (LocationCommand lc : locExistsList) {
+                String locCode = lc.getCode();
+                String aCode = lc.getOccupationCode();
+                if (StringUtils.isEmpty(locCode)) {
+                    log.error("location not recommend fail! containerCode is:[{}], logId is:[{}]", containerCode, logId);
+                    throw new BusinessException(ErrorCodes.COMMON_LOCATION_NOT_RECOMMEND_ERROR);
+                }
+                if (StringUtils.isEmpty(aCode)) {
+                    log.error("rcvd inv info error, containerCode is:[{}], logId is:[{}]", containerCode, logId);
+                    throw new BusinessException(ErrorCodes.RCVD_INV_INFO_NOT_OCCUPY_ERROR);
+                }
+            }
+        }
+        if (StringUtils.isEmpty(asnCode)) {
+            log.error("rcvd inv info error, containerCode is:[{}], logId is:[{}]", containerCode, logId);
+            throw new BusinessException(ErrorCodes.RCVD_INV_INFO_NOT_OCCUPY_ERROR);
+        }
+        WhAsn asn = whAsnDao.findAsnByCodeAndOuId(asnCode, ouId);
+        if (null == asn) {
+            log.error("asn is null error! containerCode is:[{}], logId is:[{}]", containerCode, logId);
+            throw new BusinessException(ErrorCodes.COMMON_ASN_IS_NULL_ERROR, new Object[] {asnCode});
+        }
+        if (PoAsnStatus.ASN_RCVD_FINISH != asn.getStatus()) {
+            log.error("asn status error! containerCode is:[{}], logId is:[{}]", containerCode, logId);
+            throw new BusinessException(ErrorCodes.COMMON_ASN_STATUS_ERROR, new Object[] {asnCode});
+        }
+        Long poId = asn.getPoId();
+        WhPo po = whPoDao.findWhPoById(poId, ouId);
+        if (null == po) {
+            log.error("po is null error! containerCode is:[{}], logId is:[{}]", containerCode, logId);
+            throw new BusinessException(ErrorCodes.PO_NULL);
+        }
+        String poCode = po.getPoCode();
+        if (PoAsnStatus.PO_RCVD != po.getStatus()) {
+            log.error("po status error! containerCode is:[{}], logId is:[{}]", containerCode, logId);
+            throw new BusinessException(ErrorCodes.COMMON_PO_STATUS_ERROR, new Object[] {poCode});
+        }
+        if (StringUtils.isEmpty(locationCode)) {
+
+        }
+        // 执行上架
+        for (WhSkuInventoryCommand invCmd : invList) {
+            WhSkuInventory inv = new WhSkuInventory();
+            BeanUtils.copyProperties(invCmd, inv);
+            if (null == inv.getLocationId()) {
+                throw new BusinessException(ErrorCodes.RCVD_INV_NOT_HAS_LOCATION_ERROR);
+            }
+            inv.setOccupationCode(null);
+            inv.setOnHandQty(inv.getToBeFilledQty());// 在库
+            inv.setToBeFilledQty(null);
+            whSkuInventoryDao.saveOrUpdateByVersion(inv);
+            // 生成库存日志
+
+        }
+        if (log.isInfoEnabled()) {
+            log.info("pdaPutawayManager.sysGuidePutaway end, containerCode is:[{}], funcId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", new Object[] {containerCode, funcId, ouId, userId, logId});
+        }
+    }
+
+    /**
+     * @author lichuan
+     * @param containerode
+     * @param ouId
+     * @param logId
+     * @return
+     */
+    @Override
+    public int findCaselevelCartonNumsByOuterContainerCode(String containerCode, Long ouId, String logId) {
+        if (log.isInfoEnabled()) {
+            log.info("pdaPutawayManager.findCaselevelCartonNumsByOuterContainerCode start, containerCode is:[{}], ouId is:[{}], logId is:[{}]", containerCode, ouId, logId);
+        }
+        int nums = whCartonDao.findCartonNumsByOuterContainerCode(containerCode, ouId);
+        if (log.isInfoEnabled()) {
+            log.info("pdaPutawayManager.findCaselevelCartonNumsByOuterContainerCode end, containerCode is:[{}], ouId is:[{}], nums is:[{}], logId is:[{}]", containerCode, ouId, nums, logId);
+        }
+        return nums;
     }
 
 

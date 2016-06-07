@@ -35,6 +35,31 @@ public interface PdaPutawayManager extends BaseManager {
      * @param logId
      * @return
      */
-    LocationCommand sysGuideScanPallet(String containerCode, Long funcId, Long ouId, Long userId, String logId);
+    LocationCommand sysGuideScanPallet(String containerCode, Long funcId, Integer putawayPatternDetailType, Long ouId, Long userId, String logId);
+    
+    /**
+     * 系统指导执行上架
+     * @author lichuan
+     * @param containerCode
+     * @param locationCode
+     * @param funcId
+     * @param asnId
+     * @param putawayPatternDetailType
+     * @param caseMode
+     * @param ouId
+     * @param userId
+     * @param logId
+     */
+    void sysGuidePutaway(String containerCode, String locationCode, String asnCode, Long funcId, Integer putawayPatternDetailType, Integer caseMode, Long ouId, Long userId, String logId);
+    
+    /**
+     * 根据外部容器查询Caselevel箱数量
+     * @author lichuan
+     * @param containerode
+     * @param ouId
+     * @param logId
+     * @return
+     */
+    int findCaselevelCartonNumsByOuterContainerCode(String containerCode, Long ouId, String logId);
 
 }

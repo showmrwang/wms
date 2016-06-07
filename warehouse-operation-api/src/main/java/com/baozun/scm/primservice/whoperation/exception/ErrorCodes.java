@@ -222,6 +222,8 @@ public class ErrorCodes {
     public static final int COMMON_PO_IS_NULL_ERROR = 5008;
     /** PO单据[{0}]状态异常 */
     public static final int COMMON_PO_STATUS_ERROR = 5009;
+    /** 未找到推荐库位！ */
+    public static final int COMMON_LOCATION_NOT_RECOMMEND_ERROR = 5010;
     // 5001-10000 common end
 
     // 10001-20000 luyimin
@@ -269,6 +271,8 @@ public class ErrorCodes {
     public static final int CONTAINER_RCVD_INV_HAS_LOCATION_ERROR = 40004;
     /** 收货库存信息异常，未找到占用编码 */
     public static final int RCVD_INV_INFO_NOT_OCCUPY_ERROR = 40005;
+    /** 上架失败，收货库存信息没有推荐库位！ */
+    public static final int RCVD_INV_NOT_HAS_LOCATION_ERROR = 40006;
     // 40001-50000 lichuan
 
     // 50001-60000 hubin
