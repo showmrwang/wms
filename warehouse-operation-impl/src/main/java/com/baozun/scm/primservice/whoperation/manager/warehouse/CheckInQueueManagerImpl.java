@@ -71,6 +71,7 @@ public class CheckInQueueManagerImpl implements CheckInQueueManager {
      * @return
      */
     @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public CheckInQueueCommand findCheckInQueueByAsnReserveId(Long reserveId, Long ouId, String logId) {
         if (log.isInfoEnabled()) {
             log.info("CheckInQueueManagerImpl.findCheckInQueueByAsnReserveId start, reserveId is:[{}], ouId is:[{}], logId is:[{}]", reserveId, ouId, logId);
@@ -773,6 +774,7 @@ public class CheckInQueueManagerImpl implements CheckInQueueManager {
      * @return
      */
     @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public Long freePlatform(Long platformId, Long ouId, Long userId, String logId) {
         if (log.isInfoEnabled()) {
             log.info("PlatformManagerImpl.freePlatform start, platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", platformId, ouId, userId, logId);
