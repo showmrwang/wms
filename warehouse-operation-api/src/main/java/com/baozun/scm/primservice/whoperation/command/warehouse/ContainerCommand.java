@@ -42,7 +42,7 @@ public class ContainerCommand extends BaseCommand {
      */
     private Long operatorId;
     /**
-     * 1.可用;2.已删除;0.禁用
+     * 1.可用;2.已删除;0.禁用;3:占用;5:可上架
      */
     private Integer lifecycle;
 
