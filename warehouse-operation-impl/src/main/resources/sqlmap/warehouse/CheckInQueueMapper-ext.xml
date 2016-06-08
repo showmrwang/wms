@@ -94,7 +94,7 @@
         ]]>
     </update>
 
-    <update id="updateByVersionExt" parameterType="com.baozun.scm.primservice.whoperation.command.warehouse.CheckInQueueCommand">
+    <update id="updateByVersionExt" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.CheckInQueue">
         <![CDATA[
             UPDATE t_wh_checkin_queue SET
                 sequence = #{sequence,javaType=java.lang.Integer,jdbcType=INTEGER} ,
@@ -130,6 +130,14 @@
             on ar.id = cq.reserve_id
         where cq.ou_id = #{ouId}
         and cq.reserve_id = #{reserveId}
+    </select>
+
+    <select id="findByIdExt" resultMap="CheckInQueueResultExt">
+        select
+            <include refid="checkInQueueColumnsExt"/>
+        from t_wh_checkin_queue
+        where id = #{id}
+        and ou_id = #{ouId}
     </select>
 
 </mapper>

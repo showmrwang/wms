@@ -308,8 +308,7 @@ public class CheckInManagerProxyImpl extends BaseManagerImpl implements CheckInM
 
         Map<Integer, RecommendPlatformCommand> exportPlatformCode = ruleExportCommand.getExportPlatformCode();
         if (null == exportPlatformCode) {
-            log.error("CheckInManagerProxyImpl.matchPlatformRule -> ruleExportCommand.getExportPlatformCode error, result is null, asnReserveCode is:[{}], ouId is:[{}], logId is:[{}], ruleAfferCommand is:[{}], ruleExportCommand is:[{}]", asnReserveCode,
-                    ouId, logId, ruleAfferCommand, ruleExportCommand);
+            log.error("CheckInManagerProxyImpl.matchPlatformRule -> ruleExportCommand.getExportPlatformCode error, result is null, asnReserveCode is:[{}], ouId is:[{}], logId is:[{}], ruleAfferCommand is:[{}], ruleExportCommand is:[{}]", asnReserveCode, ouId, logId, ruleAfferCommand, ruleExportCommand);
             throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
         }
 
@@ -497,7 +496,7 @@ public class CheckInManagerProxyImpl extends BaseManagerImpl implements CheckInM
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
         if (log.isDebugEnabled()) {
-            log.debug("CheckInManagerProxyImpl.findOccupiedPlatform -> checkInQueueManager.simpleReserve invoke, ouId is:[{}], lifecycle is:[{}], logId is:[{}]", ouId, lifecycle, logId);
+            log.debug("CheckInManagerProxyImpl.findOccupiedPlatform -> platformManager.findOccupiedPlatform invoke, ouId is:[{}], lifecycle is:[{}], logId is:[{}]", ouId, lifecycle, logId);
         }
         List<Platform> occupiedPlatformList = platformManager.findOccupiedPlatform(ouId, lifecycle, logId);
         if (log.isInfoEnabled()) {

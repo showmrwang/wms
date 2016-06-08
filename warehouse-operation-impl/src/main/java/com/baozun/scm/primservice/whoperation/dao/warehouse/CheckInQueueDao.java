@@ -82,8 +82,18 @@ public interface CheckInQueueDao extends BaseDao<CheckInQueue, Long> {
      * 使用command更新
      *
      * @author mingwei.xie
-     * @param checkInQueueCommand
+     * @param checkInQueue
      * @return
      */
-    int updateByVersionExt(CheckInQueueCommand checkInQueueCommand);
+    int updateByVersionExt(CheckInQueue checkInQueue);
+
+    /**
+     * 根据id查询签入队列信息
+     *
+     * @author mingwei.xie
+     * @param id
+     * @param ouId
+     * @return
+     */
+    CheckInQueue findByIdExt(@Param("id") Long id, @Param("ouId") Long ouId);
 }

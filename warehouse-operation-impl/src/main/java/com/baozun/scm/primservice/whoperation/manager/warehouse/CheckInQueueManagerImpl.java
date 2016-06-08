@@ -30,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.whoperation.command.warehouse.AsnReserveCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.CheckInQueueCommand;
+import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnDao;
@@ -38,6 +39,7 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.CheckInQueueDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.PlatformDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
+import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 import com.baozun.scm.primservice.whoperation.model.warehouse.AsnReserve;
@@ -46,7 +48,7 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.Platform;
 
 @Service("checkInQueueManager")
 @Transactional
-public class CheckInQueueManagerImpl implements CheckInQueueManager {
+public class CheckInQueueManagerImpl extends BaseManagerImpl implements CheckInQueueManager {
     public static final Logger log = LoggerFactory.getLogger(CheckInQueueManagerImpl.class);
 
     @Autowired
@@ -85,7 +87,8 @@ public class CheckInQueueManagerImpl implements CheckInQueueManager {
         }
         CheckInQueueCommand checkInQueueCommand = checkInQueueDao.findCheckInQueueByAsnReserveId(reserveId, ouId);
         if (log.isDebugEnabled()) {
-            log.debug("CheckInQueueManagerImpl.findCheckInQueueByAsnReserveId -> checkInQueueDao.findCheckInQueueByAsnReserveId result, reserveId is:[{}], ouId is:[{}], logId is:[{}], checkInQueueCommand is:[{}]", reserveId, ouId, logId, checkInQueueCommand);
+            log.debug("CheckInQueueManagerImpl.findCheckInQueueByAsnReserveId -> checkInQueueDao.findCheckInQueueByAsnReserveId result, reserveId is:[{}], ouId is:[{}], logId is:[{}], checkInQueueCommand is:[{}]", reserveId, ouId, logId,
+                    checkInQueueCommand);
         }
         if (log.isInfoEnabled()) {
             log.info("CheckInQueueManagerImpl.findCheckInQueueByAsnReserveId end, asnReserveId is:[{}], ouId is:[{}], logId is:[{}]", reserveId, ouId, logId);
@@ -172,7 +175,7 @@ public class CheckInQueueManagerImpl implements CheckInQueueManager {
         // ASN预约信息
         AsnReserve originAsnReserve = asnReserveDao.findAsnReserveByAsnId(asnId, ouId);
         if (null == originAsnReserve || PoAsnStatus.ASN_RESERVE_NEW != originAsnReserve.getStatus()) {
-            log.error("CheckInQueueManagerImpl.addInToCheckInQueue -> asnReserveDao.findAsnReserveByAsnId error, asnId is:[{}], ouId is:[{}], logId is:[{}], originAsnReserve IS:[{}]", asnId, ouId, logId, originAsnReserve);
+            log.error("CheckInQueueManagerImpl.addInToCheckInQueue -> asnReserveDao.findAsnReserveByAsnId error, asnId is:[{}], ouId is:[{}], logId is:[{}], originAsnReserve is:[{}]", asnId, ouId, logId, originAsnReserve);
             throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
         }
 
@@ -190,9 +193,11 @@ public class CheckInQueueManagerImpl implements CheckInQueueManager {
             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
         }
 
+        insertGlobalLog(Constants.GLOBAL_LOG_UPDATE, originAsnReserve, ouId, userId, null, null);
+
         originAsnReserve = asnReserveDao.findAsnReserveByAsnId(asnId, ouId);
         if (null == originAsnReserve) {
-            log.error("CheckInQueueManagerImpl.addInToCheckInQueue -> asnReserveDao.findAsnReserveByAsnId error, asnId is:[{}], ouId is:[{}], logId is:[{}], originAsnReserve IS:[{}]", asnId, ouId, logId);
+            log.error("CheckInQueueManagerImpl.addInToCheckInQueue -> asnReserveDao.findAsnReserveByAsnId error, result is null, asnId is:[{}], ouId is:[{}], logId is:[{}]", asnId, ouId, logId);
             throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
         }
 
@@ -233,17 +238,19 @@ public class CheckInQueueManagerImpl implements CheckInQueueManager {
                     log.debug("CheckInQueueManagerImpl.addInToCheckInQueue loop checkInQueueCommandList, checkInQueue is exist, update to sharedDB, tempCommand is:[{}], logId is:[{}]", tempCommand, logId);
                 }
                 if (!tempCommand.getSequence().equals(index + 1)) {
-                    tempCommand.setSequence(index + 1);
-                    tempCommand.setModifiedId(userId);
+                    CheckInQueue originCheckInQueue = checkInQueueDao.findByIdExt(tempCommand.getId(), tempCommand.getOuId());
+                    originCheckInQueue.setSequence(index + 1);
+                    originCheckInQueue.setModifiedId(userId);
                     if (log.isDebugEnabled()) {
-                        log.debug("CheckInQueueManagerImpl.addInToCheckInQueue -> checkInQueueDao.updateByVersionExt, update checkInQueue sequence,  update to sharedDB, tempCommand is:[{}], logId is:[{}]", tempCommand, logId);
+                        log.debug("CheckInQueueManagerImpl.addInToCheckInQueue -> checkInQueueDao.updateByVersionExt, update originCheckInQueue sequence,  update to sharedDB, originCheckInQueue is:[{}], logId is:[{}]", originCheckInQueue, logId);
                     }
-                    int count = checkInQueueDao.updateByVersionExt(tempCommand);
+                    int count = checkInQueueDao.updateByVersionExt(originCheckInQueue);
                     if (count != 1) {
-                        log.error("CheckInQueueManagerImpl.addInToCheckInQueue -> checkInQueueDao.updateByVersionExt failed, update count != 1, asnId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}], updateCheckInQueueCommand is:[{}]", asnId, ouId,
-                                userId, logId, tempCommand);
+                        log.error("CheckInQueueManagerImpl.addInToCheckInQueue -> checkInQueueDao.updateByVersionExt failed, update count != 1, asnId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}], originCheckInQueue is:[{}]", asnId, ouId, userId,
+                                logId, originCheckInQueue);
                         throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
                     }
+                    insertGlobalLog(Constants.GLOBAL_LOG_UPDATE, originCheckInQueue, ouId, userId, null, null);
                 }
             } else {
                 waitNum = index;
@@ -266,6 +273,8 @@ public class CheckInQueueManagerImpl implements CheckInQueueManager {
             log.debug("CheckInQueueManagerImpl.addInToCheckInQueue -> checkInQueueDao.insert error count != 1, checkInQueue is:[{}], logId is:[{}], count is:[{}]", checkInQueue, logId, count);
             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
         }
+
+        insertGlobalLog(Constants.GLOBAL_LOG_INSERT, checkInQueue, ouId, userId, null, null);
 
 
         /*
@@ -359,6 +368,13 @@ public class CheckInQueueManagerImpl implements CheckInQueueManager {
             if (checkInQueueCommand.getReserveId().equals(originAsnReserve.getId())) {
                 waitingFlag = true;
                 listIterator.remove();
+                CheckInQueue originCheckInQueue = checkInQueueDao.findByIdExt(checkInQueueCommand.getId(), checkInQueueCommand.getOuId());
+                if (null == originCheckInQueue) {
+                    log.error("CheckInQueueManagerImpl.finishCheckIn -> checkInQueueDao.findByIdExt error, originCheckInQueue is null,   logId is:[{}], checkInQueueCommand is:[{}]", logId, checkInQueueCommand);
+                    throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
+                }
+                insertGlobalLog(Constants.GLOBAL_LOG_DELETE, originCheckInQueue, ouId, userId, null, null);
+
                 int count = checkInQueueDao.deleteById(checkInQueueCommand.getId(), checkInQueueCommand.getOuId());
                 if (count != 1) {
                     log.error("CheckInQueueManagerImpl.finishCheckIn -> checkInQueueDao.deleteById failed, delete count != 1, asnId is:[{}], platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}], deleteCheckInQueue is:[{}]", asnId, platformId,
@@ -394,13 +410,15 @@ public class CheckInQueueManagerImpl implements CheckInQueueManager {
             CheckInQueueCommand tempCommand = checkInQueueCommandList.get(index);
             if (null != tempCommand.getId()) {
                 if (!tempCommand.getSequence().equals(index + 1)) {
-                    tempCommand.setSequence(index + 1);
-                    tempCommand.setModifiedId(userId);
-                    //TODO 索引唯一性
-                    int count = checkInQueueDao.updateByVersionExt(tempCommand);
+                    CheckInQueue originCheckInQueue = checkInQueueDao.findByIdExt(tempCommand.getId(), tempCommand.getOuId());
+                    originCheckInQueue.setSequence(index + 1);
+                    originCheckInQueue.setModifiedId(userId);
+                    insertGlobalLog(Constants.GLOBAL_LOG_UPDATE, originCheckInQueue, ouId, userId, null, null);
+                    // TODO 索引唯一性
+                    int count = checkInQueueDao.updateByVersionExt(originCheckInQueue);
                     if (count != 1) {
-                        log.error("CheckInQueueManagerImpl.finishCheckIn -> checkInQueueDao.updateByVersionExt failed, update count != 1, asnId is:[{}], platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}], updateCheckInQueueCommand is:[{}]",
-                                asnId, platformId, ouId, userId, logId, tempCommand);
+                        log.error("CheckInQueueManagerImpl.finishCheckIn -> checkInQueueDao.updateByVersionExt failed, update count != 1, asnId is:[{}], platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}], originCheckInQueue is:[{}]", asnId,
+                                platformId, ouId, userId, logId, originCheckInQueue);
                         throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
                     }
                 }
@@ -420,6 +438,7 @@ public class CheckInQueueManagerImpl implements CheckInQueueManager {
             log.debug("CheckInQueueManagerImpl.finishCheckIn -> asnReserveDao.saveOrUpdateByVersion error asnReserveUpdateCount != 1, originAsnReserve is:[{}], logId is:[{}], asnUpdateCount is:[{}]", originAsnReserve, logId, asnReserveUpdateCount);
             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
         }
+        insertGlobalLog(Constants.GLOBAL_LOG_UPDATE, originAsnReserve, ouId, userId, null, null);
 
         // 修改ASN状态和实际到货时间
         originWhAsn.setDeliveryTime(originAsnReserve.getDeliveryTime());
@@ -430,15 +449,16 @@ public class CheckInQueueManagerImpl implements CheckInQueueManager {
             log.debug("CheckInQueueManagerImpl.finishCheckIn -> whAsnDao.saveOrUpdateByVersion error asnReserveUpdateCount != 1, originWhAsn is:[{}], logId is:[{}], asnUpdateCount is:[{}]", originWhAsn, logId, asnUpdateCount);
             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
         }
+        insertGlobalLog(Constants.GLOBAL_LOG_UPDATE, originWhAsn, ouId, userId, null, null);
 
 
         Platform originPlatform = platformDao.findByIdExt(platformId, ouId);
         if (null == originPlatform) {
-            log.error("PlatformManagerImpl finishCheckIn failed, originPlatform is null, asnId is:[{}], platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", asnId, platformId, ouId, userId, logId);
+            log.error("CheckInQueueManagerImpl finishCheckIn failed, originPlatform is null, asnId is:[{}], platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", asnId, platformId, ouId, userId, logId);
             throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
         }
         if (originPlatform.getIsOccupied() || !BaseModel.LIFECYCLE_NORMAL.equals(originPlatform.getLifecycle())) {
-            log.error("PlatformManagerImpl finishCheckIn failed, originPlatform invalid,  asnId is:[{}], platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}], originPlatform is:[{}]", asnId, platformId, ouId, userId, logId, originPlatform);
+            log.error("CheckInQueueManagerImpl finishCheckIn failed, originPlatform invalid,  asnId is:[{}], platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}], originPlatform is:[{}]", asnId, platformId, ouId, userId, logId, originPlatform);
             throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
         }
 
@@ -447,15 +467,16 @@ public class CheckInQueueManagerImpl implements CheckInQueueManager {
         originPlatform.setOccupationCode(originWhAsn.getAsnCode());
         originPlatform.setModifiedId(userId);
         if (log.isDebugEnabled()) {
-            log.debug("PlatformManagerImpl.finishCheckIn -> platformDao.assignPlatform  update to sharedDB, asnId is:[{}], platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}], originPlatform is:[{}]", asnId, platformId, ouId, userId, logId,
+            log.debug("CheckInQueueManagerImpl.finishCheckIn -> platformDao.assignPlatform  update to sharedDB, asnId is:[{}], platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}], originPlatform is:[{}]", asnId, platformId, ouId, userId, logId,
                     originPlatform);
         }
         Long resultCount = platformDao.assignPlatform(originPlatform);
         if (resultCount != 1) {
-            log.error("PlatformManagerImpl.finishCheckIn -> platformDao.assignPlatform  update to sharedDB failed, update count != 1, asnId is:[{}], platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}], originPlatform is:[{}]", asnId,
+            log.error("CheckInQueueManagerImpl.finishCheckIn -> platformDao.assignPlatform  update to sharedDB failed, update count != 1, asnId is:[{}], platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}], originPlatform is:[{}]", asnId,
                     platformId, ouId, userId, logId, originPlatform);
             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
         }
+        insertGlobalLog(Constants.GLOBAL_LOG_UPDATE, originPlatform, ouId, userId, null, null);
 
         if (log.isInfoEnabled()) {
             log.info("CheckInQueueManagerImpl.finishCheckIn end, asnId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", asnId, ouId, userId, logId);
@@ -502,13 +523,13 @@ public class CheckInQueueManagerImpl implements CheckInQueueManager {
         }
 
         if (log.isDebugEnabled()) {
-            log.debug("CheckInQueueManagerImpl.finishCheckIn -> asnReserveDao.findAsnReserveByAsnId invoke, asnReserveCommand is:[{}], asnId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", asnReserveCommand, asnReserveCommand.getAsnId(), ouId,
+            log.debug("CheckInQueueManagerImpl.simpleReserve -> asnReserveDao.findAsnReserveByAsnId invoke, asnReserveCommand is:[{}], asnId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", asnReserveCommand, asnReserveCommand.getAsnId(), ouId,
                     userId, logId);
         }
         // ASN预约信息
         AsnReserve originAsnReserve = asnReserveDao.findAsnReserveByAsnId(asnReserveCommand.getAsnId(), ouId);
         if (log.isDebugEnabled()) {
-            log.debug("CheckInQueueManagerImpl.finishCheckIn -> asnReserveDao.findAsnReserveByAsnId result, asnReserveCommand is:[{}], asnId is:[{}], originAsnReserve is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", asnReserveCommand,
+            log.debug("CheckInQueueManagerImpl.simpleReserve -> asnReserveDao.findAsnReserveByAsnId result, asnReserveCommand is:[{}], asnId is:[{}], originAsnReserve is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", asnReserveCommand,
                     asnReserveCommand.getAsnId(), originAsnReserve, ouId, userId, logId);
         }
         if (null != originAsnReserve) {
@@ -531,6 +552,7 @@ public class CheckInQueueManagerImpl implements CheckInQueueManager {
                 log.error("CheckInQueueManagerImpl.simpleReserve -> asnReserveDao.saveOrUpdateByVersion  update to sharedDB failed, update count != 1, logId is:[{}], originAsnReserve is:[{}], count is:[{}]", logId, originAsnReserve, count);
                 throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
             }
+            insertGlobalLog(Constants.GLOBAL_LOG_UPDATE, originAsnReserve, ouId, userId, null, null);
 
         } else {
             AsnReserve asnReserve = new AsnReserve();
@@ -552,6 +574,7 @@ public class CheckInQueueManagerImpl implements CheckInQueueManager {
                 log.error("CheckInQueueManagerImpl.simpleReserve -> asnReserveDao.insert,  insert to sharedDB failed, update count != 1, logId is:[{}], asnReserve is:[{}], count is:[{}]", logId, asnReserve, count);
                 throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
             }
+            insertGlobalLog(Constants.GLOBAL_LOG_INSERT, asnReserve, ouId, userId, null, null);
 
         }
         // ASN改为已预约
@@ -565,6 +588,7 @@ public class CheckInQueueManagerImpl implements CheckInQueueManager {
             log.error("CheckInQueueManagerImpl.simpleReserve -> whAsnDao.saveOrUpdateByVersion,  update to sharedDB failed, update count != 1, logId is:[{}], originWhAsn is:[{}], count is:[{}]", logId, originWhAsn, count);
             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
         }
+        insertGlobalLog(Constants.GLOBAL_LOG_UPDATE, originWhAsn, ouId, userId, null, null);
 
         if (log.isInfoEnabled()) {
             log.info("CheckInQueueManagerImpl.simpleReserve end, asnReserveCommand is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", asnReserveCommand, ouId, userId, logId);
@@ -586,10 +610,10 @@ public class CheckInQueueManagerImpl implements CheckInQueueManager {
     @Override
     public Long assignPlatform(Long asnId, Long platformId, Long ouId, Long userId, String logId) {
         if (log.isInfoEnabled()) {
-            log.info("PlatformManagerImpl.assignPlatform start, asnId is:[{}], platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", asnId, platformId, ouId, userId, logId);
+            log.info("CheckInQueueManagerImpl.assignPlatform start, asnId is:[{}], platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", asnId, platformId, ouId, userId, logId);
         }
         if (null == asnId || null == platformId || null == ouId || null == userId) {
-            log.error("PlatformManagerImpl.assignPlatform param is null, asnId is:[{}], platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", asnId, platformId, ouId, userId, logId);
+            log.error("CheckInQueueManagerImpl.assignPlatform param is null, asnId is:[{}], platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", asnId, platformId, ouId, userId, logId);
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
 
@@ -643,6 +667,14 @@ public class CheckInQueueManagerImpl implements CheckInQueueManager {
                 if (checkInQueueCommand.getReserveId().equals(originAsnReserve.getId())) {
                     waitingFlag = true;
                     listIterator.remove();
+
+                    CheckInQueue originCheckInQueue = checkInQueueDao.findByIdExt(checkInQueueCommand.getId(), checkInQueueCommand.getOuId());
+                    if (null == originCheckInQueue) {
+                        log.error("CheckInQueueManagerImpl.assignPlatform -> checkInQueueDao.findByIdExt error, originCheckInQueue is null,   logId is:[{}], checkInQueueCommand is:[{}]", logId, checkInQueueCommand);
+                        throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
+                    }
+                    insertGlobalLog(Constants.GLOBAL_LOG_DELETE, originCheckInQueue, ouId, userId, null, null);
+
                     int count = checkInQueueDao.deleteById(checkInQueueCommand.getId(), checkInQueueCommand.getOuId());
                     if (count != 1) {
                         log.error("CheckInQueueManagerImpl.assignPlatform -> checkInQueueDao.deleteById failed, delete count != 1, asnId is:[{}], platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}], deleteCheckInQueue is:[{}]", asnId,
@@ -673,14 +705,15 @@ public class CheckInQueueManagerImpl implements CheckInQueueManager {
                 CheckInQueueCommand tempCommand = checkInQueueCommandList.get(index);
                 if (null != tempCommand.getId()) {
                     if (!tempCommand.getSequence().equals(index + 1)) {
-                        tempCommand.setSequence(index + 1);
-                        tempCommand.setModifiedId(userId);
-                        //TODO 索引唯一性
-                        int count = checkInQueueDao.updateByVersionExt(tempCommand);
+                        CheckInQueue originCheckInQueue = checkInQueueDao.findByIdExt(tempCommand.getId(), tempCommand.getOuId());
+                        originCheckInQueue.setSequence(index + 1);
+                        originCheckInQueue.setModifiedId(userId);
+                        insertGlobalLog(Constants.GLOBAL_LOG_UPDATE, originCheckInQueue, ouId, userId, null, null);
+                        // TODO 索引唯一性
+                        int count = checkInQueueDao.updateByVersionExt(originCheckInQueue);
                         if (count != 1) {
-                            log.error(
-                                    "CheckInQueueManagerImpl.assignPlatform -> checkInQueueDao.updateByVersionExt failed, update count != 1, asnId is:[{}], platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}], updateCheckInQueueCommand is:[{}]",
-                                    asnId, platformId, ouId, userId, logId, tempCommand);
+                            log.error("CheckInQueueManagerImpl.assignPlatform -> checkInQueueDao.updateByVersionExt failed, update count != 1, asnId is:[{}], platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}], originCheckInQueue is:[{}]",
+                                    asnId, platformId, ouId, userId, logId, originCheckInQueue);
                             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
                         }
                     }
@@ -702,6 +735,8 @@ public class CheckInQueueManagerImpl implements CheckInQueueManager {
                 log.error("CheckInQueueManagerImpl.assignPlatform -> asnReserveDao.saveOrUpdateByVersion,  update to sharedDB failed, update count != 1, logId is:[{}], originAsnReserve is:[{}], count is:[{}]", logId, originAsnReserve, count);
                 throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
             }
+
+            insertGlobalLog(Constants.GLOBAL_LOG_UPDATE, originAsnReserve, ouId, userId, null, null);
         }
         // 修改asn实际到货时间
         // ASN改为已签入
@@ -720,13 +755,14 @@ public class CheckInQueueManagerImpl implements CheckInQueueManager {
             log.error("CheckInQueueManagerImpl.assignPlatform -> whAsnDao.saveOrUpdateByVersion,  update to sharedDB failed, update count != 1, logId is:[{}], originWhAsn is:[{}], count is:[{}]", logId, originWhAsn, count);
             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
         }
+        insertGlobalLog(Constants.GLOBAL_LOG_UPDATE, originWhAsn, ouId, userId, null, null);
 
         if (log.isDebugEnabled()) {
             log.debug("CheckInQueueManagerImpl.assignPlatform -> platformDao.findByIdExt invoke, asnId is:[{}], platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", asnId, platformId, ouId, userId, logId);
         }
         Platform originPlatform = platformDao.findByIdExt(platformId, ouId);
         if (null == originPlatform) {
-            log.error("PlatformManagerImpl assignPlatform failed, originPlatform is null, asnId is:[{}], platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", asnId, platformId, ouId, userId, logId);
+            log.error("CheckInQueueManagerImpl assignPlatform failed, originPlatform is null, asnId is:[{}], platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", asnId, platformId, ouId, userId, logId);
             throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
         }
         if (log.isDebugEnabled()) {
@@ -735,7 +771,7 @@ public class CheckInQueueManagerImpl implements CheckInQueueManager {
         }
 
         if (originPlatform.getIsOccupied() || !BaseModel.LIFECYCLE_NORMAL.equals(originPlatform.getLifecycle())) {
-            log.error("PlatformManagerImpl assignPlatform failed, originPlatform invalid,  asnId is:[{}], platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}], originPlatform is:[{}]", asnId, platformId, ouId, userId, logId, originPlatform);
+            log.error("CheckInQueueManagerImpl assignPlatform failed, originPlatform invalid,  asnId is:[{}], platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}], originPlatform is:[{}]", asnId, platformId, ouId, userId, logId, originPlatform);
             throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
         }
 
@@ -745,18 +781,19 @@ public class CheckInQueueManagerImpl implements CheckInQueueManager {
         originPlatform.setOccupationCode(originWhAsn.getAsnCode());
         originPlatform.setModifiedId(userId);
         if (log.isDebugEnabled()) {
-            log.debug("PlatformManagerImpl.assignPlatform -> platformDao.assignPlatform  update to sharedDB, asnId is:[{}], platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}], originPlatform is:[{}]", asnId, platformId, ouId, userId, logId,
+            log.debug("CheckInQueueManagerImpl.assignPlatform -> platformDao.assignPlatform  update to sharedDB, asnId is:[{}], platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}], originPlatform is:[{}]", asnId, platformId, ouId, userId, logId,
                     originPlatform);
         }
         Long resultCount = platformDao.assignPlatform(originPlatform);
         if (resultCount != 1) {
-            log.error("PlatformManagerImpl.assignPlatform -> platformDao.assignPlatform  update to sharedDB failed, update count != 1, asnId is:[{}], platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}], originPlatform is:[{}]", asnId,
+            log.error("CheckInQueueManagerImpl.assignPlatform -> platformDao.assignPlatform  update to sharedDB failed, update count != 1, asnId is:[{}], platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}], originPlatform is:[{}]", asnId,
                     platformId, ouId, userId, logId, originPlatform);
             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
         }
+        insertGlobalLog(Constants.GLOBAL_LOG_UPDATE, originPlatform, ouId, userId, null, null);
 
         if (log.isInfoEnabled()) {
-            log.info("PlatformManagerImpl.assignPlatform end, asnId is:[{}], platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", asnId, platformId, ouId, userId, logId);
+            log.info("CheckInQueueManagerImpl.assignPlatform end, asnId is:[{}], platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", asnId, platformId, ouId, userId, logId);
         }
 
         return resultCount;
@@ -777,20 +814,20 @@ public class CheckInQueueManagerImpl implements CheckInQueueManager {
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public Long freePlatform(Long platformId, Long ouId, Long userId, String logId) {
         if (log.isInfoEnabled()) {
-            log.info("PlatformManagerImpl.freePlatform start, platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", platformId, ouId, userId, logId);
+            log.info("CheckInQueueManagerImpl.freePlatform start, platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", platformId, ouId, userId, logId);
         }
         if (null == platformId || null == ouId || null == userId) {
-            log.error("PlatformManagerImpl.freePlatform param is null, platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", platformId, ouId, userId, logId);
+            log.error("CheckInQueueManagerImpl.freePlatform param is null, platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", platformId, ouId, userId, logId);
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
 
         Platform originPlatform = platformDao.findByIdExt(platformId, ouId);
         if (null == originPlatform) {
-            log.error("PlatformManagerImpl assignPlatform failed, originPlatform is null, platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", platformId, ouId, userId, logId);
+            log.error("CheckInQueueManagerImpl freePlatform failed, originPlatform is null, platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", platformId, ouId, userId, logId);
             throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
         }
         if (!originPlatform.getIsOccupied() || !BaseModel.LIFECYCLE_NORMAL.equals(originPlatform.getLifecycle())) {
-            log.error("PlatformManagerImpl assignPlatform failed, originPlatform invalid, platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}], originPlatform is:[{}]", platformId, ouId, userId, logId, originPlatform);
+            log.error("CheckInQueueManagerImpl freePlatform failed, originPlatform invalid, platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}], originPlatform is:[{}]", platformId, ouId, userId, logId, originPlatform);
             throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
         }
         originPlatform.setIsOccupied(false);
@@ -798,15 +835,17 @@ public class CheckInQueueManagerImpl implements CheckInQueueManager {
         originPlatform.setModifiedId(userId);
 
         if (log.isDebugEnabled()) {
-            log.debug("PlatformManagerImpl.freePlatform -> checkInQueueManager.freePlatform invoke, platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", platformId, ouId, userId, logId);
+            log.debug("CheckInQueueManagerImpl.freePlatform -> platformDao.freePlatform invoke, platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", platformId, ouId, userId, logId);
         }
         long resultCount = platformDao.freePlatform(originPlatform);
         if (resultCount != 1) {
-            log.error("PlatformManagerImpl.freePlatform -> platformDao.freePlatform  update to sharedDB failed, update count != 1, platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", platformId, ouId, userId, logId);
+            log.error("CheckInQueueManagerImpl.freePlatform -> platformDao.freePlatform  update to sharedDB failed, update count != 1, platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", platformId, ouId, userId, logId);
             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
         }
+        insertGlobalLog(Constants.GLOBAL_LOG_UPDATE, originPlatform, ouId, userId, null, null);
+
         if (log.isInfoEnabled()) {
-            log.info("PlatformManagerImpl.freePlatform end, vacantPlatformList is:[{}], platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", platformId, ouId, userId, logId);
+            log.info("CheckInQueueManagerImpl.freePlatform end, vacantPlatformList is:[{}], platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", platformId, ouId, userId, logId);
         }
         return resultCount;
     }
