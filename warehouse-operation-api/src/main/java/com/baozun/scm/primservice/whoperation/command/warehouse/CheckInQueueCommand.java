@@ -138,16 +138,14 @@ public class CheckInQueueCommand extends BaseCommand implements Comparable<Check
     @Override
     public int compareTo(CheckInQueueCommand toCompareCommand) {
         if (this.getLevel().equals(toCompareCommand.getLevel())) {
-            if((this.getDeliveryTime().compareTo(this.getEta()) < 1) && (toCompareCommand.getDeliveryTime().compareTo(toCompareCommand.getEta()) < 1)){
-                //都不迟到，比较预约时间
+            if((this.getDeliveryTime().compareTo(this.getEta()) < 1 && toCompareCommand.getDeliveryTime().compareTo(toCompareCommand.getEta()) < 1) ||
+                    (this.getDeliveryTime().compareTo(this.getEta()) > 0 && toCompareCommand.getDeliveryTime().compareTo(toCompareCommand.getEta()) > 0)){
+                //都不迟到和都迟到，比较预约时间
                 if(this.getEta().compareTo(toCompareCommand.getEta()) == 0){
                     return this.getDeliveryTime().compareTo(toCompareCommand.getDeliveryTime());
                 }else {
                     return this.getEta().compareTo(toCompareCommand.getEta());
                 }
-            }else if((this.getDeliveryTime().compareTo(this.getEta()) > 0) && (toCompareCommand.getDeliveryTime().compareTo(toCompareCommand.getEta()) > 0)){
-                //都迟到，比较实际到货时间
-                return this.getDeliveryTime().compareTo(toCompareCommand.getDeliveryTime());
             }else {
                 if(this.getDeliveryTime().compareTo(this.getEta()) > 0){
                     return 1;
