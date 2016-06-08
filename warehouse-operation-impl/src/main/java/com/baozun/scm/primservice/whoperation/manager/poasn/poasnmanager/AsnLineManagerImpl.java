@@ -254,4 +254,10 @@ public class AsnLineManagerImpl extends BaseManagerImpl implements AsnLineManage
     public long findListCountByParam(WhAsnLine searchAsnLine) {
         return this.whAsnLineDao.findListCountByParam(searchAsnLine);
     }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public Pagination<WhAsnLineCommand> findAsnLineListByQueryMapWithPageExtForCreateAsn(Page page, Sort[] sorts, Map<String, Object> paraMap) {
+        return whAsnLineDao.findListByQueryMapWithPageExtForCreateAsn(page, sorts, paraMap);
+    }
 }

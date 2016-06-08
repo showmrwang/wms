@@ -69,6 +69,8 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
     private PoLineManager poLineManager;
     @Autowired
     private CodeManager codeManager;
+    @Autowired
+    private CheckInManagerProxy checkInManagerProxy;
 
     /**
      * 扫描ASN时 初始化缓存
@@ -438,7 +440,12 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                 po.setStatus(PoAsnStatus.PO_RCVD_FINISH);
             }
             this.generalRcvdManager.saveScanedSkuWhenGeneralRcvdForPda(saveSnList, saveSnLogList, saveInvList, saveInvLogList, saveAsnLineList, asn, savePoLineList, po);
-
+            // 释放月台#TODO
+            try {
+                // checkInManagerProxy.freePlatform(asnId, ouId, userId, null);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -924,12 +931,28 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
         //1.从库存中初始化容器的库存属性
         Container container = this.generalRcvdManager.findContainerByIdToShard(command.getInsideContainerId(), ouId);
         if (3 == container.getLifecycle()) {
-            throw new BusinessException("容器已被占用");
+            RcvdContainerCacheCommand rcvdContainerCacheCommand = this.cacheManager.getMapObject(CacheKeyConstant.CACHE_RCVD_CONTAINER, command.getInsideContainerId().toString());
+            if (null == rcvdContainerCacheCommand) {
+                container.setLifecycle(3);
+                int updateCount = this.generalRcvdManager.updateContainerByVersion(container);
+                if (updateCount <= 0) {
+                    throw new BusinessException(ErrorCodes.RCVD_CONTAINER_OCCUPATIED_ERROR);
+                }
+            }
+            if (!command.getUserId().equals(rcvdContainerCacheCommand.getUserId())) {
+                throw new BusinessException(ErrorCodes.RCVD_CONTAINER_OCCUPATIED_ERROR);
+            }
+            return;
+        } else if (4 == container.getLifecycle()) {
+            throw new BusinessException(ErrorCodes.RCVD_CONTAINER_OCCUPATIED_ERROR);
+        } else {
+            container.setLifecycle(3);
+            int updateCount = this.generalRcvdManager.updateContainerByVersion(container);
+            if (updateCount <= 0) {
+                throw new BusinessException(ErrorCodes.RCVD_CONTAINER_OCCUPATIED_ERROR);
+            }
         }
-        container.setLifecycle(3);
-        int updateCount = this.generalRcvdManager.updateContainerByVersion(container);
-        RcvdContainerCacheCommand rcvdContainerCacheCommand=this.cacheManager.getMapObject(CacheKeyConstant.CACHE_RCVD_CONTAINER, command.getInsideContainerId().toString());
-        // #TODO
+        RcvdContainerCacheCommand rcvdContainerCacheCommand = this.cacheManager.getMapObject(CacheKeyConstant.CACHE_RCVD_CONTAINER, command.getInsideContainerId().toString());
         if (null == rcvdContainerCacheCommand || true) {
             long invContainerCount = this.generalRcvdManager.findContainerListCountByInsideContainerIdFromSkuInventory(command.getInsideContainerId(), ouId);
             if(Constants.DEFAULT_INTEGER!=invContainerCount){
@@ -1042,6 +1065,8 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                 } else {
                     rcvdContainerCacheCommand.setSkuId(null);
                 }
+                // 用户ID
+                rcvdContainerCacheCommand.setUserId(command.getUserId());
                 // 时长一小时
                 this.cacheManager.setMapObject(CacheKeyConstant.CACHE_RCVD_CONTAINER, command.getInsideContainerId().toString(), rcvdContainerCacheCommand, 60 * 60);
             }

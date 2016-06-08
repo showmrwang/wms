@@ -241,4 +241,14 @@ public interface SelectPoAsnManagerProxy extends BaseManager {
      */
     WhAsn findWhAsnById(Long occupationId, Long ouId);
 
+    /**
+     * @author yimin.lu 创建ASN的时候查询ASN单临时数据
+     * @param page
+     * @param sorts
+     * @param paraMap
+     * @param shardSource
+     * @return
+     */
+    Pagination<WhAsnLineCommand> findAsnLineListByQueryMapWithPageExtForCreateAsn(Page page, Sort[] sorts, Map<String, Object> paraMap, Integer shardSource);
+
 }

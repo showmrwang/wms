@@ -101,4 +101,6 @@ public interface AsnManager extends BaseManager {
     int updateByVersionForUnLock(Long id, Long ouid);
 
 
+
+
 }

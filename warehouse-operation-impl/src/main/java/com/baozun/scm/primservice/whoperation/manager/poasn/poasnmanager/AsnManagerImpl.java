@@ -756,4 +756,5 @@ public class AsnManagerImpl implements AsnManager {
         return this.whAsnDao.updateByVersionForUnLock(id, ouid);
     }
 
+
 }

@@ -46,4 +46,13 @@ public interface AsnLineManager extends BaseManager {
      */
     long findListCountByParam(WhAsnLine searchAsnLine);
 
+    /**
+     * @author yimin.lu 创建ASN单时候临时数据查询
+     * @param page
+     * @param sorts
+     * @param paraMap
+     * @return
+     */
+    Pagination<WhAsnLineCommand> findAsnLineListByQueryMapWithPageExtForCreateAsn(Page page, Sort[] sorts, Map<String, Object> paraMap);
+
 }

@@ -153,6 +153,16 @@ public class WhAsnLineCommand extends BaseCommand {
     private String uomName;
     /** 单位CODE */
     private String uomCode;
+    /** IT专用 */
+    private String uuid;
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
 
     public String getInvName() {
         return invName;

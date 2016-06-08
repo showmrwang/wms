@@ -56,6 +56,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				<if test="urgentStatus!=null and urgentStatus!=''">
 					and asn.urgent_status = #{urgentStatus}
 				</if>
+				<if test="uuid!=null and uuid!=''">
+					and asn.uuid = #{uuid}
+				</if>
 		</where>
 	</sql>
 
@@ -98,7 +101,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	asn.ext_code as extCode,
 	        	asn.urgent_status as urgentStatus,
 	        	s.store_name as storeName,
-	        	asn.version as version
+	        	asn.version as version,
+	        	asn.uuid as uuid
 	    ]]>
 	</sql>
 	
@@ -132,6 +136,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			       	po_ou_id = #{poOuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			       	ext_code = #{extCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			       	urgent_status = #{urgentStatus,javaType=java.lang.String,jdbcType=VARCHAR} 
+			       	uuid= #{uuid,javaType=java.lang.String,jdbcType=VARCHAR}
 		    ]]>
 		     <where>
 		    		id = #{id} 
@@ -179,7 +184,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				asn.urgent_status as urgentStatus,
 				c.customer_name as customerName,
 				s.store_name as storeName,
-				sys.dic_label as statusName
+				sys.dic_label as statusName,
+				asn.uuid as uuid
 	    ]]>
 	</sql>
 	
@@ -335,4 +341,5 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			and asn_code = #{asnCode}
 		</where>
     </select>
+    
 </mapper>

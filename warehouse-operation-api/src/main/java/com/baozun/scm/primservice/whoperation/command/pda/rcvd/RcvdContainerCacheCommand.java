@@ -34,7 +34,15 @@ public class RcvdContainerCacheCommand implements Serializable {
     private String invAttr5;
     /** SKUID */
     private String SkuId;
+    /** 用户ID */
+    private Long userId;
 
+    public Long getUserId() {
+        return userId;
+    }
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
     public Long getInsideContainerId() {
         return insideContainerId;
     }

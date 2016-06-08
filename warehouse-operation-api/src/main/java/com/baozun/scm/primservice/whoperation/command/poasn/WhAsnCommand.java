@@ -121,7 +121,16 @@ public class WhAsnCommand extends BaseCommand {
     private String urgentStatus;
     /** 超收比例 */
     private Double overChageRate;
+    /** IT用uuid */
+    private String uuid;
 
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
 
     public Double getOverChageRate() {
         return overChageRate;

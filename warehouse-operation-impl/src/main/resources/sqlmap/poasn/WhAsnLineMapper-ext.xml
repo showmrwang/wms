@@ -39,7 +39,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	created_id as createdId,
 	        	last_modify_time as lastModifyTime,
 	        	modified_id as modifiedId,
-	        	valid_date_uom as validDateUom
+	        	valid_date_uom as validDateUom,
+	        	uuid as uuid
 	    ]]>
 	</sql>
 	
@@ -165,6 +166,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				<if test="validDateUom!=null and validDateUom!=''">
 					and valid_date_uom = #{validDateUom}
 				</if>
+				
+				 <if test="uuid!=null and uuid!=''">
+					and uuid = #{uuid}
+				</if>
 		</where>
 	</sql>
 	
@@ -198,7 +203,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-			        valid_date_uom=#{validDateUom,javaType=java.lang.String,jdbcType=VARCHAR}
+			        valid_date_uom=#{validDateUom,javaType=java.lang.String,jdbcType=VARCHAR},
+			        uuid= #{uuid,javaType=java.lang.String,jdbcType=VARCHAR}
 		        WHERE 
 			        id = #{id} and ou_id=#{ouId}
 			        and last_modify_time	=  #{lastModifyTime}    
@@ -246,7 +252,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				sku.ext_code as skuExtCode,
 				sku.bar_code as skuBarCode,
 				sku.name as skuName,
-				inv.name as invName
+				inv.name as invName,
+				al.uuid as uuid
 	    ]]>
 	</sql>	
 		
@@ -454,5 +461,28 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 							and line.sku_id = #{skuid} 
     </select>
 	 
+	 <select id="findListByQueryMapWithPageExtForCreateAsn" resultMap="whAsnLineCommand">
+    	select <include refid="whAsnLineColumnsMapExt" />
+		    from 
+		    t_wh_asn_line al
+		   	inner join t_wh_asn asn on asn.id = al.asn_id
+			left join sys_dictionary sys on sys.dic_value = al.status and sys.group_value = 'ASNLINESTATUS'
+			left join t_wh_inventory_status inv on inv.id = al.inv_status
+			left join t_wh_sku sku on al.sku_id = sku.id
+			where asn.uuid=#{uuid} and al.uuid=#{uuid} and asn.ou_id=#{ouId} and asn.po_id=#{poId}
+			
+    </select>
+    		
+		
+	<select id="findListCountByQueryMapExtForCreateAsn" resultType="long">
+        select count(*) from 
+		    t_wh_asn_line al
+		   	inner join t_wh_asn asn on asn.id = al.asn_id
+			left join sys_dictionary sys on sys.dic_value = al.status and sys.group_value = 'ASNLINESTATUS'
+			left join t_wh_inventory_status inv on inv.id = al.inv_status
+			left join t_wh_sku sku on al.sku_id = sku.id
+			where asn.uuid=#{uuid} and al.uuid=#{uuid} and asn.ou_id=#{ouId} and asn.po_id=#{poId}
+    </select>
+	
 	 
 </mapper>

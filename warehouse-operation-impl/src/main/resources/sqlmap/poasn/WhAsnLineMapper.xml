@@ -39,7 +39,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	created_id as createdId,
 	        	last_modify_time as lastModifyTime,
 	        	modified_id as modifiedId,
-	        	valid_date_uom as validDateUom
+	        	valid_date_uom as validDateUom,
+	        	uuid as uuid
 	    ]]>
 	</sql>
 		<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
@@ -76,7 +77,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	last_modify_time ,
 	        	modified_id,
 	        	ou_id ,
-	        	valid_date_uom
+	        	valid_date_uom,
+	        	uuid
 	        ) VALUES (
 	        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{asnId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -106,7 +108,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 	        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-	        	#{validDateUom,javaType=java.lang.String,jdbcType=VARCHAR}
+	        	#{validDateUom,javaType=java.lang.String,jdbcType=VARCHAR},
+	        	#{uuid,javaType=java.lang.String,jdbcType=VARCHAR} 
 	        )
 	    ]]>
 
@@ -143,7 +146,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        valid_date_uom=#{validDateUom,javaType=java.lang.String,jdbcType=VARCHAR} 
+		        valid_date_uom=#{validDateUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        uuid= #{uuid,javaType=java.lang.String,jdbcType=VARCHAR}
 	        WHERE 
 		        id = #{id} 
 	    ]]>
@@ -301,6 +305,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				
 				<if test="validDateUom!=null and validDateUom!=''">
 					and valid_date_uom = #{validDateUom}
+				</if>
+				<if test="uuid!=null and uuid!=''">
+					and uuid = #{uuid}
 				</if>
 		</where>
 	</sql>

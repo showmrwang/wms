@@ -67,4 +67,7 @@ public interface WhAsnLineDao extends BaseDao<WhAsnLine, Long> {
      */
     WhAsnLineCommand findWhAsnLineCommandEditDevanning(@Param("id") Long id, @Param("asnid") Long asnid, @Param("ouid") Long ouid, @Param("skuid") Long skuid);
 
+    @QueryPage("findListCountByQueryMapExtForCreateAsn")
+    Pagination<WhAsnLineCommand> findListByQueryMapWithPageExtForCreateAsn(Page page, Sort[] sorts, Map<String, Object> paraMap);
+
 }
