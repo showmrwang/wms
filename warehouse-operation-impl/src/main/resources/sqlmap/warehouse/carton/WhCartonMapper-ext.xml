@@ -259,8 +259,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    ]]>
 	 </delete>
 	
-<select id="findCartonNumsByOuterContainerCode" resultType="long">
-    	select count(c.id)
+<select id="findCartonNumsByOuterContainerCode" resultType="Integer">
+    <!-- 	select count(1)
 	    from t_wh_carton c ,
 	    (
 	    	select 
@@ -279,5 +279,36 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    where ou_id = #{ouId}
 	    and container.insideContainerId = c.container_id 
 	    and container.asnId = c.asn_id
+	    and c.is_caselevel = 1 -->
+	    
+	    select 
+					count(1)
+					
+					from 
+					t_wh_sku_inventory inv 
+					left join t_wh_container c on c.id = inv.outer_container_id
+					left join t_wh_location loc on inv.location_id = loc.id
+					left join t_wh_asn asn on asn.asn_code = inv.occupation_code
+					where 
+					inv.ou_id = #{ouId}
+					and c.code = #{containerCode}
+					and exists 
+					(select 1 from t_wh_carton c where c.container_id = inv.inside_container_id and c.asn_id = asn.id and c.is_caselevel = 1)
+ </select>
+ 
+ <select id="findNoneCartonNumsByOuterContainerCode" resultType="Integer">
+	    select 
+					count(1)
+					
+					from 
+					t_wh_sku_inventory inv 
+					left join t_wh_container c on c.id = inv.outer_container_id
+					left join t_wh_location loc on inv.location_id = loc.id
+					left join t_wh_asn asn on asn.asn_code = inv.occupation_code
+					where 
+					inv.ou_id = #{ouId}
+					and c.code = #{containerCode}
+					and not exists 
+					(select 1 from t_wh_carton c where c.container_id = inv.inside_container_id and c.asn_id = asn.id and c.is_caselevel = 1)
  </select>
 </mapper>

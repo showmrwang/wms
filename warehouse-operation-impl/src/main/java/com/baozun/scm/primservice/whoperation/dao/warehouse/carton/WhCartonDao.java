@@ -76,6 +76,15 @@ public interface WhCartonDao extends BaseDao<WhCarton, Long> {
      * @return
      */
     int findCartonNumsByOuterContainerCode(@Param("containerCode") String containerCode, @Param("ouId") Long ouId);
+    
+    /**
+     * 根据外部容器查找装箱数量
+     * @author lichuan
+     * @param containerCode
+     * @param ouId
+     * @return
+     */
+    int findNoneCartonNumsByOuterContainerCode(@Param("containerCode") String containerCode, @Param("ouId") Long ouId);
 
 
 }

@@ -353,5 +353,24 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         return nums;
     }
 
+    
+    /**
+     * @author lichuan
+     * @param containerode
+     * @param ouId
+     * @param logId
+     * @return
+     */
+    @Override
+    public int findNotCaselevelCartonNumsByOuterContainerCode(String containerCode, Long ouId, String logId) { 
+        if (log.isInfoEnabled()) {
+            log.info("pdaPutawayManager.findNotCaselevelCartonNumsByOuterContainerCode start, containerCode is:[{}], ouId is:[{}], logId is:[{}]", containerCode, ouId, logId);
+        }
+        int nums = whCartonDao.findNoneCartonNumsByOuterContainerCode(containerCode, ouId);
+        if (log.isInfoEnabled()) {
+            log.info("pdaPutawayManager.findNotCaselevelCartonNumsByOuterContainerCode end, containerCode is:[{}], ouId is:[{}], nums is:[{}], logId is:[{}]", containerCode, ouId, nums, logId);
+        }
+        return nums;
+    }
 
 }

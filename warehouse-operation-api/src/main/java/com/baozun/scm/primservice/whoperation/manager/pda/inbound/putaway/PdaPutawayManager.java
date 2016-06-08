@@ -60,6 +60,16 @@ public interface PdaPutawayManager extends BaseManager {
      * @param logId
      * @return
      */
-    int findCaselevelCartonNumsByOuterContainerCode(String containerCode, Long ouId, String logId); 
+    int findCaselevelCartonNumsByOuterContainerCode(String containerCode, Long ouId, String logId);
+    
+    /**
+     * 根据外部容器查询非Caselevel箱数量
+     * @author lichuan
+     * @param containerCode
+     * @param ouId
+     * @param logId
+     * @return
+     */
+    int findNotCaselevelCartonNumsByOuterContainerCode(String containerCode, Long ouId, String logId); 
 
 }

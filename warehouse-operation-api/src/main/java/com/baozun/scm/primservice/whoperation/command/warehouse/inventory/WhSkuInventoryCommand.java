@@ -46,6 +46,8 @@ public class WhSkuInventoryCommand extends BaseCommand {
     private Long storeId;
     /** 占用单据号 */
     private String occupationCode;
+    /** 调整数量 */
+    private Double modifyQty;
     /** 在库库存 */
     private Double onHandQty;
     /** 已分配库存 */
@@ -469,6 +471,14 @@ public class WhSkuInventoryCommand extends BaseCommand {
 
     public void setOccupationCode(String occupationCode) {
         this.occupationCode = occupationCode;
+    }
+    
+    public Double getModifyQty() {
+        return modifyQty;
+    }
+
+    public void setModifyQty(Double modifyQty) {
+        this.modifyQty = modifyQty;
     }
 
     public Double getOnHandQty() {

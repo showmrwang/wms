@@ -22,7 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.InventoryCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
@@ -58,7 +58,7 @@ public class InventoryModifyManagerImpl extends BaseManagerImpl implements Inven
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void modifyInvAttr(InventoryCommand invCmd, Long ouId, Long userId, String logId) {
+    public void modifyInvAttr(WhSkuInventoryCommand invCmd, Long ouId, Long userId, String logId) {
         String invCmdStr = ParamsUtil.bean2String(invCmd);
         if (log.isInfoEnabled()) {
             log.info("inventoryModifyManager.modifyInvAttr start, invCmd is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", new Object[]{invCmdStr, ouId, userId, logId});

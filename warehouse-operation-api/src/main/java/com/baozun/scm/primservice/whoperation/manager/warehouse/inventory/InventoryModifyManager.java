@@ -16,7 +16,7 @@
  */
 package com.baozun.scm.primservice.whoperation.manager.warehouse.inventory;
 
-import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.InventoryCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 
 /**
@@ -25,6 +25,6 @@ import com.baozun.scm.primservice.whoperation.manager.BaseManager;
  */
 public interface InventoryModifyManager extends BaseManager {
     
-    void modifyInvAttr(InventoryCommand invCmd, Long ouId, Long userId, String logId);
+    void modifyInvAttr(WhSkuInventoryCommand invCmd, Long ouId, Long userId, String logId);
 
 }

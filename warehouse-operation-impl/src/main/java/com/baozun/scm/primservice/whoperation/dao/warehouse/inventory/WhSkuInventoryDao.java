@@ -21,8 +21,8 @@ import org.apache.ibatis.annotations.Param;
 
 import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdContainerCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.LocationCommand;
-import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.InventoryCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 
 import lark.common.annotation.CommonQuery;
@@ -43,7 +43,7 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
     Pagination<WhSkuInventory> query(Page page, Sort[] sorts, QueryCondition cond);
 
     @QueryPage("findListCountByQueryMapExt")
-    Pagination<InventoryCommand> findListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params);
+    Pagination<WhSkuInventorySnCommand> findListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params);
 
     List<WhSkuInventory> query(QueryCondition cond);
 

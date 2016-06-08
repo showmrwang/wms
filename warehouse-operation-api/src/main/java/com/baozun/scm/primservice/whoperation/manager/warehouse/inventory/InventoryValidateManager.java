@@ -18,7 +18,7 @@ package com.baozun.scm.primservice.whoperation.manager.warehouse.inventory;
 
 import java.util.List;
 
-import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.InventoryCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 
 /**
@@ -29,6 +29,6 @@ public interface InventoryValidateManager extends BaseManager {
     
     boolean onHandQtyValidate(String uuid, Long skuId, Long ouId, Double expectQty, String logId);
     
-    List<InventoryCommand> validateOccupyByExpectQty(String occupyCode, Double eQty);
+    List<WhSkuInventorySnCommand> validateOccupyByExpectQty(String occupyCode, Double eQty);
 
 }

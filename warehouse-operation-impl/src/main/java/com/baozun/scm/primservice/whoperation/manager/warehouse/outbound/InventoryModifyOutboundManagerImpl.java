@@ -26,7 +26,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.InventoryCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseInventoryManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.InventoryOccupyManager;
@@ -52,7 +51,7 @@ public class InventoryModifyOutboundManagerImpl extends BaseInventoryManagerImpl
      * @param logId
      */
     @Override
-    public void outbound(InventoryCommand invCmd, Long ouId, Long userId, String logId) {
+    public void outbound(WhSkuInventoryCommand invCmd, Long ouId, Long userId, String logId) {
         //创出库单
         String orderCode = "O" + new Date().getTime();//虚拟出库单
         //查询库存明细
@@ -68,7 +67,7 @@ public class InventoryModifyOutboundManagerImpl extends BaseInventoryManagerImpl
         exeOutbound(invCmd, orderCode, logId);
     }
     
-    private void exeOutbound(InventoryCommand invCmd, String occupyCode, String logId){
+    private void exeOutbound(WhSkuInventoryCommand invCmd, String occupyCode, String logId){
         //删除库存记录日志
         removeInventoryAndLog(occupyCode, logId);
     }

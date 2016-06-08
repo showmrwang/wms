@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.InventoryCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseInventoryManagerImpl;
 
 /**
@@ -40,7 +40,7 @@ public class InventoryModifyInboundManagerImpl extends BaseInventoryManagerImpl 
      * @param logId
      */
     @Override
-    public void inbound(InventoryCommand invCmd, Long ouId, Long userId, String logId) {
+    public void inbound(WhSkuInventoryCommand invCmd, Long ouId, Long userId, String logId) {
         // 创po单
         
         // 创asn单

@@ -24,8 +24,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.InventoryCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
@@ -75,7 +75,7 @@ public class InventoryValidateManagerImpl extends BaseManagerImpl implements Inv
      * @return
      */
     @Override
-    public List<InventoryCommand> validateOccupyByExpectQty(String occupyCode, Double eQty) {
+    public List<WhSkuInventorySnCommand> validateOccupyByExpectQty(String occupyCode, Double eQty) {
         // TODO Auto-generated method stub
         return null;
     }
