@@ -16,6 +16,7 @@ package com.baozun.scm.primservice.whoperation.model.warehouse;
 
 import java.util.Date;
 
+import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 
 /**
@@ -45,10 +46,10 @@ public class Container extends BaseModel {
      * 二级容器类型
      */
     private Long twoLevelType;
-    
+
     /** 是否满箱 0:否 1:是 */
     private Boolean isFull = false;
-    
+
     /**
      * 创建时间
      */
@@ -62,9 +63,9 @@ public class Container extends BaseModel {
      */
     private Long operatorId;
     /**
-     * 1.可用;2.已删除;0.禁用;3:占用;5:可上架
+     * 1.可用;2.已删除;0.禁用;3:占用;
      */
-    private Integer lifecycle = 1;
+    private Integer lifecycle = ContainerStatus.CONTAINER_LIFECYCLE_USABLE;
 
     private Long ouId;
 
@@ -73,7 +74,7 @@ public class Container extends BaseModel {
      * 
      * @return
      */
-    private Integer status;
+    private Integer status = ContainerStatus.CONTAINER_STATUS_USABLE;
 
     public Integer getStatus() {
         return status;
