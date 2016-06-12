@@ -130,9 +130,10 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @return
      */
     List<WhSkuInventoryCommand> findWhSkuInventoryByOuterContainerCode(@Param("ouid") Long ouid, @Param("containerList") List<String> containerList);
-    
+
     /**
      * 通过外部容器号查询对用的库存信息的所有库位
+     * 
      * @author lichuan
      * @param ouid
      * @param containerList
@@ -157,7 +158,7 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @param ouid
      * @return
      */
-    WhSkuInventory findwWhSkuInventoryById(@Param("id") Long id, @Param("ouid") Long ouid);
+    WhSkuInventory findWhSkuInventoryById(@Param("id") Long id, @Param("ouid") Long ouid);
 
     /**
      * 通过UUID+OUID查询对应库存信息
@@ -166,7 +167,7 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @param uuid
      * @return
      */
-    WhSkuInventory findwWhSkuInventoryByUuid(@Param("ouid") Long ouid, @Param("uuid") String uuid);
+    WhSkuInventory findWhSkuInventoryByUuid(@Param("ouid") Long ouid, @Param("uuid") String uuid);
 
     /**
      * 通过id+ouid删除对应库存记录
@@ -184,7 +185,7 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @return
      */
     RcvdContainerCacheCommand getUniqueSkuAttrFromWhSkuInventory(@Param("insideContainerId") Long insideContainerId, @Param("ouId") Long ouId);
-    
+
     /**
      * 根据sku+内部容器号或者外部容器号 查找容器库存数据 location is null
      * 
@@ -194,5 +195,13 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @return
      */
     List<WhSkuInventoryCommand> findWhSkuInventoryBySkuIdAndContainerid(@Param("ouid") Long ouid, @Param("skuid") Long skuid, @Param("insideContainerid") Long insideContainerid, @Param("outerContainerid") Long outerContainerid);
+
+    /**
+     * 通过商品对应库存属性 查找对应库存记录
+     * 
+     * @param whSkuInventoryCommand
+     * @return
+     */
+    WhSkuInventoryCommand findWhSkuInventoryBySkuAttr(WhSkuInventoryCommand whSkuInventoryCommand);
 
 }
