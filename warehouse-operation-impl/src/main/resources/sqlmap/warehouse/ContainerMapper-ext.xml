@@ -64,7 +64,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	s.lifecycle as lifecycle,
 	        	s.ou_id as ouId,
 	        	syst.dic_label as oneLevelTypeName,
-                sysl.dic_label as twoLevelTypeName
+                sysl.dic_label as twoLevelTypeName,
+                s.status as status
 	    ]]>
 	</sql>
 	
@@ -119,6 +120,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				<if test="ouId!=null">
 					and s.ou_id = #{ouId}
 				</if>
+				<if test="status!=null">
+					and s.status = #{status}
+				</if>
 		</where>
 	</sql>
 	
@@ -134,7 +138,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        last_modify_time = now(),
 			        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-			        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
+			        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        status=#{status,javaType=java.lang.Integer,jdbcType=INTEGER} 
 		        WHERE 
 			        id = #{id} 
 			        and ou_id = #{ouId}
@@ -191,7 +196,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
+		        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        status=#{status,javaType=java.lang.Integer,jdbcType=INTEGER} 
 	        WHERE 
 		        id = #{id} 
 		        and ou_id = #{ouId}
@@ -212,7 +218,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        	last_modify_time ,
 			        	operator_id ,
 			        	lifecycle ,
-			        	ou_id 
+			        	ou_id ,
+			        	status
 				        ) VALUES 
 				]]>
 				<foreach collection="list" item="item" index="index"
@@ -228,7 +235,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{item.lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        	#{item.operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{item.lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-		        	#{item.ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        	#{item.ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{item.status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 					)
 				</foreach>
 		</insert>
@@ -247,7 +255,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	s.lifecycle as lifecycle,
 	        	s.ou_id as ouId,
 				dic.lifecycle as oneLevelTypeLifecycle,
-				c2c.lifecycle as twoLevelTypeLifecycle
+				c2c.lifecycle as twoLevelTypeLifecycle,
+				s.status as status
 		    <![CDATA[
 			    from t_wh_container s
 			    left join sys_dictionary dic on dic.id=s.one_level_type

@@ -68,6 +68,21 @@ public class Container extends BaseModel {
 
     private Long ouId;
 
+    /**
+     * 状态
+     * 
+     * @return
+     */
+    private Integer status;
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
     public String getName() {
         return name;
     }

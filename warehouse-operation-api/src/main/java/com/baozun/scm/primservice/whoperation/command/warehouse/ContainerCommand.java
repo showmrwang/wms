@@ -47,7 +47,12 @@ public class ContainerCommand extends BaseCommand {
     private Integer lifecycle;
 
     private Long ouId;
-
+    /**
+     * 状态
+     * 
+     * @return
+     */
+    private Integer status;
 
     /**
      * 容器一级类型
@@ -67,6 +72,14 @@ public class ContainerCommand extends BaseCommand {
     private Integer twoLevelTypeLifecycle;
 
 
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
 
     public String getOneLevelTypeValue() {
         return oneLevelTypeValue;
