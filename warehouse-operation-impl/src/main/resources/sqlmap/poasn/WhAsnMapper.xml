@@ -195,6 +195,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		       <if test="asnCode!=null and asnCode!=''">
 					and asn_code = #{asnCode}
 				</if>
+				
+		       <if test="asnExtCode!=null and asnExtCode!=''">
+					and asn_ext_code = #{asnExtCode}
+				</if>
 	       
 				<if test="poId!=null">
 					and po_id = #{poId}

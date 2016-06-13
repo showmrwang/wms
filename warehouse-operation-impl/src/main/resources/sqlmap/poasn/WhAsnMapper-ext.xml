@@ -135,7 +135,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			       	po_ou_id = #{poOuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			       	ext_code = #{extCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			       	urgent_status = #{urgentStatus,javaType=java.lang.String,jdbcType=VARCHAR} 
+			       	urgent_status = #{urgentStatus,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			       	uuid= #{uuid,javaType=java.lang.String,jdbcType=VARCHAR}
 		    ]]>
 		     <where>
@@ -341,5 +341,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			and asn_code = #{asnCode}
 		</where>
     </select>
+     <select id="findListByParamExt" resultMap="whAsnCommand">
+    	select <include refid="whAsnColumns" />
+	    from t_wh_asn 
+		<include refid="whAsnDynamicWhere"/>
+    </select>
     
+     <select id="findListCountByParamExt" resultType="long">
+    	select count(*)
+	    from t_wh_asn 
+		<include refid="whAsnDynamicWhere"/>
+    </select>
 </mapper>
