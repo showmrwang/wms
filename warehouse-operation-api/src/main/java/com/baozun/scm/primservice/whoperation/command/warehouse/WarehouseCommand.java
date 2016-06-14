@@ -102,6 +102,46 @@ public class WarehouseCommand extends BaseCommand {
     private String ouName;
 
     private Long ouId;
+    
+    
+    /** 新加三字段 */
+    /** 用户分拣是否共享目标容器 */
+    private Boolean isSortationContainerAssign = false;
+    /** 是否允许多次出库 */
+    private Boolean isRepeatedlyOutbound = false;
+    /** 在库存日志是否记录交易前后库存总数 */
+    private Boolean isTabbInvTotal = false;
+
+
+
+    public Boolean getIsSortationContainerAssign() {
+        return isSortationContainerAssign;
+    }
+
+    public void setIsSortationContainerAssign(Boolean isSortationContainerAssign) {
+        this.isSortationContainerAssign = isSortationContainerAssign;
+    }
+
+    public Boolean getIsRepeatedlyOutbound() {
+        return isRepeatedlyOutbound;
+    }
+
+    public void setIsRepeatedlyOutbound(Boolean isRepeatedlyOutbound) {
+        this.isRepeatedlyOutbound = isRepeatedlyOutbound;
+    }
+
+    public Boolean getIsTabbInvTotal() {
+        return isTabbInvTotal;
+    }
+
+    public void setIsTabbInvTotal(Boolean isTabbInvTotal) {
+        this.isTabbInvTotal = isTabbInvTotal;
+    }
+    
+    
+    
+    
+    
 
     public Long getId() {
         return id;
