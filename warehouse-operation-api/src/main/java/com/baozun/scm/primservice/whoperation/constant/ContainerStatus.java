@@ -23,8 +23,7 @@ public class ContainerStatus implements Serializable {
     public static final int CONTAINER_STATUS_FORBIDDEN = 0; // 禁用 forbidden
     public static final int CONTAINER_STATUS_USABLE = 1; // 可用 usable
     public static final int CONTAINER_STATUS_RCVD = 2; // 收货中
-    public static final int CONTAINER_STATUS_SORTATION = 3; // 分拣中
-    public static final int CONTAINER_STATUS_CAN_PUTAWAY = 5; // 可上架 putaway
-    public static final int CONTAINER_STATUS_PUTAWAY = 6; // 上架中
+    public static final int CONTAINER_STATUS_CAN_PUTAWAY = 3; // 待上架 putaway
+    public static final int CONTAINER_STATUS_PUTAWAY = 5; // 上架中
     
 }
