@@ -152,6 +152,9 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
         List<ShelveRecommendRuleCommand> sList = shelveRecommendRuleDao.findShelveRecommendRuleByOuid(ruleAffer.getOuid());
         // 查询所有对应容器号的库存信息
         List<WhSkuInventoryCommand> invList = whSkuInventoryDao.findWhSkuInventoryByContainerCode(ruleAffer.getOuid(), ruleAffer.getAfferContainerCodeList());
+        if(invList.size() == 0){
+            return export;
+        }
         // 所有符合条件的规则LIST
         List<ShelveRecommendRuleCommand> returnList = new ArrayList<ShelveRecommendRuleCommand>();
         for (ShelveRecommendRuleCommand s : sList) {

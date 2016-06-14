@@ -24,7 +24,6 @@ import com.baozun.scm.primservice.whoperation.command.BaseCommand;
  * @author larkark
  * 
  */
-@Deprecated
 public class InventoryCommand extends BaseCommand {
 
     private static final long serialVersionUID = -635262476522169659L;
