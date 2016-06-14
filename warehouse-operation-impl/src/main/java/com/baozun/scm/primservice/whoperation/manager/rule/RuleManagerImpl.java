@@ -247,7 +247,7 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
             for (WhInBoundRuleCommand i : iList) {
                 // 验证原始库存记录是否可用使用该规则
                 Long inbound = whInBoundRuleDao.executeRuleSql(i.getRuleSql(), ruleAffer.getOuid(), ruleAffer.getInvId());
-                if (null == inbound) {
+                if (null != inbound) {
                     // 可拆跳出循环返回
                     export.setUsableness(true);
                     export.setWhInBoundRuleCommand(i);
@@ -263,7 +263,7 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
                 if (inBoundRule.getLifecycle().equals(WhInBoundRule.LIFECYCLE_NORMAL)) {
                     // 验证原始库存记录是否可使用该规则
                     Long inbound = whInBoundRuleDao.executeRuleSql(inBoundRule.getRuleSql(), ruleAffer.getOuid(), ruleAffer.getInvId());
-                    if (null == inbound) {
+                    if (null != inbound) {
                         BeanUtils.copyProperties(inBoundRule, whInBoundRuleCommand);
                         // 可拆跳出循环返回
                         export.setUsableness(true);

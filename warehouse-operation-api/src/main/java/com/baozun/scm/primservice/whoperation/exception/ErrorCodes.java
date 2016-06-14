@@ -284,11 +284,11 @@ public class ErrorCodes {
     public static final int PDA_INBOUND_SORTATION_CONTAINERCODE_NULL = 50001;
     /** 容器不存在 */
     public static final int PDA_INBOUND_SORTATION_CONTAINER_NULL = 50002;
-    /** 容器状态不可用 */
+    /** 容器生命周期无效 */
     public static final int PDA_INBOUND_SORTATION_LIFRCYCLE_ERROR = 50003;
     /** 容器对应的库存信息不存在 */
     public static final int PDA_INBOUND_SORTATION_CONTAINER_INV_NULL = 50004;
-    /** 容器找不到对应入库分拣规则 */
+    /** 找不到对应入库分拣规则 */
     public static final int PDA_INBOUND_SORTATION_CONTAINER_USABLENESS_FALSE = 50005;
     /** SKU不能为空 */
     public static final int PDA_INBOUND_SORTATION_SKUCODE_NULL = 50006;
@@ -316,6 +316,8 @@ public class ErrorCodes {
     public static final int PDA_INBOUND_SORTATION_ONHANDQTY_ERROR = 50017;
     /** 库存属性对应库存不存在 请重新操作 */
     public static final int PDA_INBOUND_SORTATION_SKUATTRINV_ERROR = 50018;
+    /** 容器状态异常 状态编码【{0}】 */
+    public static final int PDA_INBOUND_SORTATION_STATUS_ERROR = 50019;
     // 50001-60000 hubin
 
     // 60001-70000 xiemingwei
