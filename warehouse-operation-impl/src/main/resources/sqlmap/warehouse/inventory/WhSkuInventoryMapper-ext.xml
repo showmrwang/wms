@@ -444,7 +444,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			t group by t.uuid
     </select>
     
-    <sql id="findwWhSkuInventoryByIdAndUuidColumns">
+    <sql id="findWhSkuInventoryByIdAndUuidColumns">
 	    <![CDATA[
 			inv.id as id,
 			inv.sku_id as skuId,
@@ -486,8 +486,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	</sql>
     
     
-	<select id="findwWhSkuInventoryByIdAndUuid" resultMap="WhSkuInventoryCommandResultExt">
-		select <include refid="findwWhSkuInventoryByIdAndUuidColumns" />
+	<select id="findWhSkuInventoryByIdAndUuid" resultMap="WhSkuInventoryCommandResultExt">
+		select <include refid="findWhSkuInventoryByIdAndUuidColumns" />
 			from t_wh_sku_inventory inv 
 				left join t_wh_location l on inv.location_id = l.id 
 				left join t_wh_container cout on inv.outer_container_id = cout.id 
@@ -505,7 +505,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     </select>
     
     <select id="findWhSkuInventoryByContainerId" resultMap="WhSkuInventoryCommandResultExt">
-		select <include refid="findwWhSkuInventoryByIdAndUuidColumns" />
+		select <include refid="findWhSkuInventoryByIdAndUuidColumns" />
 			from t_wh_sku_inventory inv 
 				left join t_wh_location l on inv.location_id = l.id 
 				left join t_wh_container cout on inv.outer_container_id = cout.id 
@@ -652,66 +652,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					and inv.ou_id = #{ouid}
 					and inv.location_id is null
     </select>
-    
-    <sql id="findWhSkuInventoryByIdAndUuidColumns">
-	    <![CDATA[
-			inv.id as id,
-			inv.sku_id as skuId,
-			inv.location_id as locationId,
-			inv.outer_container_id as outerContainerId,
-			inv.inside_container_id as insideContainerId,
-			inv.customer_id as customerId,
-			inv.store_id as storeId,
-			inv.occupation_code as occupationCode,
-			inv.on_hand_qty as onHandQty,
-			inv.allocated_qty as allocatedQty,
-			inv.to_be_filled_qty as toBeFilledQty,
-			inv.frozen_qty as frozenQty,
-			inv.inv_status as invStatus,
-			inv.inv_type as invType,
-			inv.batch_number as batchNumber,
-			inv.mfg_date as mfgDate,
-			inv.exp_date as expDate,
-			inv.country_of_origin as countryOfOrigin,
-			inv.inv_attr1 as invAttr1,
-			inv.inv_attr2 as invAttr2,
-			inv.inv_attr3 as invAttr3,
-			inv.inv_attr4 as invAttr4,
-			inv.inv_attr5 as invAttr5,
-			inv.uuid as uuid,
-			inv.is_locked as isLocked,
-			inv.ou_id as ouId,
-			inv.occupation_code_source as occupationCodeSource,
-			inv.t.inbound_time as inboundTime,
-	        inv.last_modify_time as lastModifyTime,
-			l.code as locationCode,
-			cout.code as outerContainerCode,
-			iout.code as insideContainerCode,
-			cust.customer_name as customerName,
-			store.store_name as storeName,
-			sku.code as skuCode,
-			sku.name as skuName
-	    ]]>
-	</sql>
-    
-    
-	<select id="findWhSkuInventoryByIdAndUuid" resultMap="WhSkuInventoryCommandResultExt">
-		select <include refid="findWhSkuInventoryByIdAndUuidColumns" />
-			from t_wh_sku_inventory inv 
-				left join t_wh_location l on inv.location_id = l.id 
-				left join t_wh_container cout on inv.outer_container_id = cout.id 
-				left join t_wh_container iout on inv.inside_container_id = iout.id 
-				left join t_bi_customer cust on inv.customer_id = cust.id 
-				left join t_bi_store store on inv.store_id = store.id 
-				left join t_wh_sku sku on inv.sku_id = sku.id 
-				<where>
-				inv.id = #{id} 
-	       		and inv.ou_id = #{ouid} 
-				<if test="uuid!=null and uuid!=''">
-					 and inv.uuid = #{uuid}
-				</if>
-		</where>
-    </select>
+
     
     <select id="findWhSkuInventoryByIdGroupByUuid" resultMap="WhSkuInventoryCommandResultExt">
 		select inv.sku_id as skuId, inv.ou_id as ouId, inv.uuid as uuid, 
@@ -765,7 +706,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     	
     </select>
     
-	<select id="findwWhSkuInventoryById" resultMap="WhSkuInventoryResultExt">
+	<select id="findWhSkuInventoryById" resultMap="WhSkuInventoryResultExt">
 				select  <include refid="whSkuInventoryColumnsExt" />
 					from 
 					t_wh_sku_inventory 
@@ -774,7 +715,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					and ou_id = #{ouid}
     </select>
     
-    <select id="findwWhSkuInventoryByUuid" resultMap="WhSkuInventoryResultExt">
+    <select id="findWhSkuInventoryByUuid" resultMap="WhSkuInventoryResultExt">
 				select  <include refid="whSkuInventoryColumnsExt" />
 					from 
 					t_wh_sku_inventory 
@@ -911,5 +852,50 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 							and t.outer_container_id = #{outerContainerid} 
 						</if>
 					</where>
+    </select>
+    
+   <select id="findWhSkuInventoryBySkuAttr" resultMap="WhSkuInventoryCommandResultExt" parameterType="com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand">
+				select  <include refid="whSkuInventoryColumnsExt" />
+					from 
+					t_wh_sku_inventory 
+				<where>
+					ou_id = #{ouId} 
+					and sku_id = #{skuId} 
+					and inside_container_id = #{insideContainerId} 
+					and location_id is null 
+					<if test="countryOfOrigin != null and countryOfOrigin!=''">
+						and country_of_origin = #{countryOfOrigin}
+					</if>
+					<if test="mfgDateStr != null and mfgDateStr !=''">
+						and mfg_date = #{mfgDateStr}
+					</if>
+					<if test="expDateStr != null and expDateStr !=''">
+						and exp_date = #{expDateStr}
+					</if>
+					<if test="batchNumber != null and batchNumber!=''">
+						and batch_number = #{batchNumber}
+					</if>
+					<if test="invAttr1 != null and invAttr1!=''">
+						and inv_attr1 = #{invAttr1}
+					</if>
+					<if test="invAttr2 != null and invAttr2!=''">
+						and inv_attr2 = #{invAttr2}
+					</if>
+					<if test="invAttr3 != null and invAttr3!=''">
+						and inv_attr3 = #{invAttr3}
+					</if>
+					<if test="invAttr4 != null and invAttr4!=''">
+						and inv_attr4 = #{invAttr4}
+					</if>
+					<if test="invAttr5 != null and invAttr5!=''">
+						and inv_attr5 = #{invAttr5}
+					</if>
+					<if test="invStatus != null and invStatus!=''">
+						and inv_status = #{invStatus}
+					</if>
+					<if test="invType != null and invType!=''">
+						and inv_type = #{invType}
+					</if>
+				</where>
     </select>
 </mapper>

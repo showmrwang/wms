@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.sortation.WhContainerAssignDao">
+	<resultMap id="WhContainerAssignResult" type="com.baozun.scm.primservice.whoperation.model.warehouse.sortation.WhContainerAssign">
+	</resultMap>
+	<resultMap id="WhContainerAssignPaginationResult" type="lark.common.dao.Pagination">
+    	<collection property="items" javaType="ArrayList" resultMap="WhContainerAssignResult"/>
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whContainerAssignColumns">
+	    <![CDATA[
+	        	id as id,
+	        	user_id as userId,
+	        	container_id as containerId,
+	        	rule_id as ruleId,
+	        	uuid as uuid,
+	        	ou_id as ouId
+	    ]]>
+	</sql>
+	<sql id="whContainerAssignConditionWhereExt">
+		<where>
+			<if test="likeEqualsMap != null">
+				<foreach collection="likeEqualsMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} like CONCAT('%',#{value},'%') 
+				</foreach> 
+			</if> 
+			<if test="equalsMap != null"> 
+				<foreach collection="equalsMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} = #{value} 
+				</foreach> 
+			</if> 
+			<if test="notEqualsMap != null"> 
+				<foreach collection="notEqualsMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} != #{value} 
+				</foreach> 
+			</if> 
+			<if test="greateMap != null"> 
+				<foreach collection="greateMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} &gt; #{value} 
+				</foreach> 
+			</if> 
+			<if test="greateEqualsMap != null"> 
+				<foreach collection="greateEqualsMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} &gt;= #{value} 
+				</foreach> 
+			</if> 
+			<if test="lessMap != null"> 
+				<foreach collection="lessMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} &lt; #{value} 
+				</foreach> 
+			</if> 
+			<if test="lessEqualsMap != null"> 
+				<foreach collection="lessEqualsMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} &lt;= #{value} 
+				</foreach> 
+			</if> 
+			<if test="nullMap != null"> 
+				<foreach collection="nullMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} is null 
+				</foreach> 
+			</if> 
+			<if test="notNullMap != null"> 
+				<foreach collection="notNullMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} is not null 
+				</foreach> 
+			</if> 
+			<if test="inMap != null"> 
+				<foreach collection="inMap" index="key"  item="value" separator="and" open=" and (" close=")"> 
+					<foreach collection="value" item="itemin" index="index" separator="or"> 
+						${key} = #{itemin} 
+					</foreach> 
+				</foreach> 
+			</if> 
+			<if test="notInMap != null"> 
+				<foreach collection="notInMap" index="key"  item="value" separator="and" open=" and (" close=")"> 
+					<foreach collection="value" item="itemin" index="index" separator="and"> 
+						${key} != #{itemin} 
+					</foreach> 
+				</foreach> 
+			</if> 
+		</where>
+		<if test="sortBy != null"> 
+			<foreach collection="sortBy" item="item" separator=","  open=" order by "> 
+				${item.field} ${item.type}
+			</foreach> 
+		</if>
+	</sql>
+	
+		<!-- 如果有自增字段 -->
+		
+			<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+			<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.sortation.WhContainerAssign" 
+				
+			 flushCache="true">
+		    <![CDATA[
+		        INSERT INTO
+		        t_wh_container_assign (
+		        id,
+		        	user_id ,
+		        	container_id ,
+		        	rule_id ,
+		        	uuid ,
+		        	ou_id 
+		        ) VALUES (
+		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{userId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{containerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{ruleId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{uuid,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        )
+		    ]]>
+
+		</insert>
+		
+		
+		<update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.sortation.WhContainerAssign">
+	    <![CDATA[
+	        UPDATE t_wh_container_assign SET
+		        user_id = #{userId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        container_id = #{containerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        rule_id = #{ruleId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        uuid = #{uuid,javaType=java.lang.Long,jdbcType=BIGINT}
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+		</update>
+		<update id="batchUpdate">
+	        UPDATE t_wh_container_assign SET
+	        	<foreach collection="batchUpdateMap" index="key"  item="value" separator=",">
+	        		${key} = #{value}
+	        	</foreach>
+	        	<include refid="whContainerAssignConditionWhereExt"/>
+		</update>
+		
+	   <delete id="delete" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from t_wh_container_assign where
+		        id = #{id} 
+	    ]]>
+	    </delete> 
+	    
+	     <delete id="deleteByIds" parameterType="list">
+	    
+	        delete from t_wh_container_assign 
+	        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>	
+	  
+	    </delete>  
+	    <update id="batchDelete">
+	        delete from t_wh_container_assign <include refid="whContainerAssignConditionWhereExt"/>
+		</update>
+	         
+	    <select id="findById" parameterType="java.lang.Long" resultMap="WhContainerAssignResult" flushCache="false">
+			select <include refid="whContainerAssignColumns" />
+		    <![CDATA[
+			    from t_wh_container_assign 
+		        where 
+		        id = #{id} 
+		    ]]>
+		</select>	
+		<select id="getByIds" parameterType="list"  resultMap="WhContainerAssignResult" flushCache="false">
+			select <include refid="whContainerAssignColumns" />
+			    from t_wh_container_assign 
+		        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>					
+		</select>	
+	<sql id="whContainerAssignDynamicWhere">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+				<if test="userId!=null">
+					and user_id = #{userId}
+				</if>
+	       
+				<if test="containerId!=null">
+					and container_id = #{containerId}
+				</if>
+	       
+				<if test="ruleId!=null">
+					and rule_id = #{ruleId}
+				</if>
+	       
+				<if test="uuid!=null">
+					and uuid = #{uuid}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+		</where>
+	</sql>
+	
+
+	<select id="getCount" resultType="long">
+        select count(*) from t_wh_container_assign 
+    </select>
+    <select id="findListCountByQueryMap" resultType="long">
+        select count(*) from t_wh_container_assign 
+		<include refid="whContainerAssignDynamicWhere"/>    
+    </select>
+    
+    <select id="findListCountByParam" resultType="long">
+        select count(*) from t_wh_container_assign 
+		<include refid="whContainerAssignDynamicWhere"/>    
+    </select>
+    
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPage" resultMap="WhContainerAssignResult">
+    	select <include refid="whContainerAssignColumns" />
+	    from t_wh_container_assign 
+		<include refid="whContainerAssignDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByQueryMap" resultMap="WhContainerAssignResult">
+    	select <include refid="whContainerAssignColumns" />
+	    from t_wh_container_assign 
+		<include refid="whContainerAssignDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByParam" resultMap="WhContainerAssignResult">
+    	select <include refid="whContainerAssignColumns" />
+	    from t_wh_container_assign 
+		<include refid="whContainerAssignDynamicWhere"/>
+		
+    </select>
+    
+    <select id="query" resultMap="WhContainerAssignResult">
+		select <include refid="whContainerAssignColumns" />
+	    from t_wh_container_assign  
+		<include refid="whContainerAssignConditionWhereExt"/>
+    </select>
+    
+    <select id="queryCount" resultType="long">
+		select count(*) from t_wh_container_assign  
+		<include refid="whContainerAssignConditionWhereExt"/>
+    </select>
+
+	
+</mapper>
