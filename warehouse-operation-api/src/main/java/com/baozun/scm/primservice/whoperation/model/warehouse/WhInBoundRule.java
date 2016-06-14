@@ -37,9 +37,9 @@ public class WhInBoundRule extends BaseModel {
     /** 规则sql */
     private String ruleSql;
     /** 规则结果条件ID */
-    private String resultConditionIds;
+    private String sortingConditionIds;
     /** 规则结果SQL */
-    private String resultSql;
+    private String sortingSql;
     /** 仓库组织ID */
     private Long ouId;
     /** 优先级 */
@@ -89,20 +89,20 @@ public class WhInBoundRule extends BaseModel {
         this.ruleSql = ruleSql;
     }
 
-    public String getResultConditionIds() {
-        return resultConditionIds;
+    public String getSortingConditionIds() {
+        return sortingConditionIds;
     }
 
-    public void setResultConditionIds(String resultConditionIds) {
-        this.resultConditionIds = resultConditionIds;
+    public void setSortingConditionIds(String sortingConditionIds) {
+        this.sortingConditionIds = sortingConditionIds;
     }
 
-    public String getResultSql() {
-        return resultSql;
+    public String getSortingSql() {
+        return sortingSql;
     }
 
-    public void setResultSql(String resultSql) {
-        this.resultSql = resultSql;
+    public void setSortingSql(String sortingSql) {
+        this.sortingSql = sortingSql;
     }
 
     public Long getOuId() {

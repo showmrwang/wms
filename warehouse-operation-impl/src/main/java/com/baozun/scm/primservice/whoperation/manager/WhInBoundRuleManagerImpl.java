@@ -4,6 +4,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import lark.common.annotation.MoreDB;
+import lark.common.dao.Page;
+import lark.common.dao.Pagination;
+import lark.common.dao.Sort;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,11 +27,6 @@ import com.baozun.scm.primservice.whoperation.manager.system.GlobalLogManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhInBoundRuleManager;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhInBoundRule;
 import com.baozun.scm.primservice.whoperation.util.ParamsUtil;
-
-import lark.common.annotation.MoreDB;
-import lark.common.dao.Page;
-import lark.common.dao.Pagination;
-import lark.common.dao.Sort;
 
 @Service("whInBoundRuleManager")
 @Transactional
@@ -124,30 +124,30 @@ public class WhInBoundRuleManagerImpl implements WhInBoundRuleManager {
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public WhInBoundRuleCommand testRuleSql(WhInBoundRule whInBoundRule, Long ouId, String originContainerCode) {
+    public WhInBoundRuleCommand testRuleSql(WhInBoundRule whInBoundRule, Long ouId, Long originInventoryId) {
         if (log.isInfoEnabled()) {
             log.info("WhInBoundRuleManagerImpl testRuleSql is start");
         }
         if (log.isDebugEnabled()) {
-            log.debug("testRuleSql param [whInBoundRule:{}, ouId:{], originContainerCode:{} ", whInBoundRule, ouId, originContainerCode);
+            log.debug("testRuleSql param [whInBoundRule:{}, ouId:{], originInventoryId:{} ", whInBoundRule, ouId, originInventoryId);
         }
-        if (null == whInBoundRule || null == whInBoundRule.getRuleSql() || null == ouId || null == originContainerCode) {
-            log.error("WhInBoundRuleManagerImpl testRuleSql failed, param is null, param [whInBoundRule:{}, ouId:{], originContainerCode:{} ", whInBoundRule, ouId, originContainerCode);
+        if (null == whInBoundRule || null == whInBoundRule.getRuleSql() || null == ouId || null == originInventoryId) {
+            log.error("WhInBoundRuleManagerImpl testRuleSql failed, param is null, param [whInBoundRule:{}, ouId:{], originInventoryId:{} ", whInBoundRule, ouId, originInventoryId);
             throw new BusinessException(ErrorCodes.PARAM_IS_NULL);
         }
         WhInBoundRuleCommand command = new WhInBoundRuleCommand();
-        String containerCode = null;
+        Long resultInventoryId = null;
         Boolean testResult = true;
         try {
-            containerCode = whInBoundRuleDao.executeRuleSql(whInBoundRule.getRuleSql(), ouId, originContainerCode);
+            resultInventoryId = whInBoundRuleDao.executeRuleSql(whInBoundRule.getRuleSql(), ouId, originInventoryId);
         } catch (Exception e) {
-            log.error("WhInBoundRuleManagerImpl testRuleSql failed, param [whInBoundRule:{}, ouId:{}, originContainerCode:{}, exception:{}]", whInBoundRule, ouId, originContainerCode, e.getMessage());
+            log.error("WhInBoundRuleManagerImpl testRuleSql failed, param [whInBoundRule:{}, ouId:{}, originInventoryId:{}, exception:{}]", whInBoundRule, ouId, originInventoryId, e.getMessage());
             testResult = false;
         }
-        command.setContainerCode(containerCode);
+        command.setInventoryId(resultInventoryId);
         command.setRuleSqlTestResult(testResult);
         if (log.isDebugEnabled()) {
-            log.debug("testRuleSql result, param [whInBoundRule:{}, ouId:{}, originContainerCode:{}, containerCode:{}]", whInBoundRule, ouId, originContainerCode, containerCode);
+            log.debug("testRuleSql result, param [whInBoundRule:{}, ouId:{}, originInventoryId:{}, resultInventoryId:{}]", whInBoundRule, ouId, originInventoryId, resultInventoryId);
         }
         if (log.isInfoEnabled()) {
             log.info("WhInBoundRuleManagerImpl testRuleSql is end");
@@ -194,8 +194,8 @@ public class WhInBoundRuleManagerImpl implements WhInBoundRuleManager {
             originalRule.setPriority(ruleCommand.getPriority());
             originalRule.setRule(ruleCommand.getRule());
             originalRule.setRuleSql(ruleCommand.getRuleSql());
-            originalRule.setResultConditionIds(ruleCommand.getResultConditionIds());
-            originalRule.setResultSql(ruleCommand.getResultSql());
+            originalRule.setSortingConditionIds(ruleCommand.getSortingConditionIds());
+            originalRule.setSortingSql(ruleCommand.getSortingSql());
             originalRule.setLifecycle(ruleCommand.getLifecycle());
             originalRule.setModifiedId(userId);
             if (log.isDebugEnabled()) {
@@ -219,8 +219,8 @@ public class WhInBoundRuleManagerImpl implements WhInBoundRuleManager {
             updateRule.setLifecycle(ruleCommand.getLifecycle());
             updateRule.setRule(ruleCommand.getRule());
             updateRule.setRuleSql(ruleCommand.getRuleSql());
-            updateRule.setResultConditionIds(ruleCommand.getResultConditionIds());
-            updateRule.setResultSql(ruleCommand.getResultSql());
+            updateRule.setSortingConditionIds(ruleCommand.getSortingConditionIds());
+            updateRule.setSortingSql(ruleCommand.getSortingSql());
             updateRule.setCreateTime(new Date());
             updateRule.setCreatedId(userId);
             updateRule.setLastModifyTime(new Date());

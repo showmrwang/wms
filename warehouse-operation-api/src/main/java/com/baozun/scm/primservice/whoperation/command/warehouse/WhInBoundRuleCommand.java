@@ -38,9 +38,9 @@ public class WhInBoundRuleCommand extends BaseCommand {
     /** 规则sql */
     private String ruleSql;
     /** 规则结果条件ID */
-    private String resultConditionIds;
+    private String sortingConditionIds;
     /** 规则结果SQL */
-    private String resultSql;
+    private String sortingSql;
     /** 仓库组织ID */
     private Long ouId;
     /** 优先级 */
@@ -57,8 +57,8 @@ public class WhInBoundRuleCommand extends BaseCommand {
     private Long modifiedId;
     /** 是否启用 1:启用 0:停用 */
     private Integer lifecycle;
-    /** 容器编码列表 */
-    private String containerCode;
+    /** 库存记录ID */
+    private Long inventoryId;
     /** 规则测试结果 */
     private Boolean ruleSqlTestResult;
 
@@ -102,20 +102,20 @@ public class WhInBoundRuleCommand extends BaseCommand {
         this.ruleSql = ruleSql;
     }
 
-    public String getResultConditionIds() {
-        return resultConditionIds;
+    public String getSortingConditionIds() {
+        return sortingConditionIds;
     }
 
-    public void setResultConditionIds(String resultConditionIds) {
-        this.resultConditionIds = resultConditionIds;
+    public void setSortingConditionIds(String sortingConditionIds) {
+        this.sortingConditionIds = sortingConditionIds;
     }
 
-    public String getResultSql() {
-        return resultSql;
+    public String getSortingSql() {
+        return sortingSql;
     }
 
-    public void setResultSql(String resultSql) {
-        this.resultSql = resultSql;
+    public void setSortingSql(String sortingSql) {
+        this.sortingSql = sortingSql;
     }
 
     public Long getOuId() {
@@ -182,12 +182,12 @@ public class WhInBoundRuleCommand extends BaseCommand {
         this.lifecycle = lifecycle;
     }
 
-    public String getContainerCode() {
-        return containerCode;
+    public Long getInventoryId() {
+        return inventoryId;
     }
 
-    public void setContainerCode(String containerCode) {
-        this.containerCode = containerCode;
+    public void setInventoryId(Long inventoryId) {
+        this.inventoryId = inventoryId;
     }
 
     public Boolean getRuleSqlTestResult() {

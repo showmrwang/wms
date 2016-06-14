@@ -85,14 +85,14 @@ public interface WhInBoundRuleDao extends BaseDao<WhInBoundRule, Long> {
 
     /**
      * 执行规则sql
-     * 
+     *
      * @author mingwei.xie
      * @param ouId
      * @param ruleSql
-     * @param originContainerCode
+     * @param inventoryId
      * @return
      */
-    String executeRuleSql(@Param("ruleSql") String ruleSql, @Param("ouId") Long ouId, @Param("originContainerCode") String originContainerCode);
+    Long executeRuleSql(@Param("ruleSql") String ruleSql, @Param("ouId") Long ouId, @Param("inventoryId") Long inventoryId);
 
     /**
      * 根据id查找入库分拣规则

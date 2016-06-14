@@ -1,10 +1,11 @@
 package com.baozun.scm.primservice.whoperation.manager.pda.sortation;
 
 import com.baozun.scm.primservice.whoperation.command.pda.sortation.PdaInboundSortationCommand;
+import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 
 
 
-public interface PdaInboundSortationManager {
+public interface PdaInboundSortationManager extends BaseManager {
 
     PdaInboundSortationCommand pdaScanContainer(PdaInboundSortationCommand pdaInboundSortationCommand);
 
@@ -21,4 +22,6 @@ public interface PdaInboundSortationManager {
     void pdaScanSnDone(PdaInboundSortationCommand pdaInboundSortationCommand);
 
     PdaInboundSortationCommand pdaScanSkuAttr(PdaInboundSortationCommand pdaInboundSortationCommand) throws Exception;
+
+    PdaInboundSortationCommand scanNewContainerView(PdaInboundSortationCommand pdaInboundSortationCommand);
 }

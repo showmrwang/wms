@@ -21,6 +21,7 @@ import com.baozun.scm.primservice.whoperation.command.rule.RuleExportCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
+import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.dao.sku.SkuDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
@@ -83,27 +84,35 @@ public class PdaInboundSortationManagerImpl extends BaseManagerImpl implements P
             log.warn("pdaScanContainer container is null logid: " + pdaInboundSortationCommand.getLogId());
             throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
         }
-        // 验证容器状态是否可用
-        if (!container.getLifecycle().equals(BaseModel.LIFECYCLE_NORMAL)) {
-            // 容器状态不可用
+        // 验证容器Lifecycle是否有效
+        if (container.getLifecycle().equals(BaseModel.LIFECYCLE_DISABLE)) {
+            // 容器Lifecycle无效
             log.warn("pdaScanContainer container lifecycle error =" + container.getLifecycle() + " logid: " + pdaInboundSortationCommand.getLogId());
             throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_LIFRCYCLE_ERROR);
         }
-        pdaInboundSortationCommand.setContainerId(container.getId());// 保存容器ID
-        // 判断该容器是否有符合的入库分拣规则
-        RuleAfferCommand ruleAffer = new RuleAfferCommand();
-        ruleAffer.setLogId(pdaInboundSortationCommand.getLogId());
-        ruleAffer.setOuid(pdaInboundSortationCommand.getOuId());
-        ruleAffer.setAfferContainerCode(pdaInboundSortationCommand.getContainerCode());
-        ruleAffer.setRuleType(Constants.INBOUND_RULE);// 入库分拣规则
-        ruleAffer.setRuleId(pdaInboundSortationCommand.getRuleId());
-        RuleExportCommand export = ruleManager.ruleExport(ruleAffer);
-        if (!export.getUsableness()) {
-            // 如果没有对应规则 提示错误
-            log.warn("pdaScanContainer export.getUsableness() is false logid: " + pdaInboundSortationCommand.getLogId());
-            throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_USABLENESS_FALSE);
+        // 如果容器Lifecycle为占用 判断是否状态为待上架/可用状态
+        if (container.getLifecycle().equals(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED)) {
+            if (!container.getStatus().equals(ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY) && !container.getStatus().equals(ContainerStatus.CONTAINER_STATUS_USABLE)) {
+                log.warn("pdaScanContainer container status error =" + container.getStatus() + " logid: " + pdaInboundSortationCommand.getLogId());
+                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_STATUS_ERROR, new Object[] {container.getStatus()});
+            }
         }
-        pdaInboundSortationCommand.setRuleId(export.getWhInBoundRuleCommand().getId());
+        pdaInboundSortationCommand.setContainerId(container.getId());// 保存容器ID
+        // // 判断该容器是否有符合的入库分拣规则
+        // RuleAfferCommand ruleAffer = new RuleAfferCommand();
+        // ruleAffer.setLogId(pdaInboundSortationCommand.getLogId());
+        // ruleAffer.setOuid(pdaInboundSortationCommand.getOuId());
+        // ruleAffer.setAfferContainerCode(pdaInboundSortationCommand.getContainerCode());
+        // ruleAffer.setRuleType(Constants.INBOUND_RULE);// 入库分拣规则
+        // ruleAffer.setRuleId(pdaInboundSortationCommand.getRuleId());
+        // RuleExportCommand export = ruleManager.ruleExport(ruleAffer);
+        // if (!export.getUsableness()) {
+        // // 如果没有对应规则 提示错误
+        // log.warn("pdaScanContainer export.getUsableness() is false logid: " +
+        // pdaInboundSortationCommand.getLogId());
+        // throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_USABLENESS_FALSE);
+        // }
+        // pdaInboundSortationCommand.setRuleId(export.getWhInBoundRuleCommand().getId());
         // 验证容器是否存在库存信息
         List<String> containerList = new ArrayList<String>();
         containerList.add(pdaInboundSortationCommand.getContainerCode());
@@ -748,6 +757,36 @@ public class PdaInboundSortationManagerImpl extends BaseManagerImpl implements P
         }
         pdaInboundSortationCommand.setSkuInvId(inv.getId());
         log.info(this.getClass().getSimpleName() + ".pdaScanSkuAttr method begin! end: " + pdaInboundSortationCommand.getLogId());
+        return pdaInboundSortationCommand;
+    }
+
+    /**
+     * 进入扫描目标容器号 获取对应规则 获取对应目标容器信息
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public PdaInboundSortationCommand scanNewContainerView(PdaInboundSortationCommand pdaInboundSortationCommand) {
+        log.info(this.getClass().getSimpleName() + ".scanNewContainerView method begin! logid: " + pdaInboundSortationCommand.getLogId());
+        if (log.isDebugEnabled()) {
+            log.debug("params:[PdaInboundSortationCommand:{}]", pdaInboundSortationCommand.toString());
+        }
+        // 通过库存ID信息查找对应规则信息
+        RuleAfferCommand ruleAffer = new RuleAfferCommand();
+        // 封装数据
+        ruleAffer.setLogId(pdaInboundSortationCommand.getLogId());
+        ruleAffer.setOuid(pdaInboundSortationCommand.getOuId());
+        ruleAffer.setRuleType(Constants.INBOUND_RULE);// 入库分拣规则
+        ruleAffer.setRuleId(pdaInboundSortationCommand.getRuleId());
+        ruleAffer.setInvId(pdaInboundSortationCommand.getSkuInvId());
+        RuleExportCommand export = ruleManager.ruleExport(ruleAffer);
+        if (!export.getUsableness()) {
+            // 如果没有对应规则 提示错误
+            log.warn("pdaScanContainer export.getUsableness() is false logid: " + pdaInboundSortationCommand.getLogId());
+            throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_USABLENESS_FALSE);
+        }
+        // 保存对应规则ID
+        pdaInboundSortationCommand.setRuleId(export.getWhInBoundRuleCommand().getId());
+        log.info(this.getClass().getSimpleName() + ".scanNewContainerView method end! logid: " + pdaInboundSortationCommand.getLogId());
         return pdaInboundSortationCommand;
     }
 
