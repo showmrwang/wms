@@ -117,10 +117,7 @@ public class Warehouse extends BaseModel {
     /** SKU严重混放数量 */
     private Integer skuMixNumber;
     
-    
-    
-    
-    /** 新加三字段 */
+
     /** 用户分拣是否共享目标容器 */
     private Boolean isSortationContainerAssign = false;
     /** 是否允许多次出库 */

@@ -103,8 +103,7 @@ public class WarehouseCommand extends BaseCommand {
 
     private Long ouId;
     
-    
-    /** 新加三字段 */
+
     /** 用户分拣是否共享目标容器 */
     private Boolean isSortationContainerAssign = false;
     /** 是否允许多次出库 */
