@@ -228,14 +228,14 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
 
     /***
      * 入库分拣规则匹配
-     * 
+     *
      * @param ruleAffer
      * @return
      */
     private RuleExportCommand exportInboundRule(RuleAfferCommand ruleAffer) {
-        if (StringUtil.isEmpty(ruleAffer.getAfferContainerCode())) {
-            // 判断原始容器号是否为空
-            log.warn("ruleExport ruleAffer.getAfferContainerCode() is null logid: " + ruleAffer.getLogId());
+        if (null == ruleAffer.getInvId()) {
+            // 判断原始库存ID是否为空
+            log.warn("ruleExport ruleAffer.getInvId() is null logid: " + ruleAffer.getLogId());
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
         RuleExportCommand export = new RuleExportCommand();
@@ -245,9 +245,9 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
             // 查询所有的入库分拣规则
             List<WhInBoundRuleCommand> iList = whInBoundRuleDao.findInboundRuleByOuId(ruleAffer.getOuid());
             for (WhInBoundRuleCommand i : iList) {
-                // 验证原始容器号是否可用
-                String inbound = whInBoundRuleDao.executeRuleSql(i.getRuleSql(), ruleAffer.getOuid(), ruleAffer.getAfferContainerCode());
-                if (!StringUtil.isEmpty(inbound)) {
+                // 验证原始库存记录是否可用使用该规则
+                Long inbound = whInBoundRuleDao.executeRuleSql(i.getRuleSql(), ruleAffer.getOuid(), ruleAffer.getInvId());
+                if (null == inbound) {
                     // 可拆跳出循环返回
                     export.setUsableness(true);
                     export.setWhInBoundRuleCommand(i);
@@ -261,9 +261,9 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
             if (null != inBoundRule) {
                 // 判断该规则状态是否可用
                 if (inBoundRule.getLifecycle().equals(WhInBoundRule.LIFECYCLE_NORMAL)) {
-                    // 验证原始容器号是否可用
-                    String inbound = whInBoundRuleDao.executeRuleSql(inBoundRule.getRuleSql(), ruleAffer.getOuid(), ruleAffer.getAfferContainerCode());
-                    if (!StringUtil.isEmpty(inbound)) {
+                    // 验证原始库存记录是否可使用该规则
+                    Long inbound = whInBoundRuleDao.executeRuleSql(inBoundRule.getRuleSql(), ruleAffer.getOuid(), ruleAffer.getInvId());
+                    if (null == inbound) {
                         BeanUtils.copyProperties(inBoundRule, whInBoundRuleCommand);
                         // 可拆跳出循环返回
                         export.setUsableness(true);
@@ -277,7 +277,7 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
 
     /**
      * 通过入库规则ResultConditionIds获取对应字段映射
-     * 
+     *
      * @param ids
      * @return
      */
@@ -303,7 +303,7 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public RuleExportCommand ruleExportContainerCode(RuleAfferCommand ruleAffer) {
         // 获取所有入库分拣规则的ResultConditionIds 封装成List<Long>
-        String[] conditionIds = ruleAffer.getWhInBoundRuleCommand().getResultConditionIds().split(",");
+        String[] conditionIds = ruleAffer.getWhInBoundRuleCommand().getSortingConditionIds().split(",");
         List<Long> ids = new ArrayList<Long>();
         for (String c : conditionIds) {
             ids.add(Long.parseLong(c));
@@ -313,9 +313,9 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
         // 通过入库分拣规则的ResultConditionIds 得到对应的字段映射
         String selectColumnsStr = selectColumnsByConditionIds(ids);
         // 通过原始容器号的库存记录查询 分拣策略的条件值
-        WhInBoundRuleResultCommand wrr = whInBoundRuleDao.findResultConditionByInventoryId(ruleAffer.getInvId(), ruleAffer.getOuid(), ruleAffer.getWhInBoundRuleCommand().getResultSql());
+        WhInBoundRuleResultCommand wrr = whInBoundRuleDao.findResultConditionByInventoryId(ruleAffer.getInvId(), ruleAffer.getOuid(), ruleAffer.getWhInBoundRuleCommand().getSortingSql());
         // 查询目标容器分拣策略条件值集合
-        List<WhInBoundRuleResultCommand> wrrList = whInBoundRuleDao.findResultConditionByContainerCode(wrr.getContainerCode(), ruleAffer.getOuid(), ruleAffer.getWhInBoundRuleCommand().getResultSql(), selectColumnsStr);
+        List<WhInBoundRuleResultCommand> wrrList = whInBoundRuleDao.findResultConditionByContainerCode(wrr.getContainerCode(), ruleAffer.getOuid(), ruleAffer.getWhInBoundRuleCommand().getSortingSql(), selectColumnsStr);
         // 如果目标容器集合为空 则找不到对应容器
         if (wrrList.size() == 0) {
             return export;
