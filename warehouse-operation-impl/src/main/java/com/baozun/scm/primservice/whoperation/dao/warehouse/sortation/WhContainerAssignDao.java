@@ -17,6 +17,8 @@ package com.baozun.scm.primservice.whoperation.dao.warehouse.sortation;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.annotations.Param;
+
 import lark.common.annotation.CommonQuery;
 import lark.common.annotation.QueryPage;
 import lark.common.dao.Page;
@@ -42,5 +44,10 @@ public interface WhContainerAssignDao extends BaseDao<WhContainerAssign, Long> {
 
     @CommonQuery
     int saveOrUpdate(WhContainerAssign o);
+
+    /**
+     * 删除对应入库分拣相同商品属性对应目标容器表数据
+     */
+    int deleteWhContainerAssign(@Param("ouid") Long ouid, @Param("containerId") Long containerId);
 
 }

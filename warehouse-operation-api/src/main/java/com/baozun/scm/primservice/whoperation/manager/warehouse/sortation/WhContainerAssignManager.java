@@ -4,4 +4,5 @@ import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 
 public interface WhContainerAssignManager extends BaseManager {
 
+    int deleteWhContainerAssign(Long ouid, Long containerId);
 }
