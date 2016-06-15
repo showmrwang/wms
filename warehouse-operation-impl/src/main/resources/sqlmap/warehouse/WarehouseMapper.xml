@@ -4,10 +4,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
 
 
-<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.WarehouseDao">
-	<resultMap id="WarehouseResult" type="com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse">
+<mapper
+	namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.WarehouseDao">
+	<resultMap id="WarehouseResult"
+		type="com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse">
 	</resultMap>
-	
+
 	<!-- 用于select查询公用抽取的列 -->
 	<sql id="warehouseColumns">
 	    <![CDATA[
@@ -54,12 +56,18 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	create_time as createTime,
 	        	last_modify_time as lastModifyTime,
 	        	operator_id as operatorId,
+	        	
+	        	is_sortation_container_assign as isSortationContainerAssign,
+	        	is_repeatedly_outbound as isRepeatedlyOutbound, 
+	        	is_tabb_inv_total as isTabbInvTotal,
+
 	        	lifecycle as lifecycle
 	    ]]>
 	</sql>
-		<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
-		<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse" 
-		 flushCache="true">
+	<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+	<insert id="insert"
+		parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse"
+		flushCache="true">
 	    <![CDATA[
 	        INSERT INTO
 	        t_bi_warehouse (
@@ -106,6 +114,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	create_time ,
 	        	last_modify_time ,
 	        	operator_id ,
+	        	is_sortation_container_assign,
+	        	is_repeatedly_outbound,
+	        	is_tabb_inv_total,
 	        	lifecycle 
 	        ) VALUES (
 	        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -151,13 +162,22 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         		#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 	        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 	        	#{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	
+	        	#{isSortationContainerAssign,javaType=java.lang.Boolean,jdbcType=BIT} ,
+	        	#{isRepeatedlyOutbound,javaType=java.lang.Boolean,jdbcType=BIT} ,
+	        	#{isTabbInvTotal,javaType=java.lang.Boolean,jdbcType=BIT} ,
+	        	
 	        	#{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
+	        	
+
+	        	
 	        )
 	    ]]>
 
-		</insert>
-	    
-		<update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse">
+	</insert>
+
+	<update id="update"
+		parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse">
 	    <![CDATA[
 		        UPDATE t_bi_warehouse SET
 			        code = #{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -202,203 +222,228 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        is_sortation_container_assign = #{isSortationContainerAssign,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        is_repeatedly_outbound = #{isRepeatedlyOutbound,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        is_tabb_inv_total = #{isTabbInvTotal,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        
 			        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
 	        WHERE 
 		        id = #{id} 
 	    ]]>
-		</update>
-	   <delete id="delete" parameterType="java.lang.Long">
+	</update>
+	<delete id="delete" parameterType="java.lang.Long">
 	    <![CDATA[
 	        delete from t_bi_warehouse where
 		        id = #{id} 
 	    ]]>
-	    </delete> 
-	    
-	     <delete id="deleteByIds" parameterType="list">
-	    
-	        delete from t_bi_warehouse 
-	        where id in
-				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
-#{item}				</foreach>	
-	  
-	    </delete>  
-	         
-	    <select id="findById" parameterType="java.lang.Long" resultMap="WarehouseResult" flushCache="false">
-			select <include refid="warehouseColumns" />
+	</delete>
+
+	<delete id="deleteByIds" parameterType="list">
+
+		delete from t_bi_warehouse
+		where id in
+		<foreach item="item" index="index" collection="list" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+
+	</delete>
+
+	<select id="findById" parameterType="java.lang.Long" resultMap="WarehouseResult"
+		flushCache="false">
+		select
+		<include refid="warehouseColumns" />
 		    <![CDATA[
 			    from t_bi_warehouse 
 		        where 
 		        id = #{id} 
 		    ]]>
-		</select>	
-		<select id="getByIds" parameterType="list"  resultMap="WarehouseResult" flushCache="false">
-			select <include refid="warehouseColumns" />
-			    from t_bi_warehouse 
-		        where id in
-				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
-#{item}				</foreach>					
-		</select>	
+	</select>
+	<select id="getByIds" parameterType="list" resultMap="WarehouseResult"
+		flushCache="false">
+		select
+		<include refid="warehouseColumns" />
+		from t_bi_warehouse
+		where id in
+		<foreach item="item" index="index" collection="list" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
 	<sql id="warehouseDynamicWhere">
 		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
 		<where>
-	       
-				<if test="id!=null">
-					and id = #{id}
-				</if>
-	       
-	       
-		       <if test="code!=null and code!=''">
-					and code = #{code}
-				</if>
-	       
-	       
-		       <if test="name!=null and name!=''">
-					and name = #{name}
-				</if>
-	       
-				<if test="opMode!=null">
-					and op_mode = #{opMode}
-				</if>
-	       
-				<if test="manageMode!=null">
-					and manage_mode = #{manageMode}
-				</if>
-	       
-	       
-		       <if test="pic!=null and pic!=''">
-					and pic = #{pic}
-				</if>
-	       
-	       
-		       <if test="picContact!=null and picContact!=''">
-					and pic_contact = #{picContact}
-				</if>
-	       
-	       
-		       <if test="phone!=null and phone!=''">
-					and phone = #{phone}
-				</if>
-	       
-	       
-		       <if test="fax!=null and fax!=''">
-					and fax = #{fax}
-				</if>
-	       
-	       
-		       <if test="otherContact1!=null and otherContact1!=''">
-					and other_contact1 = #{otherContact1}
-				</if>
-	       
-	       
-		       <if test="otherContact2!=null and otherContact2!=''">
-					and other_contact2 = #{otherContact2}
-				</if>
-	       
-	       
-		       <if test="otherContact3!=null and otherContact3!=''">
-					and other_contact3 = #{otherContact3}
-				</if>
-	       
-				<if test="countryId!=null">
-					and country_id = #{countryId}
-				</if>
-	       
-				<if test="provinceId!=null">
-					and province_id = #{provinceId}
-				</if>
-	       
-				<if test="cityId!=null">
-					and city_id = #{cityId}
-				</if>
-	       
-	       
-		       <if test="address!=null and address!=''">
-					and address = #{address}
-				</if>
-	       
-	       
-		       <if test="zipCode!=null and zipCode!=''">
-					and zip_code = #{zipCode}
-				</if>
-	       
-				<if test="size!=null">
-					and size = #{size}
-				</if>
-	       
-	       
-		       <if test="sizeUom!=null and sizeUom!=''">
-					and size_uom = #{sizeUom}
-				</if>
-	       
-				<if test="rentPrice!=null">
-					and rent_price = #{rentPrice}
-				</if>
-	       
-	       
-		       <if test="rentPriceUom!=null and rentPriceUom!=''">
-					and rent_price_uom = #{rentPriceUom}
-				</if>
-	       
-	       
-		       <if test="description!=null and description!=''">
-					and description = #{description}
-				</if>
-	       
-				<if test="createTime!=null">
-					and create_time = #{createTime}
-				</if>
-	       
-				<if test="lastModifyTime!=null">
-					and last_modify_time = #{lastModifyTime}
-				</if>
-	       
-				<if test="operatorId!=null">
-					and operator_id = #{operatorId}
-				</if>
-	       
-				<if test="lifecycle!=null">
-					and lifecycle = #{lifecycle}
-				</if>
+
+			<if test="id!=null">
+				and id = #{id}
+			</if>
+
+
+			<if test="code!=null and code!=''">
+				and code = #{code}
+			</if>
+
+
+			<if test="name!=null and name!=''">
+				and name = #{name}
+			</if>
+
+			<if test="opMode!=null">
+				and op_mode = #{opMode}
+			</if>
+
+			<if test="manageMode!=null">
+				and manage_mode = #{manageMode}
+			</if>
+
+
+			<if test="pic!=null and pic!=''">
+				and pic = #{pic}
+			</if>
+
+
+			<if test="picContact!=null and picContact!=''">
+				and pic_contact = #{picContact}
+			</if>
+
+
+			<if test="phone!=null and phone!=''">
+				and phone = #{phone}
+			</if>
+
+
+			<if test="fax!=null and fax!=''">
+				and fax = #{fax}
+			</if>
+
+
+			<if test="otherContact1!=null and otherContact1!=''">
+				and other_contact1 = #{otherContact1}
+			</if>
+
+
+			<if test="otherContact2!=null and otherContact2!=''">
+				and other_contact2 = #{otherContact2}
+			</if>
+
+
+			<if test="otherContact3!=null and otherContact3!=''">
+				and other_contact3 = #{otherContact3}
+			</if>
+
+			<if test="countryId!=null">
+				and country_id = #{countryId}
+			</if>
+
+			<if test="provinceId!=null">
+				and province_id = #{provinceId}
+			</if>
+
+			<if test="cityId!=null">
+				and city_id = #{cityId}
+			</if>
+
+
+			<if test="address!=null and address!=''">
+				and address = #{address}
+			</if>
+
+
+			<if test="zipCode!=null and zipCode!=''">
+				and zip_code = #{zipCode}
+			</if>
+
+			<if test="size!=null">
+				and size = #{size}
+			</if>
+
+
+			<if test="sizeUom!=null and sizeUom!=''">
+				and size_uom = #{sizeUom}
+			</if>
+
+			<if test="rentPrice!=null">
+				and rent_price = #{rentPrice}
+			</if>
+
+
+			<if test="rentPriceUom!=null and rentPriceUom!=''">
+				and rent_price_uom = #{rentPriceUom}
+			</if>
+
+
+			<if test="description!=null and description!=''">
+				and description = #{description}
+			</if>
+
+			<if test="createTime!=null">
+				and create_time = #{createTime}
+			</if>
+
+			<if test="lastModifyTime!=null">
+				and last_modify_time = #{lastModifyTime}
+			</if>
+
+			<if test="operatorId!=null">
+				and operator_id = #{operatorId}
+			</if>
+			
+			<if test="isSortationContainerAssign!=null">
+				and is_sortation_container_assign = #{isSortationContainerAssign}
+			</if>
+
+			<if test="isRepeatedlyOutbound!=null">
+				and is_repeatedly_outbound = #{isRepeatedlyOutbound}
+			</if>
+
+			<if test="isTabbInvTotal!=null">
+				and is_tabb_inv_total = #{isTabbInvTotal}
+			</if>
+			
+			<if test="lifecycle!=null">
+				and lifecycle = #{lifecycle}
+			</if>
 		</where>
 	</sql>
-	
+
 
 	<select id="getCount" resultType="long">
-        select count(*) from t_bi_warehouse 
-    </select>
-    <select id="findListCountByQueryMap" resultType="long">
-        select count(*) from t_bi_warehouse 
-		<include refid="warehouseDynamicWhere"/>    
-    </select>
-    
-    <select id="findListCountByParam" resultType="long">
-        select count(*) from t_bi_warehouse 
-		<include refid="warehouseDynamicWhere"/>    
-    </select>
-    
-    <!--
-    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
-    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
-    -->
-    <select id="findListByQueryMapWithPage" resultMap="WarehouseResult">
-    	select <include refid="warehouseColumns" />
-	    from t_bi_warehouse 
-		<include refid="warehouseDynamicWhere"/>
-		
-    </select>
-    
-    <select id="findListByQueryMap" resultMap="WarehouseResult">
-    	select <include refid="warehouseColumns" />
-	    from t_bi_warehouse 
-		<include refid="warehouseDynamicWhere"/>
-    </select>
-    
-    <select id="findListByParam" resultMap="WarehouseResult">
-    	select <include refid="warehouseColumns" />
-	    from t_bi_warehouse 
-		<include refid="warehouseDynamicWhere"/>
-		
-    </select>
+		select count(*) from t_bi_warehouse
+	</select>
+	<select id="findListCountByQueryMap" resultType="long">
+		select count(*) from t_bi_warehouse
+		<include refid="warehouseDynamicWhere" />
+	</select>
 
-	
+	<select id="findListCountByParam" resultType="long">
+		select count(*) from t_bi_warehouse
+		<include refid="warehouseDynamicWhere" />
+	</select>
+
+	<!-- 分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页 因为分页查询将传 offset,pageSize,lastRows 
+		三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现 -->
+	<select id="findListByQueryMapWithPage" resultMap="WarehouseResult">
+		select
+		<include refid="warehouseColumns" />
+		from t_bi_warehouse
+		<include refid="warehouseDynamicWhere" />
+
+	</select>
+
+	<select id="findListByQueryMap" resultMap="WarehouseResult">
+		select
+		<include refid="warehouseColumns" />
+		from t_bi_warehouse
+		<include refid="warehouseDynamicWhere" />
+	</select>
+
+	<select id="findListByParam" resultMap="WarehouseResult">
+		select
+		<include refid="warehouseColumns" />
+		from t_bi_warehouse
+		<include refid="warehouseDynamicWhere" />
+
+	</select>
+
+
 </mapper>

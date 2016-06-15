@@ -17,14 +17,14 @@ package com.baozun.scm.primservice.whoperation.manager.warehouse;
 import java.util.List;
 import java.util.Map;
 
+import lark.common.dao.Page;
+import lark.common.dao.Pagination;
+import lark.common.dao.Sort;
+
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhInBoundRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhInBoundRuleResultCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhInBoundRule;
-
-import lark.common.dao.Page;
-import lark.common.dao.Pagination;
-import lark.common.dao.Sort;
 
 
 public interface WhInBoundRuleManager extends BaseManager {
@@ -33,7 +33,7 @@ public interface WhInBoundRuleManager extends BaseManager {
 
     /**
      * 通过参数查询入库分拣规则列表
-     * 
+     *
      * @author mingwei.xie
      * @param page
      * @param sorts
@@ -44,7 +44,7 @@ public interface WhInBoundRuleManager extends BaseManager {
 
     /**
      * 根据id查找入库分拣规则
-     * 
+     *
      * @author mingwei.xie
      * @param id
      * @param ouId
@@ -54,7 +54,7 @@ public interface WhInBoundRuleManager extends BaseManager {
 
     /**
      * 通过规则名称和编号是否存在
-     * 
+     *
      * @author mingwei.xie
      * @param ouId
      * @param whInBoundRule
@@ -64,19 +64,19 @@ public interface WhInBoundRuleManager extends BaseManager {
 
     /**
      * 检查规则是否可用
-     * 
+     *
      * @author mingwei.xie
      * @param ouId
      * @param whInBoundRule
-     * @param originContainerCode
+     * @param originInventoryId
      * @return
      */
-    WhInBoundRuleCommand testRuleSql(WhInBoundRule whInBoundRule, Long ouId, String originContainerCode);
+    WhInBoundRuleCommand testRuleSql(WhInBoundRule whInBoundRule, Long ouId, Long originInventoryId);
 
 
     /**
      * 新建/修改入库分拣规则
-     * 
+     *
      * @author mingwei.xie
      * @param ruleCommand
      * @param userId
@@ -87,7 +87,7 @@ public interface WhInBoundRuleManager extends BaseManager {
 
     /**
      * 启用/停用入库分拣规则
-     * 
+     *
      * @author mingwei.xie
      * @param ids
      * @param lifeCycle
@@ -100,7 +100,7 @@ public interface WhInBoundRuleManager extends BaseManager {
 
     /**
      * 根据待分拣的商品获取分拣条件值
-     * 
+     *
      * @author mingwei.xie
      * @param inventoryId
      * @param ouId
@@ -112,7 +112,7 @@ public interface WhInBoundRuleManager extends BaseManager {
 
     /**
      * 根据待分拣的占用码获取分拣条件值列表
-     * 
+     *
      * @author mingwei.xie
      * @param containerCode
      * @param ouId

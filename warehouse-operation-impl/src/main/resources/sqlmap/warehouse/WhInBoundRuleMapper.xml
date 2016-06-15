@@ -19,8 +19,8 @@
 	        	inbound_rule_code as inboundRuleCode,
 	        	rule as rule,
 	        	rule_sql as ruleSql,
-	        	result_conditionIds as resultConditionIds,
-	        	result_sql as resultSql,
+	        	sorting_conditionIds as sortingConditionIds,
+	        	sorting_sql as sortingSql,
 	        	ou_id as ouId,
 	        	priority as priority,
 	        	description as description,
@@ -114,8 +114,8 @@
 		        	inbound_rule_code ,
 		        	rule ,
 		        	rule_sql ,
-		        	result_conditionIds ,
-		        	result_sql ,
+		        	sorting_conditionIds ,
+		        	sorting_sql ,
 		        	ou_id ,
 		        	priority ,
 		        	description ,
@@ -130,8 +130,8 @@
 		        	#{inboundRuleCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{rule,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{ruleSql,javaType=java.lang.String,jdbcType=LONGVARCHAR} ,
-		        	#{resultConditionIds,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        	#{resultSql,javaType=java.lang.String,jdbcType=LONGVARCHAR} ,
+		        	#{sortingConditionIds,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{sortingSql,javaType=java.lang.String,jdbcType=LONGVARCHAR} ,
 		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{priority,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        	#{description,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -153,8 +153,8 @@
 		        inbound_rule_code = #{inboundRuleCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        rule = #{rule,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        rule_sql = #{ruleSql,javaType=java.lang.String,jdbcType=LONGVARCHAR} ,
-		        result_conditionIds = #{resultConditionIds,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        result_sql = #{resultSql,javaType=java.lang.String,jdbcType=LONGVARCHAR} ,
+		        sorting_conditionIds = #{sortingConditionIds,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        sorting_sql = #{sortingSql,javaType=java.lang.String,jdbcType=LONGVARCHAR} ,
 		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        priority = #{priority,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        description = #{description,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -243,13 +243,13 @@
             </if>
 
 
-            <if test="resultConditionIds!=null and resultConditionIds!=''">
-                and result_conditionIds = #{resultConditionIds}
+            <if test="sortingConditionIds!=null and sortingConditionIds!=''">
+                and sorting_conditionIds = #{sortingConditionIds}
             </if>
 
 
-            <if test="resultSql!=null and resultSql!=''">
-                and result_sql = #{resultSql}
+            <if test="sortingSql!=null and sortingSql!=''">
+                and sorting_sql = #{sortingSql}
             </if>
 
             <if test="ouId!=null">

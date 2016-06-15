@@ -22,8 +22,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
             inbound_rule_code as inboundRuleCode,
             rule as rule,
             rule_sql as ruleSql,
-            result_conditionIds as resultConditionIds,
-            result_sql as resultSql,
+            sorting_conditionIds as sortingConditionIds,
+            sorting_sql as sortingSql,
             ou_id as ouId,
             priority as priority,
             description as description,
@@ -64,13 +64,13 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
             </if>
 
 
-            <if test="resultConditionIds!=null and resultConditionIds!=''">
-                and result_conditionIds = #{resultConditionIds}
+            <if test="sortingConditionIds!=null and sortingConditionIds!=''">
+                and sorting_conditionIds = #{sortingConditionIds}
             </if>
 
 
-            <if test="resultSql!=null and resultSql!=''">
-                and result_sql = #{resultSql}
+            <if test="sortingSql!=null and sortingSql!=''">
+                and sorting_sql = #{sortingSql}
             </if>
 
             <if test="ouId!=null">
@@ -116,8 +116,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
                                 inbound_rule_code = #{inboundRuleCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
                                 rule = #{rule,javaType=java.lang.String,jdbcType=VARCHAR} ,
                                 rule_sql = #{ruleSql,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                                result_conditionIds = #{resultConditionIds,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                                result_sql = #{resultSql,javaType=java.lang.String,jdbcType=LONGVARCHAR} ,
+                                sorting_conditionIds = #{sortingConditionIds,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                                sorting_sql = #{sortingSql,javaType=java.lang.String,jdbcType=LONGVARCHAR} ,
                                 priority = #{priority,javaType=java.lang.Integer,jdbcType=INTEGER} ,
                                 description = #{description,javaType=java.lang.String,jdbcType=VARCHAR} ,
                                 create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
@@ -147,8 +147,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
                 ibr.inbound_rule_code as inboundRuleCode,
                 ibr.rule as rule,
                 ibr.rule_sql as ruleSql,
-                ibr.result_conditionIds as resultConditionIds,
-                ibr.result_sql as resultSql,
+                ibr.sorting_conditionIds as sortingConditionIds,
+                ibr.sorting_sql as sortingSql,
                 ibr.ou_id as ouId,
                 ibr.priority as priority,
                 ibr.description as description,
@@ -225,7 +225,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
             ]]>
     </select>
 
-    <select id="executeRuleSql" resultType="string">
+    <select id="executeRuleSql" resultType="Long">
         ${ruleSql}
     </select>
 
@@ -355,8 +355,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
             inbound_rule_code as inboundRuleCode,
             rule as rule,
             rule_sql as ruleSql,
-            result_conditionIds as resultConditionIds,
-            result_sql as resultSql,
+            sorting_conditionIds as sortingConditionIds,
+            sorting_sql as sortingSql,
             ou_id as ouId,
             priority as priority,
             description as description,
