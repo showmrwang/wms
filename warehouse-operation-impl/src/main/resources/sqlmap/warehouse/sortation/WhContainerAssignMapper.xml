@@ -94,20 +94,17 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		<!-- 如果有自增字段 -->
 		
 			<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
-			<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.sortation.WhContainerAssign" 
-				
-			 flushCache="true">
+		<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.sortation.WhContainerAssign" 
+			useGeneratedKeys="true" keyProperty="id"  flushCache="true">
 		    <![CDATA[
 		        INSERT INTO
 		        t_wh_container_assign (
-		        id,
 		        	user_id ,
 		        	container_id ,
 		        	rule_id ,
 		        	uuid ,
 		        	ou_id 
 		        ) VALUES (
-		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{userId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{containerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{ruleId,javaType=java.lang.Long,jdbcType=BIGINT} ,
