@@ -1,5 +1,6 @@
 package com.baozun.scm.primservice.whoperation.manager.pda.sortation;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -27,6 +28,7 @@ import com.baozun.scm.primservice.whoperation.dao.sku.SkuDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventorySnDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.sortation.WhContainerAssignDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
@@ -36,6 +38,7 @@ import com.baozun.scm.primservice.whoperation.model.sku.Sku;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventorySn;
+import com.baozun.scm.primservice.whoperation.model.warehouse.sortation.WhContainerAssign;
 import com.baozun.scm.primservice.whoperation.util.SkuInventoryUuid;
 import com.baozun.scm.primservice.whoperation.util.StringUtil;
 
@@ -61,6 +64,8 @@ public class PdaInboundSortationManagerImpl extends BaseManagerImpl implements P
     private WhSkuInventoryDao whSkuInventoryDao;
     @Autowired
     private WhSkuInventorySnDao whSkuInventorySnDao;
+    @Autowired
+    private WhContainerAssignDao whContainerAssignDao;
 
     /**
      * 扫描容器号 验证容器号
@@ -762,10 +767,12 @@ public class PdaInboundSortationManagerImpl extends BaseManagerImpl implements P
 
     /**
      * 进入扫描目标容器号 获取对应规则 获取对应目标容器信息
+     * 
+     * @throws Exception
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public PdaInboundSortationCommand scanNewContainerView(PdaInboundSortationCommand pdaInboundSortationCommand) {
+    public PdaInboundSortationCommand scanNewContainerView(PdaInboundSortationCommand pdaInboundSortationCommand) throws Exception {
         log.info(this.getClass().getSimpleName() + ".scanNewContainerView method begin! logid: " + pdaInboundSortationCommand.getLogId());
         if (log.isDebugEnabled()) {
             log.debug("params:[PdaInboundSortationCommand:{}]", pdaInboundSortationCommand.toString());
@@ -785,9 +792,33 @@ public class PdaInboundSortationManagerImpl extends BaseManagerImpl implements P
             throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_USABLENESS_FALSE);
         }
         // 保存对应规则ID
-        pdaInboundSortationCommand.setRuleId(export.getWhInBoundRuleCommand().getId());
+        Long ruleId = export.getWhInBoundRuleCommand().getId();
+        pdaInboundSortationCommand.setRuleId(ruleId);
+        // 获取库存信息
+        WhSkuInventory skuInv = whSkuInventoryDao.findWhSkuInventoryById(pdaInboundSortationCommand.getSkuInvId(), pdaInboundSortationCommand.getOuId());
+        WhSkuInventory inv = new WhSkuInventory();
+        BeanUtils.copyProperties(skuInv, inv);
+        // 通过商品库存属性得到对应UUID
+        inv.setOuterContainerId(null);
+        inv.setInsideContainerId(null);
+        inv.setLocationId(null);
+        String uuid = SkuInventoryUuid.invUuid(inv);
+        // 判断仓库基础信息 用户分拣是否共享目标容器
+        WhContainerAssign wca = null;
+        if (pdaInboundSortationCommand.getIsSortationContainerAssign()) {
+            // 如果允许共享目标容器 查询对应目标容器不需要当前操作用户ID
+            wca = whContainerAssignDao.findWhContainerAssignByUuidOrUserId(pdaInboundSortationCommand.getOuId(), uuid, ruleId, null);
+        } else {
+            // 如果不允许共享目标容器 查询对应目标容器需要定位到当前操作用户ID
+            wca = whContainerAssignDao.findWhContainerAssignByUuidOrUserId(pdaInboundSortationCommand.getOuId(), uuid, ruleId, pdaInboundSortationCommand.getUserId());
+        }
+        // 如果找到对应目标容器
+        if (null != wca) {
+            Container container = containerDao.findByIdExt(wca.getContainerId(), pdaInboundSortationCommand.getOuId());
+            // 保存对应目标容器
+            pdaInboundSortationCommand.setTargetContainerCode(container.getCode());
+        }
         log.info(this.getClass().getSimpleName() + ".scanNewContainerView method end! logid: " + pdaInboundSortationCommand.getLogId());
         return pdaInboundSortationCommand;
     }
-
 }

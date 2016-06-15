@@ -23,5 +23,5 @@ public interface PdaInboundSortationManager extends BaseManager {
 
     PdaInboundSortationCommand pdaScanSkuAttr(PdaInboundSortationCommand pdaInboundSortationCommand) throws Exception;
 
-    PdaInboundSortationCommand scanNewContainerView(PdaInboundSortationCommand pdaInboundSortationCommand);
+    PdaInboundSortationCommand scanNewContainerView(PdaInboundSortationCommand pdaInboundSortationCommand) throws Exception;
 }
