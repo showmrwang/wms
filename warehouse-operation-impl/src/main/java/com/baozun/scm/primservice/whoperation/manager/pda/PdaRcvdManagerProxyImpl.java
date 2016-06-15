@@ -928,6 +928,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
     @Override
     public void initSkuAttrFromInventoryForCacheContainer(WhSkuInventoryCommand command, Long ouId) {
         //逻辑:
+        // @mender yimin.lu 2016/6/15 托盘和容器不能是同一个
         //1.从库存中初始化容器的库存属性
         Container container = this.generalRcvdManager.findContainerByIdToShard(command.getInsideContainerId(), ouId);
         if (3 == container.getLifecycle()) {
