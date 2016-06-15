@@ -37,7 +37,7 @@ public class WhContainerAssign extends BaseModel {
     /** 规则ID */
     private Long ruleId;
     /** 内部对接码 用于定位相同商品属性 */
-    private Long uuid;
+    private String uuid;
     /** 仓库组织ID */
     private Long ouId;
 
@@ -65,11 +65,11 @@ public class WhContainerAssign extends BaseModel {
         this.ruleId = ruleId;
     }
 
-    public Long getUuid() {
+    public String getUuid() {
         return uuid;
     }
 
-    public void setUuid(Long uuid) {
+    public void setUuid(String uuid) {
         this.uuid = uuid;
     }
 

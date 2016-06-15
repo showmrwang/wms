@@ -60,4 +60,17 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
 	</delete>
 	
+	<select id="findWhContainerAssignByUuidOrUserId" resultMap="WhContainerAssignResultExt">
+		select <include refid="whContainerAssignColumnsExt" /> 
+			from t_wh_container_assign 
+		<where>
+			ou_id = #{ouid} 
+			and uuid = #{uuid} 
+			and rule_id = #{ruleid}
+			<if test="userid!=null">
+				and user_id = #{userid}
+			</if>
+		</where>
+	</select>
+	
 </mapper>

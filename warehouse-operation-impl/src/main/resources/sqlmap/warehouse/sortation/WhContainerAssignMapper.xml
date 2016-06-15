@@ -111,7 +111,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{userId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{containerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{ruleId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        	#{uuid,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{uuid,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
 		        )
 		    ]]>
@@ -125,7 +125,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        user_id = #{userId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        container_id = #{containerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        rule_id = #{ruleId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        uuid = #{uuid,javaType=java.lang.Long,jdbcType=BIGINT}
+		        uuid = #{uuid,javaType=java.lang.String,jdbcType=VARCHAR}
 	        WHERE 
 		        id = #{id} 
 	    ]]>

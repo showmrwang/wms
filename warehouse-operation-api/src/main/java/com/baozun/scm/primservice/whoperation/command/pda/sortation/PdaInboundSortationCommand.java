@@ -128,6 +128,9 @@ public class PdaInboundSortationCommand extends BaseCommand {
     // 库存状态
     private Long invStatus;
 
+    /** 用户分拣是否共享目标容器 */
+    private Boolean isSortationContainerAssign;
+
     public String getContainerCode() {
         return containerCode;
     }
@@ -470,6 +473,14 @@ public class PdaInboundSortationCommand extends BaseCommand {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public Boolean getIsSortationContainerAssign() {
+        return isSortationContainerAssign;
+    }
+
+    public void setIsSortationContainerAssign(Boolean isSortationContainerAssign) {
+        this.isSortationContainerAssign = isSortationContainerAssign;
     }
 
 
