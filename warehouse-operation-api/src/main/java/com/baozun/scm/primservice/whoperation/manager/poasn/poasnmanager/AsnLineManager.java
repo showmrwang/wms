@@ -55,4 +55,14 @@ public interface AsnLineManager extends BaseManager {
      */
     Pagination<WhAsnLineCommand> findAsnLineListByQueryMapWithPageExtForCreateAsn(Page page, Sort[] sorts, Map<String, Object> paraMap);
 
+    /**
+     * 根据id,uuid,ouid查询数据【业务方法；查询创建asn的临时数据】
+     *
+     * @param id
+     * @param uuid
+     * @param ouId
+     * @return
+     */
+    WhAsnLine findWhAsnLineByPoLineIdAndUuidAndOuId(Long id, String uuid, Long ouId);
+
 }

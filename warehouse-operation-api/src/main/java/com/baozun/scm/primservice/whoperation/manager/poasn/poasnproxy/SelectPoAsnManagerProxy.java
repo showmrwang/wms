@@ -223,7 +223,19 @@ public interface SelectPoAsnManagerProxy extends BaseManager {
     Pagination<WhPoLineCommand> findPoLineListByQueryMapWithPageExtForCreateSubPo(Page page, Sort[] sorts, Map<String, Object> paraMap, Integer infoSource);
     
     /**
+     * 创建Asn时Po明细的分页查询:可用明细数量>0
+     *
+     * @param page
+     * @param sorts
+     * @param params
+     * @param sourceType
+     * @return
+     */
+    Pagination<WhPoLineCommand> findPoLineListByQueryMapWithPageExtForCreateAsn(Page page, Sort[] sorts, Map<String, Object> paraMap, Integer infoSource);
+
+    /**
      * 校验此收货Asn是否存在该商品收货明细
+     *
      * @param asnId
      * @param skuId
      * @param ouId

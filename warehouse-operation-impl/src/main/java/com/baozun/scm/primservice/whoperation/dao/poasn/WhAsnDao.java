@@ -42,6 +42,7 @@ public interface WhAsnDao extends BaseDao<WhAsn, Long> {
     Pagination<WhAsnCommand> findListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params);
 
     @CommonQuery
+    @Deprecated
     int saveOrUpdate(WhAsn o);
 
     @CommonQuery
@@ -87,6 +88,10 @@ public interface WhAsnDao extends BaseDao<WhAsn, Long> {
      * @return
      */
     WhAsn findAsnByCodeAndOuId(@Param("asnCode") String asnCode, @Param("ouId") Long ouId);
+
+    List<WhAsnCommand> findListByParamExt(WhAsnCommand asnCommand);
+
+    long findListCountByParamExt(WhAsnCommand asnCommand);
 
 
 }

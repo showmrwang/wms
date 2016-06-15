@@ -260,4 +260,9 @@ public class AsnLineManagerImpl extends BaseManagerImpl implements AsnLineManage
     public Pagination<WhAsnLineCommand> findAsnLineListByQueryMapWithPageExtForCreateAsn(Page page, Sort[] sorts, Map<String, Object> paraMap) {
         return whAsnLineDao.findListByQueryMapWithPageExtForCreateAsn(page, sorts, paraMap);
     }
+
+    @Override
+    public WhAsnLine findWhAsnLineByPoLineIdAndUuidAndOuId(Long polineId, String uuid, Long ouId) {
+        return this.whAsnLineDao.findWhAsnLineByPoLineIdAndUuidAndOuId(polineId, uuid, ouId);
+    }
 }

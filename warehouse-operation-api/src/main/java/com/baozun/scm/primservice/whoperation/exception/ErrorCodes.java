@@ -255,6 +255,10 @@ public class ErrorCodes {
     public static final int RCVD_WAREHOUSE_STORE_OVERCHAGE_CACHE_ERROR = 10013;
     /** 容器已被占用！ */
     public static final int RCVD_CONTAINER_OCCUPATIED_ERROR = 10014;
+    /** ASN的外部编码已经存在 */
+    public static final int ASN_EXTCODE_EXISTS = 10015;
+    /** 残次收货数量超出批量收货数量 */
+    public static final int RCVD_BATCH_DEFEAT_COUNT_OVER_ERROR = 10016;
     // 10001-20000 luyimin
 
 

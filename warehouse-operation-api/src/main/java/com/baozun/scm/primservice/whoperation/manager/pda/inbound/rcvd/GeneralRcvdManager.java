@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdContainerCacheCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine;
@@ -15,6 +16,7 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.StoreDefectReasons
 import com.baozun.scm.primservice.whoperation.model.warehouse.StoreDefectType;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhAsnRcvdLog;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhAsnRcvdSnLog;
+import com.baozun.scm.primservice.whoperation.model.warehouse.carton.WhCarton;
 import com.baozun.scm.primservice.whoperation.model.warehouse.conf.basis.WarehouseDefectReasons;
 import com.baozun.scm.primservice.whoperation.model.warehouse.conf.basis.WarehouseDefectType;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
@@ -29,9 +31,9 @@ public interface GeneralRcvdManager extends BaseManager {
     /**
      * 通用收货：将扫描的商品数据从缓存中推送到数据库中
      * 
-     * @deprecated
      * @param commmand
      */
+    @Deprecated
     void saveScanedSkuWhenGeneralRcvdForPda(List<RcvdCacheCommand> commmandList);
 
     /**
@@ -78,7 +80,7 @@ public interface GeneralRcvdManager extends BaseManager {
     WarehouseDefectReasons findWarehouseDefectReasonsByIdToShard(Long id, Long ouId);
 
     /**
-     * 通用收货：将扫描的商品数据从缓存中推送到数据库中
+     * 通用收货：将扫描的商品数据从缓存中推送到数据库中【业务方法】
      * 
      * @author yimin.lu
      * @param saveSnList
@@ -89,9 +91,10 @@ public interface GeneralRcvdManager extends BaseManager {
      * @param asn
      * @param savePoLineList
      * @param po
+     * @param saveWhCartonList
      */
     void saveScanedSkuWhenGeneralRcvdForPda(List<WhSkuInventorySn> saveSnList, List<WhAsnRcvdSnLog> saveSnLogList, List<WhSkuInventory> saveInvList, List<WhAsnRcvdLog> saveInvLogList, List<WhAsnLine> saveAsnLineList, WhAsn asn,
-            List<WhPoLine> savePoLineList, WhPo po);
+            List<WhPoLine> savePoLineList, WhPo po, Container container, List<WhCarton> saveWhCartonList);
 
     /**
      * version更新容器
@@ -100,4 +103,19 @@ public interface GeneralRcvdManager extends BaseManager {
      * @return
      */
     int updateContainerByVersion(Container container);
+
+    /**
+     * 根据容器编码查找容器 无判断
+     */
+    ContainerCommand findContainerByCode(String code, Long ouId);
+
+    /**
+     * 返回插入数据库对象的ID
+     * 
+     * @param container
+     * @param userId
+     * @param ouId
+     * @return
+     */
+    Container insertByCode(ContainerCommand container, Long userId, Long ouId);
 }

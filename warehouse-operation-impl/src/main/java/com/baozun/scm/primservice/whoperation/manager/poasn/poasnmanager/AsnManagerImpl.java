@@ -756,5 +756,69 @@ public class AsnManagerImpl implements AsnManager {
         return this.whAsnDao.updateByVersionForUnLock(id, ouid);
     }
 
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<WhAsnCommand> findListByParamsExt(WhAsnCommand asn) {
+        return this.whAsnDao.findListByParamExt(asn);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public long findListCountByParamsExt(WhAsnCommand asnCommand) {
+        return this.whAsnDao.findListCountByParamExt(asnCommand);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void createAsnAndLineWithUuidToShard(WhAsn asn, List<WhAsnLine> lineList) {
+        if (null == asn.getId()) {
+            this.whAsnDao.insert(asn);
+        } else {
+            this.whAsnDao.saveOrUpdateByVersion(asn);
+        }
+        for (WhAsnLine line : lineList) {
+            line.setAsnId(asn.getId());
+            if (null == line.getId()) {
+                this.whAsnLineDao.insert(line);
+            } else {
+                this.whAsnLineDao.saveOrUpdateByVersion(line);
+            }
+        }
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void revokeAsnWithUuidToShard(WhAsnCommand command) {
+        double qtyCount=Constants.DEFAULT_DOUBLE;
+        for (WhAsnLineCommand lineCommand : command.getAsnLineList()) {
+            WhAsnLine asnLine = this.whAsnLineDao.findWhAsnLineById(lineCommand.getId(), command.getOuId());
+            qtyCount+=lineCommand.getQtyPlanned()-asnLine.getQtyPlanned();
+            if(Constants.DEFAULT_DOUBLE.equals(lineCommand.getQtyPlanned())){
+                int deleteLineCount=this.whAsnLineDao.deleteByIdOuId(asnLine.getId(), asnLine.getOuId());
+                if(deleteLineCount<=0){
+                    throw new BusinessException(ErrorCodes.DELETE_DATA_ERROR);
+                }
+            }else{
+                asnLine.setQtyPlanned(lineCommand.getQtyPlanned());
+                asnLine.setModifiedId(command.getUserId());
+                asnLine.setLastModifyTime(new Date());
+                this.whAsnLineDao.saveOrUpdateByVersion(asnLine);
+            }
+        }
+        WhAsn asn = this.whAsnDao.findWhAsnById(command.getId(), command.getOuId());
+        qtyCount = asn.getQtyPlanned() + qtyCount;
+        if (qtyCount <= Constants.DEFAULT_DOUBLE) {
+            int deleteCount = this.whAsnDao.deleteByIdOuId(command.getId(), command.getOuId());
+            if (deleteCount <= 0) {
+                throw new BusinessException(ErrorCodes.DELETE_DATA_ERROR);
+            }
+        } else {
+            asn.setQtyPlanned(qtyCount);
+            asn.setModifiedId(command.getUserId());
+            asn.setLastModifyTime(new Date());
+            this.whAsnDao.saveOrUpdateByVersion(asn);
+        }
+    }
+
 
 }

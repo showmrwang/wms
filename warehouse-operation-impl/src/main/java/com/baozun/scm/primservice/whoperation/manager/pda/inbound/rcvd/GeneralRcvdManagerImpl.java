@@ -16,11 +16,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.baseservice.sac.manager.CodeManager;
+import com.baozun.scm.baseservice.sac.manager.PkManager;
 import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdContainerCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdSnCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnLineCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoLineCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
@@ -30,11 +32,13 @@ import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoLineDao;
 import com.baozun.scm.primservice.whoperation.dao.sku.SkuDao;
 import com.baozun.scm.primservice.whoperation.dao.system.SysDictionaryDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.Container2ndCategoryDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.StoreDefectReasonsDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.StoreDefectTypeDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhAsnRcvdLogDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhAsnRcvdSnLogDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.carton.WhCartonDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.conf.basis.WarehouseDefectReasonsDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.conf.basis.WarehouseDefectTypeDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
@@ -42,16 +46,20 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInven
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
+import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 import com.baozun.scm.primservice.whoperation.model.sku.Sku;
+import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Container2ndCategory;
 import com.baozun.scm.primservice.whoperation.model.warehouse.StoreDefectReasons;
 import com.baozun.scm.primservice.whoperation.model.warehouse.StoreDefectType;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhAsnRcvdLog;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhAsnRcvdSnLog;
+import com.baozun.scm.primservice.whoperation.model.warehouse.carton.WhCarton;
 import com.baozun.scm.primservice.whoperation.model.warehouse.conf.basis.WarehouseDefectReasons;
 import com.baozun.scm.primservice.whoperation.model.warehouse.conf.basis.WarehouseDefectType;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
@@ -93,6 +101,12 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
     private StoreDefectReasonsDao storeDefectReasonsDao;
     @Autowired
     private WarehouseDefectReasonsDao warehouseDefectReasonsDao;
+    @Autowired
+    private Container2ndCategoryDao container2ndCategoryDao;
+    @Autowired
+    private PkManager pkManager;
+    @Autowired
+    private WhCartonDao whCartonDao;
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void saveScanedSkuWhenGeneralRcvdForPda(List<RcvdCacheCommand> commandList) {
@@ -394,9 +408,8 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void saveScanedSkuWhenGeneralRcvdForPda(List<WhSkuInventorySn> saveSnList, List<WhAsnRcvdSnLog> saveSnLogList, List<WhSkuInventory> saveInvList, List<WhAsnRcvdLog> saveInvLogList, List<WhAsnLine> saveAsnLineList, WhAsn asn,
-            List<WhPoLine> savePoLineList, WhPo po) {
+            List<WhPoLine> savePoLineList, WhPo po, Container container, List<WhCarton> saveWhCartonList) {
         try {
-
             // 保存残次信息
             for (WhSkuInventorySn sn : saveSnList) {
                 this.whSkuInventorySnDao.insert(sn);
@@ -405,9 +418,19 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
             for (WhAsnRcvdSnLog snlog : saveSnLogList) {
                 this.whAsnRcvdSnLogDao.insert(snlog);
             }
+            //更新装箱信息表
+            for(WhCarton whCarton:saveWhCartonList){
+                this.whCartonDao.insert(whCarton);
+            }
             // 保存库存记录
             for (WhSkuInventory inv : saveInvList) {
-                this.whSkuInventoryDao.insert(inv);
+                WhSkuInventory skuInv = this.whSkuInventoryDao.findWhSkuInventoryByUuid(inv.getOuId(), inv.getUuid());
+                if (null == skuInv) {
+                    this.whSkuInventoryDao.insert(inv);
+                } else {
+                    skuInv.setOnHandQty(skuInv.getOnHandQty() + inv.getOnHandQty());
+                    this.whSkuInventoryDao.saveOrUpdateByVersion(skuInv);
+                }
             }
             // 保存库存日志
             for (WhAsnRcvdLog invLog : saveInvLogList) {
@@ -437,6 +460,11 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
             if (updatePoCount <= 0) {
                 throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
             }
+            // 更新容器
+            int updateContainerCount = this.containerDao.saveOrUpdateByVersion(container);
+            if (updateContainerCount <= 0) {
+                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            }
         } catch (BusinessException e) {
             throw e;
         } catch (Exception ex) {
@@ -451,4 +479,79 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
         return this.containerDao.saveOrUpdateByVersion(container);
     }
 
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public Container insertByCode(ContainerCommand container, Long userId, Long ouId) {
+        /**
+         * 逻辑：1.生成系统预定义容器； 如果预定义容器的二级容器类型不存在，那么生成容器的二级容器
+         */
+        Container saveContainer = new Container();// 需要保存的容器对象
+        saveContainer.setCode(container.getCode());
+        saveContainer.setOneLevelType(container.getOneLevelType());
+        saveContainer.setCreateTime(new Date());
+        saveContainer.setLastModifyTime(new Date());
+        saveContainer.setOperatorId(userId);
+        saveContainer.setLifecycle(BaseModel.LIFECYCLE_NORMAL);
+        saveContainer.setOuId(ouId);
+        // 一级容器类型，设置容器的一级容器类型 这个字段存储为ID，需要获取系统字典表对应的Id
+        SysDictionary searchDictionary = new SysDictionary();
+        searchDictionary.setDicValue(container.getOneLevelTypeValue());
+        searchDictionary.setGroupValue(Constants.DICTIONARY_CONTAINTER_TYPE);
+        List<SysDictionary> dicList = this.sysDictionaryDao.findListByParam(searchDictionary);
+        if (null == dicList || dicList.size() == 0) {
+            throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
+        }
+        saveContainer.setOneLevelType(dicList.get(0).getId());
+        // 二级容器类型 设置容器的二级容器类型；逻辑：如果不存在系统预定义的对应的二级容器类型，那么生成宇通预定义的二级容器对象
+        Container2ndCategory secendContainer = new Container2ndCategory();
+        secendContainer.setCategoryCode(container.getTwoLevelTypeValue());
+        secendContainer.setOneLevelType(dicList.get(0).getId());
+        secendContainer.setOuId(ouId);
+        List<Container2ndCategory> secondContainerList = this.container2ndCategoryDao.findListByParam(secendContainer);// 查询是否有系统预定义的容器类型
+        if (secondContainerList != null && secondContainerList.size() > 0) {
+            secendContainer = secondContainerList.get(0);// 如果有的话，则获得系统预定义的二级容器类型
+        } else {// 没有的话，需要生成预定义的二级容器类型
+            Long secendContainerId = this.pkManager.generatePk(Constants.WMS, Constants.CONTAINER_MODEL_URL);
+            secendContainer.setId(secendContainerId);
+            // 获取预定义的二级容器编码对应的名称
+            SysDictionary search2Dictionary = new SysDictionary();
+            search2Dictionary.setDicValue(container.getTwoLevelTypeValue());
+            search2Dictionary.setGroupValue(Constants.DICTIONARY_CONTAINTER_SECOND_TYPE);
+            List<SysDictionary> dic2List = this.sysDictionaryDao.findListByParam(search2Dictionary);
+            if (null == dic2List || dic2List.size() == 0) {
+                throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
+            }
+            secendContainer.setCategoryName(dic2List.get(0).getDicLabel());
+            // 基础信息设置
+            secendContainer.setCreateTime(new Date());
+            secendContainer.setLastModifyTime(new Date());
+            secendContainer.setOperatorId(userId);
+            secendContainer.setLifecycle(BaseModel.LIFECYCLE_NORMAL);
+            // 插入二级容器
+            long insertSecondCount = this.container2ndCategoryDao.insert(secendContainer);
+            if (insertSecondCount == 0) {
+                throw new BusinessException(ErrorCodes.INSERT_DATA_ERROR);
+            }
+        }
+
+        // 插入容器
+        saveContainer.setTwoLevelType(secendContainer.getId());
+        saveContainer.setName(secendContainer.getCategoryName());
+        long insertCount = this.containerDao.insert(saveContainer);
+        if (insertCount == 0) {
+            throw new BusinessException(ErrorCodes.INSERT_DATA_ERROR);
+        }
+        // this.insertGlobalLog(saveContainer, Constants.GLOBAL_LOG_INSERT);
+        return saveContainer;
+    }
+
+
+    /***
+     * 根据容器编码查找容器 无判断
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public ContainerCommand findContainerByCode(String code, Long ouId) {
+        return containerDao.getContainerByCode(code, ouId);
+    }
 }

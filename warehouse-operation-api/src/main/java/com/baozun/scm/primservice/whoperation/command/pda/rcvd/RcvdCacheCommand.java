@@ -20,6 +20,8 @@ public class RcvdCacheCommand implements Serializable{
     private Long outerContainerId;
     /** 内部容器ID 托盘 货箱 */
     private Long insideContainerId;
+    /** 内部容器ID 托盘 货箱 Code */
+    private String insideContainerCode;
     /** 占用单据号 */
     private String occupationCode;
     /** 占用单据ID */
@@ -61,6 +63,15 @@ public class RcvdCacheCommand implements Serializable{
     private Integer skuBatchCount;
     /** Sn号 */
     private List<RcvdSnCacheCommand> snList;
+
+
+    public String getInsideContainerCode() {
+        return insideContainerCode;
+    }
+
+    public void setInsideContainerCode(String insideContainerCode) {
+        this.insideContainerCode = insideContainerCode;
+    }
 
     public List<RcvdSnCacheCommand> getSnList() {
         return snList;

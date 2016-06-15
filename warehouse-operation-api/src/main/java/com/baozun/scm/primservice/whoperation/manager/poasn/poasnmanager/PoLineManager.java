@@ -116,6 +116,16 @@ public interface PoLineManager extends BaseManager {
     Pagination<WhPoLineCommand> findPoLineListByQueryMapWithPageExtForCreateSubPoToInfo(Page page, Sort[] sorts, Map<String, Object> paraMap);
 
     /**
+     * 业务方法：创建ASN时候分页查询
+     *
+     * @param page
+     * @param sorts
+     * @param params
+     * @return
+     */
+    Pagination<WhPoLineCommand> findPoLineListByQueryMapWithPageExtForCreateAsnToShard(Page page, Sort[] sorts, Map<String, Object> paraMap);
+
+    /**
      * 查找PO单指定状态下的明细
      * 
      * @param id

@@ -482,6 +482,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			left join t_wh_sku sku on al.sku_id = sku.id
 			where asn.uuid=#{uuid} and al.uuid=#{uuid} and asn.ou_id=#{ouId} and asn.id=#{id}
     </select>
-	
+	<select id="findWhAsnLineByPoLineIdAndUuidAndOuId"  resultMap="WhAsnLineResultExt">
+	 select <include refid="whAsnLineColumnsExt" />
+	 from
+		    t_wh_asn_line
+			where
+			po_line_id=#{poLineId}  and ou_id = #{ouid} and uuid=#{uuid}
+	 </select>
 	 
 </mapper>

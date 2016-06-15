@@ -516,4 +516,9 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
         return this.asnLineManager.findAsnLineListByQueryMapWithPageExtForCreateAsn(page, sorts, paraMap);
     }
 
+    @Override
+    public Pagination<WhPoLineCommand> findPoLineListByQueryMapWithPageExtForCreateAsn(Page page, Sort[] sorts, Map<String, Object> paraMap, Integer infoSource) {
+        return this.poLineManager.findPoLineListByQueryMapWithPageExtForCreateAsnToShard(page, sorts, paraMap);
+    }
+
 }

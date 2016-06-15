@@ -103,6 +103,9 @@ public interface WhPoLineDao extends BaseDao<WhPoLine, Long> {
     @QueryPage("findListCountByQueryMapExtForCreateSubPoToInfo")
     Pagination<WhPoLineCommand> findPoLineListByQueryMapWithPageExtForCreateSubPoToInfo(Page page, Sort[] sorts, Map<String, Object> paraMap);
 
+    @QueryPage("findListCountByQueryMapExtForCreateAsnToShard")
+    Pagination<WhPoLineCommand> findPoLineListByQueryMapWithPageExtForCreateAsnToShard(Page page, Sort[] sorts, Map<String, Object> paraMap);
+
     List<WhPoLine> findListByParamExt(WhPoLineCommand command);
 
 }

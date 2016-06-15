@@ -13,6 +13,7 @@ import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnLineCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 
@@ -33,6 +34,7 @@ public interface AsnManager extends BaseManager {
      * 
      * @param whAsn
      */
+    @Deprecated
     void editAsnStatusByInfo(WhAsnCommand whAsn);
 
     void editAsnStatusByShard(WhAsnCommand whAsn);
@@ -45,6 +47,7 @@ public interface AsnManager extends BaseManager {
      * @param params
      * @return
      */
+    @Deprecated
     Pagination<WhAsnCommand> findListByQueryMapWithPageExtByInfo(Page page, Sort[] sorts, Map<String, Object> params);
 
     Pagination<WhAsnCommand> findListByQueryMapWithPageExtByShard(Page page, Sort[] sorts, Map<String, Object> params);
@@ -53,8 +56,10 @@ public interface AsnManager extends BaseManager {
 
     ResponseMsg insertAsnWithOuId(WhAsn whAsn, List<WhAsnLineCommand> asnLineList, WhPo whPo, Map<Long, WhPoLine> poLineMap, ResponseMsg rm);
 
+    @Deprecated
     WhAsnCommand findWhAsnByIdToShard(WhAsnCommand whAsn);
 
+    @Deprecated
     void editAsnToInfo(WhAsn whasn);
 
     void editAsnToShard(WhAsn whasn);
@@ -81,7 +86,7 @@ public interface AsnManager extends BaseManager {
     WhAsn findWhAsnByIdToShard(Long id, Long ouId);
 
     /**
-     * 缓存锁使用
+     * 缓存锁使用【业务方法】
      * 
      * @param id
      * @param ouid
@@ -91,7 +96,7 @@ public interface AsnManager extends BaseManager {
     int updateByVersionForLock(Long id, Long ouid, Date lastModifyTime);
 
     /**
-     * 释放缓存锁使用
+     * 释放缓存锁使用【业务方法】
      * 
      * @param id
      * @param ouid
@@ -100,7 +105,34 @@ public interface AsnManager extends BaseManager {
      */
     int updateByVersionForUnLock(Long id, Long ouid);
 
+    /**
+     * 查询【通用方法】
+     *
+     * @param asn
+     * @return
+     */
+    List<WhAsnCommand> findListByParamsExt(WhAsnCommand asn);
 
+    /**
+     * 查询【通用方法】
+     *
+     * @param checkAsn
+     */
+    long findListCountByParamsExt(WhAsnCommand checkAsn);
 
+    /**
+     * WMS系统创建Asn分支一:创建带UUID的Asn【业务方法】
+     *
+     * @param asn
+     * @param lineList
+     */
+    void createAsnAndLineWithUuidToShard(WhAsn asn, List<WhAsnLine> lineList);
 
+    /**
+     * WMS系统创建Asn分支一：撤销带UUID的Asn
+     *
+     * @param asn
+     * @param lineList
+     */
+    void revokeAsnWithUuidToShard(WhAsnCommand command);
 }

@@ -205,4 +205,23 @@ public final class Constants {
     // 残次品条码编码生成 前缀
     public static final String INVENTORY_SN_BARCODE_PREFIX = "SN";
 
+
+    /** 字典表 一级容器类型 */
+    public static final String DICTIONARY_CONTAINTER_TYPE = "ONE_LEVEL_TYPE";
+
+    /** 字典表 一级容器类型 托盘类 */
+    public static final String CONTAINER_TYPE_PALLET = "PALLET_TYPE";
+
+    /** 字典表 一级容器类型 货箱类 */
+    public static final String CONTAINER_TYPE_BOX = "BOX_TYPE";
+
+    /** 字典表 二级容器类型 系统自定义托盘类 */
+    public static final String CONTAINER_TYPE_2ND_PALLET = "SYS_PALLET_TYPE";
+
+    /** 字典表 二级容器类型 系统自定义货箱类 */
+    public static final String CONTAINER_TYPE_2ND_BOX = "SYS_BOX_TYPE";
+
+    /** 二级容器类型 */
+    public static final String DICTIONARY_CONTAINTER_SECOND_TYPE = "TWO_LEVEL_TYPE";
+
 }

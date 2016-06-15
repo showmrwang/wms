@@ -31,6 +31,7 @@ import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnCheckManager;
+import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnLineManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.BiPoLineManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.BiPoManager;
@@ -44,6 +45,7 @@ import com.baozun.scm.primservice.whoperation.model.poasn.CheckAsnCode;
 import com.baozun.scm.primservice.whoperation.model.poasn.CheckPoCode;
 import com.baozun.scm.primservice.whoperation.model.poasn.PoAsnOu;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 import com.baozun.scm.primservice.whoperation.util.StringUtil;
@@ -70,6 +72,8 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
     private AsnCheckManager asnCheckManager;
     @Autowired
     private AsnManager asnManager;
+    @Autowired
+    private AsnLineManager asnLineManager;
     @Autowired
     private BiPoManager biPoManager;
     @Autowired
@@ -906,5 +910,159 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
     @Override
     public void closeSubPoToInfo(WhPoCommand command) {
         this.biPoManager.closeSubPoToInfo(command.getPoCode(), command.getOuId(), command.getId());
+    }
+
+    @Override
+    public WhAsn createAsnWithUuid(WhPoCommand command) {
+        // 这边的逻辑：
+        // 当在WMS系统页面操作创建ASN的时候，先将数据保存到临时表
+        // 限定：同一个仓库下；只允许一个人同时操作一个PO单；
+        WhPo po = this.poManager.findWhPoByIdToShard(command.getId(), command.getOuId());
+        if (null == po) {
+            throw new BusinessException(ErrorCodes.PO_NULL);
+        }
+        // 1.校验ASNEXTCODE的唯一性：店铺的唯一性
+        WhAsnCommand checkAsn = new WhAsnCommand();
+        checkAsn.setAsnExtCode(command.getAsnExtCode());
+        checkAsn.setStoreId(po.getStoreId());
+        checkAsn.setOuId(command.getOuId());
+        long checkAsnCount = this.asnManager.findListCountByParamsExt(checkAsn);
+        if (checkAsnCount > Constants.DEFAULT_INTEGER) {
+            throw new BusinessException(ErrorCodes.ASN_EXTCODE_EXISTS);
+        }
+        // 2.创建ASN以及明细
+        List<WhAsnLine> lineList = new ArrayList<WhAsnLine>();
+        double qtyCount = Constants.DEFAULT_DOUBLE;
+        if (null != command.getPoLineList() && command.getPoLineList().size() > 0) {
+            for (WhPoLineCommand lineCommand : command.getPoLineList()) {
+                WhPoLine poline = this.poLineManager.findWhPoLineByIdOuIdToShard(lineCommand.getId(), command.getOuId());
+                if (poline.getAvailableQty() < lineCommand.getQtyPlanned()) {
+                    throw new BusinessException(ErrorCodes.ASNLINE_QTYPLANNED_ERROR);
+                }
+                qtyCount += lineCommand.getQtyPlanned();
+                WhAsnLine line = new WhAsnLine();
+                line.setOuId(command.getOuId());
+                line.setPoLineId(poline.getId());
+                line.setPoLinenum(poline.getLinenum());
+                line.setSkuId(poline.getSkuId());
+                line.setQtyPlanned(lineCommand.getQtyPlanned());
+                line.setStatus(PoAsnStatus.ASNLINE_NOT_RCVD);
+                line.setIsIqc(poline.getIsIqc());
+                line.setMfgDate(poline.getMfgDate());
+                line.setExpDate(poline.getMfgDate());
+                line.setValidDate(poline.getValidDate());
+                line.setBatchNo(poline.getBatchNo());
+                line.setCountryOfOrigin(poline.getCountryOfOrigin());
+                line.setInvStatus(poline.getInvStatus());
+                line.setInvAttr1(poline.getInvAttr1());
+                line.setInvAttr2(poline.getInvAttr2());
+                line.setInvAttr3(poline.getInvAttr3());
+                line.setInvAttr4(poline.getInvAttr4());
+                line.setInvAttr5(poline.getInvAttr5());
+                line.setCreatedId(command.getUserId());
+                line.setCreateTime(new Date());
+                line.setLastModifyTime(new Date());
+                line.setModifiedId(command.getUserId());
+                line.setInvType(poline.getInvType());
+                line.setValidDateUom(poline.getValidDateUom());
+                line.setUuid(command.getUuid());
+                line.setIsIqc(poline.getIsIqc());
+                line.setSkuId(poline.getSkuId());
+                lineList.add(line);
+            }
+        }
+        WhAsn asn = new WhAsn();
+        // WMS单据号 调用HUB编码生成器获得
+        String asnCode = codeManager.generateCode(Constants.WMS, Constants.WHASN_MODEL_URL, Constants.WMS_ASN_INNER, null, null);
+        asn.setAsnCode(asnCode);
+        asn.setAsnExtCode(command.getAsnExtCode());
+        asn.setPoId(po.getId());
+        asn.setOuId(command.getOuId());
+        asn.setExtCode(po.getExtCode());
+        asn.setCustomerId(po.getCustomerId());
+        asn.setStoreId(po.getStoreId());
+        asn.setPoDate(new Date());
+        asn.setEta(po.getEta());
+        asn.setDeliveryTime(po.getDeliveryTime());
+        asn.setSupplierId(po.getSupplierId());
+        asn.setLogisticsProviderId(po.getLogisticsProviderId());
+        asn.setAsnType(po.getPoType());
+        asn.setStatus(PoAsnStatus.ASN_NEW);
+        asn.setCreatedId(command.getUserId());
+        asn.setCreateTime(new Date());
+        asn.setLastModifyTime(new Date());
+        asn.setModifiedId(command.getUserId());
+        asn.setUuid(command.getUuid());
+        asn.setIsIqc(po.getIsIqc());
+        asn.setQtyPlanned(qtyCount);
+        this.asnManager.createAsnAndLineWithUuidToShard(asn, lineList);
+        return asn;
+    }
+
+    @Override
+    public void revokeAsnWithUuid(WhAsnCommand command) {
+        this.asnManager.revokeAsnWithUuidToShard(command);
+    }
+
+    @Override
+    public WhAsn updateAsnWithUuid(WhPoCommand command) {
+        WhAsn asn = this.asnManager.findWhAsnByIdToShard(command.getAsnId(), command.getOuId());
+        if (null == asn) {
+            throw new BusinessException(ErrorCodes.ASN_NULL);
+        }
+        double qtyCount = Constants.DEFAULT_DOUBLE;
+        List<WhAsnLine> lineList = new ArrayList<WhAsnLine>();
+        if (null != command.getPoLineList() && command.getPoLineList().size() > 0) {
+            for (WhPoLineCommand lineCommand : command.getPoLineList()) {
+                WhPoLine poline = this.poLineManager.findWhPoLineByIdOuIdToShard(lineCommand.getId(), command.getOuId());
+                if (poline.getAvailableQty() < lineCommand.getQtyPlanned()) {
+                    throw new BusinessException(ErrorCodes.ASNLINE_QTYPLANNED_ERROR);
+                }
+                qtyCount += lineCommand.getQtyPlanned();
+                WhAsnLine line = this.asnLineManager.findWhAsnLineByPoLineIdAndUuidAndOuId(poline.getId(), poline.getUuid(), poline.getOuId());
+                if (line == null) {
+                    qtyCount += lineCommand.getQtyPlanned();
+                    line = new WhAsnLine();
+                    line.setOuId(command.getOuId());
+                    line.setPoLineId(poline.getId());
+                    line.setPoLinenum(poline.getLinenum());
+                    line.setSkuId(poline.getSkuId());
+                    line.setQtyPlanned(lineCommand.getQtyPlanned());
+                    line.setStatus(PoAsnStatus.ASNLINE_NOT_RCVD);
+                    line.setIsIqc(poline.getIsIqc());
+                    line.setMfgDate(poline.getMfgDate());
+                    line.setExpDate(poline.getMfgDate());
+                    line.setValidDate(poline.getValidDate());
+                    line.setBatchNo(poline.getBatchNo());
+                    line.setCountryOfOrigin(poline.getCountryOfOrigin());
+                    line.setInvStatus(poline.getInvStatus());
+                    line.setInvAttr1(poline.getInvAttr1());
+                    line.setInvAttr2(poline.getInvAttr2());
+                    line.setInvAttr3(poline.getInvAttr3());
+                    line.setInvAttr4(poline.getInvAttr4());
+                    line.setInvAttr5(poline.getInvAttr5());
+                    line.setCreatedId(command.getUserId());
+                    line.setCreateTime(new Date());
+                    line.setLastModifyTime(new Date());
+                    line.setModifiedId(command.getUserId());
+                    line.setInvType(poline.getInvType());
+                    line.setValidDateUom(poline.getValidDateUom());
+                    line.setUuid(command.getUuid());
+                    line.setIsIqc(poline.getIsIqc());
+                    line.setSkuId(poline.getSkuId());
+                } else {
+                    line.setQtyPlanned(line.getQtyPlanned() + lineCommand.getQtyPlanned());
+                    line.setModifiedId(command.getUserId());
+                    line.setLastModifyTime(new Date());
+                }
+                lineList.add(line);
+            }
+        }
+        asn.setUuid(command.getUuid());
+        asn.setQtyPlanned(asn.getQtyPlanned() + qtyCount);
+        asn.setModifiedId(command.getUserId());
+        asn.setLastModifyTime(new Date());
+        this.asnManager.createAsnAndLineWithUuidToShard(asn, lineList);
+        return asn;
     }
 }

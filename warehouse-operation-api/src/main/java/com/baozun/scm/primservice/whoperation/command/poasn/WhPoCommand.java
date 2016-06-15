@@ -124,6 +124,16 @@ public class WhPoCommand extends BaseCommand {
     private String uuid;
     /** 超收比例 */
     private Double overChageRate;
+    /** 创建ASN时用 asnId */
+    private Long asnId;
+
+    public Long getAsnId() {
+        return asnId;
+    }
+
+    public void setAsnId(Long asnId) {
+        this.asnId = asnId;
+    }
 
     public Double getOverChageRate() {
         return overChageRate;

@@ -593,5 +593,11 @@ public class PoLineManagerImpl implements PoLineManager {
         return this.whPoLineDao.findListCountByParam(searchPoLine);
     }
 
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public Pagination<WhPoLineCommand> findPoLineListByQueryMapWithPageExtForCreateAsnToShard(Page page, Sort[] sorts, Map<String, Object> paraMap) {
+        return this.whPoLineDao.findPoLineListByQueryMapWithPageExtForCreateAsnToShard(page, sorts, paraMap);
+    }
+
 
 }
