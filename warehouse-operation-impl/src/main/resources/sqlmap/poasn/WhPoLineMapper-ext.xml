@@ -383,6 +383,36 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
     </select>
     
+    <select id="findPoLineListByQueryMapWithPageExtForCreateAsnToShard" resultMap="WhPoLineCommand">
+    	select <include refid="whPoLineColumnsMapExt" />
+	    from 
+	    t_wh_po_line line 
+	    inner join t_wh_po po on po.id=line.po_id 
+		left join sys_dictionary sys on sys.dic_value = line.status and sys.group_value = 'POLINESTATUS'
+		left join t_wh_inventory_status inv on inv.id = line.inv_status 
+		left join t_wh_sku sku on line.sku_id = sku.id 
+		left join t_wh_uom uom on uom.uom_code=line.valid_date_uom
+		<where>
+			po.id=#{poId}
+			and po.ou_id=#{ouId}
+			and line.available_qty>0
+		</where>
+    </select>
+    
+    <select id="findListCountByQueryMapExtForCreateAsnToShard" resultType="long">
+        select count(*) from 
+	        t_wh_po_line line 
+	        inner join t_wh_po po on po.id=line.po_id
+			left join sys_dictionary sys on sys.dic_value = line.status and sys.group_value = 'POLINESTATUS'
+			left join t_wh_inventory_status inv on inv.id = line.inv_status
+			left join t_wh_sku sku on line.sku_id = sku.id
+			left join t_wh_uom uom on uom.uom_code=line.valid_date_uom
+		<where>
+			po.id=#{poId}
+			and po.ou_id=#{ouId}
+			and line.available_qty>0
+		</where>
+    </select>
    <delete id="deletePoLineByUuid" parameterType="int">  
 		delete from t_wh_po_line
 		<where>

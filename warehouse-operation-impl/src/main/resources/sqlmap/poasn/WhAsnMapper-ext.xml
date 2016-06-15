@@ -341,5 +341,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			and asn_code = #{asnCode}
 		</where>
     </select>
+     <select id="findListByParamExt" resultMap="whAsnCommand">
+    	select <include refid="whAsnColumns" />
+	    from t_wh_asn 
+		<include refid="whAsnDynamicWhere"/>
+    </select>
     
+     <select id="findListCountByParamExt" resultType="long">
+    	select count(*)
+	    from t_wh_asn 
+		<include refid="whAsnDynamicWhere"/>
+    </select>
 </mapper>
