@@ -767,7 +767,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    ]]>
 		</update>
 		
-		<delete id="deleteWhSkuInventoryById" parameterType="java.lang.Integer">
+		<delete id="deleteWhSkuInventoryById" >
 	        delete from t_wh_sku_inventory where
 		        id = #{id} and ou_id = #{ouid}
 		</delete>

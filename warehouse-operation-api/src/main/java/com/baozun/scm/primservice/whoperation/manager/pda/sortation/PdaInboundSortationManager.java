@@ -21,6 +21,8 @@ public interface PdaInboundSortationManager extends BaseManager {
 
     void pdaScanSnDone(PdaInboundSortationCommand pdaInboundSortationCommand);
 
+    void pdaContainerFull(PdaInboundSortationCommand pdaInboundSortationCommand);
+
     PdaInboundSortationCommand pdaScanSkuAttr(PdaInboundSortationCommand pdaInboundSortationCommand) throws Exception;
 
     PdaInboundSortationCommand scanNewContainerView(PdaInboundSortationCommand pdaInboundSortationCommand) throws Exception;

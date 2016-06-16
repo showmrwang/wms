@@ -51,13 +51,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	</sql>
 	
 	<delete id="deleteWhContainerAssign">
-		delete t_wh_container_assign 
-		<where>
+		delete from t_wh_container_assign 
+			where
 			ou_id = #{ouid}
 			<if test="containerId!=null">
 				and container_id = #{containerId}
 			</if>
-		</where>
 	</delete>
 	
 	<select id="findWhContainerAssignByUuidOrUserId" resultMap="WhContainerAssignResultExt">
