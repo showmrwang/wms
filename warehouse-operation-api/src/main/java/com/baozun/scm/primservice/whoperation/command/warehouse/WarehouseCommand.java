@@ -112,6 +112,54 @@ public class WarehouseCommand extends BaseCommand {
     private Boolean isTabbInvTotal = false;
 
 
+    
+    
+    /** 长度默认单位类型 */
+    private Long defaultLengthUomType;
+    /** 重量默认单位类型 */
+    private Long defaultWeightUomType;
+    /** 体积默认单位类型 */
+    private Long defaultVolumeUomType;
+    /** 面积默认单位类型 */
+    private Long defaultAreaUomType;
+
+    
+    public Long getDefaultLengthUomType() {
+        return defaultLengthUomType;
+    }
+
+    public void setDefaultLengthUomType(Long defaultLengthUomType) {
+        this.defaultLengthUomType = defaultLengthUomType;
+    }
+
+    public Long getDefaultWeightUomType() {
+        return defaultWeightUomType;
+    }
+
+    public void setDefaultWeightUomType(Long defaultWeightUomType) {
+        this.defaultWeightUomType = defaultWeightUomType;
+    }
+
+    public Long getDefaultVolumeUomType() {
+        return defaultVolumeUomType;
+    }
+
+    public void setDefaultVolumeUomType(Long defaultVolumeUomType) {
+        this.defaultVolumeUomType = defaultVolumeUomType;
+    }
+
+    public Long getDefaultAreaUomType() {
+        return defaultAreaUomType;
+    }
+
+    public void setDefaultAreaUomType(Long defaultAreaUomType) {
+        this.defaultAreaUomType = defaultAreaUomType;
+    }
+
+    
+    
+    
+    
 
     public Boolean getIsSortationContainerAssign() {
         return isSortationContainerAssign;

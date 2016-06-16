@@ -61,6 +61,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	is_repeatedly_outbound as isRepeatedlyOutbound, 
 	        	is_tabb_inv_total as isTabbInvTotal,
 	        	
+	        	
+	        	default_length_uom_type as defaultLengthUomType,
+	        	default_weight_uom_type as defaultWeightUomType,
+	        	default_volume_uom_type as defaultVolumeUomType,
+	        	default_area_uom_type as defaultAreaUomType,
+	        	
 	        	lifecycle as lifecycle
 	    ]]>
 	</sql>
@@ -196,6 +202,26 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<if test="isTabbInvTotal!=null">
 				and is_tabb_inv_total = #{isTabbInvTotal}
 			</if>
+			
+			
+			
+			
+			<if test="defaultLengthUomType!=null">
+					and default_length_uom_type = #{defaultLengthUomType}
+			</if>
+	       
+			<if test="defaultWeightUomType!=null">
+					and default_weight_uom_type = #{defaultWeightUomType}
+			</if>
+	       
+			<if test="defaultVolumeUomType!=null">
+					and default_volume_uom_type = #{defaultVolumeUomType}
+			</if>
+	       
+			<if test="defaultAreaUomType!=null">
+					and default_area_uom_type = #{defaultAreaUomType}
+			</if>
+			
 
 			<if test="lifecycle!=null">
 				and lifecycle = #{lifecycle}
@@ -303,6 +329,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				w.is_repeatedly_outbound as isRepeatedlyOutbound,
 				w.is_tabb_inv_total as isTabbInvTotal,
 
+
+				w.default_length_uom_type as defaultLengthUomType,
+	        	w.default_weight_uom_type as defaultWeightUomType,
+	        	w.default_volume_uom_type as defaultVolumeUomType,
+	        	w.default_area_uom_type as defaultAreaUomType,
+
 				w.lifecycle as lifecycle,
 	        	ou.parent_ou_id as parentOuId,
 	        	ou.id as ouId
@@ -398,6 +430,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        is_sortation_container_assign = #{isSortationContainerAssign,javaType=java.lang.Boolean,jdbcType=BIT} ,
 			        is_repeatedly_outbound = #{isRepeatedlyOutbound,javaType=java.lang.Boolean,jdbcType=BIT} ,
 			        is_tabb_inv_total = #{isTabbInvTotal,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        
+			        default_length_uom_type = #{defaultLengthUomType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	default_weight_uom_type = #{defaultWeightUomType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		       		default_volume_uom_type = #{defaultVolumeUomType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	default_area_uom_type = #{defaultAreaUomType,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        
 			        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
 		        WHERE 
