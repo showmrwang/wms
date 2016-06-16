@@ -734,12 +734,15 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                 Iterator<String> it = lineIdSet.keySet().iterator();
                 while (it.hasNext()) {
                     String entry = it.next();
-                    Integer lineSkuOverchargeCount = this.cacheManager.getMapObject(CacheKeyConstant.CACHE_ASNLINE_OVERCHARGE_PREFIX + command.getOccupationId(), entry);
-                    if (null == lineSkuOverchargeCount) {
-                        lineSkuOverchargeCount = Constants.DEFAULT_INTEGER;
+                    WhAsnLine line = this.cacheManager.getMapObject(CacheKeyConstant.CACHE_ASNLINE_PREFIX + command.getOccupationId(), entry);
+                    if (command.getSkuId().equals(line.getSkuId())) {
+                        Integer lineSkuOverchargeCount = this.cacheManager.getMapObject(CacheKeyConstant.CACHE_ASNLINE_OVERCHARGE_PREFIX + command.getOccupationId(), entry);
+                        if (null == lineSkuOverchargeCount) {
+                            lineSkuOverchargeCount = Constants.DEFAULT_INTEGER;
+                        }
+                        asnSkuCount = asnSkuCount + lineSkuOverchargeCount;
+                        lineIdListStr += entry + ",";
                     }
-                    asnSkuCount = asnSkuCount + lineSkuOverchargeCount;
-                    lineIdListStr += entry + ",";
                 }
                 if (asnSkuCount < skuPlannedCount) {
                     throw new BusinessException(ErrorCodes.SKU_OVERCHARGE_ERROR);
@@ -993,6 +996,8 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
          * 逻辑：
          */
         boolean flag = false;
+        // 测试用
+        this.cacheManager.removeMapValue(CacheKeyConstant.CACHE_RCVD_CONTAINER, "14100017");
         ContainerCommand containerCommand = this.generalRcvdManager.findContainerByCode(command.getInsideContainerCode(), command.getOuId());
         if (null == containerCommand) {
             ContainerCommand saveContainer = new ContainerCommand();
