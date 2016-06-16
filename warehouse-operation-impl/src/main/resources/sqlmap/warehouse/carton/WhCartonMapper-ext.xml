@@ -251,7 +251,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    from t_wh_carton 
 	    where id = #{id} and ou_id = #{ouid}
  </select>
-
+ 
 	<delete id="deleteCartonById" parameterType="map">
 	    <![CDATA[
 	        delete from t_wh_carton where
@@ -299,7 +299,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
  <select id="findNoneCartonNumsByOuterContainerCode" resultType="Integer">
 	    select 
 					count(1)
-					
 					from 
 					t_wh_sku_inventory inv 
 					left join t_wh_container c on c.id = inv.outer_container_id
@@ -310,5 +309,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					and c.code = #{containerCode}
 					and not exists 
 					(select 1 from t_wh_carton c where c.container_id = inv.inside_container_id and c.asn_id = asn.id and c.is_caselevel = 1)
+ </select>
+ 
+ <select id="findWhCartonByAsnSkuContainer" resultMap="WhCartonResultExt">
+    	select <include refid="whCartonColumnsExt" />
+		    from t_wh_carton 
+		    where 
+		    ou_id = #{ouid} 
+		    and asn_id = #{asnid} 
+		    and sku_id = #{skuid} 
+		    and container_id = #{containerid}
  </select>
 </mapper>

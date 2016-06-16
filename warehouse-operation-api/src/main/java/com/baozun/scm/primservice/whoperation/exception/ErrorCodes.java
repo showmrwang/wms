@@ -324,6 +324,8 @@ public class ErrorCodes {
     public static final int PDA_INBOUND_SORTATION_STATUS_ERROR = 50019;
     /** 此目标容器已被其他用户使用 请更换容器 WhContainerAssign */
     public static final int PDA_INBOUND_CONTAINER_ASSIGN_USER_ERROR = 50020;
+    /** 此商品不能放入目标容器 请更换容器 IsSkuMatchContainer */
+    public static final int PDA_INBOUND_SKU_MATCH_CONTAINER_ERROR = 50021;
     // 50001-60000 hubin
 
     // 60001-70000 xiemingwei

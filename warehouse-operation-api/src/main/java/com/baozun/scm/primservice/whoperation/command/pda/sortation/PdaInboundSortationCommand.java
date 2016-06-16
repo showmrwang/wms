@@ -483,6 +483,4 @@ public class PdaInboundSortationCommand extends BaseCommand {
         this.isSortationContainerAssign = isSortationContainerAssign;
     }
 
-
-
 }

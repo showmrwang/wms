@@ -19,12 +19,16 @@ import com.baozun.scm.primservice.whoperation.command.pda.sortation.PdaInboundSo
 import com.baozun.scm.primservice.whoperation.command.rule.RuleAfferCommand;
 import com.baozun.scm.primservice.whoperation.command.rule.RuleExportCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhInBoundRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
+import com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnDao;
 import com.baozun.scm.primservice.whoperation.dao.sku.SkuDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhInBoundRuleDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.carton.WhCartonDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventorySnDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.sortation.WhContainerAssignDao;
@@ -33,8 +37,10 @@ import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.rule.RuleManager;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 import com.baozun.scm.primservice.whoperation.model.sku.Sku;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
+import com.baozun.scm.primservice.whoperation.model.warehouse.carton.WhCarton;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventorySn;
 import com.baozun.scm.primservice.whoperation.model.warehouse.sortation.WhContainerAssign;
@@ -65,6 +71,12 @@ public class PdaInboundSortationManagerImpl extends BaseManagerImpl implements P
     private WhSkuInventorySnDao whSkuInventorySnDao;
     @Autowired
     private WhContainerAssignDao whContainerAssignDao;
+    @Autowired
+    private WhInBoundRuleDao whInBoundRuleDao;
+    @Autowired
+    private WhCartonDao whCartonDao;
+    @Autowired
+    private WhAsnDao whAsnDao;
 
     /**
      * 扫描容器号 验证容器号
@@ -102,21 +114,6 @@ public class PdaInboundSortationManagerImpl extends BaseManagerImpl implements P
             }
         }
         pdaInboundSortationCommand.setContainerId(container.getId());// 保存容器ID
-        // // 判断该容器是否有符合的入库分拣规则
-        // RuleAfferCommand ruleAffer = new RuleAfferCommand();
-        // ruleAffer.setLogId(pdaInboundSortationCommand.getLogId());
-        // ruleAffer.setOuid(pdaInboundSortationCommand.getOuId());
-        // ruleAffer.setAfferContainerCode(pdaInboundSortationCommand.getContainerCode());
-        // ruleAffer.setRuleType(Constants.INBOUND_RULE);// 入库分拣规则
-        // ruleAffer.setRuleId(pdaInboundSortationCommand.getRuleId());
-        // RuleExportCommand export = ruleManager.ruleExport(ruleAffer);
-        // if (!export.getUsableness()) {
-        // // 如果没有对应规则 提示错误
-        // log.warn("pdaScanContainer export.getUsableness() is false logid: " +
-        // pdaInboundSortationCommand.getLogId());
-        // throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_USABLENESS_FALSE);
-        // }
-        // pdaInboundSortationCommand.setRuleId(export.getWhInBoundRuleCommand().getId());
         // 验证容器是否存在库存信息
         List<String> containerList = new ArrayList<String>();
         containerList.add(pdaInboundSortationCommand.getContainerCode());
@@ -260,11 +257,23 @@ public class PdaInboundSortationManagerImpl extends BaseManagerImpl implements P
                 throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_STATUS_ERROR, new Object[] {container.getStatus()});
             }
         }
-        // 通过规则策略判断是否能放入改目标容器
-        RuleAfferCommand ruleAffer = new RuleAfferCommand();
-        ruleAffer.setOuid(pdaInboundSortationCommand.getOuId());
-        ruleAffer.setInvId(pdaInboundSortationCommand.getSkuInvId());
-        ruleManager.ruleExportContainerCode(ruleAffer);
+        if (container.getLifecycle().equals(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED)) {
+            // 如果容器状态是占用状态 需要验证商品是否能放入目标容器
+            // 获取规则数据
+            WhInBoundRuleCommand rule = whInBoundRuleDao.findWhInBoundRuleCommandById(pdaInboundSortationCommand.getRuleId(), pdaInboundSortationCommand.getOuId());
+            // 通过规则策略判断是否能放入改目标容器
+            RuleAfferCommand ruleAffer = new RuleAfferCommand();
+            ruleAffer.setOuid(pdaInboundSortationCommand.getOuId());
+            ruleAffer.setInvId(pdaInboundSortationCommand.getSkuInvId());
+            ruleAffer.setContainerId(container.getId());
+            ruleAffer.setWhInBoundRuleCommand(rule);
+            RuleExportCommand ruleExport = ruleManager.ruleExportContainerCode(ruleAffer);
+            if (!ruleExport.getIsSkuMatchContainer()) {
+                // 商品不能放入改目标容器
+                log.warn("pdaScanNewContainer ruleExport.getIsSkuMatchContainer() false logid: " + pdaInboundSortationCommand.getLogId());
+                throw new BusinessException(ErrorCodes.PDA_INBOUND_SKU_MATCH_CONTAINER_ERROR);
+            }
+        }
         // 验证此容器是否能被共享
         if (!pdaInboundSortationCommand.getIsSortationContainerAssign()) {
             // 如果不允许用户共享分拣目标容器
@@ -281,6 +290,20 @@ public class PdaInboundSortationManagerImpl extends BaseManagerImpl implements P
         pdaInboundSortationCommand.setNewContainerId(container.getId());
         // 对库存数据进行拆分处理
         pdaScanNewContainerInsertSkuInv(pdaInboundSortationCommand);
+        // 修改容器状态为待上架 条件为目标容器状态为可用
+        if (container.getLifecycle().equals(ContainerStatus.CONTAINER_LIFECYCLE_USABLE)) {
+            boolean b = updateSkuInvContainerStatus(container.getId(), pdaInboundSortationCommand.getOuId(), pdaInboundSortationCommand.getUserId(), pdaInboundSortationCommand.getLogId());
+            if (!b) {
+                // 修改容器状态失败
+                throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
+            }
+        }
+        // 根据sku+内部容器号 查找容器库存数据 location is null 查询多条对应的库存数据
+        List<WhSkuInventoryCommand> skuInvList = whSkuInventoryDao.findWhSkuInventoryBySkuIdAndContainerid(pdaInboundSortationCommand.getOuId(), pdaInboundSortationCommand.getSkuId(), pdaInboundSortationCommand.getContainerId(), null);
+        if (skuInvList.size() == 0) {
+            // 此原始容器号已完成全部商品分拣
+            pdaInboundSortationCommand.setIsDone(true);
+        }
         log.info(this.getClass().getSimpleName() + ".pdaScanNewContainer method end! logid: " + pdaInboundSortationCommand.getLogId());
         return pdaInboundSortationCommand;
     }
@@ -358,31 +381,27 @@ public class PdaInboundSortationManagerImpl extends BaseManagerImpl implements P
             ca.setUserId(pdaInboundSortation.getUserId());
             ca.setContainerId(pdaInboundSortation.getNewContainerId());
             whContainerAssignDao.insert(ca);
+            // 保存操作日志
+            insertGlobalLog(Constants.GLOBAL_LOG_INSERT, ca, ca.getOuId(), ca.getUserId(), null, null);
         }
-        // 根据sku+内部容器号 查找容器库存数据 location is null 查询多条对应的库存数据
-        List<WhSkuInventoryCommand> skuInvList = whSkuInventoryDao.findWhSkuInventoryBySkuIdAndContainerid(pdaInboundSortation.getOuId(), pdaInboundSortation.getSkuId(), pdaInboundSortation.getContainerId(), null);
-        if (skuInvList.size() == 0) {
-            // // 如果原始容器号库存为0 需要更新原始容器号对应的新容器号 把外部容器号制空 并且如果新容器号is_full(是否装满) = true -->false
-            // // 新容器号库存 外部容器号制空
-            // List<WhSkuInventoryCommand> newSkuInvList =
-            // whSkuInventoryDao.findWhSkuInventoryBySkuIdAndContainerid(pdaInboundSortation.getOuId(),
-            // pdaInboundSortation.getSkuId(), null, pdaInboundSortation.getContainerId());
-            // for (WhSkuInventoryCommand inv : newSkuInvList) {
-            // b = updateSkuInvOuterContainerIsNull(inv, pdaInboundSortation);
-            // if (!b) {
-            // // 修改新容器号库存 制空外部容器号失败
-            // throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
-            // }
-            // // 修改容器号is_full = false
-            // b = updateSkuInvContainerIsFull(inv.getInsideContainerId(), inv.getOuId(),
-            // pdaInboundSortation.getUserId(), pdaInboundSortation.getLogId(), false);
-            // if (!b) {
-            // // 修改容器is_full error
-            // throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
-            // }
-            // }
-            // 此原始容器号已完成全部商品分拣
-            pdaInboundSortation.setIsDone(true);
+        // 如果是caselevel箱信息的话 需要把此箱改成非caselevel
+        // 查询对应ASN单信息
+        WhAsn asn = whAsnDao.findAsnByCodeAndOuId(skuInv.getOccupationCode(), pdaInboundSortation.getOuId());
+        if (null == asn) {
+            log.warn("pdaScanNewContainer WhAsn is null AsnCode: " + skuInv.getOccupationCode() + " logid: " + pdaInboundSortation.getLogId());
+            throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
+        }
+        WhCarton carton = whCartonDao.findWhCartonByAsnSkuContainer(asn.getId(), skuInv.getSkuId(), skuInv.getInsideContainerId(), pdaInboundSortation.getOuId());
+        if (null != carton) {
+            // 箱信息不为空
+            if (carton.getIsCaselevel()) {
+                // 箱信息是caselevel
+                b = updateCartonCaselevel(carton.getId(), pdaInboundSortation.getOuId(), pdaInboundSortation.getUserId(), uuid);
+                if (!b) {
+                    // 修改箱信息caselevel失败
+                    throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
+                }
+            }
         }
         return pdaInboundSortation;
     }
@@ -501,38 +520,72 @@ public class PdaInboundSortationManagerImpl extends BaseManagerImpl implements P
     }
 
     /***
-     * 更新目标容器is_full = true/false
+     * 如果是新目标容器 更新容器状态为待上架
      * 
      * @param pdaInboundSortation
      * @return
      * @throws Exception
      */
-    // private boolean updateSkuInvContainerIsFull(Long containerId, Long ouid, Long userId, String
-    // logId, Boolean isFull) throws Exception {
-    // boolean b = false;
-    // for (int i = 1; i <= 5; i++) {
-    // // 每次尝试更新5次 避免并发情况
-    // // 延迟200毫秒
-    // Thread.sleep(200);
-    // // 通过目标容器ID查找容器信息
-    // Container c = containerDao.findByIdExt(containerId, ouid);
-    // c.setIsFull(isFull);
-    // c.setOperatorId(userId);
-    // int count = containerDao.saveOrUpdateByVersion(c);
-    // if (count == 0) {
-    // log.warn("pdaScanNewContainer updateSkuInvContainerIsFull error count= " + i +
-    // " containerId: " + containerId + " logid: " + logId);
-    // continue;
-    // } else {
-    // // 修改成功 跳出循环 返回true
-    // // 插入操作日志
-    // insertGlobalLog(Constants.GLOBAL_LOG_UPDATE, c, ouid, userId, null, null);
-    // b = true;
-    // break;
-    // }
-    // }
-    // return b;
-    // }
+    private boolean updateSkuInvContainerStatus(Long containerId, Long ouid, Long userId, String logId) throws Exception {
+        boolean b = false;
+        for (int i = 1; i <= 5; i++) {
+            // 每次尝试更新5次 避免并发情况
+            // 延迟200毫秒
+            Thread.sleep(200);
+            // 通过目标容器ID查找容器信息
+            Container c = containerDao.findByIdExt(containerId, ouid);
+            c.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
+            c.setStatus(ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY);
+            c.setOperatorId(userId);
+            int count = containerDao.saveOrUpdateByVersion(c);
+            if (count == 0) {
+                log.warn("pdaScanNewContainer updateSkuInvContainerStatus error count= " + i + " containerId: " + containerId + " logid: " + logId);
+                continue;
+            } else {
+                // 修改成功 跳出循环 返回true
+                // 插入操作日志
+                insertGlobalLog(Constants.GLOBAL_LOG_UPDATE, c, ouid, userId, null, null);
+                b = true;
+                break;
+            }
+        }
+        return b;
+    }
+
+    /**
+     * 更改箱信息Caselevel=false
+     * 
+     * @param cartonId
+     * @param ouid
+     * @param userId
+     * @param logId
+     * @return
+     * @throws Exception
+     */
+    private boolean updateCartonCaselevel(Long cartonId, Long ouid, Long userId, String logId) throws Exception {
+        boolean b = false;
+        for (int i = 1; i <= 5; i++) {
+            // 每次尝试更新5次 避免并发情况
+            // 延迟200毫秒
+            Thread.sleep(200);
+            // 通过箱信息Caselevel
+            WhCarton carton = whCartonDao.findWhCatonById(cartonId, ouid);
+            carton.setIsCaselevel(false);
+            carton.setModifiedId(userId);
+            int count = whCartonDao.saveOrUpdateByVersion(carton);
+            if (count == 0) {
+                log.warn("pdaScanNewContainer updateCartonCaselevel error count= " + i + " cartonId: " + cartonId + " logid: " + logId);
+                continue;
+            } else {
+                // 修改成功 跳出循环 返回true
+                // 插入操作日志
+                insertGlobalLog(Constants.GLOBAL_LOG_UPDATE, carton, ouid, userId, null, null);
+                b = true;
+                break;
+            }
+        }
+        return b;
+    }
 
     /***
      * 修改对应库存明细 把outer_container_id 设置为null

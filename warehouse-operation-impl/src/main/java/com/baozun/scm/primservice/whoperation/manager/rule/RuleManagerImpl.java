@@ -301,7 +301,6 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public RuleExportCommand ruleExportContainerCode(RuleAfferCommand ruleAffer) {
-
         RuleExportCommand export = new RuleExportCommand();
         export.setExportContainerCode(null);
         Long sortingResult = whInBoundRuleDao.executeSortingRuleSql(ruleAffer.getInvId(), ruleAffer.getContainerId(), ruleAffer.getWhInBoundRuleCommand().getSortingSql(), ruleAffer.getOuid());
