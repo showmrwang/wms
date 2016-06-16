@@ -379,4 +379,31 @@ public class WhInBoundRuleManagerImpl implements WhInBoundRuleManager {
         return whInBoundRuleResultCommandList;
     }
 
+    /**
+     * 测试分拣规则sql
+     *
+     * @author mingwei.xie
+     * @param inventoryId
+     * @param containerId
+     * @param ruleSql
+     * @param ouId
+     * @return
+     */
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    @Override
+    public Boolean testSortingRule(Long inventoryId, Long containerId, String ruleSql, Long ouId) {
+        if (log.isInfoEnabled()) {
+            log.info("WhInBoundRuleManagerImpl testSortingRule is start, param [inventoryId:{}, containerId:{}, ruleSql:{}, ouId:{}]", inventoryId, containerId, ruleSql, ouId);
+        }
+        if (null == inventoryId || null == containerId || null == ruleSql || null == ouId) {
+            log.error("WhInBoundRuleManagerImpl testSortingRule failed,param is null, param [inventoryId:{}, containerId:{}, ruleSql:{}, ouId:{}]", inventoryId, containerId, ruleSql, ouId);
+            throw new BusinessException(ErrorCodes.PARAM_IS_NULL);
+        }
+        Long result = whInBoundRuleDao.executeSortingRuleSql(inventoryId, containerId, ruleSql, ouId);
+        if (log.isInfoEnabled()) {
+            log.info("WhInBoundRuleManagerImpl testSortingRule is end, param [inventoryId:{}, containerId:{}, ruleSql:{}, ouId:{}, result:{}]", inventoryId, containerId, ruleSql, ouId, result);
+        }
+        return null != result;
+    }
+
 }

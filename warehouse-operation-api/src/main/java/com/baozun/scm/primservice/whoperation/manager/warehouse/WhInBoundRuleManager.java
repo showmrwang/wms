@@ -122,4 +122,15 @@ public interface WhInBoundRuleManager extends BaseManager {
      */
     List<WhInBoundRuleResultCommand> findResultConditionByContainerCode(String containerCode, Long ouId, String selectColumnsPropertyStr, String selectColumnsStr);
 
+    /**
+     * 测试分拣规则sql
+     *
+     * @author mingwei.xie
+     * @param inventoryId
+     * @param containerId
+     * @param ruleSql
+     * @param ouId
+     * @return
+     */
+    Boolean testSortingRule(Long inventoryId, Long containerId, String ruleSql, Long ouId);
 }
