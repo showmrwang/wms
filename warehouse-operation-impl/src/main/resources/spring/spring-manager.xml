@@ -47,6 +47,7 @@
 					<value>com.baozun.scm.primservice.whoperation.model.warehouse.Container</value>
 					<value>com.baozun.scm.primservice.whoperation.model.warehouse.AsnReserve</value>
                     <value>com.baozun.scm.primservice.whoperation.model.warehouse.CheckInQueue</value>
+                    <value>com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory</value>
 				</list>
 			</property>
 			

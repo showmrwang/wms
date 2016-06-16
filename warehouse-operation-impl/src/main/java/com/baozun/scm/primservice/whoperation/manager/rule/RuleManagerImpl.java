@@ -21,7 +21,6 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.RecommendPlatfor
 import com.baozun.scm.primservice.whoperation.command.warehouse.RecommendRuleConditionCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ShelveRecommendRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhInBoundRuleCommand;
-import com.baozun.scm.primservice.whoperation.command.warehouse.WhInBoundRuleResultCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
@@ -152,7 +151,7 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
         List<ShelveRecommendRuleCommand> sList = shelveRecommendRuleDao.findShelveRecommendRuleByOuid(ruleAffer.getOuid());
         // 查询所有对应容器号的库存信息
         List<WhSkuInventoryCommand> invList = whSkuInventoryDao.findWhSkuInventoryByContainerCode(ruleAffer.getOuid(), ruleAffer.getAfferContainerCodeList());
-        if(invList.size() == 0){
+        if (invList.size() == 0) {
             return export;
         }
         // 所有符合条件的规则LIST
@@ -297,36 +296,19 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
     }
 
     /**
-     * 根据原始容器库存记录找寻对应可放入的目标容器号
+     * 根据容器ID和库存ID验证该属性的sku是否可以放入容器
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public RuleExportCommand ruleExportContainerCode(RuleAfferCommand ruleAffer) {
-        // 获取所有入库分拣规则的ResultConditionIds 封装成List<Long>
-        String[] conditionIds = ruleAffer.getWhInBoundRuleCommand().getSortingConditionIds().split(",");
-        List<Long> ids = new ArrayList<Long>();
-        for (String c : conditionIds) {
-            ids.add(Long.parseLong(c));
-        }
+
         RuleExportCommand export = new RuleExportCommand();
         export.setExportContainerCode(null);
-        // 通过入库分拣规则的ResultConditionIds 得到对应的字段映射
-        String selectColumnsStr = selectColumnsByConditionIds(ids);
-        // 通过原始容器号的库存记录查询 分拣策略的条件值
-        WhInBoundRuleResultCommand wrr = whInBoundRuleDao.findResultConditionByInventoryId(ruleAffer.getInvId(), ruleAffer.getOuid(), ruleAffer.getWhInBoundRuleCommand().getSortingSql());
-        // 查询目标容器分拣策略条件值集合
-        List<WhInBoundRuleResultCommand> wrrList = whInBoundRuleDao.findResultConditionByContainerCode(wrr.getContainerCode(), ruleAffer.getOuid(), ruleAffer.getWhInBoundRuleCommand().getSortingSql(), selectColumnsStr);
-        // 如果目标容器集合为空 则找不到对应容器
-        if (wrrList.size() == 0) {
-            return export;
-        }
-        for (WhInBoundRuleResultCommand w : wrrList) {
-            // 如果目标容器集合不为空 比对原始容器号的库存记录查询 分拣策略的条件值和目标容器分拣策略条件值集合是否相同
-            if (wrr.equals(w)) {
-                // 相同返回对应容器号
-                export.setExportContainerCode(w.getContainerCode());
-                break;
-            }
+        Long sortingResult = whInBoundRuleDao.executeSortingRuleSql(ruleAffer.getInvId(), ruleAffer.getContainerId(), ruleAffer.getWhInBoundRuleCommand().getSortingSql(), ruleAffer.getOuid());
+        if (null == sortingResult) {
+            export.setIsSkuMatchContainer(false);
+        } else {
+            export.setIsSkuMatchContainer(true);
         }
         return export;
     }

@@ -40,6 +40,9 @@ public class RuleExportCommand extends BaseCommand {
     /** 上架规则List */
     private List<ShelveRecommendRuleCommand> shelveRecommendRuleList;
 
+    /** 商品是否匹配容器 */
+    private Boolean isSkuMatchContainer;
+
     public Boolean getUsableness() {
         return usableness;
     }
@@ -96,6 +99,11 @@ public class RuleExportCommand extends BaseCommand {
         this.shelveRecommendRuleList = shelveRecommendRuleList;
     }
 
+    public Boolean getIsSkuMatchContainer() {
+        return isSkuMatchContainer;
+    }
 
-
+    public void setIsSkuMatchContainer(Boolean isSkuMatchContainer) {
+        this.isSkuMatchContainer = isSkuMatchContainer;
+    }
 }

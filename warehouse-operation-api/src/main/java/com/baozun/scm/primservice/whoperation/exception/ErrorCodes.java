@@ -322,6 +322,8 @@ public class ErrorCodes {
     public static final int PDA_INBOUND_SORTATION_SKUATTRINV_ERROR = 50018;
     /** 容器状态异常 状态编码【{0}】 */
     public static final int PDA_INBOUND_SORTATION_STATUS_ERROR = 50019;
+    /** 此目标容器已被其他用户使用 请更换容器 WhContainerAssign */
+    public static final int PDA_INBOUND_CONTAINER_ASSIGN_USER_ERROR = 50020;
     // 50001-60000 hubin
 
     // 60001-70000 xiemingwei

@@ -28,6 +28,9 @@ public class RuleAfferCommand extends BaseCommand {
     /** 原始容器号 */
     private String afferContainerCode;
 
+    /** 容器ID */
+    private Long containerId;
+
     /** 入库分拣规则对象 */
     private WhInBoundRuleCommand whInBoundRuleCommand;
 
@@ -39,7 +42,7 @@ public class RuleAfferCommand extends BaseCommand {
 
     /** 规则ID */
     private Long ruleId;
-    
+
     /** 功能ID */
     private Long funcId;
 
@@ -74,6 +77,14 @@ public class RuleAfferCommand extends BaseCommand {
 
     public void setAfferContainerCode(String afferContainerCode) {
         this.afferContainerCode = afferContainerCode;
+    }
+
+    public Long getContainerId() {
+        return containerId;
+    }
+
+    public void setContainerId(Long containerId) {
+        this.containerId = containerId;
     }
 
     public WhInBoundRuleCommand getWhInBoundRuleCommand() {

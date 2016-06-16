@@ -73,4 +73,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
 	</select>
 	
+	<select id="findWhContainerAssignByContainerId" resultMap="WhContainerAssignResultExt">
+		select <include refid="whContainerAssignColumnsExt" /> 
+			from t_wh_container_assign 
+			where
+			ou_id = #{ouid} 
+			and container_id = #{containerId}
+	</select>
+	
 </mapper>

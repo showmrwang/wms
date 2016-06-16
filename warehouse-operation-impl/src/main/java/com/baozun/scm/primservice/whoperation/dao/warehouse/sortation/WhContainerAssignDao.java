@@ -57,4 +57,13 @@ public interface WhContainerAssignDao extends BaseDao<WhContainerAssign, Long> {
      */
     WhContainerAssign findWhContainerAssignByUuidOrUserId(@Param("ouid") Long ouid, @Param("uuid") String uuid, @Param("ruleid") Long ruleid, @Param("userid") Long userid);
 
+    /**
+     * 通过容器ID查询对应
+     * 
+     * @param ouid
+     * @param containerId
+     * @return
+     */
+    List<WhContainerAssign> findWhContainerAssignByContainerId(@Param("ouid") Long ouid, @Param("containerId") Long containerId);
+
 }

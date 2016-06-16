@@ -17,12 +17,6 @@ package com.baozun.scm.primservice.whoperation.dao.warehouse;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.ibatis.annotations.Param;
-
-import com.baozun.scm.primservice.whoperation.command.warehouse.WhInBoundRuleCommand;
-import com.baozun.scm.primservice.whoperation.command.warehouse.WhInBoundRuleResultCommand;
-import com.baozun.scm.primservice.whoperation.model.warehouse.WhInBoundRule;
-
 import lark.common.annotation.CommonQuery;
 import lark.common.annotation.QueryPage;
 import lark.common.dao.Page;
@@ -30,6 +24,12 @@ import lark.common.dao.Pagination;
 import lark.common.dao.QueryCondition;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
+
+import org.apache.ibatis.annotations.Param;
+
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhInBoundRuleCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhInBoundRuleResultCommand;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhInBoundRule;
 
 public interface WhInBoundRuleDao extends BaseDao<WhInBoundRule, Long> {
 
@@ -54,7 +54,7 @@ public interface WhInBoundRuleDao extends BaseDao<WhInBoundRule, Long> {
 
     /**
      * 通过参数查询入库分拣规则分页列表
-     * 
+     *
      * @author mingwei.xie
      * @param page
      * @param sorts
@@ -66,7 +66,7 @@ public interface WhInBoundRuleDao extends BaseDao<WhInBoundRule, Long> {
 
     /**
      * 根据id查找入库分拣规则
-     * 
+     *
      * @author mingwei.xie
      * @param id
      * @param ouId
@@ -76,7 +76,7 @@ public interface WhInBoundRuleDao extends BaseDao<WhInBoundRule, Long> {
 
     /**
      * 通过入库分拣规则名称和编号检验规则是否存在
-     * 
+     *
      * @author mingwei.xie
      * @param whInBoundRule
      * @return
@@ -96,7 +96,7 @@ public interface WhInBoundRuleDao extends BaseDao<WhInBoundRule, Long> {
 
     /**
      * 根据id查找入库分拣规则
-     * 
+     *
      * @author mingwei.xie
      * @param id
      * @param ouId
@@ -107,7 +107,7 @@ public interface WhInBoundRuleDao extends BaseDao<WhInBoundRule, Long> {
 
     /**
      * 根据待分拣的商品获取分拣条件值
-     * 
+     *
      * @author mingwei.xie
      * @param inventoryId
      * @param ouId
@@ -118,7 +118,7 @@ public interface WhInBoundRuleDao extends BaseDao<WhInBoundRule, Long> {
 
     /**
      * 根据待分拣的占用码获取分拣条件值列表
-     * 
+     *
      * @author mingwei.xie
      * @param containerCode
      * @param ouId
@@ -131,10 +131,21 @@ public interface WhInBoundRuleDao extends BaseDao<WhInBoundRule, Long> {
 
     /**
      * 根据OUID查询所有可用入库分拣规则 并且按照priority排序
-     * 
+     *
      * @param ouid
      * @return
      */
     List<WhInBoundRuleCommand> findInboundRuleByOuId(Long ouid);
+
+    /**
+     * 测试分拣规则sql
+     *
+     * @author mingwei.xie
+     * @param inventoryId
+     * @param containerId
+     * @param ruleSql
+     * @return
+     */
+    Long executeSortingRuleSql(@Param("inventoryId") Long inventoryId, @Param("containerId") Long containerId, @Param("ruleSql") String ruleSql, @Param("ouId") Long ouId);
 
 }
