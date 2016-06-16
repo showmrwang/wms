@@ -156,7 +156,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                 throw new BusinessException(ErrorCodes.ASN_CACHE_ERROR);
             }
         } catch (Exception e) {
-            cacheManager.removeMapValue(CacheKeyConstant.CACHE_ASN, occupationId.toString());
+            // cacheManager.removeMapValue(CacheKeyConstant.CACHE_ASN, occupationId.toString());
             throw e;
         }
 
