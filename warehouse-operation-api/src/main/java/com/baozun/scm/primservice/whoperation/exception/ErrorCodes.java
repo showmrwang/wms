@@ -281,6 +281,12 @@ public class ErrorCodes {
     public static final int RCVD_INV_INFO_NOT_OCCUPY_ERROR = 40005;
     /** 上架失败，收货库存信息没有推荐库位！ */
     public static final int RCVD_INV_NOT_HAS_LOCATION_ERROR = 40006;
+    /** 容器号[{0}]状态无法上架！*/
+    public static final int CONTAINER_STATUS_ERROR_UNABLE_PUTAWAY = 40007;
+    /** 容器号[{0}]是内部容器，请扫描外部容器号*/
+    public static final int CONTAINER_IS_INSIDE_ERROR_UNABLE_PUTAWAY = 40008;
+    /** 收货库存信息没有内部容器异常！ */
+    public static final int RCVD_INV_NOT_HAS_INSIDE_CONTAINER_ERROR = 40009;
     // 40001-50000 lichuan
 
     // 50001-60000 hubin

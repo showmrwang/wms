@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.WhSkuDao">
+	<resultMap id="WhSkuResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.WhSku">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whSkuColumnsExt">
+	    <![CDATA[
+	        	id as id,
+	        	code as code,
+	        	ext_code as extCode,
+	        	bar_code as barCode,
+	        	name as name,
+	        	en_name as enName,
+	        	description as description,
+	        	color as color,
+	        	length as length,
+	        	width as width,
+	        	height as height,
+	        	length_uom as lengthUom,
+	        	volume as volume,
+	        	volume_uom as volumeUom,
+	        	weight as weight,
+	        	weight_uom as weightUom,
+	        	brand_id as brandId,
+	        	customer_id as customerId,
+	        	ou_id as ouId,
+	        	create_time as createTime,
+	        	created_id as createdId,
+	        	last_modify_time as lastModifyTime,
+	        	modified_id as modifiedId,
+	        	style as style,
+	        	size as size,
+	        	lifecycle as lifecycle
+	    ]]>
+	</sql>
+	
+	<sql id="whSkuDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+	       
+		       <if test="code!=null and code!=''">
+					and code = #{code}
+				</if>
+	       
+	       
+		       <if test="extCode!=null and extCode!=''">
+					and ext_code = #{extCode}
+				</if>
+	       
+	       
+		       <if test="barCode!=null and barCode!=''">
+					and bar_code = #{barCode}
+				</if>
+	       
+	       
+		       <if test="name!=null and name!=''">
+					and name = #{name}
+				</if>
+	       
+	       
+		       <if test="enName!=null and enName!=''">
+					and en_name = #{enName}
+				</if>
+	       
+	       
+		       <if test="description!=null and description!=''">
+					and description = #{description}
+				</if>
+	       
+	       
+		       <if test="color!=null and color!=''">
+					and color = #{color}
+				</if>
+	       
+				<if test="length!=null">
+					and length = #{length}
+				</if>
+	       
+				<if test="width!=null">
+					and width = #{width}
+				</if>
+	       
+				<if test="height!=null">
+					and height = #{height}
+				</if>
+	       
+	       
+		       <if test="lengthUom!=null and lengthUom!=''">
+					and length_uom = #{lengthUom}
+				</if>
+	       
+				<if test="volume!=null">
+					and volume = #{volume}
+				</if>
+	       
+	       
+		       <if test="volumeUom!=null and volumeUom!=''">
+					and volume_uom = #{volumeUom}
+				</if>
+	       
+				<if test="weight!=null">
+					and weight = #{weight}
+				</if>
+	       
+	       
+		       <if test="weightUom!=null and weightUom!=''">
+					and weight_uom = #{weightUom}
+				</if>
+	       
+				<if test="brandId!=null">
+					and brand_id = #{brandId}
+				</if>
+	       
+				<if test="customerId!=null">
+					and customer_id = #{customerId}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+	       
+				<if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="createdId!=null">
+					and created_id = #{createdId}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="modifiedId!=null">
+					and modified_id = #{modifiedId}
+				</if>
+	       
+	       
+		       <if test="style!=null and style!=''">
+					and style = #{style}
+				</if>
+	       
+	       
+		       <if test="size!=null and size!=''">
+					and size = #{size}
+				</if>
+	       
+				<if test="lifecycle!=null">
+					and lifecycle = #{lifecycle}
+				</if>
+		</where>
+	</sql>
+	
+
+</mapper>

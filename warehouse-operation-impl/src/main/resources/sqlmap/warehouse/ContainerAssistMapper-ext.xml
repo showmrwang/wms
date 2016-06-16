@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerAssistDao">
+	<resultMap id="ContainerAssistResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.ContainerAssist">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="containerAssistColumnsExt">
+	    <![CDATA[
+	        	id as id,
+	        	container_id as containerId,
+	        	sys_weight as sysWeight,
+	        	sys_volume as sysVolume,
+	        	sys_length as sysLength,
+	        	sys_width as sysWidth,
+	        	sys_height as sysHeight,
+	        	ou_id as ouId,
+	        	create_time as createTime,
+	        	last_modify_time as lastModifyTime,
+	        	operator_id as operatorId,
+	        	lifecycle as lifecycle,
+	        	CARTON_QTY as cartonQty,
+	        	SKU_CATEGORY as skuCategory,
+	        	SKU_QTY as skuQty,
+	        	STORE_QTY as storeQty
+	    ]]>
+	</sql>
+	
+	<sql id="containerAssistDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+				<if test="containerId!=null">
+					and container_id = #{containerId}
+				</if>
+	       
+				<if test="sysWeight!=null">
+					and sys_weight = #{sysWeight}
+				</if>
+	       
+				<if test="sysVolume!=null">
+					and sys_volume = #{sysVolume}
+				</if>
+	       
+				<if test="sysLength!=null">
+					and sys_length = #{sysLength}
+				</if>
+	       
+				<if test="sysWidth!=null">
+					and sys_width = #{sysWidth}
+				</if>
+	       
+				<if test="sysHeight!=null">
+					and sys_height = #{sysHeight}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+	       
+				<if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="operatorId!=null">
+					and operator_id = #{operatorId}
+				</if>
+	       
+				<if test="lifecycle!=null">
+					and lifecycle = #{lifecycle}
+				</if>
+	       
+				<if test="cartonQty!=null">
+					and CARTON_QTY = #{cartonQty}
+				</if>
+	       
+				<if test="skuCategory!=null">
+					and SKU_CATEGORY = #{skuCategory}
+				</if>
+	       
+				<if test="skuQty!=null">
+					and SKU_QTY = #{skuQty}
+				</if>
+	       
+				<if test="storeQty!=null">
+					and STORE_QTY = #{storeQty}
+				</if>
+		</where>
+	</sql>
+	
+</mapper>

@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.UomDao">
+	<resultMap id="UomResultExt"
+		type="com.baozun.scm.primservice.whoperation.model.warehouse.Uom">
+	</resultMap>
+
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="uomColumnsExt">
+	    <![CDATA[
+	        	id as id,
+	        	uom_code as uomCode,
+	        	uom_name as uomName,
+	        	conversion_rate as conversionRate,
+	        	group_code as groupCode,
+	        	sort_no as sortNo,
+	        	create_time as createTime,
+	        	last_modify_time as lastModifyTime,
+	        	default_display_uom_flag as defaultDisplayUomFlag,
+	        	operator_id as operatorId,
+	        	lifecycle as lifecycle
+	    ]]>
+	</sql>
+
+	<sql id="uomDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+
+			<if test="id!=null">
+				and id = #{id}
+			</if>
+
+
+			<if test="uomCode!=null and uomCode!=''">
+				and uom_code = #{uomCode}
+			</if>
+
+
+			<if test="uomName!=null and uomName!=''">
+				and uom_name = #{uomName}
+			</if>
+
+			<if test="conversionRate!=null">
+				and conversion_rate = #{conversionRate}
+			</if>
+
+
+			<if test="groupCode!=null and groupCode!=''">
+				and group_code = #{groupCode}
+			</if>
+
+			<if test="sortNo!=null">
+				and sort_no = #{sortNo}
+			</if>
+
+			<if test="createTime!=null">
+				and create_time = #{createTime}
+			</if>
+
+			<if test="lastModifyTime!=null">
+				and last_modify_time = #{lastModifyTime}
+			</if>
+
+			<if test="defaultDisplayUomFlag!=null">
+				and default_display_uom_flag = #{defaultDisplayUomFlag}
+			</if>
+
+			<if test="operatorId!=null">
+				and operator_id = #{operatorId}
+			</if>
+
+			<if test="lifecycle!=null">
+				and lifecycle = #{lifecycle}
+			</if>
+		</where>
+	</sql>
+
+	<resultMap id="uomCommand"
+		type="com.baozun.scm.primservice.whoperation.command.warehouse.UomCommand">
+	</resultMap>
+
+	<sql id="uomColumnsExtBean">
+	    <![CDATA[
+	    		u.id as id,
+	        	u.uom_code as uomCode,
+	        	u.uom_name as uomName,
+	        	u.conversion_rate as conversionRate,
+	        	u.group_code as groupCode,
+	        	u.sort_no as sortNo,
+	        	u.create_time as createTime,
+	        	u.last_modify_time as lastModifyTime,
+	        	u.default_display_uom_flag as defaultDisplayUomFlag,
+	        	u.operator_id as operatorId,
+	        	u.lifecycle as lifecycle
+	    ]]>
+	</sql>
+
+	<select id="findUomByGroupCode" resultMap="uomCommand">
+		SELECT
+		<include refid="uomColumnsExtBean"></include>
+		from t_wh_uom u where u.group_code = #{groupCode}
+		<if test="lifecycle!=null and lifecycle!=''">
+			and u.lifecycle = #{lifecycle}
+		</if>
+	</select>
+
+	<update id="bacthUpdate" parameterType="map">
+
+		update t_wh_uom set
+		lifecycle=#{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER},
+		operator_id=#{operatorId,javaType=java.lang.Long,jdbcType=BIGINT},
+		last_modify_time=now()
+		<where>
+			<if test="ids!=null and ids.size()!=0">
+				id in
+				<foreach item="item" index="index" collection="ids" open="("
+					separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+		</where>
+	</update>
+
+	<sql id="uomDynamicWhereLikeExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+			and group_code!='UOM_TYPE'
+			<if test="uomCode!=null and uomCode!=''">
+				and uom_code like #{uomCode}
+			</if>
+
+
+			<if test="uomName!=null and uomName!=''">
+				and uom_name like #{uomName}
+			</if>
+
+			<if test="conversionRate!=null">
+				and conversion_rate = #{conversionRate}
+			</if>
+
+
+			<if test="groupCode!=null and groupCode!=''">
+				and group_code = #{groupCode}
+			</if>
+
+			<if test="lifecycle!=null">
+				and lifecycle = #{lifecycle}
+			</if>
+			<if test="name0!=null and name0!=''">
+				and uom_name like #{name0}
+			</if>
+			<if test="code0!=null and code0!=''">
+				and uom_code like #{code0}
+			</if>
+			<if test="type0!=null and type0!=''">
+				and group_code like #{type0}
+			</if>
+		</where>
+	</sql>
+
+	<select id="findListByQueryMapWithPageExt" resultMap="uomCommand">
+		SELECT
+		<include refid="uomColumnsExt"></include>
+		from t_wh_uom
+		<include refid="uomDynamicWhereLikeExt" />
+
+	</select>
+
+	<select id="findListCountByQueryMapExt" resultType="long">
+		select count(*)
+		from t_wh_uom
+		<include refid="uomDynamicWhereLikeExt" />
+	</select>
+
+	<update id="updateByVersion"
+		parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Uom">
+		    <![CDATA[
+		        UPDATE t_wh_uom SET
+			        uom_code = #{uomCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        uom_name = #{uomName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        conversion_rate = #{conversionRate,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+			        group_code = #{groupCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        sort_no = #{sortNo,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+			        last_modify_time = #{updateDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+			        default_display_uom_flag = #{defaultDisplayUomFlag,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        
+			        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
+		        WHERE 
+			        id = #{id} 
+			        
+			        and last_modify_time	=  #{lastModifyTime}    
+		    ]]>
+	</update>
+</mapper>

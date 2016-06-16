@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.WhSkuWhmgmtDao">
+	<resultMap id="WhSkuWhmgmtResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.WhSkuWhmgmt">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whSkuWhmgmtColumnsExt">
+	    <![CDATA[
+	        	id as id,
+	        	sku_id as skuId,
+	        	occupancy_zero_picking_qty as occupancyZeroPickingQty,
+	        	occupancy_box_picking_qty as occupancyBoxPickingQty,
+	        	picking_rate as pickingRate,
+	        	packing_rate as packingRate,
+	        	abnormal_rate as abnormalRate,
+	        	two_level_type as twoLevelType,
+	        	outbound_ctn_type as outboundCtnType,
+	        	shelf_rule as shelfRule,
+	        	allocate_rule as allocateRule,
+	        	code_wheel_norm as codeWheelNorm,
+	        	last_check_time as lastCheckTime,
+	        	type_of_goods as typeOfGoods,
+	        	ou_id as ouId,
+	        	create_time as createTime,
+	        	last_modify_time as lastModifyTime,
+	        	operator_id as operatorId
+	    ]]>
+	</sql>
+	
+	<sql id="whSkuWhmgmtDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+				<if test="skuId!=null">
+					and sku_id = #{skuId}
+				</if>
+	       
+				<if test="occupancyZeroPickingQty!=null">
+					and occupancy_zero_picking_qty = #{occupancyZeroPickingQty}
+				</if>
+	       
+				<if test="occupancyBoxPickingQty!=null">
+					and occupancy_box_picking_qty = #{occupancyBoxPickingQty}
+				</if>
+	       
+				<if test="pickingRate!=null">
+					and picking_rate = #{pickingRate}
+				</if>
+	       
+				<if test="packingRate!=null">
+					and packing_rate = #{packingRate}
+				</if>
+	       
+				<if test="abnormalRate!=null">
+					and abnormal_rate = #{abnormalRate}
+				</if>
+	       
+	      		 <if test="typeOfGoods!=null">
+					and typeOfGoods = #{typeOfGoods}
+				</if>
+	       
+	       
+				<if test="twoLevelType!=null">
+					and two_level_type = #{twoLevelType}
+				</if>
+	       
+				<if test="outboundCtnType!=null">
+					and outbound_ctn_type = #{outboundCtnType}
+				</if>
+	       
+				<if test="shelfRule!=null">
+					and shelf_rule = #{shelfRule}
+				</if>
+	       
+				<if test="allocateRule!=null">
+					and allocate_rule = #{allocateRule}
+				</if>
+	       
+	       
+		       <if test="codeWheelNorm!=null and codeWheelNorm!=''">
+					and code_wheel_norm = #{codeWheelNorm}
+				</if>
+	       
+				<if test="lastCheckTime!=null">
+					and last_check_time = #{lastCheckTime}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+	       
+				<if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="operatorId!=null">
+					and operator_id = #{operatorId}
+				</if>
+		</where>
+	</sql>
+	
+</mapper>

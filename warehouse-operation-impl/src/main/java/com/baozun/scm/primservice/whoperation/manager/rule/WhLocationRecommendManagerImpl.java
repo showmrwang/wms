@@ -54,8 +54,8 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.Area;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container2ndCategory;
 import com.baozun.scm.primservice.whoperation.model.warehouse.LocationTemplet;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionPutAway;
-import com.baozun.scm.primservice.whoperation.util.formula.SimpleCubeCalculator;
-import com.baozun.scm.primservice.whoperation.util.formula.SimpleWeightCalculator;
+import com.baozun.scm.primservice.whoperation.util.formula.SimpleStandardCubeCalculator;
+import com.baozun.scm.primservice.whoperation.util.formula.SimpleStandardWeightCalculator;
 
 /**
  * @author lichuan
@@ -220,11 +220,11 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                         String locWeightUom = locTemplet.getWeightUom();
                         if (WhLocationRecommendType.EMPTY_LOCATION.equals(locationRecommendRule)) {
                             // 计算体积
-                            SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, locLenUom, 0.8);
+                            SimpleStandardCubeCalculator calc = new SimpleStandardCubeCalculator(locLength, locWidth, locHeight, locLenUom, 0.8);
                             calc.initStuffCube(length, width, height, lenUom);
                             boolean cubageAvailable = calc.calculateAvailable();
                             // 计算重量
-                            SimpleWeightCalculator weightCal = new SimpleWeightCalculator(locWeight, locWeightUom);
+                            SimpleStandardWeightCalculator weightCal = new SimpleStandardWeightCalculator(locWeight, locWeightUom);
                             weightCal.initStuffWeight(weight, weightUom);
                             boolean weightAvailable = weightCal.calculateAvailable();
                             if (cubageAvailable & weightAvailable) {
@@ -242,11 +242,11 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                             break;
                         } else if (WhLocationRecommendType.ONE_LOCATION_ONLY.equals(locationRecommendRule)) {
                             // 计算体积
-                            SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, locLenUom, 0.8);
+                            SimpleStandardCubeCalculator calc = new SimpleStandardCubeCalculator(locLength, locWidth, locHeight, locLenUom, 0.8);
                             calc.initStuffCube(length, width, height, lenUom);
                             boolean cubageAvailable = calc.calculateAvailable();
                             // 计算重量
-                            SimpleWeightCalculator weightCal = new SimpleWeightCalculator(locWeight, locWeightUom);
+                            SimpleStandardWeightCalculator weightCal = new SimpleStandardWeightCalculator(locWeight, locWeightUom);
                             weightCal.initStuffWeight(weight, weightUom);
                             boolean weightAvailable = weightCal.calculateAvailable();
                             if (cubageAvailable & weightAvailable) {

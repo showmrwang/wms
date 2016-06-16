@@ -16,6 +16,7 @@
  */
 package com.baozun.scm.primservice.whoperation.manager.pda.inbound.putaway;
 
+import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.ScanContainerResultCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.LocationCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 
@@ -36,6 +37,20 @@ public interface PdaPutawayManager extends BaseManager {
      * @return
      */
     LocationCommand sysGuideScanPallet(String containerCode, Long funcId, Integer putawayPatternDetailType, Long ouId, Long userId, String logId);
+    
+    /**
+     * 系统指导上架扫容器
+     * @author lichuan
+     * @param containerCode
+     * @param funcId
+     * @param putawayPatternType
+     * @param putawayPatternDetailType
+     * @param ouId
+     * @param userId
+     * @param logId
+     * @return
+     */
+    ScanContainerResultCommand sysGuideScanContainer(String containerCode, Long funcId, Integer putawayPatternDetailType, Long ouId, Long userId, String logId);
     
     /**
      * 系统指导执行上架

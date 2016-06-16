@@ -1,0 +1,422 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.WhSkuWhmgmtDao">
+	<resultMap id="WhSkuWhmgmtResult"
+		type="com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuWhmgmtCommand">
+	</resultMap>
+
+	<resultMap id="WhSkuWhmgmt"
+		type="com.baozun.scm.primservice.whoperation.model.warehouse.WhSkuWhmgmt">
+	</resultMap>
+
+	<resultMap id="WhSkuWhmgmtPaginationResult" type="lark.common.dao.Pagination">
+		<collection property="items" javaType="ArrayList"
+			resultMap="WhSkuWhmgmtResult" />
+	</resultMap>
+
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whSkuWhmgmtColumns">
+	    <![CDATA[
+	        	id as id,
+	        	sku_id as skuId,
+	        	occupancy_zero_picking_qty as occupancyZeroPickingQty,
+	        	occupancy_box_picking_qty as occupancyBoxPickingQty,
+	        	picking_rate as pickingRate,
+	        	packing_rate as packingRate,
+	        	abnormal_rate as abnormalRate,
+	        	two_level_type as twoLevelType,
+	        	outbound_ctn_type as outboundCtnType,
+	        	shelf_rule as shelfRule,
+	        	allocate_rule as allocateRule,
+	        	code_wheel_norm as codeWheelNorm,
+	        	type_of_goods as typeOfGoods,
+	        	last_check_time as lastCheckTime,
+	        	ou_id as ouId,
+	        	create_time as createTime,
+	        	last_modify_time as lastModifyTime, 
+	        	operator_id as operatorId
+	    ]]>
+	</sql>
+	<sql id="whSkuWhmgmtConditionWhereExt">
+		<where>
+			<if test="likeEqualsMap != null">
+				<foreach collection="likeEqualsMap" index="key" item="value"
+					separator="and" open=" and ">
+					${key} like CONCAT('%',#{value},'%')
+				</foreach>
+			</if>
+			<if test="equalsMap != null">
+				<foreach collection="equalsMap" index="key" item="value"
+					separator="and" open=" and ">
+					${key} = #{value}
+				</foreach>
+			</if>
+			<if test="notEqualsMap != null">
+				<foreach collection="notEqualsMap" index="key" item="value"
+					separator="and" open=" and ">
+					${key} != #{value}
+				</foreach>
+			</if>
+			<if test="greateMap != null">
+				<foreach collection="greateMap" index="key" item="value"
+					separator="and" open=" and ">
+					${key} &gt; #{value}
+				</foreach>
+			</if>
+			<if test="greateEqualsMap != null">
+				<foreach collection="greateEqualsMap" index="key" item="value"
+					separator="and" open=" and ">
+					${key} &gt;= #{value}
+				</foreach>
+			</if>
+			<if test="lessMap != null">
+				<foreach collection="lessMap" index="key" item="value"
+					separator="and" open=" and ">
+					${key} &lt; #{value}
+				</foreach>
+			</if>
+			<if test="lessEqualsMap != null">
+				<foreach collection="lessEqualsMap" index="key" item="value"
+					separator="and" open=" and ">
+					${key} &lt;= #{value}
+				</foreach>
+			</if>
+			<if test="nullMap != null">
+				<foreach collection="nullMap" index="key" item="value"
+					separator="and" open=" and ">
+					${key} is null
+				</foreach>
+			</if>
+			<if test="notNullMap != null">
+				<foreach collection="notNullMap" index="key" item="value"
+					separator="and" open=" and ">
+					${key} is not null
+				</foreach>
+			</if>
+			<if test="inMap != null">
+				<foreach collection="inMap" index="key" item="value"
+					separator="and" open=" and (" close=")">
+					<foreach collection="value" item="itemin" index="index"
+						separator="or">
+						${key} = #{itemin}
+					</foreach>
+				</foreach>
+			</if>
+			<if test="notInMap != null">
+				<foreach collection="notInMap" index="key" item="value"
+					separator="and" open=" and (" close=")">
+					<foreach collection="value" item="itemin" index="index"
+						separator="and">
+						${key} != #{itemin}
+					</foreach>
+				</foreach>
+			</if>
+		</where>
+		<if test="sortBy != null">
+			<foreach collection="sortBy" item="item" separator=","
+				open=" order by ">
+				${item.field} ${item.type}
+			</foreach>
+		</if>
+	</sql>
+
+	<!-- 如果有自增字段 -->
+
+	<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+	<insert id="insert"
+		parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhSkuWhmgmt"
+		useGeneratedKeys="true" keyProperty="id" flushCache="true">
+		    <![CDATA[
+		        INSERT INTO
+		        t_wh_sku_whmgmt (
+		        	sku_id ,
+		        	occupancy_zero_picking_qty ,
+		        	occupancy_box_picking_qty ,
+		        	picking_rate ,
+		        	packing_rate ,
+		        	abnormal_rate ,
+		        	two_level_type ,
+		        	outbound_ctn_type ,
+		        	shelf_rule ,
+		        	allocate_rule ,
+		        	code_wheel_norm ,
+		        	type_of_goods,
+		        	last_check_time ,
+		        	ou_id ,
+		        	create_time ,
+		        	last_modify_time ,
+		        	operator_id 
+		        ) VALUES (
+		        	#{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{occupancyZeroPickingQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{occupancyBoxPickingQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{pickingRate,javaType=Long,jdbcType=DECIMAL} ,
+		        	#{packingRate,javaType=Long,jdbcType=DECIMAL} ,
+		        	#{abnormalRate,javaType=Long,jdbcType=DECIMAL} ,
+		        	#{twoLevelType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{outboundCtnType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{shelfRule,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{allocateRule,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{codeWheelNorm,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{typeOfGoods,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{lastCheckTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        )
+		    ]]>
+
+	</insert>
+
+	<update id="update"
+		parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhSkuWhmgmt">
+	    <![CDATA[
+	        UPDATE t_wh_sku_whmgmt SET
+		        sku_id = #{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        occupancy_zero_picking_qty = #{occupancyZeroPickingQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        occupancy_box_picking_qty = #{occupancyBoxPickingQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        picking_rate = #{pickingRate,javaType=Long,jdbcType=DECIMAL} ,
+		        packing_rate = #{packingRate,javaType=Long,jdbcType=DECIMAL} ,
+		        abnormal_rate = #{abnormalRate,javaType=Long,jdbcType=DECIMAL} ,
+		        two_level_type = #{twoLevelType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        outbound_ctn_type = #{outboundCtnType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        shelf_rule = #{shelfRule,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        allocate_rule = #{allocateRule,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        code_wheel_norm = #{codeWheelNorm,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		         type_of_goods = #{typeOfGoods,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		         
+		        last_check_time = #{lastCheckTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} 
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+	</update>
+	<update id="batchUpdate">
+		UPDATE t_wh_sku_whmgmt SET
+		<foreach collection="batchUpdateMap" index="key" item="value"
+			separator=",">
+			${key} = #{value}
+		</foreach>
+		<include refid="whSkuWhmgmtConditionWhereExt" />
+	</update>
+
+	<delete id="delete" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from t_wh_sku_whmgmt where
+		        id = #{id} 
+	    ]]>
+	</delete>
+
+	<delete id="deleteByIds" parameterType="list">
+
+		delete from t_wh_sku_whmgmt
+		where id in
+		<foreach item="item" index="index" collection="list" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+
+	</delete>
+	<update id="batchDelete">
+		delete from t_wh_sku_whmgmt
+		<include refid="whSkuWhmgmtConditionWhereExt" />
+	</update>
+
+	<select id="findById" parameterType="java.lang.Long" resultMap="WhSkuWhmgmtResult"
+		flushCache="false">
+		select
+		<include refid="whSkuWhmgmtColumns" />
+		    <![CDATA[
+			    from t_wh_sku_whmgmt 
+		        where 
+		        id = #{id} 
+		    ]]>
+	</select>
+	<select id="getByIds" parameterType="list" resultMap="WhSkuWhmgmtResult"
+		flushCache="false">
+		select
+		<include refid="whSkuWhmgmtColumns" />
+		from t_wh_sku_whmgmt
+		where id in
+		<foreach item="item" index="index" collection="list" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+	<sql id="whSkuWhmgmtDynamicWhere">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+
+			<if test="id!=null">
+				and id = #{id}
+			</if>
+
+			<if test="skuId!=null">
+				and sku_id = #{skuId}
+			</if>
+
+			<if test="occupancyZeroPickingQty!=null">
+				and occupancy_zero_picking_qty =
+				#{occupancyZeroPickingQty}
+			</if>
+
+			<if test="occupancyBoxPickingQty!=null">
+				and occupancy_box_picking_qty = #{occupancyBoxPickingQty}
+			</if>
+
+			<if test="pickingRate!=null">
+				and picking_rate = #{pickingRate}
+			</if>
+
+			<if test="packingRate!=null">
+				and packing_rate = #{packingRate}
+			</if>
+
+			<if test="abnormalRate!=null">
+				and abnormal_rate = #{abnormalRate}
+			</if>
+
+			<if test="twoLevelType!=null">
+				and two_level_type = #{twoLevelType}
+			</if>
+
+			<if test="outboundCtnType!=null">
+				and outbound_ctn_type = #{outboundCtnType}
+			</if>
+
+			<if test="shelfRule!=null">
+				and shelf_rule = #{shelfRule}
+			</if>
+
+			<if test="allocateRule!=null">
+				and allocate_rule = #{allocateRule}
+			</if>
+
+
+			<if test="codeWheelNorm!=null and codeWheelNorm!=''">
+				and code_wheel_norm = #{codeWheelNorm}
+			</if>
+
+
+			<if test="typeOfGoods!=null and typeOfGoods!=''">
+				and type_of_goods = #{typeOfGoods}
+			</if>
+
+
+			<if test="lastCheckTime!=null">
+				and last_check_time = #{lastCheckTime}
+			</if>
+
+			<if test="ouId!=null">
+				and ou_id = #{ouId}
+			</if>
+
+			<if test="createTime!=null">
+				and create_time = #{createTime}
+			</if>
+
+			<if test="lastModifyTime!=null">
+				and last_modify_time = #{lastModifyTime}
+			</if>
+
+			<if test="operatorId!=null">
+				and operator_id = #{operatorId}
+			</if>
+		</where>
+	</sql>
+
+
+	<select id="getCount" resultType="long">
+		select count(*) from
+		t_wh_sku_whmgmt
+	</select>
+	<select id="findListCountByQueryMap" resultType="long">
+		select count(*) from t_wh_sku_whmgmt
+		<include refid="whSkuWhmgmtDynamicWhere" />
+	</select>
+
+	<select id="findListCountByParam" resultType="long">
+		select count(*) from t_wh_sku_whmgmt
+		<include refid="whSkuWhmgmtDynamicWhere" />
+	</select>
+
+	<!-- 分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页 因为分页查询将传 offset,pageSize,lastRows 
+		三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现 -->
+	<select id="findListByQueryMapWithPage" resultMap="WhSkuWhmgmtResult">
+		select
+		<include refid="whSkuWhmgmtColumns" />
+		from t_wh_sku_whmgmt
+		<include refid="whSkuWhmgmtDynamicWhere" />
+
+	</select>
+
+	<select id="findListByQueryMap" resultMap="WhSkuWhmgmtResult">
+		select
+		<include refid="whSkuWhmgmtColumns" />
+		from t_wh_sku_whmgmt
+		<include refid="whSkuWhmgmtDynamicWhere" />
+
+	</select>
+
+	<select id="query" resultMap="WhSkuWhmgmtResult">
+		select
+		<include refid="whSkuWhmgmtColumns" />
+		from t_wh_sku_whmgmt
+		<include refid="whSkuWhmgmtConditionWhereExt" />
+	</select>
+
+	<select id="queryCount" resultType="long">
+		select count(*) from t_wh_sku_whmgmt
+		<include refid="whSkuWhmgmtConditionWhereExt" />
+	</select>
+
+
+	<select id="findWhmgmtByParams" resultMap="WhSkuWhmgmtResult">
+		select
+		<include refid="whSkuWhmgmtColumns" />
+		from t_wh_sku_whmgmt
+		<include refid="whSkuWhmgmtDynamicWhere" />
+	</select>
+
+
+
+	<update id="updateByIdAndOuId"
+		parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhSkuWhmgmt">
+		UPDATE t_wh_sku_whmgmt SET
+		occupancy_zero_picking_qty =
+		#{occupancyZeroPickingQty},
+		occupancy_box_picking_qty =
+		#{occupancyBoxPickingQty},
+		picking_rate = #{pickingRate},
+		packing_rate =
+		#{packingRate},
+		abnormal_rate = #{abnormalRate},
+		two_level_type =
+		#{twoLevelType},
+		outbound_ctn_type = #{outboundCtnType},
+		shelf_rule =
+		#{shelfRule},
+		allocate_rule = #{allocateRule},
+		code_wheel_norm =
+		#{codeWheelNorm},
+		last_check_time = #{lastCheckTime} ,
+		type_of_goods =
+		#{typeOfGoods}
+		WHERE sku_id = #{skuId}
+		and ou_id = #{ouId}
+	</update>
+
+	<select id="queryCountBySkuIdAndOuId" resultType="long">
+		select count(*)
+		from t_wh_sku_whmgmt WHERE sku_id = #{skuId} and ou_id = #{ouId}
+	</select>
+
+</mapper>

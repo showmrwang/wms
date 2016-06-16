@@ -1,0 +1,471 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.WhSkuDao">
+	<resultMap id="WhSkuResult"
+		type="com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand">
+	</resultMap>
+	<resultMap id="WhSkuPaginationResult" type="lark.common.dao.Pagination">
+		<collection property="items" javaType="ArrayList"
+			resultMap="WhSkuResult" />
+	</resultMap>
+
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whSkuColumns">
+	    <![CDATA[
+	        	sku.id as id,
+                sku.code as code,
+                sku.bar_code as barCode,
+                sku.name as name,
+                sku.en_name as enName,
+                sku.description as description,
+                sku.color as color,
+                sku.length as length,
+                sku.width as width,
+                sku.height as height,
+                sku.volume as volume,
+                sku.weight as weight,
+                sku.brand_id as brandId,
+                sku.customer_id as customerId,
+                sku.create_time as createTime,
+                sku.created_id as createdId,
+                sku.last_modify_time as lastModifyTime,
+                sku.modified_id as modifiedId, 
+                sku.style as style,
+                sku.size as size,
+                sku.lifecycle as lifecycle,
+                sku.ext_code as extCode,
+                sku.length_uom as lengthUom,
+                sku.volume_uom as volumeUom,
+                sku.weight_uom as weightUom,
+                brand.name as brandName,
+                customer.customer_name as customerName
+	    ]]>
+	</sql>
+	<sql id="whSkuConditionWhereExt">
+		<where>
+			<if test="likeEqualsMap != null">
+				<foreach collection="likeEqualsMap" index="key" item="value"
+					separator="and" open=" and ">
+					${key} like CONCAT('%',#{value},'%')
+				</foreach>
+			</if>
+			<if test="equalsMap != null">
+				<foreach collection="equalsMap" index="key" item="value"
+					separator="and" open=" and ">
+					${key} = #{value}
+				</foreach>
+			</if>
+			<if test="notEqualsMap != null">
+				<foreach collection="notEqualsMap" index="key" item="value"
+					separator="and" open=" and ">
+					${key} != #{value}
+				</foreach>
+			</if>
+			<if test="greateMap != null">
+				<foreach collection="greateMap" index="key" item="value"
+					separator="and" open=" and ">
+					${key} &gt; #{value}
+				</foreach>
+			</if>
+			<if test="greateEqualsMap != null">
+				<foreach collection="greateEqualsMap" index="key" item="value"
+					separator="and" open=" and ">
+					${key} &gt;= #{value}
+				</foreach>
+			</if>
+			<if test="lessMap != null">
+				<foreach collection="lessMap" index="key" item="value"
+					separator="and" open=" and ">
+					${key} &lt; #{value}
+				</foreach>
+			</if>
+			<if test="lessEqualsMap != null">
+				<foreach collection="lessEqualsMap" index="key" item="value"
+					separator="and" open=" and ">
+					${key} &lt;= #{value}
+				</foreach>
+			</if>
+			<if test="nullMap != null">
+				<foreach collection="nullMap" index="key" item="value"
+					separator="and" open=" and ">
+					${key} is null
+				</foreach>
+			</if>
+			<if test="notNullMap != null">
+				<foreach collection="notNullMap" index="key" item="value"
+					separator="and" open=" and ">
+					${key} is not null
+				</foreach>
+			</if>
+			<if test="inMap != null">
+				<foreach collection="inMap" index="key" item="value"
+					separator="and" open=" and (" close=")">
+					<foreach collection="value" item="itemin" index="index"
+						separator="or">
+						${key} = #{itemin}
+					</foreach>
+				</foreach>
+			</if>
+			<if test="notInMap != null">
+				<foreach collection="notInMap" index="key" item="value"
+					separator="and" open=" and (" close=")">
+					<foreach collection="value" item="itemin" index="index"
+						separator="and">
+						${key} != #{itemin}
+					</foreach>
+				</foreach>
+			</if>
+		</where>
+		<if test="sortBy != null">
+			<foreach collection="sortBy" item="item" separator=","
+				open=" order by ">
+				${item.field} ${item.type}
+			</foreach>
+		</if>
+	</sql>
+
+	<!-- 如果有自增字段 -->
+
+	<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+	<insert id="insert"
+		parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhSku"
+		useGeneratedKeys="true" keyProperty="id" flushCache="true">
+		    <![CDATA[
+		        INSERT INTO
+		        t_wh_sku (
+		        	code ,
+		        	ext_code ,
+		        	bar_code ,
+		        	name ,
+		        	en_name ,
+		        	description ,
+		        	color ,
+		        	length ,
+		        	width ,
+		        	height ,
+		        	length_uom ,
+		        	volume ,
+		        	volume_uom ,
+		        	weight ,
+		        	weight_uom ,
+		        	brand_id ,
+		        	customer_id ,
+		        	ou_id ,
+		        	create_time ,
+		        	created_id ,
+		        	last_modify_time ,
+		        	modified_id ,
+		        	style ,
+		        	size ,
+		        	lifecycle 
+		        ) VALUES (
+		        	#{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{extCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{barCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{name,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{enName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{description,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{color,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{length,javaType=Double,jdbcType=DECIMAL} ,
+		        	#{width,javaType=Double,jdbcType=DECIMAL} ,
+		        	#{height,javaType=Double,jdbcType=DECIMAL} ,
+		        	#{lengthUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{volume,javaType=Double,jdbcType=DECIMAL} ,
+		        	#{volumeUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{weight,javaType=Double,jdbcType=DECIMAL} ,
+		        	#{weightUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{typeOfGoods,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{brandId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{customerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{style,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{size,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
+		        )
+		    ]]>
+
+	</insert>
+
+	<update id="update"
+		parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhSku">
+	    <![CDATA[
+	        UPDATE t_wh_sku SET
+		        code = #{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        ext_code = #{extCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        bar_code = #{barCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        name = #{name,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        en_name = #{enName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        description = #{description,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        color = #{color,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        length = #{length,javaType=Double,jdbcType=DECIMAL} ,
+		        width = #{width,javaType=Double,jdbcType=DECIMAL} ,
+		        height = #{height,javaType=Double,jdbcType=DECIMAL} ,
+		        length_uom = #{lengthUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        volume = #{volume,javaType=Double,jdbcType=DECIMAL} ,
+		        volume_uom = #{volumeUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        weight = #{weight,javaType=Double,jdbcType=DECIMAL} ,
+		        weight_uom = #{weightUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        brand_id = #{brandId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        customer_id = #{customerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        style = #{style,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        size = #{size,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+	</update>
+	<update id="batchUpdate">
+		UPDATE t_wh_sku SET
+		<foreach collection="batchUpdateMap" index="key" item="value"
+			separator=",">
+			${key} = #{value}
+		</foreach>
+		<include refid="whSkuConditionWhereExt" />
+	</update>
+
+	<delete id="delete" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from t_wh_sku where
+		        id = #{id} 
+	    ]]>
+	</delete>
+
+	<delete id="deleteByIds" parameterType="list">
+
+		delete from t_wh_sku
+		where id in
+		<foreach item="item" index="index" collection="list" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+
+	</delete>
+	<update id="batchDelete">
+		delete from t_wh_sku
+		<include refid="whSkuConditionWhereExt" />
+	</update>
+
+	<select id="findById" parameterType="java.lang.Long" resultMap="WhSkuResult"
+		flushCache="false">
+		select
+		<include refid="whSkuColumns" />
+		    <![CDATA[
+			    from t_wh_sku 
+		        where 
+		        id = #{id} 
+		    ]]>
+	</select>
+	<select id="getByIds" parameterType="list" resultMap="WhSkuResult"
+		flushCache="false">
+		select
+		<include refid="whSkuColumns" />
+		from t_wh_sku
+		where id in
+		<foreach item="item" index="index" collection="list" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+	<sql id="whSkuDynamicWhere">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+
+			<if test="id!=null">
+				and sku.id = #{id}
+			</if>
+
+
+			<if test="code!=null and code!=''">
+				and sku.code like #{code}
+			</if>
+
+
+			<if test="barCode!=null and barCode!=''">
+				and sku.bar_code like #{barCode}
+			</if>
+
+
+			<if test="name!=null and name!=''">
+				and sku.name like #{name}
+			</if>
+
+
+			<if test="enName!=null and enName!=''">
+				and sku.en_name like #{enName}
+			</if>
+
+
+			<if test="description!=null and description!=''">
+				and sku.description like #{description}
+			</if>
+
+
+			<if test="color!=null and color!=''">
+				and sku.color like #{color}
+			</if>
+
+			<if test="length!=null">
+				and sku.length = #{length}
+			</if>
+
+			<if test="width!=null">
+				and sku.width = #{width}
+			</if>
+
+			<if test="height!=null">
+				and sku.height = #{height}
+			</if>
+
+			<if test="volume!=null">
+				and sku.volume = #{volume}
+			</if>
+
+			<if test="weight!=null">
+				and sku.weight = #{weight}
+			</if>
+
+			<if test="brandId!=null">
+				and sku.brand_id = #{brandId}
+			</if>
+
+			<if test="customerId!=null">
+				and sku.customer_id = #{customerId}
+			</if>
+
+			<if test="createTime!=null">
+				and sku.create_time = #{createTime}
+			</if>
+
+			<if test="createdId!=null">
+				and sku.created_id = #{createdId}
+			</if>
+
+			<if test="lastModifyTime!=null">
+				and sku.last_modify_time = #{lastModifyTime}
+			</if>
+
+			<if test="modifiedId!=null">
+				and sku.modified_id = #{modifiedId}
+			</if>
+
+			<if test="style!=null and style!=''">
+				and sku.style = #{style}
+			</if>
+
+			<if test="size!=null and size!=''">
+				and sku.size = #{size}
+			</if>
+
+			<if test="lifecycle!=null">
+				and sku.lifecycle = #{lifecycle}
+			</if>
+
+			<if test="extCode!=null and extCode!=''">
+				and sku.ext_code like #{extCode}
+			</if>
+
+			<if test="lengthUom!=null and lengthUom!=''">
+				and sku.length_uom = #{lengthUom}
+			</if>
+
+			<if test="volumeUom!=null and volumeUom!=''">
+				and sku.volume_uom = #{volumeUom}
+			</if>
+
+			<if test="weightUom!=null and weightUom!=''">
+				and sku.weight_uom = #{weightUom}
+			</if>
+			<if test="ouId!=null">
+				and sku.ou_id = #{ouId}
+			</if>
+
+		</where>
+	</sql>
+
+
+	<select id="getCount" resultType="long">
+		select count(*) from t_wh_sku
+	</select>
+	<select id="findListCountByQueryMap" resultType="long">
+		select count(*) from t_wh_sku
+		<include refid="whSkuDynamicWhere" />
+	</select>
+
+	<select id="findListCountByParam" resultType="long">
+		select count(*) from t_wh_sku
+		<include refid="whSkuDynamicWhere" />
+	</select>
+
+	<!-- 分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页 因为分页查询将传 offset,pageSize,lastRows 
+		三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现 -->
+	<select id="findListByQueryMapWithPage" resultMap="WhSkuResult">
+		select
+		<include refid="whSkuColumns" />
+		from t_wh_sku
+		<include refid="whSkuDynamicWhere" />
+
+	</select>
+
+
+
+	<select id="findwhSkuById" resultMap="WhSkuResult">
+		select
+		<include refid="whSkuColumns" />
+		from t_wh_sku
+		<include refid="whSkuDynamicWhere" />
+
+	</select>
+
+	<select id="findwhSkuList" resultMap="WhSkuResult">
+		select
+		<include refid="whSkuColumns" />
+		from t_wh_sku sku
+		left join t_bi_brand brand on sku.brand_id = brand.id
+		left join
+		t_bi_customer customer on sku.customer_id = customer.id
+		<include refid="whSkuDynamicWhere" />
+	</select>
+
+
+	<select id="findwhSkuListCount" resultType="long">
+		select count(*) from t_wh_sku sku
+		<include refid="whSkuDynamicWhere" />
+	</select>
+
+
+	<select id="findWhSkuByParams" resultMap="WhSkuResult">
+		select
+		<include refid="whSkuColumns" />
+		from t_wh_sku sku
+		left join t_bi_brand brand on sku.brand_id = brand.id
+		left join
+		t_bi_customer customer on sku.customer_id = customer.id
+		where sku.ou_id = #{ouId}
+		and sku.id = #{id}
+	</select>
+	
+	<select id="findWhSkuByIdExt" resultMap="WhSkuResult">
+		select
+		<include refid="whSkuColumns" />
+		from t_wh_sku sku
+		left join t_bi_brand brand on sku.brand_id = brand.id
+		left join
+		t_bi_customer customer on sku.customer_id = customer.id
+		where sku.ou_id = #{ouId}
+		and sku.id = #{id}
+	</select>
+
+</mapper>
