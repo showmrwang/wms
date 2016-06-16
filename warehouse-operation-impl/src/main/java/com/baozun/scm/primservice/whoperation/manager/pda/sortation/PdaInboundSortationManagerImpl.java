@@ -882,7 +882,7 @@ public class PdaInboundSortationManagerImpl extends BaseManagerImpl implements P
         ContainerCommand container = containerDao.getContainerByCode(pdaInboundSortationCommand.getTargetContainerCode(), pdaInboundSortationCommand.getOuId());
         if (null == container) {
             // 容器信息不存在
-            log.warn("pdaScanContainer container is null logid: " + pdaInboundSortationCommand.getLogId());
+            log.warn("pdaContainerFull container is null logid: " + pdaInboundSortationCommand.getLogId());
             throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
         }
         // 删除t_wh_container_assign表中对应容器数据
