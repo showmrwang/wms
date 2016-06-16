@@ -302,7 +302,7 @@ public class PdaInboundSortationManagerImpl extends BaseManagerImpl implements P
         List<WhSkuInventoryCommand> skuInvList = whSkuInventoryDao.findWhSkuInventoryBySkuIdAndContainerid(pdaInboundSortationCommand.getOuId(), pdaInboundSortationCommand.getSkuId(), pdaInboundSortationCommand.getContainerId(), null);
         if (skuInvList.size() == 0) {
             // 此原始容器号已完成全部商品分拣
-            pdaInboundSortationCommand.setIsDone(true);
+            pdaInboundSortationCommand.setIsSortationDone(true);
         }
         log.info(this.getClass().getSimpleName() + ".pdaScanNewContainer method end! logid: " + pdaInboundSortationCommand.getLogId());
         return pdaInboundSortationCommand;
@@ -587,41 +587,6 @@ public class PdaInboundSortationManagerImpl extends BaseManagerImpl implements P
         return b;
     }
 
-    /***
-     * 修改对应库存明细 把outer_container_id 设置为null
-     * 
-     * @param skuInv
-     * @param pdaInboundSortation
-     * @return
-     * @throws Exception
-     */
-    // private boolean updateSkuInvOuterContainerIsNull(WhSkuInventoryCommand skuInv,
-    // PdaInboundSortationCommand pdaInboundSortation) throws Exception {
-    // boolean b = false;
-    // for (int i = 1; i <= 5; i++) {
-    // // 每次尝试更新5次 避免并发情况
-    // // 延迟200毫秒
-    // Thread.sleep(200);
-    // WhSkuInventory inv = whSkuInventoryDao.findWhSkuInventoryById(skuInv.getId(),
-    // skuInv.getOuId());
-    // inv.setOuterContainerId(null);
-    // int count = whSkuInventoryDao.saveOrUpdateByVersion(inv);
-    // if (count == 0) {
-    // log.warn("pdaScanNewContainer updateSkuInvOuterContainerIsNull error count= " + i +
-    // " WhSkuInventoryId: " + inv.getId() + " logid: " + pdaInboundSortation.getLogId());
-    // continue;
-    // } else {
-    // // 修改成功 跳出循环 返回true
-    // // 插入操作日志
-    // insertGlobalLog(Constants.GLOBAL_LOG_UPDATE, inv, skuInv.getOuId(),
-    // pdaInboundSortation.getUserId(), null, null);
-    // b = true;
-    // break;
-    // }
-    // }
-    // return b;
-    // }
-
     /**
      * 封装多条库存属性 返回页面进行筛选
      */
@@ -901,5 +866,27 @@ public class PdaInboundSortationManagerImpl extends BaseManagerImpl implements P
         }
         log.info(this.getClass().getSimpleName() + ".scanNewContainerView method end! logid: " + pdaInboundSortationCommand.getLogId());
         return pdaInboundSortationCommand;
+    }
+
+    /**
+     * 容器已满操作 删除对应容器在t_wh_container_assign中数据
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void pdaContainerFull(PdaInboundSortationCommand pdaInboundSortationCommand) {
+        log.info(this.getClass().getSimpleName() + ".pdaContainerFull method begin! logid: " + pdaInboundSortationCommand.getLogId());
+        if (log.isDebugEnabled()) {
+            log.debug("params:[PdaInboundSortationCommand:{}]", pdaInboundSortationCommand.toString());
+        }
+        // 查询对应容器数据
+        ContainerCommand container = containerDao.getContainerByCode(pdaInboundSortationCommand.getTargetContainerCode(), pdaInboundSortationCommand.getOuId());
+        if (null == container) {
+            // 容器信息不存在
+            log.warn("pdaScanContainer container is null logid: " + pdaInboundSortationCommand.getLogId());
+            throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+        }
+        // 删除t_wh_container_assign表中对应容器数据
+        whContainerAssignDao.deleteWhContainerAssign(pdaInboundSortationCommand.getOuId(), container.getId());
+        log.info(this.getClass().getSimpleName() + ".pdaContainerFull method end! logid: " + pdaInboundSortationCommand.getLogId());
     }
 }

@@ -68,11 +68,8 @@ public class PdaInboundSortationCommand extends BaseCommand {
     /** 是否装满 */
     private Boolean isFull;
 
-    /** 是否入库分拣完成 */
-    private Boolean isSortationDone;
-
     /** 此原始容器号所有完成所有商品分拣 */
-    private Boolean isDone = false;
+    private Boolean isSortationDone = false;
 
     /** 生产日期 String */
     private String mfgDateStr;
@@ -337,14 +334,6 @@ public class PdaInboundSortationCommand extends BaseCommand {
 
     public void setIsFull(Boolean isFull) {
         this.isFull = isFull;
-    }
-
-    public Boolean getIsDone() {
-        return isDone;
-    }
-
-    public void setIsDone(Boolean isDone) {
-        this.isDone = isDone;
     }
 
     public String getCountryOfOrigin() {
