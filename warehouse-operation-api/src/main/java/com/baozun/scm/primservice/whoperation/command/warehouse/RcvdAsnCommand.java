@@ -10,10 +10,28 @@ public class RcvdAsnCommand extends BaseCommand {
 
     private String asnId;
     private String asnLineId;
+    private String skuId;
     private String qtyPlanned;
     private String qtyRcvd;
     private String qtyOverCharge;
     private String qtyToRcvd;
+    private String skuCount;
+
+    public String getSkuCount() {
+        return skuCount;
+    }
+
+    public void setSkuCount(String skuCount) {
+        this.skuCount = skuCount;
+    }
+
+    public String getSkuId() {
+        return skuId;
+    }
+
+    public void setSkuId(String skuId) {
+        this.skuId = skuId;
+    }
 
     public String getQtyRcvd() {
         return qtyRcvd;
