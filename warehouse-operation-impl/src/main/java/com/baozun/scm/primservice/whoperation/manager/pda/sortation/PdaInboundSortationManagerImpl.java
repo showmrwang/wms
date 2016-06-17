@@ -101,7 +101,7 @@ public class PdaInboundSortationManagerImpl extends BaseManagerImpl implements P
             throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
         }
         // 验证容器Lifecycle是否有效
-        if (container.getLifecycle().equals(BaseModel.LIFECYCLE_DISABLE)) {
+        if (container.getLifecycle().equals(ContainerStatus.CONTAINER_LIFECYCLE_FORBIDDEN)) {
             // 容器Lifecycle无效
             log.warn("pdaScanContainer container lifecycle error =" + container.getLifecycle() + " logid: " + pdaInboundSortationCommand.getLogId());
             throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_LIFRCYCLE_ERROR);
@@ -374,15 +374,15 @@ public class PdaInboundSortationManagerImpl extends BaseManagerImpl implements P
         WhContainerAssign wca = whContainerAssignDao.findWhContainerAssignByUuidOrUserId(pdaInboundSortation.getOuId(), uuidCa, pdaInboundSortation.getRuleId(), pdaInboundSortation.getUserId());
         if (null == wca) {
             // 如果为空 插入新数据
-            WhContainerAssign ca = new WhContainerAssign();
-            ca.setOuId(pdaInboundSortation.getOuId());
-            ca.setRuleId(pdaInboundSortation.getRuleId());
-            ca.setUuid(uuidCa);
-            ca.setUserId(pdaInboundSortation.getUserId());
-            ca.setContainerId(pdaInboundSortation.getNewContainerId());
-            whContainerAssignDao.insert(ca);
+            wca = new WhContainerAssign();
+            wca.setOuId(pdaInboundSortation.getOuId());
+            wca.setRuleId(pdaInboundSortation.getRuleId());
+            wca.setUuid(uuidCa);
+            wca.setUserId(pdaInboundSortation.getUserId());
+            wca.setContainerId(pdaInboundSortation.getNewContainerId());
+            whContainerAssignDao.insert(wca);
             // 保存操作日志
-            insertGlobalLog(Constants.GLOBAL_LOG_INSERT, ca, ca.getOuId(), ca.getUserId(), null, null);
+            insertGlobalLog(Constants.GLOBAL_LOG_INSERT, wca,wca.getOuId(), wca.getUserId(), null, null);
         }
         // 如果是caselevel箱信息的话 需要把此箱改成非caselevel
         // 查询对应ASN单信息
