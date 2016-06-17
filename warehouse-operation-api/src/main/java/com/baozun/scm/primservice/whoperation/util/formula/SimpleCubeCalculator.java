@@ -33,6 +33,7 @@ public class SimpleCubeCalculator {
     public static final String COORDS_Y = "y";
     public static final String COORDS_Z = "z";
     public static final String COORDS_ALL = "";
+    public static final String SYS_UOM = "1";
     private boolean isInit = false;
     private boolean isInitStuffCube = false;
     private Double _x;
@@ -59,8 +60,13 @@ public class SimpleCubeCalculator {
     private Double rawZ;
     private String _uom;
     private String uom;
-    private static final String sysUom = "1";
+    private static final String sysUom = SYS_UOM;
     private static final Double sysUomValue = 1.0;
+    @SuppressWarnings("unused")
+    private static String defaultUom = sysUom;
+    @SuppressWarnings("unused")
+    private static Double defaultUomConversion = 1.0;
+    private static Double defaultUomValue = sysUomValue;
     private static String[] uomCache = new String[] {sysUom};
     private static int uomSize = 1;
     private static Map<String, Double> uomConversion = new HashMap<String, Double>();
@@ -77,7 +83,7 @@ public class SimpleCubeCalculator {
     @SuppressWarnings("unused")
     private boolean isAvailable;
 
-    private void preInit(Map<String, Double> uomConversionRate) {
+    private void preInit(Map<String, Double> uomConversionRate, String dUom) {
         uomConversion.put(sysUom, sysUomValue);
         if (null != uomConversionRate) {
             uomConversion.putAll(uomConversionRate);
@@ -86,6 +92,10 @@ public class SimpleCubeCalculator {
             uomCache = new String[] {};
             uoms.toArray(uomCache);
         }
+        isUomSupport(dUom);
+        defaultUom = dUom;
+        defaultUomConversion = uomConversion.get(dUom);
+        defaultUomValue = (uomConversion.get(dUom) * sysUomValue);
         uomSize = uomCache.length;
         isCubageAvailable = false;
         isLengthAvailable = false;
@@ -94,11 +104,15 @@ public class SimpleCubeCalculator {
     }
 
     public SimpleCubeCalculator(Map<String, Double> uomConversionRate) {
-        preInit(uomConversion);
+        preInit(uomConversionRate, sysUom);
     }
 
-    public SimpleCubeCalculator(Double _x, Double _y, Double _z, String _uom, Double availability, Map<String, Double> uomConversionRate) {
-        preInit(uomConversionRate);
+    public SimpleCubeCalculator(Map<String, Double> uomConversionRate, String defaultUom) {
+        preInit(uomConversionRate, defaultUom);
+    }
+
+    public SimpleCubeCalculator(Double _x, Double _y, Double _z, String _uom, Double availability, Map<String, Double> uomConversionRate, String defaultUom) {
+        preInit(uomConversionRate, defaultUom);
         init(_x, _y, _z, _uom, availability);
         setInit(true);
     }
@@ -124,7 +138,11 @@ public class SimpleCubeCalculator {
         return getCubage();
     }
 
-    public Double calculateStuffCubage(Double actualX, Double actualY, Double actualZ, String actualUom) {
+    public Double calculateStuffVolume(Double actualX, Double actualY, Double actualZ) {
+        return calculateStuffVolume(actualX, actualY, actualZ, sysUom);
+    }
+
+    public Double calculateStuffVolume(Double actualX, Double actualY, Double actualZ, String actualUom) {
         Double cubage = 0.0;
         Double ax = uomConversion(actualUom, actualX);
         Double ay = uomConversion(actualUom, actualY);
@@ -132,8 +150,12 @@ public class SimpleCubeCalculator {
         cubage += cubageFormula(ax, ay, az);
         return cubage;
     }
-    
-    public Double accumulationStuffCubage(Double actualX, Double actualY, Double actualZ, String actualUom) {
+
+    public Double accumulationStuffVolume(Double actualX, Double actualY, Double actualZ) {
+        return accumulationStuffVolume(actualX, actualY, actualZ, sysUom);
+    }
+
+    public Double accumulationStuffVolume(Double actualX, Double actualY, Double actualZ, String actualUom) {
         if (false == isInitStuffCube()) {
             initStuffCube(0.0, 0.0, 0.0, sysUom);
         }
@@ -226,7 +248,7 @@ public class SimpleCubeCalculator {
         actualUom = actualUom.trim();
         isUomSupport(actualUom);
         Double conversionRate = uomConversion.get(actualUom);
-        ret = (ret * sysUomValue * conversionRate);
+        ret = (ret * (conversionRate * sysUomValue) / defaultUomValue);
         return ret;
     }
 

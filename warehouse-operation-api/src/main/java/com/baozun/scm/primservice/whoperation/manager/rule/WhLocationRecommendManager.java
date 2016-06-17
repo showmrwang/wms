@@ -18,6 +18,7 @@ package com.baozun.scm.primservice.whoperation.manager.rule;
 
 import java.util.List;
 
+import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.LocationRecommendResultCommand;
 import com.baozun.scm.primservice.whoperation.command.rule.RuleAfferCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.LocationCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ShelveRecommendRuleCommand;
@@ -30,5 +31,7 @@ import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 public interface WhLocationRecommendManager extends BaseManager {
     
     List<LocationCommand> recommendLocationByShevleRule(RuleAfferCommand ruleAffer, List<ShelveRecommendRuleCommand> ruleList, int putawayPatternDetail, String logId);
+    
+    List<LocationRecommendResultCommand> recommendLocationByShevleRule(RuleAfferCommand ruleAffer, int putawayPatternDetail, List<ShelveRecommendRuleCommand> ruleList, String logId);
 
 }

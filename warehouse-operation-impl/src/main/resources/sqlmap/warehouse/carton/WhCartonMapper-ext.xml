@@ -320,4 +320,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    and sku_id = #{skuid} 
 		    and container_id = #{containerid}
  </select>
+ 
+ <select id="findWhCaselevelCartonById" resultMap="WhCartonResultExt">
+    	select <include refid="whCartonColumnsExt" />
+	    from t_wh_carton 
+	    where id = #{id} and ou_id = #{ouid}
+	    and is_caselevel = 1
+ </select>
 </mapper>

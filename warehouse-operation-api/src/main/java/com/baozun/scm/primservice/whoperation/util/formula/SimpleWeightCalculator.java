@@ -27,6 +27,7 @@ public class SimpleWeightCalculator {
      * 简单重量计算器
      */
 
+    public static final String SYS_UOM = "1";
     private boolean isInit = false;
     private boolean isInitStuffWeight = false;
     private Double _weight;
@@ -35,8 +36,13 @@ public class SimpleWeightCalculator {
     private Double rawWeight;
     private String _uom;
     private String uom;
-    private static final String sysUom = "1";
+    private static final String sysUom = SYS_UOM;
     private static final Double sysUomValue = 1.0;
+    @SuppressWarnings("unused")
+    private static String defaultUom = sysUom;
+    @SuppressWarnings("unused")
+    private static Double defaultUomConversion = 1.0;
+    private static Double defaultUomValue = 1.0;
     private static String[] uomCache = new String[] {sysUom};
     private static int uomSize = 1;
     private static Map<String, Double> uomConversion = new HashMap<String, Double>();
@@ -44,7 +50,7 @@ public class SimpleWeightCalculator {
     private Double availableWeight;
     private boolean isWeightAvailable;
 
-    private void preInit(Map<String, Double> uomConversionRate) {
+    private void preInit(Map<String, Double> uomConversionRate, String dUom) {
         uomConversion.put(sysUom, sysUomValue);
         if (null != uomConversionRate) {
             uomConversion.putAll(uomConversionRate);
@@ -53,16 +59,23 @@ public class SimpleWeightCalculator {
             uomCache = new String[] {};
             uoms.toArray(uomCache);
         }
+        defaultUom = dUom;
+        defaultUomConversion = uomConversion.get(dUom);
+        defaultUomValue = (uomConversion.get(dUom) * sysUomValue);
         uomSize = uomCache.length;
         setAvailability(1.0);
     }
 
     public SimpleWeightCalculator(Map<String, Double> uomConversionRate) {
-        preInit(uomConversionRate);
+        preInit(uomConversionRate, sysUom);
     }
 
-    public SimpleWeightCalculator(Double _weight, String _uom, Map<String, Double> uomConversionRate) {
-        preInit(uomConversionRate);
+    public SimpleWeightCalculator(Map<String, Double> uomConversionRate, String defaultUom) {
+        preInit(uomConversionRate, defaultUom);
+    }
+
+    public SimpleWeightCalculator(Double _weight, String _uom, Map<String, Double> uomConversionRate, String defaultUom) {
+        preInit(uomConversionRate, defaultUom);
         setInit(true);
         init(_weight, _uom);
     }
@@ -88,11 +101,19 @@ public class SimpleWeightCalculator {
         return getWeight();
     }
 
+    public Double calculateStuffWeight(Double actualWeight) {
+        return calculateStuffWeight(actualWeight, sysUom);
+    }
+
     public Double calculateStuffWeight(Double actualWeight, String actualUom) {
         Double rw = uomConversion(actualUom, actualWeight);
         return rw;
     }
-    
+
+    public Double accumulationStuffWeight(Double actualWeight) {
+        return accumulationStuffWeight(actualWeight, sysUom);
+    }
+
     public Double accumulationStuffWeight(Double actualWeight, String actualUom) {
         if (false == isInitStuffWeight()) {
             initStuffWeight(0.0, sysUom);
@@ -180,7 +201,7 @@ public class SimpleWeightCalculator {
         actualUom = actualUom.trim();
         isUomSupport(actualUom);
         Double conversionRate = uomConversion.get(actualUom);
-        ret = (ret * sysUomValue * conversionRate);
+        ret = (ret * (conversionRate * sysUomValue) / defaultUomValue);
         return ret;
     }
 
