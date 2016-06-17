@@ -43,9 +43,11 @@ public class RcvdContainerCacheCommand implements Serializable {
     public void setUserId(Long userId) {
         this.userId = userId;
     }
+
     public Long getInsideContainerId() {
         return insideContainerId;
     }
+
     public void setInsideContainerId(Long insideContainerId) {
         this.insideContainerId = insideContainerId;
     }
@@ -65,51 +67,67 @@ public class RcvdContainerCacheCommand implements Serializable {
     public void setSkuId(String skuId) {
         SkuId = skuId;
     }
+
     public String getInvType() {
         return invType;
     }
+
     public void setInvType(String invType) {
         this.invType = invType;
     }
+
     public String getBatchNumber() {
         return batchNumber;
     }
+
     public void setBatchNumber(String batchNumber) {
         this.batchNumber = batchNumber;
     }
+
     public String getCountryOfOrigin() {
         return countryOfOrigin;
     }
+
     public void setCountryOfOrigin(String countryOfOrigin) {
         this.countryOfOrigin = countryOfOrigin;
     }
+
     public String getInvAttr1() {
         return invAttr1;
     }
+
     public void setInvAttr1(String invAttr1) {
         this.invAttr1 = invAttr1;
     }
+
     public String getInvAttr2() {
         return invAttr2;
     }
+
     public void setInvAttr2(String invAttr2) {
         this.invAttr2 = invAttr2;
     }
+
     public String getInvAttr3() {
         return invAttr3;
     }
+
     public void setInvAttr3(String invAttr3) {
         this.invAttr3 = invAttr3;
     }
+
     public String getInvAttr4() {
         return invAttr4;
     }
+
     public void setInvAttr4(String invAttr4) {
         this.invAttr4 = invAttr4;
     }
+
     public String getInvAttr5() {
         return invAttr5;
     }
+
     public void setInvAttr5(String invAttr5) {
         this.invAttr5 = invAttr5;
     }
@@ -129,6 +147,6 @@ public class RcvdContainerCacheCommand implements Serializable {
     public void setExpDate(String expDate) {
         this.expDate = expDate;
     }
-    
+
     
 }
