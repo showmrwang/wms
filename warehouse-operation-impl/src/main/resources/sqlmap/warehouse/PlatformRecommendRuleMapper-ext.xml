@@ -16,8 +16,8 @@
     <sql id="platformRecommendRuleColumnsExt">
         <![CDATA[
                 id as id,
-                platform_recommend_rule_name as platformRecommendRuleName,
-                platform_recommend_rule_code as platformRecommendRuleCode,
+                rule_name as ruleName,
+                rule_code as ruleCode,
                 rule as rule,
                 rule_sql as ruleSql,
                 ou_id as ouId,
@@ -40,13 +40,13 @@
             </if>
 
 
-            <if test="platformRecommendRuleName!=null and platformRecommendRuleName!=''">
-                and platform_recommend_rule_name = #{platformRecommendRuleName}
+            <if test="ruleName!=null and ruleName!=''">
+                and rule_name = #{ruleName}
             </if>
 
 
-            <if test="platformRecommendRuleCode!=null and platformRecommendRuleCode!=''">
-                and platform_recommend_rule_code = #{platformRecommendRuleCode}
+            <if test="ruleCode!=null and ruleCode!=''">
+                and rule_code = #{ruleCode}
             </if>
 
 
@@ -97,8 +97,8 @@
     <sql id="platformRecommendRuleCommandColumnsExt">
         <![CDATA[
             prr.id as id,
-            prr.platform_recommend_rule_name as platformRecommendRuleName,
-            prr.platform_recommend_rule_code as platformRecommendRuleCode,
+            prr.rule_name as ruleName,
+            prr.rule_code as ruleCode,
             prr.rule as rule,
             prr.rule_sql as ruleSql,
             prr.ou_id as ouId,
@@ -121,20 +121,20 @@
             </if>
 
 
-            <if test="platformRecommendRuleName!=null and platformRecommendRuleName!=''">
-                and prr.platform_recommend_rule_name like #{platformRecommendRuleName}
+            <if test="ruleName!=null and ruleName!=''">
+                and prr.rule_name like #{ruleName}
             </if>
 
-            <if test="platformRecommendRuleNameByCriteriasData!=null and platformRecommendRuleNameByCriteriasData!=''">
-                and prr.platform_recommend_rule_name like #{platformRecommendRuleNameByCriteriasData}
+            <if test="ruleNameByCriteriasData!=null and ruleNameByCriteriasData!=''">
+                and prr.rule_name like #{ruleNameByCriteriasData}
             </if>
 
-            <if test="platformRecommendRuleCode!=null and platformRecommendRuleCode!=''">
-                and platform_recommend_rule_code like #{platformRecommendRuleCode}
+            <if test="ruleCode!=null and ruleCode!=''">
+                and rule_code like #{ruleCode}
             </if>
 
-            <if test="platformRecommendRuleCodeByCriteriasData!=null and platformRecommendRuleCodeByCriteriasData!=''">
-                and prr.platform_recommend_rule_code like #{platformRecommendRuleCodeByCriteriasData}
+            <if test="ruleCodeByCriteriasData!=null and ruleCodeByCriteriasData!=''">
+                and prr.rule_code like #{ruleCodeByCriteriasData}
             </if>
 
 
@@ -213,8 +213,8 @@
     <resultMap id="ruleCommandGlobalAttribute"
                type="com.baozun.scm.primservice.whoperation.command.warehouse.PlatformRecommendRuleCommand">
         <result property="id" column="prr_id"/>
-        <result property="platformRecommendRuleName" column="prr_rule_name"/>
-        <result property="platformRecommendRuleCode" column="prr_rule_code"/>
+        <result property="ruleName" column="prr_rule_name"/>
+        <result property="ruleCode" column="prr_rule_code"/>
         <result property="rule" column="prr_rule"/>
         <result property="ruleSql" column="prr_rule_sql"/>
         <result property="ouId" column="prr_ou_id"/>
@@ -272,8 +272,8 @@
         <![CDATA[
             select
                 prr.id as prr_id,
-                prr.platform_recommend_rule_name as prr_rule_name,
-                prr.platform_recommend_rule_code as prr_rule_code,
+                prr.rule_name as prr_rule_name,
+                prr.rule_code as prr_rule_code,
                 prr.rule as prr_rule,
                 prr.rule_sql as prr_rule_sql,
                 prr.ou_id as prr_ou_id,
@@ -336,16 +336,16 @@
             <if test="id!=null">
                 and prr.id != #{id}
             </if>
-            <if test="(platformRecommendRuleCode!=null and platformRecommendRuleCode!='')
-                    or (platformRecommendRuleName!=null and platformRecommendRuleName!='')
+            <if test="(ruleCode!=null and ruleCode!='')
+                    or (ruleName!=null and ruleName!='')
                     or (priority!=null and priority!='')">
                 and (
                 <trim prefix="" prefixOverrides="or">
-                    <if test="platformRecommendRuleCode!=null and platformRecommendRuleCode!=''">
-                        or prr.platform_recommend_rule_code = #{platformRecommendRuleCode}
+                    <if test="ruleCode!=null and ruleCode!=''">
+                        or prr.rule_code = #{ruleCode}
                     </if>
-                    <if test="platformRecommendRuleName!=null and platformRecommendRuleName!=''">
-                        or prr.platform_recommend_rule_name = #{platformRecommendRuleName}
+                    <if test="ruleName!=null and ruleName!=''">
+                        or prr.rule_name = #{ruleName}
                     </if>
                     <if test="priority!=null and priority!=''">
                         or prr.priority = #{priority}
@@ -377,8 +377,8 @@
             parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.PlatformRecommendRule">
         <![CDATA[
             UPDATE t_wh_platform_recommend_rule SET
-                platform_recommend_rule_name = #{platformRecommendRuleName,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                platform_recommend_rule_code = #{platformRecommendRuleCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                rule_name = #{ruleName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                rule_code = #{ruleCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
                 rule = #{rule,javaType=java.lang.String,jdbcType=VARCHAR} ,
                 rule_sql = #{ruleSql,javaType=java.lang.String,jdbcType=LONGVARCHAR} ,
                 priority = #{priority,javaType=java.lang.Integer,jdbcType=INTEGER} ,

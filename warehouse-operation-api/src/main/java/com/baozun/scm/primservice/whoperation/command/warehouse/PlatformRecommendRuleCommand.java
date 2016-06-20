@@ -27,9 +27,9 @@ public class PlatformRecommendRuleCommand extends BaseCommand {
     /** 主键ID */
     private Long id;
     /** 月台推荐规则 */
-    private String platformRecommendRuleName;
+    private String ruleName;
     /** 月台推荐规则编码 */
-    private String platformRecommendRuleCode;
+    private String ruleCode;
     /** 规则描述 */
     private String rule;
     /** 规则sql */
@@ -65,20 +65,20 @@ public class PlatformRecommendRuleCommand extends BaseCommand {
         this.id = id;
     }
 
-    public String getPlatformRecommendRuleName() {
-        return platformRecommendRuleName;
+    public String getRuleName() {
+        return ruleName;
     }
 
-    public void setPlatformRecommendRuleName(String platformRecommendRuleName) {
-        this.platformRecommendRuleName = platformRecommendRuleName;
+    public void setRuleName(String ruleName) {
+        this.ruleName = ruleName;
     }
 
-    public String getPlatformRecommendRuleCode() {
-        return platformRecommendRuleCode;
+    public String getRuleCode() {
+        return ruleCode;
     }
 
-    public void setPlatformRecommendRuleCode(String platformRecommendRuleCode) {
-        this.platformRecommendRuleCode = platformRecommendRuleCode;
+    public void setRuleCode(String ruleCode) {
+        this.ruleCode = ruleCode;
     }
 
     public String getRule() {
