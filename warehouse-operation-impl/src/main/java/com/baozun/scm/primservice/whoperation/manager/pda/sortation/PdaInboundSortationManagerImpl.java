@@ -382,7 +382,7 @@ public class PdaInboundSortationManagerImpl extends BaseManagerImpl implements P
             wca.setContainerId(pdaInboundSortation.getNewContainerId());
             whContainerAssignDao.insert(wca);
             // 保存操作日志
-            insertGlobalLog(Constants.GLOBAL_LOG_INSERT, wca,wca.getOuId(), wca.getUserId(), null, null);
+            insertGlobalLog(Constants.GLOBAL_LOG_INSERT, wca, wca.getOuId(), wca.getUserId(), null, null);
         }
         // 如果是caselevel箱信息的话 需要把此箱改成非caselevel
         // 查询对应ASN单信息

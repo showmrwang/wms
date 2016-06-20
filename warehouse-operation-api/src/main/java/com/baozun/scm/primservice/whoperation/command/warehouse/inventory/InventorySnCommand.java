@@ -22,7 +22,6 @@ import com.baozun.scm.primservice.whoperation.command.BaseCommand;
  * @author larkark
  * 
  */
-@Deprecated
 public class InventorySnCommand extends BaseCommand {
 
 
