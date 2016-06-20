@@ -368,13 +368,13 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                             if (warehouseDefectType != null) {
                                 whAsnRcvdSnLog.setDefectType(warehouseDefectType.getName());
                             } else {
-                                whAsnRcvdSnLog.setDefectType(RcvdSn.getDefectTypeId().toString());
+                                // whAsnRcvdSnLog.setDefectType(RcvdSn.getDefectTypeId().toString());
                             }
                             WarehouseDefectReasons warehouseDefectReasons = this.generalRcvdManager.findWarehouseDefectReasonsByIdToShard(RcvdSn.getDefectReasonsId(), ouId);
                             if (warehouseDefectReasons != null) {
                                 whAsnRcvdSnLog.setDefectReasons(warehouseDefectReasons.getName());
                             } else {
-                                whAsnRcvdSnLog.setDefectReasons(RcvdSn.getDefectReasonsId().toString());
+                                // whAsnRcvdSnLog.setDefectReasons(RcvdSn.getDefectReasonsId().toString());
                             }
                         } else {
                             whAsnRcvdSnLog.setDefectType(storeDefectType.getName());
@@ -382,7 +382,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                             if (storeDefectReasons != null) {
                                 whAsnRcvdSnLog.setDefectReasons(storeDefectReasons.getName());
                             } else {
-                                whAsnRcvdSnLog.setDefectReasons(RcvdSn.getDefectReasonsId().toString());
+                                // whAsnRcvdSnLog.setDefectReasons(RcvdSn.getDefectReasonsId().toString());
                             }
                         }
                         saveSnLogList.add(whAsnRcvdSnLog);
@@ -488,7 +488,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
             }
             // 更新容器
             Container container = this.generalRcvdManager.findContainerByIdToShard(insideContainerId, ouId);
-            container.setStatus(ContainerStatus.CONTAINER_LIFECYCLE_USABLE);
+            container.setStatus(ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY);
             container.setOperatorId(userId);
             try {
 
@@ -1177,7 +1177,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
         ContainerCommand palletCommand = this.generalRcvdManager.findContainerByCode(command.getOuterContainerCode(), command.getOuId());
         if (null == palletCommand) {
             ContainerCommand saveContainer = new ContainerCommand();
-            saveContainer.setCode(command.getInsideContainerCode());
+            saveContainer.setCode(command.getOuterContainerCode());
             saveContainer.setOuId(command.getOuId());
             saveContainer.setOneLevelTypeValue(Constants.CONTAINER_TYPE_PALLET);
             saveContainer.setTwoLevelTypeValue(Constants.CONTAINER_TYPE_2ND_PALLET);
