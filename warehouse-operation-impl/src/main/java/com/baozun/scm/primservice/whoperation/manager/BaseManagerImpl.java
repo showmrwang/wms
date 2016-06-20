@@ -14,6 +14,8 @@
  */
 package com.baozun.scm.primservice.whoperation.manager;
 
+import java.util.Date;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +25,9 @@ import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.system.GlobalLogManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryLogManager;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
+import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryLog;
 import com.baozun.scm.primservice.whoperation.util.LogUtil;
 import com.baozun.scm.primservice.whoperation.util.ParamsUtil;
 
@@ -40,6 +44,8 @@ public abstract class BaseManagerImpl implements BaseManager {
     protected String logId = "";
     @Autowired
     private GlobalLogManager globalLogManager;
+    @Autowired
+    private WhSkuInventoryLogManager whSkuInventoryLogManager;
 
 
     /**
@@ -78,6 +84,39 @@ public abstract class BaseManagerImpl implements BaseManager {
         } else {
             globalLogManager.insertGlobalLog(gl, dataSource);
         }
+    }
+
+    /**
+     * 库存日志插入
+     * 
+     * @param skuInvId 变动的库存ID
+     * @param qty 调整数量
+     * @param oldQty 修改前库存数量
+     * @param isTabbInvTotal 在库存日志是否记录交易前后库存总数
+     * @param ouid 仓库组织ID
+     * @param userid 操作人ID
+     */
+    protected void insertSkuInventoryLog(Long skuInvId, Double qty, Double oldQty, Boolean isTabbInvTotal, Long ouid, Long userid) {
+        if (null == skuInvId) {
+            throw new BusinessException(ErrorCodes.PARAM_IS_NULL, "skuInvId");
+        }
+        // 通过库存ID封装库存日志对象
+        WhSkuInventoryLog log = whSkuInventoryLogManager.findInventoryLogBySkuInvId(skuInvId, ouid);
+        // 调整数量
+        log.setRevisionQty(qty);
+        log.setModifiedId(userid);
+        log.setModifyTime(new Date());
+        // 判断是否要计算库存修改前后数量
+        if (isTabbInvTotal) {
+            if (null == oldQty) {
+                log.setOldQty(0.0);
+                log.setNewQty(qty);
+            } else {
+                log.setOldQty(oldQty);
+                log.setNewQty(oldQty + qty);
+            }
+        }
+        whSkuInventoryLogManager.insertSkuInventoryLog(log);
     }
 
     /**

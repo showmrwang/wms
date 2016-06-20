@@ -128,6 +128,9 @@ public class PdaInboundSortationCommand extends BaseCommand {
     /** 用户分拣是否共享目标容器 */
     private Boolean isSortationContainerAssign;
 
+    /** 在库存日志是否记录交易前后库存总数 */
+    private Boolean isTabbInvTotal = false;
+
     public String getContainerCode() {
         return containerCode;
     }
@@ -470,6 +473,14 @@ public class PdaInboundSortationCommand extends BaseCommand {
 
     public void setIsSortationContainerAssign(Boolean isSortationContainerAssign) {
         this.isSortationContainerAssign = isSortationContainerAssign;
+    }
+
+    public Boolean getIsTabbInvTotal() {
+        return isTabbInvTotal;
+    }
+
+    public void setIsTabbInvTotal(Boolean isTabbInvTotal) {
+        this.isTabbInvTotal = isTabbInvTotal;
     }
 
 }

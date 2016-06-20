@@ -15,7 +15,14 @@
 package com.baozun.scm.primservice.whoperation.manager.warehouse.inventory;
 
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
+import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryLog;
 
 public interface WhSkuInventoryLogManager extends BaseManager {
+
+    void insertSkuInventoryLog(WhSkuInventoryLog skuInvLog);
+
+    WhSkuInventoryLog findInventoryLogBySkuInvId(Long skuInvId, Long ouid);
+
+    Double sumSkuInvOnHandQty(String uuid, Long ouid);
 
 }

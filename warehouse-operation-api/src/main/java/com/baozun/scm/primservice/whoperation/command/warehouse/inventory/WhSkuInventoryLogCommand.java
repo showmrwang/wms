@@ -45,11 +45,11 @@ public class WhSkuInventoryLogCommand extends BaseCommand {
     /** 占用单据号 */
     private String occupationCode;
     /** 调整数量 */
-    private Long revisionQty;
+    private Double revisionQty;
     /** 调整前数量 */
-    private Long oldQty;
+    private Double oldQty;
     /** 调整后数量 */
-    private Long newQty;
+    private Double newQty;
     /** 库存状态名称 */
     private String invStatus;
     /** 库存类型名称 */
@@ -151,27 +151,27 @@ public class WhSkuInventoryLogCommand extends BaseCommand {
         this.occupationCode = occupationCode;
     }
 
-    public Long getRevisionQty() {
+    public Double getRevisionQty() {
         return revisionQty;
     }
 
-    public void setRevisionQty(Long revisionQty) {
+    public void setRevisionQty(Double revisionQty) {
         this.revisionQty = revisionQty;
     }
 
-    public Long getOldQty() {
+    public Double getOldQty() {
         return oldQty;
     }
 
-    public void setOldQty(Long oldQty) {
+    public void setOldQty(Double oldQty) {
         this.oldQty = oldQty;
     }
 
-    public Long getNewQty() {
+    public Double getNewQty() {
         return newQty;
     }
 
-    public void setNewQty(Long newQty) {
+    public void setNewQty(Double newQty) {
         this.newQty = newQty;
     }
 

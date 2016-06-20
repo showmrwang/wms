@@ -36,6 +36,7 @@ import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.rule.RuleManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryLogManager;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 import com.baozun.scm.primservice.whoperation.model.sku.Sku;
@@ -77,6 +78,8 @@ public class PdaInboundSortationManagerImpl extends BaseManagerImpl implements P
     private WhCartonDao whCartonDao;
     @Autowired
     private WhAsnDao whAsnDao;
+    @Autowired
+    private WhSkuInventoryLogManager whSkuInventoryLogManager;
 
     /**
      * 扫描容器号 验证容器号
@@ -340,6 +343,16 @@ public class PdaInboundSortationManagerImpl extends BaseManagerImpl implements P
         newSkuInv.setInsideContainerId(pdaInboundSortation.getNewContainerId());
         String uuid = SkuInventoryUuid.invUuid(newSkuInv);
         newSkuInv.setUuid(uuid);
+        // 判断是否要计算库存修改前后数量
+        Double inboundOnHandQty = null;
+        Double outboundOnHandQty = null;
+        if (pdaInboundSortation.getIsTabbInvTotal()) {
+            // 查询修改前对应库存数量
+            // 入库
+            inboundOnHandQty = whSkuInventoryLogManager.sumSkuInvOnHandQty(uuid, pdaInboundSortation.getOuId());
+            // 出库
+            outboundOnHandQty = whSkuInventoryLogManager.sumSkuInvOnHandQty(skuInv.getUuid(), pdaInboundSortation.getOuId());
+        }
         // 查询此UUID在库存表是否存在
         WhSkuInventory skuInvUuid = whSkuInventoryDao.findWhSkuInventoryByUuid(pdaInboundSortation.getOuId(), uuid);
         if (null == skuInvUuid) {
@@ -355,6 +368,8 @@ public class PdaInboundSortationManagerImpl extends BaseManagerImpl implements P
                 throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
             }
         }
+        // 插入库存日志(新库存)
+        insertSkuInventoryLog(newSkuInv.getId(), pdaInboundSortation.getShiftInQty(), inboundOnHandQty, pdaInboundSortation.getIsTabbInvTotal(), pdaInboundSortation.getOuId(), pdaInboundSortation.getUserId());
         // 判断是否有UUID传入
         if (!StringUtil.isEmpty(pdaInboundSortation.getUuid())) {
             // 如果有UUID 证明有SN/残次信息录入 需要更新对应的UUID
@@ -364,6 +379,8 @@ public class PdaInboundSortationManagerImpl extends BaseManagerImpl implements P
                 throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
             }
         }
+        // 插入库存日志(原始库存)
+        insertSkuInventoryLog(skuInv.getId(), -pdaInboundSortation.getShiftInQty(), outboundOnHandQty, pdaInboundSortation.getIsTabbInvTotal(), pdaInboundSortation.getOuId(), pdaInboundSortation.getUserId());
         // 修改原始容器号在库库存
         b = updateSkuInvOnHandQtyForOriginal(newSkuInv, pdaInboundSortation);
         if (!b) {

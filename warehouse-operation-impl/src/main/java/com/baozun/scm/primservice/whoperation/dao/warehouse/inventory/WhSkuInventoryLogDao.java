@@ -17,6 +17,8 @@ package com.baozun.scm.primservice.whoperation.dao.warehouse.inventory;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.annotations.Param;
+
 import lark.common.annotation.CommonQuery;
 import lark.common.annotation.QueryPage;
 import lark.common.dao.Page;
@@ -42,5 +44,23 @@ public interface WhSkuInventoryLogDao extends BaseDao<WhSkuInventoryLog, Long> {
 
     @CommonQuery
     int saveOrUpdate(WhSkuInventoryLog o);
+
+    /**
+     * 通过库存ID 查询出对应库存日志封装数据
+     * 
+     * @param skuInvId
+     * @param ouid
+     * @return
+     */
+    WhSkuInventoryLog findInventoryLogBySkuInvId(@Param("skuInvId") Long skuInvId, @Param("ouid") Long ouid);
+
+    /**
+     * 通过UUID 查询对应库存的所有库存记录
+     * 
+     * @param uuid
+     * @param ouid
+     * @return
+     */
+    Double sumSkuInvOnHandQty(@Param("uuid") String uuid, @Param("ouid") Long ouid);
 
 }

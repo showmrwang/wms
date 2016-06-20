@@ -126,7 +126,7 @@ public final class Constants {
     public static final String DATE_PATTERN_YMD = "yyyy-MM-dd";
 
     public static final String DATE_PATTERN_YMDHM = "yyyy-MM-dd HH:mm";
-    
+
     /** 功能模板 入库分拣功能 */
     public static final String FUNCTION_TEMPLET_INBOUND = "inbound";
 
@@ -135,7 +135,7 @@ public final class Constants {
 
     /** 功能模板 上架功能 */
     public static final String FUNCTION_TEMPLET_SHELF = "shelf";
-    
+
     /** 月台规则TYPE */
     public static final String PLATFORM_RECOMMEND_RULE = "platform_recommend_rule";
 
@@ -223,5 +223,7 @@ public final class Constants {
 
     /** 二级容器类型 */
     public static final String DICTIONARY_CONTAINTER_SECOND_TYPE = "TWO_LEVEL_TYPE";
+
+
 
 }
