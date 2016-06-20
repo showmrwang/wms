@@ -103,9 +103,9 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
      * @return
      */
     private RuleExportCommand exportPlatformRecommendRule(RuleAfferCommand ruleAffer) {
-        if (StringUtil.isEmpty(ruleAffer.getAfferReserveCode())) {
+        if (null == ruleAffer.getAfferAsnId()) {
             // 判断预约号是否为空
-            log.warn("ruleExport ruleAffer.getAfferReserveCode() is null logid: " + ruleAffer.getLogId());
+            log.warn("ruleExport ruleAffer.getAfferAsnId() is null logid: " + ruleAffer.getLogId());
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
         RuleExportCommand export = new RuleExportCommand();
@@ -115,8 +115,8 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
         List<PlatformRecommendRuleCommand> prList = platformRecommendRuleDao.findPlatformRecommendRuleByOuId(ruleAffer.getOuid());
         for (PlatformRecommendRuleCommand p : prList) {
             // 查询规则是否符合要求
-            String prr = platformRecommendRuleDao.executeRuleSql(p.getRuleSql(), ruleAffer.getOuid(), ruleAffer.getAfferReserveCode());
-            if (!StringUtil.isEmpty(prr)) {
+            Long prr = platformRecommendRuleDao.executeRuleSql(p.getRuleSql(), ruleAffer.getOuid(), ruleAffer.getAfferAsnId());
+            if (null != prr) {
                 // 如果不为空 则该规则符合要求
                 returnMap.clear();// 去除0:找不到规则
                 returnMap.put(Constants.NONE_AVAILABLE_PLATFORMS, new RecommendPlatformCommand());// 添加1:找到规则

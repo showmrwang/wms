@@ -52,8 +52,8 @@ public class PlatformRecommendRuleCommand extends BaseCommand {
     private Integer lifecycle;
     /** 规则推荐月台列表 */
     private List<RecommendPlatformCommand> recommendPlatformCommandsList;
-    /** 测试规则返回的ASN预约号 */
-    private String asnReserveCode;
+    /** 测试规则返回的asnID */
+    private Long asnId;
     /** 规则测试结果 */
     private Boolean testResult;
 
@@ -169,12 +169,12 @@ public class PlatformRecommendRuleCommand extends BaseCommand {
         this.recommendPlatformCommandsList = recommendPlatformCommandsList;
     }
 
-    public String getAsnReserveCode() {
-        return asnReserveCode;
+    public Long getAsnId() {
+        return asnId;
     }
 
-    public void setAsnReserveCode(String asnReserveCode) {
-        this.asnReserveCode = asnReserveCode;
+    public void setAsnId(Long asnId) {
+        this.asnId = asnId;
     }
 
     public Boolean getTestResult() {
