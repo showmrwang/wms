@@ -41,6 +41,7 @@ public class ContainerAssistCommand extends BaseModel {
     public static final String ALIAS_SKU_CATEGORY = "SKU种类";
     public static final String ALIAS_SKU_QTY = "SKU数量";
     public static final String ALIAS_STORE_QTY = "店铺数量";
+    public static final String ALIAS_SKU_ATTR_CATEGORY = "唯一SKU数";
 
     // columns START
     /** 容器ID */
@@ -73,6 +74,8 @@ public class ContainerAssistCommand extends BaseModel {
     private java.lang.Long skuQty;
     /** 店铺数量 */
     private java.lang.Long storeQty;
+    /** 唯一sku数 */
+    private java.lang.Long skuAttrCategory;
     // columns END
 
     public ContainerAssistCommand() {}
@@ -200,6 +203,15 @@ public class ContainerAssistCommand extends BaseModel {
     public java.lang.Long getStoreQty() {
         return this.storeQty;
     }
+
+    public java.lang.Long getSkuAttrCategory() {
+        return skuAttrCategory;
+    }
+
+    public void setSkuAttrCategory(java.lang.Long skuAttrCategory) {
+        this.skuAttrCategory = skuAttrCategory;
+    }
+    
 
 }
 

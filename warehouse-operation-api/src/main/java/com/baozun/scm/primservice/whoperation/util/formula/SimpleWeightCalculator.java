@@ -38,7 +38,6 @@ public class SimpleWeightCalculator {
     private String uom;
     private static final String sysUom = SYS_UOM;
     private static final Double sysUomValue = 1.0;
-    @SuppressWarnings("unused")
     private static String defaultUom = sysUom;
     @SuppressWarnings("unused")
     private static Double defaultUomConversion = 1.0;
@@ -67,11 +66,17 @@ public class SimpleWeightCalculator {
     }
 
     public SimpleWeightCalculator(Map<String, Double> uomConversionRate) {
-        preInit(uomConversionRate, sysUom);
+        preInit(uomConversionRate, defaultUom);
     }
 
     public SimpleWeightCalculator(Map<String, Double> uomConversionRate, String defaultUom) {
         preInit(uomConversionRate, defaultUom);
+    }
+
+    public SimpleWeightCalculator(Double _weight, String _uom, Map<String, Double> uomConversionRate) {
+        preInit(uomConversionRate, defaultUom);
+        setInit(true);
+        init(_weight, _uom);
     }
 
     public SimpleWeightCalculator(Double _weight, String _uom, Map<String, Double> uomConversionRate, String defaultUom) {
@@ -165,7 +170,7 @@ public class SimpleWeightCalculator {
         setAvailableWeight(get_weight() * getAvailability());
     }
 
-    private void initStuffWeight(Double weight, String uom) {
+    public void initStuffWeight(Double weight, String uom) {
         setRawWeight(weight);
         setUom(uom);
         isWeightSupport(weight);

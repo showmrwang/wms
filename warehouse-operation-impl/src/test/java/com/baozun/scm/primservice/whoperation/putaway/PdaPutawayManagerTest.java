@@ -49,9 +49,9 @@ public class PdaPutawayManagerTest extends AbstractJUnit4SpringContextTests {
        //13100030
        ////com.baozun.scm.primservice.whinfo.model.warehouse.inventory.WhSkuInventory
 
+       //com.baozun.scm.primservice.whinfo.model.warehouse.WhSkuLocation
        
-       
-       Long id = pkManager.generatePk(Constants.WMS, "com.baozun.scm.primservice.whinfo.model.warehouse.inventory.WhSkuInventory");
+       Long id = pkManager.generatePk(Constants.WMS, "com.baozun.scm.primservice.whinfo.model.warehouse.WhSkuLocation");
        System.out.println(id);
     }
     

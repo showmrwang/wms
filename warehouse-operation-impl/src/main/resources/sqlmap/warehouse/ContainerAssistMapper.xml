@@ -29,7 +29,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	CARTON_QTY as cartonQty,
 	        	SKU_CATEGORY as skuCategory,
 	        	SKU_QTY as skuQty,
-	        	STORE_QTY as storeQty
+	        	STORE_QTY as storeQty,
+	        	SKU_ATTR_CATEGORY as skuAttrCategory
 	    ]]>
 	</sql>
 	<sql id="containerAssistConditionWhereExt">
@@ -124,7 +125,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	CARTON_QTY ,
 		        	SKU_CATEGORY ,
 		        	SKU_QTY ,
-		        	STORE_QTY 
+		        	STORE_QTY,
+		        	SKU_ATTR_CATEGORY 
 		        ) VALUES (
 		        	#{containerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{sysWeight,javaType=Double,jdbcType=DECIMAL} ,
@@ -140,7 +142,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{cartonQty,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{skuCategory,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{skuQty,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        	#{storeQty,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        	#{storeQty,javaType=java.lang.Long,jdbcType=BIGINT}, 
+		        	#{skuAttrCategory,javaType=java.lang.Long,jdbcType=BIGINT} 
 		        )
 		    ]]>
 	
@@ -163,7 +166,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        CARTON_QTY = #{cartonQty,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        SKU_CATEGORY = #{skuCategory,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        SKU_QTY = #{skuQty,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        STORE_QTY = #{storeQty,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        STORE_QTY = #{storeQty,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        SKU_ATTR_CATEGORY = #{skuAttrCategory,javaType=java.lang.Long,jdbcType=BIGINT}
 	        WHERE 
 		        id = #{id} 
 	    ]]>
@@ -276,6 +280,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	       
 				<if test="storeQty!=null">
 					and STORE_QTY = #{storeQty}
+				</if>
+				
+				<if test="skuAttrCategory!=null">
+					and SKU_ATTR_CATEGORY = #{skuAttrCategory}
 				</if>
 		</where>
 	</sql>

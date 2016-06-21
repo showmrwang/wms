@@ -915,4 +915,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			and inv.occupation_code=asn.asn_code and (asn.status=4 or asn.status=10)
 			and exists (select 1 from t_wh_sku_inventory invs where invs.inside_container_id=inv.occupation_code and invs.ou_id=inv.ou_id and invs.outer_container_id=#{outerContainerId})		
 	</select>
+	
+	<select id="findWhSkuInventoryByLocIdAndOuId" resultMap="WhSkuInventoryResultExt" flushCache="false">
+			select <include refid="whSkuInventoryColumnsExt" />
+		    <![CDATA[
+			    from t_wh_sku_inventory inv
+		        where 
+		        inv.location_id =#{locid}
+		        and inv.ou_id = #{ouid}
+		    ]]>
+	</select>
 </mapper>

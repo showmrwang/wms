@@ -222,4 +222,12 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      */
     int findRcvdInventoryCountsByInsideContainerId(@Param("ouid") Long ouid, @Param("insideContainerid") Long insideContainerid);
 
+    /**
+     * 根据库位查找所有库存
+     * @author lichuan
+     * @param ouid
+     * @param locid
+     * @return
+     */
+    List<WhSkuInventoryCommand> findWhSkuInventoryByLocIdAndOuId(@Param("ouid") Long ouid, @Param("locid") Long locid);
 }

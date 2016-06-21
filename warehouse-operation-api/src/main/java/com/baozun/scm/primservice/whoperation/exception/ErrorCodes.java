@@ -226,6 +226,12 @@ public class ErrorCodes {
     public static final int COMMON_LOCATION_NOT_RECOMMEND_ERROR = 5010;
     /** 库位信息不存在！ */
     public static final int COMMON_LOCATION_IS_NOT_EXISTS = 5011;
+    /** 库存记录行计算唯一标识异常！ */
+    public static final int COMMON_INV_PROCESS_UUID_ERROR = 5012;
+    /** 店铺信息不存在！ */
+    public static final int COMMON_STORE_NOT_FOUND_ERROR = 5013;
+    /** 仓库信息不存在！ */
+    public static final int COMMON_WAREHOUSE_NOT_FOUND_ERROR = 5014;
     // 5001-10000 common end
 
     // 10001-20000 luyimin
@@ -297,6 +303,8 @@ public class ErrorCodes {
     public static final int SKU_LENGTH_WIDTH_HIGHT_IS_NULL_ERROR = 40012;
     /** 商品[{0}]重量异常！ */
     public static final int SKU_WEIGHT_IS_NULL_ERROR = 40013;
+    /** 容器辅助信息统计失败！ */
+    public static final int CONTAINER_ASSIST_INFO_GENERATE_ERROR = 40014;
     // 40001-50000 lichuan
 
     // 50001-60000 hubin

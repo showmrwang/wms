@@ -62,7 +62,6 @@ public class SimpleCubeCalculator {
     private String uom;
     private static final String sysUom = SYS_UOM;
     private static final Double sysUomValue = 1.0;
-    @SuppressWarnings("unused")
     private static String defaultUom = sysUom;
     @SuppressWarnings("unused")
     private static Double defaultUomConversion = 1.0;
@@ -104,11 +103,17 @@ public class SimpleCubeCalculator {
     }
 
     public SimpleCubeCalculator(Map<String, Double> uomConversionRate) {
-        preInit(uomConversionRate, sysUom);
+        preInit(uomConversionRate, defaultUom);
     }
 
     public SimpleCubeCalculator(Map<String, Double> uomConversionRate, String defaultUom) {
         preInit(uomConversionRate, defaultUom);
+    }
+
+    public SimpleCubeCalculator(Double _x, Double _y, Double _z, String _uom, Double availability, Map<String, Double> uomConversionRate) {
+        preInit(uomConversionRate, defaultUom);
+        init(_x, _y, _z, _uom, availability);
+        setInit(true);
     }
 
     public SimpleCubeCalculator(Double _x, Double _y, Double _z, String _uom, Double availability, Map<String, Double> uomConversionRate, String defaultUom) {
@@ -298,7 +303,7 @@ public class SimpleCubeCalculator {
         }
     }
 
-    private void initStuffCube(Double x, Double y, Double z, String uom) {
+    public void initStuffCube(Double x, Double y, Double z, String uom) {
         if (null == x) x = 0.0;
         if (null == y) y = 0.0;
         if (null == z) z = 0.0;

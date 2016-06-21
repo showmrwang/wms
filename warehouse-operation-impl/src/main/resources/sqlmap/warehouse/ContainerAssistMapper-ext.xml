@@ -26,7 +26,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	CARTON_QTY as cartonQty,
 	        	SKU_CATEGORY as skuCategory,
 	        	SKU_QTY as skuQty,
-	        	STORE_QTY as storeQty
+	        	STORE_QTY as storeQty,
+	        	SKU_ATTR_CATEGORY as skuAttrCategory
 	    ]]>
 	</sql>
 	
@@ -96,6 +97,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	       
 				<if test="storeQty!=null">
 					and STORE_QTY = #{storeQty}
+				</if>
+				
+				<if test="skuAttrCategory!=null">
+					and SKU_ATTR_CATEGORY = #{skuAttrCategory}
 				</if>
 		</where>
 	</sql>

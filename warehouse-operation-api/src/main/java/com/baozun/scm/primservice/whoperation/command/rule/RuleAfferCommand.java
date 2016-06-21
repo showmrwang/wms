@@ -45,6 +45,9 @@ public class RuleAfferCommand extends BaseCommand {
 
     /** 功能ID */
     private Long funcId;
+    
+    /** 店铺List */
+    private List<Long> storeIdList;
 
 
     public String getRuleType() {
@@ -133,6 +136,13 @@ public class RuleAfferCommand extends BaseCommand {
         this.funcId = funcId;
     }
 
+    public List<Long> getStoreIdList() {
+        return storeIdList;
+    }
+
+    public void setStoreIdList(List<Long> storeIdList) {
+        this.storeIdList = storeIdList;
+    }
 
 
 }
