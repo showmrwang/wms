@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventorySnLogDao">
+	<resultMap id="WhSkuInventorySnLogResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventorySnLog">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whSkuInventorySnLogColumnsExt">
+	    <![CDATA[
+	        	id as id,
+	        	sn as sn,
+	        	occupation_code as occupationCode,
+	        	defect_ware_barcode as defectWareBarcode,
+	        	defect_type as defectType,
+	        	defect_reasons as defectReasons,
+	        	status as status,
+	        	uuid as uuid,
+	        	ou_id as ouId
+	    ]]>
+	</sql>
+	
+	<sql id="whSkuInventorySnLogDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+	       
+		       <if test="sn!=null and sn!=''">
+					and sn = #{sn}
+				</if>
+	       
+	       
+		       <if test="occupationCode!=null and occupationCode!=''">
+					and occupation_code = #{occupationCode}
+				</if>
+	       
+	       
+		       <if test="defectWareBarcode!=null and defectWareBarcode!=''">
+					and defect_ware_barcode = #{defectWareBarcode}
+				</if>
+	       
+	       
+		       <if test="defectType!=null and defectType!=''">
+					and defect_type = #{defectType}
+				</if>
+	       
+	       
+		       <if test="defectReasons!=null and defectReasons!=''">
+					and defect_reasons = #{defectReasons}
+				</if>
+	       
+				<if test="status!=null">
+					and status = #{status}
+				</if>
+	       
+	       
+		       <if test="uuid!=null and uuid!=''">
+					and uuid = #{uuid}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+		</where>
+	</sql>
+	
+</mapper>

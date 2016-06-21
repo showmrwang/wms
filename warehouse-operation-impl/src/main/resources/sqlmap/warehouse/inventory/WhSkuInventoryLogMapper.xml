@@ -224,7 +224,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    ]]>
 		</update>
 		<update id="batchUpdate">
-	        UPDATE t_wh_sku_inventory_log201606 SET
+	        UPDATE t_wh_sku_inventory_log${sysDate} SET
 	        	<foreach collection="batchUpdateMap" index="key"  item="value" separator=",">
 	        		${key} = #{value}
 	        	</foreach>
@@ -233,34 +233,34 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		
 	   <delete id="delete" parameterType="java.lang.Long">
 	    <![CDATA[
-	        delete from t_wh_sku_inventory_log201606 where
+	        delete from t_wh_sku_inventory_log${sysDate} where
 		        id = #{id} 
 	    ]]>
 	    </delete> 
 	    
 	     <delete id="deleteByIds" parameterType="list">
 	    
-	        delete from t_wh_sku_inventory_log201606 
+	        delete from t_wh_sku_inventory_log${sysDate} 
 	        where id in
 				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
 #{item}				</foreach>	
 	  
 	    </delete>  
 	    <update id="batchDelete">
-	        delete from t_wh_sku_inventory_log201606 <include refid="whSkuInventoryLogConditionWhereExt"/>
+	        delete from t_wh_sku_inventory_log${sysDate} <include refid="whSkuInventoryLogConditionWhereExt"/>
 		</update>
 	         
 	    <select id="findById" parameterType="java.lang.Long" resultMap="WhSkuInventoryLogResult" flushCache="false">
 			select <include refid="whSkuInventoryLogColumns" />
 		    <![CDATA[
-			    from t_wh_sku_inventory_log201606 
+			    from t_wh_sku_inventory_log${sysDate} 
 		        where 
 		        id = #{id} 
 		    ]]>
 		</select>	
 		<select id="getByIds" parameterType="list"  resultMap="WhSkuInventoryLogResult" flushCache="false">
 			select <include refid="whSkuInventoryLogColumns" />
-			    from t_wh_sku_inventory_log201606 
+			    from t_wh_sku_inventory_log${sysDate} 
 		        where id in
 				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
 #{item}				</foreach>					
@@ -407,15 +407,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	
 
 	<select id="getCount" resultType="long">
-        select count(*) from t_wh_sku_inventory_log201606 
+        select count(*) from t_wh_sku_inventory_log${sysDate} 
     </select>
     <select id="findListCountByQueryMap" resultType="long">
-        select count(*) from t_wh_sku_inventory_log201606 
+        select count(*) from t_wh_sku_inventory_log${sysDate} 
 		<include refid="whSkuInventoryLogDynamicWhere"/>    
     </select>
     
     <select id="findListCountByParam" resultType="long">
-        select count(*) from t_wh_sku_inventory_log201606 
+        select count(*) from t_wh_sku_inventory_log${sysDate} 
 		<include refid="whSkuInventoryLogDynamicWhere"/>    
     </select>
     
@@ -425,33 +425,33 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     -->
     <select id="findListByQueryMapWithPage" resultMap="WhSkuInventoryLogResult">
     	select <include refid="whSkuInventoryLogColumns" />
-	    from t_wh_sku_inventory_log201606 
+	    from t_wh_sku_inventory_log${sysDate} 
 		<include refid="whSkuInventoryLogDynamicWhere"/>
 		
     </select>
     
     <select id="findListByQueryMap" resultMap="WhSkuInventoryLogResult">
     	select <include refid="whSkuInventoryLogColumns" />
-	    from t_wh_sku_inventory_log201606 
+	    from t_wh_sku_inventory_log${sysDate} 
 		<include refid="whSkuInventoryLogDynamicWhere"/>
 		
     </select>
     
     <select id="findListByParam" resultMap="WhSkuInventoryLogResult">
     	select <include refid="whSkuInventoryLogColumns" />
-	    from t_wh_sku_inventory_log201606 
+	    from t_wh_sku_inventory_log${sysDate} 
 		<include refid="whSkuInventoryLogDynamicWhere"/>
 		
     </select>
     
     <select id="query" resultMap="WhSkuInventoryLogResult">
 		select <include refid="whSkuInventoryLogColumns" />
-	    from t_wh_sku_inventory_log201606  
+	    from t_wh_sku_inventory_log${sysDate}  
 		<include refid="whSkuInventoryLogConditionWhereExt"/>
     </select>
     
     <select id="queryCount" resultType="long">
-		select count(*) from t_wh_sku_inventory_log201606  
+		select count(*) from t_wh_sku_inventory_log${sysDate}  
 		<include refid="whSkuInventoryLogConditionWhereExt"/>
     </select>
 
