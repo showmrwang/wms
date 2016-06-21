@@ -1,8 +1,5 @@
 package com.baozun.scm.primservice.whoperation.manager.warehouse.inventory;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import lark.common.annotation.MoreDB;
 
 import org.springframework.beans.BeanUtils;
@@ -13,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryLogDao;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryLog;
+import com.baozun.scm.primservice.whoperation.util.DateUtil;
 
 @Transactional
 @Service("whSkuInventoryLogManager")
@@ -29,19 +27,10 @@ public class WhSkuInventoryLogManagerImpl implements WhSkuInventoryLogManager {
     public void insertSkuInventoryLog(WhSkuInventoryLog skuInvLog) {
         WhSkuInventoryLog log = new WhSkuInventoryLog();
         BeanUtils.copyProperties(skuInvLog, log);
-        log.setSysDate(getSysDate());
+        log.setSysDate(DateUtil.getSysDate());
         whSkuInventoryLogDao.insert(log);
     }
 
-    /**
-     * 获取当前时间用于判断插入月份LOG表
-     * 
-     * @return
-     */
-    public String getSysDate() {
-        SimpleDateFormat df = new SimpleDateFormat("yyyyMM");// 设置日期格式
-        return df.format(new Date());// new Date()为获取当前系统时间
-    }
 
     /**
      * 通过库存ID 查询出对应库存日志封装数据

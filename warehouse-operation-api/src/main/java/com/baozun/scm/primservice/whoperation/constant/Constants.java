@@ -224,6 +224,12 @@ public final class Constants {
     /** 二级容器类型 */
     public static final String DICTIONARY_CONTAINTER_SECOND_TYPE = "TWO_LEVEL_TYPE";
 
+    /** 库存明细残次类型来源 店铺 */
+    public static final String SKU_SN_DEFECT_SOURCE_STORE = "STORE";
+
+    /** 库存明细残次类型来源 仓库 */
+    public static final String SKU_SN_DEFECT_SOURCE_WH = "WH";
+
 
 
 }

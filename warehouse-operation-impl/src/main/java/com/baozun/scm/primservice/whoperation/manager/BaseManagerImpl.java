@@ -26,10 +26,12 @@ import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.system.GlobalLogManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryLogManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventorySnLogManager;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryLog;
 import com.baozun.scm.primservice.whoperation.util.LogUtil;
 import com.baozun.scm.primservice.whoperation.util.ParamsUtil;
+import com.baozun.scm.primservice.whoperation.util.StringUtil;
 
 /**
  * @author lichuan
@@ -46,6 +48,8 @@ public abstract class BaseManagerImpl implements BaseManager {
     private GlobalLogManager globalLogManager;
     @Autowired
     private WhSkuInventoryLogManager whSkuInventoryLogManager;
+    @Autowired
+    private WhSkuInventorySnLogManager whSkuInventorySnLogManager;
 
 
     /**
@@ -102,6 +106,9 @@ public abstract class BaseManagerImpl implements BaseManager {
         }
         // 通过库存ID封装库存日志对象
         WhSkuInventoryLog log = whSkuInventoryLogManager.findInventoryLogBySkuInvId(skuInvId, ouid);
+        if (null == log) {
+            throw new BusinessException(ErrorCodes.PARAM_IS_NULL, "skuInvId");
+        }
         // 调整数量
         log.setRevisionQty(qty);
         log.setModifiedId(userid);
@@ -117,6 +124,20 @@ public abstract class BaseManagerImpl implements BaseManager {
             }
         }
         whSkuInventoryLogManager.insertSkuInventoryLog(log);
+    }
+
+    /**
+     * 库存SN/残次日志插入
+     * 
+     * @param uuid
+     * @param ouid
+     * @param userid
+     */
+    protected void insertSkuInventorySnLog(String uuid, Long ouid) {
+        if (StringUtil.isEmpty(uuid)) {
+            throw new BusinessException(ErrorCodes.PARAM_IS_NULL, "uuid");
+        }
+        whSkuInventorySnLogManager.insertSkuInventorySnLog(uuid, ouid);
     }
 
     /**

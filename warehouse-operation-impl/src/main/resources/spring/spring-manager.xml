@@ -53,6 +53,7 @@
                     <value>com.baozun.scm.primservice.whoperation.model.warehouse.WhAsnRcvdLog</value>
                     <value>com.baozun.scm.primservice.whoperation.model.warehouse.WhAsnRcvdSnLog</value>
                     <value>com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryLog</value>
+                    <value>com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventorySnLog</value>
 				</list>
 			</property>
 			

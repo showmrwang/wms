@@ -18,5 +18,6 @@ import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 
 public interface WhSkuInventorySnLogManager extends BaseManager {
 
+    void insertSkuInventorySnLog(String uuid, Long ouid);
 
 }

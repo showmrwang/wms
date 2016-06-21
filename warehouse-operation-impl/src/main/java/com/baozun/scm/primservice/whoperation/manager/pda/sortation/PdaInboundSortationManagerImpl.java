@@ -360,6 +360,8 @@ public class PdaInboundSortationManagerImpl extends BaseManagerImpl implements P
             whSkuInventoryDao.insert(newSkuInv);
             // 插入操作日志
             insertGlobalLog(Constants.GLOBAL_LOG_INSERT, newSkuInv, pdaInboundSortation.getOuId(), pdaInboundSortation.getUserId(), null, null);
+            // 插入库存日志(新库存)
+            insertSkuInventoryLog(newSkuInv.getId(), pdaInboundSortation.getShiftInQty(), inboundOnHandQty, pdaInboundSortation.getIsTabbInvTotal(), pdaInboundSortation.getOuId(), pdaInboundSortation.getUserId());
         } else {
             // 更新原有库存记录在库库存数量
             b = updateSkuInvOnHandQty(newSkuInv, pdaInboundSortation, uuid, inboundOnHandQty);
@@ -370,12 +372,16 @@ public class PdaInboundSortationManagerImpl extends BaseManagerImpl implements P
         }
         // 判断是否有UUID传入
         if (!StringUtil.isEmpty(pdaInboundSortation.getUuid())) {
+            // 插入库存SN/残次日志信息(原始库存记录)
+            insertSkuInventorySnLog(skuInv.getUuid(), pdaInboundSortation.getOuId());
             // 如果有UUID 证明有SN/残次信息录入 需要更新对应的UUID
             b = updateSkuInvSnUuid(skuInv, pdaInboundSortation, uuid);
             if (!b) {
                 // 修改SN/残次UUID失败后
                 throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
             }
+            // 插入库存SN/残次日志信息(新库存记录)
+            insertSkuInventorySnLog(uuid, pdaInboundSortation.getOuId());
         }
         // 插入库存日志(原始库存)
         insertSkuInventoryLog(skuInv.getId(), -pdaInboundSortation.getShiftInQty(), outboundOnHandQty, pdaInboundSortation.getIsTabbInvTotal(), pdaInboundSortation.getOuId(), pdaInboundSortation.getUserId());
@@ -763,9 +769,11 @@ public class PdaInboundSortationManagerImpl extends BaseManagerImpl implements P
             throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_SN_NULL);
         }
         // 判断此SN/残次条码是否本次扫过
-        if (sn.getSysUuid().equals(pdaInboundSortationCommand.getUuid())) {
-            log.warn("pdaScanSn sn.getSysUuid() = pdaInboundSortation.getUuid() error logid: " + pdaInboundSortationCommand.getLogId());
-            throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_SN_DOUBLE_ERROR);
+        if (!StringUtil.isEmpty(sn.getSysUuid())) {
+            if (sn.getSysUuid().equals(pdaInboundSortationCommand.getUuid())) {
+                log.warn("pdaScanSn sn.getSysUuid() = pdaInboundSortation.getUuid() error logid: " + pdaInboundSortationCommand.getLogId());
+                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_SN_DOUBLE_ERROR);
+            }
         }
         // 修改对应SN/残次信息的SYS_UUID
         sn.setSysUuid(pdaInboundSortationCommand.getUuid());
