@@ -129,9 +129,8 @@ public abstract class BaseManagerImpl implements BaseManager {
     /**
      * 库存SN/残次日志插入
      * 
-     * @param uuid
-     * @param ouid
-     * @param userid
+     * @param uuid 库存对应UUID
+     * @param ouid 组织仓库ID
      */
     protected void insertSkuInventorySnLog(String uuid, Long ouid) {
         if (StringUtil.isEmpty(uuid)) {
