@@ -83,4 +83,12 @@ public interface WhSkuInventorySnDao extends BaseDao<WhSkuInventorySn, Long> {
      */
     List<WhSkuInventorySn> findWhSkuInventorySnByUuidAndSysUuid(@Param("ouid") Long ouid, @Param("uuid") String uuid, @Param("sysuuid") String sysuuid);
 
+    /**
+     * 根据库存UUID+SYS_UUID修改对应UUID 关联外键表获取对应数据
+     * 
+     * @param ouid
+     * @param uuid
+     * @return
+     */
+    List<WhSkuInventorySnCommand> findWhSkuInventoryByUuidLeftJoinForeignKey(@Param("ouid") Long ouid, @Param("uuid") String uuid);
 }

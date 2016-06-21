@@ -15,7 +15,7 @@ public class RcvdCacheCommand implements Serializable{
     /**
      * 
      */
-    private static final long serialVersionUID = 3819879639917624436L;
+    private static final long serialVersionUID = -5403194405337842530L;
     /** 外部容器ID 托盘 货箱 */
     private Long outerContainerId;
     /** 内部容器ID 托盘 货箱 */
