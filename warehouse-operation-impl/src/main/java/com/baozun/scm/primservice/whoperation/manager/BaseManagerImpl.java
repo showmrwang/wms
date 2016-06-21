@@ -102,12 +102,12 @@ public abstract class BaseManagerImpl implements BaseManager {
      */
     protected void insertSkuInventoryLog(Long skuInvId, Double qty, Double oldQty, Boolean isTabbInvTotal, Long ouid, Long userid) {
         if (null == skuInvId) {
-            throw new BusinessException(ErrorCodes.PARAM_IS_NULL, "skuInvId");
+            throw new BusinessException(ErrorCodes.PARAM_IS_NULL, new Object[] {"skuInvId"});
         }
         // 通过库存ID封装库存日志对象
         WhSkuInventoryLog log = whSkuInventoryLogManager.findInventoryLogBySkuInvId(skuInvId, ouid);
         if (null == log) {
-            throw new BusinessException(ErrorCodes.PARAM_IS_NULL, "skuInvId");
+            throw new BusinessException(ErrorCodes.PARAM_IS_NULL, new Object[] {"skuInvId"});
         }
         // 调整数量
         log.setRevisionQty(qty);
@@ -134,7 +134,7 @@ public abstract class BaseManagerImpl implements BaseManager {
      */
     protected void insertSkuInventorySnLog(String uuid, Long ouid) {
         if (StringUtil.isEmpty(uuid)) {
-            throw new BusinessException(ErrorCodes.PARAM_IS_NULL, "uuid");
+            throw new BusinessException(ErrorCodes.PARAM_IS_NULL, new Object[] {"uuid"});
         }
         whSkuInventorySnLogManager.insertSkuInventorySnLog(uuid, ouid);
     }
