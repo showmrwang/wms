@@ -90,8 +90,8 @@ public abstract class BaseManagerImpl implements BaseManager {
      * 库存日志插入
      * 
      * @param skuInvId 变动的库存ID
-     * @param qty 调整数量
-     * @param oldQty 修改前库存数量
+     * @param qty 调整数量如果为50.0 入库=50.0 出库=-50.0
+     * @param oldQty 修改前库存数量 无需记录交易前后库存总数 = null
      * @param isTabbInvTotal 在库存日志是否记录交易前后库存总数
      * @param ouid 仓库组织ID
      * @param userid 操作人ID

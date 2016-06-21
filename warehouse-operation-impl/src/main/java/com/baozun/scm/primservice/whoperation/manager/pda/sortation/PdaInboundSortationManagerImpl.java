@@ -362,14 +362,12 @@ public class PdaInboundSortationManagerImpl extends BaseManagerImpl implements P
             insertGlobalLog(Constants.GLOBAL_LOG_INSERT, newSkuInv, pdaInboundSortation.getOuId(), pdaInboundSortation.getUserId(), null, null);
         } else {
             // 更新原有库存记录在库库存数量
-            b = updateSkuInvOnHandQty(newSkuInv, pdaInboundSortation, uuid);
+            b = updateSkuInvOnHandQty(newSkuInv, pdaInboundSortation, uuid, inboundOnHandQty);
             if (!b) {
                 // 修改原来库存记录失败
                 throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
             }
         }
-        // 插入库存日志(新库存)
-        insertSkuInventoryLog(newSkuInv.getId(), pdaInboundSortation.getShiftInQty(), inboundOnHandQty, pdaInboundSortation.getIsTabbInvTotal(), pdaInboundSortation.getOuId(), pdaInboundSortation.getUserId());
         // 判断是否有UUID传入
         if (!StringUtil.isEmpty(pdaInboundSortation.getUuid())) {
             // 如果有UUID 证明有SN/残次信息录入 需要更新对应的UUID
@@ -432,7 +430,7 @@ public class PdaInboundSortationManagerImpl extends BaseManagerImpl implements P
      * @return
      * @throws Exception
      */
-    private boolean updateSkuInvOnHandQty(WhSkuInventory newSkuInv, PdaInboundSortationCommand pdaInboundSortation, String uuid) throws Exception {
+    private boolean updateSkuInvOnHandQty(WhSkuInventory newSkuInv, PdaInboundSortationCommand pdaInboundSortation, String uuid, Double inboundOnHandQty) throws Exception {
         boolean b = false;
         for (int i = 1; i <= 5; i++) {
             // 每次尝试更新5次 避免并发情况
@@ -450,6 +448,8 @@ public class PdaInboundSortationManagerImpl extends BaseManagerImpl implements P
             } else {
                 // 修改成功 跳出循环 返回true
                 b = true;
+                // 插入库存日志(新库存)
+                insertSkuInventoryLog(oldSkuInv.getId(), pdaInboundSortation.getShiftInQty(), inboundOnHandQty, pdaInboundSortation.getIsTabbInvTotal(), pdaInboundSortation.getOuId(), pdaInboundSortation.getUserId());
                 break;
             }
         }
