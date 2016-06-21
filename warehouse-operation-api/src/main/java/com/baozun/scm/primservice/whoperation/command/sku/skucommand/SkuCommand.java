@@ -67,6 +67,17 @@ public class SkuCommand extends BaseCommand {
     private String brandName;
 
     private String customerName;
+    
+    
+   private Boolean isFoldable;
+    
+    public Boolean getIsFoldable() {
+        return isFoldable;
+    }
+
+    public void setIsFoldable(Boolean isFoldable) {
+        this.isFoldable = isFoldable;
+    }
 
     /** 用于模糊查询显示前15条数据 */
     private Integer lineNum;
