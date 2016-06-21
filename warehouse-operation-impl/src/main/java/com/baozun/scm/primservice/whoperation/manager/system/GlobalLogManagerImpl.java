@@ -1,6 +1,5 @@
 package com.baozun.scm.primservice.whoperation.manager.system;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import lark.common.annotation.MoreDB;
@@ -16,6 +15,7 @@ import com.baozun.scm.primservice.whoperation.dao.system.GlobalLogDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.model.system.GlobalLog;
+import com.baozun.scm.primservice.whoperation.util.DateUtil;
 import com.baozun.utilities.type.JsonUtil;
 
 
@@ -39,7 +39,7 @@ public class GlobalLogManagerImpl implements GlobalLogManager {
         gl.setParentCode(globalLogCommand.getParentCode());
         gl.setObjectType(formatClassName(globalLogCommand.getObjectType()));
         gl.setModifyTime(new Date());
-        gl.setSysDate(getSysDate());
+        gl.setSysDate(DateUtil.getSysDate());
         gl.setIsTranslate(false);
         globalLogDao.insert(gl);
     }
@@ -75,16 +75,6 @@ public class GlobalLogManagerImpl implements GlobalLogManager {
     }
 
     /**
-     * 获取当前时间用于判断插入月份LOG表
-     * 
-     * @return
-     */
-    public String getSysDate() {
-        SimpleDateFormat df = new SimpleDateFormat("yyyyMM");// 设置日期格式
-        return df.format(new Date());// new Date()为获取当前系统时间
-    }
-
-    /**
      * 日志插入到公共库
      * 
      * @author lichuan
@@ -101,7 +91,7 @@ public class GlobalLogManagerImpl implements GlobalLogManager {
         gl.setParentCode(globalLogCommand.getParentCode());
         gl.setObjectType(formatClassName(globalLogCommand.getObjectType()));
         gl.setModifyTime(new Date());
-        gl.setSysDate(getSysDate());
+        gl.setSysDate(DateUtil.getSysDate());
         gl.setIsTranslate(false);
         globalLogDao.insert(gl);
     }

@@ -25,4 +25,14 @@ public class DateUtil {
         return sdf.parse(date);
     }
 
+    /**
+     * 获取当前时间用于判断插入月份LOG表
+     * 
+     * @return
+     */
+    public static String getSysDate() {
+        SimpleDateFormat df = new SimpleDateFormat("yyyyMM");// 设置日期格式
+        return df.format(new Date());// new Date()为获取当前系统时间
+    }
+
 }

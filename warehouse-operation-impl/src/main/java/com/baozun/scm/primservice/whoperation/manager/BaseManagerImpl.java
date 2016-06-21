@@ -26,10 +26,12 @@ import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.system.GlobalLogManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryLogManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventorySnLogManager;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryLog;
 import com.baozun.scm.primservice.whoperation.util.LogUtil;
 import com.baozun.scm.primservice.whoperation.util.ParamsUtil;
+import com.baozun.scm.primservice.whoperation.util.StringUtil;
 
 /**
  * @author lichuan
@@ -46,6 +48,8 @@ public abstract class BaseManagerImpl implements BaseManager {
     private GlobalLogManager globalLogManager;
     @Autowired
     private WhSkuInventoryLogManager whSkuInventoryLogManager;
+    @Autowired
+    private WhSkuInventorySnLogManager whSkuInventorySnLogManager;
 
 
     /**
@@ -90,18 +94,21 @@ public abstract class BaseManagerImpl implements BaseManager {
      * 库存日志插入
      * 
      * @param skuInvId 变动的库存ID
-     * @param qty 调整数量
-     * @param oldQty 修改前库存数量
+     * @param qty 调整数量如果为50.0 入库=50.0 出库=-50.0
+     * @param oldQty 修改前库存数量 无需记录交易前后库存总数 = null
      * @param isTabbInvTotal 在库存日志是否记录交易前后库存总数
      * @param ouid 仓库组织ID
      * @param userid 操作人ID
      */
     protected void insertSkuInventoryLog(Long skuInvId, Double qty, Double oldQty, Boolean isTabbInvTotal, Long ouid, Long userid) {
         if (null == skuInvId) {
-            throw new BusinessException(ErrorCodes.PARAM_IS_NULL, "skuInvId");
+            throw new BusinessException(ErrorCodes.PARAM_IS_NULL, new Object[] {"skuInvId"});
         }
         // 通过库存ID封装库存日志对象
         WhSkuInventoryLog log = whSkuInventoryLogManager.findInventoryLogBySkuInvId(skuInvId, ouid);
+        if (null == log) {
+            throw new BusinessException(ErrorCodes.PARAM_IS_NULL, new Object[] {"skuInvId"});
+        }
         // 调整数量
         log.setRevisionQty(qty);
         log.setModifiedId(userid);
@@ -117,6 +124,19 @@ public abstract class BaseManagerImpl implements BaseManager {
             }
         }
         whSkuInventoryLogManager.insertSkuInventoryLog(log);
+    }
+
+    /**
+     * 库存SN/残次日志插入
+     * 
+     * @param uuid 库存对应UUID
+     * @param ouid 组织仓库ID
+     */
+    protected void insertSkuInventorySnLog(String uuid, Long ouid) {
+        if (StringUtil.isEmpty(uuid)) {
+            throw new BusinessException(ErrorCodes.PARAM_IS_NULL, new Object[] {"uuid"});
+        }
+        whSkuInventorySnLogManager.insertSkuInventorySnLog(uuid, ouid);
     }
 
     /**
