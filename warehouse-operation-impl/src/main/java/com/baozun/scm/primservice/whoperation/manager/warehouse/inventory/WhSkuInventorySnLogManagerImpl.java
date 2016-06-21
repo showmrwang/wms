@@ -46,7 +46,7 @@ public class WhSkuInventorySnLogManagerImpl implements WhSkuInventorySnLogManage
                     snLog.setDefectType(sn.getStoreDefectTypeName());
                     snLog.setDefectReasons(sn.getStoreDefectReasonsName());
                 }
-                if (sn.getDefectSource().equals(Constants.SKU_SN_DEFECT_SOURCE_STORE)) {
+                if (sn.getDefectSource().equals(Constants.SKU_SN_DEFECT_SOURCE_WH)) {
                     // 如果是仓库 把查出来的仓库残次原因/残次类型插入日志表
                     snLog.setDefectType(sn.getWhDefectTypeName());
                     snLog.setDefectReasons(sn.getWhDefectReasonsName());
