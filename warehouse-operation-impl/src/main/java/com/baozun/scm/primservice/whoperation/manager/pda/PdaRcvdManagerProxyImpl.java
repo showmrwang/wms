@@ -113,6 +113,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
             cacheManager.setMapValue(CacheKeyConstant.CACHE_ASN_OVERCHARGE, occupationId.toString(), cacheRate, 365 * 24 * 60 * 60);
         }
         try {
+            // 加锁
             int updateCount = this.asnManager.updateByVersionForLock(cacheAsn.getId(), ouId, cacheAsn.getLastModifyTime());
             if (1 == updateCount) {
                 WhAsnLineCommand command = new WhAsnLineCommand();
@@ -156,7 +157,8 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                 throw new BusinessException(ErrorCodes.ASN_CACHE_ERROR);
             }
         } catch (Exception e) {
-            // cacheManager.removeMapValue(CacheKeyConstant.CACHE_ASN, occupationId.toString());
+            this.asnManager.updateByVersionForUnLock(occupationId, ouId);
+            cacheManager.removeMapValue(CacheKeyConstant.CACHE_ASN, occupationId.toString());
             throw e;
         }
 
@@ -972,6 +974,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
             rcvdContainerCacheCommand.setInvAttr3(command.getInvAttr3());
             rcvdContainerCacheCommand.setInvAttr4(command.getInvAttr4());
             rcvdContainerCacheCommand.setInvAttr5(command.getInvAttr5());
+            rcvdContainerCacheCommand.setOuId(command.getOuId());
             if (null != command.getInvStatus()) {// DateUtil.format(line.getExpDate(),
                                                  // Constants.DATE_PATTERN_YMD)
                 rcvdContainerCacheCommand.setInvStatus(command.getInvStatus().toString());
@@ -997,7 +1000,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
          */
         boolean flag = false;
         // 测试用
-        this.cacheManager.removeMapValue(CacheKeyConstant.CACHE_RCVD_CONTAINER, "14100017");
+        // this.cacheManager.removeMapValue(CacheKeyConstant.CACHE_RCVD_CONTAINER, "14100017");
         ContainerCommand containerCommand = this.generalRcvdManager.findContainerByCode(command.getInsideContainerCode(), command.getOuId());
         if (null == containerCommand) {
             ContainerCommand saveContainer = new ContainerCommand();
