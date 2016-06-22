@@ -214,7 +214,6 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
         // 5.更新PO头信息
         // 准备更新的数据
 
-
         if (commandList != null && commandList.size() > 0) {
             List<WhSkuInventorySn> saveSnList = new ArrayList<WhSkuInventorySn>();
             List<WhAsnRcvdSnLog> saveSnLogList = new ArrayList<WhAsnRcvdSnLog>();
@@ -501,7 +500,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                 throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
             }
             // 释放容器缓存
-            this.cacheManager.removeMapValue(CacheKeyConstant.CACHE_RCVD_CONTAINER, userId.toString());
+            this.cacheManager.removeMapValue(CacheKeyConstant.CACHE_RCVD_CONTAINER, insideContainerId.toString());
             // 释放SN缓存
             this.cacheManager.removeMapValue(CacheKeyConstant.CACHE_RCVD_SN, userId.toString());
             // 释放收货数据缓存
@@ -746,6 +745,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                         lineIdListStr += entry + ",";
                     }
                 }
+                lineIdListStr = lineIdListStr.substring(0, lineIdListStr.length() - 1);
                 if (asnSkuCount < skuPlannedCount) {
                     throw new BusinessException(ErrorCodes.SKU_OVERCHARGE_ERROR);
                 }
@@ -766,6 +766,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                     asnSkuCount = asnSkuCount + lineSkuOverchargeCount;
                     lineIdListStr += lineId + ",";
                 }
+                lineIdListStr = lineIdListStr.substring(0, lineIdListStr.length() - 1);
                 if (asnSkuCount < skuPlannedCount) {
                     if (command.getIsInvattrDiscrepancyAllowrcvd()) {
                         throw new BusinessException(ErrorCodes.SKU_OVERCHARGE_ERROR);
@@ -920,7 +921,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                     break;
                 case Constants.GENERAL_RECEIVING_ISINVSTATUS:
                     if (command.getIsLimitUniqueInvStatus() && flag) {
-                        if (!command.getInvStatus().equals(rcvdContainerCacheCommand.getInvStatus())) {
+                        if (!command.getInvStatus().toString().equals(rcvdContainerCacheCommand.getInvStatus())) {
                             break;
                             // throw new BusinessException(ErrorCodes.RCVD_CONTAINER_LIMIT_ERROR);
                         }
@@ -975,12 +976,13 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
             rcvdContainerCacheCommand.setInvAttr4(command.getInvAttr4());
             rcvdContainerCacheCommand.setInvAttr5(command.getInvAttr5());
             rcvdContainerCacheCommand.setOuId(command.getOuId());
+            rcvdContainerCacheCommand.setUserId(command.getUserId());
             if (null != command.getInvStatus()) {// DateUtil.format(line.getExpDate(),
                                                  // Constants.DATE_PATTERN_YMD)
                 rcvdContainerCacheCommand.setInvStatus(command.getInvStatus().toString());
             }
-            rcvdContainerCacheCommand.setMfgDate(command.getMfgDateStr());
-            rcvdContainerCacheCommand.setExpDate(command.getExpDateStr());
+            rcvdContainerCacheCommand.setMfgDate(null == command.getMfgDateStr() ? "" : command.getMfgDateStr());
+            rcvdContainerCacheCommand.setExpDate(null == command.getExpDateStr() ? "" : command.getExpDateStr());
             rcvdContainerCacheCommand.setBatchNumber(command.getBatchNumber());
             rcvdContainerCacheCommand.setCountryOfOrigin(command.getCountryOfOrigin());
             rcvdContainerCacheCommand.setSkuId(command.getSkuId().toString());
@@ -1169,6 +1171,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                 }
                 // 用户ID
                 rcvdContainerCacheCommand.setUserId(command.getUserId());
+                rcvdContainerCacheCommand.setOuId(command.getOuId());
                 // 时长一小时
                 this.cacheManager.setMapObject(CacheKeyConstant.CACHE_RCVD_CONTAINER, command.getInsideContainerId().toString(), rcvdContainerCacheCommand, 60 * 60);
             }
