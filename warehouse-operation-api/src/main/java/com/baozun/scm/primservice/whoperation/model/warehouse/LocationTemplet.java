@@ -36,24 +36,6 @@ public class LocationTemplet extends BaseModel {
     private String templetCode;
     /** 库位模板名称 */
     private String templetName;
-    /** 长 */
-    private Double length;
-    /** 宽 */
-    private Double width;
-    /** 高 */
-    private Double high;
-    /** 长度单位 */
-    private String lengthUom;
-    /** 体积 */
-    private Double volume;
-    /** 体积单位 */
-    private String volumeUom;
-    /** 重量 */
-    private Double weight;
-    /** 重量单位 */
-    private String weightUom;
-    /** 尺寸类别 */
-    private String sizeType;
     /** 间隔符 */
     private String splitMark;
     /** 描述 */
@@ -91,77 +73,6 @@ public class LocationTemplet extends BaseModel {
         this.templetName = templetName;
     }
 
-    public Double getLength() {
-        return length;
-    }
-
-    public void setLength(Double length) {
-        this.length = length;
-    }
-
-    public Double getWidth() {
-        return width;
-    }
-
-    public void setWidth(Double width) {
-        this.width = width;
-    }
-
-    public Double getHigh() {
-        return high;
-    }
-
-    public void setHigh(Double high) {
-        this.high = high;
-    }
-
-    public String getLengthUom() {
-        return lengthUom;
-    }
-
-    public void setLengthUom(String lengthUom) {
-        this.lengthUom = lengthUom;
-    }
-
-    public Double getVolume() {
-        return volume;
-    }
-
-    public void setVolume(Double volume) {
-        this.volume = volume;
-    }
-
-    public String getVolumeUom() {
-        return volumeUom;
-    }
-
-    public void setVolumeUom(String volumeUom) {
-        this.volumeUom = volumeUom;
-    }
-
-    public Double getWeight() {
-        return weight;
-    }
-
-    public void setWeight(Double weight) {
-        this.weight = weight;
-    }
-
-    public String getWeightUom() {
-        return weightUom;
-    }
-
-    public void setWeightUom(String weightUom) {
-        this.weightUom = weightUom;
-    }
-
-    public String getSizeType() {
-        return sizeType;
-    }
-
-    public void setSizeType(String sizeType) {
-        this.sizeType = sizeType;
-    }
 
     public String getSplitMark() {
         return splitMark;
