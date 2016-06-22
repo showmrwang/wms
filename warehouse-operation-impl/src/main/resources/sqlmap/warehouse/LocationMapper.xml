@@ -49,7 +49,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	dimension8 as dimension8,
 	        	is_static as isStatic,
 	        	upBound as upBound,
-	        	downBound as downBound
+	        	downBound as downBound,
+	        	length as length,
+	        	width as width,
+	        	high as high,
+	        	volume as volume,
+	        	weight as weight,
+	        	size_type as sizeType,
+	        	tray_count as trayCount,
+	        	max_chaos_sku as maxChaosSku,
+	        	volume_rate as volumeRate
 	    ]]>
 	</sql>
 		<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
@@ -96,7 +105,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	dimension8,
 	        	is_static,
 	        	upBound,
-	        	downBound
+		        downBound,
+		        length,
+		        width,
+		        high,
+		        volume,
+		        weight,
+		        size_type,
+		        tray_count,
+		        max_chaos_sku,
+		        volume_rate
 	        ) VALUES (
 	        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -136,7 +154,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	#{dimension8,javaType=java.lang.String,jdbcType=VARCHAR},
 	        	#{isStatic,javaType=java.lang.Boolean,jdbcType=BIT}, 
 	        	#{upBound,javaType=java.lang.String,jdbcType=VARCHAR},
-	        	#{downBound,javaType=java.lang.String,jdbcType=VARCHAR} 
+		        #{downBound,javaType=java.lang.String,jdbcType=VARCHAR},
+		        #{length,javaType=java.lang.Double,jdbcType=DOUBLE},
+		        #{width,javaType=java.lang.Double,jdbcType=DOUBLE},
+		        #{high,javaType=java.lang.Double,jdbcType=DOUBLE},
+		        #{volume,javaType=java.lang.Double,jdbcType=DOUBLE},
+		        #{weight,javaType=java.lang.Double,jdbcType=DOUBLE},
+		        #{sizeType,javaType=java.lang.String,jdbcType=VARCHAR},
+		        #{trayCount,javaType=java.lang.Integer,jdbcType=INTEGER},
+		        #{maxChaosSku,javaType=java.lang.Long,jdbcType=BIGINT},
+		        #{volumeRate,javaType=java.lang.String,jdbcType=VARCHAR}   
 	        )
 	    ]]>
 
@@ -181,8 +208,17 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	dimension7=#{dimension7,javaType=java.lang.String,jdbcType=VARCHAR},
 	        	dimension8=#{dimension8,javaType=java.lang.String,jdbcType=VARCHAR},
 	        	isStatic=#{isStatic,javaType=java.lang.Boolean,jdbcType=BIT},
-	        	upBound=#{upBound,javaType=java.lang.String,jdbcType=VARCHAR},
-	        	downBound=#{downBound,javaType=java.lang.String,jdbcType=VARCHAR}  
+	        	upBound = #{upBound,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        downBound = #{downBound,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        length = #{length,javaType=java.lang.Double,jdbcType=DOUBLE} ,
+		        width = #{width,javaType=java.lang.Double,jdbcType=DOUBLE} ,
+		        high = #{high,javaType=java.lang.Double,jdbcType=DOUBLE} ,
+		        volume = #{volume,javaType=java.lang.Double,jdbcType=DOUBLE} ,
+		        weight = #{weight,javaType=java.lang.Double,jdbcType=DOUBLE} ,
+		        size_type = #{sizeType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        tray_count = #{trayCount,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        max_chaos_sku = #{maxChaosSku,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        volume_rate = #{volumeRate,javaType=java.lang.String,jdbcType=VARCHAR}   
 	        WHERE 
 		        id = #{id} 
 	    ]]>
@@ -341,6 +377,52 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				
 				<if test="isStatic!=null">
 					and is_static = #{isStatic}
+				</if>
+			       <if test="upBound!=null and upBound!=''">
+					and upBound = #{upBound}
+				</if>
+	       
+	       
+		       <if test="downBound!=null and downBound!=''">
+					and downBound = #{downBound}
+				</if>
+	       
+				<if test="length!=null">
+					and length = #{length}
+				</if>
+	       
+				<if test="width!=null">
+					and width = #{width}
+				</if>
+	       
+				<if test="high!=null">
+					and high = #{high}
+				</if>
+	       
+				<if test="volume!=null">
+					and volume = #{volume}
+				</if>
+	       
+				<if test="weight!=null">
+					and weight = #{weight}
+				</if>
+	       
+	       
+		       <if test="sizeType!=null and sizeType!=''">
+					and size_type = #{sizeType}
+				</if>
+	       
+				<if test="trayCount!=null">
+					and tray_count = #{trayCount}
+				</if>
+	       
+				<if test="maxChaosSku!=null">
+					and max_chaos_sku = #{maxChaosSku}
+				</if>
+	       
+	       
+		       <if test="volumeRate!=null and volumeRate!=''">
+					and volume_rate = #{volumeRate}
 				</if>
 		</where>
 	</sql>

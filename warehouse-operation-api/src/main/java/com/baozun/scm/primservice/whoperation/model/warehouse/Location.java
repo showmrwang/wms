@@ -98,6 +98,26 @@ public class Location extends BaseModel {
     private String upBound;
     /*下限*/
     private String downBound;
+    
+    /** 长度 */
+    private java.lang.Double length;
+    /** 宽 */
+    private java.lang.Double width;
+    /** 高 */
+    private java.lang.Double high;
+    /** 体积 */
+    private java.lang.Double volume;
+    /** 重量 */
+    private java.lang.Double weight;
+    /** 库位尺寸类型 */
+    private java.lang.String sizeType;
+    /** 托盘数 */
+    private java.lang.Integer trayCount;
+    /** 最大混放sku属性数 */
+    private java.lang.Long maxChaosSku;
+    /** 体积利用率 */
+    private java.lang.String volumeRate;
+    
     public Boolean getIsStatic() {
         return isStatic;
     }
@@ -402,9 +422,78 @@ public class Location extends BaseModel {
 		this.downBound = downBound;
 	}
 
+    public java.lang.Double getLength() {
+        return length;
+    }
+
+    public void setLength(java.lang.Double length) {
+        this.length = length;
+    }
+
+    public java.lang.Double getWidth() {
+        return width;
+    }
+
+    public void setWidth(java.lang.Double width) {
+        this.width = width;
+    }
+
+    public java.lang.Double getHigh() {
+        return high;
+    }
+
+    public void setHigh(java.lang.Double high) {
+        this.high = high;
+    }
+
+    public java.lang.Double getVolume() {
+        return volume;
+    }
+
+    public void setVolume(java.lang.Double volume) {
+        this.volume = volume;
+    }
+
+    public java.lang.Double getWeight() {
+        return weight;
+    }
+
+    public void setWeight(java.lang.Double weight) {
+        this.weight = weight;
+    }
+
+    public java.lang.Integer getTrayCount() {
+        return trayCount;
+    }
+
+    public void setTrayCount(java.lang.Integer trayCount) {
+        this.trayCount = trayCount;
+    }
+
+    public java.lang.Long getMaxChaosSku() {
+        return maxChaosSku;
+    }
+
+    public void setMaxChaosSku(java.lang.Long maxChaosSku) {
+        this.maxChaosSku = maxChaosSku;
+    }
+
+    public java.lang.String getVolumeRate() {
+        return volumeRate;
+    }
+
+    public void setVolumeRate(java.lang.String volumeRate) {
+        this.volumeRate = volumeRate;
+    }
+
+    public java.lang.String getSizeType() {
+        return sizeType;
+    }
+
+    public void setSizeType(java.lang.String sizeType) {
+        this.sizeType = sizeType;
+    }
+
     
-
-
-
     
 }

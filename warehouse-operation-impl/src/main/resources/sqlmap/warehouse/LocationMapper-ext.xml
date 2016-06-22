@@ -4,8 +4,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
 
 
-<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.WhLocationDao">
-	<resultMap id="LocationResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.Location">
+<mapper
+	namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.WhLocationDao">
+	<resultMap id="LocationResultExt"
+		type="com.baozun.scm.primservice.whoperation.model.warehouse.Location">
 	</resultMap>
 
 	<!-- 用于select查询公用抽取的列 -->
@@ -49,7 +51,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	dimension8 as dimension8,
 	        	is_static as isStatic,
 	        	upBound as upBound,
-	        	downBound as downBound
+	        	downBound as downBound,
+	        	length as length,
+	        	width as width,
+	        	high as high,
+	        	volume as volume,
+	        	weight as weight,
+	        	size_type as sizeType,
+	        	tray_count as trayCount,
+	        	max_chaos_sku as maxChaosSku,
+	        	volume_rate as volumeRate
 	    ]]>
 	</sql>
 
@@ -158,13 +169,61 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				and replenishment_barcode = #{replenishmentBarcode}
 			</if>
 			<if test="isStatic!=null">
-					and is_static = #{isStatic}
-				</if>
+				and is_static = #{isStatic}
+			</if>
+
+			<if test="upBound!=null and upBound!=''">
+				and upBound = #{upBound}
+			</if>
+
+
+			<if test="downBound!=null and downBound!=''">
+				and downBound = #{downBound}
+			</if>
+
+			<if test="length!=null">
+				and length = #{length}
+			</if>
+
+			<if test="width!=null">
+				and width = #{width}
+			</if>
+
+			<if test="high!=null">
+				and high = #{high}
+			</if>
+
+			<if test="volume!=null">
+				and volume = #{volume}
+			</if>
+
+			<if test="weight!=null">
+				and weight = #{weight}
+			</if>
+
+
+			<if test="sizeType!=null and sizeType!=''">
+				and size_type = #{sizeType}
+			</if>
+
+			<if test="trayCount!=null">
+				and tray_count = #{trayCount}
+			</if>
+
+			<if test="maxChaosSku!=null">
+				and max_chaos_sku = #{maxChaosSku}
+			</if>
+
+
+			<if test="volumeRate!=null and volumeRate!=''">
+				and volume_rate = #{volumeRate}
+			</if>
 		</where>
 	</sql>
 
 
-	<update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Location">
+	<update id="updateByVersion"
+		parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Location">
 		    <![CDATA[
 		        UPDATE t_wh_location SET
 			        code = #{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -192,7 +251,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        replenishment_barcode = #{replenishmentBarcode,javaType=java.lang.String,jdbcType=VARCHAR},
 			        is_static=#{isStatic,javaType=java.lang.Boolean,jdbcType=BIT},
 			        upBound=#{upBound,javaType=java.lang.String,jdbcType=VARCHAR},
-	        	   downBound=#{downBound,javaType=java.lang.String,jdbcType=VARCHAR}   
+	        	   downBound=#{downBound,javaType=java.lang.String,jdbcType=VARCHAR},
+	        	   length = #{length,javaType=java.lang.Double,jdbcType=DOUBLE} ,
+		        width = #{width,javaType=java.lang.Double,jdbcType=DOUBLE} ,
+		        high = #{high,javaType=java.lang.Double,jdbcType=DOUBLE} ,
+		        volume = #{volume,javaType=java.lang.Double,jdbcType=DOUBLE} ,
+		        weight = #{weight,javaType=java.lang.Double,jdbcType=DOUBLE} ,
+		        size_type = #{sizeType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        tray_count = #{trayCount,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        max_chaos_sku = #{maxChaosSku,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        volume_rate = #{volumeRate,javaType=java.lang.String,jdbcType=VARCHAR}     
 		        WHERE 
 			        id = #{id} 
 			        and ou_id = #{ouId}
@@ -246,49 +314,73 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	dimension6,
 	        	dimension7,
 	        	dimension8,
-	        	is_static
+	        	is_static,
+	        	upBound ,
+		        downBound ,
+		         length,
+		        width,
+		        high,
+		        volume,
+		        weight,
+		       size_type,
+		       tray_count,
+		       max_chaos_sku,
+		       volume_rate
 	        ) VALUES 
 ]]>
 		<foreach collection="list" item="item" index="index"
 			separator=",">
 			(
-	        	#{item.id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			#{item.id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			#{item.code,javaType=java.lang.String,jdbcType=VARCHAR} ,
-	        	#{item.barCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-	        	#{item.sysCompileCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-	        	#{item.manualCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-	        	#{item.ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-	        	#{item.shelfAreaId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-	        	#{item.allocateAreaId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-	        	#{item.workAreaId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-	        	#{item.statusId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-	        	#{item.isMixStacking,javaType=java.lang.Boolean,jdbcType=BIT} ,
-	        	#{item.mixStackingNumber,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-	        	#{item.isReplenishmentBarcode,javaType=java.lang.Boolean,jdbcType=BIT} ,
-	        	#{item.isValidMgt,javaType=java.lang.Boolean,jdbcType=BIT} ,
-	        	#{item.isBatchMgt,javaType=java.lang.Boolean,jdbcType=BIT} ,
-	        	#{item.isTrackVessel,javaType=java.lang.Boolean,jdbcType=BIT} ,
-	        	#{item.isTemporaryLocation,javaType=java.lang.Boolean,jdbcType=BIT} ,
-	        	#{item.templetCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-	        	#{item.createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-	        	#{item.lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-	        	#{item.operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-	        	#{item.lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-	        	#{item.shelfSort,javaType=java.lang.String,jdbcType=VARCHAR} ,
-	        	#{item.pickSort,javaType=java.lang.String,jdbcType=VARCHAR} ,
-	        	#{item.replenishmentBarcode,javaType=java.lang.String,jdbcType=VARCHAR},
-	        	#{item.temporaryCode,javaType=java.lang.String,jdbcType=VARCHAR},
-	        	#{item.latestSkuCode,javaType=java.lang.String,jdbcType=VARCHAR},
-	        	#{item.uuid,javaType=java.lang.String,jdbcType=VARCHAR},
-	        	#{item.dimension1,javaType=java.lang.String,jdbcType=VARCHAR},
-	        	#{item.dimension2,javaType=java.lang.String,jdbcType=VARCHAR},
-	        	#{item.dimension3,javaType=java.lang.String,jdbcType=VARCHAR},
-	        	#{item.dimension4,javaType=java.lang.String,jdbcType=VARCHAR},
-	        	#{item.dimension5,javaType=java.lang.String,jdbcType=VARCHAR},
-	        	#{item.dimension6,javaType=java.lang.String,jdbcType=VARCHAR},
-	        	#{item.dimension7,javaType=java.lang.String,jdbcType=VARCHAR},
-	        	#{item.dimension8,javaType=java.lang.String,jdbcType=VARCHAR},
-	        	#{isStatic,javaType=java.lang.Boolean,jdbcType=BIT} 
+			#{item.barCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			#{item.sysCompileCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			#{item.manualCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			#{item.ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			#{item.shelfAreaId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			#{item.allocateAreaId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			#{item.workAreaId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			#{item.statusId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			#{item.isMixStacking,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			#{item.mixStackingNumber,javaType=java.lang.Integer,jdbcType=INTEGER}
+			,
+			#{item.isReplenishmentBarcode,javaType=java.lang.Boolean,jdbcType=BIT}
+			,
+			#{item.isValidMgt,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			#{item.isBatchMgt,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			#{item.isTrackVessel,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			#{item.isTemporaryLocation,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			#{item.templetCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			#{item.createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+			#{item.lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+			#{item.operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			#{item.lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			#{item.shelfSort,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			#{item.pickSort,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			#{item.replenishmentBarcode,javaType=java.lang.String,jdbcType=VARCHAR},
+			#{item.temporaryCode,javaType=java.lang.String,jdbcType=VARCHAR},
+			#{item.latestSkuCode,javaType=java.lang.String,jdbcType=VARCHAR},
+			#{item.uuid,javaType=java.lang.String,jdbcType=VARCHAR},
+			#{item.dimension1,javaType=java.lang.String,jdbcType=VARCHAR},
+			#{item.dimension2,javaType=java.lang.String,jdbcType=VARCHAR},
+			#{item.dimension3,javaType=java.lang.String,jdbcType=VARCHAR},
+			#{item.dimension4,javaType=java.lang.String,jdbcType=VARCHAR},
+			#{item.dimension5,javaType=java.lang.String,jdbcType=VARCHAR},
+			#{item.dimension6,javaType=java.lang.String,jdbcType=VARCHAR},
+			#{item.dimension7,javaType=java.lang.String,jdbcType=VARCHAR},
+			#{item.dimension8,javaType=java.lang.String,jdbcType=VARCHAR},
+			#{isStatic,javaType=java.lang.Boolean,jdbcType=BIT},
+			#{upBound,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			#{downBound,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			#{length,javaType=java.lang.Double,jdbcType=DOUBLE},
+			#{width,javaType=java.lang.Double,jdbcType=DOUBLE},
+			#{high,javaType=java.lang.Double,jdbcType=DOUBLE},
+			#{volume,javaType=java.lang.Double,jdbcType=DOUBLE},
+			#{weight,javaType=java.lang.Double,jdbcType=DOUBLE},
+			#{sizeType,javaType=java.lang.String,jdbcType=VARCHAR},
+			#{trayCount,javaType=java.lang.Integer,jdbcType=INTEGER},
+			#{maxChaosSku,javaType=java.lang.Long,jdbcType=BIGINT},
+			#{volumeRate,javaType=java.lang.String,jdbcType=VARCHAR}
 			)
 		</foreach>
 	</insert>
@@ -343,7 +435,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			</if>
 
 			<if test="isReplenishmentBarcode!=null">
-				and l.is_replenishment_barcode = #{isReplenishmentBarcode}
+				and l.is_replenishment_barcode =
+				#{isReplenishmentBarcode}
 			</if>
 
 			<if test="isValidMgt!=null">
@@ -406,21 +499,49 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<if test="uuid!=null and uuid!=''">
 				and l.uuid = #{uuid}
 			</if>
-			
+
 			<if test="code1!=null and code1!=''">
 				and l.code like #{code1}
 			</if>
-			
+
 			<if test="templetName1!=null and templetName1!=''">
 				and temp.templet_name like #{templetName1}
 			</if>
-			
+
 			<if test="templetCode1!=null and templetCode1!=''">
 				and l.templet_code like #{templetCode1}
 			</if>
 			<if test="isStatic!=null">
-					and l.is_static = #{isStatic}
-				</if>
+				and l.is_static = #{isStatic}
+			</if>
+			<if test="upBound!=null and upBound!=''">
+				and upBound = #{upBound}
+			</if>
+
+
+			<if test="downBound!=null and downBound!=''">
+				and downBound = #{downBound}
+			</if>
+
+			<if test="length!=null">
+				and length = #{length}
+			</if>
+
+			<if test="width!=null">
+				and width = #{width}
+			</if>
+
+			<if test="high!=null">
+				and high = #{high}
+			</if>
+
+			<if test="volume!=null">
+				and volume = #{volume}
+			</if>
+
+			<if test="weight!=null">
+				and weight = #{weight}
+			</if>
 		</where>
 	</sql>
 
@@ -460,12 +581,22 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	area2.area_name as allocateArea,
 	        	area3.area_name as workArea,
 	        	status.name as status,
-	        	upBound as upBound,
-	        	downBound as downBound
+	        	l.upBound as upBound,
+	        	l.downBound as downBound,
+	        	l.length as length,
+	        	l.width as width,
+	        	l.high as high,
+	        	l.volume as volume,
+	        	l.weight as weight,
+	        	l.size_type as sizeType,
+	        	l.tray_count as trayCount,
+	        	l.max_chaos_sku as maxChaosSku,
+	        	l.volume_rate as volumeRate
 	    ]]>
 	</sql>
 
-	<update id="batchUpdateLifeCycle" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Location">
+	<update id="batchUpdateLifeCycle"
+		parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Location">
 		UPDATE t_wh_location location SET location.lifecycle = #{lifecycle},
 		location.last_modify_time = #{modifyDate},
 		operator_id = #{userId}
@@ -481,14 +612,19 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		select count(*)
 		from t_wh_location l
 		left join t_wh_area area1
-		on l.shelf_area_id = area1.id
-		left join t_wh_area area2 on l.allocate_area_id = area2.id
+		on
+		l.shelf_area_id = area1.id
+		left join t_wh_area area2 on
+		l.allocate_area_id = area2.id
 		left join
-		t_wh_area area3 on l.work_area_id = area3.id
+		t_wh_area area3 on
+		l.work_area_id = area3.id
 		left join
-		t_wh_inventory_status status on l.status_id = status.id
+		t_wh_inventory_status status on
+		l.status_id = status.id
 		left join
-		t_wh_location_templet temp on l.templet_code = temp.templet_code
+		t_wh_location_templet temp on
+		l.templet_code = temp.templet_code
 		<include refid="locationCommandDynamicWhereExt" />
 	</select>
 
@@ -498,7 +634,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		<include refid="locationCommandColumnsExt" />
 		from t_wh_location l
 		left join t_wh_area area1
-		on l.shelf_area_id = area1.id
+		on l.shelf_area_id =
+		area1.id
 		left join t_wh_area area2 on l.allocate_area_id = area2.id
 		left join
 		t_wh_area area3 on l.work_area_id = area3.id
@@ -511,41 +648,51 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 
 	<select id="findLocationCommandByParam" resultMap="locationCommondResult">
 		select
-		<include refid="locationCommandColumnsExt" />,
-		(case (select count(*) from t_wh_sku_inventory si where si.ou_id=l.ou_id and si.location_id=l.id) when 0 then 0 else 1 end) as isOccupiedInventory
+		<include refid="locationCommandColumnsExt" />
+		,
+		(case (select count(*) from t_wh_sku_inventory si where
+		si.ou_id=l.ou_id and si.location_id=l.id) when 0 then 0 else 1 end) as
+		isOccupiedInventory
 		from t_wh_location l
 		left join t_wh_area area1
-		on l.shelf_area_id = area1.id
-		left join t_wh_area area2 on l.allocate_area_id = area2.id
+		on
+		l.shelf_area_id = area1.id
+		left join t_wh_area area2 on
+		l.allocate_area_id = area2.id
 		left join
-		t_wh_area area3 on l.work_area_id = area3.id
+		t_wh_area area3 on
+		l.work_area_id = area3.id
 		left join
-		t_wh_inventory_status status on l.status_id = status.id
+		t_wh_inventory_status status on
+		l.status_id = status.id
 		left join
-		t_wh_location_templet temp on l.templet_code = temp.templet_code
+		t_wh_location_templet temp on
+		l.templet_code = temp.templet_code
 		where
 		l.id = #{id}
-		and l.ou_id = #{ouId}
+		and l.ou_id =
+		#{ouId}
 	</select>
 	<delete id="deleteByParams" parameterType="map">
-	        delete from t_wh_location 
-			where ou_id=#{ouId} and uuid=#{uuid}
+		delete from
+		t_wh_location
+		where ou_id=#{ouId} and uuid=#{uuid}
 	</delete>
-	
+
 	<update id="batchUpdateByVersion" parameterType="map">
 	 <![CDATA[
 		UPDATE t_wh_location l
 		set 
 		]]>
-				<if test="#{isAllocated}">
+		<if test="#{isAllocated}">
 					 <![CDATA[allocate_area_id = #{location.allocateAreaId,javaType=java.lang.Long,jdbcType=BIGINT},]]>
-				</if>
-				<if test="#{isWorked}">
+		</if>
+		<if test="#{isWorked}">
 					 <![CDATA[work_area_id = #{location.workAreaId,javaType=java.lang.Long,jdbcType=BIGINT},]]>
-				</if>
-				<if test="#{isShelfed}">
+		</if>
+		<if test="#{isShelfed}">
 					<![CDATA[ shelf_area_id = #{location.shelfAreaId,javaType=java.lang.Long,jdbcType=BIGINT},]]>
-				</if>
+		</if>
 				<![CDATA[
 				 status_id = IFNULL(#{location.statusId,javaType=java.lang.Long,jdbcType=BIGINT},status_id),
 				 is_mix_stacking = IFNULL(#{location.isMixStacking,javaType=java.lang.Boolean,jdbcType=BIT},is_mix_stacking),
@@ -558,103 +705,122 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				 is_static= IFNULL(#{location.isStatic,javaType=java.lang.Boolean,jdbcType=BIT},is_static),
 				 operator_id = IFNULL(#{location.operatorId,javaType=java.lang.Long,jdbcType=BIGINT},operator_id)
 				where ]]>
-				l.ou_id =#{ouId} 
+		l.ou_id =#{ouId} 
 				<![CDATA[
 				and l.code in
 				]]>
-				 	<foreach collection="list" item="item" open="("
-						separator="," close=")">
+		<foreach collection="list" item="item" open="(" separator=","
+			close=")">
 						<![CDATA[#{item}]]>
-					</foreach>
+		</foreach>
 			 <![CDATA[		
 					and last_modify_time < #{location.lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP}
 					]]>
-		
+
 	</update>
 	<select id="findByCodeRange" parameterType="map" resultMap="LocationResultExt">
-			select <include refid="locationColumnsExt" />
-			    from t_wh_location l
-		    where l.ou_id=#{ouId} and l.code in
-		    <foreach collection="list" item="item" open="("
-						separator="," close=")">
-						#{item}
-					</foreach>
-		</select>
-		
-	<select id="findLocationByCode" parameterType="map" resultMap="LocationResultExt">
-			select <include refid="locationColumnsExt" />
-			    from t_wh_location l
-		    where l.ou_id=#{ouId} and l.code=#{code}
-		</select>
-	
-	<select id="findWrongListbyCode" parameterType="map"  resultMap="LocationResultExt" flushCache="false">
-			select <include refid="locationColumnsExt" />
-			    from t_wh_location
-		        where ou_id=#{ouId} and code in
-				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
-#{item}				</foreach>					
-		</select>	
-		
-		
-		<update id="batchDeleteByVersion" parameterType="map">
+		select
+		<include refid="locationColumnsExt" />
+		from t_wh_location l
+		where l.ou_id=#{ouId} and l.code in
+		<foreach collection="list" item="item" open="(" separator=","
+			close=")">
+			#{item}
+		</foreach>
+	</select>
+
+	<select id="findLocationByCode" parameterType="map"
+		resultMap="LocationResultExt">
+		select
+		<include refid="locationColumnsExt" />
+		from t_wh_location l
+		where l.ou_id=#{ouId} and l.code=#{code}
+	</select>
+
+	<select id="findWrongListbyCode" parameterType="map"
+		resultMap="LocationResultExt" flushCache="false">
+		select
+		<include refid="locationColumnsExt" />
+		from t_wh_location
+		where ou_id=#{ouId} and code in
+		<foreach item="item" index="index" collection="list" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+
+
+	<update id="batchDeleteByVersion" parameterType="map">
 	 <![CDATA[
 		DELETE FROM t_wh_location 
 			WHERE ou_id=#{ouId} and code IN
 			]]>
-			 	<foreach collection="list" item="item" open="("
-					separator="," close=")">
+		<foreach collection="list" item="item" open="(" separator=","
+			close=")">
 					<![CDATA[#{item}]]>
-				</foreach>
+		</foreach>
 		 <![CDATA[		
 				and last_modify_time < #{date,javaType=java.util.Date,jdbcType=TIMESTAMP}
 				]]>
-		
+
 	</update>
-	
+
 	<update id="batchDeleteSelected" parameterType="map">
 	 <![CDATA[
 		DELETE FROM t_wh_location 
 			WHERE ou_id=#{ouId} and id IN
 			]]>
-			 	<foreach collection="list" item="item" open="("
-					separator="," close=")">
+		<foreach collection="list" item="item" open="(" separator=","
+			close=")">
 					<![CDATA[#{item}]]>
-				</foreach>
+		</foreach>
 		 <![CDATA[		
 				and last_modify_time < #{date,javaType=java.util.Date,jdbcType=TIMESTAMP}
 				]]>
-		
+
 	</update>
-	
-	<select id="findByIdExt" parameterType="java.lang.Long" resultMap="LocationResult" flushCache="false">
-			select <include refid="locationColumns" />
+
+	<select id="findByIdExt" parameterType="java.lang.Long"
+		resultMap="LocationResult" flushCache="false">
+		select
+		<include refid="locationColumns" />
 		    <![CDATA[
 			    from t_wh_location 
 		        where 
 		        id = #{id} 
 		        and ou_id = #{ouId}
 		    ]]>
-		</select>
-	
-	 <select id="findListByParamExt" parameterType="com.baozun.scm.primservice.whoperation.command.warehouse.LocationCommand" resultMap="locationCommondResult">
-    	select <include refid="locationColumnsExt" />
-    	<if test="isFuzzy==1">
-    	,((case  l.is_mix_stacking  when 0 then 1 else IFNULL(l.mix_stacking_number,0) end )-(select count(1) from t_wh_sku_location sl where sl.location_id=l.id)) as availableMixCount
-    	</if>
-	    from t_wh_location l
-		<include refid="locationDynamicWhereExt"/>
-		
+	</select>
+
+	<select id="findListByParamExt"
+		parameterType="com.baozun.scm.primservice.whoperation.command.warehouse.LocationCommand"
+		resultMap="locationCommondResult">
+		select
+		<include refid="locationColumnsExt" />
+		<if test="isFuzzy==1">
+			,((case l.is_mix_stacking when 0 then 1 else
+			IFNULL(l.mix_stacking_number,0)
+			end )-(select count(1) from
+			t_wh_sku_location sl where
+			sl.location_id=l.id)) as availableMixCount
+		</if>
+		from t_wh_location l
+		<include refid="locationDynamicWhereExt" />
+
 		<if test="lineNum!=null and lineNum!=0 ">
 			limit 0,#{lineNum}
 		</if>
-    </select>
-    <delete id="deleteByIdOuId" parameterType="map">
-	        delete from t_wh_location 
-			where ou_id=#{ouId} and id=#{id}
+	</select>
+	<delete id="deleteByIdOuId" parameterType="map">
+		delete from
+		t_wh_location
+		where ou_id=#{ouId} and id=#{id}
 	</delete>
-	
-	<select id="findAllEmptyLocsByAreaId" resultMap="locationCommondResult" flushCache="false">
-			select <include refid="locationColumnsExt" />
+
+	<select id="findAllEmptyLocsByAreaId" resultMap="locationCommondResult"
+		flushCache="false">
+		select
+		<include refid="locationColumnsExt" />
 		    <![CDATA[
 			    from t_wh_location loc
 		        where 
@@ -680,9 +846,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    ]]>
 		       
 	</select>
-	
-	<select id="findAllStaticLocsByAreaId" resultMap="locationCommondResult" flushCache="false">
-			select <include refid="locationColumnsExt" />
+
+	<select id="findAllStaticLocsByAreaId" resultMap="locationCommondResult"
+		flushCache="false">
+		select
+		<include refid="locationColumnsExt" />
 		    <![CDATA[
 			    from t_wh_location loc
 		        where 
@@ -693,10 +861,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        and ${cSql}
 		    ]]>
 	</select>
-	
-	
-	<select id="findAllInvLocsByAreaIdAndSameAttrs" resultMap="locationCommondResult" flushCache="false">
-			select <include refid="locationColumnsExt" />
+
+
+	<select id="findAllInvLocsByAreaIdAndSameAttrs" resultMap="locationCommondResult"
+		flushCache="false">
+		select
+		<include refid="locationColumnsExt" />
 		    <![CDATA[
 			    from t_wh_location loc
 		        where 
@@ -706,9 +876,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        and ${cSql}
 		    ]]>
 	</select>
-	
-	<select id="findAllInvLocsByAreaIdAndDiffAttrs" resultMap="locationCommondResult" flushCache="false">
-			select <include refid="locationColumnsExt" />
+
+	<select id="findAllInvLocsByAreaIdAndDiffAttrs" resultMap="locationCommondResult"
+		flushCache="false">
+		select
+		<include refid="locationColumnsExt" />
 		    <![CDATA[
 			    from t_wh_location loc
 		        where 
@@ -718,9 +890,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        and ${cSql}
 		    ]]>
 	</select>
-	
-	<select id="findAllAvailableLocsByAreaId" resultMap="locationCommondResult" flushCache="false">
-			select <include refid="locationColumnsExt" />
+
+	<select id="findAllAvailableLocsByAreaId" resultMap="locationCommondResult"
+		flushCache="false">
+		select
+		<include refid="locationColumnsExt" />
 		    <![CDATA[
 			    from t_wh_location loc
 		        where 
@@ -730,5 +904,5 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        and ${cSql}
 		    ]]>
 	</select>
-	
+
 </mapper>
