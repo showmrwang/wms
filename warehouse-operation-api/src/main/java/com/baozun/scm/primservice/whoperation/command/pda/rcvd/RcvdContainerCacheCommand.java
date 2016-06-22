@@ -36,7 +36,16 @@ public class RcvdContainerCacheCommand implements Serializable {
     private String SkuId;
     /** 用户ID */
     private Long userId;
+    /** OUID */
+    private Long ouId;
 
+    public Long getOuId() {
+        return ouId;
+    }
+
+    public void setOuId(Long ouId) {
+        this.ouId = ouId;
+    }
     public Long getUserId() {
         return userId;
     }

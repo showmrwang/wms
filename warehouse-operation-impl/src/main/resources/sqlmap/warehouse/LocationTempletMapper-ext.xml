@@ -15,15 +15,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	ou_id as ouId,
 	        	templet_code as templetCode,
 	        	templet_name as templetName,
-	        	length as length,
-	        	width as width,
-	        	high as high,
-	        	length_uom as lengthUom,
-	        	volume as volume,
-	        	volume_uom as volumeUom,
-	        	weight as weight,
-	        	weight_uom as weightUom,
-	        	size_type as sizeType,
 	        	split_mark as splitMark,
 	        	description as description,
 	        	create_time as createTime,
@@ -54,47 +45,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		       <if test="templetName!=null and templetName!=''">
 					and templet_name = #{templetName}
 				</if>
-	       
-				<if test="length!=null">
-					and length = #{length}
-				</if>
-	       
-				<if test="width!=null">
-					and width = #{width}
-				</if>
-	       
-				<if test="high!=null">
-					and high = #{high}
-				</if>
-	       
-	       
-		       <if test="lengthUom!=null and lengthUom!=''">
-					and length_uom = #{lengthUom}
-				</if>
-	       
-				<if test="volume!=null">
-					and volume = #{volume}
-				</if>
-	       
-	       
-		       <if test="volumeUom!=null and volumeUom!=''">
-					and volume_uom = #{volumeUom}
-				</if>
-	       
-				<if test="weight!=null">
-					and weight = #{weight}
-				</if>
-	       
-	       
-		       <if test="weightUom!=null and weightUom!=''">
-					and weight_uom = #{weightUom}
-				</if>
-	       
-	       
-		       <if test="sizeType!=null and sizeType!=''">
-					and size_type = #{sizeType}
-				</if>
-	       
 	       
 		       <if test="splitMark!=null and splitMark!=''">
 					and split_mark = #{splitMark}
@@ -190,15 +140,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        UPDATE t_wh_location_templet SET
 			        templet_code = #{templetCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        templet_name = #{templetName,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        length = #{length,javaType=java.lang.Double,jdbcType=DECIMAL} ,
-			        width = #{width,javaType=java.lang.Double,jdbcType=DECIMAL} ,
-			        high = #{high,javaType=java.lang.Double,jdbcType=DECIMAL} ,
-			        length_uom = #{lengthUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        volume = #{volume,javaType=java.lang.Double,jdbcType=DECIMAL} ,
-			        volume_uom = #{volumeUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        weight = #{weight,javaType=java.lang.Double,jdbcType=DECIMAL} ,
-			        weight_uom = #{weightUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        size_type = #{sizeType,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        split_mark = #{splitMark,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        description = #{description,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
@@ -263,15 +204,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        UPDATE t_wh_location_templet SET
 		        templet_code = #{templetCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        templet_name = #{templetName,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        length = #{length,javaType=java.lang.Double,jdbcType=DECIMAL} ,
-		        width = #{width,javaType=java.lang.Double,jdbcType=DECIMAL} ,
-		        high = #{high,javaType=java.lang.Double,jdbcType=DECIMAL} ,
-		        length_uom = #{lengthUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        volume = #{volume,javaType=java.lang.Double,jdbcType=DECIMAL} ,
-		        volume_uom = #{volumeUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        weight = #{weight,javaType=java.lang.Double,jdbcType=DECIMAL} ,
-		        weight_uom = #{weightUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        size_type = #{sizeType,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        split_mark = #{splitMark,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        description = #{description,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
