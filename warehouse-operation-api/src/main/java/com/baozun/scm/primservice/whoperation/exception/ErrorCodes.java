@@ -232,6 +232,16 @@ public class ErrorCodes {
     public static final int COMMON_STORE_NOT_FOUND_ERROR = 5013;
     /** 仓库信息不存在！ */
     public static final int COMMON_WAREHOUSE_NOT_FOUND_ERROR = 5014;
+    /** 内部容器信息不存在！ */
+    public static final int COMMON_INSIDE_CONTAINER_IS_NOT_EXISTS = 5015;
+    /** 外部容器信息不存在！ */
+    public static final int COMMON_OUTER_CONTAINER_IS_NOT_EXISTS = 5016;
+    /** 内部容器状态不可用！ */
+    public static final int COMMON_INSIDE_CONTAINER_LIFECYCLE_IS_NOT_NORMAL = 5017;
+    /** 菜单功能信息不存在！ */
+    public static final int COMMON_FUNCTION_IS_NULL_ERROR = 5018;
+    /** 菜单功能参数信息不存在！ */
+    public static final int COMMON_FUNCTION_CONF_IS_NULL_ERROR = 5019;
     // 5001-10000 common end
 
     // 10001-20000 luyimin

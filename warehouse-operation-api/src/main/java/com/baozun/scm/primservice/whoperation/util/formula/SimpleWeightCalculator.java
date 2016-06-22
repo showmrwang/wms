@@ -15,6 +15,7 @@
 package com.baozun.scm.primservice.whoperation.util.formula;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -53,10 +54,12 @@ public class SimpleWeightCalculator {
         uomConversion.put(sysUom, sysUomValue);
         if (null != uomConversionRate) {
             uomConversion.putAll(uomConversionRate);
-            Set<String> uoms = uomConversionRate.keySet();
+            Set<String> uoms = new HashSet<String>();
+            Set<String> keys = uomConversionRate.keySet();
+            uoms.addAll(keys);
             uoms.add(sysUom);
             uomCache = new String[] {};
-            uoms.toArray(uomCache);
+            uomCache = uoms.toArray(uomCache);
         }
         defaultUom = dUom;
         defaultUomConversion = uomConversion.get(dUom);
@@ -107,7 +110,7 @@ public class SimpleWeightCalculator {
     }
 
     public Double calculateStuffWeight(Double actualWeight) {
-        return calculateStuffWeight(actualWeight, sysUom);
+        return calculateStuffWeight(actualWeight, defaultUom);
     }
 
     public Double calculateStuffWeight(Double actualWeight, String actualUom) {
@@ -116,12 +119,12 @@ public class SimpleWeightCalculator {
     }
 
     public Double accumulationStuffWeight(Double actualWeight) {
-        return accumulationStuffWeight(actualWeight, sysUom);
+        return accumulationStuffWeight(actualWeight, defaultUom);
     }
 
     public Double accumulationStuffWeight(Double actualWeight, String actualUom) {
         if (false == isInitStuffWeight()) {
-            initStuffWeight(0.0, sysUom);
+            initStuffWeight(0.0, defaultUom);
         }
         Double rw = uomConversion(actualUom, actualWeight);
         addStuffWeight(rw);

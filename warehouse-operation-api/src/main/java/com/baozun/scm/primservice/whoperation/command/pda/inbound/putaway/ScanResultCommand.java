@@ -20,7 +20,7 @@ import com.baozun.scm.primservice.whoperation.command.BaseCommand;
  * @author lichuan
  *
  */
-public class ScanContainerResultCommand extends BaseCommand {
+public class ScanResultCommand extends BaseCommand {
 
     private static final long serialVersionUID = -7534090365486133862L;
 
@@ -48,6 +48,10 @@ public class ScanContainerResultCommand extends BaseCommand {
     private String outerContainerCode;
     /** 容器类型 1：外部容器 2：内部容器 */
     private int containerType;
+    /** 是否需要上架 */
+    private boolean isNeedPutaway;
+    /** 是否已执行上架 */
+    private boolean isPutaway;
 
     public int getPutawayPatternType() {
         return putawayPatternType;
@@ -144,6 +148,22 @@ public class ScanContainerResultCommand extends BaseCommand {
     public void setContainerType(int containerType) {
         this.containerType = containerType;
     }
-    
+
+    public boolean isNeedPutaway() {
+        return isNeedPutaway;
+    }
+
+    public void setNeedPutaway(boolean isNeedPutaway) {
+        this.isNeedPutaway = isNeedPutaway;
+    }
+
+    public boolean isPutaway() {
+        return isPutaway;
+    }
+
+    public void setPutaway(boolean isPutaway) {
+        this.isPutaway = isPutaway;
+    }
+
 
 }

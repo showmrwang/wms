@@ -602,13 +602,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					inv.inbound_time as inboundTime,
 	        		inv.last_modify_time as lastModifyTime
 					from 
-					t_wh_sku_inventory inv,
-					t_wh_asn asn,
+					t_wh_asn asn,	
+					t_wh_sku_inventory inv
 					left join t_wh_container c on c.id = inv.outer_container_id
 					where 
 						inv.occupation_code is not null 
-						and inv.occupation_code=asn.asn_code and (asn.status=4 or asn.status=10)
-					inv.ou_id = #{ouid}
+						and asn.asn_code = inv.occupation_code
+						and (asn.status=4 or asn.status=10)
+					    and inv.ou_id = #{ouid}
 					and c.code in 
 					<foreach item="item" index="index" collection="containerList" open="(" separator="," close=")">
 			            #{item}
@@ -904,16 +905,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     
     <select id="findRcvdInventoryCountsByOuterContainerId" resultType="Integer">
 		select count(1) from t_wh_sku_inventory inv,t_wh_asn asn where inv.occupation_code is not null 
-			and inv.ou_id=#{ouId}
+			and inv.ou_id=#{ouid}
 			and inv.occupation_code=asn.asn_code and (asn.status=4 or asn.status=10)
-			and exists (select 1 from t_wh_sku_inventory invs where invs.occupation_code=inv.occupation_code and invs.ou_id=inv.ou_id and invs.outer_container_id=#{outerContainerId})		
+			and exists (select 1 from t_wh_sku_inventory invs where invs.occupation_code=inv.occupation_code and invs.ou_id=inv.ou_id and invs.outer_container_id=#{outerContainerid})		
 	</select>
 	
 	 <select id="findRcvdInventoryCountsByInsideContainerId" resultType="Integer">
 		select count(1) from t_wh_sku_inventory inv,t_wh_asn asn where inv.occupation_code is not null 
-			and inv.ou_id=#{ouId}
+			and inv.ou_id=#{ouid}
 			and inv.occupation_code=asn.asn_code and (asn.status=4 or asn.status=10)
-			and exists (select 1 from t_wh_sku_inventory invs where invs.inside_container_id=inv.occupation_code and invs.ou_id=inv.ou_id and invs.outer_container_id=#{outerContainerId})		
+			and exists (select 1 from t_wh_sku_inventory invs where invs.inside_container_id=inv.occupation_code and invs.ou_id=inv.ou_id and invs.outer_container_id=#{insideContainerid})		
 	</select>
 	
 	<select id="findWhSkuInventoryByLocIdAndOuId" resultMap="WhSkuInventoryResultExt" flushCache="false">

@@ -16,6 +16,7 @@ package com.baozun.scm.primservice.whoperation.util.formula;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -86,10 +87,12 @@ public class SimpleCubeCalculator {
         uomConversion.put(sysUom, sysUomValue);
         if (null != uomConversionRate) {
             uomConversion.putAll(uomConversionRate);
-            Set<String> uoms = uomConversionRate.keySet();
+            Set<String> uoms = new HashSet<String>();
+            Set<String> keys = uomConversionRate.keySet();
+            uoms.addAll(keys);
             uoms.add(sysUom);
             uomCache = new String[] {};
-            uoms.toArray(uomCache);
+            uomCache = uoms.toArray(uomCache);
         }
         isUomSupport(dUom);
         defaultUom = dUom;
@@ -144,7 +147,7 @@ public class SimpleCubeCalculator {
     }
 
     public Double calculateStuffVolume(Double actualX, Double actualY, Double actualZ) {
-        return calculateStuffVolume(actualX, actualY, actualZ, sysUom);
+        return calculateStuffVolume(actualX, actualY, actualZ, defaultUom);
     }
 
     public Double calculateStuffVolume(Double actualX, Double actualY, Double actualZ, String actualUom) {
@@ -157,12 +160,12 @@ public class SimpleCubeCalculator {
     }
 
     public Double accumulationStuffVolume(Double actualX, Double actualY, Double actualZ) {
-        return accumulationStuffVolume(actualX, actualY, actualZ, sysUom);
+        return accumulationStuffVolume(actualX, actualY, actualZ, defaultUom);
     }
 
     public Double accumulationStuffVolume(Double actualX, Double actualY, Double actualZ, String actualUom) {
         if (false == isInitStuffCube()) {
-            initStuffCube(0.0, 0.0, 0.0, sysUom);
+            initStuffCube(0.0, 0.0, 0.0, defaultUom);
         }
         Double cubage = getCubage();
         Double ax = uomConversion(actualUom, actualX);
