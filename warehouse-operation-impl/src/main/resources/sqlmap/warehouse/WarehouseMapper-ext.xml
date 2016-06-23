@@ -60,12 +60,13 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			  	is_sortation_container_assign as isSortationContainerAssign,
 	        	is_repeatedly_outbound as isRepeatedlyOutbound, 
 	        	is_tabb_inv_total as isTabbInvTotal,
-	        	
-	        	
+
 	        	default_length_uom_type as defaultLengthUomType,
 	        	default_weight_uom_type as defaultWeightUomType,
 	        	default_volume_uom_type as defaultVolumeUomType,
 	        	default_area_uom_type as defaultAreaUomType,
+	        	
+	        	is_generate_inventory_task as isGenerateInventoryTask,
 	        	
 	        	lifecycle as lifecycle
 	    ]]>
@@ -205,7 +206,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			
 			
 			
-			
 			<if test="defaultLengthUomType!=null">
 					and default_length_uom_type = #{defaultLengthUomType}
 			</if>
@@ -222,6 +222,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					and default_area_uom_type = #{defaultAreaUomType}
 			</if>
 			
+			<if test="isGenerateInventoryTask!=null">
+					and is_generate_inventory_task = #{isGenerateInventoryTask}
+			</if>
 
 			<if test="lifecycle!=null">
 				and lifecycle = #{lifecycle}
@@ -334,6 +337,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	w.default_weight_uom_type as defaultWeightUomType,
 	        	w.default_volume_uom_type as defaultVolumeUomType,
 	        	w.default_area_uom_type as defaultAreaUomType,
+	        	
+	        	w.is_generate_inventory_task as isGenerateInventoryTask,
 
 				w.lifecycle as lifecycle,
 	        	ou.parent_ou_id as parentOuId,
@@ -442,6 +447,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	default_weight_uom_type = #{defaultWeightUomType,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		       		default_volume_uom_type = #{defaultVolumeUomType,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	default_area_uom_type = #{defaultAreaUomType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        
+			        is_generate_inventory_task = #{isGenerateInventoryTask,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        
 			        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
 		        WHERE 

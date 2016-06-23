@@ -137,6 +137,19 @@ public class Warehouse extends BaseModel {
     private Long defaultAreaUomType;
 
     
+    /** 拣货出现差异是否生成盘点任务 */
+    private Boolean isGenerateInventoryTask;
+    
+    public Boolean getIsGenerateInventoryTask() {
+        return isGenerateInventoryTask;
+    }
+
+    public void setIsGenerateInventoryTask(Boolean isGenerateInventoryTask) {
+        this.isGenerateInventoryTask = isGenerateInventoryTask;
+    }
+    
+    
+    
     public Long getDefaultLengthUomType() {
         return defaultLengthUomType;
     }

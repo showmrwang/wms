@@ -66,6 +66,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	default_volume_uom_type as defaultVolumeUomType,
 	        	default_area_uom_type as defaultAreaUomType,
 				
+				is_generate_inventory_task as isGenerateInventoryTask,
 
 	        	lifecycle as lifecycle
 	    ]]>
@@ -129,6 +130,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	default_volume_uom_type,
 	        	default_area_uom_type,
 	        	
+	        	is_generate_inventory_task,
+	        	
 	        	lifecycle 
 	        ) VALUES (
 	        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -184,6 +187,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        #{defaultWeightUomType,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        #{defaultVolumeUomType,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        #{defaultAreaUomType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	
+	        	#{isGenerateInventoryTask,javaType=java.lang.Boolean,jdbcType=BIT} ,
 	        	
 	        	#{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
 	       
@@ -248,6 +253,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	default_weight_uom_type = #{defaultWeightUomType,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		       		default_volume_uom_type = #{defaultVolumeUomType,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	default_area_uom_type = #{defaultAreaUomType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	
+		        	is_generate_inventory_task = #{isGenerateInventoryTask,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        
 			        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
 	        WHERE 
@@ -441,6 +448,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			</if>
 			
 			
+			<if test="isGenerateInventoryTask!=null">
+					and is_generate_inventory_task = #{isGenerateInventoryTask}
+			</if>
 			
 			
 			<if test="lifecycle!=null">
