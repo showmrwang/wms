@@ -638,13 +638,13 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                 throw new BusinessException(ErrorCodes.COMMON_CONTAINER_IS_NOT_EXISTS);
             }
             // 验证容器状态是否可用
-            if (!BaseModel.LIFECYCLE_NORMAL.equals(insideContainer.getLifecycle()) || ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED != insideContainer.getLifecycle()) {
+            if (!BaseModel.LIFECYCLE_NORMAL.equals(insideContainer.getLifecycle()) && ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED != insideContainer.getLifecycle()) {
                 log.error("container lifecycle is not normal, logId is:[{}]", logId);
                 throw new BusinessException(ErrorCodes.COMMON_CONTAINER_LIFECYCLE_IS_NOT_NORMAL);
             }
             // 获取容器状态
             Integer containerStatus = insideContainer.getStatus();
-            if (ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY != containerStatus || ContainerStatus.CONTAINER_STATUS_PUTAWAY != containerStatus) {
+            if (ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY != containerStatus && ContainerStatus.CONTAINER_STATUS_PUTAWAY != containerStatus) {
                 log.error("container status is invalid, containerStatus is:[{}], logId is:[{}]", containerStatus, logId);
                 throw new BusinessException(ErrorCodes.CONTAINER_STATUS_ERROR_UNABLE_PUTAWAY, new Object[] {containerCode});
             }
@@ -660,9 +660,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         }
         // 7.删除并更新容器辅助表
         List<Long> deleteContainerIds = new ArrayList<Long>();
-        Long[] dcIds = new Long[] {};
-        CollectionUtils.addAll(insideContainerIds, dcIds);
-        deleteContainerIds = Arrays.asList(dcIds);
+        CollectionUtils.addAll(deleteContainerIds, insideContainerIds.iterator());
         deleteContainerIds.add(outerContainerId);
         containerAssistDao.deleteByContainerIds(ouId, deleteContainerIds);
         // 内部容器辅助表信息
@@ -702,9 +700,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         caMap.put(containerId, containerAssist);// 所有的容器辅助信息
         // 8.匹配上架规则
         List<Long> storeList = new ArrayList<Long>();
-        Long[] sIds = new Long[] {};
-        CollectionUtils.addAll(storeIds, sIds);
-        storeList = Arrays.asList(sIds);// 所有店铺
+        CollectionUtils.addAll(storeList, storeIds.iterator());
         RuleAfferCommand ruleAffer = new RuleAfferCommand();
         ruleAffer.setLogId(logId);
         ruleAffer.setOuid(ouId);

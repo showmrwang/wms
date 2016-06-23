@@ -105,15 +105,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
 	</sql>
 	
-	 <delete id="deleteByContainerIds" parameterType="java.lang.Integer">
+	 <delete id="deleteByContainerIds"  parameterType="list">
 	    <![CDATA[
 	        delete from t_wh_container_assist where
 		        ou_id = #{ouId}
 		        and container_id in 
-		        <foreach item="item" index="index" collection="containerIds" open="(" separator="," close=")">
-			            #{item}
-			    </foreach> 
 	    ]]>
+	     <foreach item="item" index="index" collection="containerIds" open="(" separator="," close=")">
+			            #{item}
+	     </foreach> 
 	</delete> 
 	
 </mapper>

@@ -35,6 +35,8 @@ public interface WarehouseManager extends BaseManager {
     Pagination<WarehouseCommand> getListByParams(Page page, Sort[] sorts, Map<String, Object> params);
 
     Warehouse findWarehouseById(Long id);
+    
+    Warehouse findWarehouseByIdExt(Long id);
 
     void updateWhType(Long userId, Long whId, Integer lifecycle);
 

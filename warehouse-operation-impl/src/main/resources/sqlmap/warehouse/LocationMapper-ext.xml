@@ -829,8 +829,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        and loc.lifecycle = 1
 		        and not exists (select 1 from t_wh_sku_inventory inv where inv.location_id = loc.id and inv.ou_id = #{ouId})
 		        and loc.is_mix_stacking = 1
-		        and ${cSql}
 		    ]]>
+		    <if test="cSql!=null and cSql!=''">
+				and ${cSql}
+			</if>
 			
 			union all
 			
@@ -858,8 +860,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        and loc.ou_id = #{ouId}
 		        and loc.is_static = 1
 		        and loc.lifecycle = 1
-		        and ${cSql}
 		    ]]>
+		    <if test="cSql!=null and cSql!=''">
+				and ${cSql}
+			</if>
 	</select>
 
 
@@ -873,8 +877,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        loc.shelf_area_id = #{areaId} 
 		        and loc.ou_id = #{ouId}
 		        and loc.lifecycle = 1
-		        and ${cSql}
 		    ]]>
+		     <if test="cSql!=null and cSql!=''">
+				and ${cSql}
+			</if>
 	</select>
 
 	<select id="findAllInvLocsByAreaIdAndDiffAttrs" resultMap="locationCommondResult"
@@ -887,8 +893,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        loc.shelf_area_id = #{areaId} 
 		        and loc.ou_id = #{ouId}
 		        and loc.lifecycle = 1
-		        and ${cSql}
 		    ]]>
+		    <if test="cSql!=null and cSql!=''">
+				and ${cSql}
+			</if>
 	</select>
 
 	<select id="findAllAvailableLocsByAreaId" resultMap="locationCommondResult"
@@ -901,8 +909,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        loc.shelf_area_id = #{areaId} 
 		        and loc.ou_id = #{ouId}
 		        and loc.lifecycle = 1
-		        and ${cSql}
 		    ]]>
+		    <if test="cSql!=null and cSql!=''">
+				and ${cSql}
+			</if>
 	</select>
 
 </mapper>

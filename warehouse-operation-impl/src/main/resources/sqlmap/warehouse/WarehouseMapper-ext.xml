@@ -361,6 +361,13 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		from t_bi_warehouse
 		where id = #{id}
 	</select>
+	
+	<select id="findWarehouseByIdExt" resultMap="WarehouseResultExt">
+		SELECT
+		<include refid="warehouseColumnsExt"></include>
+		from t_bi_warehouse
+		where id = #{id}
+	</select>
 
 	<select id="findWarehouseByCode" resultMap="WarehouseResultExt">
 		SELECT

@@ -95,6 +95,13 @@ public class WarehouseManagerImpl extends BaseManagerImpl implements WarehouseMa
     public Warehouse findWarehouseById(Long id) {
         return warehouseDao.findWarehouseById(id);
     }
+    
+    @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
+    @Transactional(propagation=Propagation.REQUIRES_NEW)
+    public Warehouse findWarehouseByIdExt(Long id) {
+        return warehouseDao.findWarehouseById(id);
+    }
 
 
     /**

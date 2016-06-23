@@ -56,7 +56,7 @@ public class SysGuidePalletPutawayCondition extends BaseManagerImpl implements P
                 if (null != attrParams.getIsMixStacking()) {
                     sql.append(" ").append("loc.is_mix_stacking = ").append((true == attrParams.getIsMixStacking() ? "1" : "0"));
                 }
-                sql.append(" and exists (select 1 from t_wh_sku_inventory inv where inv.location_id = loc.id and inv.ou_id = ").append(attrParams.getOuId());
+                sql.append(" exists (select 1 from t_wh_sku_inventory inv where inv.location_id = loc.id and inv.ou_id = ").append(attrParams.getOuId());
                 invAttrMgmtAspect(attrParams, sql);
                 sql.append(" ").append("group by inv.location_id,inv.ou_id,inv.sku_id having(inv.sku_id) = 1");
                 sql.append(")");
@@ -65,7 +65,7 @@ public class SysGuidePalletPutawayCondition extends BaseManagerImpl implements P
                 /*if (null != attrParams.getIsMixStacking()) {
                     sql.append(" ").append("loc.is_mix_stacking = ").append((true == attrParams.getIsMixStacking() ? "1" : "0"));
                 }*/
-                sql.append(" and exists (select 1 from t_wh_sku_inventory inv where inv.location_id = loc.id and inv.ou_id = ").append(attrParams.getOuId());
+                sql.append(" exists (select 1 from t_wh_sku_inventory inv where inv.location_id = loc.id and inv.ou_id = ").append(attrParams.getOuId());
                 sql.append(" ").append("group by inv.location_id,inv.ou_id,inv.sku_id having(inv.sku_id) = 1");
                 sql.append(")");
                 return sql.toString();
