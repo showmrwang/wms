@@ -44,6 +44,9 @@ public interface ContainerAssistDao extends BaseDao<ContainerAssist, Long> {
 
     @CommonQuery
     int saveOrUpdate(ContainerAssist o);
+    
+    @CommonQuery
+    int saveOrUpdateByVersion(ContainerAssist o);
 
     /**
      * 根据容器Id删除辅助表信息

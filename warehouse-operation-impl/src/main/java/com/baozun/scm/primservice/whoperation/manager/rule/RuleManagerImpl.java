@@ -163,6 +163,8 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
             if (invList.size() == list.size()) {
                 // 把规则加入list
                 returnList.add(s);
+            }else{
+                returnList.add(s);
             }
         }
         export.setShelveRecommendRuleList(returnList);

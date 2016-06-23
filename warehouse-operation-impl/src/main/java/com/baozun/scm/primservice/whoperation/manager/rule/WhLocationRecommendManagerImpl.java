@@ -25,7 +25,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.baozun.scm.baseservice.sac.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.LocationInvVolumeWeightCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.LocationRecommendResultCommand;
 import com.baozun.scm.primservice.whoperation.command.rule.RuleAfferCommand;
@@ -48,6 +47,7 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.RecommendShelveDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhLocationDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhSkuLocationDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
+import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.rule.putaway.AttrParams;
@@ -60,13 +60,10 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.Area;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container2ndCategory;
 import com.baozun.scm.primservice.whoperation.model.warehouse.ContainerAssist;
-import com.baozun.scm.primservice.whoperation.model.warehouse.LocationTemplet;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionPutAway;
 import com.baozun.scm.primservice.whoperation.util.formula.SimpleCubeCalculator;
-import com.baozun.scm.primservice.whoperation.util.formula.SimpleStandardCubeCalculator;
-import com.baozun.scm.primservice.whoperation.util.formula.SimpleStandardWeightCalculator;
 import com.baozun.scm.primservice.whoperation.util.formula.SimpleWeightCalculator;
 
 /**
@@ -409,6 +406,9 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                     if (null != putawayCondition) {
                         cSql = putawayCondition.getCondition(attrParams);
                     }
+                    if(StringUtils.isEmpty(cSql)){
+                        cSql = null;
+                    }
                     List<LocationCommand> aLocs = locationDao.findAllEmptyLocsByAreaId(area.getId(), ouId, cSql);
                     avaliableLocs = new ArrayList<LocationCommand>();
                     for (LocationCommand locCmd : aLocs) {
@@ -516,6 +516,14 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                     Double locHeight = al.getHigh();
                     Double locWidth = al.getWidth();
                     Double locWeight = al.getWeight();
+                    if (null == locLength || null == locLength || null == locLength) {
+                        log.error("sys guide pallet putaway sku length、width、height is null error, skuId is:[{}], logId is:[{}]", locId, logId);
+                        throw new BusinessException(ErrorCodes.LOCATION_LENGTH_WIDTH_HIGHT_IS_NULL_ERROR, new Object[] {al.getCode()});
+                    }
+                    if (null == locWeight) {
+                        log.error("sys guide pallet putaway sku weight is null error, skuId is:[{}], logId is:[{}]", locId, logId);
+                        throw new BusinessException(ErrorCodes.LOCATION_WEIGHT_IS_NULL_ERROR, new Object[] {al.getCode()});
+                    }
                     //Double volumeRate = al.getVolumeRate();
                     if (WhLocationRecommendType.EMPTY_LOCATION.equals(locationRecommendRule)) {
                         // 计算体积

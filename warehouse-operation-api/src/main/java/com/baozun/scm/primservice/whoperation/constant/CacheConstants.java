@@ -1,0 +1,38 @@
+/**
+ * Copyright (c) 2013 Baozun All Rights Reserved.
+ *
+ * This software is the confidential and proprietary information of Baozun. You shall not disclose
+ * such Confidential Information and shall use it only in accordance with the terms of the license
+ * agreement you entered into with Baozun.
+ *
+ * BAOZUN MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT THE SUITABILITY OF THE SOFTWARE, EITHER
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT. BAOZUN SHALL NOT BE LIABLE FOR ANY DAMAGES
+ * SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS SOFTWARE OR ITS
+ * DERIVATIVES.
+ *
+ */
+package com.baozun.scm.primservice.whoperation.constant;
+
+/**
+ * @author lichuan
+ *
+ */
+public final class CacheConstants {
+    private CacheConstants() {}
+    
+    public static final int CACHE_ONE_SECOND = 1;
+    public static final int CACHE_ONE_MINUTE = 60;
+    public static final int CACHE_THIRTY_MINUTE = 30*60;
+    public static final int CACHE_ONE_HOUR = 60*60;
+    public static final int CACHE_ONE_DAY = 1*24*60*60;
+    public static final int CACHE_ONE_MONTH = 30*24*60*60;
+    public static final int CACHE_ONE_YEAR = 365*24*60*60;
+    
+    /** 库存缓存Key */
+    public static final String INVENTORY = "INVENTORY";
+    /** 容器库存缓存Key */
+    public static final String CONTAINER_INVENTORY = "CONTAINER_INVENTORY";
+    
+
+}

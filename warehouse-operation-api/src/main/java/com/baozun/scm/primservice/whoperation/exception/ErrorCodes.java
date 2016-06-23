@@ -317,6 +317,10 @@ public class ErrorCodes {
     public static final int SKU_WEIGHT_IS_NULL_ERROR = 40013;
     /** 容器辅助信息统计失败！ */
     public static final int CONTAINER_ASSIST_INFO_GENERATE_ERROR = 40014;
+    /** 库位[{0}]长宽高异常！ */
+    public static final int LOCATION_LENGTH_WIDTH_HIGHT_IS_NULL_ERROR = 40015;
+    /** 库位[{0}]重量异常！ */
+    public static final int LOCATION_WEIGHT_IS_NULL_ERROR = 40016;
     // 40001-50000 lichuan
 
     // 50001-60000 hubin
