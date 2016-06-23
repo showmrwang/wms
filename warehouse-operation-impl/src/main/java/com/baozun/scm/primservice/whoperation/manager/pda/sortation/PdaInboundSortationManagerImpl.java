@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.baozun.redis.manager.CacheManager;
 import com.baozun.scm.primservice.whoperation.command.pda.sortation.PdaInboundSortationCommand;
 import com.baozun.scm.primservice.whoperation.command.rule.RuleAfferCommand;
 import com.baozun.scm.primservice.whoperation.command.rule.RuleExportCommand;
@@ -80,6 +81,8 @@ public class PdaInboundSortationManagerImpl extends BaseManagerImpl implements P
     private WhAsnDao whAsnDao;
     @Autowired
     private WhSkuInventoryLogManager whSkuInventoryLogManager;
+    @Autowired
+    private CacheManager cacheManager;
 
     /**
      * 扫描容器号 验证容器号
