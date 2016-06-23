@@ -711,101 +711,134 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
      */
     @Override
     public String getMatchLineListStr(WhSkuInventoryCommand command) {
-        int skuPlannedCount = command.getSkuBatchCount();
-        // 可用数量
-        Integer asnSkuCount = Integer.parseInt(cacheManager.getValue(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + command.getOccupationId() + "_" + command.getSkuId()));
-        Integer asnlineSkuCount = Constants.DEFAULT_INTEGER;
         String lineIdListStr = "";
         try {
             if (StringUtils.isEmpty(command.getLineIdListString())) {
-                // 容器限定的商品库存属性
-                RcvdContainerCacheCommand rcvdContainerCacheCommand = this.cacheManager.getMapObject(CacheKeyConstant.CACHE_RCVD_CONTAINER, command.getInsideContainerId().toString());
-                
-                if (rcvdContainerCacheCommand != null) {
-                    if (command.getIsMixingSku()) {
-                        if (!command.getSkuId().equals(rcvdContainerCacheCommand.getSkuId())) {
-                            throw new BusinessException(ErrorCodes.RCVD_CONTAINER_LIMIT_ERROR);
-                        }
-                    }
-                }
-                Map<String, String> lineIdSet = this.cacheManager.getAllMap(CacheKeyConstant.CACHE_ASNLINE_PREFIX + command.getOccupationId());
-                if (null == lineIdSet || lineIdSet.size() == 0) {
-                    throw new BusinessException(ErrorCodes.RCVD_SKU_ASNLINE_NOTFOUND_ERROR);
-                }
-                Iterator<String> it = lineIdSet.keySet().iterator();
-                while (it.hasNext()) {
-                    String entry = it.next();
-                    WhAsnLine line = this.cacheManager.getMapObject(CacheKeyConstant.CACHE_ASNLINE_PREFIX + command.getOccupationId(), entry);
-                    if (command.getSkuId().equals(line.getSkuId())) {
-                        Integer lineSkuOverchargeCount = this.cacheManager.getMapObject(CacheKeyConstant.CACHE_ASNLINE_OVERCHARGE_PREFIX + command.getOccupationId(), entry);
-                        if (null == lineSkuOverchargeCount) {
-                            lineSkuOverchargeCount = Constants.DEFAULT_INTEGER;
-                        }
-                        asnSkuCount = asnSkuCount + lineSkuOverchargeCount;
-                        lineIdListStr += entry + ",";
-                    }
-                }
-                lineIdListStr = lineIdListStr.substring(0, lineIdListStr.length() - 1);
-                if (asnSkuCount < skuPlannedCount) {
-                    throw new BusinessException(ErrorCodes.SKU_OVERCHARGE_ERROR);
-                }
+                lineIdListStr = initMatchedLineIdStr(command);
             } else {
-                List<String> matchLineList = this.matchLineList(command.getSkuUrlOperator(), command);// 匹配行明细
-                if (null == matchLineList || matchLineList.size() == 0) {
-                    if (command.getIsInvattrDiscrepancyAllowrcvd()) {
-                        throw new BusinessException(ErrorCodes.RCVD_DISCREPANCY_ERROR);
-                    }
-                }
-                for (String lineId : matchLineList) {
-                    Integer lineSkuOverchargeCount = this.cacheManager.getMapObject(CacheKeyConstant.CACHE_ASNLINE_OVERCHARGE_PREFIX + command.getOccupationId(), lineId);
-                    if (null == lineSkuOverchargeCount) {
-                        lineSkuOverchargeCount = 0;
-                    }
-                    String asnlineskuQtyCount = cacheManager.getValue(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + command.getOccupationId() + "_" + lineId + "_" + command.getSkuId());
-                    asnlineSkuCount = Integer.parseInt(asnlineskuQtyCount) + lineSkuOverchargeCount;
-                    asnSkuCount = asnSkuCount + lineSkuOverchargeCount;
-                    lineIdListStr += lineId + ",";
-                }
-                lineIdListStr = lineIdListStr.substring(0, lineIdListStr.length() - 1);
-                if (asnSkuCount < skuPlannedCount) {
-                    if (command.getIsInvattrDiscrepancyAllowrcvd()) {
-                        throw new BusinessException(ErrorCodes.SKU_OVERCHARGE_ERROR);
-                    } else {
-                        lineIdListStr = command.getLineIdListString();
-                    }
-                }
-                if (asnlineSkuCount < skuPlannedCount) {
-                    if (command.getIsInvattrDiscrepancyAllowrcvd()) {
-                        throw new BusinessException(ErrorCodes.SKU_OVERCHARGE_ERROR);
-                    } else {
-                        lineIdListStr = command.getLineIdListString();
-                    }
-                }
+                lineIdListStr = getMatchedLineIdStrForSkuAttr(command.getSkuUrlOperator(), command, command.getLineIdListString());// 匹配行明细;
             }
-            // 校验明细行对应的数量是否超收
-
-            return lineIdListStr;
-
         } catch (BusinessException e) {
             throw e;
         } catch (Exception ex) {
             throw new BusinessException(ErrorCodes.RCVD_MATCH_ERROR);
         }
+        return lineIdListStr;
     }
 
     /**
-     * 匹配明细行逻辑
+     * 初始化匹配的明细行ID集合
+     */
+    private String initMatchedLineIdStr(WhSkuInventoryCommand command) {
+        int skuPlannedCount = command.getSkuBatchCount();
+        // 可用数量
+        Integer asnSkuCount = Integer.parseInt(cacheManager.getValue(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + command.getOccupationId() + "_" + command.getSkuId()));
+        String lineIdListStr = "";
+        // 容器限定的商品库存属性
+        RcvdContainerCacheCommand rcvdContainerCacheCommand = this.cacheManager.getMapObject(CacheKeyConstant.CACHE_RCVD_CONTAINER, command.getInsideContainerId().toString());
+
+        if (rcvdContainerCacheCommand != null) {
+            if (!command.getIsMixingSku()) {
+                if (!command.getSkuId().toString().equals(rcvdContainerCacheCommand.getSkuId())) {
+                    throw new BusinessException(ErrorCodes.RCVD_CONTAINER_LIMIT_ERROR);
+                }
+            }
+        }
+        Map<String, String> lineIdSet = this.cacheManager.getAllMap(CacheKeyConstant.CACHE_ASNLINE_PREFIX + command.getOccupationId());
+        if (null == lineIdSet || lineIdSet.size() == 0) {
+            throw new BusinessException(ErrorCodes.RCVD_SKU_ASNLINE_NOTFOUND_ERROR);
+        }
+        Iterator<String> it = lineIdSet.keySet().iterator();
+        while (it.hasNext()) {
+            String entry = it.next();
+            WhAsnLine line = this.cacheManager.getMapObject(CacheKeyConstant.CACHE_ASNLINE_PREFIX + command.getOccupationId(), entry);
+            if (command.getSkuId().equals(line.getSkuId())) {
+
+                Integer lineSkuOverchargeCount = this.cacheManager.getMapObject(CacheKeyConstant.CACHE_ASNLINE_OVERCHARGE_PREFIX + command.getOccupationId(), entry);
+                if (null == lineSkuOverchargeCount) {
+                    lineSkuOverchargeCount = Constants.DEFAULT_INTEGER;
+                }
+                asnSkuCount = asnSkuCount + lineSkuOverchargeCount;
+                lineIdListStr += entry + ",";
+            }
+        }
+        lineIdListStr = lineIdListStr.substring(0, lineIdListStr.length() - 1);
+        if (asnSkuCount < skuPlannedCount) {
+            throw new BusinessException(ErrorCodes.SKU_OVERCHARGE_ERROR);
+        }
+        // @mender yimin.lu 2016/6/22添加逻辑：当功能菜单上指定了库存状态和类型之后
+        // 1.库存状态
+        if (command.getSkuUrl().charAt(Constants.GENERAL_RECEIVING_ISINVSTATUS) == '1' && command.getInvStatus() != null) {
+            lineIdListStr = this.getMatchedLineIdStrForSkuAttr(Constants.GENERAL_RECEIVING_ISINVSTATUS, command, lineIdListStr);
+        }
+        // 2.库存类型
+        // 如果库存类型为管控的属性的时候
+        if (command.getSkuUrl().charAt(Constants.GENERAL_RECEIVING_ISINVTYPE) == '1' && StringUtils.hasText(command.getInvType())) {
+            lineIdListStr = this.getMatchedLineIdStrForSkuAttr(Constants.GENERAL_RECEIVING_ISINVSTATUS, command, lineIdListStr);
+        }
+        return lineIdListStr;
+    }
+    /**
+     * 从明细中挑选出满足属性和数量的MAX明细ID集合，并toString()
+     * 
+     * @param skuUrlOperator
+     * @param command
+     * @param lineIdListString
+     * @return
+     */
+    private String getMatchedLineIdStrForSkuAttr(Integer skuUrlOperator, WhSkuInventoryCommand command, String lineIdListString) {
+        int skuPlannedCount = command.getSkuBatchCount();
+        // 可用数量
+        Integer asnSkuCount = Integer.parseInt(cacheManager.getValue(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + command.getOccupationId() + "_" + command.getSkuId()));
+        Integer asnlineSkuCount = Constants.DEFAULT_INTEGER;
+        String lineIdListStr = "";
+        List<String> matchLineList = this.matchLineList(skuUrlOperator, command, lineIdListString);// 匹配行明细
+        if (null == matchLineList || matchLineList.size() == 0) {
+            if (command.getIsInvattrDiscrepancyAllowrcvd()) {
+                throw new BusinessException(ErrorCodes.RCVD_DISCREPANCY_ERROR);
+            }
+        }
+        for (String lineId : matchLineList) {
+            Integer lineSkuOverchargeCount = this.cacheManager.getMapObject(CacheKeyConstant.CACHE_ASNLINE_OVERCHARGE_PREFIX + command.getOccupationId(), lineId);
+            if (null == lineSkuOverchargeCount) {
+                lineSkuOverchargeCount = 0;
+            }
+            String asnlineskuQtyCount = cacheManager.getValue(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + command.getOccupationId() + "_" + lineId + "_" + command.getSkuId());
+            asnlineSkuCount = Integer.parseInt(asnlineskuQtyCount) + lineSkuOverchargeCount;
+            asnSkuCount = asnSkuCount + lineSkuOverchargeCount;
+            lineIdListStr += lineId + ",";
+        }
+        lineIdListStr = lineIdListStr.substring(0, lineIdListStr.length() - 1);
+        if (asnSkuCount < skuPlannedCount) {
+            if (command.getIsInvattrDiscrepancyAllowrcvd()) {
+                throw new BusinessException(ErrorCodes.SKU_OVERCHARGE_ERROR);
+            } else {
+                lineIdListStr = lineIdListString;
+            }
+        }
+        if (asnlineSkuCount < skuPlannedCount) {
+            if (command.getIsInvattrDiscrepancyAllowrcvd()) {
+                throw new BusinessException(ErrorCodes.SKU_OVERCHARGE_ERROR);
+            } else {
+                lineIdListStr = lineIdListString;
+            }
+        }
+        return lineIdListStr;
+    }
+    
+    /**
+     * 匹配明细行逻辑:从明细中挑选出满足SKU属性的明细ID集合
      * 
      * @param operator
      * @param isInvattrDiscrepancyAllowrcvd
      * @param command
      */
-    private List<String> matchLineList(int operator, WhSkuInventoryCommand command) {
+    private List<String> matchLineList(int operator, WhSkuInventoryCommand command, String lineIdListString) {
         // 容器限定的商品库存属性
         RcvdContainerCacheCommand rcvdContainerCacheCommand = this.cacheManager.getMapObject(CacheKeyConstant.CACHE_RCVD_CONTAINER, command.getInsideContainerId().toString());
         boolean flag = null == rcvdContainerCacheCommand ? false : true;
         // 匹配可用的明细
-        String[] lineIdArray = command.getLineIdListString().split(",");
+        String[] lineIdArray = lineIdListString.split(",");
         // 如果只有一条明细
         List<String> lineList = new ArrayList<String>();
         for (String lineId : lineIdArray) {
@@ -1160,7 +1193,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                 } else {
                     rcvdContainerCacheCommand.setCountryOfOrigin(null);
                 }
-                if (command.getIsMixingSku()) {
+                if (!command.getIsMixingSku()) {
                     if (StringUtils.hasText(rcvdContainerCacheCommand.getSkuId())) {
                         if (rcvdContainerCacheCommand.getSkuId().contains(",")) {
                             throw new BusinessException(ErrorCodes.RCVD_CONTAINER_LIMIT_ERROR);
