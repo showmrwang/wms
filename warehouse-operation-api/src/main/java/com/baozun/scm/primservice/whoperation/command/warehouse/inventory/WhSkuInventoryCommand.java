@@ -191,6 +191,17 @@ public class WhSkuInventoryCommand extends BaseCommand {
     /** 是否支持混放SKU */
     private Boolean isMixingSku;
 
+    /** 效期天数 */
+    private Integer dayOfValidDate;
+
+
+    public Integer getDayOfValidDate() {
+        return dayOfValidDate;
+    }
+
+    public void setDayOfValidDate(Integer dayOfValidDate) {
+        this.dayOfValidDate = dayOfValidDate;
+    }
 
     public Boolean getNormIncPointoutRcvd() {
         return normIncPointoutRcvd;

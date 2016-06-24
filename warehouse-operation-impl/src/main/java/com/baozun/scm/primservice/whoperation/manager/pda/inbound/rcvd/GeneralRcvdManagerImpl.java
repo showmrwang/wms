@@ -491,8 +491,9 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
         saveContainer.setCreateTime(new Date());
         saveContainer.setLastModifyTime(new Date());
         saveContainer.setOperatorId(userId);
-        saveContainer.setLifecycle(BaseModel.LIFECYCLE_NORMAL);
+        saveContainer.setLifecycle(container.getLifecycle());
         saveContainer.setOuId(ouId);
+        saveContainer.setStatus(container.getStatus());
         // 一级容器类型，设置容器的一级容器类型 这个字段存储为ID，需要获取系统字典表对应的Id
         SysDictionary searchDictionary = new SysDictionary();
         searchDictionary.setDicValue(container.getOneLevelTypeValue());
