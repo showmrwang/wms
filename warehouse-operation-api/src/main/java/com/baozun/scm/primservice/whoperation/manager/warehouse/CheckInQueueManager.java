@@ -18,7 +18,7 @@ public interface CheckInQueueManager extends BaseManager {
      * @param logId
      * @return
      */
-    CheckInQueueCommand findCheckInQueueByAsnReserveId(Long reserveId,Long ouId, String logId);
+    CheckInQueueCommand findCheckInQueueByAsnId(Long reserveId, Long ouId, String logId);
 
     /**
      * 查询所有排队中的ASN，按照

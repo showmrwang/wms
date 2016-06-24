@@ -14,7 +14,7 @@
     <sql id="checkInQueueColumnsExt">
         <![CDATA[
                 id as id,
-                reserve_id as reserveId,
+                asn_id as asnId,
                 ou_id as ouId,
                 sequence as sequence,
                 create_time as createTime,
@@ -27,35 +27,35 @@
     <sql id="checkInQueueDynamicWhereExt">
         <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
         <where>
-            
+
             <if test="id!=null">
                 and id = #{id}
             </if>
-            
-            <if test="reserveId!=null">
-                and reserve_id = #{reserveId}
+
+            <if test="asnId!=null">
+                and asn_id = #{asnId}
             </if>
-            
+
             <if test="ouId!=null">
                 and ou_id = #{ouId}
             </if>
-            
+
             <if test="sequence!=null">
                 and sequence = #{sequence}
             </if>
-            
+
             <if test="createTime!=null">
                 and create_time = #{createTime}
             </if>
-            
+
             <if test="createdId!=null">
                 and created_id = #{createdId}
             </if>
-            
+
             <if test="lastModifyTime!=null">
                 and last_modify_time = #{lastModifyTime}
             </if>
-            
+
             <if test="modifiedId!=null">
                 and modified_id = #{modifiedId}
             </if>
@@ -65,13 +65,14 @@
     <sql id="checkInQueueCommandColumnsExt">
         <![CDATA[
             cq.id as id,
-            cq.reserve_id as reserveId,
+            cq.asn_id as asnId,
             cq.ou_id as ouId,
             cq.sequence as sequence,
             cq.create_time as createTime,
             cq.created_id as createdId,
             cq.last_modify_time as lastModifyTime,
             cq.modified_id as modifiedId,
+            ar.id as reserveId,
             ar.delivery_time as deliveryTime,
             ar.level as level,
             ar.eta as eta
@@ -117,19 +118,31 @@
         select
             <include refid="checkInQueueCommandColumnsExt"/>
         from t_wh_checkin_queue as cq
-            left join t_wh_asn_reserve as ar
-            on ar.id = cq.reserve_id
+            left join t_wh_asn as asn
+                on asn.id = cq.asn_id
+            left join t_wh_asn_reserve ar
+                on asn.id = ar.asn_id
         where cq.ou_id = #{ouId}
             order by cq.sequence ASC
     </select>
-    <select id="findCheckInQueueByAsnReserveId" resultMap="checkInQueueCommand">
+    <select id="findCheckInQueueCommandByAsnId" resultMap="checkInQueueCommand">
         select
             <include refid="checkInQueueCommandColumnsExt"/>
         from t_wh_checkin_queue as cq
-            left join t_wh_asn_reserve as ar
-            on ar.id = cq.reserve_id
+        left join t_wh_asn as asn
+            on asn.id = cq.asn_id
+        left join t_wh_asn_reserve ar
+            on asn.id = ar.asn_id
         where cq.ou_id = #{ouId}
-        and cq.reserve_id = #{reserveId}
+        and cq.asn_id = #{asnId}
+    </select>
+
+    <select id="findCheckInQueueByAsnId" resultMap="CheckInQueueResultExt">
+        select
+            <include refid="checkInQueueColumnsExt"/>
+        from t_wh_checkin_queue
+        where asn_id = #{asnId}
+        and ou_id = #{ouId}
     </select>
 
     <select id="findByIdExt" resultMap="CheckInQueueResultExt">

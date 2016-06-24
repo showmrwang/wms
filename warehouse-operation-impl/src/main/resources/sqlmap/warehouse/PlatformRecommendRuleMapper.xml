@@ -15,8 +15,8 @@
     <sql id="platformRecommendRuleColumns">
         <![CDATA[
                 id as id,
-                platform_recommend_rule_name as platformRecommendRuleName,
-                platform_recommend_rule_code as platformRecommendRuleCode,
+                rule_name as ruleName,
+                rule_code as ruleCode,
                 rule as rule,
                 rule_sql as ruleSql,
                 ou_id as ouId,
@@ -108,8 +108,8 @@
                 INSERT INTO
                 t_wh_platform_recommend_rule (
                     id,
-                    platform_recommend_rule_name ,
-                    platform_recommend_rule_code ,
+                    rule_name ,
+                    rule_code ,
                     rule ,
                     rule_sql ,
                     ou_id ,
@@ -122,8 +122,8 @@
                     lifecycle 
                 ) VALUES (
                     #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
-                    #{platformRecommendRuleName,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{platformRecommendRuleCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{ruleName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{ruleCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
                     #{rule,javaType=java.lang.String,jdbcType=VARCHAR} ,
                     #{ruleSql,javaType=java.lang.String,jdbcType=LONGVARCHAR} ,
                     #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -143,8 +143,8 @@
     <update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.PlatformRecommendRule">
         <![CDATA[
             UPDATE t_wh_platform_recommend_rule SET
-                platform_recommend_rule_name = #{platformRecommendRuleName,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                platform_recommend_rule_code = #{platformRecommendRuleCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                rule_name = #{ruleName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                rule_code = #{ruleCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
                 rule = #{rule,javaType=java.lang.String,jdbcType=VARCHAR} ,
                 rule_sql = #{ruleSql,javaType=java.lang.String,jdbcType=LONGVARCHAR} ,
                 ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -215,13 +215,13 @@
             </if>
 
 
-            <if test="platformRecommendRuleName!=null and platformRecommendRuleName!=''">
-                and platform_recommend_rule_name = #{platformRecommendRuleName}
+            <if test="ruleName!=null and ruleName!=''">
+                and rule_name = #{ruleName}
             </if>
 
 
-            <if test="platformRecommendRuleCode!=null and platformRecommendRuleCode!=''">
-                and platform_recommend_rule_code = #{platformRecommendRuleCode}
+            <if test="ruleCode!=null and ruleCode!=''">
+                and rule_code = #{ruleCode}
             </if>
 
 

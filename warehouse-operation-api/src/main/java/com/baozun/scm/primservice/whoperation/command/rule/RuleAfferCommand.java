@@ -22,8 +22,8 @@ public class RuleAfferCommand extends BaseCommand {
     /** 仓库组织ID */
     private Long ouid;
 
-    /** 预约号 */
-    private String afferReserveCode;
+    /** asnId */
+    private Long afferAsnId;
 
     /** 原始容器号 */
     private String afferContainerCode;
@@ -66,12 +66,12 @@ public class RuleAfferCommand extends BaseCommand {
         this.ouid = ouid;
     }
 
-    public String getAfferReserveCode() {
-        return afferReserveCode;
+    public Long getAfferAsnId() {
+        return afferAsnId;
     }
 
-    public void setAfferReserveCode(String afferReserveCode) {
-        this.afferReserveCode = afferReserveCode;
+    public void setAfferAsnId(Long afferAsnId) {
+        this.afferAsnId = afferAsnId;
     }
 
     public String getAfferContainerCode() {

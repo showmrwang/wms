@@ -100,4 +100,15 @@ public interface PlatformDao extends BaseDao<Platform, Long> {
      */
     Long freePlatform(Platform platform);
 
+    /**
+     * 根据占用码查询月台
+     *
+     * @author mingwei.xie
+     * @param occupationCode
+     * @param ouId
+     * @param lifecycle
+     * @return
+     */
+    Platform findByOccupationCode(@Param("occupationCode") String occupationCode, @Param("ouId") Long ouId, @Param("lifecycle") Integer lifecycle);
+
 }

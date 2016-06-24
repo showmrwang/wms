@@ -1,200 +1,201 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
-PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
-"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
 
 
 <mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.PlatformDao">
-	<resultMap id="PlatformResultExt"
-		type="com.baozun.scm.primservice.whoperation.model.warehouse.Platform">
-	</resultMap>
-	<resultMap id="platformCommand"
-		type="com.baozun.scm.primservice.whoperation.command.warehouse.PlatformCommand">
-	</resultMap>
-
-
-	<!-- 用于select查询公用抽取的列 -->
-	<sql id="platformColumnsExt">
-	    <![CDATA[
-	        	id as id,
-	        	platform_code as platformCode,
-	        	platform_name as platformName,
-	        	occupation_code as occupationCode,
-	        	is_occupied as isOccupied,
-	        	ou_id as ouId,
-	        	platform_type as platformType,
-	        	create_time as createTime,
-	        	created_id as createdId,
-	        	last_modify_time as lastModifyTime,
-	        	modified_id as modifiedId,
-	        	lifecycle as lifecycle
-	    ]]>
-	</sql>
-
-	<sql id="platformDynamicWhereExt">
-		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
-		<where>	       
-			<if test="id!=null">
-				and id = #{id}
-			</if>
-       
-       
-	       <if test="platformCode!=null and platformCode!=''">
-				and platform_code = #{platformCode}
-			</if>
-       
-       
-	       <if test="platformName!=null and platformName!=''">
-				and platform_name = #{platformName}
-			</if>
-       
-       
-	       <if test="occupationCode!=null and occupationCode!=''">
-				and occupation_code = #{occupationCode}
-			</if>
-       
-			<if test="isOccupied!=null">
-				and is_occupied = #{isOccupied}
-			</if>
-       
-			<if test="ouId!=null">
-				and ou_id = #{ouId}
-			</if>
-       
-			<if test="platformType!=null">
-				and platform_type = #{platformType}
-			</if>
-       
-			<if test="createTime!=null">
-				and create_time = #{createTime}
-			</if>
-       
-			<if test="createdId!=null">
-				and created_id = #{createdId}
-			</if>
-       
-			<if test="lastModifyTime!=null">
-				and last_modify_time = #{lastModifyTime}
-			</if>
-       
-			<if test="modifiedId!=null">
-				and modified_id = #{modifiedId}
-			</if>
-       
-			<if test="lifecycle!=null">
-				and lifecycle = #{lifecycle}
-			</if>
-		</where>
-	</sql>
-
-	<sql id="platformListColumnsExt">
-	    <![CDATA[
-	        	p.id as id,
-	        	p.platform_code as platformCode,
-	        	p.platform_name as platformName,
-	        	p.occupation_code as occupationCode,
-	        	p.is_occupied as isOccupied,
-	        	p.ou_id as ouId,
-	        	syst.dic_label as platformTypeName,
-	        	p.platform_type as platformType,
-	        	p.create_time as createTime,
-	        	p.created_id as createdId,
-	        	p.last_modify_time as lastModifyTime,
-	        	p.modified_id as modifiedId,
-	        	p.lifecycle as lifecycle
-	    ]]>
-	</sql>
-
-	<sql id="platformDynamicWhereLikeExt">
-		<where>
-
-			<if test="id!=null">
-				and p.id = #{id}
-			</if>
-
-
-			<if test="platformCode!=null and platformCode!=''">
-				and p.platform_code like #{platformCode}
-			</if>
-
-			<if
-				test="platformCodeByCriteriasData!=null and platformCodeByCriteriasData!=''">
-				and p.platform_code like #{platformCodeByCriteriasData}
-			</if>
-
-
-			<if test="platformName!=null and platformName!=''">
-				and p.platform_name like #{platformName}
-			</if>
-
-			<if
-				test="platformNameByCriteriasData!=null and platformNameByCriteriasData!=''">
-				and p.platform_name like #{platformNameByCriteriasData}
-			</if>
-
-			<if test="occupationCode!=null and occupationCode!=''">
-				and p.occupation_code = #{occupationCode}
-			</if>
-
-			<if test="isOccupied!=null">
-				and p.is_occupied = #{isOccupied}
-			</if>
-
-			<if test="ouId!=null">
-				and p.ou_id = #{ouId}
-			</if>
-			
-			<if test="platformType!=null">
-				and p.platform_type = #{platformType}
-			</if>
-			
-			<if test="createTime!=null">
-				and p.create_time = #{createTime}
-			</if>
-
-			<if test="createdId!=null">
-				and p.created_id = #{createdId}
-			</if>
-
-			<if test="lastModifyTime!=null">
-				and p.last_modify_time = #{lastModifyTime}
-			</if>
-
-			<if test="modifiedId!=null">
-				and p.modified_id = #{modifiedId}
-			</if>
-
-			<if test="lifecycle!=null">
-				and p.lifecycle = #{lifecycle}
-			</if>
-		</where>
-	</sql>
-
-	<select id="findByIdExt" resultMap="PlatformResultExt">
-		select <include refid="platformColumnsExt" />
-	    <![CDATA[
-		    from t_wh_platform
-	        where 
-	        id = #{id} 
-	        and ou_id = #{ouId}
-	    ]]>
-	</select>	
-		
-	<select id="findListByQueryMapWithPageExt" resultMap="platformCommand">
-		select
-		<include refid="platformListColumnsExt" />
-		from t_wh_platform as p
-		left join sys_dictionary as syst on
-		p.platform_type = syst.id
-		<include refid="platformDynamicWhereLikeExt" />
-	</select>
-
-	<select id="findListCountByQueryMapExt" resultType="long">
-		select count(*) from t_wh_platform as p
-		<include refid="platformDynamicWhereLikeExt" />
-	</select>
-
-
+    <resultMap id="PlatformResultExt"
+               type="com.baozun.scm.primservice.whoperation.model.warehouse.Platform">
+    </resultMap>
+    <resultMap id="platformCommand"
+               type="com.baozun.scm.primservice.whoperation.command.warehouse.PlatformCommand">
+    </resultMap>
+    
+    
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="platformColumnsExt">
+        <![CDATA[
+            id as id,
+            platform_code as platformCode,
+            platform_name as platformName,
+            occupation_code as occupationCode,
+            is_occupied as isOccupied,
+            ou_id as ouId,
+            platform_type as platformType,
+            create_time as createTime,
+            created_id as createdId,
+            last_modify_time as lastModifyTime,
+            modified_id as modifiedId,
+            lifecycle as lifecycle
+        ]]>
+    </sql>
+    
+    <sql id="platformDynamicWhereExt">
+        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+            <if test="id!=null">
+                and id = #{id}
+            </if>
+            
+            
+            <if test="platformCode!=null and platformCode!=''">
+                and platform_code = #{platformCode}
+            </if>
+            
+            
+            <if test="platformName!=null and platformName!=''">
+                and platform_name = #{platformName}
+            </if>
+            
+            
+            <if test="occupationCode!=null and occupationCode!=''">
+                and occupation_code = #{occupationCode}
+            </if>
+            
+            <if test="isOccupied!=null">
+                and is_occupied = #{isOccupied}
+            </if>
+            
+            <if test="ouId!=null">
+                and ou_id = #{ouId}
+            </if>
+            
+            <if test="platformType!=null">
+                and platform_type = #{platformType}
+            </if>
+            
+            <if test="createTime!=null">
+                and create_time = #{createTime}
+            </if>
+            
+            <if test="createdId!=null">
+                and created_id = #{createdId}
+            </if>
+            
+            <if test="lastModifyTime!=null">
+                and last_modify_time = #{lastModifyTime}
+            </if>
+            
+            <if test="modifiedId!=null">
+                and modified_id = #{modifiedId}
+            </if>
+            
+            <if test="lifecycle!=null">
+                and lifecycle = #{lifecycle}
+            </if>
+        </where>
+    </sql>
+    
+    <sql id="platformListColumnsExt">
+        <![CDATA[
+            p.id as id,
+            p.platform_code as platformCode,
+            p.platform_name as platformName,
+            p.occupation_code as occupationCode,
+            p.is_occupied as isOccupied,
+            p.ou_id as ouId,
+            syst.dic_label as platformTypeName,
+            p.platform_type as platformType,
+            p.create_time as createTime,
+            p.created_id as createdId,
+            p.last_modify_time as lastModifyTime,
+            p.modified_id as modifiedId,
+            p.lifecycle as lifecycle
+        ]]>
+    </sql>
+    
+    <sql id="platformDynamicWhereLikeExt">
+        <where>
+            
+            <if test="id!=null">
+                and p.id = #{id}
+            </if>
+            
+            
+            <if test="platformCode!=null and platformCode!=''">
+                and p.platform_code like #{platformCode}
+            </if>
+            
+            <if
+                    test="platformCodeByCriteriasData!=null and platformCodeByCriteriasData!=''">
+                and p.platform_code like #{platformCodeByCriteriasData}
+            </if>
+            
+            
+            <if test="platformName!=null and platformName!=''">
+                and p.platform_name like #{platformName}
+            </if>
+            
+            <if
+                    test="platformNameByCriteriasData!=null and platformNameByCriteriasData!=''">
+                and p.platform_name like #{platformNameByCriteriasData}
+            </if>
+            
+            <if test="occupationCode!=null and occupationCode!=''">
+                and p.occupation_code = #{occupationCode}
+            </if>
+            
+            <if test="isOccupied!=null">
+                and p.is_occupied = #{isOccupied}
+            </if>
+            
+            <if test="ouId!=null">
+                and p.ou_id = #{ouId}
+            </if>
+            
+            <if test="platformType!=null">
+                and p.platform_type = #{platformType}
+            </if>
+            
+            <if test="createTime!=null">
+                and p.create_time = #{createTime}
+            </if>
+            
+            <if test="createdId!=null">
+                and p.created_id = #{createdId}
+            </if>
+            
+            <if test="lastModifyTime!=null">
+                and p.last_modify_time = #{lastModifyTime}
+            </if>
+            
+            <if test="modifiedId!=null">
+                and p.modified_id = #{modifiedId}
+            </if>
+            
+            <if test="lifecycle!=null">
+                and p.lifecycle = #{lifecycle}
+            </if>
+        </where>
+    </sql>
+    
+    <select id="findByIdExt" resultMap="PlatformResultExt">
+        select
+            <include refid="platformColumnsExt"/>
+        <![CDATA[
+            from t_wh_platform
+            where 
+            id = #{id} 
+            and ou_id = #{ouId}
+        ]]>
+    </select>
+    
+    <select id="findListByQueryMapWithPageExt" resultMap="platformCommand">
+        select
+            <include refid="platformListColumnsExt"/>
+        from t_wh_platform as p
+        left join sys_dictionary as syst on
+            p.platform_type = syst.id
+        <include refid="platformDynamicWhereLikeExt"/>
+    </select>
+    
+    <select id="findListCountByQueryMapExt" resultType="long">
+        select count(*) from t_wh_platform as p
+        <include refid="platformDynamicWhereLikeExt"/>
+    </select>
+    
+    
     <select id="checkUnique" resultType="long">
         select count(*) from t_wh_platform as p
         <where>
@@ -213,34 +214,35 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
                 </trim>
                 )
             </if>
-			and p.ou_id = #{ouId}
-
+            and p.ou_id = #{ouId}
+        
         </where>
     </select>
-
-
-	<update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Platform">
-		    <![CDATA[
-		        UPDATE t_wh_platform SET
-			        platform_code = #{platformCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        platform_name = #{platformName,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        occupation_code = #{occupationCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        is_occupied = #{isOccupied,javaType=java.lang.Boolean,jdbcType=BIT} ,
-			        platform_type = #{platformType,javaType=java.lang.Long,jdbcType=BIGINT} ,
-			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-			        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-			        last_modify_time = now() ,
-			        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-			        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
-		        WHERE 
-			        id = #{id}
-			        and ou_id = #{ouId}
-			        and last_modify_time	=  #{lastModifyTime}  
-		    ]]>
-	</update>
-
+    
+    
+    <update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Platform">
+        <![CDATA[
+                UPDATE t_wh_platform SET
+                    platform_code = #{platformCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    platform_name = #{platformName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    occupation_code = #{occupationCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    is_occupied = #{isOccupied,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                    platform_type = #{platformType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                    created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    last_modify_time = now() ,
+                    modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
+                WHERE 
+                    id = #{id}
+                    and ou_id = #{ouId}
+                    and last_modify_time    =  #{lastModifyTime}  
+            ]]>
+    </update>
+    
     <select id="findListByPlatformType" resultMap="PlatformResultExt">
-        select <include refid="platformColumnsExt" />
+        select
+        <include refid="platformColumnsExt"/>
         <![CDATA[
             from t_wh_platform
             where
@@ -250,6 +252,18 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         ]]>
     </select>
 
+    <select id="findByOccupationCode" resultMap="PlatformResultExt">
+        select
+            <include refid="platformColumnsExt"/>
+        <![CDATA[
+            from t_wh_platform
+            where
+                occupation_code = #{occupationCode}
+                and ou_id = #{ouId}
+                and lifecycle = #{lifecycle}
+        ]]>
+    </select>
+    
     <update id="assignPlatform" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Platform">
         UPDATE t_wh_platform SET
             occupation_code = #{occupationCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -259,9 +273,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         WHERE
             id = #{id}
             and ou_id = #{ouId}
-            and last_modify_time =  #{lastModifyTime}
+            and last_modify_time = #{lastModifyTime}
     </update>
-
+    
     <update id="freePlatform" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Platform">
         UPDATE t_wh_platform SET
             occupation_code = null ,
@@ -271,7 +285,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         WHERE
             id = #{id}
             and ou_id = #{ouId}
-            and last_modify_time =  #{lastModifyTime}
+            and last_modify_time = #{lastModifyTime}
     </update>
 
 </mapper>

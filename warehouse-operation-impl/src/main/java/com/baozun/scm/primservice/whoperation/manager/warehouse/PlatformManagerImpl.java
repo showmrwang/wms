@@ -163,7 +163,7 @@ public class PlatformManagerImpl implements PlatformManager {
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void updateLifeCycle(List<Long> ids, Integer lifeCycle, Long userId, Long ouId) {
-        if(log.isInfoEnabled()) {
+        if (log.isInfoEnabled()) {
             log.info("PlatformManagerImpl updateLifeCycle is start");
         }
         if (log.isDebugEnabled()) {
@@ -175,7 +175,7 @@ public class PlatformManagerImpl implements PlatformManager {
             throw new BusinessException(ErrorCodes.PARAM_IS_NULL);
         }
 
-        if(log.isDebugEnabled()){
+        if (log.isDebugEnabled()) {
             log.debug("updateLifeCycle loop param [ids:{}]", ids);
         }
         for (Long id : ids) {
@@ -196,7 +196,7 @@ public class PlatformManagerImpl implements PlatformManager {
             // 保存更新数据历史
             saveUpdateLog(originPlatform, Constants.GLOBAL_LOG_UPDATE);
         }
-        if(log.isInfoEnabled()) {
+        if (log.isInfoEnabled()) {
             log.info("PlatformManagerImpl updateLifeCycle is end");
         }
     }
@@ -207,7 +207,7 @@ public class PlatformManagerImpl implements PlatformManager {
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public Platform findPlatformById(Long id, Long ouId) {
-        if(log.isInfoEnabled()) {
+        if (log.isInfoEnabled()) {
             log.info("PlatformManagerImpl findPlatformById is start");
         }
         if (log.isDebugEnabled()) {
@@ -217,7 +217,7 @@ public class PlatformManagerImpl implements PlatformManager {
         if (null != id && null != ouId) {
             platform = platformDao.findByIdExt(id, ouId);
         }
-        if(log.isInfoEnabled()) {
+        if (log.isInfoEnabled()) {
             log.info("PlatformManagerImpl findPlatformById is end");
         }
         return platform;
@@ -227,7 +227,7 @@ public class PlatformManagerImpl implements PlatformManager {
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<Platform> findListByPlatformType(Long platformType, Long ouId, Integer lifecycle) {
-        if(log.isInfoEnabled()) {
+        if (log.isInfoEnabled()) {
             log.info("PlatformManagerImpl findListByPlatformType is start");
         }
         if (log.isDebugEnabled()) {
@@ -237,7 +237,7 @@ public class PlatformManagerImpl implements PlatformManager {
         if (null != platformType && null != ouId && null != lifecycle) {
             platformList = platformDao.findListByPlatformType(platformType, ouId, lifecycle);
         }
-        if(log.isInfoEnabled()) {
+        if (log.isInfoEnabled()) {
             log.info("PlatformManagerImpl findListByPlatformType is end");
         }
         return platformList;
@@ -250,7 +250,7 @@ public class PlatformManagerImpl implements PlatformManager {
      * @param platform
      */
     private void saveUpdateLog(Platform platform, String operationType) {
-        if(log.isInfoEnabled()) {
+        if (log.isInfoEnabled()) {
             log.info("PlatformManagerImpl saveUpdateLog is start");
         }
         if (log.isDebugEnabled()) {
@@ -262,12 +262,12 @@ public class PlatformManagerImpl implements PlatformManager {
         gl.setModifiedValues(platform);
         gl.setOuId(platform.getOuId());
         gl.setType(operationType);
-        if(log.isDebugEnabled()){
-         log.debug("PlatformManagerImpl saveUpdateLog, insert to sharedDB, param [platform:{}, globalLogCommand:{} ]", platform, gl);
+        if (log.isDebugEnabled()) {
+            log.debug("PlatformManagerImpl saveUpdateLog, insert to sharedDB, param [platform:{}, globalLogCommand:{} ]", platform, gl);
         }
         globalLogManager.insertGlobalLog(gl);
 
-        if(log.isInfoEnabled()) {
+        if (log.isInfoEnabled()) {
             log.info("PlatformManagerImpl saveUpdateLog is end");
         }
     }
@@ -312,7 +312,7 @@ public class PlatformManagerImpl implements PlatformManager {
      * @param logId
      * @return
      */
-    public List<Platform> findOccupiedPlatform(Long ouId, Integer lifecycle, String logId){
+    public List<Platform> findOccupiedPlatform(Long ouId, Integer lifecycle, String logId) {
         if (log.isInfoEnabled()) {
             log.info("PlatformManagerImpl findOccupiedPlatform is start");
         }
@@ -335,5 +335,31 @@ public class PlatformManagerImpl implements PlatformManager {
         return platformList;
     }
 
-
+    /**
+     * 根据占用码查询月台
+     *
+     * @author mingwei.xie
+     * @param occupationCode
+     * @param ouId
+     * @param lifecycle
+     * @return
+     */
+    @Override
+    public Platform findByOccupationCode(String occupationCode, Long ouId, Integer lifecycle) {
+        if (log.isInfoEnabled()) {
+            log.info("PlatformManagerImpl findByOccupationCode is start");
+        }
+        if(null == occupationCode || null == ouId || null == lifecycle){
+            log.error("PlatformManagerImpl findByOccupationCode error, param is null, param [occupationCode:{}, ouId:{}, lifecycle:{}]", occupationCode, ouId, lifecycle);
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("findByOccupationCode param [occupationCode:{}, ouId:{}, lifecycle:{}]", occupationCode, ouId, lifecycle);
+        }
+        Platform platform = platformDao.findByOccupationCode(occupationCode, ouId, lifecycle);
+        if (log.isInfoEnabled()) {
+            log.info("PlatformManagerImpl findOccupiedPlatform is end");
+        }
+        return platform;
+    }
 }
