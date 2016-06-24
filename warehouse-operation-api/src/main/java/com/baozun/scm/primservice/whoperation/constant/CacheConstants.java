@@ -26,13 +26,22 @@ public final class CacheConstants {
     public static final int CACHE_THIRTY_MINUTE = 30*60;
     public static final int CACHE_ONE_HOUR = 60*60;
     public static final int CACHE_ONE_DAY = 1*24*60*60;
+    public static final int CACHE_ONE_WEEK = 7*24*60*60;
     public static final int CACHE_ONE_MONTH = 30*24*60*60;
     public static final int CACHE_ONE_YEAR = 365*24*60*60;
     
-    /** 库存缓存Key */
+    /** 库存缓存 */
     public static final String INVENTORY = "INVENTORY";
-    /** 容器库存缓存Key */
+    /** 容器库存缓存 */
     public static final String CONTAINER_INVENTORY = "CONTAINER_INVENTORY";
+    /** 容器库存统计缓存 */
+    public static final String CONTAINER_INVENTORY_STATISTIC = "CONTAINER_INVENTORY_STATISTIC";
+    /** 已扫描的容器队列 */
+    public static final String SCAN_CONTAINER_QUEUE = "SCAN_CONTAINER_QUEUE_";
+    /** 已扫描的Sku队列 */
+    public static final String SCAN_SKU_QUEUE = "SCAN_SKU_QUEUE_";
+    
+    
     
 
 }

@@ -16,6 +16,9 @@
  */
 package com.baozun.scm.primservice.whoperation.putaway;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
@@ -96,6 +99,30 @@ public class PdaPutawayManagerTest extends AbstractJUnit4SpringContextTests {
             System.out.println("key remove success！");
         }
         
+        long len = cacheManagr.listLen(CacheConstants.INVENTORY);
+        System.out.println(len);
+        cacheManagr.pushToListHead(CacheConstants.INVENTORY, "111");
+        cacheManagr.pushToListFooter(CacheConstants.INVENTORY, "222");
+        cacheManagr.pushToListFooter(CacheConstants.INVENTORY, "333");
+        len = cacheManagr.listLen(CacheConstants.INVENTORY);
+        System.out.println(len);
+        System.out.println(cacheManagr.popListHead(CacheConstants.INVENTORY)); 
+        len = cacheManagr.listLen(CacheConstants.INVENTORY);
+        System.out.println(len);
+        for(int ii = 0; ii < new Long(len).intValue(); ii++){
+            System.out.println(cacheManagr.findListItem(CacheConstants.INVENTORY, ii)); 
+        }
+        cacheManagr.remove(CacheConstants.INVENTORY);
+        
+        
+        List<WhSkuInventoryCommand> list = new ArrayList<WhSkuInventoryCommand>();
+        list.add(invs);
+        cacheManagr.setMapObject(CacheConstants.INVENTORY, inv.getOccupationCode(), list, 30*24*60*60);
+        List<WhSkuInventoryCommand> list2 = cacheManagr.getMapObject(CacheConstants.INVENTORY, inv.getOccupationCode());
+        if(null != list2){
+            System.out.println("cache list success!");
+        }
+        cacheManagr.removeMapValue(CacheConstants.INVENTORY, inv.getOccupationCode());
         
         try {
             cacheManagr.setMapObject(CacheConstants.INVENTORY, inv.getOccupationCode(), inv, 30*24*60*60);
@@ -119,6 +146,7 @@ public class PdaPutawayManagerTest extends AbstractJUnit4SpringContextTests {
             throw e;
         }
         
+       
     }
     
     public static void main(String[] args) {

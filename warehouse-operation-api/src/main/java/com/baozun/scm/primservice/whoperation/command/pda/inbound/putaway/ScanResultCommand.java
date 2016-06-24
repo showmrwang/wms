@@ -48,10 +48,10 @@ public class ScanResultCommand extends BaseCommand {
     private String outerContainerCode;
     /** 容器类型 1：外部容器 2：内部容器 */
     private int containerType;
-    /** 是否需要上架 */
-    private boolean isNeedPutaway;
     /** 是否已执行上架 */
     private boolean isPutaway;
+    /** 缓存是否存在 */
+    private boolean isCacheExists;
 
     public int getPutawayPatternType() {
         return putawayPatternType;
@@ -149,14 +149,6 @@ public class ScanResultCommand extends BaseCommand {
         this.containerType = containerType;
     }
 
-    public boolean isNeedPutaway() {
-        return isNeedPutaway;
-    }
-
-    public void setNeedPutaway(boolean isNeedPutaway) {
-        this.isNeedPutaway = isNeedPutaway;
-    }
-
     public boolean isPutaway() {
         return isPutaway;
     }
@@ -164,6 +156,15 @@ public class ScanResultCommand extends BaseCommand {
     public void setPutaway(boolean isPutaway) {
         this.isPutaway = isPutaway;
     }
+
+    public boolean isCacheExists() {
+        return isCacheExists;
+    }
+
+    public void setCacheExists(boolean isCacheExists) {
+        this.isCacheExists = isCacheExists;
+    }
+    
 
 
 }
