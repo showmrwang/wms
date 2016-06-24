@@ -510,11 +510,16 @@ public class PoLineManagerImpl implements PoLineManager {
         return this.whPoLineDao.findInfoPoLineByPoCodeOuId(poCode, ouId);
     }
 
+    /**
+     * TODO yimin.lu 这个方法逻辑有点不明确
+     */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void createPoLineBatchToShareNew(BiPoLineCommand biPoLineCommand, List<WhPoLine> infoPolineList) {
         WhPo whpo = this.whPoDao.findByPoCodeAndOuId(biPoLineCommand.getPoCode(), biPoLineCommand.getOuId());
+        double qtyPlanned = Constants.DEFAULT_DOUBLE;
         for (WhPoLine infoPoline : infoPolineList) {
+            qtyPlanned += infoPoline.getQtyPlanned();
             WhPoLine shardPoline = this.whPoLineDao.findByPoCodeAndOuIdAndPoLineId(biPoLineCommand.getPoCode(), biPoLineCommand.getOuId(), infoPoline.getPoLineId());
             if (shardPoline != null) {
                 BeanUtils.copyProperties(infoPoline, shardPoline, "id", "lastModifyTime", "poId");
@@ -525,8 +530,9 @@ public class PoLineManagerImpl implements PoLineManager {
                 infoPoline.setPoId(whpo.getId());
                 this.whPoLineDao.insert(infoPoline);
             }
-
         }
+        whpo.setQtyPlanned(qtyPlanned);
+        this.whPoDao.saveOrUpdateByVersion(whpo);
     }
 
     @Override

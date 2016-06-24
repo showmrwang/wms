@@ -27,8 +27,11 @@ import com.baozun.scm.primservice.whoperation.model.BaseModel;
  */
 public class WhPo extends BaseModel {
 
-    private static final long serialVersionUID = 6476267264305613566L;
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 3128949844364994933L;
     /** PO单号 */
     private String poCode;
     /** 相关单据号 */
@@ -86,13 +89,6 @@ public class WhPo extends BaseModel {
     /** 超收比例 */
     private Double overChageRate;
 
-    public Double getOverChageRate() {
-        return overChageRate;
-    }
-
-    public void setOverChageRate(Double overChageRate) {
-        this.overChageRate = overChageRate;
-    }
 
     public String getUuid() {
         return uuid;
@@ -309,6 +305,14 @@ public class WhPo extends BaseModel {
 
     public void setIsVmi(Boolean isVmi) {
         this.isVmi = isVmi;
+    }
+
+    public Double getOverChageRate() {
+        return overChageRate;
+    }
+
+    public void setOverChageRate(Double overChageRate) {
+        this.overChageRate = overChageRate;
     }
 
 

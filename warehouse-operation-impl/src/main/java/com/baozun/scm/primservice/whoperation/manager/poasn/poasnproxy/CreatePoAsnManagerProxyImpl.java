@@ -733,14 +733,9 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
             /**
              * @mender yimin.lu 2016/4/27 以下逻辑做修正；修改后的逻辑： 1.生成主库备份 2.如果有仓库，则在仓库中再插入一份
              */
-            rm = biPoManager.createPoAndLineToInfo(whPo, whPoLines, rm);
-            if (ResponseMsg.STATUS_SUCCESS == rm.getResponseStatus()) {
-                if (ouId != null) {
-                    rm = biPoManager.createPoAndLineToShared(whPo, whPoLines, rm);
-                }
-            } else {
-                log.warn("create po and line to info failed!responseMsg:[responseMsg:{}]", rm);
-                return rm;
+            biPoManager.createPoAndLineToInfo(whPo, whPoLines);
+            if (ouId != null) {
+                biPoManager.createPoAndLineToShared(whPo, whPoLines);
             }
         } catch (Exception e) {
             log.error("CreatePoAsnManagerProxyImpl.createPoNew error:[exception:{}]", e);

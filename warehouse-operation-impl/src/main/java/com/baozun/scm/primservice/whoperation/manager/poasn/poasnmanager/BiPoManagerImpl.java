@@ -87,233 +87,173 @@ public class BiPoManagerImpl extends BaseManagerImpl implements BiPoManager {
 
     @Override
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
-    public ResponseMsg createPoAndLineToInfo(WhPo po, List<WhPoLine> whPoLines, ResponseMsg rm) {
+    public void createPoAndLineToInfo(WhPo po, List<WhPoLine> whPoLines) {
         // create-po分支：
         // 逻辑:
         // 1.没有指定仓库，则只需要插入BIPO
         // 2.指定仓库,则需要插入BIPO，并将数据同步到INFO的WHPO中；
         // 3.指定了仓库，状态为已分配仓库状态。而仓库为新建状态
         log.info("BiPoManager.createPoAndLineToInfo method begin! params:[po:{},whPoLines:{}]", po, whPoLines);
-        try {
-            if (log.isDebugEnabled()) {
-                log.debug("BiPoManager.createPoAndLineToInfo start inserting data to info.bipo/info.whpo!orgin:[data:{}]", po);
-            }
-            BiPo biPo = new BiPo();// biPo为插入到BIPO的实体对象;po为插入到INFO.WHPO的对象
-            BeanUtils.copyProperties(po, biPo);
-            biPo.setStatus(null == po.getOuId() ? PoAsnStatus.BIPO_NEW : PoAsnStatus.BIPO_ALLOT);
-            // 插入BIPO
-            long bipocount = biPoDao.insert(biPo);
-            if (bipocount <= Constants.DEFAULT_LONG) {
-                log.error("BiPoManager.createPoAndLineToInfo method insert into BIPO error:[insertCount:{},insertData:{}]", bipocount, biPo);
+        if (log.isDebugEnabled()) {
+            log.debug("BiPoManager.createPoAndLineToInfo start inserting data to info.bipo/info.whpo!orgin:[data:{}]", po);
+        }
+        BiPo biPo = new BiPo();// biPo为插入到BIPO的实体对象;po为插入到INFO.WHPO的对象
+        BeanUtils.copyProperties(po, biPo);
+        biPo.setStatus(null == po.getOuId() ? PoAsnStatus.BIPO_NEW : PoAsnStatus.BIPO_ALLOT);
+        // 插入BIPO
+        long bipocount = biPoDao.insert(biPo);
+        if (bipocount <= Constants.DEFAULT_LONG) {
+            log.error("BiPoManager.createPoAndLineToInfo method insert into BIPO error:[insertCount:{},insertData:{}]", bipocount, biPo);
+            throw new BusinessException(ErrorCodes.INSERT_DATA_ERROR);
+        }
+        this.insertGlobalLog(GLOBAL_LOG_INSERT, biPo, po.getOuId(), po.getCreatedId(), null, null);
+        if (po.getOuId() != null) {
+            // 插入WHPO
+            po.setStatus(PoAsnStatus.PO_NEW);
+            // 插入info.whpo
+            long whpocount = whPoDao.insert(po);
+            if (whpocount <= Constants.DEFAULT_LONG) {
+                log.error("BiPoManager.createPoAndLineToInfo method insert into BIPO error:[insertCount:{},insertData:{}]", whpocount, po);
                 throw new BusinessException(ErrorCodes.INSERT_DATA_ERROR);
             }
-            this.insertGlobalLog(GLOBAL_LOG_INSERT, biPo, po.getOuId(), po.getCreatedId(), null, DbDataSource.MOREDB_INFOSOURCE);
-            if (po.getOuId() != null) {
-                // 插入WHPO
-                po.setStatus(PoAsnStatus.PO_NEW);
-                // 插入info.whpo
-                long whpocount = whPoDao.insert(po);
-                if (whpocount <= Constants.DEFAULT_LONG) {
-                    log.error("BiPoManager.createPoAndLineToInfo method insert into BIPO error:[insertCount:{},insertData:{}]", whpocount, po);
+            this.insertGlobalLog(GLOBAL_LOG_INSERT, po, po.getOuId(), po.getCreatedId(), null, null);
+        }
+        // 有line信息保存
+        if (whPoLines != null && whPoLines.size() > Constants.DEFAULT_INTEGER) {
+            if (log.isDebugEnabled()) {
+                log.debug("BiPoManager.createPoAndLineToInfo start iterating lines to insert to info.bipoLine/info.whpoLine. origin:[data:{}]", whPoLines);
+            }
+            for (WhPoLine whPoLine : whPoLines) {
+                // 插入BIPOLINE
+                whPoLine.setPoId(biPo.getId());
+                BiPoLine biPoLine = new BiPoLine();
+                BeanUtils.copyProperties(whPoLine, biPoLine);
+                if (po.getOuId() != null) {
+                    biPoLine.setAvailableQty(Constants.DEFAULT_DOUBLE);
+                    biPoLine.setStatus(PoAsnStatus.BIPOLINE_ALLOT);
+                } else {
+                    biPoLine.setAvailableQty(biPoLine.getQtyPlanned());
+                    biPoLine.setStatus(PoAsnStatus.BIPOLINE_NEW);
+                }
+                long bipoLineCount = biPoLineDao.insert(biPoLine);
+                if (bipoLineCount <= Constants.DEFAULT_LONG) {
+                    log.error("BiPoManager.createPoAndLineToInfo method insert into BIPOLINE error:[insertCount:{},insertData:{}]", bipoLineCount, biPoLine);
                     throw new BusinessException(ErrorCodes.INSERT_DATA_ERROR);
                 }
-                this.insertGlobalLog(GLOBAL_LOG_INSERT, po, po.getOuId(), po.getCreatedId(), null, DbDataSource.MOREDB_INFOSOURCE);
-            }
-            // 有line信息保存
-            if (whPoLines != null && whPoLines.size() > Constants.DEFAULT_INTEGER) {
-                if (log.isDebugEnabled()) {
-                    log.debug("BiPoManager.createPoAndLineToInfo start iterating lines to insert to info.bipoLine/info.whpoLine. origin:[data:{}]", whPoLines);
-                }
-                for (WhPoLine whPoLine : whPoLines) {
-                    // 插入BIPOLINE
-                    whPoLine.setPoId(biPo.getId());
-                    BiPoLine biPoLine = new BiPoLine();
-                    BeanUtils.copyProperties(whPoLine, biPoLine);
-                    if (po.getOuId() != null) {
-                        biPoLine.setAvailableQty(Constants.DEFAULT_DOUBLE);
-                        biPoLine.setStatus(PoAsnStatus.BIPOLINE_ALLOT);
-                    } else {
-                        biPoLine.setAvailableQty(biPoLine.getQtyPlanned());
-                        biPoLine.setStatus(PoAsnStatus.BIPOLINE_NEW);
-                    }
-                    long bipoLineCount = biPoLineDao.insert(biPoLine);
-                    if (bipoLineCount <= Constants.DEFAULT_LONG) {
-                        log.error("BiPoManager.createPoAndLineToInfo method insert into BIPOLINE error:[insertCount:{},insertData:{}]", bipoLineCount, biPoLine);
+                this.insertGlobalLog(GLOBAL_LOG_INSERT, biPoLine, po.getOuId(), po.getCreatedId(), po.getPoCode(), null);
+                if (po.getOuId() != null) {
+                    // 插入WHPOLINE
+                    whPoLine.setId(null);
+                    whPoLine.setPoId(po.getId());
+                    whPoLine.setPoLineId(biPoLine.getId());
+                    whPoLine.setStatus(PoAsnStatus.POLINE_NEW);
+                    whPoLine.setAvailableQty(whPoLine.getQtyPlanned());
+                    long whPoLineCount = whPoLineDao.insert(whPoLine);
+                    if (whPoLineCount <= Constants.DEFAULT_LONG) {
+                        log.error("BiPoManager.createPoAndLineToInfo method insert into INFO.WHPOLINE error:[insertCount:{},insertData:{}]", whPoLineCount, whPoLine);
                         throw new BusinessException(ErrorCodes.INSERT_DATA_ERROR);
                     }
-                    this.insertGlobalLog(GLOBAL_LOG_INSERT, biPoLine, po.getOuId(), po.getCreatedId(), po.getPoCode(), DbDataSource.MOREDB_INFOSOURCE);
-                    if (po.getOuId() != null) {
-                        // 插入WHPOLINE
-                        whPoLine.setId(null);
-                        whPoLine.setPoId(po.getId());
-                        whPoLine.setPoLineId(biPoLine.getId());
-                        whPoLine.setStatus(PoAsnStatus.POLINE_NEW);
-                        whPoLine.setAvailableQty(whPoLine.getQtyPlanned());
-                        long whPoLineCount = whPoLineDao.insert(whPoLine);
-                        if (whPoLineCount <= Constants.DEFAULT_LONG) {
-                            log.error("BiPoManager.createPoAndLineToInfo method insert into INFO.WHPOLINE error:[insertCount:{},insertData:{}]", whPoLineCount, whPoLine);
-                            throw new BusinessException(ErrorCodes.INSERT_DATA_ERROR);
-                        }
-                        this.insertGlobalLog(GLOBAL_LOG_INSERT, whPoLine, po.getOuId(), po.getCreatedId(), po.getPoCode(), DbDataSource.MOREDB_INFOSOURCE);
+                    this.insertGlobalLog(GLOBAL_LOG_INSERT, whPoLine, po.getOuId(), po.getCreatedId(), po.getPoCode(), null);
 
-                    }
                 }
             }
-        } catch (Exception e) {
-            log.error("BiPoManager.createPoAndLineToInfo error:[exception:{}]", e);
-            if (e instanceof BusinessException) {
-                rm.setMsg(((BusinessException) e).getErrorCode() + "");
-            } else {
-                rm.setMsg(ErrorCodes.DAO_EXCEPTION + "");
-            }
-            rm.setResponseStatus(ResponseMsg.DATA_ERROR);
-            log.info("BiPoManager.createPoAndLineToInfo method end!");
-            return rm;
         }
-        rm.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
         log.info("BiPoManager.createPoAndLineToInfo method end!");
-        return rm;
     }
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public ResponseMsg createPoAndLineToShared(WhPo po, List<WhPoLine> whPoLines, ResponseMsg rm) {
+    public void createPoAndLineToShared(WhPo po, List<WhPoLine> whPoLines) {
         // 逻辑:
         // 将INFO.WHPO数据同步到SHARD.WHPO中
         // 1.头信息同步：po
         // 2.明细信息同步：whpoLines
         log.info("BiPoManagerImpl.createPoAndLineToShared method begin!");
-        try{
-            // 插入SHARD.WHPO
-            po.setId(null);
-            po.setStatus(PoAsnStatus.PO_NEW);
-            long i = whPoDao.insert(po);
-            if (i <= 0) {
-                log.error("BiPoManagerImpl.createPoAndLineToShared method insert data to shard.whpoerror!message:[insertCount:{},insertData:{}]", i, po);
-                throw new BusinessException(ErrorCodes.INSERT_DATA_ERROR);
-            }
-            this.insertGlobalLog(GLOBAL_LOG_INSERT, po, po.getOuId(), po.getModifiedId(), null, DbDataSource.MOREDB_SHARDSOURCE);
-            // 插入SHARD.WHPOLINE
-            if (whPoLines != null && whPoLines.size() > 0) {
-                // 有line信息保存
-                for (WhPoLine whPoLine : whPoLines) {
-                    whPoLine.setId(null);
-                    whPoLine.setPoId(po.getId());
-                    whPoLine.setStatus(PoAsnStatus.POLINE_NEW);
-                    whPoLine.setAvailableQty(whPoLine.getQtyPlanned());
-                    long il = whPoLineDao.insert(whPoLine);
-                    if (il <= 0) {
-                        log.error("BiPoManagerImpl.createPoAndLineToShared method iterate data for inserting data to shard.whpoline error!message:[insertCount:{},insertData:{}]", il, whPoLine);
-                        throw new BusinessException(ErrorCodes.INSERT_DATA_ERROR);
-                    }
-                    this.insertGlobalLog(GLOBAL_LOG_INSERT, whPoLine, whPoLine.getOuId(), whPoLine.getModifiedId(), null, DbDataSource.MOREDB_SHARDSOURCE);
-                }
-            }
-        } catch (Exception e) {
-            log.error("BiPoManager.createPoAndLineToShared error:[exception:{}]", e);
-            if (e instanceof BusinessException) {
-                rm.setMsg(((BusinessException) e).getErrorCode() + "");
-            } else {
-                rm.setMsg(ErrorCodes.DAO_EXCEPTION + "");
-            }
-            rm.setResponseStatus(ResponseMsg.DATA_ERROR);
-            log.info("BiPoManager.createPoAndLineToInfo method end!");
-            return rm;
+        // 插入SHARD.WHPO
+        po.setId(null);
+        po.setStatus(PoAsnStatus.PO_NEW);
+        long i = whPoDao.insert(po);
+        if (i <= 0) {
+            log.error("BiPoManagerImpl.createPoAndLineToShared method insert data to shard.whpoerror!message:[insertCount:{},insertData:{}]", i, po);
+            throw new BusinessException(ErrorCodes.INSERT_DATA_ERROR);
         }
-        rm.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
-        log.info("BiPoManagerImpl.createPoAndLineToShared method end!");
-        return rm;
+        this.insertGlobalLog(GLOBAL_LOG_INSERT, po, po.getOuId(), po.getModifiedId(), null, DbDataSource.MOREDB_SHARDSOURCE);
+        // 插入SHARD.WHPOLINE
+        if (whPoLines != null && whPoLines.size() > 0) {
+            // 有line信息保存
+            for (WhPoLine whPoLine : whPoLines) {
+                whPoLine.setId(null);
+                whPoLine.setPoId(po.getId());
+                whPoLine.setStatus(PoAsnStatus.POLINE_NEW);
+                whPoLine.setAvailableQty(whPoLine.getQtyPlanned());
+                long il = whPoLineDao.insert(whPoLine);
+                if (il <= 0) {
+                    log.error("BiPoManagerImpl.createPoAndLineToShared method iterate data for inserting data to shard.whpoline error!message:[insertCount:{},insertData:{}]", il, whPoLine);
+                    throw new BusinessException(ErrorCodes.INSERT_DATA_ERROR);
+                }
+                this.insertGlobalLog(GLOBAL_LOG_INSERT, whPoLine, whPoLine.getOuId(), whPoLine.getModifiedId(), null, DbDataSource.MOREDB_SHARDSOURCE);
+            }
+        }
     }
 
     @Override
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
-    public ResponseMsg deleteBiPoAndLine(Long id, Long userId) {
-        ResponseMsg rm=new ResponseMsg();
-        try{
-            List<BiPoLine> lines = this.biPoLineDao.findBiPoLineByPoIdAndUuid(id, null);
-            if (lines != null) {
-                for (BiPoLine line : lines) {
-                    int dpl=this.biPoLineDao.delete(line.getId());
-                    if(dpl<0){
-                        throw new BusinessException(ErrorCodes.DELETE_DATA_ERROR);
-                    }
-                    this.insertGlobalLog(GLOBAL_LOG_DELETE, line, null, userId, line.getPoId() + "", DbDataSource.MOREDB_INFOSOURCE);
+    public void deleteBiPoAndLine(Long id, Long userId) {
+        List<BiPoLine> lines = this.biPoLineDao.findBiPoLineByPoIdAndUuid(id, null);
+        if (lines != null) {
+            for (BiPoLine line : lines) {
+                int dpl = this.biPoLineDao.delete(line.getId());
+                if (dpl < 0) {
+                    throw new BusinessException(ErrorCodes.DELETE_DATA_ERROR);
                 }
+                this.insertGlobalLog(GLOBAL_LOG_DELETE, line, null, userId, line.getPoId() + "", DbDataSource.MOREDB_INFOSOURCE);
             }
-            BiPo bipo = this.biPoDao.findById(id);
-            int dp = this.biPoDao.delete(id);
-            if (dp < 0) {
-                throw new BusinessException(ErrorCodes.DELETE_DATA_ERROR);
-            }
-            this.insertGlobalLog(GLOBAL_LOG_DELETE, bipo, null, userId, null, DbDataSource.MOREDB_INFOSOURCE);
-        } catch (Exception e) {
-            rm.setMsg("delete bipo error");
-            rm.setResponseStatus(ResponseMsg.DATA_ERROR);
-            return rm;
         }
-        rm.setMsg("success");
-        rm.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
-        return rm;
+        BiPo bipo = this.biPoDao.findById(id);
+        int dp = this.biPoDao.delete(id);
+        if (dp < 0) {
+            throw new BusinessException(ErrorCodes.DELETE_DATA_ERROR);
+        }
+        this.insertGlobalLog(GLOBAL_LOG_DELETE, bipo, null, userId, null, DbDataSource.MOREDB_INFOSOURCE);
     }
 
     @Override
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
-    public ResponseMsg cancelBiPo(Long id, Long userId) {
+    public void cancelBiPo(Long id, Long userId) {
         ResponseMsg rm = new ResponseMsg();
-        try {
-            List<BiPoLine> lines = this.biPoLineDao.findBiPoLineByPoIdAndUuid(id, null);
-            if (lines != null) {
-                for (BiPoLine line : lines) {
-                    line.setStatus(PoAsnStatus.BIPOLINE_CANCELED);
-                    line.setModifiedId(userId);
-                    int dpl = this.biPoLineDao.saveOrUpdateByVersion(line);
-                    if (dpl < 0) {
-                        throw new BusinessException(ErrorCodes.CANCEL_PO_ERROR);
-                    }
-                    this.insertGlobalLog(GLOBAL_LOG_UPDATE, line, null, userId, line.getPoId() + "", DbDataSource.MOREDB_INFOSOURCE);
+        List<BiPoLine> lines = this.biPoLineDao.findBiPoLineByPoIdAndUuid(id, null);
+        if (lines != null) {
+            for (BiPoLine line : lines) {
+                line.setStatus(PoAsnStatus.BIPOLINE_CANCELED);
+                line.setModifiedId(userId);
+                int dpl = this.biPoLineDao.saveOrUpdateByVersion(line);
+                if (dpl < 0) {
+                    throw new BusinessException(ErrorCodes.CANCEL_PO_ERROR);
                 }
+                this.insertGlobalLog(GLOBAL_LOG_UPDATE, line, null, userId, line.getPoId() + "", DbDataSource.MOREDB_INFOSOURCE);
             }
-            BiPo bipo = this.biPoDao.findById(id);
-            if (null == bipo) {
-                throw new BusinessException(ErrorCodes.CANCEL_PO_ERROR);
-            }
-            bipo.setStatus(PoAsnStatus.BIPO_CANCELED);
-            bipo.setModifiedId(userId);
-            int dp = this.biPoDao.saveOrUpdateByVersion(bipo);
-            if (dp < 0) {
-                throw new BusinessException(ErrorCodes.CANCEL_PO_ERROR);
-            }
-            this.insertGlobalLog(GLOBAL_LOG_UPDATE, bipo, null, userId, null, DbDataSource.MOREDB_INFOSOURCE);
-        } catch (Exception e) {
-            rm.setMsg("cancel bipo error");
-            rm.setResponseStatus(ResponseMsg.DATA_ERROR);
-            return rm;
         }
-        rm.setMsg("success");
-        rm.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
-        return rm;
+        BiPo bipo = this.biPoDao.findById(id);
+        if (null == bipo) {
+            throw new BusinessException(ErrorCodes.CANCEL_PO_ERROR);
+        }
+        bipo.setStatus(PoAsnStatus.BIPO_CANCELED);
+        bipo.setModifiedId(userId);
+        int dp = this.biPoDao.saveOrUpdateByVersion(bipo);
+        if (dp < 0) {
+            throw new BusinessException(ErrorCodes.CANCEL_PO_ERROR);
+        }
+        this.insertGlobalLog(GLOBAL_LOG_UPDATE, bipo, null, userId, null, DbDataSource.MOREDB_INFOSOURCE);
     }
 
     @Override
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
-    public ResponseMsg editBiPo(BiPo updatePo) {
-        ResponseMsg rm=new ResponseMsg();
-        try{
-            int updatecount=this.biPoDao.saveOrUpdateByVersion(updatePo);
-            if(updatecount<0){
-                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR); 
-            }
-            this.insertGlobalLog(GLOBAL_LOG_UPDATE, updatePo, null, updatePo.getModifiedId(), null, DbDataSource.MOREDB_INFOSOURCE);
-        }catch(Exception e){
-            if(e instanceof BusinessException){
-                rm.setResponseStatus(ResponseMsg.DATA_ERROR);
-                rm.setMsg(((BusinessException)e).getErrorCode()+"");
-                return rm;
-            }
+    public void editBiPo(BiPo updatePo) {
+        int updatecount = this.biPoDao.saveOrUpdateByVersion(updatePo);
+        if (updatecount < 0) {
+            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
         }
-        rm.setMsg("success");
-        rm.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
-        return rm;
+        this.insertGlobalLog(GLOBAL_LOG_UPDATE, updatePo, null, updatePo.getModifiedId(), null, DbDataSource.MOREDB_INFOSOURCE);
     }
 
     @Override
