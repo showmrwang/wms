@@ -26,7 +26,7 @@ public class RuleExportCommand extends BaseCommand {
     private String exportContainerCode;
 
     /** 返回月台可用信息 key: 0:找不到规则 1:找到规则单月台不可用 2:找到对应月台 */
-    private Map<Integer, RecommendPlatformCommand> exportPlatformCode;
+    private Map<Integer, RecommendPlatformCommand> exportPlatform;
 
     /** 入库分拣规则对象 */
     private WhInBoundRuleCommand whInBoundRuleCommand;
@@ -59,12 +59,12 @@ public class RuleExportCommand extends BaseCommand {
         this.exportContainerCode = exportContainerCode;
     }
 
-    public Map<Integer, RecommendPlatformCommand> getExportPlatformCode() {
-        return exportPlatformCode;
+    public Map<Integer, RecommendPlatformCommand> getExportPlatform() {
+        return exportPlatform;
     }
 
-    public void setExportPlatformCode(Map<Integer, RecommendPlatformCommand> exportPlatformCode) {
-        this.exportPlatformCode = exportPlatformCode;
+    public void setExportPlatform(Map<Integer, RecommendPlatformCommand> exportPlatform) {
+        this.exportPlatform = exportPlatform;
     }
 
     public WhInBoundRuleCommand getWhInBoundRuleCommand() {

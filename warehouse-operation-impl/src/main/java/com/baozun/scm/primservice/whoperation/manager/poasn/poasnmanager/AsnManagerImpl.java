@@ -793,7 +793,7 @@ public class AsnManagerImpl implements AsnManager {
         for (WhAsnLineCommand lineCommand : command.getAsnLineList()) {
             WhAsnLine asnLine = this.whAsnLineDao.findWhAsnLineById(lineCommand.getId(), command.getOuId());
             qtyCount+=lineCommand.getQtyPlanned()-asnLine.getQtyPlanned();
-            if(Constants.DEFAULT_DOUBLE.equals(lineCommand.getQtyPlanned())){
+            if(Constants.DEFAULT_DOUBLE.doubleValue()==lineCommand.getQtyPlanned().doubleValue()){
                 int deleteLineCount=this.whAsnLineDao.deleteByIdOuId(asnLine.getId(), asnLine.getOuId());
                 if(deleteLineCount<=0){
                     throw new BusinessException(ErrorCodes.DELETE_DATA_ERROR);

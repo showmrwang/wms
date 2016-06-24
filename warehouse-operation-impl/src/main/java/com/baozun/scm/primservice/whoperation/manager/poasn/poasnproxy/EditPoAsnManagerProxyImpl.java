@@ -788,7 +788,21 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
             rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
             return rm;
         }
-        return this.biPoManager.deleteBiPoAndLine(poCommand.getId(), poCommand.getUserId());
+        try {
+
+            this.biPoManager.deleteBiPoAndLine(poCommand.getId(), poCommand.getUserId());
+        } catch (BusinessException e) {
+            rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
+            rm.setMsg(e.getErrorCode() + "");
+            return rm;
+        } catch (Exception ex) {
+            rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
+            rm.setMsg(ErrorCodes.DAO_EXCEPTION + "");
+            return rm;
+        }
+        rm.setReasonStatus(ResponseMsg.STATUS_SUCCESS);
+        rm.setMsg("success");
+        return rm;
     }
 
     @Override
@@ -813,7 +827,20 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
             }
 
         }
-        return this.biPoManager.cancelBiPo(command.getId(), command.getUserId());
+        try {
+            this.biPoManager.cancelBiPo(command.getId(), command.getUserId());
+        } catch (BusinessException e) {
+            rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
+            rm.setMsg(e.getErrorCode() + "");
+            return rm;
+        } catch (Exception ex) {
+            rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
+            rm.setMsg(ErrorCodes.DAO_EXCEPTION + "");
+            return rm;
+        }
+        rm.setReasonStatus(ResponseMsg.STATUS_SUCCESS);
+        rm.setMsg("success");
+        return rm;
 
     }
 
@@ -824,7 +851,21 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
 
     @Override
     public ResponseMsg editBiPo(BiPo updatePo) {
-        return this.biPoManager.editBiPo(updatePo);
+        ResponseMsg rm = new ResponseMsg();
+        try {
+            this.biPoManager.editBiPo(updatePo);
+        } catch (BusinessException e) {
+            rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
+            rm.setMsg(e.getErrorCode() + "");
+            return rm;
+        } catch (Exception ex) {
+            rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
+            rm.setMsg(ErrorCodes.DAO_EXCEPTION + "");
+            return rm;
+        }
+        rm.setReasonStatus(ResponseMsg.STATUS_SUCCESS);
+        rm.setMsg("success");
+        return rm;
     }
 
     @Override

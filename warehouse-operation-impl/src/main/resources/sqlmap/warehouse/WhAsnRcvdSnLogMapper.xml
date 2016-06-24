@@ -119,11 +119,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 
 	<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
 	<insert id="insert"
-		parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhAsnRcvdSnLog"
-		useGeneratedKeys="true" keyProperty="id" flushCache="true">
+		parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhAsnRcvdSnLog" flushCache="true"> 
 		    <![CDATA[
 		        INSERT INTO
 		        t_wh_asn_rcvd_sn_log (
+		        	id,
 		        	asn_rcvd_id ,
 		        	sn ,
 		        	defect_ware_barcode ,
@@ -131,6 +131,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	defect_reasons ,
 		        	ou_id 
 		        ) VALUES (
+		       		#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{asnRcvdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{sn,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{defectWareBarcode,javaType=java.lang.String,jdbcType=VARCHAR} ,

@@ -698,7 +698,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
             while (it.hasNext()) {
                 Entry<String, String> entry = it.next();
                 WhAsnLine line = this.cacheManager.getMapObject(CacheKeyConstant.CACHE_ASNLINE_PREFIX + occupationId, entry.getKey());
-                Integer overchargeCount = (int) (line.getQtyPlanned() * newChargeRate);
+                Integer overchargeCount = (int) (line.getQtyPlanned() * newChargeRate / 100);
                 this.cacheManager.setMapObject(CacheKeyConstant.CACHE_ASNLINE_OVERCHARGE_PREFIX + occupationId, entry.getKey(), overchargeCount, 24 * 60 * 60);
             }
         } catch (Exception e) {
@@ -832,6 +832,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
      * @param operator
      * @param isInvattrDiscrepancyAllowrcvd
      * @param command
+     * @throws ParseException
      */
     private List<String> matchLineList(int operator, WhSkuInventoryCommand command, String lineIdListString) {
         // 容器限定的商品库存属性
@@ -839,14 +840,36 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
         boolean flag = null == rcvdContainerCacheCommand ? false : true;
         // 匹配可用的明细
         String[] lineIdArray = lineIdListString.split(",");
-        // 如果只有一条明细
         List<String> lineList = new ArrayList<String>();
         for (String lineId : lineIdArray) {
             WhAsnLine line = this.cacheManager.getMapObject(CacheKeyConstant.CACHE_ASNLINE_PREFIX + command.getOccupationId(), lineId + "");
             switch (operator) {
                 case Constants.GENERAL_RECEIVING_ISVALID:
-                    String mfgDateStr = null == line.getMfgDate() ? "" : DateUtil.format(line.getMfgDate(), Constants.DATE_PATTERN_YMD);
-                    String expDateStr = null == line.getExpDate() ? "" : DateUtil.format(line.getExpDate(), Constants.DATE_PATTERN_YMD);
+                    //@mender yimin.lu 2016/6/24 修改日期校验逻辑
+                    String lineMfgDateStr = null == line.getMfgDate() ? null : DateUtil.format(line.getMfgDate(), Constants.DATE_PATTERN_YMD);
+                    String lineExpDateStr = null == line.getMfgDate() ? null : DateUtil.format(line.getExpDate(), Constants.DATE_PATTERN_YMD);
+                    String mfgDateStr = command.getMfgDateStr();
+                    String expDateStr = command.getExpDateStr();
+                    Date mfgDate=null;
+                    Date expDate=null;
+                    if(StringUtils.hasText(mfgDateStr)){
+                        try {
+                            mfgDate = DateUtil.parse(mfgDateStr, Constants.DATE_PATTERN_YMD);
+                        } catch (ParseException e) {
+                            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+                        }
+                    }
+                    if(StringUtils.hasText(expDateStr)){
+                        try {
+                            expDate = DateUtil.parse(mfgDateStr, Constants.DATE_PATTERN_YMD);
+                        } catch (ParseException e) {
+                            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+                        }
+                    }
+                    if(command.getDayOfValidDate()!=null){
+                        
+                    }
+                    
                     if (command.getIsLimitUniqueDateOfManufacture() && flag) {
                         if (!mfgDateStr.equals(rcvdContainerCacheCommand.getMfgDate())) {
                             break;
@@ -859,7 +882,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                             // throw new BusinessException(ErrorCodes.RCVD_CONTAINER_LIMIT_ERROR);
                         }
                     }
-                    if (mfgDateStr.equals(command.getMfgDateStr()) && expDateStr.equals(command.getExpDateStr())) {
+                    if ((null == lineMfgDateStr || lineMfgDateStr.equals(mfgDateStr)) && (null == lineExpDateStr || lineExpDateStr.equals(expDateStr))) {
                         lineList.add(lineId);
                     }
                     break;
@@ -1010,6 +1033,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
             rcvdContainerCacheCommand.setInvAttr5(command.getInvAttr5());
             rcvdContainerCacheCommand.setOuId(command.getOuId());
             rcvdContainerCacheCommand.setUserId(command.getUserId());
+            rcvdContainerCacheCommand.setInvType(command.getInvType());
             if (null != command.getInvStatus()) {// DateUtil.format(line.getExpDate(),
                                                  // Constants.DATE_PATTERN_YMD)
                 rcvdContainerCacheCommand.setInvStatus(command.getInvStatus().toString());

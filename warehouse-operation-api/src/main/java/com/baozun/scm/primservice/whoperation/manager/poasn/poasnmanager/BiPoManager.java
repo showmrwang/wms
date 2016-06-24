@@ -9,7 +9,6 @@ import lark.common.dao.Sort;
 
 import com.baozun.scm.primservice.whoperation.command.poasn.BiPoCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
-import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
 import com.baozun.scm.primservice.whoperation.model.poasn.BiPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
@@ -68,7 +67,7 @@ public interface BiPoManager extends BaseManager {
      * @param rm
      * @return
      */
-    ResponseMsg createPoAndLineToInfo(WhPo whPo, List<WhPoLine> whPoLines, ResponseMsg rm);
+    void createPoAndLineToInfo(WhPo whPo, List<WhPoLine> whPoLines);
 
     /**
      * 创建PO单分支二：创建shard库PO单；
@@ -78,7 +77,7 @@ public interface BiPoManager extends BaseManager {
      * @param rm
      * @return
      */
-    ResponseMsg createPoAndLineToShared(WhPo whPo, List<WhPoLine> whPoLines, ResponseMsg rm);
+    void createPoAndLineToShared(WhPo whPo, List<WhPoLine> whPoLines);
 
     /**
      * 删除BIPO单操作：删除BIPO及明细
@@ -87,7 +86,7 @@ public interface BiPoManager extends BaseManager {
      * @param userId
      * @return
      */
-    ResponseMsg deleteBiPoAndLine(Long id, Long userId);
+    void deleteBiPoAndLine(Long id, Long userId);
 
     /**
      * 取消BIPO单操作：将BIPO及其明细置为取消状态
@@ -96,7 +95,7 @@ public interface BiPoManager extends BaseManager {
      * @param userId
      * @return
      */
-    ResponseMsg cancelBiPo(Long id, Long userId);
+    void cancelBiPo(Long id, Long userId);
 
     /**
      * 编辑BIPO单表头
@@ -104,7 +103,7 @@ public interface BiPoManager extends BaseManager {
      * @param updatePo
      * @return
      */
-    ResponseMsg editBiPo(BiPo updatePo);
+    void editBiPo(BiPo updatePo);
 
     /**
      * 创建子PO操作分支一

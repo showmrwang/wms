@@ -86,12 +86,12 @@ public interface CheckInManagerProxy extends BaseManager {
      * 根据asn预约信息查找等待队列信息
      *
      * @author mingwei.xie
-     * @param reserveId
+     * @param asnId
      * @param ouId
      * @param logId
      * @return
      */
-    CheckInQueueCommand findCheckInQueueByAsnReserveId(Long reserveId,Long ouId, String logId);
+    CheckInQueueCommand findCheckInQueueByAsnId(Long asnId, Long ouId, String logId);
 
 
 
@@ -99,12 +99,12 @@ public interface CheckInManagerProxy extends BaseManager {
      * 根据asn预约号匹配月台推荐规则
      *
      * @author mingwei.xie
-     * @param asnReserveCode
+     * @param asnId
      * @param ouId
      * @param logId
      * @return
      */
-    Map<Integer, RecommendPlatformCommand> matchPlatformRule(String asnReserveCode, Long ouId, String logId);
+    Map<Integer, RecommendPlatformCommand> matchPlatformRule(Long asnId, Long ouId, String logId);
 
     /**
      * 加入asn签入等待序列
@@ -116,7 +116,7 @@ public interface CheckInManagerProxy extends BaseManager {
      * @param logId
      * @return
      */
-    int addInToCheckInQueue(Long asnId, Long ouId, Long userId, String logId);
+    int addToCheckInQueue(Long asnId, Long ouId, Long userId, String logId);
 
     /**
      * 完成签入
@@ -194,6 +194,18 @@ public interface CheckInManagerProxy extends BaseManager {
      * @return
      */
     Long freePlatform(Long platformId, Long ouId, Long userId, String logId);
+
+    /**
+     * 释放月台
+     *
+     * @author mingwei.xie
+     * @param logId
+     * @param asnId
+     * @param ouId
+     * @param userId
+     * @return
+     */
+    void freePlatformByRcvdFinish(Long asnId, Long ouId, Long userId, String logId);
 
 
 }

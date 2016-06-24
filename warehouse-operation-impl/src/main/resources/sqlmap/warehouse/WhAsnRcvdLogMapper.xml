@@ -113,11 +113,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	
 			<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
 			<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhAsnRcvdLog" 
-				useGeneratedKeys="true" keyProperty="id" 
 			 flushCache="true">
 		    <![CDATA[
 		        INSERT INTO
 		        t_wh_asn_rcvd_log (
+		        id,
 		        	asn_id ,
 		        	asn_line_id ,
 		        	asn_code ,
@@ -142,6 +142,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	last_modify_time ,
 		        	operator_id 
 		        ) VALUES (
+		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{asnId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{asnLineId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{asnCode,javaType=java.lang.String,jdbcType=VARCHAR} ,

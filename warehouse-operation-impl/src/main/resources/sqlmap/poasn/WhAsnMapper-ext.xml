@@ -102,7 +102,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	asn.urgent_status as urgentStatus,
 	        	s.store_name as storeName,
 	        	asn.version as version,
-	        	asn.uuid as uuid
+	        	asn.uuid as uuid,
+	        	asn.overchage_rate as overChageRate
 	    ]]>
 	</sql>
 	
@@ -136,7 +137,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			       	po_ou_id = #{poOuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			       	ext_code = #{extCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			       	urgent_status = #{urgentStatus,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			       	uuid= #{uuid,javaType=java.lang.String,jdbcType=VARCHAR}
+			       	uuid= #{uuid,javaType=java.lang.String,jdbcType=VARCHAR},
+			       	overchage_rate=#{overChageRate,javaType=java.lang.Double,jdbcType=DECIMAL} 
 		    ]]>
 		     <where>
 		    		id = #{id} 
@@ -185,7 +187,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				c.customer_name as customerName,
 				s.store_name as storeName,
 				sys.dic_label as statusName,
-				asn.uuid as uuid
+				asn.uuid as uuid,
+				asn.overchage_rate as overChageRate
 	    ]]>
 	</sql>
 	
@@ -284,7 +287,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	asn_ext_code as asnExtCode,
 	        	po_ou_id as poOuId,
 	        	ext_code as extCode,
-	        	urgent_status as urgentStatus
+	        	urgent_status as urgentStatus,
+	        	overchage_rate as overChageRate
 		    from 
 		    t_wh_asn 
 		    <where>

@@ -76,9 +76,10 @@ public interface PlatformRecommendRuleDao extends BaseDao<PlatformRecommendRule,
      * @author mingwei.xie
      * @param ouId
      * @param ruleSql
+     * @param asnId
      * @return
      */
-    String executeRuleSql(@Param("ruleSql") String ruleSql, @Param("ouId") Long ouId, @Param("asnReserveCode") String asnReserveCode);
+    Long executeRuleSql(@Param("ruleSql") String ruleSql, @Param("ouId") Long ouId, @Param("asnId") Long asnId);
 
     /**
      * 根据id查找月台推荐规则
@@ -102,7 +103,7 @@ public interface PlatformRecommendRuleDao extends BaseDao<PlatformRecommendRule,
 
     /**
      * 根据仓库ID查询所有可用的月台规则并且按照优先级排序
-     * 
+     *
      * @param ouid
      * @return
      */

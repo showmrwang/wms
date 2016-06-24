@@ -26,8 +26,8 @@ public class CheckInQueueCommand extends BaseCommand implements Comparable<Check
 
     /** 主键ID */
     private Long id;
-    /** 预约ID */
-    private Long reserveId;
+    /** asnId */
+    private Long asnId;
     /** 仓库组织ID */
     private Long ouId;
     /** 序号 */
@@ -40,6 +40,8 @@ public class CheckInQueueCommand extends BaseCommand implements Comparable<Check
     private Date lastModifyTime;
     /** 操作人ID */
     private Long modifiedId;
+    /** 预约ID */
+    private Long reserveId;
     /** 计划到货时间 */
     private Date eta;
     /** 实际到货时间 */
@@ -47,12 +49,20 @@ public class CheckInQueueCommand extends BaseCommand implements Comparable<Check
     /** 优先级 */
     private Long level;
 
-    public Long getReserveId() {
-        return reserveId;
+    public Long getId() {
+        return id;
     }
 
-    public void setReserveId(Long reserveId) {
-        this.reserveId = reserveId;
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getAsnId() {
+        return asnId;
+    }
+
+    public void setAsnId(Long asnId) {
+        this.asnId = asnId;
     }
 
     public Long getOuId() {
@@ -95,20 +105,28 @@ public class CheckInQueueCommand extends BaseCommand implements Comparable<Check
         this.lastModifyTime = lastModifyTime;
     }
 
-    public Date getEta() {
-        return eta;
-    }
-
-    public void setEta(Date eta) {
-        this.eta = eta;
-    }
-
     public Long getModifiedId() {
         return modifiedId;
     }
 
     public void setModifiedId(Long modifiedId) {
         this.modifiedId = modifiedId;
+    }
+
+    public Long getReserveId() {
+        return reserveId;
+    }
+
+    public void setReserveId(Long reserveId) {
+        this.reserveId = reserveId;
+    }
+
+    public Date getEta() {
+        return eta;
+    }
+
+    public void setEta(Date eta) {
+        this.eta = eta;
     }
 
     public Date getDeliveryTime() {
@@ -127,37 +145,37 @@ public class CheckInQueueCommand extends BaseCommand implements Comparable<Check
         this.level = level;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     @Override
     public int compareTo(CheckInQueueCommand toCompareCommand) {
-        if (this.getLevel().equals(toCompareCommand.getLevel())) {
-            if((this.getDeliveryTime().compareTo(this.getEta()) < 1 && toCompareCommand.getDeliveryTime().compareTo(toCompareCommand.getEta()) < 1) ||
-                    (this.getDeliveryTime().compareTo(this.getEta()) > 0 && toCompareCommand.getDeliveryTime().compareTo(toCompareCommand.getEta()) > 0)){
-                //都不迟到和都迟到，比较预约时间
-                if(this.getEta().compareTo(toCompareCommand.getEta()) == 0){
-                    return this.getDeliveryTime().compareTo(toCompareCommand.getDeliveryTime());
-                }else {
-                    return this.getEta().compareTo(toCompareCommand.getEta());
-                }
-            }else {
-                if(this.getDeliveryTime().compareTo(this.getEta()) > 0){
-                    return 1;
-                }else {
-                    return -1;
-                }
-            }
+        if (null == this.getReserveId() && null == toCompareCommand.getReserveId()) {
+            return this.getDeliveryTime().compareTo(toCompareCommand.getDeliveryTime());
+        } else if (null == this.getReserveId()) {
+            return 1;
+        } else if (null == toCompareCommand.getReserveId()) {
+            return -1;
         } else {
-            if (Constants.ASN_RESERVE_URGENT.equals(this.getLevel())) {
-                return -1;
+            if (this.getLevel().equals(toCompareCommand.getLevel())) {
+                if ((this.getDeliveryTime().compareTo(this.getEta()) < 1 && toCompareCommand.getDeliveryTime().compareTo(toCompareCommand.getEta()) < 1)
+                        || (this.getDeliveryTime().compareTo(this.getEta()) > 0 && toCompareCommand.getDeliveryTime().compareTo(toCompareCommand.getEta()) > 0)) {
+                    // 都不迟到和都迟到，比较预约时间
+                    if (this.getEta().compareTo(toCompareCommand.getEta()) == 0) {
+                        return this.getDeliveryTime().compareTo(toCompareCommand.getDeliveryTime());
+                    } else {
+                        return this.getEta().compareTo(toCompareCommand.getEta());
+                    }
+                } else {
+                    if (this.getDeliveryTime().compareTo(this.getEta()) > 0) {
+                        return 1;
+                    } else {
+                        return -1;
+                    }
+                }
             } else {
-                return 1;
+                if (Constants.ASN_RESERVE_URGENT.equals(this.getLevel())) {
+                    return -1;
+                } else {
+                    return 1;
+                }
             }
         }
     }

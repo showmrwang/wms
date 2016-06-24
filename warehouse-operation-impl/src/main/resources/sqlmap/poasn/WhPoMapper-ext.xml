@@ -43,7 +43,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	created_id as createdId,
 	        	last_modify_time as lastModifyTime,
 	        	modified_id as modifiedId,
-	        	uuid as uuid
+	        	uuid as uuid,
+	        	overchage_rate as overChageRate
 	    ]]>
 	</sql>
 	
@@ -114,7 +115,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        last_modify_time = now(),
 			        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-			        uuid= #{uuid,javaType=java.lang.String,jdbcType=VARCHAR}
+			        uuid= #{uuid,javaType=java.lang.String,jdbcType=VARCHAR},
+			        overchage_rate=#{overChageRate,javaType=java.lang.Double,jdbcType=DECIMAL} 
 		    ]]>
 		    <where>
 		    		id = #{id} 
@@ -160,6 +162,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				po.last_modify_time as lastModifyTime,
 				po.modified_id as modifiedId,
 				po.uuid as uuid,
+				po.overchage_rate as overChageRate,
 				c.customer_name as customerName,
 				s.store_name as storeName,
 				sys.dic_label as statusName,
