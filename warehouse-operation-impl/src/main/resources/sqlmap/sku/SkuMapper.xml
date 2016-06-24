@@ -32,10 +32,7 @@
                 style as style,
                 size as size, 
                 lifecycle as lifecycle,
-                ext_code as extCode,
-                length_uom as lengthUom,
-                volume_uom as volumeUom,
-                weight_uom as weightUom
+                ext_code as extCode
         ]]>
     </sql>
     
@@ -69,10 +66,7 @@
                     style ,
                     size ,
                     lifecycle ,
-                    ext_code ,
-					length_uom ,
-					volume_uom ,
-					weight_uom
+                    ext_code 
                 ) VALUES (
                     #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
                     #{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -95,10 +89,7 @@
                     #{style,javaType=java.lang.String,jdbcType=VARCHAR} ,
                     #{size,javaType=java.lang.String,jdbcType=VARCHAR} ,
 					#{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-					#{extCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-					#{lengthUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
-					#{volumeUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
-					#{weightUom,javaType=java.lang.String,jdbcType=VARCHAR} 
+					#{extCode,javaType=java.lang.String,jdbcType=VARCHAR} 
                 )
             ]]>
     
@@ -127,10 +118,7 @@
                 style = #{style,javaType=java.lang.String,jdbcType=VARCHAR} ,
                 size = #{size,javaType=java.lang.String,jdbcType=VARCHAR} ,
                 lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-                ext_code = #{extCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                length_uom = #{lengthUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                volume_uom = #{volumeUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                weight_uom = #{weightUom,javaType=java.lang.String,jdbcType=VARCHAR} 
+                ext_code = #{extCode,javaType=java.lang.String,jdbcType=VARCHAR} 
             WHERE 
                 id = #{id} 
         ]]>
@@ -269,18 +257,6 @@
 			
 			<if test="extCode!=null and extCode!=''">
                 and ext_code like #{extCode}
-            </if>
-            
-            <if test="lengthUom!=null and lengthUom!=''">
-                and length_uom = #{lengthUom}
-            </if>
-            
-            <if test="volumeUom!=null and volumeUom!=''">
-                and volume_uom = #{volumeUom}
-            </if>
-            
-            <if test="weightUom!=null and weightUom!=''">
-                and weight_uom = #{weightUom}
             </if>
         </where>
     </sql>
