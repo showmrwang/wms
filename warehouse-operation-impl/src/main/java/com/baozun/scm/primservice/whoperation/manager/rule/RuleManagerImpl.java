@@ -129,7 +129,7 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
                 }
             }
         }
-        export.setExportPlatformCode(returnMap);
+        export.setExportPlatform(returnMap);
         return export;
     }
 

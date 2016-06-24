@@ -53,11 +53,21 @@ public interface CheckInQueueDao extends BaseDao<CheckInQueue, Long> {
      * 根据asn预约信息查找等待队列信息
      *
      * @author mingwei.xie
-     * @param reserveId
+     * @param asnId
      * @param ouId
      * @return
      */
-    CheckInQueueCommand findCheckInQueueByAsnReserveId(@Param("reserveId") Long reserveId, @Param("ouId") Long ouId);
+    CheckInQueueCommand findCheckInQueueCommandByAsnId(@Param("asnId") Long asnId, @Param("ouId") Long ouId);
+
+    /**
+     * 根据asn预约信息查找等待队列信息
+     *
+     * @author mingwei.xie
+     * @param asnId
+     * @param ouId
+     * @return
+     */
+    CheckInQueue findCheckInQueueByAsnId(@Param("asnId") Long asnId, @Param("ouId") Long ouId);
 
     /**
      * 查询所有排队中的ASN，按照
