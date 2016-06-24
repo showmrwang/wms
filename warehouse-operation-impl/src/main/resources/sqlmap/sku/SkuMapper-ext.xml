@@ -54,9 +54,6 @@
                 sku.size as size,
                 sku.lifecycle as lifecycle,
                 sku.ext_code as extCode,
-                sku.length_uom as lengthUom,
-                sku.volume_uom as volumeUom,
-                sku.weight_uom as weightUom,
                 brand.name as brandName,
                 customer.customer_name as customerName
         ]]>
@@ -162,17 +159,6 @@
                 and sku.ext_code like #{extCode}
             </if>
             
-            <if test="lengthUom!=null and lengthUom!=''">
-                and sku.length_uom = #{lengthUom}
-            </if>
-            
-            <if test="volumeUom!=null and volumeUom!=''">
-                and sku.volume_uom = #{volumeUom}
-            </if>
-            
-            <if test="weightUom!=null and weightUom!=''">
-                and sku.weight_uom = #{weightUom}
-            </if>
 		</where>
 	</sql>
 	
@@ -207,9 +193,6 @@
                     size = #{size,javaType=java.lang.String,jdbcType=VARCHAR} ,
                     lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} ,
                     ext_code = #{extCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-	                length_uom = #{lengthUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
-	                volume_uom = #{volumeUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
-	                weight_uom = #{weightUom,javaType=java.lang.String,jdbcType=VARCHAR} 
                 WHERE 
                     id = #{id} 
                     and last_modify_time = #{lastModifyTime}   
@@ -240,9 +223,6 @@
                     size = #{size,javaType=java.lang.String,jdbcType=VARCHAR} ,
                     lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} ,
                     ext_code = #{extCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-	                length_uom = #{lengthUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
-	                volume_uom = #{volumeUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
-	                weight_uom = #{weightUom,javaType=java.lang.String,jdbcType=VARCHAR} 
                 WHERE 
                     id = #{id} 
                     
@@ -290,10 +270,7 @@
             sku.style as style,
             sku.size as size,
             sku.lifecycle as lifecycle,
-            sku.ext_code as extCode,
-            sku.length_uom as lengthUom,
-            sku.volume_uom as volumeUom,
-            sku.weight_uom as weightUom
+            sku.ext_code as extCode
         ]]>
 	</sql>
 
@@ -355,25 +332,16 @@
                 and sku.height = #{height}
             </if>
 
-            <if test="lengthUom!=null and lengthUom!=''">
-                and sku.length_uom = #{lengthUom}
-            </if>
 
             <if test="volume!=null">
                 and sku.volume = #{volume}
             </if>
 
-            <if test="volumeUom!=null and volumeUom!=''">
-                and sku.volume_uom = #{volumeUom}
-            </if>
 
             <if test="weight!=null">
                 and sku.weight = #{weight}
             </if>
 
-            <if test="weightUom!=null and weightUom!=''">
-                and sku.weight_uom = #{weightUom}
-            </if>
             
             <if test="brandId!=null">
                 and sku.brand_id = #{brandId}
@@ -465,24 +433,14 @@
                 and sku.height like #{height}
             </if>
 
-            <if test="lengthUom!=null and lengthUom!=''">
-                and sku.length_uom like #{lengthUom}
-            </if>
 
             <if test="volume!=null">
                 and sku.volume like #{volume}
             </if>
 
-            <if test="volumeUom!=null and volumeUom!=''">
-                and sku.volume_uom like #{volumeUom}
-            </if>
 
             <if test="weight!=null">
                 and sku.weight = #{weight}
-            </if>
-
-            <if test="weightUom!=null and weightUom!=''">
-                and sku.weight_uom = #{weightUom}
             </if>
 
             <if test="brandId!=null">
@@ -592,10 +550,7 @@
                     style ,
                     size ,
                     lifecycle,
-                    ext_code ,
-                    length_uom ,
-                    volume_uom ,
-                    weight_uom
+                    ext_code 
                 ) VALUES (
                     #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
                     #{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -619,10 +574,7 @@
                     #{style,javaType=java.lang.String,jdbcType=VARCHAR} ,
                     #{size,javaType=java.lang.String,jdbcType=VARCHAR} ,
                     #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-                    #{extCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{lengthUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{volumeUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{weightUom,javaType=java.lang.String,jdbcType=VARCHAR}
+                    #{extCode,javaType=java.lang.String,jdbcType=VARCHAR}
                 )
             ]]>
     </insert>
@@ -649,10 +601,7 @@
             style = #{style,javaType=java.lang.String,jdbcType=VARCHAR} ,
             size = #{size,javaType=java.lang.String,jdbcType=VARCHAR} ,
             lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-            ext_code = #{extCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-            length_uom = #{lengthUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
-            volume_uom = #{volumeUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
-            weight_uom = #{weightUom,javaType=java.lang.String,jdbcType=VARCHAR}
+            ext_code = #{extCode,javaType=java.lang.String,jdbcType=VARCHAR} 
         WHERE
             id = #{id}
             and ou_id = #{ouId}

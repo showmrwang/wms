@@ -128,13 +128,13 @@ public class LocationCommand extends BaseCommand{
     /** 重量 */
     private java.lang.Double weight;
     /** 库位尺寸类型 */
-    private java.lang.String sizeType;
+    private java.lang.Integer sizeType;
     /** 托盘数 */
     private java.lang.Integer trayCount;
     /** 最大混放sku属性数 */
     private java.lang.Long maxChaosSku;
     /** 体积利用率 */
-    private java.lang.String volumeRate;
+    private java.lang.Double volumeRate;
     
     /** 长度单位 */
     private String lengthUom;
@@ -667,14 +667,6 @@ public class LocationCommand extends BaseCommand{
         this.weightUom = weightUom;
     }
 
-    public java.lang.String getSizeType() {
-        return sizeType;
-    }
-
-    public void setSizeType(java.lang.String sizeType) {
-        this.sizeType = sizeType;
-    }
-
     public java.lang.Integer getTrayCount() {
         return trayCount;
     }
@@ -691,14 +683,21 @@ public class LocationCommand extends BaseCommand{
         this.maxChaosSku = maxChaosSku;
     }
 
-    public java.lang.String getVolumeRate() {
+    public java.lang.Integer getSizeType() {
+        return sizeType;
+    }
+
+    public void setSizeType(java.lang.Integer sizeType) {
+        this.sizeType = sizeType;
+    }
+
+    public java.lang.Double getVolumeRate() {
         return volumeRate;
     }
 
-    public void setVolumeRate(java.lang.String volumeRate) {
+    public void setVolumeRate(java.lang.Double volumeRate) {
         this.volumeRate = volumeRate;
     }
-    
     
     
 }

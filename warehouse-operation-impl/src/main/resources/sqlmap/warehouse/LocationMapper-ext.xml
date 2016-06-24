@@ -257,10 +257,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        high = #{high,javaType=java.lang.Double,jdbcType=DOUBLE} ,
 		        volume = #{volume,javaType=java.lang.Double,jdbcType=DOUBLE} ,
 		        weight = #{weight,javaType=java.lang.Double,jdbcType=DOUBLE} ,
-		        size_type = #{sizeType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        size_type = #{sizeType,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        tray_count = #{trayCount,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        max_chaos_sku = #{maxChaosSku,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        volume_rate = #{volumeRate,javaType=java.lang.String,jdbcType=VARCHAR}     
+		        volume_rate = #{volumeRate,javaType=java.lang.Double,jdbcType=DOUBLE}     
 		        WHERE 
 			        id = #{id} 
 			        and ou_id = #{ouId}
@@ -377,10 +377,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			#{high,javaType=java.lang.Double,jdbcType=DOUBLE},
 			#{volume,javaType=java.lang.Double,jdbcType=DOUBLE},
 			#{weight,javaType=java.lang.Double,jdbcType=DOUBLE},
-			#{sizeType,javaType=java.lang.String,jdbcType=VARCHAR},
+			#{sizeType,javaType=java.lang.Integer,jdbcType=INTEGER},
 			#{trayCount,javaType=java.lang.Integer,jdbcType=INTEGER},
 			#{maxChaosSku,javaType=java.lang.Long,jdbcType=BIGINT},
-			#{volumeRate,javaType=java.lang.String,jdbcType=VARCHAR}
+			#{volumeRate,javaType=java.lang.Double,jdbcType=DOUBLE}
 			)
 		</foreach>
 	</insert>
@@ -515,33 +515,56 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				and l.is_static = #{isStatic}
 			</if>
 			<if test="upBound!=null and upBound!=''">
-				and upBound = #{upBound}
+				and l.upBound = #{upBound}
 			</if>
 
 
 			<if test="downBound!=null and downBound!=''">
-				and downBound = #{downBound}
+				and l.downBound = #{downBound}
 			</if>
 
 			<if test="length!=null">
-				and length = #{length}
+				and l.length = #{length}
 			</if>
 
 			<if test="width!=null">
-				and width = #{width}
+				and l.width = #{width}
 			</if>
 
 			<if test="high!=null">
-				and high = #{high}
+				and l.high = #{high}
 			</if>
 
 			<if test="volume!=null">
-				and volume = #{volume}
+				and l.volume = #{volume}
 			</if>
 
 			<if test="weight!=null">
-				and weight = #{weight}
+				and l.weight = #{weight}
 			</if>
+			<if test="volume!=null">
+				and l.volume = #{volume}
+			</if>
+
+			<if test="weight!=null">
+				and l.weight = #{weight}
+			</if>
+			<if test="sizeType!=null and sizeType!=''">
+				and l.size_type = #{sizeType}
+		    </if>
+	       
+		    <if test="trayCount!=null">
+				and l.tray_count = #{trayCount}
+			</if>
+	       
+			<if test="maxChaosSku!=null">
+				and l.max_chaos_sku = #{maxChaosSku}
+			</if>
+	       
+	       
+		    <if test="volumeRate!=null and volumeRate!=''">
+				and l.volume_rate = #{volumeRate}
+		    </if>
 		</where>
 	</sql>
 

@@ -27,27 +27,27 @@ public class CheckInQueue extends BaseModel {
 
     private static final long serialVersionUID = 1965148352013411015L;
 
-    /** 预约ID */
-    private Long reserveId;
+    /** asnId */
+    private Long asnId;
     /** 仓库组织ID */
     private Long ouId;
     /** 序号 */
     private Integer sequence;
     /** 创建时间 */
-    private java.util.Date createTime;
+    private Date createTime;
     /** 创建人 */
     private Long createdId;
     /** 最后修改时间 */
-    private java.util.Date lastModifyTime;
+    private Date lastModifyTime;
     /** 操作人ID */
     private Long modifiedId;
 
-    public Long getReserveId() {
-        return reserveId;
+    public Long getAsnId() {
+        return asnId;
     }
 
-    public void setReserveId(Long reserveId) {
-        this.reserveId = reserveId;
+    public void setAsnId(Long asnId) {
+        this.asnId = asnId;
     }
 
     public Long getOuId() {

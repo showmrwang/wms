@@ -21,11 +21,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	length as length,
 	        	width as width,
 	        	high as high,
-	        	length_uom as lengthUom,
 	        	volume as volume,
-	        	volume_uom as volumeUom,
 	        	weight as weight,
-	        	weight_uom as weightUom,
 	        	ou_id as ouId,
 	        	create_time as createTime,
 	        	last_modify_time as lastModifyTime,
@@ -51,11 +48,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	length ,
 		        	width ,
 		        	high ,
-		        	length_uom ,
 		        	volume ,
-		        	volume_uom ,
 		        	weight ,
-		        	weight_uom ,
 		        	ou_id ,
 		        	create_time ,
 		        	last_modify_time ,
@@ -72,11 +66,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{length,javaType=java.lang.Double,jdbcType=DECIMAL} ,
 		        	#{width,javaType=java.lang.Double,jdbcType=DECIMAL} ,
 		        	#{high,javaType=java.lang.Double,jdbcType=DECIMAL} ,
-		        	#{lengthUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{volume,javaType=java.lang.Double,jdbcType=DECIMAL} ,
-		        	#{volumeUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{weight,javaType=java.lang.Double,jdbcType=DECIMAL} ,
-		        	#{weightUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
@@ -100,11 +91,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        length = #{length,javaType=java.lang.Double,jdbcType=DECIMAL} ,
 		        width = #{width,javaType=java.lang.Double,jdbcType=DECIMAL} ,
 		        high = #{high,javaType=java.lang.Double,jdbcType=DECIMAL} ,
-		        length_uom = #{lengthUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        volume = #{volume,javaType=java.lang.Double,jdbcType=DECIMAL} ,
-		        volume_uom = #{volumeUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        weight = #{weight,javaType=java.lang.Double,jdbcType=DECIMAL} ,
-		        weight_uom = #{weightUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
@@ -195,27 +183,18 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				</if>
 	       
 	       
-		       <if test="lengthUom!=null and lengthUom!=''">
-					and length_uom = #{lengthUom}
-				</if>
 	       
 				<if test="volume!=null">
 					and volume = #{volume}
 				</if>
 	       
 	       
-		       <if test="volumeUom!=null and volumeUom!=''">
-					and volume_uom = #{volumeUom}
-				</if>
 	       
 				<if test="weight!=null">
 					and weight = #{weight}
 				</if>
 	       
 	       
-		       <if test="weightUom!=null and weightUom!=''">
-					and weight_uom = #{weightUom}
-				</if>
 	       
 				<if test="ouId!=null">
 					and ou_id = #{ouId}

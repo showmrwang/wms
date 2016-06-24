@@ -160,10 +160,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        #{high,javaType=java.lang.Double,jdbcType=DOUBLE},
 		        #{volume,javaType=java.lang.Double,jdbcType=DOUBLE},
 		        #{weight,javaType=java.lang.Double,jdbcType=DOUBLE},
-		        #{sizeType,javaType=java.lang.String,jdbcType=VARCHAR},
+		        #{sizeType,javaType=java.lang.Integer,jdbcType=INTEGER},
 		        #{trayCount,javaType=java.lang.Integer,jdbcType=INTEGER},
 		        #{maxChaosSku,javaType=java.lang.Long,jdbcType=BIGINT},
-		        #{volumeRate,javaType=java.lang.String,jdbcType=VARCHAR}   
+		        #{volumeRate,javaType=java.lang.Double,jdbcType=DOUBLE}   
 	        )
 	    ]]>
 
@@ -215,10 +215,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        high = #{high,javaType=java.lang.Double,jdbcType=DOUBLE} ,
 		        volume = #{volume,javaType=java.lang.Double,jdbcType=DOUBLE} ,
 		        weight = #{weight,javaType=java.lang.Double,jdbcType=DOUBLE} ,
-		        size_type = #{sizeType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        size_type = #{sizeType,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        tray_count = #{trayCount,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        max_chaos_sku = #{maxChaosSku,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        volume_rate = #{volumeRate,javaType=java.lang.String,jdbcType=VARCHAR}   
+		        volume_rate = #{volumeRate,javaType=java.lang.Double,jdbcType=DOUBLE}   
 	        WHERE 
 		        id = #{id} 
 	    ]]>

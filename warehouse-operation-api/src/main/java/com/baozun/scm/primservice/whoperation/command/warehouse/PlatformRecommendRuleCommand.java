@@ -27,9 +27,9 @@ public class PlatformRecommendRuleCommand extends BaseCommand {
     /** 主键ID */
     private Long id;
     /** 月台推荐规则 */
-    private String platformRecommendRuleName;
+    private String ruleName;
     /** 月台推荐规则编码 */
-    private String platformRecommendRuleCode;
+    private String ruleCode;
     /** 规则描述 */
     private String rule;
     /** 规则sql */
@@ -52,8 +52,8 @@ public class PlatformRecommendRuleCommand extends BaseCommand {
     private Integer lifecycle;
     /** 规则推荐月台列表 */
     private List<RecommendPlatformCommand> recommendPlatformCommandsList;
-    /** 测试规则返回的ASN预约号 */
-    private String asnReserveCode;
+    /** 测试规则返回的asnID */
+    private Long asnId;
     /** 规则测试结果 */
     private Boolean testResult;
 
@@ -65,20 +65,20 @@ public class PlatformRecommendRuleCommand extends BaseCommand {
         this.id = id;
     }
 
-    public String getPlatformRecommendRuleName() {
-        return platformRecommendRuleName;
+    public String getRuleName() {
+        return ruleName;
     }
 
-    public void setPlatformRecommendRuleName(String platformRecommendRuleName) {
-        this.platformRecommendRuleName = platformRecommendRuleName;
+    public void setRuleName(String ruleName) {
+        this.ruleName = ruleName;
     }
 
-    public String getPlatformRecommendRuleCode() {
-        return platformRecommendRuleCode;
+    public String getRuleCode() {
+        return ruleCode;
     }
 
-    public void setPlatformRecommendRuleCode(String platformRecommendRuleCode) {
-        this.platformRecommendRuleCode = platformRecommendRuleCode;
+    public void setRuleCode(String ruleCode) {
+        this.ruleCode = ruleCode;
     }
 
     public String getRule() {
@@ -169,12 +169,12 @@ public class PlatformRecommendRuleCommand extends BaseCommand {
         this.recommendPlatformCommandsList = recommendPlatformCommandsList;
     }
 
-    public String getAsnReserveCode() {
-        return asnReserveCode;
+    public Long getAsnId() {
+        return asnId;
     }
 
-    public void setAsnReserveCode(String asnReserveCode) {
-        this.asnReserveCode = asnReserveCode;
+    public void setAsnId(Long asnId) {
+        this.asnId = asnId;
     }
 
     public Boolean getTestResult() {

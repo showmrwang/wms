@@ -110,4 +110,15 @@ public interface PlatformManager extends BaseManager {
      * @return
      */
     List<Platform> findOccupiedPlatform(Long ouId, Integer lifecycle, String logId);
+
+    /**
+     * 根据占用码查询月台
+     *
+     * @author mingwei.xie
+     * @param occupationCode
+     * @param ouId
+     * @param lifecycle
+     * @return
+     */
+    Platform findByOccupationCode(String occupationCode, Long ouId, Integer lifecycle);
 }

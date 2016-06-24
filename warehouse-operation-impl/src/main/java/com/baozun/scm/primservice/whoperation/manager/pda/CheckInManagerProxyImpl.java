@@ -41,6 +41,7 @@ import com.baozun.scm.primservice.whoperation.manager.warehouse.CheckInQueueMana
 import com.baozun.scm.primservice.whoperation.manager.warehouse.PlatformManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.StoreManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WarehouseManager;
+import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.warehouse.AsnReserve;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Platform;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
@@ -142,34 +143,34 @@ public class CheckInManagerProxyImpl extends BaseManagerImpl implements CheckInM
      * 根据ASN的ID,OUID查找ASN
      *
      * @author mingwei.xie
-     * @param whAsnCommand
+     * @param paramWhAsnCommand
      * @param logId
      * @return
      */
     @Override
-    public WhAsnCommand findWhAsnById(WhAsnCommand whAsnCommand, String logId) {
+    public WhAsnCommand findWhAsnById(WhAsnCommand paramWhAsnCommand, String logId) {
         if (log.isInfoEnabled()) {
-            log.info("CheckInManagerProxyImpl.findWhAsnById start, whAsnCommand is:[{}], logId is:[{}]", whAsnCommand, logId);
+            log.info("CheckInManagerProxyImpl.findWhAsnById start, paramWhAsnCommand is:[{}], logId is:[{}]", paramWhAsnCommand, logId);
         }
-        if (null == whAsnCommand || null == whAsnCommand.getOuId() || null == whAsnCommand.getId()) {
-            log.error("CheckInManagerProxyImpl.findWhAsnById param is null, param whAsnCommand is:[{}], logId is:[{}]", whAsnCommand, logId);
+        if (null == paramWhAsnCommand || null == paramWhAsnCommand.getOuId() || null == paramWhAsnCommand.getId()) {
+            log.error("CheckInManagerProxyImpl.findWhAsnById param is null, param paramWhAsnCommand is:[{}], logId is:[{}]", paramWhAsnCommand, logId);
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
         if (log.isDebugEnabled()) {
-            log.debug("CheckInManagerProxyImpl.findWhAsnById -> selectPoAsnManagerProxy.findWhAsnById invoke, whAsnCommand is:[{}], logId is:[{}]", whAsnCommand, logId);
+            log.debug("CheckInManagerProxyImpl.findWhAsnById -> selectPoAsnManagerProxy.findWhAsnById invoke, paramWhAsnCommand is:[{}], logId is:[{}]", paramWhAsnCommand, logId);
         }
-        WhAsnCommand returnWhAsnCommand = selectPoAsnManagerProxy.findWhAsnById(whAsnCommand);
-        if (null == returnWhAsnCommand) {
-            log.error("CheckInManagerProxyImpl.findWhAsnById -> selectPoAsnManagerProxy.findWhAsnById error, result is null, whAsnCommand is:[{}], logId is:[{}]", whAsnCommand, logId);
+        WhAsnCommand originWhAsnCommand = selectPoAsnManagerProxy.findWhAsnById(paramWhAsnCommand);
+        if (null == originWhAsnCommand) {
+            log.error("CheckInManagerProxyImpl.findWhAsnById -> selectPoAsnManagerProxy.findWhAsnById error, result is null, paramWhAsnCommand is:[{}], logId is:[{}]", paramWhAsnCommand, logId);
             throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
         }
         if (log.isDebugEnabled()) {
-            log.debug("CheckInManagerProxyImpl.findWhAsnById -> selectPoAsnManagerProxy.findWhAsnById result, whAsnCommand is:[{}], logId is:[{}], returnWhAsnCommand is:[{}]", whAsnCommand, logId, returnWhAsnCommand);
+            log.debug("CheckInManagerProxyImpl.findWhAsnById -> selectPoAsnManagerProxy.findWhAsnById result, paramWhAsnCommand is:[{}], logId is:[{}], originWhAsnCommand is:[{}]", paramWhAsnCommand, logId, originWhAsnCommand);
         }
         if (log.isInfoEnabled()) {
-            log.info("CheckInManagerProxyImpl.findWhAsnById end, whAsnCommand is:[{}], logId is:[{}]", whAsnCommand, logId);
+            log.info("CheckInManagerProxyImpl.findWhAsnById end, paramWhAsnCommand is:[{}], logId is:[{}]", paramWhAsnCommand, logId);
         }
-        return returnWhAsnCommand;
+        return originWhAsnCommand;
     }
 
     /**
@@ -240,30 +241,29 @@ public class CheckInManagerProxyImpl extends BaseManagerImpl implements CheckInM
      * 根据asn预约信息查找等待队列信息
      * 
      * @author mingwei.xie
-     * @param reserveId
+     * @param asnId
      * @param ouId
      * @param logId
      * @return
      */
     @Override
-    public CheckInQueueCommand findCheckInQueueByAsnReserveId(Long reserveId, Long ouId, String logId) {
+    public CheckInQueueCommand findCheckInQueueByAsnId(Long asnId, Long ouId, String logId) {
         if (log.isInfoEnabled()) {
-            log.info("CheckInManagerProxyImpl.findCheckInQueueByAsnReserveId start, reserveId is:[{}], ouId is:[{}], logId is:[{}]", reserveId, ouId, logId);
+            log.info("CheckInManagerProxyImpl.findCheckInQueueCommandByAsnId start, asnId is:[{}], ouId is:[{}], logId is:[{}]", asnId, ouId, logId);
         }
-        if (null == reserveId || null == ouId) {
-            log.error("CheckInManagerProxyImpl.findCheckInQueueByAsnReserveId param is null, param reserveId is:[{}], ouId is:[{}], logId is:[{}]", reserveId, ouId, logId);
+        if (null == asnId || null == ouId) {
+            log.error("CheckInManagerProxyImpl.findCheckInQueueCommandByAsnId param is null, param asnId is:[{}], ouId is:[{}], logId is:[{}]", asnId, ouId, logId);
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
         if (log.isDebugEnabled()) {
-            log.debug("CheckInManagerProxyImpl.findCheckInQueueByAsnReserveId -> checkInQueueManager.findCheckInQueueByAsnReserveId invoke, reserveId is:[{}], ouId is:[{}], logId is:[{}]", reserveId, ouId, logId);
+            log.debug("CheckInManagerProxyImpl.findCheckInQueueCommandByAsnId -> checkInQueueManager.findCheckInQueueCommandByAsnId invoke, asnId is:[{}], ouId is:[{}], logId is:[{}]", asnId, ouId, logId);
         }
-        CheckInQueueCommand checkInQueueCommand = checkInQueueManager.findCheckInQueueByAsnReserveId(reserveId, ouId, logId);
+        CheckInQueueCommand checkInQueueCommand = checkInQueueManager.findCheckInQueueByAsnId(asnId, ouId, logId);
         if (log.isDebugEnabled()) {
-            log.debug("CheckInManagerProxyImpl.findCheckInQueueByAsnReserveId -> checkInQueueManager.findCheckInQueueByAsnReserveId result, reserveId is:[{}], ouId is:[{}], logId is:[{}], checkInQueueCommand is:[{}]", reserveId, ouId, logId,
-                    checkInQueueCommand);
+            log.debug("CheckInManagerProxyImpl.findCheckInQueueCommandByAsnId -> checkInQueueManager.findCheckInQueueCommandByAsnId result, asnId is:[{}], ouId is:[{}], logId is:[{}], checkInQueueCommand is:[{}]", asnId, ouId, logId, checkInQueueCommand);
         }
         if (log.isInfoEnabled()) {
-            log.info("CheckInManagerProxyImpl.findCheckInQueueByAsnReserveId end, reserveId is:[{}], ouId is:[{}], logId is:[{}]", reserveId, ouId, logId);
+            log.info("CheckInManagerProxyImpl.findCheckInQueueCommandByAsnId end, asnId is:[{}], ouId is:[{}], logId is:[{}]", asnId, ouId, logId);
         }
         return checkInQueueCommand;
     }
@@ -272,50 +272,50 @@ public class CheckInManagerProxyImpl extends BaseManagerImpl implements CheckInM
      * 根据asn预约号匹配月台推荐规则
      *
      * @author mingwei.xie
-     * @param asnReserveCode
+     * @param asnId
      * @param ouId
      * @param logId
      * @return
      */
     @Override
-    public Map<Integer, RecommendPlatformCommand> matchPlatformRule(String asnReserveCode, Long ouId, String logId) {
+    public Map<Integer, RecommendPlatformCommand> matchPlatformRule(Long asnId, Long ouId, String logId) {
         if (log.isInfoEnabled()) {
-            log.info("CheckInManagerProxyImpl.matchPlatformRule start, asnReserveCode is:[{}], ouId is:[{}], logId is:[{}]", asnReserveCode, ouId, logId);
+            log.info("CheckInManagerProxyImpl.matchPlatformRule start, asnId is:[{}], ouId is:[{}], logId is:[{}]", asnId, ouId, logId);
         }
-        if (null == asnReserveCode || null == ouId) {
-            log.error("CheckInManagerProxyImpl.matchPlatformRule param is null, param asnReserveCode is:[{}], ouId is:[{}], logId is:[{}]", asnReserveCode, ouId, logId);
+        if (null == asnId || null == ouId) {
+            log.error("CheckInManagerProxyImpl.matchPlatformRule param is null, param asnId is:[{}], ouId is:[{}], logId is:[{}]", asnId, ouId, logId);
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
 
         // 匹配规则
         RuleAfferCommand ruleAfferCommand = new RuleAfferCommand();
         ruleAfferCommand.setOuid(ouId);
-        ruleAfferCommand.setAfferReserveCode(asnReserveCode);
+        ruleAfferCommand.setAfferAsnId(asnId);
         ruleAfferCommand.setRuleType(Constants.PLATFORM_RECOMMEND_RULE);
         ruleAfferCommand.setLogId(logId);
         if (log.isDebugEnabled()) {
-            log.debug("CheckInManagerProxyImpl.matchPlatformRule -> ruleManager.ruleExport invoke, asnReserveCode is:[{}], ouId is:[{}], logId is:[{}], ruleAfferCommand is:[{}]", asnReserveCode, ouId, logId, ruleAfferCommand);
+            log.debug("CheckInManagerProxyImpl.matchPlatformRule -> ruleManager.ruleExport invoke, asnId is:[{}], ouId is:[{}], logId is:[{}], ruleAfferCommand is:[{}]", asnId, ouId, logId, ruleAfferCommand);
         }
         RuleExportCommand ruleExportCommand = ruleManager.ruleExport(ruleAfferCommand);
         if (null == ruleExportCommand) {
-            log.error("CheckInManagerProxyImpl.matchPlatformRule -> ruleManager.ruleExport error, result is null, asnReserveCode is:[{}], ouId is:[{}], logId is:[{}], ruleAfferCommand is:[{}]", asnReserveCode, ouId, logId, ruleAfferCommand);
+            log.error("CheckInManagerProxyImpl.matchPlatformRule -> ruleManager.ruleExport error, result is null, asnId is:[{}], ouId is:[{}], logId is:[{}], ruleAfferCommand is:[{}]", asnId, ouId, logId, ruleAfferCommand);
             throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
         }
         if (log.isDebugEnabled()) {
-            log.debug("CheckInManagerProxyImpl.matchPlatformRule -> ruleManager.ruleExport result, asnReserveCode is:[{}], ouId is:[{}], logId is:[{}], ruleAfferCommand is:[{}], ruleExportCommand is:[{}]", asnReserveCode, ouId, logId, ruleAfferCommand,
-                    ruleExportCommand);
+            log.debug("CheckInManagerProxyImpl.matchPlatformRule -> ruleManager.ruleExport result, asnId is:[{}], ouId is:[{}], logId is:[{}], ruleAfferCommand is:[{}], ruleExportCommand is:[{}]", asnId, ouId, logId, ruleAfferCommand, ruleExportCommand);
         }
 
-        Map<Integer, RecommendPlatformCommand> exportPlatformCode = ruleExportCommand.getExportPlatformCode();
-        if (null == exportPlatformCode) {
-            log.error("CheckInManagerProxyImpl.matchPlatformRule -> ruleExportCommand.getExportPlatformCode error, result is null, asnReserveCode is:[{}], ouId is:[{}], logId is:[{}], ruleAfferCommand is:[{}], ruleExportCommand is:[{}]", asnReserveCode, ouId, logId, ruleAfferCommand, ruleExportCommand);
+        Map<Integer, RecommendPlatformCommand> exportPlatform = ruleExportCommand.getExportPlatform();
+        if (null == exportPlatform) {
+            log.error("CheckInManagerProxyImpl.matchPlatformRule -> ruleExportCommand.getExportPlatform error, result is null, asnId is:[{}], ouId is:[{}], logId is:[{}], ruleAfferCommand is:[{}], ruleExportCommand is:[{}]", asnId, ouId, logId,
+                    ruleAfferCommand, ruleExportCommand);
             throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
         }
 
         if (log.isInfoEnabled()) {
-            log.info("CheckInManagerProxyImpl.matchPlatformRule start, asnReserveCode is:[{}], ouId is:[{}], logId is:[{}]", asnReserveCode, ouId, logId);
+            log.info("CheckInManagerProxyImpl.matchPlatformRule start, asnId is:[{}], ouId is:[{}], logId is:[{}]", asnId, ouId, logId);
         }
-        return exportPlatformCode;
+        return exportPlatform;
     }
 
     /**
@@ -329,19 +329,19 @@ public class CheckInManagerProxyImpl extends BaseManagerImpl implements CheckInM
      * @return
      */
     @Override
-    public int addInToCheckInQueue(Long asnId, Long ouId, Long userId, String logId) {
+    public int addToCheckInQueue(Long asnId, Long ouId, Long userId, String logId) {
         if (log.isInfoEnabled()) {
-            log.info("CheckInManagerProxyImpl.addInToCheckInQueue start, asnId is:[{}], ouId is:[{}], logId is:[{}]", asnId, ouId, logId);
+            log.info("CheckInManagerProxyImpl.addToCheckInQueue start, asnId is:[{}], ouId is:[{}], logId is:[{}]", asnId, ouId, logId);
         }
         if (null == asnId || null == ouId) {
-            log.error("CheckInManagerProxyImpl.addInToCheckInQueue param is null, param asnId is:[{}], ouId is:[{}], logId is:[{}]", asnId, ouId, logId);
+            log.error("CheckInManagerProxyImpl.addToCheckInQueue param is null, param asnId is:[{}], ouId is:[{}], logId is:[{}]", asnId, ouId, logId);
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
 
         int waitNum = checkInQueueManager.addInToCheckInQueue(asnId, ouId, userId, logId);
 
         if (log.isInfoEnabled()) {
-            log.info("CheckInManagerProxyImpl.addInToCheckInQueue end, asnId is:[{}], ouId is:[{}], logId is:[{}]", asnId, ouId, logId);
+            log.info("CheckInManagerProxyImpl.addToCheckInQueue end, asnId is:[{}], ouId is:[{}], logId is:[{}]", asnId, ouId, logId);
         }
         return waitNum;
     }
@@ -471,11 +471,11 @@ public class CheckInManagerProxyImpl extends BaseManagerImpl implements CheckInM
         if (log.isDebugEnabled()) {
             log.debug("CheckInManagerProxyImpl.assignPlatform -> checkInQueueManager.assignPlatform invoke, asnId is:[{}], platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", asnId, platformId, ouId, userId, logId);
         }
-        long resultCount = checkInQueueManager.assignPlatform(asnId, platformId, ouId, userId, logId);
+        long updateCount = checkInQueueManager.assignPlatform(asnId, platformId, ouId, userId, logId);
         if (log.isInfoEnabled()) {
             log.info("CheckInManagerProxyImpl.assignPlatform end, vacantPlatformList is:[{}], asnId is:[{}], platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", asnId, platformId, ouId, userId, logId);
         }
-        return resultCount;
+        return updateCount;
     }
 
     /**
@@ -537,16 +537,78 @@ public class CheckInManagerProxyImpl extends BaseManagerImpl implements CheckInM
         return resultCount;
     }
 
+    /**
+     * 释放月台
+     *
+     * @author mingwei.xie
+     * @param logId
+     * @param asnId
+     * @param ouId
+     * @param userId
+     * @return
+     */
+    @Override
+    public void freePlatformByRcvdFinish(Long asnId, Long ouId, Long userId, String logId) {
+        try {
+            if (log.isInfoEnabled()) {
+                log.info("CheckInManagerProxyImpl.freePlatformByRcvdFinish start, asnId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", asnId, ouId, userId, logId);
+            }
+            if (null == asnId || null == ouId || null == userId) {
+                log.error("CheckInManagerProxyImpl.freePlatformByRcvdFinish param is null, asnId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", asnId, ouId, userId, logId);
+                throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+            }
+
+            WhAsnCommand queryWhAsnCommand = new WhAsnCommand();
+            queryWhAsnCommand.setOuId(ouId);
+            queryWhAsnCommand.setId(asnId);
+
+            if (log.isDebugEnabled()) {
+                log.debug("CheckInManagerProxyImpl.freePlatformByRcvdFinish -> selectPoAsnManagerProxy.findWhAsnById invoke, queryWhAsnCommand is:[{}], logId is:[{}]", queryWhAsnCommand, logId);
+            }
+            WhAsnCommand originWhAsnCommand = selectPoAsnManagerProxy.findWhAsnById(queryWhAsnCommand);
+            if (null == originWhAsnCommand) {
+                log.error("CheckInManagerProxyImpl.freePlatformByRcvdFinish -> selectPoAsnManagerProxy.findWhAsnById error, result is null, queryWhAsnCommand is:[{}], logId is:[{}]", queryWhAsnCommand, logId);
+                throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
+            }
+            if (log.isDebugEnabled()) {
+                log.debug("CheckInManagerProxyImpl.freePlatformByRcvdFinish -> selectPoAsnManagerProxy.findWhAsnById result, queryWhAsnCommand is:[{}], logId is:[{}], originWhAsnCommand is:[{}]", queryWhAsnCommand, logId, originWhAsnCommand);
+            }
+
+            if (log.isDebugEnabled()) {
+                log.debug("CheckInManagerProxyImpl.freePlatformByRcvdFinish -> platformManager.findByOccupationCode invoke, asnCode is:[{}], ouId is:[{}], logId is:[{}]", originWhAsnCommand.getAsnCode(), ouId, logId);
+            }
+            Platform platform = platformManager.findByOccupationCode(originWhAsnCommand.getAsnCode(), ouId, BaseModel.LIFECYCLE_NORMAL);
+            if (null == platform) {
+                log.error("CheckInManagerProxyImpl.freePlatformByRcvdFinish -> platformManager.findByOccupationCode error, result is null, asnCode is:[{}], ouId is:[{}], logId is:[{}]", originWhAsnCommand.getAsnCode(), ouId, logId);
+                throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
+            }
+            if (log.isDebugEnabled()) {
+                log.debug("CheckInManagerProxyImpl.freePlatformByRcvdFinish -> platformManager.findByOccupationCode result, asnCode is:[{}], ouId is:[{}], logId is:[{}], platform is:[{}]", originWhAsnCommand.getAsnCode(), ouId, logId, platform);
+            }
+
+            if (log.isDebugEnabled()) {
+                log.debug("CheckInManagerProxyImpl.freePlatformByRcvdFinish -> checkInQueueManager.freePlatform invoke, asnId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", asnId, ouId, userId, logId);
+            }
+            checkInQueueManager.freePlatform(platform.getId(), ouId, userId, logId);
+            // TODO 触发检查队列的操作，将空出的月台进行分配
+            autoCheckIn(ouId, userId, logId);
+            if (log.isInfoEnabled()) {
+                log.info("CheckInManagerProxyImpl.freePlatformByRcvdFinish end, vacantPlatformList is:[{}], asnId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", asnId, ouId, userId, logId);
+            }
+        } catch (Exception e) {
+            log.error("CheckInManagerProxyImpl freePlatformByRcvdFinish error, ouId is:[{}], userId is:[{}], logId is:[{}], exception is:[{}]", ouId, userId, logId, e);
+        }
+    }
 
     private void autoCheckIn(Long ouId, Long userId, String logId) {
         try {
             if (log.isInfoEnabled()) {
                 log.info("CheckInManagerProxyImpl.autoCheckIn start, ouId is:[{}], userId is:[{}], logId is:[{}]", ouId, userId, logId);
             }
-            // 签入队列
             if (log.isDebugEnabled()) {
                 log.debug("CheckInManagerProxyImpl.autoCheckIn -> checkInQueueManager.getListOrderBySequenceAsc invoke, ouId is:[{}], userId is:[{}], logId is:[{}]", ouId, userId, logId);
             }
+            // 签入队列
             List<CheckInQueueCommand> checkInQueueCommandList = checkInQueueManager.getListOrderBySequenceAsc(ouId, logId);
             if (log.isDebugEnabled()) {
                 log.debug("CheckInManagerProxyImpl.autoCheckIn -> checkInQueueManager.getListOrderBySequenceAsc result, ouId is:[{}], userId is:[{}], logId is:[{}], checkInQueueCommandList is:[{}]", ouId, userId, logId, checkInQueueCommandList);
@@ -563,22 +625,11 @@ public class CheckInManagerProxyImpl extends BaseManagerImpl implements CheckInM
                 log.debug("CheckInManagerProxyImpl.autoCheckIn loop checkInQueueCommandList, ouId is:[{}], userId is:[{}], logId is:[{}], checkInQueueCommandList is:[{}]", ouId, userId, logId, checkInQueueCommandList);
             }
             for (CheckInQueueCommand checkInQueue : checkInQueueCommandList) {
-                if (log.isDebugEnabled()) {
-                    log.debug("CheckInManagerProxyImpl.autoCheckIn -> asnReserveManager.findByIdExt invoke, ouId is:[{}], userId is:[{}], logId is:[{}], checkInQueue is:[{}]", ouId, userId, logId, checkInQueue);
-                }
-                AsnReserve asnReserve = asnReserveManager.findByIdExt(checkInQueue.getReserveId(), ouId);
-                if (null == asnReserve) {
-                    log.error("CheckInManagerProxyImpl.autoCheckIn -> asnReserveManager.findByIdExt error, result is null, ouId is:[{}], userId is:[{}], logId is:[{}]", ouId, userId, logId);
-                    throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
-                }
-                if (log.isDebugEnabled()) {
-                    log.debug("CheckInManagerProxyImpl.autoCheckIn -> asnReserveManager.findByIdExt result, ouId is:[{}], userId is:[{}], logId is:[{}], asnReserve is:[{}]", ouId, userId, logId, asnReserve);
-                }
 
                 // 匹配规则
                 RuleAfferCommand ruleAfferCommand = new RuleAfferCommand();
                 ruleAfferCommand.setOuid(ouId);
-                ruleAfferCommand.setAfferReserveCode(asnReserve.getCode());
+                ruleAfferCommand.setAfferAsnId(checkInQueue.getAsnId());
                 ruleAfferCommand.setRuleType(Constants.PLATFORM_RECOMMEND_RULE);
                 ruleAfferCommand.setLogId(logId);
 
@@ -587,7 +638,7 @@ public class CheckInManagerProxyImpl extends BaseManagerImpl implements CheckInM
                 }
                 RuleExportCommand ruleExportCommand = ruleManager.ruleExport(ruleAfferCommand);
 
-                if (null == ruleExportCommand || null == ruleExportCommand.getExportPlatformCode()) {
+                if (null == ruleExportCommand || null == ruleExportCommand.getExportPlatform()) {
                     log.error("CheckInManagerProxyImpl.autoCheckIn -> ruleManager.ruleExport result is null, ouId is:[{}], userId is:[{}], logId is:[{}], ruleAfferCommand is:[{}], ruleExportCommand is:[{}]", ouId, userId, logId, ruleAfferCommand,
                             ruleExportCommand);
                     throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
@@ -595,14 +646,13 @@ public class CheckInManagerProxyImpl extends BaseManagerImpl implements CheckInM
                 if (log.isDebugEnabled()) {
                     log.debug("CheckInManagerProxyImpl.autoCheckIn -> ruleManager.ruleExport result, ouId is:[{}], userId is:[{}], logId is:[{}], ruleExportCommand is:[{}]", ouId, userId, logId, ruleExportCommand);
                 }
-                Map<Integer, RecommendPlatformCommand> exportPlatformCode = ruleExportCommand.getExportPlatformCode();
+                Map<Integer, RecommendPlatformCommand> exportPlatformCode = ruleExportCommand.getExportPlatform();
                 if (null != exportPlatformCode.get(Constants.AVAILABLE_PLATFORM)) {
                     RecommendPlatformCommand recommendPlatformCommand = exportPlatformCode.get(Constants.AVAILABLE_PLATFORM);
                     if (log.isDebugEnabled()) {
-                        log.debug("CheckInManagerProxyImpl.autoCheckIn -> checkInQueueManager.finishCheckIn invoke, ouId is:[{}], userId is:[{}], logId is:[{}], asnReserve is:[{}], recommendPlatformCommand is:[{}]", ouId, userId, logId, asnReserve,
-                                recommendPlatformCommand);
+                        log.debug("CheckInManagerProxyImpl.autoCheckIn -> checkInQueueManager.finishCheckIn invoke, ouId is:[{}], userId is:[{}], logId is:[{}], recommendPlatformCommand is:[{}]", ouId, userId, logId, recommendPlatformCommand);
                     }
-                    checkInQueueManager.finishCheckIn(asnReserve.getAsnId(), recommendPlatformCommand.getPlatformId(), ouId, userId, logId);
+                    checkInQueueManager.finishCheckIn(checkInQueue.getAsnId(), recommendPlatformCommand.getPlatformId(), ouId, userId, logId);
                     // TODO 通知月台分配信息
                 }
             }

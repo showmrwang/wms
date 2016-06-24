@@ -15,7 +15,7 @@
     <sql id="checkInQueueColumns">
         <![CDATA[
                 id as id,
-                reserve_id as reserveId,
+                asn_id as asnId,
                 ou_id as ouId,
                 sequence as sequence,
                 create_time as createTime,
@@ -101,7 +101,7 @@
                 INSERT INTO
                 t_wh_checkin_queue (
                     id,
-                    reserve_id ,
+                    asn_id ,
                     ou_id ,
                     sequence ,
                     create_time ,
@@ -110,7 +110,7 @@
                     modified_id 
                 ) VALUES (
                     #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
-                    #{reserveId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{asnId,javaType=java.lang.Long,jdbcType=BIGINT} ,
                     #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
                     #{sequence,javaType=java.lang.Integer,jdbcType=INTEGER} ,
                     #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
@@ -125,7 +125,7 @@
     <update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.CheckInQueue">
         <![CDATA[
             UPDATE t_wh_checkin_queue SET
-                reserve_id = #{reserveId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                asn_id = #{asnId,javaType=java.lang.Long,jdbcType=BIGINT} ,
                 ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
                 sequence = #{sequence,javaType=java.lang.Integer,jdbcType=INTEGER} ,
                 create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
@@ -147,10 +147,10 @@
     
     <delete id="delete" parameterType="java.lang.Long">
         <![CDATA[
-        
+
             delete from t_wh_checkin_queue where
-                id = #{id} 
-        
+                id = #{id}
+
         ]]>
     </delete>
     
@@ -197,10 +197,10 @@
                 and id = #{id}
             </if>
             
-            <if test="reserveId!=null">
-                and reserve_id = #{reserveId}
+            <if test="asnId!=null">
+                and asn_id = #{asnId}
             </if>
-            
+
             <if test="ouId!=null">
                 and ou_id = #{ouId}
             </if>
