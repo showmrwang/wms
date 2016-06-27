@@ -57,5 +57,14 @@ public interface WhSkuDao extends BaseDao<WhSku, Long> {
      * @return
      */
     WhSkuCommand findWhSkuByIdExt(@Param("id") Long id, @Param("ouId") Long ouId);
+    
+    /**
+     * 根据条码获取商品信息
+     * @author lichuan
+     * @param id
+     * @param ouId
+     * @return
+     */
+    WhSkuCommand findWhSkuByBarcodeExt(@Param("barcode") String barcode, @Param("ouId") Long ouId);
  
 }

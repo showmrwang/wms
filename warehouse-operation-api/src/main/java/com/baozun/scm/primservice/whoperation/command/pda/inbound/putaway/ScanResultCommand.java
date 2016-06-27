@@ -52,6 +52,12 @@ public class ScanResultCommand extends BaseCommand {
     private boolean isPutaway;
     /** 缓存是否存在 */
     private boolean isCacheExists;
+    /** 是否提示商品 */
+    private boolean isNeedTipSku;
+    /** 提示商品条码 */
+    private String tipSkuBarcode;
+    /** 是否直接核扫商品 */
+    private boolean isNeedScanSku;
 
     public int getPutawayPatternType() {
         return putawayPatternType;
@@ -164,7 +170,30 @@ public class ScanResultCommand extends BaseCommand {
     public void setCacheExists(boolean isCacheExists) {
         this.isCacheExists = isCacheExists;
     }
-    
+
+    public boolean isNeedTipSku() {
+        return isNeedTipSku;
+    }
+
+    public void setNeedTipSku(boolean isNeedTipSku) {
+        this.isNeedTipSku = isNeedTipSku;
+    }
+
+    public String getTipSkuBarcode() {
+        return tipSkuBarcode;
+    }
+
+    public void setTipSkuBarcode(String tipSkuBarcode) {
+        this.tipSkuBarcode = tipSkuBarcode;
+    }
+
+    public boolean isNeedScanSku() {
+        return isNeedScanSku;
+    }
+
+    public void setNeedScanSku(boolean isNeedScanSku) {
+        this.isNeedScanSku = isNeedScanSku;
+    }
 
 
 }

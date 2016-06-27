@@ -67,6 +67,8 @@ public class WhSkuCommand extends BaseCommand {
     private String brandName;
 
     private String customerName;
+    /** 扫描数量 */
+    private Double scanSkuQty;
 
 
 
@@ -301,6 +303,14 @@ public class WhSkuCommand extends BaseCommand {
 
     public void setLifecycle(java.lang.Integer lifecycle) {
         this.lifecycle = lifecycle;
+    }
+
+    public Double getScanSkuQty() {
+        return scanSkuQty;
+    }
+
+    public void setScanSkuQty(Double scanSkuQty) {
+        this.scanSkuQty = scanSkuQty;
     }
 
 

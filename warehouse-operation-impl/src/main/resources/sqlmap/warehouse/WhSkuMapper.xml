@@ -467,5 +467,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		where sku.ou_id = #{ouId}
 		and sku.id = #{id}
 	</select>
+	
+	<select id="findWhSkuByBarcodeExt" resultMap="WhSkuResult">
+		select
+		<include refid="whSkuColumns" />
+		from t_wh_sku sku
+		left join t_bi_brand brand on sku.brand_id = brand.id
+		left join
+		t_bi_customer customer on sku.customer_id = customer.id
+		where sku.ou_id = #{ouId}
+		and sku.bar_code = #{barcode}
+	</select>
 
 </mapper>

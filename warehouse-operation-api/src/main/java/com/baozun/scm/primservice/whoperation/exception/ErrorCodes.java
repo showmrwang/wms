@@ -242,6 +242,10 @@ public class ErrorCodes {
     public static final int COMMON_FUNCTION_IS_NULL_ERROR = 5018;
     /** 菜单功能参数信息不存在！ */
     public static final int COMMON_FUNCTION_CONF_IS_NULL_ERROR = 5019;
+    /** 缓存服务繁忙，请稍后再试！ */
+    public static final int COMMON_CACHE_IS_ERROR = 5020;
+    /** 库存行没有绑定库位，无法上架 */
+    public static final int COMMON_INV_LINE_NOT_BINDING_LOC_ERROR = 5021;
     // 5001-10000 common end
 
     // 10001-20000 luyimin
@@ -321,6 +325,18 @@ public class ErrorCodes {
     public static final int LOCATION_LENGTH_WIDTH_HIGHT_IS_NULL_ERROR = 40015;
     /** 库位[{0}]重量异常！ */
     public static final int LOCATION_WEIGHT_IS_NULL_ERROR = 40016;
+    /** 容器号[{0}]中不存在当前扫描的商品 */
+    public static final int CONTAINER_NOT_FOUND_SCAN_SKU_ERROR = 40017;
+    /** 容器号[{0}]中此商品数量与扫描数量不一致 */
+    public static final int CONTAINER_SKU_QTY_NOT_EQUAL_SCAN_SKU_QTY_ERROR = 40018;
+    /** 容器号[{0}]中此商品已复核完成，无法重复扫描 */
+    public static final int CONTAINER_SKU_HAS_ALREADY_SCANNED = 40019;
+    /** 当前扫描商品数量不正确！ */
+    public static final int SCAN_SKU_QTY_IS_VALID = 40020;
+    /** 上架失败，整托上架绑定多个库位异常 */
+    public static final int PALLET_PUTAWAY_BINDING_MORE_THAN_ONE_LOC = 40021;
+    /** 上架失败，整箱上架绑定多个库位异常 */
+    public static final int CONTAINER_PUTAWAY_BINDING_MORE_THAN_ONE_LOC = 40022;
     // 40001-50000 lichuan
 
     // 50001-60000 hubin

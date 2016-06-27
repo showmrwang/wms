@@ -67,6 +67,8 @@ public class SkuCommand extends BaseCommand {
     private String brandName;
 
     private String customerName;
+    /** 扫描数量 */
+    private Double scanSkuQty;
     
     
    private Boolean isFoldable;
@@ -320,5 +322,15 @@ public class SkuCommand extends BaseCommand {
     public void setLineNum(Integer lineNum) {
         this.lineNum = lineNum;
     }
+
+    public Double getScanSkuQty() {
+        return scanSkuQty;
+    }
+
+    public void setScanSkuQty(Double scanSkuQty) {
+        this.scanSkuQty = scanSkuQty;
+    }
+    
+    
 
 }
