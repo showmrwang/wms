@@ -777,23 +777,38 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</delete>
 		
 		<select id="getUniqueSkuAttrFromWhSkuInventory" resultMap="RcvdContainerCacheCommand">
-		SELECT
-			INV.inside_container_id as insideContainerId,
-			group_concat(distinct INV.sku_id) as skuId,
-			group_concat(distinct INV.batch_number) as batchNumber,
-			group_concat(distinct INV.country_of_origin) as countryOfOrigin,
-			group_concat(distinct date_format(INV.exp_date,'%Y-%m-%d')) as expDate,
-			group_concat(distinct date_format(INV.mfg_date,'%Y-%m-%d')) as mfgDate,
-			group_concat(distinct INV.inv_attr1) as invAttr1,
-			group_concat(distinct INV.inv_attr2) as invAttr2,
-			group_concat(distinct INV.inv_attr3) as invAttr3,
-			group_concat(distinct INV.inv_attr4) as invAttr4,
-			group_concat(distinct INV.inv_attr5) as invAttr5,
-			group_concat(distinct INV.inv_status) as invStatus,
-			group_concat(distinct INV.inv_type) as invType
-			from t_wh_sku_inventory INV
-		where INV.inside_container_id=#{insideContainerId} and INV.ou_id=#{ouId}
-		
+			SELECT
+				INV.inside_container_id as insideContainerId,
+				INV.ou_id as ouId,
+				INV.sku_id as skuId,
+				group_concat(distinct INV.batch_number) as batchNumber,
+				group_concat(distinct INV.country_of_origin) as countryOfOrigin,
+				group_concat(distinct date_format(INV.exp_date,'%Y-%m-%d')) as expDate,
+				group_concat(distinct date_format(INV.mfg_date,'%Y-%m-%d')) as mfgDate,
+				group_concat(distinct INV.inv_attr1) as invAttr1,
+				group_concat(distinct INV.inv_attr2) as invAttr2,
+				group_concat(distinct INV.inv_attr3) as invAttr3,
+				group_concat(distinct INV.inv_attr4) as invAttr4,
+				group_concat(distinct INV.inv_attr5) as invAttr5,
+				group_concat(distinct INV.inv_status) as invStatus,
+				group_concat(distinct INV.inv_type) as invType
+				from t_wh_sku_inventory INV
+			where INV.inside_container_id=#{insideContainerId} and INV.ou_id=#{ouId}
+			<if test='skuId!=null'>
+			and INV.sku_id=#{skuId}
+			</if>
+			group by INV.sku_id
+		</select>
+		<select id="getUniqueSkuAttrCountFromWhSkuInventory" resultType="long">
+			SELECT count(*) from (
+				select INV.sku_id
+					from t_wh_sku_inventory INV
+				where INV.inside_container_id=#{insideContainerId} and INV.ou_id=#{ouId}
+				<if test='skuId!=null'>
+				and INV.sku_id=#{skuId}
+				</if>
+				group by INV.sku_id
+			)
 		</select>
 		
 	<select id="findWhSkuInventoryBySkuIdAndContainerid" resultMap="WhSkuInventoryCommandResultExt">

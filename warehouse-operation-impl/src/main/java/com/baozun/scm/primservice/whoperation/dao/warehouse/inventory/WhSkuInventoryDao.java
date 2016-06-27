@@ -17,14 +17,6 @@ package com.baozun.scm.primservice.whoperation.dao.warehouse.inventory;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.ibatis.annotations.Param;
-
-import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdContainerCacheCommand;
-import com.baozun.scm.primservice.whoperation.command.warehouse.LocationCommand;
-import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
-import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
-import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
-
 import lark.common.annotation.CommonQuery;
 import lark.common.annotation.QueryPage;
 import lark.common.dao.Page;
@@ -32,6 +24,14 @@ import lark.common.dao.Pagination;
 import lark.common.dao.QueryCondition;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
+
+import org.apache.ibatis.annotations.Param;
+
+import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdContainerCacheCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.LocationCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
+import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 
 public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
 
@@ -178,13 +178,25 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      */
     int deleteWhSkuInventoryById(@Param("id") Long id, @Param("ouid") Long ouid);
 
-    /***
+    /**
      * 根据容器ID获取容器去重的商品库存属性
      * 
-     * @param insideContainerId
+     * @param insideContainerId 必填
+     * @param skuId 可选
+     * @param ouId 必填
      * @return
      */
-    RcvdContainerCacheCommand getUniqueSkuAttrFromWhSkuInventory(@Param("insideContainerId") Long insideContainerId, @Param("ouId") Long ouId);
+    List<RcvdContainerCacheCommand> getUniqueSkuAttrFromWhSkuInventory(@Param("insideContainerId") Long insideContainerId, @Param("skuId") Long skuId, @Param("ouId") Long ouId);
+
+    /**
+     * 获取容器混放SKU数
+     * 
+     * @param insideContainerId 必填
+     * @param skuId 可选
+     * @param ouId 必填
+     * @return
+     */
+    long getUniqueSkuAttrCountFromWhSkuInventory(@Param("insideContainerId") Long insideContainerId, @Param("skuId") Long skuId, @Param("ouId") Long ouId);
 
     /**
      * 根据sku+内部容器号或者外部容器号 查找容器库存数据 location is null
