@@ -45,12 +45,13 @@ public interface GeneralRcvdManager extends BaseManager {
     long findContainerListCountByInsideContainerIdFromSkuInventory(Long insideContainerId, Long ouId);
 
     /**
-     * 获取容器的去重后的商品库存属性。多重库存属性用，分隔
      * 
      * @param insideContainerId
+     * @param skuId
+     * @param ouId
      * @return
      */
-    RcvdContainerCacheCommand getUniqueSkuAttrFromWhSkuInventory(Long insideContainerId, Long ouId);
+    List<RcvdContainerCacheCommand> getUniqueSkuAttrFromWhSkuInventory(Long insideContainerId, Long skuId, Long ouId);
 
     /**
      * 查找商品信息
@@ -118,4 +119,13 @@ public interface GeneralRcvdManager extends BaseManager {
      * @return
      */
     Container insertByCode(ContainerCommand container, Long userId, Long ouId);
+
+    /**
+     * 
+     * @param insideContainerId
+     * @param skuId
+     * @param ouId
+     * @return
+     */
+    long getUniqueSkuAttrCountFromWhSkuInventory(Long insideContainerId, Long skuId, Long ouId);
 }

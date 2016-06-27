@@ -55,7 +55,7 @@ public interface PdaRcvdManagerProxy extends BaseManager {
      * 
      * @param command
      */
-    void initSkuAttrFromInventoryForCacheContainer(WhSkuInventoryCommand command, Long ouId);
+    void checkContainer(WhSkuInventoryCommand command, Long ouId);
 
     /**
      * 校验托盘的可用性
@@ -64,5 +64,12 @@ public interface PdaRcvdManagerProxy extends BaseManager {
      * @param ouId
      */
     void checkPallet(WhSkuInventoryCommand command, Long ouId);
+
+    /**
+     * 组装扫描的数据【业务方法】
+     * 
+     * @param command
+     */
+    void assembleSkuOperate(WhSkuInventoryCommand command);
 
 }

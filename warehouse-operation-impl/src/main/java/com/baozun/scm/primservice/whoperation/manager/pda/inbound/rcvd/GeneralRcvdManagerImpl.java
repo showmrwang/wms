@@ -365,8 +365,8 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public RcvdContainerCacheCommand getUniqueSkuAttrFromWhSkuInventory(Long insideContainerId, Long ouId) {
-        return this.whSkuInventoryDao.getUniqueSkuAttrFromWhSkuInventory(insideContainerId, ouId);
+    public List<RcvdContainerCacheCommand> getUniqueSkuAttrFromWhSkuInventory(Long insideContainerId, Long skuId, Long ouId) {
+        return this.whSkuInventoryDao.getUniqueSkuAttrFromWhSkuInventory(insideContainerId, skuId, ouId);
     }
 
     @Override
@@ -554,5 +554,11 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public ContainerCommand findContainerByCode(String code, Long ouId) {
         return containerDao.getContainerByCode(code, ouId);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public long getUniqueSkuAttrCountFromWhSkuInventory(Long insideContainerId, Long skuId, Long ouId) {
+        return this.whSkuInventoryDao.getUniqueSkuAttrCountFromWhSkuInventory(insideContainerId, skuId, ouId);
     }
 }

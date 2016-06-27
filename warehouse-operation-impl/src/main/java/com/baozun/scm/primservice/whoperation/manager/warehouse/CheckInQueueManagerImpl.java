@@ -290,11 +290,11 @@ public class CheckInQueueManagerImpl extends BaseManagerImpl implements CheckInQ
                 CheckInQueue checkInQueue = new CheckInQueue();
                 checkInQueue.setAsnId(newCheckInQueueCommand.getAsnId());
                 checkInQueue.setOuId(newCheckInQueueCommand.getOuId());
-                checkInQueue.setCreateTime(newCheckInQueueCommand.getCreateTime());
-                checkInQueue.setCreatedId(newCheckInQueueCommand.getCreatedId());
-                checkInQueue.setModifiedId(newCheckInQueueCommand.getModifiedId());
-                checkInQueue.setLastModifyTime(newCheckInQueueCommand.getLastModifyTime());
-                checkInQueue.setSequence(newCheckInQueueCommand.getSequence());
+                checkInQueue.setCreateTime(new Date());
+                checkInQueue.setCreatedId(userId);
+                checkInQueue.setModifiedId(userId);
+                checkInQueue.setLastModifyTime(new Date());
+                checkInQueue.setSequence(index + 1);
                 if (log.isDebugEnabled()) {
                     log.debug("CheckInQueueManagerImpl.addToCheckInQueue -> checkInQueueDao.insert,insert to sharedDB, checkInQueue is:[{}], logId is:[{}]", checkInQueue, logId);
                 }

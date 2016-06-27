@@ -230,6 +230,8 @@ public final class Constants {
     /** 库存明细残次类型来源 仓库 */
     public static final String SKU_SN_DEFECT_SOURCE_WH = "WH";
 
+    /** 上架规则sql占位符 */
+    public static final String SHELVE_RULE_PLACEHOLDER = "${containerCodeListStr}";
 
 
 }
