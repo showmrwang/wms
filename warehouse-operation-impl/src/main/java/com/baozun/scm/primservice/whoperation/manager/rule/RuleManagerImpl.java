@@ -158,7 +158,7 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
         List<ShelveRecommendRuleCommand> returnList = new ArrayList<ShelveRecommendRuleCommand>();
         for (ShelveRecommendRuleCommand s : sList) {
             // 查询上架规则对应库存信息ID LIST
-            List<Long> list = shelveRecommendRuleDao.executeRuleSql(s.getRuleSql().replace("containerCodeListStr", containerCodeListStr), ruleAffer.getOuid());
+            List<Long> list = shelveRecommendRuleDao.executeRuleSql(s.getRuleSql().replace(Constants.SHELVE_RULE_PLACEHOLDER, containerCodeListStr), ruleAffer.getOuid());
             // 如果库存信息数量=上架规则对应库存信息ID LIST 加入list规则对象
             if (invList.size() == list.size()) {
                 // 把规则加入list
@@ -193,7 +193,7 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
         Map<Long, List<ShelveRecommendRuleCommand>> returnMap = new HashMap<Long, List<ShelveRecommendRuleCommand>>();
         for (ShelveRecommendRuleCommand s : sList) {
             // 查询上架规则对应库存信息ID LIST
-            List<Long> list = shelveRecommendRuleDao.executeRuleSql(s.getRuleSql().replace("containerCodeListStr", containerCodeListStr), ruleAffer.getOuid());
+            List<Long> list = shelveRecommendRuleDao.executeRuleSql(s.getRuleSql().replace(Constants.SHELVE_RULE_PLACEHOLDER, containerCodeListStr), ruleAffer.getOuid());
             if (list.size() > 0) {
                 map.put(s, list);
             }
