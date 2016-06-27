@@ -73,9 +73,9 @@
             cq.last_modify_time as lastModifyTime,
             cq.modified_id as modifiedId,
             ar.id as reserveId,
-            ar.delivery_time as deliveryTime,
+            asn.delivery_time as deliveryTime,
             ar.level as level,
-            ar.eta as eta
+            asn.eta as eta
         ]]>
     </sql>
 
