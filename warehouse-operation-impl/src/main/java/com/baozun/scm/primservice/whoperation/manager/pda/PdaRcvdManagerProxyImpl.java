@@ -356,10 +356,10 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                 }
                 whCartonMap.put(asnRcvdLogMaoKey, whCarton);
                 if (null != cacheInv.getSnList()) {
-                    for (RcvdSnCacheCommand RcvdSn : cacheInv.getSnList()) {
+                    for (RcvdSnCacheCommand rcvdSn : cacheInv.getSnList()) {
                         WhSkuInventorySn skuInvSn = new WhSkuInventorySn();
-                        skuInvSn.setDefectTypeId(RcvdSn.getDefectTypeId());
-                        skuInvSn.setDefectReasonsId(RcvdSn.getDefectReasonsId());
+                        skuInvSn.setDefectTypeId(rcvdSn.getDefectTypeId());
+                        skuInvSn.setDefectReasonsId(rcvdSn.getDefectReasonsId());
                         skuInvSn.setStatus(Constants.INVENTORY_SN_STATUS_ONHAND);
                         // #条码 调用条码生成器
                         String barCode = this.codeManager.generateCode(Constants.WMS, Constants.INVENTORY_SN_BARCODE, null, Constants.INVENTORY_SN_BARCODE_PREFIX, null);
@@ -371,31 +371,28 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                         // 插入日志表
                         WhAsnRcvdSnLog whAsnRcvdSnLog = new WhAsnRcvdSnLog();
                         whAsnRcvdSnLog.setAsnRcvdId(asnId);
-                        whAsnRcvdSnLog.setSn(RcvdSn.getSn());
+                        whAsnRcvdSnLog.setSn(rcvdSn.getSn());
                         whAsnRcvdSnLog.setDefectWareBarcode(barCode);
                         whAsnRcvdSnLog.setOuId(ouId);
                         // #取得残次类型残次原因的名称。
-                        StoreDefectType storeDefectType = this.generalRcvdManager.findStoreDefectTypeByIdToGlobal(RcvdSn.getDefectTypeId());
-                        if (null == storeDefectType) {
-                            WarehouseDefectType warehouseDefectType = this.generalRcvdManager.findWarehouseDefectTypeByIdToShard(RcvdSn.getDefectTypeId(), ouId);
+                        if (Constants.SKU_SN_DEFECT_SOURCE_STORE.equals(rcvdSn.getDefectSource())) {
+                            StoreDefectType storeDefectType = this.generalRcvdManager.findStoreDefectTypeByIdToGlobal(rcvdSn.getDefectTypeId());
+                            if (storeDefectType != null) {
+                                whAsnRcvdSnLog.setDefectType(storeDefectType.getName());
+                                StoreDefectReasons storeDefectReasons = this.generalRcvdManager.findStoreDefectReasonsByIdToGlobal(rcvdSn.getDefectReasonsId());
+                                if (storeDefectReasons != null) {
+                                    whAsnRcvdSnLog.setDefectType(storeDefectReasons.getName());
+                                }
+                            }
+
+                        } else if (Constants.SKU_SN_DEFECT_SOURCE_WH.equals(rcvdSn.getDefectSource())) {
+                            WarehouseDefectType warehouseDefectType = this.generalRcvdManager.findWarehouseDefectTypeByIdToShard(rcvdSn.getDefectTypeId(), ouId);
                             if (warehouseDefectType != null) {
                                 whAsnRcvdSnLog.setDefectType(warehouseDefectType.getName());
-                            } else {
-                                // whAsnRcvdSnLog.setDefectType(RcvdSn.getDefectTypeId().toString());
-                            }
-                            WarehouseDefectReasons warehouseDefectReasons = this.generalRcvdManager.findWarehouseDefectReasonsByIdToShard(RcvdSn.getDefectReasonsId(), ouId);
-                            if (warehouseDefectReasons != null) {
-                                whAsnRcvdSnLog.setDefectReasons(warehouseDefectReasons.getName());
-                            } else {
-                                // whAsnRcvdSnLog.setDefectReasons(RcvdSn.getDefectReasonsId().toString());
-                            }
-                        } else {
-                            whAsnRcvdSnLog.setDefectType(storeDefectType.getName());
-                            StoreDefectReasons storeDefectReasons = this.generalRcvdManager.findStoreDefectReasonsByIdToGlobal(RcvdSn.getDefectReasonsId());
-                            if (storeDefectReasons != null) {
-                                whAsnRcvdSnLog.setDefectReasons(storeDefectReasons.getName());
-                            } else {
-                                // whAsnRcvdSnLog.setDefectReasons(RcvdSn.getDefectReasonsId().toString());
+                                WarehouseDefectReasons warehouseDefectReasons = this.generalRcvdManager.findWarehouseDefectReasonsByIdToShard(rcvdSn.getDefectReasonsId(), ouId);
+                                if (warehouseDefectReasons != null) {
+                                    whAsnRcvdSnLog.setDefectReasons(warehouseDefectReasons.getName());
+                                }
                             }
                         }
                         saveSnLogList.add(whAsnRcvdSnLog);
