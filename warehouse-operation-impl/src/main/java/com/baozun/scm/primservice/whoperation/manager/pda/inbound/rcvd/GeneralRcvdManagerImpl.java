@@ -107,6 +107,7 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
     private PkManager pkManager;
     @Autowired
     private WhCartonDao whCartonDao;
+
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void saveScanedSkuWhenGeneralRcvdForPda(List<RcvdCacheCommand> commandList) {
@@ -542,7 +543,6 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
         if (insertCount == 0) {
             throw new BusinessException(ErrorCodes.INSERT_DATA_ERROR);
         }
-        // this.insertGlobalLog(saveContainer, Constants.GLOBAL_LOG_INSERT);
         return saveContainer;
     }
 
@@ -561,4 +561,5 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
     public long getUniqueSkuAttrCountFromWhSkuInventory(Long insideContainerId, Long skuId, Long ouId) {
         return this.whSkuInventoryDao.getUniqueSkuAttrCountFromWhSkuInventory(insideContainerId, skuId, ouId);
     }
+
 }

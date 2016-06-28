@@ -32,7 +32,7 @@ public interface PdaRcvdManagerProxy extends BaseManager {
      * 
      * @param id
      */
-    void freshAsnCacheForGeneralReceiving(Long occupationId, Double newChargeRate, Double oldChargeRate);
+    void freshAsnCacheForGeneralReceiving(Long occupationId, Long ouId);
 
     /**
      * 获取匹配的明细行
@@ -66,10 +66,27 @@ public interface PdaRcvdManagerProxy extends BaseManager {
     void checkPallet(WhSkuInventoryCommand command, Long ouId);
 
     /**
-     * 组装扫描的数据【业务方法】
+     * 初始化扫描的SKU的属性
+     * 
+     * @param isInvattrAsnPointoutUser
+     * @param nextOpt
+     * @param command
+     */
+    void initAttrWhenScanningSku(Boolean isInvattrAsnPointoutUser, Integer nextOpt, WhSkuInventoryCommand command);
+
+    /**
+     * 获取下一个扫描的ASN属性
+     * 
+     * @param command
+     * @return
+     */
+    Integer getNextSkuAttrOperatorForScanning(WhSkuInventoryCommand command);
+
+    /**
+     * 初始化ASN缓存【业务方法】
      * 
      * @param command
      */
-    void assembleSkuOperate(WhSkuInventoryCommand command);
+    void initOrFreshCacheForScanningAsn(WhSkuInventoryCommand command);
 
 }

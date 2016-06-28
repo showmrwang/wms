@@ -174,6 +174,8 @@ public final class Constants {
     public static final String CHECK_IN_TYPE_MANUAL_CHECKIN = "manualCheckIn";
 
     // enum:通用收货商品属性扫描序列
+    public static final int GENERAL_RECEIVING_START = -1;// 开始
+    public static final int GENERAL_RECEIVING_END = 99;// 结束
     public static final int GENERAL_RECEIVING_ISVALID = 0;// 0：是否管理效期
     public static final int GENERAL_RECEIVING_ISBATCHNO = 1; // 1:是否管理批次号
     public static final int GENERAL_RECEIVING_ISCOUNTRYOFORIGIN = 2;// 2:是否管理原产地
@@ -232,6 +234,5 @@ public final class Constants {
 
     /** 上架规则sql占位符 */
     public static final String SHELVE_RULE_PLACEHOLDER = "${containerCodeListStr}";
-
 
 }
