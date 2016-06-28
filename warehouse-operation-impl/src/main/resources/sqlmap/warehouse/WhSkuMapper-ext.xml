@@ -22,11 +22,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	length as length,
 	        	width as width,
 	        	height as height,
-	        	length_uom as lengthUom,
 	        	volume as volume,
-	        	volume_uom as volumeUom,
 	        	weight as weight,
-	        	weight_uom as weightUom,
 	        	brand_id as brandId,
 	        	customer_id as customerId,
 	        	ou_id as ouId,
@@ -96,27 +93,17 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				</if>
 	       
 	       
-		       <if test="lengthUom!=null and lengthUom!=''">
-					and length_uom = #{lengthUom}
-				</if>
-	       
 				<if test="volume!=null">
 					and volume = #{volume}
 				</if>
 	       
 	       
-		       <if test="volumeUom!=null and volumeUom!=''">
-					and volume_uom = #{volumeUom}
-				</if>
 	       
 				<if test="weight!=null">
 					and weight = #{weight}
 				</if>
 	       
 	       
-		       <if test="weightUom!=null and weightUom!=''">
-					and weight_uom = #{weightUom}
-				</if>
 	       
 				<if test="brandId!=null">
 					and brand_id = #{brandId}

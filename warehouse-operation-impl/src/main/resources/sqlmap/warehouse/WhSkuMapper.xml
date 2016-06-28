@@ -38,9 +38,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
                 sku.size as size,
                 sku.lifecycle as lifecycle,
                 sku.ext_code as extCode,
-                sku.length_uom as lengthUom,
-                sku.volume_uom as volumeUom,
-                sku.weight_uom as weightUom,
                 brand.name as brandName,
                 customer.customer_name as customerName
 	    ]]>
@@ -147,11 +144,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	length ,
 		        	width ,
 		        	height ,
-		        	length_uom ,
 		        	volume ,
-		        	volume_uom ,
 		        	weight ,
-		        	weight_uom ,
 		        	brand_id ,
 		        	customer_id ,
 		        	ou_id ,
@@ -173,11 +167,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{length,javaType=Double,jdbcType=DECIMAL} ,
 		        	#{width,javaType=Double,jdbcType=DECIMAL} ,
 		        	#{height,javaType=Double,jdbcType=DECIMAL} ,
-		        	#{lengthUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{volume,javaType=Double,jdbcType=DECIMAL} ,
-		        	#{volumeUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{weight,javaType=Double,jdbcType=DECIMAL} ,
-		        	#{weightUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{typeOfGoods,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{brandId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{customerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -208,11 +199,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        length = #{length,javaType=Double,jdbcType=DECIMAL} ,
 		        width = #{width,javaType=Double,jdbcType=DECIMAL} ,
 		        height = #{height,javaType=Double,jdbcType=DECIMAL} ,
-		        length_uom = #{lengthUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        volume = #{volume,javaType=Double,jdbcType=DECIMAL} ,
-		        volume_uom = #{volumeUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        weight = #{weight,javaType=Double,jdbcType=DECIMAL} ,
-		        weight_uom = #{weightUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        brand_id = #{brandId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        customer_id = #{customerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -377,17 +365,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				and sku.ext_code like #{extCode}
 			</if>
 
-			<if test="lengthUom!=null and lengthUom!=''">
-				and sku.length_uom = #{lengthUom}
-			</if>
-
-			<if test="volumeUom!=null and volumeUom!=''">
-				and sku.volume_uom = #{volumeUom}
-			</if>
-
-			<if test="weightUom!=null and weightUom!=''">
-				and sku.weight_uom = #{weightUom}
-			</if>
 			<if test="ouId!=null">
 				and sku.ou_id = #{ouId}
 			</if>
