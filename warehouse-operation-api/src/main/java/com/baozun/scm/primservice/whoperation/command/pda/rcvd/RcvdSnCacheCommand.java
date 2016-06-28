@@ -15,6 +15,16 @@ public class RcvdSnCacheCommand implements Serializable{
     private Long defectTypeId;
     /** 残次原因ID */
     private Long defectReasonsId;
+    /** 残次来源 */
+    private String defectSource;
+
+    public String getDefectSource() {
+        return defectSource;
+    }
+
+    public void setDefectSource(String defectSource) {
+        this.defectSource = defectSource;
+    }
 
     public String getSn() {
         return sn;

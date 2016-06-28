@@ -283,6 +283,8 @@ public class ErrorCodes {
     public static final int RCVD_BATCH_DEFEAT_COUNT_OVER_ERROR = 10016;
     /** 容器收货完成操作异常，请重试! */
     public static final int RCVD_CONTAINERRCVDSAVE_ERROR = 10017;
+    /** ASN数据缓存刷新失败 */
+    public static final int ASN_CACHE_FRESH_ERROR = 10018;
     // 10001-20000 luyimin
 
 
