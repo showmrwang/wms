@@ -11,6 +11,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	</resultMap>
 	<resultMap id="locationCommandResultExt" type="com.baozun.scm.primservice.whoperation.command.warehouse.LocationCommand">
 	</resultMap>
+	<resultMap id="ContainerCommandResultExt" type="com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand">
+	</resultMap>
 	
 	<!-- 用于select查询公用抽取的列 -->
 	<sql id="whSkuInventoryColumnsExt">
@@ -616,6 +618,52 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        </foreach>
     </select>
     
+    <select id="findWhSkuInventoryByInsideContainerCode" resultMap="WhSkuInventoryCommandResultExt">
+			select 
+					inv.id as id,
+					inv.sku_id as skuId,
+					inv.location_id as locationId,
+					inv.outer_container_id as outerContainerId,
+					inv.inside_container_id as insideContainerId,
+					inv.customer_id as customerId,
+					inv.store_id as storeId,
+					inv.occupation_code as occupationCode,
+					inv.on_hand_qty as onHandQty,
+					inv.allocated_qty as allocatedQty,
+					inv.to_be_filled_qty as toBeFilledQty,
+					inv.frozen_qty as frozenQty,
+					inv.inv_status as invStatus,
+					inv.inv_type as invType,
+					inv.batch_number as batchNumber,
+					inv.mfg_date as mfgDate,
+					inv.exp_date as expDate,
+					inv.country_of_origin as countryOfOrigin,
+					inv.inv_attr1 as invAttr1,
+					inv.inv_attr2 as invAttr2,
+					inv.inv_attr3 as invAttr3,
+					inv.inv_attr4 as invAttr4,
+					inv.inv_attr5 as invAttr5,
+					inv.uuid as uuid,
+					inv.is_locked as isLocked,
+					inv.ou_id as ouId,
+					inv.occupation_code_source as occupationCodeSource,
+					inv.inbound_time as inboundTime,
+	        		inv.last_modify_time as lastModifyTime
+					from 
+					t_wh_asn asn,	
+					t_wh_sku_inventory inv
+					left join t_wh_container c on c.id = inv.inside_container_id
+					where 
+						inv.occupation_code is not null 
+						and asn.asn_code = inv.occupation_code
+						and (asn.status=4 or asn.status=10)
+					    and inv.ou_id = #{ouid}
+					and c.code in 
+					<foreach item="item" index="index" collection="containerList" open="(" separator="," close=")">
+			            #{item}
+			        </foreach>
+    </select>
+    
      <select id="findWhSkuInventoryLocByOuterContainerCode" resultMap="locationCommandResultExt">
 			select 
 					loc.id as id,
@@ -932,6 +980,13 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			and exists (select 1 from t_wh_sku_inventory invs where invs.inside_container_id=inv.occupation_code and invs.ou_id=inv.ou_id and invs.outer_container_id=#{insideContainerid})		
 	</select>
 	
+	 <select id="findRcvdInventoryCountsByInsideContainerId1" resultType="Integer">
+		select count(1) from t_wh_sku_inventory inv,t_wh_asn asn where inv.occupation_code is not null  and inv.outer_container_id is not null
+			and inv.ou_id=#{ouid}
+			and inv.occupation_code=asn.asn_code and (asn.status=4 or asn.status=10)
+			and exists (select 1 from t_wh_sku_inventory invs where invs.inside_container_id=inv.occupation_code and invs.ou_id=inv.ou_id and invs.outer_container_id=#{insideContainerid})		
+	</select>
+	
 	<select id="findWhSkuInventoryByLocIdAndOuId" resultMap="WhSkuInventoryResultExt" flushCache="false">
 			select <include refid="whSkuInventoryColumnsExt" />
 		    <![CDATA[
@@ -939,6 +994,38 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        where 
 		        inv.location_id =#{locid}
 		        and inv.ou_id = #{ouid}
+		    ]]>
+	</select>
+	
+	<select id="findAllInsideContainerByOuterContainerId" resultMap="ContainerCommandResultExt" flushCache="false">
+			select
+				s.id as id,
+	        	s.name as name,
+	        	s.code as code,
+	        	s.one_level_type as oneLevelType,
+	        	s.two_level_type as twoLevelType,
+	        	s.is_full as isFull,
+	        	s.create_time as createTime,
+	        	s.last_modify_time as lastModifyTime,
+	        	s.operator_id as operatorId,
+	        	s.lifecycle as lifecycle,
+	        	s.ou_id as ouId,
+				dic.lifecycle as oneLevelTypeLifecycle,
+				c2c.lifecycle as twoLevelTypeLifecycle,
+				s.status as status
+		    <![CDATA[
+			    from t_wh_container s
+			    left join sys_dictionary dic on dic.id=s.one_level_type
+			    left join t_wh_container_2nd_category c2c on c2c.id=s.two_level_type
+		        where 
+		        s.ou_id = #{ouid}
+		        and s.id in
+		        (
+		        select distinct inv.inside_container_id from t_wh_sku_inventory inv,t_wh_asn asn where inv.occupation_code is not null 
+			and inv.ou_id=#{ouid}
+			and inv.occupation_code=asn.asn_code and (asn.status=4 or asn.status=10)
+			and exists (select 1 from t_wh_sku_inventory invs where invs.occupation_code=inv.occupation_code and invs.ou_id=inv.ou_id and invs.outer_container_id=#{outerContainerid})
+				)		
 		    ]]>
 	</select>
 </mapper>

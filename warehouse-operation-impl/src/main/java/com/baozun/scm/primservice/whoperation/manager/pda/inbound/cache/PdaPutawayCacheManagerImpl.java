@@ -32,12 +32,16 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
+import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
 import com.baozun.scm.primservice.whoperation.constant.WhPutawayPatternDetailType;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.pda.inbound.inventory.InventoryStatisticManager;
+import com.baozun.scm.primservice.whoperation.model.BaseModel;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
 
 /**
  * @author lichuan
@@ -54,6 +58,8 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
     private WhSkuInventoryDao whSkuInventoryDao;
     @Autowired
     private CacheManager cacheManager;
+    @Autowired
+    private ContainerDao containerDao;
 
     /**
      * @author lichuan
@@ -68,11 +74,11 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
         }
         String containerCode = containerCmd.getCode();
         // 缓存所有库存
-        List<String> ocCodelist = new ArrayList<String>();
-        ocCodelist.add(containerCode);
+        List<String> codelist = new ArrayList<String>();
+        codelist.add(containerCode);
         // 查询所有对应容器号的库存信息
         List<WhSkuInventoryCommand> invList = null;
-        invList = whSkuInventoryDao.findWhSkuInventoryByOuterContainerCode(ouId, ocCodelist);
+        invList = whSkuInventoryDao.findWhSkuInventoryByOuterContainerCode(ouId, codelist);
         if (null == invList || 0 == invList.size()) {
             log.error("sys guide pallet putaway container:[{}] rcvd inventory not found error!, logId is:[{}]", containerCode, logId);
             throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_RCVD_INV_ERROR, new Object[] {containerCode});
@@ -119,11 +125,11 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
         }
         String containerCode = containerCmd.getCode();
         // 缓存所有库存
-        List<String> ocCodelist = new ArrayList<String>();
-        ocCodelist.add(containerCode);
+        List<String> codelist = new ArrayList<String>();
+        codelist.add(containerCode);
         // 查询所有对应容器号的库存信息
         List<WhSkuInventoryCommand> invList = null;
-        invList = whSkuInventoryDao.findWhSkuInventoryByOuterContainerCode(ouId, ocCodelist);
+        invList = whSkuInventoryDao.findWhSkuInventoryByOuterContainerCode(ouId, codelist);
         if (null == invList || 0 == invList.size()) {
             log.error("sys guide pallet putaway container:[{}] rcvd inventory not found error!, logId is:[{}]", containerCode, logId);
             throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_RCVD_INV_ERROR, new Object[] {containerCode});
@@ -151,11 +157,11 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
         }
         String containerCode = containerCmd.getCode();
         // 缓存所有库存
-        List<String> ocCodelist = new ArrayList<String>();
-        ocCodelist.add(containerCode);
+        List<String> codelist = new ArrayList<String>();
+        codelist.add(containerCode);
         // 查询所有对应容器号的库存信息
         List<WhSkuInventoryCommand> invList = null;
-        invList = whSkuInventoryDao.findWhSkuInventoryByOuterContainerCode(ouId, ocCodelist);
+        invList = whSkuInventoryDao.findWhSkuInventoryByOuterContainerCode(ouId, codelist);
         if (null == invList || 0 == invList.size()) {
             log.error("sys guide pallet putaway container:[{}] rcvd inventory not found error!, logId is:[{}]", containerCode, logId);
             throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_RCVD_INV_ERROR, new Object[] {containerCode});
@@ -393,5 +399,190 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
         cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY_STATISTIC, ocId.toString());
         // 3.清除所有库存缓存信息
         cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY, ocId.toString());
+    }
+    
+    /**
+     * @author lichuan
+     * @param containerCmd
+     * @param ouId
+     * @param logId
+     * @return
+     */
+    @Override
+    public List<ContainerCommand> sysGuideContainertPutawayCacheInsideContainer(ContainerCommand containerCmd, Long ouId, String logId) {
+        Long containerId = containerCmd.getId();
+        //查询对应所有内部容器信息
+        List<ContainerCommand> icList = whSkuInventoryDao.findAllInsideContainerByOuterContainerId(ouId, containerId);
+        //判断所有内部容器状态
+        for (ContainerCommand ic : icList) {
+            Long icId = ic.getId();
+            Container icCmd = containerDao.findByIdExt(icId, ouId);
+            if (null == icCmd) {
+                // 容器信息不存在
+                log.error("container is not exists, logId is:[{}]", logId);
+                throw new BusinessException(ErrorCodes.COMMON_CONTAINER_IS_NOT_EXISTS);
+            }
+            // 验证容器状态是否可用
+            if (!BaseModel.LIFECYCLE_NORMAL.equals(icCmd.getLifecycle()) && ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED != icCmd.getLifecycle()) {
+                log.error("container lifecycle is not normal, logId is:[{}]", logId);
+                throw new BusinessException(ErrorCodes.COMMON_CONTAINER_LIFECYCLE_IS_NOT_NORMAL);
+            }
+            // 获取容器状态
+            Integer icStatus = icCmd.getStatus();
+            if (ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY != icStatus && ContainerStatus.CONTAINER_STATUS_PUTAWAY != icStatus) {
+                log.error("container status is invalid, containerStatus is:[{}], logId is:[{}]", icStatus, logId);
+                throw new BusinessException(ErrorCodes.CONTAINER_STATUS_ERROR_UNABLE_PUTAWAY, new Object[] {icStatus});
+            }
+        }
+        //缓存
+        cacheManager.setMapObject(CacheConstants.CONTAINER, containerId.toString(), icList, CacheConstants.CACHE_ONE_MONTH);
+        return icList;
+    }
+    
+    /**
+     * @author lichuan
+     * @param icList
+     * @param logId
+     * @return
+     */
+    @Override
+    public Long sysGuideContainerPutawayTipContainer0(ContainerCommand containerCmd, List<ContainerCommand> icList, String logId) {
+        Long containerId = containerCmd.getId();
+        Long tipContainerId = null;
+        long len = cacheManager.listLen(CacheConstants.SCAN_CONTAINER_QUEUE + containerId.toString());
+        if (0 < len) {
+            String insideContainerId = cacheManager.findListItem(CacheConstants.SCAN_CONTAINER_QUEUE + containerId.toString(), len - 1);
+            tipContainerId = new Long(insideContainerId);
+        } else {
+            // 随机取一个容器
+            for (ContainerCommand ic : icList) {
+                Long icId = ic.getId();
+                if (null != icId) {
+                    tipContainerId = icId;
+                    cacheManager.pushToListHead(CacheConstants.SCAN_CONTAINER_QUEUE + containerId.toString(), icId.toString());
+                    break;
+                }
+            }
+        }
+        return tipContainerId;
+    }
+    
+    /**
+     * @author lichuan
+     * @param insideContainerCmd
+     * @param ouId
+     * @param logId
+     * @return
+     */
+    @Override
+    public List<WhSkuInventoryCommand> sysGuideContainerPutawayCacheInventory(ContainerCommand insideContainerCmd, Long ouId, String logId) {
+        Long containerId = insideContainerCmd.getId();
+        if (log.isInfoEnabled()) {
+            log.info("sys guide container putaway cache inventory start, contianerId is:[{}], ouId is:[{}], logId is:[{}]", containerId, ouId, logId);
+        }
+        String containerCode = insideContainerCmd.getCode();
+        // 缓存所有库存
+        List<String> codelist = new ArrayList<String>();
+        codelist.add(containerCode);
+        // 查询所有对应容器号的库存信息
+        List<WhSkuInventoryCommand> invList = null;
+        invList = whSkuInventoryDao.findWhSkuInventoryByInsideContainerCode(ouId, codelist);
+        if (null == invList || 0 == invList.size()) {
+            log.error("sys guide container putaway container:[{}] rcvd inventory not found error!, logId is:[{}]", containerCode, logId);
+            throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_RCVD_INV_ERROR, new Object[] {containerCode});
+        }
+        cacheManager.setMapObject(CacheConstants.CONTAINER_INVENTORY, containerId.toString(), invList, CacheConstants.CACHE_ONE_MONTH);
+        if (log.isInfoEnabled()) {
+            log.info("sys guide container putaway cache inventory end, contianerId is:[{}], ouId is:[{}], logId is:[{}]", containerId, ouId, logId);
+        }
+        return invList;
+    }
+    
+    /**
+     * @author lichuan
+     * @param insideContainerCmd
+     * @param isCmd
+     * @param ouId
+     * @param logId
+     * @return
+     */
+    @Override
+    public InventoryStatisticResultCommand sysGuideContainerPutawayCacheInventoryStatistic(ContainerCommand insideContainerCmd, InventoryStatisticResultCommand isCmd, Long ouId, String logId) {
+        Long containerId = insideContainerCmd.getId();
+        if (log.isInfoEnabled()) {
+            log.info("sys guide container putaway cache inventoryStatistic start, contianerId is:[{}], ouId is:[{}], logId is:[{}]", containerId, ouId, logId);
+        }
+        cacheManager.setMapObject(CacheConstants.CONTAINER_INVENTORY_STATISTIC, containerId.toString(), isCmd, CacheConstants.CACHE_ONE_MONTH);
+        if (log.isInfoEnabled()) {
+            log.info("sys guide container putaway cache inventoryStatistic end, contianerId is:[{}], ouId is:[{}], logId is:[{}]", containerId, ouId, logId);
+        }
+        return isCmd;
+    }
+    
+    /**
+     * @author lichuan
+     * @param insideContainerCmd
+     * @param ouId
+     * @param logId
+     * @return
+     */
+    @Override
+    public InventoryStatisticResultCommand sysGuideContainerPutawayCacheInventoryStatistic(ContainerCommand insideContainerCmd, Long ouId, String logId) {
+        Long containerId = insideContainerCmd.getId();
+        if (log.isInfoEnabled()) {
+            log.info("sys guide container putaway cache inventoryStatistic start, contianerId is:[{}], ouId is:[{}], logId is:[{}]", containerId, ouId, logId);
+        }
+        String containerCode = insideContainerCmd.getCode();
+        // 缓存所有库存
+        List<String> codelist = new ArrayList<String>();
+        codelist.add(containerCode);
+        // 查询所有对应容器号的库存信息
+        List<WhSkuInventoryCommand> invList = null;
+        invList = whSkuInventoryDao.findWhSkuInventoryByInsideContainerCode(ouId, codelist);
+        if (null == invList || 0 == invList.size()) {
+            log.error("sys guide container putaway container:[{}] rcvd inventory not found error!, logId is:[{}]", containerCode, logId);
+            throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_RCVD_INV_ERROR, new Object[] {containerCode});
+        }
+        InventoryStatisticResultCommand isCmd = inventoryStatisticManager.sysGuidePutawayInvStatistic(invList, WhPutawayPatternDetailType.PALLET_PUTAWAY, ouId, logId);
+        isCmd.setInsideContainerId(containerId);
+        cacheManager.setMapObject(CacheConstants.CONTAINER_INVENTORY_STATISTIC, containerId.toString(), isCmd, CacheConstants.CACHE_ONE_MONTH);
+        if (log.isInfoEnabled()) {
+            log.info("sys guide container putaway cache inventoryStatistic end, contianerId is:[{}], ouId is:[{}], logId is:[{}]", containerId, ouId, logId);
+        }
+        return isCmd;
+    }
+    
+    /**
+     * @author lichuan
+     * @param containerCmd
+     * @param ouId
+     * @param logId
+     * @return
+     */
+    @Override
+    public List<WhSkuInventoryCommand> sysGuideContainerPutawayCacheInventoryAndStatistic(ContainerCommand containerCmd, Long ouId, String logId) {
+        Long containerId = containerCmd.getId();
+        if (log.isInfoEnabled()) {
+            log.info("sys guide container putaway cache inventoryAndStatistic start, contianerId is:[{}], ouId is:[{}], logId is:[{}]", containerId, ouId, logId);
+        }
+        String containerCode = containerCmd.getCode();
+        // 缓存所有库存
+        List<String> codelist = new ArrayList<String>();
+        codelist.add(containerCode);
+        // 查询所有对应容器号的库存信息
+        List<WhSkuInventoryCommand> invList = null;
+        invList = whSkuInventoryDao.findWhSkuInventoryByInsideContainerCode(ouId, codelist);
+        if (null == invList || 0 == invList.size()) {
+            log.error("sys guide container putaway container:[{}] rcvd inventory not found error!, logId is:[{}]", containerCode, logId);
+            throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_RCVD_INV_ERROR, new Object[] {containerCode});
+        }
+        cacheManager.setMapObject(CacheConstants.CONTAINER_INVENTORY, containerId.toString(), invList, CacheConstants.CACHE_ONE_MONTH);
+        InventoryStatisticResultCommand isCmd = inventoryStatisticManager.sysGuidePutawayInvStatistic(invList, WhPutawayPatternDetailType.PALLET_PUTAWAY, ouId, logId);
+        isCmd.setInsideContainerId(containerId);
+        cacheManager.setMapObject(CacheConstants.CONTAINER_INVENTORY_STATISTIC, containerId.toString(), isCmd, CacheConstants.CACHE_ONE_MONTH);
+        if (log.isInfoEnabled()) {
+            log.info("sys guide container putaway cache inventoryAndStatistic end, contianerId is:[{}], ouId is:[{}], logId is:[{}]", containerId, ouId, logId);
+        }
+        return invList;
     }
 }

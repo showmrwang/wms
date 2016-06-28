@@ -17,6 +17,15 @@ package com.baozun.scm.primservice.whoperation.dao.warehouse.inventory;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.annotations.Param;
+
+import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdContainerCacheCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.LocationCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
+import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
+
 import lark.common.annotation.CommonQuery;
 import lark.common.annotation.QueryPage;
 import lark.common.dao.Page;
@@ -24,14 +33,6 @@ import lark.common.dao.Pagination;
 import lark.common.dao.QueryCondition;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
-
-import org.apache.ibatis.annotations.Param;
-
-import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdContainerCacheCommand;
-import com.baozun.scm.primservice.whoperation.command.warehouse.LocationCommand;
-import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
-import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
-import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 
 public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
 
@@ -130,6 +131,15 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @return
      */
     List<WhSkuInventoryCommand> findWhSkuInventoryByOuterContainerCode(@Param("ouid") Long ouid, @Param("containerList") List<String> containerList);
+    
+    /**
+     * 通过内部容器号查询对用的库存信息
+     * @author lichuan
+     * @param ouid
+     * @param containerList
+     * @return
+     */
+    List<WhSkuInventoryCommand> findWhSkuInventoryByInsideContainerCode(@Param("ouid") Long ouid, @Param("containerList") List<String> containerList);
 
     /**
      * 通过外部容器号查询对用的库存信息的所有库位
@@ -233,6 +243,16 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @return
      */
     int findRcvdInventoryCountsByInsideContainerId(@Param("ouid") Long ouid, @Param("insideContainerid") Long insideContainerid);
+    
+    /**
+     * 根据内部容器获取收货库存数量(外部容器不为空)
+     * 
+     * @author lichuan
+     * @param ouid
+     * @param insideContainerid
+     * @return
+     */
+    int findRcvdInventoryCountsByInsideContainerId1(@Param("ouid") Long ouid, @Param("insideContainerid") Long insideContainerid);
 
     /**
      * 根据库位查找所有库存
@@ -242,4 +262,13 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @return
      */
     List<WhSkuInventoryCommand> findWhSkuInventoryByLocIdAndOuId(@Param("ouid") Long ouid, @Param("locid") Long locid);
+    
+    /**
+     * 根据外部容器号查询所有内部容器信息
+     * @author lichuan
+     * @param ouid
+     * @param outerContainerid
+     * @return
+     */
+    List<ContainerCommand> findAllInsideContainerByOuterContainerId(@Param("ouid") Long ouid, @Param("outerContainerid") Long outerContainerid);
 }

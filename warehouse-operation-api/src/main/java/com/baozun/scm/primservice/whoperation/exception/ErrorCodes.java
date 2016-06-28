@@ -339,6 +339,8 @@ public class ErrorCodes {
     public static final int PALLET_PUTAWAY_BINDING_MORE_THAN_ONE_LOC = 40021;
     /** 上架失败，整箱上架绑定多个库位异常 */
     public static final int CONTAINER_PUTAWAY_BINDING_MORE_THAN_ONE_LOC = 40022;
+    /** 容器号[{0}]有外部容器，请先扫外部容器 */
+    public static final int CONTAINER_HAS_OUTER_CONTAINER_SCAN_OUTER_FIRST = 40023;
     // 40001-50000 lichuan
 
     // 50001-60000 hubin

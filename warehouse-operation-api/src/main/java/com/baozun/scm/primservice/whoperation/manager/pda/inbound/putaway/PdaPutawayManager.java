@@ -51,7 +51,7 @@ public interface PdaPutawayManager extends BaseManager {
      * @param logId
      * @return
      */
-    ScanResultCommand sysGuideScanContainer(String containerCode, Long funcId, Integer putawayPatternDetailType, Long ouId, Long userId, String logId);
+    ScanResultCommand sysGuideScanContainer(String containerCode, String insideContainerCode, Long funcId, Integer putawayPatternDetailType, Long ouId, Long userId, String logId);
 
     /**
      * 系统指导上架扫库位

@@ -26,7 +26,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuI
  */
 public final class SkuCategoryProvider {
     //占位符
-    private static final String PH = "_";
+    private static final String PH = "┊";
     
     public static String getSkuCategoryByInv(WhSkuInventoryCommand invCmd) {
         String ret = "";

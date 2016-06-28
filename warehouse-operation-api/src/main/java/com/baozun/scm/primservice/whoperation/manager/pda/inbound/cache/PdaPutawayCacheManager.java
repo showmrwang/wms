@@ -107,5 +107,67 @@ public interface PdaPutawayCacheManager extends BaseManager {
      * @param logId
      */
     void sysGuidePalletPutawayRemoveAllCache(ContainerCommand containerCmd, String logId);
+    
+    /**
+     * pda整箱上架缓存所有内部容器
+     * @author lichuan
+     * @param containerCmd
+     * @param ouId
+     * @param logId
+     * @return
+     */
+    List<ContainerCommand> sysGuideContainertPutawayCacheInsideContainer(ContainerCommand containerCmd, Long ouId, String logId);
+    
+    /**
+     * pda整箱上架提示容器
+     * @author lichuan
+     * @param icList
+     * @param logId
+     * @return
+     */
+    Long sysGuideContainerPutawayTipContainer0(ContainerCommand containerCmd, List<ContainerCommand> icList, String logId);
+    
+    /**
+     * pda整箱上架缓存库存信息
+     * @author lichuan
+     * @param containerCmd
+     * @param insideContainerCmd
+     * @param ouId
+     * @param logId
+     * @return
+     */
+    List<WhSkuInventoryCommand> sysGuideContainerPutawayCacheInventory(ContainerCommand insideContainerCmd, Long ouId, String logId);
+    
+    
+    /**
+     * pda整箱上架缓存库存统计信息
+     * @author lichuan
+     * @param containerCmd
+     * @param isCmd
+     * @param ouId
+     * @param logId
+     * @return
+     */
+    InventoryStatisticResultCommand sysGuideContainerPutawayCacheInventoryStatistic(ContainerCommand insideContainerCmd, InventoryStatisticResultCommand isCmd, Long ouId, String logId);
+    
+    /**
+     * pda整箱上架缓存库存和统计信息
+     * @author lichuan
+     * @param containerCmd
+     * @param ouId
+     * @param logId
+     * @return
+     */
+    InventoryStatisticResultCommand sysGuideContainerPutawayCacheInventoryStatistic(ContainerCommand insideContainerCmd, Long ouId, String logId);
+    
+    /**
+     * pda整箱上架缓存库存和统计信息
+     * @author lichuan
+     * @param containerCmd
+     * @param ouId
+     * @param logId
+     * @return
+     */
+    List<WhSkuInventoryCommand> sysGuideContainerPutawayCacheInventoryAndStatistic(ContainerCommand containerCmd, Long ouId, String logId);
 
 }
