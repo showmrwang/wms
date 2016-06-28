@@ -1065,7 +1065,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                             // throw new BusinessException(ErrorCodes.RCVD_CONTAINER_LIMIT_ERROR);
                         }
                     }
-                    if (null == line.getInvType() || line.getInvType().equals(command.getInvType())) {
+                    if (StringUtils.isEmpty(line.getInvType()) || line.getInvType().equals(command.getInvType())) {
                         lineList.add(lineId);
                     }
                     break;
@@ -1076,7 +1076,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                             // throw new BusinessException(ErrorCodes.RCVD_CONTAINER_LIMIT_ERROR);
                         }
                     }
-                    if (null == line.getInvAttr1() || line.getInvAttr1().equals(command.getInvAttr1())) {
+                    if (StringUtils.isEmpty(line.getInvAttr1()) || line.getInvAttr1().equals(command.getInvAttr1())) {
                         lineList.add(lineId);
                     }
                     break;
@@ -1087,7 +1087,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                             // throw new BusinessException(ErrorCodes.RCVD_CONTAINER_LIMIT_ERROR);
                         }
                     }
-                    if (null == line.getInvAttr2() || line.getInvAttr2().equals(command.getInvAttr2())) {
+                    if (StringUtils.isEmpty(line.getInvAttr2()) || line.getInvAttr2().equals(command.getInvAttr2())) {
                         lineList.add(lineId);
                     }
                     break;
@@ -1098,7 +1098,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                             // throw new BusinessException(ErrorCodes.RCVD_CONTAINER_LIMIT_ERROR);
                         }
                     }
-                    if (null == line.getInvAttr3() || line.getInvAttr3().equals(command.getInvAttr3())) {
+                    if (StringUtils.isEmpty(line.getInvAttr3()) || line.getInvAttr3().equals(command.getInvAttr3())) {
                         lineList.add(lineId);
                     }
                     break;
@@ -1109,7 +1109,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                             // throw new BusinessException(ErrorCodes.RCVD_CONTAINER_LIMIT_ERROR);
                         }
                     }
-                    if (null == line.getInvAttr5() || line.getInvAttr4().equals(command.getInvAttr4())) {
+                    if (StringUtils.isEmpty(line.getInvAttr4()) || line.getInvAttr4().equals(command.getInvAttr4())) {
                         lineList.add(lineId);
                     }
                     break;
@@ -1121,7 +1121,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                             // throw new BusinessException(ErrorCodes.RCVD_CONTAINER_LIMIT_ERROR);
                         }
                     }
-                    if (null == line.getInvAttr5() || line.getInvAttr5().equals(command.getInvAttr5())) {
+                    if (StringUtils.isEmpty(line.getInvAttr5()) || line.getInvAttr5().equals(command.getInvAttr5())) {
                         lineList.add(lineId);
                     }
                     break;
@@ -1197,8 +1197,9 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
 
         }
     }
+    
     /**
-     * 从库存中初始化容器商品属性缓存 #TODO 有风险
+     * 从库存中初始化容器商品属性缓存
      * 
      * @param command
      */
@@ -1288,7 +1289,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
         // 3.生成托盘占用缓存
         /***/
         // 查询托盘
-        Long outerContainerId = command.getOuterContainerId();
+        Long outerContainerId = null;
         Long userId = command.getUserId();
         ContainerCommand palletCommand = this.generalRcvdManager.findContainerByCode(command.getOuterContainerCode(), ouId);
         // 找不到托盘，则新建托盘
@@ -1305,6 +1306,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
             outerContainerId = c.getId();
             // 否则，进行更新托盘
         } else {
+            outerContainerId = palletCommand.getId();
             // 校验状态
             if (!BaseModel.LIFECYCLE_NORMAL.equals(palletCommand.getOneLevelTypeLifecycle()) || !BaseModel.LIFECYCLE_NORMAL.equals(palletCommand.getTwoLevelTypeLifecycle())) {
                 throw new BusinessException(ErrorCodes.DATA_EXPRIE_ERROR);
@@ -1350,7 +1352,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
 
 
     @Override
-    public void initAttrWhenScanningSku(Boolean isInvattrAsnPointoutUser, Integer nextOpt, WhSkuInventoryCommand command) {
+    public WhSkuInventoryCommand initAttrWhenScanningSku(Boolean isInvattrAsnPointoutUser, Integer nextOpt, WhSkuInventoryCommand command) {
         // 匹配可用的明细
         String[] lineIdArray = command.getLineIdListString().split(",");
         String lineId = lineIdArray[0];
@@ -1412,7 +1414,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
             }
             if (Constants.GENERAL_RECEIVING_ISSERIALNUMBER == nextOpt) {}// 序列号不用提示
         }
-
+        return command;
     }
 
     @Override
