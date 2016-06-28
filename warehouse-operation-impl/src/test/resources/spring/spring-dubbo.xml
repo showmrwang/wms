@@ -24,10 +24,34 @@
     
  
     <!-- 声明需要暴露的服务接口 -->
-    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.system.SchedulerTaskManager" ref="schedulerTaskManager" />
-    
-    
- 
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnManager"  ref="asnManager" />
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoManager"  ref="poManager" />
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.poasn.poasnproxy.CreatePoAsnManagerProxy"  ref="createPoAsnManagerProxy" />
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.poasn.poasnproxy.SelectPoAsnManagerProxy"  ref="selectPoAsnManagerProxy" />
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.poasn.poasnproxy.EditPoAsnManagerProxy"  ref="editPoAsnManagerProxy" />
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoCheckManager"  ref="poCheckManager" />
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnCheckManager"  ref="asnCheckManager" />
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnLineManager"  ref="asnLineManager" />
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoAsnOuManager"  ref="poAsnOuManager" />
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.system.GlobalLogManager"  ref="globalLogManager" />
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.InventoryModifyManager"  ref="inventoryModifyManager" />
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.InventoryOccupyManager"  ref="inventoryOccupyManager" />
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.InventoryLogManager"  ref="inventoryLogManager" />
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.InventoryLockManager"  ref="inventoryLockManager" />
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.InventoryValidateManager"  ref="inventoryValidateManager" />
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.outbound.InventoryModifyOutboundManager"  ref="inventoryModifyOutboundManager" />
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.outbound.CommonOutboundManager"  ref="commonOutboundManager" />
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.inbound.InventoryModifyInboundManager"  ref="inventoryModifyInboundManager" />
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.inbound.CommonInboundManager"  ref="commonInboundManager" />
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.carton.WhCartonManager" ref="whCartonManager" />  
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.pda.PdaRcvdManagerProxy"  ref="pdaRcvdManagerProxy" />
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.pda.inbound.putaway.PdaPutawayManager"  ref="pdaPutawayManager" />
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.pda.CheckInManagerProxy"  ref="checkInManagerProxy" />
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.pda.sortation.PdaInboundSortationManager"  ref="pdaInboundSortationManager" />
+    	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.sortation.WhContainerAssignManager" ref="whContainerAssignManager" />  
+    	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryLogManager" ref="whSkuInventoryLogManager" />  
+    	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventorySnLogManager" ref="whSkuInventorySnLogManager" />  
+
     <!--生成远程服务代理，可以和本地bean一样使用demoService-->
 <!--     <dubbo:reference id="demoManager" interface="com.baozun.scm.primservice.whoperation.manager.DemoManager" cluster="failfast" loadbalance="consistenthash"/> -->
  
@@ -37,5 +61,11 @@
  
  	<!-- 扫描包中所有的方服务 -->
 <!--  	<dubbo:annotation package="com.baozun.scm.primservice.whoperation.manager" /> -->
+	<dubbo:consumer check="true" version="${dubbo.default.version}" cluster="failfast" timeout="350000"/>
+
+	<dubbo:reference id="pkManager" url="${dubbo.sac.server}" interface="com.baozun.scm.baseservice.sac.manager.PkManager"/>
+	
+	<dubbo:reference id="codeManager" url="${dubbo.sac.server}" interface="com.baozun.scm.baseservice.sac.manager.CodeManager"/>
+
 
 </beans>

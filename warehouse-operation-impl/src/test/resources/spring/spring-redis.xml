@@ -81,4 +81,9 @@
 		</constructor-arg>
 		
 	</bean>
+	
+	<bean id="cacheManager" class="com.baozun.redis.manager.CacheManagerImpl">
+		<property name="cacheConfigManager" ref="cacheConfigManager"></property>
+		<property name="jedisPool" ref="jedisSentinelPool"></property>
+	</bean>
 </beans>

@@ -10,13 +10,27 @@
 	<aop:aspectj-autoproxy />
 	<context:annotation-config />
 	<import resource="classpath*:lark-aop-context.xml"/>
-	<context:property-placeholder location="classpath:test-config.properties" />
+	<bean id="configBean"
+		class="com.baozun.zkpro.ZookeeperConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:config/zk.properties</value>
+			</list>
+		</property>
+		<!-- 重写zookeeper中的配置 -->
+		<property name="overrideLocaltions">
+			<list>
+				<value>classpath:config/ext.properties</value>
+			</list>
+		</property>
+	</bean>
+<!-- 	<context:property-placeholder location="classpath:test-config.properties" /> -->
 	
 	<import resource="spring/spring-dao.xml" />
 	<import resource="spring/spring-manager.xml" />
-<!-- 	<import resource="spring/spring-message.xml" /> -->
-<!-- 	<import resource="spring/spring-mail.xml" /> -->
-<!-- 	<import resource="spring/spring-zk.xml" /> -->
-<!-- 	<import resource="spring/spring-dubbo.xml"/> -->
+	<import resource="spring/spring-mail.xml" />
+	<import resource="spring/spring-redis.xml" />
+	<import resource="spring/spring-zk.xml" />
+	<import resource="spring/spring-dubbo.xml"/>
 
 </beans>

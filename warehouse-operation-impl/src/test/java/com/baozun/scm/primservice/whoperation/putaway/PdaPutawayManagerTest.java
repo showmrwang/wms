@@ -36,7 +36,10 @@ import com.baozun.scm.primservice.whoperation.util.formula.SimpleStandardCubeCal
  * @author lichuan
  *
  */
-@ContextConfiguration(locations = {"classpath*:mybatis-config.xml", "classpath*:spring.xml"})
+//@ContextConfiguration(locations = {"classpath*:mybatis-config.xml", "classpath*:spring.xml"})
+@ContextConfiguration(locations={"classpath*:mybatis-config.xml",
+                                 "classpath*:lark-aop-context.xml",
+                                 "classpath*:spring-test.xml"})
 @ActiveProfiles("dev")
 public class PdaPutawayManagerTest extends AbstractJUnit4SpringContextTests {
 
@@ -60,8 +63,12 @@ public class PdaPutawayManagerTest extends AbstractJUnit4SpringContextTests {
 
        //com.baozun.scm.primservice.whinfo.model.warehouse.WhSkuLocation
        
-       Long id = pkManager.generatePk(Constants.WMS, "com.baozun.scm.primservice.whinfo.model.warehouse.WhSkuLocation");
-       System.out.println(id);
+//       Long id = pkManager.generatePk(Constants.WMS, "com.baozun.scm.primservice.whinfo.model.warehouse.WhSkuLocation");
+//       System.out.println(id);
+       List<Long> ids = pkManager.generatePkList(Constants.WMS, "com.baozun.scm.primservice.whinfo.model.warehouse.inventory.WhSkuInventory", 5).toArray();
+       for(Long id : ids){
+           System.out.println(id);
+       }
     }
     
     @Test

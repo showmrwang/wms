@@ -4,14 +4,71 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-	<context:component-scan base-package="com.baozun.**.manager" />
-	<context:component-scan base-package="com.baozun.**.event" />
+<!-- 	<context:component-scan base-package="com.baozun.nebula.solr.dao" /> -->
+	<context:component-scan base-package="com.baozun.**.manager" >
 
-	<bean id="applicationEventMulticaster" class="org.springframework.context.event.SimpleApplicationEventMulticaster">
-		<property name="taskExecutor">
-			<bean class="org.springframework.core.task.SimpleAsyncTaskExecutor">
-			</bean>
-		</property>
-	</bean>
+<!-- 		<context:exclude-filter type="regex" expression="com.baozun.nebula.cms.*" /> -->
+	</context:component-scan>
+	<context:component-scan base-package="com.baozun.**.event" />
+<!-- 	<context:component-scan base-package="com.baozun.**.engine" /> -->
+	<context:component-scan base-package="com.baozun.**.impl" >
+<!-- 		<context:exclude-filter type="regex" expression="com.baozun.nebula.cms.*" /> -->
+	</context:component-scan>
+
+
+<!-- 因为开启异步加载模式，造成dubbo local 模式启动出错 -->
+<!-- 	<bean id="applicationEventMulticaster" -->
+<!-- 		class="org.springframework.context.event.SimpleApplicationEventMulticaster"> -->
+<!-- 		<property name="taskExecutor"> -->
+<!-- 			<bean class="org.springframework.core.task.SimpleAsyncTaskExecutor"> -->
+<!-- 			</bean> -->
+<!-- 		</property> -->
+<!-- 	</bean> -->
 	
+<!-- 	<bean id="contextCollector" class="com.baozun.bizhub.util.spring.SpringUtil"> -->
+<!-- 		<property name="contextKey"> -->
+<!-- 			<value>mainContext</value> -->
+<!-- 		</property> -->
+<!-- 	</bean>  -->
+		<bean class="com.baozun.scm.primservice.whoperation.aop.SeqAndCodeAspect">
+			<property name="modelList">
+				<list>
+					<value>com.baozun.scm.primservice.whoperation.model.poasn.WhAsn</value>
+					<value>com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine</value>
+					<value>com.baozun.scm.primservice.whoperation.model.poasn.WhAsnSn</value>
+					<value>com.baozun.scm.primservice.whoperation.model.poasn.WhPo</value>
+					<value>com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine</value>
+					<value>com.baozun.scm.primservice.whoperation.model.poasn.WhPoSn</value>
+					<value>com.baozun.scm.primservice.whoperation.model.poasn.BiPo</value>
+					<value>com.baozun.scm.primservice.whoperation.model.poasn.BiPoLine</value>
+					<value>com.baozun.scm.primservice.whoperation.model.poasn.BiPoSn</value>
+					<value>com.baozun.scm.primservice.whoperation.model.system.GlobalLog</value>
+					<value>com.baozun.scm.primservice.whoperation.model.warehouse.carton.WhCarton</value>
+					<value>com.baozun.scm.primservice.whoperation.model.warehouse.Container</value>
+					<value>com.baozun.scm.primservice.whoperation.model.warehouse.ContainerAssist</value>
+					<value>com.baozun.scm.primservice.whoperation.model.warehouse.AsnReserve</value>
+                    <value>com.baozun.scm.primservice.whoperation.model.warehouse.CheckInQueue</value>
+                    <value>com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory</value>
+                    <value>com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventorySn</value>
+                    <value>com.baozun.scm.primservice.whoperation.model.warehouse.WhAsnRcvdLog</value>
+                    <value>com.baozun.scm.primservice.whoperation.model.warehouse.WhAsnRcvdSnLog</value>
+                    <value>com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryLog</value>
+                    <value>com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventorySnLog</value>
+				</list>
+			</property>
+			
+			<!-- 如果有配置，表示这个实体使用配制的实体标识查询主键   key表示实体的package, value 表示获取主键的实体标识-->
+			<property name="modelMapppingMap">
+			<map>
+				<entry key="com.baozun.scm.primservice.whoperation.model.system.GlobalLog" value="com.baozun.scm.primservice.whinfo.model.system.GlobalLog">	</entry>
+				<entry key="com.baozun.scm.primservice.whoperation.model.warehouse.carton.WhCarton" value="com.baozun.scm.primservice.whinfo.model.warehouse.carton.WhCarton">	</entry>
+				<entry key="com.baozun.scm.primservice.whoperation.model.warehouse.Container" value="com.baozun.scm.primservice.whinfo.model.warehouse.Container">	</entry>
+				<entry key="com.baozun.scm.primservice.whoperation.model.warehouse.AsnReserve" value="com.baozun.scm.primservice.whinfo.model.warehouse.AsnReserve"> </entry>
+				<entry key="com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory" value="com.baozun.scm.primservice.whinfo.model.warehouse.inventory.WhSkuInventory"> </entry>
+				<entry key="com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventorySn" value="com.baozun.scm.primservice.whinfo.model.warehouse.inventory.WhSkuInventorySn"> </entry>
+				<entry key="com.baozun.scm.primservice.whoperation.model.warehouse.WhAsnRcvdLog" value="com.baozun.scm.primservice.whinfo.model.warehouse.WhAsnRcvdLog"> </entry>
+				<entry key="com.baozun.scm.primservice.whoperation.model.warehouse.WhAsnRcvdSnLog" value="com.baozun.scm.primservice.whinfo.model.warehouse.WhAsnRcvdSnLog"> </entry>
+			</map>
+			</property>
+		</bean>
 </beans>
