@@ -223,21 +223,21 @@ public class CheckInQueueManagerImpl extends BaseManagerImpl implements CheckInQ
         newCheckInQueueCommand.setModifiedId(userId);
 
 
-        if (store.getIsMandatorilyReserved()) {
-            if (log.isDebugEnabled()) {
-                log.debug("CheckInQueueManagerImpl.addToCheckInQueue -> asnReserveDao.findAsnReserveByAsnId invoke, asnId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", asnId, ouId, userId, logId);
-            }
-            // 查询原始ASN预约信息
-            AsnReserve originAsnReserve = asnReserveDao.findAsnReserveByAsnId(asnId, ouId);
+        if (log.isDebugEnabled()) {
+            log.debug("CheckInQueueManagerImpl.addToCheckInQueue -> asnReserveDao.findAsnReserveByAsnId invoke, asnId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", asnId, ouId, userId, logId);
+        }
+        // 查询原始ASN预约信息
+        AsnReserve originAsnReserve = asnReserveDao.findAsnReserveByAsnId(asnId, ouId);
+        if (log.isDebugEnabled()) {
+            log.debug("CheckInQueueManagerImpl.addToCheckInQueue -> asnReserveDao.findAsnReserveByAsnId result, asnId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}], originAsnReserve is:[{}]", asnId, ouId, userId, logId, originAsnReserve);
+        }
+        if (store.getIsMandatorilyReserved() && null == originAsnReserve || (null != originAsnReserve && PoAsnStatus.ASN_RESERVE_NEW != originAsnReserve.getStatus())) {
             // 店铺强制预约，asn预约状态不是新建状态不允许签入
-            if (null == originAsnReserve || (PoAsnStatus.ASN_RESERVE_NEW != originAsnReserve.getStatus() && null == originCheckInQueue)) {
-                log.error("CheckInQueueManagerImpl.addToCheckInQueue -> asnReserveDao.findAsnReserveByAsnId error, asnId is:[{}], ouId is:[{}], logId is:[{}], originAsnReserve is:[{}]", asnId, ouId, logId, originAsnReserve);
-                throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
-            }
-            if (log.isDebugEnabled()) {
-                log.debug("CheckInQueueManagerImpl.addToCheckInQueue -> asnReserveDao.findAsnReserveByAsnId result, asnId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}], originAsnReserve is:[{}]", asnId, ouId, userId, logId, originAsnReserve);
-            }
+            log.error("CheckInQueueManagerImpl.addToCheckInQueue -> asnReserveDao.findAsnReserveByAsnId error, asnId is:[{}], ouId is:[{}], logId is:[{}], originAsnReserve is:[{}]", asnId, ouId, logId, originAsnReserve);
+            throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
+        }
 
+        if (null != originAsnReserve) {
             // 修改asn预约状态和实际到货时间
             // ASN预约改为已签入
             originAsnReserve.setStatus(PoAsnStatus.ASN_RESERVE_CHECKIN);
@@ -260,7 +260,7 @@ public class CheckInQueueManagerImpl extends BaseManagerImpl implements CheckInQ
         for (int index = checkInQueueCommandList.size() - 1; index >= 0; index--) {
             CheckInQueueCommand originCheckInQueueCommand = checkInQueueCommandList.get(index);
             // 不能先修改,需要使用原先的序号判断是否需要更新
-            //originCheckInQueueCommand.setSequence(index + 1);
+            // originCheckInQueueCommand.setSequence(index + 1);
             if (null != originCheckInQueueCommand.getId()) {
                 if (log.isDebugEnabled()) {
                     log.debug("CheckInQueueManagerImpl.addToCheckInQueue loop checkInQueueCommandList, checkInQueue is exist, update to sharedDB, originCheckInQueueCommand is:[{}], logId is:[{}]", originCheckInQueueCommand, logId);
@@ -374,22 +374,21 @@ public class CheckInQueueManagerImpl extends BaseManagerImpl implements CheckInQ
         // 更新whAsn信息
         originWhAsn = this.updateWhAsn(asnId, ouId, userId, logId, originWhAsn);
 
-
-        if (store.getIsMandatorilyReserved()) {
-            if (log.isDebugEnabled()) {
-                log.debug("CheckInQueueManagerImpl.finishCheckIn -> asnReserveDao.findAsnReserveByAsnId invoke, asnId is:[{}], platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", asnId, ouId, userId, logId);
-            }
-            // ASN预约信息
-            AsnReserve originAsnReserve = asnReserveDao.findAsnReserveByAsnId(asnId, ouId);
-            if (null == originAsnReserve || (PoAsnStatus.ASN_RESERVE_NEW != originAsnReserve.getStatus() && PoAsnStatus.ASN_RESERVE_CHECKIN != originAsnReserve.getStatus())) {
-                log.error("CheckInQueueManagerImpl.finishCheckIn -> asnReserveDao.findAsnReserveByAsnId error, originAsnReserve status error,  asnId is:[{}], platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}], originAsnReserve is:[{}]",
-                        asnId, platformId, ouId, userId, logId, originAsnReserve);
-                throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
-            }
-            if (log.isDebugEnabled()) {
-                log.debug("CheckInQueueManagerImpl.finishCheckIn -> asnReserveDao.findAsnReserveByAsnId result, asnId is:[{}], platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}], originAsnReserve is:[{}]", asnId, ouId, userId, logId,
-                        originAsnReserve);
-            }
+        if (log.isDebugEnabled()) {
+            log.debug("CheckInQueueManagerImpl.finishCheckIn -> asnReserveDao.findAsnReserveByAsnId invoke, asnId is:[{}], platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", asnId, ouId, userId, logId);
+        }
+        // ASN预约信息
+        AsnReserve originAsnReserve = asnReserveDao.findAsnReserveByAsnId(asnId, ouId);
+        if (store.getIsMandatorilyReserved() && null == originAsnReserve || (null != originAsnReserve && PoAsnStatus.ASN_RESERVE_NEW != originAsnReserve.getStatus())) {
+            log.error("CheckInQueueManagerImpl.finishCheckIn -> asnReserveDao.findAsnReserveByAsnId error, originAsnReserve status error,  asnId is:[{}], platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}], originAsnReserve is:[{}]",
+                    asnId, platformId, ouId, userId, logId, originAsnReserve);
+            throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("CheckInQueueManagerImpl.finishCheckIn -> asnReserveDao.findAsnReserveByAsnId result, asnId is:[{}], platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}], originAsnReserve is:[{}]", asnId, ouId, userId, logId,
+                    originAsnReserve);
+        }
+        if (null != originAsnReserve) {
             // 不在签入队列的应该是即时签入的，否则签入时间在加入队列时已更新
             if (!isInCheckInQueue) {
                 originAsnReserve.setDeliveryTime(originWhAsn.getDeliveryTime());
