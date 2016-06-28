@@ -36,7 +36,7 @@ public class PoAsnStatus implements Serializable {
     public static final int ASN_NEW = 1;// 新建
     public static final int ASN_RESERVE = 2;// 预约
     public static final int ASN_CHECKIN = 3;// 签入 Checkin
-    public static final int ASN_RCVD = 4;// 收货中
+    public static final int ASN_RCVD = 5;// 收货中
     public static final int ASN_RCVD_FINISH = 10;// 收货完成
     public static final int ASN_CANCELED = 17;// 取消
     public static final int ASN_CLOSE = 20;// 关闭
