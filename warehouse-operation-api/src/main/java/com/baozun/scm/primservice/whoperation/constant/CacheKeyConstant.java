@@ -39,7 +39,11 @@ public class CacheKeyConstant {
     public static final String CACHE_ASNLINE_OVERCHARGE_PREFIX = "CACHE_ASNLINE_OVERCHARGE_";
 
     /** 容器商品占用缓存 */
+    @Deprecated
     public static final String CACHE_RCVD_CONTAINER = "CACHE_RCVD_CONTAINER";
+
+    /** 容器商品占用缓存 */
+    public static final String CACHE_RCVD_CONTAINER_USER = "CACHE_RCVD_CONTAINER_USER";
 
     /** 容器商品属性缓存前缀 规则：前缀+containerId */
     public static final String CACHE_RCVD_CONTAINER_PREFIX = "CACHE_RCVD_CONTAINER_";

@@ -235,4 +235,7 @@ public final class Constants {
     /** 上架规则sql占位符 */
     public static final String SHELVE_RULE_PLACEHOLDER = "${containerCodeListStr}";
 
+    /** 库存 占用单据来源 ASN */
+    public static final String SKU_INVENTORY_OCCUPATION_SOURCE_ASN = "ASN";
+
 }

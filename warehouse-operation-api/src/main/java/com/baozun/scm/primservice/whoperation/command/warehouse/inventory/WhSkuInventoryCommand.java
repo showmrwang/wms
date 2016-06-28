@@ -193,7 +193,17 @@ public class WhSkuInventoryCommand extends BaseCommand {
 
     /** 效期天数 */
     private Integer dayOfValidDate;
+    /** 残次来源 */
+    private String snSource;
 
+
+    public String getSnSource() {
+        return snSource;
+    }
+
+    public void setSnSource(String snSource) {
+        this.snSource = snSource;
+    }
 
     public Integer getDayOfValidDate() {
         return dayOfValidDate;

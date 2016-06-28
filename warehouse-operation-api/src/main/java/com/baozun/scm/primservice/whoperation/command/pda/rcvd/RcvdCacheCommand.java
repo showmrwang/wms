@@ -63,7 +63,16 @@ public class RcvdCacheCommand implements Serializable{
     private Integer skuBatchCount;
     /** Sn号 */
     private List<RcvdSnCacheCommand> snList;
+    /** 占用单据号来源 */
+    private String occupationCodeSource;
 
+    public String getOccupationCodeSource() {
+        return occupationCodeSource;
+    }
+
+    public void setOccupationCodeSource(String occupationCodeSource) {
+        this.occupationCodeSource = occupationCodeSource;
+    }
 
     public String getInsideContainerCode() {
         return insideContainerCode;

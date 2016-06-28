@@ -308,7 +308,9 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                     asnRcvdLog.setExpDate(cacheInv.getExpDate());
                     asnRcvdLog.setBatchNo(cacheInv.getBatchNumber());
                     asnRcvdLog.setCountryOfOrigin(cacheInv.getCountryOfOrigin());
-                    asnRcvdLog.setInvStatus(cacheInv.getInvStatus().toString());
+                    if (cacheInv.getInvStatus() != null) {
+                        asnRcvdLog.setInvStatus(cacheInv.getInvStatus().toString());
+                    }
                     asnRcvdLog.setInvType(cacheInv.getInvType());
                     asnRcvdLog.setInvAttr1(cacheInv.getInvAttr1());
                     asnRcvdLog.setInvAttr2(cacheInv.getInvAttr2());
@@ -510,7 +512,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                 throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
             }
             // 释放容器缓存
-            this.cacheManager.removeMapValue(CacheKeyConstant.CACHE_RCVD_CONTAINER, insideContainerId.toString());
+            this.cacheManager.removeMapValue(CacheKeyConstant.CACHE_RCVD_CONTAINER_USER, insideContainerId.toString());
             this.cacheManager.remove(CacheKeyConstant.CACHE_RCVD_CONTAINER_PREFIX + insideContainerId.toString());
             // 释放托盘容器缓存
             if (outerContainerId != null) {
@@ -686,6 +688,8 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
         rcvdCacheCommand.setLastModifyTime(new Date());
         rcvdCacheCommand.setOuId(command.getOuId());
         rcvdCacheCommand.setInsideContainerCode(command.getInsideContainerCode());
+        // 占用单据来源
+        rcvdCacheCommand.setOccupationCodeSource(Constants.SKU_INVENTORY_OCCUPATION_SOURCE_ASN);
         try {
             if (StringUtils.hasText(command.getExpDateStr())) {
                 rcvdCacheCommand.setExpDate(DateUtil.parse(command.getExpDateStr(), Constants.DATE_PATTERN_YMD));
@@ -1156,6 +1160,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
             cacheSn = new ArrayList<RcvdSnCacheCommand>();
         }
         RcvdSnCacheCommand rcvdSn = command.getSn();
+        rcvdSn.setDefectSource(command.getSnSource());
         for (int i = 0; i < snCount; i++) {
             cacheSn.add(rcvdSn);
         }
@@ -1170,7 +1175,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
      */
     private void cacheContainerSkuAttr(WhSkuInventoryCommand command) {
         // 容器限定的商品库存属性
-        RcvdContainerCacheCommand rcvdContainerCacheCommand = this.cacheManager.getMapObject(CacheKeyConstant.CACHE_RCVD_CONTAINER, command.getInsideContainerId().toString());
+        RcvdContainerCacheCommand rcvdContainerCacheCommand = this.cacheManager.getMapObject(CacheKeyConstant.CACHE_RCVD_CONTAINER_PREFIX + command.getInsideContainerId(), command.getSkuId().toString());
         if (null == rcvdContainerCacheCommand) {
             // 初始化
             rcvdContainerCacheCommand = new RcvdContainerCacheCommand();
@@ -1183,8 +1188,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
             rcvdContainerCacheCommand.setOuId(command.getOuId());
             rcvdContainerCacheCommand.setUserId(command.getUserId());
             rcvdContainerCacheCommand.setInvType(command.getInvType());
-            if (null != command.getInvStatus()) {// DateUtil.format(line.getExpDate(),
-                                                 // Constants.DATE_PATTERN_YMD)
+            if (null != command.getInvStatus()) {
                 rcvdContainerCacheCommand.setInvStatus(command.getInvStatus().toString());
             }
             rcvdContainerCacheCommand.setMfgDate(null == command.getMfgDateStr() ? "" : command.getMfgDateStr());
@@ -1253,7 +1257,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                     }
                     flag = true;
                 } else if (ContainerStatus.CONTAINER_STATUS_RCVD == containerCommand.getStatus()) {
-                    String containerUserId = this.cacheManager.getMapObject(CacheKeyConstant.CACHE_RCVD_CONTAINER, command.getInsideContainerId().toString());
+                    String containerUserId = this.cacheManager.getMapObject(CacheKeyConstant.CACHE_RCVD_CONTAINER_USER, command.getInsideContainerId().toString());
                     if(command.getUserId().toString().equals(containerUserId)){
                         
                     }else{
@@ -1267,7 +1271,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
         }
         if (flag) {
             // 初始化容器缓存
-            this.cacheManager.setMapValue(CacheKeyConstant.CACHE_RCVD_CONTAINER, command.getInsideContainerId().toString(), command.getUserId().toString(), 60 * 60);
+            this.cacheManager.setMapValue(CacheKeyConstant.CACHE_RCVD_CONTAINER_USER, command.getInsideContainerId().toString(), command.getUserId().toString(), 60 * 60);
             if (null != command.getOuterContainerId()) {
                 // 1.托盘容器缓存
                 this.cacheManager.pushToListHead(CacheKeyConstant.CACHE_RCVD_PALLET_PREFIX + command.getOuterContainerId(), command.getInsideContainerId().toString());
@@ -1332,7 +1336,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                     }
                     // 占用中，需要校验：同一个收货容器只能一个人操作
                 } else if (ContainerStatus.CONTAINER_STATUS_RCVD == palletCommand.getStatus()) {
-                    String containerUser = this.cacheManager.getMapValue(CacheKeyConstant.CACHE_RCVD_CONTAINER, outerContainerId.toString());
+                    String containerUser = this.cacheManager.getMapValue(CacheKeyConstant.CACHE_RCVD_CONTAINER_USER, outerContainerId.toString());
                     if (!userId.toString().equals(containerUser)) {
                         throw new BusinessException(ErrorCodes.RCVD_CONTAINER_OCCUPATIED_ERROR);
                     }
@@ -1344,7 +1348,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
             }
         }
         // 缓存托盘
-        this.cacheManager.setMapValue(CacheKeyConstant.CACHE_RCVD_CONTAINER, outerContainerId.toString(), userId.toString(), 60 * 60);
+        this.cacheManager.setMapValue(CacheKeyConstant.CACHE_RCVD_CONTAINER_USER, outerContainerId.toString(), userId.toString(), 60 * 60);
     }
 
 
