@@ -327,11 +327,11 @@ public class ErrorCodes {
     public static final int LOCATION_LENGTH_WIDTH_HIGHT_IS_NULL_ERROR = 40015;
     /** 库位[{0}]重量异常！ */
     public static final int LOCATION_WEIGHT_IS_NULL_ERROR = 40016;
-    /** 容器号[{0}]中不存在当前扫描的商品 */
+    /** 容器号[{0}]不存在当前扫描的商品 */
     public static final int CONTAINER_NOT_FOUND_SCAN_SKU_ERROR = 40017;
-    /** 容器号[{0}]中此商品数量与扫描数量不一致 */
+    /** 容器号[{0}]此商品扫描数量不正确 */
     public static final int CONTAINER_SKU_QTY_NOT_EQUAL_SCAN_SKU_QTY_ERROR = 40018;
-    /** 容器号[{0}]中此商品已复核完成，无法重复扫描 */
+    /** 容器号[{0}]此商品重复扫描 */
     public static final int CONTAINER_SKU_HAS_ALREADY_SCANNED = 40019;
     /** 当前扫描商品数量不正确！ */
     public static final int SCAN_SKU_QTY_IS_VALID = 40020;

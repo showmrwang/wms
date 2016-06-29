@@ -72,8 +72,8 @@ public class SimpleCubeCalculator {
     private static Map<String, Double> uomConversion = new HashMap<String, Double>();
     private Double _cubage;
     private Double _rawCubage;
-    private Double cubage;
-    private Double initStuffCubage;
+    private Double cubage = 0.0;
+    private Double initStuffCubage = 0.0;
     private Double rawCubage;
     private Double availability = 0.8;
     private Double availableCubage;

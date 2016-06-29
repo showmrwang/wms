@@ -65,7 +65,7 @@ public interface PdaPutawayManager extends BaseManager {
      * @param logId
      * @return
      */
-    ScanResultCommand sysGuideScanLocConfirm(String containerCode, String locationCode, Long funcId, Integer putawayPatternDetailType, Long ouId, Long userId, String logId);
+    ScanResultCommand sysGuideScanLocConfirm(String containerCode, String insideContainerCode, String locationCode, Long funcId, Integer putawayPatternDetailType, Long ouId, Long userId, String logId);
 
     /**
      * 系统指导上架核对扫描内部容器
@@ -81,7 +81,7 @@ public interface PdaPutawayManager extends BaseManager {
      * @param logId
      * @return
      */
-    ScanResultCommand sysGuideCheckScanContainerConfirm(String containerCode, String insideContainer, String locationCode, Long funcId, Integer putawayPatternDetailType, Long ouId, Long userId, String logId);
+    ScanResultCommand sysGuideCheckScanContainerConfirm(String containerCode, String insideContainerCode, String locationCode, Long funcId, Integer putawayPatternDetailType, Long ouId, Long userId, String logId);
 
     /**
      * 系统指导上架核对扫描商品
@@ -97,7 +97,31 @@ public interface PdaPutawayManager extends BaseManager {
      * @param logId
      * @return
      */
-    ScanResultCommand sysGuideCheckScanSkuConfirm(String containerCode, String insideContainer, WhSkuCommand skuCmd, String locationCode, Long funcId, Integer putawayPatternDetailType, Long ouId, Long userId, String logId);
+    ScanResultCommand sysGuideCheckScanSkuConfirm(String containerCode, String insideContainerCode, WhSkuCommand skuCmd, String locationCode, Long funcId, Integer putawayPatternDetailType, Long ouId, Long userId, String logId);
+    
+    /**
+     * 系统指导整托上架执行
+     * @author lichuan
+     * @param containerCode
+     * @param locationCode
+     * @param funcId
+     * @param ouId
+     * @param userId
+     * @param logId
+     */
+    void sysGuidePalletPutaway(String containerCode, String locationCode, Long funcId, Long ouId, Long userId, String logId);
+    
+    /**
+     * 系统指导整箱上架执行
+     * @author lichuan
+     * @param containerCode
+     * @param locationCode
+     * @param funcId
+     * @param ouId
+     * @param userId
+     * @param logId
+     */
+    void sysGuideContainerPutaway(String containerCode, String locationCode, Long funcId, Long ouId, Long userId, String logId);
 
     /**
      * 系统指导执行上架

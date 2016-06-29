@@ -610,7 +610,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					where 
 						inv.occupation_code is not null 
 						and asn.asn_code = inv.occupation_code
-						and (asn.status=4 or asn.status=10)
+						and (asn.status=5 or asn.status=10)
 					    and inv.ou_id = #{ouid}
 					and c.code in 
 					<foreach item="item" index="index" collection="containerList" open="(" separator="," close=")">
@@ -656,7 +656,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					where 
 						inv.occupation_code is not null 
 						and asn.asn_code = inv.occupation_code
-						and (asn.status=4 or asn.status=10)
+						and (asn.status=5 or asn.status=10)
 					    and inv.ou_id = #{ouid}
 					and c.code in 
 					<foreach item="item" index="index" collection="containerList" open="(" separator="," close=")">
@@ -969,21 +969,21 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     <select id="findRcvdInventoryCountsByOuterContainerId" resultType="Integer">
 		select count(1) from t_wh_sku_inventory inv,t_wh_asn asn where inv.occupation_code is not null 
 			and inv.ou_id=#{ouid}
-			and inv.occupation_code=asn.asn_code and (asn.status=4 or asn.status=10)
+			and inv.occupation_code=asn.asn_code and (asn.status=5 or asn.status=10)
 			and exists (select 1 from t_wh_sku_inventory invs where invs.occupation_code=inv.occupation_code and invs.ou_id=inv.ou_id and invs.outer_container_id=#{outerContainerid})		
 	</select>
 	
 	 <select id="findRcvdInventoryCountsByInsideContainerId" resultType="Integer">
 		select count(1) from t_wh_sku_inventory inv,t_wh_asn asn where inv.occupation_code is not null 
 			and inv.ou_id=#{ouid}
-			and inv.occupation_code=asn.asn_code and (asn.status=4 or asn.status=10)
+			and inv.occupation_code=asn.asn_code and (asn.status=5 or asn.status=10)
 			and exists (select 1 from t_wh_sku_inventory invs where invs.inside_container_id=inv.occupation_code and invs.ou_id=inv.ou_id and invs.outer_container_id=#{insideContainerid})		
 	</select>
 	
 	 <select id="findRcvdInventoryCountsByInsideContainerId1" resultType="Integer">
 		select count(1) from t_wh_sku_inventory inv,t_wh_asn asn where inv.occupation_code is not null  and inv.outer_container_id is not null
 			and inv.ou_id=#{ouid}
-			and inv.occupation_code=asn.asn_code and (asn.status=4 or asn.status=10)
+			and inv.occupation_code=asn.asn_code and (asn.status=5 or asn.status=10)
 			and exists (select 1 from t_wh_sku_inventory invs where invs.inside_container_id=inv.occupation_code and invs.ou_id=inv.ou_id and invs.outer_container_id=#{insideContainerid})		
 	</select>
 	
@@ -1023,7 +1023,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        (
 		        select distinct inv.inside_container_id from t_wh_sku_inventory inv,t_wh_asn asn where inv.occupation_code is not null 
 			and inv.ou_id=#{ouid}
-			and inv.occupation_code=asn.asn_code and (asn.status=4 or asn.status=10)
+			and inv.occupation_code=asn.asn_code and (asn.status=5 or asn.status=10)
 			and exists (select 1 from t_wh_sku_inventory invs where invs.occupation_code=inv.occupation_code and invs.ou_id=inv.ou_id and invs.outer_container_id=#{outerContainerid})
 				)		
 		    ]]>

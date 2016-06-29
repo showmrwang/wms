@@ -714,7 +714,339 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
     private List<LocationRecommendResultCommand> sysGuideContainerPutawayRecommendLocation(RuleAfferCommand ruleAffer, List<ShelveRecommendRuleCommand> ruleList, Map<Long, ContainerAssist> caMap, List<WhSkuInventoryCommand> invList,
             Map<String, Map<String, Double>> uomMap, String logId) {
         List<LocationRecommendResultCommand> list = new ArrayList<LocationRecommendResultCommand>();
+        // Long funcId = ruleAffer.getFuncId();
+        Long ouId = ruleAffer.getOuid();
+        Long containerId = ruleAffer.getContainerId();
+        List<Long> storeIds = (null == ruleAffer.getStoreIdList() ? new ArrayList<Long>() : ruleAffer.getStoreIdList());
+        // 获取内部容器辅助信息
+        ContainerAssist containerAssist = caMap.get(containerId);// 获取内部容器辅助信息
+        if (null == containerAssist) {
+            log.error("container assist info is null error, logId is:[{}]", logId);
+            throw new BusinessException(ErrorCodes.CONTAINER_ASSIST_INFO_GENERATE_ERROR);
+        }
+        String containerCode = ruleAffer.getAfferContainerCode();
+        Container container = containerDao.findByIdExt(containerId, ouId);
+        if (null == container) {
+            // 容器信息不存在
+            log.error("container is not exists, logId is:[{}]", logId);
+            throw new BusinessException(ErrorCodes.COMMON_CONTAINER_IS_NOT_EXISTS);
+        }
+        // 验证容器状态是否可用
+        if (ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED != container.getLifecycle()) {
+            log.error("container lifecycle is not normal, logId is:[{}]", logId);
+            throw new BusinessException(ErrorCodes.COMMON_CONTAINER_LIFECYCLE_IS_NOT_NORMAL);
+        }
+        // 获取容器状态
+        Integer containerStatus = container.getStatus();
+        if (ContainerStatus.CONTAINER_STATUS_PUTAWAY != containerStatus) {
+            log.error("container status is invalid, containerStatus is:[{}], logId is:[{}]", containerStatus, logId);
+            throw new BusinessException(ErrorCodes.CONTAINER_STATUS_ERROR_UNABLE_PUTAWAY, new Object[] {containerCode});
+        }
+        Long containerCate = container.getTwoLevelType();
+        Container2ndCategory container2 = container2ndCategoryDao.findByIdExt(containerCate, ouId);
+        if (null == container2) {
+            log.error("container2ndCategory is null error, 2endCategoryId is:[{}], logId is:[{}]", containerCate, logId);
+            throw new BusinessException(ErrorCodes.CONTAINER2NDCATEGORY_NULL_ERROR);
+        }
+        if (1 != container2.getLifecycle()) {
+            log.error("container2ndCategory lifecycle is not normal error, containerId is:[{}], logId is:[{}]", container2.getId(), logId);
+            throw new BusinessException(ErrorCodes.COMMON_CONTAINER_LIFECYCLE_IS_NOT_NORMAL);
+        }
+        Double length = containerAssist.getSysLength();// 长（系统基准）
+        Double width = containerAssist.getSysWidth();// 宽（系统基准）
+        Double height = containerAssist.getSysHeight();// 高（系统基准）
+        // Double volume = outerContainerAssist.getSysVolume();// 体积（系统基准）
+        Double weight = containerAssist.getSysWeight();// 重量（系统基准）
+        Long skuCategory = containerAssist.getSkuCategory();// sku种类数
+        Long skuAttrCategory = containerAssist.getSkuAttrCategory();// 唯一sku数
+        // Long skuQty = outerContainerAssist.getSkuQty();// sku总件数
+        // Long storeQty = outerContainerAssist.getStoreQty();// 店铺数
+        Map<String, Double> lenUomConversionRate = uomMap.get(WhUomType.LENGTH_UOM);
+        Map<String, Double> weightUomConversionRate = uomMap.get(WhUomType.WEIGHT_UOM);
+        for (ShelveRecommendRuleCommand rule : ruleList) {
+            Long ruleId = rule.getId();
+            List<RecommendShelveCommand> rsList = recommendShelveDao.findCommandByRuleIdOrderByPriority(ruleId, ouId);
+            if (null == rsList || 0 == rsList.size()) {
+                continue;// 继续遍历剩下规则
+            }
+            for (RecommendShelveCommand rs : rsList) {
+                RecommendShelveCommand crs = rs;
+                if (null == crs) continue;
+                // 上架库区
+                Long whAreaId = crs.getShelveAreaId();
+                // 库位推荐规则
+                String locationRecommendRule = crs.getLocationRule();
+                Area area = areaDao.findByIdExt(whAreaId, ouId);
+                if (null == area || 1 != area.getLifecycle()) {
+                    continue;// 库区不存在或不可用，则当前库区不能推荐
+                }
+                String cSql = "";
+                AttrParams attrParams = new AttrParams();
+                attrParams.setOuId(ouId);
+                List<LocationCommand> avaliableLocs = null;
+                if (WhLocationRecommendType.EMPTY_LOCATION.equals(locationRecommendRule)) {
+                    attrParams.setLrt(WhLocationRecommendType.EMPTY_LOCATION);
+                    attrParams.setSkuCategory(skuCategory);
+                    attrParams.setSkuAttrCategory(skuAttrCategory);
+                    PutawayCondition putawayCondition = putawayConditionFactory.getPutawayCondition(WhPutawayPatternType.SYS_GUIDE_PUTAWAY, WhPutawayPatternDetailType.CONTAINER_PUTAWAY, logId);
+                    if (null != putawayCondition) {
+                        cSql = putawayCondition.getCondition(attrParams);
+                    }
+                    if(StringUtils.isEmpty(cSql)){
+                        cSql = null;
+                    }
+                    List<LocationCommand> aLocs = locationDao.findAllEmptyLocsByAreaId(area.getId(), ouId, cSql);
+                    avaliableLocs = new ArrayList<LocationCommand>();
+                    for (LocationCommand locCmd : aLocs) {
+                        LocationCommand loc = locCmd;
+                        if (null == loc) {
+                            continue;
+                        }
+                        if (false == loc.getIsMixStacking()) {
+                            if (1L == skuAttrCategory) {// 不允许混放只能是唯一sku
+                                avaliableLocs.add(loc);
+                            }
+                        } else {
+                            avaliableLocs.add(loc);
+                        }
+                    }
+                } else if (WhLocationRecommendType.STATIC_LOCATION.equals(locationRecommendRule)) {
+                    attrParams.setLrt(WhLocationRecommendType.STATIC_LOCATION);
+                    PutawayCondition putawayCondition = putawayConditionFactory.getPutawayCondition(WhPutawayPatternType.SYS_GUIDE_PUTAWAY, WhPutawayPatternDetailType.CONTAINER_PUTAWAY, logId);
+                    if (null != putawayCondition) {
+                        cSql = putawayCondition.getCondition(attrParams);
+                    }
+                    if(StringUtils.isEmpty(cSql)){
+                        cSql = null;
+                    }
+                    avaliableLocs = locationDao.findAllStaticLocsByAreaId(area.getId(), ouId, cSql);
+                } else if (WhLocationRecommendType.MERGE_LOCATION_SAME_INV_ATTRS.equals(locationRecommendRule)) {
+                    attrParams.setLrt(WhLocationRecommendType.MERGE_LOCATION_SAME_INV_ATTRS);
+                    if (1L != skuCategory.longValue() && 1L != skuAttrCategory.longValue()) {
+                        // 商品不唯一,不考虑推荐库位
+                        avaliableLocs = null;
+                        continue;
+                    }
+                    attrParams.setIsMixStacking(false);// 库位不允许混放
+                    String invAttrMgmt = "";
+                    if (1 == storeIds.size()) {
+                        // 获取店铺上配置的库存关键属性
+                        Store store = storeManager.getStoreById(storeIds.get(0));
+                        if (null == store) {
+                            log.error("store is null error, logId is:[{}]", logId);
+                            throw new BusinessException(ErrorCodes.COMMON_STORE_NOT_FOUND_ERROR);
+                        }
+                        invAttrMgmt = store.getInvAttrMgmt();
+                    }
+                    if (StringUtils.isEmpty(invAttrMgmt)) {
+                        // 获取仓库上配置的库存关键属性
+                        Warehouse warehouse = warehouseManager.findWarehouseByIdExt(ouId);
+                        if (null == warehouse) {
+                            log.error("warehouse is null error, logId is:[{}]", logId);
+                            throw new BusinessException(ErrorCodes.COMMON_WAREHOUSE_NOT_FOUND_ERROR);
+                        }
+                        invAttrMgmt = warehouse.getInvAttrMgmt();
+                    }
+                    WhSkuInventoryCommand invCmd = invList.get(0);// 取一条库存信息
+                    attrParams.setInvAttrMgmt(invAttrMgmt);
+                    // 解析库存关键属性
+                    invAttrMgmtAspect(attrParams, invCmd);
+                    PutawayCondition putawayCondition = putawayConditionFactory.getPutawayCondition(WhPutawayPatternType.SYS_GUIDE_PUTAWAY, WhPutawayPatternDetailType.CONTAINER_PUTAWAY, logId);
+                    if (null != putawayCondition) {
+                        cSql = putawayCondition.getCondition(attrParams);
+                    }
+                    if(StringUtils.isEmpty(cSql)){
+                        cSql = null;
+                    }
+                    avaliableLocs = locationDao.findAllInvLocsByAreaIdAndSameAttrs(area.getId(), ouId, cSql);
+                } else if (WhLocationRecommendType.MERGE_LOCATION_DIFF_INV_ATTRS.equals(locationRecommendRule)) {
+                    attrParams.setLrt(WhLocationRecommendType.MERGE_LOCATION_DIFF_INV_ATTRS);
+                    if (1L != skuCategory.longValue()) {
+                        // 商品种类不唯一，不考虑推荐库位
+                        avaliableLocs = null;
+                        continue;
+                    }
+                    WhSkuInventoryCommand invCmd = invList.get(0);// 取一条库存信息
+                    attrParams.setInvAttrMgmt("");
+                    // 解析库存关键属性
+                    invAttrMgmtAspect(attrParams, invCmd);
+                    PutawayCondition putawayCondition = putawayConditionFactory.getPutawayCondition(WhPutawayPatternType.SYS_GUIDE_PUTAWAY, WhPutawayPatternDetailType.CONTAINER_PUTAWAY, logId);
+                    if (null != putawayCondition) {
+                        cSql = putawayCondition.getCondition(attrParams);
+                    }
+                    if(StringUtils.isEmpty(cSql)){
+                        cSql = null;
+                    }
+                    avaliableLocs = locationDao.findAllInvLocsByAreaIdAndDiffAttrs(area.getId(), ouId, cSql);
+                } else if (WhLocationRecommendType.ONE_LOCATION_ONLY.equals(locationRecommendRule)) {
+                    attrParams.setLrt(WhLocationRecommendType.ONE_LOCATION_ONLY);
+                    PutawayCondition putawayCondition = putawayConditionFactory.getPutawayCondition(WhPutawayPatternType.SYS_GUIDE_PUTAWAY, WhPutawayPatternDetailType.CONTAINER_PUTAWAY, logId);
+                    if (null != putawayCondition) {
+                        cSql = putawayCondition.getCondition(attrParams);
+                    }
+                    if(StringUtils.isEmpty(cSql)){
+                        cSql = null;
+                    }
+                    avaliableLocs = locationDao.findAllAvailableLocsByAreaId(area.getId(), ouId, cSql);
+                } else {
+                    avaliableLocs = null;
+                }
+                if (null == avaliableLocs || 0 == avaliableLocs.size()) {
+                    continue;// 如果没有可用的库位，则遍历下一个上架规则
+                }
+                for (LocationCommand al : avaliableLocs) {
+                    Long locId = al.getId();
+                    //String templetCode = al.getTempletCode();
+                    //LocationTemplet locTemplet = locationTempletDao.findLocationTempletByCodeAndOuId(templetCode, ouId);
+                    Double locLength = al.getLength();
+                    Double locHeight = al.getHigh();
+                    Double locWidth = al.getWidth();
+                    Double locWeight = al.getWeight();
+                    if (null == locLength || null == locLength || null == locLength) {
+                        log.error("sys guide container putaway sku length、width、height is null error, skuId is:[{}], logId is:[{}]", locId, logId);
+                        throw new BusinessException(ErrorCodes.LOCATION_LENGTH_WIDTH_HIGHT_IS_NULL_ERROR, new Object[] {al.getCode()});
+                    }
+                    if (null == locWeight) {
+                        log.error("sys guide container putaway sku weight is null error, skuId is:[{}], logId is:[{}]", locId, logId);
+                        throw new BusinessException(ErrorCodes.LOCATION_WEIGHT_IS_NULL_ERROR, new Object[] {al.getCode()});
+                    }
+                    //Double volumeRate = al.getVolumeRate();
+                    if (WhLocationRecommendType.EMPTY_LOCATION.equals(locationRecommendRule)) {
+                        // 计算体积
+                        SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, 0.8, lenUomConversionRate);
+                        calc.initStuffCube(length, width, height, SimpleCubeCalculator.SYS_UOM);
+                        boolean cubageAvailable = calc.calculateAvailable();
+                        // 计算重量
+                        SimpleWeightCalculator weightCal = new SimpleWeightCalculator(locWeight, SimpleWeightCalculator.SYS_UOM, weightUomConversionRate);
+                        weightCal.initStuffWeight(weight, SimpleWeightCalculator.SYS_UOM);
+                        boolean weightAvailable = weightCal.calculateAvailable();
+                        if (cubageAvailable & weightAvailable) {
+                            LocationRecommendResultCommand lrrc = new LocationRecommendResultCommand();
+                            lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
+                            lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.CONTAINER_PUTAWAY);
+                            lrrc.setLocationCode(al.getCode());
+                            lrrc.setLocationId(al.getId());
+                            lrrc.setOuterContainerCode(containerCode);
+                            lrrc.setOuterContainerId(containerId);
+                            list.add(lrrc);
+                        }
+                    } else if (WhLocationRecommendType.STATIC_LOCATION.equals(locationRecommendRule)) {
+                        int count = whSkuLocationDao.findContainerSkuCountNotInSkuLocation(ouId, locId, ruleAffer.getAfferContainerCodeList());
+                        if (count > 0) {
+                            // 此静态库位不可用，容器中包含商品当前静态库位没有绑定
+                            continue;
+                        }
+                        LocationInvVolumeWeightCommand livw = whLocationInvVolumeWieghtManager.calculateLocationInvVolumeAndWeight(locId, ouId, uomMap, logId);
+                        Double livwVolume = livw.getVolume();// 库位上已有货物总体积
+                        Double livwWeight = livw.getWeight();// 库位上已有货物总重量
+                        // 计算体积
+                        SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, 0.8, lenUomConversionRate);
+                        calc.initStuffCube(length, width, height, SimpleCubeCalculator.SYS_UOM);
+                        calc.addStuffCubage(livwVolume);
+                        boolean cubageAvailable = calc.calculateAvailable();
+                        // 计算重量
+                        SimpleWeightCalculator weightCal = new SimpleWeightCalculator(locWeight, SimpleWeightCalculator.SYS_UOM, weightUomConversionRate);
+                        weightCal.initStuffWeight(weight, SimpleWeightCalculator.SYS_UOM);
+                        weightCal.addStuffWeight(livwWeight);
+                        boolean weightAvailable = weightCal.calculateAvailable();
+                        if (cubageAvailable & weightAvailable) {
+                            LocationRecommendResultCommand lrrc = new LocationRecommendResultCommand();
+                            lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
+                            lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.CONTAINER_PUTAWAY);
+                            lrrc.setLocationCode(al.getCode());
+                            lrrc.setLocationId(al.getId());
+                            lrrc.setOuterContainerCode(containerCode);
+                            lrrc.setOuterContainerId(containerId);
+                            list.add(lrrc);
+                        }
+                    } else if (WhLocationRecommendType.MERGE_LOCATION_SAME_INV_ATTRS.equals(locationRecommendRule)) {
+                        LocationInvVolumeWeightCommand livw = whLocationInvVolumeWieghtManager.calculateLocationInvVolumeAndWeight(locId, ouId, uomMap, logId);
+                        Double livwVolume = livw.getVolume();// 库位上已有货物总体积
+                        Double livwWeight = livw.getWeight();// 库位上已有货物总重量
+                        // 计算体积
+                        SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, 0.8, lenUomConversionRate);
+                        calc.initStuffCube(length, width, height, SimpleCubeCalculator.SYS_UOM);
+                        calc.addStuffCubage(livwVolume);
+                        boolean cubageAvailable = calc.calculateAvailable();
+                        // 计算重量
+                        SimpleWeightCalculator weightCal = new SimpleWeightCalculator(locWeight, SimpleWeightCalculator.SYS_UOM, weightUomConversionRate);
+                        weightCal.initStuffWeight(weight, SimpleWeightCalculator.SYS_UOM);
+                        weightCal.addStuffWeight(livwWeight);
+                        boolean weightAvailable = weightCal.calculateAvailable();
+                        if (cubageAvailable & weightAvailable) {
+                            LocationRecommendResultCommand lrrc = new LocationRecommendResultCommand();
+                            lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
+                            lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.CONTAINER_PUTAWAY);
+                            lrrc.setLocationCode(al.getCode());
+                            lrrc.setLocationId(al.getId());
+                            lrrc.setOuterContainerCode(containerCode);
+                            lrrc.setOuterContainerId(containerId);
+                            list.add(lrrc);
+                        }
+                    } else if (WhLocationRecommendType.MERGE_LOCATION_DIFF_INV_ATTRS.equals(locationRecommendRule)) {
+                        LocationInvVolumeWeightCommand livw = whLocationInvVolumeWieghtManager.calculateLocationInvVolumeAndWeight(locId, ouId, uomMap, logId);
+                        Double livwVolume = livw.getVolume();// 库位上已有货物总体积
+                        Double livwWeight = livw.getWeight();// 库位上已有货物总重量
+                        // 计算体积
+                        SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, 0.8, lenUomConversionRate);
+                        calc.initStuffCube(length, width, height, SimpleCubeCalculator.SYS_UOM);
+                        calc.addStuffCubage(livwVolume);
+                        boolean cubageAvailable = calc.calculateAvailable();
+                        // 计算重量
+                        SimpleWeightCalculator weightCal = new SimpleWeightCalculator(locWeight, SimpleWeightCalculator.SYS_UOM, weightUomConversionRate);
+                        weightCal.initStuffWeight(weight, SimpleWeightCalculator.SYS_UOM);
+                        weightCal.addStuffWeight(livwWeight);
+                        boolean weightAvailable = weightCal.calculateAvailable();
+                        if (cubageAvailable & weightAvailable) {
+                            LocationRecommendResultCommand lrrc = new LocationRecommendResultCommand();
+                            lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
+                            lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.CONTAINER_PUTAWAY);
+                            lrrc.setLocationCode(al.getCode());
+                            lrrc.setLocationId(al.getId());
+                            lrrc.setOuterContainerCode(containerCode);
+                            lrrc.setOuterContainerId(containerId);
+                            list.add(lrrc);
+                        }
+                    } else if (WhLocationRecommendType.ONE_LOCATION_ONLY.equals(locationRecommendRule)) {
+                        LocationInvVolumeWeightCommand livw = whLocationInvVolumeWieghtManager.calculateLocationInvVolumeAndWeight(locId, ouId, uomMap, logId);
+                        Double livwVolume = livw.getVolume();// 库位上已有货物总体积
+                        Double livwWeight = livw.getWeight();// 库位上已有货物总重量
+                        // 计算体积
+                        SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, 0.8, lenUomConversionRate);
+                        calc.initStuffCube(length, width, height, SimpleCubeCalculator.SYS_UOM);
+                        calc.addStuffCubage(livwVolume);
+                        boolean cubageAvailable = calc.calculateAvailable();
+                        // 计算重量
+                        SimpleWeightCalculator weightCal = new SimpleWeightCalculator(locWeight, SimpleWeightCalculator.SYS_UOM, weightUomConversionRate);
+                        weightCal.initStuffWeight(weight, SimpleWeightCalculator.SYS_UOM);
+                        weightCal.addStuffWeight(livwWeight);
+                        boolean weightAvailable = weightCal.calculateAvailable();
+                        if (cubageAvailable & weightAvailable) {
+                            LocationRecommendResultCommand lrrc = new LocationRecommendResultCommand();
+                            lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
+                            lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.CONTAINER_PUTAWAY);
+                            lrrc.setLocationCode(al.getCode());
+                            lrrc.setLocationId(al.getId());
+                            lrrc.setOuterContainerCode(containerCode);
+                            lrrc.setOuterContainerId(containerId);
+                            list.add(lrrc);
+                        }
+                    } else {
+                        break;
+                    }
 
+                    if (1 == list.size()) {
+                        break;
+                    }
+                }
+                if (1 == list.size()) {
+                    break;
+                }
+            }
+            if (1 == list.size()) {
+                break;
+            }
+        }
         return list;
     }
 

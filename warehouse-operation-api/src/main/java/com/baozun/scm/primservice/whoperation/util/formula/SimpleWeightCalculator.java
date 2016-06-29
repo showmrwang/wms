@@ -33,7 +33,7 @@ public class SimpleWeightCalculator {
     private boolean isInitStuffWeight = false;
     private Double _weight;
     private Double _rawWeight;
-    private Double weight;
+    private Double weight = 0.0;
     private Double rawWeight;
     private String _uom;
     private String uom;

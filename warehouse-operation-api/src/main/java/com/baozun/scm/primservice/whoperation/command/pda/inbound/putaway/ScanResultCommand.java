@@ -58,6 +58,9 @@ public class ScanResultCommand extends BaseCommand {
     private String tipSkuBarcode;
     /** 是否直接核扫商品 */
     private boolean isNeedScanSku;
+    /** 上架以后是否提示下一个容器 */
+    private boolean isAfterPutawayTipContianer;
+
 
     public int getPutawayPatternType() {
         return putawayPatternType;
@@ -193,6 +196,14 @@ public class ScanResultCommand extends BaseCommand {
 
     public void setNeedScanSku(boolean isNeedScanSku) {
         this.isNeedScanSku = isNeedScanSku;
+    }
+
+    public boolean isAfterPutawayTipContianer() {
+        return isAfterPutawayTipContianer;
+    }
+
+    public void setAfterPutawayTipContianer(boolean isAfterPutawayTipContianer) {
+        this.isAfterPutawayTipContianer = isAfterPutawayTipContianer;
     }
 
 
