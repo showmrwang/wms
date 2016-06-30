@@ -12,7 +12,7 @@
  * DERIVATIVES.
  *
  */
-package com.baozun.scm.primservice.whoperation.manager.pda.inbound.inventory;
+package com.baozun.scm.primservice.whoperation.manager.pda.inbound.statis;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,13 +26,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.ContainerStatisticResultCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.InventoryStatisticResultCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
+import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.carton.WhCartonDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.pda.inbound.putaway.SkuCategoryProvider;
+import com.baozun.scm.primservice.whoperation.model.BaseModel;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
 import com.baozun.scm.primservice.whoperation.model.warehouse.carton.WhCarton;
 
 /**
@@ -46,6 +52,8 @@ public class InventoryStatisticManagerImpl extends BaseManagerImpl implements In
 
     @Autowired
     private WhCartonDao whCartonDao;
+    @Autowired
+    private ContainerDao containerDao;
 
     /**
      * @author lichuan
@@ -197,6 +205,60 @@ public class InventoryStatisticManagerImpl extends BaseManagerImpl implements In
         isCmd.setInsideContainerSkuAttrIdsQty(insideContainerSkuAttrIdsQty);
         isCmd.setInsideContainerStoreIds(insideContainerStoreIds);
         return isCmd;
+    }
+    
+    /**
+     * @author lichuan
+     * @param cList
+     * @param putawayPatternDetailType
+     * @param ouId
+     * @param logId
+     * @return
+     */
+    @Override
+    public ContainerStatisticResultCommand sysGuidePutawayContainerStatistic(List<ContainerCommand> icList, Integer putawayPatternDetailType, Long ouId, String logId) {
+        ContainerStatisticResultCommand csrCmd = new ContainerStatisticResultCommand();
+        csrCmd.setPutawayPatternDetailType(putawayPatternDetailType);
+        Set<Long> insideContainerIds = new HashSet<Long>();// 所有内部容器
+        Set<Long> caselevelContainerIds = new HashSet<Long>();// 所有caselevel内部容器
+        Set<Long> notcaselevelContainerIds = new HashSet<Long>();// 所有非caselevel内部容器
+        Map<Long, String> insideContainerIdsCode = new HashMap<Long, String>();//所有内部容器及容器号
+        // 判断所有内部容器状态
+        for (ContainerCommand ic : icList) {
+            Long icId = ic.getId();
+            Container icCmd = containerDao.findByIdExt(icId, ouId);
+            if (null == icCmd) {
+                // 容器信息不存在
+                log.error("container is not exists, logId is:[{}]", logId);
+                throw new BusinessException(ErrorCodes.COMMON_CONTAINER_IS_NOT_EXISTS);
+            }
+            // 验证容器状态是否可用
+            if (!BaseModel.LIFECYCLE_NORMAL.equals(icCmd.getLifecycle()) && ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED != icCmd.getLifecycle()) {
+                log.error("container lifecycle is not normal, logId is:[{}]", logId);
+                throw new BusinessException(ErrorCodes.COMMON_CONTAINER_LIFECYCLE_IS_NOT_NORMAL);
+            }
+            // 获取容器状态
+            Integer icStatus = icCmd.getStatus();
+            if (ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY != icStatus && ContainerStatus.CONTAINER_STATUS_PUTAWAY != icStatus) {
+                log.error("container status is invalid, containerStatus is:[{}], logId is:[{}]", icStatus, logId);
+                throw new BusinessException(ErrorCodes.CONTAINER_STATUS_ERROR_UNABLE_PUTAWAY, new Object[] {ic.getCode()});
+            }
+            insideContainerIds.add(icId);
+            if (null == insideContainerIdsCode.get(icId)) {
+                insideContainerIdsCode.put(icId, icCmd.getCode());
+            }
+            WhCarton carton = whCartonDao.findWhCaselevelCartonById(icId, ouId);
+            if (null != carton) {
+                caselevelContainerIds.add(icId);
+            } else {
+                notcaselevelContainerIds.add(icId);
+            }
+        }
+        csrCmd.setInsideContainerIds(insideContainerIds);
+        csrCmd.setCaselevelContainerIds(caselevelContainerIds);
+        csrCmd.setNotcaselevelContainerIds(notcaselevelContainerIds);
+        csrCmd.setInsideContainerIdsCode(insideContainerIdsCode);
+        return csrCmd;
     }
 
 

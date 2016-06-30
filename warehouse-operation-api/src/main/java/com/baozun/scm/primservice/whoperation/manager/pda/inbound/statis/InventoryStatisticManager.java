@@ -12,11 +12,13 @@
  * DERIVATIVES.
  *
  */
-package com.baozun.scm.primservice.whoperation.manager.pda.inbound.inventory;
+package com.baozun.scm.primservice.whoperation.manager.pda.inbound.statis;
 
 import java.util.List;
 
+import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.ContainerStatisticResultCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.InventoryStatisticResultCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 
@@ -27,5 +29,7 @@ import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 public interface InventoryStatisticManager extends BaseManager {
 
     public InventoryStatisticResultCommand sysGuidePutawayInvStatistic(List<WhSkuInventoryCommand> invList, Integer putawayPatternDetailType, Long ouId, String logId);
+    
+    public ContainerStatisticResultCommand sysGuidePutawayContainerStatistic(List<ContainerCommand> icList, Integer putawayPatternDetailType, Long ouId, String logId);
 
 }

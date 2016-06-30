@@ -98,9 +98,10 @@ public interface PdaPutawayManager extends BaseManager {
      * @return
      */
     ScanResultCommand sysGuideCheckScanSkuConfirm(String containerCode, String insideContainerCode, WhSkuCommand skuCmd, String locationCode, Long funcId, Integer putawayPatternDetailType, Long ouId, Long userId, String logId);
-    
+
     /**
      * 系统指导整托上架执行
+     * 
      * @author lichuan
      * @param containerCode
      * @param locationCode
@@ -110,9 +111,10 @@ public interface PdaPutawayManager extends BaseManager {
      * @param logId
      */
     void sysGuidePalletPutaway(String containerCode, String locationCode, Long funcId, Long ouId, Long userId, String logId);
-    
+
     /**
      * 系统指导整箱上架执行
+     * 
      * @author lichuan
      * @param containerCode
      * @param locationCode
@@ -121,7 +123,7 @@ public interface PdaPutawayManager extends BaseManager {
      * @param userId
      * @param logId
      */
-    void sysGuideContainerPutaway(String containerCode, String locationCode, Long funcId, Long ouId, Long userId, String logId);
+    void sysGuideContainerPutaway(String containerCode, String insideContainerCode, Boolean isAfterPutawayTipContainer, String locationCode, Long funcId, Long ouId, Long userId, String logId);
 
     /**
      * 系统指导执行上架
@@ -138,6 +140,20 @@ public interface PdaPutawayManager extends BaseManager {
      * @param logId
      */
     void sysGuidePutaway(String containerCode, String locationCode, Long funcId, Integer putawayPatternDetailType, Integer caseMode, Long ouId, Long userId, String logId);
+
+    /**
+     * 系统指导上架提示容器
+     * 
+     * @author lichuan
+     * @param containerCode
+     * @param funcId
+     * @param putawayPatternDetailType
+     * @param ouId
+     * @param userId
+     * @param logId
+     * @return
+     */
+    String sysGuideTipContainer(String containerCode, Long funcId, Integer putawayPatternDetailType, Long ouId, Long userId, String logId);
 
     /**
      * 根据外部容器查询Caselevel箱数量

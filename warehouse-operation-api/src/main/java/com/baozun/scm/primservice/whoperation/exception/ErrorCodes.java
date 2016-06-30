@@ -246,6 +246,10 @@ public class ErrorCodes {
     public static final int COMMON_CACHE_IS_ERROR = 5020;
     /** 库存行没有绑定库位，无法上架 */
     public static final int COMMON_INV_LINE_NOT_BINDING_LOC_ERROR = 5021;
+    /** 外部容器信息不匹配！ */
+    public static final int COMMON_OUTER_CONTAINER_IS_NOT_MATCH = 5022;
+    /** 功能信息变更异常！ */
+    public static final int COMMON_FUNCTION_IS_CHANGE_ERROR = 5023;
     // 5001-10000 common end
 
     // 10001-20000 luyimin
@@ -341,6 +345,8 @@ public class ErrorCodes {
     public static final int CONTAINER_PUTAWAY_BINDING_MORE_THAN_ONE_LOC = 40022;
     /** 容器号[{0}]有外部容器，请先扫外部容器 */
     public static final int CONTAINER_HAS_OUTER_CONTAINER_SCAN_OUTER_FIRST = 40023;
+    /** 外部容器[{0}]提示下一个容器号失败 */
+    public static final int TIP_NEXT_CONTAINER_IS_ERROR = 40024;
     // 40001-50000 lichuan
 
     // 50001-60000 hubin

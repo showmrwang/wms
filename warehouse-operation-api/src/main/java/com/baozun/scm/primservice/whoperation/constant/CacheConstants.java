@@ -42,6 +42,8 @@ public final class CacheConstants {
     public static final String SCAN_SKU_QUEUE = "SCAN_SKU_QUEUE_";
     /** 容器缓存 */
     public static final String CONTAINER = "CONTAINER";
+    /** 容器统计缓存 */
+    public static final String CONTAINER_STATISTIC = "CONTAINER_STATISTIC";
     
     
     
