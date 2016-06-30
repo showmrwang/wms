@@ -159,17 +159,28 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
         if (invList.size() == 0) {
             return export;
         }
+        List<String> originInvSnIdList = new ArrayList<>();
+        for (WhSkuInventoryCommand inventoryCommand : invList) {
+            //查询库存记录对应的残次库存信息
+            List<WhSkuInventorySnCommand> inventorySnCommandList = whSkuInventorySnDao.findWhSkuInventoryByUuid(inventoryCommand.getOuId(), inventoryCommand.getUuid());
+            if(null != inventorySnCommandList  && !inventorySnCommandList.isEmpty()){
+                for(WhSkuInventorySnCommand inventorySnCommand : inventorySnCommandList){
+                    originInvSnIdList.add(inventoryCommand.getId() + "," + inventorySnCommand.getId());
+                }
+            }else {
+                originInvSnIdList.add(inventoryCommand.getId() + ",null");
+            }
+        }
         // 所有符合条件的规则LIST
         List<ShelveRecommendRuleCommand> returnList = new ArrayList<ShelveRecommendRuleCommand>();
         for (ShelveRecommendRuleCommand s : sList) {
             // 查询上架规则对应库存信息ID LIST
             List<String> list = shelveRecommendRuleDao.executeRuleSql(s.getRuleSql().replace(Constants.SHELVE_RULE_PLACEHOLDER, insideContainerIdListStr), ruleAffer.getOuid());
-            // 如果库存信息数量=上架规则对应库存信息ID LIST 加入list规则对象
-            if (invList.size() == list.size()) {
+            // 如果符合上架规则的记录包含所有的原始库存记录 加入list规则对象
+            if (null != list && list.containsAll(originInvSnIdList)) {
                 // 把规则加入list
                 returnList.add(s);
-            }else{
-                //TODO 为什么不匹配的也加入
+                } else {
                 returnList.add(s);
             }
         }
