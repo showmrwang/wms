@@ -233,7 +233,7 @@ public final class Constants {
     public static final String SKU_SN_DEFECT_SOURCE_WH = "WH";
 
     /** 上架规则sql占位符 */
-    public static final String SHELVE_RULE_PLACEHOLDER = "${containerCodeListStr}";
+    public static final String SHELVE_RULE_PLACEHOLDER = "${insideContainerIdListStr}";
 
     /** 库存 占用单据来源 ASN */
     public static final String SKU_INVENTORY_OCCUPATION_SOURCE_ASN = "ASN";

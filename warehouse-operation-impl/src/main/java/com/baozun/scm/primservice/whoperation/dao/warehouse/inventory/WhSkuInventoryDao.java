@@ -123,6 +123,16 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
     List<WhSkuInventoryCommand> findWhSkuInventoryByContainerCode(@Param("ouid") Long ouid, @Param("containerList") List<String> containerList);
 
     /**
+     * 通过容器号查询SN库存信息
+     *
+     * @author mingwei.xie
+     * @param ouId
+     * @param insideContainerIdList
+     * @return
+     */
+    List<WhSkuInventoryCommand> findWhSkuInventoryForRuleByInsideContainerId(@Param("ouId") Long ouId, @Param("insideContainerIdList") List<Long> insideContainerIdList);
+
+    /**
      * 通过外部容器号查询对用的库存信息
      * 
      * @author lichuan

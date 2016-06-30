@@ -24,6 +24,7 @@ import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnLineCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
+import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnDao;
@@ -38,6 +39,7 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.StoreDefectReasonsDa
 import com.baozun.scm.primservice.whoperation.dao.warehouse.StoreDefectTypeDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhAsnRcvdLogDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhAsnRcvdSnLogDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhFunctionRcvdDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.carton.WhCartonDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.conf.basis.WarehouseDefectReasonsDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.conf.basis.WarehouseDefectTypeDao;
@@ -59,6 +61,7 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.StoreDefectReasons
 import com.baozun.scm.primservice.whoperation.model.warehouse.StoreDefectType;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhAsnRcvdLog;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhAsnRcvdSnLog;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionRcvd;
 import com.baozun.scm.primservice.whoperation.model.warehouse.carton.WhCarton;
 import com.baozun.scm.primservice.whoperation.model.warehouse.conf.basis.WarehouseDefectReasons;
 import com.baozun.scm.primservice.whoperation.model.warehouse.conf.basis.WarehouseDefectType;
@@ -107,6 +110,8 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
     private PkManager pkManager;
     @Autowired
     private WhCartonDao whCartonDao;
+    @Autowired
+    private WhFunctionRcvdDao whFunctionRcvdDao;
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
@@ -462,9 +467,11 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
                 throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
             }
             // 更新容器
-            int updateContainerCount = this.containerDao.saveOrUpdateByVersion(container);
-            if (updateContainerCount <= 0) {
-                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            if (container != null) {
+                int updateContainerCount = this.containerDao.saveOrUpdateByVersion(container);
+                if (updateContainerCount <= 0) {
+                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                }
             }
         } catch (BusinessException e) {
             throw e;
@@ -561,5 +568,37 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
     public long getUniqueSkuAttrCountFromWhSkuInventory(Long insideContainerId, Long skuId, Long ouId) {
         return this.whSkuInventoryDao.getUniqueSkuAttrCountFromWhSkuInventory(insideContainerId, skuId, ouId);
     }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void rcvdPallet(Long outerContainerId, Long insideContainerId, Long ouId, Long userId) {
+        try {
+            Container pallet = this.containerDao.findByIdExt(outerContainerId, ouId);
+            pallet.setStatus(ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY);
+            pallet.setOperatorId(userId);
+            int updateCount = this.containerDao.saveOrUpdateByVersion(pallet);
+            if (updateCount <= 0) {
+                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            }
+            Container container = this.containerDao.findByIdExt(outerContainerId, ouId);
+            container.setStatus(ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY);
+            container.setOperatorId(userId);
+            int containerCount = this.containerDao.saveOrUpdateByVersion(container);
+            if (containerCount <= 0) {
+                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            }
+        } catch (BusinessException ex) {
+            throw ex;
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
+        }
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public WhFunctionRcvd findwFunctionRcvdByFunctionId(Long id, Long ouid) {
+        return this.whFunctionRcvdDao.findwFunctionRcvdByFunctionId(id, ouid);
+    }
+
 
 }

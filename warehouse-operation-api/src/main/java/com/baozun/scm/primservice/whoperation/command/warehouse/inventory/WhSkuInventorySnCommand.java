@@ -14,7 +14,10 @@
  */
 package com.baozun.scm.primservice.whoperation.command.warehouse.inventory;
 
+import java.util.List;
+
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.ShelveRecommendRuleCommand;
 
 /**
  * 库存明细表
@@ -52,6 +55,8 @@ public class WhSkuInventorySnCommand extends BaseCommand {
     private String uuid;
     /** 对应仓库ID */
     private Long ouId;
+    /** */
+    private String sysUuid;
 
     /** 商品编码 */
     private String skuCode;
@@ -82,6 +87,8 @@ public class WhSkuInventorySnCommand extends BaseCommand {
     /** 残次原因(仓库) */
     private String whDefectReasonsName;
 
+    /** 上架规则 */
+    private List<ShelveRecommendRuleCommand> shelveRecommendRuleCommandList;
 
     public Long getId() {
         return id;
@@ -169,6 +176,14 @@ public class WhSkuInventorySnCommand extends BaseCommand {
 
     public void setOuId(Long ouId) {
         this.ouId = ouId;
+    }
+
+    public String getSysUuid() {
+        return sysUuid;
+    }
+
+    public void setSysUuid(String sysUuid) {
+        this.sysUuid = sysUuid;
     }
 
     public String getSkuCode() {
@@ -283,6 +298,11 @@ public class WhSkuInventorySnCommand extends BaseCommand {
         this.whDefectReasonsName = whDefectReasonsName;
     }
 
+    public List<ShelveRecommendRuleCommand> getShelveRecommendRuleCommandList() {
+        return shelveRecommendRuleCommandList;
+    }
 
-
+    public void setShelveRecommendRuleCommandList(List<ShelveRecommendRuleCommand> shelveRecommendRuleCommandList) {
+        this.shelveRecommendRuleCommandList = shelveRecommendRuleCommandList;
+    }
 }

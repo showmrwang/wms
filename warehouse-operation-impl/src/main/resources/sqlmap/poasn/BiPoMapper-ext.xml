@@ -90,7 +90,30 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	</sql>
 	 <sql id="biPoDynamicPageWhereExt">
 	    <where>
+	               
 					bipo.status &lt;&gt; 0 
+					<if test="customerList!=null">
+		               and  bipo.customer_id in
+				     <foreach collection="customerList" item="cid" open="("
+			         separator="," close=")">
+			         #{cid}
+		             </foreach>
+			       </if>
+             
+                   <if test="customerList==null">
+                       and bipo.customer_id in (null)
+			       </if>
+			       <if test="storeList!=null">
+		               and  bipo.store_id in
+				     <foreach collection="storeList" item="sid" open="("
+			         separator="," close=")">
+			         #{sid}
+		             </foreach>
+			       </if>
+             
+                   <if test="storeList==null">
+                       and bipo.store_id in (null)
+			       </if>
 					<if test="poCode!=null and poCode!=''">
 						and bipo.po_code like #{poCode}
 					</if>

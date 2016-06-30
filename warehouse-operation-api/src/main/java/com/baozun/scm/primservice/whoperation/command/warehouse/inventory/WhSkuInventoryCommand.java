@@ -15,9 +15,11 @@
 package com.baozun.scm.primservice.whoperation.command.warehouse.inventory;
 
 import java.util.Date;
+import java.util.List;
 
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdSnCacheCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.ShelveRecommendRuleCommand;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionRcvd;
 
 /**
@@ -145,10 +147,6 @@ public class WhSkuInventoryCommand extends BaseCommand {
     private String skuUrl;
     /** 通用收货功能商品扫描流程指针 */
     private Integer skuUrlOperator;
-    /** 通用收货功能是否提示库存属性 */
-    private Boolean isInvattrAsnPointoutUser;
-    /** 通用收货功能是否允许差异收货 */
-    private Boolean isInvattrDiscrepancyAllowrcvd;
     /** 通用收货功能匹配明细行 */
     private String lineIdListString;
     /** 通用收货功能匹配明细行 */
@@ -163,271 +161,41 @@ public class WhSkuInventoryCommand extends BaseCommand {
     private Integer snCount;
     /** 残次累计数量 */
     private Integer snAddUpCount;
-    //
-    /** 按照标准装箱提示收货 */
-    private Boolean normIncPointoutRcvd;
-    /** 是否限定唯一库存类型 */
-    private Boolean isLimitUniqueInvType;
-    /** 是否限定唯一库存状态 */
-    private Boolean isLimitUniqueInvStatus;
-    /** 是否限定唯一库存属性1 */
-    private Boolean isLimitUniqueInvAttr1;
-    /** 是否限定唯一库存属性2 */
-    private Boolean isLimitUniqueInvAttr2;
-    /** 是否限定唯一库存属性3 */
-    private Boolean isLimitUniqueInvAttr3;
-    /** 是否限定唯一库存属性4 */
-    private Boolean isLimitUniqueInvAttr4;
-    /** 是否限定唯一库存属性5 */
-    private Boolean isLimitUniqueInvAttr5;
-    /** 是否限定唯一原产地 */
-    private Boolean isLimitUniquePlaceoforigin;
-    /** 是否限定唯一批次号 */
-    private Boolean isLimitUniqueBatch;
-    /** 是否限定唯一生产日期 */
-    private Boolean isLimitUniqueDateOfManufacture;
-    /** 是否限定唯一失效日期 */
-    private Boolean isLimitUniqueExpiryDate;
-    /** 是否支持混放SKU */
-    private Boolean isMixingSku;
 
     /** 效期天数 */
     private Integer dayOfValidDate;
     /** 残次来源 */
     private String snSource;
 
+    /** 是否允许货箱收货完成 */
+    private Boolean isContainerRcvdFinished;
 
-    public String getSnSource() {
-        return snSource;
+    /** 是否允许托盘收货完成 */
+    private Boolean isPalletRcvdFinished;
+
+    /** 是否允许ASN收货完成 */
+    private Boolean isAsnRcvdFinished;
+
+    /** 残次库存信息 */
+    private List<WhSkuInventorySnCommand> whSkuInventorySnCommandList;
+
+    /** 匹配的规则 */
+    private List<ShelveRecommendRuleCommand> shelveRecommendRuleCommandList;
+
+    public Boolean getIsPalletRcvdFinished() {
+        return isPalletRcvdFinished;
     }
 
-    public void setSnSource(String snSource) {
-        this.snSource = snSource;
+    public void setIsPalletRcvdFinished(Boolean isPalletRcvdFinished) {
+        this.isPalletRcvdFinished = isPalletRcvdFinished;
     }
 
-    public Integer getDayOfValidDate() {
-        return dayOfValidDate;
+    public Boolean getIsAsnRcvdFinished() {
+        return isAsnRcvdFinished;
     }
 
-    public void setDayOfValidDate(Integer dayOfValidDate) {
-        this.dayOfValidDate = dayOfValidDate;
-    }
-
-    public Boolean getNormIncPointoutRcvd() {
-        return normIncPointoutRcvd;
-    }
-
-    public void setNormIncPointoutRcvd(Boolean normIncPointoutRcvd) {
-        this.normIncPointoutRcvd = normIncPointoutRcvd;
-    }
-
-    public Boolean getIsLimitUniqueInvType() {
-        return isLimitUniqueInvType;
-    }
-
-    public void setIsLimitUniqueInvType(Boolean isLimitUniqueInvType) {
-        this.isLimitUniqueInvType = isLimitUniqueInvType;
-    }
-
-    public Boolean getIsLimitUniqueInvStatus() {
-        return isLimitUniqueInvStatus;
-    }
-
-    public void setIsLimitUniqueInvStatus(Boolean isLimitUniqueInvStatus) {
-        this.isLimitUniqueInvStatus = isLimitUniqueInvStatus;
-    }
-
-    public Boolean getIsLimitUniqueInvAttr1() {
-        return isLimitUniqueInvAttr1;
-    }
-
-    public void setIsLimitUniqueInvAttr1(Boolean isLimitUniqueInvAttr1) {
-        this.isLimitUniqueInvAttr1 = isLimitUniqueInvAttr1;
-    }
-
-    public Boolean getIsLimitUniqueInvAttr2() {
-        return isLimitUniqueInvAttr2;
-    }
-
-    public void setIsLimitUniqueInvAttr2(Boolean isLimitUniqueInvAttr2) {
-        this.isLimitUniqueInvAttr2 = isLimitUniqueInvAttr2;
-    }
-
-    public Boolean getIsLimitUniqueInvAttr3() {
-        return isLimitUniqueInvAttr3;
-    }
-
-    public void setIsLimitUniqueInvAttr3(Boolean isLimitUniqueInvAttr3) {
-        this.isLimitUniqueInvAttr3 = isLimitUniqueInvAttr3;
-    }
-
-    public Boolean getIsLimitUniqueInvAttr4() {
-        return isLimitUniqueInvAttr4;
-    }
-
-    public void setIsLimitUniqueInvAttr4(Boolean isLimitUniqueInvAttr4) {
-        this.isLimitUniqueInvAttr4 = isLimitUniqueInvAttr4;
-    }
-
-    public Boolean getIsLimitUniqueInvAttr5() {
-        return isLimitUniqueInvAttr5;
-    }
-
-    public void setIsLimitUniqueInvAttr5(Boolean isLimitUniqueInvAttr5) {
-        this.isLimitUniqueInvAttr5 = isLimitUniqueInvAttr5;
-    }
-
-    public Boolean getIsLimitUniquePlaceoforigin() {
-        return isLimitUniquePlaceoforigin;
-    }
-
-    public void setIsLimitUniquePlaceoforigin(Boolean isLimitUniquePlaceoforigin) {
-        this.isLimitUniquePlaceoforigin = isLimitUniquePlaceoforigin;
-    }
-
-    public Boolean getIsLimitUniqueBatch() {
-        return isLimitUniqueBatch;
-    }
-
-    public void setIsLimitUniqueBatch(Boolean isLimitUniqueBatch) {
-        this.isLimitUniqueBatch = isLimitUniqueBatch;
-    }
-
-    public Boolean getIsLimitUniqueDateOfManufacture() {
-        return isLimitUniqueDateOfManufacture;
-    }
-
-    public void setIsLimitUniqueDateOfManufacture(Boolean isLimitUniqueDateOfManufacture) {
-        this.isLimitUniqueDateOfManufacture = isLimitUniqueDateOfManufacture;
-    }
-
-    public Boolean getIsLimitUniqueExpiryDate() {
-        return isLimitUniqueExpiryDate;
-    }
-
-    public void setIsLimitUniqueExpiryDate(Boolean isLimitUniqueExpiryDate) {
-        this.isLimitUniqueExpiryDate = isLimitUniqueExpiryDate;
-    }
-
-    public Boolean getIsMixingSku() {
-        return isMixingSku;
-    }
-
-    public void setIsMixingSku(Boolean isMixingSku) {
-        this.isMixingSku = isMixingSku;
-    }
-
-    public Integer getSnCount() {
-        return snCount;
-    }
-
-    public void setSnCount(Integer snCount) {
-        this.snCount = snCount;
-    }
-
-    public Integer getSnAddUpCount() {
-        return snAddUpCount;
-    }
-
-    public void setSnAddUpCount(Integer snAddUpCount) {
-        this.snAddUpCount = snAddUpCount;
-    }
-
-    public RcvdSnCacheCommand getSn() {
-        return sn;
-    }
-
-    public void setSn(RcvdSnCacheCommand sn) {
-        this.sn = sn;
-    }
-
-    public Integer getSkuBatchCount() {
-        return skuBatchCount;
-    }
-
-    public void setSkuBatchCount(Integer skuBatchCount) {
-        this.skuBatchCount = skuBatchCount;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    public String getLineIdListString() {
-        return lineIdListString;
-    }
-
-    public void setLineIdListString(String lineIdListString) {
-        this.lineIdListString = lineIdListString;
-    }
-
-    public Boolean getIsInvattrAsnPointoutUser() {
-        return isInvattrAsnPointoutUser;
-    }
-
-    public void setIsInvattrAsnPointoutUser(Boolean isInvattrAsnPointoutUser) {
-        this.isInvattrAsnPointoutUser = isInvattrAsnPointoutUser;
-    }
-
-    public Integer getSkuUrlOperator() {
-        return skuUrlOperator;
-    }
-
-    public void setSkuUrlOperator(Integer skuUrlOperator) {
-        this.skuUrlOperator = skuUrlOperator;
-    }
-
-    public String getSkuUrl() {
-        return skuUrl;
-    }
-
-    public void setSkuUrl(String skuUrl) {
-        this.skuUrl = skuUrl;
-    }
-
-    public Long getFunctionId() {
-        return FunctionId;
-    }
-
-    public void setFunctionId(Long functionId) {
-        FunctionId = functionId;
-    }
-
-    public String getFunctionUrl() {
-        return functionUrl;
-    }
-
-    public void setFunctionUrl(String functionUrl) {
-        this.functionUrl = functionUrl;
-    }
-
-
-    public Integer getMenuIndex() {
-        return menuIndex;
-    }
-
-    public void setMenuIndex(Integer menuIndex) {
-        this.menuIndex = menuIndex;
-    }
-
-    public WhFunctionRcvd getRcvd() {
-        return rcvd;
-    }
-
-    public void setRcvd(WhFunctionRcvd rcvd) {
-        this.rcvd = rcvd;
-    }
-
-    public Long getOccupationId() {
-        return occupationId;
-    }
-
-    public void setOccupationId(Long occupationId) {
-        this.occupationId = occupationId;
+    public void setIsAsnRcvdFinished(Boolean isAsnRcvdFinished) {
+        this.isAsnRcvdFinished = isAsnRcvdFinished;
     }
 
     public Long getId() {
@@ -493,7 +261,7 @@ public class WhSkuInventoryCommand extends BaseCommand {
     public void setOccupationCode(String occupationCode) {
         this.occupationCode = occupationCode;
     }
-    
+
     public Double getModifyQty() {
         return modifyQty;
     }
@@ -646,6 +414,30 @@ public class WhSkuInventoryCommand extends BaseCommand {
         this.ouId = ouId;
     }
 
+    public String getOccupationCodeSource() {
+        return occupationCodeSource;
+    }
+
+    public void setOccupationCodeSource(String occupationCodeSource) {
+        this.occupationCodeSource = occupationCodeSource;
+    }
+
+    public String getMfgDateStr() {
+        return mfgDateStr;
+    }
+
+    public void setMfgDateStr(String mfgDateStr) {
+        this.mfgDateStr = mfgDateStr;
+    }
+
+    public String getExpDateStr() {
+        return expDateStr;
+    }
+
+    public void setExpDateStr(String expDateStr) {
+        this.expDateStr = expDateStr;
+    }
+
     public String getSkuCode() {
         return skuCode;
     }
@@ -726,22 +518,6 @@ public class WhSkuInventoryCommand extends BaseCommand {
         this.invstatusName = invstatusName;
     }
 
-    public String getMfgDateStr() {
-        return mfgDateStr;
-    }
-
-    public void setMfgDateStr(String mfgDateStr) {
-        this.mfgDateStr = mfgDateStr;
-    }
-
-    public String getExpDateStr() {
-        return expDateStr;
-    }
-
-    public void setExpDateStr(String expDateStr) {
-        this.expDateStr = expDateStr;
-    }
-
     public String getInvAttr1Str() {
         return invAttr1Str;
     }
@@ -782,40 +558,28 @@ public class WhSkuInventoryCommand extends BaseCommand {
         this.invAttr5Str = invAttr5Str;
     }
 
-    public String getOccupationCodeSource() {
-        return occupationCodeSource;
-    }
-
-    public void setOccupationCodeSource(String occupationCodeSource) {
-        this.occupationCodeSource = occupationCodeSource;
-    }
-
-    /**
-     * @return the occupyKey
-     */
     public String getOccupyKey() {
         return occupyKey;
     }
 
-    /**
-     * @param occupyKey the occupyKey to set
-     */
     public void setOccupyKey(String occupyKey) {
         this.occupyKey = occupyKey;
     }
 
-    /**
-     * @return the expectQty
-     */
     public Double getExpectQty() {
         return expectQty;
     }
 
-    /**
-     * @param expectQty the expectQty to set
-     */
     public void setExpectQty(Double expectQty) {
         this.expectQty = expectQty;
+    }
+
+    public Long getOccupationId() {
+        return occupationId;
+    }
+
+    public void setOccupationId(Long occupationId) {
+        this.occupationId = occupationId;
     }
 
     public Date getInboundTime() {
@@ -834,12 +598,68 @@ public class WhSkuInventoryCommand extends BaseCommand {
         this.lastModifyTime = lastModifyTime;
     }
 
-    public Boolean getIsInvattrDiscrepancyAllowrcvd() {
-        return isInvattrDiscrepancyAllowrcvd;
+    public WhFunctionRcvd getRcvd() {
+        return rcvd;
     }
 
-    public void setIsInvattrDiscrepancyAllowrcvd(Boolean isInvattrDiscrepancyAllowrcvd) {
-        this.isInvattrDiscrepancyAllowrcvd = isInvattrDiscrepancyAllowrcvd;
+    public void setRcvd(WhFunctionRcvd rcvd) {
+        this.rcvd = rcvd;
+    }
+
+    public Integer getMenuIndex() {
+        return menuIndex;
+    }
+
+    public void setMenuIndex(Integer menuIndex) {
+        this.menuIndex = menuIndex;
+    }
+
+    public String getFunctionUrl() {
+        return functionUrl;
+    }
+
+    public void setFunctionUrl(String functionUrl) {
+        this.functionUrl = functionUrl;
+    }
+
+    public Long getFunctionId() {
+        return FunctionId;
+    }
+
+    public void setFunctionId(Long functionId) {
+        FunctionId = functionId;
+    }
+
+    public String getSkuUrl() {
+        return skuUrl;
+    }
+
+    public void setSkuUrl(String skuUrl) {
+        this.skuUrl = skuUrl;
+    }
+
+    public Integer getSkuUrlOperator() {
+        return skuUrlOperator;
+    }
+
+    public void setSkuUrlOperator(Integer skuUrlOperator) {
+        this.skuUrlOperator = skuUrlOperator;
+    }
+
+    public String getLineIdListString() {
+        return lineIdListString;
+    }
+
+    public void setLineIdListString(String lineIdListString) {
+        this.lineIdListString = lineIdListString;
+    }
+
+    public RcvdSnCacheCommand getSn() {
+        return sn;
+    }
+
+    public void setSn(RcvdSnCacheCommand sn) {
+        this.sn = sn;
     }
 
     public Integer getSkuAddUpCount() {
@@ -850,5 +670,75 @@ public class WhSkuInventoryCommand extends BaseCommand {
         this.skuAddUpCount = skuAddUpCount;
     }
 
+    public Long getUserId() {
+        return userId;
+    }
 
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public Integer getSkuBatchCount() {
+        return skuBatchCount;
+    }
+
+    public void setSkuBatchCount(Integer skuBatchCount) {
+        this.skuBatchCount = skuBatchCount;
+    }
+
+    public Integer getSnCount() {
+        return snCount;
+    }
+
+    public void setSnCount(Integer snCount) {
+        this.snCount = snCount;
+    }
+
+    public Integer getSnAddUpCount() {
+        return snAddUpCount;
+    }
+
+    public void setSnAddUpCount(Integer snAddUpCount) {
+        this.snAddUpCount = snAddUpCount;
+    }
+
+    public Integer getDayOfValidDate() {
+        return dayOfValidDate;
+    }
+
+    public void setDayOfValidDate(Integer dayOfValidDate) {
+        this.dayOfValidDate = dayOfValidDate;
+    }
+
+    public String getSnSource() {
+        return snSource;
+    }
+
+    public void setSnSource(String snSource) {
+        this.snSource = snSource;
+    }
+
+    public Boolean getIsContainerRcvdFinished() {
+        return isContainerRcvdFinished;
+    }
+
+    public void setIsContainerRcvdFinished(Boolean isContainerRcvdFinished) {
+        this.isContainerRcvdFinished = isContainerRcvdFinished;
+    }
+
+    public List<ShelveRecommendRuleCommand> getShelveRecommendRuleCommandList() {
+        return shelveRecommendRuleCommandList;
+    }
+
+    public void setShelveRecommendRuleCommandList(List<ShelveRecommendRuleCommand> shelveRecommendRuleCommandList) {
+        this.shelveRecommendRuleCommandList = shelveRecommendRuleCommandList;
+    }
+
+    public List<WhSkuInventorySnCommand> getWhSkuInventorySnCommandList() {
+        return whSkuInventorySnCommandList;
+    }
+
+    public void setWhSkuInventorySnCommandList(List<WhSkuInventorySnCommand> whSkuInventorySnCommandList) {
+        this.whSkuInventorySnCommandList = whSkuInventorySnCommandList;
+    }
 }

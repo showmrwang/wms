@@ -16,6 +16,7 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.StoreDefectReasons
 import com.baozun.scm.primservice.whoperation.model.warehouse.StoreDefectType;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhAsnRcvdLog;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhAsnRcvdSnLog;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionRcvd;
 import com.baozun.scm.primservice.whoperation.model.warehouse.carton.WhCarton;
 import com.baozun.scm.primservice.whoperation.model.warehouse.conf.basis.WarehouseDefectReasons;
 import com.baozun.scm.primservice.whoperation.model.warehouse.conf.basis.WarehouseDefectType;
@@ -128,4 +129,23 @@ public interface GeneralRcvdManager extends BaseManager {
      * @return
      */
     long getUniqueSkuAttrCountFromWhSkuInventory(Long insideContainerId, Long skuId, Long ouId);
+
+    /**
+     * 托盘收货完成 【业务方法】
+     * 
+     * @param outerContainerId
+     * @param insideContainerId
+     * @param ouId
+     * @param userId
+     */
+    void rcvdPallet(Long outerContainerId, Long insideContainerId, Long ouId, Long userId);
+
+    /**
+     * 查询功能菜单
+     * 
+     * @param id
+     * @param ouid
+     * @return
+     */
+    WhFunctionRcvd findwFunctionRcvdByFunctionId(Long id, Long ouid);
 }

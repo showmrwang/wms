@@ -40,12 +40,15 @@ public class RuleAfferCommand extends BaseCommand {
     /** 箱号List 运用于上架 */
     private List<String> afferContainerCodeList;
 
+    /** 内部容器ID list 用于上架规则 */
+    private List<Long> afferInsideContainerIdList;
+
     /** 规则ID */
     private Long ruleId;
 
     /** 功能ID */
     private Long funcId;
-    
+
     /** 店铺List */
     private List<Long> storeIdList;
 
@@ -144,5 +147,11 @@ public class RuleAfferCommand extends BaseCommand {
         this.storeIdList = storeIdList;
     }
 
+    public List<Long> getAfferInsideContainerIdList() {
+        return afferInsideContainerIdList;
+    }
 
+    public void setAfferInsideContainerIdList(List<Long> afferInsideContainerIdList) {
+        this.afferInsideContainerIdList = afferInsideContainerIdList;
+    }
 }

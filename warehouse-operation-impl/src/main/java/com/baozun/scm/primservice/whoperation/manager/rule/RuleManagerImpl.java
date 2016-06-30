@@ -22,6 +22,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.RecommendRuleCon
 import com.baozun.scm.primservice.whoperation.command.warehouse.ShelveRecommendRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhInBoundRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.PlatformRecommendRuleDao;
@@ -30,6 +31,7 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.RecommendRuleConditi
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ShelveRecommendRuleDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhInBoundRuleDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventorySnDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
@@ -54,6 +56,9 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
     private ShelveRecommendRuleDao shelveRecommendRuleDao;
     @Autowired
     private WhSkuInventoryDao whSkuInventoryDao;
+
+    @Autowired
+    private WhSkuInventorySnDao whSkuInventorySnDao;
 
     /***
      * 根据规则传入参数返回对应规则输出参数
@@ -140,30 +145,42 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
      * @return
      */
     private RuleExportCommand exportShelveRuleAll(RuleAfferCommand ruleAffer) {
-        if (ruleAffer.getAfferContainerCodeList().size() == 0) {
+        if (ruleAffer.getAfferInsideContainerIdList().size() == 0) {
             // 判断容器号List是否为空
-            log.warn("ruleExport ruleAffer.getAfferContainerCodeList().size() == 0 logid: " + ruleAffer.getLogId());
+            log.warn("ruleExport ruleAffer.getAfferInsideContainerIdList().size() == 0 logid: " + ruleAffer.getLogId());
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
-        String containerCodeListStr = forMatAfferContainerCodeList(ruleAffer.getAfferContainerCodeList());
+        String insideContainerIdListStr = forMatAfferInsideContainerIdList(ruleAffer.getAfferInsideContainerIdList());
         RuleExportCommand export = new RuleExportCommand();
         // 查询所有可用上架规则 并且排序
         List<ShelveRecommendRuleCommand> sList = shelveRecommendRuleDao.findShelveRecommendRuleByOuid(ruleAffer.getOuid());
         // 查询所有对应容器号的库存信息
-        List<WhSkuInventoryCommand> invList = whSkuInventoryDao.findWhSkuInventoryByContainerCode(ruleAffer.getOuid(), ruleAffer.getAfferContainerCodeList());
+        List<WhSkuInventoryCommand> invList = whSkuInventoryDao.findWhSkuInventoryForRuleByInsideContainerId(ruleAffer.getOuid(), ruleAffer.getAfferInsideContainerIdList());
         if (invList.size() == 0) {
             return export;
+        }
+        List<String> originInvSnIdList = new ArrayList<>();
+        for (WhSkuInventoryCommand inventoryCommand : invList) {
+            //查询库存记录对应的残次库存信息
+            List<WhSkuInventorySnCommand> inventorySnCommandList = whSkuInventorySnDao.findWhSkuInventoryByUuid(inventoryCommand.getOuId(), inventoryCommand.getUuid());
+            if(null != inventorySnCommandList  && !inventorySnCommandList.isEmpty()){
+                for(WhSkuInventorySnCommand inventorySnCommand : inventorySnCommandList){
+                    originInvSnIdList.add(inventoryCommand.getId() + "," + inventorySnCommand.getId());
+                }
+            }else {
+                originInvSnIdList.add(inventoryCommand.getId() + ",null");
+            }
         }
         // 所有符合条件的规则LIST
         List<ShelveRecommendRuleCommand> returnList = new ArrayList<ShelveRecommendRuleCommand>();
         for (ShelveRecommendRuleCommand s : sList) {
             // 查询上架规则对应库存信息ID LIST
-            List<Long> list = shelveRecommendRuleDao.executeRuleSql(s.getRuleSql().replace(Constants.SHELVE_RULE_PLACEHOLDER, containerCodeListStr), ruleAffer.getOuid());
-            // 如果库存信息数量=上架规则对应库存信息ID LIST 加入list规则对象
-            if (invList.size() == list.size()) {
+            List<String> list = shelveRecommendRuleDao.executeRuleSql(s.getRuleSql().replace(Constants.SHELVE_RULE_PLACEHOLDER, insideContainerIdListStr), ruleAffer.getOuid());
+            // 如果符合上架规则的记录包含所有的原始库存记录 加入list规则对象
+            if (null != list && list.containsAll(originInvSnIdList)) {
                 // 把规则加入list
                 returnList.add(s);
-            }else{
+                } else {
                 returnList.add(s);
             }
         }
@@ -178,52 +195,62 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
      * @return
      */
     private RuleExportCommand exportShelveRule(RuleAfferCommand ruleAffer) {
-        if (ruleAffer.getAfferContainerCodeList().size() == 0) {
+        if (ruleAffer.getAfferInsideContainerIdList().size() == 0) {
             // 判断容器号List是否为空
-            log.warn("ruleExport ruleAffer.getAfferContainerCodeList().size() == 0 logid: " + ruleAffer.getLogId());
+            log.warn("ruleExport ruleAffer.getAfferInsideContainerIdList().size() == 0 logid: " + ruleAffer.getLogId());
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
-        String containerCodeListStr = forMatAfferContainerCodeList(ruleAffer.getAfferContainerCodeList());
+        String insideContainerIdListStr = forMatAfferInsideContainerIdList(ruleAffer.getAfferInsideContainerIdList());
         RuleExportCommand export = new RuleExportCommand();
         // 查询所有可用上架规则 并且排序
-        List<ShelveRecommendRuleCommand> sList = shelveRecommendRuleDao.findShelveRecommendRuleByOuid(ruleAffer.getOuid());
-        // 查询所有对应容器号的库存信息
-        List<WhSkuInventoryCommand> invList = whSkuInventoryDao.findWhSkuInventoryByContainerCode(ruleAffer.getOuid(), ruleAffer.getAfferContainerCodeList());
-        Map<ShelveRecommendRuleCommand, List<Long>> map = new HashMap<ShelveRecommendRuleCommand, List<Long>>();
-        Map<Long, List<ShelveRecommendRuleCommand>> returnMap = new HashMap<Long, List<ShelveRecommendRuleCommand>>();
-        for (ShelveRecommendRuleCommand s : sList) {
+        List<ShelveRecommendRuleCommand> shelveRuleList = shelveRecommendRuleDao.findShelveRecommendRuleByOuid(ruleAffer.getOuid());
+        //存放规则对应哪些库存记录
+        Map<ShelveRecommendRuleCommand, List<String>> ruleInvSnMmap = new HashMap<ShelveRecommendRuleCommand, List<String>>();
+        for (ShelveRecommendRuleCommand shelveRule : shelveRuleList) {
             // 查询上架规则对应库存信息ID LIST
-            List<Long> list = shelveRecommendRuleDao.executeRuleSql(s.getRuleSql().replace(Constants.SHELVE_RULE_PLACEHOLDER, containerCodeListStr), ruleAffer.getOuid());
-            if (list.size() > 0) {
-                map.put(s, list);
+            List<String> invIdSnIdStrList = shelveRecommendRuleDao.executeRuleSql(shelveRule.getRuleSql().replace(Constants.SHELVE_RULE_PLACEHOLDER, insideContainerIdListStr), ruleAffer.getOuid());
+            if (invIdSnIdStrList.size() > 0) {
+                ruleInvSnMmap.put(shelveRule, invIdSnIdStrList);
             }
         }
+        //存放库存记录对应那些规则
+        Map<String, List<ShelveRecommendRuleCommand>> invSnRuleMap = new HashMap<String, List<ShelveRecommendRuleCommand>>();
         // 把map Map<ShelveRecommendRuleCommand, List<Long>>封装成map Map<Long,
         // List<ShelveRecommendRuleCommand>>
-        for (ShelveRecommendRuleCommand m : map.keySet()) {
-            List<Long> maoLong = map.get(m);// 规则对应库存记录LIST
-            for (Long l : maoLong) {
-                List<ShelveRecommendRuleCommand> longList = returnMap.get(l);// 查询returnMap
-                if (null == longList) {
+        for (ShelveRecommendRuleCommand shelveRule : ruleInvSnMmap.keySet()) {
+            List<String> invIdSnIdStrList = ruleInvSnMmap.get(shelveRule);// 规则对应库存记录LIST
+            for (String invIdSnIdStr : invIdSnIdStrList) {
+                List<ShelveRecommendRuleCommand> shelveRuList = invSnRuleMap.get(invIdSnIdStr);// 库存记录对应的规则List
+                if (null == shelveRuList) {
                     // 没值new新对象
-                    longList = new ArrayList<ShelveRecommendRuleCommand>();
+                    shelveRuList = new ArrayList<ShelveRecommendRuleCommand>();
                 }
                 // 放入list
-                longList.add(m);
+                shelveRuList.add(shelveRule);
                 // 放入Map
-                returnMap.put(l, longList);
+                invSnRuleMap.put(invIdSnIdStr, shelveRuList);
             }
         }
+        // 查询所有对应容器号的库存信息
+        List<WhSkuInventoryCommand> invList = whSkuInventoryDao.findWhSkuInventoryForRuleByInsideContainerId(ruleAffer.getOuid(), ruleAffer.getAfferInsideContainerIdList());
         // 循环库存记录 判断库存记录是否有匹配规则
-        for (WhSkuInventoryCommand inv : invList) {
-            // 查询returnMap是否有对应inv.id值
-            List<ShelveRecommendRuleCommand> srr = returnMap.get(inv.getId());
-            if (null == srr) {
-                // 没有 put新的数据value = null
-                returnMap.put(inv.getId(), null);
+        for (WhSkuInventoryCommand inventoryCommand : invList) {
+            List<WhSkuInventorySnCommand> inventorySnCommandList = whSkuInventorySnDao.findWhSkuInventoryByUuid(inventoryCommand.getOuId(), inventoryCommand.getUuid());
+            if(null == inventorySnCommandList || inventorySnCommandList.isEmpty()){
+                // 查询returnMap是否有对应inv.id值
+                List<ShelveRecommendRuleCommand> srr = invSnRuleMap.get(inventoryCommand.getId() + ",null");
+                inventoryCommand.setShelveRecommendRuleCommandList(srr);
+            }else {
+                inventoryCommand.setShelveRecommendRuleCommandList(null);
+                for(WhSkuInventorySnCommand inventorySnCommand : inventorySnCommandList){
+                    // 查询returnMap是否有对应inv.id值
+                    List<ShelveRecommendRuleCommand> srr = invSnRuleMap.get(inventoryCommand.getId() + "," + inventorySnCommand.getId());
+                    inventorySnCommand.setShelveRecommendRuleCommandList(srr);
+                }
             }
+            inventoryCommand.setWhSkuInventorySnCommandList(inventorySnCommandList);
         }
-        export.setShelveMap(returnMap);
+        export.setShelveSkuInvCommandList(invList);
         return export;
     }
 
@@ -317,18 +344,16 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
     /***
      * 封装容器号
      * 
-     * @param afferContainerCodeList
+     * @param afferInsideContainerIdList
      * @return
      */
-    private String forMatAfferContainerCodeList(List<String> afferContainerCodeList) {
+    private String forMatAfferInsideContainerIdList(List<Long> afferInsideContainerIdList) {
         StringBuilder stringBuilder = new StringBuilder();
         // 封装容器号
-        for (int i = 0; i < afferContainerCodeList.size(); i++) {
-            String containerCode = afferContainerCodeList.get(i);
-            stringBuilder.append("'");
-            stringBuilder.append(containerCode);
-            stringBuilder.append("'");
-            if (i != afferContainerCodeList.size() - 1) {
+        for (int i = 0; i < afferInsideContainerIdList.size(); i++) {
+            Long insideContainerId = afferInsideContainerIdList.get(i);
+            stringBuilder.append(insideContainerId);
+            if (i != afferInsideContainerIdList.size() - 1) {
                 stringBuilder.append(",");
             }
         }
