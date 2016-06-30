@@ -100,7 +100,7 @@ public interface ShelveRecommendRuleDao extends BaseDao<ShelveRecommendRule, Lon
      * @param ruleSql
      * @return
      */
-    List<Long> executeRuleSql(@Param("ruleSql") String ruleSql, @Param("ouId") Long ouId);
+    List<String> executeRuleSql(@Param("ruleSql") String ruleSql, @Param("ouId") Long ouId);
 
     /***
      * 根据OUID查询所有可用上架规则 并且按照priority排序

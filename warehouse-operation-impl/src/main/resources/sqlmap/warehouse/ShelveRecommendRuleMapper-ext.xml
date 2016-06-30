@@ -254,7 +254,7 @@
         </where>
     </select>
 
-    <select id="executeRuleSql" resultType="Long">
+    <select id="executeRuleSql" resultType="String">
         ${ruleSql}
     </select>
 

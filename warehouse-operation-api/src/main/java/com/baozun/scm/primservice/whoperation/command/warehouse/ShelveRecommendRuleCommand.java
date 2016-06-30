@@ -44,9 +44,9 @@ public class ShelveRecommendRuleCommand extends BaseCommand {
     /** 描述 */
     private String description;
     /** 创建时间 */
-    private java.util.Date createTime;
+    private Date createTime;
     /** 最后操作时间 */
-    private java.util.Date lastModifyTime;
+    private Date lastModifyTime;
     /** 创建人ID */
     private Long createdId;
     /** 操作人ID */
@@ -55,8 +55,8 @@ public class ShelveRecommendRuleCommand extends BaseCommand {
     private Integer lifecycle;
     /** 上架规则的区域推荐规则 */
     private List<RecommendShelveCommand> recommendShelveCommandList;
-    /** 测试规则返回的skuCode */
-    private List<Long> inventoryIdList;
+    /** 测试规则返回的库存记录ID和残次库存记录ID拼接的字符串 */
+    private List<String> inventoryIdSnIdList;
     /** 规则测试结果 */
     private Boolean testResult;
 
@@ -172,12 +172,12 @@ public class ShelveRecommendRuleCommand extends BaseCommand {
         this.recommendShelveCommandList = recommendShelveCommandList;
     }
 
-    public List<Long> getInventoryIdList() {
-        return inventoryIdList;
+    public List<String> getInventoryIdSnIdList() {
+        return inventoryIdSnIdList;
     }
 
-    public void setInventoryIdList(List<Long> inventoryIdList) {
-        this.inventoryIdList = inventoryIdList;
+    public void setInventoryIdSnIdList(List<String> inventoryIdSnIdList) {
+        this.inventoryIdSnIdList = inventoryIdSnIdList;
     }
 
     public Boolean getTestResult() {
