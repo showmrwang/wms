@@ -5,6 +5,7 @@ import java.util.List;
 import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionRcvd;
 
 public interface PdaRcvdManagerProxy extends BaseManager {
 
@@ -88,5 +89,37 @@ public interface PdaRcvdManagerProxy extends BaseManager {
      * @param command
      */
     void initOrFreshCacheForScanningAsn(WhSkuInventoryCommand command);
+
+    /**
+     * 将收货的托盘或者货箱释放
+     * 
+     * @param insideContainerId
+     * @param ouId
+     * @param id
+     */
+    void revokeContainer(Long insideContainerId, Long ouId, Long userId);
+
+    /**
+     * 托盘收货完成逻辑
+     */
+    void rcvdPallet(Long outerContainerId, Long insideContainerId, Long ouId, Long userId);
+
+    /**
+     * ASN收货完成逻辑
+     * 
+     * @param occupationId
+     * @param ouId
+     * @param id
+     */
+    void rcvdAsn(Long occupationId, Long ouId, Long id);
+
+    /**
+     * 查询功能菜单
+     * 
+     * @param id
+     * @param ouid
+     * @return
+     */
+    WhFunctionRcvd findwFunctionRcvdByFunctionId(Long id, Long ouid);
 
 }

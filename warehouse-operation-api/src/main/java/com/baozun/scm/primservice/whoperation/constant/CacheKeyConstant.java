@@ -16,6 +16,10 @@ public class CacheKeyConstant {
     /** 收货等操作用户列表 */
     public static final String CACHE_OPERATOR_USER = "CACHE_OPERATOR_USER";
 
+    /** 收货操作用户-占用单据号 */
+    @Deprecated
+    public static final String CACHE_USER_OCCUPATION = "CACHE_USER_OCCUPATION";
+
     /** 收货缓存数据集合 */
     public static final String CACHE_RCVD = "CACHE_RCVD";
 

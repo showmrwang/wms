@@ -597,6 +597,7 @@ public class CheckInManagerProxyImpl extends BaseManagerImpl implements CheckInM
             }
         } catch (Exception e) {
             log.error("CheckInManagerProxyImpl freePlatformByRcvdFinish error, ouId is:[{}], userId is:[{}], logId is:[{}], exception is:[{}]", ouId, userId, logId, e);
+            throw e;
         }
     }
 

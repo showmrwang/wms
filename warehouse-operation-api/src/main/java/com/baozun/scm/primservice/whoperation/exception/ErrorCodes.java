@@ -285,6 +285,18 @@ public class ErrorCodes {
     public static final int RCVD_CONTAINERRCVDSAVE_ERROR = 10017;
     /** ASN数据缓存刷新失败 */
     public static final int ASN_CACHE_FRESH_ERROR = 10018;
+    /** 单据号获取单据失败 */
+    public static final int OCCUPATION_RCVD_GET_ERROR = 10019;
+    /** 单据号获取PO单失败 */
+    public static final int PO_RCVD_GET_ERROR = 10020;
+    /** 获取容器数据失败 */
+    public static final int CONTAINER_RCVD_GET_ERROR = 10021;
+    /** 月台释放失败，请手动释放月台！ */
+    public static final int RCVD_PLATFORM_REALEASE_ERROR = 10022;
+    /** 托盘上有已收货完成的容器，请点击托盘收货完成返回上一页 */
+    public static final int RCVD_PALLET_CONTANIER_ERROR = 10023;
+    /** 容器状态回滚失败，请重试！ */
+    public static final int RCVD_CONTAINER_REVOKE_ERROR = 10024;
     // 10001-20000 luyimin
 
 
