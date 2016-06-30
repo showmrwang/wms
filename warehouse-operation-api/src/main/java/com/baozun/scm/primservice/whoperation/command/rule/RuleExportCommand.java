@@ -7,6 +7,7 @@ import com.baozun.scm.primservice.whoperation.command.BaseCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.RecommendPlatformCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ShelveRecommendRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhInBoundRuleCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 
 /***
  * 调用规则输出参数结果
@@ -34,8 +35,8 @@ public class RuleExportCommand extends BaseCommand {
     /** 上架规则 */
     private ShelveRecommendRuleCommand shelveRecommendRuleCommand;
 
-    /** 上架规则返回 */
-    private Map<Long, List<ShelveRecommendRuleCommand>> shelveMap;
+    /** 拆箱上架规则返回 */
+    private List<WhSkuInventoryCommand> shelveSkuInvCommandList;
 
     /** 上架规则List */
     private List<ShelveRecommendRuleCommand> shelveRecommendRuleList;
@@ -83,12 +84,12 @@ public class RuleExportCommand extends BaseCommand {
         this.shelveRecommendRuleCommand = shelveRecommendRuleCommand;
     }
 
-    public Map<Long, List<ShelveRecommendRuleCommand>> getShelveMap() {
-        return shelveMap;
+    public List<WhSkuInventoryCommand> getShelveSkuInvCommandList() {
+        return shelveSkuInvCommandList;
     }
 
-    public void setShelveMap(Map<Long, List<ShelveRecommendRuleCommand>> shelveMap) {
-        this.shelveMap = shelveMap;
+    public void setShelveSkuInvCommandList(List<WhSkuInventoryCommand> shelveSkuInvCommandList) {
+        this.shelveSkuInvCommandList = shelveSkuInvCommandList;
     }
 
     public List<ShelveRecommendRuleCommand> getShelveRecommendRuleList() {

@@ -1028,4 +1028,20 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				)		
 		    ]]>
 	</select>
+
+
+
+    <select id="findWhSkuInventoryForRuleByInsideContainerId" resultMap="WhSkuInventoryCommandResultExt">
+        select
+        <include refid="whSkuInventoryColumnsInvExt"/>
+        from
+        t_wh_sku_inventory as inv
+        where
+        inv.ou_id = #{ouId}
+        and inv.inside_container_id in
+        <foreach item="item" index="index" collection="insideContainerIdList" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
 </mapper>

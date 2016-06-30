@@ -15,9 +15,11 @@
 package com.baozun.scm.primservice.whoperation.command.warehouse.inventory;
 
 import java.util.Date;
+import java.util.List;
 
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdSnCacheCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.ShelveRecommendRuleCommand;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionRcvd;
 
 /**
@@ -173,6 +175,12 @@ public class WhSkuInventoryCommand extends BaseCommand {
 
     /** 是否允许ASN收货完成 */
     private Boolean isAsnRcvdFinished;
+
+    /** 残次库存信息 */
+    private List<WhSkuInventorySnCommand> whSkuInventorySnCommandList;
+
+    /** 匹配的规则 */
+    private List<ShelveRecommendRuleCommand> shelveRecommendRuleCommandList;
 
     public Boolean getIsPalletRcvdFinished() {
         return isPalletRcvdFinished;
@@ -718,5 +726,19 @@ public class WhSkuInventoryCommand extends BaseCommand {
         this.isContainerRcvdFinished = isContainerRcvdFinished;
     }
 
+    public List<ShelveRecommendRuleCommand> getShelveRecommendRuleCommandList() {
+        return shelveRecommendRuleCommandList;
+    }
 
+    public void setShelveRecommendRuleCommandList(List<ShelveRecommendRuleCommand> shelveRecommendRuleCommandList) {
+        this.shelveRecommendRuleCommandList = shelveRecommendRuleCommandList;
+    }
+
+    public List<WhSkuInventorySnCommand> getWhSkuInventorySnCommandList() {
+        return whSkuInventorySnCommandList;
+    }
+
+    public void setWhSkuInventorySnCommandList(List<WhSkuInventorySnCommand> whSkuInventorySnCommandList) {
+        this.whSkuInventorySnCommandList = whSkuInventorySnCommandList;
+    }
 }
