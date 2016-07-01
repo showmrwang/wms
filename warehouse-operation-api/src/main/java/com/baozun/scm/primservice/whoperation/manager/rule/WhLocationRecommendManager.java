@@ -19,6 +19,7 @@ import java.util.Map;
 
 import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.LocationRecommendResultCommand;
 import com.baozun.scm.primservice.whoperation.command.rule.RuleAfferCommand;
+import com.baozun.scm.primservice.whoperation.command.rule.RuleExportCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.LocationCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ShelveRecommendRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
@@ -33,7 +34,7 @@ public interface WhLocationRecommendManager extends BaseManager {
 
     List<LocationCommand> recommendLocationByShevleRule(RuleAfferCommand ruleAffer, List<ShelveRecommendRuleCommand> ruleList, int putawayPatternDetail, String logId);
 
-    List<LocationRecommendResultCommand> recommendLocationByShevleRule(RuleAfferCommand ruleAffer, List<ShelveRecommendRuleCommand> ruleList, int putawayPatternDetailType, Map<Long, ContainerAssist> caMap, List<WhSkuInventoryCommand> invList,
+    List<LocationRecommendResultCommand> recommendLocationByShevleRule(RuleAfferCommand ruleAffer, RuleExportCommand export, int putawayPatternDetailType, Map<Long, ContainerAssist> caMap, List<WhSkuInventoryCommand> invList,
             Map<String, Map<String, Double>> uomMap, String logId);
 
 }

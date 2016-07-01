@@ -918,4 +918,108 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
             cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY, icId.toString());
         }
     }
+    
+    /**
+     * @author lichuan
+     * @param containerCmd
+     * @param ouId
+     * @param logId
+     * @return
+     */
+    @Override
+    public ContainerStatisticResultCommand sysGuideSplitContainerPutawayCacheInsideContainerStatistic(ContainerCommand containerCmd, Long ouId, String logId) {
+        Long containerId = containerCmd.getId();
+        if (log.isInfoEnabled()) {
+            log.info("sys guide splitContainer putaway cache containerStatistic start, contianerId is:[{}], ouId is:[{}], logId is:[{}]", containerId, ouId, logId);
+        }
+        // 查询对应所有内部容器信息
+        List<ContainerCommand> icList = whSkuInventoryDao.findAllInsideContainerByOuterContainerId(ouId, containerId);
+        ContainerStatisticResultCommand csrCmd = inventoryStatisticManager.sysGuidePutawayContainerStatistic(icList, WhPutawayPatternDetailType.CONTAINER_PUTAWAY, ouId, logId);
+        cacheManager.setMapObject(CacheConstants.CONTAINER_STATISTIC, containerId.toString(), csrCmd, CacheConstants.CACHE_ONE_MONTH);
+        if (log.isInfoEnabled()) {
+            log.info("sys guide splitContainer putaway cache containerStatistic end, contianerId is:[{}], ouId is:[{}], logId is:[{}]", containerId, ouId, logId);
+        }
+        return csrCmd;
+    }
+    
+    /**
+     * @author lichuan
+     * @param containerCmd
+     * @param insideContainerIds
+     * @param logId
+     * @return
+     */
+    @Override
+    public Long sysGuideSplitContainerPutawayTipContainer0(ContainerCommand containerCmd, Set<Long> insideContainerIds, String logId) {
+        Long containerId = containerCmd.getId();
+        Long tipContainerId = null;
+        long len = cacheManager.listLen(CacheConstants.SCAN_CONTAINER_QUEUE + containerId.toString());
+        if (0 < len) {
+            String insideContainerId = cacheManager.findListItem(CacheConstants.SCAN_CONTAINER_QUEUE + containerId.toString(), len - 1);
+            tipContainerId = new Long(insideContainerId);
+        } else {
+            // 随机取一个容器
+            for (Long ic : insideContainerIds) {
+                Long icId = ic;
+                if (null != icId) {
+                    tipContainerId = icId;
+                    cacheManager.pushToListHead(CacheConstants.SCAN_CONTAINER_QUEUE + containerId.toString(), icId.toString());
+                    break;
+                }
+            }
+        }
+        return tipContainerId;
+    }
+    
+    /**
+     * @author lichuan
+     * @param insideContainerCmd
+     * @param ouId
+     * @param logId
+     * @return
+     */
+    @Override
+    public List<WhSkuInventoryCommand> sysGuideSplitContainerPutawayCacheInventory(ContainerCommand insideContainerCmd, Long ouId, String logId) {
+        Long containerId = insideContainerCmd.getId();
+        if (log.isInfoEnabled()) {
+            log.info("sys guide splitContainer putaway cache inventory start, contianerId is:[{}], ouId is:[{}], logId is:[{}]", containerId, ouId, logId);
+        }
+        String containerCode = insideContainerCmd.getCode();
+        // 缓存所有库存
+        List<String> codelist = new ArrayList<String>();
+        codelist.add(containerCode);
+        // 查询所有对应容器号的库存信息
+        List<WhSkuInventoryCommand> invList = null;
+        invList = whSkuInventoryDao.findWhSkuInventoryByInsideContainerCode(ouId, codelist);
+        if (null == invList || 0 == invList.size()) {
+            log.error("sys guide splitContainer putaway container:[{}] rcvd inventory not found error!, logId is:[{}]", containerCode, logId);
+            throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_RCVD_INV_ERROR, new Object[] {containerCode});
+        }
+        cacheManager.setMapObject(CacheConstants.CONTAINER_INVENTORY, containerId.toString(), invList, CacheConstants.CACHE_ONE_MONTH);
+        if (log.isInfoEnabled()) {
+            log.info("sys guide splitContainer putaway cache inventory end, contianerId is:[{}], ouId is:[{}], logId is:[{}]", containerId, ouId, logId);
+        }
+        return invList;
+    }
+    
+    /**
+     * @author lichuan
+     * @param insideContainerCmd
+     * @param isCmd
+     * @param ouId
+     * @param logId
+     * @return
+     */
+    @Override
+    public InventoryStatisticResultCommand sysGuideSplitContainerPutawayCacheInventoryStatistic(ContainerCommand insideContainerCmd, InventoryStatisticResultCommand isCmd, Long ouId, String logId) {
+        Long containerId = insideContainerCmd.getId();
+        if (log.isInfoEnabled()) {
+            log.info("sys guide splitContainer putaway cache inventoryStatistic start, contianerId is:[{}], ouId is:[{}], logId is:[{}]", containerId, ouId, logId);
+        }
+        cacheManager.setMapObject(CacheConstants.CONTAINER_INVENTORY_STATISTIC, containerId.toString(), isCmd, CacheConstants.CACHE_ONE_MONTH);
+        if (log.isInfoEnabled()) {
+            log.info("sys guide splitContainer putaway cache inventoryStatistic end, contianerId is:[{}], ouId is:[{}], logId is:[{}]", containerId, ouId, logId);
+        }
+        return isCmd;
+    }
 }

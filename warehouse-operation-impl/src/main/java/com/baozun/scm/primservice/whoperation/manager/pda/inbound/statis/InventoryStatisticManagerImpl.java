@@ -30,6 +30,7 @@ import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.Contai
 import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.InventoryStatisticResultCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.carton.WhCartonDao;
@@ -82,6 +83,7 @@ public class InventoryStatisticManagerImpl extends BaseManagerImpl implements In
         Map<Long, Map<Long, Long>> insideContainerSkuIdsQty = new HashMap<Long, Map<Long, Long>>();// 内部容器单个sku总件数
         Map<Long, Set<String>> insideContainerSkuAttrIds = new HashMap<Long, Set<String>>();// 内部容器唯一sku种类
         Map<Long, Map<String, Long>> insideContainerSkuAttrIdsQty = new HashMap<Long, Map<String, Long>>();// 内部容器唯一sku总件数
+        Map<Long, Map<String, Set<String>>> insideContainerSkuAttrIdsDefect = new HashMap<Long, Map<String, Set<String>>>();//内部容器唯一sku对应所有残次条码
         Map<Long, Set<Long>> insideContainerStoreIds = new HashMap<Long, Set<Long>>();// 内部容器所有店铺
         for (WhSkuInventoryCommand invCmd : invList) {
             Long ocId = invCmd.getOuterContainerId();
@@ -180,6 +182,36 @@ public class InventoryStatisticManagerImpl extends BaseManagerImpl implements In
                 saq.put(SkuCategoryProvider.getSkuCategoryByInv(invCmd), curerntSkuQty.longValue());
                 insideContainerSkuAttrIdsQty.put(icId, saq);
             }
+            // 统计残次品
+            List<WhSkuInventorySnCommand> snCmdList = invCmd.getWhSkuInventorySnCommandList();
+            Set<String> snDefects = null;
+            if (null != snCmdList && 0 < snCmdList.size()) {
+                snDefects = new HashSet<String>();
+                for (WhSkuInventorySnCommand snCmd : snCmdList) {
+                    if (null != snCmd) {
+                        String defectBar = snCmd.getDefectWareBarcode();
+                        snDefects.add(defectBar);
+                    }
+                }
+            }
+            if (null != snDefects) {
+                if (null != insideContainerSkuAttrIdsDefect.get(icId)) {
+                    Map<String, Set<String>> skuAttrIdsDefect = insideContainerSkuAttrIdsDefect.get(icId);
+                    if (null != skuAttrIdsDefect.get(SkuCategoryProvider.getSkuCategoryByInv(invCmd))) {
+                        Set<String> defects = skuAttrIdsDefect.get(SkuCategoryProvider.getSkuCategoryByInv(invCmd));
+                        defects.addAll(snDefects);
+                        skuAttrIdsDefect.put(SkuCategoryProvider.getSkuCategoryByInv(invCmd), defects);
+                        insideContainerSkuAttrIdsDefect.put(icId, skuAttrIdsDefect);
+                    } else {
+                        skuAttrIdsDefect.put(SkuCategoryProvider.getSkuCategoryByInv(invCmd), snDefects);
+                        insideContainerSkuAttrIdsDefect.put(icId, skuAttrIdsDefect);
+                    }
+                } else {
+                    Map<String, Set<String>> skuAttrIdsDefect = new HashMap<String, Set<String>>();
+                    skuAttrIdsDefect.put(SkuCategoryProvider.getSkuCategoryByInv(invCmd), snDefects);
+                    insideContainerSkuAttrIdsDefect.put(icId, skuAttrIdsDefect);
+                }
+            }
             if (null != insideContainerStoreIds.get(icId)) {
                 Set<Long> icStores = insideContainerStoreIds.get(icId);
                 icStores.add(stroeId);
@@ -203,6 +235,7 @@ public class InventoryStatisticManagerImpl extends BaseManagerImpl implements In
         isCmd.setInsideContainerSkuIdsQty(insideContainerSkuIdsQty);
         isCmd.setInsideContainerSkuAttrIds(insideContainerSkuAttrIds);
         isCmd.setInsideContainerSkuAttrIdsQty(insideContainerSkuAttrIdsQty);
+        isCmd.setInsideContainerSkuAttrIdsDefect(insideContainerSkuAttrIdsDefect);
         isCmd.setInsideContainerStoreIds(insideContainerStoreIds);
         return isCmd;
     }

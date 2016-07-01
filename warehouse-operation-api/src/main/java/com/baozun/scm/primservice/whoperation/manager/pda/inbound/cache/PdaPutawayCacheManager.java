@@ -226,5 +226,46 @@ public interface PdaPutawayCacheManager extends BaseManager {
      * @param logId
      */
     void sysGuideContainerPutawayRemoveAllCache(ContainerCommand containerCmd, ContainerCommand insideContainerCmd, Boolean isAfterPutawayTipContainer, String logId);
+    
+    /**
+     * pda拆箱上架内部容器信息统计
+     * @author lichuan
+     * @param containerCmd
+     * @param ouId
+     * @param logId
+     * @return
+     */
+    ContainerStatisticResultCommand sysGuideSplitContainerPutawayCacheInsideContainerStatistic(ContainerCommand containerCmd, Long ouId, String logId);
+    
+    /**
+     * pda拆箱上架提示一个容器号
+     * @author lichuan
+     * @param containerCmd
+     * @param insideContainerIds
+     * @param logId
+     * @return
+     */
+    Long sysGuideSplitContainerPutawayTipContainer0(ContainerCommand containerCmd, Set<Long> insideContainerIds, String logId);
+    
+    /**
+     * pda拆箱上架缓内部容器存库存信息
+     * @author lichuan
+     * @param insideContainerCmd
+     * @param ouId
+     * @param logId
+     * @return
+     */
+    List<WhSkuInventoryCommand> sysGuideSplitContainerPutawayCacheInventory(ContainerCommand insideContainerCmd, Long ouId, String logId);
+    
+    /**
+     * pda拆箱上架缓存库存统计信息
+     * @author lichuan
+     * @param insideContainerCmd
+     * @param isCmd
+     * @param ouId
+     * @param logId
+     * @return
+     */
+    InventoryStatisticResultCommand sysGuideSplitContainerPutawayCacheInventoryStatistic(ContainerCommand insideContainerCmd, InventoryStatisticResultCommand isCmd, Long ouId, String logId);
 
 }

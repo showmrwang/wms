@@ -572,16 +572,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        </foreach>
     </select>
     
-    <select id="findWhSkuInventoryByOuterContainerCode" resultMap="WhSkuInventoryCommandResultExt">
+    <select id="findWhSkuInventoryByOuterContainerCode" resultMap="WhSkuInventoryCommandSnResultExt">
 			select 
-					inv.id as id,
+					inv.id as invId,
 					inv.sku_id as skuId,
 					inv.location_id as locationId,
 					inv.outer_container_id as outerContainerId,
 					inv.inside_container_id as insideContainerId,
 					inv.customer_id as customerId,
 					inv.store_id as storeId,
-					inv.occupation_code as occupationCode,
+					inv.occupation_code as invOccupationCode,
 					inv.on_hand_qty as onHandQty,
 					inv.allocated_qty as allocatedQty,
 					inv.to_be_filled_qty as toBeFilledQty,
@@ -597,16 +597,29 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					inv.inv_attr3 as invAttr3,
 					inv.inv_attr4 as invAttr4,
 					inv.inv_attr5 as invAttr5,
-					inv.uuid as uuid,
+					inv.uuid as invUuid,
 					inv.is_locked as isLocked,
-					inv.ou_id as ouId,
+					inv.ou_id as invOuId,
 					inv.occupation_code_source as occupationCodeSource,
 					inv.inbound_time as inboundTime,
-	        		inv.last_modify_time as lastModifyTime
+	        		inv.last_modify_time as lastModifyTime,
+	        		sn.id as snId,
+	        		sn.sn as snSn,
+	        		sn.occupation_code as snOccupationCode,
+	        		sn.defect_ware_barcode as snDefectWareBarcode,
+	        		sn.defect_source as snDefectSource,
+	        		sn.defect_type_id as snDefectTypeId,
+	        		sn.defect_reasons_id as snDefectReasonsId,
+	        		sn.status as snStatus,
+	        		sn.inv_attr as snInvAttr,
+	        		sn.uuid as snUuid,
+	        		sn.ou_id as snOuId,
+	        		sn.sys_uuid as snSysUuid
 					from 
 					t_wh_asn asn,	
 					t_wh_sku_inventory inv
-					left join t_wh_container c on c.id = inv.outer_container_id
+					left join t_wh_container c on c.id = inv.inside_container_id
+					left join t_wh_sku_inventory_sn sn on inv.uuid = sn.uuid
 					where 
 						inv.occupation_code is not null 
 						and asn.asn_code = inv.occupation_code
@@ -617,17 +630,66 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			            #{item}
 			        </foreach>
     </select>
+
+
+	<resultMap id="WhSkuInventoryCommandSnResultExt"
+		type="com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand">
+		<result property="id" column="invId"/>
+		<result property="skuId" column="skuId"/>
+		<result property="locationId" column="locationId"/>
+		<result property="outerContainerId" column="outerContainerId"/>
+		<result property="insideContainerId" column="insideContainerId"/>
+		<result property="customerId" column="customerId"/>
+		<result property="storeId" column="storeId"/>
+		<result property="occupationCode" column="invOccupationCode"/>
+		<result property="onHandQty" column="onHandQty"/>
+		<result property="allocatedQty" column="allocatedQty"/>
+		<result property="toBeFilledQty" column="toBeFilledQty"/>
+		<result property="frozenQty" column="frozenQty"/>
+		<result property="invStatus" column="invStatus"/>
+		<result property="invType" column="invType"/>
+		<result property="batchNumber" column="batchNumber"/>
+		<result property="mfgDate" column="mfgDate"/>
+		<result property="expDate" column="expDate"/>
+		<result property="countryOfOrigin" column="countryOfOrigin"/>
+		<result property="invAttr1" column="invAttr1"/>
+		<result property="invAttr2" column="invAttr2"/>
+		<result property="invAttr3" column="invAttr3"/>
+		<result property="invAttr4" column="invAttr4"/>
+		<result property="invAttr5" column="invAttr5"/>
+		<result property="uuid" column="invUuid"/>
+		<result property="isLocked" column="isLocked"/>
+		<result property="ouId" column="invOuId"/>
+		<result property="occupationCodeSource" column="occupationCodeSource"/>
+		<result property="inboundTime" column="inboundTime"/>
+		<result property="lastModifyTime" column="lastModifyTime"/>
+		<collection property="whSkuInventorySnCommandList"
+			ofType="com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand">
+			<id property="id" column="snId"/>
+			<result property="sn" column="snSn" />
+			<result property="occupationCode" column="snOccupationCode" />
+			<result property="defectWareBarcode" column="snDefectWareBarcode" />
+			<result property="defectSource" column="snDefectSource" />
+			<result property="defectTypeId" column="snDefectTypeId" />
+			<result property="defectReasonsId" column="snDefectReasonsId" />
+			<result property="status" column="snStatus" />
+			<result property="invAttr" column="snInvAttr" />
+			<result property="uuid" column="snUuid" />
+			<result property="ouId" column="snOuId" />
+			<result property="sysUuid" column="snSysUuid" />
+		</collection>
+	</resultMap>
     
-    <select id="findWhSkuInventoryByInsideContainerCode" resultMap="WhSkuInventoryCommandResultExt">
+    <select id="findWhSkuInventoryByInsideContainerCode" resultMap="WhSkuInventoryCommandSnResultExt">
 			select 
-					inv.id as id,
+					inv.id as invId,
 					inv.sku_id as skuId,
 					inv.location_id as locationId,
 					inv.outer_container_id as outerContainerId,
 					inv.inside_container_id as insideContainerId,
 					inv.customer_id as customerId,
 					inv.store_id as storeId,
-					inv.occupation_code as occupationCode,
+					inv.occupation_code as invOccupationCode,
 					inv.on_hand_qty as onHandQty,
 					inv.allocated_qty as allocatedQty,
 					inv.to_be_filled_qty as toBeFilledQty,
@@ -643,16 +705,29 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					inv.inv_attr3 as invAttr3,
 					inv.inv_attr4 as invAttr4,
 					inv.inv_attr5 as invAttr5,
-					inv.uuid as uuid,
+					inv.uuid as invUuid,
 					inv.is_locked as isLocked,
-					inv.ou_id as ouId,
+					inv.ou_id as invOuId,
 					inv.occupation_code_source as occupationCodeSource,
 					inv.inbound_time as inboundTime,
-	        		inv.last_modify_time as lastModifyTime
+	        		inv.last_modify_time as lastModifyTime,
+	        		sn.id as snId,
+	        		sn.sn as snSn,
+	        		sn.occupation_code as snOccupationCode,
+	        		sn.defect_ware_barcode as snDefectWareBarcode,
+	        		sn.defect_source as snDefectSource,
+	        		sn.defect_type_id as snDefectTypeId,
+	        		sn.defect_reasons_id as snDefectReasonsId,
+	        		sn.status as snStatus,
+	        		sn.inv_attr as snInvAttr,
+	        		sn.uuid as snUuid,
+	        		sn.ou_id as snOuId,
+	        		sn.sys_uuid as snSysUuid
 					from 
 					t_wh_asn asn,	
 					t_wh_sku_inventory inv
 					left join t_wh_container c on c.id = inv.inside_container_id
+					left join t_wh_sku_inventory_sn sn on inv.uuid = sn.uuid
 					where 
 						inv.occupation_code is not null 
 						and asn.asn_code = inv.occupation_code

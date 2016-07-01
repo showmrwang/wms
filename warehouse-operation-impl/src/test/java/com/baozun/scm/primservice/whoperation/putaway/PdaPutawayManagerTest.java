@@ -60,13 +60,14 @@ public class PdaPutawayManagerTest extends AbstractJUnit4SpringContextTests {
        //com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine
        //13100030
        ////com.baozun.scm.primservice.whinfo.model.warehouse.inventory.WhSkuInventory
+       //com.baozun.scm.primservice.whinfo.model.warehouse.inventory.WhSkuInventorySn
 
        //com.baozun.scm.primservice.whinfo.model.warehouse.WhSkuLocation
        //com.baozun.scm.primservice.whinfo.model.sku.Sku
        
 //       Long id = pkManager.generatePk(Constants.WMS, "com.baozun.scm.primservice.whinfo.model.warehouse.WhSkuLocation");
 //       System.out.println(id);
-       List<Long> ids = pkManager.generatePkList(Constants.WMS, "com.baozun.scm.primservice.whinfo.model.sku.Sku", 3).toArray();
+       List<Long> ids = pkManager.generatePkList(Constants.WMS, "com.baozun.scm.primservice.whinfo.model.warehouse.inventory.WhSkuInventorySn", 3).toArray();
        for(Long id : ids){
            System.out.println(id);
        }
@@ -159,7 +160,9 @@ public class PdaPutawayManagerTest extends AbstractJUnit4SpringContextTests {
     
     @Test
     public void removeCache(){
-       cacheManagr.removeMapValue(CacheConstants.CONTAINER_INVENTORY, "15100152");
+       //cacheManagr.removeMapValue(CacheConstants.CONTAINER_INVENTORY, "15100152");
+        cacheManagr.removeMapValue(CacheConstants.CONTAINER_INVENTORY, "15100156");
+        
     }
     
     public static void main(String[] args) {
