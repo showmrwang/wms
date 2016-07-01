@@ -158,7 +158,7 @@ public class WhLocationInvVolumeWieghtManagerImpl extends BaseManagerImpl implem
                         Double freezeQty = invCmd.getFrozenQty();
                         Double toBeFillQty = invCmd.getToBeFilledQty();
                         Double sVolume = cubeCal.calculateStuffVolume(skuLength, skuWidth, skuHeight);
-                        cubeCal.addStuffCubage(sVolume * (onHandQty + freezeQty + toBeFillQty));
+                        cubeCal.addStuffVolume(sVolume * (onHandQty + freezeQty + toBeFillQty));
                     }
                 }
             }
@@ -182,7 +182,7 @@ public class WhLocationInvVolumeWieghtManagerImpl extends BaseManagerImpl implem
             insideContainerIds.add(insideContainerId);
             skuIds.add(skuId);
         }
-        livw.setVolume(cubeCal.getStuffCubage());
+        livw.setVolume(cubeCal.getStuffVolume());
         livw.setWeight(weightCal.getStuffWeight());
         if (log.isInfoEnabled()) {
             log.info("whLocationInvVolumeWieghtManager.calculateLocationInvVolumeAndWeight end, locationId is:[{}], ouId is:[{}], logId is:[{}]", locationId, ouId, logId);

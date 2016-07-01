@@ -516,6 +516,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                     Double locHeight = al.getHigh();
                     Double locWidth = al.getWidth();
                     Double locWeight = al.getWeight();
+                    Double locVolumeRate = (null == al.getVolumeRate() ? 1.0 : al.getVolumeRate());
                     if (null == locLength || null == locLength || null == locLength) {
                         log.error("sys guide pallet putaway sku length、width、height is null error, skuId is:[{}], logId is:[{}]", locId, logId);
                         throw new BusinessException(ErrorCodes.LOCATION_LENGTH_WIDTH_HIGHT_IS_NULL_ERROR, new Object[] {al.getCode()});
@@ -527,7 +528,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                     //Double volumeRate = al.getVolumeRate();
                     if (WhLocationRecommendType.EMPTY_LOCATION.equals(locationRecommendRule)) {
                         // 计算体积
-                        SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, 0.8, lenUomConversionRate);
+                        SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate);
                         calc.initStuffCube(length, width, height, SimpleCubeCalculator.SYS_UOM);
                         boolean cubageAvailable = calc.calculateAvailable();
                         // 计算重量
@@ -554,9 +555,9 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                         Double livwVolume = livw.getVolume();// 库位上已有货物总体积
                         Double livwWeight = livw.getWeight();// 库位上已有货物总重量
                         // 计算体积
-                        SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, 0.8, lenUomConversionRate);
+                        SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate);
                         calc.initStuffCube(length, width, height, SimpleCubeCalculator.SYS_UOM);
-                        calc.addStuffCubage(livwVolume);
+                        calc.addStuffVolume(livwVolume);
                         boolean cubageAvailable = calc.calculateAvailable();
                         // 计算重量
                         SimpleWeightCalculator weightCal = new SimpleWeightCalculator(locWeight, SimpleWeightCalculator.SYS_UOM, weightUomConversionRate);
@@ -578,9 +579,9 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                         Double livwVolume = livw.getVolume();// 库位上已有货物总体积
                         Double livwWeight = livw.getWeight();// 库位上已有货物总重量
                         // 计算体积
-                        SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, 0.8, lenUomConversionRate);
+                        SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate);
                         calc.initStuffCube(length, width, height, SimpleCubeCalculator.SYS_UOM);
-                        calc.addStuffCubage(livwVolume);
+                        calc.addStuffVolume(livwVolume);
                         boolean cubageAvailable = calc.calculateAvailable();
                         // 计算重量
                         SimpleWeightCalculator weightCal = new SimpleWeightCalculator(locWeight, SimpleWeightCalculator.SYS_UOM, weightUomConversionRate);
@@ -602,9 +603,9 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                         Double livwVolume = livw.getVolume();// 库位上已有货物总体积
                         Double livwWeight = livw.getWeight();// 库位上已有货物总重量
                         // 计算体积
-                        SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, 0.8, lenUomConversionRate);
+                        SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate);
                         calc.initStuffCube(length, width, height, SimpleCubeCalculator.SYS_UOM);
-                        calc.addStuffCubage(livwVolume);
+                        calc.addStuffVolume(livwVolume);
                         boolean cubageAvailable = calc.calculateAvailable();
                         // 计算重量
                         SimpleWeightCalculator weightCal = new SimpleWeightCalculator(locWeight, SimpleWeightCalculator.SYS_UOM, weightUomConversionRate);
@@ -626,9 +627,9 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                         Double livwVolume = livw.getVolume();// 库位上已有货物总体积
                         Double livwWeight = livw.getWeight();// 库位上已有货物总重量
                         // 计算体积
-                        SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, 0.8, lenUomConversionRate);
+                        SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate);
                         calc.initStuffCube(length, width, height, SimpleCubeCalculator.SYS_UOM);
-                        calc.addStuffCubage(livwVolume);
+                        calc.addStuffVolume(livwVolume);
                         boolean cubageAvailable = calc.calculateAvailable();
                         // 计算重量
                         SimpleWeightCalculator weightCal = new SimpleWeightCalculator(locWeight, SimpleWeightCalculator.SYS_UOM, weightUomConversionRate);
@@ -902,6 +903,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                     Double locHeight = al.getHigh();
                     Double locWidth = al.getWidth();
                     Double locWeight = al.getWeight();
+                    Double locVolumeRate = (null == al.getVolumeRate() ? 1.0 : al.getVolumeRate());
                     if (null == locLength || null == locLength || null == locLength) {
                         log.error("sys guide container putaway sku length、width、height is null error, skuId is:[{}], logId is:[{}]", locId, logId);
                         throw new BusinessException(ErrorCodes.LOCATION_LENGTH_WIDTH_HIGHT_IS_NULL_ERROR, new Object[] {al.getCode()});
@@ -913,7 +915,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                     //Double volumeRate = al.getVolumeRate();
                     if (WhLocationRecommendType.EMPTY_LOCATION.equals(locationRecommendRule)) {
                         // 计算体积
-                        SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, 0.8, lenUomConversionRate);
+                        SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate);
                         calc.initStuffCube(length, width, height, SimpleCubeCalculator.SYS_UOM);
                         boolean cubageAvailable = calc.calculateAvailable();
                         // 计算重量
@@ -940,9 +942,9 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                         Double livwVolume = livw.getVolume();// 库位上已有货物总体积
                         Double livwWeight = livw.getWeight();// 库位上已有货物总重量
                         // 计算体积
-                        SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, 0.8, lenUomConversionRate);
+                        SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate);
                         calc.initStuffCube(length, width, height, SimpleCubeCalculator.SYS_UOM);
-                        calc.addStuffCubage(livwVolume);
+                        calc.addStuffVolume(livwVolume);
                         boolean cubageAvailable = calc.calculateAvailable();
                         // 计算重量
                         SimpleWeightCalculator weightCal = new SimpleWeightCalculator(locWeight, SimpleWeightCalculator.SYS_UOM, weightUomConversionRate);
@@ -964,9 +966,9 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                         Double livwVolume = livw.getVolume();// 库位上已有货物总体积
                         Double livwWeight = livw.getWeight();// 库位上已有货物总重量
                         // 计算体积
-                        SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, 0.8, lenUomConversionRate);
+                        SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate);
                         calc.initStuffCube(length, width, height, SimpleCubeCalculator.SYS_UOM);
-                        calc.addStuffCubage(livwVolume);
+                        calc.addStuffVolume(livwVolume);
                         boolean cubageAvailable = calc.calculateAvailable();
                         // 计算重量
                         SimpleWeightCalculator weightCal = new SimpleWeightCalculator(locWeight, SimpleWeightCalculator.SYS_UOM, weightUomConversionRate);
@@ -988,9 +990,9 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                         Double livwVolume = livw.getVolume();// 库位上已有货物总体积
                         Double livwWeight = livw.getWeight();// 库位上已有货物总重量
                         // 计算体积
-                        SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, 0.8, lenUomConversionRate);
+                        SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate);
                         calc.initStuffCube(length, width, height, SimpleCubeCalculator.SYS_UOM);
-                        calc.addStuffCubage(livwVolume);
+                        calc.addStuffVolume(livwVolume);
                         boolean cubageAvailable = calc.calculateAvailable();
                         // 计算重量
                         SimpleWeightCalculator weightCal = new SimpleWeightCalculator(locWeight, SimpleWeightCalculator.SYS_UOM, weightUomConversionRate);
@@ -1012,9 +1014,9 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                         Double livwVolume = livw.getVolume();// 库位上已有货物总体积
                         Double livwWeight = livw.getWeight();// 库位上已有货物总重量
                         // 计算体积
-                        SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, 0.8, lenUomConversionRate);
+                        SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate);
                         calc.initStuffCube(length, width, height, SimpleCubeCalculator.SYS_UOM);
-                        calc.addStuffCubage(livwVolume);
+                        calc.addStuffVolume(livwVolume);
                         boolean cubageAvailable = calc.calculateAvailable();
                         // 计算重量
                         SimpleWeightCalculator weightCal = new SimpleWeightCalculator(locWeight, SimpleWeightCalculator.SYS_UOM, weightUomConversionRate);

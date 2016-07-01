@@ -70,13 +70,13 @@ public class SimpleCubeCalculator {
     private static String[] uomCache = new String[] {sysUom};
     private static int uomSize = 1;
     private static Map<String, Double> uomConversion = new HashMap<String, Double>();
-    private Double _cubage;
-    private Double _rawCubage;
-    private Double cubage = 0.0;
-    private Double initStuffCubage = 0.0;
-    private Double rawCubage;
+    private Double _volume;
+    private Double _rawVolume;
+    private Double volume = 0.0;
+    private Double initStuffVolume = 0.0;
+    private Double rawVolume;
     private Double availability = 0.8;
-    private Double availableCubage;
+    private Double availableVolume;
     @SuppressWarnings("unused")
     private boolean isCubageAvailable;
     private boolean isLengthAvailable;
@@ -125,25 +125,25 @@ public class SimpleCubeCalculator {
         setInit(true);
     }
 
-    public Double getTotalCubage() {
+    public Double getTotalVolume() {
         isInitialization();
-        return get_cubage();
+        return get_Volume();
     }
 
     public Double getTotalAvailableCubage() {
         isInitialization();
-        return getAvailableCubage();
+        return getAvailableVolume();
     }
 
-    public Double addStuffCubage(Double c) {
-        Double ret = getCubage();
+    public Double addStuffVolume(Double c) {
+        Double ret = getVolume();
         ret += c;
-        setCubage(ret);
+        setVolume(ret);
         return ret;
     }
 
-    public Double getStuffCubage() {
-        return getCubage();
+    public Double getStuffVolume() {
+        return getVolume();
     }
 
     public Double calculateStuffVolume(Double actualX, Double actualY, Double actualZ) {
@@ -167,17 +167,17 @@ public class SimpleCubeCalculator {
         if (false == isInitStuffCube()) {
             initStuffCube(0.0, 0.0, 0.0, defaultUom);
         }
-        Double cubage = getCubage();
+        Double cubage = getVolume();
         Double ax = uomConversion(actualUom, actualX);
         Double ay = uomConversion(actualUom, actualY);
         Double az = uomConversion(actualUom, actualZ);
         cubage += cubageFormula(ax, ay, az);
-        addStuffCubage(cubage);
-        return getStuffCubage();
+        addStuffVolume(cubage);
+        return getStuffVolume();
     }
 
-    private Double calculateRemainCubage(Double availableCubage, Double cubage) {
-        return availableCubage - cubage + getInitStuffCubage();
+    private Double calculateRemainCubage(Double availableVolume, Double volume) {
+        return availableVolume - volume + getInitStuffVolume();
     }
 
     private Double calculateRemainZ(Double remainCubage, Double x, Double y) {
@@ -288,16 +288,16 @@ public class SimpleCubeCalculator {
         set_rawY(_y);
         set_rawZ(_z);
         set_uom(_uom);
-        set_rawCubage(cubageFormula(_x, _y, _z));
+        set_rawVolume(cubageFormula(_x, _y, _z));
         Double rx = uomConversion(_uom, _x);
         Double ry = uomConversion(_uom, _y);
         Double rz = uomConversion(_uom, _z);
         set_x(rx);
         set_y(ry);
         set_z(rz);
-        set_cubage(cubageFormula(rx, ry, rz));
+        set_volume(cubageFormula(rx, ry, rz));
         setAvailability(availability);
-        setAvailableCubage(get_cubage() * getAvailability());
+        setAvailableVolume(get_Volume() * getAvailability());
     }
 
     private void isLengthSupport(Double len) {
@@ -317,7 +317,7 @@ public class SimpleCubeCalculator {
         setRawX(x);
         setRawY(y);
         setRawZ(z);
-        setRawCubage(cubageFormula(x, y, z));
+        setRawVolume(cubageFormula(x, y, z));
         setUom(uom);
         Double rx = uomConversion(uom, x);
         Double ry = uomConversion(uom, y);
@@ -325,8 +325,8 @@ public class SimpleCubeCalculator {
         setX(rx);
         setY(ry);
         setZ(rz);
-        setCubage(cubageFormula(rx, ry, rz));
-        setInitStuffCubage(getCubage());
+        setVolume(cubageFormula(rx, ry, rz));
+        setInitStuffVolume(getVolume());
         setInitStuffCube(true);
     }
 
@@ -395,7 +395,7 @@ public class SimpleCubeCalculator {
         if (coords_z.equals(coords)) {
             Double rx = get_x();
             Double ry = get_y();
-            set_remainZ(calculateRemainZ(calculateRemainCubage(getTotalAvailableCubage(), getStuffCubage()), rx, ry));
+            set_remainZ(calculateRemainZ(calculateRemainCubage(getTotalAvailableCubage(), getStuffVolume()), rx, ry));
             Double rz = get_remainZ();
             Double ax = getX();
             Double ay = getY();
@@ -404,7 +404,7 @@ public class SimpleCubeCalculator {
         } else if (coords_y.equals(coords)) {
             Double rx = get_x();
             Double rz = get_z();
-            set_remainY(calculateRemainY(calculateRemainCubage(getTotalAvailableCubage(), getStuffCubage()), rz, rx));
+            set_remainY(calculateRemainY(calculateRemainCubage(getTotalAvailableCubage(), getStuffVolume()), rz, rx));
             Double ry = get_remainY();
             Double ax = getX();
             Double ay = getY();
@@ -413,7 +413,7 @@ public class SimpleCubeCalculator {
         } else if (coords_x.equals(coords)) {
             Double ry = get_y();
             Double rz = get_z();
-            set_remainX(calculateRemainX(calculateRemainCubage(getTotalAvailableCubage(), getStuffCubage()), ry, rz));
+            set_remainX(calculateRemainX(calculateRemainCubage(getTotalAvailableCubage(), getStuffVolume()), ry, rz));
             Double rx = get_remainX();
             Double ax = getX();
             Double ay = getY();
@@ -625,44 +625,44 @@ public class SimpleCubeCalculator {
         return uomSize;
     }
 
-    public Double get_cubage() {
-        return _cubage;
+    public Double get_Volume() {
+        return _volume;
     }
 
-    public void set_cubage(Double _cubage) {
-        this._cubage = _cubage;
+    public void set_volume(Double _volume) {
+        this._volume = _volume;
     }
 
-    public Double get_rawCubage() {
-        return _rawCubage;
+    public Double get_rawVolume() {
+        return _rawVolume;
     }
 
-    public void set_rawCubage(Double _rawCubage) {
-        this._rawCubage = _rawCubage;
+    public void set_rawVolume(Double _rawVolume) {
+        this._rawVolume = _rawVolume;
     }
 
-    public Double getCubage() {
-        return cubage;
+    public Double getVolume() {
+        return volume;
     }
 
-    public void setCubage(Double cubage) {
-        this.cubage = cubage;
+    public void setVolume(Double cubage) {
+        this.volume = cubage;
     }
 
-    public Double getInitStuffCubage() {
-        return initStuffCubage;
+    public Double getInitStuffVolume() {
+        return initStuffVolume;
     }
 
-    public void setInitStuffCubage(Double initStuffCubage) {
-        this.initStuffCubage = initStuffCubage;
+    public void setInitStuffVolume(Double initStuffVolume) {
+        this.initStuffVolume = initStuffVolume;
     }
 
-    public Double getRawCubage() {
-        return rawCubage;
+    public Double getRawVolume() {
+        return rawVolume;
     }
 
-    public void setRawCubage(Double rawCubage) {
-        this.rawCubage = rawCubage;
+    public void setRawVolume(Double rawVolume) {
+        this.rawVolume = rawVolume;
     }
 
     public Double getAvailability() {
@@ -673,17 +673,17 @@ public class SimpleCubeCalculator {
         this.availability = availability;
     }
 
-    public Double getAvailableCubage() {
-        return availableCubage;
+    public Double getAvailableVolume() {
+        return availableVolume;
     }
 
-    public void setAvailableCubage(Double availableCubage) {
-        this.availableCubage = availableCubage;
+    public void setAvailableVolume(Double availableCubage) {
+        this.availableVolume = availableCubage;
     }
 
     public boolean isCubageAvailable() {
-        Double availableCubage = getAvailableCubage();
-        Double cubage = getCubage();
+        Double availableCubage = getAvailableVolume();
+        Double cubage = getVolume();
         return (availableCubage - cubage >= 0 ? true : false);
     }
 

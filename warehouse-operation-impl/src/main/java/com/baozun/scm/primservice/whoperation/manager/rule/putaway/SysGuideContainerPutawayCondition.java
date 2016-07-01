@@ -97,10 +97,10 @@ public class SysGuideContainerPutawayCondition extends BaseManagerImpl implement
                             sql.append(" ").append(" and inv.batch_number = ").append(attrParams.getBatchNumber());
                             break;
                         case InvAttrMgmtType.MFG_DATE:
-                            sql.append(" ").append(" and inv.mfg_date = ").append(new SimpleDateFormat("yyyyMMdd hhmmss").format(attrParams.getMfgDate()));
+                            sql.append(" ").append(" and inv.mfg_date = ").append(null == attrParams.getMfgDate() ? null : new SimpleDateFormat("yyyyMMdd hhmmss").format(attrParams.getMfgDate()));
                             break;
                         case InvAttrMgmtType.EXP_DATE:
-                            sql.append(" ").append(" and inv.exp_date = ").append(new SimpleDateFormat("yyyyMMdd hhmmss").format(attrParams.getExpDate()));
+                            sql.append(" ").append(" and inv.exp_date = ").append(null == attrParams.getExpDate() ? null : new SimpleDateFormat("yyyyMMdd hhmmss").format(attrParams.getExpDate()));
                             break;
                         case InvAttrMgmtType.COUNTRY_OF_ORIGIN:
                             sql.append(" ").append(" and inv.country_of_origin = ").append(attrParams.getCountryOfOrigin());

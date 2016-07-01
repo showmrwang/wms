@@ -797,6 +797,8 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         // 8.匹配上架规则
         List<Long> storeList = new ArrayList<Long>();
         CollectionUtils.addAll(storeList, storeIds.iterator());
+        List<Long> icIdList = new ArrayList<Long>();
+        CollectionUtils.addAll(icIdList, insideContainerIds.iterator());
         RuleAfferCommand ruleAffer = new RuleAfferCommand();
         ruleAffer.setLogId(logId);
         ruleAffer.setOuid(ouId);
@@ -804,6 +806,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         ruleAffer.setContainerId(outerContainerId);
         ruleAffer.setFuncId(funcId);
         ruleAffer.setAfferContainerCodeList(icCodeList);
+        ruleAffer.setAfferInsideContainerIdList(icIdList);
         ruleAffer.setRuleType(Constants.SHELVE_RECOMMEND_RULE_ALL);// 整托 、货箱上架规则
         ruleAffer.setStoreIdList(storeList);
         RuleExportCommand export = ruleManager.ruleExport(ruleAffer);
@@ -1314,10 +1317,13 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         icCodeList.add(insideContainerCode);
         List<Long> storeList = new ArrayList<Long>();
         CollectionUtils.addAll(storeList, storeIds.iterator());
+        List<Long> icIdList = new ArrayList<Long>();
+        CollectionUtils.addAll(icIdList, insideContainerIds.iterator());
         RuleAfferCommand ruleAffer = new RuleAfferCommand();
         ruleAffer.setLogId(logId);
         ruleAffer.setOuid(ouId);
         ruleAffer.setAfferContainerCode(insideContainerCode);
+        ruleAffer.setAfferInsideContainerIdList(icIdList);
         ruleAffer.setContainerId(insideContainerId);
         ruleAffer.setFuncId(funcId);
         ruleAffer.setAfferContainerCodeList(icCodeList);

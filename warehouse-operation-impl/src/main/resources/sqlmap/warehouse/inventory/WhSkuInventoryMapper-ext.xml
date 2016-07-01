@@ -987,7 +987,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			and exists (select 1 from t_wh_sku_inventory invs where invs.inside_container_id=inv.occupation_code and invs.ou_id=inv.ou_id and invs.outer_container_id=#{insideContainerid})		
 	</select>
 	
-	<select id="findWhSkuInventoryByLocIdAndOuId" resultMap="WhSkuInventoryResultExt" flushCache="false">
+	<select id="findWhSkuInventoryByLocIdAndOuId" resultMap="WhSkuInventoryCommandResultExt" flushCache="false">
 			select <include refid="whSkuInventoryColumnsExt" />
 		    <![CDATA[
 			    from t_wh_sku_inventory inv

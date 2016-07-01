@@ -889,7 +889,7 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
             Long ocId = containerCmd.getId();
             if (false == isAfterPutawayTipContainer) {
                 // 0.先清除所有复核商品队列及内部库存及统计信息
-                InventoryStatisticResultCommand isCmd = cacheManager.getMapObject(CacheConstants.CONTAINER_STATISTIC, ocId.toString());
+                ContainerStatisticResultCommand isCmd = cacheManager.getMapObject(CacheConstants.CONTAINER_STATISTIC, ocId.toString());
                 if (null != isCmd) {
                     Set<Long> insideContainerIds = isCmd.getInsideContainerIds();
                     for (Long icId : insideContainerIds) {
