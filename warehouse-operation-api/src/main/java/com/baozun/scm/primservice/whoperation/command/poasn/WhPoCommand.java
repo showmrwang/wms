@@ -126,7 +126,11 @@ public class WhPoCommand extends BaseCommand {
     private Double overChageRate;
     /** 创建ASN时用 asnId */
     private Long asnId;
+    /**顾客ID*/
+    private List<Long> customerList;
 
+    /**店铺ID*/
+    private List<Long> storeList;
     public Long getAsnId() {
         return asnId;
     }
@@ -527,6 +531,22 @@ public class WhPoCommand extends BaseCommand {
 
     public void setInboundTimeStr(String inboundTimeStr) {
         this.inboundTimeStr = inboundTimeStr;
+    }
+
+    public List<Long> getCustomerList() {
+        return customerList;
+    }
+
+    public void setCustomerList(List<Long> customerList) {
+        this.customerList = customerList;
+    }
+
+    public List<Long> getStoreList() {
+        return storeList;
+    }
+
+    public void setStoreList(List<Long> storeList) {
+        this.storeList = storeList;
     }
 
 

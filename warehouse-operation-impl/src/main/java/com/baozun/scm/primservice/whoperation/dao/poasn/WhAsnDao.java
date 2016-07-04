@@ -93,5 +93,12 @@ public interface WhAsnDao extends BaseDao<WhAsn, Long> {
 
     long findListCountByParamExt(WhAsnCommand asnCommand);
 
+    /**
+     * 根据客户id集合，店铺id集合查询asn信息
+     * @param customerList
+     * @param storeList
+     * @return
+     */
+    public List<Long> getWhAsnCommandByCustomerId(@Param("customerList") List<Long> customerList,@Param("storeList") List<Long> storeList);
 
 }
