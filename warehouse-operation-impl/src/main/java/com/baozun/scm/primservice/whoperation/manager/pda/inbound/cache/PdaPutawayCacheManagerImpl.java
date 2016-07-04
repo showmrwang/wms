@@ -490,7 +490,7 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
         }
         return tipContainerId;
     }
-    
+
     /**
      * @author lichuan
      * @param containerCmd
@@ -640,7 +640,7 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
             throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_RCVD_INV_ERROR, new Object[] {containerCode});
         }
         cacheManager.setMapObject(CacheConstants.CONTAINER_INVENTORY, containerId.toString(), invList, CacheConstants.CACHE_ONE_MONTH);
-        InventoryStatisticResultCommand isCmd = inventoryStatisticManager.sysGuidePutawayInvStatistic(invList, WhPutawayPatternDetailType.PALLET_PUTAWAY, ouId, logId);
+        InventoryStatisticResultCommand isCmd = inventoryStatisticManager.sysGuidePutawayInvStatistic(invList, WhPutawayPatternDetailType.CONTAINER_PUTAWAY, ouId, logId);
         isCmd.setInsideContainerId(containerId);
         cacheManager.setMapObject(CacheConstants.CONTAINER_INVENTORY_STATISTIC, containerId.toString(), isCmd, CacheConstants.CACHE_ONE_MONTH);
         if (log.isInfoEnabled()) {
@@ -772,7 +772,7 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                                 }
                                 break;
                             } else {
-                                //重复扫描如果是最后一件则认为可以上架，否则报错提示
+                                // 重复扫描如果是最后一件则认为可以上架，否则报错提示
                                 if (isCacheAllExists(icSkusIds, CacheConstants.SCAN_SKU_QUEUE + icId.toString())) {
                                     // 全部商品已复核完毕
                                     // 判断上架以后是否需要提示下一个容器
@@ -782,7 +782,7 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                                     } else {
                                         cssrCmd.setNeedTipContainer(true);// 上架后需要提示下一个容器
                                     }
-                                }else{
+                                } else {
                                     log.error("scan sku has already checked, ocId is:[{}], icId is:[{}], scanSkuId is:[{}], logId is:[{}]", ocId, icId, skuId, logId);
                                     throw new BusinessException(ErrorCodes.CONTAINER_SKU_HAS_ALREADY_SCANNED, new Object[] {icCmd.getCode()});
                                 }
@@ -875,7 +875,7 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
         }
         return cssrCmd;
     }
-    
+
     /**
      * @author lichuan
      * @param containerCmd
@@ -918,7 +918,7 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
             cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY, icId.toString());
         }
     }
-    
+
     /**
      * @author lichuan
      * @param containerCmd
@@ -941,7 +941,7 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
         }
         return csrCmd;
     }
-    
+
     /**
      * @author lichuan
      * @param containerCmd
@@ -970,7 +970,7 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
         }
         return tipContainerId;
     }
-    
+
     /**
      * @author lichuan
      * @param insideContainerCmd
@@ -1001,7 +1001,7 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
         }
         return invList;
     }
-    
+
     /**
      * @author lichuan
      * @param insideContainerCmd
@@ -1021,5 +1021,68 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
             log.info("sys guide splitContainer putaway cache inventoryStatistic end, contianerId is:[{}], ouId is:[{}], logId is:[{}]", containerId, ouId, logId);
         }
         return isCmd;
+    }
+
+    /**
+     * @author lichuan
+     * @param containerCmd
+     * @param ouId
+     * @param logId
+     * @return
+     */
+    @Override
+    public List<WhSkuInventoryCommand> sysGuideSplitContainerPutawayCacheInventoryAndStatistic(ContainerCommand containerCmd, Long ouId, String logId) {
+        Long containerId = containerCmd.getId();
+        if (log.isInfoEnabled()) {
+            log.info("sys guide container putaway cache inventoryAndStatistic start, contianerId is:[{}], ouId is:[{}], logId is:[{}]", containerId, ouId, logId);
+        }
+        String containerCode = containerCmd.getCode();
+        // 缓存所有库存
+        List<String> codelist = new ArrayList<String>();
+        codelist.add(containerCode);
+        // 查询所有对应容器号的库存信息
+        List<WhSkuInventoryCommand> invList = null;
+        invList = whSkuInventoryDao.findWhSkuInventoryByInsideContainerCode(ouId, codelist);
+        if (null == invList || 0 == invList.size()) {
+            log.error("sys guide container putaway container:[{}] rcvd inventory not found error!, logId is:[{}]", containerCode, logId);
+            throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_RCVD_INV_ERROR, new Object[] {containerCode});
+        }
+        cacheManager.setMapObject(CacheConstants.CONTAINER_INVENTORY, containerId.toString(), invList, CacheConstants.CACHE_ONE_MONTH);
+        InventoryStatisticResultCommand isCmd = inventoryStatisticManager.sysGuidePutawayInvStatistic(invList, WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY, ouId, logId);
+        isCmd.setInsideContainerId(containerId);
+        cacheManager.setMapObject(CacheConstants.CONTAINER_INVENTORY_STATISTIC, containerId.toString(), isCmd, CacheConstants.CACHE_ONE_MONTH);
+        if (log.isInfoEnabled()) {
+            log.info("sys guide container putaway cache inventoryAndStatistic end, contianerId is:[{}], ouId is:[{}], logId is:[{}]", containerId, ouId, logId);
+        }
+        return invList;
+    }
+
+    /**
+     * @author lichuan
+     * @param insideContainerCmd
+     * @param locationIds
+     * @param logId
+     * @return
+     */
+    @Override
+    public Long sysGuideSplitContainerPutawayTipLocation0(ContainerCommand insideContainerCmd, Set<Long> locationIds, String logId) {
+        Long containerId = insideContainerCmd.getId();
+        Long tipLocationId = null;
+        long len = cacheManager.listLen(CacheConstants.SCAN_LOCATION_QUEUE + containerId.toString());
+        if (0 < len) {
+            String insideContainerId = cacheManager.findListItem(CacheConstants.SCAN_LOCATION_QUEUE + containerId.toString(), len - 1);
+            tipLocationId = new Long(insideContainerId);
+        } else {
+            // 随机取一个容器
+            for (Long id : locationIds) {
+                Long locId = id;
+                if (null != locId) {
+                    tipLocationId = locId;
+                    cacheManager.pushToListHead(CacheConstants.SCAN_LOCATION_QUEUE + containerId.toString(), locId.toString());
+                    break;
+                }
+            }
+        }
+        return tipLocationId;
     }
 }

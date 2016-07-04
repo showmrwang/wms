@@ -44,6 +44,8 @@ public final class CacheConstants {
     public static final String CONTAINER = "CONTAINER";
     /** 容器统计缓存 */
     public static final String CONTAINER_STATISTIC = "CONTAINER_STATISTIC";
+    /** 已扫描的库位队列 */
+    public static final String SCAN_LOCATION_QUEUE = "SCAN_LOCATION_QUEUE_";
     
     
     

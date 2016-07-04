@@ -1142,7 +1142,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                     // 当前sku库存行没有匹配到任何可用上架规则
                     LocationRecommendResultCommand lrrc = new LocationRecommendResultCommand();
                     lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
-                    lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.CONTAINER_PUTAWAY);
+                    lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY);
                     lrrc.setLocationCode(null);
                     lrrc.setLocationId(null);
                     lrrc.setInsideContainerCode(containerCode);
@@ -1152,6 +1152,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                     lrrc.setDefectBarcode(null);
                     list.add(lrrc);
                 } else {
+                    LocationRecommendResultCommand lrrc = null;
                     for (ShelveRecommendRuleCommand rule : ruleList) {
                         Long ruleId = rule.getId();
                         List<RecommendShelveCommand> rsList = recommendShelveDao.findCommandByRuleIdOrderByPriority(ruleId, ouId);
@@ -1177,7 +1178,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                 attrParams.setLrt(WhLocationRecommendType.EMPTY_LOCATION);
                                 attrParams.setSkuCategory(skuCategory);
                                 attrParams.setSkuAttrCategory(skuAttrCategory);
-                                PutawayCondition putawayCondition = putawayConditionFactory.getPutawayCondition(WhPutawayPatternType.SYS_GUIDE_PUTAWAY, WhPutawayPatternDetailType.CONTAINER_PUTAWAY, logId);
+                                PutawayCondition putawayCondition = putawayConditionFactory.getPutawayCondition(WhPutawayPatternType.SYS_GUIDE_PUTAWAY, WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY, logId);
                                 if (null != putawayCondition) {
                                     cSql = putawayCondition.getCondition(attrParams);
                                 }
@@ -1201,7 +1202,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                 }
                             } else if (WhLocationRecommendType.STATIC_LOCATION.equals(locationRecommendRule)) {
                                 attrParams.setLrt(WhLocationRecommendType.STATIC_LOCATION);
-                                PutawayCondition putawayCondition = putawayConditionFactory.getPutawayCondition(WhPutawayPatternType.SYS_GUIDE_PUTAWAY, WhPutawayPatternDetailType.CONTAINER_PUTAWAY, logId);
+                                PutawayCondition putawayCondition = putawayConditionFactory.getPutawayCondition(WhPutawayPatternType.SYS_GUIDE_PUTAWAY, WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY, logId);
                                 if (null != putawayCondition) {
                                     cSql = putawayCondition.getCondition(attrParams);
                                 }
@@ -1240,7 +1241,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                 attrParams.setInvAttrMgmt(invAttrMgmt);
                                 // 解析库存关键属性
                                 invAttrMgmtAspect(attrParams, invCmd);
-                                PutawayCondition putawayCondition = putawayConditionFactory.getPutawayCondition(WhPutawayPatternType.SYS_GUIDE_PUTAWAY, WhPutawayPatternDetailType.CONTAINER_PUTAWAY, logId);
+                                PutawayCondition putawayCondition = putawayConditionFactory.getPutawayCondition(WhPutawayPatternType.SYS_GUIDE_PUTAWAY, WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY, logId);
                                 if (null != putawayCondition) {
                                     cSql = putawayCondition.getCondition(attrParams);
                                 }
@@ -1259,7 +1260,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                 attrParams.setInvAttrMgmt("");
                                 // 解析库存关键属性
                                 invAttrMgmtAspect(attrParams, invCmd);
-                                PutawayCondition putawayCondition = putawayConditionFactory.getPutawayCondition(WhPutawayPatternType.SYS_GUIDE_PUTAWAY, WhPutawayPatternDetailType.CONTAINER_PUTAWAY, logId);
+                                PutawayCondition putawayCondition = putawayConditionFactory.getPutawayCondition(WhPutawayPatternType.SYS_GUIDE_PUTAWAY, WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY, logId);
                                 if (null != putawayCondition) {
                                     cSql = putawayCondition.getCondition(attrParams);
                                 }
@@ -1269,7 +1270,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                 avaliableLocs = locationDao.findAllInvLocsByAreaIdAndDiffAttrs(area.getId(), ouId, cSql);
                             } else if (WhLocationRecommendType.ONE_LOCATION_ONLY.equals(locationRecommendRule)) {
                                 attrParams.setLrt(WhLocationRecommendType.ONE_LOCATION_ONLY);
-                                PutawayCondition putawayCondition = putawayConditionFactory.getPutawayCondition(WhPutawayPatternType.SYS_GUIDE_PUTAWAY, WhPutawayPatternDetailType.CONTAINER_PUTAWAY, logId);
+                                PutawayCondition putawayCondition = putawayConditionFactory.getPutawayCondition(WhPutawayPatternType.SYS_GUIDE_PUTAWAY, WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY, logId);
                                 if (null != putawayCondition) {
                                     cSql = putawayCondition.getCondition(attrParams);
                                 }
@@ -1313,13 +1314,16 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                     weightCal.initStuffWeight(weight, SimpleWeightCalculator.SYS_UOM);
                                     boolean weightAvailable = weightCal.calculateAvailable();
                                     if (cubageAvailable & weightAvailable) {
-                                        LocationRecommendResultCommand lrrc = new LocationRecommendResultCommand();
+                                        lrrc = new LocationRecommendResultCommand();
                                         lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
-                                        lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.CONTAINER_PUTAWAY);
+                                        lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY);
                                         lrrc.setLocationCode(al.getCode());
                                         lrrc.setLocationId(al.getId());
-                                        lrrc.setOuterContainerCode(containerCode);
-                                        lrrc.setOuterContainerId(containerId);
+                                        lrrc.setInsideContainerCode(containerCode);
+                                        lrrc.setInsideContainerId(containerId);
+                                        lrrc.setSkuId(skuId);
+                                        lrrc.setSkuAttrId(SkuCategoryProvider.getSkuCategoryByInv(invRule));
+                                        lrrc.setDefectBarcode(null);
                                         list.add(lrrc);
                                     }
                                 } else if (WhLocationRecommendType.STATIC_LOCATION.equals(locationRecommendRule)) {
@@ -1342,13 +1346,16 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                     weightCal.addStuffWeight(livwWeight);
                                     boolean weightAvailable = weightCal.calculateAvailable();
                                     if (cubageAvailable & weightAvailable) {
-                                        LocationRecommendResultCommand lrrc = new LocationRecommendResultCommand();
+                                        lrrc = new LocationRecommendResultCommand();
                                         lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
-                                        lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.CONTAINER_PUTAWAY);
+                                        lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY);
                                         lrrc.setLocationCode(al.getCode());
                                         lrrc.setLocationId(al.getId());
-                                        lrrc.setOuterContainerCode(containerCode);
-                                        lrrc.setOuterContainerId(containerId);
+                                        lrrc.setInsideContainerCode(containerCode);
+                                        lrrc.setInsideContainerId(containerId);
+                                        lrrc.setSkuId(skuId);
+                                        lrrc.setSkuAttrId(SkuCategoryProvider.getSkuCategoryByInv(invRule));
+                                        lrrc.setDefectBarcode(null);
                                         list.add(lrrc);
                                     }
                                 } else if (WhLocationRecommendType.MERGE_LOCATION_SAME_INV_ATTRS.equals(locationRecommendRule)) {
@@ -1366,13 +1373,16 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                     weightCal.addStuffWeight(livwWeight);
                                     boolean weightAvailable = weightCal.calculateAvailable();
                                     if (cubageAvailable & weightAvailable) {
-                                        LocationRecommendResultCommand lrrc = new LocationRecommendResultCommand();
+                                        lrrc = new LocationRecommendResultCommand();
                                         lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
-                                        lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.CONTAINER_PUTAWAY);
+                                        lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY);
                                         lrrc.setLocationCode(al.getCode());
                                         lrrc.setLocationId(al.getId());
-                                        lrrc.setOuterContainerCode(containerCode);
-                                        lrrc.setOuterContainerId(containerId);
+                                        lrrc.setInsideContainerCode(containerCode);
+                                        lrrc.setInsideContainerId(containerId);
+                                        lrrc.setSkuId(skuId);
+                                        lrrc.setSkuAttrId(SkuCategoryProvider.getSkuCategoryByInv(invRule));
+                                        lrrc.setDefectBarcode(null);
                                         list.add(lrrc);
                                     }
                                 } else if (WhLocationRecommendType.MERGE_LOCATION_DIFF_INV_ATTRS.equals(locationRecommendRule)) {
@@ -1390,13 +1400,16 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                     weightCal.addStuffWeight(livwWeight);
                                     boolean weightAvailable = weightCal.calculateAvailable();
                                     if (cubageAvailable & weightAvailable) {
-                                        LocationRecommendResultCommand lrrc = new LocationRecommendResultCommand();
+                                        lrrc = new LocationRecommendResultCommand();
                                         lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
-                                        lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.CONTAINER_PUTAWAY);
+                                        lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY);
                                         lrrc.setLocationCode(al.getCode());
                                         lrrc.setLocationId(al.getId());
-                                        lrrc.setOuterContainerCode(containerCode);
-                                        lrrc.setOuterContainerId(containerId);
+                                        lrrc.setInsideContainerCode(containerCode);
+                                        lrrc.setInsideContainerId(containerId);
+                                        lrrc.setSkuId(skuId);
+                                        lrrc.setSkuAttrId(SkuCategoryProvider.getSkuCategoryByInv(invRule));
+                                        lrrc.setDefectBarcode(null);
                                         list.add(lrrc);
                                     }
                                 } else if (WhLocationRecommendType.ONE_LOCATION_ONLY.equals(locationRecommendRule)) {
@@ -1414,30 +1427,46 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                     weightCal.addStuffWeight(livwWeight);
                                     boolean weightAvailable = weightCal.calculateAvailable();
                                     if (cubageAvailable & weightAvailable) {
-                                        LocationRecommendResultCommand lrrc = new LocationRecommendResultCommand();
+                                        lrrc = new LocationRecommendResultCommand();
                                         lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
-                                        lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.CONTAINER_PUTAWAY);
+                                        lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY);
                                         lrrc.setLocationCode(al.getCode());
                                         lrrc.setLocationId(al.getId());
-                                        lrrc.setOuterContainerCode(containerCode);
-                                        lrrc.setOuterContainerId(containerId);
+                                        lrrc.setInsideContainerCode(containerCode);
+                                        lrrc.setInsideContainerId(containerId);
+                                        lrrc.setSkuId(skuId);
+                                        lrrc.setSkuAttrId(SkuCategoryProvider.getSkuCategoryByInv(invRule));
+                                        lrrc.setDefectBarcode(null);
                                         list.add(lrrc);
                                     }
                                 } else {
                                     break;
                                 }
 
-                                if (1 == list.size()) {
+                                if (null != lrrc) {
                                     break;
                                 }
                             }
-                            if (1 == list.size()) {
+                            if (null != lrrc) {
                                 break;
                             }
                         }
-                        if (1 == list.size()) {
+                        if (null != lrrc) {
                             break;
                         }
+                    }
+                    if(null == lrrc){
+                        lrrc = new LocationRecommendResultCommand();
+                        lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
+                        lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY);
+                        lrrc.setLocationCode(null);
+                        lrrc.setLocationId(null);
+                        lrrc.setInsideContainerCode(containerCode);
+                        lrrc.setInsideContainerId(containerId);
+                        lrrc.setSkuId(skuId);
+                        lrrc.setSkuAttrId(SkuCategoryProvider.getSkuCategoryByInv(invRule));
+                        lrrc.setDefectBarcode(null);
+                        list.add(lrrc);
                     }
                 }
             } else {
@@ -1451,7 +1480,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                         // 当前sn库存行没有匹配到任何可用规则
                         LocationRecommendResultCommand lrrc = new LocationRecommendResultCommand();
                         lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
-                        lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.CONTAINER_PUTAWAY);
+                        lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY);
                         lrrc.setLocationCode(null);
                         lrrc.setLocationId(null);
                         lrrc.setInsideContainerCode(containerCode);
@@ -1461,6 +1490,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                         lrrc.setDefectBarcode(defectBarcode);
                         list.add(lrrc);
                     } else {
+                        LocationRecommendResultCommand lrrc = null;
                         for (ShelveRecommendRuleCommand rule : ruleList) {
                             Long ruleId = rule.getId();
                             List<RecommendShelveCommand> rsList = recommendShelveDao.findCommandByRuleIdOrderByPriority(ruleId, ouId);
@@ -1486,7 +1516,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                     attrParams.setLrt(WhLocationRecommendType.EMPTY_LOCATION);
                                     attrParams.setSkuCategory(skuCategory);
                                     attrParams.setSkuAttrCategory(skuAttrCategory);
-                                    PutawayCondition putawayCondition = putawayConditionFactory.getPutawayCondition(WhPutawayPatternType.SYS_GUIDE_PUTAWAY, WhPutawayPatternDetailType.CONTAINER_PUTAWAY, logId);
+                                    PutawayCondition putawayCondition = putawayConditionFactory.getPutawayCondition(WhPutawayPatternType.SYS_GUIDE_PUTAWAY, WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY, logId);
                                     if (null != putawayCondition) {
                                         cSql = putawayCondition.getCondition(attrParams);
                                     }
@@ -1510,7 +1540,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                     }
                                 } else if (WhLocationRecommendType.STATIC_LOCATION.equals(locationRecommendRule)) {
                                     attrParams.setLrt(WhLocationRecommendType.STATIC_LOCATION);
-                                    PutawayCondition putawayCondition = putawayConditionFactory.getPutawayCondition(WhPutawayPatternType.SYS_GUIDE_PUTAWAY, WhPutawayPatternDetailType.CONTAINER_PUTAWAY, logId);
+                                    PutawayCondition putawayCondition = putawayConditionFactory.getPutawayCondition(WhPutawayPatternType.SYS_GUIDE_PUTAWAY, WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY, logId);
                                     if (null != putawayCondition) {
                                         cSql = putawayCondition.getCondition(attrParams);
                                     }
@@ -1549,7 +1579,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                     attrParams.setInvAttrMgmt(invAttrMgmt);
                                     // 解析库存关键属性
                                     invAttrMgmtAspect(attrParams, invCmd);
-                                    PutawayCondition putawayCondition = putawayConditionFactory.getPutawayCondition(WhPutawayPatternType.SYS_GUIDE_PUTAWAY, WhPutawayPatternDetailType.CONTAINER_PUTAWAY, logId);
+                                    PutawayCondition putawayCondition = putawayConditionFactory.getPutawayCondition(WhPutawayPatternType.SYS_GUIDE_PUTAWAY, WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY, logId);
                                     if (null != putawayCondition) {
                                         cSql = putawayCondition.getCondition(attrParams);
                                     }
@@ -1568,7 +1598,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                     attrParams.setInvAttrMgmt("");
                                     // 解析库存关键属性
                                     invAttrMgmtAspect(attrParams, invCmd);
-                                    PutawayCondition putawayCondition = putawayConditionFactory.getPutawayCondition(WhPutawayPatternType.SYS_GUIDE_PUTAWAY, WhPutawayPatternDetailType.CONTAINER_PUTAWAY, logId);
+                                    PutawayCondition putawayCondition = putawayConditionFactory.getPutawayCondition(WhPutawayPatternType.SYS_GUIDE_PUTAWAY, WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY, logId);
                                     if (null != putawayCondition) {
                                         cSql = putawayCondition.getCondition(attrParams);
                                     }
@@ -1578,7 +1608,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                     avaliableLocs = locationDao.findAllInvLocsByAreaIdAndDiffAttrs(area.getId(), ouId, cSql);
                                 } else if (WhLocationRecommendType.ONE_LOCATION_ONLY.equals(locationRecommendRule)) {
                                     attrParams.setLrt(WhLocationRecommendType.ONE_LOCATION_ONLY);
-                                    PutawayCondition putawayCondition = putawayConditionFactory.getPutawayCondition(WhPutawayPatternType.SYS_GUIDE_PUTAWAY, WhPutawayPatternDetailType.CONTAINER_PUTAWAY, logId);
+                                    PutawayCondition putawayCondition = putawayConditionFactory.getPutawayCondition(WhPutawayPatternType.SYS_GUIDE_PUTAWAY, WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY, logId);
                                     if (null != putawayCondition) {
                                         cSql = putawayCondition.getCondition(attrParams);
                                     }
@@ -1622,13 +1652,16 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                         weightCal.initStuffWeight(weight, SimpleWeightCalculator.SYS_UOM);
                                         boolean weightAvailable = weightCal.calculateAvailable();
                                         if (cubageAvailable & weightAvailable) {
-                                            LocationRecommendResultCommand lrrc = new LocationRecommendResultCommand();
+                                            lrrc = new LocationRecommendResultCommand();
                                             lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
-                                            lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.CONTAINER_PUTAWAY);
+                                            lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY);
                                             lrrc.setLocationCode(al.getCode());
                                             lrrc.setLocationId(al.getId());
-                                            lrrc.setOuterContainerCode(containerCode);
-                                            lrrc.setOuterContainerId(containerId);
+                                            lrrc.setInsideContainerCode(containerCode);
+                                            lrrc.setInsideContainerId(containerId);
+                                            lrrc.setSkuId(skuId);
+                                            lrrc.setSkuAttrId(SkuCategoryProvider.getSkuCategoryByInv(invRule));
+                                            lrrc.setDefectBarcode(defectBarcode);
                                             list.add(lrrc);
                                         }
                                     } else if (WhLocationRecommendType.STATIC_LOCATION.equals(locationRecommendRule)) {
@@ -1651,13 +1684,16 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                         weightCal.addStuffWeight(livwWeight);
                                         boolean weightAvailable = weightCal.calculateAvailable();
                                         if (cubageAvailable & weightAvailable) {
-                                            LocationRecommendResultCommand lrrc = new LocationRecommendResultCommand();
+                                            lrrc = new LocationRecommendResultCommand();
                                             lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
-                                            lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.CONTAINER_PUTAWAY);
+                                            lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY);
                                             lrrc.setLocationCode(al.getCode());
                                             lrrc.setLocationId(al.getId());
-                                            lrrc.setOuterContainerCode(containerCode);
-                                            lrrc.setOuterContainerId(containerId);
+                                            lrrc.setInsideContainerCode(containerCode);
+                                            lrrc.setInsideContainerId(containerId);
+                                            lrrc.setSkuId(skuId);
+                                            lrrc.setSkuAttrId(SkuCategoryProvider.getSkuCategoryByInv(invRule));
+                                            lrrc.setDefectBarcode(defectBarcode);
                                             list.add(lrrc);
                                         }
                                     } else if (WhLocationRecommendType.MERGE_LOCATION_SAME_INV_ATTRS.equals(locationRecommendRule)) {
@@ -1675,13 +1711,16 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                         weightCal.addStuffWeight(livwWeight);
                                         boolean weightAvailable = weightCal.calculateAvailable();
                                         if (cubageAvailable & weightAvailable) {
-                                            LocationRecommendResultCommand lrrc = new LocationRecommendResultCommand();
+                                            lrrc = new LocationRecommendResultCommand();
                                             lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
-                                            lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.CONTAINER_PUTAWAY);
+                                            lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY);
                                             lrrc.setLocationCode(al.getCode());
                                             lrrc.setLocationId(al.getId());
-                                            lrrc.setOuterContainerCode(containerCode);
-                                            lrrc.setOuterContainerId(containerId);
+                                            lrrc.setInsideContainerCode(containerCode);
+                                            lrrc.setInsideContainerId(containerId);
+                                            lrrc.setSkuId(skuId);
+                                            lrrc.setSkuAttrId(SkuCategoryProvider.getSkuCategoryByInv(invRule));
+                                            lrrc.setDefectBarcode(defectBarcode);
                                             list.add(lrrc);
                                         }
                                     } else if (WhLocationRecommendType.MERGE_LOCATION_DIFF_INV_ATTRS.equals(locationRecommendRule)) {
@@ -1699,13 +1738,16 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                         weightCal.addStuffWeight(livwWeight);
                                         boolean weightAvailable = weightCal.calculateAvailable();
                                         if (cubageAvailable & weightAvailable) {
-                                            LocationRecommendResultCommand lrrc = new LocationRecommendResultCommand();
+                                            lrrc = new LocationRecommendResultCommand();
                                             lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
-                                            lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.CONTAINER_PUTAWAY);
+                                            lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY);
                                             lrrc.setLocationCode(al.getCode());
                                             lrrc.setLocationId(al.getId());
-                                            lrrc.setOuterContainerCode(containerCode);
-                                            lrrc.setOuterContainerId(containerId);
+                                            lrrc.setInsideContainerCode(containerCode);
+                                            lrrc.setInsideContainerId(containerId);
+                                            lrrc.setSkuId(skuId);
+                                            lrrc.setSkuAttrId(SkuCategoryProvider.getSkuCategoryByInv(invRule));
+                                            lrrc.setDefectBarcode(defectBarcode);
                                             list.add(lrrc);
                                         }
                                     } else if (WhLocationRecommendType.ONE_LOCATION_ONLY.equals(locationRecommendRule)) {
@@ -1723,30 +1765,46 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                         weightCal.addStuffWeight(livwWeight);
                                         boolean weightAvailable = weightCal.calculateAvailable();
                                         if (cubageAvailable & weightAvailable) {
-                                            LocationRecommendResultCommand lrrc = new LocationRecommendResultCommand();
+                                            lrrc = new LocationRecommendResultCommand();
                                             lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
-                                            lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.CONTAINER_PUTAWAY);
+                                            lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY);
                                             lrrc.setLocationCode(al.getCode());
                                             lrrc.setLocationId(al.getId());
-                                            lrrc.setOuterContainerCode(containerCode);
-                                            lrrc.setOuterContainerId(containerId);
+                                            lrrc.setInsideContainerCode(containerCode);
+                                            lrrc.setInsideContainerId(containerId);
+                                            lrrc.setSkuId(skuId);
+                                            lrrc.setSkuAttrId(SkuCategoryProvider.getSkuCategoryByInv(invRule));
+                                            lrrc.setDefectBarcode(defectBarcode);
                                             list.add(lrrc);
                                         }
                                     } else {
                                         break;
                                     }
 
-                                    if (1 == list.size()) {
+                                    if (null != lrrc) {
                                         break;
                                     }
                                 }
-                                if (1 == list.size()) {
+                                if (null != lrrc) {
                                     break;
                                 }
                             }
-                            if (1 == list.size()) {
+                            if (null != lrrc) {
                                 break;
                             }
+                        }
+                        if(null == lrrc){
+                            lrrc = new LocationRecommendResultCommand();
+                            lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
+                            lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY);
+                            lrrc.setLocationCode(null);
+                            lrrc.setLocationId(null);
+                            lrrc.setInsideContainerCode(containerCode);
+                            lrrc.setInsideContainerId(containerId);
+                            lrrc.setSkuId(skuId);
+                            lrrc.setSkuAttrId(SkuCategoryProvider.getSkuCategoryByInv(invRule));
+                            lrrc.setDefectBarcode(defectBarcode);
+                            list.add(lrrc);
                         }
                     }
                 }

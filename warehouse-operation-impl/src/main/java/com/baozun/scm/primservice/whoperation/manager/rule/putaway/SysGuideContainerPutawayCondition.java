@@ -14,17 +14,12 @@
  */
 package com.baozun.scm.primservice.whoperation.manager.rule.putaway;
 
-import java.text.SimpleDateFormat;
-
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.baozun.scm.primservice.whoperation.constant.InvAttrMgmtType;
 import com.baozun.scm.primservice.whoperation.constant.WhLocationRecommendType;
-import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 
 /**
  * @author lichuan
@@ -32,7 +27,7 @@ import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
  */
 @Service("sysGuideContainerPutawayCondition")
 @Transactional
-public class SysGuideContainerPutawayCondition extends BaseManagerImpl implements PutawayCondition {
+public class SysGuideContainerPutawayCondition extends PutawayBaseCondition implements PutawayCondition {
     protected static final Logger log = LoggerFactory.getLogger(SysGuideContainerPutawayCondition.class);
 
     /**
@@ -77,53 +72,6 @@ public class SysGuideContainerPutawayCondition extends BaseManagerImpl implement
                 sql = new StringBuilder("");
         }
         return sql.toString();
-    }
-
-    private void invAttrMgmtAspect(AttrParams attrParams, StringBuilder sql) {
-        String invAttrMgmt = attrParams.getInvAttrMgmt();
-        sql.append(" ").append("and inv.sku_id = ").append(attrParams.getSkuId().toString());
-        if (!StringUtils.isEmpty(invAttrMgmt)) {
-            String[] invAttrs = invAttrMgmt.split(",");
-            if (null != invAttrs && 0 < invAttrs.length) {
-                for (String attr : invAttrs) {
-                    switch (attr) {
-                        case InvAttrMgmtType.INV_TYPE:
-                            sql.append(" ").append(" and inv.inv_type = ").append(attrParams.getInvType());
-                            break;
-                        case InvAttrMgmtType.INV_STATUS:
-                            sql.append(" ").append(" and inv.inv_status = ").append(attrParams.getInvStatus());
-                            break;
-                        case InvAttrMgmtType.BATCH_NUMBER:
-                            sql.append(" ").append(" and inv.batch_number = ").append(attrParams.getBatchNumber());
-                            break;
-                        case InvAttrMgmtType.MFG_DATE:
-                            sql.append(" ").append(" and inv.mfg_date = ").append(null == attrParams.getMfgDate() ? null : new SimpleDateFormat("yyyyMMdd hhmmss").format(attrParams.getMfgDate()));
-                            break;
-                        case InvAttrMgmtType.EXP_DATE:
-                            sql.append(" ").append(" and inv.exp_date = ").append(null == attrParams.getExpDate() ? null : new SimpleDateFormat("yyyyMMdd hhmmss").format(attrParams.getExpDate()));
-                            break;
-                        case InvAttrMgmtType.COUNTRY_OF_ORIGIN:
-                            sql.append(" ").append(" and inv.country_of_origin = ").append(attrParams.getCountryOfOrigin());
-                            break;
-                        case InvAttrMgmtType.INV_ATTR1:
-                            sql.append(" ").append(" and inv.inv_attr1 = ").append(attrParams.getInvAttr1());
-                            break;
-                        case InvAttrMgmtType.INV_ATTR2:
-                            sql.append(" ").append(" and inv.inv_attr2 = ").append(attrParams.getInvAttr2());
-                            break;
-                        case InvAttrMgmtType.INV_ATTR3:
-                            sql.append(" ").append(" and inv.inv_attr3 = ").append(attrParams.getInvAttr3());
-                            break;
-                        case InvAttrMgmtType.INV_ATTR4:
-                            sql.append(" ").append(" and inv.inv_attr4 = ").append(attrParams.getInvAttr4());
-                            break;
-                        case InvAttrMgmtType.INV_ATTR5:
-                            sql.append(" ").append(" and inv.inv_attr5 = ").append(attrParams.getInvAttr5());
-                            break;
-                    }
-                }
-            }
-        }
     }
 
 }

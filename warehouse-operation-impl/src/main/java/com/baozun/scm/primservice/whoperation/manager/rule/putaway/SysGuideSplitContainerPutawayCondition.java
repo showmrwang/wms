@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.whoperation.constant.WhLocationRecommendType;
-import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 
 /**
  * @author lichuan
@@ -30,7 +29,7 @@ import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
  */
 @Service("sysGuideSplitContainerPutawayCondition")
 @Transactional
-public class SysGuideSplitContainerPutawayCondition extends BaseManagerImpl implements PutawayCondition {
+public class SysGuideSplitContainerPutawayCondition extends PutawayBaseCondition implements PutawayCondition {
     protected static final Logger log = LoggerFactory.getLogger(SysGuideSplitContainerPutawayCondition.class);
 
     /**
@@ -45,10 +44,30 @@ public class SysGuideSplitContainerPutawayCondition extends BaseManagerImpl impl
         String lrt = attrParams.getLrt();
         switch (lrt) {
             case WhLocationRecommendType.EMPTY_LOCATION:
+                sql.append(" ").append(" loc.mix_stacking_number >= ").append(attrParams.getSkuCategory());
+                sql.append(" ").append(" and loc.max_chaos_sku >= ").append(attrParams.getSkuAttrCategory());
+                return sql.toString();
             case WhLocationRecommendType.STATIC_LOCATION:
+                return sql.toString();
             case WhLocationRecommendType.MERGE_LOCATION_SAME_INV_ATTRS:
+                if (null != attrParams.getIsMixStacking()) {
+                    sql.append(" ").append("loc.is_mix_stacking = ").append((true == attrParams.getIsMixStacking() ? "1" : "0"));
+                }
+                sql.append(" exists (select 1 from t_wh_sku_inventory inv where inv.location_id = loc.id and inv.ou_id = ").append(attrParams.getOuId());
+                invAttrMgmtAspect(attrParams, sql);
+                sql.append(" ").append("group by inv.location_id,inv.ou_id,inv.sku_id having(inv.sku_id) = 1");
+                sql.append(")");
+                return sql.toString();
             case WhLocationRecommendType.MERGE_LOCATION_DIFF_INV_ATTRS:
+                /*if (null != attrParams.getIsMixStacking()) {
+                    sql.append(" ").append("loc.is_mix_stacking = ").append((true == attrParams.getIsMixStacking() ? "1" : "0"));
+                }*/
+                sql.append(" exists (select 1 from t_wh_sku_inventory inv where inv.location_id = loc.id and inv.ou_id = ").append(attrParams.getOuId());
+                sql.append(" ").append("group by inv.location_id,inv.ou_id,inv.sku_id having(inv.sku_id) = 1");
+                sql.append(")");
+                return sql.toString();
             case WhLocationRecommendType.ONE_LOCATION_ONLY:
+                return sql.toString();
             default:
                 sql = new StringBuilder("");
         }

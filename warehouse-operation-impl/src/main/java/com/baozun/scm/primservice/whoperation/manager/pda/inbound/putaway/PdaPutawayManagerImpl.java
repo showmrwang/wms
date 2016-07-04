@@ -14,6 +14,7 @@
  */
 package com.baozun.scm.primservice.whoperation.manager.pda.inbound.putaway;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -65,6 +66,7 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.WhLocationDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhSkuDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.carton.WhCartonDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventorySnDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
@@ -84,6 +86,7 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.Location;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionPutAway;
 import com.baozun.scm.primservice.whoperation.model.warehouse.carton.WhCarton;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
+import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventorySn;
 import com.baozun.scm.primservice.whoperation.util.SkuInventoryUuid;
 import com.baozun.scm.primservice.whoperation.util.formula.SimpleCubeCalculator;
 import com.baozun.scm.primservice.whoperation.util.formula.SimpleWeightCalculator;
@@ -131,6 +134,8 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
     private CacheManager cacheManager;
     @Autowired
     PdaPutawayCacheManager pdaPutawayCacheManager;
+    @Autowired
+    WhSkuInventorySnDao whSkuInventorySnDao;
 
     /**
      * 系统指导上架扫托盘号
@@ -833,9 +838,6 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         LocationRecommendResultCommand lrr = lrrList.get(0);
         Long lrrLocId = lrr.getLocationId();
         String lrrLocCode = lrr.getLocationCode();
-        srCmd.setRecommendLocation(true);// 已推荐库位
-        srCmd.setTipLocationCode(lrrLocCode);// 提示库位编码
-        srCmd.setNeedTipLocation(true);// 提示库位
         // 10.缓存容器库存统计信息
         InventoryStatisticResultCommand isCmd = new InventoryStatisticResultCommand();
         isCmd.setPutawayPatternDetailType(WhPutawayPatternDetailType.PALLET_PUTAWAY);
@@ -887,6 +889,10 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
             whSkuInventoryDao.delete(inv.getId());
             insertGlobalLog(GLOBAL_LOG_DELETE, inv, ouId, userId, null, null);
         }
+        // 12.提示库位
+        srCmd.setRecommendLocation(true);// 已推荐库位
+        srCmd.setTipLocationCode(lrrLocCode);// 提示库位编码
+        srCmd.setNeedTipLocation(true);// 提示库位
         return srCmd;
     }
 
@@ -1353,9 +1359,6 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         LocationRecommendResultCommand lrr = lrrList.get(0);
         Long lrrLocId = lrr.getLocationId();
         String lrrLocCode = lrr.getLocationCode();
-        srCmd.setRecommendLocation(true);// 已推荐库位
-        srCmd.setTipLocationCode(lrrLocCode);// 提示库位编码
-        srCmd.setNeedTipLocation(true);// 提示库位
         // 8.缓存容器库存统计信息
         InventoryStatisticResultCommand isCmd = new InventoryStatisticResultCommand();
         isCmd.setPutawayPatternDetailType(WhPutawayPatternDetailType.CONTAINER_PUTAWAY);
@@ -1408,6 +1411,10 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
             whSkuInventoryDao.delete(inv.getId());
             insertGlobalLog(GLOBAL_LOG_DELETE, inv, ouId, userId, null, null);
         }
+        // 10.提示库位
+        srCmd.setRecommendLocation(true);// 已推荐库位
+        srCmd.setTipLocationCode(lrrLocCode);// 提示库位编码
+        srCmd.setNeedTipLocation(true);// 提示库位
         return srCmd;
     }
 
@@ -1549,7 +1556,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         Map<Long, Map<Long, Long>> insideContainerSkuIdsQty = new HashMap<Long, Map<Long, Long>>();// 内部容器单个sku总件数
         Map<Long, Set<String>> insideContainerSkuAttrIds = new HashMap<Long, Set<String>>();// 内部容器唯一sku种类
         Map<Long, Map<String, Long>> insideContainerSkuAttrIdsQty = new HashMap<Long, Map<String, Long>>();// 内部容器唯一sku总件数
-        Map<Long, Map<String, Set<String>>> insideContainerSkuAttrIdsDefect = new HashMap<Long, Map<String, Set<String>>>();//内部容器唯一sku对应所有残次条码
+        Map<Long, Map<String, Set<String>>> insideContainerSkuAttrIdsDefect = new HashMap<Long, Map<String, Set<String>>>();// 内部容器唯一sku对应所有残次条码
         Map<Long, Set<Long>> insideContainerStoreIds = new HashMap<Long, Set<Long>>();// 内部容器所有店铺
         Map<Long, Double> insideContainerWeight = new HashMap<Long, Double>();// 内部容器重量
         Map<Long, Double> insideContainerVolume = new HashMap<Long, Double>();// 内部容器体积
@@ -1826,17 +1833,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         }
         if (0 < locationIds.size()) {
             srCmd.setRecommendLocation(true);// 已推荐库位
-            if (1 < locationIds.size()) {
-                log.error("sys guide pallet putaway location is more than one error, logId is:[{}]", logId);
-                throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
-            }
-            Long locId = null;
-            for (Long locationId : locationIds) {
-                if (null == locId) {
-                    locId = locationId;
-                    if (null != locId) break;
-                }
-            }
+            Long locId = pdaPutawayCacheManager.sysGuideSplitContainerPutawayTipLocation0(insideContainerCmd, locationIds, logId);
             Location loc = locationDao.findByIdExt(locId, ouId);
             if (null == loc) {
                 log.error("location is null error, locId is:[{}], logId is:[{}]", locId, logId);
@@ -1902,13 +1899,53 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
             log.error("location recommend fail! containerCode is:[{}], logId is:[{}]", containerCode, logId);
             throw new BusinessException(ErrorCodes.COMMON_LOCATION_RECOMMEND_ERROR);
         }
-        LocationRecommendResultCommand lrr = lrrList.get(0);
-        Long lrrLocId = lrr.getLocationId();
-        String lrrLocCode = lrr.getLocationCode();
-        srCmd.setRecommendLocation(true);// 已推荐库位
-        srCmd.setTipLocationCode(lrrLocCode);// 提示库位编码
-        srCmd.setNeedTipLocation(true);// 提示库位
-        // 8.缓存容器库存统计信息
+        // 8.分析推荐结果
+        Map<String, Long> invRecommendLocId = new HashMap<String, Long>();
+        Map<String, String> invRecommendLocCode = new HashMap<String, String>();
+        Map<Long, Set<String>> locSkuAttrIds = new HashMap<Long, Set<String>>();
+        Map<Long, Map<Long, Set<String>>> insideContainerLocSkuAttrIds = new HashMap<Long, Map<Long, Set<String>>>();
+        for (LocationRecommendResultCommand lrrCmd : lrrList) {
+            String defectBarcode = lrrCmd.getDefectBarcode();
+            Long locationId = lrrCmd.getLocationId();
+            if (null != locationId) {
+                if (null != locSkuAttrIds.get(locationId)) {
+                    Set<String> allSkuAttrIds = locSkuAttrIds.get(locationId);
+                    if (StringUtils.isEmpty(defectBarcode)) {
+                        allSkuAttrIds.add(lrrCmd.getSkuAttrId());
+                        locSkuAttrIds.put(locationId, allSkuAttrIds);
+                    } else {
+                        allSkuAttrIds.add(lrrCmd.getSkuAttrId() + lrrCmd.getDefectBarcode());
+                        locSkuAttrIds.put(locationId, allSkuAttrIds);
+                    }
+                } else {
+                    Set<String> allSkuAttrIds = new HashSet<String>();
+                    if (StringUtils.isEmpty(defectBarcode)) {
+                        allSkuAttrIds.add(lrrCmd.getSkuAttrId());
+                        locSkuAttrIds.put(locationId, allSkuAttrIds);
+                    } else {
+                        allSkuAttrIds.add(lrrCmd.getSkuAttrId() + lrrCmd.getDefectBarcode());
+                        locSkuAttrIds.put(locationId, allSkuAttrIds);
+                    }
+                }
+            }
+            String locationCode = lrrCmd.getLocationCode();
+            if (StringUtils.isEmpty(defectBarcode)) {
+                // 非残次品
+                invRecommendLocId.put(lrrCmd.getSkuAttrId(), locationId);
+                invRecommendLocCode.put(lrrCmd.getSkuAttrId(), locationCode);
+            } else {
+                // 残次品
+                invRecommendLocId.put(lrrCmd.getSkuAttrId() + defectBarcode, locationId);
+                invRecommendLocCode.put(lrrCmd.getSkuAttrId() + defectBarcode, locationCode);
+            }
+        }
+        if (0 == locSkuAttrIds.size()) {
+            log.error("location recommend failure! containerCode is:[{}], logId is:[{}]", containerCode, logId);
+            throw new BusinessException(ErrorCodes.COMMON_LOCATION_RECOMMEND_ERROR);
+        } else {
+            insideContainerLocSkuAttrIds.put(insideContainerId, locSkuAttrIds);
+        }
+        // 9.缓存容器库存统计信息
         InventoryStatisticResultCommand isCmd = new InventoryStatisticResultCommand();
         isCmd.setPutawayPatternDetailType(WhPutawayPatternDetailType.CONTAINER_PUTAWAY);
         isCmd.setHasOuterContainer(true);
@@ -1928,39 +1965,177 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         isCmd.setInsideContainerSkuAttrIds(insideContainerSkuAttrIds);
         isCmd.setInsideContainerSkuAttrIdsQty(insideContainerSkuAttrIdsQty);
         isCmd.setInsideContainerSkuAttrIdsDefect(insideContainerSkuAttrIdsDefect);
+        isCmd.setInsideContainerLocSkuAttrIds(insideContainerLocSkuAttrIds);
         isCmd.setInsideContainerStoreIds(insideContainerStoreIds);
         // cacheManager.setMapObject(CacheConstants.CONTAINER_INVENTORY_STATISTIC,
         // containerId.toString(), isCmd, CacheConstants.CACHE_ONE_MONTH);
         pdaPutawayCacheManager.sysGuideSplitContainerPutawayCacheInventoryStatistic(insideContainerCmd, isCmd, ouId, logId);
-        // 9.绑定库位(一入一出)
+        // 10.绑定库位(一入一出)
         // 先待移入库位库存
         for (WhSkuInventoryCommand invCmd : invList) {
-            WhSkuInventory inv = new WhSkuInventory();
-            BeanUtils.copyProperties(invCmd, inv);
-            inv.setId(null);
-            inv.setToBeFilledQty(inv.getOnHandQty());// 待移入
-            inv.setOnHandQty(0.0);
-            inv.setLocationId(lrrLocId);
-            try {
-                inv.setUuid(SkuInventoryUuid.invUuid(inv));// UUID
-            } catch (Exception e) {
-                log.error(getLogMsg("inv uuid error, logId is:[{}]", new Object[] {logId}), e);
-                throw new BusinessException(ErrorCodes.COMMON_INV_PROCESS_UUID_ERROR);
+            List<WhSkuInventorySnCommand> snList = invCmd.getWhSkuInventorySnCommandList();
+            if (null == snList || 0 == snList.size()) {
+                WhSkuInventory inv = new WhSkuInventory();
+                BeanUtils.copyProperties(invCmd, inv);
+                inv.setId(null);
+                inv.setToBeFilledQty(inv.getOnHandQty());// 待移入
+                inv.setOnHandQty(0.0);
+                Long recommendLocId = invRecommendLocId.get(SkuCategoryProvider.getSkuCategoryByInv(invCmd));
+                if (null == recommendLocId) {
+                    continue;
+                }
+                inv.setLocationId(recommendLocId);
+                try {
+                    inv.setUuid(SkuInventoryUuid.invUuid(inv));// UUID
+                } catch (Exception e) {
+                    log.error(getLogMsg("inv uuid error, logId is:[{}]", new Object[] {logId}), e);
+                    throw new BusinessException(ErrorCodes.COMMON_INV_PROCESS_UUID_ERROR);
+                }
+                whSkuInventoryDao.insert(inv);
+                insertGlobalLog(GLOBAL_LOG_INSERT, inv, ouId, userId, null, null);
+                // 记录待移入库位库存日志
+                insertSkuInventoryLog(invCmd.getId(), 0.0, inv.getToBeFilledQty(), true, ouId, userId);
+            } else {
+                Map<Long, Set<String>> allLocSkuAttrIds = new HashMap<Long, Set<String>>();
+                int allToBefilledQty = 0;
+                for (WhSkuInventorySnCommand snCmd : snList) {
+                    String defectBarcode = snCmd.getDefectWareBarcode();
+                    Long recommendLocId = invRecommendLocId.get(SkuCategoryProvider.getSkuCategoryByInv(invCmd) + defectBarcode);
+                    if (null == recommendLocId) {
+                        continue;
+                    }
+                    if (null != allLocSkuAttrIds.get(recommendLocId)) {
+                        Set<String> allSkuAttrIds = allLocSkuAttrIds.get(recommendLocId);
+                        allSkuAttrIds.add(SkuCategoryProvider.getSkuCategoryByInv(invCmd) + defectBarcode);
+                        allLocSkuAttrIds.put(recommendLocId, allSkuAttrIds);
+                    } else {
+                        Set<String> allSkuAttrIds = new HashSet<String>();
+                        allSkuAttrIds.add(SkuCategoryProvider.getSkuCategoryByInv(invCmd) + defectBarcode);
+                        allLocSkuAttrIds.put(recommendLocId, allSkuAttrIds);
+                    }
+                    allToBefilledQty += 1;
+                }
+                for (Long locId : allLocSkuAttrIds.keySet()) {
+                    Set<String> allSkuAttrIds = allLocSkuAttrIds.get(locId);
+                    if (null != allSkuAttrIds && 0 < allSkuAttrIds.size()) {
+                        int qty = allSkuAttrIds.size();
+                        WhSkuInventory inv = new WhSkuInventory();
+                        BeanUtils.copyProperties(invCmd, inv);
+                        inv.setId(null);
+                        inv.setToBeFilledQty(new Double(qty));// 待移入
+                        inv.setOnHandQty(0.0);
+                        inv.setLocationId(locId);
+                        try {
+                            inv.setUuid(SkuInventoryUuid.invUuid(inv));// UUID
+                        } catch (Exception e) {
+                            log.error(getLogMsg("inv uuid error, logId is:[{}]", new Object[] {logId}), e);
+                            throw new BusinessException(ErrorCodes.COMMON_INV_PROCESS_UUID_ERROR);
+                        }
+                        whSkuInventoryDao.insert(inv);
+                        insertGlobalLog(GLOBAL_LOG_INSERT, inv, ouId, userId, null, null);
+                        // 判断是否需要拆库存
+                        if (qty != invCmd.getOnHandQty().intValue()) {
+                            WhSkuInventory splitInv = new WhSkuInventory();
+                            BeanUtils.copyProperties(invCmd, splitInv);
+                            splitInv.setId(null);
+                            splitInv.setToBeFilledQty(null);
+                            splitInv.setOnHandQty(new Double(invCmd.getOnHandQty().intValue() - qty));// 剩余在库数量
+                            splitInv.setLocationId(null);
+                            whSkuInventoryDao.insert(splitInv);
+                            insertGlobalLog(GLOBAL_LOG_INSERT, splitInv, ouId, userId, null, null);
+                        }
+                        for (WhSkuInventorySnCommand snCmd : snList) {
+                            String defectBarcode = snCmd.getDefectWareBarcode();
+                            if (allSkuAttrIds.contains(SkuCategoryProvider.getSkuCategoryByInv(invCmd) + defectBarcode)) {
+                                WhSkuInventorySn sn = new WhSkuInventorySn();
+                                BeanUtils.copyProperties(snCmd, sn);
+                                sn.setId(null);
+                                try {
+                                    sn.setUuid(SkuInventoryUuid.invUuid(inv));
+                                } catch (NoSuchAlgorithmException e) {
+                                    log.error(getLogMsg("invSn uuid error, logId is:[{}]", new Object[] {logId}), e);
+                                    throw new BusinessException(ErrorCodes.COMMON_INV_PROCESS_UUID_ERROR);
+                                }
+                                whSkuInventorySnDao.insert(sn);
+                                insertGlobalLog(GLOBAL_LOG_INSERT, sn, ouId, userId, null, null);
+                                insertSkuInventorySnLog(snCmd.getUuid(), ouId);
+                            }
+                        }
+                    }
+                }
+                // 记录待移入库位库存日志(有可能拆库)
+                // FIXME
+                insertSkuInventoryLog(invCmd.getId(), 0.0, new Double(allToBefilledQty), true, ouId, userId);
             }
-            whSkuInventoryDao.insert(inv);
-            insertGlobalLog(GLOBAL_LOG_INSERT, inv, ouId, userId, null, null);
-            // 记录待移入库位库存日志
-            insertSkuInventoryLog(invCmd.getId(), 0.0, inv.getToBeFilledQty(), true, ouId, userId);
         }
         // 再出容器库存
         for (WhSkuInventoryCommand invCmd : invList) {
             // 记录容器移出日志
-            insertSkuInventoryLog(invCmd.getId(), invCmd.getOnHandQty(), 0.0, true, ouId, userId);
-            WhSkuInventory inv = new WhSkuInventory();
-            BeanUtils.copyProperties(invCmd, inv);
-            whSkuInventoryDao.delete(inv.getId());
-            insertGlobalLog(GLOBAL_LOG_DELETE, inv, ouId, userId, null, null);
+            List<WhSkuInventorySnCommand> snList = invCmd.getWhSkuInventorySnCommandList();
+            if (null == snList || 0 == snList.size()) {
+                insertSkuInventoryLog(invCmd.getId(), invCmd.getOnHandQty(), 0.0, true, ouId, userId);
+                WhSkuInventory inv = new WhSkuInventory();
+                BeanUtils.copyProperties(invCmd, inv);
+                Long recommendLocId = invRecommendLocId.get(SkuCategoryProvider.getSkuCategoryByInv(invCmd));
+                if (null == recommendLocId) {
+                    continue;
+                }
+                whSkuInventoryDao.delete(inv.getId());
+                insertGlobalLog(GLOBAL_LOG_DELETE, inv, ouId, userId, null, null);
+            } else {
+                Map<Long, Set<String>> allLocSkuAttrIds = new HashMap<Long, Set<String>>();
+                int allToBefilledQty = 0;
+                for (WhSkuInventorySnCommand snCmd : snList) {
+                    String defectBarcode = snCmd.getDefectWareBarcode();
+                    Long recommendLocId = invRecommendLocId.get(SkuCategoryProvider.getSkuCategoryByInv(invCmd) + defectBarcode);
+                    if (null == recommendLocId) {
+                        continue;
+                    }
+                    if (null != allLocSkuAttrIds.get(recommendLocId)) {
+                        Set<String> allSkuAttrIds = allLocSkuAttrIds.get(recommendLocId);
+                        allSkuAttrIds.add(SkuCategoryProvider.getSkuCategoryByInv(invCmd) + defectBarcode);
+                        allLocSkuAttrIds.put(recommendLocId, allSkuAttrIds);
+                    } else {
+                        Set<String> allSkuAttrIds = new HashSet<String>();
+                        allSkuAttrIds.add(SkuCategoryProvider.getSkuCategoryByInv(invCmd) + defectBarcode);
+                        allLocSkuAttrIds.put(recommendLocId, allSkuAttrIds);
+                    }
+                    allToBefilledQty += 1;
+                }
+                if (null != allLocSkuAttrIds && 0 < allLocSkuAttrIds.size()) {
+                    insertSkuInventoryLog(invCmd.getId(), new Double(allToBefilledQty), 0.0, true, ouId, userId);
+                    WhSkuInventory inv = new WhSkuInventory();
+                    BeanUtils.copyProperties(invCmd, inv);
+                    whSkuInventoryDao.delete(inv.getId());
+                    insertGlobalLog(GLOBAL_LOG_DELETE, inv, ouId, userId, null, null);
+                    for (WhSkuInventorySnCommand snCmd : snList) {
+                        String defectBarcode = snCmd.getDefectWareBarcode();
+                        for (Long locId : allLocSkuAttrIds.keySet()) {
+                            Set<String> allSkuAttrIds = allLocSkuAttrIds.get(locId);
+                            if (null != allSkuAttrIds && 0 < allSkuAttrIds.size()) {
+                                if (allSkuAttrIds.contains(SkuCategoryProvider.getSkuCategoryByInv(invCmd) + defectBarcode)) {
+                                    WhSkuInventorySn sn = new WhSkuInventorySn();
+                                    BeanUtils.copyProperties(snCmd, sn);
+                                    whSkuInventorySnDao.delete(sn.getId());
+                                    insertGlobalLog(GLOBAL_LOG_DELETE, sn, ouId, userId, null, null);
+                                }
+                            }
+                        }
+                    }
+                }
+
+            }
         }
+        // 11.提示库位
+        srCmd.setRecommendLocation(true);// 已推荐库位
+        Long locId = pdaPutawayCacheManager.sysGuideSplitContainerPutawayTipLocation0(insideContainerCmd, locationIds, logId);
+        Location loc = locationDao.findByIdExt(locId, ouId);
+        if (null == loc) {
+            log.error("location is null error, locId is:[{}], logId is:[{}]", locId, logId);
+            throw new BusinessException(ErrorCodes.COMMON_LOCATION_IS_NOT_EXISTS);
+        }
+        srCmd.setTipLocationCode(loc.getCode());// 提示库位编码
+        srCmd.setNeedTipLocation(true);// 提示库位
         return srCmd;
     }
 
