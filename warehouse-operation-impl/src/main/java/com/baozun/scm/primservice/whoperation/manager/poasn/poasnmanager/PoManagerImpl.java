@@ -288,8 +288,8 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
-    public List<WhPoCommand> findWhPoListByExtCodeToInfo(String poCode, List<Integer> status, Long ouid, Integer linenum) {
-        return whPoDao.findWhPoListByExtCode(status, poCode, ouid, linenum);
+    public List<WhPoCommand> findWhPoListByExtCodeToInfo(String poCode, List<Integer> status, List<Long> customerList,List<Long> storeList,Long ouid, Integer linenum) {
+        return whPoDao.findWhPoListByExtCode(status, poCode,customerList, storeList, ouid, linenum);
     }
 
     /**
@@ -297,8 +297,8 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public List<WhPoCommand> findWhPoListByExtCodeToShard(String poCode, List<Integer> status, Long ouid, Integer linenum) {
-        return whPoDao.findWhPoListByExtCode(status, poCode, ouid, linenum);
+    public List<WhPoCommand> findWhPoListByExtCodeToShard(String poCode, List<Integer> status,List<Long> customerList,List<Long> storeList, Long ouid, Integer linenum) {
+        return whPoDao.findWhPoListByExtCode(status, poCode,customerList, storeList,ouid, linenum);
     }
 
     @Override

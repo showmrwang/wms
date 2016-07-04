@@ -83,6 +83,28 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				<if test="status!=null">
 					and po.status = #{status}
 				</if>
+				<if test="customerList!=null">
+		           and po.customer_id in
+				 <foreach collection="customerList" item="cid" open="("
+			      separator="," close=")">
+			       #{cid}
+		         </foreach>
+			    </if>
+             
+                <if test="customerList==null">
+                   and  po.customer_id in (null)
+			    </if>
+			    <if test="storeList!=null">
+		           and po.store_id in
+				 <foreach collection="storeList" item="sid" open="("
+			      separator="," close=")">
+			       #{sid}
+		         </foreach>
+			    </if>
+             
+                <if test="storeList==null">
+                   and  po.store_id in (null)
+			    </if>
 		</where>
 	</sql>
 	
@@ -269,12 +291,26 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			   	<foreach collection="statusList" item="status" open="(" separator="," close=")">
 					#{status}
 				</foreach>
+		        and customer_id in
+				 <foreach collection="customerList" item="cid" open="("
+			      separator="," close=")">
+			       #{cid}
+		         </foreach>
+                  
+		       and store_id in
+				 <foreach collection="storeList" item="sid" open="("
+			      separator="," close=")">
+			       #{sid}
+		         </foreach>
+             
+                
 				<if test="linenum!=null">
 				and  exists(select 1 from t_wh_po_line line where line.ou_id=po.ou_id and line.po_id=po.id and line.available_qty>0)
 				</if>
 				<if test="linenum!=null">
 				limit 0,#{linenum}
 				</if>
+				
 			</where>
     </select>
     

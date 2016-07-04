@@ -255,9 +255,9 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
     public List<WhPoCommand> findWhPoListByExtCode(WhPoCommand command) {
         log.info(this.getClass().getSimpleName() + ".findWhPoListByExtCode method begin!");
         if (null == command.getOuId()) {
-            return poManager.findWhPoListByExtCodeToInfo(command.getExtCode(), command.getStatusList(), command.getOuId(), command.getLinenum());
+            return poManager.findWhPoListByExtCodeToInfo(command.getExtCode(), command.getStatusList(),command.getCustomerList(),command.getStoreList(), command.getOuId(), command.getLinenum());
         } else {
-            return poManager.findWhPoListByExtCodeToShard(command.getExtCode(), command.getStatusList(), command.getOuId(), command.getLinenum());
+            return poManager.findWhPoListByExtCodeToShard(command.getExtCode(), command.getStatusList(),command.getCustomerList(),command.getStoreList(),command.getOuId(), command.getLinenum());
         }
     }
 

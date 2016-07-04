@@ -135,4 +135,12 @@ public interface AsnManager extends BaseManager {
      * @param lineList
      */
     void revokeAsnWithUuidToShard(WhAsnCommand command);
+    
+    /**
+     * 根据客户id集合，店铺id集合查询asn信息
+     * @param customerList
+     * @param storeList
+     * @return
+     */
+    public List<Long> getWhAsnCommandByCustomerId(List<Long> customerList,List<Long> storeList);
 }

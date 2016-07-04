@@ -59,6 +59,28 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				<if test="uuid!=null and uuid!=''">
 					and asn.uuid = #{uuid}
 				</if>
+				<if test="customerList!=null">
+		           and asn.customer_id in
+				 <foreach collection="customerList" item="cid" open="("
+			      separator="," close=")">
+			       #{cid}
+		         </foreach>
+			    </if>
+             
+                <if test="customerList==null">
+                   and  asn.customer_id in (null)
+			    </if>
+			    <if test="storeList!=null">
+		           and asn.store_id in
+				 <foreach collection="storeList" item="sid" open="("
+			      separator="," close=")">
+			       #{sid}
+		         </foreach>
+			    </if>
+             
+                <if test="storeList==null">
+                   and  asn.store_id in (null)
+			    </if>
 		</where>
 	</sql>
 
@@ -355,5 +377,31 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     	select count(*)
 	    from t_wh_asn 
 		<include refid="whAsnDynamicWhere"/>
+    </select>
+    
+    <select id="getWhAsnCommandByCustomerId" resultType="long">
+        select id
+	    from t_wh_asn 
+	    where customer_id in 
+	    <if test="customerList!=null">
+				 <foreach collection="customerList" item="cid" open="("
+			  separator="," close=")">
+			       #{cid}
+		      </foreach>
+		</if>
+             
+        <if test="customerList==null">
+               (null)
+		</if>
+		and store_id in
+		<if test="storeList!=null">
+				 <foreach collection="storeList" item="ids" open="("
+			  separator="," close=")">
+			       #{ids}
+		      </foreach>
+	    </if>
+        <if test="storeList==null">
+              (null)
+	    </if>
     </select>
 </mapper>

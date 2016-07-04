@@ -820,5 +820,24 @@ public class AsnManagerImpl implements AsnManager {
         }
     }
 
+    /**
+     * 根据客户id集合，店铺id集合查询asn信息
+     * @param customerList
+     * @param storeList
+     * @return
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<Long> getWhAsnCommandByCustomerId(List<Long> customerList, List<Long> storeList) {
+        // TODO Auto-generated method stub
+        log.info("AsnManagerImpl getWhAsnCommandByCustomerId is start"); 
+        if(log.isDebugEnabled()) {
+            log.debug("AsnManagerImpl getWhAsnCommandByCustomerId Param is [customerList {},storeList {}]",customerList,storeList);
+        } 
+        List<Long> list = whAsnDao.getWhAsnCommandByCustomerId(customerList, storeList);
+        log.info("AsnManagerImpl getWhAsnCommandByCustomerId is end"); 
+        return list;
+    }
+
 
 }
