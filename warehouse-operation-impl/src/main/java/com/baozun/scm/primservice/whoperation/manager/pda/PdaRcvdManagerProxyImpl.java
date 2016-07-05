@@ -1051,7 +1051,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                             // throw new BusinessException(ErrorCodes.RCVD_CONTAINER_LIMIT_ERROR);
                         }
                     }
-                    if (null == line.getBatchNo() || line.getBatchNo().equals(command.getBatchNumber())) {
+                    if (StringUtils.isEmpty(line.getBatchNo()) || line.getBatchNo().equals(command.getBatchNumber())) {
                         lineList.add(lineId);
                     }
                     break;

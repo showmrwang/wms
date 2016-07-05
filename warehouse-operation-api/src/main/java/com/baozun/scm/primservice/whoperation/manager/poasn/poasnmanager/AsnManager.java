@@ -135,6 +135,16 @@ public interface AsnManager extends BaseManager {
      * @param lineList
      */
     void revokeAsnWithUuidToShard(WhAsnCommand command);
+
+    /**
+     * WMS系统创建Asn分支一：保存带UUID的Asn
+     * 
+     * @param asn
+     * @param saveAsnLineList
+     * @param po
+     * @param savePoLineList
+     */
+    void saveTempAsnWithUuidToShard(WhAsn asn, List<WhAsnLine> saveAsnLineList, WhPo po, List<WhPoLine> savePoLineList);
     
     /**
      * 根据客户id集合，店铺id集合查询asn信息

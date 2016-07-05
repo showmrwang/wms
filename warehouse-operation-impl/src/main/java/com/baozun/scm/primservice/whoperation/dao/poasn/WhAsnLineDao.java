@@ -72,4 +72,6 @@ public interface WhAsnLineDao extends BaseDao<WhAsnLine, Long> {
 
     WhAsnLine findWhAsnLineByPoLineIdAndUuidAndOuId(@Param("poLineId") Long polineId, @Param("uuid") String uuid, @Param("ouId") Long ouId);
 
+    List<WhAsnLine> findWhAsnLineByAsnIdOuIdUuid(@Param("asnId") Long asnId, @Param("ouId") Long ouId, @Param("uuid") String uuid);
+
 }

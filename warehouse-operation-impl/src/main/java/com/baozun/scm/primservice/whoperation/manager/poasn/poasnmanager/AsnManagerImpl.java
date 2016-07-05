@@ -839,5 +839,37 @@ public class AsnManagerImpl implements AsnManager {
         return list;
     }
 
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void saveTempAsnWithUuidToShard(WhAsn asn, List<WhAsnLine> saveAsnLineList, WhPo po, List<WhPoLine> savePoLineList) {
+        try{
+            
+            int updateAsnCount = this.whAsnDao.saveOrUpdateByVersion(asn);
+            if (updateAsnCount <= 0) {
+                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            }
+            for (WhAsnLine asnLine : saveAsnLineList) {
+                int updateAsnLineCount = this.whAsnLineDao.saveOrUpdateByVersion(asnLine);
+                if (updateAsnLineCount <= 0) {
+                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                }
+            }
+            int updatePoCount = this.whPoDao.saveOrUpdateByVersion(po);
+            if (updatePoCount <= 0) {
+                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            }
+            for (WhPoLine poLine : savePoLineList) {
+                int updatePoLineCount = this.whPoLineDao.saveOrUpdateByVersion(poLine);
+                if (updatePoLineCount <= 0) {
+                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                }
+            }
+        }catch(BusinessException ex){
+            throw ex;
+        }catch(Exception e){
+            throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
+        }
+    }
+
 
 }

@@ -65,4 +65,14 @@ public interface AsnLineManager extends BaseManager {
      */
     WhAsnLine findWhAsnLineByPoLineIdAndUuidAndOuId(Long id, String uuid, Long ouId);
 
+    /**
+     * 查找临时的ASN明细数据
+     * 
+     * @param asnId
+     * @param ouId
+     * @param uuid
+     * @return
+     */
+    List<WhAsnLine> findWhAsnLineByAsnIdOuIdUuid(Long asnId, Long ouId, String uuid);
+
 }
