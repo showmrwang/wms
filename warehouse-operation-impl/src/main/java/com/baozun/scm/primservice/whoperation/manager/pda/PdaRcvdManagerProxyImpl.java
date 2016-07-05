@@ -361,19 +361,24 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                     for (RcvdSnCacheCommand rcvdSn : cacheInv.getSnList()) {
                         // #条码 调用条码生成器
                         String barCode = null;
-                        if (null == rcvdSn.getDefectReasonsId()) {
+                        if (null == rcvdSn.getDefectTypeId()) {
                             barCode = this.codeManager.generateCode(Constants.WMS, Constants.INVENTORY_SN_BARCODE, null, Constants.INVENTORY_SN_BARCODE_PREFIX, null);
                         }
-                        if (null == rcvdSn.getSerialNumberType() || Constants.SERIAL_NUMBER_TYPE_IN.equals(rcvdSn.getSerialNumberType())) {
-                            WhSkuInventorySn skuInvSn = new WhSkuInventorySn();
+
+                        boolean flag = false;
+                        WhSkuInventorySn skuInvSn = new WhSkuInventorySn();
+                        if (null != rcvdSn.getSerialNumberType() && !Constants.SERIAL_NUMBER_TYPE_IN.equals(rcvdSn.getSerialNumberType())) {
+                            skuInvSn.setSn(rcvdSn.getSn());
+                            flag = true;
+                        }
+                        if (flag || null != barCode) {
                             skuInvSn.setDefectTypeId(rcvdSn.getDefectTypeId());
                             skuInvSn.setDefectReasonsId(rcvdSn.getDefectReasonsId());
+                            skuInvSn.setOccupationCode(occupationCode);
                             skuInvSn.setStatus(Constants.INVENTORY_SN_STATUS_ONHAND);
                             skuInvSn.setDefectWareBarcode(barCode);
                             skuInvSn.setOuId(ouId);
                             skuInvSn.setUuid(uuid);
-                            skuInvSn.setSn(rcvdSn.getSn());
-                            skuInvSn.setOccupationCode(occupationCode);
                             saveSnList.add(skuInvSn);
                         }
                         // 插入日志表
