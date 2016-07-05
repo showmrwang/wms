@@ -499,7 +499,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
             }
             // 更新容器
             Container container = null;
-            if (outerContainerId != null) {
+            if (null == outerContainerId) {
                 container = this.generalRcvdManager.findContainerByIdToShard(insideContainerId, ouId);
                 if (null == container) {
                     throw new BusinessException(ErrorCodes.CONTAINER_RCVD_GET_ERROR);
