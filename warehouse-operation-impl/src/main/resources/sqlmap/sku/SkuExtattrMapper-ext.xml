@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.sku.SkuExtattrDao">
+    <resultMap id="SkuExtattrResultExt" type="com.baozun.scm.primservice.whoperation.model.sku.SkuExtattr">
+    </resultMap>
+    
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="skuExtattrColumnsExt">
+        <![CDATA[
+                id as id,
+                sku_id as skuId,
+                inv_attr1 as invAttr1,
+                inv_attr2 as invAttr2,
+                inv_attr3 as invAttr3,
+                inv_attr4 as invAttr4,
+                inv_attr5 as invAttr5,
+                user_defined1 as userDefined1,
+                user_defined2 as userDefined2,
+                user_defined3 as userDefined3,
+                user_defined4 as userDefined4,
+                user_defined5 as userDefined5,
+                user_defined6 as userDefined6,
+                user_defined7 as userDefined7,
+                user_defined8 as userDefined8,
+                user_defined9 as userDefined9,
+                user_defined10 as userDefined10,
+                sku_type1 as skuType1,
+                sku_type2 as skuType2,
+                sku_type3 as skuType3,
+                sku_type4 as skuType4,
+                sku_type5 as skuType5,
+                sku_type6 as skuType6,
+                sku_type7 as skuType7,
+                sku_type8 as skuType8,
+                sku_type9 as skuType9,
+                sku_type10 as skuType10
+        ]]>
+    </sql>
+    
+    <sql id="skuExtattrDynamicWhereExt">
+        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+            
+            <if test="id!=null">
+                and id = #{id}
+            </if>
+            
+            <if test="skuId!=null">
+                and sku_id = #{skuId}
+            </if>
+            
+            <if test="invAttr1!=null">
+                and inv_attr1 = #{invAttr1}
+            </if>
+            
+            <if test="invAttr2!=null">
+                and inv_attr2 = #{invAttr2}
+            </if>
+            
+            <if test="invAttr3!=null">
+                and inv_attr3 = #{invAttr3}
+            </if>
+            
+            
+            <if test="invAttr4!=null">
+                and inv_attr4 = #{invAttr4}
+            </if>
+            
+            <if test="invAttr5!=null">
+                and inv_attr5 = #{invAttr5}
+            </if>
+            
+            <if test="userDefined1!=null and userDefined1!=''">
+                and user_defined1 = #{userDefined1}
+            </if>
+            
+            
+            <if test="userDefined2!=null and userDefined2!=''">
+                and user_defined2 = #{userDefined2}
+            </if>
+            
+            
+            <if test="userDefined3!=null and userDefined3!=''">
+                and user_defined3 = #{userDefined3}
+            </if>
+            
+            
+            <if test="userDefined4!=null and userDefined4!=''">
+                and user_defined4 = #{userDefined4}
+            </if>
+            
+            
+            <if test="userDefined5!=null and userDefined5!=''">
+                and user_defined5 = #{userDefined5}
+            </if>
+            
+            
+            <if test="userDefined6!=null and userDefined6!=''">
+                and user_defined6 = #{userDefined6}
+            </if>
+            
+            
+            <if test="userDefined7!=null and userDefined7!=''">
+                and user_defined7 = #{userDefined7}
+            </if>
+            
+            
+            <if test="userDefined8!=null and userDefined8!=''">
+                and user_defined8 = #{userDefined8}
+            </if>
+            
+            
+            <if test="userDefined9!=null and userDefined9!=''">
+                and user_defined9 = #{userDefined9}
+            </if>
+            
+            
+            <if test="userDefined10!=null and userDefined10!=''">
+                and user_defined10 = #{userDefined10}
+            </if>
+            
+            <if test="skuType1!=null">
+                and sku_type1 = #{skuType1}
+            </if>
+            
+            <if test="skuType2!=null">
+                and sku_type2 = #{skuType2}
+            </if>
+            
+            <if test="skuType3!=null">
+                and sku_type3 = #{skuType3}
+            </if>
+            
+            <if test="skuType4!=null">
+                and sku_type4 = #{skuType4}
+            </if>
+            
+            <if test="skuType5!=null">
+                and sku_type5 = #{skuType5}
+            </if>
+            
+            <if test="skuType6!=null">
+                and sku_type6 = #{skuType6}
+            </if>
+            
+            <if test="skuType7!=null">
+                and sku_type7 = #{skuType7}
+            </if>
+            
+            <if test="skuType8!=null">
+                and sku_type8 = #{skuType8}
+            </if>
+            
+            <if test="skuType9!=null">
+                and sku_type9 = #{skuType9}
+            </if>
+            
+            <if test="skuType10!=null">
+                and sku_type10 = #{skuType10}
+            </if>
+        </where>
+    </sql>
+    
+    <update id="updateBySkuId" parameterType="com.baozun.scm.primservice.whoperation.model.sku.SkuExtattr">
+        <![CDATA[
+            UPDATE t_wh_sku_extattr SET
+                inv_attr1 = #{invAttr1,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                inv_attr2 = #{invAttr2,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                inv_attr3 = #{invAttr3,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                inv_attr4 = #{invAttr4,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                inv_attr5 = #{invAttr5,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                user_defined1 = #{userDefined1,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                user_defined2 = #{userDefined2,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                user_defined3 = #{userDefined3,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                user_defined4 = #{userDefined4,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                user_defined5 = #{userDefined5,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                user_defined6 = #{userDefined6,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                user_defined7 = #{userDefined7,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                user_defined8 = #{userDefined8,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                user_defined9 = #{userDefined9,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                user_defined10 = #{userDefined10,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                sku_type1 = #{skuType1,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                sku_type2 = #{skuType2,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                sku_type3 = #{skuType3,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                sku_type4 = #{skuType4,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                sku_type5 = #{skuType5,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                sku_type6 = #{skuType6,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                sku_type7 = #{skuType7,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                sku_type8 = #{skuType8,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                sku_type9 = #{skuType9,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                sku_type10 = #{skuType10,javaType=java.lang.Long,jdbcType=BIGINT}
+            WHERE 
+                sku_id = #{skuId} 
+        ]]>
+    </update>
+    
+
+    <sql id="skuExtattrColumnsSharedExt">
+        <![CDATA[
+                id as id,
+                sku_id as skuId,
+                ou_id as ouId,
+                inv_attr1 as invAttr1,
+                inv_attr2 as invAttr2,
+                inv_attr3 as invAttr3,
+                inv_attr4 as invAttr4,
+                inv_attr5 as invAttr5,
+                user_defined1 as userDefined1,
+                user_defined2 as userDefined2,
+                user_defined3 as userDefined3,
+                user_defined4 as userDefined4,
+                user_defined5 as userDefined5,
+                user_defined6 as userDefined6,
+                user_defined7 as userDefined7,
+                user_defined8 as userDefined8,
+                user_defined9 as userDefined9,
+                user_defined10 as userDefined10,
+                sku_type1 as skuType1,
+                sku_type2 as skuType2,
+                sku_type3 as skuType3,
+                sku_type4 as skuType4,
+                sku_type5 as skuType5,
+                sku_type6 as skuType6,
+                sku_type7 as skuType7,
+                sku_type8 as skuType8,
+                sku_type9 as skuType9,
+                sku_type10 as skuType10
+        ]]>
+    </sql>
+
+    <select id="findByIdShared" parameterType="java.lang.Long" resultMap="SkuExtattrResultExt">
+        select
+        <include refid="skuExtattrColumnsSharedExt"/>
+        <![CDATA[
+                from t_wh_sku_extattr
+            WHERE
+                id = #{id}
+                and ou_id = #{ouId}
+            ]]>
+    </select>
+
+    <select id="findSkuExtattrBySkuIdShared" resultMap="SkuExtattrResultExt">
+        select
+        <include refid="skuExtattrColumnsSharedExt"/>
+        <![CDATA[
+                from t_wh_sku_extattr
+            WHERE
+                sku_id = #{skuId}
+                and ou_id = #{ouId}
+            ]]>
+    </select>
+
+    <insert id="insertShared" parameterType="com.baozun.scm.primservice.whoperation.model.sku.SkuExtattr">
+        <![CDATA[
+                INSERT INTO
+                t_wh_sku_extattr (
+                    id,
+                    sku_id ,
+                    ou_id ,
+                    inv_attr1 ,
+                    inv_attr2 ,
+                    inv_attr3 ,
+                    inv_attr4 ,
+                    inv_attr5 ,
+                    user_defined1 ,
+                    user_defined2 ,
+                    user_defined3 ,
+                    user_defined4 ,
+                    user_defined5 ,
+                    user_defined6 ,
+                    user_defined7 ,
+                    user_defined8 ,
+                    user_defined9 ,
+                    user_defined10 ,
+                    sku_type1 ,
+                    sku_type2 ,
+                    sku_type3 ,
+                    sku_type4 ,
+                    sku_type5 ,
+                    sku_type6 ,
+                    sku_type7 ,
+                    sku_type8 ,
+                    sku_type9 ,
+                    sku_type10
+                ) VALUES (
+                    #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{invAttr1,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                    #{invAttr2,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                    #{invAttr3,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                    #{invAttr4,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                    #{invAttr5,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                    #{userDefined1,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{userDefined2,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{userDefined3,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{userDefined4,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{userDefined5,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{userDefined6,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{userDefined7,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{userDefined8,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{userDefined9,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{userDefined10,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{skuType1,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{skuType2,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{skuType3,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{skuType4,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{skuType5,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{skuType6,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{skuType7,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{skuType8,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{skuType9,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{skuType10,javaType=java.lang.Long,jdbcType=BIGINT}
+                )
+            ]]>
+    
+    </insert>
+    
+    <update id="updateShared" parameterType="com.baozun.scm.primservice.whoperation.model.sku.SkuExtattr">
+        <![CDATA[
+            UPDATE t_wh_sku_extattr SET
+                sku_id = #{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                inv_attr1 = #{invAttr1,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                inv_attr2 = #{invAttr2,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                inv_attr3 = #{invAttr3,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                inv_attr4 = #{invAttr4,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                inv_attr5 = #{invAttr5,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                user_defined1 = #{userDefined1,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                user_defined2 = #{userDefined2,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                user_defined3 = #{userDefined3,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                user_defined4 = #{userDefined4,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                user_defined5 = #{userDefined5,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                user_defined6 = #{userDefined6,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                user_defined7 = #{userDefined7,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                user_defined8 = #{userDefined8,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                user_defined9 = #{userDefined9,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                user_defined10 = #{userDefined10,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                sku_type1 = #{skuType1,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                sku_type2 = #{skuType2,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                sku_type3 = #{skuType3,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                sku_type4 = #{skuType4,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                sku_type5 = #{skuType5,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                sku_type6 = #{skuType6,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                sku_type7 = #{skuType7,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                sku_type8 = #{skuType8,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                sku_type9 = #{skuType9,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                sku_type10 = #{skuType10,javaType=java.lang.Long,jdbcType=BIGINT}
+            WHERE
+                id = #{id}
+                and ou_id = #{ouId}
+        ]]>
+    </update>
+    
+    <select id="findSkuExtattrBySkuId" parameterType="java.lang.Long" resultMap="SkuExtattrResult" flushCache="false">
+        select
+        <include refid="skuExtattrColumnsExt"/>
+        <![CDATA[
+                from t_wh_sku_extattr 
+                where 
+                sku_id = #{skuId} 
+            ]]>
+    </select>
+    
+    
+    
+</mapper>

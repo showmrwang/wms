@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.sku.SkuMgmtDao">
+    <resultMap id="SkuMgmtResultExt" type="com.baozun.scm.primservice.whoperation.model.sku.SkuMgmt">
+    </resultMap>
+    
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="skuMgmtColumnsExt">
+        <![CDATA[
+                id as id,
+                sku_id as skuId,
+                is_valid as isValid,
+                is_batch_no as isBatchNo,
+                serial_number_type as serialNumberType,
+                is_country_of_origin as isCountryOfOrigin,
+                is_inv_type as isInvType,
+                is_sku_attr as isSkuAttr,
+                is_to_weight as isToWeight,
+                container_type as containerType,
+                is_fragile_cargo as isFragileCargo,
+                is_labeling as isLabeling,
+                is_quality_control as isQualityControl,
+                is_repackaging as isRepackaging,
+                is_mix_allowed as isMixAllowed,
+                mix_attr as mixAttr,
+                is_hazardous_cargo as isHazardousCargo,
+                is_valuables as isValuables,
+                max_valid_date as maxValidDate,
+                min_valid_date as minValidDate,
+                is_expired_goods_receive as isExpiredGoodsReceive,
+                good_shelf_life_unit as goodShelfLifeUnit,
+                valid_date as validDate,
+                warning_date as warningDate,
+                storage_condition as storageCondition,
+                is_foldable as isFoldable,
+                price as price,
+                carton_meas as cartonMeas
+        ]]>
+    </sql>
+    
+    <sql id="skuMgmtDynamicWhereExt">
+        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+            
+            <if test="id!=null">
+                and id = #{id}
+            </if>
+            
+            <if test="skuId!=null">
+                and sku_id = #{skuId}
+            </if>
+            
+            <if test="isValid!=null">
+                and is_valid = #{isValid}
+            </if>
+            
+            <if test="isBatchNo!=null">
+                and is_batch_no = #{isBatchNo}
+            </if>
+            
+            <if test="serialNumberType!=null">
+                and serial_number_type = #{serialNumberType}
+            </if>
+            
+            <if test="isCountryOfOrigin!=null">
+                and is_country_of_origin = #{isCountryOfOrigin}
+            </if>
+            
+            <if test="isInvType!=null">
+                and is_inv_type = #{isInvType}
+            </if>
+            
+            <if test="isSkuAttr!=null">
+                and is_sku_attr = #{isSkuAttr}
+            </if>
+            
+            <if test="isToWeight!=null">
+                and is_to_weight = #{isToWeight}
+            </if>
+            
+            <if test="containerType!=null">
+                and container_type = #{containerType}
+            </if>
+            
+            <if test="isFragileCargo!=null">
+                and is_fragile_cargo = #{isFragileCargo}
+            </if>
+            
+            <if test="isLabeling!=null">
+                and is_labeling = #{isLabeling}
+            </if>
+            
+            <if test="isQualityControl!=null">
+                and is_quality_control = #{isQualityControl}
+            </if>
+            
+            <if test="isRepackaging!=null">
+                and is_repackaging = #{isRepackaging}
+            </if>
+            
+            <if test="isMixAllowed!=null">
+                and is_mix_allowed = #{isMixAllowed}
+            </if>
+            
+            
+            <if test="mixAttr!=null and mixAttr!=''">
+                and mix_attr = #{mixAttr}
+            </if>
+            
+            <if test="isHazardousCargo!=null">
+                and is_hazardous_cargo = #{isHazardousCargo}
+            </if>
+            
+            <if test="isValuables!=null">
+                and is_valuables = #{isValuables}
+            </if>
+            
+            <if test="maxValidDate!=null">
+                and max_valid_date = #{maxValidDate}
+            </if>
+            
+            <if test="minValidDate!=null">
+                and min_valid_date = #{minValidDate}
+            </if>
+            
+            <if test="isExpiredGoodsReceive!=null">
+                and is_expired_goods_receive = #{isExpiredGoodsReceive}
+            </if>
+            
+			<if test="goodShelfLifeUnit!=null">
+                and good_shelf_life_unit = #{goodShelfLifeUnit}
+            </if>
+            
+            <if test="validDate!=null">
+                and valid_date = #{validDate}
+            </if>
+            
+            <if test="warningDate!=null">
+                and warning_date = #{warningDate}
+            </if>
+            
+            
+            <if test="storageCondition!=null and storageCondition!=''">
+                and storage_condition = #{storageCondition}
+            </if>
+            
+  			<if test="isFoldable!=null">
+                and is_foldable  = #{isFoldable}
+            </if>
+            
+            <if test="price!=null">
+                and price = #{price}
+            </if>
+            
+
+            <if test="cartonMeas!=null">
+                and carton_meas = #{cartonMeas}
+            </if>
+        </where>
+    </sql>
+    
+    <update id="updateBySkuId" parameterType="com.baozun.scm.primservice.whoperation.model.sku.SkuMgmt">
+        <![CDATA[
+            UPDATE t_wh_sku_mgmt SET
+                is_valid = #{isValid,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                is_batch_no = #{isBatchNo,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                serial_number_type = #{serialNumberType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                is_country_of_origin = #{isCountryOfOrigin,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                is_inv_type = #{isInvType,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                is_sku_attr = #{isSkuAttr,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                is_to_weight = #{isToWeight,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                container_type = #{containerType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                is_fragile_cargo = #{isFragileCargo,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                is_labeling = #{isLabeling,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                is_quality_control = #{isQualityControl,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                is_repackaging = #{isRepackaging,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                is_mix_allowed = #{isMixAllowed,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                mix_attr = #{mixAttr,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                is_hazardous_cargo = #{isHazardousCargo,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                is_valuables = #{isValuables,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                max_valid_date = #{maxValidDate,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                min_valid_date = #{minValidDate,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                is_expired_goods_receive = #{isExpiredGoodsReceive,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                good_shelf_life_unit = #{goodShelfLifeUnit,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                valid_date = #{validDate,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                warning_date = #{warningDate,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                storage_condition = #{storageCondition,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                is_foldable  = #{isFoldable,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                price = #{price,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+                carton_meas = #{cartonMeas,javaType=java.lang.Integer,jdbcType=INTEGER} 
+            WHERE 
+                sku_id = #{skuId} 
+        ]]>
+    </update>
+
+    <sql id="skuMgmtColumnsSharedExt">
+        <![CDATA[
+                id as id,
+                sku_id as skuId,
+                ou_id as ouId,
+                is_valid as isValid,
+                is_batch_no as isBatchNo,
+                serial_number_type as serialNumberType,
+                is_country_of_origin as isCountryOfOrigin,
+                is_inv_type as isInvType,
+                is_sku_attr as isSkuAttr,
+                is_to_weight as isToWeight,
+                container_type as containerType,
+                is_fragile_cargo as isFragileCargo,
+                is_labeling as isLabeling,
+                is_quality_control as isQualityControl,
+                is_repackaging as isRepackaging,
+                is_mix_allowed as isMixAllowed,
+                mix_attr as mixAttr,
+                is_hazardous_cargo as isHazardousCargo,
+                is_valuables as isValuables,
+                max_valid_date as maxValidDate,
+                min_valid_date as minValidDate,
+                is_expired_goods_receive as isExpiredGoodsReceive,
+                good_shelf_life_unit as goodShelfLifeUnit,
+                valid_date as validDate,
+                warning_date as warningDate,
+                storage_condition as storageCondition,
+                is_foldable as isFoldable,
+                price as price,
+                carton_meas as cartonMeas
+        ]]>
+    </sql>
+
+    <select id="findByIdShared" parameterType="java.lang.Long" resultMap="SkuMgmtResultExt">
+        select
+        <include refid="skuMgmtColumnsSharedExt"/>
+        <![CDATA[
+                from t_wh_sku_mgmt
+            where
+                id = #{id}
+                and ou_id = #{ouId}
+            ]]>
+    </select>
+
+    <select id="findSkuMgmtBySkuIdShared" resultMap="SkuMgmtResultExt">
+        select
+        <include refid="skuMgmtColumnsSharedExt"/>
+        <![CDATA[
+                from t_wh_sku_mgmt
+            where
+                sku_id = #{skuId}
+                and ou_id = #{ouId}
+            ]]>
+    </select>
+
+    <insert id="insertShared" parameterType="com.baozun.scm.primservice.whoperation.model.sku.SkuMgmt">
+        <![CDATA[
+                INSERT INTO
+                t_wh_sku_mgmt (
+                    id ,
+                    sku_id ,
+                    ou_id ,
+                    is_valid ,
+                    is_batch_no ,
+                    serial_number_type ,
+                    is_country_of_origin ,
+                    is_inv_type ,
+                    is_sku_attr ,
+                    is_to_weight ,
+                    container_type ,
+                    is_fragile_cargo ,
+                    is_labeling,
+                	is_quality_control,
+                	is_repackaging,
+                    is_mix_allowed ,
+                    mix_attr ,
+                    is_hazardous_cargo ,
+                    is_valuables ,
+                    max_valid_date ,
+                    min_valid_date ,
+                    is_expired_goods_receive ,
+                    good_shelf_life_unit,
+                    valid_date ,
+                    warning_date ,
+                    storage_condition ,
+                    is_foldable ,
+                    price ,
+                    carton_meas
+                ) VALUES (
+                    #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{isValid,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                    #{isBatchNo,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                    #{serialNumberType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{isCountryOfOrigin,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                    #{isInvType,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                    #{isSkuAttr,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                    #{isToWeight,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                    #{containerType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{isFragileCargo,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                    #{isLabeling,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                    #{isQualityControl,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                    #{isRepackaging,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                    #{isMixAllowed,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                    #{mixAttr,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{isHazardousCargo,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                    #{isValuables,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                    #{maxValidDate,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                    #{minValidDate,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                    #{isExpiredGoodsReceive,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                    #{goodShelfLifeUnit,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{validDate,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                    #{warningDate,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                    #{storageCondition,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{isFoldable,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                    #{price,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+                    #{cartonMeas,javaType=java.lang.Integer,jdbcType=INTEGER}
+                )
+            ]]>
+    
+    </insert>
+    
+    <update id="updateShared" parameterType="com.baozun.scm.primservice.whoperation.model.sku.SkuMgmt">
+        <![CDATA[
+            UPDATE t_wh_sku_mgmt SET
+                sku_id = #{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                is_valid = #{isValid,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                is_batch_no = #{isBatchNo,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                serial_number_type = #{serialNumberType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                is_country_of_origin = #{isCountryOfOrigin,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                is_inv_type = #{isInvType,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                is_sku_attr = #{isSkuAttr,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                is_to_weight = #{isToWeight,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                container_type = #{containerType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                is_fragile_cargo = #{isFragileCargo,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                is_labeling = #{isLabeling,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                is_quality_control = #{isQualityControl,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                is_repackaging = #{isRepackaging,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                is_mix_allowed = #{isMixAllowed,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                mix_attr = #{mixAttr,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                is_hazardous_cargo = #{isHazardousCargo,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                is_valuables = #{isValuables,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                max_valid_date = #{maxValidDate,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                min_valid_date = #{minValidDate,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                is_expired_goods_receive = #{isExpiredGoodsReceive,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                good_shelf_life_unit = #{goodShelfLifeUnit,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                valid_date = #{validDate,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                warning_date = #{warningDate,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                storage_condition = #{storageCondition,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                is_foldable  = #{isFoldable,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                price = #{price,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+                carton_meas = #{cartonMeas,javaType=java.lang.Integer,jdbcType=INTEGER}
+            WHERE
+                id = #{id}
+                and ou_id = #{ouId}
+        ]]>
+    </update>
+    
+    <select id="findSkuMgmtBySkuId" parameterType="java.lang.Long" resultMap="SkuMgmtResultExt" flushCache="false">
+        select
+        <include refid="skuMgmtColumns"/>
+        <![CDATA[
+                from t_wh_sku_mgmt 
+                where 
+                sku_id = #{skuId} 
+            ]]>
+    </select>
+
+</mapper>
