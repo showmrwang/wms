@@ -182,6 +182,16 @@ public class SimpleWeightCalculator {
         setWeight(rw);
         setInitStuffWeight(true);
     }
+    
+    public void initStuffWeight(Double weight, Double qty, String uom) {
+        setRawWeight(weight);
+        setUom(uom);
+        isWeightSupport(weight);
+        isUomSupport(uom);
+        Double rw = uomConversion(uom, weight);
+        setWeight(rw * qty);
+        setInitStuffWeight(true);
+    }
 
     @SuppressWarnings("unused")
     private int getUomIndex(String actualUom) {

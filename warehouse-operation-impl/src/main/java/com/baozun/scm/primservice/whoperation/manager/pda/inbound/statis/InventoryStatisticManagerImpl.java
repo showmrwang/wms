@@ -84,7 +84,7 @@ public class InventoryStatisticManagerImpl extends BaseManagerImpl implements In
         Map<Long, Map<Long, Long>> insideContainerSkuIdsQty = new HashMap<Long, Map<Long, Long>>();// 内部容器单个sku总件数
         Map<Long, Set<String>> insideContainerSkuAttrIds = new HashMap<Long, Set<String>>();// 内部容器唯一sku种类
         Map<Long, Map<String, Long>> insideContainerSkuAttrIdsQty = new HashMap<Long, Map<String, Long>>();// 内部容器唯一sku总件数
-        Map<Long, Map<String, Set<String>>> insideContainerSkuAttrIdsDefect = new HashMap<Long, Map<String, Set<String>>>();// 内部容器唯一sku对应所有残次条码
+        Map<Long, Map<String, Set<String>>> insideContainerSkuAttrIdsSnDefect = new HashMap<Long, Map<String, Set<String>>>();// 内部容器唯一sku对应所有残次条码
         Map<Long, Map<Long, Set<String>>> insideContainerLocSkuAttrIds = new HashMap<Long, Map<Long, Set<String>>>();// 内部容器推荐库位对应唯一sku及残次条码
         Map<Long, Set<Long>> insideContainerStoreIds = new HashMap<Long, Set<Long>>();// 内部容器所有店铺
         for (WhSkuInventoryCommand invCmd : invList) {
@@ -132,7 +132,7 @@ public class InventoryStatisticManagerImpl extends BaseManagerImpl implements In
                 log.error("sys guide putaway sku is not exists error, skuId is:[{}], logId is:[{}]", skuId, logId);
                 throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
             }
-            skuAttrIds.add(SkuCategoryProvider.getSkuCategoryByInv(invCmd));
+            skuAttrIds.add(SkuCategoryProvider.getSkuAttrIdByInv(invCmd));
             Long stroeId = invCmd.getStoreId();
             if (null != stroeId) {
                 storeIds.add(stroeId);
@@ -165,24 +165,24 @@ public class InventoryStatisticManagerImpl extends BaseManagerImpl implements In
             }
             if (null != insideContainerSkuAttrIds.get(icId)) {
                 Set<String> icSkus = insideContainerSkuAttrIds.get(icId);
-                icSkus.add(SkuCategoryProvider.getSkuCategoryByInv(invCmd));
+                icSkus.add(SkuCategoryProvider.getSkuAttrIdByInv(invCmd));
                 insideContainerSkuAttrIds.put(icId, icSkus);
             } else {
                 Set<String> icSkus = new HashSet<String>();
-                icSkus.add(SkuCategoryProvider.getSkuCategoryByInv(invCmd));
+                icSkus.add(SkuCategoryProvider.getSkuAttrIdByInv(invCmd));
                 insideContainerSkuAttrIds.put(icId, icSkus);
             }
             if (null != insideContainerSkuAttrIdsQty.get(icId)) {
                 Map<String, Long> skuAttrIdsQty = insideContainerSkuAttrIdsQty.get(icId);
                 if (null != skuAttrIdsQty.get(skuId)) {
-                    skuAttrIdsQty.put(SkuCategoryProvider.getSkuCategoryByInv(invCmd), skuAttrIdsQty.get(SkuCategoryProvider.getSkuCategoryByInv(invCmd)) + curerntSkuQty.longValue());
+                    skuAttrIdsQty.put(SkuCategoryProvider.getSkuAttrIdByInv(invCmd), skuAttrIdsQty.get(SkuCategoryProvider.getSkuAttrIdByInv(invCmd)) + curerntSkuQty.longValue());
                 } else {
-                    skuAttrIdsQty.put(SkuCategoryProvider.getSkuCategoryByInv(invCmd), curerntSkuQty.longValue());
+                    skuAttrIdsQty.put(SkuCategoryProvider.getSkuAttrIdByInv(invCmd), curerntSkuQty.longValue());
                 }
                 insideContainerSkuAttrIdsQty.put(icId, skuAttrIdsQty);
             } else {
                 Map<String, Long> saq = new HashMap<String, Long>();
-                saq.put(SkuCategoryProvider.getSkuCategoryByInv(invCmd), curerntSkuQty.longValue());
+                saq.put(SkuCategoryProvider.getSkuAttrIdByInv(invCmd), curerntSkuQty.longValue());
                 insideContainerSkuAttrIdsQty.put(icId, saq);
             }
             // 统计残次品
@@ -194,24 +194,25 @@ public class InventoryStatisticManagerImpl extends BaseManagerImpl implements In
                     for (WhSkuInventorySnCommand snCmd : snCmdList) {
                         if (null != snCmd) {
                             String defectBar = snCmd.getDefectWareBarcode();
-                            snDefects.add(defectBar);
+                            String sn = snCmd.getSn();
+                            snDefects.add(SkuCategoryProvider.concatSkuAttrId(sn, defectBar));
                             if (null != locationId) {
                                 if (null != insideContainerLocSkuAttrIds.get(icId)) {
                                     Map<Long, Set<String>> locSkuAttrIds = insideContainerLocSkuAttrIds.get(icId);
                                     Set<String> allSkuAttrIds = locSkuAttrIds.get(locationId);
                                     if (null != allSkuAttrIds) {
-                                        allSkuAttrIds.add(SkuCategoryProvider.getSkuCategoryByInv(invCmd) + defectBar);
+                                        allSkuAttrIds.add(SkuCategoryProvider.concatSkuAttrId(SkuCategoryProvider.getSkuAttrIdByInv(invCmd), sn, defectBar));
                                         locSkuAttrIds.put(locationId, allSkuAttrIds);
                                         insideContainerLocSkuAttrIds.put(icId, locSkuAttrIds);
                                     } else {
                                         allSkuAttrIds = new HashSet<String>();
-                                        allSkuAttrIds.add(SkuCategoryProvider.getSkuCategoryByInv(invCmd) + defectBar);
+                                        allSkuAttrIds.add(SkuCategoryProvider.concatSkuAttrId(SkuCategoryProvider.getSkuAttrIdByInv(invCmd), sn, defectBar));
                                         locSkuAttrIds.put(locationId, allSkuAttrIds);
                                         insideContainerLocSkuAttrIds.put(icId, locSkuAttrIds);
                                     }
                                 } else {
                                     Set<String> allSkuAttrIds = new HashSet<String>();
-                                    allSkuAttrIds.add(SkuCategoryProvider.getSkuCategoryByInv(invCmd) + defectBar);
+                                    allSkuAttrIds.add(SkuCategoryProvider.concatSkuAttrId(SkuCategoryProvider.getSkuAttrIdByInv(invCmd), sn, defectBar));
                                     Map<Long, Set<String>> locSkuAttrIds = new HashMap<Long, Set<String>>();
                                     locSkuAttrIds.put(locationId, allSkuAttrIds);
                                     insideContainerLocSkuAttrIds.put(icId, locSkuAttrIds);
@@ -225,18 +226,18 @@ public class InventoryStatisticManagerImpl extends BaseManagerImpl implements In
                             Map<Long, Set<String>> locSkuAttrIds = insideContainerLocSkuAttrIds.get(icId);
                             Set<String> allSkuAttrIds = locSkuAttrIds.get(locationId);
                             if (null != allSkuAttrIds) {
-                                allSkuAttrIds.add(SkuCategoryProvider.getSkuCategoryByInv(invCmd));
+                                allSkuAttrIds.add(SkuCategoryProvider.getSkuAttrIdByInv(invCmd));
                                 locSkuAttrIds.put(locationId, allSkuAttrIds);
                                 insideContainerLocSkuAttrIds.put(icId, locSkuAttrIds);
                             } else {
                                 allSkuAttrIds = new HashSet<String>();
-                                allSkuAttrIds.add(SkuCategoryProvider.getSkuCategoryByInv(invCmd));
+                                allSkuAttrIds.add(SkuCategoryProvider.getSkuAttrIdByInv(invCmd));
                                 locSkuAttrIds.put(locationId, allSkuAttrIds);
                                 insideContainerLocSkuAttrIds.put(icId, locSkuAttrIds);
                             }
                         } else {
                             Set<String> allSkuAttrIds = new HashSet<String>();
-                            allSkuAttrIds.add(SkuCategoryProvider.getSkuCategoryByInv(invCmd));
+                            allSkuAttrIds.add(SkuCategoryProvider.getSkuAttrIdByInv(invCmd));
                             Map<Long, Set<String>> locSkuAttrIds = new HashMap<Long, Set<String>>();
                             locSkuAttrIds.put(locationId, allSkuAttrIds);
                             insideContainerLocSkuAttrIds.put(icId, locSkuAttrIds);
@@ -244,21 +245,21 @@ public class InventoryStatisticManagerImpl extends BaseManagerImpl implements In
                     }
                 }
                 if (null != snDefects) {
-                    if (null != insideContainerSkuAttrIdsDefect.get(icId)) {
-                        Map<String, Set<String>> skuAttrIdsDefect = insideContainerSkuAttrIdsDefect.get(icId);
-                        if (null != skuAttrIdsDefect.get(SkuCategoryProvider.getSkuCategoryByInv(invCmd))) {
-                            Set<String> defects = skuAttrIdsDefect.get(SkuCategoryProvider.getSkuCategoryByInv(invCmd));
+                    if (null != insideContainerSkuAttrIdsSnDefect.get(icId)) {
+                        Map<String, Set<String>> skuAttrIdsDefect = insideContainerSkuAttrIdsSnDefect.get(icId);
+                        if (null != skuAttrIdsDefect.get(SkuCategoryProvider.getSkuAttrIdByInv(invCmd))) {
+                            Set<String> defects = skuAttrIdsDefect.get(SkuCategoryProvider.getSkuAttrIdByInv(invCmd));
                             defects.addAll(snDefects);
-                            skuAttrIdsDefect.put(SkuCategoryProvider.getSkuCategoryByInv(invCmd), defects);
-                            insideContainerSkuAttrIdsDefect.put(icId, skuAttrIdsDefect);
+                            skuAttrIdsDefect.put(SkuCategoryProvider.getSkuAttrIdByInv(invCmd), defects);
+                            insideContainerSkuAttrIdsSnDefect.put(icId, skuAttrIdsDefect);
                         } else {
-                            skuAttrIdsDefect.put(SkuCategoryProvider.getSkuCategoryByInv(invCmd), snDefects);
-                            insideContainerSkuAttrIdsDefect.put(icId, skuAttrIdsDefect);
+                            skuAttrIdsDefect.put(SkuCategoryProvider.getSkuAttrIdByInv(invCmd), snDefects);
+                            insideContainerSkuAttrIdsSnDefect.put(icId, skuAttrIdsDefect);
                         }
                     } else {
                         Map<String, Set<String>> skuAttrIdsDefect = new HashMap<String, Set<String>>();
-                        skuAttrIdsDefect.put(SkuCategoryProvider.getSkuCategoryByInv(invCmd), snDefects);
-                        insideContainerSkuAttrIdsDefect.put(icId, skuAttrIdsDefect);
+                        skuAttrIdsDefect.put(SkuCategoryProvider.getSkuAttrIdByInv(invCmd), snDefects);
+                        insideContainerSkuAttrIdsSnDefect.put(icId, skuAttrIdsDefect);
                     }
                 }
             }
@@ -285,7 +286,7 @@ public class InventoryStatisticManagerImpl extends BaseManagerImpl implements In
         isCmd.setInsideContainerSkuIdsQty(insideContainerSkuIdsQty);
         isCmd.setInsideContainerSkuAttrIds(insideContainerSkuAttrIds);
         isCmd.setInsideContainerSkuAttrIdsQty(insideContainerSkuAttrIdsQty);
-        isCmd.setInsideContainerSkuAttrIdsDefect(insideContainerSkuAttrIdsDefect);
+        isCmd.setInsideContainerSkuAttrIdsSnDefect(insideContainerSkuAttrIdsSnDefect);
         isCmd.setInsideContainerLocSkuAttrIds(insideContainerLocSkuAttrIds);
         isCmd.setInsideContainerStoreIds(insideContainerStoreIds);
         return isCmd;

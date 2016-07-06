@@ -33,6 +33,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand
 import com.baozun.scm.primservice.whoperation.command.warehouse.LocationCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.RecommendShelveCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ShelveRecommendRuleCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
@@ -47,6 +48,7 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.LocationTempletDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.RecommendShelveDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhLocationDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhSkuDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhSkuLocationDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
@@ -98,12 +100,15 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
     private ContainerDao containerDao;
     @Autowired
     private Container2ndCategoryDao container2ndCategoryDao;
+    @SuppressWarnings("unused")
     @Autowired
     private LocationTempletDao locationTempletDao;
     @Autowired
     private WhSkuLocationDao whSkuLocationDao;
     @Autowired
     private WhLocationInvVolumeWieghtManager whLocationInvVolumeWieghtManager;
+    @Autowired
+    private WhSkuDao whSkuDao;
 
     /**
      * @author lichuan
@@ -1128,14 +1133,25 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
         Long skuAttrCategory = containerAssist.getSkuAttrCategory();// 唯一sku数
         // Long skuQty = outerContainerAssist.getSkuQty();// sku总件数
         // Long storeQty = outerContainerAssist.getStoreQty();// 店铺数
+        Double onHandQty = 0.0;
         Map<String, Double> lenUomConversionRate = uomMap.get(WhUomType.LENGTH_UOM);
         Map<String, Double> weightUomConversionRate = uomMap.get(WhUomType.WEIGHT_UOM);
         for (WhSkuInventoryCommand invRule : invRuleList) {
             // 商品
             Long skuId = invRule.getSkuId();
+            WhSkuCommand skuCmd = whSkuDao.findWhSkuByIdExt(skuId, ouId);
+            if (null == skuCmd) {
+                log.error("sys guide pallet putaway sku is not exists error, skuId is:[{}], logId is:[{}]", skuId, logId);
+                throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
+            }
+            length = skuCmd.getLength();
+            width = skuCmd.getWidth();
+            height = skuCmd.getHeight();
+            weight = skuCmd.getWeight();
             List<WhSkuInventorySnCommand> invSnRuleList = invRule.getWhSkuInventorySnCommandList();
             if (null == invSnRuleList || 0 == invSnRuleList.size()) {
                 // 非残次品，上架规则匹配到sku库存行上
+                onHandQty = invRule.getOnHandQty();
                 // 获取当前sku行匹配到的所有上架规则
                 List<ShelveRecommendRuleCommand> ruleList = invRule.getShelveRecommendRuleCommandList();
                 if (null == ruleList || 0 == ruleList.size()) {
@@ -1148,8 +1164,9 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                     lrrc.setInsideContainerCode(containerCode);
                     lrrc.setInsideContainerId(containerId);
                     lrrc.setSkuId(skuId);
-                    lrrc.setSkuAttrId(SkuCategoryProvider.getSkuCategoryByInv(invRule));
+                    lrrc.setSkuAttrId(SkuCategoryProvider.getSkuAttrIdByInv(invRule));
                     lrrc.setDefectBarcode(null);
+                    lrrc.setSn(null);
                     list.add(lrrc);
                 } else {
                     LocationRecommendResultCommand lrrc = null;
@@ -1307,11 +1324,11 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                 if (WhLocationRecommendType.EMPTY_LOCATION.equals(locationRecommendRule)) {
                                     // 计算体积
                                     SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate);
-                                    calc.initStuffCube(length, width, height, SimpleCubeCalculator.SYS_UOM);
+                                    calc.initStuffCube(length, width, height, onHandQty, SimpleCubeCalculator.SYS_UOM);
                                     boolean cubageAvailable = calc.calculateAvailable();
                                     // 计算重量
                                     SimpleWeightCalculator weightCal = new SimpleWeightCalculator(locWeight, SimpleWeightCalculator.SYS_UOM, weightUomConversionRate);
-                                    weightCal.initStuffWeight(weight, SimpleWeightCalculator.SYS_UOM);
+                                    weightCal.initStuffWeight(weight, onHandQty, SimpleWeightCalculator.SYS_UOM);
                                     boolean weightAvailable = weightCal.calculateAvailable();
                                     if (cubageAvailable & weightAvailable) {
                                         lrrc = new LocationRecommendResultCommand();
@@ -1322,8 +1339,9 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                         lrrc.setInsideContainerCode(containerCode);
                                         lrrc.setInsideContainerId(containerId);
                                         lrrc.setSkuId(skuId);
-                                        lrrc.setSkuAttrId(SkuCategoryProvider.getSkuCategoryByInv(invRule));
+                                        lrrc.setSkuAttrId(SkuCategoryProvider.getSkuAttrIdByInv(invRule));
                                         lrrc.setDefectBarcode(null);
+                                        lrrc.setSn(null);
                                         list.add(lrrc);
                                     }
                                 } else if (WhLocationRecommendType.STATIC_LOCATION.equals(locationRecommendRule)) {
@@ -1337,12 +1355,12 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                     Double livwWeight = livw.getWeight();// 库位上已有货物总重量
                                     // 计算体积
                                     SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate);
-                                    calc.initStuffCube(length, width, height, SimpleCubeCalculator.SYS_UOM);
+                                    calc.initStuffCube(length, width, height, onHandQty, SimpleCubeCalculator.SYS_UOM);
                                     calc.addStuffVolume(livwVolume);
                                     boolean cubageAvailable = calc.calculateAvailable();
                                     // 计算重量
                                     SimpleWeightCalculator weightCal = new SimpleWeightCalculator(locWeight, SimpleWeightCalculator.SYS_UOM, weightUomConversionRate);
-                                    weightCal.initStuffWeight(weight, SimpleWeightCalculator.SYS_UOM);
+                                    weightCal.initStuffWeight(weight, onHandQty, SimpleWeightCalculator.SYS_UOM);
                                     weightCal.addStuffWeight(livwWeight);
                                     boolean weightAvailable = weightCal.calculateAvailable();
                                     if (cubageAvailable & weightAvailable) {
@@ -1354,8 +1372,9 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                         lrrc.setInsideContainerCode(containerCode);
                                         lrrc.setInsideContainerId(containerId);
                                         lrrc.setSkuId(skuId);
-                                        lrrc.setSkuAttrId(SkuCategoryProvider.getSkuCategoryByInv(invRule));
+                                        lrrc.setSkuAttrId(SkuCategoryProvider.getSkuAttrIdByInv(invRule));
                                         lrrc.setDefectBarcode(null);
+                                        lrrc.setSn(null);
                                         list.add(lrrc);
                                     }
                                 } else if (WhLocationRecommendType.MERGE_LOCATION_SAME_INV_ATTRS.equals(locationRecommendRule)) {
@@ -1364,12 +1383,12 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                     Double livwWeight = livw.getWeight();// 库位上已有货物总重量
                                     // 计算体积
                                     SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate);
-                                    calc.initStuffCube(length, width, height, SimpleCubeCalculator.SYS_UOM);
+                                    calc.initStuffCube(length, width, height, onHandQty, SimpleCubeCalculator.SYS_UOM);
                                     calc.addStuffVolume(livwVolume);
                                     boolean cubageAvailable = calc.calculateAvailable();
                                     // 计算重量
                                     SimpleWeightCalculator weightCal = new SimpleWeightCalculator(locWeight, SimpleWeightCalculator.SYS_UOM, weightUomConversionRate);
-                                    weightCal.initStuffWeight(weight, SimpleWeightCalculator.SYS_UOM);
+                                    weightCal.initStuffWeight(weight, onHandQty, SimpleWeightCalculator.SYS_UOM);
                                     weightCal.addStuffWeight(livwWeight);
                                     boolean weightAvailable = weightCal.calculateAvailable();
                                     if (cubageAvailable & weightAvailable) {
@@ -1381,8 +1400,9 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                         lrrc.setInsideContainerCode(containerCode);
                                         lrrc.setInsideContainerId(containerId);
                                         lrrc.setSkuId(skuId);
-                                        lrrc.setSkuAttrId(SkuCategoryProvider.getSkuCategoryByInv(invRule));
+                                        lrrc.setSkuAttrId(SkuCategoryProvider.getSkuAttrIdByInv(invRule));
                                         lrrc.setDefectBarcode(null);
+                                        lrrc.setSn(null);
                                         list.add(lrrc);
                                     }
                                 } else if (WhLocationRecommendType.MERGE_LOCATION_DIFF_INV_ATTRS.equals(locationRecommendRule)) {
@@ -1391,12 +1411,12 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                     Double livwWeight = livw.getWeight();// 库位上已有货物总重量
                                     // 计算体积
                                     SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate);
-                                    calc.initStuffCube(length, width, height, SimpleCubeCalculator.SYS_UOM);
+                                    calc.initStuffCube(length, width, height, onHandQty, SimpleCubeCalculator.SYS_UOM);
                                     calc.addStuffVolume(livwVolume);
                                     boolean cubageAvailable = calc.calculateAvailable();
                                     // 计算重量
                                     SimpleWeightCalculator weightCal = new SimpleWeightCalculator(locWeight, SimpleWeightCalculator.SYS_UOM, weightUomConversionRate);
-                                    weightCal.initStuffWeight(weight, SimpleWeightCalculator.SYS_UOM);
+                                    weightCal.initStuffWeight(weight, onHandQty, SimpleWeightCalculator.SYS_UOM);
                                     weightCal.addStuffWeight(livwWeight);
                                     boolean weightAvailable = weightCal.calculateAvailable();
                                     if (cubageAvailable & weightAvailable) {
@@ -1408,8 +1428,9 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                         lrrc.setInsideContainerCode(containerCode);
                                         lrrc.setInsideContainerId(containerId);
                                         lrrc.setSkuId(skuId);
-                                        lrrc.setSkuAttrId(SkuCategoryProvider.getSkuCategoryByInv(invRule));
+                                        lrrc.setSkuAttrId(SkuCategoryProvider.getSkuAttrIdByInv(invRule));
                                         lrrc.setDefectBarcode(null);
+                                        lrrc.setSn(null);
                                         list.add(lrrc);
                                     }
                                 } else if (WhLocationRecommendType.ONE_LOCATION_ONLY.equals(locationRecommendRule)) {
@@ -1418,12 +1439,12 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                     Double livwWeight = livw.getWeight();// 库位上已有货物总重量
                                     // 计算体积
                                     SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate);
-                                    calc.initStuffCube(length, width, height, SimpleCubeCalculator.SYS_UOM);
+                                    calc.initStuffCube(length, width, height, onHandQty, SimpleCubeCalculator.SYS_UOM);
                                     calc.addStuffVolume(livwVolume);
                                     boolean cubageAvailable = calc.calculateAvailable();
                                     // 计算重量
                                     SimpleWeightCalculator weightCal = new SimpleWeightCalculator(locWeight, SimpleWeightCalculator.SYS_UOM, weightUomConversionRate);
-                                    weightCal.initStuffWeight(weight, SimpleWeightCalculator.SYS_UOM);
+                                    weightCal.initStuffWeight(weight, onHandQty, SimpleWeightCalculator.SYS_UOM);
                                     weightCal.addStuffWeight(livwWeight);
                                     boolean weightAvailable = weightCal.calculateAvailable();
                                     if (cubageAvailable & weightAvailable) {
@@ -1435,8 +1456,9 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                         lrrc.setInsideContainerCode(containerCode);
                                         lrrc.setInsideContainerId(containerId);
                                         lrrc.setSkuId(skuId);
-                                        lrrc.setSkuAttrId(SkuCategoryProvider.getSkuCategoryByInv(invRule));
+                                        lrrc.setSkuAttrId(SkuCategoryProvider.getSkuAttrIdByInv(invRule));
                                         lrrc.setDefectBarcode(null);
+                                        lrrc.setSn(null);
                                         list.add(lrrc);
                                     }
                                 } else {
@@ -1464,16 +1486,20 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                         lrrc.setInsideContainerCode(containerCode);
                         lrrc.setInsideContainerId(containerId);
                         lrrc.setSkuId(skuId);
-                        lrrc.setSkuAttrId(SkuCategoryProvider.getSkuCategoryByInv(invRule));
+                        lrrc.setSkuAttrId(SkuCategoryProvider.getSkuAttrIdByInv(invRule));
                         lrrc.setDefectBarcode(null);
+                        lrrc.setSn(null);
                         list.add(lrrc);
                     }
                 }
             } else {
                 // 残次品，上架规则匹配到sn库存行上
+                onHandQty = 1.0;
                 for (WhSkuInventorySnCommand invSnRule : invSnRuleList) {
                     // 残次条码
                     String defectBarcode = invSnRule.getDefectWareBarcode();
+                    // 序列号
+                    String sn = invSnRule.getSn();
                     // 获取当前sn行匹配到的所有上架规则
                     List<ShelveRecommendRuleCommand> ruleList = invSnRule.getShelveRecommendRuleCommandList();
                     if (null == ruleList || 0 == ruleList.size()) {
@@ -1486,8 +1512,9 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                         lrrc.setInsideContainerCode(containerCode);
                         lrrc.setInsideContainerId(containerId);
                         lrrc.setSkuId(skuId);
-                        lrrc.setSkuAttrId(SkuCategoryProvider.getSkuCategoryByInv(invRule));
+                        lrrc.setSkuAttrId(SkuCategoryProvider.getSkuAttrIdByInv(invRule));
                         lrrc.setDefectBarcode(defectBarcode);
+                        lrrc.setSn(sn);
                         list.add(lrrc);
                     } else {
                         LocationRecommendResultCommand lrrc = null;
@@ -1645,11 +1672,11 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                     if (WhLocationRecommendType.EMPTY_LOCATION.equals(locationRecommendRule)) {
                                         // 计算体积
                                         SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate);
-                                        calc.initStuffCube(length, width, height, SimpleCubeCalculator.SYS_UOM);
+                                        calc.initStuffCube(length, width, height, onHandQty, SimpleCubeCalculator.SYS_UOM);
                                         boolean cubageAvailable = calc.calculateAvailable();
                                         // 计算重量
                                         SimpleWeightCalculator weightCal = new SimpleWeightCalculator(locWeight, SimpleWeightCalculator.SYS_UOM, weightUomConversionRate);
-                                        weightCal.initStuffWeight(weight, SimpleWeightCalculator.SYS_UOM);
+                                        weightCal.initStuffWeight(weight, onHandQty, SimpleWeightCalculator.SYS_UOM);
                                         boolean weightAvailable = weightCal.calculateAvailable();
                                         if (cubageAvailable & weightAvailable) {
                                             lrrc = new LocationRecommendResultCommand();
@@ -1660,8 +1687,9 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                             lrrc.setInsideContainerCode(containerCode);
                                             lrrc.setInsideContainerId(containerId);
                                             lrrc.setSkuId(skuId);
-                                            lrrc.setSkuAttrId(SkuCategoryProvider.getSkuCategoryByInv(invRule));
+                                            lrrc.setSkuAttrId(SkuCategoryProvider.concatSkuAttrId(SkuCategoryProvider.getSkuAttrIdByInv(invRule), sn, defectBarcode));
                                             lrrc.setDefectBarcode(defectBarcode);
+                                            lrrc.setSn(sn);
                                             list.add(lrrc);
                                         }
                                     } else if (WhLocationRecommendType.STATIC_LOCATION.equals(locationRecommendRule)) {
@@ -1675,12 +1703,12 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                         Double livwWeight = livw.getWeight();// 库位上已有货物总重量
                                         // 计算体积
                                         SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate);
-                                        calc.initStuffCube(length, width, height, SimpleCubeCalculator.SYS_UOM);
+                                        calc.initStuffCube(length, width, height, onHandQty, SimpleCubeCalculator.SYS_UOM);
                                         calc.addStuffVolume(livwVolume);
                                         boolean cubageAvailable = calc.calculateAvailable();
                                         // 计算重量
                                         SimpleWeightCalculator weightCal = new SimpleWeightCalculator(locWeight, SimpleWeightCalculator.SYS_UOM, weightUomConversionRate);
-                                        weightCal.initStuffWeight(weight, SimpleWeightCalculator.SYS_UOM);
+                                        weightCal.initStuffWeight(weight, onHandQty, SimpleWeightCalculator.SYS_UOM);
                                         weightCal.addStuffWeight(livwWeight);
                                         boolean weightAvailable = weightCal.calculateAvailable();
                                         if (cubageAvailable & weightAvailable) {
@@ -1692,8 +1720,9 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                             lrrc.setInsideContainerCode(containerCode);
                                             lrrc.setInsideContainerId(containerId);
                                             lrrc.setSkuId(skuId);
-                                            lrrc.setSkuAttrId(SkuCategoryProvider.getSkuCategoryByInv(invRule));
+                                            lrrc.setSkuAttrId(SkuCategoryProvider.concatSkuAttrId(SkuCategoryProvider.getSkuAttrIdByInv(invRule), sn, defectBarcode));
                                             lrrc.setDefectBarcode(defectBarcode);
+                                            lrrc.setSn(sn);
                                             list.add(lrrc);
                                         }
                                     } else if (WhLocationRecommendType.MERGE_LOCATION_SAME_INV_ATTRS.equals(locationRecommendRule)) {
@@ -1702,12 +1731,12 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                         Double livwWeight = livw.getWeight();// 库位上已有货物总重量
                                         // 计算体积
                                         SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate);
-                                        calc.initStuffCube(length, width, height, SimpleCubeCalculator.SYS_UOM);
+                                        calc.initStuffCube(length, width, height, onHandQty, SimpleCubeCalculator.SYS_UOM);
                                         calc.addStuffVolume(livwVolume);
                                         boolean cubageAvailable = calc.calculateAvailable();
                                         // 计算重量
                                         SimpleWeightCalculator weightCal = new SimpleWeightCalculator(locWeight, SimpleWeightCalculator.SYS_UOM, weightUomConversionRate);
-                                        weightCal.initStuffWeight(weight, SimpleWeightCalculator.SYS_UOM);
+                                        weightCal.initStuffWeight(weight, onHandQty, SimpleWeightCalculator.SYS_UOM);
                                         weightCal.addStuffWeight(livwWeight);
                                         boolean weightAvailable = weightCal.calculateAvailable();
                                         if (cubageAvailable & weightAvailable) {
@@ -1719,8 +1748,9 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                             lrrc.setInsideContainerCode(containerCode);
                                             lrrc.setInsideContainerId(containerId);
                                             lrrc.setSkuId(skuId);
-                                            lrrc.setSkuAttrId(SkuCategoryProvider.getSkuCategoryByInv(invRule));
+                                            lrrc.setSkuAttrId(SkuCategoryProvider.concatSkuAttrId(SkuCategoryProvider.getSkuAttrIdByInv(invRule), sn, defectBarcode));
                                             lrrc.setDefectBarcode(defectBarcode);
+                                            lrrc.setSn(sn);
                                             list.add(lrrc);
                                         }
                                     } else if (WhLocationRecommendType.MERGE_LOCATION_DIFF_INV_ATTRS.equals(locationRecommendRule)) {
@@ -1729,12 +1759,12 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                         Double livwWeight = livw.getWeight();// 库位上已有货物总重量
                                         // 计算体积
                                         SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate);
-                                        calc.initStuffCube(length, width, height, SimpleCubeCalculator.SYS_UOM);
+                                        calc.initStuffCube(length, width, height, onHandQty, SimpleCubeCalculator.SYS_UOM);
                                         calc.addStuffVolume(livwVolume);
                                         boolean cubageAvailable = calc.calculateAvailable();
                                         // 计算重量
                                         SimpleWeightCalculator weightCal = new SimpleWeightCalculator(locWeight, SimpleWeightCalculator.SYS_UOM, weightUomConversionRate);
-                                        weightCal.initStuffWeight(weight, SimpleWeightCalculator.SYS_UOM);
+                                        weightCal.initStuffWeight(weight, onHandQty, SimpleWeightCalculator.SYS_UOM);
                                         weightCal.addStuffWeight(livwWeight);
                                         boolean weightAvailable = weightCal.calculateAvailable();
                                         if (cubageAvailable & weightAvailable) {
@@ -1746,8 +1776,9 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                             lrrc.setInsideContainerCode(containerCode);
                                             lrrc.setInsideContainerId(containerId);
                                             lrrc.setSkuId(skuId);
-                                            lrrc.setSkuAttrId(SkuCategoryProvider.getSkuCategoryByInv(invRule));
+                                            lrrc.setSkuAttrId(SkuCategoryProvider.concatSkuAttrId(SkuCategoryProvider.getSkuAttrIdByInv(invRule), sn, defectBarcode));
                                             lrrc.setDefectBarcode(defectBarcode);
+                                            lrrc.setSn(sn);
                                             list.add(lrrc);
                                         }
                                     } else if (WhLocationRecommendType.ONE_LOCATION_ONLY.equals(locationRecommendRule)) {
@@ -1756,12 +1787,12 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                         Double livwWeight = livw.getWeight();// 库位上已有货物总重量
                                         // 计算体积
                                         SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate);
-                                        calc.initStuffCube(length, width, height, SimpleCubeCalculator.SYS_UOM);
+                                        calc.initStuffCube(length, width, height, onHandQty, SimpleCubeCalculator.SYS_UOM);
                                         calc.addStuffVolume(livwVolume);
                                         boolean cubageAvailable = calc.calculateAvailable();
                                         // 计算重量
                                         SimpleWeightCalculator weightCal = new SimpleWeightCalculator(locWeight, SimpleWeightCalculator.SYS_UOM, weightUomConversionRate);
-                                        weightCal.initStuffWeight(weight, SimpleWeightCalculator.SYS_UOM);
+                                        weightCal.initStuffWeight(weight, onHandQty, SimpleWeightCalculator.SYS_UOM);
                                         weightCal.addStuffWeight(livwWeight);
                                         boolean weightAvailable = weightCal.calculateAvailable();
                                         if (cubageAvailable & weightAvailable) {
@@ -1773,8 +1804,9 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                             lrrc.setInsideContainerCode(containerCode);
                                             lrrc.setInsideContainerId(containerId);
                                             lrrc.setSkuId(skuId);
-                                            lrrc.setSkuAttrId(SkuCategoryProvider.getSkuCategoryByInv(invRule));
+                                            lrrc.setSkuAttrId(SkuCategoryProvider.concatSkuAttrId(SkuCategoryProvider.getSkuAttrIdByInv(invRule), sn, defectBarcode));
                                             lrrc.setDefectBarcode(defectBarcode);
+                                            lrrc.setSn(sn);
                                             list.add(lrrc);
                                         }
                                     } else {
@@ -1802,8 +1834,9 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                             lrrc.setInsideContainerCode(containerCode);
                             lrrc.setInsideContainerId(containerId);
                             lrrc.setSkuId(skuId);
-                            lrrc.setSkuAttrId(SkuCategoryProvider.getSkuCategoryByInv(invRule));
+                            lrrc.setSkuAttrId(SkuCategoryProvider.concatSkuAttrId(SkuCategoryProvider.getSkuAttrIdByInv(invRule), sn, defectBarcode));
                             lrrc.setDefectBarcode(defectBarcode);
+                            lrrc.setSn(sn);
                             list.add(lrrc);
                         }
                     }

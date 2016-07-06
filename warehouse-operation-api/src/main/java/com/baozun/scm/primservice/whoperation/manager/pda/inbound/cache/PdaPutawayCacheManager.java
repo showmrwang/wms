@@ -282,6 +282,16 @@ public interface PdaPutawayCacheManager extends BaseManager {
      * @return
      */
     InventoryStatisticResultCommand sysGuideSplitContainerPutawayCacheInventoryStatistic(ContainerCommand insideContainerCmd, InventoryStatisticResultCommand isCmd, Long ouId, String logId);
+    
+    /**
+     * pda拆箱上架缓存库存统计信息
+     * @author lichuan
+     * @param insideContainerCmd
+     * @param ouId
+     * @param logId
+     * @return
+     */
+    InventoryStatisticResultCommand sysGuideSplitContainerPutawayCacheInventoryStatistic(ContainerCommand insideContainerCmd, Long ouId, String logId);
 
     /**
      * pda拆箱上架缓存库存和统计信息
@@ -304,5 +314,16 @@ public interface PdaPutawayCacheManager extends BaseManager {
      * @return
      */
     Long sysGuideSplitContainerPutawayTipLocation0(ContainerCommand insideContainerCmd, Set<Long> locationIds, String logId);
+    
+    /**
+     * pda拆箱上架提示商品
+     * @author lichuan
+     * @param insideContainerCmd
+     * @param locationId
+     * @param locSkuAttrIds
+     * @param logId
+     * @return
+     */
+    String sysGuideSplitContainerPutawayTipSku0(ContainerCommand insideContainerCmd, Long locationId, Map<Long, Set<String>> locSkuAttrIds, String logId);
 
 }

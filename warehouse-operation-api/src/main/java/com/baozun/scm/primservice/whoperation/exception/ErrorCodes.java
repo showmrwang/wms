@@ -250,6 +250,12 @@ public class ErrorCodes {
     public static final int COMMON_OUTER_CONTAINER_IS_NOT_MATCH = 5022;
     /** 功能信息变更异常！ */
     public static final int COMMON_FUNCTION_IS_CHANGE_ERROR = 5023;
+    /** 库存类型未找到！ */
+    public static final int COMMON_INV_TYPE_NOT_FOUND_ERROR = 5024;
+    /** 库存状态未找到！ */
+    public static final int COMMON_INV_STATUS_NOT_FOUND_ERROR = 5025;
+    /** 库存属性未找到！ */
+    public static final int COMMON_INV_ATTR_NOT_FOUND_ERROR = 5026;
     // 5001-10000 common end
 
     // 10001-20000 luyimin

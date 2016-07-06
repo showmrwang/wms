@@ -161,7 +161,7 @@ public class PdaPutawayManagerTest extends AbstractJUnit4SpringContextTests {
     @Test
     public void removeCache(){
        //cacheManagr.removeMapValue(CacheConstants.CONTAINER_INVENTORY, "15100152");
-        cacheManagr.removeMapValue(CacheConstants.CONTAINER_INVENTORY, "15100156");
+        cacheManagr.removeMapValue(CacheConstants.CONTAINER_INVENTORY_STATISTIC, "15100156");
         
     }
     

@@ -39,7 +39,7 @@ public class CheckScanSkuResultCommand extends BaseCommand {
     /** 是否提示商品 */
     private boolean isNeedTipSku;
     /** 提示商品条码 */
-    private Long tipSkuId;
+    private Long tipSkuBarcode;
     /** 是否直接核扫商品 */
     private boolean isNeedScanSku;
 
@@ -99,12 +99,12 @@ public class CheckScanSkuResultCommand extends BaseCommand {
         this.isNeedTipSku = isNeedTipSku;
     }
 
-    public Long getTipSkuId() {
-        return tipSkuId;
+    public Long getTipSkuBarcode() {
+        return tipSkuBarcode;
     }
 
-    public void setTipSkuId(Long tipSkuId) {
-        this.tipSkuId = tipSkuId;
+    public void setTipSkuBarcode(Long tipSkuBarcode) {
+        this.tipSkuBarcode = tipSkuBarcode;
     }
 
     public boolean isNeedScanSku() {

@@ -47,6 +47,8 @@ public class LocationRecommendResultCommand extends BaseCommand {
     private String skuAttrId;
     /** 残次条码 */
     private String defectBarcode;
+    /** 序列号 */
+    private String sn;
 
     public int getPutawayPatternType() {
         return putawayPatternType;
@@ -142,6 +144,14 @@ public class LocationRecommendResultCommand extends BaseCommand {
 
     public void setDefectBarcode(String defectBarcode) {
         this.defectBarcode = defectBarcode;
+    }
+
+    public String getSn() {
+        return sn;
+    }
+
+    public void setSn(String sn) {
+        this.sn = sn;
     }
 
 

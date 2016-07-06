@@ -74,7 +74,7 @@ public class InventoryStatisticResultCommand extends BaseCommand {
     /** 内部容器唯一sku总件数 */
     Map<Long, Map<String, Long>> insideContainerSkuAttrIdsQty = new HashMap<Long, Map<String, Long>>();
     /** 内部容器唯一sku对应所有残次条码 */
-    Map<Long, Map<String, Set<String>>> insideContainerSkuAttrIdsDefect = new HashMap<Long, Map<String, Set<String>>>();
+    Map<Long, Map<String, Set<String>>> insideContainerSkuAttrIdsSnDefect = new HashMap<Long, Map<String, Set<String>>>();
     /** 内部容器推荐库位对应唯一sku及残次条码 */
     Map<Long, Map<Long, Set<String>>> insideContainerLocSkuAttrIds = new HashMap<Long, Map<Long, Set<String>>>();
     /** 内部容器所有店铺 */
@@ -257,12 +257,12 @@ public class InventoryStatisticResultCommand extends BaseCommand {
         this.insideContainerSkuAttrIdsQty = insideContainerSkuAttrIdsQty;
     }
 
-    public Map<Long, Map<String, Set<String>>> getInsideContainerSkuAttrIdsDefect() {
-        return insideContainerSkuAttrIdsDefect;
+    public Map<Long, Map<String, Set<String>>> getInsideContainerSkuAttrIdsSnDefect() {
+        return insideContainerSkuAttrIdsSnDefect;
     }
 
-    public void setInsideContainerSkuAttrIdsDefect(Map<Long, Map<String, Set<String>>> insideContainerSkuAttrIdsDefect) {
-        this.insideContainerSkuAttrIdsDefect = insideContainerSkuAttrIdsDefect;
+    public void setInsideContainerSkuAttrIdsSnDefect(Map<Long, Map<String, Set<String>>> insideContainerSkuAttrIdsSnDefect) {
+        this.insideContainerSkuAttrIdsSnDefect = insideContainerSkuAttrIdsSnDefect;
     }
 
     public Map<Long, Map<Long, Set<String>>> getInsideContainerLocSkuAttrIds() {

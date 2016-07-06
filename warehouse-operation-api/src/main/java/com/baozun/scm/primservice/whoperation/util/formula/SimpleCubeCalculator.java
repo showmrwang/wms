@@ -329,6 +329,30 @@ public class SimpleCubeCalculator {
         setInitStuffVolume(getVolume());
         setInitStuffCube(true);
     }
+    
+    public void initStuffCube(Double x, Double y, Double z, Double qty, String uom) {
+        if (null == x) x = 0.0;
+        if (null == y) y = 0.0;
+        if (null == z) z = 0.0;
+        isLengthSupport(x);
+        isLengthSupport(y);
+        isLengthSupport(z);
+        isUomSupport(uom);
+        setRawX(x);
+        setRawY(y);
+        setRawZ(z);
+        setRawVolume(cubageFormula(x, y, z));
+        setUom(uom);
+        Double rx = uomConversion(uom, x);
+        Double ry = uomConversion(uom, y);
+        Double rz = uomConversion(uom, z);
+        setX(rx);
+        setY(ry);
+        setZ(rz);
+        setVolume(cubageFormula(rx, ry, rz) * qty);
+        setInitStuffVolume(getVolume());
+        setInitStuffCube(true);
+    }
 
     private void isInitialization() {
         if (false == isInit()) {

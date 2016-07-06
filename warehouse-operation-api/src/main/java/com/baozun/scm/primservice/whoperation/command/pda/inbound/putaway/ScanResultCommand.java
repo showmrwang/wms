@@ -60,6 +60,54 @@ public class ScanResultCommand extends BaseCommand {
     private boolean isNeedScanSku;
     /** 上架以后是否提示下一个容器 */
     private boolean isAfterPutawayTipContianer;
+    /** 是否需要提示扫商品属性 */
+    private boolean isNeedTipSkuDetail;
+    /** 提示商品数量 */
+    private int tipSkuQty;
+    /** 是否需要提示商品的库存类型 */
+    private boolean isNeedTipSkuInvType;
+    /** 提示商品库存类型 */
+    private String tipSkuInvType;
+    /** 是否需要提示商品的库存状态 */
+    private boolean isNeedTipSkuInvStatus;
+    /** 提示商品库存状态 */
+    private String tipSkuInvStatus;
+    /** 是否需要提示商品的生产日期 */
+    private boolean isNeedTipSkuMfgDate;
+    /** 提示商品生产日期 */
+    private String tipSkuMfgDate;
+    /** 是否需要提示商品过期日期 */
+    private boolean isNeedTipSkuExpDate;
+    /** 提示商品过期日期 */
+    private String tipSkuExpDate;
+    /** 是否需要提示商品库存属性1 */
+    private boolean isNeedTipSkuInvAttr1;
+    /** 提示商品库存属性1 */
+    private String tipSkuInvAttr1;
+    /** 是否需要提示商品库存属性2 */
+    private boolean isNeedTipSkuInvAttr2;
+    /** 提示商品库存属性2 */
+    private String tipSkuInvAttr2;
+    /** 是否需要提示商品库存属性3 */
+    private boolean isNeedTipSkuInvAttr3;
+    /** 提示商品库存属性3 */
+    private String tipSkuInvAttr3;
+    /** 是否需要提示商品库存属性4 */
+    private boolean isNeedTipSkuInvAttr4;
+    /** 提示商品库存属性4 */
+    private String tipSkuInvAttr4;
+    /** 是否需要提示商品库存属性5 */
+    private boolean isNeedTipSkuInvAttr5;
+    /** 提示商品库存属性5 */
+    private String tipSkuInvAttr5;
+    /** 是否需要提示商品sn */
+    private boolean isNeedTipSkuSn;
+    /** 提示商品sn */
+    private String tipSkuSn;
+    /** 是否需要提示商品残次条码 */
+    private boolean isNeedTipSkuDefect;
+    /** 提示商品条码 */
+    private String tipSkuDefect;
 
 
     public int getPutawayPatternType() {
@@ -205,6 +253,200 @@ public class ScanResultCommand extends BaseCommand {
     public void setAfterPutawayTipContianer(boolean isAfterPutawayTipContianer) {
         this.isAfterPutawayTipContianer = isAfterPutawayTipContianer;
     }
+
+    public boolean isNeedTipSkuDetail() {
+        return isNeedTipSkuDetail;
+    }
+
+    public void setNeedTipSkuDetail(boolean isNeedTipSkuDetail) {
+        this.isNeedTipSkuDetail = isNeedTipSkuDetail;
+    }
+
+    public int getTipSkuQty() {
+        return tipSkuQty;
+    }
+
+    public void setTipSkuQty(int tipSkuQty) {
+        this.tipSkuQty = tipSkuQty;
+    }
+
+    public boolean isNeedTipSkuInvType() {
+        return isNeedTipSkuInvType;
+    }
+
+    public void setNeedTipSkuInvType(boolean isNeedTipSkuInvType) {
+        this.isNeedTipSkuInvType = isNeedTipSkuInvType;
+    }
+
+    public String getTipSkuInvType() {
+        return tipSkuInvType;
+    }
+
+    public void setTipSkuInvType(String tipSkuInvType) {
+        this.tipSkuInvType = tipSkuInvType;
+    }
+
+    public boolean isNeedTipSkuInvStatus() {
+        return isNeedTipSkuInvStatus;
+    }
+
+    public void setNeedTipSkuInvStatus(boolean isNeedTipSkuInvStatus) {
+        this.isNeedTipSkuInvStatus = isNeedTipSkuInvStatus;
+    }
+
+    public String getTipSkuInvStatus() {
+        return tipSkuInvStatus;
+    }
+
+    public void setTipSkuInvStatus(String tipSkuInvStatus) {
+        this.tipSkuInvStatus = tipSkuInvStatus;
+    }
+
+    public boolean isNeedTipSkuMfgDate() {
+        return isNeedTipSkuMfgDate;
+    }
+
+    public void setNeedTipSkuMfgDate(boolean isNeedTipSkuMfgDate) {
+        this.isNeedTipSkuMfgDate = isNeedTipSkuMfgDate;
+    }
+
+    public String getTipSkuMfgDate() {
+        return tipSkuMfgDate;
+    }
+
+    public void setTipSkuMfgDate(String tipSkuMfgDate) {
+        this.tipSkuMfgDate = tipSkuMfgDate;
+    }
+
+    public boolean isNeedTipSkuExpDate() {
+        return isNeedTipSkuExpDate;
+    }
+
+    public void setNeedTipSkuExpDate(boolean isNeedTipSkuExpDate) {
+        this.isNeedTipSkuExpDate = isNeedTipSkuExpDate;
+    }
+
+    public String getTipSkuExpDate() {
+        return tipSkuExpDate;
+    }
+
+    public void setTipSkuExpDate(String tipSkuExpDate) {
+        this.tipSkuExpDate = tipSkuExpDate;
+    }
+
+    public boolean isNeedTipSkuInvAttr1() {
+        return isNeedTipSkuInvAttr1;
+    }
+
+    public void setNeedTipSkuInvAttr1(boolean isNeedTipSkuInvAttr1) {
+        this.isNeedTipSkuInvAttr1 = isNeedTipSkuInvAttr1;
+    }
+
+    public String getTipSkuInvAttr1() {
+        return tipSkuInvAttr1;
+    }
+
+    public void setTipSkuInvAttr1(String tipSkuInvAttr1) {
+        this.tipSkuInvAttr1 = tipSkuInvAttr1;
+    }
+
+    public boolean isNeedTipSkuInvAttr2() {
+        return isNeedTipSkuInvAttr2;
+    }
+
+    public void setNeedTipSkuInvAttr2(boolean isNeedTipSkuInvAttr2) {
+        this.isNeedTipSkuInvAttr2 = isNeedTipSkuInvAttr2;
+    }
+
+    public String getTipSkuInvAttr2() {
+        return tipSkuInvAttr2;
+    }
+
+    public void setTipSkuInvAttr2(String tipSkuInvAttr2) {
+        this.tipSkuInvAttr2 = tipSkuInvAttr2;
+    }
+
+    public boolean isNeedTipSkuInvAttr3() {
+        return isNeedTipSkuInvAttr3;
+    }
+
+    public void setNeedTipSkuInvAttr3(boolean isNeedTipSkuInvAttr3) {
+        this.isNeedTipSkuInvAttr3 = isNeedTipSkuInvAttr3;
+    }
+
+    public String getTipSkuInvAttr3() {
+        return tipSkuInvAttr3;
+    }
+
+    public void setTipSkuInvAttr3(String tipSkuInvAttr3) {
+        this.tipSkuInvAttr3 = tipSkuInvAttr3;
+    }
+
+    public boolean isNeedTipSkuInvAttr4() {
+        return isNeedTipSkuInvAttr4;
+    }
+
+    public void setNeedTipSkuInvAttr4(boolean isNeedTipSkuInvAttr4) {
+        this.isNeedTipSkuInvAttr4 = isNeedTipSkuInvAttr4;
+    }
+
+    public String getTipSkuInvAttr4() {
+        return tipSkuInvAttr4;
+    }
+
+    public void setTipSkuInvAttr4(String tipSkuInvAttr4) {
+        this.tipSkuInvAttr4 = tipSkuInvAttr4;
+    }
+
+    public boolean isNeedTipSkuInvAttr5() {
+        return isNeedTipSkuInvAttr5;
+    }
+
+    public void setNeedTipSkuInvAttr5(boolean isNeedTipSkuInvAttr5) {
+        this.isNeedTipSkuInvAttr5 = isNeedTipSkuInvAttr5;
+    }
+
+    public String getTipSkuInvAttr5() {
+        return tipSkuInvAttr5;
+    }
+
+    public void setTipSkuInvAttr5(String tipSkuInvAttr5) {
+        this.tipSkuInvAttr5 = tipSkuInvAttr5;
+    }
+
+    public boolean isNeedTipSkuSn() {
+        return isNeedTipSkuSn;
+    }
+
+    public void setNeedTipSkuSn(boolean isNeedTipSkuSn) {
+        this.isNeedTipSkuSn = isNeedTipSkuSn;
+    }
+
+    public String getTipSkuSn() {
+        return tipSkuSn;
+    }
+
+    public void setTipSkuSn(String tipSkuSn) {
+        this.tipSkuSn = tipSkuSn;
+    }
+
+    public boolean isNeedTipSkuDefect() {
+        return isNeedTipSkuDefect;
+    }
+
+    public void setNeedTipSkuDefect(boolean isNeedTipSkuDefect) {
+        this.isNeedTipSkuDefect = isNeedTipSkuDefect;
+    }
+
+    public String getTipSkuDefect() {
+        return tipSkuDefect;
+    }
+
+    public void setTipSkuDefect(String tipSkuDefect) {
+        this.tipSkuDefect = tipSkuDefect;
+    }
+
+
 
 
 }
