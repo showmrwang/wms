@@ -262,7 +262,14 @@ public class AsnLineManagerImpl extends BaseManagerImpl implements AsnLineManage
     }
 
     @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public WhAsnLine findWhAsnLineByPoLineIdAndUuidAndOuId(Long polineId, String uuid, Long ouId) {
         return this.whAsnLineDao.findWhAsnLineByPoLineIdAndUuidAndOuId(polineId, uuid, ouId);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<WhAsnLine> findWhAsnLineByAsnIdOuIdUuid(Long asnId, Long ouId, String uuid) {
+        return this.whAsnLineDao.findWhAsnLineByAsnIdOuIdUuid(asnId, ouId, uuid);
     }
 }

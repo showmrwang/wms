@@ -307,6 +307,8 @@ public class ErrorCodes {
     public static final int RCVD_PALLET_CONTANIER_ERROR = 10023;
     /** 容器状态回滚失败，请重试！ */
     public static final int RCVD_CONTAINER_REVOKE_ERROR = 10024;
+    /** 商品效期已过期！ */
+    public static final int SKU_EXPIRE_ERROR = 10025;
     // 10001-20000 luyimin
 
 

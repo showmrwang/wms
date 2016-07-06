@@ -105,4 +105,12 @@ public interface CreatePoAsnManagerProxy extends BaseManager {
      */
     WhAsn updateAsnWithUuid(WhPoCommand command);
 
+    /**
+     * 创建ASN分支一：保存带UUID的asn数据【业务方法】
+     * 
+     * @param command
+     * @return
+     */
+    void saveTempAsnWithUuid(WhPoCommand command);
+
 }

@@ -238,4 +238,10 @@ public final class Constants {
     /** 库存 占用单据来源 ASN */
     public static final String SKU_INVENTORY_OCCUPATION_SOURCE_ASN = "ASN";
 
+    // 序列号管理类型
+    public static final Long SERIAL_NUMBER_TYPE_IN = 1L;
+    public static final Long SERIAL_NUMBER_TYPE_OUT = 2L;
+    public static final Long SERIAL_NUMBER_TYPE_INOUT = 3L;
+    public static final Long SERIAL_NUMBER_TYPE_ALL = 4L;
+
 }

@@ -530,7 +530,7 @@ public class CheckInManagerProxyImpl extends BaseManagerImpl implements CheckInM
         }
         long resultCount = checkInQueueManager.freePlatform(platformId, ouId, userId, logId);
         // TODO 触发检查队列的操作，将空出的月台进行分配
-        autoCheckIn(ouId, userId, logId);
+        this.autoCheckIn(ouId, userId, logId);
         if (log.isInfoEnabled()) {
             log.info("CheckInManagerProxyImpl.freePlatform end, vacantPlatformList is:[{}], platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", platformId, ouId, userId, logId);
         }
@@ -578,20 +578,17 @@ public class CheckInManagerProxyImpl extends BaseManagerImpl implements CheckInM
                 log.debug("CheckInManagerProxyImpl.freePlatformByRcvdFinish -> platformManager.findByOccupationCode invoke, asnCode is:[{}], ouId is:[{}], logId is:[{}]", originWhAsnCommand.getAsnCode(), ouId, logId);
             }
             Platform platform = platformManager.findByOccupationCode(originWhAsnCommand.getAsnCode(), ouId, BaseModel.LIFECYCLE_NORMAL);
-            if (null == platform) {
-                log.error("CheckInManagerProxyImpl.freePlatformByRcvdFinish -> platformManager.findByOccupationCode error, result is null, asnCode is:[{}], ouId is:[{}], logId is:[{}]", originWhAsnCommand.getAsnCode(), ouId, logId);
-                throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
-            }
             if (log.isDebugEnabled()) {
                 log.debug("CheckInManagerProxyImpl.freePlatformByRcvdFinish -> platformManager.findByOccupationCode result, asnCode is:[{}], ouId is:[{}], logId is:[{}], platform is:[{}]", originWhAsnCommand.getAsnCode(), ouId, logId, platform);
             }
-
-            if (log.isDebugEnabled()) {
-                log.debug("CheckInManagerProxyImpl.freePlatformByRcvdFinish -> checkInQueueManager.freePlatform invoke, asnId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", asnId, ouId, userId, logId);
+            if (null != platform) {
+                if (log.isDebugEnabled()) {
+                    log.debug("CheckInManagerProxyImpl.freePlatformByRcvdFinish -> checkInQueueManager.freePlatform invoke, asnId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", asnId, ouId, userId, logId);
+                }
+                checkInQueueManager.freePlatform(platform.getId(), ouId, userId, logId);
+                // TODO 触发检查队列的操作，将空出的月台进行分配
+                this.autoCheckIn(ouId, userId, logId);
             }
-            checkInQueueManager.freePlatform(platform.getId(), ouId, userId, logId);
-            // TODO 触发检查队列的操作，将空出的月台进行分配
-            autoCheckIn(ouId, userId, logId);
             if (log.isInfoEnabled()) {
                 log.info("CheckInManagerProxyImpl.freePlatformByRcvdFinish end, vacantPlatformList is:[{}], asnId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", asnId, ouId, userId, logId);
             }

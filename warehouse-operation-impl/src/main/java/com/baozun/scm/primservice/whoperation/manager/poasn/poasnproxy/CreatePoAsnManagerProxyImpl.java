@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -927,14 +929,12 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
         }
         // 2.创建ASN以及明细
         List<WhAsnLine> lineList = new ArrayList<WhAsnLine>();
-        double qtyCount = Constants.DEFAULT_DOUBLE;
         if (null != command.getPoLineList() && command.getPoLineList().size() > 0) {
             for (WhPoLineCommand lineCommand : command.getPoLineList()) {
                 WhPoLine poline = this.poLineManager.findWhPoLineByIdOuIdToShard(lineCommand.getId(), command.getOuId());
                 if (poline.getAvailableQty() < lineCommand.getQtyPlanned()) {
                     throw new BusinessException(ErrorCodes.ASNLINE_QTYPLANNED_ERROR);
                 }
-                qtyCount += lineCommand.getQtyPlanned();
                 WhAsnLine line = new WhAsnLine();
                 line.setOuId(command.getOuId());
                 line.setPoLineId(poline.getId());
@@ -989,7 +989,6 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
         asn.setModifiedId(command.getUserId());
         asn.setUuid(command.getUuid());
         asn.setIsIqc(po.getIsIqc());
-        asn.setQtyPlanned(qtyCount);
         this.asnManager.createAsnAndLineWithUuidToShard(asn, lineList);
         return asn;
     }
@@ -1005,7 +1004,6 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
         if (null == asn) {
             throw new BusinessException(ErrorCodes.ASN_NULL);
         }
-        double qtyCount = Constants.DEFAULT_DOUBLE;
         List<WhAsnLine> lineList = new ArrayList<WhAsnLine>();
         if (null != command.getPoLineList() && command.getPoLineList().size() > 0) {
             for (WhPoLineCommand lineCommand : command.getPoLineList()) {
@@ -1013,10 +1011,8 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
                 if (poline.getAvailableQty() < lineCommand.getQtyPlanned()) {
                     throw new BusinessException(ErrorCodes.ASNLINE_QTYPLANNED_ERROR);
                 }
-                qtyCount += lineCommand.getQtyPlanned();
                 WhAsnLine line = this.asnLineManager.findWhAsnLineByPoLineIdAndUuidAndOuId(poline.getId(), poline.getUuid(), poline.getOuId());
                 if (line == null) {
-                    qtyCount += lineCommand.getQtyPlanned();
                     line = new WhAsnLine();
                     line.setOuId(command.getOuId());
                     line.setPoLineId(poline.getId());
@@ -1054,10 +1050,63 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
             }
         }
         asn.setUuid(command.getUuid());
-        asn.setQtyPlanned(asn.getQtyPlanned() + qtyCount);
         asn.setModifiedId(command.getUserId());
         asn.setLastModifyTime(new Date());
         this.asnManager.createAsnAndLineWithUuidToShard(asn, lineList);
         return asn;
+    }
+
+    @Override
+    public void saveTempAsnWithUuid(WhPoCommand command) {
+        Long asnId = command.getAsnId();
+        Long ouId = command.getOuId();
+        String uuid=command.getUuid();
+        Long userId=command.getUserId();
+        WhAsn asn = this.asnManager.findWhAsnByIdToShard(asnId, ouId);
+        if (null == asn) {
+            throw new BusinessException(ErrorCodes.ASN_NULL);
+        }
+        List<WhAsnLine> asnLineList = this.asnLineManager.findWhAsnLineByAsnIdOuIdUuid(asnId, ouId, uuid);
+        List<WhAsnLine> saveAsnLineList = new ArrayList<WhAsnLine>();
+        Map<Long, Double> poLineMap = new HashMap<Long, Double>();
+        Double lineQty = Constants.DEFAULT_DOUBLE;
+        if (asnLineList != null) {
+            for (WhAsnLine asnLine : asnLineList) {
+                asnLine.setUuid(null);
+                asnLine.setModifiedId(userId);
+                saveAsnLineList.add(asnLine);
+                // asn计划数量统计
+                lineQty += asnLine.getQtyPlanned();
+                // po明细
+                if (poLineMap.containsKey(asnLine.getPoLineId())) {
+                    poLineMap.put(asnLine.getPoLineId(), poLineMap.get(asnLine.getPoLineId()) + asnLine.getQtyPlanned());
+                } else {
+                    poLineMap.put(asnLine.getPoLineId(), asnLine.getQtyPlanned());
+                }
+            }
+        }
+        // asn数据封装
+        asn.setQtyPlanned(asn.getQtyPlanned() + lineQty);
+        asn.setModifiedId(userId);
+
+        // po单明细
+        Iterator<Entry<Long, Double>> it = poLineMap.entrySet().iterator();
+        List<WhPoLine> savePoLineList = new ArrayList<WhPoLine>();
+        while (it.hasNext()) {
+            Entry<Long, Double> entry = it.next();
+            WhPoLine poLine = this.poLineManager.findWhPoLineByIdOuIdToShard(entry.getKey(), ouId);
+            if (null == poLine) {
+                throw new BusinessException(ErrorCodes.PO_NULL);
+            }
+            poLine.setModifiedId(userId);
+            poLine.setAvailableQty(poLine.getAvailableQty() - entry.getValue());
+            savePoLineList.add(poLine);
+
+        }
+
+        // po单
+        WhPo po = this.poManager.findWhPoByIdToShard(asn.getPoId(), ouId);
+
+        this.asnManager.saveTempAsnWithUuidToShard(asn, saveAsnLineList, po, savePoLineList);
     }
 }

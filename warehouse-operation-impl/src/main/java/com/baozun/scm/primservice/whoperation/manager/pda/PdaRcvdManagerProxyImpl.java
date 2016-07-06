@@ -25,6 +25,7 @@ import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnLineCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoLineCommand;
+import com.baozun.scm.primservice.whoperation.command.sku.skucommand.SkuMgmtCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.constant.CacheKeyConstant;
@@ -358,17 +359,28 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                 whCartonMap.put(asnRcvdLogMaoKey, whCarton);
                 if (null != cacheInv.getSnList()) {
                     for (RcvdSnCacheCommand rcvdSn : cacheInv.getSnList()) {
-                        WhSkuInventorySn skuInvSn = new WhSkuInventorySn();
-                        skuInvSn.setDefectTypeId(rcvdSn.getDefectTypeId());
-                        skuInvSn.setDefectReasonsId(rcvdSn.getDefectReasonsId());
-                        skuInvSn.setStatus(Constants.INVENTORY_SN_STATUS_ONHAND);
                         // #条码 调用条码生成器
-                        String barCode = this.codeManager.generateCode(Constants.WMS, Constants.INVENTORY_SN_BARCODE, null, Constants.INVENTORY_SN_BARCODE_PREFIX, null);
-                        skuInvSn.setDefectWareBarcode(barCode);
-                        skuInvSn.setOuId(ouId);
-                        skuInvSn.setUuid(uuid);
-                        skuInvSn.setOccupationCode(occupationCode);
-                        saveSnList.add(skuInvSn);
+                        String barCode = null;
+                        if (null == rcvdSn.getDefectTypeId()) {
+                            barCode = this.codeManager.generateCode(Constants.WMS, Constants.INVENTORY_SN_BARCODE, null, Constants.INVENTORY_SN_BARCODE_PREFIX, null);
+                        }
+
+                        boolean flag = false;
+                        WhSkuInventorySn skuInvSn = new WhSkuInventorySn();
+                        if (null != rcvdSn.getSerialNumberType() && !Constants.SERIAL_NUMBER_TYPE_IN.equals(rcvdSn.getSerialNumberType())) {
+                            skuInvSn.setSn(rcvdSn.getSn());
+                            flag = true;
+                        }
+                        if (flag || null != barCode) {
+                            skuInvSn.setDefectTypeId(rcvdSn.getDefectTypeId());
+                            skuInvSn.setDefectReasonsId(rcvdSn.getDefectReasonsId());
+                            skuInvSn.setOccupationCode(occupationCode);
+                            skuInvSn.setStatus(Constants.INVENTORY_SN_STATUS_ONHAND);
+                            skuInvSn.setDefectWareBarcode(barCode);
+                            skuInvSn.setOuId(ouId);
+                            skuInvSn.setUuid(uuid);
+                            saveSnList.add(skuInvSn);
+                        }
                         // 插入日志表
                         WhAsnRcvdSnLog whAsnRcvdSnLog = new WhAsnRcvdSnLog();
                         whAsnRcvdSnLog.setAsnRcvdId(asnId);
@@ -382,7 +394,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                                 whAsnRcvdSnLog.setDefectType(storeDefectType.getName());
                                 StoreDefectReasons storeDefectReasons = this.generalRcvdManager.findStoreDefectReasonsByIdToGlobal(rcvdSn.getDefectReasonsId());
                                 if (storeDefectReasons != null) {
-                                    whAsnRcvdSnLog.setDefectType(storeDefectReasons.getName());
+                                    whAsnRcvdSnLog.setDefectReasons(storeDefectReasons.getName());
                                 }
                             }
 
@@ -499,7 +511,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
             }
             // 更新容器
             Container container = null;
-            if (outerContainerId != null) {
+            if (null == outerContainerId) {
                 container = this.generalRcvdManager.findContainerByIdToShard(insideContainerId, ouId);
                 if (null == container) {
                     throw new BusinessException(ErrorCodes.CONTAINER_RCVD_GET_ERROR);
@@ -1024,6 +1036,14 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
                         }
                     }
+                    if (null != command.getSkuMgmt()) {
+                        SkuMgmtCommand skuMgmt = command.getSkuMgmt();
+                        if (null != skuMgmt.getIsExpiredGoodsReceive() && !skuMgmt.getIsExpiredGoodsReceive()) {
+                            if (expDate.after(new Date())) {
+                                throw new BusinessException(ErrorCodes.SKU_EXPIRE_ERROR);
+                            }
+                        }
+                    }
                     if(command.getDayOfValidDate()!=null){
                         
                     }
@@ -1051,7 +1071,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                             // throw new BusinessException(ErrorCodes.RCVD_CONTAINER_LIMIT_ERROR);
                         }
                     }
-                    if (null == line.getBatchNo() || line.getBatchNo().equals(command.getBatchNumber())) {
+                    if (StringUtils.isEmpty(line.getBatchNo()) || line.getBatchNo().equals(command.getBatchNumber())) {
                         lineList.add(lineId);
                     }
                     break;
@@ -1166,6 +1186,10 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
         }
         RcvdSnCacheCommand rcvdSn = command.getSn();
         rcvdSn.setDefectSource(command.getSnSource());
+        if (null != command.getSkuMgmt()) {
+            SkuMgmtCommand skuMgmt = command.getSkuMgmt();
+            rcvdSn.setSerialNumberType(skuMgmt.getSerialNumberType());
+        }
         for (int i = 0; i < snCount; i++) {
             cacheSn.add(rcvdSn);
         }
