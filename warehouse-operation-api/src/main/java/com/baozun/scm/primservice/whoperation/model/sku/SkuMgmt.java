@@ -36,7 +36,7 @@ public class SkuMgmt extends BaseModel {
     /** 是否管理批次号 */
     private Boolean isBatchNo;
     /** 序列号管理类型*/
-    private Long serialNumberType;
+    private String serialNumberType;
     /** 是否管理原产地 */
     private Boolean isCountryOfOrigin;
     /** 是否管理库存类型 */
@@ -140,11 +140,11 @@ public class SkuMgmt extends BaseModel {
         this.isBatchNo = isBatchNo;
     }
 
-    public Long getSerialNumberType() {
+    public String getSerialNumberType() {
         return serialNumberType;
     }
 
-    public void setSerialNumberType(Long serialNumberType) {
+    public void setSerialNumberType(String serialNumberType) {
         this.serialNumberType = serialNumberType;
     }
 
