@@ -54,6 +54,7 @@ import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
 import com.baozun.scm.primservice.whoperation.constant.WhContainerCategoryType;
 import com.baozun.scm.primservice.whoperation.constant.WhContainerType;
 import com.baozun.scm.primservice.whoperation.constant.WhPutawayPatternDetailType;
+import com.baozun.scm.primservice.whoperation.constant.WhPutawayPatternType;
 import com.baozun.scm.primservice.whoperation.constant.WhUomType;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoDao;
@@ -147,7 +148,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
     private SysDictionaryManager sysDictionaryManager;
     @Autowired
     private InventoryStatusManager inventoryStatusManager;
-    
+
 
     /**
      * 系统指导上架扫托盘号
@@ -374,6 +375,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
      */
     private ScanResultCommand sysGuidePalletPutawayScanContainer(ContainerCommand containerCmd, Long funcId, Long ouId, Long userId, String logId) {
         ScanResultCommand srCmd = new ScanResultCommand();
+        srCmd.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
         srCmd.setPutawayPatternDetailType(WhPutawayPatternDetailType.PALLET_PUTAWAY);
         Long containerId = containerCmd.getId();
         String containerCode = containerCmd.getCode();
@@ -903,7 +905,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                     log.error("sum sku inv onHand qty error, logId is:[{}]", logId);
                     throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
                 }
-            }else{
+            } else {
                 oldQty = 0.0;
             }
             insertSkuInventoryLog(invCmd.getId(), 0.0, oldQty, warehouse.getIsTabbInvTotal(), ouId, userId);
@@ -921,7 +923,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                     log.error("sum sku inv onHand qty error, logId is:[{}]", logId);
                     throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
                 }
-            }else{
+            } else {
                 oldQty = 0.0;
             }
             insertSkuInventoryLog(invCmd.getId(), -invCmd.getOnHandQty(), oldQty, warehouse.getIsTabbInvTotal(), ouId, userId);
@@ -948,6 +950,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
      */
     private ScanResultCommand sysGuideContainerPutawayScanContainer(ContainerCommand containerCmd, ContainerCommand insideContainerCmd, Long funcId, Long ouId, Long userId, String logId) {
         ScanResultCommand srCmd = new ScanResultCommand();
+        srCmd.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
         srCmd.setPutawayPatternDetailType(WhPutawayPatternDetailType.CONTAINER_PUTAWAY);
         Long containerId = containerCmd.getId();
         String containerCode = containerCmd.getCode();
@@ -1452,7 +1455,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                     log.error("sum sku inv onHand qty error, logId is:[{}]", logId);
                     throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
                 }
-            }else{
+            } else {
                 oldQty = 0.0;
             }
             insertSkuInventoryLog(invCmd.getId(), 0.0, oldQty, warehouse.getIsTabbInvTotal(), ouId, userId);
@@ -1470,7 +1473,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                     log.error("sum sku inv onHand qty error, logId is:[{}]", logId);
                     throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
                 }
-            }else{
+            } else {
                 oldQty = 0.0;
             }
             insertSkuInventoryLog(invCmd.getId(), -invCmd.getOnHandQty(), oldQty, warehouse.getIsTabbInvTotal(), ouId, userId);
@@ -1497,6 +1500,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
      */
     private ScanResultCommand sysGuideSplitContainerPutawayScanContainer(ContainerCommand containerCmd, ContainerCommand insideContainerCmd, Long funcId, Long ouId, Long userId, String logId) {
         ScanResultCommand srCmd = new ScanResultCommand();
+        srCmd.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
         srCmd.setPutawayPatternDetailType(WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY);
         Long containerId = containerCmd.getId();
         String containerCode = containerCmd.getCode();
@@ -2056,7 +2060,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                         log.error("sum sku inv onHand qty error, logId is:[{}]", logId);
                         throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
                     }
-                }else{
+                } else {
                     oldQty = 0.0;
                 }
                 // 记录待移入库位库存日志
@@ -2107,6 +2111,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                             splitInv.setOnHandQty(new Double(invCmd.getOnHandQty().intValue() - qty));// 剩余在库数量
                             splitInv.setLocationId(null);
                             whSkuInventoryDao.insert(splitInv);
+                            insertSkuInventoryLog(invCmd.getId(), new Double(invCmd.getOnHandQty().intValue() - qty), 0.0, warehouse.getIsTabbInvTotal(), ouId, userId);
                             insertGlobalLog(GLOBAL_LOG_INSERT, splitInv, ouId, userId, null, null);
                         }
                         for (WhSkuInventorySnCommand snCmd : snList) {
@@ -2136,7 +2141,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                                 log.error("sum sku inv onHand qty error, logId is:[{}]", logId);
                                 throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
                             }
-                        }else{
+                        } else {
                             oldQty = 0.0;
                         }
                         insertSkuInventoryLog(invCmd.getId(), 0.0, oldQty, warehouse.getIsTabbInvTotal(), ouId, userId);
@@ -2159,7 +2164,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                         log.error("sum sku inv onHand qty error, logId is:[{}]", logId);
                         throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
                     }
-                }else{
+                } else {
                     oldQty = 0.0;
                 }
                 insertSkuInventoryLog(invCmd.getId(), -invCmd.getOnHandQty(), oldQty, warehouse.getIsTabbInvTotal(), ouId, userId);
@@ -2199,7 +2204,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                             log.error("sum sku inv onHand qty error, logId is:[{}]", logId);
                             throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
                         }
-                    }else{
+                    } else {
                         oldQty = 0.0;
                     }
                     insertSkuInventoryLog(invCmd.getId(), -invCmd.getOnHandQty(), oldQty, warehouse.getIsTabbInvTotal(), ouId, userId);
@@ -2317,6 +2322,8 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
      */
     private ScanResultCommand sysGuidePalletPutawayScanLocConfirm(ContainerCommand containerCmd, String locationCode, Long funcId, Long ouId, Long userId, String logId) {
         ScanResultCommand srCmd = new ScanResultCommand();
+        srCmd.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
+        srCmd.setPutawayPatternDetailType(WhPutawayPatternDetailType.PALLET_PUTAWAY);
         Long containerId = containerCmd.getId();
         // 0.判断是否已经缓存所有库存信息
         List<WhSkuInventoryCommand> invList = cacheManager.getMapObject(CacheConstants.CONTAINER_INVENTORY, containerId.toString());
@@ -2419,6 +2426,8 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
      */
     private ScanResultCommand sysGuideContainerPutawayScanLocConfirm(ContainerCommand containerCmd, ContainerCommand insideContainerCmd, String locationCode, Long funcId, Long ouId, Long userId, String logId) {
         ScanResultCommand srCmd = new ScanResultCommand();
+        srCmd.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
+        srCmd.setPutawayPatternDetailType(WhPutawayPatternDetailType.CONTAINER_PUTAWAY);
         if (null == insideContainerCmd) {
             insideContainerCmd = containerCmd;
             containerCmd = null;
@@ -2451,7 +2460,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         Boolean isNotcaselevelScanSku = (null == putawyaFunc.getIsNotcaselevelScanSku() ? false : putawyaFunc.getIsNotcaselevelScanSku());
         // 2.判断是继续扫描内部容器还是直接上架
         Set<Long> insideContainerIds = isCmd.getInsideContainerIds();
-        //Map<Long, Set<Long>> insideContainerSkuIds = isCmd.getInsideContainerSkuIds();
+        // Map<Long, Set<Long>> insideContainerSkuIds = isCmd.getInsideContainerSkuIds();
         Set<Long> caselevelContainerIds = isCmd.getCaselevelContainerIds();
         Set<Long> notcaselevelContainerIds = isCmd.getNotcaselevelContainerIds();
         if (null != containerCmd) {
@@ -2522,6 +2531,8 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
      */
     private ScanResultCommand sysGuideSplitContainerPutawayScanLocConfirm(ContainerCommand containerCmd, ContainerCommand insideContainerCmd, String locationCode, Long funcId, Long ouId, Long userId, String logId) {
         ScanResultCommand srCmd = new ScanResultCommand();
+        srCmd.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
+        srCmd.setPutawayPatternDetailType(WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY);
         if (null == insideContainerCmd) {
             insideContainerCmd = containerCmd;
             containerCmd = null;
@@ -2546,7 +2557,8 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         }
         // 1.提示商品并判断是否需要扫描属性
         Map<Long, Map<String, Long>> insideContainerSkuAttrIdsQty = isCmd.getInsideContainerSkuAttrIdsQty();
-        //Map<Long, Map<String, Set<String>>> insideContainerSkuAttrIdsSnDefect = isCmd.getInsideContainerSkuAttrIdsSnDefect();
+        // Map<Long, Map<String, Set<String>>> insideContainerSkuAttrIdsSnDefect =
+        // isCmd.getInsideContainerSkuAttrIdsSnDefect();
         Map<Long, Map<Long, Set<String>>> insideContainerLocSkuAttrIds = isCmd.getInsideContainerLocSkuAttrIds();
         Location loc = locationDao.findLocationByCode(locationCode, ouId);
         if (null == loc) {
@@ -2567,26 +2579,26 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         srCmd.setTipSkuBarcode(skuCmd.getBarCode());
         return srCmd;
     }
-    
+
     private void tipSkuDetailAspect(ScanResultCommand srCmd, String tipSkuAttrId, Map<Long, Set<String>> locSkuAttrIds, Map<String, Long> skuAttrIdsQty, String logId) {
         boolean isTipSkuDetail = TipSkuDetailProvider.isTipSkuDetail(locSkuAttrIds, tipSkuAttrId);
-        isTipSkuDetail = true;  
+        isTipSkuDetail = true;
         srCmd.setNeedTipSkuDetail(isTipSkuDetail);
         String skuAttrId = SkuCategoryProvider.getSkuAttrId(tipSkuAttrId);
         Long qty = skuAttrIdsQty.get(skuAttrId);
-        if(null == qty){
+        if (null == qty) {
             log.error("sku qty is null error, logId is:[{}]", logId);
             throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
         }
         srCmd.setTipSkuQty(qty.intValue());
         if (true == isTipSkuDetail) {
             srCmd.setNeedTipSkuInvType(TipSkuDetailProvider.isTipSkuInvType(tipSkuAttrId));
-            if(true == srCmd.isNeedTipSkuInvType()){
+            if (true == srCmd.isNeedTipSkuInvType()) {
                 String skuInvType = TipSkuDetailProvider.getSkuInvType(tipSkuAttrId);
                 List<SysDictionary> invTypeList = sysDictionaryManager.getListByGroup(Constants.INVENTORY_TYPE, BaseModel.LIFECYCLE_NORMAL);
                 boolean isExists = false;
-                for(SysDictionary sd : invTypeList){
-                    if(sd.getDicValue().equals(skuInvType)){
+                for (SysDictionary sd : invTypeList) {
+                    if (sd.getDicValue().equals(skuInvType)) {
                         srCmd.setTipSkuInvType(sd.getDicLabel());
                         isExists = true;
                         break;
@@ -2598,39 +2610,39 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                 }
             }
             srCmd.setNeedTipSkuInvStatus(TipSkuDetailProvider.isTipSkuInvStatus(tipSkuAttrId));
-            if(true == srCmd.isNeedTipSkuInvStatus()){
+            if (true == srCmd.isNeedTipSkuInvStatus()) {
                 String skuInvStatus = TipSkuDetailProvider.getSkuInvStatus(tipSkuAttrId);
                 List<InventoryStatus> invStatusList = inventoryStatusManager.findAllInventoryStatus();
                 boolean isExists = false;
-                for(InventoryStatus is : invStatusList){
-                    if(is.getId().toString().equals(skuInvStatus)){
+                for (InventoryStatus is : invStatusList) {
+                    if (is.getId().toString().equals(skuInvStatus)) {
                         srCmd.setTipSkuInvStatus(is.getName());
                         isExists = true;
                         break;
                     }
                 }
-                if(false == isExists){
+                if (false == isExists) {
                     log.error("inv status is not found error, logId is:[{}]", logId);
                     throw new BusinessException(ErrorCodes.COMMON_INV_STATUS_NOT_FOUND_ERROR);
                 }
             }
             srCmd.setNeedTipSkuMfgDate(TipSkuDetailProvider.isTipSkuMfgDate(tipSkuAttrId));
-            if(true == srCmd.isNeedTipSkuMfgDate()){
+            if (true == srCmd.isNeedTipSkuMfgDate()) {
                 String skuMfgDate = TipSkuDetailProvider.getSkuMfgDate(tipSkuAttrId);
                 srCmd.setTipSkuMfgDate(skuMfgDate);
             }
             srCmd.setNeedTipSkuExpDate(TipSkuDetailProvider.isTipSkuExpDate(tipSkuAttrId));
-            if(true == srCmd.isNeedTipSkuExpDate()){
+            if (true == srCmd.isNeedTipSkuExpDate()) {
                 String skuExpDate = TipSkuDetailProvider.getSkuExpDate(tipSkuAttrId);
                 srCmd.setTipSkuExpDate(skuExpDate);
             }
             srCmd.setNeedTipSkuInvAttr1(TipSkuDetailProvider.isTipSkuInvAttr1(tipSkuAttrId));
-            if(true == srCmd.isNeedTipSkuInvAttr1()){
+            if (true == srCmd.isNeedTipSkuInvAttr1()) {
                 String skuInvAttr1 = TipSkuDetailProvider.getSkuInvAttr1(tipSkuAttrId);
                 List<SysDictionary> list = sysDictionaryManager.getListByGroup(Constants.INVENTORY_ATTR_1, BaseModel.LIFECYCLE_NORMAL);
                 boolean isExists = false;
-                for(SysDictionary sd : list){
-                    if(sd.getDicValue().equals(skuInvAttr1)){
+                for (SysDictionary sd : list) {
+                    if (sd.getDicValue().equals(skuInvAttr1)) {
                         srCmd.setTipSkuInvAttr1(sd.getDicLabel());
                         isExists = true;
                         break;
@@ -2642,12 +2654,12 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                 }
             }
             srCmd.setNeedTipSkuInvAttr2(TipSkuDetailProvider.isTipSkuInvAttr2(tipSkuAttrId));
-            if(true == srCmd.isNeedTipSkuInvAttr2()){
+            if (true == srCmd.isNeedTipSkuInvAttr2()) {
                 String skuInvAttr2 = TipSkuDetailProvider.getSkuInvAttr2(tipSkuAttrId);
                 List<SysDictionary> list = sysDictionaryManager.getListByGroup(Constants.INVENTORY_ATTR_2, BaseModel.LIFECYCLE_NORMAL);
                 boolean isExists = false;
-                for(SysDictionary sd : list){
-                    if(sd.getDicValue().equals(skuInvAttr2)){
+                for (SysDictionary sd : list) {
+                    if (sd.getDicValue().equals(skuInvAttr2)) {
                         srCmd.setTipSkuInvAttr2(sd.getDicLabel());
                         isExists = true;
                         break;
@@ -2659,12 +2671,12 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                 }
             }
             srCmd.setNeedTipSkuInvAttr3(TipSkuDetailProvider.isTipSkuInvAttr3(tipSkuAttrId));
-            if(true == srCmd.isNeedTipSkuInvAttr3()){
+            if (true == srCmd.isNeedTipSkuInvAttr3()) {
                 String skuInvAttr3 = TipSkuDetailProvider.getSkuInvAttr3(tipSkuAttrId);
                 List<SysDictionary> list = sysDictionaryManager.getListByGroup(Constants.INVENTORY_ATTR_3, BaseModel.LIFECYCLE_NORMAL);
                 boolean isExists = false;
-                for(SysDictionary sd : list){
-                    if(sd.getDicValue().equals(skuInvAttr3)){
+                for (SysDictionary sd : list) {
+                    if (sd.getDicValue().equals(skuInvAttr3)) {
                         srCmd.setTipSkuInvAttr3(sd.getDicLabel());
                         isExists = true;
                         break;
@@ -2676,12 +2688,12 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                 }
             }
             srCmd.setNeedTipSkuInvAttr4(TipSkuDetailProvider.isTipSkuInvAttr4(tipSkuAttrId));
-            if(true == srCmd.isNeedTipSkuInvAttr4()){
+            if (true == srCmd.isNeedTipSkuInvAttr4()) {
                 String skuInvAttr4 = TipSkuDetailProvider.getSkuInvAttr4(tipSkuAttrId);
                 List<SysDictionary> list = sysDictionaryManager.getListByGroup(Constants.INVENTORY_ATTR_4, BaseModel.LIFECYCLE_NORMAL);
                 boolean isExists = false;
-                for(SysDictionary sd : list){
-                    if(sd.getDicValue().equals(skuInvAttr4)){
+                for (SysDictionary sd : list) {
+                    if (sd.getDicValue().equals(skuInvAttr4)) {
                         srCmd.setTipSkuInvAttr4(sd.getDicLabel());
                         isExists = true;
                         break;
@@ -2693,12 +2705,12 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                 }
             }
             srCmd.setNeedTipSkuInvAttr5(TipSkuDetailProvider.isTipSkuInvAttr5(tipSkuAttrId));
-            if(true == srCmd.isNeedTipSkuInvAttr5()){
+            if (true == srCmd.isNeedTipSkuInvAttr5()) {
                 String skuInvAttr5 = TipSkuDetailProvider.getSkuInvAttr5(tipSkuAttrId);
                 List<SysDictionary> list = sysDictionaryManager.getListByGroup(Constants.INVENTORY_ATTR_5, BaseModel.LIFECYCLE_NORMAL);
                 boolean isExists = false;
-                for(SysDictionary sd : list){
-                    if(sd.getDicValue().equals(skuInvAttr5)){
+                for (SysDictionary sd : list) {
+                    if (sd.getDicValue().equals(skuInvAttr5)) {
                         srCmd.setTipSkuInvAttr5(sd.getDicLabel());
                         isExists = true;
                         break;
@@ -2710,12 +2722,12 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                 }
             }
             srCmd.setNeedTipSkuSn(TipSkuDetailProvider.isTipSkuSn(tipSkuAttrId));
-            if(true == srCmd.isNeedTipSkuSn()){
+            if (true == srCmd.isNeedTipSkuSn()) {
                 String skuSn = TipSkuDetailProvider.getSkuSn(tipSkuAttrId);
                 srCmd.setTipSkuSn(skuSn);
             }
             srCmd.setNeedTipSkuDefect(TipSkuDetailProvider.isTipSkuDefect(tipSkuAttrId));
-            if(true == srCmd.isNeedTipSkuDefect()){
+            if (true == srCmd.isNeedTipSkuDefect()) {
                 String skuDefect = TipSkuDetailProvider.getSkuDefect(tipSkuAttrId);
                 srCmd.setTipSkuDefect(skuDefect);
             }
@@ -2815,6 +2827,8 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
      */
     private ScanResultCommand sysGuidePalletPutawayCheckScanContainerConfirm(ContainerCommand ocCmd, ContainerCommand icCmd, String locationCode, Long funcId, Long ouId, Long userId, String logId) {
         ScanResultCommand srCmd = new ScanResultCommand();
+        srCmd.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
+        srCmd.setPutawayPatternDetailType(WhPutawayPatternDetailType.PALLET_PUTAWAY);
         if (null == ocCmd) {
             log.error("sys guide pallet putaway check san container, outer container is null error, logId is:[{}]", logId);
             throw new BusinessException(ErrorCodes.COMMON_OUTER_CONTAINER_IS_NOT_EXISTS);
@@ -2972,8 +2986,10 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
             log.error("sku is null error, logId is:[{}]", logId);
             throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
         } else {
-            BeanUtils.copyProperties(sCmd, skuCmd);
-            skuCmd.setScanSkuQty(scanQty);
+            if (WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY != putawayPatternDetailType) {
+                BeanUtils.copyProperties(sCmd, skuCmd);
+                skuCmd.setScanSkuQty(scanQty);
+            }
         }
         if (WhPutawayPatternDetailType.PALLET_PUTAWAY == putawayPatternDetailType) {
             srCmd = sysGuidePalletPutawayCheckScanSkuConfirm(ocCmd, icCmd, skuCmd, locationCode, funcId, ouId, userId, logId);
@@ -3008,12 +3024,14 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
      */
     private ScanResultCommand sysGuidePalletPutawayCheckScanSkuConfirm(ContainerCommand ocCmd, ContainerCommand icCmd, WhSkuCommand skuCmd, String locationCode, Long funcId, Long ouId, Long userId, String logId) {
         ScanResultCommand srCmd = new ScanResultCommand();
+        srCmd.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
+        srCmd.setPutawayPatternDetailType(WhPutawayPatternDetailType.PALLET_PUTAWAY);
         if (null == ocCmd) {
-            log.error("sys guide pallet putaway check san container, outer container is null error, logId is:[{}]", logId);
+            log.error("sys guide pallet putaway check san sku, outer container is null error, logId is:[{}]", logId);
             throw new BusinessException(ErrorCodes.COMMON_OUTER_CONTAINER_IS_NOT_EXISTS);
         }
         if (null == icCmd) {
-            log.error("sys guide pallet putaway check san container, inside container is null error, logId is:[{}]", logId);
+            log.error("sys guide pallet putaway check san sku, inside container is null error, logId is:[{}]", logId);
             throw new BusinessException(ErrorCodes.COMMON_INSIDE_CONTAINER_IS_NOT_EXISTS);
         }
         // 0.判断是否已经缓存所有库存信息
@@ -3128,13 +3146,15 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
      */
     private ScanResultCommand sysGuideContainerPutawayCheckScanSkuConfirm(ContainerCommand ocCmd, ContainerCommand icCmd, WhSkuCommand skuCmd, String locationCode, Long funcId, Long ouId, Long userId, String logId) {
         ScanResultCommand srCmd = new ScanResultCommand();
+        srCmd.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
+        srCmd.setPutawayPatternDetailType(WhPutawayPatternDetailType.CONTAINER_PUTAWAY);
         if (null == icCmd) {
             // 无外部容器
             icCmd = ocCmd;
             ocCmd = null;
         }
         if (null == icCmd) {
-            log.error("sys guide container putaway check san container, inside container is null error, logId is:[{}]", logId);
+            log.error("sys guide container putaway check san sku, inside container is null error, logId is:[{}]", logId);
             throw new BusinessException(ErrorCodes.COMMON_INSIDE_CONTAINER_IS_NOT_EXISTS);
         }
         // 0.判断是否已经缓存所有库存信息
@@ -3263,11 +3283,128 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
      */
     private ScanResultCommand sysGuideSplitContainerPutawayCheckScanSkuConfirm(ContainerCommand ocCmd, ContainerCommand icCmd, WhSkuCommand skuCmd, String locationCode, Long funcId, Long ouId, Long userId, String logId) {
         ScanResultCommand srCmd = new ScanResultCommand();
+        srCmd.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
+        srCmd.setPutawayPatternDetailType(WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY);
         if (null == icCmd) {
-            log.error("sys guide pallet putaway check san container, inside container is null error, logId is:[{}]", logId);
+            // 无外部容器
+            icCmd = ocCmd;
+            ocCmd = null;
+        }
+        if (null == icCmd) {
+            log.error("sys guide splitContainer putaway check san sku, inside container is null error, logId is:[{}]", logId);
             throw new BusinessException(ErrorCodes.COMMON_INSIDE_CONTAINER_IS_NOT_EXISTS);
         }
+        // 0.判断是否已经缓存所有库存信息
+        List<WhSkuInventoryCommand> invList = cacheManager.getMapObject(CacheConstants.CONTAINER_INVENTORY, icCmd.getId().toString());
+        if (null == invList || 0 == invList.size()) {
+            srCmd.setCacheExists(false);// 缓存信息不存在
+            invList = pdaPutawayCacheManager.sysGuideContainerPutawayCacheInventoryAndStatistic(icCmd, ouId, logId);
+        }
+        InventoryStatisticResultCommand isCmd = cacheManager.getMapObject(CacheConstants.CONTAINER_INVENTORY_STATISTIC, icCmd.getId().toString());
+        if (null == isCmd) {
+            isCmd = pdaPutawayCacheManager.sysGuideContainerPutawayCacheInventoryStatistic(icCmd, ouId, logId);
+        }
+        ContainerStatisticResultCommand csrCmd = new ContainerStatisticResultCommand();
+        if (null != ocCmd) {
+            csrCmd = cacheManager.getMapObject(CacheConstants.CONTAINER_STATISTIC, ocCmd.getId().toString());
+            if (null == csrCmd) {
+                csrCmd = pdaPutawayCacheManager.sysGuideContainerPutawayCacheInsideContainerStatistic(ocCmd, ouId, logId);
+            }
+        }
 
+        // 1.判断当前商品是否扫完、是否提示下一个库位、容器或上架
+        Set<Long> insideContainerIds = csrCmd.getInsideContainerIds();
+        Map<Long, Map<String, Long>> insideContainerSkuAttrIdsQty = isCmd.getInsideContainerSkuAttrIdsQty();
+        Map<Long, Map<String, Set<String>>> insideContainerSkuAttrIdsSnDefect = isCmd.getInsideContainerSkuAttrIdsSnDefect();
+        Map<Long, Map<Long, Set<String>>> insideContainerLocSkuAttrIds = isCmd.getInsideContainerLocSkuAttrIds();
+        Map<Long, Set<String>> locSkuAttrIds = insideContainerLocSkuAttrIds.get(icCmd.getId());
+        Set<Long> locationIds = locSkuAttrIds.keySet();
+        Map<String, Long> skuAttrIdsQty = insideContainerSkuAttrIdsQty.get(icCmd.getId());
+        Location loc = locationDao.findLocationByCode(locationCode, ouId);
+        String barcode = skuCmd.getBarCode();
+        WhSkuCommand sku = whSkuDao.findWhSkuByBarcodeExt(barcode, ouId);
+        if (null == sku) {
+            log.error("sku is not found error, logId is:[{}]", logId);
+            throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
+        }
+        sku.setScanSkuQty(skuCmd.getScanSkuQty());
+        sku.setIsNeedTipSkuDetail(null == skuCmd.getIsNeedTipSkuDetail() ? false : skuCmd.getIsNeedTipSkuDetail());
+        sku.setIsNeedTipSkuSn(null == skuCmd.getIsNeedTipSkuSn() ? false : skuCmd.getIsNeedTipSkuSn());
+        sku.setIsNeedTipSkuDefect(null == skuCmd.getIsNeedTipSkuDefect() ? false : skuCmd.getIsNeedTipSkuDefect());
+        sku.setInvType(StringUtils.isEmpty(skuCmd.getInvType()) ? null : skuCmd.getInvType());
+        sku.setInvStatus(StringUtils.isEmpty(skuCmd.getInvStatus()) ? null : skuCmd.getInvStatus());
+        sku.setInvMfgDate(StringUtils.isEmpty(skuCmd.getInvMfgDate()) ? null : skuCmd.getInvMfgDate());
+        sku.setInvExpDate(StringUtils.isEmpty(skuCmd.getInvExpDate()) ? null : skuCmd.getInvExpDate());
+        sku.setInvAttr1(StringUtils.isEmpty(skuCmd.getInvAttr1()) ? null : skuCmd.getInvAttr1());
+        sku.setInvAttr2(StringUtils.isEmpty(skuCmd.getInvAttr2()) ? null : skuCmd.getInvAttr2());
+        sku.setInvAttr3(StringUtils.isEmpty(skuCmd.getInvAttr3()) ? null : skuCmd.getInvAttr3());
+        sku.setInvAttr4(StringUtils.isEmpty(skuCmd.getInvAttr4()) ? null : skuCmd.getInvAttr4());
+        sku.setInvAttr5(StringUtils.isEmpty(skuCmd.getInvAttr5()) ? null : skuCmd.getInvAttr5());
+        sku.setSkuSn(StringUtils.isEmpty(skuCmd.getSkuSn()) ? null : skuCmd.getSkuSn());
+        sku.setSkuDefect(StringUtils.isEmpty(skuCmd.getSkuDefect()) ? null : skuCmd.getSkuDefect());
+        if (null == loc) {
+            log.error("location is null error, locCode is:[{}], logId is:[{}]", locationCode, logId);
+            throw new BusinessException(ErrorCodes.COMMON_LOCATION_IS_NOT_EXISTS);
+        }
+        CheckScanSkuResultCommand cssrCmd =
+                pdaPutawayCacheManager.sysGuideSplitContainerPutawayTipSkuOrLocOrContainer(ocCmd, icCmd, insideContainerIds, insideContainerSkuAttrIdsQty, insideContainerSkuAttrIdsSnDefect, insideContainerLocSkuAttrIds, loc.getId(), sku, logId);
+        if (cssrCmd.isNeedTipSkuSn()) {
+            // 当前商品还未扫描，继续扫sn残次信息
+            srCmd.setNeedScanSkuSn(true);// 继续扫sn
+            String tipSkuAttrId = cssrCmd.getTipSkuAttrId();
+            Long skuId = SkuCategoryProvider.getSkuId(tipSkuAttrId);
+            WhSkuCommand tipSkuCmd = whSkuDao.findWhSkuByIdExt(skuId, ouId);
+            if (null == tipSkuCmd) {
+                log.error("sku is not found error, logId is:[{}]", logId);
+                throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
+            }
+            tipSkuDetailAspect(srCmd, tipSkuAttrId, locSkuAttrIds, skuAttrIdsQty, logId);
+            srCmd.setTipSkuBarcode(skuCmd.getBarCode());
+            pdaPutawayCacheManager.sysGuideSplitContainerPutawayTipSku(icCmd, loc.getId(), locSkuAttrIds, tipSkuAttrId, logId);
+        } else if (cssrCmd.isNeedTipSku()) {
+            // 当前商品复核完毕，提示下一个商品
+            srCmd.setNeedTipSku(true);// 提示下一个sku
+            String tipSkuAttrId = cssrCmd.getTipSkuAttrId();
+            Long skuId = SkuCategoryProvider.getSkuId(tipSkuAttrId);
+            WhSkuCommand tipSkuCmd = whSkuDao.findWhSkuByIdExt(skuId, ouId);
+            if (null == tipSkuCmd) {
+                log.error("sku is not found error, logId is:[{}]", logId);
+                throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
+            }
+            tipSkuDetailAspect(srCmd, tipSkuAttrId, locSkuAttrIds, skuAttrIdsQty, logId);
+            srCmd.setTipSkuBarcode(skuCmd.getBarCode());
+            pdaPutawayCacheManager.sysGuideSplitContainerPutawayTipSku(icCmd, loc.getId(), locSkuAttrIds, tipSkuAttrId, logId);
+        } else if (cssrCmd.isNeedTipLoc()) {
+            // 当前库位对应的商品已扫描完毕，可上架，并提示下一个库位
+            srCmd.setPutaway(true);
+            sysGuideSplitContainerPutaway((null == ocCmd ? null : ocCmd.getCode()), icCmd.getCode(), false, true, locationCode, funcId, ouId, userId, logId);
+            srCmd.setAfterPutawayTipLoc(true);
+            Long tipLocId = cssrCmd.getTipLocId();
+            Location tipLoc = locationDao.findByIdExt(tipLocId, ouId);
+            if (null == tipLoc) {
+                log.error("location is null error, locId is:[{}], logId is:[{}]", tipLocId, logId);
+                throw new BusinessException(ErrorCodes.COMMON_LOCATION_IS_NOT_EXISTS);
+            }
+            srCmd.setTipLocationCode(tipLoc.getCode());
+            pdaPutawayCacheManager.sysGuideSplitContainerPutawayTipLocation(icCmd, locationIds, loc.getId(), logId);
+        } else if (cssrCmd.isNeedTipContainer()) {
+            // 当前容器已扫描完毕，可上架，并提示下一个容器
+            srCmd.setPutaway(true);
+            sysGuideSplitContainerPutaway((null == ocCmd ? null : ocCmd.getCode()), icCmd.getCode(), true, false, locationCode, funcId, ouId, userId, logId);
+            srCmd.setAfterPutawayTipContianer(true);
+            Long tipContainerId = cssrCmd.getTipContainerId();
+            Container tipContainer = containerDao.findByIdExt(tipContainerId, ouId);
+            if (null == tipContainer) {
+                log.error("tip container is null error, containerId is:[{}], logId is:[{}]", tipContainerId, logId);
+                throw new BusinessException(ErrorCodes.COMMON_CONTAINER_IS_NOT_EXISTS);
+            }
+            srCmd.setTipContainerCode(tipContainer.getCode());
+            pdaPutawayCacheManager.sysGuideSplitContainerPutawayTipContainer(ocCmd, insideContainerIds, tipContainerId, logId);
+        } else {
+            // 执行上架
+            srCmd.setPutaway(true);
+            sysGuideSplitContainerPutaway((null == ocCmd ? null : ocCmd.getCode()), icCmd.getCode(), false, false, locationCode, funcId, ouId, userId, logId);
+        }
         return srCmd;
     }
 
@@ -3289,12 +3426,14 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
             log.error("containerCode is null error, logId is:[{}]", logId);
             throw new BusinessException(ErrorCodes.COMMON_CONTAINER_CODE_IS_NULL_ERROR);
         }
+        Long containerId = null;
         ContainerCommand containerCmd = containerDao.getContainerByCode(containerCode, ouId);
         if (null == containerCmd) {
             // 容器信息不存在
             log.error("container is not exists, logId is:[{}]", logId);
             throw new BusinessException(ErrorCodes.COMMON_CONTAINER_IS_NOT_EXISTS);
         }
+        containerId = containerCmd.getId();
         // 验证容器状态是否可用
         if (!BaseModel.LIFECYCLE_NORMAL.equals(containerCmd.getLifecycle()) && ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED != containerCmd.getLifecycle()) {
             log.error("container lifecycle is not normal, logId is:[{}]", logId);
@@ -3342,55 +3481,143 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         // 先入库位库存
         Set<Long> locIds = new HashSet<Long>();
         for (WhSkuInventoryCommand invCmd : invList) {
-            WhSkuInventory inv = new WhSkuInventory();
-            BeanUtils.copyProperties(invCmd, inv);
-            inv.setId(null);
-            inv.setOnHandQty(inv.getToBeFilledQty());// 在库库存
-            inv.setToBeFilledQty(0.0);
-            if (null == inv.getLocationId() || 0 != loc.getId().compareTo(inv.getLocationId())) {
-                log.error("location is null error, locationCode is:[{}], logId is:[{}]", locationCode, logId);
-                throw new BusinessException(ErrorCodes.COMMON_INV_LINE_NOT_BINDING_LOC_ERROR);
+            List<WhSkuInventorySnCommand> snList = invCmd.getWhSkuInventorySnCommandList();
+            if (null == snList || 0 == snList.size()) {
+                WhSkuInventory inv = new WhSkuInventory();
+                BeanUtils.copyProperties(invCmd, inv);
+                inv.setId(null);
+                inv.setOnHandQty(inv.getToBeFilledQty());// 在库库存
+                inv.setToBeFilledQty(0.0);
+                if (!StringUtils.isEmpty(containerCode)) {
+                    if (0 != containerId.compareTo(inv.getOuterContainerId())) {
+                        log.error("outer container is not matching, paramContainerId is:[{}], invOuterContainerId is:[{}]", containerId, inv.getOuterContainerId());
+                        throw new BusinessException(ErrorCodes.COMMON_OUTER_CONTAINER_IS_NOT_MATCH);
+                    }
+                }
+                if (null == inv.getLocationId() || 0 != loc.getId().compareTo(inv.getLocationId())) {
+                    log.error("location is null error, locationCode is:[{}], logId is:[{}]", locationCode, logId);
+                    throw new BusinessException(ErrorCodes.COMMON_INV_LINE_NOT_BINDING_LOC_ERROR);
+                } else {
+                    locIds.add(inv.getLocationId());
+                }
+                if (locIds.size() > 1) {
+                    log.error("binding location is more than one error, logId is:[{}]", logId);
+                    throw new BusinessException(ErrorCodes.CONTAINER_PUTAWAY_BINDING_MORE_THAN_ONE_LOC);
+                }
+                if (false == isTV) {
+                    inv.setOuterContainerId(null);
+                    inv.setInsideContainerId(null);
+                }
+                if (false == isBM) {
+                    inv.setBatchNumber(null);
+                }
+                if (false == isVM) {
+                    inv.setExpDate(null);
+                }
+                inv.setOccupationCode(null);
+                Long icId = invCmd.getInsideContainerId();
+                if (null != icId) {
+                    insideContainerIds.add(icId);
+                }
+                try {
+                    inv.setUuid(SkuInventoryUuid.invUuid(inv));// UUID
+                } catch (Exception e) {
+                    log.error(getLogMsg("inv uuid error, logId is:[{}]", new Object[] {logId}), e);
+                    throw new BusinessException(ErrorCodes.COMMON_INV_PROCESS_UUID_ERROR);
+                }
+                whSkuInventoryDao.insert(inv);
+                insertGlobalLog(GLOBAL_LOG_INSERT, inv, ouId, userId, null, null);
+                // 记录待移入库位库存日志
+                insertSkuInventoryLog(invCmd.getId(), inv.getOnHandQty(), 0.0, true, ouId, userId);
             } else {
-                locIds.add(inv.getLocationId());
+                WhSkuInventory inv = new WhSkuInventory();
+                BeanUtils.copyProperties(invCmd, inv);
+                inv.setId(null);
+                inv.setOnHandQty(inv.getToBeFilledQty());// 在库库存
+                inv.setToBeFilledQty(0.0);
+                if (!StringUtils.isEmpty(containerCode)) {
+                    if (0 != containerId.compareTo(inv.getOuterContainerId())) {
+                        log.error("outer container is not matching, paramContainerId is:[{}], invOuterContainerId is:[{}]", containerId, inv.getOuterContainerId());
+                        throw new BusinessException(ErrorCodes.COMMON_OUTER_CONTAINER_IS_NOT_MATCH);
+                    }
+                }
+                if (null == inv.getLocationId() || 0 != loc.getId().compareTo(inv.getLocationId())) {
+                    log.error("location is null error, locationCode is:[{}], logId is:[{}]", locationCode, logId);
+                    throw new BusinessException(ErrorCodes.COMMON_INV_LINE_NOT_BINDING_LOC_ERROR);
+                } else {
+                    locIds.add(inv.getLocationId());
+                }
+                if (locIds.size() > 1) {
+                    log.error("binding location is more than one error, logId is:[{}]", logId);
+                    throw new BusinessException(ErrorCodes.CONTAINER_PUTAWAY_BINDING_MORE_THAN_ONE_LOC);
+                }
+                if (false == isTV) {
+                    inv.setOuterContainerId(null);
+                    inv.setInsideContainerId(null);
+                }
+                if (false == isBM) {
+                    inv.setBatchNumber(null);
+                }
+                if (false == isVM) {
+                    inv.setExpDate(null);
+                }
+                inv.setOccupationCode(null);
+                Long icId = invCmd.getInsideContainerId();
+                if (null != icId) {
+                    insideContainerIds.add(icId);
+                }
+                try {
+                    inv.setUuid(SkuInventoryUuid.invUuid(inv));// UUID
+                } catch (Exception e) {
+                    log.error(getLogMsg("inv uuid error, logId is:[{}]", new Object[] {logId}), e);
+                    throw new BusinessException(ErrorCodes.COMMON_INV_PROCESS_UUID_ERROR);
+                }
+                whSkuInventoryDao.insert(inv);
+                insertGlobalLog(GLOBAL_LOG_INSERT, inv, ouId, userId, null, null);
+                // 记录待移入库位库存日志
+                insertSkuInventoryLog(invCmd.getId(), inv.getOnHandQty(), 0.0, true, ouId, userId);
+                for (WhSkuInventorySnCommand snCmd : snList) {
+                    WhSkuInventorySn sn = new WhSkuInventorySn();
+                    BeanUtils.copyProperties(snCmd, sn);
+                    sn.setId(null);
+                    sn.setOccupationCode(null);
+                    try {
+                        sn.setUuid(SkuInventoryUuid.invUuid(inv));
+                    } catch (NoSuchAlgorithmException e) {
+                        log.error(getLogMsg("invSn uuid error, logId is:[{}]", new Object[] {logId}), e);
+                        throw new BusinessException(ErrorCodes.COMMON_INV_PROCESS_UUID_ERROR);
+                    }
+                    whSkuInventorySnDao.insert(sn);
+                    insertGlobalLog(GLOBAL_LOG_INSERT, sn, ouId, userId, null, null);
+                    insertSkuInventorySnLog(snCmd.getUuid(), ouId);
+                }
             }
-            if (locIds.size() > 1) {
-                log.error("binding location is more than one error, logId is:[{}]", logId);
-                throw new BusinessException(ErrorCodes.PALLET_PUTAWAY_BINDING_MORE_THAN_ONE_LOC);
-            }
-            if (false == isTV) {
-                inv.setOuterContainerId(null);
-                inv.setInsideContainerId(null);
-            }
-            if (false == isBM) {
-                inv.setBatchNumber(null);
-            }
-            if (false == isVM) {
-                inv.setExpDate(null);
-            }
-            inv.setOccupationCode(null);
-            Long icId = invCmd.getInsideContainerId();
-            if (null != icId) {
-                insideContainerIds.add(icId);
-            }
-            try {
-                inv.setUuid(SkuInventoryUuid.invUuid(inv));// UUID
-            } catch (Exception e) {
-                log.error(getLogMsg("inv uuid error, logId is:[{}]", new Object[] {logId}), e);
-                throw new BusinessException(ErrorCodes.COMMON_INV_PROCESS_UUID_ERROR);
-            }
-            whSkuInventoryDao.insert(inv);
-            insertGlobalLog(GLOBAL_LOG_INSERT, inv, ouId, userId, null, null);
-            // 记录待移入库位库存日志
-            insertSkuInventoryLog(invCmd.getId(), inv.getOnHandQty(), 0.0, true, ouId, userId);
         }
         // 再出待移入容器库存
         for (WhSkuInventoryCommand invCmd : invList) {
             // 记录出容器库存日志
-            insertSkuInventoryLog(invCmd.getId(), 0.0, invCmd.getToBeFilledQty(), true, ouId, userId);
-            WhSkuInventory inv = new WhSkuInventory();
-            BeanUtils.copyProperties(invCmd, inv);
-            whSkuInventoryDao.delete(inv.getId());
-            insertGlobalLog(GLOBAL_LOG_DELETE, inv, ouId, userId, null, null);
+            // 记录容器移出日志
+            List<WhSkuInventorySnCommand> snList = invCmd.getWhSkuInventorySnCommandList();
+            if (null == snList || 0 == snList.size()) {
+                insertSkuInventoryLog(invCmd.getId(), -invCmd.getToBeFilledQty(), 0.0, true, ouId, userId);
+                WhSkuInventory inv = new WhSkuInventory();
+                BeanUtils.copyProperties(invCmd, inv);
+                whSkuInventoryDao.delete(inv.getId());
+                insertGlobalLog(GLOBAL_LOG_DELETE, inv, ouId, userId, null, null);
+            } else {
+                insertSkuInventoryLog(invCmd.getId(), -invCmd.getToBeFilledQty(), 0.0, true, ouId, userId);
+                WhSkuInventory inv = new WhSkuInventory();
+                BeanUtils.copyProperties(invCmd, inv);
+                whSkuInventoryDao.delete(inv.getId());
+                insertGlobalLog(GLOBAL_LOG_DELETE, inv, ouId, userId, null, null);
+                for (WhSkuInventorySnCommand snCmd : snList) {
+                    insertSkuInventorySnLog(snCmd.getUuid(), ouId);
+                    WhSkuInventorySn sn = new WhSkuInventorySn();
+                    BeanUtils.copyProperties(snCmd, sn);
+                    whSkuInventorySnDao.delete(sn.getId());
+                    insertGlobalLog(GLOBAL_LOG_DELETE, sn, ouId, userId, null, null);
+                }
+            }
         }
         // 3.修改所有内部容器状态为可用
         for (Long icId : insideContainerIds) {
@@ -3501,61 +3728,143 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         // 先入库位库存
         Set<Long> locIds = new HashSet<Long>();
         for (WhSkuInventoryCommand invCmd : invList) {
-            WhSkuInventory inv = new WhSkuInventory();
-            BeanUtils.copyProperties(invCmd, inv);
-            inv.setId(null);
-            inv.setOnHandQty(inv.getToBeFilledQty());// 在库库存
-            inv.setToBeFilledQty(0.0);
-            if (!StringUtils.isEmpty(containerCode)) {
-                if (0 != containerId.compareTo(inv.getOuterContainerId())) {
-                    log.error("outer container is not matching, paramContainerId is:[{}], invOuterContainerId is:[{}]", containerId, inv.getOuterContainerId());
-                    throw new BusinessException(ErrorCodes.COMMON_OUTER_CONTAINER_IS_NOT_MATCH);
+            List<WhSkuInventorySnCommand> snList = invCmd.getWhSkuInventorySnCommandList();
+            if (null == snList || 0 == snList.size()) {
+                WhSkuInventory inv = new WhSkuInventory();
+                BeanUtils.copyProperties(invCmd, inv);
+                inv.setId(null);
+                inv.setOnHandQty(inv.getToBeFilledQty());// 在库库存
+                inv.setToBeFilledQty(0.0);
+                if (!StringUtils.isEmpty(containerCode)) {
+                    if (0 != containerId.compareTo(inv.getOuterContainerId())) {
+                        log.error("outer container is not matching, paramContainerId is:[{}], invOuterContainerId is:[{}]", containerId, inv.getOuterContainerId());
+                        throw new BusinessException(ErrorCodes.COMMON_OUTER_CONTAINER_IS_NOT_MATCH);
+                    }
+                }
+                if (null == inv.getLocationId() || 0 != loc.getId().compareTo(inv.getLocationId())) {
+                    log.error("location is null error, locationCode is:[{}], logId is:[{}]", locationCode, logId);
+                    throw new BusinessException(ErrorCodes.COMMON_INV_LINE_NOT_BINDING_LOC_ERROR);
+                } else {
+                    locIds.add(inv.getLocationId());
+                }
+                if (locIds.size() > 1) {
+                    log.error("binding location is more than one error, logId is:[{}]", logId);
+                    throw new BusinessException(ErrorCodes.CONTAINER_PUTAWAY_BINDING_MORE_THAN_ONE_LOC);
+                }
+                if (false == isTV) {
+                    inv.setOuterContainerId(null);
+                    inv.setInsideContainerId(null);
+                }
+                if (false == isBM) {
+                    inv.setBatchNumber(null);
+                }
+                if (false == isVM) {
+                    inv.setExpDate(null);
+                }
+                inv.setOccupationCode(null);
+                Long icId = invCmd.getInsideContainerId();
+                if (null != icId) {
+                    insideContainerIds.add(icId);
+                }
+                try {
+                    inv.setUuid(SkuInventoryUuid.invUuid(inv));// UUID
+                } catch (Exception e) {
+                    log.error(getLogMsg("inv uuid error, logId is:[{}]", new Object[] {logId}), e);
+                    throw new BusinessException(ErrorCodes.COMMON_INV_PROCESS_UUID_ERROR);
+                }
+                whSkuInventoryDao.insert(inv);
+                insertGlobalLog(GLOBAL_LOG_INSERT, inv, ouId, userId, null, null);
+                // 记录待移入库位库存日志
+                insertSkuInventoryLog(invCmd.getId(), inv.getOnHandQty(), 0.0, true, ouId, userId);
+            } else {
+                WhSkuInventory inv = new WhSkuInventory();
+                BeanUtils.copyProperties(invCmd, inv);
+                inv.setId(null);
+                inv.setOnHandQty(inv.getToBeFilledQty());// 在库库存
+                inv.setToBeFilledQty(0.0);
+                if (!StringUtils.isEmpty(containerCode)) {
+                    if (0 != containerId.compareTo(inv.getOuterContainerId())) {
+                        log.error("outer container is not matching, paramContainerId is:[{}], invOuterContainerId is:[{}]", containerId, inv.getOuterContainerId());
+                        throw new BusinessException(ErrorCodes.COMMON_OUTER_CONTAINER_IS_NOT_MATCH);
+                    }
+                }
+                if (null == inv.getLocationId() || 0 != loc.getId().compareTo(inv.getLocationId())) {
+                    log.error("location is null error, locationCode is:[{}], logId is:[{}]", locationCode, logId);
+                    throw new BusinessException(ErrorCodes.COMMON_INV_LINE_NOT_BINDING_LOC_ERROR);
+                } else {
+                    locIds.add(inv.getLocationId());
+                }
+                if (locIds.size() > 1) {
+                    log.error("binding location is more than one error, logId is:[{}]", logId);
+                    throw new BusinessException(ErrorCodes.CONTAINER_PUTAWAY_BINDING_MORE_THAN_ONE_LOC);
+                }
+                if (false == isTV) {
+                    inv.setOuterContainerId(null);
+                    inv.setInsideContainerId(null);
+                }
+                if (false == isBM) {
+                    inv.setBatchNumber(null);
+                }
+                if (false == isVM) {
+                    inv.setExpDate(null);
+                }
+                inv.setOccupationCode(null);
+                Long icId = invCmd.getInsideContainerId();
+                if (null != icId) {
+                    insideContainerIds.add(icId);
+                }
+                try {
+                    inv.setUuid(SkuInventoryUuid.invUuid(inv));// UUID
+                } catch (Exception e) {
+                    log.error(getLogMsg("inv uuid error, logId is:[{}]", new Object[] {logId}), e);
+                    throw new BusinessException(ErrorCodes.COMMON_INV_PROCESS_UUID_ERROR);
+                }
+                whSkuInventoryDao.insert(inv);
+                insertGlobalLog(GLOBAL_LOG_INSERT, inv, ouId, userId, null, null);
+                // 记录待移入库位库存日志
+                insertSkuInventoryLog(invCmd.getId(), inv.getOnHandQty(), 0.0, true, ouId, userId);
+                for (WhSkuInventorySnCommand snCmd : snList) {
+                    WhSkuInventorySn sn = new WhSkuInventorySn();
+                    BeanUtils.copyProperties(snCmd, sn);
+                    sn.setId(null);
+                    sn.setOccupationCode(null);
+                    try {
+                        sn.setUuid(SkuInventoryUuid.invUuid(inv));
+                    } catch (NoSuchAlgorithmException e) {
+                        log.error(getLogMsg("invSn uuid error, logId is:[{}]", new Object[] {logId}), e);
+                        throw new BusinessException(ErrorCodes.COMMON_INV_PROCESS_UUID_ERROR);
+                    }
+                    whSkuInventorySnDao.insert(sn);
+                    insertGlobalLog(GLOBAL_LOG_INSERT, sn, ouId, userId, null, null);
+                    insertSkuInventorySnLog(snCmd.getUuid(), ouId);
                 }
             }
-            if (null == inv.getLocationId() || 0 != loc.getId().compareTo(inv.getLocationId())) {
-                log.error("location is null error, locationCode is:[{}], logId is:[{}]", locationCode, logId);
-                throw new BusinessException(ErrorCodes.COMMON_INV_LINE_NOT_BINDING_LOC_ERROR);
-            } else {
-                locIds.add(inv.getLocationId());
-            }
-            if (locIds.size() > 1) {
-                log.error("binding location is more than one error, logId is:[{}]", logId);
-                throw new BusinessException(ErrorCodes.CONTAINER_PUTAWAY_BINDING_MORE_THAN_ONE_LOC);
-            }
-            if (false == isTV) {
-                inv.setOuterContainerId(null);
-                inv.setInsideContainerId(null);
-            }
-            if (false == isBM) {
-                inv.setBatchNumber(null);
-            }
-            if (false == isVM) {
-                inv.setExpDate(null);
-            }
-            inv.setOccupationCode(null);
-            Long icId = invCmd.getInsideContainerId();
-            if (null != icId) {
-                insideContainerIds.add(icId);
-            }
-            try {
-                inv.setUuid(SkuInventoryUuid.invUuid(inv));// UUID
-            } catch (Exception e) {
-                log.error(getLogMsg("inv uuid error, logId is:[{}]", new Object[] {logId}), e);
-                throw new BusinessException(ErrorCodes.COMMON_INV_PROCESS_UUID_ERROR);
-            }
-            whSkuInventoryDao.insert(inv);
-            insertGlobalLog(GLOBAL_LOG_INSERT, inv, ouId, userId, null, null);
-            // 记录待移入库位库存日志
-            insertSkuInventoryLog(invCmd.getId(), inv.getOnHandQty(), 0.0, true, ouId, userId);
         }
         // 再出待移入容器库存
         for (WhSkuInventoryCommand invCmd : invList) {
             // 记录出容器库存日志
-            insertSkuInventoryLog(invCmd.getId(), 0.0, invCmd.getToBeFilledQty(), true, ouId, userId);
-            WhSkuInventory inv = new WhSkuInventory();
-            BeanUtils.copyProperties(invCmd, inv);
-            whSkuInventoryDao.delete(inv.getId());
-            insertGlobalLog(GLOBAL_LOG_DELETE, inv, ouId, userId, null, null);
+            // 记录容器移出日志
+            List<WhSkuInventorySnCommand> snList = invCmd.getWhSkuInventorySnCommandList();
+            if (null == snList || 0 == snList.size()) {
+                insertSkuInventoryLog(invCmd.getId(), -invCmd.getToBeFilledQty(), 0.0, true, ouId, userId);
+                WhSkuInventory inv = new WhSkuInventory();
+                BeanUtils.copyProperties(invCmd, inv);
+                whSkuInventoryDao.delete(inv.getId());
+                insertGlobalLog(GLOBAL_LOG_DELETE, inv, ouId, userId, null, null);
+            } else {
+                insertSkuInventoryLog(invCmd.getId(), -invCmd.getToBeFilledQty(), 0.0, true, ouId, userId);
+                WhSkuInventory inv = new WhSkuInventory();
+                BeanUtils.copyProperties(invCmd, inv);
+                whSkuInventoryDao.delete(inv.getId());
+                insertGlobalLog(GLOBAL_LOG_DELETE, inv, ouId, userId, null, null);
+                for (WhSkuInventorySnCommand snCmd : snList) {
+                    insertSkuInventorySnLog(snCmd.getUuid(), ouId);
+                    WhSkuInventorySn sn = new WhSkuInventorySn();
+                    BeanUtils.copyProperties(snCmd, sn);
+                    whSkuInventorySnDao.delete(sn.getId());
+                    insertGlobalLog(GLOBAL_LOG_DELETE, sn, ouId, userId, null, null);
+                }
+            }
         }
         // 3.修改内部容器状态为可用
         Container insideContainer = containerDao.findByIdExt(insideContainerCmd.getId(), ouId);
@@ -3572,6 +3881,241 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         }
         // 4.清除redis缓存
         pdaPutawayCacheManager.sysGuideContainerPutawayRemoveAllCache(containerCmd, insideContainerCmd, isAfterPutawayTipContainer, logId);
+    }
+
+
+    public void sysGuideSplitContainerPutaway(String containerCode, String insideContainerCode, Boolean isAfterPutawayTipContainer, Boolean isAfterPutawayTipLoc, String locationCode, Long funcId, Long ouId, Long userId, String logId) {
+        // 0.修改外部容器状态
+        ContainerCommand containerCmd = null;
+        Long containerId = null;
+        if (!StringUtils.isEmpty(containerCode)) {
+            containerCmd = containerDao.getContainerByCode(containerCode, ouId);
+            if (null == containerCmd) {
+                // 容器信息不存在
+                log.error("container is not exists, logId is:[{}]", logId);
+                throw new BusinessException(ErrorCodes.COMMON_CONTAINER_IS_NOT_EXISTS);
+            }
+            // 验证容器状态是否可用
+            if (!BaseModel.LIFECYCLE_NORMAL.equals(containerCmd.getLifecycle()) && ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED != containerCmd.getLifecycle()) {
+                log.error("container lifecycle is not normal, logId is:[{}]", logId);
+                throw new BusinessException(ErrorCodes.COMMON_CONTAINER_LIFECYCLE_IS_NOT_NORMAL);
+            }
+            // 获取容器状态
+            Integer containerStatus = containerCmd.getStatus();
+            if (ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY != containerStatus && ContainerStatus.CONTAINER_STATUS_PUTAWAY != containerStatus) {
+                log.error("container status is invalid, containerStatus is:[{}], logId is:[{}]", containerStatus, logId);
+                throw new BusinessException(ErrorCodes.CONTAINER_STATUS_ERROR_UNABLE_PUTAWAY, new Object[] {containerCode});
+            }
+            containerId = containerCmd.getId();
+            if (false == isAfterPutawayTipContainer) {
+                // 所有容器已上架完毕，修改外部容器状态
+                if (ContainerStatus.CONTAINER_STATUS_PUTAWAY == containerStatus) {
+                    Container container = new Container();
+                    BeanUtils.copyProperties(containerCmd, container);
+                    container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_USABLE);
+                    container.setStatus(ContainerStatus.CONTAINER_STATUS_USABLE);
+                    containerDao.saveOrUpdateByVersion(container);
+                    insertGlobalLog(GLOBAL_LOG_UPDATE, container, ouId, userId, null, null);
+                }
+            }
+        }
+        // 1.判断内部容器状态
+        ContainerCommand insideContainerCmd = containerDao.getContainerByCode(insideContainerCode, ouId);
+        if (null == insideContainerCmd) {
+            // 容器信息不存在
+            log.error("container is not exists, logId is:[{}]", logId);
+            throw new BusinessException(ErrorCodes.COMMON_CONTAINER_IS_NOT_EXISTS);
+        }
+        // 验证容器状态是否可用
+        if (!BaseModel.LIFECYCLE_NORMAL.equals(insideContainerCmd.getLifecycle()) && ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED != insideContainerCmd.getLifecycle()) {
+            log.error("container lifecycle is not normal, logId is:[{}]", logId);
+            throw new BusinessException(ErrorCodes.COMMON_CONTAINER_LIFECYCLE_IS_NOT_NORMAL);
+        }
+        // 获取容器状态
+        Integer insideContainerStatus = insideContainerCmd.getStatus();
+        if (ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY != insideContainerStatus && ContainerStatus.CONTAINER_STATUS_PUTAWAY != insideContainerStatus) {
+            log.error("container status is invalid, containerStatus is:[{}], logId is:[{}]", insideContainerStatus, logId);
+            throw new BusinessException(ErrorCodes.CONTAINER_STATUS_ERROR_UNABLE_PUTAWAY, new Object[] {insideContainerCode});
+        }
+        // 2.获取所有待移入库存
+        boolean isTV = true;// 是否跟踪容器
+        boolean isBM = true;// 是否批次管理
+        boolean isVM = true;// 是否管理效期
+        Set<Long> insideContainerIds = new HashSet<Long>();// 所有内部容器id
+        Location loc = locationDao.findLocationByCode(locationCode, ouId);
+        if (null == loc) {
+            log.error("location is null error, locationCode is:[{}], logId is:[{}]", locationCode, logId);
+            throw new BusinessException(ErrorCodes.COMMON_LOCATION_IS_NOT_EXISTS);
+        }
+        isTV = (null == loc.getIsTrackVessel() ? false : loc.getIsTrackVessel());
+        isBM = (null == loc.getIsBatchMgt() ? false : loc.getIsBatchMgt());
+        isVM = (null == loc.getIsValidMgt() ? false : loc.getIsValidMgt());
+        List<WhSkuInventoryCommand> invList = null;
+        List<String> codelist = new ArrayList<String>();
+        codelist.add(insideContainerCode);
+        // 查询所有对应容器号的库存信息
+        invList = whSkuInventoryDao.findWhSkuInventoryByInsideContainerCodeAndLoc(ouId, codelist, loc.getId());
+        if (null == invList || 0 == invList.size()) {
+            log.error("sys guide container putaway container:[{}] rcvd inventory not found error!, logId is:[{}]", containerCode, logId);
+            throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_RCVD_INV_ERROR, new Object[] {containerCode});
+        }
+        // 2.执行上架(一入一出)
+        // 先入库位库存
+        Set<Long> locIds = new HashSet<Long>();
+        for (WhSkuInventoryCommand invCmd : invList) {
+            List<WhSkuInventorySnCommand> snList = invCmd.getWhSkuInventorySnCommandList();
+            if (null == snList || 0 == snList.size()) {
+                WhSkuInventory inv = new WhSkuInventory();
+                BeanUtils.copyProperties(invCmd, inv);
+                inv.setId(null);
+                inv.setOnHandQty(inv.getToBeFilledQty());// 在库库存
+                inv.setToBeFilledQty(0.0);
+                if (!StringUtils.isEmpty(containerCode)) {
+                    if (0 != containerId.compareTo(inv.getOuterContainerId())) {
+                        log.error("outer container is not matching, paramContainerId is:[{}], invOuterContainerId is:[{}]", containerId, inv.getOuterContainerId());
+                        throw new BusinessException(ErrorCodes.COMMON_OUTER_CONTAINER_IS_NOT_MATCH);
+                    }
+                }
+                if (null == inv.getLocationId() || 0 != loc.getId().compareTo(inv.getLocationId())) {
+                    log.error("location is null error, locationCode is:[{}], logId is:[{}]", locationCode, logId);
+                    throw new BusinessException(ErrorCodes.COMMON_INV_LINE_NOT_BINDING_LOC_ERROR);
+                } else {
+                    locIds.add(inv.getLocationId());
+                }
+                if (locIds.size() > 1) {
+                    log.error("binding location is more than one error, logId is:[{}]", logId);
+                    throw new BusinessException(ErrorCodes.CONTAINER_PUTAWAY_BINDING_MORE_THAN_ONE_LOC);
+                }
+                if (false == isTV) {
+                    inv.setOuterContainerId(null);
+                    inv.setInsideContainerId(null);
+                }
+                if (false == isBM) {
+                    inv.setBatchNumber(null);
+                }
+                if (false == isVM) {
+                    inv.setExpDate(null);
+                }
+                inv.setOccupationCode(null);
+                Long icId = invCmd.getInsideContainerId();
+                if (null != icId) {
+                    insideContainerIds.add(icId);
+                }
+                try {
+                    inv.setUuid(SkuInventoryUuid.invUuid(inv));// UUID
+                } catch (Exception e) {
+                    log.error(getLogMsg("inv uuid error, logId is:[{}]", new Object[] {logId}), e);
+                    throw new BusinessException(ErrorCodes.COMMON_INV_PROCESS_UUID_ERROR);
+                }
+                whSkuInventoryDao.insert(inv);
+                insertGlobalLog(GLOBAL_LOG_INSERT, inv, ouId, userId, null, null);
+                // 记录待移入库位库存日志
+                insertSkuInventoryLog(invCmd.getId(), inv.getOnHandQty(), 0.0, true, ouId, userId);
+            } else {
+                WhSkuInventory inv = new WhSkuInventory();
+                BeanUtils.copyProperties(invCmd, inv);
+                inv.setId(null);
+                inv.setOnHandQty(inv.getToBeFilledQty());// 在库库存
+                inv.setToBeFilledQty(0.0);
+                if (!StringUtils.isEmpty(containerCode)) {
+                    if (0 != containerId.compareTo(inv.getOuterContainerId())) {
+                        log.error("outer container is not matching, paramContainerId is:[{}], invOuterContainerId is:[{}]", containerId, inv.getOuterContainerId());
+                        throw new BusinessException(ErrorCodes.COMMON_OUTER_CONTAINER_IS_NOT_MATCH);
+                    }
+                }
+                if (null == inv.getLocationId() || 0 != loc.getId().compareTo(inv.getLocationId())) {
+                    log.error("location is null error, locationCode is:[{}], logId is:[{}]", locationCode, logId);
+                    throw new BusinessException(ErrorCodes.COMMON_INV_LINE_NOT_BINDING_LOC_ERROR);
+                } else {
+                    locIds.add(inv.getLocationId());
+                }
+                if (locIds.size() > 1) {
+                    log.error("binding location is more than one error, logId is:[{}]", logId);
+                    throw new BusinessException(ErrorCodes.CONTAINER_PUTAWAY_BINDING_MORE_THAN_ONE_LOC);
+                }
+                if (false == isTV) {
+                    inv.setOuterContainerId(null);
+                    inv.setInsideContainerId(null);
+                }
+                if (false == isBM) {
+                    inv.setBatchNumber(null);
+                }
+                if (false == isVM) {
+                    inv.setExpDate(null);
+                }
+                inv.setOccupationCode(null);
+                Long icId = invCmd.getInsideContainerId();
+                if (null != icId) {
+                    insideContainerIds.add(icId);
+                }
+                try {
+                    inv.setUuid(SkuInventoryUuid.invUuid(inv));// UUID
+                } catch (Exception e) {
+                    log.error(getLogMsg("inv uuid error, logId is:[{}]", new Object[] {logId}), e);
+                    throw new BusinessException(ErrorCodes.COMMON_INV_PROCESS_UUID_ERROR);
+                }
+                whSkuInventoryDao.insert(inv);
+                insertGlobalLog(GLOBAL_LOG_INSERT, inv, ouId, userId, null, null);
+                // 记录待移入库位库存日志
+                insertSkuInventoryLog(invCmd.getId(), inv.getOnHandQty(), 0.0, true, ouId, userId);
+                for (WhSkuInventorySnCommand snCmd : snList) {
+                    WhSkuInventorySn sn = new WhSkuInventorySn();
+                    BeanUtils.copyProperties(snCmd, sn);
+                    sn.setId(null);
+                    sn.setOccupationCode(null);
+                    try {
+                        sn.setUuid(SkuInventoryUuid.invUuid(inv));
+                    } catch (NoSuchAlgorithmException e) {
+                        log.error(getLogMsg("invSn uuid error, logId is:[{}]", new Object[] {logId}), e);
+                        throw new BusinessException(ErrorCodes.COMMON_INV_PROCESS_UUID_ERROR);
+                    }
+                    whSkuInventorySnDao.insert(sn);
+                    insertGlobalLog(GLOBAL_LOG_INSERT, sn, ouId, userId, null, null);
+                    insertSkuInventorySnLog(snCmd.getUuid(), ouId);
+                }
+            }
+        }
+        // 再出待移入容器库存
+        for (WhSkuInventoryCommand invCmd : invList) {
+            // 记录出容器库存日志
+            // 记录容器移出日志
+            List<WhSkuInventorySnCommand> snList = invCmd.getWhSkuInventorySnCommandList();
+            if (null == snList || 0 == snList.size()) {
+                insertSkuInventoryLog(invCmd.getId(), -invCmd.getToBeFilledQty(), 0.0, true, ouId, userId);
+                WhSkuInventory inv = new WhSkuInventory();
+                BeanUtils.copyProperties(invCmd, inv);
+                whSkuInventoryDao.delete(inv.getId());
+                insertGlobalLog(GLOBAL_LOG_DELETE, inv, ouId, userId, null, null);
+            } else {
+                insertSkuInventoryLog(invCmd.getId(), -invCmd.getToBeFilledQty(), 0.0, true, ouId, userId);
+                WhSkuInventory inv = new WhSkuInventory();
+                BeanUtils.copyProperties(invCmd, inv);
+                whSkuInventoryDao.delete(inv.getId());
+                insertGlobalLog(GLOBAL_LOG_DELETE, inv, ouId, userId, null, null);
+                for (WhSkuInventorySnCommand snCmd : snList) {
+                    insertSkuInventorySnLog(snCmd.getUuid(), ouId);
+                    WhSkuInventorySn sn = new WhSkuInventorySn();
+                    BeanUtils.copyProperties(snCmd, sn);
+                    whSkuInventorySnDao.delete(sn.getId());
+                    insertGlobalLog(GLOBAL_LOG_DELETE, sn, ouId, userId, null, null);
+                }
+            }
+        }
+        // 3.修改内部容器状态为可用
+        Container insideContainer = containerDao.findByIdExt(insideContainerCmd.getId(), ouId);
+        if (null != insideContainer) {
+            // 获取容器状态
+            Integer iContainerStatus = insideContainer.getStatus();
+            // 修改内部容器状态为：上架中，且占用中
+            if (ContainerStatus.CONTAINER_STATUS_PUTAWAY == iContainerStatus) {
+                insideContainer.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_USABLE);
+                insideContainer.setStatus(ContainerStatus.CONTAINER_STATUS_USABLE);
+                containerDao.saveOrUpdateByVersion(insideContainer);
+                insertGlobalLog(GLOBAL_LOG_UPDATE, insideContainer, ouId, userId, null, null);
+            }
+        }
+        // 4.清除redis缓存
+        pdaPutawayCacheManager.sysGuideSplitContainerPutawayRemoveAllCache(containerCmd, insideContainerCmd, isAfterPutawayTipContainer, isAfterPutawayTipLoc, loc.getId(), logId);
     }
 
     /**
