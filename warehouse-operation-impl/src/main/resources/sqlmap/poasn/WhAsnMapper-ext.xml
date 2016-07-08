@@ -310,6 +310,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	po_ou_id as poOuId,
 	        	ext_code as extCode,
 	        	urgent_status as urgentStatus,
+	        	uuid as uuid,
 	        	overchage_rate as overChageRate
 		    from 
 		    t_wh_asn 

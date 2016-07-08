@@ -535,14 +535,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
             this.cacheManager.removeMapValue(CacheKeyConstant.CACHE_RCVD_SN, userId.toString());
             // 释放收货数据缓存
             this.cacheManager.removeMapValue(CacheKeyConstant.CACHE_RCVD, userId.toString());
-            // 释放月台 不必强制事务，可以手动释放月台
-            try {
-                checkInManagerProxy.freePlatformByRcvdFinish(asnId, ouId, userId, null);
-            } catch (BusinessException ex) {
-                throw ex;
-            } catch (Exception e) {
-                throw new BusinessException(ErrorCodes.RCVD_PLATFORM_REALEASE_ERROR);
-            }
+
         }
     }
 
@@ -557,7 +550,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
          * 匹配到明细，具体做法是：每次设置ASN属性的时候，就进行过滤； 而且，功能菜单上有一个属性：是否允许库存差异收货，如果允许，则随机匹配；如果不允许，则需要进行完全匹配
          */
         // rcvdCacheCommand.setLineId(Long.parseLong(command.getLineIdListString().split(",")[0]));
-        Integer batchCount = command.getSkuBatchCount();
+        Integer batchCount = command.getSkuBatchCount() * command.getQuantity();
         Long occupationId = command.getOccupationId();
         Long skuId = command.getSkuId();
         String userId = command.getUserId().toString();
@@ -775,7 +768,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
      * 初始化匹配的明细行ID集合
      */
     private String initMatchedLineIdStr(WhSkuInventoryCommand command) {
-        int skuPlannedCount = command.getSkuBatchCount();
+        int skuPlannedCount = command.getSkuBatchCount() * command.getQuantity();
         // 可用数量
         Integer asnSkuCount = Integer.parseInt(cacheManager.getValue(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + command.getOccupationId() + "_" + command.getSkuId()));
         String lineIdListStr = "";
@@ -955,17 +948,18 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
      * @return
      */
     private String getMatchedLineIdStrForSkuAttr(Integer skuUrlOperator, WhSkuInventoryCommand command, String lineIdListString) {
-        int skuPlannedCount = command.getSkuBatchCount();
+        int skuPlannedCount = command.getSkuBatchCount() * command.getQuantity();
+        WhFunctionRcvd functionRcvd = command.getRcvd();
         // 可用数量
         Integer asnSkuCount = Integer.parseInt(cacheManager.getValue(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + command.getOccupationId() + "_" + command.getSkuId()));
         Integer asnlineSkuCount = Constants.DEFAULT_INTEGER;
         String lineIdListStr = "";
         List<String> matchLineList = this.matchLineList(skuUrlOperator, command, lineIdListString);// 匹配行明细
-        WhFunctionRcvd functionRcvd = command.getRcvd();
         if (null == matchLineList || matchLineList.size() == 0) {
-            if (functionRcvd.getIsInvattrDiscrepancyAllowrcvd()) {
+            if (!functionRcvd.getIsInvattrDiscrepancyAllowrcvd()) {
                 throw new BusinessException(ErrorCodes.RCVD_DISCREPANCY_ERROR);
             }
+            return lineIdListString;
         }
         for (String lineId : matchLineList) {
             Integer lineSkuOverchargeCount = this.cacheManager.getMapObject(CacheKeyConstant.CACHE_ASNLINE_OVERCHARGE_PREFIX + command.getOccupationId(), lineId);
@@ -1082,7 +1076,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                             // throw new BusinessException(ErrorCodes.RCVD_CONTAINER_LIMIT_ERROR);
                         }
                     }
-                    if (null == line.getCountryOfOrigin() || line.getCountryOfOrigin().equals(command.getCountryOfOrigin())) {
+                    if (StringUtils.isEmpty(line.getCountryOfOrigin()) || line.getCountryOfOrigin().equals(command.getCountryOfOrigin())) {
                         lineList.add(lineId);
                     }
                     break;
@@ -1669,6 +1663,12 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
         // 释放用户占用者缓存
         // this.cacheManager.removeMapValue(CacheKeyConstant.CACHE_USER_OCCUPATION,
         // userId.toString());
+        // 释放月台 不必强制事务，可以手动释放月台
+        try {
+            checkInManagerProxy.freePlatformByRcvdFinish(occupationId, ouId, userId, null);
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCodes.RCVD_PLATFORM_REALEASE_ERROR);
+        }
     }
 
     /**

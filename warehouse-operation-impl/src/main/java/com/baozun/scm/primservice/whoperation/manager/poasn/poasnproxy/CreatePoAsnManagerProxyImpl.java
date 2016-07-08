@@ -1011,7 +1011,7 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
                 if (poline.getAvailableQty() < lineCommand.getQtyPlanned()) {
                     throw new BusinessException(ErrorCodes.ASNLINE_QTYPLANNED_ERROR);
                 }
-                WhAsnLine line = this.asnLineManager.findWhAsnLineByPoLineIdAndUuidAndOuId(poline.getId(), poline.getUuid(), poline.getOuId());
+                WhAsnLine line = this.asnLineManager.findWhAsnLineByPoLineIdAndUuidAndOuId(poline.getId(), command.getUuid(), poline.getOuId());
                 if (line == null) {
                     line = new WhAsnLine();
                     line.setOuId(command.getOuId());
