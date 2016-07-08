@@ -789,34 +789,27 @@ public class AsnManagerImpl implements AsnManager {
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void revokeAsnWithUuidToShard(WhAsnCommand command) {
-        double qtyCount=Constants.DEFAULT_DOUBLE;
-        for (WhAsnLineCommand lineCommand : command.getAsnLineList()) {
-            WhAsnLine asnLine = this.whAsnLineDao.findWhAsnLineById(lineCommand.getId(), command.getOuId());
-            qtyCount+=lineCommand.getQtyPlanned()-asnLine.getQtyPlanned();
-            if(Constants.DEFAULT_DOUBLE.doubleValue()==lineCommand.getQtyPlanned().doubleValue()){
-                int deleteLineCount=this.whAsnLineDao.deleteByIdOuId(asnLine.getId(), asnLine.getOuId());
-                if(deleteLineCount<=0){
-                    throw new BusinessException(ErrorCodes.DELETE_DATA_ERROR);
+        try {
+            for (WhAsnLineCommand lineCommand : command.getAsnLineList()) {
+                WhAsnLine asnLine = this.whAsnLineDao.findWhAsnLineById(lineCommand.getId(), command.getOuId());
+                if (Constants.DEFAULT_DOUBLE.doubleValue() == lineCommand.getQtyPlanned().doubleValue()) {
+                    int deleteLineCount = this.whAsnLineDao.deleteByIdOuId(asnLine.getId(), asnLine.getOuId());
+                    if (deleteLineCount <= 0) {
+                        throw new BusinessException(ErrorCodes.DELETE_DATA_ERROR);
+                    }
+                } else {
+                    asnLine.setQtyPlanned(lineCommand.getQtyPlanned());
+                    asnLine.setModifiedId(command.getUserId());
+                    int updateAsnLineCount = this.whAsnLineDao.saveOrUpdateByVersion(asnLine);
+                    if (updateAsnLineCount <= 0) {
+                        throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                    }
                 }
-            }else{
-                asnLine.setQtyPlanned(lineCommand.getQtyPlanned());
-                asnLine.setModifiedId(command.getUserId());
-                asnLine.setLastModifyTime(new Date());
-                this.whAsnLineDao.saveOrUpdateByVersion(asnLine);
             }
-        }
-        WhAsn asn = this.whAsnDao.findWhAsnById(command.getId(), command.getOuId());
-        qtyCount = asn.getQtyPlanned() + qtyCount;
-        if (qtyCount <= Constants.DEFAULT_DOUBLE) {
-            int deleteCount = this.whAsnDao.deleteByIdOuId(command.getId(), command.getOuId());
-            if (deleteCount <= 0) {
-                throw new BusinessException(ErrorCodes.DELETE_DATA_ERROR);
-            }
-        } else {
-            asn.setQtyPlanned(qtyCount);
-            asn.setModifiedId(command.getUserId());
-            asn.setLastModifyTime(new Date());
-            this.whAsnDao.saveOrUpdateByVersion(asn);
+        } catch (BusinessException e) {
+            throw e;
+        } catch (Exception ex) {
+            throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
         }
     }
 

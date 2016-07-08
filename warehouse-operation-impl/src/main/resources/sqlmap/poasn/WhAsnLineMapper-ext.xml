@@ -487,7 +487,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	 from
 		    t_wh_asn_line
 			where
-			po_line_id=#{poLineId}  and ou_id = #{ouid} and uuid=#{uuid}
+			po_line_id=#{poLineId}  and ou_id = #{ouId} and uuid=#{uuid}
 	 </select>
 	 
 	<select id="findWhAsnLineByAsnIdOuIdUuid"  resultMap="WhAsnLineResultExt">
@@ -496,6 +496,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    t_wh_asn_line
 			where
 			asn_id=#{asnId}  and ou_id = #{ouId} and uuid=#{uuid}
+	 </select>
+	 
+	<select id="findWhAsnLineByAsnIdOuId"  resultMap="WhAsnLineResultExt">
+	 select <include refid="whAsnLineColumnsExt" />
+	 from
+		    t_wh_asn_line
+			where
+			asn_id=#{asnId}  and ou_id = #{ouId}
 	 </select>
 	 
 </mapper>

@@ -1,0 +1,401 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.sku.SkuBarcodeDao">
+    <resultMap id="SkuBarcodeResultExt" type="com.baozun.scm.primservice.whoperation.model.sku.SkuBarcode">
+    </resultMap>
+    
+    <resultMap id="SkuBarcodeResultAllExt" type="com.baozun.scm.primservice.whoperation.command.sku.skucommand.SkuBarcodeCommand">
+	</resultMap>
+    
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="skuBarcodeColumnsExt">
+        <![CDATA[
+                s.id as id,
+                s.bar_code as barCode,
+                s.sku_id as skuId,
+                s.quantity as quantity,
+                s.create_time as createTime,
+                s.created_id as createdId,
+                s.last_modify_time as lastModifyTime,
+                s.modified_id as modifiedId,
+                s.lifecycle as lifecycle,
+                sku.name as skuName,
+                sku.code as skuCode
+        ]]>
+    </sql>
+    
+    <sql id="skuBarcodeDynamicWhereExt">
+        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+            
+            <if test="id!=null">
+                and s.id = #{id}
+            </if>
+            
+            
+            <if test="barCode!=null and barCode!=''">
+                and s.bar_code like #{barCode}
+            </if>
+            
+            <if test="quantity!=null">
+                and s.quantity = #{quantity}
+            </if>
+            
+            <if test="skuId!=null">
+                and s.sku_id = #{skuId}
+            </if>
+            
+            <if test="createTime!=null">
+                and s.create_time = #{createTime}
+            </if>
+            
+            <if test="createdId!=null">
+                and s.created_id = #{createdId}
+            </if>
+            
+            <if test="lastModifyTime!=null">
+                and s.last_modify_time = #{lastModifyTime}
+            </if>
+            
+            <if test="modifiedId!=null">
+                and s.modified_id = #{modifiedId}
+            </if>
+            
+            <if test="lifecycle!=null">
+				and s.lifecycle = #{lifecycle}
+			</if>
+			
+			<if test="skuName!=null and skuName!=''">
+				and sku.name like #{skuName}
+			</if>
+			
+			<if test="skuCode!=null and skuCode!=''">
+				and sku.code like #{skuCode}
+			</if>
+			 <if test="customerList!=null">
+		       and sku.customer_id in
+				 <foreach collection="customerList" item="ids" open="("
+			  separator="," close=")">
+			       #{ids}
+		      </foreach>
+			 </if>
+			  <if test="customerList==null">
+		       and sku.customer_id in (null)
+			 </if>
+        </where>
+    </sql>
+
+
+    <update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.sku.SkuBarcode">
+        <![CDATA[
+                UPDATE t_wh_sku_barcode SET
+                    bar_code = #{barCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    sku_id = #{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    quantity = #{quantity,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                    created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                    modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
+                WHERE 
+                    id = #{id} 
+                    
+                    and last_modify_time    <=  #{lastModifyTime}    
+            ]]>
+    </update>
+
+    <sql id="skuBarcodeColumnsSharedExt">
+        <![CDATA[
+                id as id,
+                bar_code as barCode,
+                sku_id as skuId,
+                ou_id as ouId,
+                create_time as createTime,
+                created_id as createdId,
+                last_modify_time as lastModifyTime,
+                modified_id as modifiedId,
+                quantity as quantity ,
+                lifecycle
+        ]]>
+    </sql>
+	
+	<select id="findSkuBarcodeByIds" resultMap="SkuBarcodeResultExt">
+       select
+		<include refid="skuBarcodeColumnsExt" />
+		from t_wh_sku_barcode s 
+		left join t_wh_sku sku on sku.id = s.sku_id
+        WHERE s.id in
+			<foreach collection="ids" item="id" open="(" separator=","
+				close=")">
+				#{id}
+			</foreach>
+    </select>    
+    
+    <select id="findSkuBarcodeBySkuId" resultMap="SkuBarcodeResultExt">
+       select
+		<include refid="skuBarcodeColumnsExt" />
+		from t_wh_sku_barcode s 
+		left join t_wh_sku sku on sku.id = s.sku_id
+        WHERE s.sku_id = #{skuId}
+    </select>
+
+    <select id="findSkuBarcodeBySkuIdShared" resultMap="SkuBarcodeResultExt">
+        select
+        <include refid="skuBarcodeColumnsSharedExt" />
+        from t_wh_sku_barcode
+        where
+            sku_id = #{skuId}
+            and ou_id = #{ouId}
+    </select>
+    
+    <select id="findByIdShared" resultMap="SkuBarcodeResultExt">
+        select
+        <include refid="skuBarcodeColumnsSharedExt" />
+        <![CDATA[
+                from t_wh_sku_barcode
+            where
+                id = #{id}
+                and ou_id = #{ouId}
+        ]]>
+    </select>
+    
+    <select id="findSkuBarcodeCommandById" resultMap="SkuBarcodeResultAllExt">
+        select
+        <include refid="skuBarcodeColumnsExt" />
+        <![CDATA[
+               from t_wh_sku_barcode s 
+			   left join t_wh_sku sku on sku.id = s.sku_id
+            where
+                s.id = #{id}
+        ]]>
+    </select>
+    
+    <select id="uniqueSkuBarCode" resultType="long">
+		select count(*) from t_wh_sku_barcode 
+		<where>
+			<if test="id!=null">
+				and id != #{id}
+			</if>
+			
+			<if test="skuId!=null">
+				and sku_id = #{skuId}
+			</if>
+			
+			<if test="barCode!=null and barCode!=''">
+				and bar_code like #{barCode}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findListByQueryMapWithPageExt" resultMap="SkuBarcodeResultAllExt">
+		select
+		<include refid="skuBarcodeColumnsExt" />
+		from t_wh_sku_barcode s 
+		left join t_wh_sku sku on sku.id = s.sku_id
+		<include refid="skuBarcodeDynamicWhereExt" />
+	</select>
+	
+	 <select id="findListCountByQueryMapExt" resultType="long">
+	        select count(*) from t_wh_sku_barcode s 
+			left join t_wh_sku sku on sku.id = s.sku_id
+			<include refid="skuBarcodeDynamicWhereExt"/> 
+	</select>
+
+    <insert id="insertShared" parameterType="com.baozun.scm.primservice.whoperation.model.sku.SkuBarcode">
+        <![CDATA[
+                INSERT INTO
+                t_wh_sku_barcode (
+                    id,
+                    bar_code ,
+                    sku_id ,
+                    ou_id ,
+                    create_time ,
+                    created_id ,
+                    last_modify_time ,
+                    modified_id ,
+                    quantity ,
+                    lifecycle
+                ) VALUES (
+                    #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{barCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                    #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                    #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{quantity,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER}
+                )
+            ]]>
+
+    </insert>
+
+    <update id="updateShared" parameterType="com.baozun.scm.primservice.whoperation.model.sku.SkuBarcode">
+        <![CDATA[
+            UPDATE t_wh_sku_barcode SET
+                bar_code = #{barCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                sku_id = #{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                quantity = #{quantity,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER}
+            WHERE
+                id = #{id}
+                and ou_id = #{ouId}
+        ]]>
+    </update>
+
+    <insert id="batchInsertShared">
+        <![CDATA[
+           INSERT INTO
+            t_wh_sku_barcode (
+                id ,
+                bar_code ,
+                sku_id ,
+                ou_id ,
+                create_time ,
+                created_id ,
+                last_modify_time ,
+                modified_id ,
+                quantity ,
+                lifecycle
+            ) VALUES
+        ]]>
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+                #{item.id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                #{item.barCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                #{item.skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                #{item.ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                #{item.createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                #{item.createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                #{item.lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                #{item.modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                #{item.quantity,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                #{item.lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER}
+            )
+        </foreach>
+    </insert>
+    
+    <update id="batchUpdateShared">
+        UPDATE t_wh_sku_barcode
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="bar_code = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    when (id = #{item.id} 
+                    <if test="item.ouId!=null and item.ouId!=''">
+                    	and ou_id = #{item.ouId}
+                    </if>
+                    ) then #{item.barCode}
+                </foreach>
+            </trim>
+            <trim prefix="sku_id = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    when (id = #{item.id} 
+                    <if test="item.ouId!=null and item.ouId!=''">
+                    	and ou_id = #{item.ouId}
+                    </if>
+                    ) then #{item.skuId}
+                </foreach>
+            </trim>
+            <trim prefix="create_time = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    when (id = #{item.id} 
+                    <if test="item.ouId!=null and item.ouId!=''">
+                    	and ou_id = #{item.ouId}
+                    </if>
+                    ) then #{item.createTime}
+                </foreach>
+            </trim>
+            <trim prefix="created_id = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    when (id = #{item.id} 
+                    <if test="item.ouId!=null and item.ouId!=''">
+                    	and ou_id = #{item.ouId}
+                    </if>
+                    ) then #{item.createdId}
+                </foreach>
+            </trim>
+            <trim prefix="last_modify_time = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    when (id = #{item.id} 
+                    <if test="item.ouId!=null and item.ouId!=''">
+                    	and ou_id = #{item.ouId}
+                    </if>
+                    ) then #{item.lastModifyTime}
+                </foreach>
+            </trim>
+            <trim prefix="modified_id = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    when (id = #{item.id} 
+                    <if test="item.ouId!=null and item.ouId!=''">
+                    	and ou_id = #{item.ouId}
+                    </if>
+                    ) then #{item.modifiedId}
+                </foreach>
+            </trim>
+            <trim prefix="quantity = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    when (id = #{item.id}
+                    <if test="item.ouId!=null and item.ouId!=''">
+                        and ou_id = #{item.ouId}
+                    </if>
+                    ) then #{item.quantity}
+                </foreach>
+            </trim>
+            <trim prefix="lifecycle = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    when (id = #{item.id}
+                    <if test="item.ouId!=null and item.ouId!=''">
+                        and ou_id = #{item.ouId}
+                    </if>
+                    ) then #{item.lifecycle}
+                </foreach>
+            </trim>
+        </trim>
+        WHERE
+        <foreach collection="list" separator="or" item="item" index="index">
+            (id = #{item.id} 
+            <if test="item.ouId!=null and item.ouId!=''">
+            	and ou_id = #{item.ouId}
+            </if>
+            )
+        </foreach>
+    </update>
+    
+    <update id="updateLifeCycle" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Store">
+			UPDATE t_wh_sku_barcode SET lifecycle = #{lifecycle},modified_id = #{userid},last_modify_time = #{lastModifyTime}
+			WHERE id in
+			<foreach collection="ids" item="id" open="(" separator=","
+				close=")">
+				#{id}
+			</foreach>
+	</update>
+
+    <select id="findSkuBarCodeBySkuIdAndBarCode" resultMap="SkuBarcodeResultExt">
+        select
+                id as id,
+                bar_code as barCode,
+                sku_id as skuId,
+                ou_id as ouId,
+                create_time as createTime,
+                created_id as createdId,
+                last_modify_time as lastModifyTime,
+                modified_id as modifiedId,
+                quantity as quantity ,
+                lifecycle
+            	from 
+            	t_wh_sku_barcode 
+	            where
+	                sku_id = #{skuId}
+	                and ou_id = #{ouId}
+	                and bar_code = #{barCode}
+    </select>
+</mapper>

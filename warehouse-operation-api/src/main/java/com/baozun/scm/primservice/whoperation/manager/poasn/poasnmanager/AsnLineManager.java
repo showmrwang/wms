@@ -75,4 +75,8 @@ public interface AsnLineManager extends BaseManager {
      */
     List<WhAsnLine> findWhAsnLineByAsnIdOuIdUuid(Long asnId, Long ouId, String uuid);
 
+    /**
+     * 删除
+     */
+    int deleteWhAsnByIdOuIdToShard(Long id, Long ouId);
 }

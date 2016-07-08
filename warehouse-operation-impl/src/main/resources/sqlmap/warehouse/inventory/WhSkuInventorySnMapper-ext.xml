@@ -184,5 +184,19 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				and ou_id = #{ouid} 
 				and sys_uuid = #{sysuuid}
     </select>
-	
+
+    <select id="findInvSnIdStrByInsideContainerId" resultType="string">
+        select
+            CONCAT_WS(',', IFNULL(t_wh_sku_inventory.id,"null"), IFNULL(t_wh_sku_inventory_sn.id, "null")) as str
+        from t_wh_sku_inventory
+            #残次库存
+        left join t_wh_sku_inventory_sn
+            on t_wh_sku_inventory.uuid = t_wh_sku_inventory_sn.uuid
+        where t_wh_sku_inventory.ou_id = #{ouId}
+            and t_wh_sku_inventory.inside_container_id in
+        <foreach item="insideContainerId" index="index" collection="insideContainerIdList" open="(" separator="," close=")">
+            #{insideContainerId}
+        </foreach>
+</select>
+
 </mapper>

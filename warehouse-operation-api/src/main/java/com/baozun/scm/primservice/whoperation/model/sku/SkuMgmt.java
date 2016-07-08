@@ -1,13 +1,34 @@
-package com.baozun.scm.primservice.whoperation.command.sku.skucommand;
+/**
+ * Copyright (c) 2013 Baozun All Rights Reserved.
+ *
+ * This software is the confidential and proprietary information of Baozun. You shall not disclose
+ * such Confidential Information and shall use it only in accordance with the terms of the license
+ * agreement you entered into with Baozun.
+ *
+ * BAOZUN MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT THE SUITABILITY OF THE SOFTWARE, EITHER
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT. BAOZUN SHALL NOT BE LIABLE FOR ANY DAMAGES
+ * SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS SOFTWARE OR ITS
+ * DERIVATIVES.
+ *
+ */
+package com.baozun.scm.primservice.whoperation.model.sku;
 
-import com.baozun.scm.primservice.whoperation.command.BaseCommand;
+import com.baozun.scm.primservice.whoperation.model.BaseModel;
 
-public class SkuMgmtCommand extends BaseCommand {
+/**
+ * 
+ * @author larkark
+ *
+ */
+public class SkuMgmt extends BaseModel {
+
     /**
      * 
      */
-    private static final long serialVersionUID = -3400071214711611635L;
-    private Long id;
+    private static final long serialVersionUID = 5878382182432911553L;
+
+    // columns START
     /** SKU_ID */
     private Long skuId;
     /** 是否管理效期 有效期商品 */
@@ -82,16 +103,17 @@ public class SkuMgmtCommand extends BaseCommand {
     private Integer cartonMeas;
     /** 组织ID */
     private Long ouId;
-    
-    /** 是否可折叠 */
-    private Boolean isFoldable;
 
-    public Long getId() {
-        return id;
+   
+    //是否可折叠
+    private Boolean isFoldable;
+    
+    public Boolean getIsFoldable() {
+        return isFoldable;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setIsFoldable(Boolean isFoldable) {
+        this.isFoldable = isFoldable;
     }
 
     public Long getSkuId() {
@@ -158,6 +180,14 @@ public class SkuMgmtCommand extends BaseCommand {
         this.isToWeight = isToWeight;
     }
 
+    // public Long getOutboundCtnType() {
+    // return outboundCtnType;
+    // }
+    //
+    // public void setOutboundCtnType(Long outboundCtnType) {
+    // this.outboundCtnType = outboundCtnType;
+    // }
+
     public Long getContainerType() {
         return containerType;
     }
@@ -221,6 +251,22 @@ public class SkuMgmtCommand extends BaseCommand {
     public void setIsHazardousCargo(Boolean isHazardousCargo) {
         this.isHazardousCargo = isHazardousCargo;
     }
+
+    // public Integer getOccupancyZeroPickingQty() {
+    // return occupancyZeroPickingQty;
+    // }
+    //
+    // public void setOccupancyZeroPickingQty(Integer occupancyZeroPickingQty) {
+    // this.occupancyZeroPickingQty = occupancyZeroPickingQty;
+    // }
+    //
+    // public Integer getOccupancyBoxPickingQty() {
+    // return occupancyBoxPickingQty;
+    // }
+    //
+    // public void setOccupancyBoxPickingQty(Integer occupancyBoxPickingQty) {
+    // this.occupancyBoxPickingQty = occupancyBoxPickingQty;
+    // }
 
     public Boolean getIsValuables() {
         return isValuables;
@@ -286,6 +332,55 @@ public class SkuMgmtCommand extends BaseCommand {
         this.storageCondition = storageCondition;
     }
 
+
+    // public Long getShelfRule() {
+    // return shelfRule;
+    // }
+    //
+    // public void setShelfRule(Long shelfRule) {
+    // this.shelfRule = shelfRule;
+    // }
+    //
+    // public Long getAllocateRule() {
+    // return allocateRule;
+    // }
+    //
+    // public void setAllocateRule(Long allocateRule) {
+    // this.allocateRule = allocateRule;
+    // }
+    //
+    // public String getCodeWheelNorm() {
+    // return codeWheelNorm;
+    // }
+    //
+    // public void setCodeWheelNorm(String codeWheelNorm) {
+    // this.codeWheelNorm = codeWheelNorm;
+    // }
+    //
+    // public Double getPickingRate() {
+    // return pickingRate;
+    // }
+    //
+    // public void setPickingRate(Double pickingRate) {
+    // this.pickingRate = pickingRate;
+    // }
+    //
+    // public Double getPackingRate() {
+    // return packingRate;
+    // }
+    //
+    // public void setPackingRate(Double packingRate) {
+    // this.packingRate = packingRate;
+    // }
+    //
+    // public Double getAbnormalRate() {
+    // return abnormalRate;
+    // }
+    //
+    // public void setAbnormalRate(Double abnormalRate) {
+    // this.abnormalRate = abnormalRate;
+    // }
+
     public Double getPrice() {
         return price;
     }
@@ -293,6 +388,14 @@ public class SkuMgmtCommand extends BaseCommand {
     public void setPrice(Double price) {
         this.price = price;
     }
+
+    // public Date getLastCheckTime() {
+    // return lastCheckTime;
+    // }
+    //
+    // public void setLastCheckTime(Date lastCheckTime) {
+    // this.lastCheckTime = lastCheckTime;
+    // }
 
     public Integer getCartonMeas() {
         return cartonMeas;
@@ -309,14 +412,4 @@ public class SkuMgmtCommand extends BaseCommand {
     public void setOuId(Long ouId) {
         this.ouId = ouId;
     }
-
-    public Boolean getIsFoldable() {
-        return isFoldable;
-    }
-
-    public void setIsFoldable(Boolean isFoldable) {
-        this.isFoldable = isFoldable;
-    }
-    
-    
 }

@@ -160,6 +160,8 @@ public class WhSkuInventoryCommand extends BaseCommand {
     private Long userId;
     /** 通用收货批量收货数量 */
     private Integer skuBatchCount;
+    /** 通用收货 商品多条码数量 */
+    private Integer quantity;
     /** 残次数量 */
     private Integer snCount;
     /** 残次累计数量 */
@@ -185,6 +187,16 @@ public class WhSkuInventoryCommand extends BaseCommand {
 
     /** 匹配的规则 */
     private List<ShelveRecommendRuleCommand> shelveRecommendRuleCommandList;
+
+
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
 
     public Boolean getIsPalletRcvdFinished() {
         return isPalletRcvdFinished;

@@ -18,7 +18,7 @@ public class RcvdSnCacheCommand implements Serializable{
     /** 残次来源 */
     private String defectSource;
     /** 序列号管理类型 */
-    private Long serialNumberType;
+    private String serialNumberType;
 
     public String getDefectSource() {
         return defectSource;
@@ -52,13 +52,14 @@ public class RcvdSnCacheCommand implements Serializable{
         this.defectReasonsId = defectReasonsId;
     }
 
-    public Long getSerialNumberType() {
+    public String getSerialNumberType() {
         return serialNumberType;
     }
 
-    public void setSerialNumberType(Long serialNumberType) {
+    public void setSerialNumberType(String serialNumberType) {
         this.serialNumberType = serialNumberType;
     }
+
 
 
 }
