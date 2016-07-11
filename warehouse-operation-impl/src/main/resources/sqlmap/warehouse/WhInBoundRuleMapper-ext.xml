@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
-PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
-"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
 
 
 <mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.WhInBoundRuleDao">
@@ -9,9 +9,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <resultMap id="whInBoundRuleCommand" type="com.baozun.scm.primservice.whoperation.command.warehouse.WhInBoundRuleCommand">
-    </resultMap>
-
-    <resultMap id="whInBoundRuleResultCommand" type="com.baozun.scm.primservice.whoperation.command.warehouse.WhInBoundRuleResultCommand">
     </resultMap>
 
     <!-- 用于select查询公用抽取的列 -->
@@ -109,8 +106,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     </sql>
 
 
-        <update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhInBoundRule">
-            <![CDATA[
+    <update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhInBoundRule">
+        <![CDATA[
                 UPDATE t_wh_inbound_rule SET
                                 inbound_rule_name = #{inboundRuleName,javaType=java.lang.String,jdbcType=VARCHAR} ,
                                 inbound_rule_code = #{inboundRuleCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -130,7 +127,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
                     and ou_id = #{ouId}
                     and last_modify_time    =  #{lastModifyTime}
             ]]>
-        </update>
+    </update>
 
     <select id="findBoundRulesList" resultMap="WhInBoundRuleResultExt">
         select
@@ -276,100 +273,29 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         </where>
     </select>
 
-
-    <select id="findResultConditionByInventoryId" resultMap="whInBoundRuleResultCommand">
-        select
-            ${selectColumnsPropertyStr},
-            t_wh_container.code as containerCode
-        from
-        t_wh_sku_inventory
-            left join t_wh_container
-                on t_wh_sku_inventory.inside_container_id = t_wh_container.id
-            left join t_bi_customer
-                on t_bi_customer.id = t_wh_sku_inventory.customer_id
-            left join t_bi_store
-                on t_bi_store.id = t_wh_sku_inventory.store_id
-            left join t_wh_sku
-                on t_wh_sku.id = t_wh_sku_inventory.sku_id
-            left join t_wh_sku_extattr
-                on t_wh_sku_extattr.sku_id = t_wh_sku.id
-            left join t_wh_sku_mgmt
-                on t_wh_sku_mgmt.sku_id = t_wh_sku.id
-        where t_wh_sku_inventory.id = #{inventoryId}
-        and t_wh_sku_inventory.ou_id = #{ouId}
-        <!--and t_wh_container.isFull = "未满状态"-->
-    </select>
-
-    <select id="findResultConditionByContainerCode" resultMap="whInBoundRuleResultCommand">
-        select select_result_table.* from
-        (
-            select
-                ${selectColumnsPropertyStr},
-                t_wh_container.code as containerCode,
-                count(1) as select_count
-            from
-                t_wh_sku_inventory
-                left join  t_wh_container
-                    on t_wh_sku_inventory.inside_container_id = t_wh_container.id
-                left join t_wh_container as outer_container
-                    on t_wh_sku_inventory.outer_container_id = outer_container.id
-                left join t_bi_customer
-                    on t_bi_customer.id = t_wh_sku_inventory.customer_id
-                left join t_bi_store
-                    on t_bi_store.id = t_wh_sku_inventory.store_id
-                left join t_wh_sku
-                    on t_wh_sku.id = t_wh_sku_inventory.sku_id
-                left join t_wh_sku_extattr
-                    on t_wh_sku_extattr.sku_id = t_wh_sku.id
-                left join t_wh_sku_mgmt
-                    on t_wh_sku_mgmt.sku_id = t_wh_sku.id
-                where outer_container.code = #{containerCode}
-                and t_wh_container.is_full = 0 
-                and t_wh_container.ou_id = #{ouId}
-                group by t_wh_container.code, ${selectColumnsStr}
-        ) as select_result_table,
-        (
-            select
-                t_wh_container.code as origin_code,
-                count(1) as origin_count
-            from
-                t_wh_sku_inventory
-                left join t_wh_container
-                    on t_wh_sku_inventory.inside_container_id = t_wh_container.id
-                left join t_wh_container as outer_container
-                    on t_wh_sku_inventory.outer_container_id = outer_container.id
-                where outer_container.code = #{containerCode}
-            and t_wh_container.is_full = 0 
-            and t_wh_container.ou_id = #{ouId}
-            group by t_wh_container.code
-        ) as origin_result_table
-        where origin_result_table.origin_code = select_result_table.containerCode
-        and origin_result_table.origin_count = select_result_table.select_count
-    </select>
-    
     
     <select id="findInboundRuleByOuId" resultMap="whInBoundRuleCommand">
-		select 
-            id as id,
-            inbound_rule_name as inboundRuleName,
-            inbound_rule_code as inboundRuleCode,
-            rule as rule,
-            rule_sql as ruleSql,
-            sorting_conditionIds as sortingConditionIds,
-            sorting_sql as sortingSql,
-            ou_id as ouId,
-            priority as priority,
-            description as description,
-            create_time as createTime,
-            created_id as createdId,
-            last_modify_time as lastModifyTime,
-            modified_id as modifiedId,
-            lifecycle as lifecycle
-			from 
-			t_wh_inbound_rule 
-			where 
-			ou_id = #{ouid} and lifecycle = 1 
-			order by priority asc
+        select
+        id as id,
+        inbound_rule_name as inboundRuleName,
+        inbound_rule_code as inboundRuleCode,
+        rule as rule,
+        rule_sql as ruleSql,
+        sorting_conditionIds as sortingConditionIds,
+        sorting_sql as sortingSql,
+        ou_id as ouId,
+        priority as priority,
+        description as description,
+        create_time as createTime,
+        created_id as createdId,
+        last_modify_time as lastModifyTime,
+        modified_id as modifiedId,
+        lifecycle as lifecycle
+        from
+        t_wh_inbound_rule
+        where
+        ou_id = #{ouid} and lifecycle = 1
+        order by priority asc
     </select>
 
     <select id="executeSortingRuleSql" resultType="Long">

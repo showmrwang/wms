@@ -28,7 +28,6 @@ import lark.orm.dao.supports.BaseDao;
 import org.apache.ibatis.annotations.Param;
 
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhInBoundRuleCommand;
-import com.baozun.scm.primservice.whoperation.command.warehouse.WhInBoundRuleResultCommand;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhInBoundRule;
 
 public interface WhInBoundRuleDao extends BaseDao<WhInBoundRule, Long> {
@@ -105,29 +104,6 @@ public interface WhInBoundRuleDao extends BaseDao<WhInBoundRule, Long> {
     WhInBoundRule findByIdExt(@Param("id") Long id, @Param("ouId") Long ouId);
 
 
-    /**
-     * 根据待分拣的商品获取分拣条件值
-     *
-     * @author mingwei.xie
-     * @param inventoryId
-     * @param ouId
-     * @param selectColumnsPropertyStr
-     * @return
-     */
-    WhInBoundRuleResultCommand findResultConditionByInventoryId(@Param("inventoryId") Long inventoryId, @Param("ouId") Long ouId, @Param("selectColumnsPropertyStr") String selectColumnsPropertyStr);
-
-    /**
-     * 根据待分拣的占用码获取分拣条件值列表
-     *
-     * @author mingwei.xie
-     * @param containerCode
-     * @param ouId
-     * @param selectColumnsPropertyStr
-     * @param selectColumnsStr
-     * @return
-     */
-    List<WhInBoundRuleResultCommand> findResultConditionByContainerCode(@Param("containerCode") String containerCode, @Param("ouId") Long ouId, @Param("selectColumnsPropertyStr") String selectColumnsPropertyStr,
-            @Param("selectColumnsStr") String selectColumnsStr);
 
     /**
      * 根据OUID查询所有可用入库分拣规则 并且按照priority排序
