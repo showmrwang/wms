@@ -64,7 +64,7 @@ public class AsnReserve extends BaseModel {
     /*
      * status
      */
-    private String status;
+    private Integer status;
     /*
      * 排序 排队序号
      */
@@ -150,11 +150,11 @@ public class AsnReserve extends BaseModel {
         this.ouId = ouId;
     }
 
-    public String getStatus() {
+    public Integer getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Integer status) {
         this.status = status;
     }
 
