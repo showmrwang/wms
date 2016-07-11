@@ -79,7 +79,7 @@ public interface PlatformDao extends BaseDao<Platform, Long> {
      * @param ouId
      * @return
      */
-    List<Platform> findListByPlatformType(@Param("platformType") Long platformType, @Param("ouId") Long ouId, @Param("lifecycle") Integer lifecycle);
+    List<Platform> findListByPlatformType(@Param("platformType") String platformType, @Param("ouId") Long ouId, @Param("lifecycle") Integer lifecycle);
 
     /**
      * 手工指定月台

@@ -1,212 +1,217 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
-PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
-"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
 
 
 <mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.PlatformDao">
-	<resultMap id="PlatformResult" type="com.baozun.scm.primservice.whoperation.model.warehouse.Platform">
-	</resultMap>
-	
-	<!-- 用于select查询公用抽取的列 -->
-	<sql id="platformColumns">
-	    <![CDATA[
-	        	id as id,
-	        	platform_code as platformCode,
-	        	platform_name as platformName,
-	        	occupation_code as occupationCode,
-	        	is_occupied as isOccupied,
-	        	ou_id as ouId,
-	        	platform_type as platformType,
-	        	create_time as createTime,
-	        	created_id as createdId,
-	        	last_modify_time as lastModifyTime,
-	        	modified_id as modifiedId,
-	        	lifecycle as lifecycle
-	    ]]>
-	</sql>
-		<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
-		<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Platform" 
-		 flushCache="true">
-	    <![CDATA[
-		        INSERT INTO
-		        t_wh_platform (
-		        	id,
-		        	platform_code ,
-		        	platform_name ,
-		        	occupation_code ,
-		        	is_occupied ,
-		        	ou_id ,
-		        	platform_type ,
-		        	create_time ,
-		        	created_id ,
-		        	last_modify_time ,
-		        	modified_id ,
-		        	lifecycle 
-		        ) VALUES (
-		        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        	#{platformCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        	#{platformName,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        	#{occupationCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        	#{isOccupied,javaType=java.lang.Boolean,jdbcType=BIT} ,
-		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        	#{platformType,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-		        	#{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-		        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        	#{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
-		        )
-		    ]]>
-
-		</insert>
-	    
-		<update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Platform">
-	    <![CDATA[
-	        UPDATE t_wh_platform SET
-		        platform_code = #{platformCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        platform_name = #{platformName,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        occupation_code = #{occupationCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        is_occupied = #{isOccupied,javaType=java.lang.Boolean,jdbcType=BIT} ,
-		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        platform_type = #{platformType,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-		        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
-	        WHERE 
-		        id = #{id} 
-	    ]]>
-		</update>
-	   <delete id="delete" parameterType="java.lang.Long">
-	    <![CDATA[
-	        delete from t_wh_platform where
-		        id = #{id} 
-	    ]]>
-	    </delete> 
-	    
-	     <delete id="deleteByIds" parameterType="list">
-	    
-	        delete from t_wh_platform 
-	        where id in
-				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
-					#{item}			
-				</foreach>	
-	  
-	    </delete>  
-	         
-	    <select id="findById" parameterType="java.lang.Long" resultMap="PlatformResult" flushCache="false">
-			select <include refid="platformColumns" />
-		    <![CDATA[
-			    from t_wh_platform 
-		        where 
-		        id = #{id} 
-		    ]]>
-		</select>	
-		<select id="getByIds" parameterType="list"  resultMap="PlatformResult" flushCache="false">
-			select <include refid="platformColumns" />
-			    from t_wh_platform 
-		        where id in
-				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
-					#{item}				
-				</foreach>					
-		</select>	
-	<sql id="platformDynamicWhere">
-		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
-		<where>
-	       
-				<if test="id!=null">
-					and id = #{id}
-				</if>
-	       
-	       
-		       <if test="platformCode!=null and platformCode!=''">
-					and platform_code = #{platformCode}
-				</if>
-	       
-	       
-		       <if test="platformName!=null and platformName!=''">
-					and platform_name = #{platformName}
-				</if>
-	       
-	       
-		       <if test="occupationCode!=null and occupationCode!=''">
-					and occupation_code = #{occupationCode}
-				</if>
-	       
-				<if test="isOccupied!=null">
-					and is_occupied = #{isOccupied}
-				</if>
-	       
-				<if test="ouId!=null">
-					and ou_id = #{ouId}
-				</if>
-	       
-				<if test="platformType!=null">
-					and platform_type = #{platformType}
-				</if>
-	       
-				<if test="createTime!=null">
-					and create_time = #{createTime}
-				</if>
-	       
-				<if test="createdId!=null">
-					and created_id = #{createdId}
-				</if>
-	       
-				<if test="lastModifyTime!=null">
-					and last_modify_time = #{lastModifyTime}
-				</if>
-	       
-				<if test="modifiedId!=null">
-					and modified_id = #{modifiedId}
-				</if>
-	       
-				<if test="lifecycle!=null">
-					and lifecycle = #{lifecycle}
-				</if>
-		</where>
-	</sql>
-	
-
-	<select id="getCount" resultType="long">
-        select count(*) from t_wh_platform 
+    <resultMap id="PlatformResult" type="com.baozun.scm.primservice.whoperation.model.warehouse.Platform">
+    </resultMap>
+    
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="platformColumns">
+        <![CDATA[
+                id as id,
+                platform_code as platformCode,
+                platform_name as platformName,
+                occupation_code as occupationCode,
+                is_occupied as isOccupied,
+                ou_id as ouId,
+                platform_type as platformType,
+                create_time as createTime,
+                created_id as createdId,
+                last_modify_time as lastModifyTime,
+                modified_id as modifiedId,
+                lifecycle as lifecycle
+        ]]>
+    </sql>
+    <!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+    <insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Platform"
+            flushCache="true">
+        <![CDATA[
+                INSERT INTO
+                t_wh_platform (
+                    id,
+                    platform_code ,
+                    platform_name ,
+                    occupation_code ,
+                    is_occupied ,
+                    ou_id ,
+                    platform_type ,
+                    create_time ,
+                    created_id ,
+                    last_modify_time ,
+                    modified_id ,
+                    lifecycle 
+                ) VALUES (
+                    #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{platformCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{platformName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{occupationCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{isOccupied,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                    #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{platformType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                    #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                    #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
+                )
+            ]]>
+    
+    </insert>
+    
+    <update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Platform">
+        <![CDATA[
+            UPDATE t_wh_platform SET
+                platform_code = #{platformCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                platform_name = #{platformName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                occupation_code = #{occupationCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                is_occupied = #{isOccupied,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                platform_type = #{platformType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
+            WHERE 
+                id = #{id} 
+        ]]>
+    </update>
+    <delete id="delete" parameterType="java.lang.Long">
+        <![CDATA[
+            delete from t_wh_platform where
+                id = #{id} 
+        ]]>
+    </delete>
+    
+    <delete id="deleteByIds" parameterType="list">
+        
+        delete from t_wh_platform
+        where id in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    
+    </delete>
+    
+    <select id="findById" parameterType="java.lang.Long" resultMap="PlatformResult" flushCache="false">
+        select
+        <include refid="platformColumns"/>
+        <![CDATA[
+                from t_wh_platform 
+                where 
+                id = #{id} 
+            ]]>
+    </select>
+    <select id="getByIds" parameterType="list" resultMap="PlatformResult" flushCache="false">
+        select
+        <include refid="platformColumns"/>
+        from t_wh_platform
+        where id in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+    <sql id="platformDynamicWhere">
+        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+            
+            <if test="id!=null">
+                and id = #{id}
+            </if>
+            
+            
+            <if test="platformCode!=null and platformCode!=''">
+                and platform_code = #{platformCode}
+            </if>
+            
+            
+            <if test="platformName!=null and platformName!=''">
+                and platform_name = #{platformName}
+            </if>
+            
+            
+            <if test="occupationCode!=null and occupationCode!=''">
+                and occupation_code = #{occupationCode}
+            </if>
+            
+            <if test="isOccupied!=null">
+                and is_occupied = #{isOccupied}
+            </if>
+            
+            <if test="ouId!=null">
+                and ou_id = #{ouId}
+            </if>
+            
+            <if test="platformType!=null">
+                and platform_type = #{platformType}
+            </if>
+            
+            <if test="createTime!=null">
+                and create_time = #{createTime}
+            </if>
+            
+            <if test="createdId!=null">
+                and created_id = #{createdId}
+            </if>
+            
+            <if test="lastModifyTime!=null">
+                and last_modify_time = #{lastModifyTime}
+            </if>
+            
+            <if test="modifiedId!=null">
+                and modified_id = #{modifiedId}
+            </if>
+            
+            <if test="lifecycle!=null">
+                and lifecycle = #{lifecycle}
+            </if>
+        </where>
+    </sql>
+    
+    
+    <select id="getCount" resultType="long">
+        select count(*) from t_wh_platform
     </select>
     <select id="findListCountByQueryMap" resultType="long">
-        select count(*) from t_wh_platform 
-		<include refid="platformDynamicWhere"/>    
+        select count(*) from t_wh_platform
+        <include refid="platformDynamicWhere"/>
     </select>
     
     <select id="findListCountByParam" resultType="long">
-        select count(*) from t_wh_platform 
-		<include refid="platformDynamicWhere"/>    
+        select count(*) from t_wh_platform
+        <include refid="platformDynamicWhere"/>
     </select>
     
     <!--
-    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
-    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+        分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+        因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
     -->
     <select id="findListByQueryMapWithPage" resultMap="PlatformResult">
-    	select <include refid="platformColumns" />
-	    from t_wh_platform 
-		<include refid="platformDynamicWhere"/>
-		
+        select
+        <include refid="platformColumns"/>
+        from t_wh_platform
+        <include refid="platformDynamicWhere"/>
+    
     </select>
     
     <select id="findListByQueryMap" resultMap="PlatformResult">
-    	select <include refid="platformColumns" />
-	    from t_wh_platform 
-		<include refid="platformDynamicWhere"/>
-		
+        select
+        <include refid="platformColumns"/>
+        from t_wh_platform
+        <include refid="platformDynamicWhere"/>
+    
     </select>
     
     <select id="findListByParam" resultMap="PlatformResult">
-    	select <include refid="platformColumns" />
-	    from t_wh_platform 
-		<include refid="platformDynamicWhere"/>
-		
+        select
+        <include refid="platformColumns"/>
+        from t_wh_platform
+        <include refid="platformDynamicWhere"/>
+    
     </select>
 
-	
+
 </mapper>

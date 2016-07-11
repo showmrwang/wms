@@ -40,7 +40,7 @@ public class Platform extends BaseModel {
     /** 对应仓库组织ID */
     private Long ouId;
     /** 月台类型 */
-    private Long platformType;
+    private String platformType;
     /** 创建时间 */
     private Date createTime;
     /** 创建人ID */
@@ -92,11 +92,11 @@ public class Platform extends BaseModel {
         this.ouId = ouId;
     }
 
-    public Long getPlatformType() {
+    public String getPlatformType() {
         return platformType;
     }
 
-    public void setPlatformType(Long platformType) {
+    public void setPlatformType(String platformType) {
         this.platformType = platformType;
     }
 

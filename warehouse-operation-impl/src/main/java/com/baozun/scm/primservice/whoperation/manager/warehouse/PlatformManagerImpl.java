@@ -226,7 +226,7 @@ public class PlatformManagerImpl implements PlatformManager {
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public List<Platform> findListByPlatformType(Long platformType, Long ouId, Integer lifecycle) {
+    public List<Platform> findListByPlatformType(String platformType, Long ouId, Integer lifecycle) {
         if (log.isInfoEnabled()) {
             log.info("PlatformManagerImpl findListByPlatformType is start");
         }
@@ -349,7 +349,7 @@ public class PlatformManagerImpl implements PlatformManager {
         if (log.isInfoEnabled()) {
             log.info("PlatformManagerImpl findByOccupationCode is start");
         }
-        if(null == occupationCode || null == ouId || null == lifecycle){
+        if (null == occupationCode || null == ouId || null == lifecycle) {
             log.error("PlatformManagerImpl findByOccupationCode error, param is null, param [occupationCode:{}, ouId:{}, lifecycle:{}]", occupationCode, ouId, lifecycle);
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
