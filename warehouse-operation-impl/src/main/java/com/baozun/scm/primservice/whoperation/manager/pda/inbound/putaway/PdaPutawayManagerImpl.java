@@ -2561,6 +2561,11 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                     }
                 }
                 sysGuideContainerPutaway((null == containerCmd ? null : containerCmd.getCode()), insideContainerCmd.getCode(), srCmd.isAfterPutawayTipContianer(), locationCode, funcId, ouId, userId, logId);
+                if (true == srCmd.isAfterPutawayTipContianer()) {
+                    // 提示下一个容器
+                    String tipContainerCode = sysGuideTipContainer((null == containerCmd ? null : containerCmd.getCode()), funcId, WhPutawayPatternDetailType.CONTAINER_PUTAWAY, ouId, userId, logId);
+                    srCmd.setTipContainerCode(tipContainerCode);
+                }
             } else {
                 srCmd.setNeedScanSku(true);// 直接复核商品
             }
@@ -2577,6 +2582,11 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                     }
                 }
                 sysGuideContainerPutaway((null == containerCmd ? null : containerCmd.getCode()), insideContainerCmd.getCode(), srCmd.isAfterPutawayTipContianer(), locationCode, funcId, ouId, userId, logId);
+                if (true == srCmd.isAfterPutawayTipContianer()) {
+                    // 提示下一个容器
+                    String tipContainerCode = sysGuideTipContainer((null == containerCmd ? null : containerCmd.getCode()), funcId, WhPutawayPatternDetailType.CONTAINER_PUTAWAY, ouId, userId, logId);
+                    srCmd.setTipContainerCode(tipContainerCode);
+                }
             } else {
                 srCmd.setNeedScanSku(true);// 直接复核商品
             }
@@ -2591,6 +2601,11 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                 }
             }
             sysGuideContainerPutaway((null == containerCmd ? null : containerCmd.getCode()), insideContainerCmd.getCode(), srCmd.isAfterPutawayTipContianer(), locationCode, funcId, ouId, userId, logId);
+            if (true == srCmd.isAfterPutawayTipContianer()) {
+                // 提示下一个容器
+                String tipContainerCode = sysGuideTipContainer((null == containerCmd ? null : containerCmd.getCode()), funcId, WhPutawayPatternDetailType.CONTAINER_PUTAWAY, ouId, userId, logId);
+                srCmd.setTipContainerCode(tipContainerCode);
+            }
         }
         return srCmd;
     }
