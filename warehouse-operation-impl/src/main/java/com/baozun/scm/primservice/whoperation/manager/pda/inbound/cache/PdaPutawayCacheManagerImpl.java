@@ -179,6 +179,35 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
         return invList;
     }
 
+    /**
+     * @author lichuan
+     * @param containerCmd
+     * @param insideContainerIds
+     * @param logId
+     * @return
+     */
+    @Override
+    public Long sysGuidePalletPutawayCacheTipContainer0(ContainerCommand containerCmd, Set<Long> insideContainerIds, String logId) {
+        Long containerId = containerCmd.getId();
+        Long tipContainerId = null;
+        long len = cacheManager.listLen(CacheConstants.SCAN_CONTAINER_QUEUE + containerId.toString());
+        if (0 < len) {
+            String insideContainerId = cacheManager.findListItem(CacheConstants.SCAN_CONTAINER_QUEUE + containerId.toString(), 0);
+            tipContainerId = new Long(insideContainerId);
+        } else {
+            // 随机取一个容器
+            for (Long ic : insideContainerIds) {
+                Long icId = ic;
+                if (null != icId) {
+                    tipContainerId = icId;
+                    cacheManager.pushToListHead(CacheConstants.SCAN_CONTAINER_QUEUE + containerId.toString(), icId.toString());
+                    break;
+                }
+            }
+        }
+        return tipContainerId;
+    }
+
 
     /**
      * @author lichuan
@@ -229,13 +258,15 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                 }
             }
         } else {
-            for (Long id : insideContainerIds) {
-                if (null != id) {
-                    tipContainerId = id;// 随机取出一个放入队列
-                    break;
-                }
-            }
-            cacheManager.pushToListHead(CacheConstants.SCAN_CONTAINER_QUEUE + containerId.toString(), tipContainerId.toString());
+//            for (Long id : insideContainerIds) {
+//                if (null != id) {
+//                    tipContainerId = id;// 随机取出一个放入队列
+//                    break;
+//                }
+//            }
+//            cacheManager.pushToListHead(CacheConstants.SCAN_CONTAINER_QUEUE + containerId.toString(), tipContainerId.toString());
+            log.error("tip container is exception, logId is:[{}]", logId);
+            throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
         }
         return tipContainerId;
     }
