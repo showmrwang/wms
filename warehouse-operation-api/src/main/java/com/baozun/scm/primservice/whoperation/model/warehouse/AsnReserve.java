@@ -56,7 +56,7 @@ public class AsnReserve extends BaseModel {
     /*
      * 优先级
      */
-    private Long level;
+    private String level;
     /*
      * 仓库组织ID
      */
@@ -64,7 +64,7 @@ public class AsnReserve extends BaseModel {
     /*
      * status
      */
-    private Integer status;
+    private String status;
     /*
      * 排序 排队序号
      */
@@ -134,11 +134,11 @@ public class AsnReserve extends BaseModel {
         this.estParkingTime = estParkingTime;
     }
 
-    public Long getLevel() {
+    public String getLevel() {
         return level;
     }
 
-    public void setLevel(Long level) {
+    public void setLevel(String level) {
         this.level = level;
     }
 
@@ -150,11 +150,11 @@ public class AsnReserve extends BaseModel {
         this.ouId = ouId;
     }
 
-    public Integer getStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(Integer status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 

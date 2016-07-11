@@ -57,7 +57,7 @@ public class AsnReserveCommand extends BaseCommand {
     /*
      * 优先级
      */
-    private Long level;
+    private String level;
     /*
      * 仓库组织ID
      */
@@ -65,7 +65,7 @@ public class AsnReserveCommand extends BaseCommand {
     /*
      * status
      */
-    private Integer status;
+    private String status;
     /*
      * 排序 排队序号
      */
@@ -147,11 +147,11 @@ public class AsnReserveCommand extends BaseCommand {
         this.estParkingTime = estParkingTime;
     }
 
-    public Long getLevel() {
+    public String getLevel() {
         return level;
     }
 
-    public void setLevel(Long level) {
+    public void setLevel(String level) {
         this.level = level;
     }
 
@@ -163,11 +163,11 @@ public class AsnReserveCommand extends BaseCommand {
         this.ouId = ouId;
     }
 
-    public Integer getStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(Integer status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 

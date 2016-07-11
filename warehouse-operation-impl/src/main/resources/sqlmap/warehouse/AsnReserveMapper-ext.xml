@@ -17,15 +17,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		select
 		<include refid="asnReserveCommandColumnsExt" />
 		from t_wh_asn_reserve as s
-		left join sys_dictionary as syst on s.level = syst.id
-		left join sys_dictionary as sysl on s.status = sysl.dic_value
+		left join sys_dictionary as syst on s.level = syst.dic_value and syst.group_value = "ASN_RESERVE_LEVEL"
+		left join sys_dictionary as sysl on s.status = sysl.dic_value and sysl.group_value = "ASN_RESERVE_STATUS"
 		<include refid="asnReserveDynamicWhereExt" />
 	</select>
 
 	<select id="findListCountByQueryMapExt" resultType="int">
 		select count(*) from t_wh_asn_reserve as s
-		left join sys_dictionary as syst on s.level = syst.id
-		left join sys_dictionary as sysl on s.status = sysl.dic_value
+		left join sys_dictionary as syst on s.level = syst.dic_value and syst.group_value = "ASN_RESERVE_LEVEL"
+		left join sys_dictionary as sysl on s.status = sysl.dic_value and sysl.group_value = "ASN_RESERVE_STATUS"
 		<include refid="asnReserveDynamicWhereExt" />
 	</select>
 
@@ -33,8 +33,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		select
 		<include refid="asnReserveCommandColumnsExt" />
 		from t_wh_asn_reserve as s
-		left join sys_dictionary as syst on s.level = syst.id
-		left join sys_dictionary as sysl on s.status = sysl.dic_value
+		left join sys_dictionary as syst on s.level = syst.dic_value and syst.group_value = "ASN_RESERVE_LEVEL"
+		left join sys_dictionary as sysl on s.status = sysl.dic_value and sysl.group_value = "ASN_RESERVE_STATUS"
 		<include refid="asnReserveDynamicWhereExtSimpty" />
 
 	</select>
@@ -174,8 +174,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        eta = #{eta,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        delivery_time = #{deliveryTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        est_parking_time = #{estParkingTime,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-			        level = #{level,javaType=java.lang.Long,jdbcType=BIGINT} ,
-			        status = #{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        level = #{level,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        status = #{status,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        sort = #{sort,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
