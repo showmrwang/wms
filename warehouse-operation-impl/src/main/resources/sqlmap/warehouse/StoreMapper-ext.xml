@@ -13,16 +13,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     <select id="findListByQueryMapWithPageExt" resultMap="storeCommand">
 	    	select <include refid="storeColumnsExt" />
 		    from t_bi_store as s
-		    left join sys_dictionary as syst on s.invoice_type = syst.id
-		    left join sys_dictionary as sysl on s.payment_term = sysl.id
+		    left join sys_dictionary as syst on s.invoice_type = syst.dic_value   AND syst.group_value = 'SERIAL_NUMBER_TYPE'
+		    left join sys_dictionary as sysl on s.payment_term = sysl.dic_value  AND sysl.group_value = 'SERIAL_NUMBER_TYPE'
 		    left join t_bi_customer as c on c.id = s.customer_id  
 			<include refid="storeDynamicWhereExt"/>
     </select>
     
     <select id="findListCountByQueryMapExt" resultType="long">
 	        select count(*) from t_bi_store as s
-		    left join sys_dictionary as syst on s.invoice_type = syst.id
-		    left join sys_dictionary as sysl on s.payment_term = sysl.id 
+		    left join sys_dictionary as syst on s.invoice_type = syst.dic_value  AND syst.group_value = 'SERIAL_NUMBER_TYPE'
+		    left join sys_dictionary as sysl on s.payment_term = sysl.dic_value   AND sysl.group_value = 'SERIAL_NUMBER_TYPE'
 		    left join t_bi_customer as c on c.id = s.customer_id  
 			<include refid="storeDynamicWhereExt"/> 
 	</select>

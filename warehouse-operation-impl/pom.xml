@@ -629,13 +629,13 @@
 		<repository>
 			<id>releases</id>
 			<name>nexus-releases</name>
-			<url>http://10.8.12.100/nexus/content/repositories/releases/</url>
+			<url>http://itcentral.baozun.cn/nexus/content/repositories/releases/</url>
 		</repository>
 
 		<snapshotRepository>
 			<id>snapshots</id>
 			<name>nexus-snapshots</name>
-			<url>http://10.8.12.100/nexus/content/repositories/snapshots/</url>
+			<url>http://itcentral.baozun.cn/nexus/content/repositories/snapshots/</url>
 		</snapshotRepository>
 	</distributionManagement>
 </project>
