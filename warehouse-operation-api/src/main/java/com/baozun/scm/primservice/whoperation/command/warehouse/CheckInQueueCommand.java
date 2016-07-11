@@ -47,7 +47,7 @@ public class CheckInQueueCommand extends BaseCommand implements Comparable<Check
     /** 实际到货时间 */
     private Date deliveryTime;
     /** 优先级 */
-    private Long level;
+    private String level;
 
     public Long getId() {
         return id;
@@ -137,12 +137,12 @@ public class CheckInQueueCommand extends BaseCommand implements Comparable<Check
         this.deliveryTime = deliveryTime;
     }
 
-    public Long getLevel() {
+    public String getLevel() {
         return level;
     }
 
-    public void setLevel(Long level) {
-        this.level = level;
+    public void setLevel(String string) {
+        this.level = string;
     }
 
     @Override

@@ -13,20 +13,20 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     <select id="findListByQueryMapWithPageExt" resultMap="Container2ndCategoryCommandResultExt">
 	    	select <include refid="container2ndCategoryColumnsExt" />
 		    from t_wh_container_2nd_category as s
-		    left join sys_dictionary as syst on s.one_level_type = syst.id
+		    left join sys_dictionary as syst on s.one_level_type = syst.dic_value AND syst.group_value = 'SERIAL_NUMBER_TYPE'
 			<include refid="container2ndCategoryDynamicWhereExt"/>
     </select>
     
     <select id="findListCountByQueryMapExt" resultType="long">
 	        select count(*) from t_wh_container_2nd_category as s
-		    left join sys_dictionary as syst on s.one_level_type = syst.id
-			<include refid="container2ndCategoryDynamicWhereExt"/> 
+		    left join sys_dictionary as syst on s.one_level_type = syst.dic_value AND syst.group_value = 'SERIAL_NUMBER_TYPE'
+			<include refid="container2ndCategoryDynamicWhereExt"/>
 	</select>
 	
 	<select id="findC2ndCategoryByOuIdAndCid"  resultMap="Container2ndCategoryCommandResultExt" >
 			select <include refid="container2ndCategoryColumnsExt" />
 			    from t_wh_container_2nd_category as s
-			    left join sys_dictionary as syst on s.one_level_type = syst.id
+			    left join sys_dictionary as syst on s.one_level_type = syst.dic_value AND syst.group_value = 'SERIAL_NUMBER_TYPE'
 			    where s.lifecycle = #{lifecycle}
 			     <if test="oneLevelType!=null and oneLevelType!=''">
 					and s.one_level_type = #{oneLevelType}

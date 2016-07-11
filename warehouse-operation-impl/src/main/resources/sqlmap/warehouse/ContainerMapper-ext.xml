@@ -14,15 +14,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<select id="findListByQueryMapWithPageExt" resultMap="ContainerCommandResultExt">
 	    	select <include refid="containerColumnsExt" />
 		    from t_wh_container as s
-		    left join sys_dictionary as syst on s.one_level_type = syst.id
-		    left join sys_dictionary as sysl on s.two_level_type = sysl.id
+		    left join sys_dictionary as syst on s.one_level_type = syst.dic_value AND syst.group_value = 'SERIAL_NUMBER_TYPE'
+		    left join sys_dictionary as sysl on s.two_level_type = sysl.dic_value AND sys1.group_value = 'SERIAL_NUMBER_TYPE'
 			<include refid="containerDynamicWhereExt"/>
     </select>
 	    
 	<select id="findListCountByQueryMapExt" resultType="long">
 	        select count(*) from t_wh_container as s
-		    left join sys_dictionary as syst on s.one_level_type = syst.id
-		    left join sys_dictionary as sysl on s.two_level_type = sysl.id
+		    left join sys_dictionary as syst on s.one_level_type = syst.dic_value AND syst.group_value = 'SERIAL_NUMBER_TYPE'
+		    left join sys_dictionary as sysl on s.two_level_type = sysl.dic_value AND sys1.group_value = 'SERIAL_NUMBER_TYPE'
 			<include refid="containerDynamicWhereExt"/> 
 	</select>
 	
@@ -259,7 +259,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				s.status as status
 		    <![CDATA[
 			    from t_wh_container s
-			    left join sys_dictionary dic on dic.id=s.one_level_type
+			    left join sys_dictionary dic on dic.dic_value=s.one_level_type AND dic.group_value = 'SERIAL_NUMBER_TYPE'
 			    left join t_wh_container_2nd_category c2c on c2c.id=s.two_level_type
 		        where 
 		        s.code = #{code} 
