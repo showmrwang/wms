@@ -282,9 +282,10 @@ public interface PdaPutawayCacheManager extends BaseManager {
      * @return
      */
     InventoryStatisticResultCommand sysGuideSplitContainerPutawayCacheInventoryStatistic(ContainerCommand insideContainerCmd, InventoryStatisticResultCommand isCmd, Long ouId, String logId);
-    
+
     /**
      * pda拆箱上架缓存库存统计信息
+     * 
      * @author lichuan
      * @param insideContainerCmd
      * @param ouId
@@ -314,9 +315,10 @@ public interface PdaPutawayCacheManager extends BaseManager {
      * @return
      */
     Long sysGuideSplitContainerPutawayTipLocation0(ContainerCommand insideContainerCmd, Set<Long> locationIds, String logId);
-    
+
     /**
      * pda拆箱上架提示商品
+     * 
      * @author lichuan
      * @param insideContainerCmd
      * @param locationId
@@ -325,5 +327,73 @@ public interface PdaPutawayCacheManager extends BaseManager {
      * @return
      */
     String sysGuideSplitContainerPutawayTipSku0(ContainerCommand insideContainerCmd, Long locationId, Map<Long, Set<String>> locSkuAttrIds, String logId);
+
+    /**
+     * pda拆箱上架提示商品、库位、容器、上架判断
+     * 
+     * @author lichuan
+     * @param ocCmd
+     * @param icCmd
+     * @param insideContainerIds
+     * @param insideContainerSkuAttrIdsQty
+     * @param insideContainerSkuAttrIdsSnDefect
+     * @param insideContainerLocSkuAttrIds
+     * @param locationId
+     * @param skuCmd
+     * @param logId
+     * @return
+     */
+    CheckScanSkuResultCommand sysGuideSplitContainerPutawayTipSkuOrLocOrContainer(ContainerCommand ocCmd, ContainerCommand icCmd, Set<Long> insideContainerIds, Map<Long, Map<String, Long>> insideContainerSkuAttrIdsQty,
+            Map<Long, Map<String, Set<String>>> insideContainerSkuAttrIdsSnDefect, Map<Long, Map<Long, Set<String>>> insideContainerLocSkuAttrIds, Long locationId, WhSkuCommand skuCmd, String logId);
+
+
+    /**
+     * pda拆箱上架清除缓存
+     * 
+     * @author lichuan
+     * @param containerCmd
+     * @param insideContainerCmd
+     * @param isAfterPutawayTipContainer
+     * @param isAfterPutawayTipLoc
+     * @param locationId
+     * @param logId
+     */
+    void sysGuideSplitContainerPutawayRemoveAllCache(ContainerCommand containerCmd, ContainerCommand insideContainerCmd, Boolean isAfterPutawayTipContainer, Boolean isAfterPutawayTipLoc, Long locationId, String logId);
+
+    /**
+     * pda拆箱上架提示sn
+     * 
+     * @author lichuan
+     * @param insideContainerCmd
+     * @param locationId
+     * @param locSkuAttrIds
+     * @param skuAttrId
+     * @param logId
+     * @return
+     */
+    String sysGuideSplitContainerPutawayTipSku(ContainerCommand insideContainerCmd, Long locationId, Map<Long, Set<String>> locSkuAttrIds, String skuAttrId, String logId);
+
+    /**
+     * pda拆箱上架提示库位
+     * 
+     * @author lichuan
+     * @param insideContainerCmd
+     * @param locationIds
+     * @param logId
+     * @return
+     */
+    Long sysGuideSplitContainerPutawayTipLocation(ContainerCommand insideContainerCmd, Set<Long> locationIds, Long locationId, String logId);
+
+    /**
+     * pda拆箱上架提示容器
+     * 
+     * @author lichuan
+     * @param containerCmd
+     * @param insideContainerIds
+     * @param containerId
+     * @param logId
+     * @return
+     */
+    Long sysGuideSplitContainerPutawayTipContainer(ContainerCommand containerCmd, Set<Long> insideContainerIds, Long containerId, String logId);
 
 }

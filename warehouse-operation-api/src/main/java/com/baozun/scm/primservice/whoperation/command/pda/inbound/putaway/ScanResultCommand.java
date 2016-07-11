@@ -108,6 +108,10 @@ public class ScanResultCommand extends BaseCommand {
     private boolean isNeedTipSkuDefect;
     /** 提示商品条码 */
     private String tipSkuDefect;
+    /** 是否需要扫描Sn残次信息 */
+    private boolean isNeedScanSkuSn;
+    /** 上架以后是否需要提示下一个库位 */
+    private boolean isAfterPutawayTipLoc;
 
 
     public int getPutawayPatternType() {
@@ -446,6 +450,21 @@ public class ScanResultCommand extends BaseCommand {
         this.tipSkuDefect = tipSkuDefect;
     }
 
+    public boolean isNeedScanSkuSn() {
+        return isNeedScanSkuSn;
+    }
+
+    public void setNeedScanSkuSn(boolean isNeedScanSkuSn) {
+        this.isNeedScanSkuSn = isNeedScanSkuSn;
+    }
+
+    public boolean isAfterPutawayTipLoc() {
+        return isAfterPutawayTipLoc;
+    }
+
+    public void setAfterPutawayTipLoc(boolean isAfterPutawayTipLoc) {
+        this.isAfterPutawayTipLoc = isAfterPutawayTipLoc;
+    }
 
 
 

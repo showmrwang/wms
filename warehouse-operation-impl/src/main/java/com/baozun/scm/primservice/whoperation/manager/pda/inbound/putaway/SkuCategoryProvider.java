@@ -117,7 +117,7 @@ public final class SkuCategoryProvider {
         String[] values = skuAttrIdSnDefect.split(DV);
         if (AN < values.length) {
             String skuAttrId = getSkuAttrId(skuAttrIdSnDefect);
-            String snDefect = skuAttrIdSnDefect.substring(skuAttrId.length());
+            String snDefect = skuAttrIdSnDefect.substring(skuAttrId.length() + 1);
             ret = snDefect;
         }
         return ret;

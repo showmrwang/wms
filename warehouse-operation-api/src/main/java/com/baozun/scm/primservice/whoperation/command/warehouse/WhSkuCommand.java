@@ -10,6 +10,7 @@ import com.baozun.scm.primservice.whoperation.command.BaseCommand;
  */
 public class WhSkuCommand extends BaseCommand {
 
+    private static final long serialVersionUID = 5078657856518742601L;
     private Long id;
     /** 商品编码 */
     private java.lang.String code;
@@ -69,6 +70,20 @@ public class WhSkuCommand extends BaseCommand {
     private String customerName;
     /** 扫描数量 */
     private Double scanSkuQty;
+    private Boolean isNeedTipSkuDetail;
+    private Boolean isNeedTipSkuSn;
+    private Boolean isNeedTipSkuDefect;
+    private String invType;
+    private String invStatus;
+    private String invMfgDate;
+    private String invExpDate;
+    private String invAttr1;
+    private String invAttr2;
+    private String invAttr3;
+    private String invAttr4;
+    private String invAttr5;
+    private String skuSn;
+    private String skuDefect;
 
 
 
@@ -311,6 +326,118 @@ public class WhSkuCommand extends BaseCommand {
 
     public void setScanSkuQty(Double scanSkuQty) {
         this.scanSkuQty = scanSkuQty;
+    }
+
+    public Boolean getIsNeedTipSkuDetail() {
+        return isNeedTipSkuDetail;
+    }
+
+    public void setIsNeedTipSkuDetail(Boolean isNeedTipSkuDetail) {
+        this.isNeedTipSkuDetail = isNeedTipSkuDetail;
+    }
+
+    public Boolean getIsNeedTipSkuSn() {
+        return isNeedTipSkuSn;
+    }
+
+    public void setIsNeedTipSkuSn(Boolean isNeedTipSkuSn) {
+        this.isNeedTipSkuSn = isNeedTipSkuSn;
+    }
+
+    public Boolean getIsNeedTipSkuDefect() {
+        return isNeedTipSkuDefect;
+    }
+
+    public void setIsNeedTipSkuDefect(Boolean isNeedTipSkuDefect) {
+        this.isNeedTipSkuDefect = isNeedTipSkuDefect;
+    }
+
+    public String getInvType() {
+        return invType;
+    }
+
+    public void setInvType(String invType) {
+        this.invType = invType;
+    }
+
+    public String getInvStatus() {
+        return invStatus;
+    }
+
+    public void setInvStatus(String invStatus) {
+        this.invStatus = invStatus;
+    }
+
+    public String getInvMfgDate() {
+        return invMfgDate;
+    }
+
+    public void setInvMfgDate(String invMfgDate) {
+        this.invMfgDate = invMfgDate;
+    }
+
+    public String getInvExpDate() {
+        return invExpDate;
+    }
+
+    public void setInvExpDate(String invExpDate) {
+        this.invExpDate = invExpDate;
+    }
+
+    public String getInvAttr1() {
+        return invAttr1;
+    }
+
+    public void setInvAttr1(String invAttr1) {
+        this.invAttr1 = invAttr1;
+    }
+
+    public String getInvAttr2() {
+        return invAttr2;
+    }
+
+    public void setInvAttr2(String invAttr2) {
+        this.invAttr2 = invAttr2;
+    }
+
+    public String getInvAttr3() {
+        return invAttr3;
+    }
+
+    public void setInvAttr3(String invAttr3) {
+        this.invAttr3 = invAttr3;
+    }
+
+    public String getInvAttr4() {
+        return invAttr4;
+    }
+
+    public void setInvAttr4(String invAttr4) {
+        this.invAttr4 = invAttr4;
+    }
+
+    public String getInvAttr5() {
+        return invAttr5;
+    }
+
+    public void setInvAttr5(String invAttr5) {
+        this.invAttr5 = invAttr5;
+    }
+
+    public String getSkuSn() {
+        return skuSn;
+    }
+
+    public void setSkuSn(String skuSn) {
+        this.skuSn = skuSn;
+    }
+
+    public String getSkuDefect() {
+        return skuDefect;
+    }
+
+    public void setSkuDefect(String skuDefect) {
+        this.skuDefect = skuDefect;
     }
 
 

@@ -42,6 +42,14 @@ public class CheckScanSkuResultCommand extends BaseCommand {
     private Long tipSkuBarcode;
     /** 是否直接核扫商品 */
     private boolean isNeedScanSku;
+    /** 是否提示sn明细 */
+    private boolean isNeedTipSkuSn;
+    /** 提示唯一sku */
+    private String tipSkuAttrId;
+    /** 是否提示库位 */
+    private boolean isNeedTipLoc;
+    /** 提示库位id */
+    private Long tipLocId;
 
     public int getPutawayPatternType() {
         return putawayPatternType;
@@ -114,6 +122,39 @@ public class CheckScanSkuResultCommand extends BaseCommand {
     public void setNeedScanSku(boolean isNeedScanSku) {
         this.isNeedScanSku = isNeedScanSku;
     }
+
+    public boolean isNeedTipSkuSn() {
+        return isNeedTipSkuSn;
+    }
+
+    public void setNeedTipSkuSn(boolean isNeedTipSkuSn) {
+        this.isNeedTipSkuSn = isNeedTipSkuSn;
+    }
+
+    public String getTipSkuAttrId() {
+        return tipSkuAttrId;
+    }
+
+    public void setTipSkuAttrId(String tipSkuAttrId) {
+        this.tipSkuAttrId = tipSkuAttrId;
+    }
+
+    public boolean isNeedTipLoc() {
+        return isNeedTipLoc;
+    }
+
+    public void setNeedTipLoc(boolean isNeedTipLoc) {
+        this.isNeedTipLoc = isNeedTipLoc;
+    }
+
+    public Long getTipLocId() {
+        return tipLocId;
+    }
+
+    public void setTipLocId(Long tipLocId) {
+        this.tipLocId = tipLocId;
+    }
+
 
 
 }
