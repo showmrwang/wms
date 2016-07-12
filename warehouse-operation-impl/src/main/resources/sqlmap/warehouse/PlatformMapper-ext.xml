@@ -186,7 +186,7 @@
             <include refid="platformListColumnsExt"/>
         from t_wh_platform as p
         left join sys_dictionary as syst on
-            p.platform_type = syst.dic_value  AND syst.group_value = 'SERIAL_NUMBER_TYPE'
+        p.platform_type = syst.dic_value and syst.group_value = "PLATFORM_TYPE"
         <include refid="platformDynamicWhereLikeExt"/>
     </select>
     
@@ -227,7 +227,7 @@
                     platform_name = #{platformName,javaType=java.lang.String,jdbcType=VARCHAR} ,
                     occupation_code = #{occupationCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
                     is_occupied = #{isOccupied,javaType=java.lang.Boolean,jdbcType=BIT} ,
-                    platform_type = #{platformType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    platform_type = #{platformType,javaType=java.lang.String,jdbcType=VARCHAR} ,
                     create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
                     created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
                     last_modify_time = now() ,

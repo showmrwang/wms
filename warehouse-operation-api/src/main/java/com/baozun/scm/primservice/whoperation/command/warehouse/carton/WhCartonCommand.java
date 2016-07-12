@@ -110,7 +110,7 @@ public class WhCartonCommand extends BaseCommand {
     /** 容器类型 */
     private String categoryName;
     /** 容器类型ID */
-    private Long categoryId;
+    private String categoryId;
     /** asnline状态 */
     private Integer asnLineStatus;
 
@@ -405,11 +405,11 @@ public class WhCartonCommand extends BaseCommand {
         this.cartonList = cartonList;
     }
 
-    public Long getCategoryId() {
+    public String getCategoryId() {
         return categoryId;
     }
 
-    public void setCategoryId(Long categoryId) {
+    public void setCategoryId(String categoryId) {
         this.categoryId = categoryId;
     }
 

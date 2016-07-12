@@ -21,11 +21,11 @@ public class ContainerCommand extends BaseCommand {
     /**
      * 一级容器类型
      */
-    private Long oneLevelType;
+    private String oneLevelType;
     /**
      * 二级容器类型
      */
-    private Long twoLevelType;
+    private String twoLevelType;
 
     /** 是否满箱 0:否 1:是 */
     private Boolean isFull;
@@ -137,19 +137,21 @@ public class ContainerCommand extends BaseCommand {
         this.code = code;
     }
 
-    public Long getOneLevelType() {
+
+    public String getOneLevelType() {
         return oneLevelType;
     }
 
-    public void setOneLevelType(Long oneLevelType) {
+    public void setOneLevelType(String oneLevelType) {
         this.oneLevelType = oneLevelType;
     }
 
-    public Long getTwoLevelType() {
+
+    public String getTwoLevelType() {
         return twoLevelType;
     }
 
-    public void setTwoLevelType(Long twoLevelType) {
+    public void setTwoLevelType(String twoLevelType) {
         this.twoLevelType = twoLevelType;
     }
 

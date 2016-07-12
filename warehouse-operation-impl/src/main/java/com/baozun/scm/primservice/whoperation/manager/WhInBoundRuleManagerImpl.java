@@ -17,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.whoperation.command.system.GlobalLogCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhInBoundRuleCommand;
-import com.baozun.scm.primservice.whoperation.command.warehouse.WhInBoundRuleResultCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhInBoundRuleDao;
@@ -318,65 +317,6 @@ public class WhInBoundRuleManagerImpl implements WhInBoundRuleManager {
         if (log.isInfoEnabled()) {
             log.info("WhInBoundRuleManagerImpl updateLifeCycle is end");
         }
-    }
-
-    /**
-     * 根据待分拣的商品获取分拣条件值
-     *
-     * @author mingwei.xie
-     * @param inventoryId
-     * @param ouId
-     * @param selectColumnsPropertyStr
-     * @return
-     */
-    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    @Override
-    public WhInBoundRuleResultCommand findResultConditionByInventoryId(Long inventoryId, Long ouId, String selectColumnsPropertyStr) {
-        if (log.isInfoEnabled()) {
-            log.info("WhInBoundRuleManagerImpl findResultConditionBySku is start");
-        }
-        if (log.isDebugEnabled()) {
-            log.debug("findResultConditionBySku param [inventoryId:{}, ouId:{}, selectColumnsStr:{}] ", inventoryId, ouId, selectColumnsPropertyStr);
-        }
-        if (null == inventoryId || null == ouId || null == selectColumnsPropertyStr) {
-            log.error("WhInBoundRuleManagerImpl findResultConditionBySku failed, param [inventoryId:{}, ouId:{}, selectColumnsStr:{}] ", inventoryId, ouId, selectColumnsPropertyStr);
-            throw new BusinessException(ErrorCodes.PARAM_IS_NULL);
-        }
-        WhInBoundRuleResultCommand whInBoundRuleResultCommand = whInBoundRuleDao.findResultConditionByInventoryId(inventoryId, ouId, selectColumnsPropertyStr);
-        if (log.isInfoEnabled()) {
-            log.info("WhInBoundRuleManagerImpl findResultConditionBySku is end");
-        }
-        return whInBoundRuleResultCommand;
-    }
-
-    /**
-     * 根据待分拣的商品获取分拣条件值
-     *
-     * @author mingwei.xie
-     * @param containerCode
-     * @param ouId
-     * @param selectColumnsPropertyStr
-     * @param selectColumnsStr
-     * @return
-     */
-    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    @Override
-    public List<WhInBoundRuleResultCommand> findResultConditionByContainerCode(String containerCode, Long ouId, String selectColumnsPropertyStr, String selectColumnsStr) {
-        if (log.isInfoEnabled()) {
-            log.info("WhInBoundRuleManagerImpl findResultConditionByContainerCode is start");
-        }
-        if (log.isDebugEnabled()) {
-            log.debug("findResultConditionByContainerCode param [containerCode:{}, ouId:{}, selectColumnsStr:{}, selectColumnsPropertyStr:{}] ", containerCode, ouId, selectColumnsStr, selectColumnsPropertyStr);
-        }
-        if (null == containerCode || null == ouId || null == selectColumnsStr || null == selectColumnsPropertyStr) {
-            log.error("WhInBoundRuleManagerImpl findResultConditionByContainerCode failed, param [containerCode:{}, ouId:{}, selectColumnsStr:{}, selectColumnsPropertyStr:{}] ", containerCode, ouId, selectColumnsStr, selectColumnsPropertyStr);
-            throw new BusinessException(ErrorCodes.PARAM_IS_NULL);
-        }
-        List<WhInBoundRuleResultCommand> whInBoundRuleResultCommandList = whInBoundRuleDao.findResultConditionByContainerCode(containerCode, ouId, selectColumnsPropertyStr, selectColumnsStr);
-        if (log.isInfoEnabled()) {
-            log.info("WhInBoundRuleManagerImpl findResultConditionByContainerCode is end");
-        }
-        return whInBoundRuleResultCommandList;
     }
 
     /**

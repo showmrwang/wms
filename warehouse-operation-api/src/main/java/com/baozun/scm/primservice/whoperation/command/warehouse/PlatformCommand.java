@@ -24,7 +24,7 @@ public class PlatformCommand extends BaseCommand {
     /** 对应仓库组织ID */
     private Long ouId;
     /** 月台类型 */
-    private Long platformType;
+    private String platformType;
     /** 月台类型名称 */
     private String platformTypeName;
     /** 创建时间 */
@@ -86,11 +86,11 @@ public class PlatformCommand extends BaseCommand {
         this.ouId = ouId;
     }
 
-    public Long getPlatformType() {
+    public String getPlatformType() {
         return platformType;
     }
 
-    public void setPlatformType(Long platformType) {
+    public void setPlatformType(String platformType) {
         this.platformType = platformType;
     }
 

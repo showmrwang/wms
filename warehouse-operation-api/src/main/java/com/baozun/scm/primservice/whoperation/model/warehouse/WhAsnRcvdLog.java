@@ -40,6 +40,8 @@ public class WhAsnRcvdLog extends BaseModel {
     private String skuName;
     /** 数量 */
     private Long quantity;
+    /** 已收数量 */
+    private Double qtyRcvd = 0.0;
     /** 容器编码 */
     private String containerCode;
     /** 容器名称 */
@@ -266,6 +268,13 @@ public class WhAsnRcvdLog extends BaseModel {
         return this.operatorId;
     }
 
+    public Double getQtyRcvd() {
+        return qtyRcvd;
+    }
+
+    public void setQtyRcvd(Double qtyRcvd) {
+        this.qtyRcvd = qtyRcvd;
+    }
+
 
 }
-

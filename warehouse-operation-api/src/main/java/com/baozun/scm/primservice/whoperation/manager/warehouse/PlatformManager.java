@@ -90,7 +90,7 @@ public interface PlatformManager extends BaseManager {
      * @param lifecycle
      * @return
      */
-    List<Platform> findListByPlatformType(Long platformType, Long ouId, Integer lifecycle);
+    List<Platform> findListByPlatformType(String platformType, Long ouId, Integer lifecycle);
 
     /**
      * 查找空闲月台

@@ -22,7 +22,6 @@ import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhInBoundRuleCommand;
-import com.baozun.scm.primservice.whoperation.command.warehouse.WhInBoundRuleResultCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhInBoundRule;
 
@@ -98,29 +97,6 @@ public interface WhInBoundRuleManager extends BaseManager {
     void updateLifeCycle(List<Long> ids, Integer lifeCycle, Long userId, Long ouId);
 
 
-    /**
-     * 根据待分拣的商品获取分拣条件值
-     *
-     * @author mingwei.xie
-     * @param inventoryId
-     * @param ouId
-     * @param selectColumnsPropertyStr
-     * @return
-     */
-    WhInBoundRuleResultCommand findResultConditionByInventoryId(Long inventoryId, Long ouId, String selectColumnsPropertyStr);
-
-
-    /**
-     * 根据待分拣的占用码获取分拣条件值列表
-     *
-     * @author mingwei.xie
-     * @param containerCode
-     * @param ouId
-     * @param selectColumnsPropertyStr
-     * @param selectColumnsStr
-     * @return
-     */
-    List<WhInBoundRuleResultCommand> findResultConditionByContainerCode(String containerCode, Long ouId, String selectColumnsPropertyStr, String selectColumnsStr);
 
     /**
      * 测试分拣规则sql

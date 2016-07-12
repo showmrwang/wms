@@ -147,8 +147,6 @@ public class AsnReserveCommand extends BaseCommand {
         this.estParkingTime = estParkingTime;
     }
 
-
-
     public String getLevel() {
         return level;
     }
