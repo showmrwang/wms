@@ -29,7 +29,7 @@ public class SkuExtattr extends BaseModel {
      */
     private static final long serialVersionUID = 7152115609853903634L;
 
-    // columns START
+   
     /** SKU_ID */
     private Long skuId;
     /** 组织ID */
@@ -66,25 +66,25 @@ public class SkuExtattr extends BaseModel {
     private String userDefined10;
     
     /**商品类型1*/
-    private Long skuType1;
+    private String skuType1;
     /**商品类型2*/
-    private Long skuType2;
+    private String skuType2;
     /**商品类型3*/
-    private Long skuType3;
+    private String skuType3;
     /**商品类型4*/
-    private Long skuType4;
+    private String skuType4;
     /**商品类型5*/
-    private Long skuType5;
+    private String skuType5;
     /**商品类型6*/
-    private Long skuType6;
+    private String skuType6;
     /**商品类型7*/
-    private Long skuType7;
+    private String skuType7;
     /**商品类型8*/
-    private Long skuType8;
+    private String skuType8;
     /**商品类型9*/
-    private Long skuType9;
+    private String skuType9;
     /**商品类型10*/
-    private Long skuType10;
+    private String skuType10;
 
     // columns END
 
@@ -225,83 +225,83 @@ public class SkuExtattr extends BaseModel {
         this.userDefined10 = userDefined10;
     }
 
-    public Long getSkuType1() {
+    public String getSkuType1() {
         return skuType1;
     }
 
-    public void setSkuType1(Long skuType1) {
+    public void setSkuType1(String skuType1) {
         this.skuType1 = skuType1;
     }
 
-    public Long getSkuType2() {
+    public String getSkuType2() {
         return skuType2;
     }
 
-    public void setSkuType2(Long skuType2) {
+    public void setSkuType2(String skuType2) {
         this.skuType2 = skuType2;
     }
 
-    public Long getSkuType3() {
+    public String getSkuType3() {
         return skuType3;
     }
 
-    public void setSkuType3(Long skuType3) {
+    public void setSkuType3(String skuType3) {
         this.skuType3 = skuType3;
     }
 
-    public Long getSkuType4() {
+    public String getSkuType4() {
         return skuType4;
     }
 
-    public void setSkuType4(Long skuType4) {
+    public void setSkuType4(String skuType4) {
         this.skuType4 = skuType4;
     }
 
-    public Long getSkuType5() {
+    public String getSkuType5() {
         return skuType5;
     }
 
-    public void setSkuType5(Long skuType5) {
+    public void setSkuType5(String skuType5) {
         this.skuType5 = skuType5;
     }
 
-    public Long getSkuType6() {
+    public String getSkuType6() {
         return skuType6;
     }
 
-    public void setSkuType6(Long skuType6) {
+    public void setSkuType6(String skuType6) {
         this.skuType6 = skuType6;
     }
 
-    public Long getSkuType7() {
+    public String getSkuType7() {
         return skuType7;
     }
 
-    public void setSkuType7(Long skuType7) {
+    public void setSkuType7(String skuType7) {
         this.skuType7 = skuType7;
     }
 
-    public Long getSkuType8() {
+    public String getSkuType8() {
         return skuType8;
     }
 
-    public void setSkuType8(Long skuType8) {
+    public void setSkuType8(String skuType8) {
         this.skuType8 = skuType8;
     }
 
-    public Long getSkuType9() {
+    public String getSkuType9() {
         return skuType9;
     }
 
-    public void setSkuType9(Long skuType9) {
+    public void setSkuType9(String skuType9) {
         this.skuType9 = skuType9;
     }
 
-    public Long getSkuType10() {
+    public String getSkuType10() {
         return skuType10;
     }
 
-    public void setSkuType10(Long skuType10) {
+    public void setSkuType10(String skuType10) {
         this.skuType10 = skuType10;
     }
 

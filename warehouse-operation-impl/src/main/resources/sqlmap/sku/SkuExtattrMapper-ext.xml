@@ -183,16 +183,16 @@
                 user_defined8 = #{userDefined8,javaType=java.lang.String,jdbcType=VARCHAR} ,
                 user_defined9 = #{userDefined9,javaType=java.lang.String,jdbcType=VARCHAR} ,
                 user_defined10 = #{userDefined10,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                sku_type1 = #{skuType1,javaType=java.lang.Long,jdbcType=BIGINT} ,
-                sku_type2 = #{skuType2,javaType=java.lang.Long,jdbcType=BIGINT} ,
-                sku_type3 = #{skuType3,javaType=java.lang.Long,jdbcType=BIGINT} ,
-                sku_type4 = #{skuType4,javaType=java.lang.Long,jdbcType=BIGINT} ,
-                sku_type5 = #{skuType5,javaType=java.lang.Long,jdbcType=BIGINT} ,
-                sku_type6 = #{skuType6,javaType=java.lang.Long,jdbcType=BIGINT} ,
-                sku_type7 = #{skuType7,javaType=java.lang.Long,jdbcType=BIGINT} ,
-                sku_type8 = #{skuType8,javaType=java.lang.Long,jdbcType=BIGINT} ,
-                sku_type9 = #{skuType9,javaType=java.lang.Long,jdbcType=BIGINT} ,
-                sku_type10 = #{skuType10,javaType=java.lang.Long,jdbcType=BIGINT}
+                sku_type1 = #{skuType1,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                sku_type2 = #{skuType2,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                sku_type3 = #{skuType3,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                sku_type4 = #{skuType4,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                sku_type5 = #{skuType5,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                sku_type6 = #{skuType6,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                sku_type7 = #{skuType7,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                sku_type8 = #{skuType8,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                sku_type9 = #{skuType9,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                sku_type10 = #{skuType10,javaType=java.lang.String,jdbcType=VARCHAR}
             WHERE 
                 sku_id = #{skuId} 
         ]]>
@@ -305,16 +305,16 @@
                     #{userDefined8,javaType=java.lang.String,jdbcType=VARCHAR} ,
                     #{userDefined9,javaType=java.lang.String,jdbcType=VARCHAR} ,
                     #{userDefined10,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{skuType1,javaType=java.lang.Long,jdbcType=BIGINT} ,
-                    #{skuType2,javaType=java.lang.Long,jdbcType=BIGINT} ,
-                    #{skuType3,javaType=java.lang.Long,jdbcType=BIGINT} ,
-                    #{skuType4,javaType=java.lang.Long,jdbcType=BIGINT} ,
-                    #{skuType5,javaType=java.lang.Long,jdbcType=BIGINT} ,
-                    #{skuType6,javaType=java.lang.Long,jdbcType=BIGINT} ,
-                    #{skuType7,javaType=java.lang.Long,jdbcType=BIGINT} ,
-                    #{skuType8,javaType=java.lang.Long,jdbcType=BIGINT} ,
-                    #{skuType9,javaType=java.lang.Long,jdbcType=BIGINT} ,
-                    #{skuType10,javaType=java.lang.Long,jdbcType=BIGINT}
+                    #{skuType1,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{skuType2,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{skuType3,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{skuType4,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{skuType5,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{skuType6,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{skuType7,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{skuType8,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{skuType9,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{skuType10,javaType=java.lang.String,jdbcType=VARCHAR}
                 )
             ]]>
     
@@ -339,16 +339,16 @@
                 user_defined8 = #{userDefined8,javaType=java.lang.String,jdbcType=VARCHAR} ,
                 user_defined9 = #{userDefined9,javaType=java.lang.String,jdbcType=VARCHAR} ,
                 user_defined10 = #{userDefined10,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                sku_type1 = #{skuType1,javaType=java.lang.Long,jdbcType=BIGINT} ,
-                sku_type2 = #{skuType2,javaType=java.lang.Long,jdbcType=BIGINT} ,
-                sku_type3 = #{skuType3,javaType=java.lang.Long,jdbcType=BIGINT} ,
-                sku_type4 = #{skuType4,javaType=java.lang.Long,jdbcType=BIGINT} ,
-                sku_type5 = #{skuType5,javaType=java.lang.Long,jdbcType=BIGINT} ,
-                sku_type6 = #{skuType6,javaType=java.lang.Long,jdbcType=BIGINT} ,
-                sku_type7 = #{skuType7,javaType=java.lang.Long,jdbcType=BIGINT} ,
-                sku_type8 = #{skuType8,javaType=java.lang.Long,jdbcType=BIGINT} ,
-                sku_type9 = #{skuType9,javaType=java.lang.Long,jdbcType=BIGINT} ,
-                sku_type10 = #{skuType10,javaType=java.lang.Long,jdbcType=BIGINT}
+                sku_type1 = #{skuType1,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                sku_type2 = #{skuType2,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                sku_type3 = #{skuType3,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                sku_type4 = #{skuType4,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                sku_type5 = #{skuType5,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                sku_type6 = #{skuType6,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                sku_type7 = #{skuType7,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                sku_type8 = #{skuType8,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                sku_type9 = #{skuType9,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                sku_type10 = #{skuType10,javaType=java.lang.String,jdbcType=VARCHAR}
             WHERE
                 id = #{id}
                 and ou_id = #{ouId}
