@@ -87,7 +87,7 @@ public class WhLocationInvVolumeWieghtManagerImpl extends BaseManagerImpl implem
             if (null != outerContainerId && !outerContainerIds.contains(outerContainerId)) {
                 // 有外部容器
                 Container container = containerDao.findByIdExt(outerContainerId, ouId);
-                Long outerContainerCate = container.getTwoLevelType();
+                String outerContainerCate = container.getTwoLevelType();
                 Container2ndCategory outerContainer2 = container2ndCategoryDao.findByIdExt(outerContainerCate, ouId);
                 if (null == outerContainer2) {
                     log.error("container2ndCategory is null error, cId is:[{}], 2endCategoryId is:[{}], logId is:[{}]", outerContainerId, outerContainerCate, logId);
@@ -115,7 +115,7 @@ public class WhLocationInvVolumeWieghtManagerImpl extends BaseManagerImpl implem
                 if (null != insideContainerId && !insideContainerIds.contains(insideContainerId)) {
                     // 无外部容器但有内部容器
                     Container container = containerDao.findByIdExt(outerContainerId, ouId);
-                    Long outerContainerCate = container.getTwoLevelType();
+                    String outerContainerCate = container.getTwoLevelType();
                     Container2ndCategory insideContainer2 = container2ndCategoryDao.findByIdExt(outerContainerCate, ouId);
                     if (null == insideContainer2) {
                         log.error("container2ndCategory is null error, cId is:[{}], 2endCategoryId is:[{}], logId is:[{}]", outerContainerId, outerContainerCate, logId);
