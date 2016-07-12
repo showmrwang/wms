@@ -41,7 +41,7 @@ public class Container2ndCategory extends BaseModel {
     /*
      * 对应一级类型ID
      */
-    private Long oneLevelType;
+    private String oneLevelType;
     /*
      * 编码生成器CODE
      */
@@ -126,11 +126,11 @@ public class Container2ndCategory extends BaseModel {
         this.categoryName = categoryName;
     }
 
-    public Long getOneLevelType() {
+    public String getOneLevelType() {
         return oneLevelType;
     }
 
-    public void setOneLevelType(Long oneLevelType) {
+    public void setOneLevelType(String oneLevelType) {
         this.oneLevelType = oneLevelType;
     }
 

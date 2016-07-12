@@ -53,11 +53,11 @@ public class Store extends BaseModel {
     /*
      * 发票类型
      */
-    private Long invoiceType;
+    private String invoiceType;
     /*
      * 结算方式
      */
-    private Long paymentTerm;
+    private String paymentTerm;
 
     /*
      * 是否强制预约 0:否 1:是
@@ -194,19 +194,20 @@ public class Store extends BaseModel {
         this.picContact = picContact;
     }
 
-    public Long getInvoiceType() {
+
+    public String getInvoiceType() {
         return invoiceType;
     }
 
-    public void setInvoiceType(Long invoiceType) {
+    public void setInvoiceType(String invoiceType) {
         this.invoiceType = invoiceType;
     }
 
-    public Long getPaymentTerm() {
+    public String getPaymentTerm() {
         return paymentTerm;
     }
 
-    public void setPaymentTerm(Long paymentTerm) {
+    public void setPaymentTerm(String paymentTerm) {
         this.paymentTerm = paymentTerm;
     }
 

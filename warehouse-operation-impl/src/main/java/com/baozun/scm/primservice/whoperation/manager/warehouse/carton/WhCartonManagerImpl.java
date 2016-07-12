@@ -219,7 +219,7 @@ public class WhCartonManagerImpl extends BaseManagerImpl implements WhCartonMana
                 c.setCode(code);
                 c.setName(c2c.getCategoryName());
                 c.setOneLevelType(c2c.getOneLevelType());// 一级容器
-                c.setTwoLevelType(c2c.getId());// 二级容器
+                c.setTwoLevelType(c2c.getId().toString());// 二级容器
                 c.setOuId(whCartonCommand.getOuId());
                 c.setCreateTime(new Date());
                 c.setLastModifyTime(new Date());

@@ -18,6 +18,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	sku_code as skuCode,
 	        	sku_name as skuName,
 	        	quantity as quantity,
+	        	qty_rcvd as qtyRcvd,
 	        	container_code as containerCode,
 	        	container_name as containerName,
 	        	mfg_date as mfgDate,
