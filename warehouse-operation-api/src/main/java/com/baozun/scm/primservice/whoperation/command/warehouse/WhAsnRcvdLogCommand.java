@@ -2,11 +2,11 @@ package com.baozun.scm.primservice.whoperation.command.warehouse;
 
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
 
-public class WhAsnRcvdLogCommand extends BaseCommand{
+public class WhAsnRcvdLogCommand extends BaseCommand {
 
 
     private static final long serialVersionUID = 4407198980293854936L;
-    
+
     /** asnid */
     private Long asnId;
     /** asnlineid */
@@ -19,6 +19,8 @@ public class WhAsnRcvdLogCommand extends BaseCommand{
     private String skuName;
     /** 数量 */
     private Long quantity;
+    /** 已收数量 */
+    private Double qtyRcvd;
     /** 容器编码 */
     private String containerCode;
     /** 容器名称 */
@@ -239,6 +241,14 @@ public class WhAsnRcvdLogCommand extends BaseCommand{
 
     public Long getOperatorId() {
         return this.operatorId;
+    }
+
+    public Double getQtyRcvd() {
+        return qtyRcvd;
+    }
+
+    public void setQtyRcvd(Double qtyRcvd) {
+        this.qtyRcvd = qtyRcvd;
     }
 
 }
