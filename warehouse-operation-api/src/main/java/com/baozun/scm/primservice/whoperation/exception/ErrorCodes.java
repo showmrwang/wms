@@ -256,6 +256,16 @@ public class ErrorCodes {
     public static final int COMMON_INV_STATUS_NOT_FOUND_ERROR = 5025;
     /** 库存属性未找到！ */
     public static final int COMMON_INV_ATTR_NOT_FOUND_ERROR = 5026;
+    /** 库存属性1[{0}]未找到！ */
+    public static final int COMMON_INV_ATTR1_NOT_FOUND_ERROR = 5027;
+    /** 库存属性2[{0}]未找到！ */
+    public static final int COMMON_INV_ATTR2_NOT_FOUND_ERROR = 5028;
+    /** 库存属性3[{0}]未找到！ */
+    public static final int COMMON_INV_ATTR3_NOT_FOUND_ERROR = 5029;
+    /** 库存属性4[{0}]未找到！ */
+    public static final int COMMON_INV_ATTR4_NOT_FOUND_ERROR = 5030;
+    /** 库存属性5[{0}]未找到！ */
+    public static final int COMMON_INV_ATTR5_NOT_FOUND_ERROR = 5031;
     // 5001-10000 common end
 
     // 10001-20000 luyimin
@@ -367,6 +377,8 @@ public class ErrorCodes {
     public static final int CONTAINER_HAS_OUTER_CONTAINER_SCAN_OUTER_FIRST = 40023;
     /** 外部容器[{0}]提示下一个容器号失败 */
     public static final int TIP_NEXT_CONTAINER_IS_ERROR = 40024;
+    /** 收货库存信息商品数量异常！ */
+    public static final int RCVD_INV_SKU_QTY_ERROR = 40025;
     // 40001-50000 lichuan
 
     // 50001-60000 hubin

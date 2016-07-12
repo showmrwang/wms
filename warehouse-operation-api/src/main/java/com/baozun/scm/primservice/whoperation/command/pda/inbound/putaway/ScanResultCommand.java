@@ -112,6 +112,8 @@ public class ScanResultCommand extends BaseCommand {
     private boolean isNeedScanSkuSn;
     /** 上架以后是否需要提示下一个库位 */
     private boolean isAfterPutawayTipLoc;
+    /** 是否需要排队 */
+    private boolean isNeedQueueUp;
 
 
     public int getPutawayPatternType() {
@@ -464,6 +466,14 @@ public class ScanResultCommand extends BaseCommand {
 
     public void setAfterPutawayTipLoc(boolean isAfterPutawayTipLoc) {
         this.isAfterPutawayTipLoc = isAfterPutawayTipLoc;
+    }
+
+    public boolean isNeedQueueUp() {
+        return isNeedQueueUp;
+    }
+
+    public void setNeedQueueUp(boolean isNeedQueueUp) {
+        this.isNeedQueueUp = isNeedQueueUp;
     }
 
 

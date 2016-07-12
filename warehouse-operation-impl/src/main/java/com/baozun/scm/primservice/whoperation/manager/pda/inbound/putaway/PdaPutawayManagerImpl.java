@@ -479,32 +479,38 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
             for (WhSkuInventoryCommand invCmd : invList) {
                 String asnCode = invCmd.getOccupationCode();
                 if (StringUtils.isEmpty(asnCode)) {
+                    pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(containerCmd, ouId, logId);
                     log.error("rcvd inv info error, containerCode is:[{}], logId is:[{}]", containerCode, logId);
                     throw new BusinessException(ErrorCodes.RCVD_INV_INFO_NOT_OCCUPY_ERROR);
                 }
                 WhAsn asn = whAsnDao.findAsnByCodeAndOuId(asnCode, ouId);
                 if (null == asn) {
+                    pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(containerCmd, ouId, logId);
                     log.error("asn is null error! containerCode is:[{}], logId is:[{}]", containerCode, logId);
                     throw new BusinessException(ErrorCodes.COMMON_ASN_IS_NULL_ERROR, new Object[] {asnCode});
                 }
                 if (PoAsnStatus.ASN_RCVD_FINISH != asn.getStatus() && PoAsnStatus.ASN_RCVD != asn.getStatus()) {
+                    pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(containerCmd, ouId, logId);
                     log.error("asn status error! containerCode is:[{}], logId is:[{}]", containerCode, logId);
                     throw new BusinessException(ErrorCodes.COMMON_ASN_STATUS_ERROR, new Object[] {asnCode});
                 }
                 Long poId = asn.getPoId();
                 WhPo po = whPoDao.findWhPoById(poId, ouId);
                 if (null == po) {
+                    pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(containerCmd, ouId, logId);
                     log.error("po is null error! containerCode is:[{}], logId is:[{}]", containerCode, logId);
                     throw new BusinessException(ErrorCodes.PO_NULL);
                 }
                 String poCode = po.getPoCode();
                 if (PoAsnStatus.PO_RCVD != po.getStatus() && PoAsnStatus.PO_RCVD != po.getStatus()) {
+                    pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(containerCmd, ouId, logId);
                     log.error("po status error! containerCode is:[{}], logId is:[{}]", containerCode, logId);
                     throw new BusinessException(ErrorCodes.COMMON_PO_STATUS_ERROR, new Object[] {poCode});
                 }
                 Long icId = invCmd.getInsideContainerId();
                 Container ic;
                 if (null == icId || null == (ic = containerDao.findByIdExt(icId, ouId))) {
+                    pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(containerCmd, ouId, logId);
                     log.error("sys guide pallet putaway inside container is not found, icId is:[{}], logId is:[{}]", icId, logId);
                     throw new BusinessException(ErrorCodes.COMMON_INSIDE_CONTAINER_IS_NOT_EXISTS);
                 } else {
@@ -513,22 +519,26 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                 }
                 // 验证容器状态是否可用
                 if (!BaseModel.LIFECYCLE_NORMAL.equals(ic.getLifecycle()) && ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED != ic.getLifecycle()) {
+                    pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(containerCmd, ouId, logId);
                     log.error("sys guide pallet putaway inside container lifecycle is not normal, icId is:[{}], logId is:[{}]", icId, logId);
                     throw new BusinessException(ErrorCodes.COMMON_INSIDE_CONTAINER_LIFECYCLE_IS_NOT_NORMAL);
                 }
                 // 获取容器状态
                 Integer icStatus = ic.getStatus();
                 if (ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY != icStatus && ContainerStatus.CONTAINER_STATUS_PUTAWAY != icStatus) {
+                    pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(containerCmd, ouId, logId);
                     log.error("sys guide pallet putaway inside container status is invalid, icId is:[{}], containerStatus is:[{}], logId is:[{}]", icId, icStatus, logId);
                     throw new BusinessException(ErrorCodes.CONTAINER_STATUS_ERROR_UNABLE_PUTAWAY, new Object[] {ic.getCode()});
                 }
                 Long insideContainerCate = ic.getTwoLevelType();
                 Container2ndCategory insideContainer2 = container2ndCategoryDao.findByIdExt(insideContainerCate, ouId);
                 if (null == insideContainer2) {
+                    pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(containerCmd, ouId, logId);
                     log.error("sys guide pallet putaway container2ndCategory is null error, icId is:[{}], 2endCategoryId is:[{}], logId is:[{}]", icId, insideContainerCate, logId);
                     throw new BusinessException(ErrorCodes.CONTAINER2NDCATEGORY_NULL_ERROR);
                 }
                 if (1 != insideContainer2.getLifecycle()) {
+                    pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(containerCmd, ouId, logId);
                     log.error("sys guide pallet putaway container2ndCategory lifecycle is not normal error, icId is:[{}], containerId is:[{}], logId is:[{}]", icId, insideContainer2.getId(), logId);
                     throw new BusinessException(ErrorCodes.COMMON_CONTAINER_LIFECYCLE_IS_NOT_NORMAL);
                 }
@@ -537,10 +547,12 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                 Double icHeight = insideContainer2.getHigh();
                 Double icWeight = insideContainer2.getWeight();
                 if (null == icLength || null == icWidth || null == icHeight) {
+                    pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(containerCmd, ouId, logId);
                     log.error("sys guide pallet putaway inside container length、width、height is null error, icId is:[{}], logId is:[{}]", icId, logId);
                     throw new BusinessException(ErrorCodes.CONTAINER_LENGTH_WIDTH_HIGHT_IS_NULL_ERROR, new Object[] {ic.getCode()});
                 }
                 if (null == icWeight) {
+                    pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(containerCmd, ouId, logId);
                     log.error("sys guide pallet putaway inside container weight is null error, icId is:[{}], logId is:[{}]", icId, logId);
                     throw new BusinessException(ErrorCodes.CONTAINER_WEIGHT_IS_NULL_ERROR, new Object[] {ic.getCode()});
                 }
@@ -552,7 +564,77 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                 } else {
                     notcaselevelContainerIds.add(icId);
                 }
-
+                String invType = invCmd.getInvType();
+                if (StringUtils.isEmpty(invType)) {
+                    pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(containerCmd, ouId, logId);
+                    log.error("inv type is null error, logId is:[{}]", logId);
+                    throw new BusinessException(ErrorCodes.COMMON_INV_TYPE_NOT_FOUND_ERROR);
+                }
+                List<SysDictionary> invTypeList = sysDictionaryManager.getListByGroupAndDicValue(Constants.INVENTORY_TYPE, invType, BaseModel.LIFECYCLE_NORMAL);
+                if (null == invTypeList || 0 == invTypeList.size()) {
+                    pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(containerCmd, ouId, logId);
+                    log.error("inv type is not defined error, invType is:[{}], logId is:[{}]", invType, logId);
+                    throw new BusinessException(ErrorCodes.COMMON_INV_TYPE_NOT_FOUND_ERROR);
+                }
+                Long invStatus = invCmd.getInvStatus();
+                if (null == invStatus) {
+                    pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(containerCmd, ouId, logId);
+                    log.error("inv status is null error, logId is:[{}]", logId);
+                    throw new BusinessException(ErrorCodes.COMMON_INV_STATUS_NOT_FOUND_ERROR);
+                }
+                InventoryStatus status = new InventoryStatus();
+                status.setId(invStatus);
+                List<InventoryStatus> invStatusList = inventoryStatusManager.findInventoryStatusList(status);
+                if (null == invStatusList || 0 == invStatusList.size()) {
+                    pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(containerCmd, ouId, logId);
+                    log.error("inv status is not defined error, invStatusId is:[{}], logId is:[{}]", invStatus, logId);
+                    throw new BusinessException(ErrorCodes.COMMON_INV_STATUS_NOT_FOUND_ERROR);
+                }
+                String invAttr1 = invCmd.getInvAttr1();
+                if (!StringUtils.isEmpty(invAttr1)) {
+                    List<SysDictionary> list = sysDictionaryManager.getListByGroupAndDicValue(Constants.INVENTORY_ATTR_1, invAttr1, BaseModel.LIFECYCLE_NORMAL);
+                    if (null == list || 0 == list.size()) {
+                        pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(containerCmd, ouId, logId);
+                        log.error("inv attr1 is not defined error, invAttr1 is:[{}], logId is:[{}]", invAttr1, logId);
+                        throw new BusinessException(ErrorCodes.COMMON_INV_ATTR1_NOT_FOUND_ERROR, new Object[] {invAttr1});
+                    }
+                }
+                String invAttr2 = invCmd.getInvAttr2();
+                if (!StringUtils.isEmpty(invAttr2)) {
+                    List<SysDictionary> list = sysDictionaryManager.getListByGroupAndDicValue(Constants.INVENTORY_ATTR_2, invAttr2, BaseModel.LIFECYCLE_NORMAL);
+                    if (null == list || 0 == list.size()) {
+                        pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(containerCmd, ouId, logId);
+                        log.error("inv attr2 is not defined error, invAttr2 is:[{}], logId is:[{}]", invAttr2, logId);
+                        throw new BusinessException(ErrorCodes.COMMON_INV_ATTR1_NOT_FOUND_ERROR, new Object[] {invAttr2});
+                    }
+                }
+                String invAttr3 = invCmd.getInvAttr3();
+                if (!StringUtils.isEmpty(invAttr3)) {
+                    List<SysDictionary> list = sysDictionaryManager.getListByGroupAndDicValue(Constants.INVENTORY_ATTR_3, invAttr3, BaseModel.LIFECYCLE_NORMAL);
+                    if (null == list || 0 == list.size()) {
+                        pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(containerCmd, ouId, logId);
+                        log.error("inv attr3 is not defined error, invAttr3 is:[{}], logId is:[{}]", invAttr3, logId);
+                        throw new BusinessException(ErrorCodes.COMMON_INV_ATTR3_NOT_FOUND_ERROR, new Object[] {invAttr3});
+                    }
+                }
+                String invAttr4 = invCmd.getInvAttr4();
+                if (!StringUtils.isEmpty(invAttr4)) {
+                    List<SysDictionary> list = sysDictionaryManager.getListByGroupAndDicValue(Constants.INVENTORY_ATTR_4, invAttr4, BaseModel.LIFECYCLE_NORMAL);
+                    if (null == list || 0 == list.size()) {
+                        pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(containerCmd, ouId, logId);
+                        log.error("inv attr4 is not defined error, invAttr4 is:[{}], logId is:[{}]", invAttr4, logId);
+                        throw new BusinessException(ErrorCodes.COMMON_INV_ATTR4_NOT_FOUND_ERROR, new Object[] {invAttr4});
+                    }
+                }
+                String invAttr5 = invCmd.getInvAttr5();
+                if (!StringUtils.isEmpty(invAttr5)) {
+                    List<SysDictionary> list = sysDictionaryManager.getListByGroupAndDicValue(Constants.INVENTORY_ATTR_5, invAttr5, BaseModel.LIFECYCLE_NORMAL);
+                    if (null == list || 0 == list.size()) {
+                        pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(containerCmd, ouId, logId);
+                        log.error("inv attr5 is not defined error, invAttr5 is:[{}], logId is:[{}]", invAttr5, logId);
+                        throw new BusinessException(ErrorCodes.COMMON_INV_ATTR5_NOT_FOUND_ERROR, new Object[] {invAttr5});
+                    }
+                }
                 Long skuId = invCmd.getSkuId();
                 Double toBefillQty = invCmd.getToBeFilledQty();
                 Double onHandQty = invCmd.getOnHandQty();
@@ -565,6 +647,11 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                         skuQty += toBefillQty.longValue();
                     }
                 } else {
+                    if (null == onHandQty || 0 <= new Double("0.0").compareTo(onHandQty)) {
+                        pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(containerCmd, ouId, logId);
+                        log.error("rcvd inv onHandQty is less than 0 error, logId is:[{}]", logId);
+                        throw new BusinessException(ErrorCodes.RCVD_INV_SKU_QTY_ERROR);
+                    }
                     if (null != onHandQty) {
                         curerntSkuQty = onHandQty;
                         skuQty += onHandQty.longValue();
@@ -574,6 +661,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                     skuIds.add(skuId);
                     WhSkuCommand skuCmd = whSkuDao.findWhSkuByIdExt(skuId, ouId);
                     if (null == skuCmd) {
+                        pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(containerCmd, ouId, logId);
                         log.error("sys guide pallet putaway sku is not exists error, skuId is:[{}], logId is:[{}]", skuId, logId);
                         throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
                     }
@@ -584,10 +672,12 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                     // String skuWeightUom = skuCmd.getWeightUom();
                     Double skuWeight = skuCmd.getWeight();
                     if (null == skuLength || null == skuWidth || null == skuHeight) {
+                        pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(containerCmd, ouId, logId);
                         log.error("sys guide pallet putaway sku length、width、height is null error, skuId is:[{}], logId is:[{}]", skuId, logId);
                         throw new BusinessException(ErrorCodes.SKU_LENGTH_WIDTH_HIGHT_IS_NULL_ERROR, new Object[] {skuCmd.getBarCode()});
                     }
                     if (null == skuWeight) {
+                        pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(containerCmd, ouId, logId);
                         log.error("sys guide pallet putaway sku weight is null error, skuId is:[{}], logId is:[{}]", skuId, logId);
                         throw new BusinessException(ErrorCodes.SKU_WEIGHT_IS_NULL_ERROR, new Object[] {skuCmd.getBarCode()});
                     }
@@ -843,10 +933,27 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
             log.error("container assist info generate error, logId is:[{}]", logId);
             throw new BusinessException(ErrorCodes.CONTAINER_ASSIST_INFO_GENERATE_ERROR);
         }
+        // 判断是否需要排队
+        boolean isRecommend = pdaPutawayCacheManager.sysGuidePutawayLocRecommendQueue(containerId, logId);
+        if (false == isRecommend) {
+            if (log.isInfoEnabled()) {
+                log.info("need queue up, current containerId is:[{}], logId is:[{}]", containerId, logId);
+            }
+            srCmd.setNeedQueueUp(true);
+            return srCmd;
+        }
         Map<String, Map<String, Double>> uomMap = new HashMap<String, Map<String, Double>>();
         uomMap.put(WhUomType.LENGTH_UOM, lenUomConversionRate);
         uomMap.put(WhUomType.WEIGHT_UOM, weightUomConversionRate);
-        List<LocationRecommendResultCommand> lrrList = whLocationRecommendManager.recommendLocationByShevleRule(ruleAffer, export, WhPutawayPatternDetailType.PALLET_PUTAWAY, caMap, invList, uomMap, logId);
+        List<LocationRecommendResultCommand> lrrList = null;
+        try {
+            lrrList = whLocationRecommendManager.recommendLocationByShevleRule(ruleAffer, export, WhPutawayPatternDetailType.PALLET_PUTAWAY, caMap, invList, uomMap, logId);
+        } catch (Exception e1) {
+            throw e1;
+        } finally {
+            // 弹出排队队列
+            pdaPutawayCacheManager.sysGuidePutawayLocRecommendPopQueue(containerId, logId);
+        }
         if (null == lrrList || 0 == lrrList.size() || StringUtils.isEmpty(lrrList.get(0).getLocationCode())) {
             log.error("location recommend fail! containerCode is:[{}], logId is:[{}]", containerCode, logId);
             throw new BusinessException(ErrorCodes.COMMON_LOCATION_RECOMMEND_ERROR);
@@ -1110,32 +1217,38 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
             for (WhSkuInventoryCommand invCmd : invList) {
                 String asnCode = invCmd.getOccupationCode();
                 if (StringUtils.isEmpty(asnCode)) {
+                    pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(insideContainerCmd, ouId, logId);
                     log.error("rcvd inv info error, containerCode is:[{}], logId is:[{}]", containerCode, logId);
                     throw new BusinessException(ErrorCodes.RCVD_INV_INFO_NOT_OCCUPY_ERROR);
                 }
                 WhAsn asn = whAsnDao.findAsnByCodeAndOuId(asnCode, ouId);
                 if (null == asn) {
+                    pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(insideContainerCmd, ouId, logId);
                     log.error("asn is null error! containerCode is:[{}], logId is:[{}]", containerCode, logId);
                     throw new BusinessException(ErrorCodes.COMMON_ASN_IS_NULL_ERROR, new Object[] {asnCode});
                 }
                 if (PoAsnStatus.ASN_RCVD_FINISH != asn.getStatus() && PoAsnStatus.ASN_RCVD != asn.getStatus()) {
+                    pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(insideContainerCmd, ouId, logId);
                     log.error("asn status error! containerCode is:[{}], logId is:[{}]", containerCode, logId);
                     throw new BusinessException(ErrorCodes.COMMON_ASN_STATUS_ERROR, new Object[] {asnCode});
                 }
                 Long poId = asn.getPoId();
                 WhPo po = whPoDao.findWhPoById(poId, ouId);
                 if (null == po) {
+                    pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(insideContainerCmd, ouId, logId);
                     log.error("po is null error! containerCode is:[{}], logId is:[{}]", containerCode, logId);
                     throw new BusinessException(ErrorCodes.PO_NULL);
                 }
                 String poCode = po.getPoCode();
                 if (PoAsnStatus.PO_RCVD != po.getStatus() && PoAsnStatus.PO_RCVD != po.getStatus()) {
+                    pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(insideContainerCmd, ouId, logId);
                     log.error("po status error! containerCode is:[{}], logId is:[{}]", containerCode, logId);
                     throw new BusinessException(ErrorCodes.COMMON_PO_STATUS_ERROR, new Object[] {poCode});
                 }
                 Long icId = invCmd.getInsideContainerId();
                 Container ic;
                 if (null == icId || null == (ic = containerDao.findByIdExt(icId, ouId))) {
+                    pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(insideContainerCmd, ouId, logId);
                     log.error("sys guide pallet putaway inside container is not found, icId is:[{}], logId is:[{}]", icId, logId);
                     throw new BusinessException(ErrorCodes.COMMON_INSIDE_CONTAINER_IS_NOT_EXISTS);
                 } else {
@@ -1144,22 +1257,26 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                 }
                 // 验证容器状态是否可用
                 if (!BaseModel.LIFECYCLE_NORMAL.equals(ic.getLifecycle()) && ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED != ic.getLifecycle()) {
+                    pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(insideContainerCmd, ouId, logId);
                     log.error("sys guide pallet putaway inside container lifecycle is not normal, icId is:[{}], logId is:[{}]", icId, logId);
                     throw new BusinessException(ErrorCodes.COMMON_INSIDE_CONTAINER_LIFECYCLE_IS_NOT_NORMAL);
                 }
                 // 获取容器状态
                 Integer icStatus = ic.getStatus();
                 if (ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY != icStatus && ContainerStatus.CONTAINER_STATUS_PUTAWAY != icStatus) {
+                    pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(insideContainerCmd, ouId, logId);
                     log.error("sys guide pallet putaway inside container status is invalid, icId is:[{}], containerStatus is:[{}], logId is:[{}]", icId, icStatus, logId);
                     throw new BusinessException(ErrorCodes.CONTAINER_STATUS_ERROR_UNABLE_PUTAWAY, new Object[] {ic.getCode()});
                 }
                 Long insideContainerCate = ic.getTwoLevelType();
                 Container2ndCategory insideContainer2 = container2ndCategoryDao.findByIdExt(insideContainerCate, ouId);
                 if (null == insideContainer2) {
+                    pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(insideContainerCmd, ouId, logId);
                     log.error("sys guide pallet putaway container2ndCategory is null error, icId is:[{}], 2endCategoryId is:[{}], logId is:[{}]", icId, insideContainerCate, logId);
                     throw new BusinessException(ErrorCodes.CONTAINER2NDCATEGORY_NULL_ERROR);
                 }
                 if (1 != insideContainer2.getLifecycle()) {
+                    pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(insideContainerCmd, ouId, logId);
                     log.error("sys guide pallet putaway container2ndCategory lifecycle is not normal error, icId is:[{}], containerId is:[{}], logId is:[{}]", icId, insideContainer2.getId(), logId);
                     throw new BusinessException(ErrorCodes.COMMON_CONTAINER_LIFECYCLE_IS_NOT_NORMAL);
                 }
@@ -1168,10 +1285,12 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                 Double icHeight = insideContainer2.getHigh();
                 Double icWeight = insideContainer2.getWeight();
                 if (null == icLength || null == icWidth || null == icHeight) {
+                    pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(insideContainerCmd, ouId, logId);
                     log.error("sys guide pallet putaway inside container length、width、height is null error, icId is:[{}], logId is:[{}]", icId, logId);
                     throw new BusinessException(ErrorCodes.CONTAINER_LENGTH_WIDTH_HIGHT_IS_NULL_ERROR, new Object[] {ic.getCode()});
                 }
                 if (null == icWeight) {
+                    pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(insideContainerCmd, ouId, logId);
                     log.error("sys guide pallet putaway inside container weight is null error, icId is:[{}], logId is:[{}]", icId, logId);
                     throw new BusinessException(ErrorCodes.CONTAINER_WEIGHT_IS_NULL_ERROR, new Object[] {ic.getCode()});
                 }
@@ -1183,7 +1302,77 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                 } else {
                     notcaselevelContainerIds.add(icId);
                 }
-
+                String invType = invCmd.getInvType();
+                if (StringUtils.isEmpty(invType)) {
+                    pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(insideContainerCmd, ouId, logId);
+                    log.error("inv type is null error, logId is:[{}]", logId);
+                    throw new BusinessException(ErrorCodes.COMMON_INV_TYPE_NOT_FOUND_ERROR);
+                }
+                List<SysDictionary> invTypeList = sysDictionaryManager.getListByGroupAndDicValue(Constants.INVENTORY_TYPE, invType, BaseModel.LIFECYCLE_NORMAL);
+                if (null == invTypeList || 0 == invTypeList.size()) {
+                    pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(insideContainerCmd, ouId, logId);
+                    log.error("inv type is not defined error, invType is:[{}], logId is:[{}]", invType, logId);
+                    throw new BusinessException(ErrorCodes.COMMON_INV_TYPE_NOT_FOUND_ERROR);
+                }
+                Long invStatus = invCmd.getInvStatus();
+                if (null == invStatus) {
+                    pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(insideContainerCmd, ouId, logId);
+                    log.error("inv status is null error, logId is:[{}]", logId);
+                    throw new BusinessException(ErrorCodes.COMMON_INV_STATUS_NOT_FOUND_ERROR);
+                }
+                InventoryStatus status = new InventoryStatus();
+                status.setId(invStatus);
+                List<InventoryStatus> invStatusList = inventoryStatusManager.findInventoryStatusList(status);
+                if (null == invStatusList || 0 == invStatusList.size()) {
+                    pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(insideContainerCmd, ouId, logId);
+                    log.error("inv status is not defined error, invStatusId is:[{}], logId is:[{}]", invStatus, logId);
+                    throw new BusinessException(ErrorCodes.COMMON_INV_STATUS_NOT_FOUND_ERROR);
+                }
+                String invAttr1 = invCmd.getInvAttr1();
+                if (!StringUtils.isEmpty(invAttr1)) {
+                    List<SysDictionary> list = sysDictionaryManager.getListByGroupAndDicValue(Constants.INVENTORY_ATTR_1, invAttr1, BaseModel.LIFECYCLE_NORMAL);
+                    if (null == list || 0 == list.size()) {
+                        pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(insideContainerCmd, ouId, logId);
+                        log.error("inv attr1 is not defined error, invAttr1 is:[{}], logId is:[{}]", invAttr1, logId);
+                        throw new BusinessException(ErrorCodes.COMMON_INV_ATTR1_NOT_FOUND_ERROR, new Object[] {invAttr1});
+                    }
+                }
+                String invAttr2 = invCmd.getInvAttr2();
+                if (!StringUtils.isEmpty(invAttr2)) {
+                    List<SysDictionary> list = sysDictionaryManager.getListByGroupAndDicValue(Constants.INVENTORY_ATTR_2, invAttr2, BaseModel.LIFECYCLE_NORMAL);
+                    if (null == list || 0 == list.size()) {
+                        pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(insideContainerCmd, ouId, logId);
+                        log.error("inv attr2 is not defined error, invAttr2 is:[{}], logId is:[{}]", invAttr2, logId);
+                        throw new BusinessException(ErrorCodes.COMMON_INV_ATTR1_NOT_FOUND_ERROR, new Object[] {invAttr2});
+                    }
+                }
+                String invAttr3 = invCmd.getInvAttr3();
+                if (!StringUtils.isEmpty(invAttr3)) {
+                    List<SysDictionary> list = sysDictionaryManager.getListByGroupAndDicValue(Constants.INVENTORY_ATTR_3, invAttr3, BaseModel.LIFECYCLE_NORMAL);
+                    if (null == list || 0 == list.size()) {
+                        pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(insideContainerCmd, ouId, logId);
+                        log.error("inv attr3 is not defined error, invAttr3 is:[{}], logId is:[{}]", invAttr3, logId);
+                        throw new BusinessException(ErrorCodes.COMMON_INV_ATTR3_NOT_FOUND_ERROR, new Object[] {invAttr3});
+                    }
+                }
+                String invAttr4 = invCmd.getInvAttr4();
+                if (!StringUtils.isEmpty(invAttr4)) {
+                    List<SysDictionary> list = sysDictionaryManager.getListByGroupAndDicValue(Constants.INVENTORY_ATTR_4, invAttr4, BaseModel.LIFECYCLE_NORMAL);
+                    if (null == list || 0 == list.size()) {
+                        pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(insideContainerCmd, ouId, logId);
+                        log.error("inv attr4 is not defined error, invAttr4 is:[{}], logId is:[{}]", invAttr4, logId);
+                        throw new BusinessException(ErrorCodes.COMMON_INV_ATTR4_NOT_FOUND_ERROR, new Object[] {invAttr4});
+                    }
+                }
+                String invAttr5 = invCmd.getInvAttr5();
+                if (!StringUtils.isEmpty(invAttr5)) {
+                    List<SysDictionary> list = sysDictionaryManager.getListByGroupAndDicValue(Constants.INVENTORY_ATTR_5, invAttr5, BaseModel.LIFECYCLE_NORMAL);
+                    if (null == list || 0 == list.size()) {
+                        pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(insideContainerCmd, ouId, logId);
+                        log.error("inv attr5 is not defined error, invAttr5 is:[{}], logId is:[{}]", invAttr5, logId);
+                        throw new BusinessException(ErrorCodes.COMMON_INV_ATTR5_NOT_FOUND_ERROR, new Object[] {invAttr5});
+                    }
+                }
                 Long skuId = invCmd.getSkuId();
                 Double toBefillQty = invCmd.getToBeFilledQty();
                 Double onHandQty = invCmd.getOnHandQty();
@@ -1196,6 +1385,11 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                         skuQty += toBefillQty.longValue();
                     }
                 } else {
+                    if (null == onHandQty || 0 <= new Double("0.0").compareTo(onHandQty)) {
+                        pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(insideContainerCmd, ouId, logId);
+                        log.error("rcvd inv onHandQty is less than 0 error, logId is:[{}]", logId);
+                        throw new BusinessException(ErrorCodes.RCVD_INV_SKU_QTY_ERROR);
+                    }
                     if (null != onHandQty) {
                         curerntSkuQty = onHandQty;
                         skuQty += onHandQty.longValue();
@@ -1205,6 +1399,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                     skuIds.add(skuId);
                     WhSkuCommand skuCmd = whSkuDao.findWhSkuByIdExt(skuId, ouId);
                     if (null == skuCmd) {
+                        pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(insideContainerCmd, ouId, logId);
                         log.error("sys guide pallet putaway sku is not exists error, skuId is:[{}], logId is:[{}]", skuId, logId);
                         throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
                     }
@@ -1215,10 +1410,12 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                     // String skuWeightUom = skuCmd.getWeightUom();
                     Double skuWeight = skuCmd.getWeight();
                     if (null == skuLength || null == skuWidth || null == skuHeight) {
+                        pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(insideContainerCmd, ouId, logId);
                         log.error("sys guide pallet putaway sku length、width、height is null error, skuId is:[{}], logId is:[{}]", skuId, logId);
                         throw new BusinessException(ErrorCodes.SKU_LENGTH_WIDTH_HIGHT_IS_NULL_ERROR, new Object[] {skuCmd.getBarCode()});
                     }
                     if (null == skuWeight) {
+                        pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(insideContainerCmd, ouId, logId);
                         log.error("sys guide pallet putaway sku weight is null error, skuId is:[{}], logId is:[{}]", skuId, logId);
                         throw new BusinessException(ErrorCodes.SKU_WEIGHT_IS_NULL_ERROR, new Object[] {skuCmd.getBarCode()});
                     }
@@ -1392,10 +1589,27 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
             log.error("container assist info generate error, logId is:[{}]", logId);
             throw new BusinessException(ErrorCodes.CONTAINER_ASSIST_INFO_GENERATE_ERROR);
         }
+        // 判断是否需要排队
+        boolean isRecommend = pdaPutawayCacheManager.sysGuidePutawayLocRecommendQueue(insideContainerId, logId);
+        if (false == isRecommend) {
+            if (log.isInfoEnabled()) {
+                log.info("need queue up, current containerId is:[{}], logId is:[{}]", containerId, logId);
+            }
+            srCmd.setNeedQueueUp(true);
+            return srCmd;
+        }
         Map<String, Map<String, Double>> uomMap = new HashMap<String, Map<String, Double>>();
         uomMap.put(WhUomType.LENGTH_UOM, lenUomConversionRate);
         uomMap.put(WhUomType.WEIGHT_UOM, weightUomConversionRate);
-        List<LocationRecommendResultCommand> lrrList = whLocationRecommendManager.recommendLocationByShevleRule(ruleAffer, export, WhPutawayPatternDetailType.CONTAINER_PUTAWAY, caMap, invList, uomMap, logId);
+        List<LocationRecommendResultCommand> lrrList = null;
+        try {
+            lrrList = whLocationRecommendManager.recommendLocationByShevleRule(ruleAffer, export, WhPutawayPatternDetailType.CONTAINER_PUTAWAY, caMap, invList, uomMap, logId);
+        } catch (Exception e1) {
+            throw e1;
+        } finally {
+            // 弹出排队队列
+            pdaPutawayCacheManager.sysGuidePutawayLocRecommendPopQueue(containerId, logId);
+        }
         if (null == lrrList || 0 == lrrList.size() || StringUtils.isEmpty(lrrList.get(0).getLocationCode())) {
             log.error("location recommend fail! containerCode is:[{}], logId is:[{}]", containerCode, logId);
             throw new BusinessException(ErrorCodes.COMMON_LOCATION_RECOMMEND_ERROR);
@@ -1736,32 +1950,38 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
             for (WhSkuInventoryCommand invCmd : invList) {
                 String asnCode = invCmd.getOccupationCode();
                 if (StringUtils.isEmpty(asnCode)) {
+                    pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(insideContainerCmd, ouId, logId);
                     log.error("rcvd inv info error, containerCode is:[{}], logId is:[{}]", containerCode, logId);
                     throw new BusinessException(ErrorCodes.RCVD_INV_INFO_NOT_OCCUPY_ERROR);
                 }
                 WhAsn asn = whAsnDao.findAsnByCodeAndOuId(asnCode, ouId);
                 if (null == asn) {
+                    pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(insideContainerCmd, ouId, logId);
                     log.error("asn is null error! containerCode is:[{}], logId is:[{}]", containerCode, logId);
                     throw new BusinessException(ErrorCodes.COMMON_ASN_IS_NULL_ERROR, new Object[] {asnCode});
                 }
                 if (PoAsnStatus.ASN_RCVD_FINISH != asn.getStatus() && PoAsnStatus.ASN_RCVD != asn.getStatus()) {
+                    pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(insideContainerCmd, ouId, logId);
                     log.error("asn status error! containerCode is:[{}], logId is:[{}]", containerCode, logId);
                     throw new BusinessException(ErrorCodes.COMMON_ASN_STATUS_ERROR, new Object[] {asnCode});
                 }
                 Long poId = asn.getPoId();
                 WhPo po = whPoDao.findWhPoById(poId, ouId);
                 if (null == po) {
+                    pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(insideContainerCmd, ouId, logId);
                     log.error("po is null error! containerCode is:[{}], logId is:[{}]", containerCode, logId);
                     throw new BusinessException(ErrorCodes.PO_NULL);
                 }
                 String poCode = po.getPoCode();
                 if (PoAsnStatus.PO_RCVD != po.getStatus() && PoAsnStatus.PO_RCVD != po.getStatus()) {
+                    pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(insideContainerCmd, ouId, logId);
                     log.error("po status error! containerCode is:[{}], logId is:[{}]", containerCode, logId);
                     throw new BusinessException(ErrorCodes.COMMON_PO_STATUS_ERROR, new Object[] {poCode});
                 }
                 Long icId = invCmd.getInsideContainerId();
                 Container ic;
                 if (null == icId || null == (ic = containerDao.findByIdExt(icId, ouId))) {
+                    pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(insideContainerCmd, ouId, logId);
                     log.error("sys guide pallet putaway inside container is not found, icId is:[{}], logId is:[{}]", icId, logId);
                     throw new BusinessException(ErrorCodes.COMMON_INSIDE_CONTAINER_IS_NOT_EXISTS);
                 } else {
@@ -1770,22 +1990,26 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                 }
                 // 验证容器状态是否可用
                 if (!BaseModel.LIFECYCLE_NORMAL.equals(ic.getLifecycle()) && ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED != ic.getLifecycle()) {
+                    pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(insideContainerCmd, ouId, logId);
                     log.error("sys guide pallet putaway inside container lifecycle is not normal, icId is:[{}], logId is:[{}]", icId, logId);
                     throw new BusinessException(ErrorCodes.COMMON_INSIDE_CONTAINER_LIFECYCLE_IS_NOT_NORMAL);
                 }
                 // 获取容器状态
                 Integer icStatus = ic.getStatus();
                 if (ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY != icStatus && ContainerStatus.CONTAINER_STATUS_PUTAWAY != icStatus) {
+                    pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(insideContainerCmd, ouId, logId);
                     log.error("sys guide pallet putaway inside container status is invalid, icId is:[{}], containerStatus is:[{}], logId is:[{}]", icId, icStatus, logId);
                     throw new BusinessException(ErrorCodes.CONTAINER_STATUS_ERROR_UNABLE_PUTAWAY, new Object[] {ic.getCode()});
                 }
                 Long insideContainerCate = ic.getTwoLevelType();
                 Container2ndCategory insideContainer2 = container2ndCategoryDao.findByIdExt(insideContainerCate, ouId);
                 if (null == insideContainer2) {
+                    pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(insideContainerCmd, ouId, logId);
                     log.error("sys guide pallet putaway container2ndCategory is null error, icId is:[{}], 2endCategoryId is:[{}], logId is:[{}]", icId, insideContainerCate, logId);
                     throw new BusinessException(ErrorCodes.CONTAINER2NDCATEGORY_NULL_ERROR);
                 }
                 if (1 != insideContainer2.getLifecycle()) {
+                    pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(insideContainerCmd, ouId, logId);
                     log.error("sys guide pallet putaway container2ndCategory lifecycle is not normal error, icId is:[{}], containerId is:[{}], logId is:[{}]", icId, insideContainer2.getId(), logId);
                     throw new BusinessException(ErrorCodes.COMMON_CONTAINER_LIFECYCLE_IS_NOT_NORMAL);
                 }
@@ -1794,10 +2018,12 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                 Double icHeight = insideContainer2.getHigh();
                 Double icWeight = insideContainer2.getWeight();
                 if (null == icLength || null == icWidth || null == icHeight) {
+                    pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(insideContainerCmd, ouId, logId);
                     log.error("sys guide pallet putaway inside container length、width、height is null error, icId is:[{}], logId is:[{}]", icId, logId);
                     throw new BusinessException(ErrorCodes.CONTAINER_LENGTH_WIDTH_HIGHT_IS_NULL_ERROR, new Object[] {ic.getCode()});
                 }
                 if (null == icWeight) {
+                    pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(insideContainerCmd, ouId, logId);
                     log.error("sys guide pallet putaway inside container weight is null error, icId is:[{}], logId is:[{}]", icId, logId);
                     throw new BusinessException(ErrorCodes.CONTAINER_WEIGHT_IS_NULL_ERROR, new Object[] {ic.getCode()});
                 }
@@ -1809,7 +2035,77 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                 } else {
                     notcaselevelContainerIds.add(icId);
                 }
-
+                String invType = invCmd.getInvType();
+                if (StringUtils.isEmpty(invType)) {
+                    pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(insideContainerCmd, ouId, logId);
+                    log.error("inv type is null error, logId is:[{}]", logId);
+                    throw new BusinessException(ErrorCodes.COMMON_INV_TYPE_NOT_FOUND_ERROR);
+                }
+                List<SysDictionary> invTypeList = sysDictionaryManager.getListByGroupAndDicValue(Constants.INVENTORY_TYPE, invType, BaseModel.LIFECYCLE_NORMAL);
+                if (null == invTypeList || 0 == invTypeList.size()) {
+                    pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(insideContainerCmd, ouId, logId);
+                    log.error("inv type is not defined error, invType is:[{}], logId is:[{}]", invType, logId);
+                    throw new BusinessException(ErrorCodes.COMMON_INV_TYPE_NOT_FOUND_ERROR);
+                }
+                Long invStatus = invCmd.getInvStatus();
+                if (null == invStatus) {
+                    pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(insideContainerCmd, ouId, logId);
+                    log.error("inv status is null error, logId is:[{}]", logId);
+                    throw new BusinessException(ErrorCodes.COMMON_INV_STATUS_NOT_FOUND_ERROR);
+                }
+                InventoryStatus status = new InventoryStatus();
+                status.setId(invStatus);
+                List<InventoryStatus> invStatusList = inventoryStatusManager.findInventoryStatusList(status);
+                if (null == invStatusList || 0 == invStatusList.size()) {
+                    pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(insideContainerCmd, ouId, logId);
+                    log.error("inv status is not defined error, invStatusId is:[{}], logId is:[{}]", invStatus, logId);
+                    throw new BusinessException(ErrorCodes.COMMON_INV_STATUS_NOT_FOUND_ERROR);
+                }
+                String invAttr1 = invCmd.getInvAttr1();
+                if (!StringUtils.isEmpty(invAttr1)) {
+                    List<SysDictionary> list = sysDictionaryManager.getListByGroupAndDicValue(Constants.INVENTORY_ATTR_1, invAttr1, BaseModel.LIFECYCLE_NORMAL);
+                    if (null == list || 0 == list.size()) {
+                        pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(insideContainerCmd, ouId, logId);
+                        log.error("inv attr1 is not defined error, invAttr1 is:[{}], logId is:[{}]", invAttr1, logId);
+                        throw new BusinessException(ErrorCodes.COMMON_INV_ATTR1_NOT_FOUND_ERROR, new Object[] {invAttr1});
+                    }
+                }
+                String invAttr2 = invCmd.getInvAttr2();
+                if (!StringUtils.isEmpty(invAttr2)) {
+                    List<SysDictionary> list = sysDictionaryManager.getListByGroupAndDicValue(Constants.INVENTORY_ATTR_2, invAttr2, BaseModel.LIFECYCLE_NORMAL);
+                    if (null == list || 0 == list.size()) {
+                        pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(insideContainerCmd, ouId, logId);
+                        log.error("inv attr2 is not defined error, invAttr2 is:[{}], logId is:[{}]", invAttr2, logId);
+                        throw new BusinessException(ErrorCodes.COMMON_INV_ATTR1_NOT_FOUND_ERROR, new Object[] {invAttr2});
+                    }
+                }
+                String invAttr3 = invCmd.getInvAttr3();
+                if (!StringUtils.isEmpty(invAttr3)) {
+                    List<SysDictionary> list = sysDictionaryManager.getListByGroupAndDicValue(Constants.INVENTORY_ATTR_3, invAttr3, BaseModel.LIFECYCLE_NORMAL);
+                    if (null == list || 0 == list.size()) {
+                        pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(insideContainerCmd, ouId, logId);
+                        log.error("inv attr3 is not defined error, invAttr3 is:[{}], logId is:[{}]", invAttr3, logId);
+                        throw new BusinessException(ErrorCodes.COMMON_INV_ATTR3_NOT_FOUND_ERROR, new Object[] {invAttr3});
+                    }
+                }
+                String invAttr4 = invCmd.getInvAttr4();
+                if (!StringUtils.isEmpty(invAttr4)) {
+                    List<SysDictionary> list = sysDictionaryManager.getListByGroupAndDicValue(Constants.INVENTORY_ATTR_4, invAttr4, BaseModel.LIFECYCLE_NORMAL);
+                    if (null == list || 0 == list.size()) {
+                        pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(insideContainerCmd, ouId, logId);
+                        log.error("inv attr4 is not defined error, invAttr4 is:[{}], logId is:[{}]", invAttr4, logId);
+                        throw new BusinessException(ErrorCodes.COMMON_INV_ATTR4_NOT_FOUND_ERROR, new Object[] {invAttr4});
+                    }
+                }
+                String invAttr5 = invCmd.getInvAttr5();
+                if (!StringUtils.isEmpty(invAttr5)) {
+                    List<SysDictionary> list = sysDictionaryManager.getListByGroupAndDicValue(Constants.INVENTORY_ATTR_5, invAttr5, BaseModel.LIFECYCLE_NORMAL);
+                    if (null == list || 0 == list.size()) {
+                        pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(insideContainerCmd, ouId, logId);
+                        log.error("inv attr5 is not defined error, invAttr5 is:[{}], logId is:[{}]", invAttr5, logId);
+                        throw new BusinessException(ErrorCodes.COMMON_INV_ATTR5_NOT_FOUND_ERROR, new Object[] {invAttr5});
+                    }
+                }
                 Long skuId = invCmd.getSkuId();
                 Double toBefillQty = invCmd.getToBeFilledQty();
                 Double onHandQty = invCmd.getOnHandQty();
@@ -1822,6 +2118,11 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                         skuQty += toBefillQty.longValue();
                     }
                 } else {
+                    if (null == onHandQty || 0 <= new Double("0.0").compareTo(onHandQty)) {
+                        pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(insideContainerCmd, ouId, logId);
+                        log.error("rcvd inv onHandQty is less than 0 error, logId is:[{}]", logId);
+                        throw new BusinessException(ErrorCodes.RCVD_INV_SKU_QTY_ERROR);
+                    }
                     if (null != onHandQty) {
                         curerntSkuQty = onHandQty;
                         skuQty += onHandQty.longValue();
@@ -1831,6 +2132,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                     skuIds.add(skuId);
                     WhSkuCommand skuCmd = whSkuDao.findWhSkuByIdExt(skuId, ouId);
                     if (null == skuCmd) {
+                        pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(insideContainerCmd, ouId, logId);
                         log.error("sys guide pallet putaway sku is not exists error, skuId is:[{}], logId is:[{}]", skuId, logId);
                         throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
                     }
@@ -1841,10 +2143,12 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                     // String skuWeightUom = skuCmd.getWeightUom();
                     Double skuWeight = skuCmd.getWeight();
                     if (null == skuLength || null == skuWidth || null == skuHeight) {
+                        pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(insideContainerCmd, ouId, logId);
                         log.error("sys guide pallet putaway sku length、width、height is null error, skuId is:[{}], logId is:[{}]", skuId, logId);
                         throw new BusinessException(ErrorCodes.SKU_LENGTH_WIDTH_HIGHT_IS_NULL_ERROR, new Object[] {skuCmd.getBarCode()});
                     }
                     if (null == skuWeight) {
+                        pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(insideContainerCmd, ouId, logId);
                         log.error("sys guide pallet putaway sku weight is null error, skuId is:[{}], logId is:[{}]", skuId, logId);
                         throw new BusinessException(ErrorCodes.SKU_WEIGHT_IS_NULL_ERROR, new Object[] {skuCmd.getBarCode()});
                     }
@@ -1974,7 +2278,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         if (null != isrCmd) {
             locationIds = isrCmd.getLocationIds();
             if (null == locationIds || 0 == locationIds.size()) {
-                pdaPutawayCacheManager.sysGuideContainerPutawayCacheInventoryAndStatistic(insideContainerCmd, ouId, logId);
+                pdaPutawayCacheManager.sysGuideSplitContainerPutawayCacheInventoryAndStatistic(insideContainerCmd, ouId, logId);
                 log.error("sys guide container putaway cache is error, logId is:[{}]", logId);
                 throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
             }
@@ -2039,10 +2343,27 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
             log.error("container assist info generate error, logId is:[{}]", logId);
             throw new BusinessException(ErrorCodes.CONTAINER_ASSIST_INFO_GENERATE_ERROR);
         }
+        // 判断是否需要排队
+        boolean isRecommend = pdaPutawayCacheManager.sysGuidePutawayLocRecommendQueue(insideContainerId, logId);
+        if (false == isRecommend) {
+            if (log.isInfoEnabled()) {
+                log.info("need queue up, current containerId is:[{}], logId is:[{}]", containerId, logId);
+            }
+            srCmd.setNeedQueueUp(true);
+            return srCmd;
+        }
         Map<String, Map<String, Double>> uomMap = new HashMap<String, Map<String, Double>>();
         uomMap.put(WhUomType.LENGTH_UOM, lenUomConversionRate);
         uomMap.put(WhUomType.WEIGHT_UOM, weightUomConversionRate);
-        List<LocationRecommendResultCommand> lrrList = whLocationRecommendManager.recommendLocationByShevleRule(ruleAffer, export, WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY, caMap, invList, uomMap, logId);
+        List<LocationRecommendResultCommand> lrrList = null;
+        try {
+            lrrList = whLocationRecommendManager.recommendLocationByShevleRule(ruleAffer, export, WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY, caMap, invList, uomMap, logId);
+        } catch (Exception e1) {
+            throw e1;
+        } finally {
+            // 弹出排队队列
+            pdaPutawayCacheManager.sysGuidePutawayLocRecommendPopQueue(containerId, logId);
+        }
         if (null == lrrList || 0 == lrrList.size() || StringUtils.isEmpty(lrrList.get(0).getLocationCode())) {
             log.error("location recommend fail! containerCode is:[{}], logId is:[{}]", containerCode, logId);
             throw new BusinessException(ErrorCodes.COMMON_LOCATION_RECOMMEND_ERROR);

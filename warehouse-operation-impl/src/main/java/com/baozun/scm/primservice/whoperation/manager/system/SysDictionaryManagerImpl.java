@@ -50,6 +50,28 @@ public class SysDictionaryManagerImpl implements SysDictionaryManager {
         log.info("SysDictionaryManager.getListByGroup end");
         return sysDictionaryDao.findListByQueryMap(params);
     }
+    
+    /**
+     * @author lichuan
+     * @param code
+     * @param lifecycle
+     * @return
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_GLOBALSOURCE)
+    public List<SysDictionary> getListByGroupAndDicValue(String code, String dicValue, Integer lifecycle) {
+        log.info("SysDictionaryManager.getListByGroupAndDicValue begin");
+        if (log.isDebugEnabled()) {
+            log.debug("Param groupValue is {}", code);
+            log.debug("Param lifecycle is {}", lifecycle);
+        }
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("groupValue", code);
+        params.put("dicValue", dicValue);
+        params.put("lifecycle", lifecycle);
+        log.info("SysDictionaryManager.getListByGroupAndDicValue end");
+        return sysDictionaryDao.findListByQueryMap(params);
+    }
 
     // check 2016-03-03 13:42
     @Override

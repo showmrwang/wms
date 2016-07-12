@@ -30,6 +30,8 @@ public final class CacheConstants {
     public static final int CACHE_ONE_MONTH = 30*24*60*60;
     public static final int CACHE_ONE_YEAR = 365*24*60*60;
     
+    /** 库位推荐队列 */
+    public static final String LOCATION_RECOMMEND_QUEUE = "LOCATION_RECOMMEND_QUEUE";
     /** 库存缓存 */
     public static final String INVENTORY = "INVENTORY";
     /** 容器库存缓存 */

@@ -1,17 +1,15 @@
 /**
  * Copyright (c) 2013 Baozun All Rights Reserved.
  *
- * This software is the confidential and proprietary information of Baozun.
- * You shall not disclose such Confidential Information and shall use it only in
- * accordance with the terms of the license agreement you entered into
- * with Baozun.
+ * This software is the confidential and proprietary information of Baozun. You shall not disclose
+ * such Confidential Information and shall use it only in accordance with the terms of the license
+ * agreement you entered into with Baozun.
  *
- * BAOZUN MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT THE SUITABILITY OF THE
- * SOFTWARE, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
- * PURPOSE, OR NON-INFRINGEMENT. BAOZUN SHALL NOT BE LIABLE FOR ANY DAMAGES
- * SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING
- * THIS SOFTWARE OR ITS DERIVATIVES.
+ * BAOZUN MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT THE SUITABILITY OF THE SOFTWARE, EITHER
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT. BAOZUN SHALL NOT BE LIABLE FOR ANY DAMAGES
+ * SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS SOFTWARE OR ITS
+ * DERIVATIVES.
  *
  */
 package com.baozun.scm.primservice.whoperation.util;
@@ -29,6 +27,7 @@ import lark.common.dao.Sort;
  */
 public class ParamsUtil {
     private static final String NULL = "null";
+    public static final String SEP = "_";
 
     /**
      * Page对象toString
@@ -181,5 +180,41 @@ public class ParamsUtil {
         if (null == map) return result;
         result = map.toString();
         return result;
+    }
+
+    /**
+     * 拼接多个参数（默认以下划线分割）
+     * 
+     * @author lichuan
+     * @param strings
+     * @return
+     */
+    public static String concatParam(String... strings) {
+        String result = "";
+        int i = 1;
+        for (String s : strings) {
+            if (1 == i) {
+                result += s;
+            } else {
+                result += (SEP + s);
+            }
+            i++;
+        }
+        return result;
+    }
+
+
+    /**
+     * 以默认下划线分割字符串
+     * 
+     * @author lichuan
+     * @param str
+     * @return
+     */
+    public static String[] splitParam(String str) {
+        if (null == str || "".equals(str)) {
+            return null;
+        }
+        return str.split(SEP);
     }
 }

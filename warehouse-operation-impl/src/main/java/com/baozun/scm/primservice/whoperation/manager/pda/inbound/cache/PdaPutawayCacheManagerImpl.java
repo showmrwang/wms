@@ -15,6 +15,7 @@
 package com.baozun.scm.primservice.whoperation.manager.pda.inbound.cache;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +47,7 @@ import com.baozun.scm.primservice.whoperation.manager.pda.inbound.putaway.SkuCat
 import com.baozun.scm.primservice.whoperation.manager.pda.inbound.statis.InventoryStatisticManager;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
+import com.baozun.scm.primservice.whoperation.util.ParamsUtil;
 
 /**
  * @author lichuan
@@ -64,6 +66,127 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
     private CacheManager cacheManager;
     @Autowired
     private ContainerDao containerDao;
+
+
+    /**
+     * @author lichuan
+     * @param containerId
+     * @param sysDate
+     * @param logId
+     * @return
+     */
+    @Override
+    public synchronized boolean sysGuidePutawayLocRecommendQueue(Long containerId, String logId) {
+        boolean ret = true;
+        if (log.isInfoEnabled()) {
+            log.info("sys guide putaway locRecommend queue validate start, contianerId is:[{}], logId is:[{}]", containerId, logId);
+        }
+        long len = cacheManager.listLen(CacheConstants.LOCATION_RECOMMEND_QUEUE);
+        if (0 < len) {
+            // 此刻已有排队
+            Set<String> ids = new HashSet<String>();
+            ids.add(containerId.toString());
+            if (isCacheAllExists2(ids, CacheConstants.LOCATION_RECOMMEND_QUEUE)) {
+                // 已在队列中
+                String fisrt = getFirstValidDataFromQueue(CacheConstants.LOCATION_RECOMMEND_QUEUE);
+                String[] values = ParamsUtil.splitParam(fisrt);
+                if (null != values) {
+                    String fContainerId = values[0];
+                    if (!containerId.toString().equals(fContainerId)) {
+                        ret = false;// 需要排队
+                    }
+                } else {
+                    ret = false;
+                }
+            } else {
+                // 未在队列中,则放入队列
+                Date date = new Date();
+                Long dt = date.getTime();
+                String qId = ParamsUtil.concatParam(containerId.toString(), dt.toString());
+                cacheManager.pushToListFooter(CacheConstants.LOCATION_RECOMMEND_QUEUE, qId);
+                String fisrt = getFirstValidDataFromQueue(CacheConstants.LOCATION_RECOMMEND_QUEUE);
+                String[] values = ParamsUtil.splitParam(fisrt);
+                if (null != values) {
+                    String fContainerId = values[0];
+                    if (!containerId.toString().equals(fContainerId)) {
+                        ret = false;// 需要排队
+                    }
+                } else {
+                    ret = false;
+                }
+            }
+        } else {
+            // 此刻尚未排队
+            Date date = new Date();
+            Long dt = date.getTime();
+            String qId = ParamsUtil.concatParam(containerId.toString(), dt.toString());
+            cacheManager.pushToListFooter(CacheConstants.LOCATION_RECOMMEND_QUEUE, qId);
+            String fisrt = cacheManager.findListItem(CacheConstants.LOCATION_RECOMMEND_QUEUE, 0);
+            String[] values = ParamsUtil.splitParam(fisrt);
+            if (null != values) {
+                String fContainerId = values[0];
+                if (!containerId.toString().equals(fContainerId)) {
+                    ret = false;// 需要排队
+                }
+            } else {
+                ret = false;
+            }
+        }
+        if (log.isInfoEnabled()) {
+            log.info("sys guide putaway locRecommend queue validate end, contianerId is:[{}], logId is:[{}]", containerId, logId);
+        }
+        return ret;
+    }
+    
+    private String getFirstValidDataFromQueue(String key) {
+        String ret = null;
+        long len = cacheManager.listLen(key);
+        for (int i = 0; i < len; i++) {
+            String fisrt = cacheManager.findListItem(key, i);
+            String[] values = ParamsUtil.splitParam(fisrt);
+            if (null != values) {
+                String fDate = values[1];
+                long fd = new Long(fDate).longValue();
+                long fed = fd + 1000 * 60;// 一分钟后认为排队超时
+                Date cDate = new Date();
+                long cd = cDate.getTime();
+                if (fed > cd) {
+                    // 排队超时，移出队列
+                    cacheManager.popListHead(key);
+                } else {
+                    ret = values[0];
+                }
+            }
+            if (null != ret) {
+                break;
+            }
+        }
+        return ret;
+    }
+    
+    /**
+     * @author lichuan
+     * @param containerId
+     * @param logId
+     */
+    @Override
+    public void sysGuidePutawayLocRecommendPopQueue(Long containerId, String logId) {
+        if (log.isInfoEnabled()) {
+            log.info("sys guide putaway locRecommend popQueue start, contianerId is:[{}], logId is:[{}]", containerId, logId);
+        }
+        String fisrt = cacheManager.findListItem(CacheConstants.LOCATION_RECOMMEND_QUEUE, 0);
+        String[] values = ParamsUtil.splitParam(fisrt);
+        if (null != values) {
+            String fContainerId = values[0];
+            if (containerId.toString().equals(fContainerId)) {
+                // 弹出队列
+                cacheManager.popListHead(CacheConstants.LOCATION_RECOMMEND_QUEUE);
+            }
+        }
+        if (log.isInfoEnabled()) {
+            log.info("sys guide putaway locRecommend popQueue end, contianerId is:[{}], logId is:[{}]", containerId, logId);
+        }
+    }
 
     /**
      * @author lichuan
@@ -92,6 +215,24 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
             log.info("sys guide pallet putaway cache inventory end, contianerId is:[{}], ouId is:[{}], logId is:[{}]", containerId, ouId, logId);
         }
         return invList;
+    }
+
+    /**
+     * @author lichuan
+     * @param containerCmd
+     * @param ouId
+     * @param logId
+     */
+    @Override
+    public void sysGuidePutawayRemoveInventory(ContainerCommand containerCmd, Long ouId, String logId) {
+        Long containerId = containerCmd.getId();
+        if (log.isInfoEnabled()) {
+            log.info("sys guide pallet putaway remove inventory start, contianerId is:[{}], ouId is:[{}], logId is:[{}]", containerId, ouId, logId);
+        }
+        cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY, containerId.toString());
+        if (log.isInfoEnabled()) {
+            log.info("sys guide pallet putaway remove inventory end, contianerId is:[{}], ouId is:[{}], logId is:[{}]", containerId, ouId, logId);
+        }
     }
 
     /**
@@ -258,13 +399,14 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                 }
             }
         } else {
-//            for (Long id : insideContainerIds) {
-//                if (null != id) {
-//                    tipContainerId = id;// 随机取出一个放入队列
-//                    break;
-//                }
-//            }
-//            cacheManager.pushToListHead(CacheConstants.SCAN_CONTAINER_QUEUE + containerId.toString(), tipContainerId.toString());
+            // for (Long id : insideContainerIds) {
+            // if (null != id) {
+            // tipContainerId = id;// 随机取出一个放入队列
+            // break;
+            // }
+            // }
+            // cacheManager.pushToListHead(CacheConstants.SCAN_CONTAINER_QUEUE +
+            // containerId.toString(), tipContainerId.toString());
             log.error("tip container is exception, logId is:[{}]", logId);
             throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
         }

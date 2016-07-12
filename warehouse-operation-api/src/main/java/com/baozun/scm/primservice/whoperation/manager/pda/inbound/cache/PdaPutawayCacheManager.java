@@ -31,6 +31,24 @@ import com.baozun.scm.primservice.whoperation.manager.BaseManager;
  *
  */
 public interface PdaPutawayCacheManager extends BaseManager {
+    
+    /**
+     * pda系统指导上架库位推荐队列
+     * @author lichuan
+     * @param containerId
+     * @param sysDate
+     * @param logId
+     * @return
+     */
+    boolean sysGuidePutawayLocRecommendQueue(Long containerId, String logId);
+    
+    /**
+     * pda系统指导上架移除队列中第一个值
+     * @author lichuan
+     * @param containerId
+     * @param logId
+     */
+    void sysGuidePutawayLocRecommendPopQueue(Long containerId, String logId);
 
     /**
      * pda整托上架缓存库存信息
@@ -41,6 +59,16 @@ public interface PdaPutawayCacheManager extends BaseManager {
      * @return
      */
     List<WhSkuInventoryCommand> sysGuidePalletPutawayCacheInventory(ContainerCommand containerCmd, Long ouId, String logId);
+
+    /**
+     * pda整托上架删除库存缓存信息
+     * 
+     * @author lichuan
+     * @param containerCmd
+     * @param ouId
+     * @param logId
+     */
+    void sysGuidePutawayRemoveInventory(ContainerCommand containerCmd, Long ouId, String logId);
 
     /**
      * pda整托上架缓存库存统计信息
@@ -74,10 +102,11 @@ public interface PdaPutawayCacheManager extends BaseManager {
      * @return
      */
     List<WhSkuInventoryCommand> sysGuidePalletPutawayCacheInventoryAndStatistic(ContainerCommand containerCmd, Long ouId, String logId);
-    
-    
+
+
     /**
      * pda整托上架提示一个容器
+     * 
      * @author lichuan
      * @param containerCmd
      * @param insideContainerIds
