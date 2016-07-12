@@ -139,7 +139,7 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
             // 2.筛选ASN明细数据集合
             for (RcvdCacheCommand cacheInv : commandList) {
                 String occupationCode = cacheInv.getOccupationCode();
-                Long lineId=cacheInv.getLineId();
+                Long lineId = cacheInv.getLineId();
                 if (lineMap.containsKey(lineId)) {
                     lineMap.put(cacheInv.getLineId(), lineMap.get(lineId) + cacheInv.getSkuBatchCount());
                 } else {
@@ -172,9 +172,9 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
                 }
                 skuInvMap.put(uuid, skuInv);
                 // 插入日志表
-                String asnRcvdLogMaoKey=lineId+uuid;
+                String asnRcvdLogMaoKey = lineId + uuid;
                 WhAsnRcvdLog asnRcvdLog = new WhAsnRcvdLog();
-                if(rcvdLogMap.containsKey(asnRcvdLogMaoKey)){
+                if (rcvdLogMap.containsKey(asnRcvdLogMaoKey)) {
                     asnRcvdLog = rcvdLogMap.get(asnRcvdLogMaoKey);
                     asnRcvdLog.setQuantity(asnRcvdLog.getQuantity() + cacheInv.getSkuBatchCount().longValue());
                 } else {
@@ -267,8 +267,8 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
             }
             // 更新ASN明细
             Iterator<Entry<Long, Double>> it = lineMap.entrySet().iterator();
-            Double asnCount=Constants.DEFAULT_DOUBLE;
-            Map<Long,Double> polineMap=new HashMap<Long,Double>();
+            Double asnCount = Constants.DEFAULT_DOUBLE;
+            Map<Long, Double> polineMap = new HashMap<Long, Double>();
             while (it.hasNext()) {
                 Entry<Long, Double> entry = it.next();
                 WhAsnLine asnLine = this.whAsnLineDao.findWhAsnLineById(entry.getKey(), ouId);
@@ -291,43 +291,43 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
                 } else {
                     polineMap.put(asnLine.getPoLineId(), entry.getValue());
                 }
-                asnCount+=entry.getKey();
+                asnCount += entry.getKey();
             }
             // 1.更新ASN明细
             // 2.筛选PO明细数据集合
-            asn.setQtyRcvd(asn.getQtyRcvd()+asnCount);
-            WhAsnLineCommand searchAsnLineCommand=new WhAsnLineCommand();
+            asn.setQtyRcvd(asn.getQtyRcvd() + asnCount);
+            WhAsnLineCommand searchAsnLineCommand = new WhAsnLineCommand();
             searchAsnLineCommand.setAsnId(asn.getId());
             searchAsnLineCommand.setOuId(ouId);
             searchAsnLineCommand.setStatus(PoAsnStatus.ASNLINE_RCVD);
-            WhAsnLine searchAsnLine=new WhAsnLine();
+            WhAsnLine searchAsnLine = new WhAsnLine();
             BeanUtils.copyProperties(searchAsnLineCommand, searchAsnLine);
-            long rcvdlineCount=this.whAsnLineDao.findListCountByParam(searchAsnLine);
-            if(rcvdlineCount>0){
+            long rcvdlineCount = this.whAsnLineDao.findListCountByParam(searchAsnLine);
+            if (rcvdlineCount > 0) {
                 asn.setStatus(PoAsnStatus.ASN_RCVD_FINISH);
-            }else{
+            } else {
                 asn.setStatus(PoAsnStatus.ASN_RCVD);
             }
             asn.setModifiedId(userId);
-            int updateAsnCount=this.whAsnDao.saveOrUpdateByVersion(asn);
-            if(updateAsnCount<=0){
+            int updateAsnCount = this.whAsnDao.saveOrUpdateByVersion(asn);
+            if (updateAsnCount <= 0) {
                 throw new BusinessException("2");
             }
             Iterator<Entry<Long, Double>> poIt = polineMap.entrySet().iterator();
             Long poId = null;
             // 更新PO明细数据集合
-            while(poIt.hasNext()){
+            while (poIt.hasNext()) {
                 Entry<Long, Double> entry = poIt.next();
-                WhPoLine poline=this.whPoLineDao.findWhPoLineByIdWhPoLine(entry.getKey(), ouId);
-                poline.setQtyRcvd(poline.getQtyRcvd()+entry.getValue());
-                if(poline.getQtyRcvd()>poline.getQtyPlanned()){
+                WhPoLine poline = this.whPoLineDao.findWhPoLineByIdWhPoLine(entry.getKey(), ouId);
+                poline.setQtyRcvd(poline.getQtyRcvd() + entry.getValue());
+                if (poline.getQtyRcvd() > poline.getQtyPlanned()) {
                     poline.setStatus(PoAsnStatus.POLINE_RCVD_FINISH);
-                }else{
+                } else {
                     poline.setStatus(PoAsnStatus.POLINE_RCVD);
                 }
                 poline.setModifiedId(userId);
-                int updatePoCount=this.whPoLineDao.saveOrUpdateByVersion(poline);
-                if(updatePoCount<=0){
+                int updatePoCount = this.whPoLineDao.saveOrUpdateByVersion(poline);
+                if (updatePoCount <= 0) {
                     throw new BusinessException("2");
                 }
                 if (null == poId) {
@@ -424,8 +424,8 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
             for (WhAsnRcvdSnLog snlog : saveSnLogList) {
                 this.whAsnRcvdSnLogDao.insert(snlog);
             }
-            //更新装箱信息表
-            for(WhCarton whCarton:saveWhCartonList){
+            // 更新装箱信息表
+            for (WhCarton whCarton : saveWhCartonList) {
                 this.whCartonDao.insert(whCarton);
             }
             // 保存库存记录
@@ -510,11 +510,13 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
         if (null == dicList || dicList.size() == 0) {
             throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
         }
-        saveContainer.setOneLevelType(dicList.get(0).getId());
+
+
+        saveContainer.setTwoLevelType(dicList.get(0).getId().toString());
         // 二级容器类型 设置容器的二级容器类型；逻辑：如果不存在系统预定义的对应的二级容器类型，那么生成宇通预定义的二级容器对象
         Container2ndCategory secendContainer = new Container2ndCategory();
         secendContainer.setCategoryCode(container.getTwoLevelTypeValue());
-        secendContainer.setOneLevelType(dicList.get(0).getId());
+        secendContainer.setOneLevelType(dicList.get(0).getId().toString());
         secendContainer.setOuId(ouId);
         List<Container2ndCategory> secondContainerList = this.container2ndCategoryDao.findListByParam(secendContainer);// 查询是否有系统预定义的容器类型
         if (secondContainerList != null && secondContainerList.size() > 0) {
@@ -544,7 +546,7 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
         }
 
         // 插入容器
-        saveContainer.setTwoLevelType(secendContainer.getId());
+        saveContainer.setTwoLevelType(secendContainer.getId().toString());
         saveContainer.setName(secendContainer.getCategoryName());
         long insertCount = this.containerDao.insert(saveContainer);
         if (insertCount == 0) {
