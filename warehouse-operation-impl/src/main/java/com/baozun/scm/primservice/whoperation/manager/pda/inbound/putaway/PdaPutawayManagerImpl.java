@@ -1610,7 +1610,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
             throw e1;
         } finally {
             // 弹出排队队列
-            pdaPutawayCacheManager.sysGuidePutawayLocRecommendPopQueue(containerId, logId);
+            pdaPutawayCacheManager.sysGuidePutawayLocRecommendPopQueue(insideContainerId, logId);
         }
         if (null == lrrList || 0 == lrrList.size() || StringUtils.isEmpty(lrrList.get(0).getLocationCode())) {
             log.error("location recommend fail! containerCode is:[{}], logId is:[{}]", containerCode, logId);
@@ -2364,7 +2364,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
             throw e1;
         } finally {
             // 弹出排队队列
-            pdaPutawayCacheManager.sysGuidePutawayLocRecommendPopQueue(containerId, logId);
+            pdaPutawayCacheManager.sysGuidePutawayLocRecommendPopQueue(insideContainerId, logId);
         }
         if (null == lrrList || 0 == lrrList.size() || StringUtils.isEmpty(lrrList.get(0).getLocationCode())) {
             log.error("location recommend fail! containerCode is:[{}], logId is:[{}]", containerCode, logId);
