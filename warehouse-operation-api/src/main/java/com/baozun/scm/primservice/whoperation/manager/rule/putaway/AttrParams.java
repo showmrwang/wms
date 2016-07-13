@@ -68,6 +68,8 @@ public class AttrParams implements Serializable {
     Long skuCategory = null;
     // 唯一sku数
     Long skuAttrCategory = null;
+    // 容器Id
+    Long containerId = null;
 
     /**
      * @return the lrt
@@ -352,6 +354,15 @@ public class AttrParams implements Serializable {
     public void setSkuAttrCategory(Long skuAttrCategory) {
         this.skuAttrCategory = skuAttrCategory;
     }
+
+    public Long getContainerId() {
+        return containerId;
+    }
+
+    public void setContainerId(Long containerId) {
+        this.containerId = containerId;
+    }
+    
 
 
 }

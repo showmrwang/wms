@@ -202,6 +202,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                         avaliableLocs = locationDao.findAllEmptyLocsByAreaId(area.getId(), ouId, cSql);
                     } else if (WhLocationRecommendType.STATIC_LOCATION.equals(locationRecommendRule)) {
                         attrParams.setLrt(WhLocationRecommendType.STATIC_LOCATION);
+                        attrParams.setContainerId(containerCmd.getId());
                         PutawayCondition putawayCondition = putawayConditionFactory.getPutawayCondition(WhPutawayPatternType.SYS_GUIDE_PUTAWAY, WhPutawayPatternDetailType.PALLET_PUTAWAY, logId);
                         if (null != putawayCondition) {
                             cSql = putawayCondition.getCondition(attrParams);
@@ -455,6 +456,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                     }
                 } else if (WhLocationRecommendType.STATIC_LOCATION.equals(locationRecommendRule)) {
                     attrParams.setLrt(WhLocationRecommendType.STATIC_LOCATION);
+                    attrParams.setContainerId(outerContainerId);
                     PutawayCondition putawayCondition = putawayConditionFactory.getPutawayCondition(WhPutawayPatternType.SYS_GUIDE_PUTAWAY, WhPutawayPatternDetailType.PALLET_PUTAWAY, logId);
                     if (null != putawayCondition) {
                         cSql = putawayCondition.getCondition(attrParams);
@@ -843,6 +845,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                     }
                 } else if (WhLocationRecommendType.STATIC_LOCATION.equals(locationRecommendRule)) {
                     attrParams.setLrt(WhLocationRecommendType.STATIC_LOCATION);
+                    attrParams.setContainerId(containerId);
                     PutawayCondition putawayCondition = putawayConditionFactory.getPutawayCondition(WhPutawayPatternType.SYS_GUIDE_PUTAWAY, WhPutawayPatternDetailType.CONTAINER_PUTAWAY, logId);
                     if (null != putawayCondition) {
                         cSql = putawayCondition.getCondition(attrParams);
@@ -1219,6 +1222,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                 }
                             } else if (WhLocationRecommendType.STATIC_LOCATION.equals(locationRecommendRule)) {
                                 attrParams.setLrt(WhLocationRecommendType.STATIC_LOCATION);
+                                attrParams.setContainerId(containerId);
                                 PutawayCondition putawayCondition = putawayConditionFactory.getPutawayCondition(WhPutawayPatternType.SYS_GUIDE_PUTAWAY, WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY, logId);
                                 if (null != putawayCondition) {
                                     cSql = putawayCondition.getCondition(attrParams);
@@ -1567,6 +1571,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                     }
                                 } else if (WhLocationRecommendType.STATIC_LOCATION.equals(locationRecommendRule)) {
                                     attrParams.setLrt(WhLocationRecommendType.STATIC_LOCATION);
+                                    attrParams.setContainerId(containerId);
                                     PutawayCondition putawayCondition = putawayConditionFactory.getPutawayCondition(WhPutawayPatternType.SYS_GUIDE_PUTAWAY, WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY, logId);
                                     if (null != putawayCondition) {
                                         cSql = putawayCondition.getCondition(attrParams);

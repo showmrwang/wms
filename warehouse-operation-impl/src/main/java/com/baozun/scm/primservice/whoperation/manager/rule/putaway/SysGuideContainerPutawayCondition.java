@@ -46,6 +46,8 @@ public class SysGuideContainerPutawayCondition extends PutawayBaseCondition impl
                 sql.append(" ").append(" and loc.max_chaos_sku >= ").append(attrParams.getSkuAttrCategory());
                 return sql.toString();
             case WhLocationRecommendType.STATIC_LOCATION:
+                sql.append(" ").append("c.id = inv.inside_container_id");
+                sql.append(" ").append("and c.id = ").append(attrParams.getContainerId());
                 return sql.toString();
             case WhLocationRecommendType.MERGE_LOCATION_SAME_INV_ATTRS:
                 if (null != attrParams.getIsMixStacking()) {

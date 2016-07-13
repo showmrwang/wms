@@ -70,7 +70,7 @@ public class PdaPutawayManagerTest extends AbstractJUnit4SpringContextTests {
        
 //       Long id = pkManager.generatePk(Constants.WMS, "com.baozun.scm.primservice.whinfo.model.warehouse.WhSkuLocation");
 //       System.out.println(id);
-       List<Long> ids = pkManager.generatePkList(Constants.WMS, "com.baozun.scm.primservice.whinfo.model.system.SysDictionary", 2).toArray();
+       List<Long> ids = pkManager.generatePkList(Constants.WMS, "com.baozun.scm.primservice.whinfo.model.warehouse.WhSkuLocation", 2).toArray();
        for(Long id : ids){
            System.out.println(id);
        }
