@@ -137,7 +137,7 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
         }
         return ret;
     }
-    
+
     private String getFirstValidDataFromQueue(String key) {
         String ret = null;
         long len = cacheManager.listLen(key);
@@ -163,7 +163,7 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
         }
         return ret;
     }
-    
+
     /**
      * @author lichuan
      * @param containerId

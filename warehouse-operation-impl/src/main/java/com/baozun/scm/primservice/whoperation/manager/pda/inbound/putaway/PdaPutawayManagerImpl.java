@@ -951,10 +951,9 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         try {
             lrrList = whLocationRecommendManager.recommendLocationByShevleRule(ruleAffer, export, WhPutawayPatternDetailType.PALLET_PUTAWAY, caMap, invList, uomMap, logId);
         } catch (Exception e1) {
-            throw e1;
-        } finally {
             // 弹出排队队列
             pdaPutawayCacheManager.sysGuidePutawayLocRecommendPopQueue(containerId, logId);
+            throw e1;
         }
         if (null == lrrList || 0 == lrrList.size() || StringUtils.isEmpty(lrrList.get(0).getLocationCode())) {
             log.error("location recommend fail! containerCode is:[{}], logId is:[{}]", containerCode, logId);
@@ -1041,6 +1040,8 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
             }
 
         }
+        // 弹出排队队列
+        pdaPutawayCacheManager.sysGuidePutawayLocRecommendPopQueue(containerId, logId);
         // 12.提示库位
         srCmd.setRecommendLocation(true);// 已推荐库位
         srCmd.setTipLocationCode(lrrLocCode);// 提示库位编码
@@ -1607,10 +1608,9 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         try {
             lrrList = whLocationRecommendManager.recommendLocationByShevleRule(ruleAffer, export, WhPutawayPatternDetailType.CONTAINER_PUTAWAY, caMap, invList, uomMap, logId);
         } catch (Exception e1) {
-            throw e1;
-        } finally {
             // 弹出排队队列
             pdaPutawayCacheManager.sysGuidePutawayLocRecommendPopQueue(insideContainerId, logId);
+            throw e1;
         }
         if (null == lrrList || 0 == lrrList.size() || StringUtils.isEmpty(lrrList.get(0).getLocationCode())) {
             log.error("location recommend fail! containerCode is:[{}], logId is:[{}]", containerCode, logId);
@@ -1773,6 +1773,8 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
             }
 
         }
+        // 弹出排队队列
+        pdaPutawayCacheManager.sysGuidePutawayLocRecommendPopQueue(insideContainerId, logId);
         // 10.提示库位
         srCmd.setRecommendLocation(true);// 已推荐库位
         srCmd.setTipLocationCode(lrrLocCode);// 提示库位编码
@@ -2361,10 +2363,9 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         try {
             lrrList = whLocationRecommendManager.recommendLocationByShevleRule(ruleAffer, export, WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY, caMap, invList, uomMap, logId);
         } catch (Exception e1) {
-            throw e1;
-        } finally {
             // 弹出排队队列
             pdaPutawayCacheManager.sysGuidePutawayLocRecommendPopQueue(insideContainerId, logId);
+            throw e1;
         }
         if (null == lrrList || 0 == lrrList.size() || StringUtils.isEmpty(lrrList.get(0).getLocationCode())) {
             log.error("location recommend fail! containerCode is:[{}], logId is:[{}]", containerCode, logId);
@@ -2629,6 +2630,8 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
 
             }
         }
+        // 弹出排队队列
+        pdaPutawayCacheManager.sysGuidePutawayLocRecommendPopQueue(insideContainerId, logId);
         // 11.提示库位
         srCmd.setRecommendLocation(true);// 已推荐库位
         Long locId = pdaPutawayCacheManager.sysGuideSplitContainerPutawayTipLocation0(insideContainerCmd, locationIds, logId);
