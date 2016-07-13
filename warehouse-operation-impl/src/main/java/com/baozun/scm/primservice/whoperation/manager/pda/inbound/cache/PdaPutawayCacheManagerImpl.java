@@ -82,18 +82,21 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
             log.info("sys guide putaway locRecommend queue validate start, contianerId is:[{}], logId is:[{}]", containerId, logId);
         }
         long len = cacheManager.listLen(CacheConstants.LOCATION_RECOMMEND_QUEUE);
+        String qcId = "";// 当前队列头
         if (0 < len) {
             // 此刻已有排队
             Set<String> ids = new HashSet<String>();
             ids.add(containerId.toString());
             if (isCacheAllExists2(ids, CacheConstants.LOCATION_RECOMMEND_QUEUE)) {
                 // 已在队列中
-                String fisrt = getFirstValidDataFromQueue(CacheConstants.LOCATION_RECOMMEND_QUEUE);
-                String[] values = ParamsUtil.splitParam(fisrt);
+                String first = getFirstValidDataFromQueue(CacheConstants.LOCATION_RECOMMEND_QUEUE);
+                String[] values = ParamsUtil.splitParam(first);
                 if (null != values) {
                     String fContainerId = values[0];
                     if (!containerId.toString().equals(fContainerId)) {
                         ret = false;// 需要排队
+                    } else {
+                        qcId = first;
                     }
                 } else {
                     ret = false;
@@ -104,12 +107,14 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                 Long dt = date.getTime();
                 String qId = ParamsUtil.concatParam(containerId.toString(), dt.toString());
                 cacheManager.pushToListFooter(CacheConstants.LOCATION_RECOMMEND_QUEUE, qId);
-                String fisrt = getFirstValidDataFromQueue(CacheConstants.LOCATION_RECOMMEND_QUEUE);
-                String[] values = ParamsUtil.splitParam(fisrt);
+                String first = getFirstValidDataFromQueue(CacheConstants.LOCATION_RECOMMEND_QUEUE);
+                String[] values = ParamsUtil.splitParam(first);
                 if (null != values) {
                     String fContainerId = values[0];
                     if (!containerId.toString().equals(fContainerId)) {
                         ret = false;// 需要排队
+                    } else {
+                        qcId = first;
                     }
                 } else {
                     ret = false;
@@ -121,12 +126,31 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
             Long dt = date.getTime();
             String qId = ParamsUtil.concatParam(containerId.toString(), dt.toString());
             cacheManager.pushToListFooter(CacheConstants.LOCATION_RECOMMEND_QUEUE, qId);
-            String fisrt = cacheManager.findListItem(CacheConstants.LOCATION_RECOMMEND_QUEUE, 0);
-            String[] values = ParamsUtil.splitParam(fisrt);
+            String first = cacheManager.findListItem(CacheConstants.LOCATION_RECOMMEND_QUEUE, 0);
+            String[] values = ParamsUtil.splitParam(first);
             if (null != values) {
                 String fContainerId = values[0];
                 if (!containerId.toString().equals(fContainerId)) {
                     ret = false;// 需要排队
+                } else {
+                    qcId = first;
+                }
+            } else {
+                ret = false;
+            }
+        }
+        if (true == ret && !StringUtils.isEmpty(qcId)) {
+            // 判断剩余时间，少于10秒需要重新排队
+            String[] values = ParamsUtil.splitParam(qcId);
+            if (null != values) {
+                String qd = values[1];
+                Date cDate = new Date();
+                long cd = cDate.getTime();
+                long rd = cd - new Long(qd).longValue();// 剩余毫秒数
+                if (10 > rd / 1000) {
+                    // 剩余时间少于10秒，认为时间不足够用来执行逻辑，需要重新排队
+                    cacheManager.popListHead(CacheConstants.LOCATION_RECOMMEND_QUEUE);
+                    ret = false;
                 }
             } else {
                 ret = false;
