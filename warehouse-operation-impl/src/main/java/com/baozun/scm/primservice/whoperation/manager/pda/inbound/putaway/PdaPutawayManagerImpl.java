@@ -504,7 +504,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                     throw new BusinessException(ErrorCodes.PO_NULL);
                 }
                 String poCode = po.getPoCode();
-                if (PoAsnStatus.PO_RCVD != po.getStatus() && PoAsnStatus.PO_RCVD != po.getStatus()) {
+                if (PoAsnStatus.PO_RCVD != po.getStatus() && PoAsnStatus.PO_RCVD_FINISH != po.getStatus()) {
                     pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(containerCmd, ouId, logId);
                     log.error("po status error! containerCode is:[{}], logId is:[{}]", containerCode, logId);
                     throw new BusinessException(ErrorCodes.COMMON_PO_STATUS_ERROR, new Object[] {poCode});
@@ -1243,7 +1243,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                     throw new BusinessException(ErrorCodes.PO_NULL);
                 }
                 String poCode = po.getPoCode();
-                if (PoAsnStatus.PO_RCVD != po.getStatus() && PoAsnStatus.PO_RCVD != po.getStatus()) {
+                if (PoAsnStatus.PO_RCVD != po.getStatus() && PoAsnStatus.PO_RCVD_FINISH != po.getStatus()) {
                     pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(insideContainerCmd, ouId, logId);
                     log.error("po status error! containerCode is:[{}], logId is:[{}]", containerCode, logId);
                     throw new BusinessException(ErrorCodes.COMMON_PO_STATUS_ERROR, new Object[] {poCode});
@@ -1977,7 +1977,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                     throw new BusinessException(ErrorCodes.PO_NULL);
                 }
                 String poCode = po.getPoCode();
-                if (PoAsnStatus.PO_RCVD != po.getStatus() && PoAsnStatus.PO_RCVD != po.getStatus()) {
+                if (PoAsnStatus.PO_RCVD != po.getStatus() && PoAsnStatus.PO_RCVD_FINISH != po.getStatus()) {
                     pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(insideContainerCmd, ouId, logId);
                     log.error("po status error! containerCode is:[{}], logId is:[{}]", containerCode, logId);
                     throw new BusinessException(ErrorCodes.COMMON_PO_STATUS_ERROR, new Object[] {poCode});

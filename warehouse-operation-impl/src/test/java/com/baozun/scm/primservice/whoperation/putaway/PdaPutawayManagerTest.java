@@ -17,6 +17,7 @@
 package com.baozun.scm.primservice.whoperation.putaway;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.junit.Test;
@@ -163,8 +164,13 @@ public class PdaPutawayManagerTest extends AbstractJUnit4SpringContextTests {
     @Test
     public void removeCache(){
        //cacheManagr.removeMapValue(CacheConstants.CONTAINER_INVENTORY, "15100152");
-        cacheManagr.removeMapValue(CacheConstants.CONTAINER_INVENTORY_STATISTIC, "15100156");
-        
+       // cacheManagr.removeMapValue(CacheConstants.CONTAINER_INVENTORY_STATISTIC, "15100156");
+        cacheManagr.popListHead(CacheConstants.LOCATION_RECOMMEND_QUEUE);
+        cacheManagr.popListHead(CacheConstants.LOCATION_RECOMMEND_QUEUE);
+        cacheManagr.popListHead(CacheConstants.LOCATION_RECOMMEND_QUEUE);
+        cacheManagr.popListHead(CacheConstants.LOCATION_RECOMMEND_QUEUE);
+        String id = "1111" + "_" + new Date().getTime();
+        cacheManagr.pushToListHead(CacheConstants.LOCATION_RECOMMEND_QUEUE, id);
     }
     
     public static void main(String[] args) {

@@ -130,7 +130,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    ]]>
 	    </delete>	
 	    
-	 <select id="findContainerSkuCountNotInSkuLocation"  resultType="long">
+	 <select id="findContainerSkuCountNotInSkuLocation"  resultType="int">
       select count(1)
 	  	from 
 	   (select distinct inv.sku_id  as sku_id

@@ -203,7 +203,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	  		and ou_id = #{ouId}
 	    </delete>  
 	    
-	    <select id="findByIdExt" parameterType="java.lang.Long" resultMap="Container2ndCategoryResult" flushCache="false">
+	    <select id="findByIdExt" resultMap="Container2ndCategoryResult" flushCache="false">
 			select <include refid="container2ndCategoryColumns" />
 		    <![CDATA[
 			    from t_wh_container_2nd_category 

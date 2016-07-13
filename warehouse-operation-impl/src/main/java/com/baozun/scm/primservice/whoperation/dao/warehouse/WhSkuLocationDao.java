@@ -86,5 +86,5 @@ public interface WhSkuLocationDao extends BaseDao<WhSkuLocation,Long>{
      * @param containerList
      * @return
      */
-    int findContainerSkuCountNotInSkuLocation(@Param("ouId") Long ouId, @Param("LocId") Long locId, @Param("containerList") List<String> containerList);
+    int findContainerSkuCountNotInSkuLocation(@Param("ouId") Long ouId, @Param("locId") Long locId, @Param("containerList") List<String> containerList);
 }

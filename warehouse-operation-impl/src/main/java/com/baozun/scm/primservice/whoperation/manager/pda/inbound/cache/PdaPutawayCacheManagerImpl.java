@@ -87,7 +87,7 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
             // 此刻已有排队
             Set<String> ids = new HashSet<String>();
             ids.add(containerId.toString());
-            if (isCacheAllExists2(ids, CacheConstants.LOCATION_RECOMMEND_QUEUE)) {
+            if (isCacheAllExistsContain(ids, CacheConstants.LOCATION_RECOMMEND_QUEUE)) {
                 // 已在队列中
                 String first = getFirstValidDataFromQueue(CacheConstants.LOCATION_RECOMMEND_QUEUE);
                 String[] values = ParamsUtil.splitParam(first);
@@ -171,14 +171,14 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
             if (null != values) {
                 String fDate = values[1];
                 long fd = new Long(fDate).longValue();
-                long fed = fd + 1000 * 60;// 一分钟后认为排队超时
+                long fed = fd + 1000 * 60 * 1;// 一分钟后认为排队超时
                 Date cDate = new Date();
                 long cd = cDate.getTime();
-                if (fed > cd) {
+                if (fed < cd) {
                     // 排队超时，移出队列
                     cacheManager.popListHead(key);
                 } else {
-                    ret = values[0];
+                    ret = fisrt;
                 }
             }
             if (null != ret) {
@@ -1363,6 +1363,31 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                     String value = cacheManager.findListItem(cacheKey, i);
                     if (null == value) value = "-1";
                     if (value.equals(cId)) {
+                        isExists = true;
+                        break;
+                    }
+                }
+                if (false == isExists) {
+                    allExists = false;
+                }
+            }
+        } else {
+            allExists = false;
+        }
+        return allExists;
+    }
+    
+    private boolean isCacheAllExistsContain(Set<String> ids, String cacheKey) {
+        boolean allExists = true;
+        long len = cacheManager.listLen(cacheKey);
+        if (0 < len) {
+            for (String id : ids) {
+                String cId = id;
+                boolean isExists = false;
+                for (int i = 0; i < new Long(len).intValue(); i++) {
+                    String value = cacheManager.findListItem(cacheKey, i);
+                    if (null == value) value = "-1";
+                    if (value.contains(cId)) {
                         isExists = true;
                         break;
                     }
