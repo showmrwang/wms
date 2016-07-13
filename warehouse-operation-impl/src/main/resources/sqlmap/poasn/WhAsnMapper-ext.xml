@@ -384,24 +384,24 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         select id
 	    from t_wh_asn 
 	    where customer_id in 
-	    <if test="customerList!=null">
+	    <if test="customerList!=null and customerList.size() != 0">
 				 <foreach collection="customerList" item="cid" open="("
 			  separator="," close=")">
 			       #{cid}
 		      </foreach>
 		</if>
              
-        <if test="customerList==null">
+        <if test="customerList==null or customerList.size() == 0">
                (null)
 		</if>
 		and store_id in
-		<if test="storeList!=null">
+		<if test="storeList!=null and storeList.size() != 0">
 				 <foreach collection="storeList" item="ids" open="("
 			  separator="," close=")">
 			       #{ids}
 		      </foreach>
 	    </if>
-        <if test="storeList==null">
+        <if test="storeList==null or storeList.size() == 0">
               (null)
 	    </if>
     </select>
