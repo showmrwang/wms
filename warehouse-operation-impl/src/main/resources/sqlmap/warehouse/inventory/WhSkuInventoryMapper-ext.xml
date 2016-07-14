@@ -1153,8 +1153,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				s.status as status
 		    <![CDATA[
 			    from t_wh_container s
-			    left join sys_dictionary dic on dic.dic_value=s.one_level_type AND dic.group_value = 'SERIAL_NUMBER_TYPE'
-			    left join t_wh_container_2nd_category c2c on c2c.id=s.two_level_type
+			    left join sys_dictionary dic on dic.dic_value=s.one_level_type AND dic.group_value = 'ONE_LEVEL_TYPE'
+			    left join t_wh_container_2nd_category c2c on c2c.id=s.two_level_type AND  dic.group_value = 'TWO_LEVEL_TYPE'
 		        where 
 		        s.ou_id = #{ouid}
 		        and s.id in
