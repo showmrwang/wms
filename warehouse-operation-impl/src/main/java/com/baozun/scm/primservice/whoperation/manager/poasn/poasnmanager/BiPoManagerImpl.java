@@ -35,7 +35,7 @@ import com.baozun.scm.primservice.whoperation.model.poasn.BiPoLine;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 
-@Service("BiPoManager")
+@Service("biPoManager")
 @Transactional
 public class BiPoManagerImpl extends BaseManagerImpl implements BiPoManager {
     @Autowired

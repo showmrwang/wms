@@ -22,6 +22,7 @@ import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdContainerCach
 import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdSnCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnLineCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoLineCommand;
+import com.baozun.scm.primservice.whoperation.command.sku.skushared.SkuCommand2Shared;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
@@ -31,7 +32,10 @@ import com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnLineDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoLineDao;
+import com.baozun.scm.primservice.whoperation.dao.sku.SkuBarcodeDao;
 import com.baozun.scm.primservice.whoperation.dao.sku.SkuDao;
+import com.baozun.scm.primservice.whoperation.dao.sku.SkuExtattrDao;
+import com.baozun.scm.primservice.whoperation.dao.sku.SkuMgmtDao;
 import com.baozun.scm.primservice.whoperation.dao.system.SysDictionaryDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.Container2ndCategoryDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
@@ -54,6 +58,9 @@ import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 import com.baozun.scm.primservice.whoperation.model.sku.Sku;
+import com.baozun.scm.primservice.whoperation.model.sku.SkuBarcode;
+import com.baozun.scm.primservice.whoperation.model.sku.SkuExtattr;
+import com.baozun.scm.primservice.whoperation.model.sku.SkuMgmt;
 import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container2ndCategory;
@@ -112,6 +119,12 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
     private WhCartonDao whCartonDao;
     @Autowired
     private WhFunctionRcvdDao whFunctionRcvdDao;
+    @Autowired
+    private SkuBarcodeDao skuBarcodeDao;
+    @Autowired
+    private SkuExtattrDao skuExtattrDao;
+    @Autowired
+    private SkuMgmtDao skuMgmtDao;
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
@@ -600,6 +613,25 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public WhFunctionRcvd findwFunctionRcvdByFunctionId(Long id, Long ouid) {
         return this.whFunctionRcvdDao.findwFunctionRcvdByFunctionId(id, ouid);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public SkuCommand2Shared findSkuByBarCodeCustomerIdOuId(String barCode, Long customerId, Long ouId) {
+        Sku sku = this.skuDao.findSkuAllByBarCodeCustomerIdOuId(barCode, customerId, ouId);
+        if (sku != null) {
+            SkuBarcode skuBarcode = skuBarcodeDao.findSkuBarCodeBySkuIdAndBarCode(sku.getId(), ouId, barCode);
+            SkuExtattr skuExtattr = skuExtattrDao.findSkuExtattrBySkuIdShared(sku.getId(), ouId);
+            SkuMgmt skuMgmt = skuMgmtDao.findSkuMgmtBySkuIdShared(sku.getId(), ouId);
+
+            SkuCommand2Shared skuCommand2Shared = new SkuCommand2Shared();
+            skuCommand2Shared.setSku(sku);
+            skuCommand2Shared.setSkuBarcode(skuBarcode);
+            skuCommand2Shared.setSkuExtattr(skuExtattr);
+            skuCommand2Shared.setSkuMgmt(skuMgmt);
+            return skuCommand2Shared;
+        }
+        return null;
     }
 
 

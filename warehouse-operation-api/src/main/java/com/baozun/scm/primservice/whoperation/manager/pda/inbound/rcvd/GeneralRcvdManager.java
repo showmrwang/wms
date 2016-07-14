@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdContainerCacheCommand;
+import com.baozun.scm.primservice.whoperation.command.sku.skushared.SkuCommand2Shared;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
@@ -148,4 +149,14 @@ public interface GeneralRcvdManager extends BaseManager {
      * @return
      */
     WhFunctionRcvd findwFunctionRcvdByFunctionId(Long id, Long ouid);
+
+    /**
+     * 查找商品
+     * 
+     * @param skuCode
+     * @param customerId
+     * @param ouId
+     * @return
+     */
+    SkuCommand2Shared findSkuByBarCodeCustomerIdOuId(String skuCode, Long customerId, Long ouId);
 }

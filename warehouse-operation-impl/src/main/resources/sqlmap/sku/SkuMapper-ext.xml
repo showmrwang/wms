@@ -640,5 +640,16 @@
 
     </select>
 	
+	<select id="findSkuAllByBarCodeCustomerIdOuId" resultMap="SkuResultExt">
+	 select
+        <include refid="skuColumnsSharedExt"/>
+        from t_wh_sku sku 
+        where sku.ou_id=#{ouId} and sku.customer_id=#{customerId} and(
+         sku.bar_code=#{barCode}
+         or
+         exists(select 1 from t_wh_sku_barcode bc where bc.sku_id=sku.id and bc.bar_code=#{barCode})
+        )
+	
+	</select>
 
 </mapper>

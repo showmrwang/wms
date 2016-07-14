@@ -244,4 +244,9 @@ public final class Constants {
     public static final Long SERIAL_NUMBER_TYPE_INOUT = 3L;
     public static final Long SERIAL_NUMBER_TYPE_ALL = 4L;
 
+    // 度量单位：日期类型
+    public static final String TIME_UOM_YEAR = "year";
+    public static final String TIME_UOM_MONTH = "month";
+    public static final String TIME_UOM_DAY = "day";
+
 }

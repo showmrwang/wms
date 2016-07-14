@@ -105,4 +105,14 @@ public interface SkuDao extends BaseDao<Sku, Long> {
 
     List<Sku> findSkuAllInfoListByParamExt(SkuCommand skuCommand);
 
+    /**
+     * 根据customerId、ouId和多条码查询唯一的商品信息
+     * 
+     * @param barCode
+     * @param customerId
+     * @param ouId
+     * @return
+     */
+    Sku findSkuAllByBarCodeCustomerIdOuId(@Param("barCode") String barCode, @Param("customerId") Long customerId, @Param("ouId") Long ouId);
+
 }

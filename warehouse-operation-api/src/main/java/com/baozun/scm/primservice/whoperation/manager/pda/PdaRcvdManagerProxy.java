@@ -122,4 +122,12 @@ public interface PdaRcvdManagerProxy extends BaseManager {
      */
     WhFunctionRcvd findwFunctionRcvdByFunctionId(Long id, Long ouid);
 
+    /**
+     * 扫描SKU时初始化
+     * 
+     * @param command
+     * @return
+     */
+    WhSkuInventoryCommand initSkuWhenScanning(WhSkuInventoryCommand command);
+
 }
