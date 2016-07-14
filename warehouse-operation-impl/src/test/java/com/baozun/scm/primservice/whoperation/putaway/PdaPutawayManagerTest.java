@@ -163,14 +163,15 @@ public class PdaPutawayManagerTest extends AbstractJUnit4SpringContextTests {
     
     @Test
     public void removeCache(){
-       //cacheManagr.removeMapValue(CacheConstants.CONTAINER_INVENTORY, "15100152");
-       // cacheManagr.removeMapValue(CacheConstants.CONTAINER_INVENTORY_STATISTIC, "15100156");
-        cacheManagr.popListHead(CacheConstants.LOCATION_RECOMMEND_QUEUE);
-        cacheManagr.popListHead(CacheConstants.LOCATION_RECOMMEND_QUEUE);
-        cacheManagr.popListHead(CacheConstants.LOCATION_RECOMMEND_QUEUE);
-        cacheManagr.popListHead(CacheConstants.LOCATION_RECOMMEND_QUEUE);
-        String id = "1111" + "_" + new Date().getTime();
-        cacheManagr.pushToListHead(CacheConstants.LOCATION_RECOMMEND_QUEUE, id);
+        cacheManagr.removeMapValue(CacheConstants.CONTAINER_INVENTORY, "15100433");
+        cacheManagr.removeMapValue(CacheConstants.CONTAINER_INVENTORY_STATISTIC, "15100433");
+       // cacheManagr.popListHead(CacheConstants.SCAN_SKU_QUEUE+"15100433"+"15100481");
+//        cacheManagr.popListHead(CacheConstants.LOCATION_RECOMMEND_QUEUE);
+//        cacheManagr.popListHead(CacheConstants.LOCATION_RECOMMEND_QUEUE);
+//        cacheManagr.popListHead(CacheConstants.LOCATION_RECOMMEND_QUEUE);
+//        cacheManagr.popListHead(CacheConstants.LOCATION_RECOMMEND_QUEUE);
+//        String id = "1111" + "_" + new Date().getTime();
+//        cacheManagr.pushToListHead(CacheConstants.LOCATION_RECOMMEND_QUEUE, id);
     }
     
     public static void main(String[] args) {

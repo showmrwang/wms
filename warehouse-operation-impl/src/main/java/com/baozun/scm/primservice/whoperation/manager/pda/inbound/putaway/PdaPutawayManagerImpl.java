@@ -3026,6 +3026,8 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                     log.error("inv type is not found error, logId is:[{}]", logId);
                     throw new BusinessException(ErrorCodes.COMMON_INV_TYPE_NOT_FOUND_ERROR);
                 }
+            } else {
+                srCmd.setTipSkuInvType("");
             }
             srCmd.setNeedTipSkuInvStatus(TipSkuDetailProvider.isTipSkuInvStatus(tipSkuAttrId));
             if (true == srCmd.isNeedTipSkuInvStatus()) {
@@ -3043,16 +3045,22 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                     log.error("inv status is not found error, logId is:[{}]", logId);
                     throw new BusinessException(ErrorCodes.COMMON_INV_STATUS_NOT_FOUND_ERROR);
                 }
+            } else {
+                srCmd.setTipSkuInvStatus("");
             }
             srCmd.setNeedTipSkuMfgDate(TipSkuDetailProvider.isTipSkuMfgDate(tipSkuAttrId));
             if (true == srCmd.isNeedTipSkuMfgDate()) {
                 String skuMfgDate = TipSkuDetailProvider.getSkuMfgDate(tipSkuAttrId);
                 srCmd.setTipSkuMfgDate(skuMfgDate);
+            } else {
+                srCmd.setTipSkuMfgDate("");
             }
             srCmd.setNeedTipSkuExpDate(TipSkuDetailProvider.isTipSkuExpDate(tipSkuAttrId));
             if (true == srCmd.isNeedTipSkuExpDate()) {
                 String skuExpDate = TipSkuDetailProvider.getSkuExpDate(tipSkuAttrId);
                 srCmd.setTipSkuExpDate(skuExpDate);
+            } else {
+                srCmd.setTipSkuExpDate("");
             }
             srCmd.setNeedTipSkuInvAttr1(TipSkuDetailProvider.isTipSkuInvAttr1(tipSkuAttrId));
             if (true == srCmd.isNeedTipSkuInvAttr1()) {
@@ -3070,6 +3078,8 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                     log.error("inv attr1 is not found error, logId is:[{}]", logId);
                     throw new BusinessException(ErrorCodes.COMMON_INV_ATTR_NOT_FOUND_ERROR);
                 }
+            } else {
+                srCmd.setTipSkuInvAttr1("");
             }
             srCmd.setNeedTipSkuInvAttr2(TipSkuDetailProvider.isTipSkuInvAttr2(tipSkuAttrId));
             if (true == srCmd.isNeedTipSkuInvAttr2()) {
@@ -3087,6 +3097,8 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                     log.error("inv attr2 is not found error, logId is:[{}]", logId);
                     throw new BusinessException(ErrorCodes.COMMON_INV_ATTR_NOT_FOUND_ERROR);
                 }
+            } else {
+                srCmd.setTipSkuInvAttr2("");
             }
             srCmd.setNeedTipSkuInvAttr3(TipSkuDetailProvider.isTipSkuInvAttr3(tipSkuAttrId));
             if (true == srCmd.isNeedTipSkuInvAttr3()) {
@@ -3104,6 +3116,8 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                     log.error("inv attr3 is not found error, logId is:[{}]", logId);
                     throw new BusinessException(ErrorCodes.COMMON_INV_ATTR_NOT_FOUND_ERROR);
                 }
+            } else {
+                srCmd.setTipSkuInvAttr3("");
             }
             srCmd.setNeedTipSkuInvAttr4(TipSkuDetailProvider.isTipSkuInvAttr4(tipSkuAttrId));
             if (true == srCmd.isNeedTipSkuInvAttr4()) {
@@ -3121,6 +3135,8 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                     log.error("inv attr4 is not found error, logId is:[{}]", logId);
                     throw new BusinessException(ErrorCodes.COMMON_INV_ATTR_NOT_FOUND_ERROR);
                 }
+            } else {
+                srCmd.setTipSkuInvAttr4("");
             }
             srCmd.setNeedTipSkuInvAttr5(TipSkuDetailProvider.isTipSkuInvAttr5(tipSkuAttrId));
             if (true == srCmd.isNeedTipSkuInvAttr5()) {
@@ -3138,16 +3154,22 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                     log.error("inv attr5 is not found error, logId is:[{}]", logId);
                     throw new BusinessException(ErrorCodes.COMMON_INV_ATTR_NOT_FOUND_ERROR);
                 }
+            } else {
+                srCmd.setTipSkuInvAttr5("");
             }
             srCmd.setNeedTipSkuSn(TipSkuDetailProvider.isTipSkuSn(tipSkuAttrId));
             if (true == srCmd.isNeedTipSkuSn()) {
                 String skuSn = TipSkuDetailProvider.getSkuSn(tipSkuAttrId);
                 srCmd.setTipSkuSn(skuSn);
+            } else {
+                srCmd.setTipSkuSn("");
             }
             srCmd.setNeedTipSkuDefect(TipSkuDetailProvider.isTipSkuDefect(tipSkuAttrId));
             if (true == srCmd.isNeedTipSkuDefect()) {
                 String skuDefect = TipSkuDetailProvider.getSkuDefect(tipSkuAttrId);
                 srCmd.setTipSkuDefect(skuDefect);
+            } else {
+                srCmd.setTipSkuDefect("");
             }
         }
     }
