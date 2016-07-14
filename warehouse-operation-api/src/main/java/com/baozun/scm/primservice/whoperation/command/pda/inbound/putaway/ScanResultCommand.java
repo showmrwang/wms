@@ -67,27 +67,27 @@ public class ScanResultCommand extends BaseCommand {
     /** 是否需要提示商品的库存类型 */
     private boolean isNeedTipSkuInvType;
     /** 提示商品库存类型 */
-    private String tipSkuInvType;
+    private String tipSkuInvType = "";
     /** 是否需要提示商品的库存状态 */
     private boolean isNeedTipSkuInvStatus;
     /** 提示商品库存状态 */
-    private String tipSkuInvStatus;
+    private String tipSkuInvStatus = "";
     /** 是否需要提示商品的生产日期 */
     private boolean isNeedTipSkuMfgDate;
     /** 提示商品生产日期 */
-    private String tipSkuMfgDate;
+    private String tipSkuMfgDate = "";
     /** 是否需要提示商品过期日期 */
     private boolean isNeedTipSkuExpDate;
     /** 提示商品过期日期 */
-    private String tipSkuExpDate;
+    private String tipSkuExpDate = "";
     /** 是否需要提示商品库存属性1 */
     private boolean isNeedTipSkuInvAttr1;
     /** 提示商品库存属性1 */
-    private String tipSkuInvAttr1;
+    private String tipSkuInvAttr1 = "";
     /** 是否需要提示商品库存属性2 */
     private boolean isNeedTipSkuInvAttr2;
     /** 提示商品库存属性2 */
-    private String tipSkuInvAttr2;
+    private String tipSkuInvAttr2 = "";
     /** 是否需要提示商品库存属性3 */
     private boolean isNeedTipSkuInvAttr3;
     /** 提示商品库存属性3 */
@@ -95,19 +95,19 @@ public class ScanResultCommand extends BaseCommand {
     /** 是否需要提示商品库存属性4 */
     private boolean isNeedTipSkuInvAttr4;
     /** 提示商品库存属性4 */
-    private String tipSkuInvAttr4;
+    private String tipSkuInvAttr4 = "";
     /** 是否需要提示商品库存属性5 */
     private boolean isNeedTipSkuInvAttr5;
     /** 提示商品库存属性5 */
-    private String tipSkuInvAttr5;
+    private String tipSkuInvAttr5 = "";
     /** 是否需要提示商品sn */
     private boolean isNeedTipSkuSn;
     /** 提示商品sn */
-    private String tipSkuSn;
+    private String tipSkuSn = "";
     /** 是否需要提示商品残次条码 */
     private boolean isNeedTipSkuDefect;
     /** 提示商品条码 */
-    private String tipSkuDefect;
+    private String tipSkuDefect = "";
     /** 是否需要扫描Sn残次信息 */
     private boolean isNeedScanSkuSn;
     /** 上架以后是否需要提示下一个库位 */

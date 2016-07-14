@@ -16,6 +16,8 @@ package com.baozun.scm.primservice.whoperation.manager.pda.inbound.putaway;
 
 import java.text.SimpleDateFormat;
 
+import org.springframework.util.StringUtils;
+
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 
 /**
@@ -45,18 +47,18 @@ public final class SkuCategoryProvider {
     public static String getSkuAttrIdByInv(WhSkuInventoryCommand invCmd) {
         String ret = "";
         Long skuId = invCmd.getSkuId();
-        String invType = (null == invCmd.getInvType() ? PH : invCmd.getInvType());
-        String invStatus = (null == invCmd.getInvStatus() ? PH : invCmd.getInvStatus() + "");
-        // String batchNumber = (null == invCmd.getBatchNumber() ? PH : invCmd.getBatchNumber());
-        String mfgDate = (null == invCmd.getMfgDate() ? PH : new SimpleDateFormat("yyyyMMddHHmmss").format(invCmd.getMfgDate()));
-        String expDate = (null == invCmd.getExpDate() ? PH : new SimpleDateFormat("yyyyMMddHHmmss").format(invCmd.getExpDate()));
-        // String countryOfOrigin = (null == invCmd.getCountryOfOrigin() ? PH :
+        String invType = (StringUtils.isEmpty(invCmd.getInvType()) ? PH : invCmd.getInvType());
+        String invStatus = (StringUtils.isEmpty(invCmd.getInvStatus()) ? PH : invCmd.getInvStatus() + "");
+        // String batchNumber = (StringUtils.isEmpty(invCmd.getBatchNumber()) ? PH : invCmd.getBatchNumber());
+        String mfgDate = (StringUtils.isEmpty(invCmd.getMfgDate()) ? PH : new SimpleDateFormat("yyyyMMddHHmmss").format(invCmd.getMfgDate()));
+        String expDate = (StringUtils.isEmpty(invCmd.getExpDate()) ? PH : new SimpleDateFormat("yyyyMMddHHmmss").format(invCmd.getExpDate()));
+        // String countryOfOrigin = (StringUtils.isEmpty(invCmd.getCountryOfOrigin()) ? PH :
         // invCmd.getCountryOfOrigin());
-        String invAttr1 = (null == invCmd.getInvAttr1() ? PH : invCmd.getInvAttr1());
-        String invAttr2 = (null == invCmd.getInvAttr2() ? PH : invCmd.getInvAttr2());
-        String invAttr3 = (null == invCmd.getInvAttr3() ? PH : invCmd.getInvAttr3());
-        String invAttr4 = (null == invCmd.getInvAttr4() ? PH : invCmd.getInvAttr4());
-        String invAttr5 = (null == invCmd.getInvAttr5() ? PH : invCmd.getInvAttr5());
+        String invAttr1 = (StringUtils.isEmpty(invCmd.getInvAttr1()) ? PH : invCmd.getInvAttr1());
+        String invAttr2 = (StringUtils.isEmpty(invCmd.getInvAttr2()) ? PH : invCmd.getInvAttr2());
+        String invAttr3 = (StringUtils.isEmpty(invCmd.getInvAttr3()) ? PH : invCmd.getInvAttr3());
+        String invAttr4 = (StringUtils.isEmpty(invCmd.getInvAttr4()) ? PH : invCmd.getInvAttr4());
+        String invAttr5 = (StringUtils.isEmpty(invCmd.getInvAttr5()) ? PH : invCmd.getInvAttr5());
         // ret = skuId + DV + invType + DV + invStatus + DV + batchNumber + DV + mfgDate + DV +
         // expDate + DV + countryOfOrigin + DV + invAttr1 + DV + invAttr2 + DV + invAttr3 + DV +
         // invAttr4 + DV + invAttr5;
@@ -69,13 +71,13 @@ public final class SkuCategoryProvider {
         int i = 0;
         for (Object obj : argArray) {
             if (0 == i) {
-                if (null == obj) {
+                if (StringUtils.isEmpty(obj)) {
                     ret += PH;
                 } else {
                     ret += obj.toString();
                 }
             } else {
-                if (null == obj) {
+                if (StringUtils.isEmpty(obj)) {
                     ret = ret + DV + PH;
                 } else {
                     ret = ret + DV + obj.toString();
@@ -89,10 +91,10 @@ public final class SkuCategoryProvider {
     public static Long getSkuId(String skuAttrId) {
         Long id = null;
         String[] values = skuAttrId.split(DV);
-        if (null == values || 0 == values.length) {
+        if (StringUtils.isEmpty(values) || 0 == values.length) {
             id = null;
         } else {
-            id = (null == values[IDX_SKUID] ? null : new Long(values[IDX_SKUID]));
+            id = (StringUtils.isEmpty(values[IDX_SKUID]) ? null : new Long(values[IDX_SKUID]));
         }
         return id;
     }

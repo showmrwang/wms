@@ -3774,17 +3774,17 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         sku.setIsNeedTipSkuDetail(null == skuCmd.getIsNeedTipSkuDetail() ? false : skuCmd.getIsNeedTipSkuDetail());
         sku.setIsNeedTipSkuSn(null == skuCmd.getIsNeedTipSkuSn() ? false : skuCmd.getIsNeedTipSkuSn());
         sku.setIsNeedTipSkuDefect(null == skuCmd.getIsNeedTipSkuDefect() ? false : skuCmd.getIsNeedTipSkuDefect());
-        sku.setInvType(StringUtils.isEmpty(skuCmd.getInvType()) ? null : skuCmd.getInvType());
-        sku.setInvStatus(StringUtils.isEmpty(skuCmd.getInvStatus()) ? null : skuCmd.getInvStatus());
-        sku.setInvMfgDate(StringUtils.isEmpty(skuCmd.getInvMfgDate()) ? null : skuCmd.getInvMfgDate());
-        sku.setInvExpDate(StringUtils.isEmpty(skuCmd.getInvExpDate()) ? null : skuCmd.getInvExpDate());
-        sku.setInvAttr1(StringUtils.isEmpty(skuCmd.getInvAttr1()) ? null : skuCmd.getInvAttr1());
-        sku.setInvAttr2(StringUtils.isEmpty(skuCmd.getInvAttr2()) ? null : skuCmd.getInvAttr2());
-        sku.setInvAttr3(StringUtils.isEmpty(skuCmd.getInvAttr3()) ? null : skuCmd.getInvAttr3());
-        sku.setInvAttr4(StringUtils.isEmpty(skuCmd.getInvAttr4()) ? null : skuCmd.getInvAttr4());
-        sku.setInvAttr5(StringUtils.isEmpty(skuCmd.getInvAttr5()) ? null : skuCmd.getInvAttr5());
-        sku.setSkuSn(StringUtils.isEmpty(skuCmd.getSkuSn()) ? null : skuCmd.getSkuSn());
-        sku.setSkuDefect(StringUtils.isEmpty(skuCmd.getSkuDefect()) ? null : skuCmd.getSkuDefect());
+        sku.setInvType(StringUtils.isEmpty(skuCmd.getInvType()) ? "" : skuCmd.getInvType());
+        sku.setInvStatus(StringUtils.isEmpty(skuCmd.getInvStatus()) ? "" : skuCmd.getInvStatus());
+        sku.setInvMfgDate(StringUtils.isEmpty(skuCmd.getInvMfgDate()) ? "" : skuCmd.getInvMfgDate());
+        sku.setInvExpDate(StringUtils.isEmpty(skuCmd.getInvExpDate()) ? "" : skuCmd.getInvExpDate());
+        sku.setInvAttr1(StringUtils.isEmpty(skuCmd.getInvAttr1()) ? "" : skuCmd.getInvAttr1());
+        sku.setInvAttr2(StringUtils.isEmpty(skuCmd.getInvAttr2()) ? "" : skuCmd.getInvAttr2());
+        sku.setInvAttr3(StringUtils.isEmpty(skuCmd.getInvAttr3()) ? "" : skuCmd.getInvAttr3());
+        sku.setInvAttr4(StringUtils.isEmpty(skuCmd.getInvAttr4()) ? "" : skuCmd.getInvAttr4());
+        sku.setInvAttr5(StringUtils.isEmpty(skuCmd.getInvAttr5()) ? "" : skuCmd.getInvAttr5());
+        sku.setSkuSn(StringUtils.isEmpty(skuCmd.getSkuSn()) ? "" : skuCmd.getSkuSn());
+        sku.setSkuDefect(StringUtils.isEmpty(skuCmd.getSkuDefect()) ? "" : skuCmd.getSkuDefect());
         if (null == loc) {
             log.error("location is null error, locCode is:[{}], logId is:[{}]", locationCode, logId);
             throw new BusinessException(ErrorCodes.COMMON_LOCATION_IS_NOT_EXISTS);
