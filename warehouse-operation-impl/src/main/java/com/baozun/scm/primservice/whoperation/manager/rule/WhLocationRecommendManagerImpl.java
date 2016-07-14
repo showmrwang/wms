@@ -1233,11 +1233,6 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                 avaliableLocs = locationDao.findAllStaticLocsByAreaId(area.getId(), ouId, cSql);
                             } else if (WhLocationRecommendType.MERGE_LOCATION_SAME_INV_ATTRS.equals(locationRecommendRule)) {
                                 attrParams.setLrt(WhLocationRecommendType.MERGE_LOCATION_SAME_INV_ATTRS);
-                                if (1L != skuCategory.longValue() && 1L != skuAttrCategory.longValue()) {
-                                    // 商品不唯一,不考虑推荐库位
-                                    avaliableLocs = null;
-                                    continue;
-                                }
                                 attrParams.setIsMixStacking(false);// 库位不允许混放
                                 String invAttrMgmt = "";
                                 if (1 == storeIds.size()) {
@@ -1258,7 +1253,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                     }
                                     invAttrMgmt = warehouse.getInvAttrMgmt();
                                 }
-                                WhSkuInventoryCommand invCmd = invList.get(0);// 取一条库存信息
+                                WhSkuInventoryCommand invCmd = invRule;// 取到库存信息
                                 attrParams.setInvAttrMgmt(invAttrMgmt);
                                 // 解析库存关键属性
                                 invAttrMgmtAspect(attrParams, invCmd);
@@ -1272,12 +1267,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                 avaliableLocs = locationDao.findAllInvLocsByAreaIdAndSameAttrs(area.getId(), ouId, cSql);
                             } else if (WhLocationRecommendType.MERGE_LOCATION_DIFF_INV_ATTRS.equals(locationRecommendRule)) {
                                 attrParams.setLrt(WhLocationRecommendType.MERGE_LOCATION_DIFF_INV_ATTRS);
-                                if (1L != skuCategory.longValue()) {
-                                    // 商品种类不唯一，不考虑推荐库位
-                                    avaliableLocs = null;
-                                    continue;
-                                }
-                                WhSkuInventoryCommand invCmd = invList.get(0);// 取一条库存信息
+                                WhSkuInventoryCommand invCmd = invRule;// 取到库存信息
                                 attrParams.setInvAttrMgmt("");
                                 // 解析库存关键属性
                                 invAttrMgmtAspect(attrParams, invCmd);
@@ -1582,11 +1572,6 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                     avaliableLocs = locationDao.findAllStaticLocsByAreaId(area.getId(), ouId, cSql);
                                 } else if (WhLocationRecommendType.MERGE_LOCATION_SAME_INV_ATTRS.equals(locationRecommendRule)) {
                                     attrParams.setLrt(WhLocationRecommendType.MERGE_LOCATION_SAME_INV_ATTRS);
-                                    if (1L != skuCategory.longValue() && 1L != skuAttrCategory.longValue()) {
-                                        // 商品不唯一,不考虑推荐库位
-                                        avaliableLocs = null;
-                                        continue;
-                                    }
                                     attrParams.setIsMixStacking(false);// 库位不允许混放
                                     String invAttrMgmt = "";
                                     if (1 == storeIds.size()) {
@@ -1607,7 +1592,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                         }
                                         invAttrMgmt = warehouse.getInvAttrMgmt();
                                     }
-                                    WhSkuInventoryCommand invCmd = invList.get(0);// 取一条库存信息
+                                    WhSkuInventoryCommand invCmd = invRule;// 取到库存信息
                                     attrParams.setInvAttrMgmt(invAttrMgmt);
                                     // 解析库存关键属性
                                     invAttrMgmtAspect(attrParams, invCmd);
@@ -1621,12 +1606,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                     avaliableLocs = locationDao.findAllInvLocsByAreaIdAndSameAttrs(area.getId(), ouId, cSql);
                                 } else if (WhLocationRecommendType.MERGE_LOCATION_DIFF_INV_ATTRS.equals(locationRecommendRule)) {
                                     attrParams.setLrt(WhLocationRecommendType.MERGE_LOCATION_DIFF_INV_ATTRS);
-                                    if (1L != skuCategory.longValue()) {
-                                        // 商品种类不唯一，不考虑推荐库位
-                                        avaliableLocs = null;
-                                        continue;
-                                    }
-                                    WhSkuInventoryCommand invCmd = invList.get(0);// 取一条库存信息
+                                    WhSkuInventoryCommand invCmd = invRule;// 取到库存信息
                                     attrParams.setInvAttrMgmt("");
                                     // 解析库存关键属性
                                     invAttrMgmtAspect(attrParams, invCmd);
