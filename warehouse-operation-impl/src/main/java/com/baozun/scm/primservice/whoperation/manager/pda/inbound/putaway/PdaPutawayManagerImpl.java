@@ -388,7 +388,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         if (0 < count2) {
             // 整托上架只能扫外部容器号
             log.error("sys guide pallet putaway scan container is insideContainer error, containerCode is:[{}], logId is:[{}]", containerCode, logId);
-            throw new BusinessException(ErrorCodes.CONTAINER_IS_INSIDE_ERROR_UNABLE_PUTAWAY);
+            throw new BusinessException(ErrorCodes.CONTAINER_IS_INSIDE_ERROR_UNABLE_PUTAWAY, new Object[]{containerCode});
         }
         if (0 < count1) {
             srCmd.setContainerType(WhContainerType.OUTER_CONTAINER);// 外部容器

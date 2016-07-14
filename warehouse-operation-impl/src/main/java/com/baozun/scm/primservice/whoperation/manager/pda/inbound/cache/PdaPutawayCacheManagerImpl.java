@@ -146,7 +146,7 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                 String qd = values[1];
                 Date cDate = new Date();
                 long cd = cDate.getTime();
-                long rd = cd - new Long(qd).longValue();// 剩余毫秒数
+                long rd = (new Long(qd).longValue() + 1000 * 60 * 1) - cd;// 剩余毫秒数
                 if (10 > rd / 1000) {
                     // 剩余时间少于10秒，认为时间不足够用来执行逻辑，需要重新排队
                     cacheManager.popListHead(CacheConstants.LOCATION_RECOMMEND_QUEUE);
