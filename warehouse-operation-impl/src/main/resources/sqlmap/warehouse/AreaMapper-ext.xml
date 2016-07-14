@@ -96,7 +96,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<select id="findAreaListCountByQueryMapExt" resultType="long">
 		select count(*) 
 			from t_wh_area area 
-		left join sys_dictionary sys on area.area_type = sys.dic_value AND sys.group_value = 'SERIAL_NUMBER_TYPE'
+		left join sys_dictionary sys on area.area_type = sys.dic_value
 		<where>
 			<if test="areaCode!=null and areaCode!=''">
 				and area.area_code like #{areaCode}
@@ -133,7 +133,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		sys.dic_label as areaType, 
 		area.lifecycle as lifecycle
 		from t_wh_area area 
-		left join sys_dictionary sys on area.area_type = sys.dic_value AND sys.group_value = 'SERIAL_NUMBER_TYPE'
+		left join sys_dictionary sys on area.area_type = sys.dic_value
 		<where> 
 			<if test="areaCode!=null and areaCode!=''">
 				and area.area_code like #{areaCode}
