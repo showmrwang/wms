@@ -3523,7 +3523,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
     }
 
     /**
-     * 系统指导上架整托核对扫容器号
+     * 系统指导上架整托核对扫商品
      * 
      * @author lichuan
      * @param ocCmd
@@ -3645,7 +3645,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
     }
 
     /**
-     * 系统指导上架整箱核对扫容器号
+     * 系统指导上架整箱核对扫商品
      * 
      * @author lichuan
      * @param ocCmd
@@ -3807,7 +3807,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
     }
 
     /**
-     * 系统指导上架拆箱核对扫容器号
+     * 系统指导上架拆箱核对扫商品
      * 
      * @author lichuan
      * @param ocCmd
