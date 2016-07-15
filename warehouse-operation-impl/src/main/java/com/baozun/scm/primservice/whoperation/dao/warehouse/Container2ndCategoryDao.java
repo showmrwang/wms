@@ -74,10 +74,10 @@ public interface Container2ndCategoryDao extends BaseDao<Container2ndCategory, L
     /**
      * 通过id进行查询单个对象
      * 
-     * @param outerContainerCate
+     * @param
      * @return
      */
-    Container2ndCategory findByIdExt(@Param("id") String outerContainerCate, @Param("ouId") Long ouId);
+    Container2ndCategory findByIdExt(@Param("id") Long id, @Param("ouId") Long ouId);
 
     /**
      * 更新
