@@ -203,7 +203,7 @@ public class WhCartonManagerImpl extends BaseManagerImpl implements WhCartonMana
         // 插入拆箱信息
         for (WhCartonCommand cc : cartonList) {
             // 获取2级容器类型
-            Container2ndCategory c2c = container2ndCategoryDao.findByIdExt(cc.getCategoryId(), whCartonCommand.getOuId());
+            Container2ndCategory c2c = container2ndCategoryDao.findByIdExt(Long.valueOf(cc.getCategoryId()), whCartonCommand.getOuId());
             if (null == c2c) {
                 log.warn("addDevanningList Container2ndCategory is null CategoryId() " + cc.getCategoryId() + " error logid: " + whCartonCommand.getLogId());
                 throw new BusinessException(ErrorCodes.CONTAINER2NDCATEGORY_NULL_ERROR);
@@ -219,7 +219,7 @@ public class WhCartonManagerImpl extends BaseManagerImpl implements WhCartonMana
                 c.setCode(code);
                 c.setName(c2c.getCategoryName());
                 c.setOneLevelType(c2c.getOneLevelType());// 一级容器
-                c.setTwoLevelType(c2c.getId().toString());// 二级容器
+                c.setTwoLevelType(c2c.getId());// 二级容器
                 c.setOuId(whCartonCommand.getOuId());
                 c.setCreateTime(new Date());
                 c.setLastModifyTime(new Date());

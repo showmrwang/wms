@@ -142,7 +142,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
             log.error("container lifecycle is not normal error, containerId is:[{}], logId is:[{}]", containerCmd.getId(), logId);
             throw new BusinessException(ErrorCodes.COMMON_CONTAINER_LIFECYCLE_IS_NOT_NORMAL);
         }
-        String containerCate = containerCmd.getTwoLevelType();
+        Long containerCate = containerCmd.getTwoLevelType();
         Container2ndCategory container2 = container2ndCategoryDao.findByIdExt(containerCate, ouId);
         if (null == container2) {
             log.error("container2ndCategory is null error, 2endCategoryId is:[{}], logId is:[{}]", containerCate, logId);
@@ -386,7 +386,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
             log.error("container status is invalid, containerStatus is:[{}], logId is:[{}]", containerStatus, logId);
             throw new BusinessException(ErrorCodes.CONTAINER_STATUS_ERROR_UNABLE_PUTAWAY, new Object[] {containerCode});
         }
-        String containerCate = outerContainer.getTwoLevelType();
+        Long containerCate = outerContainer.getTwoLevelType();
         Container2ndCategory container2 = container2ndCategoryDao.findByIdExt(containerCate, ouId);
         if (null == container2) {
             log.error("container2ndCategory is null error, 2endCategoryId is:[{}], logId is:[{}]", containerCate, logId);
@@ -775,7 +775,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
             log.error("container status is invalid, containerStatus is:[{}], logId is:[{}]", containerStatus, logId);
             throw new BusinessException(ErrorCodes.CONTAINER_STATUS_ERROR_UNABLE_PUTAWAY, new Object[] {containerCode});
         }
-        String containerCate = container.getTwoLevelType();
+        Long containerCate = container.getTwoLevelType();
         Container2ndCategory container2 = container2ndCategoryDao.findByIdExt(containerCate, ouId);
         if (null == container2) {
             log.error("container2ndCategory is null error, 2endCategoryId is:[{}], logId is:[{}]", containerCate, logId);
@@ -1117,7 +1117,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
             log.error("container status is invalid, containerStatus is:[{}], logId is:[{}]", containerStatus, logId);
             throw new BusinessException(ErrorCodes.CONTAINER_STATUS_ERROR_UNABLE_PUTAWAY, new Object[] {containerCode});
         }
-        String containerCate = container.getTwoLevelType();
+        Long containerCate = container.getTwoLevelType();
         Container2ndCategory container2 = container2ndCategoryDao.findByIdExt(containerCate, ouId);
         if (null == container2) {
             log.error("container2ndCategory is null error, 2endCategoryId is:[{}], logId is:[{}]", containerCate, logId);

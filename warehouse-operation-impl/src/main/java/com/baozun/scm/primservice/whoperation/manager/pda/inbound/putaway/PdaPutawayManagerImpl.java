@@ -184,7 +184,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
             log.error("container lifecycle is not normal, logId is:[{}]", logId);
             throw new BusinessException(ErrorCodes.COMMON_CONTAINER_LIFECYCLE_IS_NOT_NORMAL);
         }
-        String containerCate = containerCmd.getTwoLevelType();
+        Long containerCate = containerCmd.getTwoLevelType();
         Container2ndCategory container2 = container2ndCategoryDao.findByIdExt(containerCate, ouId);
         if (null == container2) {
             log.error("container2ndCategory is null error, 2endCategoryId is:[{}], logId is:[{}]", containerCate, logId);
@@ -532,7 +532,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                     log.error("sys guide pallet putaway inside container status is invalid, icId is:[{}], containerStatus is:[{}], logId is:[{}]", icId, icStatus, logId);
                     throw new BusinessException(ErrorCodes.CONTAINER_STATUS_ERROR_UNABLE_PUTAWAY, new Object[] {ic.getCode()});
                 }
-                String insideContainerCate = ic.getTwoLevelType();
+                Long insideContainerCate = ic.getTwoLevelType();
                 Container2ndCategory insideContainer2 = container2ndCategoryDao.findByIdExt(insideContainerCate, ouId);
                 if (null == insideContainer2) {
                     pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(containerCmd, ouId, logId);
@@ -842,7 +842,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
             icCodeList.add(insideContainer.getCode());
         }
         // 6.计算外部容器体积重量
-        String outerContainerCate = containerCmd.getTwoLevelType();
+        Long outerContainerCate = containerCmd.getTwoLevelType();
         Container2ndCategory outerContainer2 = container2ndCategoryDao.findByIdExt(outerContainerCate, ouId);
         if (null == outerContainer2) {
             log.error("container2ndCategory is null error, cId is:[{}], 2endCategoryId is:[{}], logId is:[{}]", containerId, outerContainerCate, logId);
@@ -1347,7 +1347,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                     log.error("sys guide pallet putaway inside container status is invalid, icId is:[{}], containerStatus is:[{}], logId is:[{}]", icId, icStatus, logId);
                     throw new BusinessException(ErrorCodes.CONTAINER_STATUS_ERROR_UNABLE_PUTAWAY, new Object[] {ic.getCode()});
                 }
-                String insideContainerCate = ic.getTwoLevelType();
+                Long insideContainerCate = ic.getTwoLevelType();
                 Container2ndCategory insideContainer2 = container2ndCategoryDao.findByIdExt(insideContainerCate, ouId);
                 if (null == insideContainer2) {
                     pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(insideContainerCmd, ouId, logId);
@@ -2094,7 +2094,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                     log.error("sys guide pallet putaway inside container status is invalid, icId is:[{}], containerStatus is:[{}], logId is:[{}]", icId, icStatus, logId);
                     throw new BusinessException(ErrorCodes.CONTAINER_STATUS_ERROR_UNABLE_PUTAWAY, new Object[] {ic.getCode()});
                 }
-                String insideContainerCate = ic.getTwoLevelType();
+                Long insideContainerCate = ic.getTwoLevelType();
                 Container2ndCategory insideContainer2 = container2ndCategoryDao.findByIdExt(insideContainerCate, ouId);
                 if (null == insideContainer2) {
                     pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(insideContainerCmd, ouId, logId);
@@ -4821,7 +4821,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
             log.error("container lifecycle is not normal, logId is:[{}]", logId);
             throw new BusinessException(ErrorCodes.COMMON_CONTAINER_LIFECYCLE_IS_NOT_NORMAL);
         }
-        String containerCate = containerCmd.getTwoLevelType();
+        Long containerCate = containerCmd.getTwoLevelType();
         Container2ndCategory container2 = container2ndCategoryDao.findByIdExt(containerCate, ouId);
         if (null == container2) {
             log.error("container2ndCategory is null error, 2endCategoryId is:[{}], logId is:[{}]", containerCate, logId);

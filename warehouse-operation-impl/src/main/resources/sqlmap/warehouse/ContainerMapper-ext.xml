@@ -15,14 +15,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    	select <include refid="containerColumnsExt" />
 		    from t_wh_container as s
 		    left join sys_dictionary as syst on s.one_level_type = syst.dic_value AND syst.group_value = 'ONE_LEVEL_TYPE'
-		    left join sys_dictionary as sysl on s.two_level_type = sysl.dic_value AND sys1.group_value = 'TWO_LEVEL_TYPE'
+		    left join sys_dictionary as sysl on s.two_level_type = sysl.dic_id
 			<include refid="containerDynamicWhereExt"/>
     </select>
 	    
 	<select id="findListCountByQueryMapExt" resultType="long">
 	        select count(*) from t_wh_container as s
 		    left join sys_dictionary as syst on s.one_level_type = syst.dic_value AND syst.group_value = 'ONE_LEVEL_TYPE'
-		    left join sys_dictionary as sysl on s.two_level_type = sysl.dic_value AND sys1.group_value = 'TWO_LEVEL_TYPE'
+		    left join sys_dictionary as sysl on s.two_level_type = sysl.id
 			<include refid="containerDynamicWhereExt"/> 
 	</select>
 	
@@ -133,7 +133,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        name = #{name,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        code = #{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        one_level_type = #{oneLevelType,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        two_level_type = #{twoLevelType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        two_level_type = #{twoLevelType,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        is_full = #{isFull,javaType=java.lang.Boolean,jdbcType=BIT} ,
 			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        last_modify_time = now(),
@@ -191,7 +191,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        name = #{name,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        code = #{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        one_level_type = #{oneLevelType,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        two_level_type = #{twoLevelType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        two_level_type = #{twoLevelType,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        is_full = #{isFull,javaType=java.lang.Boolean,jdbcType=BIT} ,
 		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
@@ -229,7 +229,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{item.name,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{item.code,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{item.oneLevelType,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        	#{item.twoLevelType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{item.twoLevelType,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{item.isFull,javaType=java.lang.Boolean,jdbcType=BIT} ,
 		        	#{item.createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        	#{item.lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
@@ -260,7 +260,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    <![CDATA[
 			    from t_wh_container s
 			    left join sys_dictionary dic on dic.dic_value=s.one_level_type AND dic.group_value = 'ONE_LEVEL_TYPE'
-			    left join t_wh_container_2nd_category c2c on c2c.id=s.two_level_type AND  dic.group_value = 'TWO_LEVEL_TYPE'
+			    left join t_wh_container_2nd_category c2c on c2c.id=s.two_level_type
 		        where 
 		        s.code = #{code} 
 		        and s.ou_id = #{ouId}
