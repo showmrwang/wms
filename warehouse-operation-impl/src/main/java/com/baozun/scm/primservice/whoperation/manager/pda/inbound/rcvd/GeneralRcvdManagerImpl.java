@@ -525,7 +525,7 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
         }
 
 
-        saveContainer.setTwoLevelType(dicList.get(0).getId().toString());
+        saveContainer.setTwoLevelType(dicList.get(0).getId());
         // 二级容器类型 设置容器的二级容器类型；逻辑：如果不存在系统预定义的对应的二级容器类型，那么生成宇通预定义的二级容器对象
         Container2ndCategory secendContainer = new Container2ndCategory();
         secendContainer.setCategoryCode(container.getTwoLevelTypeValue());
@@ -559,7 +559,7 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
         }
 
         // 插入容器
-        saveContainer.setTwoLevelType(secendContainer.getId().toString());
+        saveContainer.setTwoLevelType(secendContainer.getId());
         saveContainer.setName(secendContainer.getCategoryName());
         long insertCount = this.containerDao.insert(saveContainer);
         if (insertCount == 0) {
