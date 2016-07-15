@@ -240,7 +240,7 @@ public interface PdaPutawayCacheManager extends BaseManager {
     List<WhSkuInventoryCommand> sysGuideContainerPutawayCacheInventoryAndStatistic(ContainerCommand containerCmd, Long ouId, String logId);
 
     /**
-     * pda整箱上架判断上架以后是否需要提示下一个容器
+     * pda整箱上架判断库位推荐失败或上架以后是否需要提示下一个容器
      * 
      * @author lichuan
      * @param containerCmd
@@ -423,9 +423,30 @@ public interface PdaPutawayCacheManager extends BaseManager {
      * @return
      */
     Long sysGuideSplitContainerPutawayTipLocation(ContainerCommand insideContainerCmd, Set<Long> locationIds, Long locationId, String logId);
-
+    
+    /**
+     * pda拆箱上架判断库位推荐失败以后是否需要提示下一个容器
+     * @author lichuan
+     * @param containerCmd
+     * @param insideContainerCmd
+     * @param insideContainerIds
+     * @param logId
+     * @return
+     */
+    Boolean sysGuideSplitContainerPutawayNeedTipContainer(ContainerCommand containerCmd, ContainerCommand insideContainerCmd, Set<Long> insideContainerIds, String logId);
+    
     /**
      * pda拆箱上架提示容器
+     * @author lichuan
+     * @param containerCmd
+     * @param insideContainerIds
+     * @param logId
+     * @return
+     */
+    Long sysGuideSplitContainerPutawayTipContainer(ContainerCommand containerCmd, Set<Long> insideContainerIds, String logId);
+
+    /**
+     * pda拆箱上架提示指定容器
      * 
      * @author lichuan
      * @param containerCmd

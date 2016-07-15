@@ -1137,7 +1137,7 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
         }
         // 查询对应所有内部容器信息
         List<ContainerCommand> icList = whSkuInventoryDao.findAllInsideContainerByOuterContainerId(ouId, containerId);
-        ContainerStatisticResultCommand csrCmd = inventoryStatisticManager.sysGuidePutawayContainerStatistic(icList, WhPutawayPatternDetailType.CONTAINER_PUTAWAY, ouId, logId);
+        ContainerStatisticResultCommand csrCmd = inventoryStatisticManager.sysGuidePutawayContainerStatistic(icList, WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY, ouId, logId);
         cacheManager.setMapObject(CacheConstants.CONTAINER_STATISTIC, containerId.toString(), csrCmd, CacheConstants.CACHE_ONE_DAY);
         if (log.isInfoEnabled()) {
             log.info("sys guide splitContainer putaway cache containerStatistic end, contianerId is:[{}], ouId is:[{}], logId is:[{}]", containerId, ouId, logId);
@@ -1871,6 +1871,85 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
         }
         cacheManager.pushToListHead(CacheConstants.SCAN_LOCATION_QUEUE + icId.toString(), locationId.toString());
         return tipLocId;
+    }
+    
+    /**
+     * @author lichuan
+     * @param containerCmd
+     * @param insideContainerCmd
+     * @param insideContainerIds
+     * @param logId
+     * @return
+     */
+    @Override
+    public Boolean sysGuideSplitContainerPutawayNeedTipContainer(ContainerCommand containerCmd, ContainerCommand insideContainerCmd, Set<Long> insideContainerIds, String logId) {
+        Boolean ret = false;
+        if (null == containerCmd) {
+            ret = false;
+            return ret;
+        } else {
+            Long containerId = containerCmd.getId();
+            Long insideContainerId = insideContainerCmd.getId();
+            // 0.先判断当前的容器是不是提示容器队列的第一个
+            long len = cacheManager.listLen(CacheConstants.SCAN_CONTAINER_QUEUE + containerId.toString());
+            if (0 < len) {
+                String cacheIcId = cacheManager.findListItem(CacheConstants.SCAN_CONTAINER_QUEUE + containerId.toString(), 0);// 队列的第一个
+                if (!insideContainerId.toString().equals(cacheIcId)) {
+                    log.error("tip container is not queue first element exception, logId is:[{}]", logId);
+                    throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+                }
+            } else {
+                log.error("sys guide container putaway cache inside container are null error, logId is:[{}]", logId);
+                throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+            }
+            // 1.获取所有内部容器信息
+            if (isCacheAllExists(insideContainerIds, CacheConstants.SCAN_CONTAINER_QUEUE + containerId.toString())) {
+                // 全部容器已复核完毕
+                ret = false;
+            } else {
+                ret = true;
+            }
+        }
+        return ret;
+    }
+    
+    /**
+     * @author lichuan
+     * @param containerCmd
+     * @param insideContainerIds
+     * @param logId
+     * @return
+     */
+    @Override
+    public Long sysGuideSplitContainerPutawayTipContainer(ContainerCommand containerCmd, Set<Long> insideContainerIds, String logId) {
+        Long containerId = containerCmd.getId();
+        Long tipContainerId = null;
+        long len = cacheManager.listLen(CacheConstants.SCAN_CONTAINER_QUEUE + containerId.toString());
+        if (0 < len) {
+            // 随机取一个容器
+            for (Long ic : insideContainerIds) {
+                Long icId = ic;
+                if (null != icId) {
+                    boolean isExists = false;
+                    for (int i = 0; i < len; i++) {
+                        String cacheId = cacheManager.findListItem(CacheConstants.SCAN_CONTAINER_QUEUE + containerId.toString(), i);
+                        if (0 == icId.compareTo(new Long(cacheId))) {
+                            isExists = true;
+                            break;
+                        }
+                    }
+                    if (false == isExists) {
+                        tipContainerId = icId;
+                        cacheManager.pushToListHead(CacheConstants.SCAN_CONTAINER_QUEUE + containerId.toString(), icId.toString());
+                        break;
+                    }
+                }
+            }
+        } else {
+            log.error("tip container is exception, logId is:[{}]", logId);
+            throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+        }
+        return tipContainerId;
     }
 
     /**

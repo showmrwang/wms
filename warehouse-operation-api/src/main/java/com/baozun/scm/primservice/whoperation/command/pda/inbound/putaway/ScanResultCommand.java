@@ -114,6 +114,10 @@ public class ScanResultCommand extends BaseCommand {
     private boolean isAfterPutawayTipLoc;
     /** 是否需要排队 */
     private boolean isNeedQueueUp;
+    /** 是否库位推荐失败 */
+    private boolean isRecommendFail;
+    /** 库位推荐失败以后是否提示下一个容器 */
+    private boolean isAfterRecommendTipContainer;
 
 
     public int getPutawayPatternType() {
@@ -475,6 +479,23 @@ public class ScanResultCommand extends BaseCommand {
     public void setNeedQueueUp(boolean isNeedQueueUp) {
         this.isNeedQueueUp = isNeedQueueUp;
     }
+
+    public boolean isRecommendFail() {
+        return isRecommendFail;
+    }
+
+    public void setRecommendFail(boolean isRecommendFail) {
+        this.isRecommendFail = isRecommendFail;
+    }
+
+    public boolean isAfterRecommendTipContainer() {
+        return isAfterRecommendTipContainer;
+    }
+
+    public void setAfterRecommendTipContainer(boolean isAfterRecommendTipContainer) {
+        this.isAfterRecommendTipContainer = isAfterRecommendTipContainer;
+    }
+
 
 
 
