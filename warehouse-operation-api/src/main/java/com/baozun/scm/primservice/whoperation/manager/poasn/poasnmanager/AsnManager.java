@@ -153,4 +153,24 @@ public interface AsnManager extends BaseManager {
      * @return
      */
     public List<Long> getWhAsnCommandByCustomerId(List<Long> customerList,List<Long> storeList);
+
+    /**
+     * 
+     */
+    WhAsn findTempAsnByPoIdOuIdNotUuid(Long poId, Long ouId, String uuid);
+
+    /**
+     * 
+     * 
+     */
+    WhAsn findTempAsnByPoIdOuIdUuid(Long poId, Long ouId, String uuid);
+
+    /**
+     * 删除ASN和ASNLINE
+     * 
+     * @param poId
+     * @param ouId
+     * @param uuid
+     */
+    void deleteAsnAndLine(WhAsn asn, List<WhAsnLine> lineList);
 }

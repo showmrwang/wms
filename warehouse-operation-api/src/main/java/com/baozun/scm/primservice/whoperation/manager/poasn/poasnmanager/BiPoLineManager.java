@@ -1,5 +1,6 @@
 package com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager;
 
+import java.util.List;
 import java.util.Map;
 
 import lark.common.dao.Page;
@@ -51,5 +52,13 @@ public interface BiPoLineManager extends BaseManager {
      * @return
      */
     Pagination<BiPoLineCommand> findListByQueryMapWithPageExtForCreateSubPo(Page page, Sort[] sorts, Map<String, Object> params);
+
+    /**
+     * [业务方法]删除BIPOLINE集合
+     * 
+     * @param lineList
+     * @return
+     */
+    void deleteList(List<BiPoLine> lineList);
 
 }

@@ -101,4 +101,8 @@ public interface WhAsnDao extends BaseDao<WhAsn, Long> {
      */
     public List<Long> getWhAsnCommandByCustomerId(@Param("customerList") List<Long> customerList,@Param("storeList") List<Long> storeList);
 
+    WhAsn findTempAsnByPoIdOuIdNotUuid(@Param("poId") Long poId, @Param("ouId") Long ouId, @Param("uuid") String uuid);
+
+    WhAsn findTempAsnByPoIdOuIdUuid(@Param("poId") Long poId, @Param("ouId") Long ouId, @Param("uuid") String uuid);
+
 }

@@ -278,4 +278,16 @@ public class AsnLineManagerImpl extends BaseManagerImpl implements AsnLineManage
     public int deleteWhAsnByIdOuIdToShard(Long id, Long ouId) {
         return this.whAsnLineDao.deleteByIdOuId(id, ouId);
     }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<WhAsnLine> findTempWhAsnLineByAsnIdOuIdNotUuid(Long asnId, Long ouId, String uuid) {
+        return this.whAsnLineDao.findTempWhAsnLineByAsnIdOuIdNotUuid(asnId, ouId, uuid);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<WhAsnLine> findTempWhAsnLineByAsnIdOuIdUuid(Long asnId, Long ouId, String uuid) {
+        return this.whAsnLineDao.findTempWhAsnLineByAsnIdOuIdUuid(asnId, ouId, uuid);
+    }
 }

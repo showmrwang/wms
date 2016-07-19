@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.baozun.scm.primservice.whoperation.command.poasn.BiPoLineCommand;
+import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
 import com.baozun.scm.primservice.whoperation.dao.poasn.BiPoDao;
@@ -114,6 +115,10 @@ public class BiPoLineManagerImpl extends BaseManagerImpl implements BiPoLineMana
                 // 如果对应的polineid is null 直接去除这条的uuid数据 保存为正式数据
                 p.setUuid(null);
                 p.setModifiedId(biPoLineCommand.getModifiedId());
+                double qtyPlanned = p.getQtyPlanned();
+                if (flag) {
+                    p.setAvailableQty(Constants.DEFAULT_DOUBLE);
+                }
                 int count = biPoLineDao.saveOrUpdateByVersion(p);
                 if (count <= 0) {
                     throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
@@ -127,6 +132,8 @@ public class BiPoLineManagerImpl extends BaseManagerImpl implements BiPoLineMana
                         whPoLine.setId(null);
                         whPoLine.setPoLineId(p.getId());
                         whPoLine.setOuId(ouId);
+                        whPoLine.setQtyPlanned(qtyPlanned);
+                        whPoLine.setAvailableQty(qtyPlanned);
                         whPoLine.setPoId(whpo.getId());
                         this.whPoLineDao.insert(whPoLine);
                     }
@@ -138,7 +145,11 @@ public class BiPoLineManagerImpl extends BaseManagerImpl implements BiPoLineMana
                 if (null != w) {
                     // 合并数量
                     w.setQtyPlanned(w.getQtyPlanned() + p.getQtyPlanned());// 计划数量
-                    w.setAvailableQty(w.getAvailableQty() + p.getQtyPlanned());// 可用数量=原可用数量+新计划数量
+                    if (flag) {
+                        w.setAvailableQty(Constants.DEFAULT_DOUBLE);
+                    } else {
+                        w.setAvailableQty(w.getAvailableQty() + p.getQtyPlanned());// 可用数量=原可用数量+新计划数量
+                    }
                     w.setModifiedId(biPoLineCommand.getModifiedId());
                     int count = biPoLineDao.saveOrUpdateByVersion(w);
                     if (count <= 0) {
@@ -147,7 +158,7 @@ public class BiPoLineManagerImpl extends BaseManagerImpl implements BiPoLineMana
                     if(flag){
                         WhPoLine whpoLine = this.whPoLineDao.findByPoCodeAndOuIdAndPoLineId(biPo.getPoCode(), ouId, w.getId());
                         whpoLine.setQtyPlanned(w.getQtyPlanned());
-                        whpoLine.setAvailableQty(w.getAvailableQty());
+                        whpoLine.setAvailableQty(whpoLine.getAvailableQty()+p.getQtyPlanned());
                         whpoLine.setModifiedId(w.getModifiedId());
                         this.whPoLineDao.saveOrUpdateByVersion(whpoLine);
                     }
@@ -243,5 +254,26 @@ public class BiPoLineManagerImpl extends BaseManagerImpl implements BiPoLineMana
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public Pagination<BiPoLineCommand> findListByQueryMapWithPageExtForCreateSubPo(Page page, Sort[] sorts, Map<String, Object> params) {
         return this.biPoLineDao.findListByQueryMapWithPageExtForCreateSubPo(page, sorts, params);
+    }
+
+    @Override
+    public void deleteList(List<BiPoLine> lineList) {
+        if (null != lineList && lineList.size() > 0) {
+            Long userId = lineList.get(0).getModifiedId();
+            BiPo bipo = this.biPoDao.findById(lineList.get(0).getPoId());
+            double qty = bipo.getQtyPlanned();
+            for (BiPoLine line : lineList) {
+                if (PoAsnStatus.BIPO_NEW != line.getStatus()) {
+                    throw new BusinessException(ErrorCodes.BIPO_DELETE_HAS_ALLOCATED_ERROR);
+                }
+                if (null != line.getUuid()) {
+                    qty -= line.getQtyPlanned();
+                }
+                this.biPoLineDao.delete(line.getId());
+            }
+            bipo.setQtyPlanned(qty);
+            bipo.setModifiedId(userId);
+            this.biPoDao.saveOrUpdateByVersion(bipo);
+        }
     }
 }

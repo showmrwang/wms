@@ -49,4 +49,15 @@ public class CacheKeyConstant {
     public static final String CACHE_RCVD_CONTAINER_PREFIX = "CACHE_RCVD_CONTAINER_";
 
     public static final String CACHE_RCVD_PALLET_PREFIX = "CACHE_RCVD_PALLET_";
+
+
+    // 过期时间
+    public static final int CACHE_ONE_SECOND = 1;
+    public static final int CACHE_ONE_MINUTE = 60;
+    public static final int CACHE_THIRTY_MINUTE = 30 * 60;
+    public static final int CACHE_ONE_HOUR = 60 * 60;
+    public static final int CACHE_ONE_DAY = 1 * 24 * 60 * 60;
+    public static final int CACHE_ONE_WEEK = 7 * 24 * 60 * 60;
+    public static final int CACHE_ONE_MONTH = 30 * 24 * 60 * 60;
+    public static final int CACHE_ONE_YEAR = 365 * 24 * 60 * 60;
 }

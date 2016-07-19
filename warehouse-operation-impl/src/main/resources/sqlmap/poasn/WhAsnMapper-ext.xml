@@ -405,4 +405,23 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
               (null)
 	    </if>
     </select>
+    
+     <select id="findTempAsnByPoIdOuIdNotUuid" parameterType="map" resultMap="WhAsnResult" flushCache="false">
+			select <include refid="whAsnColumns" />
+		    <![CDATA[
+			    from t_wh_asn 
+		        where 
+		        po_id = #{poId} and ou_id=#{ouId} and uuid is not null and uuid!=#{uuid} 
+		    ]]>
+		</select>	
+		
+     <select id="findTempAsnByPoIdOuIdUuid" parameterType="map" resultMap="WhAsnResult" flushCache="false">
+			select <include refid="whAsnColumns" />
+		    <![CDATA[
+			    from t_wh_asn 
+		        where 
+		        po_id = #{poId} and ou_id=#{ouId} and  uuid=#{uuid} 
+		    ]]>
+		</select>	
+		
 </mapper>

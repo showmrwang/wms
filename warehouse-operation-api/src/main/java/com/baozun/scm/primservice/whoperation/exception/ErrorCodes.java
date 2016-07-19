@@ -319,6 +319,8 @@ public class ErrorCodes {
     public static final int RCVD_CONTAINER_REVOKE_ERROR = 10024;
     /** 商品效期已过期！ */
     public static final int SKU_EXPIRE_ERROR = 10025;
+    /** 已分配仓库的单据，不允许删除！ */
+    public static final int BIPO_DELETE_HAS_ALLOCATED_ERROR = 10026;
     // 10001-20000 luyimin
 
 

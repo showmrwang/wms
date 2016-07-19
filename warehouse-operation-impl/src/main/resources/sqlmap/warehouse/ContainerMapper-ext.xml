@@ -7,7 +7,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao">
 	<resultMap id="ContainerResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.Container">
 	</resultMap>
-	
 	<resultMap id="ContainerCommandResultExt" type="com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand">
 	</resultMap>
 	
