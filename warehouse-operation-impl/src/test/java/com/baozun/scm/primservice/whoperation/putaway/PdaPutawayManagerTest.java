@@ -51,7 +51,7 @@ public class PdaPutawayManagerTest extends AbstractJUnit4SpringContextTests {
     
     @Test
     public void getPK(){
-       System.out.println("start"); 
+       System.out.println("start");
        //com.baozun.scm.primservice.whinfo.model.warehouse.Container
        //14100031 14100032
        
