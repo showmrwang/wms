@@ -1,261 +1,23 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
-PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
-"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
 
 
 <mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.AsnReserveDao">
-	<resultMap id="AsnReserveResultExt"
-		type="com.baozun.scm.primservice.whoperation.model.warehouse.AsnReserve">
-	</resultMap>
-
-	<resultMap id="asnReserveCommand"
-		type="com.baozun.scm.primservice.whoperation.command.warehouse.AsnReserveCommand">
-	</resultMap>
-
-	<select id="findListByQueryMapWithPageExt" resultMap="asnReserveCommand">
-		select
-		<include refid="asnReserveCommandColumnsExt" />
-		from t_wh_asn_reserve as s
-		left join sys_dictionary as syst on s.level = syst.dic_value and syst.group_value = "ASN_RESERVE_LEVEL"
-		left join sys_dictionary as sysl on s.status = sysl.dic_value and sysl.group_value = "ASN_RESERVE_STATUS"
-		<include refid="asnReserveDynamicWhereExt" />
-	</select>
-
-	<select id="findListCountByQueryMapExt" resultType="int">
-		select count(*) from t_wh_asn_reserve as s
-		left join sys_dictionary as syst on s.level = syst.dic_value and syst.group_value = "ASN_RESERVE_LEVEL"
-		left join sys_dictionary as sysl on s.status = sysl.dic_value and sysl.group_value = "ASN_RESERVE_STATUS"
-		<include refid="asnReserveDynamicWhereExt" />
-	</select>
-
-	<select id="findListByQueryMapWithExt" resultMap="asnReserveCommand">
-		select
-		<include refid="asnReserveCommandColumnsExt" />
-		from t_wh_asn_reserve as s
-		left join sys_dictionary as syst on s.level = syst.dic_value and syst.group_value = "ASN_RESERVE_LEVEL"
-		left join sys_dictionary as sysl on s.status = sysl.dic_value and sysl.group_value = "ASN_RESERVE_STATUS"
-		<include refid="asnReserveDynamicWhereExtSimpty" />
-
-	</select>
-
-
-	<!-- 用于select查询公用抽取的列 -->
-	<sql id="asnReserveCommandColumnsExt">
-	    <![CDATA[
-	        	s.id as id,
-	        	s.code as code,
-	        	s.asn_code as asnCode,
-	        	s.asn_id as asnId,
-	        	s.eta as eta,
-	        	s.delivery_time as deliveryTime,
-	        	s.est_parking_time as estParkingTime,
-	        	s.level as level,
-	        	s.ou_id as ouId,
-	        	s.status as status,
-	        	s.sort as sort,
-	        	s.create_time as createTime,
-	        	s.created_id as createdId,
-	        	s.last_modify_time as lastModifyTime,
-	        	s.modified_id as modifiedId,
-				syst.dic_label as asnReserveLevel,
-				sysl.dic_label as asnReserveStatus
-	    ]]>
-	</sql>
-	
-	<sql id="asnReserveDynamicWhereExt">
-		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
-		<where>
-
-			<if test="id!=null">
-				and s.id = #{id}
-			</if>
-
-
-			<if test="code!=null and code!=''">
-				and s.code like #{code}
-			</if>
-
-
-			<if test="asnCode!=null and asnCode!=''">
-				and s.asn_code like #{asnCode}
-			</if>
-
-			<if test="asnId!=null">
-				and s.asn_id = #{asnId}
-			</if>
-
-			<if test="eta!=null">
-				and Date(s.eta) <![CDATA[ = ]]>
-				#{eta}
-			</if>
-
-			<if test="deliveryTime!=null">
-				and Date(s.delivery_time) <![CDATA[ = ]]>
-				#{deliveryTime}
-			</if>
-
-			<if test="estParkingTime!=null">
-				and s.est_parking_time like #{estParkingTime}
-			</if>
-
-			<if test="level!=null">
-				and s.level = #{level}
-			</if>
-
-			<if test="ouId!=null">
-				and s.ou_id = #{ouId}
-			</if>
-
-			<if test="status!=null">
-				and s.status = #{status}
-			</if>
-
-			<if test="sort!=null">
-				and s.sort like #{sort}
-			</if>
-
-			<if test="createTime!=null">
-				and s.create_time >= #{createTime}
-			</if>
-
-			<if test="createdId!=null">
-				and s.created_id = #{createdId}
-			</if>
-
-			<if test="lastModifyTime!=null">
-				and s.last_modify_time >= #{lastModifyTime}
-			</if>
-
-			<if test="modifiedId!=null">
-				and s.modified_id = #{modifiedId}
-			</if>
-
-			<if test="groupName!=null">
-				and sysl.group_name = #{groupName}
-			</if>
-
-			<if test="lifecycle!=null">
-				and sysl.lifecycle = #{lifecycle}
-			</if>
-
-		</where>
-	</sql>
-
-	<sql id="asnReserveDynamicWhereExtSimpty">
-		<where>
-			<if test="eta!=null">
-				and Date(s.eta) <![CDATA[ = ]]>
-				Date(#{eta})
-			</if>
-
-			<if test="ouId!=null">
-				and s.ou_id = #{ouId}
-			</if>
-
-			<if test="groupName!=null">
-				and sysl.group_name = #{groupName}
-			</if>
-
-			<if test="lifecycle!=null">
-				and sysl.lifecycle = #{lifecycle}
-			</if>
-			order by s.sort
-		</where>
-	</sql>
-	
-	<update id="updateByVersion"
-		parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.AsnReserve">
-		    <![CDATA[
-		        UPDATE t_wh_asn_reserve SET
-			        code = #{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        asn_code = #{asnCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        asn_id = #{asnId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-			        eta = #{eta,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-			        delivery_time = #{deliveryTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-			        est_parking_time = #{estParkingTime,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-			        level = #{level,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        status = #{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-			        sort = #{sort,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-			        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-			        last_modify_time = now(),
-			        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
-		        WHERE 
-			        id = #{id} 
-			        and ou_id = #{ouId}
-			        and last_modify_time	=  #{lastModifyTime}    
-		    ]]>
-	</update>
-
-	<update id="updateStatus"
-		parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.AsnReserve">
-		UPDATE t_wh_asn_reserve SET status = #{status},modified_id =
-		#{userid},last_modify_time = now()
-		WHERE id in
-		<foreach collection="ids" item="id" open="(" separator=","
-			close=")">
-			#{id}
-		</foreach>
-		and ou_id = #{ouId}
-	</update>
-
-	<update id="updateAsnReserveSort" parameterType="java.util.List">
-		UPDATE t_wh_asn_reserve SET sort =
-		<foreach collection="asnReserveList" item="asnReserve" index="index"
-			separator=" " open="case id" close="end">
-			when #{asnReserve.id,javaType=java.lang.Long,jdbcType=BIGINT} then
-			#{asnReserve.sort,javaType=java.lang.Integer,jdbcType=INTEGER}
-		</foreach>
-		,modified_id = #{userid},last_modify_time = now()
-		where id in
-		<foreach collection="asnReserveList" index="index" item="asnReserve"
-			separator="," open="(" close=")">
-			#{asnReserve.id,javaType=java.lang.Long,jdbcType=BIGINT}
-		</foreach>
-		and ou_id = #{ouId}
-	</update>
-
-	<select id="findAsnReserveByStatusExt" resultMap="AsnReserveResultExt">
-		select * from t_wh_asn_reserve as s
-		<where>
-			<if test="status!=null">
-				and s.status = #{status}
-			</if>
-
-			<if test="asnCode!=null and asnCode!=''">
-				and s.asn_code like #{asnCode}
-			</if>
-
-			<if test="ouId!=null">
-				and s.ou_id = #{ouId}
-			</if>
-		</where>
-	</select>
-	
-	<select id="findByIdExt" parameterType="java.lang.Long" resultMap="AsnReserveResultExt" flushCache="false">
-			select <include refid="asnReserveColumns" />
-		    <![CDATA[
-			    from t_wh_asn_reserve 
-		        where 
-		        id = #{id} 
-		        and ou_id = #{ouId}
-		    ]]>
-	</select>
-	
-	 <delete id="deleteByIdExt" parameterType="java.lang.Long">
-	    <![CDATA[
-	        delete from t_wh_asn_reserve where
-		        id = #{id} 
-		        and ou_id = #{ouId}
-	    ]]>
-	 </delete>
-
+    <resultMap id="AsnReserveResultExt"
+               type="com.baozun.scm.primservice.whoperation.model.warehouse.AsnReserve">
+    </resultMap>
+    
+    <resultMap id="asnReserveCommand"
+               type="com.baozun.scm.primservice.whoperation.command.warehouse.AsnReserveCommand">
+    </resultMap>
+    
+    <!-- 用于select查询公用抽取的列 -->
     <sql id="asnReserveColumnsExt">
         <![CDATA[
             id as id,
             code as code,
-            asn_code as asnCode,
             asn_id as asnId,
             eta as eta,
             delivery_time as deliveryTime,
@@ -263,13 +25,241 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
             level as level,
             ou_id as ouId,
             status as status,
-            sort as sort,
             create_time as createTime,
             created_id as createdId,
             last_modify_time as lastModifyTime,
             modified_id as modifiedId
         ]]>
     </sql>
+    
+    <sql id="asnReserveDynamicWhereExt">
+        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+            
+            <if test="id!=null">
+                and id = #{id}
+            </if>
+            
+            <if test="code!=null and code!=''">
+                and code = #{code}
+            </if>
+            
+            <if test="asnId!=null">
+                and asn_id = #{asnId}
+            </if>
+            
+            <if test="eta!=null">
+                and eta = #{eta}
+            </if>
+            
+            <if test="deliveryTime!=null">
+                and delivery_time = #{deliveryTime}
+            </if>
+            
+            <if test="estParkingTime!=null">
+                and est_parking_time = #{estParkingTime}
+            </if>
+            
+            <if test="level!=null and level!=''">
+                and level = #{level}
+            </if>
+            
+            <if test="ouId!=null">
+                and ou_id = #{ouId}
+            </if>
+            
+            <if test="status!=null">
+                and status = #{status}
+            </if>
+            
+            <if test="createTime!=null">
+                and create_time = #{createTime}
+            </if>
+            
+            <if test="createdId!=null">
+                and created_id = #{createdId}
+            </if>
+            
+            <if test="lastModifyTime!=null">
+                and last_modify_time = #{lastModifyTime}
+            </if>
+            
+            <if test="modifiedId!=null">
+                and modified_id = #{modifiedId}
+            </if>
+        </where>
+    </sql>
+    
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="asnReserveCommandColumnsExt">
+        <![CDATA[
+            asnR.id as id,
+            asnR.code as code,
+            asnR.asn_id as asnId,
+            asnR.eta as eta,
+            asnR.delivery_time as deliveryTime,
+            asnR.est_parking_time as estParkingTime,
+            asnR.level as level,
+            asnR.ou_id as ouId,
+            asnR.status as status,
+            asnR.create_time as createTime,
+            asnR.created_id as createdId,
+            asnR.last_modify_time as lastModifyTime,
+            asnR.modified_id as modifiedId,
+            asn.asn_ext_code as asnExtCode,
+            levelDic.dic_label as asnReserveLevel,
+            statusDic.dic_label as asnReserveStatus
+        ]]>
+    </sql>
+    
+    <sql id="asnReserveDynamicWhereLikeExt">
+        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+            <if test="id!=null">
+                and asnR.id = #{id}
+            </if>
+            
+            <if test="code!=null and code!=''">
+                and asnR.code like #{code}
+            </if>
+            
+            <if test="asnId!=null">
+                and asnR.asn_id = #{asnId}
+            </if>
+            
+            <if test="asnExtCode!=null">
+                and asn.asn_ext_code like #{asnExtCode}
+            </if>
+            
+            <if test="eta!=null">
+                and asnR.eta >= date_format(#{eta}, '%Y-%m-%d')
+                and asnR.eta &lt; date_format(date_add(#{eta}, interval 1 day), '%Y-%m-%d')
+            </if>
+            
+            <if test="deliveryTime!=null">
+                and asnR.delivery_time >= date_format(#{deliveryTime}, '%Y-%m-%d')
+                and asnR.delivery_time &lt; date_format(date_add(#{deliveryTime}, interval 1 day), '%Y-%m-%d')
+            </if>
+            
+            <if test="estParkingTime!=null">
+                and asnR.est_parking_time = #{estParkingTime}
+            </if>
+            
+            <if test="level!=null and level!=''">
+                and asnR.level = #{level}
+            </if>
+            
+            <if test="ouId!=null">
+                and asnR.ou_id = #{ouId}
+            </if>
+            
+            <if test="status!=null">
+                and asnR.status = #{status}
+            </if>
+            
+            <if test="createTime!=null">
+                and asnR.create_time = #{createTime}
+            </if>
+            
+            <if test="createdId!=null">
+                and asnR.created_id = #{createdId}
+            </if>
+            
+            <if test="lastModifyTime!=null">
+                and asnR.last_modify_time = #{lastModifyTime}
+            </if>
+            
+            <if test="modifiedId!=null">
+                and asnR.modified_id = #{modifiedId}
+            </if>
+            
+            <if test="asnCode!=null and asnCode !=''">
+                and asn.asn_ext_code like #{asnExtCode}
+            </if>
+        </where>
+    </sql>
+    
+    <delete id="removeAsnReserve" parameterType="long">
+        delete from t_wh_asn_reserve
+        where id = #{asnReserveId}
+        and ou_id = #{ouId}
+    </delete>
+    
+    <select id="findListByQueryMapWithPageExt" resultMap="asnReserveCommand">
+        select
+        <include refid="asnReserveCommandColumnsExt"/>
+        from t_wh_asn_reserve as asnR
+        left join t_wh_asn as asn on asnR.asn_id = asn.id
+        left join sys_dictionary as levelDic on asnR.level = levelDic.dic_value and levelDic.group_value = "ASN_RESERVE_LEVEL"
+        left join sys_dictionary as statusDic on asnR.status = statusDic.dic_value and statusDic.group_value = "ASN_RESERVE_STATUS"
+        <include refid="asnReserveDynamicWhereLikeExt"/>
+    </select>
+    
+    <select id="findListCountByQueryMapExt" resultType="int">
+        select count(1) from t_wh_asn_reserve as asnR
+        left join t_wh_asn as asn on asnR.asn_id = asn.id
+        <include refid="asnReserveDynamicWhereLikeExt"/>
+    </select>
+    
+    <update id="updateByVersion"
+            parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.AsnReserve">
+        <![CDATA[
+                UPDATE t_wh_asn_reserve SET
+                    code = #{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    asn_id = #{asnId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    eta = #{eta,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                    delivery_time = #{deliveryTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                    est_parking_time = #{estParkingTime,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                    level = #{level,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    status = #{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                    create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                    created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    last_modify_time = now(),
+                    modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT}
+                WHERE
+                    id = #{id}
+                    and ou_id = #{ouId}
+                    and last_modify_time = #{lastModifyTime}
+            ]]>
+    </update>
+    
+    <select id="getAsnReserveCommandById" resultMap="asnReserveCommand">
+        select
+        <include refid="asnReserveCommandColumnsExt"/>
+        from t_wh_asn_reserve as asnR
+        left join t_wh_asn as asn on asnR.asn_id = asn.id
+        left join sys_dictionary as levelDic on asnR.level = levelDic.dic_value and levelDic.group_value = "ASN_RESERVE_LEVEL"
+        left join sys_dictionary as statusDic on asnR.status = statusDic.dic_value and statusDic.group_value = "ASN_RESERVE_STATUS"
+        where asnR.id = #{asnReserveId}
+        and asnR.ou_id = #{ouId}
+    </select>
+    
+    <select id="getAsnReserveById" resultMap="AsnReserveResultExt">
+        select
+        <include refid="asnReserveColumnsExt"/>
+        from t_wh_asn_reserve
+        where id = #{asnReserveId}
+        and ou_id = #{ouId}
+    </select>
+    
+    <select id="findAsnReserveCommandByEtaDate" resultMap="asnReserveCommand">
+        select
+        <include refid="asnReserveCommandColumnsExt"/>
+        from t_wh_asn_reserve as asnR
+        left join t_wh_asn as asn on asnR.asn_id = asn.id
+        left join sys_dictionary as levelDic on asnR.level = levelDic.dic_value and levelDic.group_value = "ASN_RESERVE_LEVEL"
+        left join sys_dictionary as statusDic on asnR.status = statusDic.dic_value and statusDic.group_value = "ASN_RESERVE_STATUS"
+        where asnR.ou_id = #{ouId}
+        and asnR.eta >= date_format(#{reserveDate}, '%Y-%m-%d')
+        and asnR.eta &lt; date_format(date_add(#{reserveDate}, interval 1 day), '%Y-%m-%d')
+        order by asnR.eta ASC
+    </select>
+    
+    <select id="checkAsnReserveCodeUnique" resultType="int">
+        select count(1) from t_wh_asn_reserve
+        where code = #{code}
+        and ou_id = #{ouId}
+    </select>
 
     <select id="findAsnReserveByAsnId" resultMap="AsnReserveResultExt">
         select <include refid="asnReserveColumnsExt" />

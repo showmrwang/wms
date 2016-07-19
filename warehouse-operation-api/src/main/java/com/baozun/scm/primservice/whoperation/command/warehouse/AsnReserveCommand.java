@@ -1,16 +1,16 @@
 /**
  * Copyright (c) 2013 Baozun All Rights Reserved.
- * 
+ *
  * This software is the confidential and proprietary information of Baozun. You shall not disclose
  * such Confidential Information and shall use it only in accordance with the terms of the license
  * agreement you entered into with Baozun.
- * 
+ *
  * BAOZUN MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT THE SUITABILITY OF THE SOFTWARE, EITHER
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT. BAOZUN SHALL NOT BE LIABLE FOR ANY DAMAGES
  * SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS SOFTWARE OR ITS
  * DERIVATIVES.
- * 
+ *
  */
 package com.baozun.scm.primservice.whoperation.command.warehouse;
 
@@ -19,78 +19,45 @@ import java.util.Date;
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
 
 /**
- * 
+ *
  * @author larkark
- * 
+ *
  */
 public class AsnReserveCommand extends BaseCommand {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = -766151944854267065L;
     private Long id;
-    /*
-     * 预约号
-     */
+    /** 预约号 */
     private String code;
-    /*
-     * asn号
-     */
-    private String asnCode;
-    /*
-     * asn单ID
-     */
+    /** asn单ID */
     private Long asnId;
-    /*
-     * 计划到货时间
-     */
+    /** 计划到货时间 */
     private Date eta;
-    /*
-     * 实际到货时间
-     */
+    /** 实际到货时间 */
     private Date deliveryTime;
-    /*
-     * 预计停靠时长
-     */
+    /** 预计停靠时长 */
     private Integer estParkingTime;
-    /*
-     * 优先级
-     */
+    /** 优先级 */
     private String level;
-    /*
-     * 仓库组织ID
-     */
+    /** 仓库组织ID */
     private Long ouId;
-    /*
-     * status
-     */
+    /** 预约状态:1:已创建 2:已签入 10:收货完成 */
     private Integer status;
-    /*
-     * 排序 排队序号
-     */
-    private Integer sort;
-    /*
-     * 创建时间
-     */
+    /** 创建时间 */
     private Date createTime;
-    /*
-     * createdId
-     */
+    /** 创建人 */
     private Long createdId;
-    /*
-     * 最后修改时间
-     */
+    /** 最后修改时间 */
     private Date lastModifyTime;
-    /*
-     * 操作人ID
-     */
+    /** 操作人ID */
     private Long modifiedId;
-
+    /** asn外部编码 */
+    private String asnExtCode;
+    /** 预约优先级 */
     private String asnReserveLevel;
-
+    /** 预约状态 */
     private String asnReserveStatus;
-    
+
     public Long getId() {
         return id;
     }
@@ -105,14 +72,6 @@ public class AsnReserveCommand extends BaseCommand {
 
     public void setCode(String code) {
         this.code = code;
-    }
-
-    public String getAsnCode() {
-        return asnCode;
-    }
-
-    public void setAsnCode(String asnCode) {
-        this.asnCode = asnCode;
     }
 
     public Long getAsnId() {
@@ -171,14 +130,6 @@ public class AsnReserveCommand extends BaseCommand {
         this.status = status;
     }
 
-    public Integer getSort() {
-        return sort;
-    }
-
-    public void setSort(Integer sort) {
-        this.sort = sort;
-    }
-
     public Date getCreateTime() {
         return createTime;
     }
@@ -211,6 +162,14 @@ public class AsnReserveCommand extends BaseCommand {
         this.modifiedId = modifiedId;
     }
 
+    public String getAsnExtCode() {
+        return asnExtCode;
+    }
+
+    public void setAsnExtCode(String asnExtCode) {
+        this.asnExtCode = asnExtCode;
+    }
+
     public String getAsnReserveLevel() {
         return asnReserveLevel;
     }
@@ -226,5 +185,4 @@ public class AsnReserveCommand extends BaseCommand {
     public void setAsnReserveStatus(String asnReserveStatus) {
         this.asnReserveStatus = asnReserveStatus;
     }
-
 }

@@ -1,16 +1,16 @@
 /**
  * Copyright (c) 2013 Baozun All Rights Reserved.
- * 
+ *
  * This software is the confidential and proprietary information of Baozun. You shall not disclose
  * such Confidential Information and shall use it only in accordance with the terms of the license
  * agreement you entered into with Baozun.
- * 
+ *
  * BAOZUN MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT THE SUITABILITY OF THE SOFTWARE, EITHER
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT. BAOZUN SHALL NOT BE LIABLE FOR ANY DAMAGES
  * SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS SOFTWARE OR ITS
  * DERIVATIVES.
- * 
+ *
  */
 package com.baozun.scm.primservice.whoperation.dao.warehouse;
 
@@ -35,7 +35,7 @@ public interface AsnReserveDao extends BaseDao<AsnReserve, Long> {
 
     /**
      * 通过参数查询ASN预约分页列表
-     * 
+     *
      * @param page
      * @param sorts
      * @param params
@@ -51,41 +51,54 @@ public interface AsnReserveDao extends BaseDao<AsnReserve, Long> {
     @CommonQuery
     int saveOrUpdateByVersion(AsnReserve o);
 
-    List<AsnReserveCommand> findListByQueryMapWithExt(@Param("eta") Date eta, @Param("groupName") String groupName, @Param("lifecycle") int lifecycle, @Param("ouId") Long ouId);
-
     /**
-     * 批量编辑Asn预约
-     * 
-     * @param ids
-     * @param status
-     * @param userid
-     * @return
-     */
-    int updateStatus(@Param("ids") List<Long> ids, @Param("status") Integer status, @Param("userid") Long userid, @Param("ouId") Long ouId);
-
-    int updateAsnReserveSort(@Param("asnReserveList") List<AsnReserve> asnReserveList, @Param("userid") Long userid, @Param("ouId") Long ouId);
-    
-    /**
-     * 查询AsnReserve单个对象
-     * @return
-     */
-    AsnReserve findAsnReserveByStatusExt(@Param("asnCode") String asnCode, @Param("status") Integer status, @Param("ouId") Long ouId);
-    
-    /**
-     * 通过id进行查询单个对象
-     * 
-     * @param id
-     * @return
-     */
-    AsnReserve findByIdExt(@Param("id") Long id, @Param("ouId") Long ouId);
-    
-    /**
-     * 删除Asn预约
-     * @param id
+     * 根据ID查找预约信息
+     *
+     * @author mingwei.xie
+     * @param asnReserveId
      * @param ouId
      * @return
      */
-    int deleteByIdExt(@Param("id") Long id, @Param("ouId") Long ouId);
+    AsnReserve getAsnReserveById(@Param("asnReserveId") Long asnReserveId, @Param("ouId") Long ouId);
+
+    /**
+     * 根据ID查找预约信息
+     *
+     * @author mingwei.xie
+     * @param asnReserveId
+     * @param ouId
+     * @return
+     */
+    AsnReserveCommand getAsnReserveCommandById(@Param("asnReserveId") Long asnReserveId, @Param("ouId") Long ouId);
+
+    /**
+     * 根据日期查询当天的预约信息
+     *
+     * @author mingwei.xie
+     * @param reserveDate
+     * @param ouId
+     * @return
+     */
+    List<AsnReserveCommand> findAsnReserveCommandByEtaDate(@Param("reserveDate") Date reserveDate, @Param("ouId") Long ouId);
+
+    /**
+     * 取消预约，执行物理删除
+     *
+     * @author mingwei.xie
+     * @param asnReserveId
+     * @return
+     */
+    int removeAsnReserve(@Param("asnReserveId") Long asnReserveId, @Param("ouId") Long ouId);
+
+    /**
+     * 验证预约号是否已存在
+     *
+     * @author mingwei.xie
+     * @param code
+     * @param ouId
+     * @return
+     */
+    int checkAsnReserveCodeUnique(@Param("code") String code, @Param("ouId") Long ouId);
 
     /**
      * 根据asnId查找预约信息
@@ -96,6 +109,5 @@ public interface AsnReserveDao extends BaseDao<AsnReserve, Long> {
      * @return
      */
     AsnReserve findAsnReserveByAsnId(@Param("asnId") Long asnId, @Param("ouId") Long ouId);
-
 
 }
