@@ -395,7 +395,7 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
         }
         return whpo;
     }
-    
+
     @Override
     public Pagination<WhPoLineCommand> findPoLineListByQueryMapWithPageExtForCreateSubPo(Page page, Sort[] sorts, Map<String, Object> paraMap, Integer infoSource) {
         return this.poLineManager.findPoLineListByQueryMapWithPageExtForCreateSubPoToInfo(page, sorts, paraMap);
@@ -475,7 +475,7 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
     public WhAsn findWhAsnById(Long id, Long ouId) {
         return this.asnManager.findWhAsnByIdToShard(id, ouId);
     }
-    
+
     @Override
     public void checkWhAsnLineBySkuId(List<WhAsnLine> whAsnLineList, Long skuId, Long ouId, String logId) {
         boolean errorFlag = false;
@@ -521,4 +521,15 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
         return this.poLineManager.findPoLineListByQueryMapWithPageExtForCreateAsnToShard(page, sorts, paraMap);
     }
 
+    /**
+     * 根据状态查询所有ASN
+     *
+     * @param status
+     * @param ouId
+     * @return
+     */
+    @Override
+    public List<WhAsnCommand> findAsnListByStatus(int status, Long ouId) {
+        return this.asnManager.findAsnListByStatus(status, ouId);
+    }
 }

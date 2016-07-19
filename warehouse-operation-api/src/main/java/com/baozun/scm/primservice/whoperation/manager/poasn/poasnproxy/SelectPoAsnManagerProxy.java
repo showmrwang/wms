@@ -263,4 +263,14 @@ public interface SelectPoAsnManagerProxy extends BaseManager {
      */
     Pagination<WhAsnLineCommand> findAsnLineListByQueryMapWithPageExtForCreateAsn(Page page, Sort[] sorts, Map<String, Object> paraMap, Integer shardSource);
 
+    /**
+     * 根据状态查询所有ASN
+     *
+     * @author mingwei.xie
+     * @param status
+     * @param ouId
+     * @return
+     */
+    List<WhAsnCommand> findAsnListByStatus(int status, Long ouId);
+
 }

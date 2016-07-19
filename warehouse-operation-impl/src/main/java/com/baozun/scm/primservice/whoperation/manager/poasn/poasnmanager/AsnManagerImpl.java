@@ -890,4 +890,17 @@ public class AsnManagerImpl implements AsnManager {
     }
 
 
+    /**
+     * 根据状态查询所有ASN
+     *
+     * @author mingwei.xie
+     * @param status
+     * @param ouId
+     * @return
+     */
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    @Override
+    public List<WhAsnCommand> findAsnListByStatus(int status, Long ouId) {
+        return whAsnDao.findAsnListByStatus(status, ouId);
+    }
 }

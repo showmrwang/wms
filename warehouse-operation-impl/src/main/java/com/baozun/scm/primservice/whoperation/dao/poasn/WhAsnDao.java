@@ -105,4 +105,14 @@ public interface WhAsnDao extends BaseDao<WhAsn, Long> {
 
     WhAsn findTempAsnByPoIdOuIdUuid(@Param("poId") Long poId, @Param("ouId") Long ouId, @Param("uuid") String uuid);
 
+    /**
+     * 根据状态查询所有ASN
+     *
+     * @author mingwei.xie
+     * @param status
+     * @param ouId
+     * @return
+     */
+    List<WhAsnCommand> findAsnListByStatus(@Param("status") int status, @Param("ouId") Long ouId);
+
 }

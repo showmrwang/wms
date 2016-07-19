@@ -173,4 +173,14 @@ public interface AsnManager extends BaseManager {
      * @param uuid
      */
     void deleteAsnAndLine(WhAsn asn, List<WhAsnLine> lineList);
+
+    /**
+     * 根据状态查询所有ASN
+     *
+     * @author mingwei.xie
+     * @param status
+     * @param ouId
+     * @return
+     */
+    List<WhAsnCommand> findAsnListByStatus(int status, Long ouId);
 }

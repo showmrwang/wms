@@ -424,4 +424,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    ]]>
 		</select>	
 		
+
+    <select id="findAsnListByStatus" resultMap="whAsnCommand">
+        select
+            <include refid="whAsnColumnsMapExt" />
+        from
+            t_wh_asn asn
+            left join t_bi_customer c on asn.customer_id = c.id
+            left join t_bi_store s on asn.store_id = s.id
+            left join sys_dictionary sys on sys.dic_value = asn.status and sys.group_value = 'ASNSTATUS'
+        where asn.status = #{status}
+        and asn.ou_id = #{ouId}
+    </select>
 </mapper>
