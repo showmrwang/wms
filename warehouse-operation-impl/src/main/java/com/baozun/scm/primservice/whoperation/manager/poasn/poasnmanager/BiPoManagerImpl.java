@@ -374,4 +374,10 @@ public class BiPoManagerImpl extends BaseManagerImpl implements BiPoManager {
 
     }
 
+    @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
+    public List<BiPo> findListByStoreIdExtCode(Long storeId, String extCode) {
+        return this.biPoDao.findListByStoreIdExtCode(storeId, extCode);
+    }
+
 }

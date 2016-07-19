@@ -133,5 +133,13 @@ public interface BiPoManager extends BaseManager {
      */
     void closeSubPoToInfo(String poCode, Long ouId, Long id);
 
+    /**
+     * 根据店铺ID和相关单据号查询
+     * 
+     * @param storeId
+     * @param extCode
+     * @return
+     */
+    List<BiPo> findListByStoreIdExtCode(Long storeId, String extCode);
 
 }

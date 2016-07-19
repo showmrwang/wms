@@ -705,10 +705,7 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
         Long ouId=po.getOuId();
         try {
             //校验ExtCode: ext_code与storeId 唯一性
-            BiPo checkExtCodeBiPo = new BiPo();
-            checkExtCodeBiPo.setStoreId(po.getStoreId());
-            checkExtCodeBiPo.setExtCode(po.getExtCode());
-            List<BiPo> checkExtCodeBiPoList = this.biPoManager.findListByParam(checkExtCodeBiPo);
+            List<BiPo> checkExtCodeBiPoList = this.biPoManager.findListByStoreIdExtCode(po.getStoreId(), po.getExtCode());
             if (null == checkExtCodeBiPoList || checkExtCodeBiPoList.size() > 0) {
                 log.warn("check extcode returns failure when createPo!");
                 rm.setResponseStatus(ResponseMsg.STATUS_ERROR);

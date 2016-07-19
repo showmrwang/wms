@@ -81,4 +81,13 @@ public interface BiPoDao extends BaseDao<BiPo,Long>{
     @QueryPage("findListCountByQueryMapExt")
     Pagination<BiPoCommand> findListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params);
 
+    /**
+     * 根据店铺ID和extcode查询
+     * 
+     * @param storeId
+     * @param extCode
+     * @return
+     */
+    List<BiPo> findListByStoreIdExtCode(@Param("storeId") Long storeId, @Param("extCode") String extCode);
+
 }

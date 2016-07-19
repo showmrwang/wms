@@ -118,6 +118,7 @@ public class BiPoLineManagerImpl extends BaseManagerImpl implements BiPoLineMana
                 double qtyPlanned = p.getQtyPlanned();
                 if (flag) {
                     p.setAvailableQty(Constants.DEFAULT_DOUBLE);
+                    p.setStatus(PoAsnStatus.BIPOLINE_ALLOT);
                 }
                 int count = biPoLineDao.saveOrUpdateByVersion(p);
                 if (count <= 0) {
@@ -135,6 +136,7 @@ public class BiPoLineManagerImpl extends BaseManagerImpl implements BiPoLineMana
                         whPoLine.setQtyPlanned(qtyPlanned);
                         whPoLine.setAvailableQty(qtyPlanned);
                         whPoLine.setPoId(whpo.getId());
+                        whPoLine.setStatus(PoAsnStatus.POLINE_NEW);
                         this.whPoLineDao.insert(whPoLine);
                     }
                 }
@@ -257,6 +259,7 @@ public class BiPoLineManagerImpl extends BaseManagerImpl implements BiPoLineMana
     }
 
     @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public void deleteList(List<BiPoLine> lineList) {
         if (null != lineList && lineList.size() > 0) {
             Long userId = lineList.get(0).getModifiedId();
