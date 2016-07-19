@@ -800,7 +800,7 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
             rm.setMsg(ErrorCodes.DAO_EXCEPTION + "");
             return rm;
         }
-        rm.setReasonStatus(ResponseMsg.STATUS_SUCCESS);
+        rm.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
         rm.setMsg("success");
         return rm;
     }
@@ -939,5 +939,29 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
             log.debug(this.getClass().getSimpleName() + ".save.updatePo.packageUpdatePoData method returns {}", savePo);
         }
         return savePo;
+    }
+
+    @Override
+    public void deleteBiPoLines(BiPoLineCommand command) {
+        log.info("EidtPoAsnManagerProxyImpl.deleteBiPoLines: start====================== ");
+        List<BiPoLine> lineList = new ArrayList<BiPoLine>();
+        // 循环需要更新的poline.id
+        for (Long id : command.getIds()) {
+            BiPoLine updateCommand = biPoLineManager.findBiPoLineById(id);
+
+            if (null == updateCommand) {
+                throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
+            }
+            if (null != command.getOuId() && null != command.getUuid()) {
+                throw new BusinessException(ErrorCodes.BIPO_DELETE_HAS_ALLOCATED_ERROR);
+            }
+            // 组装数据：修改者ID和修改的状态
+            updateCommand.setModifiedId(command.getModifiedId());
+            lineList.add(updateCommand);
+        }
+        if (lineList.size() > 0) {
+            this.biPoLineManager.deleteList(lineList);
+        }
+        log.info("EidtPoAsnManagerProxyImpl.deleteBiPoLines: end; delete " + lineList.size() + " rows====================== ");
     }
 }

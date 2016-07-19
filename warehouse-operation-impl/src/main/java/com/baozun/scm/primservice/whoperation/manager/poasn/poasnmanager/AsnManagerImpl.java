@@ -864,5 +864,30 @@ public class AsnManagerImpl implements AsnManager {
         }
     }
 
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void deleteAsnAndLine(WhAsn asn, List<WhAsnLine> lineList) {
+        if (lineList != null && lineList.size() > 0) {
+            for (WhAsnLine line : lineList) {
+                this.whAsnLineDao.deleteByIdOuId(line.getId(), line.getOuId());
+            }
+        }
+        if (asn != null) {
+            this.whAsnDao.deleteByIdOuId(asn.getId(), asn.getOuId());
+        }
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public WhAsn findTempAsnByPoIdOuIdNotUuid(Long poId, Long ouId, String uuid) {
+        return this.whAsnDao.findTempAsnByPoIdOuIdNotUuid(poId, ouId, uuid);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public WhAsn findTempAsnByPoIdOuIdUuid(Long poId, Long ouId, String uuid) {
+        return this.whAsnDao.findTempAsnByPoIdOuIdUuid(poId, ouId, uuid);
+    }
+
 
 }

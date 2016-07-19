@@ -506,4 +506,20 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			asn_id=#{asnId}  and ou_id = #{ouId}
 	 </select>
 	 
+	 <select id="findTempWhAsnLineByAsnIdOuIdNotUuid"  resultMap="WhAsnLineResultExt">
+	 select <include refid="whAsnLineColumnsExt" />
+	 from
+		    t_wh_asn_line
+			where
+			asn_id=#{asnId}  and ou_id = #{ouId} and uuid is not null and uuid !=#{uuid}
+	 </select>
+	 
+	 <select id="findTempWhAsnLineByAsnIdOuIdUuid"  resultMap="WhAsnLineResultExt">
+	 select <include refid="whAsnLineColumnsExt" />
+	 from
+		    t_wh_asn_line
+			where
+			asn_id=#{asnId}  and ou_id = #{ouId} and uuid =#{uuid}
+	 </select>
+	 
 </mapper>

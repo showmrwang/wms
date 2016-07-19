@@ -914,6 +914,8 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
         // 这边的逻辑：
         // 当在WMS系统页面操作创建ASN的时候，先将数据保存到临时表
         // 限定：同一个仓库下；只允许一个人同时操作一个PO单；
+        this.deleteTempAsnAndLine(command.getId(), command.getOuId(), command.getUuid());
+
         WhPo po = this.poManager.findWhPoByIdToShard(command.getId(), command.getOuId());
         if (null == po) {
             throw new BusinessException(ErrorCodes.PO_NULL);
@@ -1004,6 +1006,7 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
         if (null == asn) {
             throw new BusinessException(ErrorCodes.ASN_NULL);
         }
+        this.deleteTempAsnAndLine(asn.getPoId(), command.getOuId(), command.getUuid());
         List<WhAsnLine> lineList = new ArrayList<WhAsnLine>();
         if (null != command.getPoLineList() && command.getPoLineList().size() > 0) {
             for (WhPoLineCommand lineCommand : command.getPoLineList()) {
@@ -1049,7 +1052,7 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
                 lineList.add(line);
             }
         }
-        asn.setUuid(command.getUuid());
+        // asn.setUuid(command.getUuid());
         asn.setModifiedId(command.getUserId());
         asn.setLastModifyTime(new Date());
         this.asnManager.createAsnAndLineWithUuidToShard(asn, lineList);
@@ -1066,6 +1069,8 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
         if (null == asn) {
             throw new BusinessException(ErrorCodes.ASN_NULL);
         }
+        // 删除其他的临时数据
+        this.deleteTempAsnAndLine(asnId, ouId, uuid);
         List<WhAsnLine> asnLineList = this.asnLineManager.findWhAsnLineByAsnIdOuIdUuid(asnId, ouId, uuid);
         List<WhAsnLine> saveAsnLineList = new ArrayList<WhAsnLine>();
         Map<Long, Double> poLineMap = new HashMap<Long, Double>();
@@ -1108,5 +1113,29 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
         WhPo po = this.poManager.findWhPoByIdToShard(asn.getPoId(), ouId);
 
         this.asnManager.saveTempAsnWithUuidToShard(asn, saveAsnLineList, po, savePoLineList);
+    }
+
+    private void deleteTempAsnAndLine(Long poId, Long ouId, String uuid) {
+        // 删除掉所有的临时ASN明细
+        // 如果ASN头信息上有UUID，也删除掉
+        WhAsn asn = this.asnManager.findTempAsnByPoIdOuIdNotUuid(poId, ouId, uuid);
+        List<WhAsnLine> lineList = null;
+        if (asn != null) {
+            lineList = this.asnLineManager.findTempWhAsnLineByAsnIdOuIdNotUuid(asn.getId(), ouId, uuid);
+        }
+        this.asnManager.deleteAsnAndLine(asn, lineList);
+    }
+
+    @Override
+    public void finishCreatingAsn(WhPoCommand command) {
+        if (null != command.getAsnId()) {
+            WhAsn asn = this.asnManager.findTempAsnByPoIdOuIdUuid(command.getId(), command.getOuId(), command.getUuid());
+            List<WhAsnLine> lineList = null;
+            if (asn != null) {
+                lineList = this.asnLineManager.findTempWhAsnLineByAsnIdOuIdUuid(asn.getId(), command.getOuId(), command.getUuid());
+            }
+            this.asnManager.deleteAsnAndLine(asn, lineList);
+        }
+
     }
 }

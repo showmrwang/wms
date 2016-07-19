@@ -79,4 +79,14 @@ public interface AsnLineManager extends BaseManager {
      * 删除
      */
     int deleteWhAsnByIdOuIdToShard(Long id, Long ouId);
+
+    /**
+     * 
+     */
+    List<WhAsnLine> findTempWhAsnLineByAsnIdOuIdNotUuid(Long asnId, Long ouId, String uuid);
+
+    /**
+     * 
+     */
+    List<WhAsnLine> findTempWhAsnLineByAsnIdOuIdUuid(Long asnId, Long ouId, String uuid);
 }

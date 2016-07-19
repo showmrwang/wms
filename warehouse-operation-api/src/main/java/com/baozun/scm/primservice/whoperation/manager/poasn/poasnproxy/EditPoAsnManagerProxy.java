@@ -190,4 +190,11 @@ public interface EditPoAsnManagerProxy extends BaseManager {
      */
     ResponseMsg editPoNew(WhPoCommand command);
 
+    /**
+     * 业务方法：删除BIPO单明细
+     * 
+     * @param command
+     */
+    void deleteBiPoLines(BiPoLineCommand command);
+
 }

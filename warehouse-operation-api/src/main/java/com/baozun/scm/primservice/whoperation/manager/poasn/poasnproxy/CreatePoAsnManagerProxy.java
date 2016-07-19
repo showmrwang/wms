@@ -113,4 +113,10 @@ public interface CreatePoAsnManagerProxy extends BaseManager {
      */
     void saveTempAsnWithUuid(WhPoCommand command);
 
+    /**
+     * 
+     * @param command
+     */
+    void finishCreatingAsn(WhPoCommand command);
+
 }
