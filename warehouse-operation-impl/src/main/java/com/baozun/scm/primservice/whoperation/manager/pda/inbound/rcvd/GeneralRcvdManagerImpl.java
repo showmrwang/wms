@@ -463,6 +463,12 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
                 }
             }
             // 更新ASN
+            boolean isAsnRcvdFinished = this.whAsnDao.checkIsRcvdFinished(asn.getId(), asn.getOuId());
+            if (isAsnRcvdFinished) {
+                asn.setStatus(PoAsnStatus.ASN_RCVD_FINISH);
+            } else {
+                asn.setStatus(PoAsnStatus.ASN_RCVD);
+            }
             int updateAsnCount = this.whAsnDao.saveOrUpdateByVersion(asn);
             if (updateAsnCount <= 0) {
                 throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
@@ -475,6 +481,12 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
                 }
             }
             // 更新PO
+            boolean isPoRcvdFinished = this.whPoDao.checkIsRcvdFinished(po.getId(), po.getOuId());
+            if (isPoRcvdFinished) {
+                po.setStatus(PoAsnStatus.PO_RCVD_FINISH);
+            } else {
+                po.setStatus(PoAsnStatus.PO_RCVD);
+            }
             int updatePoCount = this.whPoDao.saveOrUpdateByVersion(po);
             if (updatePoCount <= 0) {
                 throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);

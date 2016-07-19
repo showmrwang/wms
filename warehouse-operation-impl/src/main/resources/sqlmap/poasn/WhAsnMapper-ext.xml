@@ -436,4 +436,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         where asn.status = #{status}
         and asn.ou_id = #{ouId}
     </select>
+	<select id="checkIsRcvdFinished" resultType="boolean">
+		SELECT
+		count(1)
+		from t_wh_asn a
+		where  a.id=#{asnId} and a.ou_id=#{ouId}  
+		and exists (select 1 from t_wh_asn_line l where l.asn_id=a.id and l.ou_id=a.ou_id and l.status in('1','2','10') )  
+		and not exists (select 1 from t_wh_asn_line l where l.asn_id=a.id and l.ou_id=a.ou_id and l.status in('1','2') )   
+	</select>
 </mapper>

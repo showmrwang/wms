@@ -69,4 +69,13 @@ public interface WhPoDao extends BaseDao<WhPo, Long> {
 
     List<WhPo> findWhPoByPoCodeToInfo(@Param("poCode") String poCode);
 
+    /**
+     * Po单是否收货完成
+     * 
+     * @param id
+     * @param ouId
+     * @return
+     */
+    boolean checkIsRcvdFinished(@Param("poId") Long id, @Param("ouId") Long ouId);
+
 }

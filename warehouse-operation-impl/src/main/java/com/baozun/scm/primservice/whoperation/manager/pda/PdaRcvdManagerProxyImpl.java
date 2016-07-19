@@ -26,7 +26,6 @@ import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdSnCacheComman
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnLineCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
-import com.baozun.scm.primservice.whoperation.command.poasn.WhPoLineCommand;
 import com.baozun.scm.primservice.whoperation.command.sku.skucommand.SkuMgmtCommand;
 import com.baozun.scm.primservice.whoperation.command.sku.skushared.SkuCommand2Shared;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
@@ -464,23 +463,11 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                 } else {
                     polineMap.put(asnLine.getPoLineId(), entry.getValue());
                 }
-                asnCount += entry.getKey();
+                asnCount += entry.getValue();
             }
             // 1.更新ASN明细
             // 2.筛选PO明细数据集合
             asn.setQtyRcvd(asn.getQtyRcvd() + asnCount);
-            WhAsnLineCommand searchAsnLineCommand = new WhAsnLineCommand();
-            searchAsnLineCommand.setAsnId(asn.getId());
-            searchAsnLineCommand.setOuId(ouId);
-            searchAsnLineCommand.setStatus(PoAsnStatus.ASNLINE_RCVD);
-            WhAsnLine searchAsnLine = new WhAsnLine();
-            BeanUtils.copyProperties(searchAsnLineCommand, searchAsnLine);
-            long rcvdlineCount = this.asnLineManager.findListCountByParam(searchAsnLine);
-            if (rcvdlineCount > 0) {
-                asn.setStatus(PoAsnStatus.ASN_RCVD_FINISH);
-            } else {
-                asn.setStatus(PoAsnStatus.ASN_RCVD);
-            }
             asn.setModifiedId(userId);
             Iterator<Entry<Long, Double>> poIt = polineMap.entrySet().iterator();
             Long poId = null;
@@ -507,18 +494,6 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
             }
             po.setModifiedId(userId);
             po.setQtyRcvd(po.getQtyRcvd() + asnCount);
-            WhPoLineCommand polineCommand = new WhPoLineCommand();
-            polineCommand.setOuId(ouId);
-            polineCommand.setStatus(PoAsnStatus.POLINE_RCVD);
-            polineCommand.setPoId(poId);
-            WhPoLine searchPoLine = new WhPoLine();
-            BeanUtils.copyProperties(polineCommand, searchPoLine);
-            long polinecount = this.poLineManager.findListCountByParamToShard(searchPoLine);
-            if (polinecount > 0) {
-                po.setStatus(PoAsnStatus.PO_RCVD);
-            } else {
-                po.setStatus(PoAsnStatus.PO_RCVD_FINISH);
-            }
             // 更新容器
             Container container = null;
             if (null == outerContainerId) {
