@@ -491,7 +491,6 @@ public class CheckInQueueManagerImpl extends BaseManagerImpl implements CheckInQ
         } else {
             AsnReserve asnReserve = new AsnReserve();
             asnReserve.setCode(asnReserveCommand.getCode());
-            asnReserve.setAsnCode(originWhAsn.getAsnExtCode());
             asnReserve.setAsnId(originWhAsn.getId());
             asnReserve.setEta(originWhAsn.getEta());
             asnReserve.setDeliveryTime(null);

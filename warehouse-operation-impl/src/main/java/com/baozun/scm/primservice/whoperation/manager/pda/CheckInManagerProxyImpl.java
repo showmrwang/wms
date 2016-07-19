@@ -227,7 +227,7 @@ public class CheckInManagerProxyImpl extends BaseManagerImpl implements CheckInM
         if (log.isDebugEnabled()) {
             log.debug("CheckInManagerProxyImpl.findAsnReserveByAsnId -> asnReserveManager.findAsnReserveByAsnId invoke, asnId is:[{}], ouId is:[{}], logId is:[{}]", asnId, ouId, logId);
         }
-        AsnReserve asnReserve = asnReserveManager.findAsnReserveByAsnId(asnId, ouId);
+        AsnReserve asnReserve = asnReserveManager.findAsnReserveByAsnId(asnId, ouId, logId);
         if (log.isDebugEnabled()) {
             log.debug("CheckInManagerProxyImpl.findAsnReserveByAsnId -> asnReserveManager.findAsnReserveByAsnId result, asnId is:[{}], ouId is:[{}], logId is:[{}], asnReserve is:[{}]", asnId, ouId, logId, asnReserve);
         }
@@ -404,18 +404,19 @@ public class CheckInManagerProxyImpl extends BaseManagerImpl implements CheckInM
      * 获取asn预约号
      *
      * @author mingwei.xie
+     * @param ouId
      * @param logId
      * @return
      */
-    public String getAsnReserveCode(String logId) {
+    public String getAsnReserveCode(Long ouId, String logId) {
         if (log.isInfoEnabled()) {
-            log.info("CheckInManagerProxyImpl.getAsnReserveCode start, logId is:[{}]", logId);
+            log.info("CheckInManagerProxyImpl.getAsnReserveCode start, ouId is:[{}], logId is:[{}]", ouId, logId);
         }
 
-        String asnReserveCode = asnReserveManager.createAsnReserveCode();
+        String asnReserveCode = asnReserveManager.createAsnReserveCode(ouId, logId);
 
         if (log.isInfoEnabled()) {
-            log.info("CheckInManagerProxyImpl.getAsnReserveCode end, logId is:[{}], asnReserveCode is:[{}]", logId, asnReserveCode);
+            log.info("CheckInManagerProxyImpl.getAsnReserveCode end, ouId is:[{}], logId is:[{}], asnReserveCode is:[{}]",ouId, logId, asnReserveCode);
         }
         return asnReserveCode;
     }

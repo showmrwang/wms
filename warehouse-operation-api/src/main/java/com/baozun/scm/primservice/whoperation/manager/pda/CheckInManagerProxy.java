@@ -145,10 +145,11 @@ public interface CheckInManagerProxy extends BaseManager {
      * 获取asn预约号
      *
      * @author mingwei.xie
+     * @param ouId
      * @param logId
      * @return
      */
-    String getAsnReserveCode(String logId);
+    String getAsnReserveCode(Long ouId, String logId);
 
     /**
      * 查找空闲月台
