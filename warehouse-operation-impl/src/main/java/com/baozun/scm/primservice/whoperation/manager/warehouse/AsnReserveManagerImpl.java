@@ -61,6 +61,7 @@ public class AsnReserveManagerImpl extends BaseManagerImpl implements AsnReserve
         if (log.isDebugEnabled()) {
             log.debug("AsnReserveManagerImpl.getListByParams-> asnReserveDao.findListByQueryMapWithPageExt invoke, logId is:[{}], params are:[{}]", logId, param);
         }
+        // 查询列表页数据
         Pagination<AsnReserveCommand> asnReserveList = asnReserveDao.findListByQueryMapWithPageExt(page, sorts, param);
         if (log.isDebugEnabled()) {
             log.debug("AsnReserveManagerImpl.getListByParams-> asnReserveDao.findListByQueryMapWithPageExt result, logId is:[{}], asnReserveList is:[{}]", logId, asnReserveList);
@@ -86,9 +87,15 @@ public class AsnReserveManagerImpl extends BaseManagerImpl implements AsnReserve
         if (log.isInfoEnabled()) {
             log.info("AsnReserveManagerImpl.getAsnReserveCommandById start, ouId is:[{}], logId is:[{}], asnReserveId is:[{}]", ouId, logId, asnReserveId);
         }
+        // 校验传入参数
+        if (null == asnReserveId || null == ouId) {
+            log.error("AsnReserveManagerImpl.getAsnReserveCommandById param is null,  ouId is:[{}], logId is:[{}], asnReserveId is:[{}]", ouId, logId, asnReserveId);
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+        }
         if (log.isDebugEnabled()) {
             log.debug("AsnReserveManagerImpl.getAsnReserveCommandById-> asnReserveDao.getAsnReserveCommandById invoke, ouId, logId is:[{}], asnReserveId is:[{}]", ouId, logId, asnReserveId);
         }
+        // 根据id查询预约信息
         AsnReserveCommand asnReserveCommand = asnReserveDao.getAsnReserveCommandById(asnReserveId, ouId);
         if (log.isDebugEnabled()) {
             log.debug("AsnReserveManagerImpl.getAsnReserveCommandById-> asnReserveDao.getAsnReserveCommandById result, logId is:[{}], asnReserveCommand is:[{}]", logId, asnReserveCommand);
@@ -97,6 +104,40 @@ public class AsnReserveManagerImpl extends BaseManagerImpl implements AsnReserve
             log.info("AsnReserveManagerImpl.getAsnReserveCommandById end, ouId is:[{}], logId is:[{}], asnReserveCommand is:[{}]", ouId, logId, asnReserveCommand);
         }
         return asnReserveCommand;
+    }
+
+    /**
+     * 根据asnId查找预约信息
+     *
+     * @author mingwei.xie
+     * @param asnId
+     * @param ouId
+     * @param logId
+     * @return
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public AsnReserve findAsnReserveByAsnId(Long asnId, Long ouId, String logId) {
+        if (log.isInfoEnabled()) {
+            log.info("AsnReserveManagerImpl.findAsnReserveByAsnId start, ouId is:[{}], logId is:[{}], asnId is:[{}]", ouId, logId, asnId);
+        }
+        // 校验传入参数
+        if (null == asnId || null == ouId) {
+            log.error("AsnReserveManagerImpl.findAsnReserveByAsnId error, param is null,  ouId is:[{}], logId is:[{}], asnId is:[{}]", ouId, logId, asnId);
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("AsnReserveManagerImpl.findAsnReserveByAsnId -> asnReserveDao.findAsnReserveByAsnId invoke, ouId is:[{}], logId is:[{}], asnId is:[{}]", ouId, logId, asnId);
+        }
+        // 根据asn查询预约信息
+        AsnReserve asnReserve = asnReserveDao.findAsnReserveByAsnId(asnId, ouId);
+        if (log.isDebugEnabled()) {
+            log.debug("AsnReserveManagerImpl.findAsnReserveByAsnId -> asnReserveDao.findAsnReserveByAsnId result, ouId is:[{}], logId is:[{}], asnReserve is:[{}]", ouId, logId, asnReserve);
+        }
+        if (log.isInfoEnabled()) {
+            log.info("AsnReserveManagerImpl.findAsnReserveByAsnId end, ouId is:[{}], logId is:[{}], asnReserve is:[{}]", ouId, logId, asnReserve);
+        }
+        return asnReserve;
     }
 
 
@@ -115,9 +156,15 @@ public class AsnReserveManagerImpl extends BaseManagerImpl implements AsnReserve
         if (log.isInfoEnabled()) {
             log.info("AsnReserveManagerImpl.findAsnReserveCommandByEtaDate start, ouId is:[{}], logId is:[{}], reserveDate is:[{}]", ouId, logId, reserveDate);
         }
+        // 校验传入参数
+        if (null == reserveDate || null == ouId) {
+            log.error("AsnReserveManagerImpl.findAsnReserveCommandByEtaDate param is null,  ouId is:[{}], logId is:[{}], reserveDate is:[{}]", ouId, logId, reserveDate);
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+        }
         if (log.isDebugEnabled()) {
             log.debug("AsnReserveManagerImpl.findAsnReserveCommandByEtaDate-> asnReserveDao.findAsnReserveCommandByEtaDate invoke, ouId, logId is:[{}], reserveDate is:[{}]", ouId, logId, reserveDate);
         }
+        // 根据预约日期查询预约信息列表
         List<AsnReserveCommand> asnReserveCommandList = asnReserveDao.findAsnReserveCommandByEtaDate(reserveDate, ouId);
         if (log.isDebugEnabled()) {
             log.debug("AsnReserveManagerImpl.findAsnReserveCommandByEtaDate-> asnReserveDao.findAsnReserveCommandByEtaDate result, logId is:[{}], asnReserveCommandList is:[{}]", logId, asnReserveCommandList);
@@ -141,6 +188,11 @@ public class AsnReserveManagerImpl extends BaseManagerImpl implements AsnReserve
         if (log.isInfoEnabled()) {
             log.info("AsnReserveManagerImpl.createAsnReserveCode start, ouId is:[{}], logId is:[{}]", ouId, logId);
         }
+        // 校验传入参数
+        if (null == ouId) {
+            log.error("AsnReserveManagerImpl.findAsnReserveCommandByEtaDate param ouId is null,  logId is:[{}]", logId);
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+        }
         String code = null;
         boolean isUnique = false;
         // 在失败的情况下，最多尝试三次
@@ -154,10 +206,10 @@ public class AsnReserveManagerImpl extends BaseManagerImpl implements AsnReserve
                 log.debug("AsnReserveManagerImpl.createAsnReserveCode-> asnReserveDao.generateCode result, ouId, logId is:[{}], code is:[{}]", ouId, logId, code);
             }
             if (null != code) {
-                // 检查新生成的预约号是否已存在
                 if (log.isDebugEnabled()) {
                     log.debug("AsnReserveManagerImpl.createAsnReserveCode-> codeManager.checkAsnReserveCodeUnique invoke, ouId, logId is:[{}], code is:[{}]", ouId, logId, code);
                 }
+                // 检查新生成的预约号是否已存在
                 int count = asnReserveDao.checkAsnReserveCodeUnique(code, ouId);
                 if (log.isDebugEnabled()) {
                     log.debug("AsnReserveManagerImpl.createAsnReserveCode-> asnReserveDao.checkAsnReserveCodeUnique result, ouId, logId is:[{}], count is:[{}]", ouId, logId, count);
@@ -166,13 +218,16 @@ public class AsnReserveManagerImpl extends BaseManagerImpl implements AsnReserve
                     if (log.isDebugEnabled()) {
                         log.debug("AsnReserveManagerImpl.createAsnReserveCode code is not unique, continue loop, ouId, logId is:[{}], count is:[{}]", ouId, logId, count);
                     }
+                    // 已存在则继续循环
                     continue;
                 }
                 isUnique = true;
                 break;
             }
         }
+        // 校验预约号
         if (null == code || !isUnique) {
+            log.error("AsnReserveManagerImpl.createAsnReserveCode error, ouId, logId is:[{}]", ouId, logId);
             throw new BusinessException(ErrorCodes.CODE_INTERFACE_REEOR);
         }
         if (log.isInfoEnabled()) {
@@ -197,6 +252,7 @@ public class AsnReserveManagerImpl extends BaseManagerImpl implements AsnReserve
         if (log.isInfoEnabled()) {
             log.info("AsnReserveManagerImpl.removeAsnReserve start, ouId is:[{}], logId is:[{}], asnReserveIdList is:[{}]", ouId, logId, asnReserveIdList);
         }
+        // 校验差传入参数
         if (null == asnReserveIdList || null == ouId) {
             log.error("AsnReserveManagerImpl.removeAsnReserve param is null, ouId is:[{}], logId is:[{}], asnReserveIdList is:[{}], userId is:[{}]", ouId, logId, asnReserveIdList, userId);
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
@@ -204,6 +260,7 @@ public class AsnReserveManagerImpl extends BaseManagerImpl implements AsnReserve
         if (log.isDebugEnabled()) {
             log.debug("AsnReserveManagerImpl.removeAsnReserve loop asnReserveIdList,ouId is:[{}], logId is:[{}], asnReserveIdList is:[{}], userId is:[{}]", ouId, logId, asnReserveIdList, userId);
         }
+        // 遍历需取消的预约ID
         for (Long asnReserveId : asnReserveIdList) {
             if (log.isDebugEnabled()) {
                 log.debug("AsnReserveManagerImpl.removeAsnReserve-> this.deleteAsnReserve invoke, ouId is:[{}], logId is:[{}], asnReserveId is:[{}], userId is:[{}]", ouId, logId, asnReserveId, userId);
@@ -216,7 +273,7 @@ public class AsnReserveManagerImpl extends BaseManagerImpl implements AsnReserve
             if (log.isDebugEnabled()) {
                 log.debug("AsnReserveManagerImpl.removeAsnReserve-> this.updateWhAsnStatusFromReserveToNew invoke, ouId is:[{}], logId is:[{}], asnReserveId is:[{}], asnId is:[{}]", ouId, logId, asnReserveId, asnId);
             }
-            // 更新asn状态
+            // 更新asn状态为新建，预约时间更新为null
             this.updateWhAsnStatusFromReserveToNew(asnId, userId, ouId, logId);
             if (log.isDebugEnabled()) {
                 log.debug("AsnReserveManagerImpl.removeAsnReserve-> this.updateWhAsnStatusFromReserveToNew result, ouId is:[{}], logId is:[{}], asnReserveId is:[{}], asnId is:[{}]", ouId, logId, asnReserveId, asnId);
@@ -243,6 +300,7 @@ public class AsnReserveManagerImpl extends BaseManagerImpl implements AsnReserve
         if (log.isInfoEnabled()) {
             log.info("AsnReserveManagerImpl.saveAsnReserve start, ouId is:[{}], logId is:[{}], asnReserveCommand is:[{}]", ouId, logId, asnReserveCommand);
         }
+        // 校验传入参数
         if (null == asnReserveCommand || null == userId || null == ouId) {
             log.error("AsnReserveManagerImpl.saveAsnReserve param is null, ouId is:[{}], logId is:[{}], asnReserveCommand is:[{}]", ouId, logId, asnReserveCommand);
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
@@ -254,7 +312,13 @@ public class AsnReserveManagerImpl extends BaseManagerImpl implements AsnReserve
             if (log.isDebugEnabled()) {
                 log.debug("AsnReserveManagerImpl.saveAsnReserve-> this.updateAsnReserve invoke, ouId is:[{}], logId is:[{}], asnReserveCommand is:[{}]", ouId, logId, asnReserveCommand);
             }
-            this.updateAsnReserve(asnReserveCommand, userId, ouId, logId);
+            // id存在，更新预约信息
+            AsnReserve asnReserve = this.updateAsnReserve(asnReserveCommand, userId, ouId, logId);
+            if (log.isDebugEnabled()) {
+                log.debug("AsnReserveManagerImpl.saveAsnReserve-> this.updateWhAsnEta invoke, ouId is:[{}], logId is:[{}], asnId is:[{}]", ouId, logId, asnReserve.getAsnId());
+            }
+            // 更新asn预约时间
+            this.updateWhAsnEta(asnReserve.getAsnId(), userId, ouId, logId, asnReserve.getEta());
         } else {
             if (log.isDebugEnabled()) {
                 log.debug("AsnReserveManagerImpl.saveAsnReserve asnReserve is not exist, create asnReserve");
@@ -262,12 +326,13 @@ public class AsnReserveManagerImpl extends BaseManagerImpl implements AsnReserve
             if (log.isDebugEnabled()) {
                 log.debug("AsnReserveManagerImpl.saveAsnReserve-> this.createAsnReserve invoke, ouId is:[{}], logId is:[{}], asnReserveCommand is:[{}]", ouId, logId, asnReserveCommand);
             }
-            this.createAsnReserve(asnReserveCommand, userId, ouId, logId);
-            // 更新asn状态
+            // 创建asn预约信息
+            AsnReserve asnReserve = this.createAsnReserve(asnReserveCommand, userId, ouId, logId);
             if (log.isDebugEnabled()) {
-                log.debug("AsnReserveManagerImpl.saveAsnReserve-> this.updateWhAsnStatusFromNewToReserve invoke, ouId is:[{}], logId is:[{}], asnId is:[{}]", ouId, logId, asnReserveCommand.getAsnId());
+                log.debug("AsnReserveManagerImpl.saveAsnReserve-> this.updateWhAsnStatusFromNewToReserve invoke, ouId is:[{}], logId is:[{}], asnId is:[{}], eta is:[{}]", ouId, logId, asnReserve.getAsnId(), asnReserve.getEta());
             }
-            this.updateWhAsnStatusFromNewToReserve(asnReserveCommand.getAsnId(), userId, ouId, logId);
+            // 更新asn状态为预约，更新预约时间
+            this.updateWhAsnStatusFromNewToReserve(asnReserve.getAsnId(), userId, ouId, logId, asnReserve.getEta());
         }
         if (log.isInfoEnabled()) {
             log.info("AsnReserveManagerImpl.saveAsnReserve end, ouId is:[{}], logId is:[{}]", ouId, logId);
@@ -283,10 +348,16 @@ public class AsnReserveManagerImpl extends BaseManagerImpl implements AsnReserve
      * @param ouId
      * @param logId
      */
-    private void createAsnReserve(AsnReserveCommand asnReserveCommand, Long userId, Long ouId, String logId) {
+    private AsnReserve createAsnReserve(AsnReserveCommand asnReserveCommand, Long userId, Long ouId, String logId) {
         if (log.isInfoEnabled()) {
             log.info("AsnReserveManagerImpl.createAsnReserve start, ouId is:[{}], logId is:[{}], asnReserveCommand is:[{}]", ouId, logId, asnReserveCommand);
         }
+        // 校验传入参数
+        if (null == asnReserveCommand || null == ouId) {
+            log.error("AsnReserveManagerImpl.createAsnReserve param is null, ouId is:[{}], logId is:[{}], asnReserveCommand is:[{}]", ouId, logId, asnReserveCommand);
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+        }
+        // 创建新增的预约信息
         AsnReserve asnReserve = new AsnReserve();
         asnReserve.setCode(asnReserveCommand.getCode());
         asnReserve.setAsnId(asnReserveCommand.getAsnId());
@@ -303,14 +374,17 @@ public class AsnReserveManagerImpl extends BaseManagerImpl implements AsnReserve
         if (log.isDebugEnabled()) {
             log.debug("AsnReserveManagerImpl.createAsnReserve-> asnReserveDao.insert invoke, ouId is:[{}], logId is:[{}], asnReserve is:[{}]", ouId, logId, asnReserve);
         }
+        // 创建预约信息
         asnReserveDao.insert(asnReserve);
         if (log.isDebugEnabled()) {
             log.debug("AsnReserveManagerImpl.createAsnReserve ->insertGlobalLog invoke,ouId is:[{}], logId is:[{}]", ouId, logId);
         }
+        // 保存全局日志表
         insertGlobalLog(Constants.GLOBAL_LOG_INSERT, asnReserve, ouId, userId, null, null);
         if (log.isInfoEnabled()) {
             log.info("AsnReserveManagerImpl.createAsnReserve end, ouId is:[{}], logId is:[{}]", ouId, logId);
         }
+        return asnReserve;
     }
 
     /**
@@ -322,21 +396,29 @@ public class AsnReserveManagerImpl extends BaseManagerImpl implements AsnReserve
      * @param ouId
      * @param logId
      */
-    private void updateAsnReserve(AsnReserveCommand asnReserveCommand, Long userId, Long ouId, String logId) {
+    private AsnReserve updateAsnReserve(AsnReserveCommand asnReserveCommand, Long userId, Long ouId, String logId) {
         if (log.isInfoEnabled()) {
             log.info("AsnReserveManagerImpl.updateAsnReserve start, ouId is:[{}], logId is:[{}], asnReserveCommand is:[{}]", ouId, logId, asnReserveCommand);
+        }
+        // 校验传入参数
+        if (null == asnReserveCommand || null == ouId) {
+            log.error("AsnReserveManagerImpl.updateAsnReserve param is null,  ouId is:[{}], logId is:[{}], reserveDate is:[{}]", ouId, logId, asnReserveCommand);
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
         if (log.isDebugEnabled()) {
             log.debug("AsnReserveManagerImpl.updateAsnReserve-> asnReserveDao.getAsnReserveById invoke, ouId is:[{}], logId is:[{}], asnReserveId is:[{}]", ouId, logId, asnReserveCommand.getId());
         }
+        // 根据id查询原始预约信息
         AsnReserve asnReserve = asnReserveDao.getAsnReserveById(asnReserveCommand.getId(), ouId);
         if (log.isDebugEnabled()) {
             log.debug("AsnReserveManagerImpl.updateAsnReserve-> asnReserveDao.getAsnReserveById result, ouId is:[{}], logId is:[{}], asnReserve is:[{}]", ouId, logId, asnReserve);
         }
-        if (null == asnReserve) {
-            log.error("AsnReserveManagerImpl.updateAsnReserve-> asnReserveDao.getAsnReserveById, result is null, ouId is:[{}], logId is:[{}], asnReserveId is:[{}]", ouId, logId, asnReserveCommand.getId());
-            throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
+        // 校验原始数据
+        if (null == asnReserve || PoAsnStatus.ASN_RESERVE_NEW != asnReserve.getStatus()) {
+            log.error("AsnReserveManagerImpl.updateAsnReserve check data error, ouId is:[{}], logId is:[{}], asnReserveCommand is:[{}], asnReserve is:[{}]", ouId, logId, asnReserveCommand, asnReserve);
+            throw new BusinessException(ErrorCodes.CHECK_DATA_ERROR);
         }
+        // 更新预约属性
         asnReserve.setEta(asnReserveCommand.getEta());
         asnReserve.setLevel(asnReserveCommand.getLevel());
         asnReserve.setDeliveryTime(null);
@@ -345,6 +427,7 @@ public class AsnReserveManagerImpl extends BaseManagerImpl implements AsnReserve
         if (log.isDebugEnabled()) {
             log.debug("AsnReserveManagerImpl.updateAsnReserve-> asnReserveDao.saveOrUpdateByVersion invoke, ouId is:[{}], logId is:[{}], asnReserve is:[{}]", ouId, logId, asnReserve);
         }
+        // 更新预约信息
         int updateCount = asnReserveDao.saveOrUpdateByVersion(asnReserve);
         if (1 != updateCount) {
             log.error("AsnReserveManagerImpl.updateAsnReserve-> asnReserveDao.saveOrUpdateByVersion error, update count != 1, ouId is:[{}], logId is:[{}], asnReserve is:[{}]", ouId, logId, asnReserve);
@@ -353,13 +436,58 @@ public class AsnReserveManagerImpl extends BaseManagerImpl implements AsnReserve
         if (log.isDebugEnabled()) {
             log.debug("AsnReserveManagerImpl.updateAsnReserve ->insertGlobalLog invoke,ouId is:[{}], logId is:[{}]", ouId, logId);
         }
+        // 保存全局日志
         insertGlobalLog(Constants.GLOBAL_LOG_UPDATE, asnReserve, ouId, userId, null, null);
         if (log.isInfoEnabled()) {
             log.info("AsnReserveManagerImpl.updateAsnReserve end, ouId is:[{}], logId is:[{}]", ouId, logId);
         }
+        return asnReserve;
     }
 
 
+    /**
+     * 取消预约，asn状态修改为新建
+     *
+     * @author mingwei.xie
+     * @param asnId
+     * @param userId
+     * @param ouId
+     * @param logId
+     */
+    private void updateWhAsnEta(Long asnId, Long userId, Long ouId, String logId, Date eta) {
+        if (log.isInfoEnabled()) {
+            log.info("AsnReserveManagerImpl.updateWhAsnEta start, ouId is:[{}], logId is:[{}], asnId is:[{}], eta is:[{}]", ouId, logId, asnId, eta);
+        }
+        // 校验传入参数
+        if (null == asnId || null == ouId || null == userId || null == eta) {
+            log.error("AsnReserveManagerImpl.updateWhAsnEta param is null,, ouId is:[{}], logId is:[{}], asnId is:[{}], eta is:[{}]", ouId, logId, asnId, eta);
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("AsnReserveManagerImpl.updateWhAsnEta-> whAsnDao.findWhAsnById invoke, ouId is:[{}], logId is:[{}], asnId is:[{}], eta is:[{}]", ouId, logId, asnId, eta);
+        }
+        // 查询原始asn
+        WhAsn whAsn = whAsnDao.findWhAsnById(asnId, ouId);
+        if (log.isDebugEnabled()) {
+            log.debug("AsnReserveManagerImpl.updateWhAsnEta-> whAsnDao.findWhAsnById result, ouId is:[{}], logId is:[{}], whAsn is:[{}]", ouId, logId, whAsn);
+        }
+        // 校验原始数据
+        if (null == whAsn || PoAsnStatus.ASN_RESERVE != whAsn.getStatus()) {
+            log.error("AsnReserveManagerImpl.updateWhAsnEta check data error, ouId is:[{}], logId is:[{}], asnId is:[{}], whAsn is:[{}]", ouId, logId, asnId, whAsn);
+            throw new BusinessException(ErrorCodes.CHECK_DATA_ERROR);
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("AsnReserveManagerImpl.updateWhAsnEta-> this.updateWhAsn invoke, ouId is:[{}], logId is:[{}], asnId is:[{}], eta is:[{}]", ouId, logId, asnId, eta);
+        }
+        // 更新asn属性
+        whAsn.setModifiedId(userId);
+        whAsn.setEta(eta);
+        // 更新asn预约时间
+        this.updateWhAsn(whAsn, userId, ouId, logId);
+        if (log.isInfoEnabled()) {
+            log.info("AsnReserveManagerImpl.updateWhAsnEta end, ouId is:[{}], logId is:[{}]", ouId, logId);
+        }
+    }
 
     /**
      * 取消预约，asn状态修改为新建
@@ -372,23 +500,35 @@ public class AsnReserveManagerImpl extends BaseManagerImpl implements AsnReserve
      */
     private void updateWhAsnStatusFromReserveToNew(Long asnId, Long userId, Long ouId, String logId) {
         if (log.isInfoEnabled()) {
-            log.info("AsnReserveManagerImpl.updateWhAsnStatusFromReserveToNew start, ouId is:[{}], logId is:[{}], asnId is:[{}]", ouId, logId, asnId);
+            log.info("AsnReserveManagerImpl.updateWhAsnStatusFromReserveToNew start, ouId is:[{}], logId is:[{}], asnId is:[{}], eta is:[{}]", ouId, logId, asnId);
+        }
+        // 校验传入参数
+        if (null == asnId || null == ouId || null == userId) {
+            log.error("AsnReserveManagerImpl.updateWhAsnStatusFromReserveToNew param is null,, ouId is:[{}], logId is:[{}], asnId is:[{}]", ouId, logId, asnId);
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
         if (log.isDebugEnabled()) {
             log.debug("AsnReserveManagerImpl.updateWhAsnStatusFromReserveToNew-> whAsnDao.findWhAsnById invoke, ouId is:[{}], logId is:[{}], asnId is:[{}]", ouId, logId, asnId);
         }
+        // 查询原始asn信息
         WhAsn whAsn = whAsnDao.findWhAsnById(asnId, ouId);
         if (log.isDebugEnabled()) {
             log.debug("AsnReserveManagerImpl.updateWhAsnStatusFromReserveToNew-> whAsnDao.findWhAsnById result, ouId is:[{}], logId is:[{}], whAsn is:[{}]", ouId, logId, whAsn);
         }
+        // 校验原始数据
         if (null == whAsn || PoAsnStatus.ASN_RESERVE != whAsn.getStatus()) {
-            log.error("AsnReserveManagerImpl.updateWhAsnStatusFromReserveToNew-> whAsnDao.findWhAsnById error, result is null, ouId is:[{}], logId is:[{}], asnId is:[{}]", ouId, logId, asnId);
+            log.error("AsnReserveManagerImpl.updateWhAsnStatusFromReserveToNew check data error, ouId is:[{}], logId is:[{}], whAsn is:[{}], asnId is:[{}]", ouId, logId, whAsn, asnId);
             throw new BusinessException(ErrorCodes.CHECK_DATA_ERROR);
         }
         if (log.isDebugEnabled()) {
-            log.debug("AsnReserveManagerImpl.updateWhAsnStatusFromReserveToNew-> this.updateWhAsnStatus invoke, ouId is:[{}], logId is:[{}], asnId is:[{}]", ouId, logId, asnId);
+            log.debug("AsnReserveManagerImpl.updateWhAsnStatusFromReserveToNew-> this.updateWhAsn invoke, ouId is:[{}], logId is:[{}], asnId is:[{}]", ouId, logId, asnId);
         }
-        this.updateWhAsnStatus(whAsn, PoAsnStatus.ASN_NEW, userId, ouId, logId);
+        // 更新asn属性
+        whAsn.setStatus(PoAsnStatus.ASN_NEW);
+        whAsn.setModifiedId(userId);
+        whAsn.setEta(null);
+        // 更新asn状态
+        this.updateWhAsn(whAsn, userId, ouId, logId);
         if (log.isInfoEnabled()) {
             log.info("AsnReserveManagerImpl.updateWhAsnStatusFromReserveToNew end, ouId is:[{}], logId is:[{}]", ouId, logId);
         }
@@ -403,25 +543,39 @@ public class AsnReserveManagerImpl extends BaseManagerImpl implements AsnReserve
      * @param ouId
      * @param logId
      */
-    private void updateWhAsnStatusFromNewToReserve(Long asnId, Long userId, Long ouId, String logId) {
+    private void updateWhAsnStatusFromNewToReserve(Long asnId, Long userId, Long ouId, String logId, Date eta) {
         if (log.isInfoEnabled()) {
-            log.info("AsnReserveManagerImpl.updateWhAsnStatusFromNewToReserve start, ouId is:[{}], logId is:[{}], asnId is:[{}]", ouId, logId, asnId);
+            log.info("AsnReserveManagerImpl.updateWhAsnStatusFromNewToReserve start, ouId is:[{}], logId is:[{}], asnId is:[{}], eta is:[{}]", ouId, logId, asnId, eta);
+        }
+        // 校验传入参数
+        if (null == asnId || null == ouId || null == userId || null == eta) {
+            log.error("AsnReserveManagerImpl.updateWhAsnStatusFromNewToReserve param is null,, ouId is:[{}], logId is:[{}], asnId is:[{}], eta is:[{}]", ouId, logId, asnId, eta);
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
         if (log.isDebugEnabled()) {
             log.debug("AsnReserveManagerImpl.updateWhAsnStatusFromNewToReserve-> whAsnDao.findWhAsnById invoke, ouId is:[{}], logId is:[{}], asnId is:[{}]", ouId, logId, asnId);
         }
+        // 查询原始asn信息
         WhAsn whAsn = whAsnDao.findWhAsnById(asnId, ouId);
         if (log.isDebugEnabled()) {
             log.debug("AsnReserveManagerImpl.updateWhAsnStatusFromNewToReserve-> whAsnDao.findWhAsnById result, ouId is:[{}], logId is:[{}], whAsn is:[{}]", ouId, logId, whAsn);
         }
+        // 校验原始数据
         if (null == whAsn || PoAsnStatus.ASN_NEW != whAsn.getStatus()) {
-            log.error("AsnReserveManagerImpl.updateWhAsnStatusFromNewToReserve-> whAsnDao.findWhAsnById error, result is null, ouId is:[{}], logId is:[{}], asnId is:[{}]", ouId, logId, asnId);
-            throw new BusinessException(ErrorCodes.CHECK_DATA_ERROR);
+            if (null == whAsn || PoAsnStatus.ASN_RESERVE != whAsn.getStatus()) {
+                log.error("AsnReserveManagerImpl.updateWhAsnStatusFromNewToReserve check data error, ouId is:[{}], logId is:[{}], whAsn is:[{}], asnId is:[{}]", ouId, logId, whAsn, asnId);
+                throw new BusinessException(ErrorCodes.CHECK_DATA_ERROR);
+            }
         }
+        // 更新asn属性
+        whAsn.setStatus(PoAsnStatus.ASN_RESERVE);
+        whAsn.setModifiedId(userId);
+        whAsn.setEta(eta);
         if (log.isDebugEnabled()) {
-            log.debug("AsnReserveManagerImpl.updateWhAsnStatusFromNewToReserve-> this.updateWhAsnStatus invoke, ouId is:[{}], logId is:[{}], asnId is:[{}]", ouId, logId, asnId);
+            log.debug("AsnReserveManagerImpl.updateWhAsnStatusFromNewToReserve-> this.updateWhAsn invoke, ouId is:[{}], logId is:[{}], asnId is:[{}], eta is:[{}]", ouId, logId, asnId, eta);
         }
-        this.updateWhAsnStatus(whAsn, PoAsnStatus.ASN_RESERVE, userId, ouId, logId);
+        // 更新asn状态
+        this.updateWhAsn(whAsn, userId, ouId, logId);
         if (log.isInfoEnabled()) {
             log.info("AsnReserveManagerImpl.updateWhAsnStatusFromNewToReserve end, ouId is:[{}], logId is:[{}], asnId is:[{}]", ouId, logId, asnId);
         }
@@ -442,9 +596,15 @@ public class AsnReserveManagerImpl extends BaseManagerImpl implements AsnReserve
         if (log.isInfoEnabled()) {
             log.info("AsnReserveManagerImpl.deleteAsnReserve start, ouId is:[{}], logId is:[{}], asnReserveId is:[{}]", ouId, logId, asnReserveId);
         }
+        // 校验传入参数
+        if (null == asnReserveId || null == ouId || null == userId) {
+            log.error("AsnReserveManagerImpl.deleteAsnReserve param is null,, ouId is:[{}], logId is:[{}], asnReserveId is:[{}]", ouId, logId, asnReserveId);
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+        }
         if (log.isDebugEnabled()) {
             log.debug("AsnReserveManagerImpl.deleteAsnReserve -> asnReserveDao.getAsnReserveById invoke, ouId is:[{}], logId is:[{}], asnReserveId is:[{}]", ouId, logId, asnReserveId);
         }
+        // 查询原始预约信息
         AsnReserve asnReserve = asnReserveDao.getAsnReserveById(asnReserveId, ouId);
         if (log.isDebugEnabled()) {
             log.debug("AsnReserveManagerImpl.deleteAsnReserve -> asnReserveDao.getAsnReserveById result, ouId is:[{}], logId is:[{}], asnReserve is:[{}]", ouId, logId, asnReserve);
@@ -456,6 +616,7 @@ public class AsnReserveManagerImpl extends BaseManagerImpl implements AsnReserve
         if (log.isDebugEnabled()) {
             log.debug("AsnReserveManagerImpl.deleteAsnReserve -> asnReserveDao.removeAsnReserve invoke, ouId is:[{}], logId is:[{}], asnReserveId is:[{}]", ouId, logId, asnReserveId);
         }
+        // 删除预约信息
         int updateCount = asnReserveDao.removeAsnReserve(asnReserve.getId(), ouId);
         if (1 != updateCount) {
             log.error("AsnReserveManagerImpl.deleteAsnReserve -> asnReserveDao.removeAsnReserve error, updateCount != 1, ouId is:[{}], logId is:[{}], asnReserveId is:[{}]", ouId, logId, asnReserveId);
@@ -464,6 +625,7 @@ public class AsnReserveManagerImpl extends BaseManagerImpl implements AsnReserve
         if (log.isDebugEnabled()) {
             log.debug("AsnReserveManagerImpl.deleteAsnReserve ->insertGlobalLog invoke,ouId is:[{}], logId is:[{}]", ouId, logId);
         }
+        // 保存全局日志
         insertGlobalLog(Constants.GLOBAL_LOG_DELETE, asnReserve, ouId, userId, null, null);
         if (null == asnReserve.getAsnId()) {
             log.error("AsnReserveManagerImpl.deleteAsnReserve error, asnReserve.getAsnId() is null, ouId is:[{}], logId is:[{}], asnReserveId is:[{}]", ouId, logId, asnReserveId);
@@ -480,68 +642,36 @@ public class AsnReserveManagerImpl extends BaseManagerImpl implements AsnReserve
      *
      * @author mingwei.xie
      * @param whAsn
-     * @param status
      * @param userId
      * @param ouId
      * @param logId
      */
-    private void updateWhAsnStatus(WhAsn whAsn, int status, Long userId, Long ouId, String logId) {
+    private void updateWhAsn(WhAsn whAsn, Long userId, Long ouId, String logId) {
         if (log.isInfoEnabled()) {
-            log.info("AsnReserveManagerImpl.updateWhAsnStatus start, ouId is:[{}], logId is:[{}], whAsn is:[{}]", ouId, logId, whAsn);
+            log.info("AsnReserveManagerImpl.updateWhAsn start, ouId is:[{}], logId is:[{}], whAsn is:[{}]", ouId, logId, whAsn);
         }
+        // 校验传入参数
         if (null == whAsn || null == userId || null == ouId) {
-            log.error("AsnReserveManagerImpl.updateWhAsnStatus param is null, ouId is:[{}], logId is:[{}], whAsn is:[{}]", ouId, logId, whAsn);
+            log.error("AsnReserveManagerImpl.updateWhAsn param is null, ouId is:[{}], logId is:[{}], whAsn is:[{}]", ouId, logId, whAsn);
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
-        whAsn.setStatus(status);
-        whAsn.setModifiedId(userId);
         if (log.isDebugEnabled()) {
-            log.debug("AsnReserveManagerImpl.updateWhAsnStatus -> whAsnDao.saveOrUpdateByVersion invoke, ouId is:[{}], logId is:[{}], whAsn is:[{}]", ouId, logId, whAsn);
+            log.debug("AsnReserveManagerImpl.updateWhAsn -> whAsnDao.saveOrUpdateByVersion invoke, ouId is:[{}], logId is:[{}], whAsn is:[{}]", ouId, logId, whAsn);
         }
+        // 更新asn
         int asnUpdateCount = whAsnDao.saveOrUpdateByVersion(whAsn);
         if (1 != asnUpdateCount) {
-            log.error("AsnReserveManagerImpl.updateWhAsnStatus -> whAsnDao.saveOrUpdateByVersion error, updateCount != 1, ouId is:[{}], logId is:[{}], whAsn is:[{}]", ouId, logId, whAsn);
+            log.error("AsnReserveManagerImpl.updateWhAsn -> whAsnDao.saveOrUpdateByVersion error, updateCount != 1, ouId is:[{}], logId is:[{}], whAsn is:[{}]", ouId, logId, whAsn);
             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
         }
         if (log.isDebugEnabled()) {
-            log.debug("AsnReserveManagerImpl.updateWhAsnStatus ->insertGlobalLog invoke,ouId is:[{}], logId is:[{}]", ouId, logId);
+            log.debug("AsnReserveManagerImpl.updateWhAsn ->insertGlobalLog invoke,ouId is:[{}], logId is:[{}]", ouId, logId);
         }
+        // 保存全局日志
         insertGlobalLog(Constants.GLOBAL_LOG_UPDATE, whAsn, ouId, userId, null, null);
         if (log.isInfoEnabled()) {
-            log.info("AsnReserveManagerImpl.updateWhAsnStatus end, ouId is:[{}], logId is:[{}]", ouId, logId);
+            log.info("AsnReserveManagerImpl.updateWhAsn end, ouId is:[{}], logId is:[{}]", ouId, logId);
         }
     }
 
-
-    /**
-     * 根据asnId查找预约信息
-     *
-     * @author mingwei.xie
-     * @param asnId
-     * @param ouId
-     * @param logId
-     * @return
-     */
-    @Override
-    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public AsnReserve findAsnReserveByAsnId(Long asnId, Long ouId, String logId) {
-        if (log.isInfoEnabled()) {
-            log.info("AsnReserveManagerImpl.findAsnReserveByAsnId start, ouId is:[{}], logId is:[{}], asnId is:[{}]", ouId, logId, asnId);
-        }
-        if (null == asnId || null == ouId) {
-            log.error("AsnReserveManagerImpl.findAsnReserveByAsnId error, param is null,  ouId is:[{}], logId is:[{}], asnId is:[{}]", ouId, logId, asnId);
-            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
-        }
-        if (log.isDebugEnabled()) {
-            log.debug("AsnReserveManagerImpl.findAsnReserveByAsnId -> asnReserveDao.findAsnReserveByAsnId invoke, ouId is:[{}], logId is:[{}], asnId is:[{}]", ouId, logId, asnId);
-        }
-        AsnReserve asnReserve = asnReserveDao.findAsnReserveByAsnId(asnId, ouId);
-        if (log.isDebugEnabled()) {
-            log.debug("AsnReserveManagerImpl.findAsnReserveByAsnId -> asnReserveDao.findAsnReserveByAsnId result, ouId is:[{}], logId is:[{}], asnReserve is:[{}]", ouId, logId, asnReserve);
-        }
-        if (log.isInfoEnabled()) {
-            log.info("AsnReserveManagerImpl.findAsnReserveByAsnId end, ouId is:[{}], logId is:[{}], asnReserve is:[{}]", ouId, logId, asnReserve);
-        }
-        return asnReserve;
-    }
 }
