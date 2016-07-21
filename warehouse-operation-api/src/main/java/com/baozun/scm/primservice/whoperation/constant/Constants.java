@@ -152,9 +152,9 @@ public final class Constants {
     public static final Long DEFAULT_LONG = 0l;
 
     /** Asn预约普通 */
-    public static final Long ASN_RESERVE_NORMAL = 83L;
+    public static final String ASN_RESERVE_NORMAL = "1";
     /** Asn预约紧急 */
-    public static final Long ASN_RESERVE_URGENT = 84L;
+    public static final String ASN_RESERVE_URGENT = "2";
 
     /** 未匹配规则 */
     public static final Integer NO_MATCHING_RULES = 0;
