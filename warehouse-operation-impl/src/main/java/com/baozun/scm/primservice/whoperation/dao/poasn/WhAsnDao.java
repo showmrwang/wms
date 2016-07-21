@@ -113,7 +113,7 @@ public interface WhAsnDao extends BaseDao<WhAsn, Long> {
      * @param ouId
      * @return
      */
-    List<WhAsnCommand> findAsnListByStatus(@Param("status") int status, @Param("ouId") Long ouId);
+    List<WhAsnCommand> findAsnListByStatus(@Param("status") int status, @Param("ouId") Long ouId,@Param("asnList") List<Long> asnList);
 
     /**
      * 校验asn是否收货完成

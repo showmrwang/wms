@@ -529,7 +529,7 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
      * @return
      */
     @Override
-    public List<WhAsnCommand> findAsnListByStatus(int status, Long ouId) {
-        return this.asnManager.findAsnListByStatus(status, ouId);
+    public List<WhAsnCommand> findAsnListByStatus(int status, Long ouId,List<Long> asnList) {
+        return this.asnManager.findAsnListByStatus(status, ouId,asnList);
     }
 }

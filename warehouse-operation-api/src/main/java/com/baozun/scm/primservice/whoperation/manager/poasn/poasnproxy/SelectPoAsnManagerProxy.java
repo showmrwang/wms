@@ -271,6 +271,6 @@ public interface SelectPoAsnManagerProxy extends BaseManager {
      * @param ouId
      * @return
      */
-    List<WhAsnCommand> findAsnListByStatus(int status, Long ouId);
+    List<WhAsnCommand> findAsnListByStatus(int status, Long ouId,List<Long> asnList);
 
 }
