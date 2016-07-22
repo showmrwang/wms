@@ -191,3 +191,4 @@ public interface AsnManager extends BaseManager {
      * @param asnLineList
      */
     void createAsn(WhAsn asn, List<WhAsnLineCommand> asnLineList);
+}
