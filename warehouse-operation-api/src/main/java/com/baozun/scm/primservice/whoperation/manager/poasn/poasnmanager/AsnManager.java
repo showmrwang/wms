@@ -64,7 +64,7 @@ public interface AsnManager extends BaseManager {
 
     void editAsnToShard(WhAsn whasn);
 
-    ResponseMsg createAsnBatch(WhAsnCommand asn, WhPo whpo, List<WhPoLine> whPoLines, ResponseMsg rm);
+    void createAsnBatch(WhAsnCommand asn, WhPo whpo, List<WhPoLine> whPoLines);
 
     List<WhAsn> findWhAsnByPoToShard(WhAsn whAsn);
 
@@ -191,4 +191,7 @@ public interface AsnManager extends BaseManager {
      * @param asnLineList
      */
     void createAsn(WhAsn asn, List<WhAsnLineCommand> asnLineList);
+
+    List<WhAsnCommand> findAsnListByStatus(int status, Long ouId, List<Long> asnList);
+
 }

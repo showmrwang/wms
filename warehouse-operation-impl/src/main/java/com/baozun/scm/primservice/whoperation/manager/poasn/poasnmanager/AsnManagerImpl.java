@@ -898,8 +898,8 @@ public class AsnManagerImpl implements AsnManager {
      */
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     @Override
-    public List<WhAsnCommand> findAsnListByStatus(int status, Long ouId,List<Long> asnList) {
-        return whAsnDao.findAsnListByStatus(status, ouId,asnList);
+    public List<WhAsnCommand> findAsnListByStatus(int status, Long ouId, List<Long> asnList) {
+        return whAsnDao.findAsnListByStatus(status, ouId, asnList);
     }
 
     @Override
@@ -967,5 +967,12 @@ public class AsnManagerImpl implements AsnManager {
         } catch (Exception e) {
             throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
         }
+    }
+
+
+    @Override
+    public List<WhAsnCommand> findAsnListByStatus(int status, Long ouId) {
+        // TODO Auto-generated method stub
+        return null;
     }
 }
