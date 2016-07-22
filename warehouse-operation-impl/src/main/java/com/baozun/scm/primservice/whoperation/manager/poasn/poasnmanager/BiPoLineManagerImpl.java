@@ -218,12 +218,10 @@ public class BiPoLineManagerImpl extends BaseManagerImpl implements BiPoLineMana
             biPoLine.setAvailableQty(biPoLine.getAvailableQty() + count);
             this.biPoLineDao.saveOrUpdateByVersion(biPoLine);
             this.insertGlobalLog(GLOBAL_LOG_UPDATE, biPoLine, null, biPoLine.getModifiedId(), biPoLine.getPoId() + "", DbDataSource.MOREDB_INFOSOURCE);
-        } catch (Exception e) {
-            if (e instanceof BusinessException) {
-                throw e;
-            } else {
-                throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
-            }
+        } catch (BusinessException e) {
+            throw e;
+        } catch (Exception ex) {
+            throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
         }
     }
 
@@ -266,7 +264,7 @@ public class BiPoLineManagerImpl extends BaseManagerImpl implements BiPoLineMana
             BiPo bipo = this.biPoDao.findById(lineList.get(0).getPoId());
             double qty = bipo.getQtyPlanned();
             for (BiPoLine line : lineList) {
-                if (PoAsnStatus.BIPO_NEW != line.getStatus()) {
+                if (PoAsnStatus.BIPOLINE_NEW != line.getStatus()) {
                     throw new BusinessException(ErrorCodes.BIPO_DELETE_HAS_ALLOCATED_ERROR);
                 }
                 if (null != line.getUuid()) {

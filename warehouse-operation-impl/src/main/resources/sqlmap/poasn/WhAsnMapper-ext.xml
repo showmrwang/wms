@@ -408,11 +408,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     
      <select id="findTempAsnByPoIdOuIdNotUuid" parameterType="map" resultMap="WhAsnResult" flushCache="false">
 			select <include refid="whAsnColumns" />
-		    <![CDATA[
-			    from t_wh_asn 
+			    from t_wh_asn  a
 		        where 
-		        po_id = #{poId} and ou_id=#{ouId} and uuid is not null and uuid!=#{uuid} 
-		    ]]>
+		        po_id = #{poId} and ou_id=#{ouId} and
+		        exists(select 1 from t_wh_asn_line l where l.asn_id=a.id and uuid is not null and uuid !=''
+		        <if test="uuid!=null and uuid!=''">
+		        and uuid!=#{uuid} 
+		        </if>
+		        )
 		</select>	
 		
      <select id="findTempAsnByPoIdOuIdUuid" parameterType="map" resultMap="WhAsnResult" flushCache="false">

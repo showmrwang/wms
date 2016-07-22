@@ -182,5 +182,12 @@ public interface AsnManager extends BaseManager {
      * @param ouId
      * @return
      */
-    List<WhAsnCommand> findAsnListByStatus(int status, Long ouId,List<Long> asnList);
-}
+    List<WhAsnCommand> findAsnListByStatus(int status, Long ouId);
+
+    /**
+     * 创建ASN
+     * 
+     * @param asn
+     * @param asnLineList
+     */
+    void createAsn(WhAsn asn, List<WhAsnLineCommand> asnLineList);

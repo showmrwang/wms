@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.baozun.scm.primservice.whoperation.command.poasn.PoCheckCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnLineCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
@@ -27,7 +26,6 @@ import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
 import com.baozun.scm.primservice.whoperation.dao.poasn.BiPoDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.BiPoLineDao;
-import com.baozun.scm.primservice.whoperation.dao.poasn.CheckPoCodeDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoLineDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
@@ -37,7 +35,6 @@ import com.baozun.scm.primservice.whoperation.manager.system.GlobalLogManager;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
 import com.baozun.scm.primservice.whoperation.model.poasn.BiPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.BiPoLine;
-import com.baozun.scm.primservice.whoperation.model.poasn.CheckPoCode;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
@@ -59,8 +56,6 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
     private WhPoLineDao whPoLineDao;
     @Autowired
     private GlobalLogManager globalLogManager;
-    @Autowired
-    private CheckPoCodeDao checkPoCodeDao;
     @Autowired
     private BiPoDao biPoDao;
     @Autowired
@@ -244,44 +239,6 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
         }
     }
 
-    @Override
-    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public ResponseMsg insertPoWithOuId(PoCheckCommand poCheckCommand) {
-        WhPo whPo = poCheckCommand.getWhPo();
-        List<WhPoLine> whPoLines = poCheckCommand.getWhPoLines();
-        ResponseMsg rm = poCheckCommand.getRm();
-        String extCode = whPo.getExtCode();
-        Long storeId = whPo.getStoreId();
-        Long ouId = whPo.getOuId();
-        /* 查找在性对应的拆库表中是否有此po单信息 */
-        long count = whPoDao.findPoByCodeAndStore(extCode, storeId, ouId);
-        /* 没有此po单信息 */
-        if (0 == count) {
-            long i = whPoDao.insert(whPo);
-            if (0 == i) {
-                rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
-                rm.setMsg(ErrorCodes.SAVE_CHECK_TABLE_FAILED + "");// 保存至po_check信息失败
-                return rm;
-            }
-            // whPoDao.saveOrUpdate(whpo);
-            if (whPoLines.size() > 0) {
-                // 有line信息保存
-                for (WhPoLine whPoLine : whPoLines) {
-                    whPoLine.setPoId(whPo.getId());
-                    whPoLineDao.insert(whPoLine);
-                }
-            }
-            rm.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
-            rm.setMsg(whPo.getId() + "");
-        } else {
-            /* 存在此po单信息 */
-            rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
-            rm.setMsg(ErrorCodes.PO_EXIST + "");
-            return rm;
-        }
-        return rm;
-
-    }
 
     /**
      * 通过po单code 状态 ouid 模糊查询对应po单信息 公共库
@@ -303,30 +260,12 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
 
     @Override
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
-    public WhPo findWhAsnByIdToInfo(Long id, Long ouid) {
-        return whPoDao.findWhPoById(id, ouid);
-    }
-
-    @Override
-    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public WhPo findWhAsnByIdToShard(Long id, Long ouid) {
-        return whPoDao.findWhPoById(id, ouid);
-    }
-
-    @Override
-    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public void deletePoAndPoLineToInfo(List<WhPoCommand> whPoCommand) {
         for (WhPoCommand po : whPoCommand) {
             // 删除PO表头信息
             whPoDao.deleteByIdOuId(po.getId(), po.getOuId());
             // 删除POLINE明细信息
             whPoLineDao.deleteByPoIdOuId(po.getId(), po.getOuId());
-            // 删除校验表数据
-            CheckPoCode cpCode = new CheckPoCode();
-            cpCode.setOuId(po.getOuId());
-            cpCode.setPoCode(po.getPoCode());
-            cpCode.setStoreId(po.getStoreId());
-            checkPoCodeDao.deleteByParams(cpCode);
         }
     }
 
@@ -581,20 +520,6 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
         log.info(this.getClass().getSimpleName() + ".insertGlobalLog method end!");
     }
 
-    @Override
-    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
-    public void deleteCheckPoCodeToInfo(List<CheckPoCode> poCodeList, Long userId) {
-        log.info(this.getClass().getSimpleName() + ".deleteCheckPoCodeToInfo method begin");
-        if (log.isDebugEnabled()) {
-            log.debug(this.getClass().getSimpleName() + ".deleteCheckPoCodeToInfo params:{}", poCodeList);
-        }
-        for (CheckPoCode poCode : poCodeList) {
-            checkPoCodeDao.deleteByParams(poCode);
-            // 插入操作日志
-            this.insertGlobalLog(userId, new Date(), poCode.getClass().getSimpleName(), poCode, Constants.GLOBAL_LOG_DELETE, poCode.getOuId());
-        }
-
-    }
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)

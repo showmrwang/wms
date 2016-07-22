@@ -453,7 +453,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		delete from t_wh_po_line
 		<where>
 			po_id = #{poid} 
-			and uuid is not null 
+			and uuid is not null  and uuid!=''
 			<if test="ouid != null">
 				and ou_id = #{ouid}
 			</if>
@@ -621,5 +621,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    from t_wh_po_line 
 		<include refid="whPoLineDynamicWhere"/>
 		
+    </select>
+    
+    
+    <select id="findWhPoLineByPoIdOuIdWhereHasAvailableQtyToShard" resultMap="WhPoLineResult">
+    	select <include refid="whPoLineColumns" />
+	    from t_wh_po_line 
+		where po_id=#{poId}
+		and ou_id=#{ouId}
+		and available_qty>0
+		and status in('1','2','3','10')
     </select>
 </mapper>

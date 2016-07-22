@@ -488,7 +488,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                 }
             }
             // 更新Po数据集合
-            po = this.poManager.findWhAsnByIdToShard(poId, ouId);
+            po = this.poManager.findWhPoByIdToShard(poId, ouId);
             if (null == po) {
                 throw new BusinessException(ErrorCodes.PO_RCVD_GET_ERROR);
             }

@@ -11,21 +11,13 @@ import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 public interface CreatePoAsnManagerProxy extends BaseManager {
 
     /**
-     * 创建PO单 业务方法；【业务方法；接口方法】
+     * 创建BIPO单 业务方法；【业务方法；接口方法】
      * 
      * @param command
      * @return
      */
     ResponseMsg createPoNew(WhPoCommand command);
     
-    /**
-     * 创建ASN 【接口方法；业务方法；】
-     * 
-     * @param asn
-     * @return
-     */
-    ResponseMsg createAsn(WhAsnCommand asn);
-
     /**
      * 创建POLINE明细【 业务方法；接口方法】
      * 
@@ -118,5 +110,13 @@ public interface CreatePoAsnManagerProxy extends BaseManager {
      * @param command
      */
     void finishCreatingAsn(WhPoCommand command);
+
+    /**
+     * 创建ASN
+     * 
+     * @param command
+     * @return
+     */
+    ResponseMsg createAsn(WhAsnCommand command);
 
 }

@@ -35,7 +35,6 @@ import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoManag
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
 import com.baozun.scm.primservice.whoperation.model.poasn.BiPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.BiPoLine;
-import com.baozun.scm.primservice.whoperation.model.poasn.CheckPoCode;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
@@ -349,18 +348,8 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
                 // 删除基础库PO单信息
                 poManager.deletePoAndPoLineToInfo(whPoCommandList);
             } else {
-                // 删除拆库PO单信息 TODO 需要补偿机制
                 poManager.deletePoAndPoLineToShard(whPoCommandList);
-                List<CheckPoCode> poCodeList = new ArrayList<CheckPoCode>();
-                for (WhPoCommand po : whPoCommandList) {
-                    CheckPoCode cpCode = new CheckPoCode();
-                    cpCode.setOuId(po.getOuId());
-                    cpCode.setPoCode(po.getPoCode());
-                    cpCode.setStoreId(po.getStoreId());
-                    poCodeList.add(cpCode);
-                }
 
-                poManager.deleteCheckPoCodeToInfo(poCodeList, whPoCommandList.get(0).getUserId());
             }
         } catch (Exception e) {
             throw new BusinessException(ErrorCodes.DELETE_FAILURE);
@@ -952,7 +941,7 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
             if (null == updateCommand) {
                 throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
             }
-            if (null != command.getOuId() && null != command.getUuid()) {
+            if (null != command.getOuId() && null == command.getUuid()) {
                 throw new BusinessException(ErrorCodes.BIPO_DELETE_HAS_ALLOCATED_ERROR);
             }
             // 组装数据：修改者ID和修改的状态

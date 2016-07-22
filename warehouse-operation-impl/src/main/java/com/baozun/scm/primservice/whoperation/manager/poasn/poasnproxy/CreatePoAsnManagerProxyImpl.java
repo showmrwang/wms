@@ -19,12 +19,9 @@ import org.springframework.util.StringUtils;
 import com.baozun.scm.baseservice.sac.manager.CodeManager;
 import com.baozun.scm.baseservice.sac.manager.PkManager;
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
-import com.baozun.scm.primservice.whoperation.command.poasn.AsnCheckCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.BiPoCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.BiPoLineCommand;
-import com.baozun.scm.primservice.whoperation.command.poasn.PoCheckCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
-import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnLineCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoLineCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
@@ -32,20 +29,15 @@ import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
-import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnCheckManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnLineManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.BiPoLineManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.BiPoManager;
-import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoAsnOuManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoLineManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoManager;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
 import com.baozun.scm.primservice.whoperation.model.poasn.BiPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.BiPoLine;
-import com.baozun.scm.primservice.whoperation.model.poasn.CheckAsnCode;
-import com.baozun.scm.primservice.whoperation.model.poasn.CheckPoCode;
-import com.baozun.scm.primservice.whoperation.model.poasn.PoAsnOu;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
@@ -71,8 +63,6 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
     @Autowired
     private PoLineManager poLineManager;
     @Autowired
-    private AsnCheckManager asnCheckManager;
-    @Autowired
     private AsnManager asnManager;
     @Autowired
     private AsnLineManager asnLineManager;
@@ -82,8 +72,6 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
     private PkManager pkManager;
     @Autowired
     private BiPoLineManager biPoLineManager;
-    @Autowired
-    private PoAsnOuManager poAsnOuManager;
 
     /**
      * 封装创建PO单数据
@@ -166,44 +154,6 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
         return whPoLine;
     }
 
-    /**
-     * 创建ASN单据
-     */
-    @Override
-    public ResponseMsg createAsn(WhAsnCommand asn) {
-        log.info("CreateAsn start =======================");
-        // 验证数据完整性
-        ResponseMsg rm = checkAsnParameter(asn);
-        if (rm.getResponseStatus() != ResponseMsg.STATUS_SUCCESS) {
-            log.warn("CreateAsn warn ResponseStatus: " + rm.getResponseStatus() + " msg: " + rm.getMsg());
-            return rm;
-        }
-        try {
-            // 创建ASN单数据
-            WhAsn whAsn = copyPropertiesAsn(asn);
-            // WMS单据号 调用HUB编码生成器获得
-            String asnCode = codeManager.generateCode(Constants.WMS, Constants.WHASN_MODEL_URL, Constants.WMS_ASN_INNER, null, null);
-            if (StringUtil.isEmpty(asnCode)) {
-                log.warn("CreateAsn warn asnCode generateCode is null");
-                rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
-                rm.setMsg(ErrorCodes.GET_GENERATECODE_NULL + "");
-                log.warn("CreateAsn warn ResponseStatus: " + rm.getResponseStatus() + " msg: " + rm.getMsg());
-                return rm;
-            }
-            whAsn.setAsnCode(asnCode);
-            rm = insertAsnWithCheck(whAsn, asn.getAsnLineList(), rm);
-        } catch (Exception e) {
-            if (e instanceof BusinessException) {
-                throw e;
-            }
-            rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
-            log.error("CreateAsn error asnCode: " + asn.getAsnExtCode());
-            log.error("" + e);
-            return rm;
-        }
-        log.info("CreateAsn end =======================");
-        return rm;
-    }
 
     /**
      * 封装ASN单信息
@@ -234,8 +184,17 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
     public ResponseMsg createAsnBatch(WhAsnCommand asn) {
         log.info("CreateAsnBatch start =======================");
         ResponseMsg rm = new ResponseMsg();
-        CheckAsnCode checkAsnCode = new CheckAsnCode();
+        Long ouId = asn.getOuId();
         try {
+            //查找PO单
+            WhPo whpo = this.poManager.findWhPoByIdToShard(asn.getPoId(), asn.getOuId());
+            if(null==whpo){
+                throw new BusinessException(ErrorCodes.PO_NULL);
+            }
+            if(PoAsnStatus.PO_CANCELED==whpo.getStatus()||PoAsnStatus.PO_CLOSE==whpo.getStatus()){
+                throw new BusinessException(ErrorCodes.PO_CREATEASN_STATUS_ERROR);
+            }
+            this.deleteTempAsnAndLine(whpo.getId(), ouId, null);
             // WMS单据号 调用HUB编码生成器获得
             String asnCode = codeManager.generateCode(Constants.WMS, Constants.WHASN_MODEL_URL, Constants.WMS_ASN_INNER, null, null);
             if (StringUtil.isEmpty(asnCode)) {
@@ -263,12 +222,14 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
                     return rm;
                 }
                 asn.setAsnExtCode(asnExtCode);
-                checkAsnCode.setAsnExtCode(asnExtCode);
-                checkAsnCode.setOuId(asn.getOuId());
-                checkAsnCode.setStoreId(asn.getStoreId());
-                List<CheckAsnCode> checkAsnCodeList = asnCheckManager.findCheckAsnCodeListByParam(checkAsnCode);
+
+                WhAsnCommand search = new WhAsnCommand();
+                search.setAsnExtCode(asnExtCode);
+                search.setOuId(ouId);
+                search.setStoreId(asn.getStoreId());
+                List<WhAsnCommand> searchList = this.asnManager.findListByParamsExt(search);
                 // 如果没有 直接结束
-                if (checkAsnCodeList.size() == 0) {
+                if (searchList == null || searchList.size() == 0) {
                     isSuccess = true;
                 }
             }
@@ -286,60 +247,26 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
                 log.warn("CreatePo warn ResponseStatus: " + rm.getResponseStatus() + " msg: " + rm.getMsg());
                 return rm;
             }
-            // 插入checkAsnCode表
-            checkAsnCode.setAsnCode(asnCode);
-            checkAsnCode.setAsnExtCode(asn.getAsnExtCode());
-            checkAsnCode.setOuId(asn.getOuId());
-            checkAsnCode.setStoreId(asn.getStoreId());
-            asnCheckManager.insertAsnWithCheckAndOuId(checkAsnCode);
-            /**
-             * 查询对应po_ou_id对应的po&poline数据
-             */
-            WhPo whPo = null;
-            List<WhPoLine> poLineList = new ArrayList<WhPoLine>();
-            PoAsnOu poAsnOu = new PoAsnOu();// 中间表数据
-            poAsnOu.setOuId(asn.getOuId());
-            poAsnOu.setPoId(asn.getPoId());
-            poAsnOuManager.insertPoAsnOu(poAsnOu);
-            if (null == asn.getPoOuId()) {
-                // 如果对应的po_ou_id为空去基础库查询
-                whPo = poManager.findWhAsnByIdToInfo(asn.getPoId(), asn.getPoOuId());
-                // 删除UUID不为空的数据
-                poLineManager.deletePoLineByUuidNotNullToInfo(asn.getPoId(), asn.getPoOuId());
-                poLineList = poLineManager.findWhPoLineListByPoIdToInfo(asn.getPoId(), asn.getPoOuId());
-            } else {
-                // 如果对应的po_ou_id不为空 去对应库查询
-                whPo = poManager.findWhAsnByIdToShard(asn.getPoId(), asn.getPoOuId());
-                // 删除UUID不为空的数据
-                poLineManager.deletePoLineByUuidNotNullToShard(asn.getPoId(), asn.getPoOuId());
-                poLineList = poLineManager.findWhPoLineListByPoIdToShard(asn.getPoId(), asn.getPoOuId());
+           
+            List<WhPoLine> poLineList = this.poLineManager.findWhPoLineByPoIdOuIdWhereHasAvailableQtyToShard(whpo.getId(), ouId);
+            if(null==poLineList||poLineList.size()==Constants.DEFAULT_INTEGER){
+                throw new BusinessException(ErrorCodes.PO_NO_AVAILABLE_ERROR);
             }
-            // 先期校验：polineList没有可用数量的时候，不能保存
-            boolean flag = false;
-            for (WhPoLine line : poLineList) {
-                if (line.getAvailableQty() > 0) {
-                    flag = true;
-                    break;
-                }
-            }
-            if (!flag) {
-                throw new BusinessException(ErrorCodes.CHECK_DATA_ERROR);
-            }
-            // 创建ASN&ASNLINE信息
-            rm = asnManager.createAsnBatch(asn, whPo, poLineList, rm);
-            if (null == asn.getPoOuId()) {
-                // 如果对应po单没有指定仓库 修改PO&POLINE状态及可用数量
-                rm = poManager.updatePoStatusByAsnBatch(asn, whPo, poLineList, rm);
-            }
-        } catch (Exception e) {
-            if (e instanceof BusinessException) {
-                throw e;
-            }
+            this.asnManager.createAsnBatch(asn, whpo, poLineList);
+
+        } catch (BusinessException e) {
+            rm.setMsg(e.getErrorCode() + "");
             rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
             log.error("CreateAsnBatch error poid: " + asn.getPoId() + " ouid: " + asn.getOuId());
             log.error("" + e);
             return rm;
+        } catch (Exception ex) {
+            log.error("CreateAsnBatch error poid: " + asn.getPoId() + " ouid: " + asn.getOuId());
+            log.error("" + ex);
+            rm.setMsg(ErrorCodes.SYSTEM_EXCEPTION + "");
+            rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
         }
+
         log.info("CreateAsnBatch end =======================");
         return rm;
     }
@@ -422,66 +349,6 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
         }
         return response;
     }
-
-    /**
-     * @deprecated 检验是否可以插入t_wh_po表
-     */
-    private ResponseMsg insertPoWithCheck(WhPo whPo, List<WhPoLine> whPoLines, ResponseMsg rm) {
-        log.info("InsertPoWithCheck start =======================");
-        /**
-         * 流程: 1.封装poCheckCommand对象,包含了WhPo,List<WhPoLine>,ResponseMsg,CheckPoCode
-         * 2.没有传入ouId,查找中间表t_wh_check_pocode是否有此PO单,在同一事务中执行以下两步:
-         * function==>poCheckManager.insertPoWithCheckWithoutOuId(); i)
-         * 如果有则去基础信息表查找此PO单。有PO则抛出异常,没有PO则添加一条数据. ii) 如果没有则在t_wh_check_pocode添加一条数据,并在PO表中添加一条数据.
-         * 3.有传入ouId,查找中间表t_wh_check_pocode是否有此PO单,在两个事务中分别执行以下两步:
-         * function==>poManager.createPoAndLineToShare(); i) 如果有则去对应的拆库表查找此PO单。有PO则抛出异常,没有PO则添加一条数据.
-         * function==>poManager.insertPoWithOuId(); ii) 如果没有则在t_wh_check_pocode添加一条数据,并在PO表中添加一条数据.
-         */
-        CheckPoCode checkPoCode = new CheckPoCode();
-        // poCode为编码服务器生成 extCode为外围服务器传入或WMS创建PO单时填写
-        checkPoCode.setExtCode(whPo.getExtCode());
-        checkPoCode.setPoCode(whPo.getPoCode());
-        checkPoCode.setOuId(whPo.getOuId());
-        checkPoCode.setStoreId(whPo.getStoreId());
-        Long ouId = whPo.getOuId();
-
-        /* 封装poCheckCommand对象 */
-        PoCheckCommand poCheckCommand = new PoCheckCommand();
-        poCheckCommand.setRm(rm);
-        poCheckCommand.setWhPo(whPo);
-        poCheckCommand.setWhPoLines(whPoLines);
-        poCheckCommand.setCheckPoCode(checkPoCode);
-        /**
-         * @mender yimin.lu 2016/4/27 以下逻辑做修正；修改后的逻辑： 1.生成主库备份 2.如果有仓库，则在仓库中再插入一份
-         */
-        // rm = this.biPoManager.createPoAndLineToInfo(poCheckCommand);
-        if (ResponseMsg.STATUS_SUCCESS == rm.getResponseStatus()) {
-            if (ouId != null) {
-                rm = poManager.createPoAndLineToShare(whPo, whPoLines, rm);
-            }
-        }
-
-        // if (null == ouId) {
-        // /* po单不带ouId */
-        // /* 查找并插入po数据 */
-        // rm = poCheckManager.insertPoWithCheckWithoutOuId(poCheckCommand);
-        // } else {
-        // /* po单带ouId */
-        // /* 查找check表中是否有数据 */
-        // boolean flag = poCheckManager.insertPoWithCheckAndOuId(checkPoCode);
-        // if (!flag) {
-        // /* 在check表中不存在po单 */
-        // rm = poManager.createPoAndLineToShare(whPo, whPoLines, rm);
-        // } else {
-        // /* 在check表中存在此po单,则去po表中查找是否有这单. 如果有就抛出异常,没有就插入 */
-        // rm = poManager.insertPoWithOuId(poCheckCommand);
-        // /* 如果抛出异常,此处会有补偿机制 */
-        // }
-        // }
-        log.info("InsertPoWithCheck end =======================");
-        return rm;
-    }
-
 
     @Override
     public ResponseMsg createPoLineSingleNew(BaseCommand whPoLine) {
@@ -577,80 +444,6 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
         return rm;
     }
 
-    /**
-     * 检验是否可以插入t_wh_asn表
-     */
-    private ResponseMsg insertAsnWithCheck(WhAsn whAsn, List<WhAsnLineCommand> asnLineList, ResponseMsg rm) {
-        log.info("InsertAsnWithCheck start =======================");
-        /**
-         * 流程: 1.封装asnCheckCommand对象,包含了WhAsn,List<WhAsnLine>,ResponseMsg,CheckAsnCode
-         * 2.没有传入ouId,查找中间表t_wh_check_asncode是否有此ASN单,在同一事务中执行以下两步:
-         * function==>asnCheckManager.insertAsnWithCheckWithoutOuId(); i)
-         * 如果有则去基础信息表查找此ASN单。有ASN则抛出异常,没有ASN则添加一条数据. ii)
-         * 如果没有则在t_wh_check_asncode添加一条数据,并在ASN表中添加一条数据.
-         * 3.有传入ouId,查找中间表t_wh_check_asncode是否有此ASN单,在两个事务中分别执行以下两步:
-         * function==>asnManager.createAsnAndLineToShare(); i)
-         * 如果有则去对应的拆库表查找此ASN单。有ASN则抛出异常,没有ASN则添加一条数据. function==>asnManager.insertAsnWithOuId(); ii)
-         * 如果没有则在t_wh_check_asncode添加一条数据,并在ASN表中添加一条数据.
-         */
-        CheckAsnCode checkAsnCode = new CheckAsnCode();
-        // asnCode为编码服务器生成 extCode为外围服务器传入或WMS创建ASN单时填写
-        checkAsnCode.setAsnExtCode(whAsn.getAsnExtCode());
-        checkAsnCode.setAsnCode(whAsn.getAsnCode());
-        checkAsnCode.setOuId(whAsn.getOuId());
-        checkAsnCode.setStoreId(whAsn.getStoreId());
-        // Long ouId = whAsn.getOuId();
-
-        /* 封装asnCheckCommand对象 */
-        AsnCheckCommand asnCheckCommand = new AsnCheckCommand();
-        asnCheckCommand.setRm(rm);
-        asnCheckCommand.setWhAsn(whAsn);
-        asnCheckCommand.setCheckAsnCode(checkAsnCode);
-        // if (null == ouId) {
-        // /* asn单不带ouId */
-        // /* 查找并插入asn数据 */
-        // rm = asnCheckManager.insertAsnWithCheckWithoutOuId(asnCheckCommand);
-        // } else {
-        /* asn单带ouId */
-        /* 查找check表中是否有数据 */
-        boolean flag = asnCheckManager.insertAsnWithCheckAndOuId(checkAsnCode);
-        WhPo whPo = null;
-        Map<Long, WhPoLine> poLineMap = new HashMap<Long, WhPoLine>();
-        List<WhPoLine> poLineList = new ArrayList<WhPoLine>();
-        // 封装数据
-        PoAsnOu poAsnOu = new PoAsnOu();// 中间表数据
-        poAsnOu.setOuId(whAsn.getOuId());
-        poAsnOu.setPoId(whAsn.getPoId());
-        poAsnOuManager.insertPoAsnOu(poAsnOu);
-        if (null == whAsn.getPoOuId()) {
-            // 如果对应的po_ou_id为空去基础库查询
-            whPo = poManager.findWhAsnByIdToInfo(whAsn.getPoId(), whAsn.getPoOuId());
-            poLineList = poLineManager.findWhPoLineListByPoIdToInfo(whAsn.getPoId(), whAsn.getPoOuId());
-        } else {
-            // 如果对应的po_ou_id不为空 去对应库查询
-            whPo = poManager.findWhAsnByIdToShard(whAsn.getPoId(), whAsn.getPoOuId());
-            poLineList = poLineManager.findWhPoLineListByPoIdToShard(whAsn.getPoId(), whAsn.getPoOuId());
-        }
-        for (WhPoLine whPoLine : poLineList) {
-            // 查询到的lineList放入map等到后续处理
-            poLineMap.put(whPoLine.getId(), whPoLine);
-        }
-        if (!flag) {
-            /* 在check表中不存在asn单 */
-            rm = asnManager.createAsnAndLineToShare(whAsn, asnLineList, whPo, poLineMap, rm);
-        } else {
-            /* 在check表中存在此asn单,则去asn表中查找是否有这单. 如果有就抛出异常,没有就插入 */
-            rm = asnManager.insertAsnWithOuId(whAsn, asnLineList, whPo, poLineMap, rm);
-            /* 如果抛出异常,此处会有补偿机制 */
-        }
-        if (null == whAsn.getPoOuId()) {
-            // 如果对应po单没有指定仓库 修改PO&POLINE状态及可用数量
-            rm = poManager.updatePoStatusByAsn(whAsn, asnLineList, whPo, poLineMap, rm);
-        }
-        // }
-        log.info("InsertAsnWithCheck end =======================");
-        return rm;
-    }
 
     /**
      * 获取到唯一的库位条码或补货条码 逻辑：一个仓库的库位条码和补货条码是唯一的
@@ -683,7 +476,7 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
 
 
     /**
-     * 创建PO单据
+     * 创建BIPO单据
      */
     @Override
     public ResponseMsg createPoNew(WhPoCommand po) {
@@ -1044,14 +837,12 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
                 } else {
                     line.setQtyPlanned(line.getQtyPlanned() + lineCommand.getQtyPlanned());
                     line.setModifiedId(command.getUserId());
-                    line.setLastModifyTime(new Date());
                 }
                 lineList.add(line);
             }
         }
         // asn.setUuid(command.getUuid());
         asn.setModifiedId(command.getUserId());
-        asn.setLastModifyTime(new Date());
         this.asnManager.createAsnAndLineWithUuidToShard(asn, lineList);
         return asn;
     }
@@ -1108,6 +899,9 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
 
         // po单
         WhPo po = this.poManager.findWhPoByIdToShard(asn.getPoId(), ouId);
+        if (PoAsnStatus.PO_NEW == po.getStatus()) {
+            po.setStatus(PoAsnStatus.PO_CREATE_ASN);
+        }
 
         this.asnManager.saveTempAsnWithUuidToShard(asn, saveAsnLineList, po, savePoLineList);
     }
@@ -1119,6 +913,9 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
         List<WhAsnLine> lineList = null;
         if (asn != null) {
             lineList = this.asnLineManager.findTempWhAsnLineByAsnIdOuIdNotUuid(asn.getId(), ouId, uuid);
+            if (StringUtils.isEmpty(asn.getUuid())) {
+                asn = null;
+            }
         }
         this.asnManager.deleteAsnAndLine(asn, lineList);
     }
@@ -1126,13 +923,57 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
     @Override
     public void finishCreatingAsn(WhPoCommand command) {
         if (null != command.getAsnId()) {
-            WhAsn asn = this.asnManager.findTempAsnByPoIdOuIdUuid(command.getId(), command.getOuId(), command.getUuid());
+            WhAsn asn = this.asnManager.findTempAsnByPoIdOuIdUuid(command.getId(), command.getOuId(), null);
             List<WhAsnLine> lineList = null;
             if (asn != null) {
-                lineList = this.asnLineManager.findTempWhAsnLineByAsnIdOuIdUuid(asn.getId(), command.getOuId(), command.getUuid());
+                lineList = this.asnLineManager.findTempWhAsnLineByAsnIdOuIdUuid(asn.getId(), command.getOuId(), null);
+                if (StringUtils.isEmpty(asn.getUuid())) {
+                    asn = null;
+                }
             }
             this.asnManager.deleteAsnAndLine(asn, lineList);
         }
 
     }
+
+    @Override
+    public ResponseMsg createAsn(WhAsnCommand asn) {
+        log.info("CreateAsn start =======================");
+        // 验证数据完整性
+        ResponseMsg rm = checkAsnParameter(asn);
+        if (rm.getResponseStatus() != ResponseMsg.STATUS_SUCCESS) {
+            log.warn("CreateAsn warn ResponseStatus: " + rm.getResponseStatus() + " msg: " + rm.getMsg());
+            return rm;
+        }
+        try {
+            // 创建ASN单数据
+            WhAsn whAsn = copyPropertiesAsn(asn);
+            // WMS单据号 调用HUB编码生成器获得
+            String asnCode = codeManager.generateCode(Constants.WMS, Constants.WHASN_MODEL_URL, Constants.WMS_ASN_INNER, null, null);
+            if (StringUtil.isEmpty(asnCode)) {
+                log.warn("CreateAsn warn asnCode generateCode is null");
+                rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
+                rm.setMsg(ErrorCodes.GET_GENERATECODE_NULL + "");
+                log.warn("CreateAsn warn ResponseStatus: " + rm.getResponseStatus() + " msg: " + rm.getMsg());
+                return rm;
+            }
+            whAsn.setAsnCode(asnCode);
+            this.asnManager.createAsn(whAsn, asn.getAsnLineList());
+        } catch (BusinessException e) {
+            rm.setMsg(e.getErrorCode() + "");
+            rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
+            log.error("CreateAsn error asnCode: " + asn.getAsnExtCode());
+            log.error("" + e);
+            return rm;
+        } catch (Exception ex) {
+            rm.setMsg(ErrorCodes.SYSTEM_EXCEPTION + "");
+            rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
+            log.error("CreateAsn error asnCode: " + asn.getAsnExtCode());
+            log.error("" + ex);
+            return rm;
+        }
+        log.info("CreateAsn end =======================");
+        return rm;
+    }
+
 }

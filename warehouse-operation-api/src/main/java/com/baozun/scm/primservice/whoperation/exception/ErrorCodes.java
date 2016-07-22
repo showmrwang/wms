@@ -321,6 +321,10 @@ public class ErrorCodes {
     public static final int SKU_EXPIRE_ERROR = 10025;
     /** 已分配仓库的单据，不允许删除！ */
     public static final int BIPO_DELETE_HAS_ALLOCATED_ERROR = 10026;
+    /** PO单明细已没有可用数量！ */
+    public static final int PO_NO_AVAILABLE_ERROR = 10027;
+    /** PO单状态异常，不允许创建ASN */
+    public static final int PO_CREATEASN_STATUS_ERROR = 10028;
     // 10001-20000 luyimin
 
 
@@ -427,6 +431,8 @@ public class ErrorCodes {
     /** 此商品不能放入目标容器 请更换容器 IsSkuMatchContainer */
     public static final int PDA_INBOUND_SKU_MATCH_CONTAINER_ERROR = 50021;
     // 50001-60000 hubin
+
+
 
     // 60001-70000 xiemingwei
     // 60001-70000 xiemingwei

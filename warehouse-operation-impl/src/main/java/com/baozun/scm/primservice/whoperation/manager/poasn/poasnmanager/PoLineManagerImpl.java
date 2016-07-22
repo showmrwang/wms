@@ -605,5 +605,11 @@ public class PoLineManagerImpl implements PoLineManager {
         return this.whPoLineDao.findPoLineListByQueryMapWithPageExtForCreateAsnToShard(page, sorts, paraMap);
     }
 
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<WhPoLine> findWhPoLineByPoIdOuIdWhereHasAvailableQtyToShard(Long poId, Long ouId) {
+        return this.whPoLineDao.findWhPoLineByPoIdOuIdWhereHasAvailableQtyToShard(poId, ouId);
+    }
+
 
 }

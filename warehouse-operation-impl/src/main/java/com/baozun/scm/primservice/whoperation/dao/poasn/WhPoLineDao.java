@@ -108,4 +108,6 @@ public interface WhPoLineDao extends BaseDao<WhPoLine, Long> {
 
     List<WhPoLine> findListByParamExt(WhPoLineCommand command);
 
+    List<WhPoLine> findWhPoLineByPoIdOuIdWhereHasAvailableQtyToShard(@Param("poId") Long poId, @Param("ouId") Long ouId);
+
 }

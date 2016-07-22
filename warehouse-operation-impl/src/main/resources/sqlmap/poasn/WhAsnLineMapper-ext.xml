@@ -267,7 +267,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			left join t_wh_inventory_status inv on inv.id = al.inv_status
 			left join t_wh_sku sku on al.sku_id = sku.id 
 			where 
-			al.asn_id = #{asnId}
+			al.asn_id = #{asnId} and al.ou_id=#{ouId} and al.uuid is null 
     </select>
     		
 		
@@ -279,7 +279,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			left join t_wh_inventory_status inv on inv.id = al.inv_status
 			left join t_wh_sku sku on al.sku_id = sku.id 
 			where 
-			al.asn_id = #{asnId}
+			al.asn_id = #{asnId} and al.ou_id=#{ouId} and al.uuid is null 
     </select>
 	
 	 <delete id="deleteByAsnIdOuId" parameterType="map">
@@ -469,7 +469,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			left join sys_dictionary sys on sys.dic_value = al.status and sys.group_value = 'ASNLINESTATUS'
 			left join t_wh_inventory_status inv on inv.id = al.inv_status
 			left join t_wh_sku sku on al.sku_id = sku.id
-			where asn.uuid=#{uuid} and al.uuid=#{uuid} and asn.ou_id=#{ouId} and asn.id=#{id}
+			where al.uuid=#{uuid} and asn.ou_id=#{ouId} and asn.id=#{id}
     </select>
     		
 		
@@ -480,7 +480,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			left join sys_dictionary sys on sys.dic_value = al.status and sys.group_value = 'ASNLINESTATUS'
 			left join t_wh_inventory_status inv on inv.id = al.inv_status
 			left join t_wh_sku sku on al.sku_id = sku.id
-			where asn.uuid=#{uuid} and al.uuid=#{uuid} and asn.ou_id=#{ouId} and asn.id=#{id}
+			where al.uuid=#{uuid} and asn.ou_id=#{ouId} and asn.id=#{id}
     </select>
 	<select id="findWhAsnLineByPoLineIdAndUuidAndOuId"  resultMap="WhAsnLineResultExt">
 	 select <include refid="whAsnLineColumnsExt" />
@@ -511,7 +511,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	 from
 		    t_wh_asn_line
 			where
-			asn_id=#{asnId}  and ou_id = #{ouId} and uuid is not null and uuid !=#{uuid}
+			asn_id=#{asnId}  and ou_id = #{ouId} and uuid is not null and uuid !=''
+			<if test="uuid!=null and uuid!=''">
+			and uuid !=#{uuid}
+			</if>
 	 </select>
 	 
 	 <select id="findTempWhAsnLineByAsnIdOuIdUuid"  resultMap="WhAsnLineResultExt">

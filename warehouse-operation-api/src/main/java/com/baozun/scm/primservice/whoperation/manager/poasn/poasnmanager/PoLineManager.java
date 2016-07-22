@@ -147,4 +147,6 @@ public interface PoLineManager extends BaseManager {
      */
     long findListCountByParamToShard(WhPoLine searchPoLine);
 
+    List<WhPoLine> findWhPoLineByPoIdOuIdWhereHasAvailableQtyToShard(Long id, Long ouId);
+
 }

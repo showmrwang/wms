@@ -313,6 +313,7 @@ public class BiPoManagerImpl extends BaseManagerImpl implements BiPoManager {
                 }
                 biPoLine.setAvailableQty(biPoLine.getAvailableQty() - lineQtyPlanned);
                 biPoLine.setModifiedId(userId);
+                biPoLine.setStatus(PoAsnStatus.BIPOLINE_ALLOT);
                 this.biPoLineDao.saveOrUpdateByVersion(biPoLine);
             }
         }

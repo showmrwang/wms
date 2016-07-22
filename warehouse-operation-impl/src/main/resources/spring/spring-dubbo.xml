@@ -29,10 +29,7 @@
     <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.poasn.poasnproxy.CreatePoAsnManagerProxy"  ref="createPoAsnManagerProxy" />
     <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.poasn.poasnproxy.SelectPoAsnManagerProxy"  ref="selectPoAsnManagerProxy" />
     <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.poasn.poasnproxy.EditPoAsnManagerProxy"  ref="editPoAsnManagerProxy" />
-    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoCheckManager"  ref="poCheckManager" />
-    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnCheckManager"  ref="asnCheckManager" />
     <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnLineManager"  ref="asnLineManager" />
-    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoAsnOuManager"  ref="poAsnOuManager" />
     <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.system.GlobalLogManager"  ref="globalLogManager" />
     <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.InventoryModifyManager"  ref="inventoryModifyManager" />
     <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.InventoryOccupyManager"  ref="inventoryOccupyManager" />
