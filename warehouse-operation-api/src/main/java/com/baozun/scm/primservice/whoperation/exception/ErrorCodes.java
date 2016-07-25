@@ -325,6 +325,8 @@ public class ErrorCodes {
     public static final int PO_NO_AVAILABLE_ERROR = 10027;
     /** PO单状态异常，不允许创建ASN */
     public static final int PO_CREATEASN_STATUS_ERROR = 10028;
+    /** PO单已经指定了仓库，不允许创建子PO */
+    public static final int BIPO_CREATESUB_OUID_ERROR = 10029;
     // 10001-20000 luyimin
 
 

@@ -31,5 +31,13 @@ public interface WhCartonManager extends BaseManager {
 
     void addDevanningList(WhCartonCommand whCartonCommand) throws Exception;
 
+    /**
+     * 【通用方法】
+     * 
+     * @param whCartonCommand
+     * @return
+     */
+    List<WhCartonCommand> findWhCartonByParamExt(WhCartonCommand whCartonCommand);
+
 
 }

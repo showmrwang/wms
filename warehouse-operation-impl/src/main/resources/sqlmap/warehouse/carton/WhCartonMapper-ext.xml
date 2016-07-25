@@ -327,4 +327,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    where id = #{id} and ou_id = #{ouid}
 	    and is_caselevel = 1
  </select>
+ 
+  <select id="findWhCartonByParamExt" resultMap="WhCartonResultExt">
+    	select <include refid="whCartonColumns" />
+	    from t_wh_carton 
+		<include refid="whCartonDynamicWhere"/>
+		
+    </select>
+ 
 </mapper>

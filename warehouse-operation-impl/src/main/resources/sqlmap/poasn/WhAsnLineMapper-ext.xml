@@ -470,6 +470,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			left join t_wh_inventory_status inv on inv.id = al.inv_status
 			left join t_wh_sku sku on al.sku_id = sku.id
 			where al.uuid=#{uuid} and asn.ou_id=#{ouId} and asn.id=#{id}
+			<if test="skuName!=null and skuName!=''">
+				and sku.name like #{skuName}
+			</if>
+			<if test="skuCode!=null and skuCode!=''">
+				and sku.code like #{skuCode}
+			</if>
+			<if test="qtyPlanned!=null and qtyPlanned!=''">
+				and line.qty_planned like #{qtyPlanned}
+			</if>
     </select>
     		
 		
@@ -481,6 +490,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			left join t_wh_inventory_status inv on inv.id = al.inv_status
 			left join t_wh_sku sku on al.sku_id = sku.id
 			where al.uuid=#{uuid} and asn.ou_id=#{ouId} and asn.id=#{id}
+			<if test="skuName!=null and skuName!=''">
+				and sku.name like #{skuName}
+			</if>
+			<if test="skuCode!=null and skuCode!=''">
+				and sku.code like #{skuCode}
+			</if>
+			<if test="qtyPlanned!=null and qtyPlanned!=''">
+				and line.qty_planned like #{qtyPlanned}
+			</if>
     </select>
 	<select id="findWhAsnLineByPoLineIdAndUuidAndOuId"  resultMap="WhAsnLineResultExt">
 	 select <include refid="whAsnLineColumnsExt" />

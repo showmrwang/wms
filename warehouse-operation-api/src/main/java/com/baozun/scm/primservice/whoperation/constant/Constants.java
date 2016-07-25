@@ -249,4 +249,8 @@ public final class Constants {
     public static final String TIME_UOM_MONTH = "month";
     public static final String TIME_UOM_DAY = "day";
 
+    // 默认true:false
+    public static final boolean BOOLEAN_TRUE = true;
+    public static final boolean BOOLEAN_FALSE = false;
+
 }

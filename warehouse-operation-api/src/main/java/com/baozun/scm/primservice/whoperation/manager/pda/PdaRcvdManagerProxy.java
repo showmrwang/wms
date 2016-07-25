@@ -3,6 +3,7 @@ package com.baozun.scm.primservice.whoperation.manager.pda;
 import java.util.List;
 
 import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdCacheCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.carton.WhCartonCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionRcvd;
@@ -129,5 +130,13 @@ public interface PdaRcvdManagerProxy extends BaseManager {
      * @return
      */
     WhSkuInventoryCommand initSkuWhenScanning(WhSkuInventoryCommand command);
+
+    /**
+     * 查看装箱信息表
+     * 
+     * @param cartonCommand
+     * @return
+     */
+    List<WhCartonCommand> findWhCartonByParamExt(WhCartonCommand cartonCommand);
 
 }

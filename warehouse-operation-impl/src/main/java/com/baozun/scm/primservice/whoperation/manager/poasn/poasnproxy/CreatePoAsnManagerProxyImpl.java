@@ -557,13 +557,16 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
         //2.如果没有此PO单的话
         //2.1 生成新的PO单头信息
         //2.2.1 生成新的PO单明细
-        // 3.最后的同步机制：由INFO->shard#TODO
+        // 3.最后的同步机制：由INFO->shard
         Long ouId = command.getOuId();
         String uuid=command.getUuid();
         Long userId = command.getUserId();
         BiPo bipo = this.biPoManager.findBiPoById(command.getId());
         if (null == bipo) {
             throw new BusinessException(ErrorCodes.PACKAGING_ERROR);
+        }
+        if(null!=bipo.getOuId()){
+            throw new BusinessException(ErrorCodes.BIPO_CREATESUB_OUID_ERROR);
         }
         // 查找非取消状态下的拆单
         WhPo po = this.poManager.findWhPoByPoCodeOuIdToInfo(bipo.getPoCode(), ouId);

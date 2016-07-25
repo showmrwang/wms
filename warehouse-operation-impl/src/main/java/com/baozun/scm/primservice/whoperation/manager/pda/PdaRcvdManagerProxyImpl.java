@@ -29,6 +29,7 @@ import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
 import com.baozun.scm.primservice.whoperation.command.sku.skucommand.SkuMgmtCommand;
 import com.baozun.scm.primservice.whoperation.command.sku.skushared.SkuCommand2Shared;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.carton.WhCartonCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.constant.CacheKeyConstant;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
@@ -146,18 +147,27 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                 // 缓存明细的可用数量
                 Map<Long, Integer> skuMap = new HashMap<Long, Integer>();
                 for (WhAsnLine asnline : asnlineList) {// 缓存ASN明细信息
-                    cacheManager.setMapObject(CacheKeyConstant.CACHE_ASNLINE_PREFIX + occupationId, asnline.getId().toString(), asnline, 24 * 60 * 60);
-                    int count = asnline.getQtyPlanned().intValue() - asnline.getQtyRcvd().intValue();// 未收货数量
-                    int overchargeCount = (int) (asnline.getQtyPlanned().intValue() * Double.valueOf(cacheRate) / 100);// 可超收数量
-                    cacheManager.setMapObject(CacheKeyConstant.CACHE_ASNLINE_OVERCHARGE_PREFIX + occupationId, asnline.getId().toString(), overchargeCount, 24 * 60 * 60);
-                    // 缓存ASN-商品数量
-                    long asnLineSku = cacheManager.incr(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + cacheAsn.getId() + "_" + asnline.getId() + "_" + asnline.getSkuId());
-                    cacheManager.decrBy(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + cacheAsn.getId() + "_" + asnline.getId() + "_" + asnline.getSkuId(), (int) asnLineSku);
-                    cacheManager.incrBy(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + cacheAsn.getId() + "_" + asnline.getId() + "_" + asnline.getSkuId(), count);
-                    if (skuMap.containsKey(asnline.getSkuId())) {
-                        skuMap.put(asnline.getSkuId(), skuMap.get(asnline.getSkuId()) + count);
-                    } else {
-                        skuMap.put(asnline.getSkuId(), count);
+                  //@mender yimin.lu 只缓存非caseLEVEL的明细
+                    WhCartonCommand cartonCommand = new WhCartonCommand();
+                    cartonCommand.setAsnId(occupationId);
+                    cartonCommand.setOuId(ouId);
+                    cartonCommand.setAsnLineId(asnline.getId());
+                    cartonCommand.setIsCaselevel(Constants.BOOLEAN_TRUE);
+                    List<WhCartonCommand> cartonList = this.generalRcvdManager.findWhCartonByParamExt(cartonCommand);
+                    if (cartonList == null || Constants.DEFAULT_INTEGER == cartonList.size()) {
+                        cacheManager.setMapObject(CacheKeyConstant.CACHE_ASNLINE_PREFIX + occupationId, asnline.getId().toString(), asnline, 24 * 60 * 60);
+                        int count = asnline.getQtyPlanned().intValue() - asnline.getQtyRcvd().intValue();// 未收货数量
+                        int overchargeCount = (int) (asnline.getQtyPlanned().intValue() * Double.valueOf(cacheRate) / 100);// 可超收数量
+                        cacheManager.setMapObject(CacheKeyConstant.CACHE_ASNLINE_OVERCHARGE_PREFIX + occupationId, asnline.getId().toString(), overchargeCount, 24 * 60 * 60);
+                        // 缓存ASN-商品数量
+                        long asnLineSku = cacheManager.incr(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + cacheAsn.getId() + "_" + asnline.getId() + "_" + asnline.getSkuId());
+                        cacheManager.decrBy(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + cacheAsn.getId() + "_" + asnline.getId() + "_" + asnline.getSkuId(), (int) asnLineSku);
+                        cacheManager.incrBy(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + cacheAsn.getId() + "_" + asnline.getId() + "_" + asnline.getSkuId(), count);
+                        if (skuMap.containsKey(asnline.getSkuId())) {
+                            skuMap.put(asnline.getSkuId(), skuMap.get(asnline.getSkuId()) + count);
+                        } else {
+                            skuMap.put(asnline.getSkuId(), count);
+                        }
                     }
                 }
                 // Asn商品缓存列表
@@ -1813,5 +1823,10 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
             list[Constants.GENERAL_RECEIVING_INVATTR5] = '0';
         }
         return String.copyValueOf(list);
+    }
+
+    @Override
+    public List<WhCartonCommand> findWhCartonByParamExt(WhCartonCommand cartonCommand) {
+        return this.generalRcvdManager.findWhCartonByParamExt(cartonCommand);
     }
 }

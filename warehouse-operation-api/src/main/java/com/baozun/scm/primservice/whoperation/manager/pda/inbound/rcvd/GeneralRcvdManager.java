@@ -6,6 +6,7 @@ import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdContainerCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.sku.skushared.SkuCommand2Shared;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.carton.WhCartonCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine;
@@ -159,4 +160,12 @@ public interface GeneralRcvdManager extends BaseManager {
      * @return
      */
     SkuCommand2Shared findSkuByBarCodeCustomerIdOuId(String skuCode, Long customerId, Long ouId);
+
+    /**
+     * 查找装箱信息
+     * 
+     * @param cartonCommand
+     * @return
+     */
+    List<WhCartonCommand> findWhCartonByParamExt(WhCartonCommand cartonCommand);
 }

@@ -104,5 +104,13 @@ public interface WhCartonDao extends BaseDao<WhCarton, Long> {
      */
     WhCarton findWhCaselevelCartonById(@Param("id") Long id, @Param("ouid") Long ouid);
 
+    /**
+     * 通用功能
+     * 
+     * @param whCartonCommand
+     * @return
+     */
+    List<WhCartonCommand> findWhCartonByParamExt(WhCartonCommand whCartonCommand);
+
 
 }

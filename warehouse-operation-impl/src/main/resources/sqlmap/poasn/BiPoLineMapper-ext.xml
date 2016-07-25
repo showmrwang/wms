@@ -356,7 +356,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				and sku.name like #{skuName}
 			</if>
 			<if test="skuCode!=null and skuCode!=''">
-				and sku.code = #{skuCode}
+				and sku.code like #{skuCode}
+			</if>
+			<if test="qtyAvailable!=null and qtyAvailable!=''">
+				and line.available_qty like #{qtyAvailable}
 			</if>
 			</where>
     </select>
@@ -381,7 +384,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				and sku.name like #{skuName}
 			</if>
 			<if test="skuCode!=null and skuCode!=''">
-				and sku.code = #{skuCode}
+				and sku.code like #{skuCode}
+			</if>
+			<if test="qtyAvailable!=null and qtyAvailable!=''">
+				and line.available_qty like #{qtyAvailable}
 			</if>
 			</where>
 		</select>

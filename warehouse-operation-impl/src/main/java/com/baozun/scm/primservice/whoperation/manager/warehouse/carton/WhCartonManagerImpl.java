@@ -384,4 +384,9 @@ public class WhCartonManagerImpl extends BaseManagerImpl implements WhCartonMana
         return code;
     }
 
+    @Override
+    public List<WhCartonCommand> findWhCartonByParamExt(WhCartonCommand whCartonCommand) {
+        return this.whCartonDao.findWhCartonByParamExt(whCartonCommand);
+    }
+
 }

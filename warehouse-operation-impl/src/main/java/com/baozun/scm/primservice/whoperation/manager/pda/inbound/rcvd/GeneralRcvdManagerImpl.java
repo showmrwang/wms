@@ -24,6 +24,7 @@ import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnLineCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoLineCommand;
 import com.baozun.scm.primservice.whoperation.command.sku.skushared.SkuCommand2Shared;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.carton.WhCartonCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
@@ -644,6 +645,12 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
             return skuCommand2Shared;
         }
         return null;
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<WhCartonCommand> findWhCartonByParamExt(WhCartonCommand cartonCommand) {
+        return this.whCartonDao.findWhCartonByParamExt(cartonCommand);
     }
 
 
