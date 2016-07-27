@@ -27,6 +27,6 @@ public class WhPutawayPatternType implements Serializable {
      */
     public static final int SYS_GUIDE_PUTAWAY = 1; // 系统指导上架
     public static final int SYS_SUGGEST_PUTAWAY = 2; // 系统建议上架
-    public static final int MAN_MADE_PUTAWAY = 3; // 人为指定上架
+    public static final int MANUAL_DECIDE_PUTAWAY = 3; // 人为指定上架
 
 }

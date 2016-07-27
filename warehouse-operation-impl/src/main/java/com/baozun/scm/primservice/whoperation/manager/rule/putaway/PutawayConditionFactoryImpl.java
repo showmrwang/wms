@@ -84,7 +84,7 @@ public class PutawayConditionFactoryImpl implements PutawayConditionFactory {
                     throw new BusinessException(ErrorCodes.PARAMS_ERROR);
             }
 
-        } else if (WhPutawayPatternType.MAN_MADE_PUTAWAY == ppt) {
+        } else if (WhPutawayPatternType.MANUAL_DECIDE_PUTAWAY == ppt) {
             switch (ppdt) {
                 case WhPutawayPatternDetailType.PALLET_PUTAWAY:
                     return manMadePalletPutawayCondition;
