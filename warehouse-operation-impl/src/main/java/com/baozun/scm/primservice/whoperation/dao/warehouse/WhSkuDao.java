@@ -16,20 +16,22 @@ package com.baozun.scm.primservice.whoperation.dao.warehouse;
 
 import java.util.Map;
 
-import org.apache.ibatis.annotations.Param;
-
-import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
-import com.baozun.scm.primservice.whoperation.model.warehouse.WhSku;
-
 import lark.common.annotation.QueryPage;
 import lark.common.dao.Page;
 import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
 
+import org.apache.ibatis.annotations.Param;
+
+import com.baozun.scm.primservice.whoperation.command.sku.skucommand.SkuCommand;
+import com.baozun.scm.primservice.whoperation.command.sku.skushared.SkuCommand2Shared;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhSku;
+
 public interface WhSkuDao extends BaseDao<WhSku, Long> {
 
- 
+
     /**
      * 查询商品列表
      * @author shenlijun
@@ -41,7 +43,7 @@ public interface WhSkuDao extends BaseDao<WhSku, Long> {
     @QueryPage("findwhSkuListCount")
     Pagination<WhSkuCommand> findwhSkuList(Page page, Sort[] sorts, Map<String, Object> params);
 
-   
+
     /**
      * 查询商品扩展信息
      * @param params
@@ -57,7 +59,7 @@ public interface WhSkuDao extends BaseDao<WhSku, Long> {
      * @return
      */
     WhSkuCommand findWhSkuByIdExt(@Param("id") Long id, @Param("ouId") Long ouId);
-    
+
     /**
      * 根据条码获取商品信息
      * @author lichuan
@@ -66,5 +68,7 @@ public interface WhSkuDao extends BaseDao<WhSku, Long> {
      * @return
      */
     WhSkuCommand findWhSkuByBarcodeExt(@Param("barcode") String barcode, @Param("ouId") Long ouId);
- 
+
+    SkuCommand2Shared findSkuAllInfoByParamExt(SkuCommand skuCommand);
+
 }
