@@ -12,10 +12,19 @@ import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 
 public interface PoLineManager extends BaseManager {
+    /**
+     * [通用方法]插入INFO.WHPOLINE
+     * 
+     * @param whPoLine
+     */
+    void insertToInfo(WhPoLine whPoLine);
 
-    void createPoLineSingleToInfo(WhPoLine whPoLine);
-
-    void createPoLineSingleToShare(WhPoLine whPoLine);
+    /**
+     * [通用方法]插入SHARD.WHPOLINE
+     * 
+     * @param whPoLine
+     */
+    void insertToShard(WhPoLine whPoLine);
 
     Pagination<WhPoLineCommand> findListByQueryMapWithPageExtByInfo(Page page, Sort[] sorts, Map<String, Object> params);
 
@@ -33,40 +42,37 @@ public interface PoLineManager extends BaseManager {
 
     void editPoLineToShare(WhPoLine whPoLine);
 
-    WhPoLineCommand findPoLinebyIdToInfo(WhPoLineCommand command);
+    WhPoLineCommand findPoLineCommandbyIdToInfo(Long id, Long ouId);
 
-    WhPoLineCommand findPoLinebyIdToShard(WhPoLineCommand command);
+    WhPoLineCommand findPoLineCommandbyIdToShard(Long id, Long ouId);
 
     WhPoLine findPoLineByAddPoLineParamToInfo(WhPoLine line, Boolean type);
 
     WhPoLine findPoLineByAddPoLineParamToShare(WhPoLine line, Boolean type);
 
-    void updatePoLineSingleToInfo(WhPoLine whPoLine);
-
-    void updatePoLineSingleToShare(WhPoLine whPoLine);
-
     List<WhPoLine> findWhPoLineListByPoIdToInfo(Long poid, Long ouid);
 
     List<WhPoLine> findWhPoLineListByPoIdToShard(Long poid, Long ouid);
 
+    /**
+     * [通用方法]乐观锁更新INFO.WHPOLINE
+     * 
+     * @param o
+     */
     void saveOrUpdateByVersionToInfo(WhPoLine o);
 
+    /**
+     * [通用方法]乐观锁更新SHARD.WHPOLINE
+     * 
+     * @param o
+     */
     void saveOrUpdateByVersionToShard(WhPoLine o);
 
-    int deletePoLinesToInfo(List<WhPoLine> lineList);
+    void deletePoLinesToInfo(List<WhPoLine> lineList);
 
-    int deletePoLinesToShard(List<WhPoLine> lineList);
+    void deletePoLinesToShard(List<WhPoLine> lineList);
 
     void batchUpdatePoLine(List<WhPoLine> polineList);
-
-    /**
-     * 同一个仓库【或OUID】下 POCODE唯一
-     * 
-     * @param poCode
-     * @param ouId
-     * @return
-     */
-    List<WhPoLine> findInfoPoLineByPoCodeOuId(String poCode, Long ouId);
 
     /**
      * 新的保存整单的逻辑分支：将PO单整单数据保存到仓库
@@ -90,9 +96,9 @@ public interface PoLineManager extends BaseManager {
     WhPoLine findPoLineByPolineIdAndStatusListAndPoIdAndOuIdToShared(Long poLineId, List<Integer> statusList, Long poId, Long ouId);
     WhPoLine findPoLineByPolineIdAndStatusListAndPoIdAndOuIdToInfo(Long poLineId, List<Integer> statusList, Long poId, Long ouId, String uuid, boolean uuidFlag);
 
-    List<WhPoLine> findWhPoLineByPoIdOuIdUuIdToInfo(Long id, Long ouId, String uuid);
+    List<WhPoLine> findWhPoLineByPoIdOuIdUuIdToInfo(Long poid, Long ouId, String uuid);
 
-    void deletePoLineByPoIdOuIdAndUuidNotNullNotEqual(Long id, Long ouId, String uuid);
+    void deletePoLineByPoIdOuIdAndUuidNotNullNotEqual(Long poid, Long ouId, String uuid);
 
     /**
      * 拆分PO时uuid明细的分页查询
@@ -125,9 +131,22 @@ public interface PoLineManager extends BaseManager {
     List<WhPoLine> findWhPoLineListByPoIdOuIdStatusListToInfo(Long poId, Long ouId, List<Integer> statusList);
 
     /**
+     * [通用方法]根据ID,OUID查找SHARD.WHPOLINE
      * 
+     * @param id
+     * @param ouId
+     * @return
      */
     WhPoLine findWhPoLineByIdOuIdToShard(Long id, Long ouId);
+
+    /**
+     * [通用方法]根据ID,OUID查找INFO.WHPOLINE
+     * 
+     * @param id
+     * @param ouId
+     * @return
+     */
+    WhPoLine findWhPoLineByIdOuIdToInfo(Long id, Long ouId);
 
     /**
      * 

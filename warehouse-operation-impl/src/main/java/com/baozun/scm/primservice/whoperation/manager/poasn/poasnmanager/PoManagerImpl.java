@@ -17,8 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
-import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnLineCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
 import com.baozun.scm.primservice.whoperation.command.system.GlobalLogCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
@@ -32,10 +30,8 @@ import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.system.GlobalLogManager;
-import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
 import com.baozun.scm.primservice.whoperation.model.poasn.BiPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.BiPoLine;
-import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 
@@ -63,20 +59,6 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
 
 
     /**
-     * 读取公共库PO单数据
-     * 
-     * @param page
-     * @param sorts
-     * @param params
-     * @return
-     */
-    @Override
-    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
-    public Pagination<WhPoCommand> findListByQueryMapWithPageExtByInfo(Page page, Sort[] sorts, Map<String, Object> params) {
-        return whPoDao.findListByQueryMapWithPageExt(page, sorts, params);
-    }
-
-    /**
      * 读取拆分库PO单数据
      * 
      * @param page
@@ -88,73 +70,6 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public Pagination<WhPoCommand> findListByQueryMapWithPageExtByShard(Page page, Sort[] sorts, Map<String, Object> params) {
         return whPoDao.findListByQueryMapWithPageExt(page, sorts, params);
-    }
-
-
-    /**
-     * 保存po单信息
-     * 
-     */
-    @Override
-    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public ResponseMsg createPoAndLineToShare(WhPo po, List<WhPoLine> whPoLines, ResponseMsg rm) {
-        po.setId(null);
-        long i = whPoDao.insert(po);
-        if (0 == i) {
-            rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
-            rm.setMsg(ErrorCodes.SAVE_PO_FAILED + "");// 保存至po单信息失败
-            // throw new BusinessException(ErrorCodes.SAVE_PO_FAILED);
-            return rm;
-        }
-        if (whPoLines != null && whPoLines.size() > 0) {
-            // 有line信息保存
-            for (WhPoLine whPoLine : whPoLines) {
-                whPoLine.setId(null);
-                whPoLine.setPoId(po.getId());
-                whPoLineDao.insert(whPoLine);
-            }
-        }
-        rm.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
-        return rm;
-
-    }
-
-    @Override
-    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
-    public ResponseMsg createPoAndLineToInfo(WhPo po, List<WhPoLine> whPoLines, ResponseMsg rm) {
-        try {
-            BiPo biPo = new BiPo();
-            BeanUtils.copyProperties(po, biPo);
-            // biPo.setId(po.getBiPoId());
-            biPoDao.insert(biPo);
-            this.insertGlobalLog(GLOBAL_LOG_INSERT, biPo, po.getOuId(), po.getCreatedId(), null, DbDataSource.MOREDB_INFOSOURCE);
-            if (po.getOuId() != null) {
-
-                whPoDao.insert(po);
-            }
-            // 有line信息保存
-            if (whPoLines != null && whPoLines.size() > 0) {
-                for (WhPoLine whPoLine : whPoLines) {
-                    whPoLine.setPoId(po.getId());
-                    BiPoLine biPoLine = new BiPoLine();
-                    BeanUtils.copyProperties(whPoLine, biPoLine);
-                    biPoLineDao.insert(biPoLine);
-                    // whPoLineDao.insert(whPoLine);
-                    this.insertGlobalLog(GLOBAL_LOG_INSERT, biPoLine, po.getOuId(), po.getCreatedId(), po.getPoCode(), DbDataSource.MOREDB_INFOSOURCE);
-                }
-            }
-
-
-        } catch (Exception e) {
-            if (e instanceof BusinessException) {
-                throw (BusinessException) e;
-            } else {
-                throw new BusinessException(ErrorCodes.SAVE_PO_FAILED);
-            }
-        }
-        rm.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
-        rm.setMsg(po.getId() + "");
-        return rm;
     }
 
     /**
@@ -178,46 +93,6 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
     }
 
     /**
-     * 更新PO单信息 基础表
-     * 
-     * @param whPo
-     */
-    @Override
-    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
-    public void editPoToInfo(WhPo whPo) {
-        int count = 0;
-        count = whPoDao.saveOrUpdateByVersion(whPo);
-        if (count == 0) {
-            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-        }
-    }
-
-    /**
-     * 更新PO单信息 拆库表
-     * 
-     * @param whPo
-     */
-    @Override
-    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void editPoToShard(WhPo whPo) {
-        int count = 0;
-        count = whPoDao.saveOrUpdateByVersion(whPo);
-        if (count == 0) {
-            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-        }
-    }
-
-
-    /**
-     * 通过po单code 状态 ouid 模糊查询对应po单信息 公共库
-     */
-    @Override
-    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
-    public List<WhPoCommand> findWhPoListByExtCodeToInfo(String poCode, List<Integer> status, List<Long> customerList,List<Long> storeList,Long ouid, Integer linenum) {
-        return whPoDao.findWhPoListByExtCode(status, poCode,customerList, storeList, ouid, linenum);
-    }
-
-    /**
      * 通过po单code 状态 ouid 模糊查询对应po单信息 拆库
      */
     @Override
@@ -231,7 +106,7 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
     public void deletePoAndPoLineToInfo(WhPo po, Long userId) {
         try{
             // 删除POLINE明细信息
-            List<WhPoLine> lineList = this.whPoLineDao.findWhPoLineByPoIdOuId(po.getId(), po.getOuId(), null);
+            List<WhPoLine> lineList = this.whPoLineDao.findWhPoLineByPoIdOuIdUuid(po.getId(), po.getOuId(), null);
             if (lineList != null && lineList.size() > 0) {
                 for (WhPoLine line : lineList) {
                     BiPoLine biLine = this.biPoLineDao.findById(line.getPoLineId());
@@ -251,7 +126,7 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
             // 删除PO表头信息
             BiPo biPo = this.biPoDao.findBiPoByExtCodeStoreId(po.getExtCode(), po.getStoreId());
             whPoDao.deleteByIdOuId(po.getId(), po.getOuId());
-            List<WhPo> whPoList = this.whPoDao.findWhPoByPoCodeToInfo(po.getPoCode());
+            List<WhPo> whPoList = this.whPoDao.findWhPoByExtCodeStoreIdToInfo(biPo.getExtCode(), biPo.getStoreId());
             if (whPoList == null || whPoList.size() == 0) {
                 biPo.setStatus(PoAsnStatus.BIPO_NEW);
             }
@@ -272,7 +147,7 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
     public void deletePoAndPoLineToShard(WhPo po, Long userId) {
         try{
             // 删除POLINE明细信息
-            List<WhPoLine> lineList = this.whPoLineDao.findWhPoLineByPoIdOuId(po.getId(), po.getOuId(), null);
+            List<WhPoLine> lineList = this.whPoLineDao.findWhPoLineByPoIdOuIdUuid(po.getId(), po.getOuId(), null);
             if(lineList!=null&&lineList.size()>0){
                 for(WhPoLine line:lineList){
                     this.whPoLineDao.deletePoLineByIdOuId(line.getId(), line.getOuId());
@@ -285,97 +160,41 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
         }
     }
 
-    /**
-     * 通过asn数据修改对应po单状态 只针对没有ouid的po单
-     */
-    @Override
-    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
-    public ResponseMsg updatePoStatusByAsn(WhAsn asn, List<WhAsnLineCommand> asnLineList, WhPo whPo, Map<Long, WhPoLine> poLineMap, ResponseMsg rm) {
-        // 修改表头状态
-        if (whPo.getStatus() == PoAsnStatus.PO_NEW) {
-            // 如果是新建状态 改状态为已创建ASN
-            whPo.setStatus(PoAsnStatus.PO_CREATE_ASN);
-            whPo.setModifiedId(asn.getModifiedId());
-            int result = whPoDao.saveOrUpdateByVersion(whPo);
-            if (result <= 0) {
-                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-            }
-        }
-        // 修改明细状态及可用数量
-        for (WhAsnLineCommand asnline : asnLineList) {
-            WhPoLine whPoLine = poLineMap.get(asnline.getPoLineId());
-            // 修改poline的可用数量
-            whPoLine.setAvailableQty(whPoLine.getAvailableQty() - asnline.getQtyPlanned());
-            whPoLine.setModifiedId(asn.getModifiedId());
-            if (whPoLine.getStatus() == PoAsnStatus.POLINE_NEW) {
-                // 如果明细状态为新建的话 改成已创建ASN状态
-                whPoLine.setStatus(PoAsnStatus.POLINE_CREATE_ASN);
-            }
-            int result = whPoLineDao.saveOrUpdateByVersion(whPoLine);
-            if (result <= 0) {
-                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-            }
-        }
-        rm.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
-        rm.setMsg(asn.getId() + "");
-        return rm;
-    }
-
-    /**
-     * 通过asn数据修改对应po单状态 只针对没有ouid的po单 一键创建ASN
-     */
-    @Override
-    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
-    public ResponseMsg updatePoStatusByAsnBatch(WhAsnCommand asn, WhPo whpo, List<WhPoLine> whPoLines, ResponseMsg rm) {
-        // 修改表头状态
-        if (whpo.getStatus() == PoAsnStatus.PO_NEW) {
-            // 如果是新建状态 改状态为已创建ASN
-            whpo.setStatus(PoAsnStatus.PO_CREATE_ASN);
-            whpo.setModifiedId(asn.getModifiedId());
-            int result = whPoDao.saveOrUpdateByVersion(whpo);
-            if (result <= 0) {
-                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-            }
-        }
-        // 修改明细状态和可用数量
-        for (WhPoLine pl : whPoLines) {
-            // 修改poline的可用数量
-            pl.setAvailableQty(0.0);// 一键创建asnline poline的可用数量0
-            pl.setModifiedId(asn.getModifiedId());
-            if (pl.getStatus() == PoAsnStatus.POLINE_NEW) {
-                // 如果明细状态为新建的话 改成已创建ASN状态
-                pl.setStatus(PoAsnStatus.POLINE_CREATE_ASN);
-            }
-            int result = whPoLineDao.saveOrUpdateByVersion(pl);
-            if (result <= 0) {
-                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-            }
-        }
-        rm.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
-        rm.setMsg(asn.getId() + "");
-        return rm;
-    }
 
     @Override
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public void saveOrUpdateByVersionToInfo(WhPo o) {
-        int count = this.whPoDao.saveOrUpdateByVersion(o);
-        if (count <= 0) {
-            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+        try {
+            int count = this.whPoDao.saveOrUpdateByVersion(o);
+            if (count <= 0) {
+                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            }
+            // 插入操作日志
+            this.insertGlobalLog(o.getModifiedId(), new Date(), o.getClass().getSimpleName(), o, Constants.GLOBAL_LOG_UPDATE, o.getOuId());
+        } catch (BusinessException e) {
+            throw e;
+        } catch (Exception ex) {
+            log.error("" + ex);
+            throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
         }
-        // 插入操作日志
-        this.insertGlobalLog(o.getModifiedId(), new Date(), o.getClass().getSimpleName(), o, Constants.GLOBAL_LOG_UPDATE, o.getOuId());
     }
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void saveOrUpdateByVersionToShard(WhPo o) {
-        int count = this.whPoDao.saveOrUpdateByVersion(o);
-        if (count <= 0) {
-            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+        try {
+            int count = this.whPoDao.saveOrUpdateByVersion(o);
+            if (count <= 0) {
+                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            }
+            // 插入操作日志
+            this.insertGlobalLog(o.getModifiedId(), new Date(), o.getClass().getSimpleName(), o, Constants.GLOBAL_LOG_UPDATE, o.getOuId());
+        } catch (BusinessException e) {
+            throw e;
+        } catch (Exception ex) {
+            log.error("" + ex);
+            throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
         }
-        // 插入操作日志
-        this.insertGlobalLog(o.getModifiedId(), new Date(), o.getClass().getSimpleName(), o, Constants.GLOBAL_LOG_UPDATE, o.getOuId());
     }
 
     /**
@@ -402,7 +221,7 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
             // 插入操作日志
             this.insertGlobalLog(whPo.getModifiedId(), new Date(), whPo.getClass().getSimpleName(), whPo, Constants.GLOBAL_LOG_UPDATE, ouId);
             // 循环取消对应的Po单明细
-            List<WhPoLine> lineList = this.whPoLineDao.findWhPoLineByPoIdOuId(whPo.getId(), ouId, null);
+            List<WhPoLine> lineList = this.whPoLineDao.findWhPoLineByPoIdOuIdUuid(whPo.getId(), ouId, null);
             for (WhPoLine line : lineList) {
                 line.setStatus(PoAsnStatus.POLINE_CANCELED);
                 line.setModifiedId(userId);
@@ -452,7 +271,7 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
             // 插入操作日志
             this.insertGlobalLog(userId, new Date(), whPo.getClass().getSimpleName(), whPo, Constants.GLOBAL_LOG_UPDATE, ouId);
             // 循环取消对应的Po单明细
-            List<WhPoLine> lineList = this.whPoLineDao.findWhPoLineByPoIdOuId(whPo.getId(), ouId, null);
+            List<WhPoLine> lineList = this.whPoLineDao.findWhPoLineByPoIdOuIdUuid(whPo.getId(), ouId, null);
             for (WhPoLine line : lineList) {
                 line.setStatus(PoAsnStatus.POLINE_CANCELED);
                 line.setModifiedId(userId);
@@ -466,42 +285,6 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
         } else {
             throw new BusinessException(ErrorCodes.PO_DELETE_STATUS_ERROR);
         }
-    }
-
-    /**
-     * @author yimin.lu 删除ASN单的时候，对应的PO单在INFO库的情况下，更新PO单和对应的PO单明细
-     */
-    @Override
-    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
-    public void editPoAdnPoLineWhenDeleteAsnToInfo(WhPo whpo, List<WhPoLine> polineList) {
-        log.info(this.getClass().getSimpleName() + ".editPoAdnPoLineWhenDeleteAsnToInfo method begin!");
-        try {
-            // 保存PO
-            int poUpdateCount = this.whPoDao.saveOrUpdateByVersion(whpo);
-            if (poUpdateCount <= 0) {
-                log.warn("edit linked po error!");
-                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-            }
-            // 插入操作日志
-            this.insertGlobalLog(whpo.getModifiedId(), new Date(), whpo.getClass().getSimpleName(), whpo, Constants.GLOBAL_LOG_UPDATE, whpo.getOuId());
-            for (WhPoLine poLine : polineList) {
-                int lineCount = this.whPoLineDao.saveOrUpdateByVersion(poLine);
-                if (lineCount <= 0) {
-                    log.warn("edit linked poline error!");
-                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-                }
-                // 插入操作日志
-                this.insertGlobalLog(poLine.getModifiedId(), new Date(), poLine.getClass().getSimpleName(), poLine, Constants.GLOBAL_LOG_UPDATE, poLine.getOuId());
-            }
-        } catch (Exception e) {
-            log.error(" update info.po and info.poline when deleting asn throws error:{}!", e);
-            if (e instanceof BusinessException) {
-                throw e;
-            } else {
-                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-            }
-        }
-        log.info(this.getClass().getSimpleName() + ".editPoAdnPoLineWhenDeleteAsnToInfo method end!");
     }
 
     /**
@@ -548,101 +331,8 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
 
     @Override
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
-    public void createWhPoToInfo(WhPo shardpo, List<WhPoLine> whpolineList) {
-        // 集团下BIPO创建子PO单
-        // 1.如果po单状态为新建的话，置为已分配到仓库状态；其余状态不变】
-
-        // 更改BIPO状态
-        BiPo bipo = this.biPoDao.findbyPoCode(shardpo.getPoCode());
-        if (PoAsnStatus.BIPO_NEW == bipo.getStatus()) {
-            bipo.setStatus(PoAsnStatus.BIPO_ALLOT);
-            int bipoCount = this.biPoDao.saveOrUpdateByVersion(bipo);
-            if (bipoCount < 1) {
-                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-            }
-        }
-
-        // IF逻辑：如果仓库没有分配过
-        if (null == shardpo.getId()) {
-            this.whPoDao.insert(shardpo);
-            for (WhPoLine line : whpolineList) {
-                // 更改BIPO明细
-                BiPoLine bipoline = this.biPoLineDao.findById(line.getPoLineId());
-                if (bipoline.getAvailableQty() < line.getQtyPlanned()) {
-                    throw new BusinessException(ErrorCodes.CHECK_DATA_ERROR);
-                }
-                bipoline.setAvailableQty(bipoline.getAvailableQty() - line.getQtyPlanned());
-                if (PoAsnStatus.BIPOLINE_NEW == bipoline.getStatus()) {
-                    bipoline.setStatus(PoAsnStatus.BIPO_ALLOT);
-                }
-                bipoline.setModifiedId(shardpo.getModifiedId());
-                this.biPoLineDao.saveOrUpdateByVersion(bipoline);
-
-                // 更改INFO.WHPO明细
-                line.setPoId(shardpo.getId());
-                this.whPoLineDao.insert(line);
-            }
-            // ELSE:此仓库已经分配过PO
-        } else {
-            int pocount = this.whPoDao.saveOrUpdateByVersion(shardpo);
-            if (pocount < 1) {
-                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-            }
-            for (WhPoLine line : whpolineList) {
-
-                BiPoLine bipoline = this.biPoLineDao.findById(line.getPoLineId());
-                bipoline.setAvailableQty(bipoline.getAvailableQty() - line.getQtyPlanned());
-                bipoline.setModifiedId(shardpo.getModifiedId());
-                if (PoAsnStatus.BIPOLINE_NEW == bipoline.getStatus()) {
-                    bipoline.setStatus(PoAsnStatus.BIPO_ALLOT);
-                }
-                this.biPoLineDao.saveOrUpdateByVersion(bipoline);
-
-                if (null == line.getId()) {
-                    line.setPoId(shardpo.getId());
-                    this.whPoLineDao.insert(line);
-                } else {
-                    int linecount = this.whPoLineDao.saveOrUpdateByVersion(line);
-                    if (linecount < 1) {
-                        throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-                    }
-                }
-            }
-        }
-    }
-
-    @Override
-    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void createWhPoToShard(WhPo shardpo, List<WhPoLine> whpolineList) {
-        if (null == shardpo.getId()) {
-            this.whPoDao.insert(shardpo);
-            for (WhPoLine line : whpolineList) {
-                line.setPoId(shardpo.getId());
-                this.whPoLineDao.insert(line);
-            }
-        } else {
-            int pocount = this.whPoDao.saveOrUpdateByVersion(shardpo);
-            if (pocount < 1) {
-                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-            }
-            for (WhPoLine line : whpolineList) {
-                if (null == line.getId()) {
-                    line.setPoId(shardpo.getId());
-                    this.whPoLineDao.insert(line);
-                } else {
-                    int linecount = this.whPoLineDao.saveOrUpdateByVersion(line);
-                    if (linecount < 1) {
-                        throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-                    }
-                }
-            }
-        }
-    }
-
-    @Override
-    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
-    public List<WhPo> findWhPoByPoCodeToInfo(String poCode) {
-        return this.whPoDao.findWhPoByPoCodeToInfo(poCode);
+    public List<WhPo> findWhPoByExtCodeStoreIdToInfo(String extCode, Long storeId) {
+        return this.whPoDao.findWhPoByExtCodeStoreIdToInfo(extCode, storeId);
     }
 
     @Override

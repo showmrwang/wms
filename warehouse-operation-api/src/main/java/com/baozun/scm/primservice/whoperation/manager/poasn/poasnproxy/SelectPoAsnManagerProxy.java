@@ -30,7 +30,7 @@ public interface SelectPoAsnManagerProxy extends BaseManager {
      * @param sourceType
      * @return
      */
-    Pagination<WhPoCommand> findWhPoListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params, Integer sourceType);
+    Pagination<WhPoCommand> findWhPoListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params);
 
     /**
      * BiPO的分页查询

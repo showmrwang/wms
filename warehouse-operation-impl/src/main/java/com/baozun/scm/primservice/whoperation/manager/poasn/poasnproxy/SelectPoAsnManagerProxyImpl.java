@@ -85,21 +85,8 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
      * @return
      */
     @Override
-    public Pagination<WhPoCommand> findWhPoListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params, Integer sourceType) {
-        Pagination<WhPoCommand> whPoCommandList = null;
-        if (null == sourceType) {
-            sourceType = Constants.SHARD_SOURCE;
-        }
-        // 判断读取那个库的数据
-        if (sourceType == Constants.SHARD_SOURCE) {
-            // 拆分库
-            whPoCommandList = poManager.findListByQueryMapWithPageExtByShard(page, sorts, params);
-        }
-        if (sourceType == Constants.INFO_SOURCE) {
-            // 公共库
-            whPoCommandList = poManager.findListByQueryMapWithPageExtByInfo(page, sorts, params);
-        }
-        return whPoCommandList;
+    public Pagination<WhPoCommand> findWhPoListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params) {
+        return poManager.findListByQueryMapWithPageExtByShard(page, sorts, params);
     }
 
     /**
@@ -211,16 +198,10 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
      * 通过id+ou_id 查询PO单信息
      */
     @Override
-    public WhPoLineCommand findWhPoLineById(WhPoLineCommand Command) {
+    public WhPoLineCommand findWhPoLineById(WhPoLineCommand command) {
         log.info(this.getClass().getSimpleName() + ".findWhPoLineById method begin!");
-        WhPoLineCommand whpoLine = null;
-        if (null == Command.getOuId()) {
-            // 查询基本库内信息
-            whpoLine = poLineManager.findPoLinebyIdToInfo(Command);
-        } else {
-            // 查询拆库内信息
-            whpoLine = poLineManager.findPoLinebyIdToShard(Command);
-        }
+        // 查询拆库内信息
+        WhPoLineCommand whpoLine = poLineManager.findPoLineCommandbyIdToShard(command.getId(), command.getOuId());
         log.info(this.getClass().getSimpleName() + ".findWhPoLineById method end!");
         return whpoLine;
     }
@@ -246,11 +227,7 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
     @Override
     public List<WhPoCommand> findWhPoListByExtCode(WhPoCommand command) {
         log.info(this.getClass().getSimpleName() + ".findWhPoListByExtCode method begin!");
-        if (null == command.getOuId()) {
-            return poManager.findWhPoListByExtCodeToInfo(command.getExtCode(), command.getStatusList(),command.getCustomerList(),command.getStoreList(), command.getOuId(), command.getLinenum());
-        } else {
-            return poManager.findWhPoListByExtCodeToShard(command.getExtCode(), command.getStatusList(),command.getCustomerList(),command.getStoreList(),command.getOuId(), command.getLinenum());
-        }
+        return poManager.findWhPoListByExtCodeToShard(command.getExtCode(), command.getStatusList(), command.getCustomerList(), command.getStoreList(), command.getOuId(), command.getLinenum());
     }
 
     /**

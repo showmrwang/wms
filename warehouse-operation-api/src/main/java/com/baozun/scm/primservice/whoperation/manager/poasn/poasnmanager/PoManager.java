@@ -7,58 +7,117 @@ import lark.common.dao.Page;
 import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 
-import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
-import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnLineCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
-import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
-import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 
 public interface PoManager extends BaseManager {
 
-    ResponseMsg createPoAndLineToInfo(WhPo po, List<WhPoLine> whPoLines, ResponseMsg rm);
-
-    ResponseMsg createPoAndLineToShare(WhPo po, List<WhPoLine> whPoLines, ResponseMsg rm);
-
+    /**
+     * [通用方法]根据ID，OUID查找INFO.WHPO
+     * 
+     * @param id
+     * @param ouId
+     * @return
+     */
     WhPo findWhPoByIdToInfo(Long id, Long ouId);
 
+    /**
+     * [通用方法]根据ID,OUID查找SHARD.WHPO
+     * 
+     * @param id
+     * @param ouId
+     * @return
+     */
     WhPo findWhPoByIdToShard(Long id, Long ouId);
 
+    /**
+     * [通用方法]根据ID，OUID查找INFO.WHPO
+     * 
+     * @param id
+     * @param ouId
+     * @return
+     */
     WhPoCommand findWhPoCommandByIdToInfo(Long id, Long ouId);
 
+    /**
+     * [通用方法]根据ID,OUID查找SHARD.WHPO
+     * 
+     * @param id
+     * @param ouId
+     * @return
+     */
     WhPoCommand findWhPoCommandByIdToShard(Long id, Long ouId);
 
-    Pagination<WhPoCommand> findListByQueryMapWithPageExtByInfo(Page page, Sort[] sorts, Map<String, Object> params);
-
+    /**
+     * [业务方法]PO单一览查询
+     * 
+     * @param page
+     * @param sorts
+     * @param params
+     * @return
+     */
     Pagination<WhPoCommand> findListByQueryMapWithPageExtByShard(Page page, Sort[] sorts, Map<String, Object> params);
 
-    void editPoToInfo(WhPo whPo);
-
-    void editPoToShard(WhPo whPo);
-
-    List<WhPoCommand> findWhPoListByExtCodeToInfo(String poCode, List<Integer> status, List<Long> customerList,List<Long> storeList,Long ouid, Integer linenum);
-
+    /**
+     * [业务方法]模糊查询 TODO
+     * 
+     * @param poCode
+     * @param status
+     * @param customerList
+     * @param storeList
+     * @param ouid
+     * @param linenum
+     * @return
+     */
     List<WhPoCommand> findWhPoListByExtCodeToShard(String poCode, List<Integer> status,List<Long> customerList,List<Long> storeList, Long ouid, Integer linenum);
 
+    /**
+     * [业务方法]删除SHARD.WHPO关联操作：删除INFO.WHPO并回滚BIPO
+     * 
+     * @param po
+     * @param userId
+     */
     void deletePoAndPoLineToInfo(WhPo po, Long userId);
 
+    /**
+     * [业务方法]删除SHARD.WHPO
+     * 
+     * @param po
+     * @param userId
+     */
     void deletePoAndPoLineToShard(WhPo po, Long userId);
 
-    ResponseMsg updatePoStatusByAsn(WhAsn asn, List<WhAsnLineCommand> asnLineList, WhPo whPo, Map<Long, WhPoLine> poLineMap, ResponseMsg rm);
-
-    ResponseMsg updatePoStatusByAsnBatch(WhAsnCommand asn, WhPo whPo, List<WhPoLine> whPoLines, ResponseMsg rm);
-
+    /**
+     * [通用方法]乐观锁更新INFO.WHPO
+     * 
+     * @param o
+     */
     void saveOrUpdateByVersionToInfo(WhPo o);
 
+    /**
+     * [通用方法]乐观锁更新WHPO.WHPO
+     * 
+     * @param o
+     */
     void saveOrUpdateByVersionToShard(WhPo o);
 
+    /**
+     * [业务方法]取消SHARD.WHPO关联操作：取消INFO.WHPO并回滚BIPO数量
+     * 
+     * @param updateInfoPo
+     * @param userId
+     */
     void cancelPoToInfo(WhPo updateInfoPo, Long userId);
 
+    /**
+     * [业务方法]取消SHARD.WHPO
+     * 
+     * @param updateShardPo
+     * @param userId
+     */
     void cancelPoToShard(WhPo updateShardPo, Long userId);
-
-    void editPoAdnPoLineWhenDeleteAsnToInfo(WhPo whpo, List<WhPoLine> polineList);
 
     /**
      * 逻辑：extCode+storeId+ouId能唯一确定一条PO；
@@ -80,17 +139,13 @@ public interface PoManager extends BaseManager {
      */
     WhPo findWhPoByExtCodeStoreIdOuIdToInfo(String extCode, Long storeId, Long ouId);
 
-    void createWhPoToInfo(WhPo shardpo, List<WhPoLine> whpolineList);
-
-    void createWhPoToShard(WhPo shardpo, List<WhPoLine> whpolineList);
-
     /**
-     * info库中，poCode会对应多条Po;
+     * info库中，extCode,storeId会对应多条Po;
      * 
      * @param poCode
      * @return
      */
-    List<WhPo> findWhPoByPoCodeToInfo(String poCode);
+    List<WhPo> findWhPoByExtCodeStoreIdToInfo(String extCode, Long storeId);
 
     /**
      * 插入拆分的明细到INFO.WHPO/WHPOLINE

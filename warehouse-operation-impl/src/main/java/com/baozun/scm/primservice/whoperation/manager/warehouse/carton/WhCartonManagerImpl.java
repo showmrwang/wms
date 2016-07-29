@@ -138,7 +138,7 @@ public class WhCartonManagerImpl extends BaseManagerImpl implements WhCartonMana
             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
         }
 
-        WhPoLine whPoLine = whPoLineDao.findWhPoLineByIdWhPoLine(whAsnLine.getPoLineId(), whCartonCommand.getOuId());
+        WhPoLine whPoLine = whPoLineDao.findWhPoLineById(whAsnLine.getPoLineId(), whCartonCommand.getOuId());
         whPoLine.setCtnPlanned(whPoLine.getCtnPlanned() - 1);
         whPoLine.setModifiedId(whCartonCommand.getModifiedId());
         int whPoLineCount = whPoLineDao.saveOrUpdateByVersion(whPoLine);
@@ -298,7 +298,7 @@ public class WhCartonManagerImpl extends BaseManagerImpl implements WhCartonMana
                 throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
             }
 
-            WhPoLine whPoLine = whPoLineDao.findWhPoLineByIdWhPoLine(whAsnLine.getPoLineId(), whCartonCommand.getOuId());
+            WhPoLine whPoLine = whPoLineDao.findWhPoLineById(whAsnLine.getPoLineId(), whCartonCommand.getOuId());
             whPoLine.setCtnPlanned(whPoLine.getCtnPlanned() + binQtySum);
             whPoLine.setModifiedId(whCartonCommand.getCreatedId());
             int whPoLineCount = whPoLineDao.saveOrUpdateByVersion(whPoLine);

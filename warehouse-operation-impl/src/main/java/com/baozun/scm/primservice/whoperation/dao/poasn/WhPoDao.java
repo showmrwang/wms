@@ -14,7 +14,6 @@
  */
 package com.baozun.scm.primservice.whoperation.dao.poasn;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -34,32 +33,90 @@ import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 
 public interface WhPoDao extends BaseDao<WhPo, Long> {
 
+    /**
+     * WHPO一览查询
+     * 
+     * @param page
+     * @param sorts
+     * @param params
+     * @return
+     */
     @QueryPage("findListCountByQueryMap")
+    @Deprecated
     Pagination<WhPo> findListByQueryMapWithPage(Page page, Sort[] sorts, Map<String, Object> params);
 
+    /**
+     * WHPO一览查询
+     * 
+     * @param page
+     * @param sorts
+     * @param params
+     * @return
+     */
     @QueryPage("findListCountByQueryMapExt")
     Pagination<WhPoCommand> findListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params);
 
+    /**
+     * 非乐观锁更新数据
+     * 
+     * @param o
+     * @return
+     */
     @CommonQuery
+    @Deprecated
     int saveOrUpdate(WhPo o);
 
+    /**
+     * 乐观锁更新数据
+     * 
+     * @param o
+     * @return
+     */
     @CommonQuery
     int saveOrUpdateByVersion(WhPo o);
 
+    /**
+     * [通用方法]根据ID和OUID查找WHPO
+     * 
+     * @param id
+     * @param ouid
+     * @return
+     */
     WhPo findWhPoById(@Param("id") Long id, @Param("ouid") Long ouid);
 
+    /**
+     * [通用方法]根据ID和OUID查找WHPO
+     * 
+     * @param id
+     * @param ouid
+     * @return
+     */
     WhPoCommand findWhPoCommandById(@Param("id") Long id, @Param("ouid") Long ouid);
 
-    int editPoStatus(@Param("ids") List<Long> ids, @Param("status") Integer status, @Param("userid") Long userid, @Param("ouid") Long ouid, @Param("lastModifyTime") Date lastModifyTime);
-
-    long findPoByCodeAndStore(@Param("extCode") String extCode, @Param("storeId") Long storeId, @Param("ouId") Long ouId);
-
+    /**
+     * [业务方法]模糊查询数据；TODO
+     * 
+     * @param statusList
+     * @param extCode
+     * @param customerList
+     * @param storeList
+     * @param ouid
+     * @param linenum
+     * @return
+     */
     List<WhPoCommand> findWhPoListByExtCode(@Param("statusList") List<Integer> statusList, @Param("extCode") String extCode,@Param("customerList") List<Long> customerList,@Param("storeList") List<Long> storeList,@Param("ouid") Long ouid, @Param("linenum") Integer linenum);
 
+    /**
+     * [通用方法]删除PO
+     * 
+     * @param id
+     * @param ouid
+     * @return
+     */
     int deleteByIdOuId(@Param("id") Long id, @Param("ouid") Long ouid);
 
     /**
-     * 查看非取消状态中的PO单
+     * [通用方法]查看非取消状态中的PO单
      * 
      * @param poCode
      * @param ouId
@@ -67,12 +124,16 @@ public interface WhPoDao extends BaseDao<WhPo, Long> {
      */
     WhPo findWhPoByExtCodeStoreIdOuId(@Param("extCode") String poCode, @Param("storeId") Long storeId, @Param("ouId") Long ouId);
 
-    List<WhPo> findWhPoByPoCodeToInfo(@Param("poCode") String poCode);
-
-    List<WhPo> findWhPoByPoCodeStatusToInfo(@Param("poCode") String poCode, @Param("statusList") List<Integer> statusList);
+    /**
+     * [INFO]根据extCode,ouId查找INFO库所有PO
+     * 
+     * @param poCode
+     * @return
+     */
+    List<WhPo> findWhPoByExtCodeStoreIdToInfo(@Param("extCode") String extCode, @Param("storeId") Long storeId);
 
     /**
-     * Po单是否收货完成
+     * [业务方法]Po单是否收货完成
      * 
      * @param id
      * @param ouId

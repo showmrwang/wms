@@ -485,10 +485,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
     </delete>  
     
-   <delete id="deletePoLineByPoId" parameterType="int">  
-		delete from t_wh_po_line where po_id = #{id}
-    </delete>  
-    
    <delete id="deletePoLineByUuidNotNull" parameterType="int">  
 		delete from t_wh_po_line
 		<where>
@@ -500,7 +496,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
     </delete>  
     
-    <select id="findWhPoLineById" resultMap="WhPoLineCommand">
+    <select id="findWhPoLineCommandById" resultMap="WhPoLineCommand">
 	    select
 	    <include refid="whPoLineColumnsMapExt" />
 	    from t_wh_po_line line
@@ -514,20 +510,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	  			 and line.ou_id = #{ouId}
 		</if>
     </select>
-	
-	<update id="editPoLineStatus" parameterType="com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine">
-		UPDATE t_wh_po_line SET status = #{status},modified_id = #{userid},last_modify_time = now() 
-		<where>
-			id in
-			<foreach collection="ids" item="id" open="(" separator=","
-				close=")">
-				#{id}
-			</foreach>
-			   <if test="ouid!=null">
-						and ou_id = #{ouid}
-				</if>
-		</where>
-	</update>
 	
 	<select id="findPoLineByAddPoLineParam" resultMap="WhPoLineResultExt">
     	select <include refid="whPoLineColumnsExt" />
@@ -570,7 +552,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    </where>
     </select>
     
-	<select id="findWhPoLineByPoIdOuId" resultMap="WhPoLineResultExt">
+	<select id="findWhPoLineByPoIdOuIdUuid" resultMap="WhPoLineResultExt">
     	select <include refid="whPoLineColumnsExt" />
 	    from 
 	    t_wh_po_line 
@@ -583,7 +565,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    </where>
     </select>
     
-    <select id="findWhPoLineByIdWhPoLine" resultMap="WhPoLineResultExt">
+    <select id="findWhPoLineById" resultMap="WhPoLineResultExt">
 	    select
 	    <include refid="whPoLineColumnsExt" />
 	    from t_wh_po_line
@@ -611,15 +593,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	  	and line.ou_id = #{ouId}
 	  	and line.po_line_id=#{poLineId}
 	  	and line.status!='17'
-    </select>
-    
-    <select id="findInfoPoLineByPoCodeOuId" resultMap="WhPoLineResultExt">
-	    select
-	    <include refid="whPoLineColumnsRelatedExt" />
-	    from t_wh_po_line line
-	    inner join t_wh_po po on po.ou_id=line.ou_id and po.id=line.po_id
-	    where po.po_code=#{poCode}
-	  	and line.ou_id = #{ouId}
     </select>
     
     <select id="findPoLineByPolineIdAndStatusListAndPoIdAndOuId" parameterType="map" resultMap="WhPoLineResultExt">
@@ -671,7 +644,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		and status in('1','2','3','10')
     </select>
     
-     <select id="findInfoPoLineByExtCodeStoreIdOuIdStatusToInfo" resultMap="WhPoLineResult">
+     <select id="findPoLineByExtCodeStoreIdOuIdStatus" resultMap="WhPoLineResult">
     	select <include refid="whPoLineColumns" />
 	    from t_wh_po_line 
 		where ext_code=#{extCode}

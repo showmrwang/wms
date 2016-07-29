@@ -924,7 +924,7 @@ public class AsnManagerImpl implements AsnManager {
             if (null != asnLineList && asnLineList.size() > 0) {
 
                 for (WhAsnLineCommand al : asnLineList) {
-                    WhPoLine pl = this.whPoLineDao.findWhPoLineByIdWhPoLine(al.getPoLineId(), al.getOuId());
+                    WhPoLine pl = this.whPoLineDao.findWhPoLineById(al.getPoLineId(), al.getOuId());
                     if (null == pl) {
                         throw new BusinessException(ErrorCodes.OCCUPATION_RCVD_GET_ERROR);
                     }

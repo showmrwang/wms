@@ -250,36 +250,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		   		and po.ou_id = #{ouid}
 			</where>
     </select>
-    
-	<update id="editPoStatus" parameterType="com.baozun.scm.primservice.whoperation.model.poasn.WhPo">
-		UPDATE t_wh_po SET status = #{status},modified_id = #{userid},last_modify_time = now() 
-		<where>
-			id in
-			<foreach collection="ids" item="id" open="(" separator=","
-				close=")">
-				#{id}
-			</foreach>
-			   <if test="ouid!=null">
-						and ou_id = #{ouid}
-				</if>
-		</where>
-	</update>
-	
-	<select id="findPoByCodeAndStore" resultType="long">
-        select count(*) from 
-        t_wh_po
-		<where>
-			<if test="ouId!=null">
-				and ou_id = #{ouId}
-			</if>
-			<if test="extCode!=null and extCode!=''">
-				and ext_code = #{extCode}
-			</if>
-			<if test="storeId!=null">
-				and store_id = #{storeId}
-			</if>
-		</where>
-    </select>
 	
 	 <select id="findWhPoListByExtCode" resultMap="WhPoCommand">
 	    select <include refid="whPoColumnsExt" />
@@ -325,26 +295,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			</where>
     </select>
     
-     <select id="findWhPoByPoCodeToInfo" resultMap="WhPoResult">
+     <select id="findWhPoByExtCodeStoreIdToInfo" resultMap="WhPoResult">
 	    select <include refid="whPoColumns" />
 		    from t_wh_po
 		   <where>
-			    po_code = #{poCode} 
+			    ext_code = #{poCode} 
+			    and store_id=#{storeId}
 			</where>
     </select>
     
-     <select id="findWhPoByPoCodeStatusToInfo" resultMap="WhPoResult">
-	    select <include refid="whPoColumns" />
-		    from t_wh_po
-		   <where>
-			    po_code = #{poCode}
-			     and status in
-			    	<foreach collection="statusList" item="status" open="(" separator="," close=")">
-					#{status}
-				</foreach>
-			</where>
-    </select>
-	
 	 <delete id="deleteByIdOuId" parameterType="map">
 	    <![CDATA[
 	        delete from t_wh_po where

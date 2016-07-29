@@ -57,8 +57,15 @@ public class PoLineManagerImpl implements PoLineManager {
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
-    public void createPoLineSingleToInfo(WhPoLine whPoLine) {
-        whPoLineDao.insert(whPoLine);
+    public void insertToInfo(WhPoLine whPoLine) {
+        try {
+
+            whPoLineDao.insert(whPoLine);
+        } catch (Exception ex) {
+            log.error("" + ex);
+            throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
+        }
+
     }
 
     /**
@@ -66,8 +73,13 @@ public class PoLineManagerImpl implements PoLineManager {
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void createPoLineSingleToShare(WhPoLine whPoLine) {
-        whPoLineDao.insert(whPoLine);
+    public void insertToShard(WhPoLine whPoLine) {
+        try {
+            whPoLineDao.insert(whPoLine);
+        } catch (Exception ex) {
+            log.error("" + ex);
+            throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
+        }
     }
 
     @Override
@@ -98,7 +110,7 @@ public class PoLineManagerImpl implements PoLineManager {
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public void editPoLineToInfo(WhPoLine whPoLine) {
         // 查询原始POLINE数据
-        WhPoLine poLine = whPoLineDao.findWhPoLineByIdWhPoLine(whPoLine.getId(), whPoLine.getOuId());
+        WhPoLine poLine = whPoLineDao.findWhPoLineById(whPoLine.getId(), whPoLine.getOuId());
         double differenceQty = new BigDecimal(Double.toString(poLine.getQtyPlanned())).subtract(new BigDecimal(Double.toString(whPoLine.getQtyPlanned()))).doubleValue();// 计算计划数量原始和这次改动的差额
         // double differenceQty = poLine.getQtyPlanned() - whPoLine.getQtyPlanned();//
         // 计算计划数量原始和这次改动的差额
@@ -123,7 +135,7 @@ public class PoLineManagerImpl implements PoLineManager {
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void editPoLineToShare(WhPoLine whPoLine) {
         // 查询原始POLINE数据
-        WhPoLine poLine = whPoLineDao.findWhPoLineByIdWhPoLine(whPoLine.getId(), whPoLine.getOuId());
+        WhPoLine poLine = whPoLineDao.findWhPoLineById(whPoLine.getId(), whPoLine.getOuId());
         double differenceQty = new BigDecimal(Double.toString(poLine.getQtyPlanned())).subtract(new BigDecimal(Double.toString(whPoLine.getQtyPlanned()))).doubleValue();// 计算计划数量原始和这次改动的差额
         // int differenceQty = poLine.getQtyPlanned() - whPoLine.getQtyPlanned();// 计算计划数量原始和这次改动的差额
         whPoLine.setAvailableQty(whPoLine.getAvailableQty() - differenceQty);// 修改可用数量
@@ -145,14 +157,14 @@ public class PoLineManagerImpl implements PoLineManager {
 
     @Override
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
-    public WhPoLineCommand findPoLinebyIdToInfo(WhPoLineCommand command) {
-        return this.whPoLineDao.findWhPoLineById(command.getId(), command.getOuId());
+    public WhPoLineCommand findPoLineCommandbyIdToInfo(Long id, Long ouId) {
+        return this.whPoLineDao.findWhPoLineCommandById(id, ouId);
     }
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public WhPoLineCommand findPoLinebyIdToShard(WhPoLineCommand command) {
-        return this.whPoLineDao.findWhPoLineById(command.getId(), command.getOuId());
+    public WhPoLineCommand findPoLineCommandbyIdToShard(Long id, Long ouId) {
+        return this.whPoLineDao.findWhPoLineCommandById(id, ouId);
     }
 
     /**
@@ -193,41 +205,16 @@ public class PoLineManagerImpl implements PoLineManager {
                 line.getInvStatus(), uuid);
     }
 
-    /**
-     * 修改POLINE明细
-     */
-    @Override
-    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
-    public void updatePoLineSingleToInfo(WhPoLine whPoLine) {
-        int result = whPoLineDao.saveOrUpdateByVersion(whPoLine);
-        if (result <= 0) {
-            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-        }
-    }
-
-    /**
-     * 修改POLINE明细
-     */
-    @Override
-    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void updatePoLineSingleToShare(WhPoLine whPoLine) {
-        int result = whPoLineDao.saveOrUpdateByVersion(whPoLine);
-        if (result <= 0) {
-            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-        }
-
-    }
-
     @Override
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public List<WhPoLine> findWhPoLineListByPoIdToInfo(Long poid, Long ouid) {
-        return whPoLineDao.findWhPoLineByPoIdOuId(poid, ouid, null);
+        return whPoLineDao.findWhPoLineByPoIdOuIdUuid(poid, ouid, null);
     }
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<WhPoLine> findWhPoLineListByPoIdToShard(Long poid, Long ouid) {
-        return whPoLineDao.findWhPoLineByPoIdOuId(poid, ouid, null);
+        return whPoLineDao.findWhPoLineByPoIdOuIdUuid(poid, ouid, null);
     }
 
     /**
@@ -251,74 +238,101 @@ public class PoLineManagerImpl implements PoLineManager {
     @Override
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public void saveOrUpdateByVersionToInfo(WhPoLine o) {
-        int count = this.whPoLineDao.saveOrUpdateByVersion(o);
-        if (count <= 0) {
-            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+        try {
+
+            int count = this.whPoLineDao.saveOrUpdateByVersion(o);
+            if (count <= 0) {
+                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            }
+            this.insertGlobalLog(o.getModifiedId(), new Date(), o.getClass().getSimpleName(), o, Constants.GLOBAL_LOG_UPDATE, o.getOuId());
+        } catch (BusinessException e) {
+            throw e;
+        } catch (Exception ex) {
+            log.error("" + ex);
+            throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
         }
-        this.insertGlobalLog(o.getModifiedId(), new Date(), o.getClass().getSimpleName(), o, Constants.GLOBAL_LOG_UPDATE, o.getOuId());
     }
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void saveOrUpdateByVersionToShard(WhPoLine o) {
-        int count = this.whPoLineDao.saveOrUpdateByVersion(o);
-        if (count <= 0) {
-            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+        try {
+
+            int count = this.whPoLineDao.saveOrUpdateByVersion(o);
+            if (count <= 0) {
+                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            }
+        } catch (BusinessException e) {
+            throw e;
+        } catch (Exception ex) {
+            log.error("" + ex);
+            throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
         }
     }
 
     @Override
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
-    public int deletePoLinesToInfo(List<WhPoLine> lineList) {
-        WhPo whpo = this.whPoDao.findWhPoById(lineList.get(0).getPoId(), lineList.get(0).getOuId());
-        if (null == whpo) {
-            throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
-        }
-        whpo.setModifiedId(lineList.get(0).getModifiedId());
-        int deleteCount = 0;
-        for (WhPoLine line : lineList) {
-            if (StringUtils.hasText(line.getUuid())) {
-                this.whPoLineDao.deletePoLineByIdOuId(line.getId(), line.getOuId());
-                deleteCount++;
-            } else {
-                if (PoAsnStatus.POLINE_NEW == line.getStatus()) {
-                    whpo.setQtyPlanned(whpo.getQtyPlanned() - line.getQtyPlanned());
+    public void deletePoLinesToInfo(List<WhPoLine> lineList) {
+        try {
+
+            WhPo whpo = this.whPoDao.findWhPoById(lineList.get(0).getPoId(), lineList.get(0).getOuId());
+            if (null == whpo) {
+                throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
+            }
+            whpo.setModifiedId(lineList.get(0).getModifiedId());
+            for (WhPoLine line : lineList) {
+                if (StringUtils.hasText(line.getUuid())) {
                     this.whPoLineDao.deletePoLineByIdOuId(line.getId(), line.getOuId());
-                    deleteCount++;
                 } else {
-                    throw new BusinessException(ErrorCodes.POLINE_DELETE_STATUS_ERROR, new Object[] {line.getId()});
+                    if (PoAsnStatus.POLINE_NEW == line.getStatus()) {
+                        whpo.setQtyPlanned(whpo.getQtyPlanned() - line.getQtyPlanned());
+                        this.whPoLineDao.deletePoLineByIdOuId(line.getId(), line.getOuId());
+                    } else {
+                        throw new BusinessException(ErrorCodes.POLINE_DELETE_STATUS_ERROR, new Object[] {line.getId()});
+                    }
                 }
             }
+            int updateWhPoCount = this.whPoDao.saveOrUpdateByVersion(whpo);
+            if (updateWhPoCount <= 0) {
+                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            }
+        } catch (BusinessException e) {
+            throw e;
+        } catch (Exception ex) {
+            throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
         }
-        this.whPoDao.saveOrUpdateByVersion(whpo);
-        return deleteCount;
     }
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public int deletePoLinesToShard(List<WhPoLine> lineList) {
-        WhPo whpo = this.whPoDao.findWhPoById(lineList.get(0).getPoId(), lineList.get(0).getOuId());
-        if (null == whpo) {
-            throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
-        }
-        whpo.setModifiedId(lineList.get(0).getModifiedId());
-        int deleteCount = 0;
-        for (WhPoLine line : lineList) {
-            if (StringUtils.hasText(line.getUuid())) {
-                this.whPoLineDao.deletePoLineByIdOuId(line.getId(), line.getOuId());
-                deleteCount++;
-            } else {
-                if (PoAsnStatus.POLINE_NEW == line.getStatus()) {
-                    whpo.setQtyPlanned(whpo.getQtyPlanned() - line.getQtyPlanned());
+    public void deletePoLinesToShard(List<WhPoLine> lineList) {
+        try{
+            WhPo whpo = this.whPoDao.findWhPoById(lineList.get(0).getPoId(), lineList.get(0).getOuId());
+            if (null == whpo) {
+                throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
+            }
+            whpo.setModifiedId(lineList.get(0).getModifiedId());
+            for (WhPoLine line : lineList) {
+                if (StringUtils.hasText(line.getUuid())) {
                     this.whPoLineDao.deletePoLineByIdOuId(line.getId(), line.getOuId());
-                    deleteCount++;
                 } else {
-                    throw new BusinessException(ErrorCodes.POLINE_DELETE_STATUS_ERROR, new Object[] {line.getId()});
+                    if (PoAsnStatus.POLINE_NEW == line.getStatus()) {
+                        whpo.setQtyPlanned(whpo.getQtyPlanned() - line.getQtyPlanned());
+                        this.whPoLineDao.deletePoLineByIdOuId(line.getId(), line.getOuId());
+                    } else {
+                        throw new BusinessException(ErrorCodes.POLINE_DELETE_STATUS_ERROR, new Object[] {line.getId()});
+                    }
                 }
             }
+            int updateWhPoCount = this.whPoDao.saveOrUpdateByVersion(whpo);
+            if (updateWhPoCount <= 0) {
+                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            }
+        } catch (BusinessException e) {
+            throw e;
+        } catch (Exception ex) {
+            throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
         }
-        this.whPoDao.saveOrUpdateByVersion(whpo);
-        return deleteCount;
     }
 
     /**
@@ -369,13 +383,6 @@ public class PoLineManagerImpl implements PoLineManager {
             this.insertGlobalLog(poline.getModifiedId(), new Date(), poline.getClass().getSimpleName(), poline, Constants.GLOBAL_LOG_UPDATE, poline.getOuId());
         }
         log.info(this.getClass().getSimpleName() + ".batchUpdatePoLine method end!");
-    }
-
-    @Override
-    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
-    public List<WhPoLine> findInfoPoLineByPoCodeOuId(String poCode, Long ouId) {
-
-        return this.whPoLineDao.findInfoPoLineByPoCodeOuId(poCode, ouId);
     }
 
     /**
@@ -448,17 +455,20 @@ public class PoLineManagerImpl implements PoLineManager {
     @Override
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public List<WhPoLine> findWhPoLineListByPoIdOuIdStatusListToInfo(Long poId, Long ouId, List<Integer> statusList) {
-        WhPoLineCommand command=new WhPoLineCommand();
-        command.setPoId(poId);
-        command.setOuId(ouId);
-        command.setStatusList(statusList);
-        return this.whPoLineDao.findListByParamExt(command);
+        WhPo whpo = this.whPoDao.findWhPoById(poId, ouId);
+        return this.whPoLineDao.findPoLineByExtCodeStoreIdOuIdStatus(whpo.getExtCode(), whpo.getStoreId(), ouId, statusList);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
+    public WhPoLine findWhPoLineByIdOuIdToInfo(Long id, Long ouId) {
+        return this.whPoLineDao.findWhPoLineById(id, ouId);
     }
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public WhPoLine findWhPoLineByIdOuIdToShard(Long id, Long ouId) {
-        return this.whPoLineDao.findWhPoLineByIdWhPoLine(id, ouId);
+        return this.whPoLineDao.findWhPoLineById(id, ouId);
     }
 
     @Override
@@ -482,7 +492,7 @@ public class PoLineManagerImpl implements PoLineManager {
     @Override
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public List<WhPoLine> findInfoPoLineByExtCodeStoreIdOuIdStatusToInfo(String extCode, Long storeId, Long ouId, List<Integer> statusList) {
-        return this.whPoLineDao.findInfoPoLineByExtCodeStoreIdOuIdStatusToInfo(extCode, storeId, ouId, statusList);
+        return this.whPoLineDao.findPoLineByExtCodeStoreIdOuIdStatus(extCode, storeId, ouId, statusList);
     }
 
 

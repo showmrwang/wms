@@ -282,7 +282,7 @@ public class BiPoManagerImpl extends BaseManagerImpl implements BiPoManager {
         // 2.2占用对应明细的可用数量和修改状态
         // 3.修改BIPO头信息【状态】
         WhPo whpo = this.whPoDao.findWhPoByExtCodeStoreIdOuId(extCode, storeId, ouId);
-        List<WhPoLine> whpoLineList = this.whPoLineDao.findWhPoLineByPoIdOuId(whpo.getId(), ouId, uuid);
+        List<WhPoLine> whpoLineList = this.whPoLineDao.findWhPoLineByPoIdOuIdUuid(whpo.getId(), ouId, uuid);
         Double count = Constants.DEFAULT_DOUBLE;
         for (WhPoLine whpoline : whpoLineList) {
             if (Constants.DEFAULT_DOUBLE >= whpoline.getQtyPlanned()) {

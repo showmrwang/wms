@@ -639,15 +639,10 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
             if (lineCommand.getQtyPlanned() < 0) {
                 throw new BusinessException(ErrorCodes.PACKAGING_ERROR);
             }
-            WhPoLineCommand searchCommand = new WhPoLineCommand();
-            searchCommand.setId(lineCommand.getId());
-            searchCommand.setOuId(command.getOuId());
-            WhPoLineCommand line = this.poLineManager.findPoLinebyIdToInfo(searchCommand);
-            if (null == line) {
-                throw new BusinessException(ErrorCodes.DATA_EXPRIE_ERROR);
+            WhPoLine poLine = this.poLineManager.findWhPoLineByIdOuIdToInfo(lineCommand.getId(), command.getOuId());
+            if (null == poLine) {
+                throw new BusinessException(ErrorCodes.PARAMS_ERROR);
             }
-            WhPoLine poLine = new WhPoLine();
-            BeanUtils.copyProperties(line, poLine);
             poLine.setModifiedId(command.getUserId());
             poLine.setQtyPlanned(lineCommand.getQtyPlanned());
             poLine.setAvailableQty(lineCommand.getQtyPlanned());

@@ -190,14 +190,11 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
         // 循环需要更新的poline.id
         for (Long id : command.getIds()) {
             WhPoLineCommand updateCommand = new WhPoLineCommand();
-            WhPoLineCommand lineCommand = new WhPoLineCommand();
-            lineCommand.setId(id);
-            lineCommand.setOuId(command.getOuId());
             // 根据id和ouId分库查询数据
-            if (null == lineCommand.getOuId()) {
-                updateCommand = poLineManager.findPoLinebyIdToInfo(lineCommand);
+            if (null == command.getOuId()) {
+                updateCommand = poLineManager.findPoLineCommandbyIdToInfo(id, command.getOuId());
             } else {
-                updateCommand = poLineManager.findPoLinebyIdToShard(lineCommand);
+                updateCommand = poLineManager.findPoLineCommandbyIdToShard(id, command.getOuId());
             }
             if (null == updateCommand) {
                 throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
@@ -208,15 +205,11 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
             BeanUtils.copyProperties(updateCommand, poline);
             lineList.add(poline);
         }
-        int deletecount = 0;
         if (lineList.size() > 0) {
-            if (null == command.getOuId()) {
-                deletecount = this.poLineManager.deletePoLinesToInfo(lineList);
-            } else {
-                deletecount = this.poLineManager.deletePoLinesToShard(lineList);
-            }
+            this.poLineManager.deletePoLinesToShard(lineList);
+            this.poLineManager.deletePoLinesToInfo(lineList);
         }
-        log.info("EidtPoAsnManagerProxyImpl.deletePoLines: end; delete " + deletecount + " rows====================== ");
+        log.info("EidtPoAsnManagerProxyImpl.deletePoLines: end; delete  rows====================== ");
     }
 
     /**
@@ -460,14 +453,7 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
         }
         // 数据库操作
         try {
-            if (null == whasn.getPoOuId()) {
-                // TODO 需要补偿机制
-                this.poManager.editPoAdnPoLineWhenDeleteAsnToInfo(whpo, polineList);
-                this.asnManager.deleteAsnAndAsnLineWhenPoOuIdNullToShard(whasn);
-                // 对应的PO单在拆库中
-            } else {
-                this.asnManager.deleteAsnAndAsnLineToShard(whasn, whpo, polineList);
-            }
+            this.asnManager.deleteAsnAndAsnLineToShard(whasn, whpo, polineList);
         } catch (Exception e) {
             if (e instanceof BusinessException) {
                 return getResponseMsg(String.valueOf(((BusinessException) e).getErrorCode()), ResponseMsg.DATA_ERROR, null);
@@ -497,9 +483,6 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
         // double changeCount = whAsnLineCommand.getQtyPlanned() -
         // whAsnLineCommand.getQtyPlannedOld();
         double changeCount = new BigDecimal(Double.toString(whAsnLineCommand.getQtyPlanned())).subtract(new BigDecimal(Double.toString(whAsnLineCommand.getQtyPlannedOld()))).doubleValue();
-        WhPoLineCommand polineCommand = new WhPoLineCommand();
-        polineCommand.setId(whAsnLineCommand.getPoLineId());
-        polineCommand.setOuId(whAsnLineCommand.getPoOuId());
         // 获取ASN单表头信息
         WhAsnCommand searchAsnCommand = new WhAsnCommand();
         searchAsnCommand.setId(asnLine.getAsnId());
@@ -510,7 +493,9 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
         asn.setModifiedId(whAsnLineCommand.getModifiedId());
         asn.setQtyPlanned(asn.getQtyPlanned() + changeCount);
         // 获取PO单明细
-        WhPoLineCommand newPolineCommand = null == whAsnLineCommand.getPoOuId() ? this.poLineManager.findPoLinebyIdToInfo(polineCommand) : this.poLineManager.findPoLinebyIdToShard(polineCommand);
+        WhPoLineCommand newPolineCommand =
+                null == whAsnLineCommand.getPoOuId() ? this.poLineManager.findPoLineCommandbyIdToInfo(whAsnLineCommand.getPoLineId(), whAsnLineCommand.getPoOuId()) : this.poLineManager.findPoLineCommandbyIdToShard(whAsnLineCommand.getPoLineId(),
+                        whAsnLineCommand.getPoOuId());
         if (null == newPolineCommand) {
             log.warn("editAsnLine warn ResponseStatus: asnLine can not Related to poLine,when asnLine.polineid is" + whAsnLineCommand.getPoLineId());
             return this.getResponseMsg("asnLine status is error status is: " + whAsnLineCommand.getStatus(), ResponseMsg.STATUS_ERROR, null);
@@ -593,9 +578,9 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
             serachPoCommand.setOuId(command.getPoOuId());
             WhPoLineCommand returnPoCommand = null;
             if (null == command.getPoOuId()) {
-                returnPoCommand = this.poLineManager.findPoLinebyIdToInfo(serachPoCommand);// INFO库
+                returnPoCommand = this.poLineManager.findPoLineCommandbyIdToInfo(entry.getKey(), command.getPoOuId());// INFO库
             } else {
-                returnPoCommand = this.poLineManager.findPoLinebyIdToShard(serachPoCommand);// SHARD库
+                returnPoCommand = this.poLineManager.findPoLineCommandbyIdToShard(entry.getKey(), command.getPoOuId());// SHARD库
             }
             WhPoLine poline = new WhPoLine();
             BeanUtils.copyProperties(returnPoCommand, poline);
@@ -719,7 +704,7 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
             return rm;
         }
         if (PoAsnStatus.BIPO_NEW != bipo.getStatus()) {
-            List<WhPo> whpoList = this.poManager.findWhPoByPoCodeToInfo(bipo.getPoCode());
+            List<WhPo> whpoList = this.poManager.findWhPoByExtCodeStoreIdToInfo(bipo.getExtCode(), bipo.getStoreId());
             if (whpoList != null) {
                 for (WhPo whpo : whpoList) {
                     if (PoAsnStatus.PO_CANCELED != whpo.getStatus()) {
@@ -796,11 +781,11 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
         }
         try {
             packageUpdatePoData(command, shardPo);
-            poManager.editPoToShard(shardPo);
+            poManager.saveOrUpdateByVersionToShard(shardPo);
             // #TODO
             WhPo infoPo = this.poManager.findWhPoByExtCodeStoreIdOuIdToInfo(shardPo.getExtCode(), shardPo.getStoreId(), command.getOuId());
             packageUpdatePoData(command, infoPo);
-            poManager.editPoToInfo(infoPo);
+            poManager.saveOrUpdateByVersionToShard(infoPo);
         } catch (Exception e) {
             if (e instanceof BusinessException) {
                 log.error(e + "");

@@ -332,7 +332,7 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
             // 更新PO明细数据集合
             while (poIt.hasNext()) {
                 Entry<Long, Double> entry = poIt.next();
-                WhPoLine poline = this.whPoLineDao.findWhPoLineByIdWhPoLine(entry.getKey(), ouId);
+                WhPoLine poline = this.whPoLineDao.findWhPoLineById(entry.getKey(), ouId);
                 poline.setQtyRcvd(poline.getQtyRcvd() + entry.getValue());
                 if (poline.getQtyRcvd() > poline.getQtyPlanned()) {
                     poline.setStatus(PoAsnStatus.POLINE_RCVD_FINISH);
