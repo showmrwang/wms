@@ -50,6 +50,12 @@ public final class CacheKeyConstant {
 
     public static final String CACHE_RCVD_PALLET_PREFIX = "CACHE_RCVD_PALLET_";
 
+    /** 商品条码对应SKUID缓存 前缀+barcode */
+    public static final String WMS_CACHE_SKU_BARCODE = "WMS_CACHE_SKU_BARCODE_";
+
+    /** 商品主档信息缓存 前缀+SKUID+OUID */
+    public static final String WMS_CACHE_SKU_MASTER = "WMS_CACHE_SKU_MASTER_";
+
 
     // 过期时间
     public static final int CACHE_ONE_SECOND = 1;

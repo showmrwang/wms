@@ -651,5 +651,16 @@
         )
 	
 	</select>
+	
+	<select id="getSkuIdAndBarCodeQtyByBarCode" resultType="String">
+		select concat(sku.id,'-',1) from 
+		t_wh_sku sku
+		where sku.bar_code = #{barCode}
+		union all 
+		select concat(sku.id,'-',ifnull(bar.quantity,1)) from 
+		t_wh_sku_barcode bar 
+		left join t_wh_sku sku on sku.id = bar.sku_id 
+		where bar.bar_code = #{barCode}
+	</select>
 
 </mapper>
