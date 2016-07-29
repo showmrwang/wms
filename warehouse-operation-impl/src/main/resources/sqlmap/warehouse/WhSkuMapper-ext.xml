@@ -8,6 +8,117 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<resultMap id="WhSkuResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.WhSku">
 	</resultMap>
 	
+	<resultMap id="whSkuAllInfo" type="com.baozun.scm.primservice.whinfo.command.sku.skushared.SkuCommand2Shared">
+		<association property="sku" javaType="com.baozun.scm.primservice.whinfo.model.sku.Sku">
+			<id property="id" column="id"/>  
+			<result property="code" column="skuCode"/>  
+			<result property="extCode" column="skuExtCode"/>  
+			<result property="barCode" column="skuBarCode"/>  
+			<result property="name" column="skuName"/>  
+			<result property="enName" column="skuEnName"/>  
+			<result property="description" column="skuDescription"/>  
+			<result property="color" column="skuColor"/>  
+			<result property="style" column="skuStyle"/>  
+			<result property="size" column="skuSize"/>  
+			<result property="length" column="skuLength"/>  
+			<result property="width" column="skuWidth"/>  
+			<result property="height" column="skuHeight"/>  
+			<result property="lengthUom" column="skuLengthUom"/>  
+			<result property="volumeUom" column="skuVolumeUom"/>  
+			<result property="weightUom" column="skuWeightUom"/>  
+			<result property="volume" column="skuVolume"/>  
+			<result property="weight" column="skuWeight"/>  
+			<result property="brandId" column="skuBrandId"/>  
+			<result property="customerId" column="skuCustomerId"/>  
+			<result property="ouId" column="skuOuId"/>  
+			<result property="createTime" column="skuCreateTime"/>  
+			<result property="createdId" column="skuCreateId"/>  
+			<result property="lastModifyTime" column="skuLastModifyTime"/>  
+			<result property="modifiedId" column="skuModifiedId"/>  
+			<result property="lifecycle" column="skuLifecycle"/>  
+		</association>
+		<association property="skuExtattr" javaType="com.baozun.scm.primservice.whinfo.model.sku.SkuExtattr">
+			<id property="id" column="id"/>
+			<result property="skuId" column="attrSkuId"/>  
+			<result property="ouId" column="attrOuId"/>  
+			<result property="invAttr1" column="attrInvAttr1"/>  
+			<result property="invAttr2" column="attrInvAttr2"/>  
+			<result property="invAttr3" column="attrInvAttr3"/>  
+			<result property="invAttr4" column="attrInvAttr4"/>  
+			<result property="invAttr5" column="attrInvAttr5"/>  
+			<result property="userDefined1" column="attrUserDefined1"/>  
+			<result property="userDefined2" column="attrUserDefined2"/>  
+			<result property="userDefined3" column="attrUserDefined3"/>  
+			<result property="userDefined4" column="attrUserDefined4"/>  
+			<result property="userDefined5" column="attrUserDefined5"/>  
+			<result property="userDefined6" column="attrUserDefined6"/>  
+			<result property="userDefined7" column="attrUserDefined7"/>  
+			<result property="userDefined8" column="attrUserDefined8"/>  
+			<result property="userDefined9" column="attrUserDefined9"/>  
+			<result property="userDefined10" column="attrUserDefined10"/>  
+			<result property="skuType1" column="attrSkuType1"/>  
+			<result property="skuType2" column="attrSkuType2"/>  
+			<result property="skuType3" column="attrSkuType3"/>  
+			<result property="skuType4" column="attrSkuType4"/>  
+			<result property="skuType5" column="attrSkuType5"/>  
+			<result property="skuType6" column="attrSkuType6"/>  
+			<result property="skuType7" column="attrSkuType7"/>  
+			<result property="skuType8" column="attrSkuType8"/>  
+			<result property="skuType9" column="attrSkuType9"/>  
+			<result property="skuType10" column="attrSkuType10"/>  
+		</association>
+		<association property="skuMgmt" javaType="com.baozun.scm.primservice.whinfo.model.sku.SkuMgmt">
+			<id property="id" column="id"/>
+			<result property="skuId" column="mgmtSkuId"/>
+			<result property="isValid" column="mgmtIsValid"/>
+			<result property="isBatchNo" column="mgmtIsBatchNo"/>
+			<result property="serialNumberType" column="mgmtSerialNumberType"/>
+			<result property="isCountryOfOrigin" column="mgmtIsCountryOfOrigin"/>
+			<result property="isInvType" column="mgmtIsInvType"/>
+			<result property="isSkuAttr" column="mgmtIsSkuAttr"/>
+			<result property="isToWeight" column="mgmtIsToWeight"/>
+			<result property="containerType" column="mgmtContainerType"/>
+			<result property="isFragileCargo" column="mgmtIsFragileCargo"/>
+			<result property="isLabeling" column="mgmtIsLabeling"/>
+			<result property="isQualityControl" column="mgmtIsQualityControl"/>
+			<result property="isRepackaging" column="mgmtIsRepackaging"/>
+			<result property="isMixAllowed" column="mgmtIsMixAllowed"/>
+			<result property="mixAttr" column="mgmtMixAttr"/>
+			<result property="isHazardousCargo" column="mgmtIsHazardousCargo"/>
+			<result property="isValuables" column="mgmtIsValuables"/>
+			<result property="maxValidDate" column="mgmtMaxValidDate"/>
+			<result property="minValidDate" column="mgmtMinValidDate"/>
+			<result property="isExpiredGoodsReceive" column="mgmtIsExpiredGoodsReceive"/>
+			<result property="goodShelfLifeUnit" column="mgmtGoodShelfLifeUnit"/>
+			<result property="validDate" column="mgmtValidDate"/>
+			<result property="warningDate" column="mgmtWarningDate"/>
+			<result property="storageCondition" column="mgmtStorageCondition"/>
+			<result property="price" column="mgmtPrice"/>
+			<result property="cartonMeas" column="mgmtCartonMeas"/>
+			<result property="ouId" column="mgmtOuId"/>
+		</association>
+		<association property="whSkuWhMgmt" javaType="com.baozun.scm.primservice.whinfo.model.warehouse.WhSkuWhmgmt">
+			<id property="id" column="id"/>
+			<result property="skuId" column="whSkuWhMgmtOccupancyZeroPickingQty"/>  
+			<result property="occupancyZeroPickingQty" column="whSkuWhMgmtOccupancyZeroPickingQty"/>  
+			<result property="occupancyBoxPickingQty" column="whSkuWhMgmtOccupancyBoxPickingQty"/>  
+			<result property="pickingRate" column="whSkuWhMgmtPickingRate"/>  
+			<result property="packingRate" column="whSkuWhMgmtPackingRate"/>  
+			<result property="abnormalRate" column="whSkuWhMgmtAbnormalRate"/>  
+			<result property="twoLevelType" column="whSkuWhMgmtTwoLevelType"/>  
+			<result property="outboundCtnType" column="whSkuWhMgmtOutboundCtnType"/>  
+			<result property="shelfRule" column="whSkuWhMgmtShelfRule"/>  
+			<result property="allocateRule" column="whSkuWhMgmtAllocateRule"/>  
+			<result property="codeWheelNorm" column="whSkuWhMgmtCodeWheelNorm"/>  
+			<result property="lastCheckTime" column="whSkuWhMgmtLastCheckTime"/>  
+			<result property="ouId" column="whSkuWhMgmtOuId"/>  
+			<result property="createTime" column="whSkuWhMgmtCreateTime"/>  
+			<result property="lastModifyTime" column="whSkuWhMgmtLastModifyTime"/>  
+			<result property="operatorId" column="whSkuWhMgmtOperatorId"/>  
+			<result property="typeOfGoods" column="whSkuWhMgmtTypeOfGoods"/>  
+		</association>
+	</resultMap>
+	
 	<!-- 用于select查询公用抽取的列 -->
 	<sql id="whSkuColumnsExt">
 	    <![CDATA[
@@ -148,6 +259,119 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				</if>
 		</where>
 	</sql>
+	
+	<!-- 添加四个表的关联查询 start-->
+	<sql id="skuAllInfo">
+	    <![CDATA[
+	        	sku.id as skuId,
+	        	sku.ou_id as skuOuId,
+                sku.code as skuCode,
+                sku.bar_code as skuBarCode,
+                sku.name as skuName,
+                sku.en_name as skuEnName,
+                sku.description as skuDescription,
+                sku.color as skuColor,
+                sku.length as skuLength,
+                sku.width as skuWidth,
+                sku.height as skuHeight,
+                sku.volume as skuVolume,
+                sku.weight as skuWeight,
+                sku.brand_id as skuBrandId,
+                sku.customer_id as skuCustomerId,
+                sku.create_time as skuCreateTime,
+                sku.created_id as skuCreatedId,
+                sku.last_modify_time as skuLastModifyTime,
+                sku.modified_id as skuModifiedId, 
+                sku.style as skuStyle,
+                sku.size as skuSize,
+                sku.lifecycle as skuLifecycle,
+                sku.ext_code as skuExtCode,
+                
+                extattr.ou_id as attrOuId,
+                extattr.inv_attr1 as attrInvAttr1,
+                extattr.inv_attr2 as attrInvAttr2,
+                extattr.inv_attr3 as attrInvAttr3,
+                extattr.inv_attr4 as attrInvAttr4,
+                extattr.inv_attr5 as attrInvAttr5,
+                extattr.user_defined1 as attrUserDefined1,
+                extattr.user_defined2 as attrUserDefined2,
+                extattr.user_defined3 as attrUserDefined3,
+                extattr.user_defined4 as attrUserDefined4,
+                extattr.user_defined5 as attrUserDefined5,
+                extattr.user_defined6 as attrUserDefined6,
+                extattr.user_defined7 as attrUserDefined7,
+                extattr.user_defined8 as attrUserDefined8,
+                extattr.user_defined9 as attrUserDefined9,
+                extattr.user_defined10 as attrUserDefined10,
+                extattr.sku_type1 as attrSkuType1,
+                extattr.sku_type2 as attrSkuType2,
+                extattr.sku_type3 as attrSkuType3,
+                extattr.sku_type4 as attrSkuType4,
+                extattr.sku_type5 as attrSkuType5,
+                extattr.sku_type6 as attrSkuType6,
+                extattr.sku_type7 as attrSkuType7,
+                extattr.sku_type8 as attrSkuType8,
+                extattr.sku_type9 as attrSkuType9,
+                extattr.sku_type10 as attrSkuType10,
+                
+                mgmt.is_valid as isValid,
+                mgmt.is_batch_no as isBatchNo,
+                mgmt.serial_number_type as serialNumberType,
+                mgmt.is_country_of_origin as isCountryOfOrigin,
+                mgmt.is_inv_type as isInvType,
+                mgmt.is_sku_attr as isSkuAttr,
+                mgmt.is_to_weight as isToWeight,
+                mgmt.container_type as containerType,
+                mgmt.is_fragile_cargo as isFragileCargo,
+                mgmt.is_labeling as isLabeling,
+                mgmt.is_quality_control as isQualityControl,
+                mgmt.is_repackaging as isRepackaging,
+                mgmt.is_mix_allowed as isMixAllowed,
+                mgmt.mix_attr as mixAttr,
+                mgmt.is_hazardous_cargo as isHazardousCargo,
+                mgmt.is_valuables as isValuables,
+                mgmt.max_valid_date as maxValidDate,
+                mgmt.min_valid_date as minValidDate,
+                mgmt.is_expired_goods_receive as isExpiredGoodsReceive,
+                mgmt.good_shelf_life_unit as goodShelfLifeUnit,
+                mgmt.valid_date as validDate,
+                mgmt.warning_date as warningDate,
+                mgmt.storage_condition as storageCondition,
+                mgmt.is_foldable as isFoldable,
+                mgmt.price as price,
+                mgmt.carton_meas as cartonMeas,
+                
+	        	whSkuWhMgmt.occupancy_zero_picking_qty as whSkuWhMgmtOccupancyZeroPickingQty,
+	        	whSkuWhMgmt.occupancy_box_picking_qty as whSkuWhMgmtOccupancyBoxPickingQty,
+	        	whSkuWhMgmt.picking_rate as whSkuWhMgmtPickingRate,
+	        	whSkuWhMgmt.packing_rate as whSkuWhMgmtPackingRate,
+	        	whSkuWhMgmt.abnormal_rate as whSkuWhMgmtAbnormalRate,
+	        	whSkuWhMgmt.two_level_type as whSkuWhMgmtTwoLevelType,
+	        	whSkuWhMgmt.outbound_ctn_type as whSkuWhMgmtOutboundCtnType,
+	        	whSkuWhMgmt.shelf_rule as whSkuWhMgmtShelfRule,
+	        	whSkuWhMgmt.allocate_rule as whSkuWhMgmtAllocateRule,
+	        	whSkuWhMgmt.code_wheel_norm as whSkuWhMgmtCodeWheelNorm,
+	        	whSkuWhMgmt.last_check_time as whSkuWhMgmtLastCheckTime,
+	        	whSkuWhMgmt.type_of_goods as whSkuWhMgmtTypeOfGoods,
+	        	whSkuWhMgmt.ou_id as whSkuWhMgmtOuId,
+	        	whSkuWhMgmt.create_time as whSkuWhMgmtCreateTime,
+	        	whSkuWhMgmt.last_modify_time as whSkuWhMgmtLastModifyTime,
+	        	whSkuWhMgmt.operator_id as whSkuWhMgmtOperatorId
+	    ]]>
+	</sql>
+	
+	<select id="findSkuAllInfoByParamExt" parameterType="java.lang.Long" resultMap="whSkuAllInfo" flushCache="false">
+		select
+		<include refid="skuAllInfo" />
+		from t_wh_sku sku left join t_wh_sku_extattr extattr on sku.id = extattr.sku_id
+		left join t_wh_sku_mgmt mgmt on sku.id = mgmt.sku_id
+		left join t_wh_sku_whmgmt whSkuWhMgmt on sku.id = whSkuWhMgmt.sku_id
+		where 
+			sku.id = ${id} and sku.ou_id = ${ouId}
+	</select>
+	
+	
+	<!-- 添加四个表的关联查询 end-->
 	
 
 </mapper>
