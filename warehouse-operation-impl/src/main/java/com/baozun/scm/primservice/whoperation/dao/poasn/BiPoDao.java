@@ -34,58 +34,122 @@ import com.baozun.scm.primservice.whoperation.model.poasn.BiPo;
 
 public interface BiPoDao extends BaseDao<BiPo,Long>{
 
-
+    /**
+     * [业务方法]BIPO一览查询
+     * 
+     * @param page
+     * @param sorts
+     * @param params
+     * @return
+     */
 	@QueryPage("findListCountByQueryMap")
+    @Deprecated
 	Pagination<BiPo> findListByQueryMapWithPage(Page page,Sort[] sorts,Map<String, Object> params);
 	
+    /**
+     * QueryCondition查询
+     * 
+     * @param page
+     * @param sorts
+     * @param cond
+     * @return
+     */
 	@QueryPage("queryCount")
+    @Deprecated
 	Pagination<BiPo> query(Page page,Sort[] sorts, QueryCondition cond);
 	
+    /**
+     * QueryCondition查询
+     * 
+     * @param page
+     * @param sorts
+     * @param cond
+     * @return
+     */
+    @Deprecated
 	List<BiPo> query(QueryCondition cond);
 	
+    /**
+     * 
+     * QueryCondition查询
+     * 
+     * @param page
+     * @param sorts
+     * @param cond
+     * @return
+     */
+    @Deprecated
 	Long queryCount(QueryCondition cond);
 	
+    /**
+     * 非乐观锁更新
+     * 
+     * @param o
+     * @return
+     */
 	@CommonQuery
+    @Deprecated
 	int saveOrUpdate(BiPo o);
 	
+    /**
+     * 乐观锁更新数据
+     * 
+     * @param o
+     * @return
+     */
     @CommonQuery
     int saveOrUpdateByVersion(BiPo o);
 
     /**
-     * @deprecated
-     * @param extCode
-     * @param storeId
-     * @param ouId
+     * EXTCODE,STOREID的查找唯一的BIPO
+     * 
+     * @param extCode @required
+     * @param storeId @required
      * @return
      */
-    long findBiPoByCodeAndStore(@Param("extCode") String extCode, @Param("storeId") Long storeId, @Param("ouId") Long ouId);
+    BiPo findBiPoByExtCodeStoreId(@Param("extCode") String extCode, @Param("storeId") Long storeId);
 
+    /**
+     * [通用方法]根据POCODE查询BIPO
+     * 
+     * @param code @required
+     * @return
+     */
     BiPo findbyPoCode(@Param("code") String code);
 
     /**
-     * 根据pocode关联查询 关联 customer,store,sysdictionary[potype],t_wh_logistics_provider,t_wh_supplier
+     * 根据pocode关联查询BIPO;
+     * 关联customer,store,sysdictionary[potype],t_wh_logistics_provider,t_wh_supplier
      * 
-     * @param code
+     * @param code @required
      * @return
      */
     BiPoCommand findCommandbyPoCode(@Param("code") String code);
 
     /**
-     * 根据id关联查询 关联 customer,store,sysdictionary[potype],t_wh_logistics_provider,t_wh_supplier
+     * 根据id关联查询BIPO; 关联customer,store,sysdictionary[potype],t_wh_logistics_provider,t_wh_supplier
      * 
-     * @param code
+     * @param code @required
      * @return
      */
     BiPoCommand findCommandbyId(@Param("id") Long id);
 
+    /**
+     * [业务方法]BIPO一览查询
+     * 
+     * @param page
+     * @param sorts
+     * @param params
+     * @return
+     */
     @QueryPage("findListCountByQueryMapExt")
     Pagination<BiPoCommand> findListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params);
 
     /**
      * 根据店铺ID和extcode查询
      * 
-     * @param storeId
-     * @param extCode
+     * @param storeId @required
+     * @param extCode @required
      * @return
      */
     List<BiPo> findListByStoreIdExtCode(@Param("storeId") Long storeId, @Param("extCode") String extCode);

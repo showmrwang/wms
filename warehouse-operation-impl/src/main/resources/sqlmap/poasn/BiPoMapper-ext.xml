@@ -258,19 +258,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				</if>
 		</where>
 	</sql>
-	<select id="findBiPoByCodeAndStore" resultType="long">
-        select count(*) from 
-        t_bi_po
+	<select id="findBiPoByExtCodeStoreId" resultMap="BiPoResult">
+        select <include refid="biPoColumns" />
+         from  t_bi_po
 		<where>
-			<if test="ouId!=null">
-				and ou_id = #{ouId}
-			</if>
-			<if test="extCode!=null and extCode!=''">
 				and ext_code = #{extCode}
-			</if>
-			<if test="storeId!=null">
 				and store_id = #{storeId}
-			</if>
 		</where>
     </select>
     

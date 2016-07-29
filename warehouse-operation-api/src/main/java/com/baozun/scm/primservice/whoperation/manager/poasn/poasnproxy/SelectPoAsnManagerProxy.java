@@ -273,4 +273,13 @@ public interface SelectPoAsnManagerProxy extends BaseManager {
      */
     List<WhAsnCommand> findAsnListByStatus(int status, Long ouId,List<Long> asnList);
 
+    /**
+     * [通用方法]根据EXTCODE+STOREID查找BIPO
+     * 
+     * @param extCode
+     * @param storeId
+     * @return
+     */
+    BiPo findBiPoByExtCodeStoreId(String extCode, Long storeId);
+
 }

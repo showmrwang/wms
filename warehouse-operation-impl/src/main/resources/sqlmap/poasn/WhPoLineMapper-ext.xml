@@ -361,7 +361,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		left join t_wh_sku sku on line.sku_id = sku.id 
 		left join t_wh_uom uom on uom.uom_code=line.valid_date_uom
 		<where>
-			po.po_code=#{poCode}
+			po.ext_code=#{extCode}
+			and po.store_id=#{storeId}
+			and po.ou_id=#{ouId}
 			and po.uuid=#{uuid}
 			and line.uuid=#{uuid}
 			<if test="skuName!=null and skuName!=''">
@@ -386,7 +388,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			left join t_wh_sku sku on line.sku_id = sku.id
 			left join t_wh_uom uom on uom.uom_code=line.valid_date_uom
 		<where>
-			po.po_code=#{poCode}
+			po.ext_code=#{extCode}
+			and po.store_id=#{storeId}
+			and po.ou_id=#{ouId}
 			and po.uuid=#{uuid}
 			and line.uuid=#{uuid}
 			<if test="skuName!=null and skuName!=''">
@@ -572,9 +576,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    t_wh_po_line 
 	    <where>
 	    	po_id = #{poid} 
-	    	<if test="ouid != null">
 	    		and ou_id = #{ouid}
-	    	</if>
 	    	<if test="uuid != null and uuid != ''">
 	    		and uuid = #{uuid}
 	    	</if>
@@ -599,12 +601,13 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	  		 <![CDATA[and ou_id = #{ouid}]]>
 		</if>
 	 </delete>
-    <select id="findByPoCodeAndOuIdAndPoLineId" resultMap="WhPoLineResultExt">
+    <select id="findByExtCodeStoreIdOuIdPoLineId" resultMap="WhPoLineResultExt">
 	    select
 	    <include refid="whPoLineColumnsRelatedExt" />
 	    from t_wh_po_line line
 	    inner join t_wh_po po on po.ou_id=line.ou_id and po.id=line.po_id
-	    where po.po_code=#{poCode}
+	    where po.ext_code=#{extCode}
+	    and po.store_id=#{storeId}
 	  	and line.ou_id = #{ouId}
 	  	and line.po_line_id=#{poLineId}
 	  	and line.status!='17'
@@ -659,7 +662,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		
     </select>
     
-    
     <select id="findWhPoLineByPoIdOuIdWhereHasAvailableQtyToShard" resultMap="WhPoLineResult">
     	select <include refid="whPoLineColumns" />
 	    from t_wh_po_line 
@@ -667,5 +669,18 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		and ou_id=#{ouId}
 		and available_qty>0
 		and status in('1','2','3','10')
+    </select>
+    
+     <select id="findInfoPoLineByExtCodeStoreIdOuIdStatusToInfo" resultMap="WhPoLineResult">
+    	select <include refid="whPoLineColumns" />
+	    from t_wh_po_line 
+		where ext_code=#{extCode}
+		and store_id=#{storeId}
+		and ou_id=#{ouId}
+		and status in
+			<foreach collection="statusList" item="status" open="(" separator=","
+				close=")">
+				#{status}
+			</foreach>
     </select>
 </mapper>

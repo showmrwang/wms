@@ -314,11 +314,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			</where>
     </select>
     
-	 <select id="findByPoCodeAndOuId" resultMap="WhPoResult">
+	 <select id="findWhPoByExtCodeStoreIdOuId" resultMap="WhPoResult">
 	    select <include refid="whPoColumns" />
 		    from t_wh_po po
 		   <where>
-			    po_code = #{poCode} 
+			    ext_code = #{extCode} 
+			    and store_id=#{storeId}
 			    and ou_id = #{ouId} 
 			    and status!='17'
 			</where>
@@ -329,6 +330,18 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    from t_wh_po
 		   <where>
 			    po_code = #{poCode} 
+			</where>
+    </select>
+    
+     <select id="findWhPoByPoCodeStatusToInfo" resultMap="WhPoResult">
+	    select <include refid="whPoColumns" />
+		    from t_wh_po
+		   <where>
+			    po_code = #{poCode}
+			     and status in
+			    	<foreach collection="statusList" item="status" open="(" separator="," close=")">
+					#{status}
+				</foreach>
 			</where>
     </select>
 	

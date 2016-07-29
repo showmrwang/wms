@@ -34,10 +34,6 @@ public interface PoManager extends BaseManager {
 
     Pagination<WhPoCommand> findListByQueryMapWithPageExtByShard(Page page, Sort[] sorts, Map<String, Object> params);
 
-    int editPoStatusToInfo(WhPoCommand whPo);
-
-    int editPoStatusToShard(WhPoCommand whPo);
-
     void editPoToInfo(WhPo whPo);
 
     void editPoToShard(WhPo whPo);
@@ -46,9 +42,9 @@ public interface PoManager extends BaseManager {
 
     List<WhPoCommand> findWhPoListByExtCodeToShard(String poCode, List<Integer> status,List<Long> customerList,List<Long> storeList, Long ouid, Integer linenum);
 
-    void deletePoAndPoLineToInfo(List<WhPoCommand> whPoCommand);
+    void deletePoAndPoLineToInfo(WhPo po, Long userId);
 
-    void deletePoAndPoLineToShard(List<WhPoCommand> whPoCommand);
+    void deletePoAndPoLineToShard(WhPo po, Long userId);
 
     ResponseMsg updatePoStatusByAsn(WhAsn asn, List<WhAsnLineCommand> asnLineList, WhPo whPo, Map<Long, WhPoLine> poLineMap, ResponseMsg rm);
 
@@ -58,29 +54,31 @@ public interface PoManager extends BaseManager {
 
     void saveOrUpdateByVersionToShard(WhPo o);
 
-    void cancelPoToInfo(List<WhPo> poList);
+    void cancelPoToInfo(WhPo updateInfoPo, Long userId);
 
-    void cancelPoToShard(List<WhPo> poList);
+    void cancelPoToShard(WhPo updateShardPo, Long userId);
 
     void editPoAdnPoLineWhenDeleteAsnToInfo(WhPo whpo, List<WhPoLine> polineList);
 
     /**
-     * 逻辑：poCode+ouId能唯一确定一条PO；poCode,ouId不能为空
+     * 逻辑：extCode+storeId+ouId能唯一确定一条PO；
      * 
-     * @param poCode
-     * @param ouId
+     * @param extCode @required
+     * @param storeId @required
+     * @param ouId @required
      * @return
      */
-    WhPo findWhPoByPoCodeOuIdToShard(String poCode, Long ouId);
+    WhPo findWhPoByExtCodeStoreIdOuIdToShard(String extCode, Long storeId, Long ouId);
 
     /**
-     * 逻辑：poCode+ouId能唯一确定一条非取消状态的PO；poCode,ouId不能为空
+     * 逻辑：extCode+storeId+ouId能唯一确定一条PO；
      * 
-     * @param poCode
-     * @param ouId
+     * @param extCode @required
+     * @param storeId @required
+     * @param ouId @required
      * @return
      */
-    WhPo findWhPoByPoCodeOuIdToInfo(String poCode, Long ouId);
+    WhPo findWhPoByExtCodeStoreIdOuIdToInfo(String extCode, Long storeId, Long ouId);
 
     void createWhPoToInfo(WhPo shardpo, List<WhPoLine> whpolineList);
 
@@ -110,14 +108,16 @@ public interface PoManager extends BaseManager {
     void revokeSubPoToInfo(List<WhPoLine> lineList);
 
     /**
-     * 将创建子PO的临时数据推送到仓库
+     * 将创建子PO的临时数据推送到仓库 @mender yimin.lu 2016/7/27
      * 
-     * @param poCode
+     * @param extCode
+     * @param storeId
      * @param ouId
      * @param userId
-     * @param infoPoLineList
+     * @param poCode
      * @param infoPo
+     * @param infoPoLineList
      */
-    void saveSubPoToShard(String poCode, Long ouId, Long userId, WhPo infoPo, List<WhPoLine> infoPoLineList);
+    void saveSubPoToShard(String extCode, Long storeId, Long ouId, Long userId, String poCode, WhPo infoPo, List<WhPoLine> infoPoLineList);
 
 }

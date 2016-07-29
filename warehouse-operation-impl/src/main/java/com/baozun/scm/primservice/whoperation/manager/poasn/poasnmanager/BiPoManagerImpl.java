@@ -29,7 +29,6 @@ import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoLineDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
-import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
 import com.baozun.scm.primservice.whoperation.model.poasn.BiPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.BiPoLine;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
@@ -220,7 +219,6 @@ public class BiPoManagerImpl extends BaseManagerImpl implements BiPoManager {
     @Override
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public void cancelBiPo(Long id, Long userId) {
-        ResponseMsg rm = new ResponseMsg();
         List<BiPoLine> lines = this.biPoLineDao.findBiPoLineByPoIdAndUuid(id, null);
         if (lines != null) {
             for (BiPoLine line : lines) {
@@ -277,13 +275,13 @@ public class BiPoManagerImpl extends BaseManagerImpl implements BiPoManager {
 
     @Override
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
-    public void saveSubPoToInfo(Long id, String poCode, Long ouId, String uuid, Long userId) {
+    public void saveSubPoToInfo(Long id, String extCode, Long storeId, Long ouId, String uuid, Long userId) {
         // 逻辑：
         // 1.删除可用数量为0的临时数据
         // 2.1保存临时数据【info.whpo.polineId 不为空，则合并明细 并清除数据；如果为空则清除UUID】
         // 2.2占用对应明细的可用数量和修改状态
         // 3.修改BIPO头信息【状态】
-        WhPo whpo = this.whPoDao.findByPoCodeAndOuId(poCode, ouId);
+        WhPo whpo = this.whPoDao.findWhPoByExtCodeStoreIdOuId(extCode, storeId, ouId);
         List<WhPoLine> whpoLineList = this.whPoLineDao.findWhPoLineByPoIdOuId(whpo.getId(), ouId, uuid);
         Double count = Constants.DEFAULT_DOUBLE;
         for (WhPoLine whpoline : whpoLineList) {
@@ -341,8 +339,8 @@ public class BiPoManagerImpl extends BaseManagerImpl implements BiPoManager {
 
     @Override
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
-    public void closeSubPoToInfo(String poCode, Long ouId, Long userId) {
-        WhPo infoPo = this.whPoDao.findByPoCodeAndOuId(poCode, ouId);
+    public void closeSubPoToInfo(String extCode, Long storeId, Long ouId, Long userId) {
+        WhPo infoPo = this.whPoDao.findWhPoByExtCodeStoreIdOuId(extCode, storeId, ouId);
         if (infoPo != null) {
             WhPoLineCommand searchCommand = new WhPoLineCommand();
             searchCommand.setPoId(infoPo.getId());
@@ -379,6 +377,12 @@ public class BiPoManagerImpl extends BaseManagerImpl implements BiPoManager {
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public List<BiPo> findListByStoreIdExtCode(Long storeId, String extCode) {
         return this.biPoDao.findListByStoreIdExtCode(storeId, extCode);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
+    public BiPo findBiPoByExtCodeStoreId(String extCode, Long storeId) {
+        return this.biPoDao.findBiPoByExtCodeStoreId(extCode, storeId);
     }
 
 }

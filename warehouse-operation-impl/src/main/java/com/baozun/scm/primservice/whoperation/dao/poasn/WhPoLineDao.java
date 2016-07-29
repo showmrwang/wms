@@ -77,22 +77,28 @@ public interface WhPoLineDao extends BaseDao<WhPoLine, Long> {
     WhPoLine findPoLineByAddPoLineParam(@Param("status") List<Integer> status, @Param("poid") Long poid, @Param("ouid") Long ouid, @Param("skuid") Long skuid, @Param("isIqc") Integer isIqck, @Param("mfgDate") Date mfgDate, @Param("expDate") Date expDate,
             @Param("validDate") Integer validDate, @Param("batchNo") String batchNo, @Param("coo") String coo, @Param("invStatus") Long invStatus, @Param("uuid") String uuid);
 
+    /**
+     * 
+     * @param poid @required
+     * @param ouid @required
+     * @param uuid
+     * @return
+     */
     List<WhPoLine> findWhPoLineByPoIdOuId(@Param("poid") Long poid, @Param("ouid") Long ouid, @Param("uuid") String uuid);
 
     WhPoLine findWhPoLineByIdWhPoLine(@Param("id") Long id, @Param("ouid") Long ouid);
 
     int deletePoLineByPoId(@Param("id") Long id);
 
-    int deleteByPoIdOuId(@Param("poid") Long id, @Param("ouid") Long ouid);
-
     /**
-     * @author YIMIN.LU 根据POCODE，OUID,POLINEID找到非取消状态下的对应的行
-     * @param poCode
-     * @param ouId
-     * @param id
-     * @return
+     * @author YIMIN.LU 根据EXTCODE，STOREID,OUID,POLINEID找到非取消状态下的对应的行
+     * @param extCode @required
+     * @param storeId @required
+     * @param ouId @required
+     * @param id @required
+     * @return @required
      */
-    WhPoLine findByPoCodeAndOuIdAndPoLineId(@Param("poCode") String poCode, @Param("ouId") Long ouId, @Param("poLineId") Long id);
+    WhPoLine findByExtCodeStoreIdOuIdPoLineId(@Param("extCode") String extCode, @Param("storeId") Long storeId, @Param("ouId") Long ouId, @Param("poLineId") Long id);
 
     List<WhPoLine> findInfoPoLineByPoCodeOuId(@Param("poCode") String poCode, @Param("ouId") Long ouId);
 
@@ -109,5 +115,14 @@ public interface WhPoLineDao extends BaseDao<WhPoLine, Long> {
     List<WhPoLine> findListByParamExt(WhPoLineCommand command);
 
     List<WhPoLine> findWhPoLineByPoIdOuIdWhereHasAvailableQtyToShard(@Param("poId") Long poId, @Param("ouId") Long ouId);
+
+    /**
+     * 
+     * @param extCode @required
+     * @param storeId @required
+     * @param ouId @required
+     * @return
+     */
+    List<WhPoLine> findInfoPoLineByExtCodeStoreIdOuIdStatusToInfo(@Param("extCode") String extCode, @Param("storeId") Long storeId, @Param("ouId") Long ouId, @Param("statusList") List<Integer> statusList);
 
 }

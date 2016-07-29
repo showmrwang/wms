@@ -15,24 +15,37 @@ import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 
 /**
  * @author yimin.lu
- * @author Administrator
  *
  */
 public interface BiPoManager extends BaseManager {
     /**
-     * 通用逻辑 根据字段查找集合
+     * [通用逻辑] 根据字段查找集合; 此方法注意BiPo对象可能有默认值，会影响查询结果
      * 
      * @param biPo
      * @return
      */
+    @Deprecated
     List<BiPo> findListByParam(BiPo biPo);
 
+    /**
+     * [通用方法]根据ID查询BIPO
+     * 
+     * @param id
+     * @return
+     */
     BiPo findBiPoById(Long id);
 
+    /**
+     * [通用方法]根据POCODE查询BIPO
+     * 
+     * @param poCode
+     * @return
+     */
     BiPo findBiPoByPoCode(String poCode);
 
     /**
-     * 根据id关联查询 关联 customer,store,sysdictionary[potype],t_wh_logistics_provider,t_wh_supplier
+     * [通用方法]根据id关联查询BIPO;
+     * 关联customer,store,sysdictionary[potype],t_wh_logistics_provider,t_wh_supplier
      * 
      * @param code
      * @return
@@ -40,7 +53,8 @@ public interface BiPoManager extends BaseManager {
     BiPoCommand findBiPoCommandById(Long id);
 
     /**
-     * 根据pocode关联查询 关联 customer,store,sysdictionary[potype],t_wh_logistics_provider,t_wh_supplier
+     * [通用方法]根据pocode关联查询BIPO;
+     * 关联customer,store,sysdictionary[potype],t_wh_logistics_provider,t_wh_supplier
      * 
      * @param code
      * @return
@@ -48,7 +62,7 @@ public interface BiPoManager extends BaseManager {
     BiPoCommand findBiPoCommandByPoCode(String poCode);
 
     /**
-     * BiPo一览查询
+     * [业务方法]BiPo一览查询
      * 
      * @param page
      * @param sorts
@@ -59,7 +73,8 @@ public interface BiPoManager extends BaseManager {
 
 
     /**
-     * 创建PO单分支一：创建INFO库PO单;@author yimin.lu 逻辑:①当创建的PO单没有仓库时候，只插入到BIPO中，不插入info库的whpo中；并不需要调用另一个分支
+     * [业务方法]创建PO单分支一：创建INFO库PO单;@author yimin.lu
+     * 逻辑:①当创建的PO单没有仓库时候，只插入到BIPO中，不插入info库的whpo中；并不需要调用另一个分支
      * 逻辑:②当创建的PO单有仓库的时候，数据会同步到INFO库的whpo和shard库的whpo;此时不可单独使用
      * 
      * @param whPo
@@ -70,7 +85,7 @@ public interface BiPoManager extends BaseManager {
     void createPoAndLineToInfo(WhPo whPo, List<WhPoLine> whPoLines);
 
     /**
-     * 创建PO单分支二：创建shard库PO单；
+     * [业务方法]创建PO单分支二：创建shard库PO单；
      * 
      * @param whPo
      * @param whPoLines
@@ -80,7 +95,7 @@ public interface BiPoManager extends BaseManager {
     void createPoAndLineToShared(WhPo whPo, List<WhPoLine> whPoLines);
 
     /**
-     * 删除BIPO单操作：删除BIPO及明细
+     * [业务方法]删除BIPO单操作：删除BIPO及明细
      * 
      * @param id
      * @param userId
@@ -89,7 +104,7 @@ public interface BiPoManager extends BaseManager {
     void deleteBiPoAndLine(Long id, Long userId);
 
     /**
-     * 取消BIPO单操作：将BIPO及其明细置为取消状态
+     * [业务方法]取消BIPO单操作：将BIPO及其明细置为取消状态
      * 
      * @param id
      * @param userId
@@ -98,7 +113,7 @@ public interface BiPoManager extends BaseManager {
     void cancelBiPo(Long id, Long userId);
 
     /**
-     * 编辑BIPO单表头
+     * [业务方法]编辑BIPO单表头
      * 
      * @param updatePo
      * @return
@@ -106,7 +121,7 @@ public interface BiPoManager extends BaseManager {
     void editBiPo(BiPo updatePo);
 
     /**
-     * 创建子PO操作分支一
+     * [业务方法]创建子PO操作分支一
      * 
      * @param po
      * @param whPoLineList
@@ -114,32 +129,42 @@ public interface BiPoManager extends BaseManager {
     void createSubPoToInfo(WhPo po, List<WhPoLine> whPoLineList);
 
     /**
-     * 创建子PO操作分支一：将INFO临时数据保存。
+     * [业务方法]创建子PO操作分支一：将INFO临时数据保存。
      * 
-     * @param id
-     * @param poCode
-     * @param ouId
-     * @param uuid
-     * @param userId
+     * @param id @required
+     * @param extCode @required
+     * @param StoreId @required
+     * @param ouId @required
+     * @param uuid @required
+     * @param userId @required
      */
-    void saveSubPoToInfo(Long id, String poCode, Long ouId, String uuid, Long userId);
+    void saveSubPoToInfo(Long id, String extCode, Long StoreId, Long ouId, String uuid, Long userId);
 
     /**
-     * 创建子PO操作分支一:将临时数据删除
+     * [业务方法]创建子PO操作分支一:将临时数据删除
      * 
      * @param poCode
      * @param ouId
      * @param id
      */
-    void closeSubPoToInfo(String poCode, Long ouId, Long id);
+    void closeSubPoToInfo(String extCode, Long storeId, Long ouId, Long id);
 
     /**
-     * 根据店铺ID和相关单据号查询
+     * [通用方法]根据店铺ID和相关单据号查询
      * 
-     * @param storeId
-     * @param extCode
+     * @param storeId @required
+     * @param extCode @required
      * @return
      */
     List<BiPo> findListByStoreIdExtCode(Long storeId, String extCode);
+
+    /**
+     * [通用方法] 根据EXTCODE,STOREID查找BIPO
+     * 
+     * @param extCode @required
+     * @param storeId @required
+     * @return
+     */
+    BiPo findBiPoByExtCodeStoreId(String extCode, Long storeId);
 
 }

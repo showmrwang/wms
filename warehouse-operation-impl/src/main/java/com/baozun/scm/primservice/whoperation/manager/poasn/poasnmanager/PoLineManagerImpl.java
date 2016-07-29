@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import com.baozun.scm.primservice.whoperation.command.poasn.BiPoLineCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoLineCommand;
 import com.baozun.scm.primservice.whoperation.command.system.GlobalLogCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
@@ -156,32 +155,6 @@ public class PoLineManagerImpl implements PoLineManager {
         return this.whPoLineDao.findWhPoLineById(command.getId(), command.getOuId());
     }
 
-    @Override
-    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
-    public int editPoLineStatusToInfo(WhPoLineCommand command) {
-        int result = whPoLineDao.editPoLineStatus(command.getIds(), command.getStatus(), command.getModifiedId(), command.getOuId(), new Date());
-        if (result <= 0) {
-            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-        }
-        if (result != command.getIds().size()) {
-            throw new BusinessException(ErrorCodes.UPDATE_DATA_QUANTITYERROR, new Object[] {command.getIds().size(), result});
-        }
-        return result;
-    }
-
-    @Override
-    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public int editPoLineStatusToShard(WhPoLineCommand command) {
-        int result = whPoLineDao.editPoLineStatus(command.getIds(), command.getStatus(), command.getModifiedId(), command.getOuId(), new Date());
-        if (result <= 0) {
-            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-        }
-        if (result != command.getIds().size()) {
-            throw new BusinessException(ErrorCodes.UPDATE_DATA_QUANTITYERROR, new Object[] {command.getIds().size(), result});
-        }
-        return result;
-    }
-
     /**
      * 通过创建POLINE信息查找是否该PO单下有对应明细信息(基础库)
      */
@@ -243,111 +216,6 @@ public class PoLineManagerImpl implements PoLineManager {
             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
         }
 
-    }
-
-    /**
-     * 保存临时创建POLINE信息为正式数据
-     */
-    @Override
-    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
-    public void createPoLineBatchToInfo(WhPoLineCommand whPoLine) {
-        // 先删除此次保存UUID以外的数据
-        whPoLineDao.deletePoLineByNotUuid(whPoLine.getPoId(), whPoLine.getOuId(), whPoLine.getUuid());
-        // 查询对应PO单下有UUID的数据
-        List<WhPoLine> poLineList = new ArrayList<WhPoLine>();
-        if (StringUtils.hasText(whPoLine.getUuid())) {
-            poLineList = whPoLineDao.findWhPoLineByPoIdOuId(whPoLine.getPoId(), whPoLine.getOuId(), whPoLine.getUuid());
-        }
-        double qtyPlannedCount = 0.0;
-        for (WhPoLine p : poLineList) {
-            // 整合计划数量
-            qtyPlannedCount = new BigDecimal(Double.toString(qtyPlannedCount)).add(new BigDecimal(Double.toString(p.getQtyPlanned()))).doubleValue();
-            // qtyPlannedCount = qtyPlannedCount + p.getQtyPlanned();
-            if (null == p.getPoLineId()) {
-                // 如果对应的polineid is null 直接去除这条的uuid数据 保存为正式数据
-                p.setUuid(null);
-                p.setModifiedId(whPoLine.getModifiedId());
-                int count = whPoLineDao.saveOrUpdateByVersion(p);
-                if (count <= 0) {
-                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-                }
-            } else {
-                // 如果对应的polineid is not null 直接合并相关信息 删除对应uuid数据
-                WhPoLine w = whPoLineDao.findWhPoLineByIdWhPoLine(p.getPoLineId(), p.getOuId());
-                if (null != w) {
-                    // 合并数量
-                    w.setQtyPlanned(w.getQtyPlanned() + p.getQtyPlanned());// 计划数量
-                    w.setAvailableQty(w.getAvailableQty() + p.getQtyPlanned());// 可用数量=原可用数量+新计划数量
-                    w.setModifiedId(whPoLine.getModifiedId());
-                    int count = whPoLineDao.saveOrUpdateByVersion(w);
-                    if (count <= 0) {
-                        throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-                    }
-                }
-                // 删除对应UUID临时数据
-                whPoLineDao.deletePoLineByIdOuId(p.getId(), p.getOuId());
-            }
-        }
-        // 修改po表头计划数量和可用数量
-        WhPo po = whPoDao.findWhPoById(whPoLine.getPoId(), whPoLine.getOuId());
-        po.setQtyPlanned(po.getQtyPlanned() + qtyPlannedCount);// 计划数量
-        po.setModifiedId(whPoLine.getModifiedId());
-        int count = whPoDao.saveOrUpdateByVersion(po);
-        if (count <= 0) {
-            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-        }
-    }
-
-    /**
-     * 保存临时创建POLINE信息为正式数据
-     */
-    @Override
-    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void createPoLineBatchToShare(WhPoLineCommand whPoLine) {
-        // 先删除此次保存UUID以外的数据
-        whPoLineDao.deletePoLineByNotUuid(whPoLine.getPoId(), whPoLine.getOuId(), whPoLine.getUuid());
-        // 查询对应PO单下有UUID的数据
-        List<WhPoLine> poLineList = new ArrayList<WhPoLine>();
-        if (StringUtils.hasText(whPoLine.getUuid())) {
-            poLineList = whPoLineDao.findWhPoLineByPoIdOuId(whPoLine.getPoId(), whPoLine.getOuId(), whPoLine.getUuid());
-        }
-        double qtyPlannedCount = 0.0;
-        for (WhPoLine p : poLineList) {
-            qtyPlannedCount = new BigDecimal(Double.toString(qtyPlannedCount)).add(new BigDecimal(Double.toString(p.getQtyPlanned()))).doubleValue();// 整合计划数量
-            // qtyPlannedCount = qtyPlannedCount + p.getQtyPlanned();
-            if (null == p.getPoLineId()) {
-                // 如果对应的polineid is null 直接去除这条的uuid数据 保存为正式数据
-                p.setUuid(null);
-                p.setModifiedId(whPoLine.getModifiedId());
-                int count = whPoLineDao.saveOrUpdateByVersion(p);
-                if (count <= 0) {
-                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-                }
-            } else {
-                // 如果对应的polineid is not null 直接合并相关信息 删除对应uuid数据
-                WhPoLine w = whPoLineDao.findWhPoLineByIdWhPoLine(p.getPoLineId(), p.getOuId());
-                if (null != w) {
-                    // 合并数量
-                    w.setQtyPlanned(w.getQtyPlanned() + p.getQtyPlanned());// 计划数量
-                    w.setAvailableQty(w.getAvailableQty() + p.getQtyPlanned());// 可用数量=原可用数量+新计划数量
-                    w.setModifiedId(whPoLine.getModifiedId());
-                    int count = whPoLineDao.saveOrUpdateByVersion(w);
-                    if (count <= 0) {
-                        throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-                    }
-                }
-                // 删除对应UUID临时数据
-                whPoLineDao.deletePoLineByIdOuId(p.getId(), p.getOuId());
-            }
-        }
-        // 修改po表头计划数量和可用数量
-        WhPo po = whPoDao.findWhPoById(whPoLine.getPoId(), whPoLine.getOuId());
-        po.setQtyPlanned(po.getQtyPlanned() + qtyPlannedCount);// 计划数量
-        po.setModifiedId(whPoLine.getModifiedId());
-        int count = whPoDao.saveOrUpdateByVersion(po);
-        if (count <= 0) {
-            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-        }
     }
 
     @Override
@@ -515,12 +383,12 @@ public class PoLineManagerImpl implements PoLineManager {
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void createPoLineBatchToShareNew(BiPoLineCommand biPoLineCommand, List<WhPoLine> infoPolineList) {
-        WhPo whpo = this.whPoDao.findByPoCodeAndOuId(biPoLineCommand.getPoCode(), biPoLineCommand.getOuId());
+    public void createPoLineBatchToShareNew(String extCode, Long storeId, Long ouId, List<WhPoLine> infoPolineList) {
+        WhPo whpo = this.whPoDao.findWhPoByExtCodeStoreIdOuId(extCode, storeId, ouId);
         double qtyPlanned = Constants.DEFAULT_DOUBLE;
         for (WhPoLine infoPoline : infoPolineList) {
             qtyPlanned += infoPoline.getQtyPlanned();
-            WhPoLine shardPoline = this.whPoLineDao.findByPoCodeAndOuIdAndPoLineId(biPoLineCommand.getPoCode(), biPoLineCommand.getOuId(), infoPoline.getPoLineId());
+            WhPoLine shardPoline = this.whPoLineDao.findByExtCodeStoreIdOuIdPoLineId(extCode, storeId, ouId, infoPoline.getPoLineId());
             if (shardPoline != null) {
                 BeanUtils.copyProperties(infoPoline, shardPoline, "id", "lastModifyTime", "poId");
                 this.whPoLineDao.saveOrUpdateByVersion(shardPoline);
@@ -609,6 +477,12 @@ public class PoLineManagerImpl implements PoLineManager {
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<WhPoLine> findWhPoLineByPoIdOuIdWhereHasAvailableQtyToShard(Long poId, Long ouId) {
         return this.whPoLineDao.findWhPoLineByPoIdOuIdWhereHasAvailableQtyToShard(poId, ouId);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
+    public List<WhPoLine> findInfoPoLineByExtCodeStoreIdOuIdStatusToInfo(String extCode, Long storeId, Long ouId, List<Integer> statusList) {
+        return this.whPoLineDao.findInfoPoLineByExtCodeStoreIdOuIdStatusToInfo(extCode, storeId, ouId, statusList);
     }
 
 

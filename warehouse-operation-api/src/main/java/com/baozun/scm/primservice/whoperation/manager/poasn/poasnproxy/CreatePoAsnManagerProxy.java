@@ -24,7 +24,7 @@ public interface CreatePoAsnManagerProxy extends BaseManager {
      * @param biPoLine
      * @return
      */
-    ResponseMsg createPoLineSingleNew(BaseCommand poLine);
+    void createPoLineSingleNew(BaseCommand poLine);
 
     /**
      * 保存PO单明细 【业务方法;接口方法】
@@ -32,7 +32,7 @@ public interface CreatePoAsnManagerProxy extends BaseManager {
      * @param command
      * @return
      */
-    ResponseMsg createPoLineBatchNew(BaseCommand command);
+    void createPoLineBatchNew(BaseCommand command);
 
     /**
      * 创建子PO流程：将数据写入INFO——WHPO中，并用UUID标识为同一批次的临时数据 【业务方法】

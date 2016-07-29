@@ -7,7 +7,6 @@ import lark.common.dao.Page;
 import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 
-import com.baozun.scm.primservice.whoperation.command.poasn.BiPoLineCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoLineCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
@@ -38,10 +37,6 @@ public interface PoLineManager extends BaseManager {
 
     WhPoLineCommand findPoLinebyIdToShard(WhPoLineCommand command);
 
-    int editPoLineStatusToInfo(WhPoLineCommand command);
-
-    int editPoLineStatusToShard(WhPoLineCommand command);
-
     WhPoLine findPoLineByAddPoLineParamToInfo(WhPoLine line, Boolean type);
 
     WhPoLine findPoLineByAddPoLineParamToShare(WhPoLine line, Boolean type);
@@ -49,14 +44,6 @@ public interface PoLineManager extends BaseManager {
     void updatePoLineSingleToInfo(WhPoLine whPoLine);
 
     void updatePoLineSingleToShare(WhPoLine whPoLine);
-
-    /**
-     * @deprecated
-     * @param whPoLine
-     */
-    void createPoLineBatchToInfo(WhPoLineCommand whPoLine);
-
-    void createPoLineBatchToShare(WhPoLineCommand whPoLine);
 
     List<WhPoLine> findWhPoLineListByPoIdToInfo(Long poid, Long ouid);
 
@@ -84,10 +71,12 @@ public interface PoLineManager extends BaseManager {
     /**
      * 新的保存整单的逻辑分支：将PO单整单数据保存到仓库
      * 
-     * @param biPoLineCommand
+     * @param extCode
+     * @param storeId
+     * @param ouId
      * @param infoPolineList
      */
-    void createPoLineBatchToShareNew(BiPoLineCommand biPoLineCommand, List<WhPoLine> infoPolineList);
+    void createPoLineBatchToShareNew(String extCode, Long storeId, Long ouId, List<WhPoLine> infoPolineList);
 
     /**
      * wh_po_line状态： 1。同一个polineId，poId,ouId下每个状态最多只有一条 2.【新建、已创建ASN--收货中】、【取消】、【关闭】，每组状态只有一条
@@ -148,5 +137,16 @@ public interface PoLineManager extends BaseManager {
     long findListCountByParamToShard(WhPoLine searchPoLine);
 
     List<WhPoLine> findWhPoLineByPoIdOuIdWhereHasAvailableQtyToShard(Long id, Long ouId);
+
+    /**
+     * 
+     * @param extCode @required
+     * @param storeId @required
+     * @param ouId @required
+     * @param statusList @required
+     * @return
+     */
+    List<WhPoLine> findInfoPoLineByExtCodeStoreIdOuIdStatusToInfo(String extCode, Long storeId, Long ouId, List<Integer> statusList);
+
 
 }

@@ -95,7 +95,6 @@ public class WhPoCommand extends BaseCommand {
     private Long userId;
 
 /** poid list */
-    private List<Long> poIds;
     /** 状态名称 */
     private String statusName;
     /** 仓库名称 */
@@ -443,14 +442,6 @@ public class WhPoCommand extends BaseCommand {
 
     public void setStatusName(String statusName) {
         this.statusName = statusName;
-    }
-
-    public List<Long> getPoIds() {
-        return poIds;
-    }
-
-    public void setPoIds(List<Long> poIds) {
-        this.poIds = poIds;
     }
 
     public String getOuName() {

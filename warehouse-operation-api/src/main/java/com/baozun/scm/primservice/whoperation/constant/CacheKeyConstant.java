@@ -1,6 +1,6 @@
 package com.baozun.scm.primservice.whoperation.constant;
 
-public class CacheKeyConstant {
+public final class CacheKeyConstant {
     private CacheKeyConstant() {}
 
     /** 通用收货ASNLINE缓存前缀：规则：前缀+ASNID+ASNLINEID+SKUID;间隔符"_" */

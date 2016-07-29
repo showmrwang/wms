@@ -235,15 +235,7 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
         if (null == sourceType) {
             sourceType = Constants.SHARD_SOURCE;
         }
-        // 判断读取那个库的数据
-        if (sourceType == Constants.SHARD_SOURCE) {
-            // 拆分库
-            whAsnCommandList = asnManager.findListByQueryMapWithPageExtByShard(page, sorts, params);
-        }
-        if (sourceType == Constants.INFO_SOURCE) {
-            // 公共库
-            whAsnCommandList = asnManager.findListByQueryMapWithPageExtByInfo(page, sorts, params);
-        }
+        whAsnCommandList = asnManager.findListByQueryMapWithPageExtByShard(page, sorts, params);
         log.info(this.getClass().getSimpleName() + ".findWhAsnListByQueryMapWithPageExt method end!");
         return whAsnCommandList;
     }
@@ -531,5 +523,10 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
     @Override
     public List<WhAsnCommand> findAsnListByStatus(int status, Long ouId,List<Long> asnList) {
         return this.asnManager.findAsnListByStatus(status, ouId,asnList);
+    }
+
+    @Override
+    public BiPo findBiPoByExtCodeStoreId(String extCode, Long storeId) {
+        return this.biPoManager.findBiPoByExtCodeStoreId(extCode, storeId);
     }
 }

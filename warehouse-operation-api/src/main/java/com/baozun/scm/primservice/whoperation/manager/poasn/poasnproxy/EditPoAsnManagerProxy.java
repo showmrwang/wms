@@ -1,7 +1,6 @@
 package com.baozun.scm.primservice.whoperation.manager.poasn.poasnproxy;
 
 import java.util.Date;
-import java.util.List;
 
 import com.baozun.scm.primservice.whoperation.command.poasn.BiPoCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.BiPoLineCommand;
@@ -14,18 +13,9 @@ import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
 import com.baozun.scm.primservice.whoperation.model.poasn.BiPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.BiPoLine;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
-import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 
 public interface EditPoAsnManagerProxy extends BaseManager {
-
-    /**
-     * 根据ASN的ID,OUID,查找ASN并修改STATUS
-     * 
-     * @param whAsnCommand
-     * @return
-     */
-    ResponseMsg editAsnStatus(WhAsnCommand whAsnCommand);
 
     /**
      * 取消PO单操作
@@ -34,15 +24,6 @@ public interface EditPoAsnManagerProxy extends BaseManager {
      * @return
      */
     ResponseMsg cancelPo(WhPoCommand whPoCommand);
-
-    /**
-     * 修改PO单表头信息
-     * 
-     * @deprecated
-     * @param po
-     * @return
-     */
-    ResponseMsg editPo(WhPo po);
 
     /**
      * 根据POLINE的POID,OUID,UUID删除PO单明细
@@ -88,7 +69,7 @@ public interface EditPoAsnManagerProxy extends BaseManager {
      * @param whPoCommand
      * @return
      */
-    ResponseMsg deletePoAndPoLine(List<WhPoCommand> whPoCommand);
+    ResponseMsg deletePoAndPoLine(WhPoCommand command);
 
     /**
      * 审核PO单操作
