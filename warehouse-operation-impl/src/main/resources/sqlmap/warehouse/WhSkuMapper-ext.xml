@@ -8,8 +8,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<resultMap id="WhSkuResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.WhSku">
 	</resultMap>
 	
-	<resultMap id="whSkuAllInfo" type="com.baozun.scm.primservice.whinfo.command.sku.skushared.SkuCommand2Shared">
-		<association property="sku" javaType="com.baozun.scm.primservice.whinfo.model.sku.Sku">
+	<resultMap id="whSkuAllInfo" type="com.baozun.scm.primservice.whoperation.command.sku.SkuRedisCommand">
+		<association property="sku" javaType="com.baozun.scm.primservice.whoperation.model.sku.Sku">
 			<id property="id" column="id"/>  
 			<result property="code" column="skuCode"/>  
 			<result property="extCode" column="skuExtCode"/>  
@@ -37,7 +37,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<result property="modifiedId" column="skuModifiedId"/>  
 			<result property="lifecycle" column="skuLifecycle"/>  
 		</association>
-		<association property="skuExtattr" javaType="com.baozun.scm.primservice.whinfo.model.sku.SkuExtattr">
+		<association property="skuExtattr" javaType="com.baozun.scm.primservice.whoperation.model.sku.SkuExtattr">
 			<id property="id" column="id"/>
 			<result property="skuId" column="attrSkuId"/>  
 			<result property="ouId" column="attrOuId"/>  
@@ -67,7 +67,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<result property="skuType9" column="attrSkuType9"/>  
 			<result property="skuType10" column="attrSkuType10"/>  
 		</association>
-		<association property="skuMgmt" javaType="com.baozun.scm.primservice.whinfo.model.sku.SkuMgmt">
+		<association property="skuMgmt" javaType="com.baozun.scm.primservice.whoperation.model.sku.SkuMgmt">
 			<id property="id" column="id"/>
 			<result property="skuId" column="mgmtSkuId"/>
 			<result property="isValid" column="mgmtIsValid"/>
@@ -97,7 +97,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<result property="cartonMeas" column="mgmtCartonMeas"/>
 			<result property="ouId" column="mgmtOuId"/>
 		</association>
-		<association property="whSkuWhMgmt" javaType="com.baozun.scm.primservice.whinfo.model.warehouse.WhSkuWhmgmt">
+		<association property="whSkuWhMgmt" javaType="com.baozun.scm.primservice.whoperation.model.warehouse.WhSkuWhmgmt">
 			<id property="id" column="id"/>
 			<result property="skuId" column="whSkuWhMgmtOccupancyZeroPickingQty"/>  
 			<result property="occupancyZeroPickingQty" column="whSkuWhMgmtOccupancyZeroPickingQty"/>  
