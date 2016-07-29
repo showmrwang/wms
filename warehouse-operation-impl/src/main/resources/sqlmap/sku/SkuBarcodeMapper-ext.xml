@@ -95,7 +95,7 @@
                 UPDATE t_wh_sku_barcode SET
                     bar_code = #{barCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
                     sku_id = #{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-                    quantity = #{quantity,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    quantity = #{quantity,javaType=java.lang.Integer,jdbcType=INTEGER} ,
                     create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
                     created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
                     last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
@@ -228,7 +228,7 @@
                     #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
                     #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
                     #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-                    #{quantity,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{quantity,javaType=java.lang.Integer,jdbcType=INTEGER} ,
                     #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER}
                 )
             ]]>
@@ -244,7 +244,7 @@
                 created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
                 last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
                 modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-                quantity = #{quantity,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                quantity = #{quantity,javaType=java.lang.Integer,jdbcType=INTEGER} ,
                 lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER}
             WHERE
                 id = #{id}
@@ -278,7 +278,7 @@
                 #{item.createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
                 #{item.lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
                 #{item.modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-                #{item.quantity,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                #{item.quantity,javaType=java.lang.Integer,jdbcType=INTEGER} ,
                 #{item.lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER}
             )
         </foreach>

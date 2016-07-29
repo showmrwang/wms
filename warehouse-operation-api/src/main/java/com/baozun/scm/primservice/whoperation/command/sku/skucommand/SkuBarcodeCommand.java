@@ -26,7 +26,7 @@ public class SkuBarcodeCommand extends BaseCommand {
     /** 操作人ID */
     private Long modifiedId;
     /** 数量 */
-    private Long quantity;
+    private Integer quantity;
     /**
      * 1.可用;2.已删除;0.禁用
      */
@@ -100,11 +100,11 @@ public class SkuBarcodeCommand extends BaseCommand {
         this.modifiedId = modifiedId;
     }
 
-    public Long getQuantity() {
+    public Integer getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(Long quantity) {
+    public void setQuantity(Integer quantity) {
         this.quantity = quantity;
     }
 
