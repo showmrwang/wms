@@ -24,8 +24,7 @@ import lark.orm.dao.supports.BaseDao;
 
 import org.apache.ibatis.annotations.Param;
 
-import com.baozun.scm.primservice.whoperation.command.sku.skucommand.SkuCommand;
-import com.baozun.scm.primservice.whoperation.command.sku.skushared.SkuCommand2Shared;
+import com.baozun.scm.primservice.whoperation.command.sku.SkuRedisCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhSku;
 
@@ -69,6 +68,12 @@ public interface WhSkuDao extends BaseDao<WhSku, Long> {
      */
     WhSkuCommand findWhSkuByBarcodeExt(@Param("barcode") String barcode, @Param("ouId") Long ouId);
 
-    SkuCommand2Shared findSkuAllInfoByParamExt(SkuCommand skuCommand);
+    /**
+     * 根据商品id和组织id获取商品所有相关属性 
+     * @param id
+     * @param ouId
+     * @return
+     */
+    SkuRedisCommand findSkuAllInfoByParamExt(@Param("id") Long id, @Param("ouId") Long ouId);
 
 }
