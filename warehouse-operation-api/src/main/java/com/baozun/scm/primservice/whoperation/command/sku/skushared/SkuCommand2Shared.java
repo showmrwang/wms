@@ -7,6 +7,7 @@ import com.baozun.scm.primservice.whoperation.model.sku.Sku;
 import com.baozun.scm.primservice.whoperation.model.sku.SkuBarcode;
 import com.baozun.scm.primservice.whoperation.model.sku.SkuExtattr;
 import com.baozun.scm.primservice.whoperation.model.sku.SkuMgmt;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhSkuWhmgmt;
 
 
 public class SkuCommand2Shared extends BaseCommand {
@@ -27,6 +28,8 @@ public class SkuCommand2Shared extends BaseCommand {
 
     /** 特定多条码商品条码 */
     private SkuBarcode SkuBarcode;
+
+    private WhSkuWhmgmt whSkuWhMgmt;
 
     public Sku getSku() {
         return sku;
@@ -68,6 +71,12 @@ public class SkuCommand2Shared extends BaseCommand {
         SkuBarcode = skuBarcode;
     }
 
+    public WhSkuWhmgmt getWhSkuWhMgmt() {
+        return whSkuWhMgmt;
+    }
 
+    public void setWhSkuWhMgmt(WhSkuWhmgmt whSkuWhMgmt) {
+        this.whSkuWhMgmt = whSkuWhMgmt;
+    }
 
 }
