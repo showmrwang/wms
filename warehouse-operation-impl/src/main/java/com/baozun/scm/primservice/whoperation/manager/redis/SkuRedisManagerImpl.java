@@ -75,7 +75,8 @@ public class SkuRedisManagerImpl extends BaseManagerImpl implements SkuRedisMana
             // 有对应信息 封装SKUID返回
             for (String skuid : barCodeMap.keySet()) {
                 // 获取商品默认数量
-                String qty = cacheManager.getMapValue(redisBarCodeKey, skuid);
+                String qty = cacheManager.convertMapValue(barCodeMap.get(skuid).toString());
+                // String qty = cacheManager.getMapValue(redisBarCodeKey, skuid);
                 // 放入returnMap
                 returnMap.put(Long.parseLong(skuid), Integer.parseInt(qty));
             }
