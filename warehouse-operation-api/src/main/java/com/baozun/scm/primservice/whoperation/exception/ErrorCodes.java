@@ -331,6 +331,8 @@ public class ErrorCodes {
 
 
     // 20001-30000 shenjian
+    /** 商品条码[{0}]未查询到相应的商品信息 */
+    public static final int BARCODE_NOT_FOUND_SKU = 20009;
     // 20001-30000 shenjian
 
     // 30001-40000 zhanglei
