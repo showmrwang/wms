@@ -4,6 +4,8 @@ import java.util.List;
 
 import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdContainerCacheCommand;
+import com.baozun.scm.primservice.whoperation.command.sku.skucommand.SkuCommand;
+import com.baozun.scm.primservice.whoperation.command.sku.skucommand.SkuStandardPackingCommand;
 import com.baozun.scm.primservice.whoperation.command.sku.skushared.SkuCommand2Shared;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.carton.WhCartonCommand;
@@ -70,14 +72,17 @@ public interface GeneralRcvdManager extends BaseManager {
      * 店铺的残次类型
      */
     StoreDefectType findStoreDefectTypeByIdToGlobal(Long id);
+
     /**
      * 店铺的残次原因
      */
     StoreDefectReasons findStoreDefectReasonsByIdToGlobal(Long id);
+
     /**
      * 仓库的残次类型
      */
     WarehouseDefectType findWarehouseDefectTypeByIdToShard(Long id, Long ouId);
+
     /**
      * 仓库的残次原因
      */
@@ -108,6 +113,39 @@ public interface GeneralRcvdManager extends BaseManager {
      */
     int updateContainerByVersion(Container container);
 
+    List<SkuStandardPackingCommand> findSkuStandardPacking(String skuBarCode, Long ouId, String logId);
+
+
+    /**
+     * 返回容器装箱数
+     * @param skuId
+     * @param code
+     * @param ouId
+     * @param lifecycle
+     * @param containerTypes
+     * @return
+     */
+    Long findContainerId(Long skuId, String code, Long ouId, Integer lifecycle, Long containerTypeId);
+
+    ContainerCommand findContainer(Long skuId, String code, Long ouId, Long containerTypeId);
+
+    /**
+     * @author yimin.lu
+     * @param id
+     * @param ouId
+     * @return
+     */
+    SkuCommand findSkuBySkuCodeOuId(String skuCode, Long ouId);
+
+    /**
+     * 校验此商品是否维护了装箱信息
+     * @param skuId
+     * @param ouId
+     * @param logId
+     * @return 
+     */
+    List<SkuStandardPackingCommand> checkSkuStandardPacking(String skuBarCode, Long ouId, String logId);
+
     /**
      * 根据容器编码查找容器 无判断
      */
@@ -122,6 +160,15 @@ public interface GeneralRcvdManager extends BaseManager {
      * @return
      */
     Container insertByCode(ContainerCommand container, Long userId, Long ouId);
+
+    /**
+     * 容器收货
+     * 获取容器类型
+     * @param skuId
+     * @param ouId
+     * @return
+     */
+    List<SkuStandardPackingCommand> getContainerType(Long skuId, Long ouId);
 
     /**
      * 
@@ -168,4 +215,6 @@ public interface GeneralRcvdManager extends BaseManager {
      * @return
      */
     List<WhCartonCommand> findWhCartonByParamExt(WhCartonCommand cartonCommand);
+
+    Boolean skuDateCheck(Long skuId, Long ouId, String mfgDate, String expDate);
 }

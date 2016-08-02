@@ -1,6 +1,8 @@
 package com.baozun.scm.primservice.whoperation.manager.pda.inbound.rcvd;
 
 import java.security.NoSuchAlgorithmException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -22,6 +24,8 @@ import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdContainerCach
 import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdSnCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnLineCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoLineCommand;
+import com.baozun.scm.primservice.whoperation.command.sku.skucommand.SkuCommand;
+import com.baozun.scm.primservice.whoperation.command.sku.skucommand.SkuStandardPackingCommand;
 import com.baozun.scm.primservice.whoperation.command.sku.skushared.SkuCommand2Shared;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.carton.WhCartonCommand;
@@ -37,6 +41,7 @@ import com.baozun.scm.primservice.whoperation.dao.sku.SkuBarcodeDao;
 import com.baozun.scm.primservice.whoperation.dao.sku.SkuDao;
 import com.baozun.scm.primservice.whoperation.dao.sku.SkuExtattrDao;
 import com.baozun.scm.primservice.whoperation.dao.sku.SkuMgmtDao;
+import com.baozun.scm.primservice.whoperation.dao.sku.SkuStandardPackingDao;
 import com.baozun.scm.primservice.whoperation.dao.system.SysDictionaryDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.Container2ndCategoryDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
@@ -113,6 +118,9 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
     @Autowired
     private WarehouseDefectReasonsDao warehouseDefectReasonsDao;
     @Autowired
+    private SkuStandardPackingDao skuStandardPackingDao;
+
+    @Autowired
     private Container2ndCategoryDao container2ndCategoryDao;
     @Autowired
     private PkManager pkManager;
@@ -128,6 +136,7 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
     private SkuMgmtDao skuMgmtDao;
 
     @Override
+    @Deprecated
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void saveScanedSkuWhenGeneralRcvdForPda(List<RcvdCacheCommand> commandList) {
         // 逻辑:
@@ -515,6 +524,62 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<SkuStandardPackingCommand> findSkuStandardPacking(String skuBarCode, Long ouId, String logId) {
+        return skuStandardPackingDao.findSkuStandardPackingBySkuBarCode(skuBarCode, ouId, BaseModel.LIFECYCLE_NORMAL);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public Long findContainerId(Long skuId, String code, Long ouId, Integer lc, Long containerTypeId) {
+        /* 获取符合条件的更新个数 */
+        // int cnt = containerDao.updateContainerStatusByCode(code, ouId, lifecycle, typeList);
+        ContainerCommand containerCommand = new ContainerCommand();
+        containerCommand.setCode(code);
+        containerCommand.setOuId(ouId);
+        // containerCommand.setTwoLevelType(containerTypeId);
+        // containerCommand.setTwoLevelType(14100000L);
+        // 返回一个command list
+        List<ContainerCommand> list = containerDao.getContainerByCodeAndType(containerCommand);
+
+        if (null == list || list.isEmpty() || null == list.get(0)) {
+            throw new BusinessException("没有匹配的容器");
+        }
+        if (1 < (list.size())) {
+            throw new BusinessException("查找到多个容器");
+        }
+        ContainerCommand command = list.get(0);
+        Integer lifecycle = command.getLifecycle();
+        if (ContainerStatus.CONTAINER_LIFECYCLE_USABLE == lifecycle/* && 1 == command.getIsUsed() */) {
+            // 实际上是返回容器id
+            return command.getId();
+        } else {
+            throw new BusinessException("找到的容器不符合");
+        }
+    }
+
+    @Override
+    public SkuCommand findSkuBySkuCodeOuId(String skuCode, Long ouId) {
+        SkuCommand skuCommand = new SkuCommand();
+        skuCommand.setBarCode(skuCode);
+        skuCommand.setOuId(ouId);
+        List<SkuCommand> skuList = this.skuDao.findListByParamShared(skuCommand);
+        if (skuList == null || skuList.size() > 1 || 0 == skuList.size()) {
+            throw new BusinessException("找到多个对应的sku");
+        }
+        return skuList.get(0);
+    }
+
+    @Override
+    public List<SkuStandardPackingCommand> checkSkuStandardPacking(String skuBarCode, Long ouId, String logId) {
+        List<SkuStandardPackingCommand> sspList = skuStandardPackingDao.findSkuStandardPackingBySkuBarCode(skuBarCode, ouId, BaseModel.LIFECYCLE_NORMAL);
+        if (sspList.size() <= 0) {
+            throw new BusinessException("没有找到标准装箱");
+        }
+        return sspList;
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public Container insertByCode(ContainerCommand container, Long userId, Long ouId) {
         /**
          * 逻辑：1.生成系统预定义容器； 如果预定义容器的二级容器类型不存在，那么生成容器的二级容器
@@ -591,6 +656,47 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
         return containerDao.getContainerByCode(code, ouId);
     }
 
+    /***
+     * 根据skuId 获取标准装箱类型
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<SkuStandardPackingCommand> getContainerType(Long skuId, Long ouId) {
+        List<SkuStandardPackingCommand> list = this.skuStandardPackingDao.getContainerType(skuId, ouId);
+        return list;
+    }
+
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public ContainerCommand findContainer(Long skuId, String code, Long ouId, Long containerTypeId) {
+        /* 获取符合条件的更新个数 */
+        // int cnt = containerDao.updateContainerStatusByCode(code, ouId, lifecycle, typeList);
+        ContainerCommand containerCommand = new ContainerCommand();
+        containerCommand.setCode(code);
+        containerCommand.setOuId(ouId);
+        containerCommand.setTwoLevelType(containerTypeId);
+        // TODO 这里是指定了容器类型
+        // containerCommand.setTwoLevelType(14100014L);
+        // 返回一个command list
+        List<ContainerCommand> list = containerDao.getContainerByCodeAndType(containerCommand);
+
+        if (null == list || list.isEmpty() || null == list.get(0)) {
+            throw new BusinessException("没有匹配的容器");
+        }
+        if (1 < (list.size())) {
+            throw new BusinessException("查找到多个容器");
+        }
+        ContainerCommand command = list.get(0);
+        Integer lifecycle = command.getLifecycle();
+        if (ContainerStatus.CONTAINER_LIFECYCLE_USABLE == lifecycle/* && 1 == command.getIsUsed() */) {
+            // 实际上是返回容器id
+            return command;
+        } else {
+            throw new BusinessException("找到的容器不符合");
+        }
+    }
+
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public long getUniqueSkuAttrCountFromWhSkuInventory(Long insideContainerId, Long skuId, Long ouId) {
@@ -653,5 +759,64 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
         return this.whCartonDao.findWhCartonByParamExt(cartonCommand);
     }
 
-
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public Boolean skuDateCheck(Long skuId, Long ouId, String mfgDate, String expDate) {
+        Boolean res = false;
+        // 1.失效日期必须大于生产日期, 否则返回false
+        if (mfgDate.compareTo(expDate) > 0) {
+            return false;
+        }
+        // 2.判断商品是否过期
+        SkuMgmt mgmt = skuMgmtDao.findSkuMgmtBySkuIdShared(skuId, ouId);
+        // is_expired_goods_receive
+        Boolean isExpiredGoodsReceive = mgmt.getIsExpiredGoodsReceive();
+        Date currDate = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            // 失效日期
+            Date expDate1 = sdf.parse(expDate);
+            Long timeSub = expDate1.getTime() - currDate.getTime();
+            if (timeSub < 0) {
+                // 失效日期小于当前日期,即商品已经过期
+                if (isExpiredGoodsReceive) {
+                    // 如果可以收过期商品 返回true
+                    res = true;
+                } else {
+                    // 如果不可以收过期商品 返回false
+                    return false;
+                }
+            } else {
+                // 商品没有过期
+                res = true;
+            }
+        } catch (ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return false;
+        }
+        // 3.判断商品效期是否在最大有效天数与最小有效天数内
+        Integer maxValidDate = mgmt.getMaxValidDate();
+        Integer minValidDate = mgmt.getMinValidDate();
+        try {
+            Date mfgDate1 = sdf.parse(mfgDate);
+            Date expDate1 = sdf.parse(expDate);
+            Integer timeSub = (int) ((expDate1.getTime() - mfgDate1.getTime()) / 86400000);
+            // Integer validDate = mgmt.getValidDate();
+            if (null != maxValidDate && null != minValidDate) {
+                // 商品属性有最大效期和最小效期
+                if (timeSub > minValidDate && timeSub < maxValidDate) {
+                    // 如果有效天数在效期区间内 返回true
+                    res = true;
+                } else {
+                    // 否则返回false
+                    return false;
+                }
+            }
+        } catch (ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return res;
+    }
 }
