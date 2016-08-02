@@ -21,6 +21,7 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.WhSkuDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
+import com.baozun.scm.primservice.whoperation.util.StringUtil;
 
 @Service("skuRedisManager")
 @Transactional
@@ -34,6 +35,7 @@ public class SkuRedisManagerImpl extends BaseManagerImpl implements SkuRedisMana
     private WhSkuDao whSkuDao;
 
     public static final Logger log = LoggerFactory.getLogger(SkuRedisManagerImpl.class);
+
 
     /**
      * 通过SKU条码查询对应所有的SKU信息 如果redis缓存内存在对应信息就返回 如果不存在查询数据库 然后放入redis缓存
@@ -53,32 +55,31 @@ public class SkuRedisManagerImpl extends BaseManagerImpl implements SkuRedisMana
             log.error("findSkuByBarCode cacheManager.getAllMap() error logid: " + logId);
         }
         if (barCodeMap.size() == 0) {
-            // 没有对应条码信息 查询对应数据
-            List<String> skuQty = skuDao.getSkuIdAndBarCodeQtyByBarCode(barCode);
-            if (skuQty.size() == 0) {
-                // 条码对应商品不存在
-                log.warn("findSkuByBarCode skuBarCode is null error logid: " + logId);
-                throw new BusinessException(ErrorCodes.BARCODE_NOT_FOUND_SKU, new Object[] {barCode});
-            }
-            for (String s : skuQty) {
-                // 存在对应数据 放入redis缓存 key:格式前缀+barcode field:skuid value:qty
-                try {
-                    cacheManager.setMapValue(redisBarCodeKey, s.split("-")[0], s.split("-")[1], CacheKeyConstant.CACHE_ONE_DAY);
-                } catch (Exception e) {
-                    // redis出错只记录log
-                    log.error("findSkuByBarCode cacheManager.setMapValue() error logid: " + logId);
-                }
-                // 放入returnMap
-                returnMap.put(Long.parseLong(s.split("-")[0]), Integer.parseInt(s.split("-")[1]));
-            }
+            findSkuByBarCodeSetMapValue(returnMap, barCode, logId, redisBarCodeKey);
         } else {
             // 有对应信息 封装SKUID返回
             for (String skuid : barCodeMap.keySet()) {
-                // 获取商品默认数量
-                String qty = cacheManager.convertMapValue(barCodeMap.get(skuid).toString());
-                // String qty = cacheManager.getMapValue(redisBarCodeKey, skuid);
-                // 放入returnMap
-                returnMap.put(Long.parseLong(skuid), Integer.parseInt(qty));
+                // 判断field是否为空
+                if (!StringUtil.isEmpty(skuid)) {
+                    // 不为空
+                    // 获取商品默认数量
+                    String qty = cacheManager.convertMapValue(barCodeMap.get(skuid).toString());
+                    // 判断key是否为空
+                    if (!StringUtil.isEmpty(qty)) {
+                        // 不为空
+                        // String qty = cacheManager.getMapValue(redisBarCodeKey, skuid);
+                        // 放入returnMap
+                        returnMap.put(Long.parseLong(skuid), Integer.parseInt(qty));
+                    } else {
+                        // 为空重新加载数据放入redis
+                        findSkuByBarCodeSetMapValue(returnMap, barCode, logId, redisBarCodeKey);
+                        break;
+                    }
+                } else {
+                    // 为空重新加载数据放入redis
+                    findSkuByBarCodeSetMapValue(returnMap, barCode, logId, redisBarCodeKey);
+                    break;
+                }
             }
         }
         log.info(this.getClass().getSimpleName() + ".findSkuByBarCode method end! logid: " + logId);
@@ -120,5 +121,30 @@ public class SkuRedisManagerImpl extends BaseManagerImpl implements SkuRedisMana
         }
         log.info(this.getClass().getSimpleName() + ".findSkuMasterBySkuId method end! logid: " + logId);
         return skuRedis;
+    }
+
+    /**
+     * 查询对应商品数据插入redis缓存
+     */
+    private Map<Long, Integer> findSkuByBarCodeSetMapValue(Map<Long, Integer> returnMap, String barCode, String logId, String redisBarCodeKey) {
+        // 没有对应条码信息 查询对应数据
+        List<String> skuQty = skuDao.getSkuIdAndBarCodeQtyByBarCode(barCode);
+        if (skuQty.size() == 0) {
+            // 条码对应商品不存在
+            log.warn("findSkuByBarCode skuBarCode is null error logid: " + logId);
+            throw new BusinessException(ErrorCodes.BARCODE_NOT_FOUND_SKU, new Object[] {barCode});
+        }
+        for (String s : skuQty) {
+            // 存在对应数据 放入redis缓存 key:格式前缀+barcode field:skuid value:qty
+            try {
+                cacheManager.setMapValue(redisBarCodeKey, s.split("-")[0], s.split("-")[1], CacheKeyConstant.CACHE_ONE_DAY);
+            } catch (Exception e) {
+                // redis出错只记录log
+                log.error("findSkuByBarCode cacheManager.setMapValue() error logid: " + logId);
+            }
+            // 放入returnMap
+            returnMap.put(Long.parseLong(s.split("-")[0]), Integer.parseInt(s.split("-")[1]));
+        }
+        return returnMap;
     }
 }
