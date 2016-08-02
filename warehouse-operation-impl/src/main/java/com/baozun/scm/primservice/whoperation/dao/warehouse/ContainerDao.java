@@ -108,4 +108,22 @@ public interface ContainerDao extends BaseDao<Container, Long> {
      * @return
      */
     ContainerCommand getContainerByCode(@Param("code") String code, @Param("ouId") Long ouId);
+
+    /**
+     * 根据容器编码查找容器
+     * 
+     * @param code
+     * @param ouId
+     * @return
+     */
+    int updateContainerStatusByCode(@Param("code") String code, @Param("ouId") Long ouId, @Param("lifecycle") Integer lifecycle, @Param("typeList") List<String> typeList);
+
+    /**
+     * 根据容器编码和容器类型查找匹配的容器
+     * @param code
+     * @param ouId
+     * @param typeList
+     * @return
+     */
+    List<ContainerCommand> getContainerByCodeAndType(ContainerCommand command);
 }

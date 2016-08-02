@@ -243,6 +243,17 @@ public class AsnLineManagerImpl extends BaseManagerImpl implements AsnLineManage
         return this.whAsnLineDao.saveOrUpdateByVersion(line);
     }
 
+    /**
+     * 校验sku是否在asn中
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public boolean checkAsnSku(String occupationCode, String skuCode, Long ouId) {
+        int res = this.whAsnLineDao.checkAsnSku(occupationCode, skuCode, ouId);
+        boolean flag = (0 == res) ? false : true;
+        return flag;
+    }
+
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public WhAsnLine findWhAsnLineByIdToShard(Long id, Long ouid) {

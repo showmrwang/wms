@@ -89,4 +89,6 @@ public interface AsnLineManager extends BaseManager {
      * 
      */
     List<WhAsnLine> findTempWhAsnLineByAsnIdOuIdUuid(Long asnId, Long ouId, String uuid);
+    boolean checkAsnSku(String occupationCode, String skuCode, Long ouId);
+
 }

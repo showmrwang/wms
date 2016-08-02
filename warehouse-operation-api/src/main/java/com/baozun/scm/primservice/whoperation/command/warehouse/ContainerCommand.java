@@ -66,11 +66,17 @@ public class ContainerCommand extends BaseCommand {
     private String twoLevelTypeName;
     private String twoLevelTypeValue;
 
-
     private Integer oneLevelTypeLifecycle;
 
     private Integer twoLevelTypeLifecycle;
 
+    /**
+     * 容器是否装过sku
+     */
+    private Integer isUsed;
+
+    /** 容器装箱数 */
+    private Long qty;
 
 
     public Integer getStatus() {
@@ -218,6 +224,20 @@ public class ContainerCommand extends BaseCommand {
         this.isFull = isFull;
     }
 
+    public Integer getIsUsed() {
+        return isUsed;
+    }
 
+    public void setIsUsed(Integer isUsed) {
+        this.isUsed = isUsed;
+    }
+
+    public Long getQty() {
+        return qty;
+    }
+
+    public void setQty(Long qty) {
+        this.qty = qty;
+    }
 
 }

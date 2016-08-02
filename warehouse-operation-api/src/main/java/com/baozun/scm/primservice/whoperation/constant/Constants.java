@@ -207,6 +207,22 @@ public final class Constants {
     // 残次品条码编码生成 前缀
     public static final String INVENTORY_SN_BARCODE_PREFIX = "SN";
 
+    // 商品属性管理跳转
+    public static final String ATTR_CONTROL_HEADER = "containerReceiving/receiving-sku-"; // 页面头
+    public static final String VALID_DATE = "validDate"; // 管理效期
+    public static final String BATCH_NO = "batchNo"; // 管理批次号
+    public static final String COUNTRY = "country"; // 管理原产地
+    public static final String INV_TYPE = "invType"; // 管理库存类型
+    public static final String INV_ATTR_1 = "invAttr1"; // 管理库存属性1
+    public static final String INV_ATTR_2 = "invAttr2"; // 管理库存属性2
+    public static final String INV_ATTR_3 = "invAttr3"; // 管理库存属性3
+    public static final String INV_ATTR_4 = "invAttr4"; // 管理库存属性4
+    public static final String INV_ATTR_5 = "invAttr5"; // 管理库存属性5
+    public static final String INV_STATUS = "invStatus"; // 管理库存状态
+    public static final String DEFECTIVE = "defective"; // 残次品类型及残次原因
+    public static final String SN = "sn"; // 管理序列号
+    public static final String FINISH = "finish"; // 收货完成
+
 
     /** 字典表 一级容器类型 */
     public static final String DICTIONARY_CONTAINTER_TYPE = "ONE_LEVEL_TYPE";
@@ -225,6 +241,19 @@ public final class Constants {
 
     /** 二级容器类型 */
     public static final String DICTIONARY_CONTAINTER_SECOND_TYPE = "TWO_LEVEL_TYPE";
+
+    public static final int RCVD_ISVALID = 0;// 0：是否管理效期
+    public static final int RCVD_ISBATCHNO = 1; // 1:是否管理批次号
+    public static final int RCVD_ISCOUNTRYOFORIGIN = 2;// 2:是否管理原产地
+    public static final int RCVD_ISINVTYPE = 3; // 3:是否管理库存类型
+    public static final int RCVD_INVATTR1 = 4; // 4:是否管理库存属性1
+    public static final int RCVD_INVATTR2 = 5; // 5:是否管理库存属性2
+    public static final int RCVD_INVATTR3 = 6;// 6:是否管理库存属性3
+    public static final int RCVD_INVATTR4 = 7; // 7:是否管理库存属性4
+    public static final int RCVD_INVATTR5 = 8;// 8:是否管理库存属性5
+    public static final int RCVD_ISINVSTATUS = 9; // 9:是否管理库存状态
+    public static final int RCVD_ISDEFEAT = 10;// 10:残次品类型及残次原因
+    public static final int RCVD_ISSERIALNUMBER = 11;// 11:是否管理序列号
 
     /** 库存明细残次类型来源 店铺 */
     public static final String SKU_SN_DEFECT_SOURCE_STORE = "STORE";

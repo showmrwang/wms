@@ -265,4 +265,67 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        and s.ou_id = #{ouId}
 		    ]]>
 		</select>
+
+		 <select id="getContainerByCodeAndType1" parameterType="map" resultMap="ContainerCommandResultExt" flushCache="false">
+			select
+				s.id as id,
+	        	s.name as name,
+	        	s.code as code,
+	        	s.one_level_type as oneLevelType,
+	        	s.two_level_type as twoLevelType,
+	        	s.is_full as isFull,
+	        	s.create_time as createTime,
+	        	s.last_modify_time as lastModifyTime,
+	        	s.operator_id as operatorId,
+	        	s.lifecycle as lifecycle,
+	        	s.ou_id as ouId,
+				c2c.lifecycle as twoLevelTypeLifecycle,
+				s.status as status
+				
+		    <![CDATA[
+			    from t_wh_container s
+			    left join t_wh_container_2nd_category c2c on c2c.id=s.two_level_type
+		        where 
+		        s.code = #{code} 
+		        and s.ou_id = #{ouId}
+		        and s.two_level_type = #{twoLevelType}
+		    ]]>
+		</select>
+
+		 <select id="getContainerByCodeAndType" parameterType="map" resultMap="ContainerCommandResultExt" flushCache="false">
+			select
+				s.id as id,
+	        	s.name as name,
+	        	s.code as code,
+	        	s.one_level_type as oneLevelType,
+	        	s.two_level_type as twoLevelType,
+	        	s.is_full as isFull,
+	        	s.create_time as createTime,
+	        	s.last_modify_time as lastModifyTime,
+	        	s.operator_id as operatorId,
+	        	s.lifecycle as lifecycle,
+	        	s.ou_id as ouId,
+				c2c.lifecycle as twoLevelTypeLifecycle,
+				s.status as status
+		    <![CDATA[
+			    from t_wh_container s left join t_wh_container_2nd_category c2c on c2c.id=s.two_level_type 
+			    where (
+			    select count(1) as num from t_wh_sku_inventory inv where inv.inside_container_id = 
+			    (select s.id as id 
+				    from t_wh_container s left join t_wh_container_2nd_category c2c on c2c.id=s.two_level_type
+				    where s.code = #{code}  
+				    and s.ou_id = #{ouId}
+				    and s.two_level_type = #{twoLevelType} 
+				    and s.lifecycle = 1 
+				    and s.status = 1)) = 0 
+			    and s.code = #{code} 
+			    and s.ou_id = #{ouId} 
+			    and s.two_level_type = #{twoLevelType} 
+			    and s.lifecycle = 1 
+			    and s.status = 1;
+		    ]]>
+		</select>
+		
+		
+		
 </mapper>
