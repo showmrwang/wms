@@ -2,7 +2,7 @@ package com.baozun.scm.primservice.whoperation.command.pda.rcvd;
 
 import java.io.Serializable;
 
-public class RcvdSnCacheCommand implements Serializable{
+public class RcvdSnCacheCommand implements Serializable {
 
     /**
      * 
