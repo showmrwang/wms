@@ -994,7 +994,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				and INV.sku_id=#{skuId}
 				</if>
 				group by INV.sku_id
-			)
+			) skuInv
 		</select>
 		
 	<select id="findWhSkuInventoryBySkuIdAndContainerid" resultMap="WhSkuInventoryCommandResultExt">

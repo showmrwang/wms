@@ -460,6 +460,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 							and line.ou_id = #{ouid} 
 							and line.sku_id = #{skuid} 
     </select>
+    
+    <select id="checkAsnSku" resultType="int">
+        select count(*) from t_wh_asn_line line 
+        inner join t_wh_asn asn on asn.id = line.asn_id 
+        inner join t_wh_sku sku on sku.id = line.sku_id
+        where asn.asn_ext_code = #{occupationCode}
+        and sku.code = #{skuCode}
+        and line.ou_id = #{ouId} 
+    </select>
+    
 	 
 	 <select id="findListByQueryMapWithPageExtForCreateAsn" resultMap="whAsnLineCommand">
     	select <include refid="whAsnLineColumnsMapExt" />

@@ -489,9 +489,12 @@
         select
         <include refid="skuColumnsSharedExt"/>
         ,
-        customer.customer_name as customerName
+        customer.customer_name as customerName,
+        mgmt.serial_number_type as serialNumberType,
+        mgmt.valid_date as validDate
         from t_wh_sku sku
         left join t_bi_customer customer on sku.customer_id = customer.id
+        left join t_wh_sku_mgmt mgmt on sku.id = mgmt.sku_id
         <include refid="skuDynamicWhereLikeSharedExt"/>
         <include refid="skuLimit" />
     </select>

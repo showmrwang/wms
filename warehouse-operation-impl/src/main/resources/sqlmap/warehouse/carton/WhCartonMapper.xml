@@ -347,6 +347,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				<if test="modifiedId!=null">
 					and modified_id = #{modifiedId}
 				</if>
+				
+				<if test="isCaselevel!=null">
+					and is_caselevel = #{isCaselevel}
+				</if>
 		</where>
 	</sql>
 	

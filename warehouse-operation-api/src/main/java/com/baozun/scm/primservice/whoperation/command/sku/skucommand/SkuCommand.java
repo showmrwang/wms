@@ -69,10 +69,14 @@ public class SkuCommand extends BaseCommand {
     private String customerName;
     /** 扫描数量 */
     private Double scanSkuQty;
-    
-    
-   private Boolean isFoldable;
-    
+
+    /** 序列号管理类型 */
+    private String serialNumberType;
+
+    private Integer validDate;
+
+    private Boolean isFoldable;
+
     public Boolean getIsFoldable() {
         return isFoldable;
     }
@@ -330,7 +334,21 @@ public class SkuCommand extends BaseCommand {
     public void setScanSkuQty(Double scanSkuQty) {
         this.scanSkuQty = scanSkuQty;
     }
-    
-    
+
+    public String getSerialNumberType() {
+        return serialNumberType;
+    }
+
+    public void setSerialNumberType(String serialNumberType) {
+        this.serialNumberType = serialNumberType;
+    }
+
+    public Integer getValidDate() {
+        return validDate;
+    }
+
+    public void setValidDate(Integer validDate) {
+        this.validDate = validDate;
+    }
 
 }

@@ -1,16 +1,16 @@
 /**
  * Copyright (c) 2013 Baozun All Rights Reserved.
- * 
+ *
  * This software is the confidential and proprietary information of Baozun. You shall not disclose
  * such Confidential Information and shall use it only in accordance with the terms of the license
  * agreement you entered into with Baozun.
- * 
+ *
  * BAOZUN MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT THE SUITABILITY OF THE SOFTWARE, EITHER
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT. BAOZUN SHALL NOT BE LIABLE FOR ANY DAMAGES
  * SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS SOFTWARE OR ITS
  * DERIVATIVES.
- * 
+ *
  */
 package com.baozun.scm.primservice.whoperation.command.warehouse.inventory;
 
@@ -24,11 +24,11 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.ShelveRecommendR
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionRcvd;
 
 /**
- * 商品库存表
- * 
- * @author larkark
- * 
- */
+* 商品库存表
+*
+* @author larkark
+*
+*/
 public class WhSkuInventoryCommand extends BaseCommand {
 
     private static final long serialVersionUID = -635262476522169659L;
@@ -127,6 +127,9 @@ public class WhSkuInventoryCommand extends BaseCommand {
     /** 占用Key */
     private String occupyKey;
     private Double expectQty;
+    /** 效期 */
+    private Integer validDate;
+
 
     // pda-general-receiving
     private Long occupationId;
@@ -160,6 +163,8 @@ public class WhSkuInventoryCommand extends BaseCommand {
     private Long userId;
     /** 通用收货批量收货数量 */
     private Integer skuBatchCount;
+    /** 容器收货每个容器计划收货数量 */
+    private Integer containerPlan;
     /** 通用收货 商品多条码数量 */
     private Integer quantity;
     /** 残次数量 */
@@ -197,6 +202,27 @@ public class WhSkuInventoryCommand extends BaseCommand {
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
     }
+
+    private Long containerType;
+
+    /** 当前容器序号 */
+    private String curOrder;
+
+    private Long asnSkuCount;
+
+    private String serialNumberType;
+
+    private String serialNumber;
+    /** 当前url标记 */
+    private Integer currUrl;
+
+    // private Boolean isBatchScan;
+    /** 扫描模式 */
+    private Integer scanPattern;
+
+    private String isInvattrAsnPointoutUser;
+
+    private Integer qtyRest;
 
     public Boolean getIsPalletRcvdFinished() {
         return isPalletRcvdFinished;
@@ -686,6 +712,30 @@ public class WhSkuInventoryCommand extends BaseCommand {
         this.skuAddUpCount = skuAddUpCount;
     }
 
+    public Integer getContainerPlan() {
+        return containerPlan;
+    }
+
+    public void setContainerPlan(Integer containerPlan) {
+        this.containerPlan = containerPlan;
+    }
+
+    public Long getContainerType() {
+        return containerType;
+    }
+
+    public void setContainerType(Long containerType) {
+        this.containerType = containerType;
+    }
+
+    public String getCurOrder() {
+        return curOrder;
+    }
+
+    public void setCurOrder(String curOrder) {
+        this.curOrder = curOrder;
+    }
+
     public Long getUserId() {
         return userId;
     }
@@ -758,12 +808,78 @@ public class WhSkuInventoryCommand extends BaseCommand {
         this.whSkuInventorySnCommandList = whSkuInventorySnCommandList;
     }
 
+    public Long getAsnSkuCount() {
+        return asnSkuCount;
+    }
+
+    public void setAsnSkuCount(Long asnSkuCount) {
+        this.asnSkuCount = asnSkuCount;
+    }
+
+
+
     public SkuMgmtCommand getSkuMgmt() {
         return skuMgmt;
     }
 
     public void setSkuMgmt(SkuMgmtCommand skuMgmt) {
         this.skuMgmt = skuMgmt;
+    }
+
+    public String getSerialNumberType() {
+        return serialNumberType;
+    }
+
+    public void setSerialNumberType(String serialNumberType) {
+        this.serialNumberType = serialNumberType;
+    }
+
+    public String getSerialNumber() {
+        return serialNumber;
+    }
+
+    public void setSerialNumber(String serialNumber) {
+        this.serialNumber = serialNumber;
+    }
+
+    public String getIsInvattrAsnPointoutUser() {
+        return isInvattrAsnPointoutUser;
+    }
+
+    public void setIsInvattrAsnPointoutUser(String isInvattrAsnPointoutUser) {
+        this.isInvattrAsnPointoutUser = isInvattrAsnPointoutUser;
+    }
+
+    public Integer getScanPattern() {
+        return scanPattern;
+    }
+
+    public void setScanPattern(Integer scanPattern) {
+        this.scanPattern = scanPattern;
+    }
+
+    public Integer getValidDate() {
+        return validDate;
+    }
+
+    public void setValidDate(Integer validDate) {
+        this.validDate = validDate;
+    }
+
+    public Integer getCurrUrl() {
+        return currUrl;
+    }
+
+    public void setCurrUrl(Integer currUrl) {
+        this.currUrl = currUrl;
+    }
+
+    public Integer getQtyRest() {
+        return qtyRest;
+    }
+
+    public void setQtyRest(Integer qtyRest) {
+        this.qtyRest = qtyRest;
     }
 
 }
