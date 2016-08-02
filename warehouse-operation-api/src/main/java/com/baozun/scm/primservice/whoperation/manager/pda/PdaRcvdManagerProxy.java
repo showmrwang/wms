@@ -139,4 +139,5 @@ public interface PdaRcvdManagerProxy extends BaseManager {
      */
     List<WhCartonCommand> findWhCartonByParamExt(WhCartonCommand cartonCommand);
 
+    String initMatchedLineIdStr(WhSkuInventoryCommand command);
 }

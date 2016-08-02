@@ -125,9 +125,9 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
             throw new BusinessException(ErrorCodes.ASN_NULL);
         }
         WhPo po = this.poManager.findWhPoByIdToShard(cacheAsn.getPoId(), ouId);
-        
+
         String cacheRate = cacheManager.getMapValue(CacheKeyConstant.CACHE_ASN_OVERCHARGE, occupationId.toString());
-        if(StringUtils.isEmpty(cacheRate)){
+        if (StringUtils.isEmpty(cacheRate)) {
             cacheRate = this.initAsnOverchargeRate(po.getOverChageRate(), cacheAsn.getOverChageRate(), cacheAsn.getStoreId(), cacheAsn.getOuId());
             cacheManager.setMapValue(CacheKeyConstant.CACHE_ASN_OVERCHARGE, occupationId.toString(), cacheRate, 365 * 24 * 60 * 60);
         }
@@ -147,7 +147,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                 // 缓存明细的可用数量
                 Map<Long, Integer> skuMap = new HashMap<Long, Integer>();
                 for (WhAsnLine asnline : asnlineList) {// 缓存ASN明细信息
-                  //@mender yimin.lu 只缓存非caseLEVEL的明细
+                    // @mender yimin.lu 只缓存非caseLEVEL的明细
                     WhCartonCommand cartonCommand = new WhCartonCommand();
                     cartonCommand.setAsnId(occupationId);
                     cartonCommand.setOuId(ouId);
@@ -197,8 +197,10 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
     /**
      * 初始化Asn的超收比例
      * 
-     * @param overChageRate
-     * @param overChageRate2
+     * @param overChargeRatePo
+     * @param overChargeRateAsn
+     * @param storeId
+     * @param ouId
      * @return
      */
     private String initAsnOverchargeRate(Double overChargeRatePo, Double overChargeRateAsn, Long storeId, Long ouId) {
@@ -330,6 +332,9 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                     asnRcvdLog.setBatchNo(cacheInv.getBatchNumber());
                     asnRcvdLog.setCountryOfOrigin(cacheInv.getCountryOfOrigin());
                     if (cacheInv.getInvStatus() != null) {
+                        asnRcvdLog.setInvStatus(cacheInv.getInvStatus().toString());
+                    }
+                    if (null != cacheInv.getInvStatus()) {
                         asnRcvdLog.setInvStatus(cacheInv.getInvStatus().toString());
                     }
                     asnRcvdLog.setInvType(cacheInv.getInvType());
@@ -545,6 +550,10 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
          * 匹配到明细，具体做法是：每次设置ASN属性的时候，就进行过滤； 而且，功能菜单上有一个属性：是否允许库存差异收货，如果允许，则随机匹配；如果不允许，则需要进行完全匹配
          */
         // rcvdCacheCommand.setLineId(Long.parseLong(command.getLineIdListString().split(",")[0]));
+        if (null == command.getOuId()) {
+            throw new BusinessException("error");
+        }
+        command.setQuantity(1);
         Integer batchCount = command.getSkuBatchCount() * command.getQuantity();
         Long occupationId = command.getOccupationId();
         Long skuId = command.getSkuId();
@@ -587,6 +596,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                     rcvdCacheCommand.setLineId(lineId);
                     rcvdCacheCommand.setSkuBatchCount(divCount);
                     if (cacheSn != null && cacheSn.size() > 0) {
+
                         List<RcvdSnCacheCommand> subSn = cacheSn.subList(0, divCount);
                         // 序列化问题
                         List<RcvdSnCacheCommand> subCacheSn = new ArrayList<RcvdSnCacheCommand>();
@@ -689,6 +699,8 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
         rcvdCacheCommand.setCreatedId(command.getUserId());
         rcvdCacheCommand.setLastModifyTime(new Date());
         rcvdCacheCommand.setOuId(command.getOuId());
+        // 默认为良品
+        rcvdCacheCommand.setInvStatus(3L);
         rcvdCacheCommand.setInsideContainerCode(command.getInsideContainerCode());
         // 占用单据来源
         rcvdCacheCommand.setOccupationCodeSource(Constants.SKU_INVENTORY_OCCUPATION_SOURCE_ASN);
@@ -764,7 +776,8 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
     /**
      * 初始化匹配的明细行ID集合
      */
-    private String initMatchedLineIdStr(WhSkuInventoryCommand command) {
+    public String initMatchedLineIdStr(WhSkuInventoryCommand command) {
+        command.setQuantity(1);
         int skuPlannedCount = command.getSkuBatchCount() * command.getQuantity();// PDA扫描收货数量
         // 可用数量
         Integer asnSkuCount = Integer.parseInt(cacheManager.getValue(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + command.getOccupationId() + "_" + command.getSkuId()));// ASN中此商品的数目
@@ -795,17 +808,24 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
         }
         // @mender yimin.lu 2016/6/22添加逻辑：当功能菜单上指定了库存状态和类型之后
         // 1.库存状态
-        if (command.getSkuUrl().charAt(Constants.GENERAL_RECEIVING_ISINVSTATUS) == '1' && command.getInvStatus() != null) {
-            lineIdListStr = this.getMatchedLineIdStrForSkuAttr(Constants.GENERAL_RECEIVING_ISINVSTATUS, command, lineIdListStr);
-        }
-        // 2.库存类型
-        // 如果库存类型为管控的属性的时候
-        if (command.getSkuUrl().charAt(Constants.GENERAL_RECEIVING_ISINVTYPE) == '1' && StringUtils.hasText(command.getInvType())) {
-            lineIdListStr = this.getMatchedLineIdStrForSkuAttr(Constants.GENERAL_RECEIVING_ISINVSTATUS, command, lineIdListStr);
-        }
+        // if (command.getSkuUrl().charAt(Constants.GENERAL_RECEIVING_ISINVSTATUS) == '1' &&
+        // command.getInvStatus() != null) {
+        // lineIdListStr =
+        // this.getMatchedLineIdStrForSkuAttr(Constants.GENERAL_RECEIVING_ISINVSTATUS, command,
+        // lineIdListStr);
+        // }
+        // // 2.库存类型
+        // // 如果库存类型为管控的属性的时候
+        // if (command.getSkuUrl().charAt(Constants.GENERAL_RECEIVING_ISINVTYPE) == '1' &&
+        // StringUtils.hasText(command.getInvType())) {
+        // lineIdListStr =
+        // this.getMatchedLineIdStrForSkuAttr(Constants.GENERAL_RECEIVING_ISINVSTATUS, command,
+        // lineIdListStr);
+        // }
         return lineIdListStr;
     }
-    
+
+
     /**
      * 查询商品中某个商品的缓存
      * 
@@ -818,10 +838,13 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
         // 2.容器缓存
         long invContainerCount = this.generalRcvdManager.findContainerListCountByInsideContainerIdFromSkuInventory(command.getInsideContainerId(), ouId);
         WhFunctionRcvd functionRcvd = command.getRcvd();
+        if (null == functionRcvd) {
+
+        }
         if (Constants.DEFAULT_INTEGER != invContainerCount) {
             // 校验是否允许混放
             if (!functionRcvd.getIsMixingSku()) {
-                long invContanierSkuCount=this.generalRcvdManager.getUniqueSkuAttrCountFromWhSkuInventory(command.getInsideContainerId(), null, ouId);
+                long invContanierSkuCount = this.generalRcvdManager.getUniqueSkuAttrCountFromWhSkuInventory(command.getInsideContainerId(), command.getSkuId(), ouId);
                 if (invContanierSkuCount > 0) {
                     throw new BusinessException(ErrorCodes.RCVD_CONTAINER_LIMIT_ERROR);
                 }
@@ -945,6 +968,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
      * @return
      */
     private String getMatchedLineIdStrForSkuAttr(Integer skuUrlOperator, WhSkuInventoryCommand command, String lineIdListString) {
+        command.setQuantity(1);
         int skuPlannedCount = command.getSkuBatchCount() * command.getQuantity();
         WhFunctionRcvd functionRcvd = command.getRcvd();
         // 可用数量
@@ -985,7 +1009,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
         }
         return lineIdListStr;
     }
-    
+
     /**
      * 匹配明细行逻辑:从明细中挑选出满足SKU属性的明细ID集合
      * 
@@ -1006,21 +1030,21 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
             WhAsnLine line = this.cacheManager.getMapObject(CacheKeyConstant.CACHE_ASNLINE_PREFIX + command.getOccupationId(), lineId + "");
             switch (operator) {
                 case Constants.GENERAL_RECEIVING_ISVALID:
-                    //@mender yimin.lu 2016/6/24 修改日期校验逻辑
+                    // @mender yimin.lu 2016/6/24 修改日期校验逻辑
                     String lineMfgDateStr = null == line.getMfgDate() ? null : DateUtil.format(line.getMfgDate(), Constants.DATE_PATTERN_YMD);
                     String lineExpDateStr = null == line.getExpDate() ? null : DateUtil.format(line.getExpDate(), Constants.DATE_PATTERN_YMD);
                     String mfgDateStr = command.getMfgDateStr();
                     String expDateStr = command.getExpDateStr();
-                    Date mfgDate=null;
-                    Date expDate=null;
-                    if(StringUtils.hasText(mfgDateStr)){
+                    Date mfgDate = null;
+                    Date expDate = null;
+                    if (StringUtils.hasText(mfgDateStr)) {
                         try {
                             mfgDate = DateUtil.parse(mfgDateStr, Constants.DATE_PATTERN_YMD);
                         } catch (ParseException e) {
                             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
                         }
                     }
-                    if(StringUtils.hasText(expDateStr)){
+                    if (StringUtils.hasText(expDateStr)) {
                         try {
                             expDate = DateUtil.parse(mfgDateStr, Constants.DATE_PATTERN_YMD);
                         } catch (ParseException e) {
@@ -1035,10 +1059,10 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                             }
                         }
                     }
-                    if(command.getDayOfValidDate()!=null){
-                        
+                    if (command.getDayOfValidDate() != null) {
+
                     }
-                    
+
                     if (functionRcvd.getIsLimitUniqueDateOfManufacture() && flag) {
                         if (!mfgDateStr.equals(rcvdContainerCacheCommand.getMfgDate())) {
                             break;
@@ -1220,7 +1244,8 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
 
         }
     }
-    
+
+
     /**
      * 从库存中初始化容器商品属性缓存
      * 
@@ -1252,7 +1277,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
             flag = true;
 
         } else {
-            Long insideContainerId=containerCommand.getId();
+            Long insideContainerId = containerCommand.getId();
             command.setInsideContainerId(insideContainerId);
             // @mender yimin.lu 2016/7/13
             if (!BaseModel.LIFECYCLE_NORMAL.equals(containerCommand.getTwoLevelTypeLifecycle())) {
@@ -1280,10 +1305,10 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                     }
                     flag = true;
                 } else if (ContainerStatus.CONTAINER_STATUS_RCVD == containerCommand.getStatus()) {
-                    String containerUserId = this.cacheManager.getValue(CacheKeyConstant.CACHE_RCVD_CONTAINER_USER_PREFIX+insideContainerId);
-                    if(command.getUserId().toString().equals(containerUserId)){
-                        
-                    }else{
+                    String containerUserId = this.cacheManager.getValue(CacheKeyConstant.CACHE_RCVD_CONTAINER_USER_PREFIX + insideContainerId);
+                    if (command.getUserId().toString().equals(containerUserId)) {
+
+                    } else {
                         throw new BusinessException(ErrorCodes.RCVD_CONTAINER_OCCUPATIED_ERROR);
                     }
                 } else {
