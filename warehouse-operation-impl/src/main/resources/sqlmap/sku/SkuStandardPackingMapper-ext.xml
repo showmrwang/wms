@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.sku.SkuStandardPackingDao">
+	<resultMap id="SkuStandardPackingResultExt" type="com.baozun.scm.primservice.whoperation.model.sku.SkuStandardPacking">
+	</resultMap>
+	
+	<resultMap id="SkuStandardPackingCommandResultExt" type="com.baozun.scm.primservice.whoperation.command.sku.skucommand.SkuStandardPackingCommand">
+	</resultMap>
+	
+	<select id="findListByQueryMapWithPageExt" resultMap="SkuStandardPackingCommandResultExt">
+	    	select <include refid="skuStandardPackingColumnsExt" />
+		    from t_wh_sku_standard_packing as s
+		   	left join t_wh_sku sku on sku.id = s.sku_id
+		   	left join t_wh_container_2nd_category c on s.container_type = c.id
+			<include refid="skuStandardPackingDynamicWhereExt"/>
+    </select>
+	
+	<select id="findListCountByQueryMapExt" resultType="long">
+	    	select count(*)  from t_wh_sku_standard_packing as s
+		   	left join t_wh_sku sku on sku.id = s.sku_id
+		   	left join t_wh_container_2nd_category c on s.container_type = c.id
+			<include refid="skuStandardPackingDynamicWhereExt"/>
+    </select>
+    
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="skuStandardPackingColumnsExt">
+	    <![CDATA[
+	        	s.id as id,
+	        	s.sku_id as skuId,
+	        	s.container_type as containerType,
+	        	s.quantity as quantity,
+	        	s.create_time as createTime,
+	        	s.created_id as createdId,
+	        	s.last_modify_time as lastModifyTime,
+	        	s.modified_id as modifiedId,
+	        	s.lifecycle as lifecycle,
+	        	s.ou_id as ouId,
+	        	sku.code as skuCode,
+	        	sku.name as skuName,
+	        	c.category_name as containerTypeName
+	    ]]>
+	</sql>
+	
+	<sql id="skuStandardPackingDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and s.id = #{id}
+				</if>
+	       
+				<if test="skuId!=null">
+					and s.sku_id = #{skuId}
+				</if>
+	       
+				<if test="containerType!=null">
+					and s.container_type = #{containerType}
+				</if>
+	       
+				<if test="quantity!=null">
+					and s.quantity = #{quantity}
+				</if>
+	       
+				<if test="createTime!=null">
+					and s.create_time = #{createTime}
+				</if>
+	       
+				<if test="createdId!=null">
+					and s.created_id = #{createdId}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and s.last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="modifiedId!=null">
+					and s.modified_id = #{modifiedId}
+				</if>
+	       
+				<if test="lifecycle!=null">
+					and s.lifecycle = #{lifecycle}
+				</if>
+	       
+				<if test="ouId!=null">
+					and s.ou_id = #{ouId}
+				</if>
+				
+				<if test="skuName!=null and skuName!=''">
+					and sku.name like #{skuName}
+				</if>
+				
+				<if test="skuCode!=null and skuCode!=''">
+					and sku.code like #{skuCode}
+				</if>
+		</where>
+	</sql>
+	
+	<update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.sku.SkuStandardPacking">
+		    <![CDATA[
+		    	UPDATE t_wh_sku_standard_packing SET
+		        sku_id = #{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        container_type = #{containerType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        quantity = #{quantity,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        last_modify_time =  now() ,
+		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER}
+	        WHERE 
+		        id = #{id} 
+		        and ou_id = #{ouId}
+			    and last_modify_time	=  #{lastModifyTime}    
+		    ]]>
+	</update>
+		
+	<update id="updateLifeCycle" parameterType="com.baozun.scm.primservice.whoperation.model.sku.SkuStandardPacking">
+			UPDATE t_wh_sku_standard_packing SET lifecycle = #{lifecycle},modified_id = #{userid},last_modify_time = now()  
+			WHERE id in
+			<foreach collection="ids" item="id" open="(" separator=","
+				close=")">
+				#{id}
+			</foreach>
+			and ou_id = #{ouId}
+	</update>
+	
+	<select id="findByIdExt" parameterType="java.lang.Long" resultMap="SkuStandardPackingCommandResultExt" flushCache="false">
+			select <include refid="skuStandardPackingColumnsExt" />
+		    <![CDATA[
+			    from t_wh_sku_standard_packing s
+			    left join t_wh_sku sku on sku.id = s.sku_id
+			    left join t_wh_container_2nd_category c on s.container_type = c.id
+		        where 
+		        s.id = #{id} 
+		        and s.ou_id = #{ouId}
+		    ]]>
+	</select>
+		
+	<select id="uniqueSkuStandardPacking" resultType="long">
+		select count(*) from t_wh_sku_standard_packing s
+		left join t_wh_sku sku on sku.id = s.sku_id
+		<where>
+			<if test="id!=null">
+				and s.id != #{id}
+			</if>
+			<if test="skuId!=null">
+					and s.sku_id = #{skuId}
+			</if>
+			<if test="containerType!=null">
+					and s.container_type = #{containerType}
+			</if>
+			<if test="ouId!=null">
+					and s.ou_id = #{ouId}
+			</if>
+			<if test="skuName!=null and skuName!=''">
+				and sku.name like #{skuName}
+			</if>
+			
+			<if test="skuCode!=null and skuCode!=''">
+				and sku.code like #{skuCode}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findSkuStandardPackingBySkuIdAndContainerType" resultMap="SkuStandardPackingCommandResultExt">
+			select 	        	
+				s.id as id,
+	        	s.sku_id as skuId,
+	        	s.container_type as containerType,
+	        	s.quantity as quantity,
+	        	s.create_time as createTime,
+	        	s.created_id as createdId,
+	        	s.last_modify_time as lastModifyTime,
+	        	s.modified_id as modifiedId,
+	        	s.lifecycle as lifecycle,
+	        	s.ou_id as ouId
+			    from t_wh_sku_standard_packing s
+		        where 
+		        s.sku_id = #{skuid} 
+		        and s.container_type = #{containerType} 
+		        and s.ou_id = #{ouid}
+    </select>
+    
+    <select id="findSkuStandardPackingBySkuBarCode" resultMap="SkuStandardPackingCommandResultExt">
+			select 	        	
+				s.id as id,
+	        	s.sku_id as skuId,
+	        	s.container_type as containerType,
+	        	s.quantity as quantity,
+	        	s.create_time as createTime,
+	        	s.created_id as createdId,
+	        	s.last_modify_time as lastModifyTime,
+	        	s.modified_id as modifiedId,
+	        	s.lifecycle as lifecycle,
+	        	s.ou_id as ouId
+			    from t_wh_sku_standard_packing s
+			    inner join t_wh_sku sku on s.sku_id = sku.id
+		        where 
+		        sku.bar_code = #{skuBarCode} 
+		        and s.ou_id = #{ouid}
+		        and s.lifecycle = #{lifecycle}
+    </select>
+    <select id="getContainerType" resultMap="SkuStandardPackingCommandResultExt">
+    		select 
+		    	s.id as id, 
+		    	s.sku_id as skuId,
+	        	s.container_type as containerType,
+	        	s.quantity as quantity,
+	        	s.create_time as createTime,
+	        	s.created_id as createdId,
+	        	s.last_modify_time as lastModifyTime,
+	        	s.modified_id as modifiedId,
+	        	s.lifecycle as lifecycle,
+	        	s.ou_id as ouId,
+	        	c.category_name as categoryName
+			from t_wh_sku_standard_packing s
+				left join t_wh_container_2nd_category c on s.container_type = c.id
+		    where 
+		        s.sku_id = #{skuId} 
+		        and s.ou_id = #{ouId}
+    </select>
+    
+</mapper>
