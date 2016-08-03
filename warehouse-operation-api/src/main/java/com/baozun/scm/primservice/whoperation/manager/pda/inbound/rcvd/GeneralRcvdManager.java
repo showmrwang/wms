@@ -135,7 +135,7 @@ public interface GeneralRcvdManager extends BaseManager {
      * @param ouId
      * @return
      */
-    SkuCommand findSkuBySkuCodeOuId(String skuCode, Long ouId);
+    SkuCommand findSkuBySkuCodeOuId(String skuCode, Long ouId, Long customerId);
 
     /**
      * 校验此商品是否维护了装箱信息

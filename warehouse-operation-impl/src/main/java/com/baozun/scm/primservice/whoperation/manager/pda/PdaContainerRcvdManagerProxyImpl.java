@@ -174,8 +174,9 @@ public class PdaContainerRcvdManagerProxyImpl extends BaseManagerImpl implements
     @Override
     public SkuCommand checkAsnSku(Long asnId, String occupationCode, String skuCode, Long ouId) {
 
-
-        SkuCommand sku = this.generalRcvdManager.findSkuBySkuCodeOuId(skuCode, ouId);
+        WhAsn asn = cacheManager.getObject(CacheKeyConstant.CACHE_ASN_PREFIX + asnId);
+        Long customerId = asn.getCustomerId();
+        SkuCommand sku = this.generalRcvdManager.findSkuBySkuCodeOuId(skuCode, ouId, customerId);
         if (null == sku) {
             throw new BusinessException("没有找到sku");
         }

@@ -558,10 +558,11 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
     }
 
     @Override
-    public SkuCommand findSkuBySkuCodeOuId(String skuCode, Long ouId) {
+    public SkuCommand findSkuBySkuCodeOuId(String skuCode, Long ouId, Long customerId) {
         SkuCommand skuCommand = new SkuCommand();
         skuCommand.setBarCode(skuCode);
         skuCommand.setOuId(ouId);
+        skuCommand.setCustomerId(customerId);
         List<SkuCommand> skuList = this.skuDao.findListByParamShared(skuCommand);
         if (skuList == null || skuList.size() > 1 || 0 == skuList.size()) {
             throw new BusinessException("找到多个对应的sku");
