@@ -173,6 +173,39 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
 	</sql>
 	
+	<sql id="whAsnLineDynamicWhereExtCommon">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+				
+	       		<if test="ouId!=null and ouId!=''">
+					and ou_id = #{ouId}
+				</if>
+				<if test="asnId!=null">
+					and asn_id = #{asnId}
+				</if>
+	       
+				<if test="poLineId!=null">
+					and po_line_id = #{poLineId}
+				</if>
+	       
+				<if test="poLinenum!=null">
+					and poLinenum = #{poLinenum}
+				</if>
+	       
+				<if test="skuId!=null">
+					and sku_id = #{skuId}
+				</if>
+				<if test="status!=null">
+					and status = #{status}
+				</if>
+	       
+				
+		</where>
+	</sql>
 
 		<update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine">
 		    <![CDATA[
@@ -281,13 +314,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			where 
 			al.asn_id = #{asnId} and al.ou_id=#{ouId} and al.uuid is null 
     </select>
-	
-	 <delete id="deleteByAsnIdOuId" parameterType="map">
-	    <![CDATA[
-	        delete from t_wh_asn_line where
-		        asn_id = #{asnid} and ou_id=#{ouid} 
-	    ]]>
-	 </delete>
 	 
 	 <delete id="deleteByIdOuId" parameterType="map">
 	    <![CDATA[
@@ -296,7 +322,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    ]]>
 	 </delete>
 	 
-	 <select id="findWhAsnLineByIdCommand" parameterType="map" resultMap="whAsnLineCommand">
+	 <select id="findWhAsnLineCommandByIdOuId" parameterType="map" resultMap="whAsnLineCommand">
 	 select <include refid="whAsnLineColumnsMapExt" />
 	 from 
 		    t_wh_asn_line al
@@ -545,12 +571,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			</if>
 	 </select>
 	 
-	 <select id="findTempWhAsnLineByAsnIdOuIdUuid"  resultMap="WhAsnLineResultExt">
-	 select <include refid="whAsnLineColumnsExt" />
-	 from
-		    t_wh_asn_line
-			where
-			asn_id=#{asnId}  and ou_id = #{ouId} and uuid =#{uuid}
-	 </select>
+	  <select id="findListByParamExt" resultMap="WhAsnLineResult">
+    	select <include refid="whAsnLineColumns" />
+	    from t_wh_asn_line 
+		<include refid="whAsnLineDynamicWhereExtCommon"/>
+		
+    </select>
 	 
 </mapper>

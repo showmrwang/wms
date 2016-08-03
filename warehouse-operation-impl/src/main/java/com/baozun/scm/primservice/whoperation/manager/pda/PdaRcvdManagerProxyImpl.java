@@ -24,7 +24,6 @@ import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdContainerCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdSnCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
-import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnLineCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
 import com.baozun.scm.primservice.whoperation.command.sku.skucommand.SkuMgmtCommand;
 import com.baozun.scm.primservice.whoperation.command.sku.skushared.SkuCommand2Shared;
@@ -135,12 +134,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
             // 加锁
             int updateCount = this.asnManager.updateByVersionForLock(cacheAsn.getId(), ouId, cacheAsn.getLastModifyTime());
             if (1 == updateCount) {
-                WhAsnLineCommand command = new WhAsnLineCommand();
-                command.setAsnId(cacheAsn.getId());
-                command.setOuId(ouId);
-                WhAsnLine asnLine = new WhAsnLine();
-                BeanUtils.copyProperties(command, asnLine);
-                List<WhAsnLine> asnlineList = this.asnLineManager.findListByShard(asnLine);
+                List<WhAsnLine> asnlineList = this.asnLineManager.findWhAsnLineByAsnIdOuIdToShard(cacheAsn.getId(), ouId);
                 if (null == asnlineList || asnlineList.size() == 0) {
                     throw new BusinessException(ErrorCodes.ASN_NULL);
                 }

@@ -159,7 +159,7 @@ public class CheckInManagerProxyImpl extends BaseManagerImpl implements CheckInM
         if (log.isDebugEnabled()) {
             log.debug("CheckInManagerProxyImpl.findWhAsnById -> selectPoAsnManagerProxy.findWhAsnById invoke, paramWhAsnCommand is:[{}], logId is:[{}]", paramWhAsnCommand, logId);
         }
-        WhAsnCommand originWhAsnCommand = selectPoAsnManagerProxy.findWhAsnById(paramWhAsnCommand);
+        WhAsnCommand originWhAsnCommand = selectPoAsnManagerProxy.findWhAsnCommandById(paramWhAsnCommand.getId(), paramWhAsnCommand.getOuId());
         if (null == originWhAsnCommand) {
             log.error("CheckInManagerProxyImpl.findWhAsnById -> selectPoAsnManagerProxy.findWhAsnById error, result is null, paramWhAsnCommand is:[{}], logId is:[{}]", paramWhAsnCommand, logId);
             throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
@@ -559,20 +559,17 @@ public class CheckInManagerProxyImpl extends BaseManagerImpl implements CheckInM
                 throw new BusinessException(ErrorCodes.PARAMS_ERROR);
             }
 
-            WhAsnCommand queryWhAsnCommand = new WhAsnCommand();
-            queryWhAsnCommand.setOuId(ouId);
-            queryWhAsnCommand.setId(asnId);
 
             if (log.isDebugEnabled()) {
-                log.debug("CheckInManagerProxyImpl.freePlatformByRcvdFinish -> selectPoAsnManagerProxy.findWhAsnById invoke, queryWhAsnCommand is:[{}], logId is:[{}]", queryWhAsnCommand, logId);
+                log.debug("CheckInManagerProxyImpl.freePlatformByRcvdFinish -> selectPoAsnManagerProxy.findWhAsnCommandById invoke, queryWhAsnCommand is:[id:{},ouId:{}], logId is:[{}]", asnId, ouId, logId);
             }
-            WhAsnCommand originWhAsnCommand = selectPoAsnManagerProxy.findWhAsnById(queryWhAsnCommand);
+            WhAsnCommand originWhAsnCommand = selectPoAsnManagerProxy.findWhAsnCommandById(asnId,ouId);
             if (null == originWhAsnCommand) {
-                log.error("CheckInManagerProxyImpl.freePlatformByRcvdFinish -> selectPoAsnManagerProxy.findWhAsnById error, result is null, queryWhAsnCommand is:[{}], logId is:[{}]", queryWhAsnCommand, logId);
+                log.error("CheckInManagerProxyImpl.freePlatformByRcvdFinish -> selectPoAsnManagerProxy.findWhAsnCommandById error, result is null, queryWhAsnCommand is:[id:{},ouId:{}], logId is:[{}]", asnId, ouId, logId);
                 throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
             }
             if (log.isDebugEnabled()) {
-                log.debug("CheckInManagerProxyImpl.freePlatformByRcvdFinish -> selectPoAsnManagerProxy.findWhAsnById result, queryWhAsnCommand is:[{}], logId is:[{}], originWhAsnCommand is:[{}]", queryWhAsnCommand, logId, originWhAsnCommand);
+                log.debug("CheckInManagerProxyImpl.freePlatformByRcvdFinish -> selectPoAsnManagerProxy.findWhAsnCommandById result, queryWhAsnCommand is:[{}], logId is:[{}], originWhAsnCommand is:[id:{},ouId:{}]", asnId, ouId, logId, originWhAsnCommand);
             }
 
             if (log.isDebugEnabled()) {

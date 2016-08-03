@@ -377,18 +377,22 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
     @Override
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public void revokeSubPoToInfo(List<WhPoLine> lineList) {
-        if (null == lineList || lineList.size() == 0) {
-            throw new BusinessException(ErrorCodes.PACKAGING_ERROR);
-        }
-        for (WhPoLine line : lineList) {
-            if (line.getQtyPlanned() <= Constants.DEFAULT_DOUBLE) {
+        log.info("begin!");
+        try {
+
+            if (null == lineList || lineList.size() == 0) {
+                throw new BusinessException(ErrorCodes.PACKAGING_ERROR);
+            }
+            for (WhPoLine line : lineList) {
                 this.whPoLineDao.delete(line.getId());
             }
-            int count = this.whPoLineDao.saveOrUpdateByVersion(line);
-            if (count < 0) {
-                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-            }
+        } catch (BusinessException e) {
+            throw e;
+        } catch (Exception ex) {
+            log.error("" + ex);
+            throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
         }
+        log.info("end!");
     }
 
     @Override

@@ -226,13 +226,8 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
             log.warn("EditPo warn ResponseStatus: " + rm.getResponseStatus() + " msg: " + rm.getMsg());
             return rm;
         }
-        if (null == asn.getOuId()) {
-            // OUID为空更新基础表内信息
-            asnManager.editAsnToInfo(asn);
-        } else {
-            // OUID不为空更新拆库表内信息
-            asnManager.editAsnToShard(asn);
-        }
+        // OUID不为空更新拆库表内信息
+        asnManager.saveOrUpdateByVersionToShard(asn);
         log.info("EditAsn end  =======================");
         return rm;
     }
@@ -290,10 +285,7 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
             throw new BusinessException(ErrorCodes.PO_AUDIT_STATUS_ERROR);
         }
         // ASN校验：po单下Asn不存在可以审核成功;或者存在asn，但是asn状态为取消或者关闭时候。可以审核成功
-        WhAsn whAsn = new WhAsn();
-        whAsn.setPoId(whpo.getId());
-        whAsn.setPoOuId(whpo.getOuId());
-        List<WhAsn> asnList = this.asnManager.findWhAsnByPoToShard(whAsn);
+        List<WhAsn> asnList = this.asnManager.findWhAsnByPoIdOuIdToShard(whpo.getId(), whpo.getOuId());
         if (null == asnList || asnList.size() == 0) {
 
         } else {
@@ -331,7 +323,7 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
             log.debug(this.getClass().getSimpleName() + ".auditAsn method params:{}", asnCommand);
         }
         // 查找对应的ASN
-        WhAsnCommand whAsnCommand = this.asnManager.findWhAsnByIdToShard(asnCommand);
+        WhAsnCommand whAsnCommand = this.asnManager.findWhAsnCommandByIdToShard(asnCommand.getId(), asnCommand.getOuId());
         if (null == whAsnCommand) {
             log.warn("no asn found [id:{},ouId:{}]", asnCommand.getId(), asnCommand.getOuId());
             return getResponseMsg(ErrorCodes.ASN_NULL + "", ResponseMsg.DATA_ERROR, null);
@@ -342,10 +334,7 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
         }
         // ASN明细校验：只有明细处于收货中或者收货完成可以关闭
         // 查找所有的asn明细
-        WhAsnLine whAsnLine = new WhAsnLine();
-        whAsnLine.setAsnId(whAsnCommand.getId());
-        whAsnLine.setOuId(whAsnCommand.getOuId());
-        List<WhAsnLine> asnLineList = this.asnLineManager.findListByShard(whAsnLine);
+        List<WhAsnLine> asnLineList = this.asnLineManager.findWhAsnLineByAsnIdOuIdToShard(whAsnCommand.getId(), whAsnCommand.getOuId());
         if (null == asnLineList || asnLineList.size() == 0) {
             log.warn("no asnLine found!", asnCommand.getId(), asnCommand.getOuId());
             return getResponseMsg(ErrorCodes.ASNLINE_NULL + "", ResponseMsg.DATA_ERROR, null);
@@ -366,13 +355,7 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
         whAsnCommand.setAsnIds(Arrays.asList(new Long[] {asnCommand.getId()}));
 
         try {
-            if (null == whAsnCommand.getOuId()) {
-                // OUID为空更新基础表内信息
-                asnManager.editAsnStatusByInfo(whAsnCommand);
-            } else {
-                // OUID不为空更新拆库表内信息
-                asnManager.editAsnStatusByShard(whAsnCommand);
-            }
+            asnManager.editAsnStatusByShard(Arrays.asList(new Long[] {asnCommand.getId()}), asnCommand.getOuId(), PoAsnStatus.ASN_CLOSE, asnCommand.getModifiedId());
         } catch (Exception e) {
             if (e instanceof BusinessException) {
                 log.error(e + "");
@@ -397,7 +380,7 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
          */
         log.info("deleteAsnAndAsnLine start =======================");
         // 查询拆库内信息
-        WhAsnCommand whasn = asnManager.findWhAsnByIdToShard(whAsnCommand);
+        WhAsnCommand whasn = asnManager.findWhAsnCommandByIdToShard(whAsnCommand.getId(), whAsnCommand.getOuId());
         // 业务逻辑：获取到的asn的状态不为新建状态，不能够删除
         if (null == whasn) {
             log.warn("no asn to be delete!");
@@ -409,10 +392,7 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
         }
         whasn.setModifiedId(whAsnCommand.getUserId());// 操作人更新
         // 检索需要删除的明细
-        WhAsnLine asnLineSearch = new WhAsnLine();
-        asnLineSearch.setAsnId(whasn.getId());
-        asnLineSearch.setOuId(whasn.getOuId());
-        List<WhAsnLine> asnLineList = this.asnLineManager.findListByShard(asnLineSearch);
+        List<WhAsnLine> asnLineList = this.asnLineManager.findWhAsnLineByAsnIdOuIdToShard(whasn.getId(), whasn.getOuId());
         // 修改asn要对应修改po单、po单明细的数据
         List<WhPoLine> polineList = new ArrayList<WhPoLine>();
         // asn对应的po单
@@ -484,10 +464,7 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
         // whAsnLineCommand.getQtyPlannedOld();
         double changeCount = new BigDecimal(Double.toString(whAsnLineCommand.getQtyPlanned())).subtract(new BigDecimal(Double.toString(whAsnLineCommand.getQtyPlannedOld()))).doubleValue();
         // 获取ASN单表头信息
-        WhAsnCommand searchAsnCommand = new WhAsnCommand();
-        searchAsnCommand.setId(asnLine.getAsnId());
-        searchAsnCommand.setOuId(asnLine.getOuId());
-        WhAsnCommand returnAsnCommand = this.asnManager.findWhAsnByIdToShard(searchAsnCommand);
+        WhAsnCommand returnAsnCommand = this.asnManager.findWhAsnCommandByIdToShard(asnLine.getAsnId(), asnLine.getOuId());
         WhAsn asn = new WhAsn();
         BeanUtils.copyProperties(returnAsnCommand, asn);
         asn.setModifiedId(whAsnLineCommand.getModifiedId());
@@ -509,13 +486,7 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
         }
         poline.setAvailableQty(poline.getAvailableQty() - changeCount);
         try {
-            if (null == whAsnLineCommand.getPoOuId()) {
-                // TODO yimin.lu 需要补偿机制
-                this.asnLineManager.editAsnLineToShard(asn, asnLine);
-                this.poLineManager.saveOrUpdateByVersionToInfo(poline);
-            } else {
-                this.asnLineManager.editAsnLineWhenPoToShard(asn, asnLine, poline);
-            }
+            this.asnLineManager.editAsnLineWhenPoToShard(asn, asnLine, poline);
         } catch (Exception e) {
             if (e instanceof BusinessException) {
                 return this.getResponseMsg(((BusinessException) e).getErrorCode() + "", ResponseMsg.DATA_ERROR, null);
@@ -543,11 +514,8 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
         Map<Long, Double> poLineIdMaps = new HashMap<Long, Double>();// 用于保存PO单明细ID和对应修改的数量MAP
         for (Long id : command.getIds()) {
             double changeCount = 0.0;// 对应的asn单明细中的SKU数量
-            WhAsnLineCommand searchCommand = new WhAsnLineCommand();
             // 查询对应的ASN明细
-            searchCommand.setId(id);
-            searchCommand.setOuId(command.getOuId());
-            WhAsnLineCommand returnCommand = this.asnLineManager.findWhAsnLineByIdToShard(searchCommand);
+            WhAsnLineCommand returnCommand = this.asnLineManager.findWhAsnLineCommandByIdToShard(id, command.getOuId());
             if (PoAsnStatus.ASNLINE_NOT_RCVD != returnCommand.getStatus()) {
                 throw new BusinessException(ErrorCodes.ASNLINE_DELETE_STATUS_ERROR);
             }
@@ -600,7 +568,7 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
         WhAsnCommand asnSearchCommand = new WhAsnCommand();// asn单表头的检索对象
         asnSearchCommand.setId(asnlineList.get(0).getAsnId());
         asnSearchCommand.setOuId(asnlineList.get(0).getOuId());
-        WhAsnCommand whAsnCommand = this.asnManager.findWhAsnByIdToShard(asnSearchCommand);
+        WhAsnCommand whAsnCommand = this.asnManager.findWhAsnCommandByIdToShard(asnlineList.get(0).getAsnId(), asnlineList.get(0).getOuId());
         if (null == whAsnCommand) {
             throw new BusinessException(ErrorCodes.ASN_NULL);
         }
@@ -618,13 +586,7 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
             log.debug("whAsn:{}", whAsn);
         }
         try {
-            if (null == command.getPoOuId()) {
-                // TODO yimin.lu
-                this.asnLineManager.batchDeleteWhenPoToInfo(asnlineList, whAsn);
-                this.poLineManager.batchUpdatePoLine(polineList);
-            } else {
-                this.asnLineManager.batchDeleteWhenPoToShard(asnlineList, polineList, whAsn);
-            }
+            this.asnLineManager.batchDeleteWhenPoToShard(asnlineList, polineList, whAsn);
         } catch (Exception e) {
             if (e instanceof BusinessException) {
                 return this.getResponseMsg(((BusinessException) e).getErrorCode() + "", ResponseMsg.DATA_ERROR, null);

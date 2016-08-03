@@ -327,6 +327,31 @@ public class ErrorCodes {
     public static final int PO_CREATEASN_STATUS_ERROR = 10028;
     /** PO单已经指定了仓库，不允许创建子PO */
     public static final int BIPO_CREATESUB_OUID_ERROR = 10029;
+
+    /** ASN单为空 */
+    public static final int ASN_IS_NULL_ERROR = 10030;
+    /** ASN相关单据号为空 */
+    public static final int ASN_EXTCODE_IS_NULL_ERROR = 10031;
+    /** ASN客户为空 */
+    public static final int ASN_CUSTOMER_IS_NULL_ERROR = 10032;
+    /** ASN店铺为空 */
+    public static final int ASN_STORE_IS_NULL_ERROR = 10033;
+    /** ASN所属仓库为空 */
+    public static final int ASN_OUID_IS_NULL_ERROR = 10034;
+
+    /** PO单为空 */
+    public static final int PO_IS_NULL = 10035;
+    /** PO单相关单据号为空 */
+    public static final int PO_EXTCODE_IS_NULL = 10036;
+    /** PO单类型为空 */
+    public static final int PO_POTYPE_IS_NULL = 10037;
+    /** PO单状态为空 */
+    public static final int PO_STATUS_IS_NULL = 10038;
+    /** 上位系统同步的PO单明细行为空 */
+    public static final int PO_POLINELIST_IS_NULL = 10039;
+
+    /** PO单校验相关单据号失败，同一个店铺下有相同的相关单据号 */
+    public static final int PO_CHECK_EXTCODE_ERROR = 10040;
     // 10001-20000 luyimin
 
 

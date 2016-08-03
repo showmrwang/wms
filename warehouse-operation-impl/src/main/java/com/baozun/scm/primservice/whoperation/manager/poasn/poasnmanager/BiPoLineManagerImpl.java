@@ -294,7 +294,7 @@ public class BiPoLineManagerImpl extends BaseManagerImpl implements BiPoLineMana
                 if (PoAsnStatus.BIPOLINE_NEW != line.getStatus()) {
                     throw new BusinessException(ErrorCodes.BIPO_DELETE_HAS_ALLOCATED_ERROR);
                 }
-                if (null != line.getUuid()) {
+                if (StringUtils.isEmpty(line.getUuid())) {
                     qty -= line.getQtyPlanned();
                 }
                 this.biPoLineDao.delete(line.getId());

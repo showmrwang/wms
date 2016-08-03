@@ -35,33 +35,94 @@ import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 public interface WhAsnDao extends BaseDao<WhAsn, Long> {
 
 
+    /**
+     * [业务方法]asn一览查询
+     * 
+     * @param page
+     * @param sorts
+     * @param params
+     * @return
+     */
     @QueryPage("findListCountByQueryMap")
+    @Deprecated
     Pagination<WhAsn> findListByQueryMapWithPage(Page page, Sort[] sorts, Map<String, Object> params);
 
+    /**
+     * [业务方法]asn一览查询
+     * 
+     * @param page
+     * @param sorts
+     * @param params
+     * @return
+     */
     @QueryPage("findListCountByQueryMapExt")
     Pagination<WhAsnCommand> findListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params);
 
+    /**
+     * [通用方法]非乐观锁更新数据
+     */
     @CommonQuery
     @Deprecated
     int saveOrUpdate(WhAsn o);
 
+    /**
+     * [通用方法]乐观锁更新数据
+     * 
+     * @param o
+     * @return
+     */
     @CommonQuery
     int saveOrUpdateByVersion(WhAsn o);
 
+    /**
+     * [通用方法]根据ASNEXTCODE和OUID以及状态查询ASN列表
+     * 
+     * @param asnExtCode
+     * @param status
+     * @param ouid
+     * @return
+     */
     List<WhAsnCommand> findWhAsnListByAsnExtCode(@Param("asnExtCode") String asnExtCode, @Param("statusList") Integer[] status, @Param("ouid") Long ouid);
 
-    int editAsnStatus(@Param("ids") List<Long> ids, @Param("status") Integer status, @Param("userid") Long userid, @Param("ouid") Long ouid, @Param("lastModifyTime") Date lastModifyTime);
-
+    /**
+     * TODO
+     * 
+     * @param asnExtCode
+     * @param storeId
+     * @param ouId
+     * @return
+     */
     long findAsnByCodeAndStore(@Param("asnExtCode") String asnExtCode, @Param("storeId") Long storeId, @Param("ouId") Long ouId);
 
-    WhAsnCommand findWhAsnByIdCommand(@Param("id") Long id, @Param("ouid") Long ouid);
+    /**
+     * [通用方法]根据ID,OUID查找ASN
+     * 
+     * @param id
+     * @param ouid
+     * @return
+     */
+    WhAsnCommand findWhAsnCommandById(@Param("id") Long id, @Param("ouid") Long ouid);
     
+    /**
+     * [通用方法]根据ID,OUID查找ASN
+     * 
+     * @param id
+     * @param ouid
+     * @return
+     */
     WhAsn findWhAsnById(@Param("id") Long id, @Param("ouid") Long ouid);
 
+    /**
+     * [通用方法]根据ID,OUID删除WHASN
+     * 
+     * @param id
+     * @param ouid
+     * @return
+     */
     int deleteByIdOuId(@Param("id") Long id, @Param("ouid") Long ouid);
 
     /**
-     * 缓存锁使用
+     * [业务方法]缓存锁使用
      * 
      * @param id
      * @param ouid
@@ -71,7 +132,7 @@ public interface WhAsnDao extends BaseDao<WhAsn, Long> {
     int updateByVersionForLock(@Param("id") Long id, @Param("ouid") Long ouid, @Param("lastModifyTime") Date lastModifyTime);
 
     /**
-     * 释放缓存锁使用
+     * [业务方法]释放缓存锁使用
      * 
      * @param id
      * @param ouid
@@ -81,7 +142,8 @@ public interface WhAsnDao extends BaseDao<WhAsn, Long> {
     int updateByVersionForUnLock(@Param("id") Long id, @Param("ouid") Long ouid);
     
     /**
-     * 根据Asn编码查询Asn信息
+     * [通用方法]根据Asn编码查询Asn信息
+     * 
      * @author lichuan
      * @param asnCode
      * @param ouId
@@ -89,24 +151,53 @@ public interface WhAsnDao extends BaseDao<WhAsn, Long> {
      */
     WhAsn findAsnByCodeAndOuId(@Param("asnCode") String asnCode, @Param("ouId") Long ouId);
 
+    /**
+     * [通用方法]
+     * 
+     * @param asnCommand
+     * @return
+     */
     List<WhAsnCommand> findListByParamExt(WhAsnCommand asnCommand);
 
+    /**
+     * [通用方法]
+     * 
+     * @param asnCommand
+     * @return
+     */
     long findListCountByParamExt(WhAsnCommand asnCommand);
 
     /**
-     * 根据客户id集合，店铺id集合查询asn信息
+     * [业务方法]根据客户id集合，店铺id集合查询asnID
+     * 
      * @param customerList
      * @param storeList
      * @return
      */
     public List<Long> getWhAsnCommandByCustomerId(@Param("customerList") List<Long> customerList,@Param("storeList") List<Long> storeList);
 
-    WhAsn findTempAsnByPoIdOuIdNotUuid(@Param("poId") Long poId, @Param("ouId") Long ouId, @Param("uuid") String uuid);
+    /**
+     * [业务方法]根据POID,OUID查找 {存在明细行UUID不为空【且不等于此UUID】}的ASN
+     * 
+     * @param poId @required
+     * @param ouId @required
+     * @param uuid
+     * @return
+     */
+    WhAsn findTempAsnByPoIdOuIdAndLineNotUuid(@Param("poId") Long poId, @Param("ouId") Long ouId, @Param("uuid") String uuid);
 
+    /**
+     * [业务方法]根据POID,OUID查找UUID不为空【UUID等于此UUID的】ASN
+     * 
+     * @param poId @required
+     * @param ouId @required
+     * @param uuid
+     * @return
+     */
     WhAsn findTempAsnByPoIdOuIdUuid(@Param("poId") Long poId, @Param("ouId") Long ouId, @Param("uuid") String uuid);
 
     /**
-     * 根据状态查询所有ASN
+     * [业务方法]根据指定ASN列表中处于某状态的ASN列表
      *
      * @author mingwei.xie
      * @param status
@@ -116,12 +207,21 @@ public interface WhAsnDao extends BaseDao<WhAsn, Long> {
     List<WhAsnCommand> findAsnListByStatus(@Param("status") int status, @Param("ouId") Long ouId,@Param("asnList") List<Long> asnList);
 
     /**
-     * 校验asn是否收货完成
+     * [业务方法]校验asn是否收货完成
      * 
      * @param id
      * @param ouId
      * @return
      */
     boolean checkIsRcvdFinished(@Param("asnId") Long id, @Param("ouId") Long ouId);
+
+    /**
+     * [通用方法]根据POID，OUID查询WHASN
+     * 
+     * @param poId
+     * @param ouId
+     * @return
+     */
+    List<WhAsn> findWhAsnByPoIdOuId(Long poId, Long ouId);
 
 }

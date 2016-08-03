@@ -645,12 +645,13 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     </select>
     
      <select id="findPoLineByExtCodeStoreIdOuIdStatus" resultMap="WhPoLineResult">
-    	select <include refid="whPoLineColumns" />
-	    from t_wh_po_line 
-		where ext_code=#{extCode}
-		and store_id=#{storeId}
-		and ou_id=#{ouId}
-		and status in
+    	select <include refid="whPoLineColumnsRelatedExt" />
+	    from t_wh_po_line line 
+	    inner join t_wh_po po on po.id=line.po_id
+		where po.ext_code=#{extCode}
+		and po.store_id=#{storeId}
+		and po.ou_id=#{ouId}
+		and po.status in
 			<foreach collection="statusList" item="status" open="(" separator=","
 				close=")">
 				#{status}

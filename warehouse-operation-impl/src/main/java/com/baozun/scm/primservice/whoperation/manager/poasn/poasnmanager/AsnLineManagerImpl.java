@@ -30,7 +30,9 @@ import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 @Service("asnLineManager")
 @Transactional
 public class AsnLineManagerImpl extends BaseManagerImpl implements AsnLineManager {
+
     protected static final Logger log = LoggerFactory.getLogger(AsnLineManager.class);
+
     @Autowired
     private WhAsnLineDao whAsnLineDao;
     @Autowired
@@ -39,52 +41,28 @@ public class AsnLineManagerImpl extends BaseManagerImpl implements AsnLineManage
     private WhAsnDao whAsnDao;
 
     // TODO 更新POLINE 时系统日志需要增加PO的CODE 卢义敏
+    // TODO 更新ASNLINE 时系统日志需要增加ASN的CODE 卢义敏
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public Pagination<WhAsnLineCommand> findListByQueryMapWithPageExtByShard(Page page, Sort[] sorts, Map<String, Object> params) {
+        log.info("begin!");
+        log.debug("logId:{},params:{}", this.getLogId(), params);
         return whAsnLineDao.findListByQueryMapWithPageExt(page, sorts, params);
     }
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<WhAsnLine> findListByShard(WhAsnLine asnLine) {
+        log.info("begin!");
+        log.debug("logId:{},asnLine:{}", this.getLogId(), asnLine);
         return this.whAsnLineDao.findListByParam(asnLine);
     }
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public WhAsnLineCommand findWhAsnLineByIdToShard(WhAsnLineCommand command) {
-        return this.whAsnLineDao.findWhAsnLineByIdCommand(command.getId(), command.getOuId());
-    }
-
-    /**
-     * @author yimin.lu 当PO单INFO库时，修改ASN单明细，并修改相关单据数据
-     */
-    @Override
-    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void editAsnLineToShard(WhAsn asn, WhAsnLine asnLine) {
-        log.info(this.getClass().getSimpleName() + ".editAsnLineToShard method begin!");
-        if (log.isDebugEnabled()) {
-            log.debug("prams: [asn:{},asnline:{}]", asn, asnLine);
-        }
-        // 更新ASN单明细
-        int updateCount = this.whAsnLineDao.saveOrUpdateByVersion(asnLine);
-        if (updateCount <= 0) {
-            log.warn("saveorupdatebyVersion asn line returns:{};details: [poline_id:{},poline:{}]", updateCount, asnLine.getId(), asnLine);
-            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-        }
-        // 写入日志
-        insertGlobalLog(GLOBAL_LOG_UPDATE, asnLine, asnLine.getOuId(), asnLine.getModifiedId(), asn.getAsnCode(), null);
-        // 更新ASN单表头数据
-        updateCount = this.whAsnDao.saveOrUpdateByVersion(asn);
-        if (updateCount <= 0) {
-            log.warn("saveorupdatebyVersion asn returns:{};details: [poline_id:{},poline:{}]", updateCount, asn.getId(), asn);
-            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-        }
-        // 写入操作日志
-        insertGlobalLog(GLOBAL_LOG_UPDATE, asn, asn.getOuId(), asn.getModifiedId(), null, null);
-        log.info(this.getClass().getSimpleName() + ".editAsnLineToShard method end!");
+    public WhAsnLineCommand findWhAsnLineCommandByIdToShard(Long id, Long ouId) {
+        return this.whAsnLineDao.findWhAsnLineCommandByIdOuId(id, ouId);
     }
 
     /**
@@ -94,9 +72,7 @@ public class AsnLineManagerImpl extends BaseManagerImpl implements AsnLineManage
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void editAsnLineWhenPoToShard(WhAsn asn, WhAsnLine asnLine, WhPoLine poline) {
         log.info(this.getClass().getSimpleName() + ".editAsnLineWhenPoToShard method begin!");
-        if (log.isDebugEnabled()) {
-            log.debug("prams: [asn:{},asnline:{},poline:{}]", asn, asnLine, poline);
-        }
+        log.debug("prams: [asn:{},asnline:{},poline:{}]", asn, asnLine, poline);
         // 更新asnline
         int updateCount = this.whAsnLineDao.saveOrUpdateByVersion(asnLine);
         if (updateCount <= 0) {
@@ -122,37 +98,6 @@ public class AsnLineManagerImpl extends BaseManagerImpl implements AsnLineManage
         // 写入操作日志
         insertGlobalLog(GLOBAL_LOG_UPDATE, poline, poline.getOuId(), poline.getModifiedId(), null, null);
         log.info(this.getClass().getSimpleName() + ".editAsnLineWhenPoToShard method end!");
-    }
-
-    /**
-     * @author yimin.lu 当PO单INFO库时候批量删除Asn单明细
-     */
-    @Override
-    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void batchDeleteWhenPoToInfo(List<WhAsnLine> asnlineList, WhAsn asn) {
-        log.info(this.getClass().getSimpleName() + ".batchDeleteWhenPoToInfo method begin!");
-        if (log.isDebugEnabled()) {
-            log.debug("params:[asn:{},asnlineList:{}]", asn, asnlineList);
-        }
-        // 更新ASN
-        int count = this.whAsnDao.saveOrUpdateByVersion(asn);
-        if (count <= 0) {
-            log.warn("saveorupdatebyVersion asn returns:{};details: [poline_id:{},poline:{}]", count, asn.getId(), asn);
-            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-        }
-        // 插入操作日志
-        insertGlobalLog(GLOBAL_LOG_UPDATE, asn, asn.getOuId(), asn.getModifiedId(), null, null);
-        // 循环更新ASNLINE
-        for (WhAsnLine asnLine : asnlineList) {
-            int updateCount = this.whAsnLineDao.deleteByIdOuId(asnLine.getId(), asnLine.getOuId());
-            if (updateCount <= 0) {
-                log.warn("saveorupdatebyVersion asn line returns:{};details: [poline_id:{},poline:{}]", updateCount, asnLine.getId(), asnLine);
-                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-            }
-            // 插入操作日志
-            insertGlobalLog(GLOBAL_LOG_UPDATE, asnLine, asnLine.getOuId(), asnLine.getModifiedId(), asn.getAsnCode(), null);
-        }
-        log.info(this.getClass().getSimpleName() + ".batchDeleteWhenPoToInfo method end!");
     }
 
     /**
@@ -201,6 +146,8 @@ public class AsnLineManagerImpl extends BaseManagerImpl implements AsnLineManage
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<WhAsnLineCommand> findWhAsnLineCommandDevanningList(Long asnid, Long ouid, Long skuid, Long id) {
+        log.info("begin!");
+        log.debug("asnId:{},ouId:{},skuId:{},id:{}", asnid, ouid, skuid, id);
         return whAsnLineDao.findWhAsnLineCommandDevanningList(id, asnid, ouid, skuid);
     }
 
@@ -214,7 +161,7 @@ public class AsnLineManagerImpl extends BaseManagerImpl implements AsnLineManage
         if (log.isDebugEnabled()) {
             log.debug("params:[whAsnLine:{}]", whAsnLine.toString());
         }
-        WhAsnLineCommand asn = whAsnLineDao.findWhAsnLineByIdCommand(whAsnLine.getId(), whAsnLine.getOuId());
+        WhAsnLineCommand asn = whAsnLineDao.findWhAsnLineCommandByIdOuId(whAsnLine.getId(), whAsnLine.getOuId());
         if (null == asn) {
             log.warn("findWhAsnLineCommandEditDevanning asn is null logid: " + whAsnLine.getLogId());
             throw new BusinessException(ErrorCodes.ASNLINE_NULL);
@@ -228,19 +175,24 @@ public class AsnLineManagerImpl extends BaseManagerImpl implements AsnLineManage
         return whAsnLineDao.findWhAsnLineCommandEditDevanning(whAsnLine.getId(), whAsnLine.getAsnId(), whAsnLine.getOuId(), whAsnLine.getSkuId());
     }
 
-    /**
-     * 通过asnlineid+ouid查询对应asnline信息
-     */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public WhAsnLineCommand findWhAsnLineById(Long id, Long ouid) {
-        return whAsnLineDao.findWhAsnLineByIdCommand(id, ouid);
-    }
-
-    @Override
-    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public int updateByVersion(WhAsnLine line) {
-        return this.whAsnLineDao.saveOrUpdateByVersion(line);
+    public void updateByVersion(WhAsnLine line) {
+        log.info("begin!");
+        log.debug("whAsnLine:{}", line);
+        try {
+            int updateCount = this.whAsnLineDao.saveOrUpdateByVersion(line);
+            if (updateCount <= 0) {
+                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            }
+            WhAsn asn = this.whAsnDao.findWhAsnById(line.getAsnId(), line.getOuId());
+            this.insertGlobalLog(GLOBAL_LOG_UPDATE, line, line.getOuId(), line.getModifiedId(), asn.getAsnCode(), null);
+        } catch (BusinessException e) {
+            throw e;
+        } catch (Exception ex) {
+            log.error("" + ex);
+            throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
+        }
     }
 
     /**
@@ -286,8 +238,23 @@ public class AsnLineManagerImpl extends BaseManagerImpl implements AsnLineManage
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public int deleteWhAsnByIdOuIdToShard(Long id, Long ouId) {
-        return this.whAsnLineDao.deleteByIdOuId(id, ouId);
+    public void deleteWhAsnByIdOuIdToShard(Long id, Long ouId, Long userId) {
+        log.info("begin!");
+        log.debug("params:[id:{},ouId:{}]", id, ouId);
+        try{
+            WhAsnLine line = this.findWhAsnLineByIdToShard(id, ouId);
+            int deleteCount = this.whAsnLineDao.deleteByIdOuId(id, ouId);
+            if (deleteCount <= 0) {
+                throw new BusinessException(ErrorCodes.DELETE_DATA_ERROR);
+            }
+            WhAsn asn = this.whAsnDao.findWhAsnById(line.getAsnId(), ouId);
+            this.insertGlobalLog(GLOBAL_LOG_DELETE, line, ouId, userId, asn.getAsnCode(), null);
+        } catch (BusinessException ex) {
+            throw ex;
+        } catch (Exception e) {
+            log.error("" + e);
+            throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
+        }
     }
 
     @Override
@@ -298,7 +265,14 @@ public class AsnLineManagerImpl extends BaseManagerImpl implements AsnLineManage
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public List<WhAsnLine> findTempWhAsnLineByAsnIdOuIdUuid(Long asnId, Long ouId, String uuid) {
-        return this.whAsnLineDao.findTempWhAsnLineByAsnIdOuIdUuid(asnId, ouId, uuid);
+    public List<WhAsnLine> findWhAsnLineByAsnIdOuIdToShard(Long asnId, Long ouId) {
+        return this.whAsnLineDao.findWhAsnLineByAsnIdOuId(asnId, ouId);
     }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<WhAsnLine> findListByParamExt(WhAsnLine asnLine) {
+        return this.whAsnLineDao.findListByParamExt(asnLine);
+    }
+
 }

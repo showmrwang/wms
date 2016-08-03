@@ -22,7 +22,7 @@ import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 
 public interface SelectPoAsnManagerProxy extends BaseManager {
     /**
-     * PO的分页查询
+     * [业务方法]PO的分页查询
      * 
      * @param page
      * @param sorts
@@ -33,7 +33,7 @@ public interface SelectPoAsnManagerProxy extends BaseManager {
     Pagination<WhPoCommand> findWhPoListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params);
 
     /**
-     * BiPO的分页查询
+     * [业务方法]BiPO的分页查询
      * 
      * @param page
      * @param sorts
@@ -44,7 +44,7 @@ public interface SelectPoAsnManagerProxy extends BaseManager {
     Pagination<BiPoCommand> findBiPoListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params);
 
     /**
-     * 模糊查询方法。 根据asnExtCode,asn状态，仓库查找asn
+     * [业务方法]模糊查询方法。 根据asnExtCode,asn状态，仓库查找asn
      * 
      * @param asnExtCode
      * @param status
@@ -54,15 +54,16 @@ public interface SelectPoAsnManagerProxy extends BaseManager {
     List<WhAsnCommand> findWhAsnListByAsnExtCode(String asnExtCode, Integer[] status, Long ouid);
 
     /**
-     * 根据PO单ID，OUID查找PO
+     * [通用方法]根据PO单ID，OUID查找PO
      * 
-     * @param whPoCommand
+     * @param id
+     * @param ouId
      * @return
      */
-    WhPo findWhPoById(WhPoCommand whPoCommand);
+    WhPo findWhPoById(Long id, Long ouId);
 
     /**
-     * 根据PO单ID，OUID查找PO
+     * [通用方法]根据PO单ID，OUID查找PO
      * 
      * @param whPoCommand
      * @return
@@ -70,7 +71,7 @@ public interface SelectPoAsnManagerProxy extends BaseManager {
     WhPoCommand findWhPoCommandById(Long id, Long ouId);
 
     /**
-     * PO单明细的分页查询
+     * [业务方法]PO单明细的分页查询
      * 
      * @param page
      * @param sorts
@@ -81,7 +82,7 @@ public interface SelectPoAsnManagerProxy extends BaseManager {
     Pagination<WhPoLineCommand> findPoLineListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params, Integer sourceType);
 
     /**
-     * PO单明细的分页查询
+     * [业务方法]BIPO单明细的分页查询
      * 
      * @param page
      * @param sorts
@@ -92,23 +93,23 @@ public interface SelectPoAsnManagerProxy extends BaseManager {
     Pagination<BiPoLineCommand> findBiPoLineListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params);
 
     /**
-     * 根据POLINE的ID,OUID查找PO单明细
+     * [通用方法]根据POLINE的ID,OUID查找PO单明细
      * 
      * @param Command
      * @return
      */
-    WhPoLineCommand findWhPoLineById(WhPoLineCommand Command);
+    WhPoLineCommand findWhPoLineCommandById(Long id, Long ouId);
 
     /**
-     * 根据WhAsnLine的ID,OUID查找PO单明细
+     * [通用方法]根据WhAsnLine的ID,OUID查找PO单明细
      * 
      * @param Command
      * @return
      */
-    WhAsnLineCommand findWhAsnLineById(WhAsnLineCommand Command);
+    WhAsnLineCommand findWhAsnLineCommandById(Long id, Long ouId);
 
     /**
-     * 根据WhAsnLine的ASNID,OUID查找ASN单明细
+     * [通用方法]根据WhAsnLine的ASNID,OUID查找ASN单明细
      * 
      * @param Command
      * @return
@@ -116,7 +117,7 @@ public interface SelectPoAsnManagerProxy extends BaseManager {
     List<WhAsnLine> findWhAsnLineByAsnId(Long asnId, Long ouId);
 
     /**
-     * ASN的分页查询
+     * [业务方法]ASN的分页查询
      * 
      * @param page
      * @param sorts
@@ -127,30 +128,28 @@ public interface SelectPoAsnManagerProxy extends BaseManager {
     Pagination<WhAsnCommand> findWhAsnListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params, Integer sourceType);
 
     /**
-     * 根据PO的EXTCODE,OUID,STATUSLIST模糊查找PO单明细
+     * [业务方法]根据PO的EXTCODE,OUID,STATUSLIST模糊查找PO单明细
      * 
-     * @param command
+     * @param extCode
+     * @param status
+     * @param customerList
+     * @param storeList
+     * @param ouid
+     * @param linenum
      * @return
      */
-    List<WhPoCommand> findWhPoListByExtCode(WhPoCommand command);
+    List<WhPoCommand> findWhPoListByExtCode(String extCode, List<Integer> statusList, List<Long> customerList, List<Long> storeList, Long ouid, Integer linenum);
 
     /**
-     * 生成ASN的EXTCODE
-     * 
-     * @return
-     */
-    String getAsnExtCode();
-
-    /**
-     * 根据ASN的ID,OUID查找ASN
+     * [通用方法]根据ASN的ID,OUID查找ASN
      * 
      * @param whAsnCommand
      * @return
      */
-    WhAsnCommand findWhAsnById(WhAsnCommand whAsnCommand);
+    WhAsnCommand findWhAsnCommandById(Long id, Long ouId);
 
     /**
-     * ASNLINE的分页查询
+     * [业务方法]ASNLINE的分页查询
      * 
      * @param page
      * @param sorts
@@ -161,12 +160,7 @@ public interface SelectPoAsnManagerProxy extends BaseManager {
     Pagination<WhAsnLineCommand> findAsnLineListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params, Integer sourceType);
 
     /**
-     * 根据ASN的ASNEXTCODE和OUID查找
-     */
-    WhAsn getAsnByAsnExtCode(String asnExtCode, Long ouId);
-
-    /**
-     * 查找ASN中某个商品的数量
+     * [通用方法]查找ASN中某个商品的数量
      * 
      * @param asnId
      * @param ouId
@@ -175,34 +169,64 @@ public interface SelectPoAsnManagerProxy extends BaseManager {
      */
     long getSkuCountInAsnBySkuId(Long asnId, Long ouId, Long skuId);
 
+    /**
+     * [通用方法]根据ID查找BIPO
+     * 
+     * @param id
+     * @return
+     */
     BiPo findBiPoById(Long id);
 
+    /**
+     * [通用方法]根据POCODE查找BIPO
+     * 
+     * @param poCode
+     * @return
+     */
     BiPo findBiPoByPoCode(String poCode);
 
+    /**
+     * [通用方法]根据ID查找BIPO
+     * 
+     * @param id
+     * @return
+     */
     BiPoCommand findBiPoCommandById(Long id);
 
+    /**
+     * [通用方法]根据POCODE查找BIPO
+     * 
+     * @param poCode
+     * @return
+     */
     BiPoCommand findBiPoCommandByPoCode(String poCode);
 
+    /**
+     * [通用方法]根据ID查找BIPOLINE
+     * 
+     * @param id
+     * @return
+     */
     BiPoLineCommand findBiPoLineCommandById(Long id);
 
+    /**
+     * [通用方法]根据ID查找BIPOLINE
+     * 
+     * @param id
+     * @return
+     */
     BiPoLine findBiPoLineById(Long id);
     
     /**
-     * PDA ASN预收货
-     * @param whCommand
-     * @return
-     */
-    WhAsnCommand findWhAsnCommandByAsnId(WhAsnCommand whCommand);
-    
-    /**
-     * PDA ASN预收货,返回预收货模式
+     * [业务方法]PDA ASN预收货,返回预收货模式
+     * 
      * @param whCommand
      * @return
      */
     Integer returnReceiptMode(WhAsnCommand whCommand);
 
     /**
-     * 分页查询可以拆分PO的明细行；可以：1.可用数量大于0；2.可用数量-已经拆分的数量>0
+     * [业务方法]分页查询可以拆分PO的明细行；可以：1.可用数量大于0；2.可用数量-已经拆分的数量>0
      * 
      * @param page
      * @param sorts
@@ -212,7 +236,7 @@ public interface SelectPoAsnManagerProxy extends BaseManager {
     Pagination<BiPoLineCommand> findListByQueryMapWithPageExtForCreateSubPo(Page page, Sort[] sorts, Map<String, Object> params);
 
     /**
-     * 拆分PO时uuid明细的分页查询
+     * [业务方法]拆分PO时uuid明细的分页查询
      * 
      * @param page
      * @param sorts
@@ -223,7 +247,7 @@ public interface SelectPoAsnManagerProxy extends BaseManager {
     Pagination<WhPoLineCommand> findPoLineListByQueryMapWithPageExtForCreateSubPo(Page page, Sort[] sorts, Map<String, Object> paraMap, Integer infoSource);
     
     /**
-     * 创建Asn时Po明细的分页查询:可用明细数量>0
+     * [业务方法]创建Asn时Po明细的分页查询:可用明细数量>0
      *
      * @param page
      * @param sorts
@@ -234,18 +258,18 @@ public interface SelectPoAsnManagerProxy extends BaseManager {
     Pagination<WhPoLineCommand> findPoLineListByQueryMapWithPageExtForCreateAsn(Page page, Sort[] sorts, Map<String, Object> paraMap, Integer infoSource);
 
     /**
-     * 校验此收货Asn是否存在该商品收货明细
+     * [业务方法]校验此收货Asn是否存在该商品收货明细
      *
      * @param asnId
      * @param skuId
      * @param ouId
      * @param logId
-     * @return 
+     * @return
      */
     void checkWhAsnLineBySkuId(List<WhAsnLine> whAsnLineList, Long skuId, Long ouId, String logId);
 
     /**
-     * 根据ID和OUID查找WHASN
+     * [通用方法]根据ID和OUID查找WHASN
      * 
      * @param occupationId
      * @param ouId
@@ -254,7 +278,9 @@ public interface SelectPoAsnManagerProxy extends BaseManager {
     WhAsn findWhAsnById(Long occupationId, Long ouId);
 
     /**
-     * @author yimin.lu 创建ASN的时候查询ASN单临时数据
+     * [业务方法] 创建ASN的时候查询ASN单临时数据
+     * 
+     * @author yimin.lu
      * @param page
      * @param sorts
      * @param paraMap
@@ -264,7 +290,7 @@ public interface SelectPoAsnManagerProxy extends BaseManager {
     Pagination<WhAsnLineCommand> findAsnLineListByQueryMapWithPageExtForCreateAsn(Page page, Sort[] sorts, Map<String, Object> paraMap, Integer shardSource);
 
     /**
-     * 根据状态查询所有ASN
+     * [业务方法]根据指定ASN列表中处于某状态的ASN列表
      *
      * @author mingwei.xie
      * @param status

@@ -9,7 +9,6 @@ import lark.common.dao.Sort;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -40,7 +39,6 @@ import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
-import com.baozun.scm.primservice.whoperation.util.StringUtil;
 
 /**
  * 查询PoAsn相关数据
@@ -123,19 +121,12 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
      * 通过id+ou_id 查询PO单信息
      */
     @Override
-    public WhPo findWhPoById(WhPoCommand whPoCommand) {
+    public WhPo findWhPoById(Long id, Long ouId) {
         log.info(this.getClass().getSimpleName() + ".findWhPoById method begin!");
         if (log.isDebugEnabled()) {
-            log.debug(this.getClass().getSimpleName() + ".findWhPoById method params:{}", whPoCommand);
+            log.debug(this.getClass().getSimpleName() + ".findWhPoById method params:[id:{},ouId:{}]", id, ouId);
         }
-        WhPo whpo = null;
-        if (null == whPoCommand.getOuId()) {
-            // 查询基本库内信息
-            whpo = poManager.findWhPoByIdToInfo(whPoCommand.getId(), whPoCommand.getOuId());
-        } else {
-            // 查询拆库内信息
-            whpo = poManager.findWhPoByIdToShard(whPoCommand.getId(), whPoCommand.getOuId());
-        }
+        WhPo whpo = null == ouId ? poManager.findWhPoByIdToInfo(id, ouId) : poManager.findWhPoByIdToShard(id, ouId);
         if (log.isDebugEnabled()) {
             log.debug(this.getClass().getSimpleName() + ".findWhPoById method returns {}!", whpo);
         }
@@ -198,10 +189,10 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
      * 通过id+ou_id 查询PO单信息
      */
     @Override
-    public WhPoLineCommand findWhPoLineById(WhPoLineCommand command) {
+    public WhPoLineCommand findWhPoLineCommandById(Long id, Long ouId) {
         log.info(this.getClass().getSimpleName() + ".findWhPoLineById method begin!");
         // 查询拆库内信息
-        WhPoLineCommand whpoLine = poLineManager.findPoLineCommandbyIdToShard(command.getId(), command.getOuId());
+        WhPoLineCommand whpoLine = poLineManager.findPoLineCommandbyIdToShard(id, ouId);
         log.info(this.getClass().getSimpleName() + ".findWhPoLineById method end!");
         return whpoLine;
     }
@@ -225,33 +216,15 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
      * 通过po单code 状态 ouid 模糊查询对应po单信息
      */
     @Override
-    public List<WhPoCommand> findWhPoListByExtCode(WhPoCommand command) {
+    public List<WhPoCommand> findWhPoListByExtCode(String extCode, List<Integer> statusList, List<Long> customerList, List<Long> storeList, Long ouid, Integer linenum) {
         log.info(this.getClass().getSimpleName() + ".findWhPoListByExtCode method begin!");
-        return poManager.findWhPoListByExtCodeToShard(command.getExtCode(), command.getStatusList(), command.getCustomerList(), command.getStoreList(), command.getOuId(), command.getLinenum());
-    }
-
-    /**
-     * 通过编码生成器接口获取asn相关单据号
-     */
-    @Override
-    public String getAsnExtCode() {
-        log.info(this.getClass().getSimpleName() + ".getAsnExtCode method begin!");
-        String extCode = codeManager.generateCode(Constants.WMS, Constants.WHASN_MODEL_URL, Constants.WMS_ASN_EXT, null, null);
-        if (StringUtil.isEmpty(extCode)) {
-            log.warn("getAsnExtCode warn generateCode is null");
-            throw new BusinessException(ErrorCodes.GET_GENERATECODE_NULL, new Object[] {"asn"});
-        }
-        if (log.isDebugEnabled()) {
-            log.debug(this.getClass().getSimpleName() + ".getAsnExtCode method returns:{}!", extCode);
-        }
-        log.info(this.getClass().getSimpleName() + ".getAsnExtCode method end!");
-        return extCode;
+        return poManager.findWhPoListByExtCodeToShard(extCode, statusList, customerList, storeList, ouid, linenum);
     }
 
     @Override
-    public WhAsnCommand findWhAsnById(WhAsnCommand whAsnCommand) {
+    public WhAsnCommand findWhAsnCommandById(Long id, Long ouId) {
         log.info(this.getClass().getSimpleName() + ".findWhAsnById method begin!");
-        return asnManager.findWhAsnByIdToShard(whAsnCommand);
+        return asnManager.findWhAsnCommandByIdToShard(id, ouId);
     }
 
     /**
@@ -265,14 +238,9 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
     }
 
     @Override
-    public WhAsnLineCommand findWhAsnLineById(WhAsnLineCommand Command) {
+    public WhAsnLineCommand findWhAsnLineCommandById(Long id, Long ouId) {
         log.info(this.getClass().getSimpleName() + ".findWhAsnLineById method begin!");
-        return this.asnLineManager.findWhAsnLineByIdToShard(Command);
-    }
-
-    @Override
-    public WhAsn getAsnByAsnExtCode(String asnExtCode, Long ouId) {
-        return null;
+        return this.asnLineManager.findWhAsnLineCommandByIdToShard(id, ouId);
     }
 
     @Override
@@ -295,13 +263,11 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
             log.error("SelectPoAsnManagerProxy.getSkuCountInAsnBySkuId,params ouId is null exception");
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
-        WhAsnLineCommand asnline = new WhAsnLineCommand();
+        WhAsnLine asnline = new WhAsnLine();
         asnline.setAsnId(asnId);
         asnline.setOuId(ouId);
         asnline.setSkuId(skuId);
-        WhAsnLine wa = new WhAsnLine();
-        BeanUtils.copyProperties(asnline, wa);
-        List<WhAsnLine> lineList = this.asnLineManager.findListByShard(wa);
+        List<WhAsnLine> lineList = this.asnLineManager.findListByParamExt(asnline);
         long count = 0;
         for (WhAsnLine line : lineList) {
             count += line.getQtyPlanned();
@@ -312,12 +278,7 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
 
     @Override
     public List<WhAsnLine> findWhAsnLineByAsnId(Long asnId, Long ouId) {
-        WhAsnLineCommand command = new WhAsnLineCommand();
-        command.setAsnId(asnId);
-        command.setOuId(ouId);
-        WhAsnLine asnLine = new WhAsnLine();
-        BeanUtils.copyProperties(command, asnLine);
-        return this.asnLineManager.findListByShard(asnLine);
+        return this.asnLineManager.findWhAsnLineByAsnIdOuIdToShard(asnId, ouId);
     }
 
     @Override
@@ -368,28 +329,6 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
     @Override
     public Pagination<WhPoLineCommand> findPoLineListByQueryMapWithPageExtForCreateSubPo(Page page, Sort[] sorts, Map<String, Object> paraMap, Integer infoSource) {
         return this.poLineManager.findPoLineListByQueryMapWithPageExtForCreateSubPoToInfo(page, sorts, paraMap);
-    }
-
-    @Override
-    public WhAsnCommand findWhAsnCommandByAsnId(WhAsnCommand whCommand) {
-        log.info(this.getClass().getSimpleName() + ".findWhAsnCommandByAsnId method begin!");
-        if (null == whCommand.getAsnExtCode()) {
-            log.error("SelectPoAsnManagerProxy.findWhAsnCommandByAsnId,params asnExtCode is null exception");
-            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
-        }
-
-        if (null == whCommand.getId()) {
-            log.error("SelectPoAsnManagerProxy.findWhAsnCommandByAsnId,params id is null exception");
-            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
-        }
-
-        WhAsnCommand wac = this.findWhAsnById(whCommand);
-        if (wac == null) {
-            log.error("SelectPoAsnManagerProxy.findWhAsnCommandByAsnId,object wac is null exception");
-            throw new BusinessException(ErrorCodes.OBJECT_IS_NULL);
-        }
-        log.info(this.getClass().getSimpleName() + ".findWhAsnCommandByAsnId method end!");
-        return wac;
     }
 
     @Override
@@ -490,13 +429,6 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
         return this.poLineManager.findPoLineListByQueryMapWithPageExtForCreateAsnToShard(page, sorts, paraMap);
     }
 
-    /**
-     * 根据状态查询所有ASN
-     *
-     * @param status
-     * @param ouId
-     * @return
-     */
     @Override
     public List<WhAsnCommand> findAsnListByStatus(int status, Long ouId,List<Long> asnList) {
         return this.asnManager.findAsnListByStatus(status, ouId,asnList);

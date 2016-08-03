@@ -82,6 +82,7 @@ public class WhAsn extends BaseModel {
     /** modifiedId */
     private Long modifiedId;
     /** PO单对应的ou_id */
+    @Deprecated
     private Long poOuId;
     /** 对应PO单相关编码 */
     private String extCode;

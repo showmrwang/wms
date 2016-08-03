@@ -90,7 +90,7 @@ public class WhCartonManagerImpl extends BaseManagerImpl implements WhCartonMana
             log.warn("deleteCarton WhCarton is null logid: " + whCartonCommand.getLogId());
             throw new BusinessException(ErrorCodes.CARTONNULL_ERROR);
         }
-        WhAsnLineCommand whAsnLineCommand = whAsnLineDao.findWhAsnLineByIdCommand(c.getAsnLineId(), c.getOuId());
+        WhAsnLineCommand whAsnLineCommand = whAsnLineDao.findWhAsnLineCommandByIdOuId(c.getAsnLineId(), c.getOuId());
         if (null == whAsnLineCommand) {
             log.warn("deleteCarton asnLine is null logid: " + whCartonCommand.getLogId());
             throw new BusinessException(ErrorCodes.ASNLINE_NULL);

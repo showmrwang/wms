@@ -20,70 +20,110 @@ import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 public interface AsnManager extends BaseManager {
 
     /**
-     * ASN模糊查询使用
+     * [业务方法]ASN模糊查询使用:ASNEXTCODE模糊查询仓库下处于某个些状态的ASN单
      * 
-     * @param asnCode
-     * @param status
-     * @param ouid
+     * @param asnCode @required
+     * @param status @required
+     * @param ouid @required
      * @return
      */
     List<WhAsnCommand> findWhAsnListByAsnExtCode(String asnCode, Integer[] status, Long ouid);
 
     /**
-     * 编辑ASN状态
+     * [通用方法]编辑ASN状态
      * 
-     * @param whAsn
+     * @param asnIds @required
+     * @param ouId @required
+     * @param status @required
+     * @param userId @required
      */
-    @Deprecated
-    void editAsnStatusByInfo(WhAsnCommand whAsn);
-
-    void editAsnStatusByShard(WhAsnCommand whAsn);
+    void editAsnStatusByShard(List<Long> asnIds, Long ouId, Integer status, Long userId);
 
     /**
-     * ASN分页查询
+     * [业务方法]ASN分页查询
      * 
      * @param page
      * @param sorts
      * @param params
      * @return
      */
-    @Deprecated
-    Pagination<WhAsnCommand> findListByQueryMapWithPageExtByInfo(Page page, Sort[] sorts, Map<String, Object> params);
-
     Pagination<WhAsnCommand> findListByQueryMapWithPageExtByShard(Page page, Sort[] sorts, Map<String, Object> params);
 
+    /**
+     * [业务方法]
+     * 
+     * @param whAsn
+     * @param asnLineList
+     * @param whPo
+     * @param poLineMap
+     * @param rm
+     * @return
+     */
     ResponseMsg createAsnAndLineToShare(WhAsn whAsn, List<WhAsnLineCommand> asnLineList, WhPo whPo, Map<Long, WhPoLine> poLineMap, ResponseMsg rm);
 
+    /**
+     * [业务方法]
+     * 
+     * @param whAsn
+     * @param asnLineList
+     * @param whPo
+     * @param poLineMap
+     * @param rm
+     * @return
+     */
     ResponseMsg insertAsnWithOuId(WhAsn whAsn, List<WhAsnLineCommand> asnLineList, WhPo whPo, Map<Long, WhPoLine> poLineMap, ResponseMsg rm);
 
-    @Deprecated
-    WhAsnCommand findWhAsnByIdToShard(WhAsnCommand whAsn);
-
-    @Deprecated
-    void editAsnToInfo(WhAsn whasn);
-
-    void editAsnToShard(WhAsn whasn);
-
-    void createAsnBatch(WhAsnCommand asn, WhPo whpo, List<WhPoLine> whPoLines);
-
-    List<WhAsn> findWhAsnByPoToShard(WhAsn whAsn);
-
-    ResponseMsg deleteAsnAndAsnLineToShard(WhAsnCommand asn);
-
-    void deleteAsnAndAsnLineWhenPoOuIdNullToShard(WhAsnCommand whAsnCommand);
-
-    void deleteAsnAndAsnLineToShard(WhAsnCommand whAsnCommand, WhPo whpo, List<WhPoLine> polineList);
-
-    WhAsn getAsnByAsnExtCode(String asnExtCoce, Long ouId);
+    /**
+     * [通用方法]乐观锁更新ASN数据
+     * 
+     * @param whasn
+     */
+    void saveOrUpdateByVersionToShard(WhAsn whasn);
 
     /**
-     * 根据ID和OUID查找WHASN
+     * [业务方法]一键创建ASN
+     * 
+     * @param asn
+     * @param whpo
+     * @param whPoLines
+     */
+    void createAsnBatch(WhAsnCommand asn, WhPo whpo, List<WhPoLine> whPoLines);
+
+    /**
+     * [通用方法]根据poId,ouId查询asn
+     * 
+     * @param poId
+     * @param ouId
+     * @return
+     */
+    List<WhAsn> findWhAsnByPoIdOuIdToShard(Long poId, Long ouId);
+
+    /**
+     * [业务方法]删除ASN和ASNLINE
+     * 
+     * @param whAsnCommand
+     * @param whpo
+     * @param polineList
+     */
+    void deleteAsnAndAsnLineToShard(WhAsnCommand whAsnCommand, WhPo whpo, List<WhPoLine> polineList);
+
+    /**
+     * [通用方法]根据ID和OUID查找WHASN
      * 
      * @param id
      * @param ouId
      * @return
      */
     WhAsn findWhAsnByIdToShard(Long id, Long ouId);
+
+    /**
+     * [通用方法]根据ID和OUID查找WHASN
+     * 
+     * @param id
+     * @param ouId
+     * @return
+     */
+    WhAsnCommand findWhAsnCommandByIdToShard(Long id, Long ouId);
 
     /**
      * 缓存锁使用【业务方法】
@@ -155,18 +195,22 @@ public interface AsnManager extends BaseManager {
     public List<Long> getWhAsnCommandByCustomerId(List<Long> customerList,List<Long> storeList);
 
     /**
-     * 
+     * [业务方法]根据POID,OUID查找uuid不为空【且uuid不为此uuid】的ASN
      */
-    WhAsn findTempAsnByPoIdOuIdNotUuid(Long poId, Long ouId, String uuid);
+    WhAsn findTempAsnByPoIdOuIdAndLineNotUuid(Long poId, Long ouId, String uuid);
 
     /**
+     * [业务方法]根据POID,OUID查找UUID不为空【且uuid等与此uuid】的asn
      * 
-     * 
+     * @param poId @required
+     * @param ouId @required
+     * @param uuid
+     * @return
      */
     WhAsn findTempAsnByPoIdOuIdUuid(Long poId, Long ouId, String uuid);
 
     /**
-     * 删除ASN和ASNLINE
+     * [业务方法]删除ASN和ASNLINE
      * 
      * @param poId
      * @param ouId
@@ -175,23 +219,21 @@ public interface AsnManager extends BaseManager {
     void deleteAsnAndLine(WhAsn asn, List<WhAsnLine> lineList);
 
     /**
-     * 根据状态查询所有ASN
-     *
-     * @author mingwei.xie
-     * @param status
-     * @param ouId
-     * @return
-     */
-    List<WhAsnCommand> findAsnListByStatus(int status, Long ouId);
-
-    /**
-     * 创建ASN
+     * [业务方法]创建ASN
      * 
      * @param asn
      * @param asnLineList
      */
     void createAsn(WhAsn asn, List<WhAsnLineCommand> asnLineList);
 
+    /**
+     * [业务方法]查询仓库下指定ASN列表中处于某种状态的ASN单集合
+     * 
+     * @param status
+     * @param ouId
+     * @param asnList
+     * @return
+     */
     List<WhAsnCommand> findAsnListByStatus(int status, Long ouId, List<Long> asnList);
 
 }

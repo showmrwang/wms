@@ -19,7 +19,7 @@ public interface CreatePoAsnManagerProxy extends BaseManager {
     ResponseMsg createPoNew(WhPoCommand command);
     
     /**
-     * 创建POLINE明细【 业务方法；接口方法】
+     * 创建POLINE明细【 业务方法】
      * 
      * @param biPoLine
      * @return
@@ -27,7 +27,7 @@ public interface CreatePoAsnManagerProxy extends BaseManager {
     void createPoLineSingleNew(BaseCommand poLine);
 
     /**
-     * 保存PO单明细 【业务方法;接口方法】
+     * 保存PO单明细 【业务方法】
      * 
      * @param command
      * @return
@@ -118,5 +118,12 @@ public interface CreatePoAsnManagerProxy extends BaseManager {
      * @return
      */
     ResponseMsg createAsn(WhAsnCommand command);
+
+    /**
+     * [业务方法]生成ASN的EXTCODE
+     * 
+     * @return
+     */
+    String getAsnExtCode();
 
 }
