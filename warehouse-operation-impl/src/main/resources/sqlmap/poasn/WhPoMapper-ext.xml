@@ -299,7 +299,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    select <include refid="whPoColumns" />
 		    from t_wh_po
 		   <where>
-			    ext_code = #{poCode} 
+			    ext_code = #{extCode} 
 			    and store_id=#{storeId}
 			</where>
     </select>

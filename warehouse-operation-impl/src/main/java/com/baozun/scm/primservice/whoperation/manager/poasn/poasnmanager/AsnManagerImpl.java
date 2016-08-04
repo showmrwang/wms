@@ -612,18 +612,9 @@ public class AsnManagerImpl extends BaseManagerImpl implements AsnManager {
         try {
             for (WhAsnLineCommand lineCommand : command.getAsnLineList()) {
                 WhAsnLine asnLine = this.whAsnLineDao.findWhAsnLineById(lineCommand.getId(), command.getOuId());
-                if (Constants.DEFAULT_DOUBLE.doubleValue() == lineCommand.getQtyPlanned().doubleValue()) {
-                    int deleteLineCount = this.whAsnLineDao.deleteByIdOuId(asnLine.getId(), asnLine.getOuId());
-                    if (deleteLineCount <= 0) {
-                        throw new BusinessException(ErrorCodes.DELETE_DATA_ERROR);
-                    }
-                } else {
-                    asnLine.setQtyPlanned(lineCommand.getQtyPlanned());
-                    asnLine.setModifiedId(command.getUserId());
-                    int updateAsnLineCount = this.whAsnLineDao.saveOrUpdateByVersion(asnLine);
-                    if (updateAsnLineCount <= 0) {
-                        throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-                    }
+                int deleteLineCount = this.whAsnLineDao.deleteByIdOuId(asnLine.getId(), asnLine.getOuId());
+                if (deleteLineCount <= 0) {
+                    throw new BusinessException(ErrorCodes.DELETE_DATA_ERROR);
                 }
             }
         } catch (BusinessException e) {

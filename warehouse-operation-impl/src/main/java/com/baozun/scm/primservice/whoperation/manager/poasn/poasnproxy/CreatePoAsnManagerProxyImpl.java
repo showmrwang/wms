@@ -403,8 +403,11 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
                 poLineManager.createPoLineBatchToShareNew(bipo.getExtCode(), bipo.getStoreId(), bipo.getOuId(), infoPolineList);
             }
             log.info("CreatePoLineBatch end =======================");
+        } catch (BusinessException ex) {
+            throw ex;
         } catch (Exception e) {
             log.error(e + "");
+            throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
         }
     }
 
@@ -874,7 +877,7 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
             WhAsn asn = this.asnManager.findTempAsnByPoIdOuIdUuid(command.getId(), command.getOuId(), null);
             List<WhAsnLine> lineList = null;
             if (asn != null) {
-                lineList = this.asnLineManager.findWhAsnLineByAsnIdOuIdUuid(asn.getId(), command.getOuId(), null);
+                lineList = this.asnLineManager.findTempWhAsnLineByAsnIdOuIdNotUuid(asn.getId(), command.getOuId(), null);
                 if (StringUtils.isEmpty(asn.getUuid())) {
                     asn = null;
                 }

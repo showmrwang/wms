@@ -138,6 +138,7 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
         } catch (BusinessException e) {
             throw e;
         } catch (Exception ex) {
+            log.error("" + ex);
             throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
         }
     }
@@ -150,11 +151,16 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
             List<WhPoLine> lineList = this.whPoLineDao.findWhPoLineByPoIdOuIdUuid(po.getId(), po.getOuId(), null);
             if(lineList!=null&&lineList.size()>0){
                 for(WhPoLine line:lineList){
-                    this.whPoLineDao.deletePoLineByIdOuId(line.getId(), line.getOuId());
+                    int deleteCount = this.whPoLineDao.deletePoLineByIdOuId(line.getId(), line.getOuId());
+                    if (deleteCount <= 0) {
+                        throw new BusinessException(ErrorCodes.DELETE_DATA_ERROR);
+                    }
                 }
             }
             // 删除PO表头信息
             whPoDao.deleteByIdOuId(po.getId(), po.getOuId());
+        } catch (BusinessException ex) {
+            throw ex;
         } catch (Exception e) {
             throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
         }

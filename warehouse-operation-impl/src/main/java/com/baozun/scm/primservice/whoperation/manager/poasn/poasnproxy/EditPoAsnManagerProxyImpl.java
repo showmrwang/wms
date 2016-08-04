@@ -254,7 +254,10 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
         try {
             poManager.deletePoAndPoLineToShard(whpo, userId);
             poManager.deletePoAndPoLineToInfo(infoPo, userId);
+        } catch (BusinessException ex) {
+            throw ex;
         } catch (Exception e) {
+            log.error("" + e);
             throw new BusinessException(ErrorCodes.DELETE_FAILURE);
         }
         log.info("DeletePoAndPoLine end =======================");
