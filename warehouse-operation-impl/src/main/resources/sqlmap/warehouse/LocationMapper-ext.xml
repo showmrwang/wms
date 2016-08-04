@@ -9,6 +9,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<resultMap id="LocationResultExt"
 		type="com.baozun.scm.primservice.whoperation.model.warehouse.Location">
 	</resultMap>
+	
+	<resultMap id="LocationResultCommandExt"
+		type="com.baozun.scm.primservice.whoperation.command.warehouse.LocationCommand">
+	</resultMap>
 
 	<!-- 用于select查询公用抽取的列 -->
 	<sql id="locationColumnsExt">
@@ -964,5 +968,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				and ${cSql}
 			</if>
 	</select>
+	
+	
+	 <!-- 根据barcode查询库位信息 lijun.shen --> 
+     <select id="getLocationByBarcode" resultMap="LocationResultCommandExt">
+    	select <include refid="locationColumnsExt" />
+	    from t_wh_location 
+		<include refid="locationDynamicWhereExt"/>
+    </select>
+	
 
 </mapper>
