@@ -13,6 +13,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	</resultMap>
 	<resultMap id="ContainerCommandResultExt" type="com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand">
 	</resultMap>
+		
+	<resultMap id="WhSkuInventoryCommandResultExt" type="com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand">
+	</resultMap>
+	
 	
 	<!-- 用于select查询公用抽取的列 -->
 	<sql id="whSkuInventoryColumnsExt">
@@ -394,10 +398,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
 	</sql>
 	
-	
-	<resultMap id="WhSkuInventoryCommandResultExt" type="com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand">
-	</resultMap>
-	
+
 	<select id="findListCountByQueryMapExt" resultType="long">
 		select count(t.uuid) from (
 			select <include refid="whSkuInventoryCommandMergeExt" />
@@ -563,7 +564,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        		inv.last_modify_time as lastModifyTime
 					from 
 					t_wh_sku_inventory inv 
-					left join t_wh_container c on c.id = inv.inside_container_id
+					left join t_wh_container c on c.id = inv.outer_container_id
 					where 
 					inv.ou_id = #{ouid}
 					and c.code in 
@@ -1181,5 +1182,41 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
             #{item}
         </foreach>
     </select>
+
+
+
+
+	<!-- 查询外部容器库存记录的数量-->
+	<select id="findContainerInventoryCountsByOuterContainerId" resultType="Integer">
+		select count(*)
+		from
+		t_wh_sku_inventory as inv
+		where
+		inv.ou_id = #{ouId}
+		and inv.outer_container_id = #{containerId}
+	</select>
+
+
+    <!-- 查询内部容器库存记录的数量 lijun.shen-->
+	<select id="findContainerInventoryCountsByInsideContainerId"  resultType="Integer">
+		select count(*)
+		from
+		t_wh_sku_inventory as inv
+		where
+		inv.ou_id = #{ouId}
+		and inv.inside_container_id = #{containerId}
+	</select>
+
+
+ 	<!--  查询容器内的商品种类  lijun.shen-->
+	<select id="getSkuInvListByOutContainerID" resultMap="WhSkuInventoryCommandResultExt">
+		select *, count(distinct sku_id) 
+		from
+		t_wh_sku_inventory as inv
+		where
+		inv.ou_id = #{ouId}
+		and inv.outer_container_id = #{containerId}  group by sku_id
+	</select>
+
 
 </mapper>

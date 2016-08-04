@@ -47,7 +47,11 @@
     <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.pda.sortation.PdaInboundSortationManager"  ref="pdaInboundSortationManager" />
     	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.sortation.WhContainerAssignManager" ref="whContainerAssignManager" />  
     	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryLogManager" ref="whSkuInventoryLogManager" />  
-    	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventorySnLogManager" ref="whSkuInventorySnLogManager" />  
+    	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventorySnLogManager" ref="whSkuInventorySnLogManager" />
+
+    <!-- 人为指定上架-->
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.pda.putaway.PdaManMadePutawayManager"  ref="pdaManMadePutawayManager" />
+
 
     
     <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.pda.PdaContainerRcvdManagerProxy"  ref="pdaContainerRcvdManagerProxy" />

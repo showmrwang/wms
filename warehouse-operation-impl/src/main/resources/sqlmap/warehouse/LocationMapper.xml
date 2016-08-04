@@ -8,6 +8,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<resultMap id="LocationResult" type="com.baozun.scm.primservice.whoperation.model.warehouse.Location">
 	</resultMap>
 	
+	
 	<!-- 用于select查询公用抽取的列 -->
 	<sql id="locationColumns">
 	    <![CDATA[
@@ -465,6 +466,5 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		<include refid="locationDynamicWhere"/>
 		
     </select>
-
 	
 </mapper>
