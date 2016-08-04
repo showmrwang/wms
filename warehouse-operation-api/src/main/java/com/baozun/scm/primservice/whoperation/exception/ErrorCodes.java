@@ -376,9 +376,9 @@ public class ErrorCodes {
     public static final int RCVD_INV_INFO_NOT_OCCUPY_ERROR = 40005;
     /** 上架失败，收货库存信息没有推荐库位！ */
     public static final int RCVD_INV_NOT_HAS_LOCATION_ERROR = 40006;
-    /** 容器号[{0}]状态无法上架！*/
+    /** 容器号[{0}]状态无法上架！ */
     public static final int CONTAINER_STATUS_ERROR_UNABLE_PUTAWAY = 40007;
-    /** 容器号[{0}]是内部容器，请扫描外部容器号*/
+    /** 容器号[{0}]是内部容器，请扫描外部容器号 */
     public static final int CONTAINER_IS_INSIDE_ERROR_UNABLE_PUTAWAY = 40008;
     /** 收货库存信息没有内部容器异常！ */
     public static final int RCVD_INV_NOT_HAS_INSIDE_CONTAINER_ERROR = 40009;
@@ -469,6 +469,33 @@ public class ErrorCodes {
     // 70001-80000 tangming
     // 70001-80000 tangming
 
+
+
     // 80001-90000 shenlijun
+
+    /** 容器号不能为空 */
+    public static final int PDA_MAN_MADE_PUTAWAY_CONTAINERCODE_NULL = 80001;
+    /** 容器不存在 */
+    public static final int PDA_MAN_MADE_PUTAWAY_CONTAINER_NULL = 80002;
+    /** 容器对应的库存记录不存在 */
+    public static final int PDA_MAN_MADE_PUTAWAY_CONTAINER_INV_NULL = 80003;
+    /** 容器库存记录异常 */
+    public static final int PDA_MAN_MADE_PUTAWAY_CONTAINER_INV_ERROR = 80004;
+    /** 托盘内sku商品种类数量异常 */
+    public static final int PDA_MAN_MADE_PUTAWAY_SKU_AMOUNT_ERROR = 80005;
+    /**容器内有商品不允许混放，不能整托/整箱上架 */
+    public static final int PDA_MAN_MADE_PUTAWAY_SKU_NOTALLOWED_MIX = 80006;
+    /**库位号不能为空*/
+    public static final int  PDA_MAN_MADE_PUTAWAY_BARCODE_NULL = 80007;
+    /**库位不存在*/
+    public static final int  PDA_MAN_MADE_PUTAWAY_LOCATION_NULL = 80008;
+    /**库位生命周五无效*/
+    public static final int  PDA_MAN_MADE_PUTAWAY_LOCATION_LIFECYCLE_ERROR = 80009;
+    
+    
+    
+    
+
+
     // 80001-90000 shenlijun
 }

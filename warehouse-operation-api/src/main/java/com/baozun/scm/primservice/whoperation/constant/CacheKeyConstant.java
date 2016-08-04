@@ -55,6 +55,13 @@ public final class CacheKeyConstant {
     /** 商品主档信息缓存 前缀+SKUID+OUID */
     public static final String WMS_CACHE_SKU_MASTER = "WMS_CACHE_SKU_MASTER_";
 
+    
+    /**
+     * 容器对应skuId缓存:根据容器号查询出库存，再根据库存查询该库存对应的有哪些sku_id,然后将sku_id存入缓存中
+     */
+    public static final String CACHE_MMP_CONTAINER_CODE_PREFIX = "CACHE_MMP_CONTAINER_CODE_PREFIX_";
+    
+    
 
     // 过期时间
     public static final int CACHE_ONE_SECOND = 1;
