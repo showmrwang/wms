@@ -120,5 +120,14 @@ public interface WhLocationDao extends BaseDao<Location, Long> {
      * @return
      */
     List<LocationCommand> findAllAvailableLocsByAreaId(@Param("areaId") Long id, @Param("ouId") Long ouId, @Param("cSql") String cSql);
+
+    /**
+     * 根据库位条码查询库位是否存在
+     * 
+     * @author lijun.shen
+     * @param barCode
+     * @return
+     */
+    Location getLocationByBarcode(String barCode);
     
 }

@@ -17,15 +17,6 @@ package com.baozun.scm.primservice.whoperation.dao.warehouse.inventory;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.ibatis.annotations.Param;
-
-import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdContainerCacheCommand;
-import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
-import com.baozun.scm.primservice.whoperation.command.warehouse.LocationCommand;
-import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
-import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
-import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
-
 import lark.common.annotation.CommonQuery;
 import lark.common.annotation.QueryPage;
 import lark.common.dao.Page;
@@ -33,6 +24,16 @@ import lark.common.dao.Pagination;
 import lark.common.dao.QueryCondition;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
+
+import org.apache.ibatis.annotations.Param;
+
+import com.baozun.scm.primservice.whoperation.command.pda.putaway.PdaManMadePutawayCommand;
+import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdContainerCacheCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.LocationCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
+import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 
 public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
 
@@ -291,4 +292,42 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @return
      */
     List<ContainerCommand> findAllInsideContainerByOuterContainerId(@Param("ouid") Long ouid, @Param("outerContainerid") Long outerContainerid);
+
+    /**
+     * 根据容器号查询外部容器库存记录的数量
+     * 
+     * @author lijun.shen
+     * @param pdaManMadePutawayCommand 
+     * @param ouId
+     * @param containerId
+     * @return
+     */
+    int findContainerInventoryCountsByOuterContainerId(PdaManMadePutawayCommand pdaManMadePutawayCommand);
+    
+    
+    /**
+     * 根据容器号查询外部容器库存记录的数量
+     * 
+     * @author lijun.shen
+     * @param ouId
+     * @param containerId
+     * @return
+     */
+    int findContainerInventoryCountsByInsideContainerId(PdaManMadePutawayCommand pdaManMadePutawayCommand);
+    
+    
+    /**
+     * 根据容器号查询外部容器库存记录的数量
+     * 
+     * @author lijun.shen
+     * @param ouId
+     * @param containerId
+     * @return
+     */
+    List<WhSkuInventoryCommand> getSkuInvListByOutContainerID(Long ouId, Long containerId, String logId);
+    
+    
+    
+    
+
 }
