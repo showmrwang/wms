@@ -424,7 +424,7 @@ public class AsnManagerImpl extends BaseManagerImpl implements AsnManager {
             whAsnDao.insert(whAsn);
             // 插入日志
             this.insertGlobalLog(GLOBAL_LOG_INSERT, whAsn, ouId, userId, null, null);
-            if (whpo.getStatus() == PoAsnStatus.PO_NEW) {
+            if (PoAsnStatus.PO_NEW == whpo.getStatus()) {
                 // 如果是新建状态 改状态为已创建ASN
                 whpo.setStatus(PoAsnStatus.PO_CREATE_ASN);
                 whpo.setModifiedId(userId);
