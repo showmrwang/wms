@@ -715,7 +715,7 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
             if (updateCount <= 0) {
                 throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
             }
-            Container container = this.containerDao.findByIdExt(outerContainerId, ouId);
+            Container container = this.containerDao.findByIdExt(insideContainerId, ouId);
             container.setStatus(ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY);
             container.setOperatorId(userId);
             int containerCount = this.containerDao.saveOrUpdateByVersion(container);
