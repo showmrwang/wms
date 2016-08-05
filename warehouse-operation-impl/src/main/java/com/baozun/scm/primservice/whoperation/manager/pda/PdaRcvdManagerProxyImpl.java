@@ -25,8 +25,8 @@ import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdContainerCach
 import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdSnCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
+import com.baozun.scm.primservice.whoperation.command.sku.SkuRedisCommand;
 import com.baozun.scm.primservice.whoperation.command.sku.skucommand.SkuMgmtCommand;
-import com.baozun.scm.primservice.whoperation.command.sku.skushared.SkuCommand2Shared;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.carton.WhCartonCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
@@ -42,6 +42,7 @@ import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnLine
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoLineManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoManager;
+import com.baozun.scm.primservice.whoperation.manager.redis.SkuRedisManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.StoreManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WarehouseManager;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
@@ -93,6 +94,8 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
     private WarehouseManager warehouseManager;
     @Autowired
     private StoreManager storeManager;
+    @Autowired
+    private SkuRedisManager skuRedisManager;
 
     /**
      * 扫描ASN时 初始化缓存
@@ -303,7 +306,6 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                     skuInv.setOnHandQty(cacheInv.getSkuBatchCount().doubleValue());
                 }
                 skuInvMap.put(uuid, skuInv);
-
                 // 插入日志表
                 String asnRcvdLogMaoKey = lineId + uuid;
                 WhAsnRcvdLog asnRcvdLog = new WhAsnRcvdLog();
@@ -521,9 +523,11 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
             } catch (Exception ex) {
                 throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
             }
-            // 释放容器缓存
-            this.cacheManager.remove(CacheKeyConstant.CACHE_RCVD_CONTAINER_USER_PREFIX + insideContainerId);
-            this.cacheManager.remove(CacheKeyConstant.CACHE_RCVD_CONTAINER_PREFIX + insideContainerId);
+            // 释放容器缓存:如果外部容器为空，则释放缓存；否则不释放
+            if (outerContainerId == null) {
+                this.cacheManager.remove(CacheKeyConstant.CACHE_RCVD_CONTAINER_USER_PREFIX + insideContainerId);
+                this.cacheManager.remove(CacheKeyConstant.CACHE_RCVD_CONTAINER_PREFIX + insideContainerId);
+            }
             // 释放库存
             // 释放SN缓存
             this.cacheManager.remove(CacheKeyConstant.CACHE_RCVD_SN_PREFIX + userId);
@@ -694,7 +698,9 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
         rcvdCacheCommand.setLastModifyTime(new Date());
         rcvdCacheCommand.setOuId(command.getOuId());
         // 默认为良品
-        rcvdCacheCommand.setInvStatus(3L);
+        if (null == command.getInvStatus()) {
+            rcvdCacheCommand.setInvStatus(Constants.INVENTORY_STATUS_GOOD);
+        }
         rcvdCacheCommand.setInsideContainerCode(command.getInsideContainerCode());
         // 占用单据来源
         rcvdCacheCommand.setOccupationCodeSource(Constants.SKU_INVENTORY_OCCUPATION_SOURCE_ASN);
@@ -1688,6 +1694,16 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
         this.cacheManager.remove(CacheKeyConstant.CACHE_RCVD_CONTAINER_USER_PREFIX + outerContainerId);
         // 释放托盘-货箱缓存
         this.cacheManager.remove(CacheKeyConstant.CACHE_RCVD_PALLET_PREFIX + outerContainerId);
+
+        // 清除容器-商品缓存
+        List<String> containerList = this.cacheManager.findLists(CacheKeyConstant.CACHE_RCVD_PALLET_PREFIX + outerContainerId, 0, this.cacheManager.listLen(CacheKeyConstant.CACHE_RCVD_PALLET_PREFIX + outerContainerId));
+        if(containerList!=null){
+            for (String containerId : containerList) {
+                this.cacheManager.remove(CacheKeyConstant.CACHE_RCVD_CONTAINER_PREFIX + containerId);
+            }
+        }
+        // 清除托盘-货箱缓存
+        this.cacheManager.remove(CacheKeyConstant.CACHE_RCVD_PALLET_PREFIX + outerContainerId);
     }
 
     @Override
@@ -1713,6 +1729,11 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
 
     @Override
     public WhSkuInventoryCommand initSkuWhenScanning(WhSkuInventoryCommand command) {
+        //LOGID
+        String logId=command.getLogId();
+        Long skuId = null;
+        Integer quantity = null;
+        Long ouId=command.getOuId();
         // 累计数量
         if (null == command.getSkuAddUpCount()) {
             command.setSkuAddUpCount(0);
@@ -1724,20 +1745,35 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
             if (asn == null) {
                 throw new BusinessException(ErrorCodes.ASN_CACHE_ERROR);
             }
-            SkuCommand2Shared sku = this.generalRcvdManager.findSkuByBarCodeCustomerIdOuId(command.getSkuCode(), asn.getCustomerId(), command.getOuId());
+            Map<Long, Integer> skuMap = this.skuRedisManager.findSkuByBarCode(command.getSkuCode(), logId);
+            Iterator<Entry<Long, Integer>> skuIt = skuMap.entrySet().iterator();
+            String asnSkuCount;
+            while (skuIt.hasNext()) {
+                Entry<Long, Integer> entry = skuIt.next();
+                asnSkuCount = cacheManager.getValue(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + command.getOccupationId() + "_" + entry.getKey());
+                if (StringUtils.hasText(asnSkuCount)) {
+                    skuId = entry.getKey();
+                    quantity = entry.getValue();
+                    break;
+                }
+
+            }
+            if (null == skuId) {
+                throw new BusinessException(ErrorCodes.SKU_CACHE_ERROR);
+            }
+
+            SkuRedisCommand sku = this.skuRedisManager.findSkuMasterBySkuId(skuId, ouId, logId);
             if (null == sku) {
                 throw new BusinessException(ErrorCodes.RCVD_SKU_EXPRIED_ERROR);
             }
+            command.setQuantity(quantity);
+            command.setSkuId(skuId);
             // 校验扫描的商品是否在缓存中，如果不在，推出错误
             // TODO 理论上需要调用ASN数据，查看是否存在此商品，存在，则刷新缓存，不存在，则推出错误
             // 校验商品数量是否超过超收数量，此处不校验，放到匹配明细逻辑校验
-            String asnSkuCount = cacheManager.getValue(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + command.getOccupationId() + "_" + sku.getSku().getId());
-            if (StringUtils.isEmpty(asnSkuCount)) {
-                throw new BusinessException(ErrorCodes.SKU_CACHE_ERROR);
-            }
+
             String optList = this.getOptMapStr(sku);
             command.setSkuUrl(optList);
-            command.setSkuId(sku.getSku().getId());
             // @mender yimin.lu 2016/6/24 效期
             if (null != sku.getSkuMgmt()) {
                 SkuMgmtCommand skuMgmt = new SkuMgmtCommand();
@@ -1754,12 +1790,6 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                     command.setDayOfValidDate(day);
                 }
             }
-            // 设置多条码数量
-            if (null != sku.getSkuBarcode()) {
-                command.setQuantity(sku.getSkuBarcode().getQuantity().intValue());
-            } else {
-                command.setQuantity(1);
-            }
         }
         return command;
     }
@@ -1770,7 +1800,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
      * @param sku
      * @return
      */
-    private String getOptMapStr(SkuCommand2Shared sku) {
+    private String getOptMapStr(SkuRedisCommand sku) {
         // 指针列表：
         // 0：是否管理效期
         // 1:是否管理批次号

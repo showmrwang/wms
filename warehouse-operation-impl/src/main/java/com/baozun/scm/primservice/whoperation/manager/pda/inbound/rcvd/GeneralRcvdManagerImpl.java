@@ -439,9 +439,12 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
     public void saveScanedSkuWhenGeneralRcvdForPda(List<WhSkuInventorySn> saveSnList, List<WhAsnRcvdSnLog> saveSnLogList, List<WhSkuInventory> saveInvList, List<WhAsnRcvdLog> saveInvLogList, List<WhAsnLine> saveAsnLineList, WhAsn asn,
             List<WhPoLine> savePoLineList, WhPo po, Container container, List<WhCarton> saveWhCartonList) {
         try {
+            Long userId = po.getModifiedId();
             // 保存残次信息
             for (WhSkuInventorySn sn : saveSnList) {
                 this.whSkuInventorySnDao.insert(sn);
+                // 插入SN日志
+                this.insertSkuInventorySnLog(sn.getUuid(), sn.getOuId());
             }
             // 保存残次日志
             for (WhAsnRcvdSnLog snlog : saveSnLogList) {
@@ -456,12 +459,16 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
                 WhSkuInventory skuInv = this.whSkuInventoryDao.findWhSkuInventoryByUuid(inv.getOuId(), inv.getUuid());
                 if (null == skuInv) {
                     this.whSkuInventoryDao.insert(inv);
+                    this.insertSkuInventoryLog(inv.getId(), inv.getOnHandQty(), Constants.DEFAULT_DOUBLE, true, inv.getOuId(), userId);
                 } else {
+                    Double oldQty = skuInv.getOnHandQty();
                     skuInv.setOnHandQty(skuInv.getOnHandQty() + inv.getOnHandQty());
                     this.whSkuInventoryDao.saveOrUpdateByVersion(skuInv);
+                    // 插入库存日志
+                    this.insertSkuInventoryLog(skuInv.getId(), skuInv.getOnHandQty(), oldQty, true, skuInv.getOuId(), userId);
                 }
             }
-            // 保存库存日志
+            // 保存收货日志
             for (WhAsnRcvdLog invLog : saveInvLogList) {
                 this.whAsnRcvdLogDao.insert(invLog);
             }
