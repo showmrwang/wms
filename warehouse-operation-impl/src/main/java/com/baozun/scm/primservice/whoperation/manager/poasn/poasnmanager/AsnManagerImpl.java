@@ -403,7 +403,7 @@ public class AsnManagerImpl extends BaseManagerImpl implements AsnManager {
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void createAsnBatch(WhAsnCommand asn, WhPo whpo, List<WhPoLine> whPoLines) {
-        try{
+        try {
             Long userId = asn.getUserId();
             Long ouId = asn.getOuId();
             WhAsn whAsn = new WhAsn();
@@ -502,8 +502,7 @@ public class AsnManagerImpl extends BaseManagerImpl implements AsnManager {
         Long ouId = whAsnCommand.getOuId();
         Long userId = whAsnCommand.getModifiedId();
         if (log.isDebugEnabled()) {
-            log.debug(this.getClass().getSimpleName() + ".deleteAsnAndAsnLineToShard method params:[asnId:{},ouId:{},operator:{},asn:{},po:{},polineList:{}]", asnId, ouId, userId, whAsnCommand, whpo,
-                    polineList);
+            log.debug(this.getClass().getSimpleName() + ".deleteAsnAndAsnLineToShard method params:[asnId:{},ouId:{},operator:{},asn:{},po:{},polineList:{}]", asnId, ouId, userId, whAsnCommand, whpo, polineList);
         }
 
         try {
@@ -634,20 +633,20 @@ public class AsnManagerImpl extends BaseManagerImpl implements AsnManager {
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<Long> getWhAsnCommandByCustomerId(List<Long> customerList, List<Long> storeList) {
         // TODO Auto-generated method stub
-        log.info("AsnManagerImpl getWhAsnCommandByCustomerId is start"); 
-        if(log.isDebugEnabled()) {
-            log.debug("AsnManagerImpl getWhAsnCommandByCustomerId Param is [customerList {},storeList {}]",customerList,storeList);
-        } 
+        log.info("AsnManagerImpl getWhAsnCommandByCustomerId is start");
+        if (log.isDebugEnabled()) {
+            log.debug("AsnManagerImpl getWhAsnCommandByCustomerId Param is [customerList {},storeList {}]", customerList, storeList);
+        }
         List<Long> list = whAsnDao.getWhAsnCommandByCustomerId(customerList, storeList);
-        log.info("AsnManagerImpl getWhAsnCommandByCustomerId is end"); 
+        log.info("AsnManagerImpl getWhAsnCommandByCustomerId is end");
         return list;
     }
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void saveTempAsnWithUuidToShard(WhAsn asn, List<WhAsnLine> saveAsnLineList, WhPo po, List<WhPoLine> savePoLineList) {
-        try{
-            
+        try {
+
             int updateAsnCount = this.whAsnDao.saveOrUpdateByVersion(asn);
             if (updateAsnCount <= 0) {
                 throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
@@ -668,9 +667,9 @@ public class AsnManagerImpl extends BaseManagerImpl implements AsnManager {
                     throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
                 }
             }
-        }catch(BusinessException ex){
+        } catch (BusinessException ex) {
             throw ex;
-        }catch(Exception e){
+        } catch (Exception e) {
             throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
         }
     }
