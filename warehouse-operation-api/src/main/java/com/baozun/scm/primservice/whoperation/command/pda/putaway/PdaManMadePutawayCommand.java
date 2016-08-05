@@ -58,6 +58,8 @@ public class PdaManMadePutawayCommand extends BaseCommand {
     private String barCode;
     /** 库存状态*/
     private Long statusId;
+    /** sku条码*/
+    private String skuBarcode;
     
     
     
@@ -152,6 +154,10 @@ public class PdaManMadePutawayCommand extends BaseCommand {
         this.scanPattern = scanPattern;
     }
 
+    public void setBarCode(String barCode) {
+        this.barCode = barCode;
+    }
+
     public Boolean getIsEntireTrayPutaway() {
         return isEntireTrayPutaway;
     }
@@ -220,10 +226,6 @@ public class PdaManMadePutawayCommand extends BaseCommand {
         return barCode;
     }
 
-    public void setBarCode(String barCode) {
-        this.barCode = barCode;
-    }
-
     public Long getStatusId() {
         return statusId;
     }
@@ -231,6 +233,13 @@ public class PdaManMadePutawayCommand extends BaseCommand {
     public void setStatusId(Long statusId) {
         this.statusId = statusId;
     }
-    
+
+    public String getSkuBarcode() {
+        return skuBarcode;
+    }
+
+    public void setSkuBarcode(String skuBarcode) {
+        this.skuBarcode = skuBarcode;
+    }
 }
 
