@@ -379,7 +379,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                     for (RcvdSnCacheCommand rcvdSn : cacheInv.getSnList()) {
                         // #条码 调用条码生成器
                         String barCode = null;
-                        if (null == rcvdSn.getDefectTypeId()) {
+                        if (null != rcvdSn.getDefectTypeId()) {
                             barCode = this.codeManager.generateCode(Constants.WMS, Constants.INVENTORY_SN_BARCODE, null, Constants.INVENTORY_SN_BARCODE_PREFIX, null);
                         }
 
@@ -1793,7 +1793,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
             list[Constants.GENERAL_RECEIVING_ISBATCHNO] = mgt.getIsBatchNo() ? '1' : '0';
             list[Constants.GENERAL_RECEIVING_ISCOUNTRYOFORIGIN] = mgt.getIsCountryOfOrigin() ? '1' : '0';
             list[Constants.GENERAL_RECEIVING_ISINVTYPE] = mgt.getIsInvType() ? '1' : '0';
-            if (null == mgt.getSerialNumberType() || "2".equals(mgt.getSerialNumberType())) {
+            if (null == mgt.getSerialNumberType() || Constants.SERIAL_NUMBER_TYPE_OUT.equals(mgt.getSerialNumberType()) || Constants.SERIAL_NUMBER_TYPE_ALL_NOT.equals(mgt.getSerialNumberType())) {
                 list[Constants.GENERAL_RECEIVING_ISSERIALNUMBER] = '0';
             } else {
                 list[Constants.GENERAL_RECEIVING_ISSERIALNUMBER] = '1';
