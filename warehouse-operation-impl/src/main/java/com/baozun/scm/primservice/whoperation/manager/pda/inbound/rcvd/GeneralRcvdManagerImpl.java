@@ -789,7 +789,7 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
                 // 失效日期小于当前日期,即商品已经过期
                 if (isExpiredGoodsReceive) {
                     // 如果可以收过期商品 返回true
-                    res = true;
+                    return true;
                 } else {
                     // 如果不可以收过期商品 返回false
                     return false;
@@ -803,17 +803,17 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
             e.printStackTrace();
             return false;
         }
-        // 3.判断商品效期是否在最大有效天数与最小有效天数内
+        // 3.没有过期商品 判断商品效期是否在最大有效天数与最小有效天数内
         Integer maxValidDate = mgmt.getMaxValidDate();
         Integer minValidDate = mgmt.getMinValidDate();
         try {
-            Date mfgDate1 = sdf.parse(mfgDate);
+            // Date mfgDate1 = sdf.parse(mfgDate);
             Date expDate1 = sdf.parse(expDate);
-            Integer timeSub = (int) ((expDate1.getTime() - mfgDate1.getTime()) / 86400000);
+            Integer timeSub = (int) ((expDate1.getTime() - currDate.getTime()) / 86400000);
             // Integer validDate = mgmt.getValidDate();
             if (null != maxValidDate && null != minValidDate) {
                 // 商品属性有最大效期和最小效期
-                if (timeSub > minValidDate && timeSub < maxValidDate) {
+                if (timeSub >= minValidDate && timeSub <= maxValidDate) {
                     // 如果有效天数在效期区间内 返回true
                     res = true;
                 } else {
