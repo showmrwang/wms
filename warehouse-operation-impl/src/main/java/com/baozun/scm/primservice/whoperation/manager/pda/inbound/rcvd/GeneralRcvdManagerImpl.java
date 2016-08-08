@@ -28,6 +28,7 @@ import com.baozun.scm.primservice.whoperation.command.sku.skucommand.SkuCommand;
 import com.baozun.scm.primservice.whoperation.command.sku.skucommand.SkuStandardPackingCommand;
 import com.baozun.scm.primservice.whoperation.command.sku.skushared.SkuCommand2Shared;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhAsnRcvdLogCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.carton.WhCartonCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
@@ -44,6 +45,7 @@ import com.baozun.scm.primservice.whoperation.dao.sku.SkuMgmtDao;
 import com.baozun.scm.primservice.whoperation.dao.sku.SkuStandardPackingDao;
 import com.baozun.scm.primservice.whoperation.dao.system.SysDictionaryDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.Container2ndCategoryDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerAssistDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.StoreDefectReasonsDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.StoreDefectTypeDao;
@@ -134,6 +136,8 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
     private SkuExtattrDao skuExtattrDao;
     @Autowired
     private SkuMgmtDao skuMgmtDao;
+    @Autowired
+    private ContainerAssistDao containerAssistDao;
 
     @Override
     @Deprecated
@@ -436,7 +440,7 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void saveScanedSkuWhenGeneralRcvdForPda(List<WhSkuInventorySn> saveSnList, List<WhAsnRcvdSnLog> saveSnLogList, List<WhSkuInventory> saveInvList, List<WhAsnRcvdLog> saveInvLogList, List<WhAsnLine> saveAsnLineList, WhAsn asn,
+    public void saveScanedSkuWhenGeneralRcvdForPda(List<WhSkuInventorySn> saveSnList, List<WhSkuInventory> saveInvList, List<WhAsnRcvdLogCommand> saveInvLogList, List<WhAsnLine> saveAsnLineList, WhAsn asn,
             List<WhPoLine> savePoLineList, WhPo po, Container container, List<WhCarton> saveWhCartonList) {
         try {
             Long userId = po.getModifiedId();
@@ -445,10 +449,6 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
                 this.whSkuInventorySnDao.insert(sn);
                 // 插入SN日志
                 this.insertSkuInventorySnLog(sn.getUuid(), sn.getOuId());
-            }
-            // 保存残次日志
-            for (WhAsnRcvdSnLog snlog : saveSnLogList) {
-                this.whAsnRcvdSnLogDao.insert(snlog);
             }
             // 更新装箱信息表
             for (WhCarton whCarton : saveWhCartonList) {
@@ -469,8 +469,17 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
                 }
             }
             // 保存收货日志
-            for (WhAsnRcvdLog invLog : saveInvLogList) {
+            for (WhAsnRcvdLogCommand invLogCommand : saveInvLogList) {
+                WhAsnRcvdLog invLog = new WhAsnRcvdLog();
+                BeanUtils.copyProperties(invLogCommand, invLog);
                 this.whAsnRcvdLogDao.insert(invLog);
+                // 保存残次日志
+                if (null != invLogCommand.getWhAsnRcvdSnLogList()) {
+                    for (WhAsnRcvdSnLog snlog : invLogCommand.getWhAsnRcvdSnLogList()) {
+                        snlog.setAsnRcvdId(invLog.getId());
+                        this.whAsnRcvdSnLogDao.insert(snlog);
+                    }
+                }
             }
             // 更新ASN明细
             for (WhAsnLine asnline : saveAsnLineList) {
@@ -514,6 +523,8 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
                 if (updateContainerCount <= 0) {
                     throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
                 }
+                // 更新容器辅助表 TODO
+                this.updateContainerAssistByVersion(container.getId(), container.getOuId());
             }
         } catch (BusinessException e) {
             throw e;
@@ -521,6 +532,10 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
             throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
         }
 
+    }
+
+    private void updateContainerAssistByVersion(Long id, Long ouId) {
+        this.containerAssistDao.findByContainerId(id, ouId);
     }
 
     @Override
