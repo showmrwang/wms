@@ -492,6 +492,7 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
             boolean isAsnRcvdFinished = this.whAsnDao.checkIsRcvdFinished(asn.getId(), asn.getOuId());
             if (isAsnRcvdFinished) {
                 asn.setStatus(PoAsnStatus.ASN_RCVD_FINISH);
+                asn.setStopTime(new Date());
             } else {
                 asn.setStatus(PoAsnStatus.ASN_RCVD);
             }
@@ -510,6 +511,7 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
             boolean isPoRcvdFinished = this.whPoDao.checkIsRcvdFinished(po.getId(), po.getOuId());
             if (isPoRcvdFinished) {
                 po.setStatus(PoAsnStatus.PO_RCVD_FINISH);
+                po.setStopTime(new Date());
             } else {
                 po.setStatus(PoAsnStatus.PO_RCVD);
             }

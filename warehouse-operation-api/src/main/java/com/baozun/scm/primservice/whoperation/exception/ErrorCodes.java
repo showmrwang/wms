@@ -352,6 +352,8 @@ public class ErrorCodes {
 
     /** PO单校验相关单据号失败，同一个店铺下有相同的相关单据号 */
     public static final int PO_CHECK_EXTCODE_ERROR = 10040;
+    /**收货的货箱号不能和托盘号相同!*/
+    public static final int RCVD_CONTAINER_NO_DUPLICATION = 10041;
     // 10001-20000 luyimin
 
 

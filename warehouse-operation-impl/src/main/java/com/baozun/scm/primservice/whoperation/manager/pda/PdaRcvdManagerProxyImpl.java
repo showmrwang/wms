@@ -182,6 +182,17 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                 cacheManager.setObject(CacheKeyConstant.CACHE_ASN_PREFIX + occupationId, cacheAsn, 24 * 60 * 60);
                 // 解锁
                 this.asnManager.updateByVersionForUnLock(occupationId, ouId);
+                // 设置PO和ASN的开始收货时间
+                WhAsn asn = this.asnManager.findWhAsnByIdToShard(occupationId, ouId);
+                if (null == asn.getStartTime()) {
+                    asn.setStartTime(new Date());
+                    this.asnManager.saveOrUpdateByVersionToShard(asn);
+                }
+                WhPo savePo = this.poManager.findWhPoByIdToInfo(asn.getPoId(), ouId);
+                if (null == po.getStartTime()) {
+                    po.setStartTime(new Date());
+                    this.poManager.saveOrUpdateByVersionToShard(savePo);
+                }
             } else {
                 throw new BusinessException(ErrorCodes.ASN_CACHE_ERROR);
             }
@@ -1273,6 +1284,11 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
         // 2.2容器缓存
         // 2.3容器商品属性缓存
         boolean flag = false;
+        if (null != command.getOuterContainerId()) {
+            if (command.getOuterContainerCode().equals(command.getInsideContainerCode())) {
+                throw new BusinessException(ErrorCodes.RCVD_CONTAINER_NO_DUPLICATION);
+            }
+        }
         // 测试用
         // this.cacheManager.removeMapValue(CacheKeyConstant.CACHE_RCVD_CONTAINER, "14100017");
         ContainerCommand containerCommand = this.generalRcvdManager.findContainerByCode(command.getInsideContainerCode(), command.getOuId());
