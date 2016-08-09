@@ -188,7 +188,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                     asn.setStartTime(new Date());
                     this.asnManager.saveOrUpdateByVersionToShard(asn);
                 }
-                WhPo savePo = this.poManager.findWhPoByIdToInfo(asn.getPoId(), ouId);
+                WhPo savePo = this.poManager.findWhPoByIdToShard(asn.getPoId(), ouId);
                 if (null == po.getStartTime()) {
                     po.setStartTime(new Date());
                     this.poManager.saveOrUpdateByVersionToShard(savePo);
@@ -530,16 +530,14 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
             po.setQtyRcvd(po.getQtyRcvd() + asnCount);
             // 更新容器
             Container container = null;
-            if (null == outerContainerId) {
-                container = this.generalRcvdManager.findContainerByIdToShard(insideContainerId, ouId);
-                if (null == container) {
-                    throw new BusinessException(ErrorCodes.CONTAINER_RCVD_GET_ERROR);
-                }
-                container.setStatus(ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY);
-                container.setOperatorId(userId);
+            container = this.generalRcvdManager.findContainerByIdToShard(insideContainerId, ouId);
+            if (null == container) {
+                throw new BusinessException(ErrorCodes.CONTAINER_RCVD_GET_ERROR);
             }
-            try {
+            container.setStatus(ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY);
+            container.setOperatorId(userId);
 
+            try {
                 this.generalRcvdManager.saveScanedSkuWhenGeneralRcvdForPda(saveSnList, saveInvList, saveInvLogList, saveAsnLineList, asn, savePoLineList, po, container, saveWhCartonList);
             } catch (BusinessException e) {
                 throw e;
@@ -800,7 +798,6 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
      * 初始化匹配的明细行ID集合
      */
     public String initMatchedLineIdStr(WhSkuInventoryCommand command) {
-        command.setQuantity(1);
         int skuPlannedCount = command.getSkuBatchCount() * command.getQuantity();// PDA扫描收货数量
         // 可用数量
         Integer asnSkuCount = Integer.parseInt(cacheManager.getValue(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + command.getOccupationId() + "_" + command.getSkuId()));// ASN中此商品的数目
@@ -831,20 +828,14 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
         }
         // @mender yimin.lu 2016/6/22添加逻辑：当功能菜单上指定了库存状态和类型之后
         // 1.库存状态
-        // if (command.getSkuUrl().charAt(Constants.GENERAL_RECEIVING_ISINVSTATUS) == '1' &&
-        // command.getInvStatus() != null) {
-        // lineIdListStr =
-        // this.getMatchedLineIdStrForSkuAttr(Constants.GENERAL_RECEIVING_ISINVSTATUS, command,
-        // lineIdListStr);
-        // }
-        // // 2.库存类型
-        // // 如果库存类型为管控的属性的时候
-        // if (command.getSkuUrl().charAt(Constants.GENERAL_RECEIVING_ISINVTYPE) == '1' &&
-        // StringUtils.hasText(command.getInvType())) {
-        // lineIdListStr =
-        // this.getMatchedLineIdStrForSkuAttr(Constants.GENERAL_RECEIVING_ISINVSTATUS, command,
-        // lineIdListStr);
-        // }
+        if (command.getSkuUrl().charAt(Constants.GENERAL_RECEIVING_ISINVSTATUS) == '1' && command.getInvStatus() != null) {
+            lineIdListStr = this.getMatchedLineIdStrForSkuAttr(Constants.GENERAL_RECEIVING_ISINVSTATUS, command, lineIdListStr);
+        }
+        // 2.库存类型
+        // 如果库存类型为管控的属性的时候
+        if (command.getSkuUrl().charAt(Constants.GENERAL_RECEIVING_ISINVTYPE) == '1' && StringUtils.hasText(command.getInvType())) {
+            lineIdListStr = this.getMatchedLineIdStrForSkuAttr(Constants.GENERAL_RECEIVING_ISINVSTATUS, command, lineIdListStr);
+        }
         return lineIdListStr;
     }
 
@@ -1075,6 +1066,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                         }
                     }
                     if (null != command.getSkuMgmt()) {
+
                         SkuMgmtCommand skuMgmt = command.getSkuMgmt();
                         if (null != skuMgmt.getIsExpiredGoodsReceive() && !skuMgmt.getIsExpiredGoodsReceive()) {
                             if (expDate.after(new Date())) {
