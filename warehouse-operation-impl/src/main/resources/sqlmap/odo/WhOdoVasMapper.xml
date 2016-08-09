@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.odo.WhOdoVasDao">
+
+    <resultMap id="WhOdoVasResult" type="com.baozun.scm.primservice.whoperation.model.odo.WhOdoVas">
+    </resultMap>
+
+    <resultMap id="WhOdoVasPaginationResult" type="lark.common.dao.Pagination">
+        <collection property="items" javaType="ArrayList" resultMap="WhOdoVasResult"/>
+    </resultMap>
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="whOdoVasColumns">
+        <![CDATA[
+                id as id,
+                odo_id as odoId,
+                odo_line_id as odoLineId,
+                vas_type as vasType,
+                wh_vas_type as whVasType,
+                express_vas_type as expressVasType,
+                print_templet as printTemplet,
+                sku_bar_code as skuBarCode,
+                content as content,
+                carton_no as cartonNo,
+                qty as qty,
+                amt as amt,
+                mode_of_payment as modeOfPayment,
+                vas_attr1 as vasAttr1,
+                vas_attr2 as vasAttr2,
+                vas_attr3 as vasAttr3,
+                vas_attr4 as vasAttr4,
+                vas_attr5 as vasAttr5,
+                ou_id as ouId
+        ]]>
+    </sql>
+
+    <sql id="whOdoVasConditionWhereExt">
+        <where>
+            <if test="likeEqualsMap != null">
+                <foreach collection="likeEqualsMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} like CONCAT('%',#{value},'%')
+                </foreach>
+            </if>
+
+            <if test="equalsMap != null">
+                <foreach collection="equalsMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} = #{value}
+                </foreach>
+            </if>
+
+            <if test="notEqualsMap != null">
+                <foreach collection="notEqualsMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} != #{value}
+                </foreach>
+            </if>
+
+            <if test="greateMap != null">
+                <foreach collection="greateMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} &gt; #{value}
+                </foreach>
+            </if>
+
+            <if test="greateEqualsMap != null">
+                <foreach collection="greateEqualsMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} &gt;= #{value}
+                </foreach>
+            </if>
+
+            <if test="lessMap != null">
+                <foreach collection="lessMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} &lt; #{value}
+                </foreach>
+            </if>
+
+            <if test="lessEqualsMap != null">
+                <foreach collection="lessEqualsMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} &lt;= #{value}
+                </foreach>
+            </if>
+
+            <if test="nullMap != null">
+                <foreach collection="nullMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} is null
+                </foreach>
+            </if>
+
+            <if test="notNullMap != null">
+                <foreach collection="notNullMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} is not null
+                </foreach>
+            </if>
+
+            <if test="inMap != null">
+                <foreach collection="inMap" index="key" item="value" separator="and" open=" and (" close=")">
+                    <foreach collection="value" item="itemin" index="index" separator="or">
+                        ${key} = #{itemin}
+                    </foreach>
+                </foreach>
+            </if>
+
+            <if test="notInMap != null">
+                <foreach collection="notInMap" index="key" item="value" separator="and" open=" and (" close=")">
+                    <foreach collection="value" item="itemin" index="index" separator="and">
+                        ${key} != #{itemin}
+                    </foreach>
+                </foreach>
+            </if>
+        </where>
+
+        <if test="sortBy != null">
+            <foreach collection="sortBy" item="item" separator="," open=" order by ">
+                ${item.field} ${item.type}
+            </foreach>
+        </if>
+    </sql>
+
+    <!-- 如果有自增字段 -->
+
+    <!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+    <insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.odo.WhOdoVas" flushCache="true">
+        <![CDATA[
+                INSERT INTO
+                t_wh_odo_vas (
+                    id,
+                    odo_id ,
+                    odo_line_id ,
+                    vas_type ,
+                    wh_vas_type ,
+                    express_vas_type ,
+                    print_templet ,
+                    sku_bar_code ,
+                    content ,
+                    carton_no ,
+                    qty ,
+                    amt ,
+                    mode_of_payment ,
+                    vas_attr1 ,
+                    vas_attr2 ,
+                    vas_attr3 ,
+                    vas_attr4 ,
+                    vas_attr5 ,
+                    ou_id 
+                ) VALUES (
+                    #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{odoLineId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{vasType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{whVasType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{expressVasType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{printTemplet,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{skuBarCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{content,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{cartonNo,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{qty,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{amt,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{modeOfPayment,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{vasAttr1,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{vasAttr2,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{vasAttr3,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{vasAttr4,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{vasAttr5,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+                )
+            ]]>
+
+    </insert>
+
+    <update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.odo.WhOdoVas">
+        <![CDATA[
+            UPDATE t_wh_odo_vas SET
+                odo_id = #{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                odo_line_id = #{odoLineId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                vas_type = #{vasType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                wh_vas_type = #{whVasType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                express_vas_type = #{expressVasType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                print_templet = #{printTemplet,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                sku_bar_code = #{skuBarCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                content = #{content,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                carton_no = #{cartonNo,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                qty = #{qty,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                amt = #{amt,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                mode_of_payment = #{modeOfPayment,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                vas_attr1 = #{vasAttr1,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                vas_attr2 = #{vasAttr2,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                vas_attr3 = #{vasAttr3,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                vas_attr4 = #{vasAttr4,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                vas_attr5 = #{vasAttr5,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+            WHERE 
+                id = #{id} 
+        ]]>
+    </update>
+
+    <update id="batchUpdate">
+        UPDATE t_wh_odo_vas SET
+        <foreach collection="batchUpdateMap" index="key" item="value" separator=",">
+            ${key} = #{value}
+        </foreach>
+        <include refid="whOdoVasConditionWhereExt"/>
+    </update>
+
+    <delete id="delete" parameterType="java.lang.Long">
+        <![CDATA[
+            delete from t_wh_odo_vas where
+                id = #{id} 
+        ]]>
+    </delete>
+
+    <delete id="deleteByIds" parameterType="list">
+
+        delete from t_wh_odo_vas
+        where id in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+
+    </delete>
+
+    <update id="batchDelete">
+        delete from t_wh_odo_vas
+        <include refid="whOdoVasConditionWhereExt"/>
+    </update>
+
+    <select id="findById" parameterType="java.lang.Long" resultMap="WhOdoVasResult" flushCache="false">
+        select
+        <include refid="whOdoVasColumns"/>
+        <![CDATA[
+                from t_wh_odo_vas 
+                where 
+                id = #{id} 
+            ]]>
+    </select>
+
+    <select id="getByIds" parameterType="list" resultMap="WhOdoVasResult" flushCache="false">
+        select
+        <include refid="whOdoVasColumns"/>
+        from t_wh_odo_vas
+        where id in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <sql id="whOdoVasDynamicWhere">
+        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+
+            <if test="id!=null">
+                and id = #{id}
+            </if>
+
+            <if test="odoId!=null">
+                and odo_id = #{odoId}
+            </if>
+
+            <if test="odoLineId!=null">
+                and odo_line_id = #{odoLineId}
+            </if>
+
+            <if test="vasType!=null and vasType!=''">
+                and vas_type = #{vasType}
+            </if>
+
+            <if test="whVasType!=null">
+                and wh_vas_type = #{whVasType}
+            </if>
+
+            <if test="expressVasType!=null">
+                and express_vas_type = #{expressVasType}
+            </if>
+
+            <if test="printTemplet!=null and printTemplet!=''">
+                and print_templet = #{printTemplet}
+            </if>
+
+            <if test="skuBarCode!=null and skuBarCode!=''">
+                and sku_bar_code = #{skuBarCode}
+            </if>
+
+            <if test="content!=null and content!=''">
+                and content = #{content}
+            </if>
+
+            <if test="cartonNo!=null and cartonNo!=''">
+                and carton_no = #{cartonNo}
+            </if>
+
+            <if test="qty!=null and qty!=''">
+                and qty = #{qty}
+            </if>
+
+            <if test="amt!=null and amt!=''">
+                and amt = #{amt}
+            </if>
+
+            <if test="modeOfPayment!=null and modeOfPayment!=''">
+                and mode_of_payment = #{modeOfPayment}
+            </if>
+
+            <if test="vasAttr1!=null and vasAttr1!=''">
+                and vas_attr1 = #{vasAttr1}
+            </if>
+
+            <if test="vasAttr2!=null and vasAttr2!=''">
+                and vas_attr2 = #{vasAttr2}
+            </if>
+
+            <if test="vasAttr3!=null and vasAttr3!=''">
+                and vas_attr3 = #{vasAttr3}
+            </if>
+
+            <if test="vasAttr4!=null and vasAttr4!=''">
+                and vas_attr4 = #{vasAttr4}
+            </if>
+
+            <if test="vasAttr5!=null and vasAttr5!=''">
+                and vas_attr5 = #{vasAttr5}
+            </if>
+
+            <if test="ouId!=null">
+                and ou_id = #{ouId}
+            </if>
+        </where>
+    </sql>
+
+    <select id="getCount" resultType="long">
+        select count(*) from t_wh_odo_vas
+    </select>
+
+    <select id="findListCountByQueryMap" resultType="long">
+        select count(*) from t_wh_odo_vas
+        <include refid="whOdoVasDynamicWhere"/>
+    </select>
+
+    <select id="findListCountByParam" resultType="long">
+        select count(*) from t_wh_odo_vas
+        <include refid="whOdoVasDynamicWhere"/>
+    </select>
+
+    <!--
+        分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+        因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPage" resultMap="WhOdoVasResult">
+        select
+        <include refid="whOdoVasColumns"/>
+        from t_wh_odo_vas
+        <include refid="whOdoVasDynamicWhere"/>
+
+    </select>
+
+    <select id="findListByQueryMap" resultMap="WhOdoVasResult">
+        select
+        <include refid="whOdoVasColumns"/>
+        from t_wh_odo_vas
+        <include refid="whOdoVasDynamicWhere"/>
+
+    </select>
+
+    <select id="findListByParam" resultMap="WhOdoVasResult">
+        select
+        <include refid="whOdoVasColumns"/>
+        from t_wh_odo_vas
+        <include refid="whOdoVasDynamicWhere"/>
+
+    </select>
+
+    <select id="query" resultMap="WhOdoVasResult">
+        select
+        <include refid="whOdoVasColumns"/>
+        from t_wh_odo_vas
+        <include refid="whOdoVasConditionWhereExt"/>
+    </select>
+
+    <select id="queryCount" resultType="long">
+        select count(*) from t_wh_odo_vas
+        <include refid="whOdoVasConditionWhereExt"/>
+    </select>
+
+</mapper>

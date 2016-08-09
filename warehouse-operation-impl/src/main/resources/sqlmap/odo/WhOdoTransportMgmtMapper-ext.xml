@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.odo.WhOdoTransportMgmtDao">
+
+    <resultMap id="WhOdoTransportMgmtResultExt" type="com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt">
+    </resultMap>
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="whOdoTransportMgmtColumnsExt">
+        <![CDATA[
+                id as id,
+                odo_id as odoId,
+                transport_service_provider as transportServiceProvider,
+                mode_of_transport as modeOfTransport,
+                courier_service_type as courierServiceType,
+                outbound_target_type as outboundTargetType,
+                outbound_target as outboundTarget,
+                deliver_goods_time_mode as deliverGoodsTimeMode,
+                deliver_goods_time as deliverGoodsTime,
+                plan_deliver_goods_time as planDeliverGoodsTime,
+                actual_deliver_goods_time as actualDeliverGoodsTime,
+                ou_id as ouId
+        ]]>
+    </sql>
+
+    <sql id="whOdoTransportMgmtDynamicWhereExt">
+        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+
+            <if test="id!=null">
+                and id = #{id}
+            </if>
+
+            <if test="odoId!=null">
+                and odo_id = #{odoId}
+            </if>
+
+            <if test="transportServiceProvider!=null and transportServiceProvider!=''">
+                and transport_service_provider = #{transportServiceProvider}
+            </if>
+
+            <if test="modeOfTransport!=null and modeOfTransport!=''">
+                and mode_of_transport = #{modeOfTransport}
+            </if>
+
+            <if test="courierServiceType!=null and courierServiceType!=''">
+                and courier_service_type = #{courierServiceType}
+            </if>
+
+            <if test="outboundTargetType!=null and outboundTargetType!=''">
+                and outbound_target_type = #{outboundTargetType}
+            </if>
+
+            <if test="outboundTarget!=null and outboundTarget!=''">
+                and outbound_target = #{outboundTarget}
+            </if>
+
+            <if test="deliverGoodsTimeMode!=null and deliverGoodsTimeMode!=''">
+                and deliver_goods_time_mode = #{deliverGoodsTimeMode}
+            </if>
+
+            <if test="deliverGoodsTime!=null">
+                and deliver_goods_time = #{deliverGoodsTime}
+            </if>
+
+            <if test="planDeliverGoodsTime!=null">
+                and plan_deliver_goods_time = #{planDeliverGoodsTime}
+            </if>
+
+            <if test="actualDeliverGoodsTime!=null">
+                and actual_deliver_goods_time = #{actualDeliverGoodsTime}
+            </if>
+
+            <if test="ouId!=null">
+                and ou_id = #{ouId}
+            </if>
+        </where>
+    </sql>
+
+</mapper>

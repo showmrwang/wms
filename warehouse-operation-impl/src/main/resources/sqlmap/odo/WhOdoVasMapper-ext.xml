@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.odo.WhOdoVasDao">
+
+    <resultMap id="WhOdoVasResultExt" type="com.baozun.scm.primservice.whoperation.model.odo.WhOdoVas">
+    </resultMap>
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="whOdoVasColumnsExt">
+        <![CDATA[
+                id as id,
+                odo_id as odoId,
+                odo_line_id as odoLineId,
+                vas_type as vasType,
+                wh_vas_type as whVasType,
+                express_vas_type as expressVasType,
+                print_templet as printTemplet,
+                sku_bar_code as skuBarCode,
+                content as content,
+                carton_no as cartonNo,
+                qty as qty,
+                amt as amt,
+                mode_of_payment as modeOfPayment,
+                vas_attr1 as vasAttr1,
+                vas_attr2 as vasAttr2,
+                vas_attr3 as vasAttr3,
+                vas_attr4 as vasAttr4,
+                vas_attr5 as vasAttr5,
+                ou_id as ouId
+        ]]>
+    </sql>
+
+    <sql id="whOdoVasDynamicWhereExt">
+        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+
+            <if test="id!=null">
+                and id = #{id}
+            </if>
+
+            <if test="odoId!=null">
+                and odo_id = #{odoId}
+            </if>
+
+            <if test="odoLineId!=null">
+                and odo_line_id = #{odoLineId}
+            </if>
+
+            <if test="vasType!=null and vasType!=''">
+                and vas_type = #{vasType}
+            </if>
+
+            <if test="whVasType!=null">
+                and wh_vas_type = #{whVasType}
+            </if>
+
+            <if test="expressVasType!=null">
+                and express_vas_type = #{expressVasType}
+            </if>
+
+            <if test="printTemplet!=null and printTemplet!=''">
+                and print_templet = #{printTemplet}
+            </if>
+
+            <if test="skuBarCode!=null and skuBarCode!=''">
+                and sku_bar_code = #{skuBarCode}
+            </if>
+
+            <if test="content!=null and content!=''">
+                and content = #{content}
+            </if>
+
+            <if test="cartonNo!=null and cartonNo!=''">
+                and carton_no = #{cartonNo}
+            </if>
+
+            <if test="qty!=null and qty!=''">
+                and qty = #{qty}
+            </if>
+
+            <if test="amt!=null and amt!=''">
+                and amt = #{amt}
+            </if>
+
+            <if test="modeOfPayment!=null and modeOfPayment!=''">
+                and mode_of_payment = #{modeOfPayment}
+            </if>
+
+            <if test="vasAttr1!=null and vasAttr1!=''">
+                and vas_attr1 = #{vasAttr1}
+            </if>
+
+            <if test="vasAttr2!=null and vasAttr2!=''">
+                and vas_attr2 = #{vasAttr2}
+            </if>
+
+            <if test="vasAttr3!=null and vasAttr3!=''">
+                and vas_attr3 = #{vasAttr3}
+            </if>
+
+            <if test="vasAttr4!=null and vasAttr4!=''">
+                and vas_attr4 = #{vasAttr4}
+            </if>
+
+            <if test="vasAttr5!=null and vasAttr5!=''">
+                and vas_attr5 = #{vasAttr5}
+            </if>
+
+            <if test="ouId!=null">
+                and ou_id = #{ouId}
+            </if>
+        </where>
+    </sql>
+
+</mapper>
