@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.OutInventoryBoxTypeDao">
+    <resultMap id="OutInventoryBoxTypeResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.OutInventoryBoxType">
+    </resultMap>
+
+    <resultMap id="OutCommandResultExt" type="com.baozun.scm.primservice.whoperation.command.warehouse.OutInvBoxTypeCommand">
+    </resultMap>
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="outInventoryBoxTypeColumnsExt">
+        <![CDATA[
+                id as id,
+                sku_id as skuId,
+                ou_id as ouId,
+                code as code,
+                name as name,
+                description as description,
+                lifecycle as lifecycle,
+                length as length,
+                width as width,
+                high as high,
+                volumne as volumne,
+                weight as weight,
+                create_time as createTime,
+                last_modify_time as lastModifyTime,
+                created_id as createdId,
+                modified_id as modifiedId
+        ]]>
+    </sql>
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="outInventoryBoxTypeColumnsCommand">
+        <![CDATA[
+                inventory.id as id,
+                inventory.sku_id as skuId,
+                inventory.ou_id as ouId,
+                inventory.code as code,
+                inventory.name as name,
+                inventory.description as description,
+                inventory.lifecycle as lifecycle,
+                inventory.length as length,
+                inventory.width as width,
+                inventory.high as high,
+                inventory.volumne as volumne,
+                inventory.weight as weight,
+                inventory.create_time as createTime,
+                inventory.last_modify_time as lastModifyTime,
+                inventory.created_id as createdId,
+                inventory.modified_id as modifiedId,
+                sku.name as skuName,
+                sku.bar_code as skuBarCode
+        ]]>
+    </sql>
+
+    <sql id="outInventoryBoxTypeDynamicWhereExt">
+        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+
+            <if test="skuIdList!=null and skuIdList.size() != 0">
+                and inventory.sku_id in
+                <foreach collection="skuIdList" item="ids" open="("
+                         separator="," close=")">
+                    #{ids}
+                </foreach>
+            </if>
+
+            <if test="skuIdList==null or skuIdList.size() == 0">
+                and inventory.sku_id in (null)
+            </if>
+            <if test="id!=null">
+                and inventory.id = #{id}
+            </if>
+
+            <if test="skuId!=null">
+                and inventory.sku_id = #{skuId}
+            </if>
+
+            <if test="ouId!=null">
+                and inventory.ou_id = #{ouId}
+            </if>
+
+
+            <if test="code!=null and code!=''">
+                and inventory.code = #{code}
+            </if>
+
+
+            <if test="name!=null and name!=''">
+                and inventory.name = #{name}
+            </if>
+
+
+            <if test="description!=null and description!=''">
+                and inventory.description = #{description}
+            </if>
+
+            <if test="lifecycle!=null">
+                and inventory.lifecycle = #{lifecycle}
+            </if>
+
+            <if test="length!=null">
+                and inventory.length = #{length}
+            </if>
+
+            <if test="width!=null">
+                and inventory.width = #{width}
+            </if>
+
+            <if test="high!=null">
+                and inventory.high = #{high}
+            </if>
+
+            <if test="volumne!=null">
+                and inventory.volumne = #{volumne}
+            </if>
+
+            <if test="weight!=null">
+                and inventory.weight = #{weight}
+            </if>
+
+
+            <if test="createTime!=null">
+                and inventory.create_time = #{createTime}
+            </if>
+
+            <if test="lastModifyTime!=null">
+                and inventory.last_modify_time = #{lastModifyTime}
+            </if>
+
+            <if test="createdId!=null">
+                and inventory.created_id = #{createdId}
+            </if>
+
+            <if test="modifiedId!=null">
+                and inventory.modified_id = #{modifiedId}
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="findOutInventoryBoxType" resultMap="OutCommandResultExt">
+        select
+        <include refid="outInventoryBoxTypeColumnsCommand"/>
+        from t_wh_out_inventory_box_type inventory
+        left join t_wh_sku sku on inventory.sku_id = sku.id
+        where inventory.id=#{id} and inventory.ou_id = #{ouId}
+    </select>
+    <!-- 分页查询 -->
+    <select id="findListByQueryMapWithPageExt" resultMap="OutCommandResultExt">
+        select
+        <include refid="outInventoryBoxTypeColumnsCommand"/>
+        from t_wh_out_inventory_box_type inventory
+        left join t_wh_sku sku on inventory.sku_id = sku.id
+        <include refid="outInventoryBoxTypeDynamicWhereExt"/>
+    </select>
+    <!-- 计数 -->
+    <select id="findListCountByQueryMapExt" resultType="Long">
+        select count(*)
+        from t_wh_out_inventory_box_type inventory
+        left join t_wh_sku sku on inventory.sku_id = sku.id
+        <include refid="outInventoryBoxTypeDynamicWhereExt"/>
+    </select>
+
+    <update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.OutInventoryBoxType">
+           <![CDATA[
+            UPDATE t_wh_out_inventory_box_type SET
+                sku_id = #{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                code = #{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                name = #{name,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                description = #{description,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                length = #{length,javaType=java.lang.Double,jdbcType=DOUBLE} ,
+                width = #{width,javaType=java.lang.Double,jdbcType=DOUBLE} ,
+                high = #{high,javaType=java.lang.Double,jdbcType=DOUBLE} ,
+                volumne = #{volumne,javaType=java.lang.Double,jdbcType=DOUBLE} ,
+                weight = #{weight,javaType=java.lang.Double,jdbcType=DOUBLE} ,
+                create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
+            WHERE 
+                id = #{id} and ou_id = #{ouId}
+        ]]>
+   </update>
+
+    <select id="findByIdExt" resultType="com.baozun.scm.primservice.whoperation.model.warehouse.OutInventoryBoxType">
+        select
+        <include refid="outInventoryBoxTypeColumnsExt"/>
+        from t_wh_out_inventory_box_type
+        WHERE
+        id = #{id} and ou_id = #{ouId}
+    </select>
+
+    <select id="checkUnique" resultType="Long" parameterType="com.baozun.scm.primservice.whoperation.command.warehouse.OutInvBoxTypeCommand">
+        select count(*) from t_wh_out_inventory_box_type
+        <where>
+            <if test="id!=null">
+                and id != #{id}
+            </if>
+            <if test="code!=null and code!=''">
+                and code = #{code}
+            </if>
+            <if test="name!=null and name!=''">
+                and name = #{name}
+            </if>
+            <if test="skuId!=null">
+                and sku_id = #{skuId}
+            </if>
+            <if test="ouId!=null">
+                and ou_id = #{ouId}
+            </if>
+        </where>
+    </select>
+
+
+</mapper>
