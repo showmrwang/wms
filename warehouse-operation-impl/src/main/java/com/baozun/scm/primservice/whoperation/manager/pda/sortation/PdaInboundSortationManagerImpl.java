@@ -419,12 +419,12 @@ public class PdaInboundSortationManagerImpl extends BaseManagerImpl implements P
             log.warn("pdaScanNewContainer WhAsn is null AsnCode: " + skuInv.getOccupationCode() + " logid: " + pdaInboundSortation.getLogId());
             throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
         }
-        WhCarton carton = whCartonDao.findWhCartonByAsnSkuContainer(asn.getId(), skuInv.getSkuId(), skuInv.getInsideContainerId(), pdaInboundSortation.getOuId());
-        if (null != carton) {
+        List<WhCarton> carton = whCartonDao.findWhCartonListByAsnSkuContainer(asn.getId(), skuInv.getInsideContainerId(), pdaInboundSortation.getOuId());
+        for (WhCarton whCarton : carton) {
             // 箱信息不为空
-            if (carton.getIsCaselevel()) {
+            if (whCarton.getIsCaselevel()) {
                 // 箱信息是caselevel
-                b = updateCartonCaselevel(carton.getId(), pdaInboundSortation.getOuId(), pdaInboundSortation.getUserId(), uuid);
+                b = updateCartonCaselevel(whCarton.getId(), pdaInboundSortation.getOuId(), pdaInboundSortation.getUserId(), uuid);
                 if (!b) {
                     // 修改箱信息caselevel失败
                     throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
