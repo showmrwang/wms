@@ -123,7 +123,8 @@ public class PdaInboundSortationManagerImpl extends BaseManagerImpl implements P
         // 验证容器是否存在库存信息
         List<String> containerList = new ArrayList<String>();
         containerList.add(pdaInboundSortationCommand.getContainerCode());
-        List<WhSkuInventoryCommand> invList = whSkuInventoryDao.findWhSkuInventoryByContainerCode(pdaInboundSortationCommand.getOuId(), containerList);
+        // 查询容器库存 内部容器库存
+        List<WhSkuInventoryCommand> invList = whSkuInventoryDao.findWhSkuInventoryByInsideContainerCode(pdaInboundSortationCommand.getOuId(), containerList);
         if (invList.size() == 0) {
             // 容器没有对应的库存信息
             log.warn("pdaScanContainer WhSkuInventory is null logid: " + pdaInboundSortationCommand.getLogId());
