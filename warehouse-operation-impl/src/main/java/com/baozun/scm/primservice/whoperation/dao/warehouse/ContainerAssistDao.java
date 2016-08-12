@@ -17,10 +17,6 @@ package com.baozun.scm.primservice.whoperation.dao.warehouse;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.ibatis.annotations.Param;
-
-import com.baozun.scm.primservice.whoperation.model.warehouse.ContainerAssist;
-
 import lark.common.annotation.CommonQuery;
 import lark.common.annotation.QueryPage;
 import lark.common.dao.Page;
@@ -28,6 +24,10 @@ import lark.common.dao.Pagination;
 import lark.common.dao.QueryCondition;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
+
+import org.apache.ibatis.annotations.Param;
+
+import com.baozun.scm.primservice.whoperation.model.warehouse.ContainerAssist;
 
 public interface ContainerAssistDao extends BaseDao<ContainerAssist, Long> {
 
@@ -57,5 +57,14 @@ public interface ContainerAssistDao extends BaseDao<ContainerAssist, Long> {
      * @return
      */
     int deleteByContainerIds(@Param("ouId") Long ouId, @Param("containerIds") List<Long> containerIds);
+
+    /**
+     * [通用方法]根据容器ID查找辅助表信息
+     * 
+     * @param containerId
+     * @param ouId
+     * @return
+     */
+    ContainerAssist findByContainerId(@Param("containerId") Long containerId, @Param("ouId") Long ouId);
 
 }

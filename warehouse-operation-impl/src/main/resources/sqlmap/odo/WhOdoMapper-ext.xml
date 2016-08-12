@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao">
+    <resultMap id="WhOdoResultExt" type="com.baozun.scm.primservice.whoperation.model.odo.WhOdo">
+    </resultMap>
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="whOdoColumnsExt">
+        <![CDATA[
+                id as id,
+                odo_code as odoCode,
+                ext_code as extCode,
+                ec_order_code as ecOrderCode,
+                customer_id as customerId,
+                store_id as storeId,
+                odo_type as odoType,
+                original_odo_code as originalOdoCode,
+                priority_level as priorityLevel,
+                is_whole_order_outbound as isWholeOrderOutbound,
+                part_outbound_strategy as partOutboundStrategy,
+                cross_docking_symbol as crossDockingSymbol,
+                order_type as orderType,
+                order_time as orderTime,
+                odo_status as odoStatus,
+                qty as qty,
+                current_qty as currentQty,
+                actual_qty as actualQty,
+                cancel_qty as cancelQty,
+                sku_number_of_packages as skuNumberOfPackages,
+                amt as amt,
+                distribute_mode as distributeMode,
+                epistatic_systems_order_type as epistaticSystemsOrderType,
+                outbound_carton_type as outboundCartonType,
+                include_hazardous_cargo as includeHazardousCargo,
+                include_fragile_cargo as includeFragileCargo,
+                is_locked as isLocked,
+                ou_id as ouId,
+                create_time as createTime,
+                created_id as createdId,
+                last_modify_time as lastModifyTime,
+                modified_id as modifiedId
+        ]]>
+    </sql>
+
+    <sql id="whOdoDynamicWhereExt">
+        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+
+            <if test="id!=null">
+                and id = #{id}
+            </if>
+
+            <if test="odoCode!=null and odoCode!=''">
+                and odo_code = #{odoCode}
+            </if>
+
+            <if test="extCode!=null and extCode!=''">
+                and ext_code = #{extCode}
+            </if>
+
+            <if test="ecOrderCode!=null and ecOrderCode!=''">
+                and ec_order_code = #{ecOrderCode}
+            </if>
+
+            <if test="customerId!=null">
+                and customer_id = #{customerId}
+            </if>
+
+            <if test="storeId!=null">
+                and store_id = #{storeId}
+            </if>
+
+            <if test="odoType!=null and odoType!=''">
+                and odo_type = #{odoType}
+            </if>
+
+            <if test="originalOdoCode!=null and originalOdoCode!=''">
+                and original_odo_code = #{originalOdoCode}
+            </if>
+
+            <if test="priorityLevel!=null">
+                and priority_level = #{priorityLevel}
+            </if>
+
+            <if test="isWholeOrderOutbound!=null">
+                and is_whole_order_outbound = #{isWholeOrderOutbound}
+            </if>
+
+            <if test="partOutboundStrategy!=null and partOutboundStrategy!=''">
+                and part_outbound_strategy = #{partOutboundStrategy}
+            </if>
+
+            <if test="crossDockingSymbol!=null and crossDockingSymbol!=''">
+                and cross_docking_symbol = #{crossDockingSymbol}
+            </if>
+
+            <if test="orderType!=null and orderType!=''">
+                and order_type = #{orderType}
+            </if>
+
+            <if test="orderTime!=null">
+                and order_time = #{orderTime}
+            </if>
+
+            <if test="odoStatus!=null and odoStatus!=''">
+                and odo_status = #{odoStatus}
+            </if>
+
+            <if test="qty!=null">
+                and qty = #{qty}
+            </if>
+
+            <if test="currentQty!=null">
+                and current_qty = #{currentQty}
+            </if>
+
+            <if test="actualQty!=null">
+                and actual_qty = #{actualQty}
+            </if>
+
+            <if test="cancelQty!=null">
+                and cancel_qty = #{cancelQty}
+            </if>
+
+            <if test="skuNumberOfPackages!=null">
+                and sku_number_of_packages = #{skuNumberOfPackages}
+            </if>
+
+            <if test="amt!=null">
+                and amt = #{amt}
+            </if>
+
+            <if test="distributeMode!=null and distributeMode!=''">
+                and distribute_mode = #{distributeMode}
+            </if>
+
+            <if test="epistaticSystemsOrderType!=null and epistaticSystemsOrderType!=''">
+                and epistatic_systems_order_type = #{epistaticSystemsOrderType}
+            </if>
+
+            <if test="outboundCartonType!=null">
+                and outbound_carton_type = #{outboundCartonType}
+            </if>
+
+            <if test="includeHazardousCargo!=null">
+                and include_hazardous_cargo = #{includeHazardousCargo}
+            </if>
+
+            <if test="includeFragileCargo!=null">
+                and include_fragile_cargo = #{includeFragileCargo}
+            </if>
+
+            <if test="isLocked!=null">
+                and is_locked = #{isLocked}
+            </if>
+
+            <if test="ouId!=null">
+                and ou_id = #{ouId}
+            </if>
+
+            <if test="createTime!=null">
+                and create_time = #{createTime}
+            </if>
+
+            <if test="createdId!=null">
+                and created_id = #{createdId}
+            </if>
+
+            <if test="lastModifyTime!=null">
+                and last_modify_time = #{lastModifyTime}
+            </if>
+
+            <if test="modifiedId!=null">
+                and modified_id = #{modifiedId}
+            </if>
+        </where>
+    </sql>
+
+</mapper>

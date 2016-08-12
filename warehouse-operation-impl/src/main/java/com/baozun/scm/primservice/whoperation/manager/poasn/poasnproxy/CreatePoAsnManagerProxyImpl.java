@@ -284,6 +284,8 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
         }
 
         log.info("CreateAsnBatch end =======================");
+        rm.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
+        rm.setMsg("success");
         return rm;
     }
 

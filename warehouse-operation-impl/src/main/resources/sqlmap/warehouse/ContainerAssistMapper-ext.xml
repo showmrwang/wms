@@ -116,4 +116,40 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	     </foreach> 
 	</delete> 
 	
+	<update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.ContainerAssist">
+	<![CDATA[
+		        UPDATE t_wh_container_assist SET
+			    container_id = #{containerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        sys_weight = #{sysWeight,javaType=Double,jdbcType=DECIMAL} ,
+		        sys_volume = #{sysVolume,javaType=Double,jdbcType=DECIMAL} ,
+		        sys_length = #{sysLength,javaType=Double,jdbcType=DECIMAL} ,
+		        sys_width = #{sysWidth,javaType=Double,jdbcType=DECIMAL} ,
+		        sys_height = #{sysHeight,javaType=Double,jdbcType=DECIMAL} ,
+		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        last_modify_time = now() ,
+		        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        CARTON_QTY = #{cartonQty,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        SKU_CATEGORY = #{skuCategory,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        SKU_QTY = #{skuQty,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        STORE_QTY = #{storeQty,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        SKU_ATTR_CATEGORY = #{skuAttrCategory,javaType=java.lang.Long,jdbcType=BIGINT}
+		    ]]>
+		    <where>
+		    		id = #{id} 
+			        and last_modify_time	=  #{lastModifyTime}    
+			       	and ou_id = #{ouId}
+		    </where>
+	</update>
+	
+	 <select id="findByContainerId" resultMap="ContainerAssistResult" flushCache="false">
+			select <include refid="containerAssistColumns" />
+		    <![CDATA[
+			    from t_wh_container_assist 
+		        where 
+		        container_id = #{containerId} and  ou_id=#{ouId}
+		    ]]>
+		</select>	
+		
 </mapper>

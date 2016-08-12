@@ -1,0 +1,408 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineAttrDao">
+    <resultMap id="WhOdoLineAttrResult" type="com.baozun.scm.primservice.whoperation.model.odo.WhOdoLineAttr">
+    </resultMap>
+
+    <resultMap id="WhOdoLineAttrPaginationResult" type="lark.common.dao.Pagination">
+        <collection property="items" javaType="ArrayList" resultMap="WhOdoLineAttrResult"/>
+    </resultMap>
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="whOdoLineAttrColumns">
+        <![CDATA[
+                id as id,
+                odo_line_id as odoLineId,
+                odo_line_attr1 as odoLineAttr1,
+                odo_line_attr2 as odoLineAttr2,
+                odo_line_attr3 as odoLineAttr3,
+                odo_line_attr4 as odoLineAttr4,
+                odo_line_attr5 as odoLineAttr5,
+                odo_line_attr6 as odoLineAttr6,
+                odo_line_attr7 as odoLineAttr7,
+                odo_line_attr8 as odoLineAttr8,
+                odo_line_attr9 as odoLineAttr9,
+                odo_line_attr10 as odoLineAttr10,
+                odo_line_attr11 as odoLineAttr11,
+                odo_line_attr12 as odoLineAttr12,
+                odo_line_attr13 as odoLineAttr13,
+                odo_line_attr14 as odoLineAttr14,
+                odo_line_attr15 as odoLineAttr15,
+                odo_line_attr16 as odoLineAttr16,
+                odo_line_attr17 as odoLineAttr17,
+                odo_line_attr18 as odoLineAttr18,
+                odo_line_attr19 as odoLineAttr19,
+                odo_line_attr20 as odoLineAttr20,
+                ou_id as ouId
+        ]]>
+    </sql>
+    <sql id="whOdoLineAttrConditionWhereExt">
+        <where>
+            <if test="likeEqualsMap != null">
+                <foreach collection="likeEqualsMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} like CONCAT('%',#{value},'%')
+                </foreach>
+            </if>
+
+            <if test="equalsMap != null">
+                <foreach collection="equalsMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} = #{value}
+                </foreach>
+            </if>
+
+            <if test="notEqualsMap != null">
+                <foreach collection="notEqualsMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} != #{value}
+                </foreach>
+            </if>
+
+            <if test="greateMap != null">
+                <foreach collection="greateMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} &gt; #{value}
+                </foreach>
+            </if>
+
+            <if test="greateEqualsMap != null">
+                <foreach collection="greateEqualsMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} &gt;= #{value}
+                </foreach>
+            </if>
+
+            <if test="lessMap != null">
+                <foreach collection="lessMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} &lt; #{value}
+                </foreach>
+            </if>
+
+            <if test="lessEqualsMap != null">
+                <foreach collection="lessEqualsMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} &lt;= #{value}
+                </foreach>
+            </if>
+
+            <if test="nullMap != null">
+                <foreach collection="nullMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} is null
+                </foreach>
+            </if>
+
+            <if test="notNullMap != null">
+                <foreach collection="notNullMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} is not null
+                </foreach>
+            </if>
+
+            <if test="inMap != null">
+                <foreach collection="inMap" index="key" item="value" separator="and" open=" and (" close=")">
+                    <foreach collection="value" item="itemin" index="index" separator="or">
+                        ${key} = #{itemin}
+                    </foreach>
+                </foreach>
+            </if>
+
+            <if test="notInMap != null">
+                <foreach collection="notInMap" index="key" item="value" separator="and" open=" and (" close=")">
+                    <foreach collection="value" item="itemin" index="index" separator="and">
+                        ${key} != #{itemin}
+                    </foreach>
+                </foreach>
+            </if>
+        </where>
+
+        <if test="sortBy != null">
+            <foreach collection="sortBy" item="item" separator="," open=" order by ">
+                ${item.field} ${item.type}
+            </foreach>
+        </if>
+    </sql>
+
+    <!-- 如果有自增字段 -->
+
+    <!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+    <insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.odo.WhOdoLineAttr" flushCache="true">
+        <![CDATA[
+                INSERT INTO
+                t_wh_odo_line_attr (
+                    id,
+                    odo_line_id ,
+                    odo_line_attr1 ,
+                    odo_line_attr2 ,
+                    odo_line_attr3 ,
+                    odo_line_attr4 ,
+                    odo_line_attr5 ,
+                    odo_line_attr6 ,
+                    odo_line_attr7 ,
+                    odo_line_attr8 ,
+                    odo_line_attr9 ,
+                    odo_line_attr10 ,
+                    odo_line_attr11 ,
+                    odo_line_attr12 ,
+                    odo_line_attr13 ,
+                    odo_line_attr14 ,
+                    odo_line_attr15 ,
+                    odo_line_attr16 ,
+                    odo_line_attr17 ,
+                    odo_line_attr18 ,
+                    odo_line_attr19 ,
+                    odo_line_attr20 ,
+                    ou_id 
+                ) VALUES (
+                #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{odoLineId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{odoLineAttr1,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoLineAttr2,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoLineAttr3,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoLineAttr4,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoLineAttr5,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoLineAttr6,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoLineAttr7,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoLineAttr8,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoLineAttr9,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoLineAttr10,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoLineAttr11,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoLineAttr12,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoLineAttr13,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoLineAttr14,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoLineAttr15,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoLineAttr16,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoLineAttr17,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoLineAttr18,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoLineAttr19,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoLineAttr20,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+                )
+            ]]>
+
+    </insert>
+
+    <update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.odo.WhOdoLineAttr">
+        <![CDATA[
+            UPDATE t_wh_odo_line_attr SET
+                odo_line_id = #{odoLineId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                odo_line_attr1 = #{odoLineAttr1,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                odo_line_attr2 = #{odoLineAttr2,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                odo_line_attr3 = #{odoLineAttr3,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                odo_line_attr4 = #{odoLineAttr4,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                odo_line_attr5 = #{odoLineAttr5,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                odo_line_attr6 = #{odoLineAttr6,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                odo_line_attr7 = #{odoLineAttr7,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                odo_line_attr8 = #{odoLineAttr8,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                odo_line_attr9 = #{odoLineAttr9,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                odo_line_attr10 = #{odoLineAttr10,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                odo_line_attr11 = #{odoLineAttr11,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                odo_line_attr12 = #{odoLineAttr12,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                odo_line_attr13 = #{odoLineAttr13,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                odo_line_attr14 = #{odoLineAttr14,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                odo_line_attr15 = #{odoLineAttr15,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                odo_line_attr16 = #{odoLineAttr16,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                odo_line_attr17 = #{odoLineAttr17,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                odo_line_attr18 = #{odoLineAttr18,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                odo_line_attr19 = #{odoLineAttr19,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                odo_line_attr20 = #{odoLineAttr20,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+            WHERE 
+                id = #{id} 
+        ]]>
+    </update>
+    <update id="batchUpdate">
+        UPDATE t_wh_odo_line_attr SET
+        <foreach collection="batchUpdateMap" index="key" item="value" separator=",">
+            ${key} = #{value}
+        </foreach>
+        <include refid="whOdoLineAttrConditionWhereExt"/>
+    </update>
+
+    <delete id="delete" parameterType="java.lang.Long">
+        <![CDATA[
+            delete from t_wh_odo_line_attr where
+                id = #{id} 
+        ]]>
+    </delete>
+
+    <delete id="deleteByIds" parameterType="list">
+
+        delete from t_wh_odo_line_attr
+        where id in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+
+    </delete>
+    <update id="batchDelete">
+        delete from t_wh_odo_line_attr
+        <include refid="whOdoLineAttrConditionWhereExt"/>
+    </update>
+
+    <select id="findById" parameterType="java.lang.Long" resultMap="WhOdoLineAttrResult" flushCache="false">
+        select
+        <include refid="whOdoLineAttrColumns"/>
+        <![CDATA[
+                from t_wh_odo_line_attr 
+                where 
+                id = #{id} 
+            ]]>
+    </select>
+    <select id="getByIds" parameterType="list" resultMap="WhOdoLineAttrResult" flushCache="false">
+        select
+        <include refid="whOdoLineAttrColumns"/>
+        from t_wh_odo_line_attr
+        where id in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+    <sql id="whOdoLineAttrDynamicWhere">
+        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+
+            <if test="id!=null">
+                and id = #{id}
+            </if>
+
+            <if test="odoLineId!=null">
+                and odo_line_id = #{odoLineId}
+            </if>
+
+            <if test="odoLineAttr1!=null and odoLineAttr1!=''">
+                and odo_line_attr1 = #{odoLineAttr1}
+            </if>
+
+            <if test="odoLineAttr2!=null and odoLineAttr2!=''">
+                and odo_line_attr2 = #{odoLineAttr2}
+            </if>
+
+            <if test="odoLineAttr3!=null and odoLineAttr3!=''">
+                and odo_line_attr3 = #{odoLineAttr3}
+            </if>
+
+            <if test="odoLineAttr4!=null and odoLineAttr4!=''">
+                and odo_line_attr4 = #{odoLineAttr4}
+            </if>
+
+            <if test="odoLineAttr5!=null and odoLineAttr5!=''">
+                and odo_line_attr5 = #{odoLineAttr5}
+            </if>
+
+            <if test="odoLineAttr6!=null and odoLineAttr6!=''">
+                and odo_line_attr6 = #{odoLineAttr6}
+            </if>
+
+            <if test="odoLineAttr7!=null and odoLineAttr7!=''">
+                and odo_line_attr7 = #{odoLineAttr7}
+            </if>
+
+            <if test="odoLineAttr8!=null and odoLineAttr8!=''">
+                and odo_line_attr8 = #{odoLineAttr8}
+            </if>
+
+            <if test="odoLineAttr9!=null and odoLineAttr9!=''">
+                and odo_line_attr9 = #{odoLineAttr9}
+            </if>
+
+            <if test="odoLineAttr10!=null and odoLineAttr10!=''">
+                and odo_line_attr10 = #{odoLineAttr10}
+            </if>
+
+            <if test="odoLineAttr11!=null and odoLineAttr11!=''">
+                and odo_line_attr11 = #{odoLineAttr11}
+            </if>
+
+            <if test="odoLineAttr12!=null and odoLineAttr12!=''">
+                and odo_line_attr12 = #{odoLineAttr12}
+            </if>
+
+            <if test="odoLineAttr13!=null and odoLineAttr13!=''">
+                and odo_line_attr13 = #{odoLineAttr13}
+            </if>
+
+            <if test="odoLineAttr14!=null and odoLineAttr14!=''">
+                and odo_line_attr14 = #{odoLineAttr14}
+            </if>
+
+            <if test="odoLineAttr15!=null and odoLineAttr15!=''">
+                and odo_line_attr15 = #{odoLineAttr15}
+            </if>
+
+            <if test="odoLineAttr16!=null and odoLineAttr16!=''">
+                and odo_line_attr16 = #{odoLineAttr16}
+            </if>
+
+            <if test="odoLineAttr17!=null and odoLineAttr17!=''">
+                and odo_line_attr17 = #{odoLineAttr17}
+            </if>
+
+            <if test="odoLineAttr18!=null and odoLineAttr18!=''">
+                and odo_line_attr18 = #{odoLineAttr18}
+            </if>
+
+            <if test="odoLineAttr19!=null and odoLineAttr19!=''">
+                and odo_line_attr19 = #{odoLineAttr19}
+            </if>
+
+            <if test="odoLineAttr20!=null and odoLineAttr20!=''">
+                and odo_line_attr20 = #{odoLineAttr20}
+            </if>
+
+            <if test="ouId!=null">
+                and ou_id = #{ouId}
+            </if>
+        </where>
+    </sql>
+
+    <select id="getCount" resultType="long">
+        select count(*) from t_wh_odo_line_attr
+    </select>
+    <select id="findListCountByQueryMap" resultType="long">
+        select count(*) from t_wh_odo_line_attr
+        <include refid="whOdoLineAttrDynamicWhere"/>
+    </select>
+
+    <select id="findListCountByParam" resultType="long">
+        select count(*) from t_wh_odo_line_attr
+        <include refid="whOdoLineAttrDynamicWhere"/>
+    </select>
+
+    <!--
+        分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+        因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPage" resultMap="WhOdoLineAttrResult">
+        select
+        <include refid="whOdoLineAttrColumns"/>
+        from t_wh_odo_line_attr
+        <include refid="whOdoLineAttrDynamicWhere"/>
+
+    </select>
+
+    <select id="findListByQueryMap" resultMap="WhOdoLineAttrResult">
+        select
+        <include refid="whOdoLineAttrColumns"/>
+        from t_wh_odo_line_attr
+        <include refid="whOdoLineAttrDynamicWhere"/>
+
+    </select>
+
+    <select id="findListByParam" resultMap="WhOdoLineAttrResult">
+        select
+        <include refid="whOdoLineAttrColumns"/>
+        from t_wh_odo_line_attr
+        <include refid="whOdoLineAttrDynamicWhere"/>
+
+    </select>
+
+    <select id="query" resultMap="WhOdoLineAttrResult">
+        select
+        <include refid="whOdoLineAttrColumns"/>
+        from t_wh_odo_line_attr
+        <include refid="whOdoLineAttrConditionWhereExt"/>
+    </select>
+
+    <select id="queryCount" resultType="long">
+        select count(*) from t_wh_odo_line_attr
+        <include refid="whOdoLineAttrConditionWhereExt"/>
+    </select>
+
+</mapper>

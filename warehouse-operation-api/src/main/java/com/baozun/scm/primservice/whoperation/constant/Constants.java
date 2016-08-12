@@ -268,10 +268,10 @@ public final class Constants {
     public static final String SKU_INVENTORY_OCCUPATION_SOURCE_ASN = "ASN";
 
     // 序列号管理类型
-    public static final Long SERIAL_NUMBER_TYPE_IN = 1L;
-    public static final Long SERIAL_NUMBER_TYPE_OUT = 2L;
-    public static final Long SERIAL_NUMBER_TYPE_INOUT = 3L;
-    public static final Long SERIAL_NUMBER_TYPE_ALL = 4L;
+    public static final String SERIAL_NUMBER_TYPE_IN = "1";// 入库管
+    public static final String SERIAL_NUMBER_TYPE_OUT = "2";// 出库管
+    public static final String SERIAL_NUMBER_TYPE_ALL = "3";// 全部管
+    public static final String SERIAL_NUMBER_TYPE_ALL_NOT = "4";// 全部不管
 
     // 度量单位：日期类型
     public static final String TIME_UOM_YEAR = "year";

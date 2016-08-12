@@ -1,0 +1,438 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.odo.WhOdoAddressDao">
+    <resultMap id="WhOdoAddressResult" type="com.baozun.scm.primservice.whoperation.model.odo.WhOdoAddress">
+    </resultMap>
+
+    <resultMap id="WhOdoAddressPaginationResult" type="lark.common.dao.Pagination">
+        <collection property="items" javaType="ArrayList" resultMap="WhOdoAddressResult"/>
+    </resultMap>
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="whOdoAddressColumns">
+        <![CDATA[
+                id as id,
+                odo_id as odoId,
+                account as account,
+                distribution_target_name as distributionTargetName,
+                distribution_target_mobile_phone as distributionTargetMobilePhone,
+                distribution_target_telephone as distributionTargetTelephone,
+                distribution_target_country as distributionTargetCountry,
+                distribution_target_province as distributionTargetProvince,
+                distribution_target_city as distributionTargetCity,
+                distribution_target_district as distributionTargetDistrict,
+                distribution_target_villages_towns as distributionTargetVillagesTowns,
+                distribution_target_address as distributionTargetAddress,
+                distribution_target_email as distributionTargetEmail,
+                distribution_target_zip as distributionTargetZip,
+                consignee_target_name as consigneeTargetName,
+                consignee_target_mobile_phone as consigneeTargetMobilePhone,
+                consignee_target_telephone as consigneeTargetTelephone,
+                consignee_target_country as consigneeTargetCountry,
+                consignee_target_province as consigneeTargetProvince,
+                consignee_target_city as consigneeTargetCity,
+                consignee_target_district as consigneeTargetDistrict,
+                consignee_target_villages_towns as consigneeTargetVillagesTowns,
+                consignee_target_address as consigneeTargetAddress,
+                consignee_target_email as consigneeTargetEmail,
+                consignee_target_zip as consigneeTargetZip,
+                ou_id as ouId
+        ]]>
+    </sql>
+
+    <sql id="whOdoAddressConditionWhereExt">
+        <where>
+            <if test="likeEqualsMap != null">
+                <foreach collection="likeEqualsMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} like CONCAT('%',#{value},'%')
+                </foreach>
+            </if>
+
+            <if test="equalsMap != null">
+                <foreach collection="equalsMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} = #{value}
+                </foreach>
+            </if>
+
+            <if test="notEqualsMap != null">
+                <foreach collection="notEqualsMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} != #{value}
+                </foreach>
+            </if>
+
+            <if test="greateMap != null">
+                <foreach collection="greateMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} &gt; #{value}
+                </foreach>
+            </if>
+
+            <if test="greateEqualsMap != null">
+                <foreach collection="greateEqualsMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} &gt;= #{value}
+                </foreach>
+            </if>
+
+            <if test="lessMap != null">
+                <foreach collection="lessMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} &lt; #{value}
+                </foreach>
+            </if>
+
+            <if test="lessEqualsMap != null">
+                <foreach collection="lessEqualsMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} &lt;= #{value}
+                </foreach>
+            </if>
+
+            <if test="nullMap != null">
+                <foreach collection="nullMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} is null
+                </foreach>
+            </if>
+
+            <if test="notNullMap != null">
+                <foreach collection="notNullMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} is not null
+                </foreach>
+            </if>
+
+            <if test="inMap != null">
+                <foreach collection="inMap" index="key" item="value" separator="and" open=" and (" close=")">
+                    <foreach collection="value" item="itemin" index="index" separator="or">
+                        ${key} = #{itemin}
+                    </foreach>
+                </foreach>
+            </if>
+
+            <if test="notInMap != null">
+                <foreach collection="notInMap" index="key" item="value" separator="and" open=" and (" close=")">
+                    <foreach collection="value" item="itemin" index="index" separator="and">
+                        ${key} != #{itemin}
+                    </foreach>
+                </foreach>
+            </if>
+        </where>
+
+        <if test="sortBy != null">
+            <foreach collection="sortBy" item="item" separator="," open=" order by ">
+                ${item.field} ${item.type}
+            </foreach>
+        </if>
+    </sql>
+
+    <!-- 如果有自增字段 -->
+
+    <!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+    <insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.odo.WhOdoAddress" flushCache="true">
+        <![CDATA[
+                INSERT INTO
+                t_wh_odo_address (
+                id,
+                    odo_id ,
+                    account ,
+                    distribution_target_name ,
+                    distribution_target_mobile_phone ,
+                    distribution_target_telephone ,
+                    distribution_target_country ,
+                    distribution_target_province ,
+                    distribution_target_city ,
+                    distribution_target_district ,
+                    distribution_target_villages_towns ,
+                    distribution_target_address ,
+                    distribution_target_email ,
+                    distribution_target_zip ,
+                    consignee_target_name ,
+                    consignee_target_mobile_phone ,
+                    consignee_target_telephone ,
+                    consignee_target_country ,
+                    consignee_target_province ,
+                    consignee_target_city ,
+                    consignee_target_district ,
+                    consignee_target_villages_towns ,
+                    consignee_target_address ,
+                    consignee_target_email ,
+                    consignee_target_zip ,
+                    ou_id 
+                ) VALUES (
+                #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{account,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{distributionTargetName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{distributionTargetMobilePhone,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{distributionTargetTelephone,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{distributionTargetCountry,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{distributionTargetProvince,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{distributionTargetCity,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{distributionTargetDistrict,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{distributionTargetVillagesTowns,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{distributionTargetAddress,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{distributionTargetEmail,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{distributionTargetZip,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{consigneeTargetName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{consigneeTargetMobilePhone,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{consigneeTargetTelephone,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{consigneeTargetCountry,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{consigneeTargetProvince,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{consigneeTargetCity,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{consigneeTargetDistrict,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{consigneeTargetVillagesTowns,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{consigneeTargetAddress,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{consigneeTargetEmail,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{consigneeTargetZip,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+                )
+            ]]>
+
+    </insert>
+
+    <update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.odo.WhOdoAddress">
+        <![CDATA[
+            UPDATE t_wh_odo_address SET
+                odo_id = #{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                account = #{account,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                distribution_target_name = #{distributionTargetName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                distribution_target_mobile_phone = #{distributionTargetMobilePhone,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                distribution_target_telephone = #{distributionTargetTelephone,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                distribution_target_country = #{distributionTargetCountry,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                distribution_target_province = #{distributionTargetProvince,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                distribution_target_city = #{distributionTargetCity,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                distribution_target_district = #{distributionTargetDistrict,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                distribution_target_villages_towns = #{distributionTargetVillagesTowns,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                distribution_target_address = #{distributionTargetAddress,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                distribution_target_email = #{distributionTargetEmail,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                distribution_target_zip = #{distributionTargetZip,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                consignee_target_name = #{consigneeTargetName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                consignee_target_mobile_phone = #{consigneeTargetMobilePhone,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                consignee_target_telephone = #{consigneeTargetTelephone,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                consignee_target_country = #{consigneeTargetCountry,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                consignee_target_province = #{consigneeTargetProvince,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                consignee_target_city = #{consigneeTargetCity,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                consignee_target_district = #{consigneeTargetDistrict,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                consignee_target_villages_towns = #{consigneeTargetVillagesTowns,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                consignee_target_address = #{consigneeTargetAddress,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                consignee_target_email = #{consigneeTargetEmail,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                consignee_target_zip = #{consigneeTargetZip,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+            WHERE 
+                id = #{id} 
+        ]]>
+    </update>
+
+    <update id="batchUpdate">
+        UPDATE t_wh_odo_address SET
+        <foreach collection="batchUpdateMap" index="key" item="value" separator=",">
+            ${key} = #{value}
+        </foreach>
+        <include refid="whOdoAddressConditionWhereExt"/>
+    </update>
+
+    <delete id="delete" parameterType="java.lang.Long">
+        <![CDATA[
+            delete from t_wh_odo_address where
+                id = #{id} 
+        ]]>
+    </delete>
+
+    <delete id="deleteByIds" parameterType="list">
+
+        delete from t_wh_odo_address
+        where id in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+
+    </delete>
+
+    <update id="batchDelete">
+        delete from t_wh_odo_address
+        <include refid="whOdoAddressConditionWhereExt"/>
+    </update>
+
+    <select id="findById" parameterType="java.lang.Long" resultMap="WhOdoAddressResult" flushCache="false">
+        select
+        <include refid="whOdoAddressColumns"/>
+        <![CDATA[
+                from t_wh_odo_address 
+                where 
+                id = #{id} 
+            ]]>
+    </select>
+
+    <select id="getByIds" parameterType="list" resultMap="WhOdoAddressResult" flushCache="false">
+        select
+        <include refid="whOdoAddressColumns"/>
+        from t_wh_odo_address
+        where id in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <sql id="whOdoAddressDynamicWhere">
+        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+
+            <if test="id!=null">
+                and id = #{id}
+            </if>
+
+            <if test="odoId!=null">
+                and odo_id = #{odoId}
+            </if>
+
+            <if test="account!=null and account!=''">
+                and account = #{account}
+            </if>
+
+            <if test="distributionTargetName!=null and distributionTargetName!=''">
+                and distribution_target_name = #{distributionTargetName}
+            </if>
+
+            <if test="distributionTargetMobilePhone!=null and distributionTargetMobilePhone!=''">
+                and distribution_target_mobile_phone = #{distributionTargetMobilePhone}
+            </if>
+
+            <if test="distributionTargetTelephone!=null and distributionTargetTelephone!=''">
+                and distribution_target_telephone = #{distributionTargetTelephone}
+            </if>
+
+            <if test="distributionTargetCountry!=null and distributionTargetCountry!=''">
+                and distribution_target_country = #{distributionTargetCountry}
+            </if>
+
+            <if test="distributionTargetProvince!=null and distributionTargetProvince!=''">
+                and distribution_target_province = #{distributionTargetProvince}
+            </if>
+
+            <if test="distributionTargetCity!=null and distributionTargetCity!=''">
+                and distribution_target_city = #{distributionTargetCity}
+            </if>
+
+            <if test="distributionTargetDistrict!=null and distributionTargetDistrict!=''">
+                and distribution_target_district = #{distributionTargetDistrict}
+            </if>
+
+            <if test="distributionTargetVillagesTowns!=null and distributionTargetVillagesTowns!=''">
+                and distribution_target_villages_towns = #{distributionTargetVillagesTowns}
+            </if>
+
+            <if test="distributionTargetAddress!=null and distributionTargetAddress!=''">
+                and distribution_target_address = #{distributionTargetAddress}
+            </if>
+
+            <if test="distributionTargetEmail!=null and distributionTargetEmail!=''">
+                and distribution_target_email = #{distributionTargetEmail}
+            </if>
+
+            <if test="distributionTargetZip!=null and distributionTargetZip!=''">
+                and distribution_target_zip = #{distributionTargetZip}
+            </if>
+
+            <if test="consigneeTargetName!=null and consigneeTargetName!=''">
+                and consignee_target_name = #{consigneeTargetName}
+            </if>
+
+            <if test="consigneeTargetMobilePhone!=null and consigneeTargetMobilePhone!=''">
+                and consignee_target_mobile_phone = #{consigneeTargetMobilePhone}
+            </if>
+
+            <if test="consigneeTargetTelephone!=null and consigneeTargetTelephone!=''">
+                and consignee_target_telephone = #{consigneeTargetTelephone}
+            </if>
+
+            <if test="consigneeTargetCountry!=null and consigneeTargetCountry!=''">
+                and consignee_target_country = #{consigneeTargetCountry}
+            </if>
+
+            <if test="consigneeTargetProvince!=null and consigneeTargetProvince!=''">
+                and consignee_target_province = #{consigneeTargetProvince}
+            </if>
+
+            <if test="consigneeTargetCity!=null and consigneeTargetCity!=''">
+                and consignee_target_city = #{consigneeTargetCity}
+            </if>
+
+            <if test="consigneeTargetDistrict!=null and consigneeTargetDistrict!=''">
+                and consignee_target_district = #{consigneeTargetDistrict}
+            </if>
+
+            <if test="consigneeTargetVillagesTowns!=null and consigneeTargetVillagesTowns!=''">
+                and consignee_target_villages_towns = #{consigneeTargetVillagesTowns}
+            </if>
+
+            <if test="consigneeTargetAddress!=null and consigneeTargetAddress!=''">
+                and consignee_target_address = #{consigneeTargetAddress}
+            </if>
+
+            <if test="consigneeTargetEmail!=null and consigneeTargetEmail!=''">
+                and consignee_target_email = #{consigneeTargetEmail}
+            </if>
+
+            <if test="consigneeTargetZip!=null and consigneeTargetZip!=''">
+                and consignee_target_zip = #{consigneeTargetZip}
+            </if>
+
+            <if test="ouId!=null">
+                and ou_id = #{ouId}
+            </if>
+        </where>
+    </sql>
+
+    <select id="getCount" resultType="long">
+        select count(*) from t_wh_odo_address
+    </select>
+
+    <select id="findListCountByQueryMap" resultType="long">
+        select count(*) from t_wh_odo_address
+        <include refid="whOdoAddressDynamicWhere"/>
+    </select>
+
+    <select id="findListCountByParam" resultType="long">
+        select count(*) from t_wh_odo_address
+        <include refid="whOdoAddressDynamicWhere"/>
+    </select>
+
+    <!--
+        分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+        因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPage" resultMap="WhOdoAddressResult">
+        select
+        <include refid="whOdoAddressColumns"/>
+        from t_wh_odo_address
+        <include refid="whOdoAddressDynamicWhere"/>
+
+    </select>
+
+    <select id="findListByQueryMap" resultMap="WhOdoAddressResult">
+        select
+        <include refid="whOdoAddressColumns"/>
+        from t_wh_odo_address
+        <include refid="whOdoAddressDynamicWhere"/>
+
+    </select>
+
+    <select id="findListByParam" resultMap="WhOdoAddressResult">
+        select
+        <include refid="whOdoAddressColumns"/>
+        from t_wh_odo_address
+        <include refid="whOdoAddressDynamicWhere"/>
+
+    </select>
+
+    <select id="query" resultMap="WhOdoAddressResult">
+        select
+        <include refid="whOdoAddressColumns"/>
+        from t_wh_odo_address
+        <include refid="whOdoAddressConditionWhereExt"/>
+    </select>
+
+    <select id="queryCount" resultType="long">
+        select count(*) from t_wh_odo_address
+        <include refid="whOdoAddressConditionWhereExt"/>
+    </select>
+
+</mapper>

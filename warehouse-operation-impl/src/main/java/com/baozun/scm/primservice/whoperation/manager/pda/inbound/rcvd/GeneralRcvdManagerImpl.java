@@ -28,6 +28,7 @@ import com.baozun.scm.primservice.whoperation.command.sku.skucommand.SkuCommand;
 import com.baozun.scm.primservice.whoperation.command.sku.skucommand.SkuStandardPackingCommand;
 import com.baozun.scm.primservice.whoperation.command.sku.skushared.SkuCommand2Shared;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhAsnRcvdLogCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.carton.WhCartonCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
@@ -44,6 +45,7 @@ import com.baozun.scm.primservice.whoperation.dao.sku.SkuMgmtDao;
 import com.baozun.scm.primservice.whoperation.dao.sku.SkuStandardPackingDao;
 import com.baozun.scm.primservice.whoperation.dao.system.SysDictionaryDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.Container2ndCategoryDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerAssistDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.StoreDefectReasonsDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.StoreDefectTypeDao;
@@ -134,6 +136,8 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
     private SkuExtattrDao skuExtattrDao;
     @Autowired
     private SkuMgmtDao skuMgmtDao;
+    @Autowired
+    private ContainerAssistDao containerAssistDao;
 
     @Override
     @Deprecated
@@ -436,16 +440,15 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void saveScanedSkuWhenGeneralRcvdForPda(List<WhSkuInventorySn> saveSnList, List<WhAsnRcvdSnLog> saveSnLogList, List<WhSkuInventory> saveInvList, List<WhAsnRcvdLog> saveInvLogList, List<WhAsnLine> saveAsnLineList, WhAsn asn,
+    public void saveScanedSkuWhenGeneralRcvdForPda(List<WhSkuInventorySn> saveSnList, List<WhSkuInventory> saveInvList, List<WhAsnRcvdLogCommand> saveInvLogList, List<WhAsnLine> saveAsnLineList, WhAsn asn,
             List<WhPoLine> savePoLineList, WhPo po, Container container, List<WhCarton> saveWhCartonList) {
         try {
+            Long userId = po.getModifiedId();
             // 保存残次信息
             for (WhSkuInventorySn sn : saveSnList) {
                 this.whSkuInventorySnDao.insert(sn);
-            }
-            // 保存残次日志
-            for (WhAsnRcvdSnLog snlog : saveSnLogList) {
-                this.whAsnRcvdSnLogDao.insert(snlog);
+                // 插入SN日志
+                this.insertSkuInventorySnLog(sn.getUuid(), sn.getOuId());
             }
             // 更新装箱信息表
             for (WhCarton whCarton : saveWhCartonList) {
@@ -456,14 +459,27 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
                 WhSkuInventory skuInv = this.whSkuInventoryDao.findWhSkuInventoryByUuid(inv.getOuId(), inv.getUuid());
                 if (null == skuInv) {
                     this.whSkuInventoryDao.insert(inv);
+                    this.insertSkuInventoryLog(inv.getId(), inv.getOnHandQty(), Constants.DEFAULT_DOUBLE, true, inv.getOuId(), userId);
                 } else {
+                    Double oldQty = skuInv.getOnHandQty();
                     skuInv.setOnHandQty(skuInv.getOnHandQty() + inv.getOnHandQty());
                     this.whSkuInventoryDao.saveOrUpdateByVersion(skuInv);
+                    // 插入库存日志
+                    this.insertSkuInventoryLog(skuInv.getId(), skuInv.getOnHandQty(), oldQty, true, skuInv.getOuId(), userId);
                 }
             }
-            // 保存库存日志
-            for (WhAsnRcvdLog invLog : saveInvLogList) {
+            // 保存收货日志
+            for (WhAsnRcvdLogCommand invLogCommand : saveInvLogList) {
+                WhAsnRcvdLog invLog = new WhAsnRcvdLog();
+                BeanUtils.copyProperties(invLogCommand, invLog);
                 this.whAsnRcvdLogDao.insert(invLog);
+                // 保存残次日志
+                if (null != invLogCommand.getWhAsnRcvdSnLogList()) {
+                    for (WhAsnRcvdSnLog snlog : invLogCommand.getWhAsnRcvdSnLogList()) {
+                        snlog.setAsnRcvdId(invLog.getId());
+                        this.whAsnRcvdSnLogDao.insert(snlog);
+                    }
+                }
             }
             // 更新ASN明细
             for (WhAsnLine asnline : saveAsnLineList) {
@@ -476,6 +492,7 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
             boolean isAsnRcvdFinished = this.whAsnDao.checkIsRcvdFinished(asn.getId(), asn.getOuId());
             if (isAsnRcvdFinished) {
                 asn.setStatus(PoAsnStatus.ASN_RCVD_FINISH);
+                asn.setStopTime(new Date());
             } else {
                 asn.setStatus(PoAsnStatus.ASN_RCVD);
             }
@@ -494,6 +511,7 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
             boolean isPoRcvdFinished = this.whPoDao.checkIsRcvdFinished(po.getId(), po.getOuId());
             if (isPoRcvdFinished) {
                 po.setStatus(PoAsnStatus.PO_RCVD_FINISH);
+                po.setStopTime(new Date());
             } else {
                 po.setStatus(PoAsnStatus.PO_RCVD);
             }
@@ -507,6 +525,8 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
                 if (updateContainerCount <= 0) {
                     throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
                 }
+                // 更新容器辅助表 TODO
+                this.updateContainerAssistByVersion(container.getId(), container.getOuId());
             }
         } catch (BusinessException e) {
             throw e;
@@ -514,6 +534,10 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
             throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
         }
 
+    }
+
+    private void updateContainerAssistByVersion(Long id, Long ouId) {
+        this.containerAssistDao.findByContainerId(id, ouId);
     }
 
     @Override
@@ -715,13 +739,13 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
             if (updateCount <= 0) {
                 throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
             }
-            Container container = this.containerDao.findByIdExt(outerContainerId, ouId);
-            container.setStatus(ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY);
-            container.setOperatorId(userId);
-            int containerCount = this.containerDao.saveOrUpdateByVersion(container);
-            if (containerCount <= 0) {
-                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-            }
+            /*
+             * Container container = this.containerDao.findByIdExt(insideContainerId, ouId);
+             * container.setStatus(ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY);
+             * container.setOperatorId(userId); int containerCount =
+             * this.containerDao.saveOrUpdateByVersion(container); if (containerCount <= 0) { throw
+             * new BusinessException(ErrorCodes.UPDATE_DATA_ERROR); }
+             */
         } catch (BusinessException ex) {
             throw ex;
         } catch (Exception e) {
@@ -782,7 +806,7 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
                 // 失效日期小于当前日期,即商品已经过期
                 if (isExpiredGoodsReceive) {
                     // 如果可以收过期商品 返回true
-                    res = true;
+                    return true;
                 } else {
                     // 如果不可以收过期商品 返回false
                     return false;
@@ -796,17 +820,17 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
             e.printStackTrace();
             return false;
         }
-        // 3.判断商品效期是否在最大有效天数与最小有效天数内
+        // 3.没有过期商品 判断商品效期是否在最大有效天数与最小有效天数内
         Integer maxValidDate = mgmt.getMaxValidDate();
         Integer minValidDate = mgmt.getMinValidDate();
         try {
-            Date mfgDate1 = sdf.parse(mfgDate);
+            // Date mfgDate1 = sdf.parse(mfgDate);
             Date expDate1 = sdf.parse(expDate);
-            Integer timeSub = (int) ((expDate1.getTime() - mfgDate1.getTime()) / 86400000);
+            Integer timeSub = (int) ((expDate1.getTime() - currDate.getTime()) / 86400000);
             // Integer validDate = mgmt.getValidDate();
             if (null != maxValidDate && null != minValidDate) {
                 // 商品属性有最大效期和最小效期
-                if (timeSub > minValidDate && timeSub < maxValidDate) {
+                if (timeSub >= minValidDate && timeSub <= maxValidDate) {
                     // 如果有效天数在效期区间内 返回true
                     res = true;
                 } else {

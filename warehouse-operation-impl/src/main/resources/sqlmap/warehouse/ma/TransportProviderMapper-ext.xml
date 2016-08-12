@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.ma.TransportProviderDao">
+    <resultMap id="TransportProviderResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.ma.TransportProvider">
+    </resultMap>
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="transportProviderColumnsExt">
+        <![CDATA[
+                id as id,
+                code as code,
+                name as name,
+                category as category,
+                type as type,
+                level as level,
+                description as description,
+                contact as contact,
+                phone as phone,
+                lifecycle as lifecycle,
+                create_id as createId,
+                create_time as createTime,
+                last_modify_time as lastModifyTime,
+                modified_id as modifiedId
+        ]]>
+    </sql>
+
+    <sql id="transportProviderDynamicWhereExt">
+        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+
+            <if test="id!=null">
+                and id = #{id}
+            </if>
+
+
+            <if test="code!=null and code!=''">
+                and code = #{code}
+            </if>
+
+
+            <if test="name!=null and name!=''">
+                and name = #{name}
+            </if>
+
+
+            <if test="category!=null and category!=''">
+                and category = #{category}
+            </if>
+
+
+            <if test="type!=null and type!=''">
+                and type = #{type}
+            </if>
+
+
+            <if test="level!=null and level!=''">
+                and level = #{level}
+            </if>
+
+
+            <if test="description!=null and description!=''">
+                and description = #{description}
+            </if>
+
+
+            <if test="contact!=null and contact!=''">
+                and contact = #{contact}
+            </if>
+
+
+            <if test="phone!=null and phone!=''">
+                and phone = #{phone}
+            </if>
+
+            <if test="lifecycle!=null">
+                and lifecycle = #{lifecycle}
+            </if>
+
+            <if test="createId!=null">
+                and create_id = #{createId}
+            </if>
+
+            <if test="createTime!=null">
+                and create_time = #{createTime}
+            </if>
+
+            <if test="lastModifyTime!=null">
+                and last_modify_time = #{lastModifyTime}
+            </if>
+
+            <if test="modifiedId!=null">
+                and modified_id = #{modifiedId}
+            </if>
+        </where>
+    </sql>
+
+</mapper>

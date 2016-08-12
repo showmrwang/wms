@@ -333,7 +333,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	 
 	 <update id="updateByVersionForLock">
 	 	 <![CDATA[
-	        update t_wh_asn set version='1' and last_modify_time=now() where
+	        update t_wh_asn set version='1' and last_modify_time=now()  where
 		        id = #{id} and ou_id=#{ouid} and last_modify_time=#{lastModifyTime} and version='0'
 	    ]]>
 	 </update>

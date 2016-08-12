@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineDao">
+    <resultMap id="WhOdoLineResultExt" type="com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine">
+    </resultMap>
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="whOdoLineColumnsExt">
+        <![CDATA[
+                id as id,
+                odo_id as odoId,
+                linenum as linenum,
+                store as store,
+                ext_linenum as extLinenum,
+                sku_id as skuId,
+                sku_bar_code as skuBarCode,
+                sku_name as skuName,
+                ext_sku_name as extSkuName,
+                qty as qty,
+                current_qty as currentQty,
+                actual_qty as actualQty,
+                cancel_qty as cancelQty,
+                assign_qty as assignQty,
+                dieking_qty as diekingQty,
+                line_price as linePrice,
+                line_amt as lineAmt,
+                odo_line_status as odoLineStatus,
+                is_check as isCheck,
+                full_line_outbound as fullLineOutbound,
+                part_outbound_strategy as partOutboundStrategy,
+                mfg_date as mfgDate,
+                exp_date as expDate,
+                min_exp_date as minExpDate,
+                max_exp_date as maxExpDate,
+                batch_number as batchNumber,
+                country_of_origin as countryOfOrigin,
+                inv_status as invStatus,
+                inv_type as invType,
+                inv_attr1 as invAttr1,
+                inv_attr2 as invAttr2,
+                inv_attr3 as invAttr3,
+                inv_attr4 as invAttr4,
+                inv_attr5 as invAttr5,
+                outbound_carton_type as outboundCartonType,
+                color as color,
+                style as style,
+                size as size,
+                mixing_attr as mixingAttr,
+                ou_id as ouId,
+                create_time as createTime,
+                created_id as createdId,
+                last_modify_time as lastModifyTime,
+                modified_id as modifiedId
+        ]]>
+    </sql>
+
+    <sql id="whOdoLineDynamicWhereExt">
+        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+
+            <if test="id!=null">
+                and id = #{id}
+            </if>
+
+            <if test="odoId!=null">
+                and odo_id = #{odoId}
+            </if>
+
+            <if test="linenum!=null">
+                and linenum = #{linenum}
+            </if>
+
+            <if test="store!=null and store!=''">
+                and store = #{store}
+            </if>
+
+            <if test="extLinenum!=null">
+                and ext_linenum = #{extLinenum}
+            </if>
+
+            <if test="skuId!=null">
+                and sku_id = #{skuId}
+            </if>
+
+            <if test="skuBarCode!=null and skuBarCode!=''">
+                and sku_bar_code = #{skuBarCode}
+            </if>
+
+            <if test="skuName!=null and skuName!=''">
+                and sku_name = #{skuName}
+            </if>
+
+            <if test="extSkuName!=null and extSkuName!=''">
+                and ext_sku_name = #{extSkuName}
+            </if>
+
+            <if test="qty!=null">
+                and qty = #{qty}
+            </if>
+
+            <if test="currentQty!=null">
+                and current_qty = #{currentQty}
+            </if>
+
+            <if test="actualQty!=null">
+                and actual_qty = #{actualQty}
+            </if>
+
+            <if test="cancelQty!=null">
+                and cancel_qty = #{cancelQty}
+            </if>
+
+            <if test="assignQty!=null">
+                and assign_qty = #{assignQty}
+            </if>
+
+            <if test="diekingQty!=null">
+                and dieking_qty = #{diekingQty}
+            </if>
+
+            <if test="linePrice!=null">
+                and line_price = #{linePrice}
+            </if>
+
+            <if test="lineAmt!=null">
+                and line_amt = #{lineAmt}
+            </if>
+
+            <if test="odoLineStatus!=null and odoLineStatus!=''">
+                and odo_line_status = #{odoLineStatus}
+            </if>
+
+            <if test="isCheck!=null">
+                and is_check = #{isCheck}
+            </if>
+
+            <if test="fullLineOutbound!=null">
+                and full_line_outbound = #{fullLineOutbound}
+            </if>
+
+            <if test="partOutboundStrategy!=null and partOutboundStrategy!=''">
+                and part_outbound_strategy = #{partOutboundStrategy}
+            </if>
+
+            <if test="mfgDate!=null">
+                and mfg_date = #{mfgDate}
+            </if>
+
+            <if test="expDate!=null">
+                and exp_date = #{expDate}
+            </if>
+
+            <if test="minExpDate!=null">
+                and min_exp_date = #{minExpDate}
+            </if>
+
+            <if test="maxExpDate!=null">
+                and max_exp_date = #{maxExpDate}
+            </if>
+
+            <if test="batchNumber!=null and batchNumber!=''">
+                and batch_number = #{batchNumber}
+            </if>
+
+            <if test="countryOfOrigin!=null and countryOfOrigin!=''">
+                and country_of_origin = #{countryOfOrigin}
+            </if>
+
+            <if test="invStatus!=null">
+                and inv_status = #{invStatus}
+            </if>
+
+            <if test="invType!=null and invType!=''">
+                and inv_type = #{invType}
+            </if>
+
+            <if test="invAttr1!=null and invAttr1!=''">
+                and inv_attr1 = #{invAttr1}
+            </if>
+
+            <if test="invAttr2!=null and invAttr2!=''">
+                and inv_attr2 = #{invAttr2}
+            </if>
+
+            <if test="invAttr3!=null and invAttr3!=''">
+                and inv_attr3 = #{invAttr3}
+            </if>
+
+            <if test="invAttr4!=null and invAttr4!=''">
+                and inv_attr4 = #{invAttr4}
+            </if>
+
+            <if test="invAttr5!=null and invAttr5!=''">
+                and inv_attr5 = #{invAttr5}
+            </if>
+
+            <if test="outboundCartonType!=null">
+                and outbound_carton_type = #{outboundCartonType}
+            </if>
+
+            <if test="color!=null and color!=''">
+                and color = #{color}
+            </if>
+
+            <if test="style!=null and style!=''">
+                and style = #{style}
+            </if>
+
+            <if test="size!=null and size!=''">
+                and size = #{size}
+            </if>
+
+            <if test="mixingAttr!=null and mixingAttr!=''">
+                and mixing_attr = #{mixingAttr}
+            </if>
+
+            <if test="ouId!=null">
+                and ou_id = #{ouId}
+            </if>
+
+            <if test="createTime!=null">
+                and create_time = #{createTime}
+            </if>
+
+            <if test="createdId!=null">
+                and created_id = #{createdId}
+            </if>
+
+            <if test="lastModifyTime!=null">
+                and last_modify_time = #{lastModifyTime}
+            </if>
+
+            <if test="modifiedId!=null">
+                and modified_id = #{modifiedId}
+            </if>
+        </where>
+    </sql>
+
+</mapper>

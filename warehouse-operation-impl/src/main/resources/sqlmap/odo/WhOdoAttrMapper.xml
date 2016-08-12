@@ -1,0 +1,413 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.odo.WhOdoAttrDao">
+    <resultMap id="WhOdoAttrResult" type="com.baozun.scm.primservice.whoperation.model.odo.WhOdoAttr">
+    </resultMap>
+
+    <resultMap id="WhOdoAttrPaginationResult" type="lark.common.dao.Pagination">
+        <collection property="items" javaType="ArrayList" resultMap="WhOdoAttrResult"/>
+    </resultMap>
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="whOdoAttrColumns">
+        <![CDATA[
+                id as id,
+                odo_id as odoId,
+                odo_attr1 as odoAttr1,
+                odo_attr2 as odoAttr2,
+                odo_attr3 as odoAttr3,
+                odo_attr4 as odoAttr4,
+                odo_attr5 as odoAttr5,
+                odo_attr6 as odoAttr6,
+                odo_attr7 as odoAttr7,
+                odo_attr8 as odoAttr8,
+                odo_attr9 as odoAttr9,
+                odo_attr10 as odoAttr10,
+                odo_attr11 as odoAttr11,
+                odo_attr12 as odoAttr12,
+                odo_attr13 as odoAttr13,
+                odo_attr14 as odoAttr14,
+                odo_attr15 as odoAttr15,
+                odo_attr16 as odoAttr16,
+                odo_attr17 as odoAttr17,
+                odo_attr18 as odoAttr18,
+                odo_attr19 as odoAttr19,
+                odo_attr20 as odoAttr20,
+                ou_id as ouId
+        ]]>
+    </sql>
+    <sql id="whOdoAttrConditionWhereExt">
+        <where>
+            <if test="likeEqualsMap != null">
+                <foreach collection="likeEqualsMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} like CONCAT('%',#{value},'%')
+                </foreach>
+            </if>
+
+            <if test="equalsMap != null">
+                <foreach collection="equalsMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} = #{value}
+                </foreach>
+            </if>
+
+            <if test="notEqualsMap != null">
+                <foreach collection="notEqualsMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} != #{value}
+                </foreach>
+            </if>
+
+            <if test="greateMap != null">
+                <foreach collection="greateMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} &gt; #{value}
+                </foreach>
+            </if>
+
+            <if test="greateEqualsMap != null">
+                <foreach collection="greateEqualsMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} &gt;= #{value}
+                </foreach>
+            </if>
+
+            <if test="lessMap != null">
+                <foreach collection="lessMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} &lt; #{value}
+                </foreach>
+            </if>
+
+            <if test="lessEqualsMap != null">
+                <foreach collection="lessEqualsMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} &lt;= #{value}
+                </foreach>
+            </if>
+
+            <if test="nullMap != null">
+                <foreach collection="nullMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} is null
+                </foreach>
+            </if>
+
+            <if test="notNullMap != null">
+                <foreach collection="notNullMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} is not null
+                </foreach>
+            </if>
+
+            <if test="inMap != null">
+                <foreach collection="inMap" index="key" item="value" separator="and" open=" and (" close=")">
+                    <foreach collection="value" item="itemin" index="index" separator="or">
+                        ${key} = #{itemin}
+                    </foreach>
+                </foreach>
+            </if>
+
+            <if test="notInMap != null">
+                <foreach collection="notInMap" index="key" item="value" separator="and" open=" and (" close=")">
+                    <foreach collection="value" item="itemin" index="index" separator="and">
+                        ${key} != #{itemin}
+                    </foreach>
+                </foreach>
+            </if>
+        </where>
+
+        <if test="sortBy != null">
+            <foreach collection="sortBy" item="item" separator="," open=" order by ">
+                ${item.field} ${item.type}
+            </foreach>
+        </if>
+    </sql>
+
+    <!-- 如果有自增字段 -->
+
+    <!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+    <insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.odo.WhOdoAttr" flushCache="true">
+        <![CDATA[
+                INSERT INTO
+                t_wh_odo_attr (
+                    id,
+                    odo_id ,
+                    odo_attr1 ,
+                    odo_attr2 ,
+                    odo_attr3 ,
+                    odo_attr4 ,
+                    odo_attr5 ,
+                    odo_attr6 ,
+                    odo_attr7 ,
+                    odo_attr8 ,
+                    odo_attr9 ,
+                    odo_attr10 ,
+                    odo_attr11 ,
+                    odo_attr12 ,
+                    odo_attr13 ,
+                    odo_attr14 ,
+                    odo_attr15 ,
+                    odo_attr16 ,
+                    odo_attr17 ,
+                    odo_attr18 ,
+                    odo_attr19 ,
+                    odo_attr20 ,
+                    ou_id 
+                ) VALUES (
+                #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{odoAttr1,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoAttr2,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoAttr3,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoAttr4,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoAttr5,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoAttr6,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoAttr7,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoAttr8,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoAttr9,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoAttr10,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoAttr11,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoAttr12,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoAttr13,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoAttr14,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoAttr15,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoAttr16,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoAttr17,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoAttr18,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoAttr19,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoAttr20,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+                )
+            ]]>
+
+    </insert>
+
+    <update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.odo.WhOdoAttr">
+        <![CDATA[
+            UPDATE t_wh_odo_attr SET
+                odo_id = #{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                odo_attr1 = #{odoAttr1,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                odo_attr2 = #{odoAttr2,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                odo_attr3 = #{odoAttr3,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                odo_attr4 = #{odoAttr4,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                odo_attr5 = #{odoAttr5,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                odo_attr6 = #{odoAttr6,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                odo_attr7 = #{odoAttr7,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                odo_attr8 = #{odoAttr8,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                odo_attr9 = #{odoAttr9,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                odo_attr10 = #{odoAttr10,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                odo_attr11 = #{odoAttr11,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                odo_attr12 = #{odoAttr12,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                odo_attr13 = #{odoAttr13,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                odo_attr14 = #{odoAttr14,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                odo_attr15 = #{odoAttr15,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                odo_attr16 = #{odoAttr16,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                odo_attr17 = #{odoAttr17,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                odo_attr18 = #{odoAttr18,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                odo_attr19 = #{odoAttr19,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                odo_attr20 = #{odoAttr20,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+            WHERE 
+                id = #{id} 
+        ]]>
+    </update>
+
+    <update id="batchUpdate">
+        UPDATE t_wh_odo_attr SET
+        <foreach collection="batchUpdateMap" index="key" item="value" separator=",">
+            ${key} = #{value}
+        </foreach>
+        <include refid="whOdoAttrConditionWhereExt"/>
+    </update>
+
+    <delete id="delete" parameterType="java.lang.Long">
+        <![CDATA[
+            delete from t_wh_odo_attr where
+                id = #{id} 
+        ]]>
+    </delete>
+
+    <delete id="deleteByIds" parameterType="list">
+
+        delete from t_wh_odo_attr
+        where id in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+
+    </delete>
+
+    <update id="batchDelete">
+        delete from t_wh_odo_attr
+        <include refid="whOdoAttrConditionWhereExt"/>
+    </update>
+
+    <select id="findById" parameterType="java.lang.Long" resultMap="WhOdoAttrResult" flushCache="false">
+        select
+        <include refid="whOdoAttrColumns"/>
+        <![CDATA[
+                from t_wh_odo_attr 
+                where 
+                id = #{id} 
+            ]]>
+    </select>
+
+    <select id="getByIds" parameterType="list" resultMap="WhOdoAttrResult" flushCache="false">
+        select
+        <include refid="whOdoAttrColumns"/>
+        from t_wh_odo_attr
+        where id in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <sql id="whOdoAttrDynamicWhere">
+        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+
+            <if test="id!=null">
+                and id = #{id}
+            </if>
+
+            <if test="odoId!=null">
+                and odo_id = #{odoId}
+            </if>
+
+            <if test="odoAttr1!=null and odoAttr1!=''">
+                and odo_attr1 = #{odoAttr1}
+            </if>
+
+            <if test="odoAttr2!=null and odoAttr2!=''">
+                and odo_attr2 = #{odoAttr2}
+            </if>
+
+            <if test="odoAttr3!=null and odoAttr3!=''">
+                and odo_attr3 = #{odoAttr3}
+            </if>
+
+            <if test="odoAttr4!=null and odoAttr4!=''">
+                and odo_attr4 = #{odoAttr4}
+            </if>
+
+            <if test="odoAttr5!=null and odoAttr5!=''">
+                and odo_attr5 = #{odoAttr5}
+            </if>
+
+            <if test="odoAttr6!=null and odoAttr6!=''">
+                and odo_attr6 = #{odoAttr6}
+            </if>
+
+            <if test="odoAttr7!=null and odoAttr7!=''">
+                and odo_attr7 = #{odoAttr7}
+            </if>
+
+            <if test="odoAttr8!=null and odoAttr8!=''">
+                and odo_attr8 = #{odoAttr8}
+            </if>
+
+            <if test="odoAttr9!=null and odoAttr9!=''">
+                and odo_attr9 = #{odoAttr9}
+            </if>
+
+            <if test="odoAttr10!=null and odoAttr10!=''">
+                and odo_attr10 = #{odoAttr10}
+            </if>
+
+            <if test="odoAttr11!=null and odoAttr11!=''">
+                and odo_attr11 = #{odoAttr11}
+            </if>
+
+            <if test="odoAttr12!=null and odoAttr12!=''">
+                and odo_attr12 = #{odoAttr12}
+            </if>
+
+            <if test="odoAttr13!=null and odoAttr13!=''">
+                and odo_attr13 = #{odoAttr13}
+            </if>
+
+            <if test="odoAttr14!=null and odoAttr14!=''">
+                and odo_attr14 = #{odoAttr14}
+            </if>
+
+            <if test="odoAttr15!=null and odoAttr15!=''">
+                and odo_attr15 = #{odoAttr15}
+            </if>
+
+            <if test="odoAttr16!=null and odoAttr16!=''">
+                and odo_attr16 = #{odoAttr16}
+            </if>
+
+            <if test="odoAttr17!=null and odoAttr17!=''">
+                and odo_attr17 = #{odoAttr17}
+            </if>
+
+            <if test="odoAttr18!=null and odoAttr18!=''">
+                and odo_attr18 = #{odoAttr18}
+            </if>
+
+            <if test="odoAttr19!=null and odoAttr19!=''">
+                and odo_attr19 = #{odoAttr19}
+            </if>
+
+            <if test="odoAttr20!=null and odoAttr20!=''">
+                and odo_attr20 = #{odoAttr20}
+            </if>
+
+            <if test="ouId!=null">
+                and ou_id = #{ouId}
+            </if>
+        </where>
+    </sql>
+
+    <select id="getCount" resultType="long">
+        select count(*) from t_wh_odo_attr
+    </select>
+
+    <select id="findListCountByQueryMap" resultType="long">
+        select count(*) from t_wh_odo_attr
+        <include refid="whOdoAttrDynamicWhere"/>
+    </select>
+
+    <select id="findListCountByParam" resultType="long">
+        select count(*) from t_wh_odo_attr
+        <include refid="whOdoAttrDynamicWhere"/>
+    </select>
+
+    <!--
+        分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+        因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPage" resultMap="WhOdoAttrResult">
+        select
+        <include refid="whOdoAttrColumns"/>
+        from t_wh_odo_attr
+        <include refid="whOdoAttrDynamicWhere"/>
+
+    </select>
+
+    <select id="findListByQueryMap" resultMap="WhOdoAttrResult">
+        select
+        <include refid="whOdoAttrColumns"/>
+        from t_wh_odo_attr
+        <include refid="whOdoAttrDynamicWhere"/>
+
+    </select>
+
+    <select id="findListByParam" resultMap="WhOdoAttrResult">
+        select
+        <include refid="whOdoAttrColumns"/>
+        from t_wh_odo_attr
+        <include refid="whOdoAttrDynamicWhere"/>
+
+    </select>
+
+    <select id="query" resultMap="WhOdoAttrResult">
+        select
+        <include refid="whOdoAttrColumns"/>
+        from t_wh_odo_attr
+        <include refid="whOdoAttrConditionWhereExt"/>
+    </select>
+
+    <select id="queryCount" resultType="long">
+        select count(*) from t_wh_odo_attr
+        <include refid="whOdoAttrConditionWhereExt"/>
+    </select>
+
+</mapper>
