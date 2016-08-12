@@ -94,9 +94,10 @@ public interface WhCartonDao extends BaseDao<WhCarton, Long> {
      * @return
      */
     WhCarton findWhCartonByAsnSkuContainer(@Param("asnid") Long asnid, @Param("skuid") Long skuid, @Param("containerid") Long containerid, @Param("ouid") Long ouid);
-    
+
     /**
      * 查找caselevel箱信息
+     * 
      * @author lichuan
      * @param id
      * @param ouid
@@ -111,6 +112,13 @@ public interface WhCartonDao extends BaseDao<WhCarton, Long> {
      * @return
      */
     List<WhCartonCommand> findWhCartonByParamExt(WhCartonCommand whCartonCommand);
+
+    /**
+     * 通过ASN+容器 查询对应箱信息
+     * 
+     * @return
+     */
+    List<WhCarton> findWhCartonListByAsnSkuContainer(@Param("asnid") Long asnid, @Param("containerid") Long containerid, @Param("ouid") Long ouid);
 
 
 }

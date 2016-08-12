@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.OutInvBoxTypeVolumeDao">
+    <resultMap id="OutInvBoxTypeVolumeResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.OutInvBoxTypeVolume">
+    </resultMap>
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="outInvBoxTypeVolumeColumnsExt">
+        <![CDATA[
+                typeVo.id as id,
+                typeVo.out_id as outId,
+                typeVo.ou_id as ouId,
+                typeVo.prv_id as prvId,
+                typeVo.create_time as createTime,
+                typeVo.last_modify_time as lastModifyTime,
+                typeVo.created_id as createdId,
+                typeVo.modified_id as modifiedId,
+                vo.code as code,
+                vo.name as name,
+                typeVo.volume  as volume
+        ]]>
+    </sql>
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="outInvBoxTypeVolumeColumn">
+        <![CDATA[
+                id as id,
+                out_id as outId,
+                ou_id as ouId,
+                prv_id as prvId,
+                create_time as createTime,
+                last_modify_time as lastModifyTime,
+                created_id as createdId,
+                modified_id as modifiedId,
+                volume  as volume
+        ]]>
+    </sql>
+
+    <sql id="outInvBoxTypeVolumeDynamicWhereExt">
+        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+
+            <if test="id!=null">
+                and typeVo.id = #{id}
+            </if>
+
+            <if test="outId!=null">
+                and typeVo.out_id = #{outId}
+            </if>
+
+            <if test="ouId!=null">
+                and typeVo.ou_id = #{ouId}
+            </if>
+
+            <if test="prvId!=null">
+                and typeVo.prv_id = #{prvId}
+            </if>
+
+            <if test="volume!=null">
+                and typeVo.volume = #{volume}
+            </if>
+
+            <if test="createTime!=null">
+                and typeVo.create_time = #{createTime}
+            </if>
+
+            <if test="lastModifyTime!=null">
+                and typeVo.last_modify_time = #{lastModifyTime}
+            </if>
+
+            <if test="createdId!=null">
+                and typeVo.created_id = #{createdId}
+            </if>
+
+            <if test="modifiedId!=null">
+                and typeVo.modified_id = #{modifiedId}
+            </if>
+        </where>
+    </sql>
+
+    <select id="getOutBoxTypeVolumeByTypeId" resultType="com.baozun.scm.primservice.whoperation.command.warehouse.OutInvBoxTypeVoCommand">
+        select
+        <include refid="outInvBoxTypeVolumeColumnsExt"/>
+        from t_wh_out_inv_box_type_volume typeVo
+        left join t_wh_product_volume vo on typeVo.prv_id = vo.id
+        where typeVo.out_id = #{outId} and typeVo.ou_id = #{ouId}
+    </select>
+
+    <update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.OutInvBoxTypeVolume">
+        <![CDATA[
+            UPDATE t_wh_out_inv_box_type_volume SET
+                out_id = #{outId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                prv_id = #{prvId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                volume = #{volume,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
+            WHERE 
+                id = #{id}  and ou_id = #{ouId}
+        ]]>
+   </update>
+
+    <delete id="deleteExt">
+        delete
+        from t_wh_out_inv_box_type_volume
+        where ou_Id = #{ouId} and id in
+        <foreach collection="list" item="ids" open="("
+                 separator="," close=")">
+            #{ids}
+        </foreach>
+    </delete>
+
+    <select id="findByIdExt" resultType="com.baozun.scm.primservice.whoperation.model.warehouse.OutInvBoxTypeVolume">
+        select
+        <include refid="outInvBoxTypeVolumeColumn"/>
+        from t_wh_out_inv_box_type_volume
+        where id = #{id} and ou_id = #{ouId}
+    </select>
+
+
+    <select id="checkUnique" resultType="Long" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.OutInvBoxTypeVolume">
+        select count(*)
+        from t_wh_out_inv_box_type_volume
+        <where>
+            <if test="id!=null">
+                and id != #{id}
+            </if>
+            <if test="outId != null">
+                and out_id = #{outId}
+            </if>
+            <if test="ouId != null">
+                and ou_id = #{ouId}
+            </if>
+            <if test="prvId != null">
+                and prv_id = #{prvId}
+            </if>
+        </where>
+    </select>
+</mapper>
