@@ -338,6 +338,8 @@ public class PdaInboundSortationManagerImpl extends BaseManagerImpl implements P
         BeanUtils.copyProperties(skuInv, newSkuInv);
         newSkuInv.setId(null);
         newSkuInv.setInsideContainerId(null);
+        newSkuInv.setOuterContainerId(null);
+        newSkuInv.setLocationId(null);
         // 在库库存=移入数量
         newSkuInv.setOnHandQty(pdaInboundSortation.getShiftInQty());
         newSkuInv.setAllocatedQty(0.0);
@@ -348,6 +350,13 @@ public class PdaInboundSortationManagerImpl extends BaseManagerImpl implements P
         String uuidCa = SkuInventoryUuid.invUuid(newSkuInv);
         // 内部容器号=目标容器号
         newSkuInv.setInsideContainerId(pdaInboundSortation.getNewContainerId());
+        // 查询目标容器是否有外部容器号(托盘信息)
+        List<WhSkuInventory> invList = whSkuInventoryDao.findWhSkuInventoryByContainerId(pdaInboundSortation.getOuId(), pdaInboundSortation.getNewContainerId());
+        if (invList.size() > 0) {
+            // 有对应的外部容器号
+            // 给移入的库存记录添加外部容器ID
+            newSkuInv.setOuterContainerId(invList.get(0).getOuterContainerId());
+        }
         String uuid = SkuInventoryUuid.invUuid(newSkuInv);
         newSkuInv.setUuid(uuid);
         // 判断是否要计算库存修改前后数量
