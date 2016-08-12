@@ -351,7 +351,7 @@ public class PdaInboundSortationManagerImpl extends BaseManagerImpl implements P
         // 内部容器号=目标容器号
         newSkuInv.setInsideContainerId(pdaInboundSortation.getNewContainerId());
         // 查询目标容器是否有外部容器号(托盘信息)
-        List<WhSkuInventory> invList = whSkuInventoryDao.findWhSkuInventoryByContainerId(pdaInboundSortation.getOuId(), pdaInboundSortation.getNewContainerId());
+        List<WhSkuInventory> invList = whSkuInventoryDao.findWhSkuInventoryByContainerIdLocationIsNull(pdaInboundSortation.getOuId(), pdaInboundSortation.getNewContainerId());
         if (invList.size() > 0) {
             // 有对应的外部容器号
             // 给移入的库存记录添加外部容器ID
@@ -790,6 +790,7 @@ public class PdaInboundSortationManagerImpl extends BaseManagerImpl implements P
         pdaInboundSortationCommand.setMfgMap(mfgMap);
         pdaInboundSortationCommand.setExpMap(expMap);
         pdaInboundSortationCommand.setInvStatusMap(invStatusMap);
+        pdaInboundSortationCommand.setBatchNumMap(batchNumMap);
         pdaInboundSortationCommand.setInvTypeMap(invTypeMap);
         pdaInboundSortationCommand.setInvAttr1Map(invAttr1Map);
         pdaInboundSortationCommand.setInvAttr2Map(invAttr2Map);

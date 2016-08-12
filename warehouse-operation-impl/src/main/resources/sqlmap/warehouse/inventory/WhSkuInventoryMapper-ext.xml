@@ -1476,16 +1476,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		inv.ou_id = #{ouId}
 		and inv.outer_container_id = #{containerId}  group by sku_id
 	</select>
-	
-    <select id="findWhSkuInventoryByContainerId" resultMap="WhSkuInventoryResultExt">
-			select 
-        		<include refid="whSkuInventoryColumnsExt"/>
+    
+    <select id="findWhSkuInventoryByContainerIdLocationIsNull" resultMap="WhSkuInventoryResultExt">
+				select  <include refid="whSkuInventoryColumnsExt" />
 					from 
-					t_wh_sku_inventory inv 
+					t_wh_sku_inventory 
 					where 
 					ou_id = #{ouid}
-					and inside_container_id = #{insideContainerId} 
 					and location_id is null
+					and inside_container_id = #{insideContainerId} 
     </select>
 
 </mapper>

@@ -398,10 +398,9 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * 通过内部容器号查询对应容器库存 location_id is null
      * 
      * @param ouid
-     * @param outerContainerid
      * @return
      */
-    List<WhSkuInventory> findWhSkuInventoryByContainerId(@Param("ouid") Long ouid, @Param("insideContainerId") Long insideContainerId);
+    List<WhSkuInventory> findWhSkuInventoryByContainerIdLocationIsNull(@Param("ouid") Long ouid, @Param("insideContainerId") Long insideContainerId);
 
 
 }
