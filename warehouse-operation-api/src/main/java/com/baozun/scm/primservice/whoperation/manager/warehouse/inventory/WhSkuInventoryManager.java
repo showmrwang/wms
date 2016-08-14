@@ -19,6 +19,7 @@ package com.baozun.scm.primservice.whoperation.manager.warehouse.inventory;
 import java.util.List;
 
 import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.LocationRecommendResultCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
@@ -37,6 +38,19 @@ public interface WhSkuInventoryManager extends BaseManager {
      * @param lrrList
      * @param putawayPatternDetailType
      */
-    void containerInvAllocatedAndLocationInvBinding(List<WhSkuInventoryCommand> invList, Warehouse warehouse, List<LocationRecommendResultCommand> lrrList, Integer putawayPatternDetailType, Long ouId, Long userId, String logId);
+    void binding(List<WhSkuInventoryCommand> invList, Warehouse warehouse, List<LocationRecommendResultCommand> lrrList, Integer putawayPatternDetailType, Long ouId, Long userId, String logId);
+    
+    /**
+     * 执行上架（已分配容器库存出库及待移入库位库存入库）
+     * @author lichuan
+     * @param invList
+     * @param warehouse
+     * @param lrrList
+     * @param putawayPatternDetailType
+     * @param ouId
+     * @param userId
+     * @param logId
+     */
+    void putaway(ContainerCommand containerCmd, String locationCode, Long funcId, Warehouse warehouse, List<LocationRecommendResultCommand> lrrList, Integer putawayPatternDetailType, Long ouId, Long userId, String logId);
 
 }

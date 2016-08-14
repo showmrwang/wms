@@ -142,18 +142,40 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @return
      */
     List<WhSkuInventoryCommand> findWhSkuInventoryByOuterContainerCode(@Param("ouid") Long ouid, @Param("containerList") List<String> containerList);
-    
+
+    /**
+     * 通过外部容器号查询库位待移入库存信息
+     * 
+     * @author lichuan
+     * @param ouid
+     * @param containerList
+     * @return
+     */
+    List<WhSkuInventoryCommand> findToBeFilledInventoryByOuterContainerCode(@Param("ouid") Long ouid, @Param("containerList") List<String> containerList);
+
     /**
      * 通过内部容器号查询对应的库存信息
+     * 
      * @author lichuan
      * @param ouid
      * @param containerList
      * @return
      */
     List<WhSkuInventoryCommand> findWhSkuInventoryByInsideContainerCode(@Param("ouid") Long ouid, @Param("containerList") List<String> containerList);
-    
+
+    /**
+     * 通过内部容器号查询库位待移入库存信息
+     * 
+     * @author lichuan
+     * @param ouid
+     * @param containerList
+     * @return
+     */
+    List<WhSkuInventoryCommand> findToBeFilledInventoryByInsideContainerCode(@Param("ouid") Long ouid, @Param("containerList") List<String> containerList);
+
     /**
      * 根据容器号及绑定库位查询对应的库存信息
+     * 
      * @author lichuan
      * @param ouid
      * @param containerList
@@ -161,6 +183,17 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @return
      */
     List<WhSkuInventoryCommand> findWhSkuInventoryByInsideContainerCodeAndLoc(@Param("ouid") Long ouid, @Param("containerList") List<String> containerList, @Param("locid") Long locid);
+
+    /**
+     * 根据容器号及绑定库位查询库位待移入库存信息
+     * 
+     * @author lichuan
+     * @param ouid
+     * @param containerList
+     * @param locid
+     * @return
+     */
+    List<WhSkuInventoryCommand> findToBeFilledInventoryByInsideContainerCodeAndLoc(@Param("ouid") Long ouid, @Param("containerList") List<String> containerList, @Param("locid") Long locid);
 
     /**
      * 通过外部容器号查询对用的库存信息的所有库位
@@ -246,25 +279,27 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @return
      */
     WhSkuInventoryCommand findWhSkuInventoryBySkuAttr(WhSkuInventoryCommand whSkuInventoryCommand);
-    
+
     /**
      * 根据外部容器获取收货库存数量
+     * 
      * @author lichuan
      * @param ouid
      * @param outerContainerid
      * @return
      */
     int findRcvdInventoryCountsByOuterContainerId(@Param("ouid") Long ouid, @Param("outerContainerid") Long outerContainerid);
-    
+
     /**
      * 根据内部容器获取收货库存数量
+     * 
      * @author lichuan
      * @param ouid
      * @param insideContainerid
      * @return
      */
     int findRcvdInventoryCountsByInsideContainerId(@Param("ouid") Long ouid, @Param("insideContainerid") Long insideContainerid);
-    
+
     /**
      * 根据内部容器获取收货库存数量(外部容器不为空)
      * 
@@ -276,16 +311,48 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
     int findRcvdInventoryCountsByInsideContainerId1(@Param("ouid") Long ouid, @Param("insideContainerid") Long insideContainerid);
 
     /**
+     * 根据uuid查询所有库存记录行的在库数量总和
+     * 
+     * @author lichuan
+     * @param ouid
+     * @param uuid
+     * @return
+     */
+    double findInventorysAllOnHandQtysByUuid(@Param("ouid") Long ouid, @Param("uuid") String uuid);
+
+    /**
+     * 根据uuid查询所有库存记录行
+     * 
+     * @author lichuan
+     * @param ouid
+     * @param uuid
+     * @return
+     */
+    List<WhSkuInventoryCommand> findInventorysByUuid(@Param("ouid") Long ouid, @Param("uuid") String uuid);
+
+    /**
+     * 根据uuid查询所有已分配的外部容器库存
+     * 
+     * @author lichuan
+     * @param ouid
+     * @param uuid
+     * @return
+     */
+    List<WhSkuInventoryCommand> findAllocatedContainerInventorysByUuid(@Param("ouid") Long ouid, @Param("uuid") String uuid);
+
+    /**
      * 根据库位查找所有库存
+     * 
      * @author lichuan
      * @param ouid
      * @param locid
      * @return
      */
     List<WhSkuInventoryCommand> findWhSkuInventoryByLocIdAndOuId(@Param("ouid") Long ouid, @Param("locid") Long locid);
-    
+
     /**
      * 根据外部容器号查询所有内部容器信息
+     * 
      * @author lichuan
      * @param ouid
      * @param outerContainerid
@@ -297,14 +364,14 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * 根据容器号查询外部容器库存记录的数量
      * 
      * @author lijun.shen
-     * @param pdaManMadePutawayCommand 
+     * @param pdaManMadePutawayCommand
      * @param ouId
      * @param containerId
      * @return
      */
     int findContainerInventoryCountsByOuterContainerId(PdaManMadePutawayCommand pdaManMadePutawayCommand);
-    
-    
+
+
     /**
      * 根据容器号查询外部容器库存记录的数量
      * 
@@ -314,8 +381,8 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @return
      */
     int findContainerInventoryCountsByInsideContainerId(PdaManMadePutawayCommand pdaManMadePutawayCommand);
-    
-    
+
+
     /**
      * 根据容器号查询外部容器库存记录的数量
      * 
@@ -325,9 +392,15 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @return
      */
     List<WhSkuInventoryCommand> getSkuInvListByOutContainerID(Long ouId, Long containerId, String logId);
-    
-    
-    
-    
+
+
+    /**
+     * 通过内部容器号查询对应容器库存 location_id is null
+     * 
+     * @param ouid
+     * @return
+     */
+    List<WhSkuInventory> findWhSkuInventoryByContainerIdLocationIsNull(@Param("ouid") Long ouid, @Param("insideContainerId") Long insideContainerId);
+
 
 }
