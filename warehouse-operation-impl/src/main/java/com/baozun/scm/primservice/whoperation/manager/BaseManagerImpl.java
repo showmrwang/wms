@@ -15,19 +15,26 @@
 package com.baozun.scm.primservice.whoperation.manager;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.baozun.redis.manager.CacheManager;
 import com.baozun.scm.primservice.whoperation.command.system.GlobalLogCommand;
+import com.baozun.scm.primservice.whoperation.constant.CacheKeyConstant;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.system.GlobalLogManager;
+import com.baozun.scm.primservice.whoperation.manager.system.SysDictionaryManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryLogManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventorySnLogManager;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
+import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryLog;
 import com.baozun.scm.primservice.whoperation.util.LogUtil;
 import com.baozun.scm.primservice.whoperation.util.ParamsUtil;
@@ -43,6 +50,7 @@ public abstract class BaseManagerImpl implements BaseManager {
     protected static final String GLOBAL_LOG_UPDATE = Constants.GLOBAL_LOG_UPDATE;
     protected static final String GLOBAL_LOG_INSERT = Constants.GLOBAL_LOG_INSERT;
     protected static final String GLOBAL_LOG_DELETE = Constants.GLOBAL_LOG_DELETE;
+
     protected String logId = "";
     @Autowired
     private GlobalLogManager globalLogManager;
@@ -50,6 +58,10 @@ public abstract class BaseManagerImpl implements BaseManager {
     private WhSkuInventoryLogManager whSkuInventoryLogManager;
     @Autowired
     private WhSkuInventorySnLogManager whSkuInventorySnLogManager;
+    @Autowired
+    private SysDictionaryManager sysDictionaryManager;
+    @Autowired
+    private CacheManager cacheManager;
 
 
     /**
@@ -124,6 +136,32 @@ public abstract class BaseManagerImpl implements BaseManager {
             }
         }
         whSkuInventoryLogManager.insertSkuInventoryLog(log);
+    }
+
+    /**
+     * 通过groupValue+dicValue查询对应系统参数信息 redis=null 查询数据库
+     * 
+     * @return
+     */
+    protected Map<String, SysDictionary> findSysDictionaryByRedis(String groupValue, List<String> dicValueList, String logId) {
+        String redisKey = CacheKeyConstant.WMS_CACHE_SYS_DICTIONARY + groupValue;
+        Map<String, SysDictionary> returnMap = new HashMap<String, SysDictionary>();
+        for (String dicValue : dicValueList) {
+            SysDictionary sys = null;
+            try {
+                // 先查询Redis是否存在对应数据
+                sys = cacheManager.getObject(redisKey + dicValue);
+            } catch (Exception e) {
+                // redis出错只记录log
+                log.error("findSysDictionaryByRedis error logid: " + logId);
+            }
+            if (null == sys) {
+                // 缓存无对应数据 查询数据库
+                sys = sysDictionaryManager.getGroupbyGroupValueAndDicValue(groupValue, dicValue);
+            }
+            returnMap.put(dicValue, sys);
+        }
+        return returnMap;
     }
 
     /**

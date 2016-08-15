@@ -50,7 +50,7 @@ public class SysDictionaryManagerImpl implements SysDictionaryManager {
         log.info("SysDictionaryManager.getListByGroup end");
         return sysDictionaryDao.findListByQueryMap(params);
     }
-    
+
     /**
      * @author lichuan
      * @param code
@@ -335,6 +335,18 @@ public class SysDictionaryManagerImpl implements SysDictionaryManager {
         // 设置基本参数
         setOperateParams(dictionary, userId);
         return dictionary;
+    }
+
+    /**
+     * 通过groupValue+dicValue查询对应系统参数信息
+     * 
+     * @param groupValue
+     * @param dicValue
+     * @return
+     */
+    @Override
+    public SysDictionary getGroupbyGroupValueAndDicValue(String groupValue, String dicValue) {
+        return sysDictionaryDao.getGroupbyGroupValueAndDicValue(groupValue, dicValue);
     }
 
 }

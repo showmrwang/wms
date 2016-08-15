@@ -323,8 +323,6 @@ public class PdaInboundSortationManagerImpl extends BaseManagerImpl implements P
             log.warn("pdaScanNewContainer pdaInboundSortationCommand.getShiftInQty() > skuInv.getOnHandQty() logid: " + pdaInboundSortation.getLogId());
             throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_SHIFTINOUTQTY_ERROR);
         }
-        // 移出库存对应外部容器ID
-        Long newOuterContainerId = null;
         // 原始容器对应的外部容器ID
         Long outerContainerId = null;
         // 新的库存记录
@@ -351,7 +349,6 @@ public class PdaInboundSortationManagerImpl extends BaseManagerImpl implements P
             // 有对应的外部容器号
             // 给移入的库存记录添加外部容器ID
             if (invList.get(0).getOuterContainerId() != null) {
-                newOuterContainerId = invList.get(0).getOuterContainerId();
                 newSkuInv.setOuterContainerId(invList.get(0).getOuterContainerId());
             }
         }
