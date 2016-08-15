@@ -491,8 +491,10 @@ public class ErrorCodes {
     public static final int  PDA_MAN_MADE_PUTAWAY_BARCODE_NULL = 80007;
     /**库位不存在*/
     public static final int  PDA_MAN_MADE_PUTAWAY_LOCATION_NULL = 80008;
-    /**库位生命周五无效*/
+    /**库位生命周期无效*/
     public static final int  PDA_MAN_MADE_PUTAWAY_LOCATION_LIFECYCLE_ERROR = 80009;
+    /**库位为静态库位，容器sku商品未能全部绑定库位，不能整托、整箱上架*/
+    public static final int PDA_MAN_MADE_PUTAWAY_STATICLOCATION_NOTINCLUDEALLSKU = 80010;
     
     
     

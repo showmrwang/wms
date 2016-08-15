@@ -49,7 +49,7 @@ public class PdaManMadePutawayCommand extends BaseCommand {
     /** 对应功能ID */
     private Long functionId;
     /** 库存ID */
-    private String locationId;
+    private Long locationId;
     /** 是否静态库存 */
     private Boolean isStatic;
     /** 是否允许混放 */
@@ -60,6 +60,8 @@ public class PdaManMadePutawayCommand extends BaseCommand {
     private Long statusId;
     /** sku条码*/
     private String skuBarcode;
+   
+    
     
     
     
@@ -198,11 +200,12 @@ public class PdaManMadePutawayCommand extends BaseCommand {
         this.binContainerCode = binContainerCode;
     }
 
-    public String getLocationId() {
+
+    public Long getLocationId() {
         return locationId;
     }
 
-    public void setLocationId(String locationId) {
+    public void setLocationId(Long locationId) {
         this.locationId = locationId;
     }
 
