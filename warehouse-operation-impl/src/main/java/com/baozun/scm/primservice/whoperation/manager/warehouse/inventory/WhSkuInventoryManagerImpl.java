@@ -165,7 +165,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                 WhSkuInventory splitInv = new WhSkuInventory();
                                 BeanUtils.copyProperties(invCmd, splitInv);
                                 splitInv.setId(null);
-                                splitInv.setToBeFilledQty(null);
+                                splitInv.setToBeFilledQty(0.0);
                                 splitInv.setOnHandQty(new Double(invCmd.getOnHandQty().intValue() - qty));// 剩余在库数量
                                 splitInv.setLocationId(null);
                                 whSkuInventoryDao.insert(splitInv);
