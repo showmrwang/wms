@@ -344,7 +344,7 @@ public class PdaInboundSortationManagerImpl extends BaseManagerImpl implements P
         // 内部容器号=目标容器号
         newSkuInv.setInsideContainerId(pdaInboundSortation.getNewContainerId());
         // 查询目标容器是否有外部容器号(托盘信息)
-        List<WhSkuInventory> invList = whSkuInventoryDao.findWhSkuInventoryByContainerIdLocationIsNull(pdaInboundSortation.getOuId(), pdaInboundSortation.getNewContainerId());
+        List<WhSkuInventory> invList = whSkuInventoryDao.findWhSkuInventoryByContainerIdLocationIsNull(pdaInboundSortation.getOuId(), pdaInboundSortation.getNewContainerId(), null);
         if (invList.size() > 0) {
             // 有对应的外部容器号
             // 给移入的库存记录添加外部容器ID
@@ -436,17 +436,31 @@ public class PdaInboundSortationManagerImpl extends BaseManagerImpl implements P
                 }
             }
         }
-        // 根据sku+内部容器号 查找容器库存数据 location is null 查询多条对应的库存数据
-        List<WhSkuInventoryCommand> skuInvList = whSkuInventoryDao.findWhSkuInventoryBySkuIdAndContainerid(pdaInboundSortation.getOuId(), pdaInboundSortation.getSkuId(), pdaInboundSortation.getContainerId(), null);
-        if (skuInvList.size() == 0) {
-            // 此原始容器号已完成全部商品分拣
-            // 修改对应原始容器状态为可用
-            b = updateContainerLifecycleAndStatus(pdaInboundSortation);
-            if (!b) {
-                // 修改箱信息容器状态失败
-                throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
-            }
-            if (null != outerContainerId) {
+        // 验证容器库存是否分拣完成 修改对应容器库存状态
+        updateOutInContainer(pdaInboundSortation, outerContainerId, b);
+        return pdaInboundSortation;
+    }
+
+    /**
+     * 容器分拣完成修改对应外部/内部容器状态
+     * 
+     * @param pdaInboundSortation
+     * @return
+     * @throws Exception
+     */
+    private PdaInboundSortationCommand updateOutInContainer(PdaInboundSortationCommand pdaInboundSortation, Long outerContainerId, boolean b) throws Exception {
+        // 如果有外部容器信息
+        if (null != outerContainerId) {
+            // 根据外部容器号 查找容器库存数据 location is null 查询多条对应的库存数据
+            List<WhSkuInventory> outInvList = whSkuInventoryDao.findWhSkuInventoryByContainerIdLocationIsNull(pdaInboundSortation.getOuId(), null, outerContainerId);
+            if (outInvList.size() == 0) {
+                // 此原始容器号对应外部容器库存已完成全部商品分拣
+                // 修改对应原始容器状态为可用 可外部容器状态
+                b = updateContainerLifecycleAndStatus(pdaInboundSortation);
+                if (!b) {
+                    // 修改箱信息容器状态失败
+                    throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
+                }
                 pdaInboundSortation.setContainerId(outerContainerId);
                 // 如果原始容器库存包含外部容器 需要把外部容器状态改为可用
                 b = updateContainerLifecycleAndStatus(pdaInboundSortation);
@@ -454,12 +468,25 @@ public class PdaInboundSortationManagerImpl extends BaseManagerImpl implements P
                     // 修改箱信息容器状态失败
                     throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
                 }
+                pdaInboundSortation.setIsSortationDone(true);
             }
-            pdaInboundSortation.setIsSortationDone(true);
-
+        } else {
+            // 根据内部容器号 查找容器库存数据 location is null 查询多条对应的库存数据
+            List<WhSkuInventory> inInvList = whSkuInventoryDao.findWhSkuInventoryByContainerIdLocationIsNull(pdaInboundSortation.getOuId(), pdaInboundSortation.getContainerId(), null);
+            if (inInvList.size() == 0) {
+                // 原始容器库存商品已全部分拣完成
+                // 修改对应原始容器状态为可用 可外部容器状态
+                b = updateContainerLifecycleAndStatus(pdaInboundSortation);
+                if (!b) {
+                    // 修改箱信息容器状态失败
+                    throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
+                }
+                pdaInboundSortation.setIsSortationDone(true);
+            }
         }
         return pdaInboundSortation;
     }
+
 
     /***
      * 更新原有库存记录在库库存数量

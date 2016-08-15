@@ -1478,13 +1478,19 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	</select>
     
     <select id="findWhSkuInventoryByContainerIdLocationIsNull" resultMap="WhSkuInventoryResultExt">
-				select  <include refid="whSkuInventoryColumnsExt" />
-					from 
-					t_wh_sku_inventory 
-					where 
+			select  <include refid="whSkuInventoryColumnsExt" />
+				from 
+				t_wh_sku_inventory 
+				<where>
 					ou_id = #{ouid}
 					and location_id is null
-					and inside_container_id = #{insideContainerId} 
-    </select>
+					<if test="insideContainerId != null">
+						and t.inside_container_id = #{insideContainerId} 
+					</if>
+					<if test="outerContainerId != null">
+						and t.outer_container_id = #{outerContainerId} 
+					</if>
+				</where>
+  	</select>
 
 </mapper>
