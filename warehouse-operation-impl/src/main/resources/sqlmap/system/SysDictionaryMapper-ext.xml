@@ -206,4 +206,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		from sys_dictionary_group
 		where id=#{id}
 	</select>
+	
+	<select id="getGroupbyGroupValueAndDicValue" resultMap="SysDictionaryResultExt">
+		select <include refid="sysDictionaryColumnsExt" />
+			from sys_dictionary_group
+			where 
+			group_value = #{groupValue} 
+			and dic_value = #{dicValue}
+	</select>
 </mapper>

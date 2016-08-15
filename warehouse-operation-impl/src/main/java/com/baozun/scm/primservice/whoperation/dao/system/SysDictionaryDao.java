@@ -32,7 +32,7 @@ import lark.orm.dao.supports.BaseDao;
 
 
 
-public interface SysDictionaryDao extends BaseDao<SysDictionary, Long> { 
+public interface SysDictionaryDao extends BaseDao<SysDictionary, Long> {
 
 
     @QueryPage("findListCountByQueryMap")
@@ -54,5 +54,7 @@ public interface SysDictionaryDao extends BaseDao<SysDictionary, Long> {
     int checkUnique(SysDictionaryCommand o);
 
     SysDictionaryCommand getGroupbyId(Long id);
+
+    SysDictionary getGroupbyGroupValueAndDicValue(@Param("groupValue") String groupValue, @Param("dicValue") String dicValue);
 
 }

@@ -15,9 +15,10 @@ import lark.common.dao.Sort;
 public interface SysDictionaryManager extends BaseManager {
 
     List<SysDictionary> getListByGroup(String code, Integer lifecycle);
-    
+
     /**
      * 根据字段组编码及参数值查询字典信息
+     * 
      * @author lichuan
      * @param code
      * @param lifecycle
@@ -106,4 +107,13 @@ public interface SysDictionaryManager extends BaseManager {
     List<SysDictionary> getListByParam(SysDictionaryCommand poTypeCommand);
 
     void checkUnique(SysDictionaryCommand command);
+
+    /**
+     * 通过groupValue+dicValue查询对应系统参数信息
+     * 
+     * @param groupValue
+     * @param dicValue
+     * @return
+     */
+    SysDictionary getGroupbyGroupValueAndDicValue(String groupValue, String dicValue);
 }
