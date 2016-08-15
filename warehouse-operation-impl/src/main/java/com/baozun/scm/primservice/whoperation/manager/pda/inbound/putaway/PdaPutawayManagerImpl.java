@@ -4099,7 +4099,10 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                     log.error(getLogMsg("inv uuid error, logId is:[{}]", new Object[] {logId}), e);
                     throw new BusinessException(ErrorCodes.COMMON_INV_PROCESS_UUID_ERROR);
                 }
-                WhSkuInventory oldSkuInv = whSkuInventoryDao.findWhSkuInventoryByUuid(ouId, uuid);
+                WhSkuInventory oldSkuInv = null;
+                if(!uuid.equals(invCmd.getUuid())){
+                    oldSkuInv = whSkuInventoryDao.findWhSkuInventoryByUuid(ouId, uuid);
+                }
                 if (null == oldSkuInv) {
                     // uuid不存在则插入新的库存记录
                     inv.setLastModifyTime(new Date());
@@ -4457,7 +4460,10 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                     log.error(getLogMsg("inv uuid error, logId is:[{}]", new Object[] {logId}), e);
                     throw new BusinessException(ErrorCodes.COMMON_INV_PROCESS_UUID_ERROR);
                 }
-                WhSkuInventory oldSkuInv = whSkuInventoryDao.findWhSkuInventoryByUuid(ouId, uuid);
+                WhSkuInventory oldSkuInv = null;
+                if(!uuid.equals(invCmd.getUuid())){
+                    oldSkuInv = whSkuInventoryDao.findWhSkuInventoryByUuid(ouId, uuid);
+                }
                 if (null == oldSkuInv) {
                     // uuid不存在则插入新的库存记录
                     inv.setLastModifyTime(new Date());
@@ -4732,7 +4738,10 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                     log.error(getLogMsg("inv uuid error, logId is:[{}]", new Object[] {logId}), e);
                     throw new BusinessException(ErrorCodes.COMMON_INV_PROCESS_UUID_ERROR);
                 }
-                WhSkuInventory oldSkuInv = whSkuInventoryDao.findWhSkuInventoryByUuid(ouId, uuid);
+                WhSkuInventory oldSkuInv = null;
+                if(!uuid.equals(invCmd.getUuid())){
+                    oldSkuInv = whSkuInventoryDao.findWhSkuInventoryByUuid(ouId, uuid);
+                }
                 if (null == oldSkuInv) {
                     // uuid不存在则插入新的库存记录
                     inv.setLastModifyTime(new Date());
