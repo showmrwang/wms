@@ -69,6 +69,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<if test="userid!=null">
 				and user_id = #{userid}
 			</if>
+			limit 0,1 
 		</where>
 	</select>
 	

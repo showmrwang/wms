@@ -143,23 +143,35 @@ public abstract class BaseManagerImpl implements BaseManager {
      * 
      * @return
      */
-    protected Map<String, SysDictionary> findSysDictionaryByRedis(String groupValue, List<String> dicValueList, String logId) {
-        String redisKey = CacheKeyConstant.WMS_CACHE_SYS_DICTIONARY + groupValue;
+    protected Map<String, SysDictionary> findSysDictionaryByRedis(Map<String, List<String>> sysDictionaryList) {
+        String redisKey = CacheKeyConstant.WMS_CACHE_SYS_DICTIONARY;
         Map<String, SysDictionary> returnMap = new HashMap<String, SysDictionary>();
-        for (String dicValue : dicValueList) {
-            SysDictionary sys = null;
-            try {
-                // 先查询Redis是否存在对应数据
-                sys = cacheManager.getObject(redisKey + dicValue);
-            } catch (Exception e) {
-                // redis出错只记录log
-                log.error("findSysDictionaryByRedis error logid: " + logId);
+        // 遍历系统参数Map
+        for (String groupValue : sysDictionaryList.keySet()) {
+            // 通过key = groupValue 获取 dicValue
+            List<String> divValueList = sysDictionaryList.get(groupValue);
+            for (String dicValue : divValueList) {
+                SysDictionary sys = null;
+                try {
+                    // 先查询Redis是否存在对应数据
+                    sys = cacheManager.getObject(redisKey + dicValue);
+                } catch (Exception e) {
+                    // redis出错只记录log
+                    log.error("findSysDictionaryByRedis cacheManager.getObject(" + redisKey + dicValue + ") error");
+                }
+                if (null == sys) {
+                    // 缓存无对应数据 查询数据库
+                    sys = sysDictionaryManager.getGroupbyGroupValueAndDicValue(groupValue, dicValue);
+                    try {
+                        cacheManager.setObject(redisKey + dicValue, sys);
+                    } catch (Exception e) {
+                        // redis出错只记录log
+                        log.error("findSysDictionaryByRedis cacheManager.setObject(" + redisKey + dicValue + ") error");
+                    }
+                }
+                // 放入returnMap 格式key = groupValue_dicValue value SysDictionary
+                returnMap.put(groupValue + "_" + dicValue, sys);
             }
-            if (null == sys) {
-                // 缓存无对应数据 查询数据库
-                sys = sysDictionaryManager.getGroupbyGroupValueAndDicValue(groupValue, dicValue);
-            }
-            returnMap.put(dicValue, sys);
         }
         return returnMap;
     }
