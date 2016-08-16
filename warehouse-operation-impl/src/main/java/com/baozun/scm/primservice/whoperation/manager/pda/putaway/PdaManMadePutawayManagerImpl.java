@@ -220,6 +220,7 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public PdaManMadePutawayCommand pdaLocationNotMix(PdaManMadePutawayCommand command) {
+        System.out.println("coming....");
         // 判断托盘或货箱是否存在多个sku商品
 
         // 判断托盘/货箱是否存在相同sku，不同库存属性的商品

@@ -496,6 +496,11 @@ public class ErrorCodes {
     /**库位为静态库位，容器sku商品未能全部绑定库位，不能整托、整箱上架*/
     public static final int PDA_MAN_MADE_PUTAWAY_STATICLOCATION_NOTINCLUDEALLSKU = 80010;
     
+    /**商品状态不可用*/
+    public static final int PDA_MAN_MADE_PUTAWAY_SKU_STATUS_NOT_USE = 80010;
+    
+    
+    
     
     
     
