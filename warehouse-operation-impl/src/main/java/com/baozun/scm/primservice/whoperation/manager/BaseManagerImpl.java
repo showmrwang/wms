@@ -143,7 +143,7 @@ public abstract class BaseManagerImpl implements BaseManager {
      * 
      * @return
      */
-    protected Map<String, SysDictionary> findSysDictionaryByRedis(Map<String, List<String>> sysDictionaryList, String logId) {
+    protected Map<String, SysDictionary> findSysDictionaryByRedis(Map<String, List<String>> sysDictionaryList) {
         String redisKey = CacheKeyConstant.WMS_CACHE_SYS_DICTIONARY;
         Map<String, SysDictionary> returnMap = new HashMap<String, SysDictionary>();
         // 遍历系统参数Map
@@ -157,7 +157,7 @@ public abstract class BaseManagerImpl implements BaseManager {
                     sys = cacheManager.getObject(redisKey + dicValue);
                 } catch (Exception e) {
                     // redis出错只记录log
-                    log.error("findSysDictionaryByRedis cacheManager.getObject(" + redisKey + dicValue + ") error logid: " + logId);
+                    log.error("findSysDictionaryByRedis cacheManager.getObject(" + redisKey + dicValue + ") error");
                 }
                 if (null == sys) {
                     // 缓存无对应数据 查询数据库
@@ -166,7 +166,7 @@ public abstract class BaseManagerImpl implements BaseManager {
                         cacheManager.setObject(redisKey + dicValue, sys);
                     } catch (Exception e) {
                         // redis出错只记录log
-                        log.error("findSysDictionaryByRedis cacheManager.setObject(" + redisKey + dicValue + ") error logid: " + logId);
+                        log.error("findSysDictionaryByRedis cacheManager.setObject(" + redisKey + dicValue + ") error");
                     }
                 }
                 // 放入returnMap 格式key = groupValue_dicValue value SysDictionary
