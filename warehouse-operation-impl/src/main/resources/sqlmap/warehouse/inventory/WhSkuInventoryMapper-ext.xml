@@ -245,15 +245,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			l.code as locationCode,
 			cout.code as outerContainerCode,
 			iout.code as insideContainerCode,
-			cust.customer_name as customerName,
 			store.store_name as storeName,
-			sys.dic_label as invTypeName,
-			invstatus.name as invstatusName,
-			inva1.dic_label as invAttr1Str,
-			inva2.dic_label as invAttr2Str,
-			inva3.dic_label as invAttr3Str,
-			inva4.dic_label as invAttr4Str,
-			inva5.dic_label as invAttr5Str
+			invstatus.name as invstatusName
 	    ]]>
 	</sql>
 	
@@ -296,15 +289,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			t.locationCode as locationCode,
 			t.outerContainerCode as outerContainerCode,
 			t.insideContainerCode as insideContainerCode,
-			t.customerName as customerName,
 			t.storeName as storeName,
-			t.invTypeName as invTypeName,
-			t.invstatusName as invstatusName,
-			t.invAttr1Str as invAttr1Str,
-			t.invAttr2Str as invAttr2Str,
-			t.invAttr3Str as invAttr3Str,
-			t.invAttr4Str as invAttr4Str,
-			t.invAttr5Str as invAttr5Str
+			t.invstatusName as invstatusName
 	    ]]>
 	</sql>
 	
@@ -410,15 +396,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 						left join t_wh_location l on t.location_id = l.id 
 						left join t_wh_container cout on t.outer_container_id = cout.id 
 						left join t_wh_container iout on t.inside_container_id = iout.id 
-						left join t_bi_customer cust on t.customer_id = cust.id 
 						left join t_bi_store store on t.store_id = store.id 
 						left join t_wh_inventory_status invstatus on t.inv_status = invstatus.id
-						left join sys_dictionary sys on t.inv_type = sys.dic_value and sys.group_value = 'INVENTORY_TYPE'
-						left join sys_dictionary inva1 on t.inv_attr1 = inva1.dic_value and inva1.group_value = 'INVENTORY_ATTR_1' 
-						left join sys_dictionary inva2 on t.inv_attr2 = inva2.dic_value and inva2.group_value = 'INVENTORY_ATTR_2' 
-						left join sys_dictionary inva3 on t.inv_attr3 = inva3.dic_value and inva3.group_value = 'INVENTORY_ATTR_3' 
-						left join sys_dictionary inva4 on t.inv_attr4 = inva4.dic_value and inva4.group_value = 'INVENTORY_ATTR_4' 
-						left join sys_dictionary inva5 on t.inv_attr5 = inva5.dic_value and inva5.group_value = 'INVENTORY_ATTR_5' 
 						<include refid="findListByQueryMapWithPageWhereExt"/> )
 			t group by t.uuid) t
     </select>
@@ -434,15 +413,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 							left join t_wh_location l on t.location_id = l.id 
 							left join t_wh_container cout on t.outer_container_id = cout.id 
 							left join t_wh_container iout on t.inside_container_id = iout.id 
-							left join t_bi_customer cust on t.customer_id = cust.id 
 							left join t_bi_store store on t.store_id = store.id 
 							left join t_wh_inventory_status invstatus on t.inv_status = invstatus.id
-							left join sys_dictionary sys on t.inv_type = sys.dic_value and sys.group_value = 'INVENTORY_TYPE'
-							left join sys_dictionary inva1 on t.inv_attr1 = inva1.dic_value and inva1.group_value = 'INVENTORY_ATTR_1' 
-							left join sys_dictionary inva2 on t.inv_attr2 = inva2.dic_value and inva2.group_value = 'INVENTORY_ATTR_2' 
-							left join sys_dictionary inva3 on t.inv_attr3 = inva3.dic_value and inva3.group_value = 'INVENTORY_ATTR_3' 
-							left join sys_dictionary inva4 on t.inv_attr4 = inva4.dic_value and inva4.group_value = 'INVENTORY_ATTR_4' 
-							left join sys_dictionary inva5 on t.inv_attr5 = inva5.dic_value and inva5.group_value = 'INVENTORY_ATTR_5' 
 						<include refid="findListByQueryMapWithPageWhereExt"/> )
 			t group by t.uuid
     </select>

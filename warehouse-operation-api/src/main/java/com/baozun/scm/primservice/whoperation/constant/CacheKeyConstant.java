@@ -64,6 +64,9 @@ public final class CacheKeyConstant {
     /** 系统参数缓存 前缀+groupValue+dicValue Dictionary */
     public static final String WMS_CACHE_SYS_DICTIONARY = "WMS_CACHE_SYS_DICTIONARY_";
 
+    /** 客户缓存 前缀+ customerId */
+    public static final String WMS_CACHE_CUSTOMER = "WMS_CACHE_CUSTOMER_";
+
     // 过期时间
     public static final int CACHE_ONE_SECOND = 1;
     public static final int CACHE_ONE_MINUTE = 60;

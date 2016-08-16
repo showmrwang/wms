@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.CustomerDao">
+    <resultMap id="CustomerResult"
+               type="com.baozun.scm.primservice.whoperation.model.warehouse.Customer">
+    </resultMap>
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="customerColumns">
+        <![CDATA[
+                id as id,
+                customer_code as customerCode,
+                customer_name as customerName,
+                description as description,
+                pic as pic,
+                pic_contact as picContact,
+                customer_type as customerType,
+                invoice_type as invoiceType,
+                payment_term as paymentTerm,
+                create_time as createTime,
+                last_modify_time as lastModifyTime,
+                operator_id as operatorId,
+                lifecycle as lifecycle
+        ]]>
+    </sql>
+
+    <insert id="insertCustomer" keyProperty="id"
+            parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Customer">
+        <![CDATA[
+            INSERT INTO
+            t_bi_customer (
+                id,
+                customer_code ,
+                customer_name ,
+                description ,
+                pic ,
+                pic_contact ,
+                customer_type,
+                invoice_type ,
+                payment_term ,
+                create_time ,
+                last_modify_time ,
+                operator_id ,
+                lifecycle
+            ) VALUES (
+                #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                #{customerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                #{customerName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                #{description,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                #{pic,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                #{picContact,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                #{customerType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                #{invoiceType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                #{paymentTerm,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER}
+            )
+        ]]>
+
+    </insert>
+
+
+    <insert id="insert"
+            parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Customer">
+        <![CDATA[
+            INSERT INTO
+            t_bi_customer (
+                id,
+                customer_code ,
+                customer_name ,
+                description ,
+                pic ,
+                pic_contact ,
+                customer_type,
+                invoice_type ,
+                payment_term ,
+                create_time ,
+                last_modify_time ,
+                operator_id ,
+                lifecycle
+            ) VALUES (
+                #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                #{customerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                #{customerName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                #{description,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                #{pic,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                #{picContact,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                #{customerType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                #{invoiceType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                #{paymentTerm,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER}
+            )
+        ]]>
+
+    </insert>
+
+    <update id="update"
+            parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Customer">
+        <![CDATA[
+            UPDATE t_bi_customer SET
+                customer_code = #{customerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                customer_name = #{customerName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                description = #{description,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                pic = #{pic,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                pic_contact = #{picContact,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                customer_type = #{customerType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                invoice_type = #{invoiceType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                payment_term = #{paymentTerm,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER}
+            WHERE
+                id = #{id}
+        ]]>
+    </update>
+    <delete id="delete" parameterType="java.lang.Long">
+        <![CDATA[
+            delete from t_bi_customer where
+                id = #{id}
+        ]]>
+    </delete>
+
+    <delete id="deleteByIds" parameterType="list">
+
+        delete from t_bi_customer
+        where id in
+        <foreach item="item" index="index" collection="list" open="("
+                 separator="," close=")">
+            #{item}
+        </foreach>
+
+    </delete>
+
+    <select id="findById" parameterType="java.lang.Long" resultMap="CustomerResult"
+            flushCache="false">
+        select
+        <include refid="customerColumns"/>
+        <![CDATA[
+                from t_bi_customer
+                where
+                id = #{id}
+            ]]>
+    </select>
+    <select id="getByIds" parameterType="list" resultMap="CustomerResult"
+            flushCache="false">
+        select
+        <include refid="customerColumns"/>
+        from t_bi_customer
+        where id in
+        <foreach item="item" index="index" collection="list" open="("
+                 separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+    <sql id="customerDynamicWhere">
+        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+
+            <if test="id!=null">
+                and id = #{id}
+            </if>
+
+
+            <if test="customerCode!=null and customerCode!=''">
+                and customer_code = #{customerCode}
+            </if>
+
+
+            <if test="customerName!=null and customerName!=''">
+                and customer_name = #{customerName}
+            </if>
+
+
+            <if test="description!=null and description!=''">
+                and description = #{description}
+            </if>
+
+
+            <if test="pic!=null and pic!=''">
+                and pic = #{pic}
+            </if>
+
+
+            <if test="picContact!=null and picContact!=''">
+                and pic_contact = #{picContact}
+            </if>
+
+            <if test="customerType!=null">
+                and customer_type = #{customerType}
+            </if>
+
+            <if test="invoiceType!=null">
+                and invoice_type = #{invoiceType}
+            </if>
+
+            <if test="paymentTerm!=null">
+                and payment_term = #{paymentTerm}
+            </if>
+
+            <if test="createTime!=null">
+                and create_time = #{createTime}
+            </if>
+
+            <if test="lastModifyTime!=null">
+                and last_modify_time = #{lastModifyTime}
+            </if>
+
+            <if test="operatorId!=null">
+                and operator_id = #{operatorId}
+            </if>
+
+            <if test="lifecycle!=null">
+                and lifecycle = #{lifecycle}
+            </if>
+        </where>
+    </sql>
+
+
+    <select id="getCount" resultType="long">
+        select count(*) from
+        t_bi_customer
+    </select>
+    <select id="findListCountByQueryMap" resultType="long">
+        select count(*) from t_bi_customer
+        <include refid="customerDynamicWhere"/>
+    </select>
+
+    <select id="findListCountByParam" resultType="long">
+        select count(*) from t_bi_customer
+        <include refid="customerDynamicWhere"/>
+    </select>
+
+    <!-- 分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页 因为分页查询将传 offset,pageSize,lastRows
+        三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现 -->
+    <select id="findListByQueryMapWithPage" resultMap="CustomerResult">
+        select
+        <include refid="customerColumns"/>
+        from t_bi_customer
+        <include refid="customerDynamicWhere"/>
+
+    </select>
+
+    <select id="findListByQueryMap" resultMap="CustomerResult">
+        select
+        <include refid="customerColumns"/>
+        from t_bi_customer
+        <include refid="customerDynamicWhere"/>
+
+    </select>
+
+    <select id="findListByParam" resultMap="CustomerResult">
+        select
+        <include refid="customerColumns"/>
+        from t_bi_customer
+        <include refid="customerDynamicWhere"/>
+
+    </select>
+
+    <select id="getByCustomerCode" resultMap="CustomerResult"
+            parameterType="java.lang.String">
+        select
+        <include refid="customerColumns"/>
+        <![CDATA[
+            from t_bi_customer where customer_code = #{customerCode}
+        ]]>
+    </select>
+
+    <select id="getByCustomerName" resultMap="CustomerResult"
+            parameterType="java.lang.String">
+        select
+        <include refid="customerColumns"/>
+        <![CDATA[
+            from t_bi_customer where customer_name = #{customerName}
+        ]]>
+    </select>
+
+
+    <select id="getCustomerByCustomerId" resultMap="CustomerResult">
+        select
+        <include refid="customerColumns"/>
+        from t_bi_customer
+        <include refid="customerDynamicWhere"/>
+
+    </select>
+
+
+</mapper>
