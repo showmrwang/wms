@@ -1485,10 +1485,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					ou_id = #{ouid}
 					and location_id is null
 					<if test="insideContainerId != null">
-						and t.inside_container_id = #{insideContainerId} 
+						and inside_container_id = #{insideContainerId} 
 					</if>
 					<if test="outerContainerId != null">
-						and t.outer_container_id = #{outerContainerId} 
+						and outer_container_id = #{outerContainerId} 
 					</if>
 				</where>
   	</select>
