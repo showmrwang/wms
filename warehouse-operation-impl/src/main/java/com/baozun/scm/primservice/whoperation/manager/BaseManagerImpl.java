@@ -153,11 +153,17 @@ public abstract class BaseManagerImpl implements BaseManager {
                 sys = cacheManager.getObject(redisKey + dicValue);
             } catch (Exception e) {
                 // redis出错只记录log
-                log.error("findSysDictionaryByRedis error logid: " + logId);
+                log.error("findSysDictionaryByRedis cacheManager.getObject(" + redisKey + dicValue + ") error logid: " + logId);
             }
             if (null == sys) {
                 // 缓存无对应数据 查询数据库
                 sys = sysDictionaryManager.getGroupbyGroupValueAndDicValue(groupValue, dicValue);
+                try {
+                    cacheManager.setObject(redisKey + dicValue, sys);
+                } catch (Exception e) {
+                    // redis出错只记录log
+                    log.error("findSysDictionaryByRedis cacheManager.setObject(" + redisKey + dicValue + ") error logid: " + logId);
+                }
             }
             returnMap.put(dicValue, sys);
         }
