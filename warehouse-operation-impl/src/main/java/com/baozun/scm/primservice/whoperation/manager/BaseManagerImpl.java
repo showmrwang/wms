@@ -31,10 +31,12 @@ import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.system.GlobalLogManager;
 import com.baozun.scm.primservice.whoperation.manager.system.SysDictionaryManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.CustomerManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryLogManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventorySnLogManager;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryLog;
 import com.baozun.scm.primservice.whoperation.util.LogUtil;
 import com.baozun.scm.primservice.whoperation.util.ParamsUtil;
@@ -62,6 +64,8 @@ public abstract class BaseManagerImpl implements BaseManager {
     private SysDictionaryManager sysDictionaryManager;
     @Autowired
     private CacheManager cacheManager;
+    @Autowired
+    private CustomerManager customerManager;
 
 
     /**
@@ -143,29 +147,69 @@ public abstract class BaseManagerImpl implements BaseManager {
      * 
      * @return
      */
-    protected Map<String, SysDictionary> findSysDictionaryByRedis(String groupValue, List<String> dicValueList, String logId) {
-        String redisKey = CacheKeyConstant.WMS_CACHE_SYS_DICTIONARY + groupValue;
+    protected Map<String, SysDictionary> findSysDictionaryByRedis(Map<String, List<String>> sysDictionaryList) {
+        String redisKey = CacheKeyConstant.WMS_CACHE_SYS_DICTIONARY;
         Map<String, SysDictionary> returnMap = new HashMap<String, SysDictionary>();
-        for (String dicValue : dicValueList) {
-            SysDictionary sys = null;
-            try {
-                // 先查询Redis是否存在对应数据
-                sys = cacheManager.getObject(redisKey + dicValue);
-            } catch (Exception e) {
-                // redis出错只记录log
-                log.error("findSysDictionaryByRedis cacheManager.getObject(" + redisKey + dicValue + ") error logid: " + logId);
-            }
-            if (null == sys) {
-                // 缓存无对应数据 查询数据库
-                sys = sysDictionaryManager.getGroupbyGroupValueAndDicValue(groupValue, dicValue);
+        // 遍历系统参数Map
+        for (String groupValue : sysDictionaryList.keySet()) {
+            // 通过key = groupValue 获取 dicValue
+            List<String> divValueList = sysDictionaryList.get(groupValue);
+            for (String dicValue : divValueList) {
+                SysDictionary sys = null;
                 try {
-                    cacheManager.setObject(redisKey + dicValue, sys);
+                    // 先查询Redis是否存在对应数据
+                    sys = cacheManager.getObject(redisKey + groupValue + dicValue);
                 } catch (Exception e) {
                     // redis出错只记录log
-                    log.error("findSysDictionaryByRedis cacheManager.setObject(" + redisKey + dicValue + ") error logid: " + logId);
+                    log.error("findSysDictionaryByRedis cacheManager.getObject(" + redisKey + groupValue + dicValue + ") error");
+                }
+                if (null == sys) {
+                    // 缓存无对应数据 查询数据库
+                    sys = sysDictionaryManager.getGroupbyGroupValueAndDicValue(groupValue, dicValue);
+                    try {
+                        cacheManager.setObject(redisKey + groupValue + dicValue, sys);
+                    } catch (Exception e) {
+                        // redis出错只记录log
+                        log.error("findSysDictionaryByRedis cacheManager.setObject(" + redisKey + groupValue + dicValue + ") error");
+                    }
+                }
+                // 放入returnMap 格式key = groupValue_dicValue value SysDictionary
+                returnMap.put(groupValue + "_" + dicValue, sys);
+            }
+        }
+        return returnMap;
+    }
+
+
+    /**
+     * 通过customserId查询对应系统参数信息 redis=null 查询数据库
+     * 
+     * @return
+     */
+    protected Map<Long, Customer> findCustomerByRedis(List<Long> customerIdList) {
+        String redisKey = CacheKeyConstant.WMS_CACHE_CUSTOMER;
+        Map<Long, Customer> returnMap = new HashMap<Long, Customer>();
+        // 遍历所有客户ID
+        for (Long id : customerIdList) {
+            Customer c = null;
+            try {
+                // 先查询Redis是否存在对应数据
+                c = cacheManager.getObject(redisKey + id);
+            } catch (Exception e) {
+                // redis出错只记录log
+                log.error("findCustomerByRedis cacheManager.getObject(" + redisKey + id + ") error");
+            }
+            if (null == c) {
+                // 缓存无对应数据 查询数据库
+                c = customerManager.getCustomerById(id);
+                try {
+                    cacheManager.setObject(redisKey + id, c);
+                } catch (Exception e) {
+                    // redis出错只记录log
+                    log.error("findCustomerByRedis cacheManager.setObject(" + redisKey + id + ") error");
                 }
             }
-            returnMap.put(dicValue, sys);
+            returnMap.put(id, c);
         }
         return returnMap;
     }

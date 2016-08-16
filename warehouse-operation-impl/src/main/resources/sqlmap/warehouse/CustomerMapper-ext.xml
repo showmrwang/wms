@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.CustomerDao">
+    <resultMap id="CustomerResultExt"
+               type="com.baozun.scm.primservice.whoperation.model.warehouse.Customer">
+    </resultMap>
+    <resultMap id="customerCommand"
+               type="com.baozun.scm.primservice.whoperation.command.warehouse.CustomerCommand">
+    </resultMap>
+
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="customerColumnsExt">
+        <![CDATA[
+                id as id,
+                customer_code as customerCode,
+                customer_name as customerName,
+                description as description,
+                pic as pic,
+                pic_contact as picContact,
+                customer_type as customerType, 
+                invoice_type as invoiceType,
+                payment_term as paymentTerm,
+                create_time as createTime,
+                last_modify_time as lastModifyTime,
+                operator_id as operatorId,
+                lifecycle as lifecycle
+        ]]>
+    </sql>
+
+    <sql id="customerDynamicWhereExt">
+        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+
+            <if test="id!=null">
+                and id = #{id}
+            </if>
+
+
+            <if test="customerCode!=null and customerCode!=''">
+                and customer_code = #{customerCode}
+            </if>
+
+
+            <if test="customerName!=null and customerName!=''">
+                and customer_name = #{customerName}
+            </if>
+
+
+            <if test="description!=null and description!=''">
+                and description = #{description}
+            </if>
+
+
+            <if test="pic!=null and pic!=''">
+                and pic = #{pic}
+            </if>
+
+
+            <if test="picContact!=null and picContact!=''">
+                and pic_contact = #{picContact}
+            </if>
+
+            <if test="customerType!=null">
+                and customer_type = #{customerType}
+            </if>
+            
+            <if test="invoiceType!=null">
+                and invoice_type = #{invoiceType}
+            </if>
+
+            <if test="paymentTerm!=null">
+                and payment_term = #{paymentTerm}
+            </if>
+
+            <if test="createTime!=null">
+                and create_time = #{createTime}
+            </if>
+
+            <if test="lastModifyTime!=null">
+                and last_modify_time = #{lastModifyTime}
+            </if>
+
+            <if test="operatorId!=null">
+                and operator_id = #{operatorId}
+            </if>
+
+            <if test="lifecycle!=null">
+                and lifecycle = #{lifecycle}
+            </if>
+        </where>
+    </sql>
+
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="customerListColumnsExt">
+        <![CDATA[
+                c.id as id,
+                c.customer_code as customerCode,
+                c.customer_name as customerName,
+                c.description as description,
+                c.pic as pic,
+                c.pic_contact as picContact,
+                c.customer_type as customerType,
+                c.invoice_type as invoiceType,
+                c.payment_term as paymentTerm,
+                c.create_time as createTime,
+                c.last_modify_time as lastModifyTime,
+                c.operator_id as operatorId,
+                c.lifecycle as lifecycle,
+                syst.dic_label as invoiceTypeName,
+                sysl.dic_label as paymentTermName,
+                sysc.dic_label as customerTypeName
+        ]]>
+    </sql>
+
+    <sql id="customerDynamicWhereLikeExt">
+        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+
+            <if test="customerList!=null and customerList.size() != 0">
+                c.id in
+                <foreach collection="customerList" item="ids" open="("
+                         separator="," close=")">
+                    #{ids}
+                </foreach>
+            </if>
+
+            <if test="customerList==null or customerList.size() == 0">
+                c.id in (null)
+            </if>
+
+            <if test="id!=null">
+                and c.id = #{id}
+            </if>
+
+
+            <if test="customerCode!=null and customerCode!=''">
+                and c.customer_code like #{customerCode}
+            </if>
+
+            <if
+                    test="customerCodeByCriteriasData!=null and customerCodeByCriteriasData!=''">
+                and c.customer_code like #{customerCodeByCriteriasData}
+            </if>
+
+
+            <if test="customerName!=null and customerName!=''">
+                and c.customer_name like #{customerName}
+            </if>
+
+            <if
+                    test="customerNameByCriteriasData!=null and customerNameByCriteriasData!=''">
+                and c.customer_name like #{customerNameByCriteriasData}
+            </if>
+
+
+            <if test="description!=null and description!=''">
+                and c.description like #{description}
+            </if>
+
+
+            <if test="pic!=null and pic!=''">
+                and c.pic like #{pic}
+            </if>
+
+
+            <if test="picContact!=null and picContact!=''">
+                and c.pic_contact like #{picContact}
+            </if>
+
+            <if test="customerType!=null">
+                and c.customer_type = #{customerType}
+            </if>
+            
+            <if test="invoiceType!=null">
+                and c.invoice_type = #{invoiceType}
+            </if>
+
+            <if test="paymentTerm!=null">
+                and c.payment_term = #{paymentTerm}
+            </if>
+
+            <if test="createTime!=null">
+                and c.create_time = #{createTime}
+            </if>
+
+            <if test="lastModifyTime!=null">
+                and c.last_modify_time = #{lastModifyTime}
+            </if>
+
+            <if test="operatorId!=null">
+                and c.operator_id = #{operatorId}
+            </if>
+
+            <if test="lifecycle!=null">
+                and c.lifecycle = #{lifecycle}
+            </if>
+        </where>
+    </sql>
+
+    <select id="findListByQueryMapWithPageExt" resultMap="customerCommand">
+        select
+        <include refid="customerListColumnsExt"/>
+        from t_bi_customer as c
+        left join sys_dictionary as syst on
+        c.invoice_type = syst.dic_value and syst.group_value = "CUSTOMER_INVOICE_TYPE"
+        left join sys_dictionary as sysl on
+        c.payment_term = sysl.dic_value and sysl.group_value = "CUSTOMER_PAYMENT_TERM"
+        left join sys_dictionary as sysc on
+        c.customer_type = sysc.dic_value and sysc.group_value = "CUSTOMER_TYPE"
+        <include refid="customerDynamicWhereLikeExt"/>
+    </select>
+
+    <select id="findListCountByQueryMapExt" resultType="long">
+        select count(*) from t_bi_customer as c
+        <include refid="customerDynamicWhereLikeExt"/>
+    </select>
+
+
+    <select id="checkUnique" resultType="long">
+        select count(*) from t_bi_customer as c
+        <where>
+            <if test="id!=null">
+                and c.id != #{id}
+            </if>
+            <if test="(customerCode!=null and customerCode!='')
+                    or (customerName!=null and customerName!='')">
+                and (
+                <trim prefix="" prefixOverrides="or">
+                    <if test="customerCode!=null and customerCode!=''">
+                        or c.customer_code = #{customerCode}
+                    </if>
+                    <if test="customerName!=null and customerName!=''">
+                        or c.customer_name = #{customerName}
+                    </if>
+                </trim>
+                )
+            </if>
+        </where>
+    </select>
+
+
+    <update id="updateByVersion"
+            parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Customer">
+        <![CDATA[
+                UPDATE t_bi_customer SET
+                    customer_code = #{customerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    customer_name = #{customerName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    description = #{description,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    pic = #{pic,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    pic_contact = #{picContact,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    customer_type = #{customerType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    invoice_type = #{invoiceType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    payment_term = #{paymentTerm,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                    last_modify_time = #{globalLastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP}  ,
+                    operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
+                WHERE 
+                    id = #{id} 
+                    and last_modify_time    =  #{lastModifyTime}    
+            ]]>
+    </update>
+
+    <select id="getCustomerById" resultMap="CustomerResultExt">
+        select
+        <include refid="customerColumnsExt"/>
+        from t_bi_customer c
+        where lifecycle = #{lifecycle}
+        <if test="customerList!=null and customerList.size() != 0">
+            and c.id in
+            <foreach collection="customerList" item="id" open="("
+                     separator="," close=")">
+                #{id}
+            </foreach>
+        </if>
+
+        <if test="customerList==null or customerList.size() == 0">
+            and c.id in (null)
+        </if>
+    </select>
+
+
+
+ <!-- 加权限 -->
+    <select id="getCustomerListByParams" resultMap="CustomerResultExt">
+    	select <include refid="customerColumnsExt" />
+	    from t_bi_customer c 
+	    where
+	      <if test="customeridList!=null and customeridList.size() != 0">
+                c.id in
+            <foreach collection="customeridList" item="ids" open="("
+                         separator="," close=")">
+                    #{ids}
+            </foreach>
+            </if>
+
+            <if test="customeridList==null or customeridList.size() == 0">
+                c.id in (null)
+            </if>
+        	<if test="lifecycle!=null">
+					and c.lifecycle = #{lifecycle}
+			</if>
+				    
+    </select>
+</mapper>

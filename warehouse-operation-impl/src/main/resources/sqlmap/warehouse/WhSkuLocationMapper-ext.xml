@@ -160,4 +160,37 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			       )
 		) skuList
     </select>
+    
+    <select id="findSkuCountInSkuLocation"  resultType="int">
+      select count(1)
+	  	from 
+	   ( select distinct sl.sku_id as sku_id 
+			      from 
+	     			t_wh_sku_location sl
+	    			left join t_wh_sku sku  on sku.id=sl.sku_id and sku.ou_id=sl.ou_id
+	    			left join t_wh_location location on location.id=sl.location_id and sl.ou_id =location.ou_id
+	    
+	    			where sl.ou_id = #{ouId}
+	    			and sl.location_id = #{locId}
+	    			and sl.lifecycle = 1
+	    			and location.is_static = 1
+	    			and sl.sku_id = #{skuId}
+		) skuList
+    </select>
+    
+    <select id="findAllSkuCountInSkuLocation"  resultType="int">
+      select count(1)
+	  	from 
+	   ( select distinct sl.sku_id as sku_id 
+			      from 
+	     			t_wh_sku_location sl
+	    			left join t_wh_sku sku  on sku.id=sl.sku_id and sku.ou_id=sl.ou_id
+	    			left join t_wh_location location on location.id=sl.location_id and sl.ou_id =location.ou_id
+	    
+	    			where sl.ou_id = #{ouId}
+	    			and sl.location_id = #{locId}
+	    			and sl.lifecycle = 1
+	    			and location.is_static = 1
+		) skuList
+    </select>
 </mapper>

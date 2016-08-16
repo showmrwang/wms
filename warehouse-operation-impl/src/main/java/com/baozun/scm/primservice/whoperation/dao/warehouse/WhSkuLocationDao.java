@@ -87,4 +87,23 @@ public interface WhSkuLocationDao extends BaseDao<WhSkuLocation,Long>{
      * @return
      */
     int findContainerSkuCountNotInSkuLocation(@Param("ouId") Long ouId, @Param("locId") Long locId, @Param("containerList") List<String> containerList);
+    
+    /**
+     * 查询商品是否绑定到静态库位
+     * @author lichuan
+     * @param ouId
+     * @param locId
+     * @param skuId
+     * @return
+     */
+    int findSkuCountInSkuLocation(@Param("ouId") Long ouId, @Param("locId") Long locId, @Param("skuId") Long skuId);
+    
+    /**
+     * 查询绑定到静态库位的所有商品数
+     * @author lichuan
+     * @param ouId
+     * @param locId
+     * @return
+     */
+    int findAllSkuCountInSkuLocation(@Param("ouId") Long ouId, @Param("locId") Long locId);
 }
