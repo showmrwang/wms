@@ -154,19 +154,19 @@ public abstract class BaseManagerImpl implements BaseManager {
                 SysDictionary sys = null;
                 try {
                     // 先查询Redis是否存在对应数据
-                    sys = cacheManager.getObject(redisKey + dicValue);
+                    sys = cacheManager.getObject(redisKey + groupValue + dicValue);
                 } catch (Exception e) {
                     // redis出错只记录log
-                    log.error("findSysDictionaryByRedis cacheManager.getObject(" + redisKey + dicValue + ") error");
+                    log.error("findSysDictionaryByRedis cacheManager.getObject(" + redisKey + groupValue + dicValue + ") error");
                 }
                 if (null == sys) {
                     // 缓存无对应数据 查询数据库
                     sys = sysDictionaryManager.getGroupbyGroupValueAndDicValue(groupValue, dicValue);
                     try {
-                        cacheManager.setObject(redisKey + dicValue, sys);
+                        cacheManager.setObject(redisKey + groupValue + dicValue, sys);
                     } catch (Exception e) {
                         // redis出错只记录log
-                        log.error("findSysDictionaryByRedis cacheManager.setObject(" + redisKey + dicValue + ") error");
+                        log.error("findSysDictionaryByRedis cacheManager.setObject(" + redisKey + groupValue + dicValue + ") error");
                     }
                 }
                 // 放入returnMap 格式key = groupValue_dicValue value SysDictionary

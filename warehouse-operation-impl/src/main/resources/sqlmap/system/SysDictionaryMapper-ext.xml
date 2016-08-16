@@ -209,7 +209,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	
 	<select id="getGroupbyGroupValueAndDicValue" resultMap="SysDictionaryResultExt">
 		select <include refid="sysDictionaryColumnsExt" />
-			from sys_dictionary_group
+			from sys_dictionary
 			where 
 			group_value = #{groupValue} 
 			and dic_value = #{dicValue}
