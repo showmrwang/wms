@@ -467,7 +467,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                     avaliableLocs = locationDao.findAllStaticLocsByAreaId(area.getId(), ouId, cSql);
                 } else if (WhLocationRecommendType.MERGE_LOCATION_SAME_INV_ATTRS.equals(locationRecommendRule)) {
                     attrParams.setLrt(WhLocationRecommendType.MERGE_LOCATION_SAME_INV_ATTRS);
-                    if (1L != skuCategory.longValue() && 1L != skuAttrCategory.longValue()) {
+                    if (1L != skuCategory.longValue()) {
                         // 商品不唯一,不考虑推荐库位
                         avaliableLocs = null;
                         continue;
@@ -491,6 +491,14 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                             throw new BusinessException(ErrorCodes.COMMON_WAREHOUSE_NOT_FOUND_ERROR);
                         }
                         invAttrMgmt = warehouse.getInvAttrMgmt();
+                    }
+                    if(!StringUtils.isEmpty(invAttrMgmt)){
+                        // 店铺或仓库管理库存关键属性
+                        if(1L != skuAttrCategory.longValue()){
+                            // 商品库存属性不唯一,不考虑推荐库位
+                            avaliableLocs = null;
+                            continue;
+                        }
                     }
                     WhSkuInventoryCommand invCmd = invList.get(0);// 取一条库存信息
                     attrParams.setInvAttrMgmt(invAttrMgmt);
@@ -524,15 +532,15 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                     }
                     avaliableLocs = locationDao.findAllInvLocsByAreaIdAndDiffAttrs(area.getId(), ouId, cSql);
                 } else if (WhLocationRecommendType.ONE_LOCATION_ONLY.equals(locationRecommendRule)) {
-                    attrParams.setLrt(WhLocationRecommendType.ONE_LOCATION_ONLY);
-                    PutawayCondition putawayCondition = putawayConditionFactory.getPutawayCondition(WhPutawayPatternType.SYS_GUIDE_PUTAWAY, WhPutawayPatternDetailType.PALLET_PUTAWAY, logId);
-                    if (null != putawayCondition) {
-                        cSql = putawayCondition.getCondition(attrParams);
-                    }
-                    if (StringUtils.isEmpty(cSql)) {
-                        cSql = null;
-                    }
-                    avaliableLocs = locationDao.findAllAvailableLocsByAreaId(area.getId(), ouId, cSql);
+//                    attrParams.setLrt(WhLocationRecommendType.ONE_LOCATION_ONLY);
+//                    PutawayCondition putawayCondition = putawayConditionFactory.getPutawayCondition(WhPutawayPatternType.SYS_GUIDE_PUTAWAY, WhPutawayPatternDetailType.PALLET_PUTAWAY, logId);
+//                    if (null != putawayCondition) {
+//                        cSql = putawayCondition.getCondition(attrParams);
+//                    }
+//                    if (StringUtils.isEmpty(cSql)) {
+//                        cSql = null;
+//                    }
+//                    avaliableLocs = locationDao.findAllAvailableLocsByAreaId(area.getId(), ouId, cSql);
                 } else {
                     avaliableLocs = null;
                 }
@@ -856,7 +864,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                     avaliableLocs = locationDao.findAllStaticLocsByAreaId(area.getId(), ouId, cSql);
                 } else if (WhLocationRecommendType.MERGE_LOCATION_SAME_INV_ATTRS.equals(locationRecommendRule)) {
                     attrParams.setLrt(WhLocationRecommendType.MERGE_LOCATION_SAME_INV_ATTRS);
-                    if (1L != skuCategory.longValue() && 1L != skuAttrCategory.longValue()) {
+                    if (1L != skuCategory.longValue()) {
                         // 商品不唯一,不考虑推荐库位
                         avaliableLocs = null;
                         continue;
@@ -880,6 +888,14 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                             throw new BusinessException(ErrorCodes.COMMON_WAREHOUSE_NOT_FOUND_ERROR);
                         }
                         invAttrMgmt = warehouse.getInvAttrMgmt();
+                    }
+                    if(!StringUtils.isEmpty(invAttrMgmt)){
+                        // 店铺或仓库管理库存关键属性
+                        if(1L != skuAttrCategory.longValue()){
+                            // 商品库存属性不唯一,不考虑推荐库位
+                            avaliableLocs = null;
+                            continue;
+                        }
                     }
                     WhSkuInventoryCommand invCmd = invList.get(0);// 取一条库存信息
                     attrParams.setInvAttrMgmt(invAttrMgmt);
@@ -913,15 +929,15 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                     }
                     avaliableLocs = locationDao.findAllInvLocsByAreaIdAndDiffAttrs(area.getId(), ouId, cSql);
                 } else if (WhLocationRecommendType.ONE_LOCATION_ONLY.equals(locationRecommendRule)) {
-                    attrParams.setLrt(WhLocationRecommendType.ONE_LOCATION_ONLY);
-                    PutawayCondition putawayCondition = putawayConditionFactory.getPutawayCondition(WhPutawayPatternType.SYS_GUIDE_PUTAWAY, WhPutawayPatternDetailType.CONTAINER_PUTAWAY, logId);
-                    if (null != putawayCondition) {
-                        cSql = putawayCondition.getCondition(attrParams);
-                    }
-                    if (StringUtils.isEmpty(cSql)) {
-                        cSql = null;
-                    }
-                    avaliableLocs = locationDao.findAllAvailableLocsByAreaId(area.getId(), ouId, cSql);
+//                    attrParams.setLrt(WhLocationRecommendType.ONE_LOCATION_ONLY);
+//                    PutawayCondition putawayCondition = putawayConditionFactory.getPutawayCondition(WhPutawayPatternType.SYS_GUIDE_PUTAWAY, WhPutawayPatternDetailType.CONTAINER_PUTAWAY, logId);
+//                    if (null != putawayCondition) {
+//                        cSql = putawayCondition.getCondition(attrParams);
+//                    }
+//                    if (StringUtils.isEmpty(cSql)) {
+//                        cSql = null;
+//                    }
+//                    avaliableLocs = locationDao.findAllAvailableLocsByAreaId(area.getId(), ouId, cSql);
                 } else {
                     avaliableLocs = null;
                 }
