@@ -1718,10 +1718,28 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                             list.add(lrrc);
                                         }
                                     } else if (WhLocationRecommendType.STATIC_LOCATION.equals(locationRecommendRule)) {
-                                        int count = whSkuLocationDao.findContainerSkuCountNotInSkuLocation(ouId, locId, ruleAffer.getAfferContainerCodeList());
-                                        if (count > 0) {
-                                            // 此静态库位不可用，容器中包含商品当前静态库位没有绑定
+//                                        int count = whSkuLocationDao.findContainerSkuCountNotInSkuLocation(ouId, locId, ruleAffer.getAfferContainerCodeList());
+//                                        if (count > 0) {
+//                                            // 此静态库位不可用，容器中包含商品当前静态库位没有绑定
+//                                            continue;
+//                                        }
+                                        int count = whSkuLocationDao.findSkuCountInSkuLocation(ouId, locId, skuId);
+                                        if (count <= 0) {
+                                            // 此静态库位不可用，商品当前静态库位没有绑定
                                             continue;
+                                        }else{
+                                            if(true == skuIsMixAllowed){
+                                                // 商品允许混放，判断混放属性
+                                                if(!StringUtils.isEmpty(skuMixAttr)){
+                                                    
+                                                }
+                                            }else{
+                                                //商品不允许混放
+                                                int allCount = whSkuLocationDao.findAllSkuCountInSkuLocation(ouId, locId);
+                                                if(1 < allCount){
+                                                    continue;
+                                                }
+                                            }
                                         }
                                         LocationInvVolumeWeightCommand livw = whLocationInvVolumeWieghtManager.calculateLocationInvVolumeAndWeight(locId, ouId, uomMap, logId);
                                         Double livwVolume = livw.getVolume();// 库位上已有货物总体积
