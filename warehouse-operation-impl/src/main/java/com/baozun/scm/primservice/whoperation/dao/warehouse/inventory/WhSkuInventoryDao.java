@@ -267,7 +267,7 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * 
      * @param ouid
      * @param skuid
-     * @param containerid
+     * @param
      * @return
      */
     List<WhSkuInventoryCommand> findWhSkuInventoryBySkuIdAndContainerid(@Param("ouid") Long ouid, @Param("skuid") Long skuid, @Param("insideContainerid") Long insideContainerid, @Param("outerContainerid") Long outerContainerid);
@@ -365,8 +365,8 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * 
      * @author lijun.shen
      * @param pdaManMadePutawayCommand
-     * @param ouId
-     * @param containerId
+     * @param
+     * @param
      * @return
      */
     int findContainerInventoryCountsByOuterContainerId(PdaManMadePutawayCommand pdaManMadePutawayCommand);
@@ -376,8 +376,8 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * 根据容器号查询外部容器库存记录的数量
      * 
      * @author lijun.shen
-     * @param ouId
-     * @param containerId
+     * @param
+     * @param
      * @return
      */
     int findContainerInventoryCountsByInsideContainerId(PdaManMadePutawayCommand pdaManMadePutawayCommand);
@@ -402,5 +402,12 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      */
     List<WhSkuInventory> findWhSkuInventoryByContainerIdLocationIsNull(@Param("ouid") Long ouid, @Param("insideContainerId") Long insideContainerId, @Param("outerContainerId") Long outerContainerId);
 
+
+    /**
+     * @author lijun.shen
+     * @param inventory
+     * @return
+     */
+    List<WhSkuInventory> findWhSkuInventoryByPramas(WhSkuInventory inventory);
 
 }

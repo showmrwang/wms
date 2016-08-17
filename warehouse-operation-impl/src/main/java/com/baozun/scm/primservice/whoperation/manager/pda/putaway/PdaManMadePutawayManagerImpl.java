@@ -11,9 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.baozun.redis.manager.CacheManager;
 import com.baozun.scm.primservice.whoperation.command.pda.putaway.PdaManMadePutawayCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
+import com.baozun.scm.primservice.whoperation.constant.CacheKeyConstant;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
@@ -23,6 +25,7 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInven
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
+import com.baozun.scm.primservice.whoperation.manager.pda.inbound.cache.PdaManmadePutawayCacheManager;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Location;
 import com.baozun.scm.primservice.whoperation.util.StringUtil;
 
@@ -49,6 +52,11 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
     private WhFunctionPutAwayDao whFunctionPutAwayDao;
     @Autowired
     private WhLocationDao whLocationDao;
+    @Autowired
+    private CacheManager cacheManager;
+    @Autowired
+    private PdaManmadePutawayCacheManager pdaManmadePutawayCacheManager;
+
 
 
 
@@ -110,7 +118,14 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
             // 内部容器库存
             pdaManMadePutawayCommand.setIsOutContainerInv(false);
         }
+
+        // 将容器编码信息放入缓存
+        cacheManager.setValue(CacheKeyConstant.CACHE_MMP_CONTAINER_ID_PREFIX + pdaManMadePutawayCommand.getContainerCode(), pdaManMadePutawayCommand.getUserId().toString(), CacheKeyConstant.CACHE_ONE_DAY);
+        // 将sku信息放入缓存
+        pdaManmadePutawayCacheManager.manMadePutawayCacheSku(pdaManMadePutawayCommand);
+
         return pdaManMadePutawayCommand;
+
     }
 
 
@@ -221,7 +236,13 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public PdaManMadePutawayCommand pdaLocationNotMix(PdaManMadePutawayCommand command) {
         System.out.println("coming....");
+
         // 判断托盘或货箱是否存在多个sku商品
+        List list = cacheManager.getMapObject(CacheKeyConstant.CACHE_MMP_CONTAINER_ID_PREFIX + command.getContainerId(), command.getUserId().toString());
+        if (list.size() > 1) {
+            throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_NOT_MULTISKU);
+        }
+
 
         // 判断托盘/货箱是否存在相同sku，不同库存属性的商品
 
@@ -276,16 +297,8 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
     }
 
 
-    
-    
-  
-    
-    
-    
-    
-    
-    
-//**********************************************************************************************************   
+
+    // **********************************************************************************************************
 
     /**
      * 判断库位已有sku种类数+容器内SKU种类数是否<=最大混放SKU种类数*

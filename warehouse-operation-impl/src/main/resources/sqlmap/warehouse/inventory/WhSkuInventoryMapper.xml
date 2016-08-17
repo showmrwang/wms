@@ -435,4 +435,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		<include refid="whSkuInventoryConditionWhereExt"/>
     </select>
 
+
+	<select id="findWhSkuInventoryByPramas" resultMap="WhSkuInventoryResult">
+		select <include refid="whSkuInventoryColumns" />
+		from t_wh_sku_inventory
+		<include refid="whSkuInventoryDynamicWhere"/>
+	</select>
 </mapper>

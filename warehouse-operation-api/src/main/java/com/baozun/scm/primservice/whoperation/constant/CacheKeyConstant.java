@@ -63,6 +63,18 @@ public final class CacheKeyConstant {
 
     /** 系统参数缓存 前缀+groupValue+dicValue Dictionary */
     public static final String WMS_CACHE_SYS_DICTIONARY = "WMS_CACHE_SYS_DICTIONARY_";
+    
+    
+    
+    //-------------------------------------------------------------------------------
+    
+    /**
+     * 人为指定上架:容器信息缓存
+     */
+    public static final String CACHE_MMP_CONTAINER_ID_PREFIX = "CACHE_MMP_CONTAINER_ID_PREFIX";
+    
+    
+    
 
     /** 客户缓存 前缀+ customerId */
     public static final String WMS_CACHE_CUSTOMER = "WMS_CACHE_CUSTOMER_";

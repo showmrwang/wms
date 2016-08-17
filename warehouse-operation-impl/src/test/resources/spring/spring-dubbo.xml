@@ -45,9 +45,12 @@
     <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.pda.inbound.putaway.PdaPutawayManager"  ref="pdaPutawayManager" />
     <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.pda.CheckInManagerProxy"  ref="checkInManagerProxy" />
     <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.pda.sortation.PdaInboundSortationManager"  ref="pdaInboundSortationManager" />
-    	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.sortation.WhContainerAssignManager" ref="whContainerAssignManager" />  
-    	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryLogManager" ref="whSkuInventoryLogManager" />  
-    	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventorySnLogManager" ref="whSkuInventorySnLogManager" />  
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.sortation.WhContainerAssignManager" ref="whContainerAssignManager" />
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryLogManager" ref="whSkuInventoryLogManager" />
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventorySnLogManager" ref="whSkuInventorySnLogManager" />
+
+   <!-- 人为指定上架-->
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.pda.inbound.cache.PdaManmadePutawayCacheManager" ref="pdaManmadePutawayCacheManager" />
 
     <!--生成远程服务代理，可以和本地bean一样使用demoService-->
 <!--     <dubbo:reference id="demoManager" interface="com.baozun.scm.primservice.whoperation.manager.DemoManager" cluster="failfast" loadbalance="consistenthash"/> -->
