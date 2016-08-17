@@ -282,4 +282,31 @@ public final class Constants {
     public static final boolean BOOLEAN_TRUE = true;
     public static final boolean BOOLEAN_FALSE = false;
 
+    /**
+     * 系统字典表
+     */
+    public static final String IS_WHOLE_ORDER_OUTBOUND = "IS_WHOLE_ORDER_OUTBOUND";
+
+    public static final String PART_OUTBOUND_STRATEGY = "PART_OUTBOUND_STRATEGY";
+
+    public static final String ODO_CROSS_DOCKING_SYSMBOL = "ODO_CROSS_DOCKING_SYSMBOL";
+
+    public static final String TRANSPORT_MODE = "TRANSPORT_MODE";
+
+    public static final String ODO_PRE_TYPE = "ODO_PRE_TYPE";
+
+    public static final String ODO_TYPE = "ODO_TYPE";
+
+    public static final String DISTRIBUTE_MODE = "DISTRIBUTE_MODE";
+
+    public static final String ODO_STATUS = "ODO_STATUS";
+
+    public static final String ODO_AIM_TYPE = "ODO_AIM_TYPE";
+
+    public static final String ODO_DELIVER_GOODS_TIME_MODE = "ODO_DELIVER_GOODS_TIME_MODE";
+
+    public static final String INCLUDE_FRAGILE_CARGO = "INCLUDE_FRAGILE_CARGO";
+
+    public static final String INCLUDE_HAZARDOUS_CARGO = "INCLUDE_HAZARDOUS_CARGO";
+
 }

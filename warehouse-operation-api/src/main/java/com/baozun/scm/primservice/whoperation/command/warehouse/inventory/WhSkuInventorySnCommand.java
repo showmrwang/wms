@@ -86,7 +86,8 @@ public class WhSkuInventorySnCommand extends BaseCommand {
     private String whDefectTypeName;
     /** 残次原因(仓库) */
     private String whDefectReasonsName;
-
+    /** 序列号管理类型 */
+    private String serialNumberType;
     /** 上架规则 */
     private List<ShelveRecommendRuleCommand> shelveRecommendRuleCommandList;
 
@@ -100,6 +101,14 @@ public class WhSkuInventorySnCommand extends BaseCommand {
 
     public String getSn() {
         return sn;
+    }
+
+    public String getSerialNumberType() {
+        return serialNumberType;
+    }
+
+    public void setSerialNumberType(String serialNumberType) {
+        this.serialNumberType = serialNumberType;
     }
 
     public void setSn(String sn) {

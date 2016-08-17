@@ -30,6 +30,7 @@ import com.baozun.scm.primservice.whoperation.command.sku.skushared.SkuCommand2S
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhAsnRcvdLogCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.carton.WhCartonCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
@@ -57,6 +58,7 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.conf.basis.Warehouse
 import com.baozun.scm.primservice.whoperation.dao.warehouse.conf.basis.WarehouseDefectTypeDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventorySnDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventorySnLogDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
@@ -82,6 +84,8 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.conf.basis.Warehou
 import com.baozun.scm.primservice.whoperation.model.warehouse.conf.basis.WarehouseDefectType;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventorySn;
+import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventorySnLog;
+import com.baozun.scm.primservice.whoperation.util.DateUtil;
 import com.baozun.scm.primservice.whoperation.util.SkuInventoryUuid;
 
 @Service("generalRcvdManager")
@@ -138,6 +142,8 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
     private SkuMgmtDao skuMgmtDao;
     @Autowired
     private ContainerAssistDao containerAssistDao;
+    @Autowired
+    private WhSkuInventorySnLogDao whSkuInventorySnLogDao;
 
     @Override
     @Deprecated
@@ -440,15 +446,35 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void saveScanedSkuWhenGeneralRcvdForPda(List<WhSkuInventorySn> saveSnList, List<WhSkuInventory> saveInvList, List<WhAsnRcvdLogCommand> saveInvLogList, List<WhAsnLine> saveAsnLineList, WhAsn asn,
+    public void saveScanedSkuWhenGeneralRcvdForPda(List<WhSkuInventorySnCommand> saveSnList, List<WhSkuInventory> saveInvList, List<WhAsnRcvdLogCommand> saveInvLogList, List<WhAsnLine> saveAsnLineList, WhAsn asn,
             List<WhPoLine> savePoLineList, WhPo po, Container container, List<WhCarton> saveWhCartonList) {
         try {
             Long userId = po.getModifiedId();
             // 保存残次信息
-            for (WhSkuInventorySn sn : saveSnList) {
-                this.whSkuInventorySnDao.insert(sn);
+            for (WhSkuInventorySnCommand snCommand : saveSnList) {
+                WhSkuInventorySn sn = new WhSkuInventorySn();
+                BeanUtils.copyProperties(snCommand, sn);
+                boolean flag = false;
+                if (null != snCommand.getSerialNumberType() && Constants.SERIAL_NUMBER_TYPE_ALL == snCommand.getSerialNumberType()) {
+                    flag = true;
+                } else {
+                    sn.setSn(null);
+                }
+                if (null != snCommand.getDefectTypeId() || flag) {
+                    this.whSkuInventorySnDao.insert(sn);
+                }
                 // 插入SN日志
-                this.insertSkuInventorySnLog(sn.getUuid(), sn.getOuId());
+                WhSkuInventorySnLog snLog = new WhSkuInventorySnLog();
+                snLog.setDefectReasons(snCommand.getDefectReasonsName());
+                snLog.setDefectType(snCommand.getDefectTypeName());
+                snLog.setDefectWareBarcode(snCommand.getDefectWareBarcode());
+                snLog.setOccupationCode(snCommand.getOccupationCode());
+                snLog.setOuId(snCommand.getOuId());
+                snLog.setStatus(snCommand.getStatus());
+                snLog.setSn(snCommand.getSn());
+                snLog.setSysDate(DateUtil.getSysDate());
+                snLog.setUuid(snCommand.getUuid());
+                this.whSkuInventorySnLogDao.insert(snLog);
             }
             // 更新装箱信息表
             for (WhCarton whCarton : saveWhCartonList) {

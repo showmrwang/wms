@@ -10,6 +10,7 @@ import com.baozun.scm.primservice.whoperation.command.sku.skushared.SkuCommand2S
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhAsnRcvdLogCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.carton.WhCartonCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine;
@@ -24,7 +25,6 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.carton.WhCarton;
 import com.baozun.scm.primservice.whoperation.model.warehouse.conf.basis.WarehouseDefectReasons;
 import com.baozun.scm.primservice.whoperation.model.warehouse.conf.basis.WarehouseDefectType;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
-import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventorySn;
 
 /**
  * @author yimin.lu
@@ -101,7 +101,7 @@ public interface GeneralRcvdManager extends BaseManager {
      * @param po
      * @param saveWhCartonList
      */
-    void saveScanedSkuWhenGeneralRcvdForPda(List<WhSkuInventorySn> saveSnList, List<WhSkuInventory> saveInvList, List<WhAsnRcvdLogCommand> saveInvLogList, List<WhAsnLine> saveAsnLineList, WhAsn asn,
+    void saveScanedSkuWhenGeneralRcvdForPda(List<WhSkuInventorySnCommand> saveSnList, List<WhSkuInventory> saveInvList, List<WhAsnRcvdLogCommand> saveInvLogList, List<WhAsnLine> saveAsnLineList, WhAsn asn,
             List<WhPoLine> savePoLineList, WhPo po, Container container, List<WhCarton> saveWhCartonList);
 
     /**
