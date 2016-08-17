@@ -110,6 +110,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
     private WhSkuLocationDao whSkuLocationDao;
     @Autowired
     private WhLocationInvVolumeWieghtManager whLocationInvVolumeWieghtManager;
+    @SuppressWarnings("unused")
     @Autowired
     private WhSkuDao whSkuDao;
     @Autowired

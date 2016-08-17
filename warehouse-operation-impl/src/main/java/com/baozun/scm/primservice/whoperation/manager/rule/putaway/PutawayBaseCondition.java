@@ -81,37 +81,37 @@ public abstract class PutawayBaseCondition extends BaseManagerImpl implements Pu
                 for(String attr : invAttrs){
                     switch(attr){
                         case InvAttrMgmtType.INV_TYPE:
-                            sql.append(" ").append(" and inv.inv_type = ").append(attrParams.getInvType());
+                            sql.append(" ").append(" and inv.inv_type = ").append("'").append(attrParams.getInvType()).append("'");
                             break;
                         case InvAttrMgmtType.INV_STATUS:
                             sql.append(" ").append(" and inv.inv_status = ").append(attrParams.getInvStatus());
                             break;
                         case InvAttrMgmtType.BATCH_NUMBER:
-                            sql.append(" ").append(" and inv.batch_number = ").append(attrParams.getBatchNumber());
+                            sql.append(" ").append(" and inv.batch_number = ").append("'").append(attrParams.getBatchNumber()).append("'");
                             break;
                         case InvAttrMgmtType.MFG_DATE:
-                            sql.append(" ").append(" and inv.mfg_date = ").append(null == attrParams.getMfgDate() ? null : new SimpleDateFormat("yyyyMMdd hhmmss").format(attrParams.getMfgDate()));
+                            sql.append(" ").append(" and inv.mfg_date = ").append("'").append(null == attrParams.getMfgDate() ? null : new SimpleDateFormat("yyyyMMdd hhmmss").format(attrParams.getMfgDate())).append("'");
                             break;
                         case InvAttrMgmtType.EXP_DATE:
-                            sql.append(" ").append(" and inv.exp_date = ").append(null == attrParams.getExpDate() ? null : new SimpleDateFormat("yyyyMMdd hhmmss").format(attrParams.getExpDate()));
+                            sql.append(" ").append(" and inv.exp_date = ").append("'").append(null == attrParams.getExpDate() ? null : new SimpleDateFormat("yyyyMMdd hhmmss").format(attrParams.getExpDate())).append("'");
                             break;
                         case InvAttrMgmtType.COUNTRY_OF_ORIGIN:
-                            sql.append(" ").append(" and inv.country_of_origin = ").append(attrParams.getCountryOfOrigin());
+                            sql.append(" ").append(" and inv.country_of_origin = ").append("'").append(attrParams.getCountryOfOrigin()).append("'");
                             break;
                         case InvAttrMgmtType.INV_ATTR1:
-                            sql.append(" ").append(" and inv.inv_attr1 = ").append(attrParams.getInvAttr1());
+                            sql.append(" ").append(" and inv.inv_attr1 = ").append("'").append(attrParams.getInvAttr1()).append("'");
                             break;
                         case InvAttrMgmtType.INV_ATTR2:
-                            sql.append(" ").append(" and inv.inv_attr2 = ").append(attrParams.getInvAttr2());
+                            sql.append(" ").append(" and inv.inv_attr2 = ").append("'").append(attrParams.getInvAttr2()).append("'");
                             break;
                         case InvAttrMgmtType.INV_ATTR3:
-                            sql.append(" ").append(" and inv.inv_attr3 = ").append(attrParams.getInvAttr3());
+                            sql.append(" ").append(" and inv.inv_attr3 = ").append("'").append(attrParams.getInvAttr3()).append("'");
                             break;
                         case InvAttrMgmtType.INV_ATTR4:
-                            sql.append(" ").append(" and inv.inv_attr4 = ").append(attrParams.getInvAttr4());
+                            sql.append(" ").append(" and inv.inv_attr4 = ").append("'").append(attrParams.getInvAttr4()).append("'");
                             break;
                         case InvAttrMgmtType.INV_ATTR5:
-                            sql.append(" ").append(" and inv.inv_attr5 = ").append(attrParams.getInvAttr5());
+                            sql.append(" ").append(" and inv.inv_attr5 = ").append("'").append(attrParams.getInvAttr5()).append("'");
                             break;
                     }
                 }

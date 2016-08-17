@@ -51,7 +51,7 @@ public class SysGuideContainerPutawayCondition extends PutawayBaseCondition impl
                 return sql.toString();
             case WhLocationRecommendType.MERGE_LOCATION_SAME_INV_ATTRS:
                 if (null != attrParams.getIsMixStacking()) {
-                    sql.append(" ").append("loc.is_mix_stacking = ").append((true == attrParams.getIsMixStacking() ? "1" : "0"));
+                    sql.append(" ").append("loc.is_mix_stacking = ").append((true == attrParams.getIsMixStacking() ? "1" : "0")).append(" and ");
                 }
                 sql.append(" exists (select 1 from t_wh_sku_inventory inv where inv.location_id = loc.id and inv.ou_id = ").append(attrParams.getOuId());
                 invAttrMgmtAspect(attrParams, sql);
