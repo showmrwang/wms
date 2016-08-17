@@ -295,4 +295,9 @@ public class StoreManagerImpl implements StoreManager {
     public List<Store> findStoreListByIds(List<Long> ids) {
         return storeDao.getByIds(ids);
     }
+
+    @Override
+    public Store findStoreById(Long id) {
+        return storeDao.findById(id);
+    }
 }

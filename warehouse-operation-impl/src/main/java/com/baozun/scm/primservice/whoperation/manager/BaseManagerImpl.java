@@ -14,6 +14,7 @@
  */
 package com.baozun.scm.primservice.whoperation.manager;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -27,16 +28,18 @@ import com.baozun.redis.manager.CacheManager;
 import com.baozun.scm.primservice.whoperation.command.system.GlobalLogCommand;
 import com.baozun.scm.primservice.whoperation.constant.CacheKeyConstant;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.CustomerDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.system.GlobalLogManager;
 import com.baozun.scm.primservice.whoperation.manager.system.SysDictionaryManager;
-import com.baozun.scm.primservice.whoperation.manager.warehouse.CustomerManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.StoreManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryLogManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventorySnLogManager;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryLog;
 import com.baozun.scm.primservice.whoperation.util.LogUtil;
 import com.baozun.scm.primservice.whoperation.util.ParamsUtil;
@@ -65,7 +68,9 @@ public abstract class BaseManagerImpl implements BaseManager {
     @Autowired
     private CacheManager cacheManager;
     @Autowired
-    private CustomerManager customerManager;
+    private CustomerDao customerDao;
+    @Autowired
+    private StoreManager storeManager;
 
 
     /**
@@ -182,7 +187,7 @@ public abstract class BaseManagerImpl implements BaseManager {
 
 
     /**
-     * 通过customserId查询对应系统参数信息 redis=null 查询数据库
+     * 通过customserIdList查询对应系统参数信息 redis=null 查询数据库
      * 
      * @return
      */
@@ -201,7 +206,7 @@ public abstract class BaseManagerImpl implements BaseManager {
             }
             if (null == c) {
                 // 缓存无对应数据 查询数据库
-                c = customerManager.getCustomerById(id);
+                c = customerDao.findById(id);
                 try {
                     cacheManager.setObject(redisKey + id, c);
                 } catch (Exception e) {
@@ -212,6 +217,106 @@ public abstract class BaseManagerImpl implements BaseManager {
             returnMap.put(id, c);
         }
         return returnMap;
+    }
+
+    /**
+     * 通过storeIdList查询对应系统参数信息 redis=null 查询数据库
+     * 
+     * @return
+     */
+    protected Map<Long, Store> findStoreByRedis(List<Long> storeIdList) {
+        String redisKey = CacheKeyConstant.WMS_CACHE_STORE;
+        Map<Long, Store> returnMap = new HashMap<Long, Store>();
+        // 遍历storeIdList 获取storeId
+        for (Long id : storeIdList) {
+            List<String> redis = new ArrayList<String>();
+            Store s = null;
+            try {
+                // 先查询Redis是否存在对应数据 店铺redis缓存格式前缀+customerId+storeId
+                redis = cacheManager.Keys(redisKey + "*-" + id);
+            } catch (Exception e) {
+                // redis出错只记录log
+                log.error("findStoreByRedis cacheManager.getObject(" + redisKey + id + ") error");
+            }
+            if (redis.size() != 0) {
+                // 获取对应Redis数据
+                s = cacheManager.getObject(redis.get(0).split("_")[1]);
+                if (null == s) {
+                    // 查询数据库
+                    s = storeManager.findStoreById(id);
+                    try {
+                        cacheManager.setObject(redisKey + s.getCustomerId() + "-" + id, s);
+                    } catch (Exception e) {
+                        // redis出错只记录log
+                        log.error("findStoreByRedis cacheManager.setObject(" + redisKey + s.getCustomerId() + "-" + id + ") error");
+                    }
+                }
+            } else {
+                s = storeManager.findStoreById(id);
+                try {
+                    cacheManager.setObject(redisKey + s.getCustomerId() + "-" + id, s);
+                } catch (Exception e) {
+                    // redis出错只记录log
+                    log.error("findStoreByRedis cacheManager.setObject(" + redisKey + s.getCustomerId() + "-" + id + ") error");
+                }
+            }
+            returnMap.put(id, s);
+        }
+        return returnMap;
+    }
+
+    /**
+     * 获取所有客户信息 redis = null查询数据库
+     * 
+     * @return
+     */
+    protected Map<Long, Customer> findCustomerAllByRedis() {
+        String redisKey = CacheKeyConstant.WMS_CACHE_CUSTOMER;
+        Map<Long, Customer> returnList = new HashMap<Long, Customer>();
+        List<String> redis = new ArrayList<String>();
+        try {
+            // 先查询Redis是否存在对应数据 客户redis缓存格式前缀+customerId
+            redis = cacheManager.Keys(redisKey + "*");
+        } catch (Exception e) {
+            // redis出错只记录log
+            log.error("findCustomerAllByRedis cacheManager.getObject(" + redisKey + "*) error");
+        }
+        if (redis.size() != 0) {
+            for (String s : redis) {
+                Customer c = null;
+                // 获取对应Redis数据
+                try {
+                    c = cacheManager.getObject(redis.get(0).split("_")[1]);
+                } catch (Exception e) {
+                    // redis出错只记录log
+                    log.error("findCustomerAllByRedis cacheManager.getObject(" + redis.get(0).split("_")[1] + ") error");
+                }
+                if (null == c) {
+                    // 缓存无对应数据 查询数据库
+                    c = customerDao.findById(Long.parseLong(s.substring(s.lastIndexOf("-") + 1, s.length())));
+                    try {
+                        cacheManager.setObject(redisKey + c.getId(), c);
+                    } catch (Exception e) {
+                        // redis出错只记录log
+                        log.error("findCustomerAllByRedis cacheManager.setObject(" + redisKey + c.getId() + ") error");
+                    }
+                }
+                returnList.put(c.getId(), c);
+            }
+        } else {
+            // 没有数据 查询数据库 然后封装数据
+            List<Customer> customers = customerDao.findCustomerAllList();
+            for (Customer customer : customers) {
+                try {
+                    cacheManager.setObject(redisKey + customer.getId(), customer);
+                } catch (Exception e) {
+                    // redis出错只记录log
+                    log.error("findCustomerAllByRedis cacheManager.setObject(" + redisKey + customer.getId() + ") error");
+                }
+                returnList.put(customer.getId(), customer);
+            }
+        }
+        return returnList;
     }
 
     /**

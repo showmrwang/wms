@@ -124,5 +124,7 @@ public interface CustomerManager extends BaseManager {
      */
     public List<Customer> findCustomerList(Integer lifecycle, List<Long> customeridList);
 
+    List<Customer> findCustomerAllList();
+
 
 }

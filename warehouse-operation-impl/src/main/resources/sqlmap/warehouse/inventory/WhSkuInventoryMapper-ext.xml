@@ -245,7 +245,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			l.code as locationCode,
 			cout.code as outerContainerCode,
 			iout.code as insideContainerCode,
-			store.store_name as storeName,
 			invstatus.name as invstatusName
 	    ]]>
 	</sql>
@@ -289,7 +288,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			t.locationCode as locationCode,
 			t.outerContainerCode as outerContainerCode,
 			t.insideContainerCode as insideContainerCode,
-			t.storeName as storeName,
 			t.invstatusName as invstatusName
 	    ]]>
 	</sql>
@@ -396,7 +394,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 						left join t_wh_location l on t.location_id = l.id 
 						left join t_wh_container cout on t.outer_container_id = cout.id 
 						left join t_wh_container iout on t.inside_container_id = iout.id 
-						left join t_bi_store store on t.store_id = store.id 
 						left join t_wh_inventory_status invstatus on t.inv_status = invstatus.id
 						<include refid="findListByQueryMapWithPageWhereExt"/> )
 			t group by t.uuid) t
@@ -413,7 +410,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 							left join t_wh_location l on t.location_id = l.id 
 							left join t_wh_container cout on t.outer_container_id = cout.id 
 							left join t_wh_container iout on t.inside_container_id = iout.id 
-							left join t_bi_store store on t.store_id = store.id 
 							left join t_wh_inventory_status invstatus on t.inv_status = invstatus.id
 						<include refid="findListByQueryMapWithPageWhereExt"/> )
 			t group by t.uuid

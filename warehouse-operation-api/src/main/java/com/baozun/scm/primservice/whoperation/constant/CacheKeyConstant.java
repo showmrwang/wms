@@ -62,22 +62,13 @@ public final class CacheKeyConstant {
     public static final String CACHE_MMP_CONTAINER_CODE_PREFIX = "CACHE_MMP_CONTAINER_CODE_PREFIX_";
 
     /** 系统参数缓存 前缀+groupValue+dicValue Dictionary */
-    public static final String WMS_CACHE_SYS_DICTIONARY = "WMS_CACHE_SYS_DICTIONARY_";
-    
-    
-    
-    //-------------------------------------------------------------------------------
-    
-    /**
-     * 人为指定上架:容器信息缓存
-     */
-    public static final String CACHE_MMP_CONTAINER_ID_PREFIX = "CACHE_MMP_CONTAINER_ID_PREFIX";
-    
-    
-    
+    public static final String WMS_CACHE_SYS_DICTIONARY = "WMS-CACHE-SYS-DICTIONARY-";
 
     /** 客户缓存 前缀+ customerId */
-    public static final String WMS_CACHE_CUSTOMER = "WMS_CACHE_CUSTOMER_";
+    public static final String WMS_CACHE_CUSTOMER = "WMS-CACHE-CUSTOMER-";
+
+    /** 店铺缓存 前缀+ customerId+storeId */
+    public static final String WMS_CACHE_STORE = "WMS-CACHE-STORE-";
 
     // 过期时间
     public static final int CACHE_ONE_SECOND = 1;

@@ -92,4 +92,11 @@ public interface CustomerDao extends BaseDao<Customer, Long> {
      */
     List<Customer> getCustomerListByParams(@Param("lifecycle") Integer lifecycle, @Param("customeridList") List<Long> customeridList);
 
+    /**
+     * 获取全部客户信息
+     * 
+     * @return
+     */
+    List<Customer> findCustomerAllList();
+
 }

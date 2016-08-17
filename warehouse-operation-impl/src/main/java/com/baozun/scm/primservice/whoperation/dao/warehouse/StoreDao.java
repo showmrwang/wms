@@ -32,7 +32,6 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
 
 
 
-
 public interface StoreDao extends BaseDao<Store, Long> {
 
     /**

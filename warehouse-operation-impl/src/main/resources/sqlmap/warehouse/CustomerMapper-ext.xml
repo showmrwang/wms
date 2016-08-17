@@ -308,4 +308,9 @@
 			</if>
 				    
     </select>
+    
+     <select id="findCustomerAllList" resultMap="CustomerResultExt">
+    	select <include refid="customerColumnsExt" />
+	    from t_bi_customer
+    </select>
 </mapper>

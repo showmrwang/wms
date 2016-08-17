@@ -324,5 +324,9 @@ public class CustomerManagerImpl implements CustomerManager {
         return customerList;
     }
 
+    @Override
+    public List<Customer> findCustomerAllList() {
+        return customerDao.findCustomerAllList();
+    }
 
 }

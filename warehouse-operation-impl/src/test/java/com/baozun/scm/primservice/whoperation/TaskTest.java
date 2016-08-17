@@ -41,6 +41,7 @@ import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnMana
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnproxy.CreatePoAsnManagerProxy;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnproxy.EditPoAsnManagerProxy;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.CustomerManager;
 
 
 @ContextConfiguration(locations = {"classpath*:spring.xml"})
@@ -57,6 +58,8 @@ public class TaskTest extends AbstractJUnit4SpringContextTests {
 
     @Autowired
     private EditPoAsnManagerProxy editPoAsnManagerProxy;
+    @Autowired
+    private CustomerManager customerManager;
 
 
     @Test
@@ -70,8 +73,6 @@ public class TaskTest extends AbstractJUnit4SpringContextTests {
         po.setIsWms(true);
         po.setOuId(12L);
         try {
-            // ResponseMsg rm = createPoAsnManagerProxy.createPo(po);
-            System.out.println("");
         } catch (Exception e) {
             e.printStackTrace();
         }

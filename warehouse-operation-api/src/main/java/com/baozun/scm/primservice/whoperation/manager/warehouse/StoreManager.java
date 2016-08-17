@@ -79,7 +79,7 @@ public interface StoreManager extends BaseManager {
     List<Store> findStoreListByUserIdCustomerId(Long customerId, Long userId);
 
     List<StoreCommand> findDataPrivilegeListByParams(Long userId);
-    
+
     /**
      * 根据id集合获取名称集合
      * 
@@ -88,26 +88,29 @@ public interface StoreManager extends BaseManager {
      * @return
      */
     Map<Long, String> getNameIdMapByIds(List<Long> ids);
-    
+
     /**
      * 通过店铺名称和编号检验店铺是否存在
+     * 
      * @param container2ndCategory
      * @param ouId
      * @return
      */
     Boolean uniqueCodeOrName(Store store);
-    
+
     /**
      * 获取店铺list
+     * 
      * @param ids
      * @param lifeCycle
      * @param userId
      * @return
      */
     List<Store> findStoreListByIds(List<Long> ids);
-    
+
     /**
      * 全局日志表插入,globalSource
+     * 
      * @param userId
      * @param modifyTime
      * @param objectType
@@ -116,4 +119,13 @@ public interface StoreManager extends BaseManager {
      * @param ouId
      */
     void insertGlobalLog(Long userId, Date modifyTime, String objectType, String modifiedValues, String type, Long ouId);
+
+    /**
+     * 获取店铺
+     * 
+     * @return
+     */
+    Store findStoreById(Long id);
+
+
 }
