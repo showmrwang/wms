@@ -329,11 +329,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				</if>
 				<!-- 客户名称 -->
 				<if test="customerName!=null and customerName!=''">
-					 and cust.customer_name like #{customerName}
+					 and t.customer_id = #{customerName}
 				</if>
 				<!-- 店铺名称 -->
 				<if test="storeName!=null and storeName!=''">
-					 and store.store_name like #{storeName}
+					 and t.store_id = #{storeName}
 				</if>
 				<!-- 库存状态 -->
 				<if test="invsStatus!=null and invsStatus!=''">
