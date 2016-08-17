@@ -113,7 +113,7 @@ public class ScanResultCommand extends BaseCommand {
     /** 上架以后是否需要提示下一个库位 */
     private boolean isAfterPutawayTipLoc;
     /** 是否需要排队 */
-    private boolean isNeedQueueUp;
+    private boolean isNeedQueueUp = false;
     /** 是否库位推荐失败 */
     private boolean isRecommendFail;
     /** 库位推荐失败以后是否提示下一个容器 */
