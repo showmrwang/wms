@@ -956,6 +956,8 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
             throw e1;
         }
         if (null == lrrList || 0 == lrrList.size() || StringUtils.isEmpty(lrrList.get(0).getLocationCode())) {
+            // 弹出排队队列
+            pdaPutawayCacheManager.sysGuidePutawayLocRecommendPopQueue(containerId, logId);
             log.error("location recommend fail! containerCode is:[{}], logId is:[{}]", containerCode, logId);
             throw new BusinessException(ErrorCodes.COMMON_LOCATION_RECOMMEND_ERROR);
         }
@@ -1702,6 +1704,9 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                 String tipContainerCode = sysGuideTipContainer((null == containerCmd ? null : containerCmd.getCode()), funcId, WhPutawayPatternDetailType.CONTAINER_PUTAWAY, ouId, userId, logId);
                 srCmd.setTipContainerCode(tipContainerCode);
             } else {
+                // 弹出排队队列
+                pdaPutawayCacheManager.sysGuidePutawayLocRecommendPopQueue(insideContainerId, logId);
+                log.error("location recommend fail! containerCode is:[{}], logId is:[{}]", insideContainerCode, logId);
                 throw new BusinessException(ErrorCodes.COMMON_LOCATION_RECOMMEND_ERROR);
             }
             return srCmd;
@@ -2472,6 +2477,9 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                 String tipContainerCode = sysGuideTipContainer((null == containerCmd ? null : containerCmd.getCode()), funcId, WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY, ouId, userId, logId);
                 srCmd.setTipContainerCode(tipContainerCode);
             } else {
+                // 弹出排队队列
+                pdaPutawayCacheManager.sysGuidePutawayLocRecommendPopQueue(insideContainerId, logId);
+                log.error("location recommend fail! containerCode is:[{}], logId is:[{}]", insideContainerCode, logId);
                 throw new BusinessException(ErrorCodes.COMMON_LOCATION_RECOMMEND_ERROR);
             }
             return srCmd;
@@ -2500,6 +2508,8 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
             invRecommendLocCode.put(lrrCmd.getSkuAttrId(), locationCode);
         }
         if (0 == locSkuAttrIds.size()) {
+            // 弹出排队队列
+            pdaPutawayCacheManager.sysGuidePutawayLocRecommendPopQueue(insideContainerId, logId);
             log.error("location recommend failure! containerCode is:[{}], logId is:[{}]", containerCode, logId);
             throw new BusinessException(ErrorCodes.COMMON_LOCATION_RECOMMEND_ERROR);
         } else {
