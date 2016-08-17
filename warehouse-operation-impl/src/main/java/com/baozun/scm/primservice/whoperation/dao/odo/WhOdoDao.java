@@ -25,6 +25,7 @@ import lark.common.dao.QueryCondition;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
 
+import com.baozun.scm.primservice.whoperation.command.odo.OdoResultCommand;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 
 public interface WhOdoDao extends BaseDao<WhOdo, Long> {
@@ -32,6 +33,9 @@ public interface WhOdoDao extends BaseDao<WhOdo, Long> {
 
     @QueryPage("findListCountByQueryMap")
     Pagination<WhOdo> findListByQueryMapWithPage(Page page, Sort[] sorts, Map<String, Object> params);
+
+    @QueryPage("findListCountByQueryMapExt")
+    Pagination<OdoResultCommand> findListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params);
 
     @QueryPage("queryCount")
     Pagination<WhOdo> query(Page page, Sort[] sorts, QueryCondition cond);
