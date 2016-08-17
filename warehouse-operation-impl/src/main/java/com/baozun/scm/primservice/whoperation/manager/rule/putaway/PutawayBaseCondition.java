@@ -90,10 +90,10 @@ public abstract class PutawayBaseCondition extends BaseManagerImpl implements Pu
                             sql.append(" ").append(" and inv.batch_number = ").append("'").append(attrParams.getBatchNumber()).append("'");
                             break;
                         case InvAttrMgmtType.MFG_DATE:
-                            sql.append(" ").append(" and inv.mfg_date = ").append("'").append(null == attrParams.getMfgDate() ? null : new SimpleDateFormat("yyyyMMdd hhmmss").format(attrParams.getMfgDate())).append("'");
+                            sql.append(" ").append(" and inv.mfg_date = ").append("'").append(null == attrParams.getMfgDate() ? null : new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(attrParams.getMfgDate())).append("'");
                             break;
                         case InvAttrMgmtType.EXP_DATE:
-                            sql.append(" ").append(" and inv.exp_date = ").append("'").append(null == attrParams.getExpDate() ? null : new SimpleDateFormat("yyyyMMdd hhmmss").format(attrParams.getExpDate())).append("'");
+                            sql.append(" ").append(" and inv.exp_date = ").append("'").append(null == attrParams.getExpDate() ? null : new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(attrParams.getExpDate())).append("'");
                             break;
                         case InvAttrMgmtType.COUNTRY_OF_ORIGIN:
                             sql.append(" ").append(" and inv.country_of_origin = ").append("'").append(attrParams.getCountryOfOrigin()).append("'");
