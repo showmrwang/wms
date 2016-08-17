@@ -349,4 +349,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    where
 			au.id = #{userId}
     </select>
+    
+     <select id="findStoreByCustomerId" resultMap="StoreResultExt">
+        select <include refid="storeColumnsExpand" />
+        from t_bi_store 
+        where customer_id = #{id}
+    </select>
 </mapper>

@@ -81,4 +81,12 @@ public interface StoreDao extends BaseDao<Store, Long> {
      * @return
      */
     long uniqueCodeOrName(Store store);
+
+    /**
+     * 通过客户ID查询对应店铺信息
+     * 
+     * @param id
+     * @return
+     */
+    List<Store> findStoreByCustomerId(Long id);
 }
