@@ -70,6 +70,12 @@ public final class CacheKeyConstant {
     /** 店铺缓存 前缀+ customerId+storeId */
     public static final String WMS_CACHE_STORE = "WMS-CACHE-STORE-";
 
+    /**
+     * 人为指定上架:容器信息缓存
+     */
+    public static final String CACHE_MMP_CONTAINER_ID_PREFIX = "CACHE_MMP_CONTAINER_ID_PREFIX";
+
+
     // 过期时间
     public static final int CACHE_ONE_SECOND = 1;
     public static final int CACHE_ONE_MINUTE = 60;
