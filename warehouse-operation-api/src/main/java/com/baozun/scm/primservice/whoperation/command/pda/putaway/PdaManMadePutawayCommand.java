@@ -49,7 +49,7 @@ public class PdaManMadePutawayCommand extends BaseCommand {
     /** 对应功能ID */
     private Long functionId;
     /** 库存ID */
-    private String locationId;
+    private Long locationId;
     /** 是否静态库存 */
     private Boolean isStatic;
     /** 是否允许混放 */
@@ -58,6 +58,10 @@ public class PdaManMadePutawayCommand extends BaseCommand {
     private String barCode;
     /** 库存状态*/
     private Long statusId;
+    /** sku条码*/
+    private String skuBarcode;
+   
+    
     
     
     
@@ -152,6 +156,10 @@ public class PdaManMadePutawayCommand extends BaseCommand {
         this.scanPattern = scanPattern;
     }
 
+    public void setBarCode(String barCode) {
+        this.barCode = barCode;
+    }
+
     public Boolean getIsEntireTrayPutaway() {
         return isEntireTrayPutaway;
     }
@@ -192,11 +200,12 @@ public class PdaManMadePutawayCommand extends BaseCommand {
         this.binContainerCode = binContainerCode;
     }
 
-    public String getLocationId() {
+
+    public Long getLocationId() {
         return locationId;
     }
 
-    public void setLocationId(String locationId) {
+    public void setLocationId(Long locationId) {
         this.locationId = locationId;
     }
 
@@ -220,10 +229,6 @@ public class PdaManMadePutawayCommand extends BaseCommand {
         return barCode;
     }
 
-    public void setBarCode(String barCode) {
-        this.barCode = barCode;
-    }
-
     public Long getStatusId() {
         return statusId;
     }
@@ -231,6 +236,13 @@ public class PdaManMadePutawayCommand extends BaseCommand {
     public void setStatusId(Long statusId) {
         this.statusId = statusId;
     }
-    
+
+    public String getSkuBarcode() {
+        return skuBarcode;
+    }
+
+    public void setSkuBarcode(String skuBarcode) {
+        this.skuBarcode = skuBarcode;
+    }
 }
 
