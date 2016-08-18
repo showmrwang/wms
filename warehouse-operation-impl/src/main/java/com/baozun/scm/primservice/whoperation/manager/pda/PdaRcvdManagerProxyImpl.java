@@ -860,6 +860,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
             }
             // 将容器数据推送到缓存
             List<RcvdContainerCacheCommand> rcvdContainerCacheCommandList = this.generalRcvdManager.getUniqueSkuAttrFromWhSkuInventory(command.getInsideContainerId(), command.getSkuId(), ouId);
+            // 如果此商品已有库存
             if (rcvdContainerCacheCommandList == null || rcvdContainerCacheCommandList.size() == 0) {
                 return;
             }
