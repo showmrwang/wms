@@ -28,12 +28,12 @@ import com.baozun.redis.manager.CacheManager;
 import com.baozun.scm.primservice.whoperation.command.system.GlobalLogCommand;
 import com.baozun.scm.primservice.whoperation.constant.CacheKeyConstant;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
+import com.baozun.scm.primservice.whoperation.dao.system.SysDictionaryDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.CustomerDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.StoreDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.system.GlobalLogManager;
-import com.baozun.scm.primservice.whoperation.manager.system.SysDictionaryManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryLogManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventorySnLogManager;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
@@ -64,7 +64,7 @@ public abstract class BaseManagerImpl implements BaseManager {
     @Autowired
     private WhSkuInventorySnLogManager whSkuInventorySnLogManager;
     @Autowired
-    private SysDictionaryManager sysDictionaryManager;
+    private SysDictionaryDao sysDictionaryDao;
     @Autowired
     private CacheManager cacheManager;
     @Autowired
@@ -163,19 +163,19 @@ public abstract class BaseManagerImpl implements BaseManager {
                 SysDictionary sys = null;
                 try {
                     // 先查询Redis是否存在对应数据
-                    sys = cacheManager.getObject(redisKey + groupValue + dicValue);
+                    sys = cacheManager.getObject(redisKey + groupValue + "$" + dicValue);
                 } catch (Exception e) {
                     // redis出错只记录log
-                    log.error("findSysDictionaryByRedis cacheManager.getObject(" + redisKey + groupValue + dicValue + ") error");
+                    log.error("findSysDictionaryByRedis cacheManager.getObject(" + redisKey + groupValue + "$" + dicValue + ") error");
                 }
                 if (null == sys) {
                     // 缓存无对应数据 查询数据库
-                    sys = sysDictionaryManager.getGroupbyGroupValueAndDicValue(groupValue, dicValue);
+                    sys = sysDictionaryDao.getGroupbyGroupValueAndDicValue(groupValue, dicValue);
                     try {
-                        cacheManager.setObject(redisKey + groupValue + dicValue, sys);
+                        cacheManager.setObject(redisKey + groupValue + "$" + dicValue, sys);
                     } catch (Exception e) {
                         // redis出错只记录log
-                        log.error("findSysDictionaryByRedis cacheManager.setObject(" + redisKey + groupValue + dicValue + ") error");
+                        log.error("findSysDictionaryByRedis cacheManager.setObject(" + redisKey + groupValue + "$" + dicValue + ") error");
                     }
                 }
                 // 放入returnMap 格式key = groupValue_dicValue value SysDictionary
@@ -333,7 +333,7 @@ public abstract class BaseManagerImpl implements BaseManager {
             redis = cacheManager.Keys(redisKey + "*");
         } catch (Exception e) {
             // redis出错只记录log
-            log.error("findStoreAllByRedis cacheManager.Keys(" + redisKey + ") error");
+            log.error("findStoreAllByRedis cacheManager.Keys(" + redisKey + "*) error");
         }
         if (redis.size() > 0) {
             for (String s : redis) {
@@ -372,7 +372,74 @@ public abstract class BaseManagerImpl implements BaseManager {
         }
         return returnList;
     }
-    
+
+    /**
+     * 通过groupValue+lifecycle 查询对应Redis系统参数信息 redis = null查询数据库
+     * 
+     * @param groupValue
+     * @param lifecycle
+     * @return
+     */
+    protected List<SysDictionary> findSysDictionaryByGroupValueAndRedis(String groupValue, Integer lifecycle) {
+        String redisKey = CacheKeyConstant.WMS_CACHE_SYS_DICTIONARY + groupValue + "$";
+        List<String> redis = new ArrayList<String>();
+        List<SysDictionary> returnList = new ArrayList<SysDictionary>();
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("groupValue", groupValue);
+        params.put("lifecycle", lifecycle);
+        try {
+            // 先查询Redis是否存在对应数据 系统redis缓存格式前缀+groupValue+divValue
+            redis = cacheManager.Keys(redisKey + "*");
+        } catch (Exception e) {
+            // redis出错只记录log
+            log.error("findSysDictionaryByGroupValueAndRedis cacheManager.Keys(" + redisKey + "*) error");
+        }
+        if (redis.size() > 0) {
+            // 有对应缓存信息
+            for (String s : redis) {
+                SysDictionary sys = null;
+                // 获取对应Redis数据
+                try {
+                    sys = cacheManager.getObject("%" + s.split("%")[1]);
+                } catch (Exception e) {
+                    // redis出错只记录log
+                    log.error("findSysDictionaryByGroupValueAndRedis cacheManager.getObject(" + s.split("%")[1] + ") error");
+                }
+                if (null == sys) {
+                    // 缓存无对应数据 查询数据库
+                    String dicValue = s.substring(s.lastIndexOf("$") + 1, s.length());
+                    sys = sysDictionaryDao.getGroupbyGroupValueAndDicValue(groupValue, dicValue);
+                    try {
+                        cacheManager.setObject(redisKey + dicValue, sys);
+                    } catch (Exception e) {
+                        // redis出错只记录log
+                        log.error("findSysDictionaryByGroupValueAndRedis cacheManager.setObject(" + redisKey + dicValue + ") error");
+                    }
+                }
+                if (null != sys) {
+                    // 判断系统参数的lifecycle是否=传入的lifecycle
+                    if (sys.getLifecycle().equals(lifecycle)) {
+                        returnList.add(sys);
+                    }
+                }
+            }
+        } else {
+            // redis 没有数据 查询数据库
+            List<SysDictionary> sysList = sysDictionaryDao.findListByQueryMap(params);
+            for (SysDictionary sys : sysList) {
+                try {
+                    // 放入redis
+                    cacheManager.setObject(redisKey + sys.getDicValue(), sys);
+                } catch (Exception e) {
+                    // redis出错只记录log
+                    log.error("findSysDictionaryByGroupValueAndRedis cacheManager.setObject(" + redisKey + sys.getDicValue() + ") error");
+                }
+                returnList.add(sys);
+            }
+        }
+        return returnList;
+    }
+
     /**
      * 库存SN/残次日志插入
      * 

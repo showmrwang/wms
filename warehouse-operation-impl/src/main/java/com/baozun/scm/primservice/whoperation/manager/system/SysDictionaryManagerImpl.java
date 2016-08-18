@@ -18,6 +18,7 @@ import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.dao.system.SysDictionaryDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
+import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
 
 import lark.common.annotation.MoreDB;
@@ -27,7 +28,7 @@ import lark.common.dao.Sort;
 
 @Transactional
 @Service("sysDictionaryManager")
-public class SysDictionaryManagerImpl implements SysDictionaryManager {
+public class SysDictionaryManagerImpl extends BaseManagerImpl implements SysDictionaryManager {
     public static final Logger log = LoggerFactory.getLogger(SysDictionaryManager.class);
     @Autowired
     private SysDictionaryDao sysDictionaryDao;
@@ -44,11 +45,10 @@ public class SysDictionaryManagerImpl implements SysDictionaryManager {
             log.debug("Param groupValue is {}", code);
             log.debug("Param lifecycle is {}", lifecycle);
         }
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put("groupValue", code);
-        params.put("lifecycle", lifecycle);
+        // 调取redis缓存系统参数信息
+        List<SysDictionary> sys = findSysDictionaryByGroupValueAndRedis(code, lifecycle);
         log.info("SysDictionaryManager.getListByGroup end");
-        return sysDictionaryDao.findListByQueryMap(params);
+        return sys;
     }
 
     /**
