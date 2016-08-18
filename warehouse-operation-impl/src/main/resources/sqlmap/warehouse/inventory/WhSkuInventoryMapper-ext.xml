@@ -1296,7 +1296,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			and ou_id = #{ouid}
     </select>
     
-    <select id="findAllocatedInventorysByUuid" resultMap="WhSkuInventoryCommandSnResultExt">
+    <select id="findAllocatedContainerInventorysByUuid" resultMap="WhSkuInventoryCommandSnResultExt">
 	select 
 			inv.id as invId,
 			inv.sku_id as skuId,
