@@ -571,7 +571,6 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
         if (null == command.getOuId()) {
             throw new BusinessException("error");
         }
-        command.setQuantity(1);
         Integer batchCount = command.getSkuBatchCount() * command.getQuantity();
         Long occupationId = command.getOccupationId();
         Long skuId = command.getSkuId();
@@ -851,19 +850,20 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
         // 2.容器缓存
         long invContainerCount = this.generalRcvdManager.findContainerListCountByInsideContainerIdFromSkuInventory(command.getInsideContainerId(), ouId);
         WhFunctionRcvd functionRcvd = command.getRcvd();
-        if (null == functionRcvd) {
-
-        }
         if (Constants.DEFAULT_INTEGER != invContainerCount) {
             // 校验是否允许混放
             if (!functionRcvd.getIsMixingSku()) {
-                long invContanierSkuCount = this.generalRcvdManager.getUniqueSkuAttrCountFromWhSkuInventory(command.getInsideContainerId(), command.getSkuId(), ouId);
+                long invContanierSkuCount = this.generalRcvdManager.getUniqueSkuAttrCountFromWhSkuInventory(command.getInsideContainerId(), null, ouId);
                 if (invContanierSkuCount > 0) {
                     throw new BusinessException(ErrorCodes.RCVD_CONTAINER_LIMIT_ERROR);
                 }
             }
             // 将容器数据推送到缓存
             List<RcvdContainerCacheCommand> rcvdContainerCacheCommandList = this.generalRcvdManager.getUniqueSkuAttrFromWhSkuInventory(command.getInsideContainerId(), command.getSkuId(), ouId);
+            // 如果此商品已有库存
+            if (rcvdContainerCacheCommandList == null || rcvdContainerCacheCommandList.size() == 0) {
+                return;
+            }
             rcvdContainerCacheCommand = rcvdContainerCacheCommandList.get(0);
             if (functionRcvd.getIsLimitUniqueBatch()) {
                 if (StringUtils.hasText(rcvdContainerCacheCommand.getBatchNumber())) {
@@ -981,7 +981,6 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
      * @return
      */
     private String getMatchedLineIdStrForSkuAttr(Integer skuUrlOperator, WhSkuInventoryCommand command, String lineIdListString) {
-        command.setQuantity(1);
         int skuPlannedCount = command.getSkuBatchCount() * command.getQuantity();
         WhFunctionRcvd functionRcvd = command.getRcvd();
         // 可用数量

@@ -658,7 +658,7 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
         // 二级容器类型 设置容器的二级容器类型；逻辑：如果不存在系统预定义的对应的二级容器类型，那么生成宇通预定义的二级容器对象
         Container2ndCategory secendContainer = new Container2ndCategory();
         secendContainer.setCategoryCode(container.getTwoLevelTypeValue());
-        secendContainer.setOneLevelType(dicList.get(0).getId().toString());
+        secendContainer.setOneLevelType(dicList.get(0).getDicValue());
         secendContainer.setOuId(ouId);
         List<Container2ndCategory> secondContainerList = this.container2ndCategoryDao.findListByParam(secendContainer);// 查询是否有系统预定义的容器类型
         if (secondContainerList != null && secondContainerList.size() > 0) {
