@@ -4,50 +4,52 @@ public final class CacheKeyConstant {
     private CacheKeyConstant() {}
 
     /** 通用收货ASNLINE缓存前缀：规则：前缀+ASNID+ASNLINEID+SKUID;间隔符"_" */
-    public static final String CACHE_ASNLINE_SKU_PREFIX = "CACHE_ASNLINE_SKU_";
+    public static final String CACHE_ASNLINE_SKU_PREFIX = "%CACHE-ASNLINE-SKU$";
 
     /** 通用收货SKU数量缓存前缀：规则：前缀+ASNID+SKUID;间隔符"_" */
-    public static final String CACHE_ASN_SKU_PREFIX = "CACHE_ASN_SKU_";
+    public static final String CACHE_ASN_SKU_PREFIX = "%CACHE-ASN-SKU$";
 
     /** 通用收货ASN超收比例前缀：规则：前缀+ASNID;间隔符"_" */
-    public static final String CACHE_ASN_OVERCHARGE_PREFIX = "CACHE_ASN_OVERCHARGE_";
+    public static final String CACHE_ASN_OVERCHARGE_PREFIX = "%CACHE-ASN-OVERCHARGE$";
 
-    /** 通用收货ASN缓存 */
-    public static final String CACHE_ASN_PREFIX = "CACHE_ASN_";
+    /** 通用收货ASN缓存 prefix+asnId */
+    public static final String CACHE_ASN_PREFIX = "%CACHE-ASN$";
 
     /** 通用收货ASNLINE缓存 规则:前缀+ASNID */
-    public static final String CACHE_ASNLINE_PREFIX = "CACHE_ASNLINE_";
+    public static final String CACHE_ASNLINE_PREFIX = "%CACHE-ASNLINE$";
 
     /** 超收比例 */
-    public static final String CACHE_ASN_OVERCHARGE = "CACHE_ASN_OVERCHARGE";
-    public static final String CACHE_STORE_ASN_OVERCHARGE = "CACHE_STORE_ASN_OVERCHARGE";
-    public static final String CACHE_STORE_PO_OVERCHARGE = "CACHE_STORE_PO_OVERCHARGE";
-    public static final String CACHE_WAREHOUSE_ASN_OVERCHARGE = "CACHE_WAREHOUSE_ASN_OVERCHARGE";
-    public static final String CACHE_WAREHOUSE_PO_OVERCHARGE = "CACHE_WAREHOUSE_PO_OVERCHARGE";
-
+    public static final String CACHE_ASN_OVERCHARGE = "%CACHE-ASN-OVERCHARGE$";
+    public static final String CACHE_STORE_ASN_OVERCHARGE = "%CACHE-STORE-ASN-OVERCHARGE$";
+    public static final String CACHE_STORE_PO_OVERCHARGE = "%CACHE-STORE-PO-OVERCHARGE$";
+    public static final String CACHE_WAREHOUSE_ASN_OVERCHARGE = "%CACHE-WAREHOUSE-ASN-OVERCHARGE$";
+    public static final String CACHE_WAREHOUSE_PO_OVERCHARGE = "%CACHE-WAREHOUSE-PO-OVERCHARGE$";
+    /** 缓存Key多属性分隔符 */
+    public static final String CACHE_KEY_SPLIT = "$";
     // --------------------------------------------------------------------------------------
     /** 收货等操作用户列表 */
-    public static final String CACHE_OPERATOR_USER = "CACHE_OPERATOR_USER";
+    public static final String CACHE_OPERATOR_USER = "%CACHE-OPERATOR-USER$";
 
-    /** 收货缓存数据集合 */
-    public static final String CACHE_RCVD_PREFIX = "CACHE_RCVD_";
+    /** 收货缓存数据集合 prefix+userId */
+    public static final String CACHE_RCVD_PREFIX = "%CACHE-RCVD$";
 
-    /** 通用收货ASN的Sn号缓存 */
-    public static final String CACHE_RCVD_SN_PREFIX = "CACHE_RCVD_SN_";
+    /** 通用收货ASN的Sn号缓存 prefix+userId */
+    public static final String CACHE_RCVD_SN_PREFIX = "%CACHE-RCVD-SN$";
 
     /** 明细超收数量 */
-    public static final String CACHE_ASNLINE_OVERCHARGE_PREFIX = "CACHE_ASNLINE_OVERCHARGE_";
+    public static final String CACHE_ASNLINE_OVERCHARGE_PREFIX = "%CACHE-ASNLINE-OVERCHARGE-";
 
     /** 容器商品占用缓存 */
-    public static final String CACHE_RCVD_CONTAINER = "CACHE_RCVD_CONTAINER";
+    @Deprecated
+    public static final String CACHE_RCVD_CONTAINER = "%CACHE-RCVD-CONTAINER$";
 
     /** 容器商品占用缓存 */
-    public static final String CACHE_RCVD_CONTAINER_USER_PREFIX = "CACHE_RCVD_CONTAINER_USER_";
+    public static final String CACHE_RCVD_CONTAINER_USER_PREFIX = "%CACHE-RCVD-CONTAINER-USER$";
 
     /** 容器商品属性缓存前缀 规则：前缀+containerId */
-    public static final String CACHE_RCVD_CONTAINER_PREFIX = "CACHE_RCVD_CONTAINER_";
+    public static final String CACHE_RCVD_CONTAINER_PREFIX = "%CACHE-RCVD-CONTAINER%";
 
-    public static final String CACHE_RCVD_PALLET_PREFIX = "CACHE_RCVD_PALLET_";
+    public static final String CACHE_RCVD_PALLET_PREFIX = "%CACHE-RCVD-PALLET$";
 
     /** 商品条码对应SKUID缓存 前缀+barcode */
     public static final String WMS_CACHE_SKU_BARCODE = "%WMS-CACHE-SKU-BARCODE-";

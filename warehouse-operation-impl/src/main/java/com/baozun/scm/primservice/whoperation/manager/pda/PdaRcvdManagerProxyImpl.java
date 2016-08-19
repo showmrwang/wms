@@ -160,9 +160,10 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                         int overchargeCount = (int) (asnline.getQtyPlanned().intValue() * Double.valueOf(cacheRate) / 100);// 可超收数量
                         cacheManager.setMapObject(CacheKeyConstant.CACHE_ASNLINE_OVERCHARGE_PREFIX + occupationId, asnline.getId().toString(), overchargeCount, 24 * 60 * 60);
                         // 缓存ASN-商品数量
-                        long asnLineSku = cacheManager.incr(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + cacheAsn.getId() + "_" + asnline.getId() + "_" + asnline.getSkuId());
-                        cacheManager.decrBy(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + cacheAsn.getId() + "_" + asnline.getId() + "_" + asnline.getSkuId(), (int) asnLineSku);
-                        cacheManager.incrBy(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + cacheAsn.getId() + "_" + asnline.getId() + "_" + asnline.getSkuId(), count);
+                        long asnLineSku = cacheManager.incr(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + cacheAsn.getId() + CacheKeyConstant.CACHE_KEY_SPLIT + asnline.getId() + CacheKeyConstant.CACHE_KEY_SPLIT + asnline.getSkuId());
+                        log.info(this.getClass().getSimpleName() + "initAsnCacheForGeneralReceiving PARAM asnlineSKU:{}", asnLineSku);
+                        cacheManager.decrBy(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + cacheAsn.getId() + CacheKeyConstant.CACHE_KEY_SPLIT + asnline.getId() + CacheKeyConstant.CACHE_KEY_SPLIT + asnline.getSkuId(), (int) asnLineSku);
+                        cacheManager.incrBy(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + cacheAsn.getId() + CacheKeyConstant.CACHE_KEY_SPLIT + asnline.getId() + CacheKeyConstant.CACHE_KEY_SPLIT + asnline.getSkuId(), count);
                         if (skuMap.containsKey(asnline.getSkuId())) {
                             skuMap.put(asnline.getSkuId(), skuMap.get(asnline.getSkuId()) + count);
                         } else {
@@ -174,9 +175,9 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                 Iterator<Entry<Long, Integer>> it = skuMap.entrySet().iterator();
                 while (it.hasNext()) {
                     Entry<Long, Integer> skuEntry = it.next();
-                    long asnSku = cacheManager.incr(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + cacheAsn.getId() + "_" + skuEntry.getKey());
-                    cacheManager.decrBy(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + cacheAsn.getId() + "_" + skuEntry.getKey(), (int) asnSku);
-                    cacheManager.incrBy(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + cacheAsn.getId() + "_" + skuEntry.getKey(), skuEntry.getValue());
+                    long asnSku = cacheManager.incr(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + cacheAsn.getId() + CacheKeyConstant.CACHE_KEY_SPLIT + skuEntry.getKey());
+                    cacheManager.decrBy(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + cacheAsn.getId() + CacheKeyConstant.CACHE_KEY_SPLIT + skuEntry.getKey(), (int) asnSku);
+                    cacheManager.incrBy(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + cacheAsn.getId() + CacheKeyConstant.CACHE_KEY_SPLIT + skuEntry.getKey(), skuEntry.getValue());
                 }
                 // 缓存ASN头信息
                 cacheManager.setObject(CacheKeyConstant.CACHE_ASN_PREFIX + occupationId, cacheAsn, 24 * 60 * 60);
@@ -248,7 +249,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
     }
 
     @Override
-    public void saveScanedSkuWhenGeneralRcvdForPda(List<RcvdCacheCommand> commandList) {
+    public void saveScanedSkuWhenGeneralRcvdForPda(Long userId) {
         // 逻辑:
         // 1.插入库存记录
         // 2.更新ASN明细
@@ -256,7 +257,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
         // 4.更新PO明细
         // 5.更新PO头信息
         // 准备更新的数据
-
+        List<RcvdCacheCommand> commandList = this.cacheManager.getObject(CacheKeyConstant.CACHE_RCVD_PREFIX + userId);
         if (commandList != null && commandList.size() > 0) {
             List<WhSkuInventorySnCommand> saveSnList = new ArrayList<WhSkuInventorySnCommand>();
             List<WhSkuInventory> saveInvList = new ArrayList<WhSkuInventory>();
@@ -269,7 +270,6 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
 
             Long asnId = commandList.get(0).getOccupationId();// ASN头ID
             Long ouId = commandList.get(0).getOuId();// OUID
-            Long userId = commandList.get(0).getCreatedId();// 用户ID
             String insideContainerCode = commandList.get(0).getInsideContainerCode();
             Long insideContainerId = commandList.get(0).getInsideContainerId();// 容器ID
             Long outerContainerId = commandList.get(0).getOuterContainerId();// 托盘ID
@@ -581,7 +581,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
         for (String lineIdStr : lineIdStrList) {
             Long lineId = Long.parseLong(lineIdStr);
             RcvdCacheCommand rcvdCacheCommand = this.initRcvdCacheCommand(command);
-            Integer lineCount = Integer.parseInt(this.cacheManager.getValue(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + occupationId + "_" + lineId + "_" + skuId));
+            Integer lineCount = Integer.parseInt(this.cacheManager.getValue(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + occupationId + CacheKeyConstant.CACHE_KEY_SPLIT + lineId + CacheKeyConstant.CACHE_KEY_SPLIT + skuId));
             Integer divCount = lineCount;
             if (lineCount > 0) {
                 if (lineCount > batchCount) {
@@ -589,7 +589,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                 }
                 // 扣减明细SKU数量
                 try {
-                    long lessCount = cacheManager.decrBy(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + occupationId + "_" + lineId + "_" + skuId, divCount);
+                    long lessCount = cacheManager.decrBy(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + occupationId + CacheKeyConstant.CACHE_KEY_SPLIT + lineId + CacheKeyConstant.CACHE_KEY_SPLIT + skuId, divCount);
                     Integer overchargeCount = cacheManager.getMapObject(CacheKeyConstant.CACHE_ASNLINE_OVERCHARGE_PREFIX + occupationId, lineId.toString());
                     if (null == overchargeCount) {
                         overchargeCount = Constants.DEFAULT_INTEGER;
@@ -598,15 +598,15 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                         throw new BusinessException(ErrorCodes.SKU_OVERCHARGE_ERROR);
                     }
                 } catch (Exception e) {
-                    cacheManager.incrBy(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + occupationId + "_" + lineId + "_" + skuId, divCount);
+                    cacheManager.incrBy(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + occupationId + CacheKeyConstant.CACHE_KEY_SPLIT + lineId + CacheKeyConstant.CACHE_KEY_SPLIT + skuId, divCount);
                     throw new BusinessException(ErrorCodes.RCVD_CACHE_ERROR);
                 }
                 // 扣减SKU总数
                 try {
-                    cacheManager.decrBy(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + occupationId + "_" + skuId, divCount);
+                    cacheManager.decrBy(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + occupationId + CacheKeyConstant.CACHE_KEY_SPLIT + skuId, divCount);
                 } catch (Exception e) {
-                    this.cacheManager.incrBy(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + occupationId + "_" + skuId, divCount);
-                    cacheManager.incrBy(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + occupationId + "_" + lineId + "_" + skuId, divCount);
+                    this.cacheManager.incrBy(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + occupationId + CacheKeyConstant.CACHE_KEY_SPLIT + skuId, divCount);
+                    cacheManager.incrBy(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + occupationId + CacheKeyConstant.CACHE_KEY_SPLIT + lineId + CacheKeyConstant.CACHE_KEY_SPLIT + skuId, divCount);
                     throw new BusinessException(ErrorCodes.RCVD_CACHE_ERROR);
                 }
                 try {
@@ -632,8 +632,8 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                     list.add(rcvdCacheCommand);
                     cacheManager.setObject(CacheKeyConstant.CACHE_RCVD_PREFIX + userId, list, 60 * 60);
                 } catch (Exception e) {
-                    this.cacheManager.incrBy(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + occupationId + "_" + skuId, divCount);
-                    cacheManager.incrBy(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + occupationId + "_" + lineId + "_" + skuId, divCount);
+                    this.cacheManager.incrBy(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + occupationId + CacheKeyConstant.CACHE_KEY_SPLIT + skuId, divCount);
+                    cacheManager.incrBy(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + occupationId + CacheKeyConstant.CACHE_KEY_SPLIT + lineId + CacheKeyConstant.CACHE_KEY_SPLIT + skuId, divCount);
                     throw new BusinessException(ErrorCodes.RCVD_CACHE_ERROR);
                 }
                 batchCount -= divCount;
@@ -648,7 +648,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                 RcvdCacheCommand rcvdCacheCommand = this.initRcvdCacheCommand(command);
                 Long lineId = Long.parseLong(lineStr);
                 int divCount = batchCount;
-                long lessCount = cacheManager.decrBy(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + occupationId + "_" + lineId + "_" + skuId, divCount);
+                long lessCount = cacheManager.decrBy(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + occupationId + CacheKeyConstant.CACHE_KEY_SPLIT + lineId + CacheKeyConstant.CACHE_KEY_SPLIT + skuId, divCount);
                 Integer overchargeCount = cacheManager.getMapObject(CacheKeyConstant.CACHE_ASNLINE_OVERCHARGE_PREFIX + occupationId, lineId.toString());
                 if (lessCount + overchargeCount < 0) {
                     throw new BusinessException(ErrorCodes.SKU_OVERCHARGE_ERROR);
@@ -661,17 +661,17 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                 }
                 // 扣减明细SKU数量
                 try {
-                    cacheManager.decrBy(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + occupationId + "_" + lineId + "_" + skuId, divCount);
+                    cacheManager.decrBy(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + occupationId + CacheKeyConstant.CACHE_KEY_SPLIT + lineId + CacheKeyConstant.CACHE_KEY_SPLIT + skuId, divCount);
                 } catch (Exception e) {
-                    cacheManager.incrBy(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + occupationId + "_" + lineId + "_" + skuId, divCount);
+                    cacheManager.incrBy(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + occupationId + CacheKeyConstant.CACHE_KEY_SPLIT + lineId + CacheKeyConstant.CACHE_KEY_SPLIT + skuId, divCount);
                     throw new BusinessException(ErrorCodes.RCVD_CACHE_ERROR);
                 }
                 // 扣减SKU总数
                 try {
-                    cacheManager.decrBy(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + occupationId + "_" + skuId, divCount);
+                    cacheManager.decrBy(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + occupationId + CacheKeyConstant.CACHE_KEY_SPLIT + skuId, divCount);
                 } catch (Exception e) {
-                    this.cacheManager.incrBy(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + occupationId + "_" + skuId, divCount);
-                    cacheManager.incrBy(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + occupationId + "_" + lineId + "_" + skuId, divCount);
+                    this.cacheManager.incrBy(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + occupationId + CacheKeyConstant.CACHE_KEY_SPLIT + skuId, divCount);
+                    cacheManager.incrBy(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + occupationId + CacheKeyConstant.CACHE_KEY_SPLIT + lineId + CacheKeyConstant.CACHE_KEY_SPLIT + skuId, divCount);
                     throw new BusinessException(ErrorCodes.RCVD_CACHE_ERROR);
                 }
                 try {
@@ -692,8 +692,8 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                     list.add(rcvdCacheCommand);
                     cacheManager.setObject(CacheKeyConstant.CACHE_RCVD_PREFIX + userId, list, 60 * 60);
                 } catch (Exception e) {
-                    this.cacheManager.incrBy(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + occupationId + "_" + skuId, divCount);
-                    cacheManager.incrBy(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + occupationId + "_" + lineId + "_" + skuId, divCount);
+                    this.cacheManager.incrBy(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + occupationId + CacheKeyConstant.CACHE_KEY_SPLIT + skuId, divCount);
+                    cacheManager.incrBy(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + occupationId + CacheKeyConstant.CACHE_KEY_SPLIT + lineId + CacheKeyConstant.CACHE_KEY_SPLIT + skuId, divCount);
                     throw new BusinessException(ErrorCodes.RCVD_CACHE_ERROR);
                 }
                 batchCount -= divCount;
@@ -798,7 +798,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
     public String initMatchedLineIdStr(WhSkuInventoryCommand command) {
         int skuPlannedCount = command.getSkuBatchCount() * command.getQuantity();// PDA扫描收货数量
         // 可用数量
-        Integer asnSkuCount = Integer.parseInt(cacheManager.getValue(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + command.getOccupationId() + "_" + command.getSkuId()));// ASN中此商品的数目
+        Integer asnSkuCount = Integer.parseInt(cacheManager.getValue(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + command.getOccupationId() + CacheKeyConstant.CACHE_KEY_SPLIT + command.getSkuId()));// ASN中此商品的数目
         String lineIdListStr = "";// 满足条件的明细行的ID集合
         // 容器限定的商品库存属性
         this.initSkuAttrFromInventoryForCacheContainer(command, command.getOuId());// 如果容器已有数目，并且容器中有限定的商品属性，进行缓存
@@ -984,7 +984,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
         int skuPlannedCount = command.getSkuBatchCount() * command.getQuantity();
         WhFunctionRcvd functionRcvd = command.getRcvd();
         // 可用数量
-        Integer asnSkuCount = Integer.parseInt(cacheManager.getValue(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + command.getOccupationId() + "_" + command.getSkuId()));
+        Integer asnSkuCount = Integer.parseInt(cacheManager.getValue(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + command.getOccupationId() + CacheKeyConstant.CACHE_KEY_SPLIT + command.getSkuId()));
         Integer asnlineSkuCount = Constants.DEFAULT_INTEGER;
         String lineIdListStr = "";
         List<String> matchLineList = this.matchLineList(skuUrlOperator, command, lineIdListString);// 匹配行明细
@@ -999,7 +999,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
             if (null == lineSkuOverchargeCount) {
                 lineSkuOverchargeCount = 0;
             }
-            String asnlineskuQtyCount = cacheManager.getValue(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + command.getOccupationId() + "_" + lineId + "_" + command.getSkuId());
+            String asnlineskuQtyCount = cacheManager.getValue(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + command.getOccupationId() + CacheKeyConstant.CACHE_KEY_SPLIT + lineId + CacheKeyConstant.CACHE_KEY_SPLIT + command.getSkuId());
             asnlineSkuCount += Integer.parseInt(asnlineskuQtyCount) + lineSkuOverchargeCount;
             asnSkuCount = asnSkuCount + lineSkuOverchargeCount;
             lineIdListStr += lineId + ",";
@@ -1588,6 +1588,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
         // 如果没有缓存数据，则初始化缓存
         // 如果有的话，则刷新缓存
         WhAsn cacheAsn = cacheManager.getObject(CacheKeyConstant.CACHE_ASN_PREFIX + occupationId);
+        log.info(this.getClass().getSimpleName() + "initOrFreshCacheForScanningAsn PARAM:[cahceAsn:{}]", cacheAsn);
         if (null == cacheAsn) {
             // 初始化缓存
             log.info(this.getClass().getSimpleName() + ".initOrFreshCacheForScanningAsn->this.initAsnCacheForGeneralReceiving begin!");
@@ -1768,7 +1769,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
             String asnSkuCount;
             while (skuIt.hasNext()) {
                 Entry<Long, Integer> entry = skuIt.next();
-                asnSkuCount = cacheManager.getValue(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + command.getOccupationId() + "_" + entry.getKey());
+                asnSkuCount = cacheManager.getValue(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + command.getOccupationId() + CacheKeyConstant.CACHE_KEY_SPLIT + entry.getKey());
                 if (StringUtils.hasText(asnSkuCount)) {
                     skuId = entry.getKey();
                     quantity = entry.getValue();
@@ -1895,5 +1896,79 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
     @Override
     public List<WhCartonCommand> findWhCartonByParamExt(WhCartonCommand cartonCommand) {
         return this.generalRcvdManager.findWhCartonByParamExt(cartonCommand);
+    }
+
+    @Override
+    public WhAsn getCacheAsnByOccupationId(String occupationId) {
+        return this.cacheManager.getObject(CacheKeyConstant.CACHE_ASN_PREFIX + occupationId);
+    }
+
+    @Override
+    public void cacheOperUserWhenRcvd(String userId) {
+        // 缓存操作者
+        boolean userFlag = this.cacheManager.existsInSet(CacheKeyConstant.CACHE_OPERATOR_USER, userId);
+        if (!userFlag) {
+            this.cacheManager.addSet(CacheKeyConstant.CACHE_OPERATOR_USER, new String[] {userId});
+        }
+    }
+
+    @Override
+    public void removeInsideContainerCacheWhenScanSkuNoRcvd(Long inside, Long outside, Long ouId, Long userId, String logId) {
+        // 释放容器
+        this.revokeContainer(inside, ouId, userId);
+        // 清除容器-用户缓存
+        this.cacheManager.remove(CacheKeyConstant.CACHE_RCVD_CONTAINER_USER_PREFIX + inside);
+        // 清除托盘-货箱缓存
+        if (outside != null) {
+            this.cacheManager.popListHead(CacheKeyConstant.CACHE_RCVD_PALLET_PREFIX + outside);
+        }
+    }
+
+    @Override
+    public void removeInsideContainerCacheWhenScanSkuHasRcvd(Long inside, Long outside, Long ouId, Long userId, String logId) {
+        List<RcvdSnCacheCommand> cacheSn = this.cacheManager.getObject(CacheKeyConstant.CACHE_RCVD_SN_PREFIX + userId);
+        List<RcvdCacheCommand> list = this.cacheManager.getObject(CacheKeyConstant.CACHE_RCVD_PREFIX + userId);
+        try {
+            // 撤销缓存
+            // 1.SN缓存
+            // this.cacheManager.removeMapValue(CacheKeyConstant.CACHE_RCVD_SN, userId);
+            if (null != list) {
+                // 发生异常抛出。回滚数据。
+                for (RcvdCacheCommand rcvd : list) {
+                    try {
+                        this.cacheManager.incrBy(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + rcvd.getOccupationId() + CacheKeyConstant.CACHE_KEY_SPLIT + rcvd.getLineId() + CacheKeyConstant.CACHE_KEY_SPLIT + rcvd.getSkuId(), rcvd.getSkuBatchCount());
+                    } catch (Exception e) {
+                        this.cacheManager.decrBy(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + rcvd.getOccupationId() + CacheKeyConstant.CACHE_KEY_SPLIT + rcvd.getLineId() + CacheKeyConstant.CACHE_KEY_SPLIT + rcvd.getSkuId(), rcvd.getSkuBatchCount());
+                        throw e;
+                    }
+                    try {
+                        this.cacheManager.incrBy(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + rcvd.getOccupationId() + CacheKeyConstant.CACHE_KEY_SPLIT + rcvd.getSkuId(), rcvd.getSkuBatchCount());
+                    } catch (Exception e) {
+                        this.cacheManager.decrBy(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + rcvd.getOccupationId() + CacheKeyConstant.CACHE_KEY_SPLIT + rcvd.getLineId() + CacheKeyConstant.CACHE_KEY_SPLIT + rcvd.getSkuId(), rcvd.getSkuBatchCount());
+                        this.cacheManager.decrBy(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + rcvd.getOccupationId() + CacheKeyConstant.CACHE_KEY_SPLIT + rcvd.getSkuId(), rcvd.getSkuBatchCount());
+                        throw e;
+                    }
+                }
+
+            }
+            // 释放容器
+            this.revokeContainer(inside, ouId, userId);
+            // 2.CACHE_RCVD中UserId对应缓存
+            this.cacheManager.remove(CacheKeyConstant.CACHE_RCVD_PREFIX + userId);
+            this.cacheManager.remove(CacheKeyConstant.CACHE_RCVD_SN_PREFIX + userId);
+            // 清除容器-用户缓存
+            this.cacheManager.remove(CacheKeyConstant.CACHE_RCVD_CONTAINER_USER_PREFIX + inside);
+            // 清除容器-商品缓存
+            this.cacheManager.remove(CacheKeyConstant.CACHE_RCVD_CONTAINER_PREFIX + inside);
+            // 清除托盘-货箱缓存
+            if (outside != null) {
+                this.cacheManager.popListHead(CacheKeyConstant.CACHE_RCVD_PALLET_PREFIX + outside);
+            }
+        } catch (Exception e) {
+            this.cacheManager.setObject(CacheKeyConstant.CACHE_RCVD_SN_PREFIX + userId, cacheSn, CacheKeyConstant.CACHE_ONE_HOUR);
+            this.cacheManager.setObject(CacheKeyConstant.CACHE_RCVD_PREFIX + userId, list, CacheKeyConstant.CACHE_ONE_HOUR);
+            throw new BusinessException(ErrorCodes.RCVD_CANCEL_ERROR);
+        }
+
     }
 }
