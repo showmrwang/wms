@@ -590,7 +590,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                 // 扣减明细SKU数量
                 try {
                     long lessCount = cacheManager.decrBy(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + occupationId + "_" + lineId + "_" + skuId, divCount);
-                    Integer overchargeCount = cacheManager.getMapObject(CacheKeyConstant.CACHE_ASNLINE_OVERCHARGE_PREFIX + skuId, lineId.toString());
+                    Integer overchargeCount = cacheManager.getMapObject(CacheKeyConstant.CACHE_ASNLINE_OVERCHARGE_PREFIX + occupationId, lineId.toString());
                     if (null == overchargeCount) {
                         overchargeCount = Constants.DEFAULT_INTEGER;
                     }
@@ -649,7 +649,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                 Long lineId = Long.parseLong(lineStr);
                 int divCount = batchCount;
                 long lessCount = cacheManager.decrBy(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + occupationId + "_" + lineId + "_" + skuId, divCount);
-                Integer overchargeCount = cacheManager.getMapObject(CacheKeyConstant.CACHE_ASNLINE_OVERCHARGE_PREFIX + skuId, lineId.toString());
+                Integer overchargeCount = cacheManager.getMapObject(CacheKeyConstant.CACHE_ASNLINE_OVERCHARGE_PREFIX + occupationId, lineId.toString());
                 if (lessCount + overchargeCount < 0) {
                     throw new BusinessException(ErrorCodes.SKU_OVERCHARGE_ERROR);
                 }
