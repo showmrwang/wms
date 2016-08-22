@@ -27,6 +27,8 @@ import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.pda.inbound.cache.PdaManmadePutawayCacheManager;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Location;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionPutAway;
+import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 import com.baozun.scm.primservice.whoperation.util.StringUtil;
 
 
@@ -56,7 +58,6 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
     private CacheManager cacheManager;
     @Autowired
     private PdaManmadePutawayCacheManager pdaManmadePutawayCacheManager;
-
 
 
 
@@ -125,7 +126,6 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
         pdaManmadePutawayCacheManager.manMadePutawayCacheSku(pdaManMadePutawayCommand);
 
         return pdaManMadePutawayCommand;
-
     }
 
 
@@ -205,11 +205,13 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
         }
         // 查询对应库位信息
         Location location = whLocationDao.getLocationByBarcode(pdaManMadePutawayCommand.getBarCode());
+
         // 验证库位是否存在
         if (null == location) {
             log.warn("pdaScanLocation location is null logid: " + pdaManMadePutawayCommand.getLogId());
             throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_LOCATION_NULL);
         }
+
         // 验证库位状态是否可用:lifecycle
         if (location.getLifecycle() != 1) {
             log.warn("pdaScanLocation lifecycle is error logid: " + pdaManMadePutawayCommand.getLogId());
@@ -219,6 +221,8 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
         if (location.getIsStatic()) {
             pdaManMadePutawayCommand.setIsStatic(true);
         }
+
+        pdaManMadePutawayCommand.setLocationId(location.getId());
         return pdaManMadePutawayCommand;
     }
 
@@ -237,25 +241,50 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
     public PdaManMadePutawayCommand pdaLocationNotMix(PdaManMadePutawayCommand command) {
         System.out.println("coming....");
 
+
         // 判断托盘或货箱是否存在多个sku商品
-        List list = cacheManager.getMapObject(CacheKeyConstant.CACHE_MMP_CONTAINER_ID_PREFIX + command.getContainerId(), command.getUserId().toString());
-        if (list.size() > 1) {
+        List<WhSkuInventory> mapObjectList = cacheManager.getMapObject(CacheKeyConstant.CACHE_MMP_CONTAINER_ID_PREFIX + command.getContainerId(), command.getUserId().toString());
+        boolean hasMulitSku = this.haveMultiSku(mapObjectList);
+        if (!hasMulitSku) {
             throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_NOT_MULTISKU);
         }
 
+        // 查询库位上已有商品
+        WhSkuInventory inventory = new WhSkuInventory();
+        inventory.setOuId(command.getOuId());
+        inventory.setLocationId(command.getLocationId());
+        List<WhSkuInventory> LocationSkuList = whSkuInventoryDao.findWhSkuInventoryByPramas(inventory);
 
         // 判断托盘/货箱是否存在相同sku，不同库存属性的商品
+        boolean haveDifferentAttibutes = this.haveDiffAtt(mapObjectList);
+        if (!haveDifferentAttibutes) {
+            throw new BusinessException(ErrorCodes.PDA_NOT_ALLOW_DIFFERENT_INVENTORY_ATTRIBUTES);
+        }
 
-        // 如果库位已存在库存商品：判断托盘、货箱内的sku商品、库存属性是否和库位上的相同
+        // 如果库位已存在库存商品，判断 ：托盘、货箱内的sku商品、库存属性是否和库位上的相同
+        boolean IsAttConsistent = this.IsAttConsistent(LocationSkuList, mapObjectList);
+        if (!IsAttConsistent) {
+            throw new BusinessException(ErrorCodes.PDA_CONTAINER_SKUATT_NOTSAME_LOCATION_SKUATT);
+        }
 
         // 累加容器，容器内sku商品、库位上已有容器，商品重量， 判断是否<=库位承重 *
+        boolean isLocationBearWeight = this.IsLocationBearWeight(command.getContainerId(), LocationSkuList, mapObjectList);
+        if (!isLocationBearWeight) {
+            throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_LOCATION_UNBEAR_WEIGHT);
+        }
 
-        // 判断整托整箱 *
+        // 判断整托整箱
+        WhFunctionPutAway whFunctionPutAway = whFunctionPutAwayDao.findListByParam(command.getFunctionId(), command.getOuId());
+        if (whFunctionPutAway.getIsEntireTrayPutaway()) {
+            // 如果整托：判断托盘上的货箱类型是否CASELEVEL,然后判断对应功能上的非CASELEVEL是否需要扫描SKU;如果整箱：判断货箱类型是否CASELEVEL,然后判断对应功能上的非CASELEVEL是否需要扫描SKU*;
+        }
 
-        // 如果整托：判断托盘上的货箱类型是否CASELEVEL,然后判断对应功能上的非CASELEVEL是否需要扫描SKU;如果整箱：判断货箱类型是否CASELEVEL,然后判断对应功能上的非CASELEVEL是否需要扫描SKU*;
+        if (whFunctionPutAway.getIsEntireBinPutaway()) {
+            // 如果整箱：判断货箱类型是否CASELEVEL,然后判断对应功能上的非CASELEVEL是否需要扫描SKU和CASELEVEL是否需要扫描SKU
+        }
 
 
-        return null;
+        return command;
     }
 
 
@@ -269,55 +298,116 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public PdaManMadePutawayCommand pdaLocationIsMix(PdaManMadePutawayCommand command) {
-        System.out.println("comging。。。。");
+        System.out.println("comging....");
 
-        // 判断店铺、仓库 是否配置了关键库存属性
+        // 从缓存中取出容器内的商品
+        List<WhSkuInventory> mapObjectList = cacheManager.getMapObject(CacheKeyConstant.CACHE_MMP_CONTAINER_ID_PREFIX + command.getContainerId(), command.getUserId().toString());
+        // 查询库位上已有商品
+        WhSkuInventory inventory = new WhSkuInventory();
+        inventory.setOuId(command.getOuId());
+        inventory.setLocationId(command.getLocationId());
+        List<WhSkuInventory> LocationSkuList = whSkuInventoryDao.findWhSkuInventoryByPramas(inventory);
 
-        if (true) {
-            // 判断库位上已由SKU商品，容器内所有SKU商品对应店铺/仓库配置的关键库存属性参数是否相同
+
+        // 查询店铺、仓库 配置关键库存属性
+        String isStoreAtt = this.VerifyStoreOrWarehouse(command.getContainerId());
+        if (isStoreAtt != null) {
+            // 判断库位上已有SKU商品，容器内所有SKU商品，对应店铺/仓库配置的关键库存属性参数是否相同
+            boolean isAttMgmt = this.IsAttMgmtSame(isStoreAtt, LocationSkuList, mapObjectList);
+            if (!isAttMgmt) {
+                throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_ATTR_MGMT_NOT_EQUAL);
+            }
         }
 
-        // 判断库位最大混放SKU种类数
+        // 查询库位最大混放SKU种类数
+        Location location = new Location();
+        location.setId(command.getLocationId());
+        location.setOuId(command.getOuId());
+        location = whLocationDao.findLocationByParam(location);
 
         // 判断库位已有sku种类数+容器内SKU种类数是否<=最大混放SKU种类数 *
+        boolean skuVariety = this.accumulationSkuVariety(location.getMixStackingNumber(), mapObjectList, LocationSkuList);
+        if (!skuVariety) {
+            throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_SKU_VARIETY_OVER_MAX);
+        }
 
-        // 判断库位最大混放sku属性数
-
-        // 判断库位已有SKU属性数+容器内SKU属性数是否<=最大混放SKU属性数*
+        // 验证库位最大混放sku属性数,判断库位已有SKU属性数+容器内SKU属性数是否<=最大混放SKU属性数*
+        boolean skuAtt = this.accumulationSkuAtt(location.getMaxChaosSku(), mapObjectList, LocationSkuList);
+        if (!skuAtt) {
+            throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_SKU_ATT_OVER_MAX);
+        }
 
         // 累加容器、容器内SKU商品、库位上已有容器、商品的重量，判断是否<=库位承重*
+        boolean isLocationBearWeight = this.IsLocationBearWeight(command.getContainerId(), LocationSkuList, mapObjectList);
+        if (!isLocationBearWeight) {
+            throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_LOCATION_UNBEAR_WEIGHT);
+        }
 
-        // 判断整托、整箱*
+        // 判断整托、整箱*---先查询是整托还是整箱
+        WhFunctionPutAway whFunctionPutAway = whFunctionPutAwayDao.findListByParam(command.getFunctionId(), command.getOuId());
 
-        // 如果整托：判断托盘上的货箱类型是否CASELEVEL,然后判断对应功能上的非CASELEVEL是否需要扫描SKU;如果整箱：判断货箱类型是否CASELEVEL,然后判断对应功能上的非CASELEVEL是否需要扫描SKU*;
+        if (whFunctionPutAway.getIsEntireTrayPutaway()) {
+            command.setIsEntireTrayPutaway(whFunctionPutAway.getIsEntireTrayPutaway());
+            // 如果整托：判断托盘上的货箱类型是否CASELEVEL,然后判断对应功能上的非CASELEVEL是否需要扫描SKU;如果整箱：判断货箱类型是否CASELEVEL,然后判断对应功能上的非CASELEVEL是否需要扫描SKU*;
+            boolean isNeedScanSku = this.IsEntireTrayNeedScanSku(whFunctionPutAway, command.getContainerId());
+        }
+        if (whFunctionPutAway.getIsEntireBinPutaway()) {
+            command.setIsEntireBinPutaway(whFunctionPutAway.getIsEntireBinPutaway());
+            // 如果整箱：判断货箱类型是否CASELEVEL,然后判断对应功能上的非CASELEVEL是否需要扫描SKU和CASELEVEL是否需要扫描SKU
+            boolean isBinNeedScanSku = this.IsEntireBinNeedScanSku(whFunctionPutAway, command.getContainerId());
+        }
 
-
-
-        return null;
+        return command;
     }
 
 
 
-    // **********************************************************************************************************
-
+    // **********************************************************************************************************************
     /**
-     * 判断库位已有sku种类数+容器内SKU种类数是否<=最大混放SKU种类数*
+     * 判断托盘或货箱是否存在多个sku商品
      * 
      * @author lijun.shen
+     * @param mapObjectList
      * @return
      */
-    private boolean accumulationSkuVariety() {
+    private boolean haveMultiSku(List<WhSkuInventory> mapObjectList) {
         return false;
     }
 
     /**
-     * 判断库位已有SKU属性数+容器内SKU属性数是否<=最大混放SKU属性数*
+     * 判断托盘/货箱是否存在相同sku，不同库存属性的商品
      * 
      * @author lijun.shen
+     * @param mapObjectList
      * @return
      */
-    private boolean accumulationSkuAtt() {
+    private boolean haveDiffAtt(List<WhSkuInventory> mapObjectList) {
+        List<WhSkuInventory> list = new ArrayList<>();
+        for (WhSkuInventory whSkuInventory : mapObjectList) {
+            if (list.size() == 0) {
+                list.add(whSkuInventory);
+            } else {
+                if (list.contains(whSkuInventory)) {
+                    list.add(whSkuInventory);
+                }
+            }
+        }
+        if (mapObjectList.size() == list.size()) {
+            return true;
+        }
         return false;
+    }
+
+    /**
+     * 如果库位已存在库存商品，判断 ：托盘、货箱内的sku商品、库存属性是否和库位上的相同
+     * 
+     * @author lijun.shen
+     * @param locationSkuList
+     * @param mapObjectList
+     * @return
+     */
+    private boolean IsAttConsistent(List<WhSkuInventory> locationSkuList, List<WhSkuInventory> mapObjectList) {
+        return locationSkuList.containsAll(mapObjectList);
     }
 
 
@@ -325,23 +415,129 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
      * 累加容器，容器内sku商品、库位上已有容器，商品重量， 判断是否<=库位承重 *
      * 
      * @author lijun.shen
+     * @param containerId
+     * @param locationSkuList
+     * @param mapObjectList
      * @return
      */
-    private boolean accumulationWeigt() {
+    private boolean IsLocationBearWeight(Long containerId, List<WhSkuInventory> locationSkuList, List<WhSkuInventory> mapObjectList) {
+        // 根据containerId 查询出容器重量
+
+
+        // 库位上重量： 根据locationSkuList，查询出skuid
+
+        // 根据skuid查询商品重量
+
+        // 容器和容器内sku重量：根据mapObjectList，查询出skuid
+
+        // 根据skuid查询商品重量
+
         return false;
     }
+
+
+
+    /**
+     * 查询仓库/店铺的关键属性
+     * 
+     * @author lijun.shen
+     * @param containerId
+     * @return
+     */
+    private String VerifyStoreOrWarehouse(Long containerId) {
+        // 根据容器ID查询库存表(t_wh_sku_inventory)，获取占用码信息
+
+        // 根据占用码查询ASN表(t_wh_asn 占用码就是asncode),获得店铺和仓库ID
+
+        // 用店铺和仓库id分别取查询店铺表和仓库表，验是否有关键属性的配置
+
+        // 如果店铺配置了 就依据店铺的来，店铺优先级大于仓库
+
+        return null;
+    }
+
+    /**
+     * 判断库位上已有SKU商品，容器内所有SKU商品，对应店铺/仓库配置的关键库存属性参数是否相同
+     * 
+     * @author lijun.shen
+     * @param isStoreAtt
+     * @param locationSkuList
+     * @param mapObjectList
+     * @return
+     */
+    private boolean IsAttMgmtSame(String isStoreAtt, List<WhSkuInventory> locationSkuList, List<WhSkuInventory> mapObjectList) {
+        return false;
+    }
+
+    /**
+     * 判断库位已有sku种类数+容器内SKU种类数是否<=最大混放SKU种类数 *
+     * 
+     * @author lijun.shen
+     * @param mixStackingNumber
+     * @param mapObjectList
+     * @param locationSkuList
+     * @return
+     */
+    private boolean accumulationSkuVariety(Integer mixStackingNumber, List<WhSkuInventory> mapObjectList, List<WhSkuInventory> locationSkuList) {
+        return false;
+    }
+
+
+    /**
+     * 判断库位已有SKU属性数+容器内SKU属性数是否<=最大混放SKU属性数*
+     * 
+     * @author lijun.shen
+     * @param locationSkuList
+     * @param mapObjectList
+     * @param MaxChaosSku
+     * @return
+     */
+    private boolean accumulationSkuAtt(Long MaxChaosSku, List<WhSkuInventory> mapObjectList, List<WhSkuInventory> locationSkuList) {
+        return false;
+    }
+
 
     /**
      * 如果整托：判断托盘上的货箱类型是否CASELEVEL,然后判断对应功能上的非CASELEVEL是否需要扫描SKU;如果整箱：判断货箱类型是否CASELEVEL,
      * 然后判断对应功能上的非CASELEVEL是否需要扫描SKU*;
      * 
      * @author lijun.shen
+     * @param whFunctionPutAway
+     * @param containerId
      * @return
      */
-    private boolean isScanSku() {
-        return false;
+    private boolean IsEntireTrayNeedScanSku(WhFunctionPutAway whFunctionPutAway, Long containerId) {
+        // 首先查出托盘上的货箱的id是多少,或有多个，循环每一个，只要有一个是需要扫描sku的则需要进入到扫描sku那支线
+        WhSkuInventory whSkuInventory = new WhSkuInventory();
+        whSkuInventory.setOuterContainerId(containerId);
+        whSkuInventory.setOuId(whFunctionPutAway.getOuId());
+        List<WhSkuInventory> skuInventoryList = whSkuInventoryDao.findSkuInventoryByOutContainerId(whSkuInventory);
+
+        if (skuInventoryList.size() == 1){
+            
+        }
+
+
+            // 查询货箱是否caselevel
+
+            // 在whFunctionPutAway对象中找到对应的 是否需要扫sku的值
+
+            return false;
     }
 
+    /**
+     * 如果整箱：判断货箱类型是否CASELEVEL,然后判断对应功能上的非CASELEVEL是否需要扫描SKU和CASELEVEL是否需要扫描SKU
+     * 
+     * @author lijun.shen
+     * @param whFunctionPutAway
+     * @param containerId
+     * @return
+     */
+    private boolean IsEntireBinNeedScanSku(WhFunctionPutAway whFunctionPutAway, Long containerId) {
+        // 查询货箱是否caselevel
 
+        // 在whFunctionPutAway对象中找到对应的 是否需要扫sku的值
+        return false;
+    }
 
 }

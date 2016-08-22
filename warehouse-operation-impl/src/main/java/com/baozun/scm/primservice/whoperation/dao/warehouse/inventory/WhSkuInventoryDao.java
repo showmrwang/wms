@@ -410,4 +410,13 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      */
     List<WhSkuInventory> findWhSkuInventoryByPramas(WhSkuInventory inventory);
 
+    /**
+     * 根据外部容器id查询外部容器里的内部容器id值
+     * 
+     * @author lijun.shen
+     * @param whSkuInventory
+     * @return
+     */
+    List<WhSkuInventory> findSkuInventoryByOutContainerId(WhSkuInventory whSkuInventory);
+
 }

@@ -129,5 +129,14 @@ public interface WhLocationDao extends BaseDao<Location, Long> {
      * @return
      */
     Location getLocationByBarcode(String barCode);
+
+    /**
+     * 根据参数查询库位信息
+     * 
+     * @author lijun.shen
+     * @param location
+     * @return
+     */
+    Location findLocationByParam(Location location);
     
 }

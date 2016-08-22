@@ -441,4 +441,17 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		from t_wh_sku_inventory
 		<include refid="whSkuInventoryDynamicWhere"/>
 	</select>
+	
+	
+	
+	
+	<select id="findSkuInventoryByOutContainerId" resultMap="WhSkuInventoryResult">
+		select 
+	        	inside_container_id as insideContainerId
+		from t_wh_sku_inventory
+		<include refid="whSkuInventoryDynamicWhere"/>
+		GROUP BY inside_container_id;
+	</select>
+	
+	
 </mapper>

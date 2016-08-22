@@ -466,5 +466,13 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		<include refid="locationDynamicWhere"/>
 		
     </select>
-	
+
+	<!-- lijun.shen-->
+	<select id="findLocationByParam" resultMap="LocationResult">
+		select <include refid="locationColumns" />
+		from t_wh_location
+		<include refid="locationDynamicWhere"/>
+
+	</select>
+
 </mapper>

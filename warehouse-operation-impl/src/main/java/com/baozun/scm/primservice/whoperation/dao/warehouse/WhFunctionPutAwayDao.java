@@ -17,10 +17,6 @@ package com.baozun.scm.primservice.whoperation.dao.warehouse;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.ibatis.annotations.Param;
-
-import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionPutAway;
-
 import lark.common.annotation.CommonQuery;
 import lark.common.annotation.QueryPage;
 import lark.common.dao.Page;
@@ -28,6 +24,10 @@ import lark.common.dao.Pagination;
 import lark.common.dao.QueryCondition;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
+
+import org.apache.ibatis.annotations.Param;
+
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionPutAway;
 
 public interface WhFunctionPutAwayDao extends BaseDao<WhFunctionPutAway, Long> {
 
@@ -51,5 +51,15 @@ public interface WhFunctionPutAwayDao extends BaseDao<WhFunctionPutAway, Long> {
      * 根据功能主表ID删除对应上架功能表信息
      */
     void deleteWhFunctionPutAwayByFunctionId(@Param("id") Long id, @Param("ouid") Long ouid);
+
+    /**
+     * 根据参数查询WhFunctionPutAway上架信息
+     * 
+     * @author lijun.shen
+     * @param functionId
+     * @param ouId
+     * @return
+     */
+    WhFunctionPutAway findListByParam(Long functionId, Long ouId);
 
 }
