@@ -181,10 +181,11 @@ public interface AsnManager extends BaseManager {
      * 
      * @param asn
      * @param saveAsnLineList
+     * @param delAsnLineList
      * @param po
      * @param savePoLineList
      */
-    void saveTempAsnWithUuidToShard(WhAsn asn, List<WhAsnLine> saveAsnLineList, WhPo po, List<WhPoLine> savePoLineList);
+    void saveTempAsnWithUuidToShard(WhAsn asn, List<WhAsnLine> saveAsnLineList, List<WhAsnLine> delAsnLineList, WhPo po, List<WhPoLine> savePoLineList);
     
     /**
      * 根据客户id集合，店铺id集合查询asn信息

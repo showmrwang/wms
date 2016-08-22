@@ -578,4 +578,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		
     </select>
 	 
+	 
+	 <select id="findWhAsnLineByAsnIdPolineIdOuIdAndUuid"  resultMap="WhAsnLineResultExt">
+	 select <include refid="whAsnLineColumnsExt" />
+	 from
+		    t_wh_asn_line
+			where
+			asn_id=#{asnId} and po_line_id=#{poLineId}  and ou_id = #{ouId} 
+			<if test="uuid!=null and uuid!=''">
+			and uuid !=#{uuid}
+			</if>
+	 </select>
 </mapper>

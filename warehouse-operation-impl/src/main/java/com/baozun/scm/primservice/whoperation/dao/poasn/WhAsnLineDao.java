@@ -136,7 +136,7 @@ public interface WhAsnLineDao extends BaseDao<WhAsnLine, Long> {
     Pagination<WhAsnLineCommand> findListByQueryMapWithPageExtForCreateAsn(Page page, Sort[] sorts, Map<String, Object> paraMap);
 
     /**
-     * [通用方法]根据POLINEID，ouID,uuid查找ASNLINE TODO
+     * [通用方法]根据POLINEID，ouID,uuid查找ASNLINE
      * 
      * @param polineId @required
      * @param uuid @required
@@ -182,5 +182,16 @@ public interface WhAsnLineDao extends BaseDao<WhAsnLine, Long> {
      * @return
      */
     List<WhAsnLine> findListByParamExt(WhAsnLine line);
+
+    /**
+     * [通用方法]根据ASNID,POLINEID,OUID[,UUID]查找对应的明细行
+     * 
+     * @param asnId @required
+     * @param poLineId @required
+     * @param ouId @required
+     * @param uuid
+     * @return
+     */
+    WhAsnLine findWhAsnLineByAsnIdPolineIdOuIdAndUuid(Long asnId, Long poLineId, Long ouId, String uuid);
 
 }

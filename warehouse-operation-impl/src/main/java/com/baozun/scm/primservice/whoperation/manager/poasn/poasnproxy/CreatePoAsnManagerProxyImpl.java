@@ -814,13 +814,22 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
         this.deleteTempAsnAndLine(asnId, ouId, uuid);
         List<WhAsnLine> asnLineList = this.asnLineManager.findWhAsnLineByAsnIdOuIdUuid(asnId, ouId, uuid);
         List<WhAsnLine> saveAsnLineList = new ArrayList<WhAsnLine>();
+        List<WhAsnLine> delAsnLineList = new ArrayList<WhAsnLine>();
         Map<Long, Double> poLineMap = new HashMap<Long, Double>();
         Double lineQty = Constants.DEFAULT_DOUBLE;
         if (asnLineList != null) {
             for (WhAsnLine asnLine : asnLineList) {
-                asnLine.setUuid(null);
-                asnLine.setModifiedId(userId);
-                saveAsnLineList.add(asnLine);
+                WhAsnLine asnOriginline = this.asnLineManager.findWhAsnLineByAsnIdPolineIdOuIdAndUuid(asnId, asnLine.getPoLineId(), ouId, null);
+                if (asnOriginline == null) {
+                    asnLine.setUuid(null);
+                    asnLine.setModifiedId(userId);
+                    saveAsnLineList.add(asnLine);
+                } else {
+                    asnOriginline.setModifiedId(userId);
+                    asnOriginline.setQtyPlanned(asnOriginline.getQtyPlanned() + asnLine.getQtyPlanned());
+                    saveAsnLineList.add(asnOriginline);
+                    delAsnLineList.add(asnLine);
+                }
                 // asn计划数量统计
                 lineQty += asnLine.getQtyPlanned();
                 // po明细
@@ -856,7 +865,7 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
             po.setStatus(PoAsnStatus.PO_CREATE_ASN);
         }
 
-        this.asnManager.saveTempAsnWithUuidToShard(asn, saveAsnLineList, po, savePoLineList);
+        this.asnManager.saveTempAsnWithUuidToShard(asn, saveAsnLineList, delAsnLineList, po, savePoLineList);
     }
 
     private void deleteTempAsnAndLine(Long poId, Long ouId, String uuid) {
