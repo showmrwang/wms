@@ -588,5 +588,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<if test="uuid!=null and uuid!=''">
 			and uuid !=#{uuid}
 			</if>
+			<if test="uuid==null or uuid==''">
+			and uuid is null
+			</if>
 	 </select>
 </mapper>

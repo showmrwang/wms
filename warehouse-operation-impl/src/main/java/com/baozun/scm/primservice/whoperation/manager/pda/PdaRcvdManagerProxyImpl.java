@@ -144,6 +144,9 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                 if (null == asnlineList || asnlineList.size() == 0) {
                     throw new BusinessException(ErrorCodes.ASN_NULL);
                 }
+                // ASN和PO
+                WhAsn asn = this.asnManager.findWhAsnByIdToShard(occupationId, ouId);
+                WhPo savePo = this.poManager.findWhPoByIdToShard(asn.getPoId(), ouId);
                 // 缓存明细的可用数量
                 Map<Long, Integer> skuMap = new HashMap<Long, Integer>();
                 for (WhAsnLine asnline : asnlineList) {// 缓存ASN明细信息
@@ -184,12 +187,10 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                 // 解锁
                 this.asnManager.updateByVersionForUnLock(occupationId, ouId);
                 // 设置PO和ASN的开始收货时间
-                WhAsn asn = this.asnManager.findWhAsnByIdToShard(occupationId, ouId);
                 if (null == asn.getStartTime()) {
                     asn.setStartTime(new Date());
                     this.asnManager.saveOrUpdateByVersionToShard(asn);
                 }
-                WhPo savePo = this.poManager.findWhPoByIdToShard(asn.getPoId(), ouId);
                 if (null == po.getStartTime()) {
                     po.setStartTime(new Date());
                     this.poManager.saveOrUpdateByVersionToShard(savePo);
@@ -1970,5 +1971,10 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
             throw new BusinessException(ErrorCodes.RCVD_CANCEL_ERROR);
         }
 
+    }
+
+    @Override
+    public String getCacheKeyPrefixWhenRcvd(String cacheKey) {
+        return null;
     }
 }

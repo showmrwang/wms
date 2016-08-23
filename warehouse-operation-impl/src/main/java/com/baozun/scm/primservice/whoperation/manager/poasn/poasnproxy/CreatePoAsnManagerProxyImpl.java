@@ -843,6 +843,9 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
         // asn数据封装
         asn.setQtyPlanned(asn.getQtyPlanned() + lineQty);
         asn.setModifiedId(userId);
+        if (StringUtils.hasText(asn.getUuid())) {
+            asn.setUuid(null);
+        }
 
         // po单明细
         Iterator<Entry<Long, Double>> it = poLineMap.entrySet().iterator();
