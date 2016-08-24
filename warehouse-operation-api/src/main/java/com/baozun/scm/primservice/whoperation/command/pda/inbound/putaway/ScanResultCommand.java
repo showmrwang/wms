@@ -58,6 +58,8 @@ public class ScanResultCommand extends BaseCommand {
     private String tipSkuBarcode;
     /** 是否直接核扫商品 */
     private boolean isNeedScanSku;
+    /** 扫描sku模式1：数量扫描2：逐件扫描 */
+    private int scanPattern;
     /** 上架以后是否提示下一个容器 */
     private boolean isAfterPutawayTipContianer;
     /** 是否需要提示扫商品属性 */
@@ -254,6 +256,14 @@ public class ScanResultCommand extends BaseCommand {
 
     public void setNeedScanSku(boolean isNeedScanSku) {
         this.isNeedScanSku = isNeedScanSku;
+    }
+
+    public int getScanPattern() {
+        return scanPattern;
+    }
+
+    public void setScanPattern(int scanPattern) {
+        this.scanPattern = scanPattern;
     }
 
     public boolean isAfterPutawayTipContianer() {
@@ -495,7 +505,6 @@ public class ScanResultCommand extends BaseCommand {
     public void setAfterRecommendTipContainer(boolean isAfterRecommendTipContainer) {
         this.isAfterRecommendTipContainer = isAfterRecommendTipContainer;
     }
-
 
 
 

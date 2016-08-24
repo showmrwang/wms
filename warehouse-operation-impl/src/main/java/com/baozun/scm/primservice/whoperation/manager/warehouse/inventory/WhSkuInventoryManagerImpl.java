@@ -327,7 +327,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             List<String> ccList = new ArrayList<String>();
             ccList.add(containerCode);
             // 查询所有对应容器号的库存信息
-            invList = whSkuInventoryDao.findToBeFilledInventoryByInsideContainerCodeAndLoc(ouId, ccList, loc.getId());
+            invList = whSkuInventoryDao.findLocToBeFilledInventoryByInsideContainerCodeAndLoc(ouId, ccList, loc.getId());
             if (null == invList || 0 == invList.size()) {
                 log.error("sys guide container putaway container:[{}] rcvd inventory not found error!, logId is:[{}]", containerCode, logId);
                 throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_RCVD_INV_ERROR, new Object[] {containerCode});
@@ -654,11 +654,11 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             List<WhSkuInventoryCommand> invList = null;
             List<String> ccList = new ArrayList<String>();
             ccList.add(containerCode);
-            // 查询所有对应容器号的库存信息
+            // 根据容器号查询所有库位待移入库存信息
             if (WhPutawayPatternDetailType.PALLET_PUTAWAY == putawayPatternDetailType) {
-                invList = whSkuInventoryDao.findToBeFilledInventoryByOuterContainerCode(ouId, ccList);
+                invList = whSkuInventoryDao.findLocToBeFilledInventoryByOuterContainerCode(ouId, ccList);
             } else if (WhPutawayPatternDetailType.CONTAINER_PUTAWAY == putawayPatternDetailType) {
-                invList = whSkuInventoryDao.findToBeFilledInventoryByInsideContainerCode(ouId, ccList);
+                invList = whSkuInventoryDao.findLocToBeFilledInventoryByInsideContainerCode(ouId, ccList);
             } else {
                 log.error("param putawayPatternDetailType is invalid, logId is:[{}]", logId);
                 throw new BusinessException(ErrorCodes.PARAMS_ERROR);

@@ -16,6 +16,7 @@
  */
 package com.baozun.scm.primservice.whoperation.putaway;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +28,7 @@ import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
 import com.baozun.redis.manager.CacheManager;
 import com.baozun.scm.baseservice.sac.manager.PkManager;
+import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.TipContainerCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
@@ -158,6 +160,25 @@ public class PdaPutawayManagerTest extends AbstractJUnit4SpringContextTests {
         }
         
        
+    }
+    
+    @Test
+    public void cacheObject(){
+        TipContainerCacheCommand cmd = cacheManagr.getObject("testCacheObj1");
+        if(null != cmd){
+            System.out.println(cmd);
+            cacheManagr.remove("testCacheObj1");
+        }else{
+            TipContainerCacheCommand tipCmd = new TipContainerCacheCommand();
+            tipCmd.setOuterContainerId(1234L);
+            tipCmd.setOuterContainerCode("code1");
+            ArrayDeque<Long> ids = new ArrayDeque<Long>();
+            ids.addFirst(456L);
+            tipCmd.setTipInsideContainerIds(ids);
+            cacheManagr.setObject("testCacheObj1", tipCmd, CacheConstants.CACHE_ONE_DAY);
+            TipContainerCacheCommand cmd1 = cacheManagr.getObject("testCacheObj1");
+            System.out.println(cmd1.toString());
+        }
     }
     
     @Test
