@@ -600,7 +600,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        </foreach>
     </select>
     
-    <select id="findToBeFilledInventoryByOuterContainerCode" resultMap="WhSkuInventoryCommandSnResultExt">
+    <select id="findLocToBeFilledInventoryByOuterContainerCode" resultMap="WhSkuInventoryCommandSnResultExt">
 			select 
 					inv.id as invId,
 					inv.sku_id as skuId,
@@ -649,7 +649,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					left join t_wh_container c on c.id = inv.outer_container_id
 					left join t_wh_sku_inventory_sn sn on inv.uuid = sn.uuid
 					where 
-						inv.occupation_code is not null 
+						inv.occupation_code is not null and inv.location_id is not null
 						and asn.asn_code = inv.occupation_code
 						and (asn.status=5 or asn.status=10)
 						and inv.to_be_filled_qty > 0.0
@@ -758,7 +758,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					left join t_wh_container c on c.id = inv.inside_container_id
 					left join t_wh_sku_inventory_sn sn on inv.uuid = sn.uuid
 					where 
-						inv.occupation_code is not null 
+						inv.occupation_code is not null
 						and asn.asn_code = inv.occupation_code
 						and (asn.status=5 or asn.status=10)
 					    and inv.ou_id = #{ouid}
@@ -768,7 +768,128 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        </foreach>
     </select>
     
-    <select id="findToBeFilledInventoryByInsideContainerCode" resultMap="WhSkuInventoryCommandSnResultExt">
+    <select id="findContainerOnHandInventoryByOuterContainerId" resultMap="WhSkuInventoryCommandSnResultExt">
+			select 
+					inv.id as invId,
+					inv.sku_id as skuId,
+					inv.location_id as locationId,
+					inv.outer_container_id as outerContainerId,
+					inv.inside_container_id as insideContainerId,
+					inv.customer_id as customerId,
+					inv.store_id as storeId,
+					inv.occupation_code as invOccupationCode,
+					inv.on_hand_qty as onHandQty,
+					inv.allocated_qty as allocatedQty,
+					inv.to_be_filled_qty as toBeFilledQty,
+					inv.frozen_qty as frozenQty,
+					inv.inv_status as invStatus,
+					inv.inv_type as invType,
+					inv.batch_number as batchNumber,
+					inv.mfg_date as mfgDate,
+					inv.exp_date as expDate,
+					inv.country_of_origin as countryOfOrigin,
+					inv.inv_attr1 as invAttr1,
+					inv.inv_attr2 as invAttr2,
+					inv.inv_attr3 as invAttr3,
+					inv.inv_attr4 as invAttr4,
+					inv.inv_attr5 as invAttr5,
+					inv.uuid as invUuid,
+					inv.is_locked as isLocked,
+					inv.ou_id as invOuId,
+					inv.occupation_code_source as occupationCodeSource,
+					inv.inbound_time as inboundTime,
+	        		inv.last_modify_time as lastModifyTime,
+	        		sn.id as snId,
+	        		sn.sn as snSn,
+	        		sn.occupation_code as snOccupationCode,
+	        		sn.defect_ware_barcode as snDefectWareBarcode,
+	        		sn.defect_source as snDefectSource,
+	        		sn.defect_type_id as snDefectTypeId,
+	        		sn.defect_reasons_id as snDefectReasonsId,
+	        		sn.status as snStatus,
+	        		sn.inv_attr as snInvAttr,
+	        		sn.uuid as snUuid,
+	        		sn.ou_id as snOuId,
+	        		sn.sys_uuid as snSysUuid
+					from 
+					t_wh_asn asn,	
+					t_wh_sku_inventory inv
+					left join t_wh_container c on c.id = inv.outer_container_id
+					left join t_wh_sku_inventory_sn sn on inv.uuid = sn.uuid
+					where 
+						inv.occupation_code is not null and inv.location_id is null
+						and asn.asn_code = inv.occupation_code
+						and (asn.status=5 or asn.status=10)
+						and inv.on_hand_qty > 0.0
+					    and inv.ou_id = #{ouid}
+						and c.id = #{outerContainerId}
+    </select>
+    
+    <select id="findLocToBeFilledInventoryByOuterContainerId" resultMap="WhSkuInventoryCommandSnResultExt">
+			select 
+					inv.id as invId,
+					inv.sku_id as skuId,
+					inv.location_id as locationId,
+					inv.outer_container_id as outerContainerId,
+					inv.inside_container_id as insideContainerId,
+					inv.customer_id as customerId,
+					inv.store_id as storeId,
+					inv.occupation_code as invOccupationCode,
+					inv.on_hand_qty as onHandQty,
+					inv.allocated_qty as allocatedQty,
+					inv.to_be_filled_qty as toBeFilledQty,
+					inv.frozen_qty as frozenQty,
+					inv.inv_status as invStatus,
+					inv.inv_type as invType,
+					inv.batch_number as batchNumber,
+					inv.mfg_date as mfgDate,
+					inv.exp_date as expDate,
+					inv.country_of_origin as countryOfOrigin,
+					inv.inv_attr1 as invAttr1,
+					inv.inv_attr2 as invAttr2,
+					inv.inv_attr3 as invAttr3,
+					inv.inv_attr4 as invAttr4,
+					inv.inv_attr5 as invAttr5,
+					inv.uuid as invUuid,
+					inv.is_locked as isLocked,
+					inv.ou_id as invOuId,
+					inv.occupation_code_source as occupationCodeSource,
+					inv.inbound_time as inboundTime,
+	        		inv.last_modify_time as lastModifyTime,
+	        		sn.id as snId,
+	        		sn.sn as snSn,
+	        		sn.occupation_code as snOccupationCode,
+	        		sn.defect_ware_barcode as snDefectWareBarcode,
+	        		sn.defect_source as snDefectSource,
+	        		sn.defect_type_id as snDefectTypeId,
+	        		sn.defect_reasons_id as snDefectReasonsId,
+	        		sn.status as snStatus,
+	        		sn.inv_attr as snInvAttr,
+	        		sn.uuid as snUuid,
+	        		sn.ou_id as snOuId,
+	        		sn.sys_uuid as snSysUuid
+					from 
+					t_wh_asn asn,	
+					t_wh_sku_inventory inv
+					left join t_wh_container c on c.id = inv.outer_container_id
+					left join t_wh_sku_inventory_sn sn on inv.uuid = sn.uuid
+					where 
+						inv.occupation_code is not null and inv.location_id is not null
+						and asn.asn_code = inv.occupation_code
+						and (asn.status=5 or asn.status=10)
+						and inv.to_be_filled_qty > 0.0
+					    and inv.ou_id = #{ouid}
+						and c.id = #{outerContainerId}
+    </select>
+    
+     <select id="findLocToBeFilledInventoryCountsByOuterContainerId" resultType="Integer">
+		select count(1) from t_wh_sku_inventory inv,t_wh_asn asn where inv.occupation_code is not null and inv.location_id is not null and inv.to_be_filled_qty > 0.0 
+			and inv.ou_id=#{ouid}
+			and inv.occupation_code=asn.asn_code and (asn.status=5 or asn.status=10)
+			and inv.outer_container_id=#{outerContainerId}
+	</select>
+    
+    <select id="findContainerOnHandInventoryByInsideContainerCode" resultMap="WhSkuInventoryCommandSnResultExt">
 			select 
 					inv.id as invId,
 					inv.sku_id as skuId,
@@ -817,7 +938,67 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					left join t_wh_container c on c.id = inv.inside_container_id
 					left join t_wh_sku_inventory_sn sn on inv.uuid = sn.uuid
 					where 
-						inv.occupation_code is not null 
+						inv.occupation_code is not null and inv.location_id is null 
+						and asn.asn_code = inv.occupation_code
+						and (asn.status=5 or asn.status=10)
+						and inv.on_hand_qty > 0.0
+					    and inv.ou_id = #{ouid}
+					and c.code in 
+					<foreach item="item" index="index" collection="containerList" open="(" separator="," close=")">
+			            #{item}
+			        </foreach>
+    </select>
+    
+    <select id="findLocToBeFilledInventoryByInsideContainerCode" resultMap="WhSkuInventoryCommandSnResultExt">
+			select 
+					inv.id as invId,
+					inv.sku_id as skuId,
+					inv.location_id as locationId,
+					inv.outer_container_id as outerContainerId,
+					inv.inside_container_id as insideContainerId,
+					inv.customer_id as customerId,
+					inv.store_id as storeId,
+					inv.occupation_code as invOccupationCode,
+					inv.on_hand_qty as onHandQty,
+					inv.allocated_qty as allocatedQty,
+					inv.to_be_filled_qty as toBeFilledQty,
+					inv.frozen_qty as frozenQty,
+					inv.inv_status as invStatus,
+					inv.inv_type as invType,
+					inv.batch_number as batchNumber,
+					inv.mfg_date as mfgDate,
+					inv.exp_date as expDate,
+					inv.country_of_origin as countryOfOrigin,
+					inv.inv_attr1 as invAttr1,
+					inv.inv_attr2 as invAttr2,
+					inv.inv_attr3 as invAttr3,
+					inv.inv_attr4 as invAttr4,
+					inv.inv_attr5 as invAttr5,
+					inv.uuid as invUuid,
+					inv.is_locked as isLocked,
+					inv.ou_id as invOuId,
+					inv.occupation_code_source as occupationCodeSource,
+					inv.inbound_time as inboundTime,
+	        		inv.last_modify_time as lastModifyTime,
+	        		sn.id as snId,
+	        		sn.sn as snSn,
+	        		sn.occupation_code as snOccupationCode,
+	        		sn.defect_ware_barcode as snDefectWareBarcode,
+	        		sn.defect_source as snDefectSource,
+	        		sn.defect_type_id as snDefectTypeId,
+	        		sn.defect_reasons_id as snDefectReasonsId,
+	        		sn.status as snStatus,
+	        		sn.inv_attr as snInvAttr,
+	        		sn.uuid as snUuid,
+	        		sn.ou_id as snOuId,
+	        		sn.sys_uuid as snSysUuid
+					from 
+					t_wh_asn asn,	
+					t_wh_sku_inventory inv
+					left join t_wh_container c on c.id = inv.inside_container_id
+					left join t_wh_sku_inventory_sn sn on inv.uuid = sn.uuid
+					where 
+						inv.occupation_code is not null and inv.location_id is not null 
 						and asn.asn_code = inv.occupation_code
 						and (asn.status=5 or asn.status=10)
 						and inv.to_be_filled_qty > 0.0
@@ -827,6 +1008,127 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			            #{item}
 			        </foreach>
     </select>
+    
+    <select id="findContainerOnHandInventoryByInsideContainerId" resultMap="WhSkuInventoryCommandSnResultExt">
+			select 
+					inv.id as invId,
+					inv.sku_id as skuId,
+					inv.location_id as locationId,
+					inv.outer_container_id as outerContainerId,
+					inv.inside_container_id as insideContainerId,
+					inv.customer_id as customerId,
+					inv.store_id as storeId,
+					inv.occupation_code as invOccupationCode,
+					inv.on_hand_qty as onHandQty,
+					inv.allocated_qty as allocatedQty,
+					inv.to_be_filled_qty as toBeFilledQty,
+					inv.frozen_qty as frozenQty,
+					inv.inv_status as invStatus,
+					inv.inv_type as invType,
+					inv.batch_number as batchNumber,
+					inv.mfg_date as mfgDate,
+					inv.exp_date as expDate,
+					inv.country_of_origin as countryOfOrigin,
+					inv.inv_attr1 as invAttr1,
+					inv.inv_attr2 as invAttr2,
+					inv.inv_attr3 as invAttr3,
+					inv.inv_attr4 as invAttr4,
+					inv.inv_attr5 as invAttr5,
+					inv.uuid as invUuid,
+					inv.is_locked as isLocked,
+					inv.ou_id as invOuId,
+					inv.occupation_code_source as occupationCodeSource,
+					inv.inbound_time as inboundTime,
+	        		inv.last_modify_time as lastModifyTime,
+	        		sn.id as snId,
+	        		sn.sn as snSn,
+	        		sn.occupation_code as snOccupationCode,
+	        		sn.defect_ware_barcode as snDefectWareBarcode,
+	        		sn.defect_source as snDefectSource,
+	        		sn.defect_type_id as snDefectTypeId,
+	        		sn.defect_reasons_id as snDefectReasonsId,
+	        		sn.status as snStatus,
+	        		sn.inv_attr as snInvAttr,
+	        		sn.uuid as snUuid,
+	        		sn.ou_id as snOuId,
+	        		sn.sys_uuid as snSysUuid
+					from 
+					t_wh_asn asn,	
+					t_wh_sku_inventory inv
+					left join t_wh_container c on c.id = inv.inside_container_id
+					left join t_wh_sku_inventory_sn sn on inv.uuid = sn.uuid
+					where 
+						inv.occupation_code is not null and inv.location_id is null 
+						and asn.asn_code = inv.occupation_code
+						and (asn.status=5 or asn.status=10)
+						and inv.on_hand_qty > 0.0
+					    and inv.ou_id = #{ouid}
+						and c.id = #{insideContainerId}
+    </select>
+    
+    <select id="findLocToBeFilledInventoryByInsideContainerId" resultMap="WhSkuInventoryCommandSnResultExt">
+			select 
+					inv.id as invId,
+					inv.sku_id as skuId,
+					inv.location_id as locationId,
+					inv.outer_container_id as outerContainerId,
+					inv.inside_container_id as insideContainerId,
+					inv.customer_id as customerId,
+					inv.store_id as storeId,
+					inv.occupation_code as invOccupationCode,
+					inv.on_hand_qty as onHandQty,
+					inv.allocated_qty as allocatedQty,
+					inv.to_be_filled_qty as toBeFilledQty,
+					inv.frozen_qty as frozenQty,
+					inv.inv_status as invStatus,
+					inv.inv_type as invType,
+					inv.batch_number as batchNumber,
+					inv.mfg_date as mfgDate,
+					inv.exp_date as expDate,
+					inv.country_of_origin as countryOfOrigin,
+					inv.inv_attr1 as invAttr1,
+					inv.inv_attr2 as invAttr2,
+					inv.inv_attr3 as invAttr3,
+					inv.inv_attr4 as invAttr4,
+					inv.inv_attr5 as invAttr5,
+					inv.uuid as invUuid,
+					inv.is_locked as isLocked,
+					inv.ou_id as invOuId,
+					inv.occupation_code_source as occupationCodeSource,
+					inv.inbound_time as inboundTime,
+	        		inv.last_modify_time as lastModifyTime,
+	        		sn.id as snId,
+	        		sn.sn as snSn,
+	        		sn.occupation_code as snOccupationCode,
+	        		sn.defect_ware_barcode as snDefectWareBarcode,
+	        		sn.defect_source as snDefectSource,
+	        		sn.defect_type_id as snDefectTypeId,
+	        		sn.defect_reasons_id as snDefectReasonsId,
+	        		sn.status as snStatus,
+	        		sn.inv_attr as snInvAttr,
+	        		sn.uuid as snUuid,
+	        		sn.ou_id as snOuId,
+	        		sn.sys_uuid as snSysUuid
+					from 
+					t_wh_asn asn,	
+					t_wh_sku_inventory inv
+					left join t_wh_container c on c.id = inv.inside_container_id
+					left join t_wh_sku_inventory_sn sn on inv.uuid = sn.uuid
+					where 
+						inv.occupation_code is not null and inv.location_id is not null 
+						and asn.asn_code = inv.occupation_code
+						and (asn.status=5 or asn.status=10)
+						and inv.to_be_filled_qty > 0.0
+					    and inv.ou_id = #{ouid}
+						and c.id = #{insideContainerId}
+    </select>
+    
+    <select id="findLocToBeFilledInventoryCountsByInsideContainerId" resultType="Integer">
+		select count(1) from t_wh_sku_inventory inv,t_wh_asn asn where inv.occupation_code is not null and inv.location_id is not null and inv.to_be_filled_qty > 0.0 
+			and inv.ou_id=#{ouid}
+			and inv.occupation_code=asn.asn_code and (asn.status=5 or asn.status=10)
+			and inv.inside_container_id=#{insideContainerId}
+	</select>
     
     <select id="findWhSkuInventoryByInsideContainerCodeAndLoc" resultMap="WhSkuInventoryCommandSnResultExt">
 			select 
@@ -891,7 +1193,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        </foreach>
     </select>
     
-    <select id="findToBeFilledInventoryByInsideContainerCodeAndLoc" resultMap="WhSkuInventoryCommandSnResultExt">
+    <select id="findLocToBeFilledInventoryByInsideContainerCodeAndLoc" resultMap="WhSkuInventoryCommandSnResultExt">
 			select 
 					inv.id as invId,
 					inv.sku_id as skuId,
@@ -1258,24 +1560,24 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     </select>
     
     <select id="findRcvdInventoryCountsByOuterContainerId" resultType="Integer">
-		select count(1) from t_wh_sku_inventory inv,t_wh_asn asn where inv.occupation_code is not null 
+		select count(1) from t_wh_sku_inventory inv,t_wh_asn asn where inv.occupation_code is not null
 			and inv.ou_id=#{ouid}
 			and inv.occupation_code=asn.asn_code and (asn.status=5 or asn.status=10)
-			and exists (select 1 from t_wh_sku_inventory invs where invs.occupation_code=inv.occupation_code and invs.ou_id=inv.ou_id and invs.outer_container_id=#{outerContainerid})		
+			and inv.outer_container_id=#{outerContainerid}
 	</select>
 	
 	 <select id="findRcvdInventoryCountsByInsideContainerId" resultType="Integer">
 		select count(1) from t_wh_sku_inventory inv,t_wh_asn asn where inv.occupation_code is not null 
 			and inv.ou_id=#{ouid}
 			and inv.occupation_code=asn.asn_code and (asn.status=5 or asn.status=10)
-			and exists (select 1 from t_wh_sku_inventory invs where invs.occupation_code=inv.occupation_code and invs.ou_id=inv.ou_id and invs.inside_container_id=#{insideContainerid})		
+			and inv.inside_container_id=#{insideContainerid}
 	</select>
 	
 	 <select id="findRcvdInventoryCountsByInsideContainerId1" resultType="Integer">
-		select count(1) from t_wh_sku_inventory inv,t_wh_asn asn where inv.occupation_code is not null  and inv.outer_container_id is not null
+		select count(1) from t_wh_sku_inventory inv,t_wh_asn asn where inv.occupation_code is not null and inv.outer_container_id is not null
 			and inv.ou_id=#{ouid}
 			and inv.occupation_code=asn.asn_code and (asn.status=5 or asn.status=10)
-			and exists (select 1 from t_wh_sku_inventory invs where invs.occupation_code=inv.occupation_code and invs.ou_id=inv.ou_id and invs.inside_container_id=#{insideContainerid})		
+			and inv.inside_container_id=#{insideContainerid}
 	</select>
 	
 	<select id="findInventorysAllOnHandQtysByUuid" resultType="Double">
