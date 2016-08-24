@@ -275,4 +275,10 @@ public class AsnLineManagerImpl extends BaseManagerImpl implements AsnLineManage
         return this.whAsnLineDao.findListByParamExt(asnLine);
     }
 
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public WhAsnLine findWhAsnLineByAsnIdPolineIdOuIdAndUuid(Long asnId, Long poLineId, Long ouId, String uuid) {
+        return this.whAsnLineDao.findWhAsnLineByAsnIdPolineIdOuIdAndUuid(asnId, poLineId, ouId, uuid);
+    }
+
 }

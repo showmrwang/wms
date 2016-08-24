@@ -2,10 +2,10 @@ package com.baozun.scm.primservice.whoperation.manager.pda;
 
 import java.util.List;
 
-import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.carton.WhCartonCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionRcvd;
 
 public interface PdaRcvdManagerProxy extends BaseManager {
@@ -20,7 +20,7 @@ public interface PdaRcvdManagerProxy extends BaseManager {
      * 
      * @param commmand
      */
-    void saveScanedSkuWhenGeneralRcvdForPda(List<RcvdCacheCommand> commmandList);
+    void saveScanedSkuWhenGeneralRcvdForPda(Long userId);
 
     /**
      * 将扫描的临时数据推送到缓存中
@@ -140,4 +140,46 @@ public interface PdaRcvdManagerProxy extends BaseManager {
     List<WhCartonCommand> findWhCartonByParamExt(WhCartonCommand cartonCommand);
 
     String initMatchedLineIdStr(WhSkuInventoryCommand command);
+
+    /**
+     * 获取缓存Asn对象
+     */
+    WhAsn getCacheAsnByOccupationId(String occupationId);
+
+    /**
+     * 缓存收货操作用户
+     */
+    void cacheOperUserWhenRcvd(String userId);
+
+    /**
+     * 当没有扫描商品的时候，取消货箱缓存
+     * 
+     * @param inside
+     * @param outside
+     * @param ouId
+     * @param userId
+     * @param logId
+     */
+    void removeInsideContainerCacheWhenScanSkuNoRcvd(Long inside, Long outside, Long ouId, Long userId, String logId);
+
+    /**
+     * 已扫描商品的时候，取消货箱缓存
+     * 
+     * @param inside
+     * @param outside
+     * @param ouId
+     * @param userId
+     * @param logId
+     */
+    void removeInsideContainerCacheWhenScanSkuHasRcvd(Long inside, Long outside, Long ouId, Long userId, String logId);
+
+    /**
+     * 测试专用
+     * 
+     * @param cacheKey
+     * @return
+     */
+    String getCacheKeyPrefixWhenRcvd(String cacheKey);
+
+
 }

@@ -150,7 +150,8 @@ public abstract class BaseManagerImpl implements BaseManager {
     /**
      * 通过groupValue+dicValue查询对应系统参数信息 redis=null 查询数据库
      * 
-     * @return
+     * @param sysDictionaryList Map<分组编码groupValue,List<数据值dicValue>>
+     * @return Map<分组编码groupValue_数据值dicValue, 系统参数>
      */
     protected Map<String, SysDictionary> findSysDictionaryByRedis(Map<String, List<String>> sysDictionaryList) {
         String redisKey = CacheKeyConstant.WMS_CACHE_SYS_DICTIONARY;
@@ -189,7 +190,8 @@ public abstract class BaseManagerImpl implements BaseManager {
     /**
      * 通过customserIdList查询对应系统参数信息 redis=null 查询数据库
      * 
-     * @return
+     * @param customerIdList List<客户ID>
+     * @return Map<客户ID, 客户信息>
      */
     protected Map<Long, Customer> findCustomerByRedis(List<Long> customerIdList) {
         String redisKey = CacheKeyConstant.WMS_CACHE_CUSTOMER;
@@ -222,7 +224,8 @@ public abstract class BaseManagerImpl implements BaseManager {
     /**
      * 通过storeIdList查询对应系统参数信息 redis=null 查询数据库
      * 
-     * @return
+     * @param storeIdList List<店铺ID>
+     * @return Map<店铺ID, 店铺信息>
      */
     protected Map<Long, Store> findStoreByRedis(List<Long> storeIdList) {
         String redisKey = CacheKeyConstant.WMS_CACHE_STORE;
@@ -322,7 +325,8 @@ public abstract class BaseManagerImpl implements BaseManager {
     /**
      * 通过客户ID获取所有店铺信息 redis = null查询数据库
      * 
-     * @return
+     * @param customerId 客户ID
+     * @return Map<店铺ID, 店铺信息>
      */
     protected Map<Long, Store> findStoreAllByRedis(Long customerId) {
         String redisKey = CacheKeyConstant.WMS_CACHE_STORE + customerId + "-";
@@ -348,11 +352,13 @@ public abstract class BaseManagerImpl implements BaseManager {
                 if (null == store) {
                     // redis没有 查询数据库
                     store = storeDao.findById(Long.parseLong(s.substring(s.lastIndexOf("-") + 1, s.length())));
-                    try {
-                        cacheManager.setObject(redisKey + store.getId(), store);
-                    } catch (Exception e) {
-                        // redis出错只记录log
-                        log.error("findStoreAllByRedis cacheManager.setObject(" + redisKey + store.getId() + ") error");
+                    if (null != store) {
+                        try {
+                            cacheManager.setObject(redisKey + store.getId(), store);
+                        } catch (Exception e) {
+                            // redis出错只记录log
+                            log.error("findStoreAllByRedis cacheManager.setObject(" + redisKey + store.getId() + ") error");
+                        }
                     }
                 }
                 returnList.put(store.getId(), store);
@@ -376,9 +382,9 @@ public abstract class BaseManagerImpl implements BaseManager {
     /**
      * 通过groupValue+lifecycle 查询对应Redis系统参数信息 redis = null查询数据库
      * 
-     * @param groupValue
-     * @param lifecycle
-     * @return
+     * @param groupValue 分组编码
+     * @param lifecycle 数据值
+     * @return List<SysDictionary>
      */
     protected List<SysDictionary> findSysDictionaryByGroupValueAndRedis(String groupValue, Integer lifecycle) {
         String redisKey = CacheKeyConstant.WMS_CACHE_SYS_DICTIONARY + groupValue + "$";
@@ -439,6 +445,7 @@ public abstract class BaseManagerImpl implements BaseManager {
         }
         return returnList;
     }
+
 
     /**
      * 库存SN/残次日志插入

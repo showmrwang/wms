@@ -352,7 +352,7 @@ public class ErrorCodes {
 
     /** PO单校验相关单据号失败，同一个店铺下有相同的相关单据号 */
     public static final int PO_CHECK_EXTCODE_ERROR = 10040;
-    /**收货的货箱号不能和托盘号相同!*/
+    /** 收货的货箱号不能和托盘号相同! */
     public static final int RCVD_CONTAINER_NO_DUPLICATION = 10041;
     // 10001-20000 luyimin
 
@@ -485,25 +485,41 @@ public class ErrorCodes {
     public static final int PDA_MAN_MADE_PUTAWAY_CONTAINER_INV_ERROR = 80004;
     /** 托盘内sku商品种类数量异常 */
     public static final int PDA_MAN_MADE_PUTAWAY_SKU_AMOUNT_ERROR = 80005;
-    /**容器内有商品不允许混放，不能整托/整箱上架 */
+    /** 容器内有商品不允许混放，不能整托/整箱上架 */
     public static final int PDA_MAN_MADE_PUTAWAY_SKU_NOTALLOWED_MIX = 80006;
-    /**库位号不能为空*/
-    public static final int  PDA_MAN_MADE_PUTAWAY_BARCODE_NULL = 80007;
-    /**库位不存在*/
-    public static final int  PDA_MAN_MADE_PUTAWAY_LOCATION_NULL = 80008;
-    /**库位生命周期无效*/
-    public static final int  PDA_MAN_MADE_PUTAWAY_LOCATION_LIFECYCLE_ERROR = 80009;
-    /**库位为静态库位，容器sku商品未能全部绑定库位，不能整托、整箱上架*/
+    /** 库位号不能为空 */
+    public static final int PDA_MAN_MADE_PUTAWAY_BARCODE_NULL = 80007;
+    /** 库位不存在 */
+    public static final int PDA_MAN_MADE_PUTAWAY_LOCATION_NULL = 80008;
+    /** 库位生命周期无效 */
+    public static final int PDA_MAN_MADE_PUTAWAY_LOCATION_LIFECYCLE_ERROR = 80009;
+    /** 库位为静态库位，容器sku商品未能全部绑定库位，不能整托、整箱上架 */
     public static final int PDA_MAN_MADE_PUTAWAY_STATICLOCATION_NOTINCLUDEALLSKU = 80010;
-    /**商品状态不可用*/
+    /** 商品状态不可用 */
     public static final int PDA_MAN_MADE_PUTAWAY_SKU_STATUS_NOT_USE = 80010;
-    /** 库位不允许混放，容器存在多个sku商品，不能整托/整箱上架  */
+    /** 库位不允许混放，容器存在多个sku商品，不能整托/整箱上架 */
     public static final int PDA_MAN_MADE_PUTAWAY_NOT_MULTISKU = 80011;
+    /** 容器对应的sku为空 */
+    public static final int CONTAINER_NOT_FOUND_SKU = 80012;
+    /** 库位不允许混放 容器存在不同sku库存属性商品，不能整托上架/箱 */
+    public static final int PDA_NOT_ALLOW_DIFFERENT_INVENTORY_ATTRIBUTES = 80013;
+    /** 库位不允许混放 容器存在不同sku库存属性商品，不能整托上架/箱 */
+    public static final int PDA_CONTAINER_SKUATT_NOTSAME_LOCATION_SKUATT = 80014;
+    /** 容器总重量已经超过库位承重，请更换库位进行上架 */
+    public static final int PDA_MAN_MADE_PUTAWAY_LOCATION_UNBEAR_WEIGHT = 80015;
+    /** 库位容器内SKU商品关键属性参数不相同，不能整托、整箱上架 */
+    public static final int PDA_MAN_MADE_PUTAWAY_ATTR_MGMT_NOT_EQUAL = 80016;
+    /** 库位已有种类数+容器内SKU种类数已超过库位最大混放种类数，不能整托、整箱上架 */
+    public static final int PDA_MAN_MADE_PUTAWAY_SKU_VARIETY_OVER_MAX = 80017;
+    /** 库位已有SKU属性数+容器内SKU属性数已超过库位最大混放SKU属性数，不能整托、整箱上架 */
+    public static final int PDA_MAN_MADE_PUTAWAY_SKU_ATT_OVER_MAX = 80018;
+    
+    /** 未找到外部容器对应的内部容器id */
+    public static final int CONTAINER_NOT_FOUND_INSIDE_CONTAINER_ID = 80019;
     
     
     
     
-
-
+    
     // 80001-90000 shenlijun
 }

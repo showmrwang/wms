@@ -644,19 +644,28 @@ public class AsnManagerImpl extends BaseManagerImpl implements AsnManager {
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void saveTempAsnWithUuidToShard(WhAsn asn, List<WhAsnLine> saveAsnLineList, WhPo po, List<WhPoLine> savePoLineList) {
+    public void saveTempAsnWithUuidToShard(WhAsn asn, List<WhAsnLine> saveAsnLineList, List<WhAsnLine> delAsnLineList, WhPo po, List<WhPoLine> savePoLineList) {
         try {
 
             int updateAsnCount = this.whAsnDao.saveOrUpdateByVersion(asn);
             if (updateAsnCount <= 0) {
                 throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
             }
+            // 保存修改的明细
             for (WhAsnLine asnLine : saveAsnLineList) {
                 int updateAsnLineCount = this.whAsnLineDao.saveOrUpdateByVersion(asnLine);
                 if (updateAsnLineCount <= 0) {
                     throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
                 }
             }
+            // 删除临时明细
+            for (WhAsnLine asnLine : delAsnLineList) {
+                int delAsnLineCount = this.whAsnLineDao.deleteByIdOuId(asnLine.getId(), asnLine.getOuId());
+                if (delAsnLineCount <= 0) {
+                    throw new BusinessException(ErrorCodes.DELETE_DATA_ERROR);
+                }
+            }
+
             int updatePoCount = this.whPoDao.saveOrUpdateByVersion(po);
             if (updatePoCount <= 0) {
                 throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);

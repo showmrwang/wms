@@ -15,11 +15,27 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInv
 public interface PdaManmadePutawayCacheManager extends BaseManager {
 
     /**
-     * pda人工指定上架缓存sku信息
+     * pda人工指定上架缓存容器号对应的sku信息
      * 
      * @author lijun.shen
      * @return
      */
     List<WhSkuInventory> manMadePutawayCacheSku(PdaManMadePutawayCommand pdaManMadePutawayCommand);
+
+    
+
+    /**
+     * 将外部容器里的内部容器的货箱号存入缓存
+     * 
+     * @author lijun.shen
+     * @param pdaManMadePutawayCommand
+     * @return
+     */
+    List manMadePutawayCacheBinId(Long containerId, Long ouId);
+
+
+  
+
+
 
 }

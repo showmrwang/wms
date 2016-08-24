@@ -179,4 +179,15 @@ public interface AsnLineManager extends BaseManager {
      */
     boolean checkAsnSku(String occupationCode, String skuCode, Long ouId);
 
+    /**
+     * [通用方法]根据ASNID,POLINEID,OUID[,UUID]查找对应的明细行
+     * 
+     * @param asnId @required
+     * @param poLineId @required
+     * @param ouId @required
+     * @param uuid
+     * @return
+     */
+    WhAsnLine findWhAsnLineByAsnIdPolineIdOuIdAndUuid(Long asnId, Long poLineId, Long ouId, String uuid);
+
 }

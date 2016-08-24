@@ -42,8 +42,6 @@ public class PdaManMadePutawayCommand extends BaseCommand {
     private Boolean isOutContainerInv;
     /** 货箱容器号 */
     private String binContainerCode;
-    /** 是否整箱上架 */
-    private Boolean isEntireBinPutaway;
     /** 返回的url */
     private String returnURL;
     /** 对应功能ID */
@@ -60,7 +58,14 @@ public class PdaManMadePutawayCommand extends BaseCommand {
     private Long statusId;
     /** sku条码*/
     private String skuBarcode;
-   
+    /** 是否整箱上架 */
+    private Boolean isEntireTrayPutaway;
+    /** 是否整箱上架 */
+    private Boolean isEntireBinPutaway;
+    /** CASELEVEL是否需要扫描SKU */
+    private Boolean isCaselevelScanSku;
+    /** 非CASELEVEL是否需要扫描SKU */
+    private Boolean isNotcaselevelScanSku;
     
     
     
@@ -74,12 +79,7 @@ public class PdaManMadePutawayCommand extends BaseCommand {
     private Integer putawayPattern;
     /** 扫描模式 逐件扫描 数量扫描 默认数量扫描 */
     private Integer scanPattern;
-    /** 是否整托上架 */
-    private Boolean isEntireTrayPutaway;
-    /** CASELEVEL是否需要扫描SKU */
-    private Boolean isCaselevelScanSku;
-    /** 非CASELEVEL是否需要扫描SKU */
-    private Boolean isNotcaselevelScanSku;
+   
 
 
 
