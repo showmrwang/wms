@@ -730,7 +730,6 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     } else {
                         oldQty = 0.0;
                     }
-                    inv.setLastModifyTime(new Date());
                     whSkuInventoryDao.saveOrUpdateByVersion(inv);
                     insertGlobalLog(GLOBAL_LOG_INSERT, inv, ouId, userId, null, null);
                     // 记录入库库存日志
