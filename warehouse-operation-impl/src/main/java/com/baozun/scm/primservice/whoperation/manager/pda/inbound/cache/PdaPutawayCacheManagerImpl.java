@@ -15,7 +15,6 @@
 package com.baozun.scm.primservice.whoperation.manager.pda.inbound.cache;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -230,11 +229,17 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
         }
         String containerCode = containerCmd.getCode();
         // 缓存所有库存
-        List<String> codelist = new ArrayList<String>();
-        codelist.add(containerCode);
+        // List<String> codelist = new ArrayList<String>();
+        // codelist.add(containerCode);
         // 查询所有对应容器号的库存信息
         List<WhSkuInventoryCommand> invList = null;
-        invList = whSkuInventoryDao.findWhSkuInventoryByOuterContainerCode(ouId, codelist);
+        int counts = whSkuInventoryDao.findLocToBeFilledInventoryCountsByOuterContainerId(ouId, containerId);
+        if (0 < counts) {
+            invList = whSkuInventoryDao.findLocToBeFilledInventoryByOuterContainerId(ouId, containerId);
+        } else {
+            invList = whSkuInventoryDao.findContainerOnHandInventoryByOuterContainerId(ouId, containerId);
+        }
+        // invList = whSkuInventoryDao.findWhSkuInventoryByOuterContainerCode(ouId, codelist);
         if (null == invList || 0 == invList.size()) {
             log.error("sys guide pallet putaway container:[{}] rcvd inventory not found error!, logId is:[{}]", containerCode, logId);
             throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_RCVD_INV_ERROR, new Object[] {containerCode});
@@ -298,17 +303,16 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
             log.info("sys guide pallet putaway cache inventoryStatistic start, contianerId is:[{}], ouId is:[{}], logId is:[{}]", containerId, ouId, logId);
         }
         String containerCode = containerCmd.getCode();
-        Long outerContainerId = containerCmd.getId();
         // 缓存所有库存
         // List<String> codelist = new ArrayList<String>();
         // codelist.add(containerCode);
         // 查询所有对应容器号的库存信息
         List<WhSkuInventoryCommand> invList = null;
-        int counts = whSkuInventoryDao.findLocToBeFilledInventoryCountsByOuterContainerId(ouId, outerContainerId);
+        int counts = whSkuInventoryDao.findLocToBeFilledInventoryCountsByOuterContainerId(ouId, containerId);
         if (0 < counts) {
-            invList = whSkuInventoryDao.findLocToBeFilledInventoryByOuterContainerId(ouId, outerContainerId);
+            invList = whSkuInventoryDao.findLocToBeFilledInventoryByOuterContainerId(ouId, containerId);
         } else {
-            invList = whSkuInventoryDao.findContainerOnHandInventoryByOuterContainerId(ouId, outerContainerId);
+            invList = whSkuInventoryDao.findContainerOnHandInventoryByOuterContainerId(ouId, containerId);
         }
         // invList = whSkuInventoryDao.findWhSkuInventoryByOuterContainerCode(ouId, codelist);
         if (null == invList || 0 == invList.size()) {
@@ -338,11 +342,17 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
         }
         String containerCode = containerCmd.getCode();
         // 缓存所有库存
-        List<String> codelist = new ArrayList<String>();
-        codelist.add(containerCode);
+        // List<String> codelist = new ArrayList<String>();
+        // codelist.add(containerCode);
         // 查询所有对应容器号的库存信息
         List<WhSkuInventoryCommand> invList = null;
-        invList = whSkuInventoryDao.findWhSkuInventoryByOuterContainerCode(ouId, codelist);
+        int counts = whSkuInventoryDao.findLocToBeFilledInventoryCountsByOuterContainerId(ouId, containerId);
+        if (0 < counts) {
+            invList = whSkuInventoryDao.findLocToBeFilledInventoryByOuterContainerId(ouId, containerId);
+        } else {
+            invList = whSkuInventoryDao.findContainerOnHandInventoryByOuterContainerId(ouId, containerId);
+        }
+        // invList = whSkuInventoryDao.findWhSkuInventoryByOuterContainerCode(ouId, codelist);
         if (null == invList || 0 == invList.size()) {
             log.error("sys guide pallet putaway container:[{}] rcvd inventory not found error!, logId is:[{}]", containerCode, logId);
             throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_RCVD_INV_ERROR, new Object[] {containerCode});
@@ -926,11 +936,17 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
         }
         String containerCode = insideContainerCmd.getCode();
         // 缓存所有库存
-        List<String> codelist = new ArrayList<String>();
-        codelist.add(containerCode);
+        // List<String> codelist = new ArrayList<String>();
+        // codelist.add(containerCode);
         // 查询所有对应容器号的库存信息
         List<WhSkuInventoryCommand> invList = null;
-        invList = whSkuInventoryDao.findWhSkuInventoryByInsideContainerCode(ouId, codelist);
+        int counts = whSkuInventoryDao.findLocToBeFilledInventoryCountsByInsideContainerId(ouId, containerId);
+        if (0 < counts) {
+            invList = whSkuInventoryDao.findLocToBeFilledInventoryByInsideContainerId(ouId, containerId);
+        } else {
+            invList = whSkuInventoryDao.findContainerOnHandInventoryByInsideContainerId(ouId, containerId);
+        }
+        // invList = whSkuInventoryDao.findWhSkuInventoryByInsideContainerCode(ouId, codelist);
         if (null == invList || 0 == invList.size()) {
             log.error("sys guide container putaway container:[{}] rcvd inventory not found error!, logId is:[{}]", containerCode, logId);
             throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_RCVD_INV_ERROR, new Object[] {containerCode});
@@ -959,11 +975,17 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
         }
         String containerCode = containerCmd.getCode();
         // 缓存所有库存
-        List<String> codelist = new ArrayList<String>();
-        codelist.add(containerCode);
+        // List<String> codelist = new ArrayList<String>();
+        // codelist.add(containerCode);
         // 查询所有对应容器号的库存信息
         List<WhSkuInventoryCommand> invList = null;
-        invList = whSkuInventoryDao.findWhSkuInventoryByInsideContainerCode(ouId, codelist);
+        int counts = whSkuInventoryDao.findLocToBeFilledInventoryCountsByInsideContainerId(ouId, containerId);
+        if (0 < counts) {
+            invList = whSkuInventoryDao.findLocToBeFilledInventoryByInsideContainerId(ouId, containerId);
+        } else {
+            invList = whSkuInventoryDao.findContainerOnHandInventoryByInsideContainerId(ouId, containerId);
+        }
+        // invList = whSkuInventoryDao.findWhSkuInventoryByInsideContainerCode(ouId, codelist);
         if (null == invList || 0 == invList.size()) {
             log.error("sys guide container putaway container:[{}] rcvd inventory not found error!, logId is:[{}]", containerCode, logId);
             throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_RCVD_INV_ERROR, new Object[] {containerCode});
@@ -1383,17 +1405,16 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
             log.info("sys guide splitContainer putaway cache inventory start, contianerId is:[{}], ouId is:[{}], logId is:[{}]", containerId, ouId, logId);
         }
         String containerCode = insideContainerCmd.getCode();
-        Long insideContainerId = insideContainerCmd.getId();
         // 缓存所有库存
         // List<String> codelist = new ArrayList<String>();
         // codelist.add(containerCode);
         // 查询所有对应容器号的库存信息
         List<WhSkuInventoryCommand> invList = null;
-        int counts = whSkuInventoryDao.findLocToBeFilledInventoryCountsByInsideContainerId(ouId, insideContainerId);
+        int counts = whSkuInventoryDao.findLocToBeFilledInventoryCountsByInsideContainerId(ouId, containerId);
         if (0 < counts) {
-            invList = whSkuInventoryDao.findLocToBeFilledInventoryByInsideContainerId(ouId, insideContainerId);
+            invList = whSkuInventoryDao.findLocToBeFilledInventoryByInsideContainerId(ouId, containerId);
         } else {
-            invList = whSkuInventoryDao.findContainerOnHandInventoryByInsideContainerId(ouId, insideContainerId);
+            invList = whSkuInventoryDao.findContainerOnHandInventoryByInsideContainerId(ouId, containerId);
         }
         // invList = whSkuInventoryDao.findWhSkuInventoryByInsideContainerCode(ouId, codelist);
         if (null == invList || 0 == invList.size()) {
@@ -1443,11 +1464,17 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
         }
         String containerCode = insideContainerCmd.getCode();
         // 缓存所有库存
-        List<String> codelist = new ArrayList<String>();
-        codelist.add(containerCode);
+        // List<String> codelist = new ArrayList<String>();
+        // codelist.add(containerCode);
         // 查询所有对应容器号的库存信息
         List<WhSkuInventoryCommand> invList = null;
-        invList = whSkuInventoryDao.findWhSkuInventoryByInsideContainerCode(ouId, codelist);
+        int counts = whSkuInventoryDao.findLocToBeFilledInventoryCountsByInsideContainerId(ouId, containerId);
+        if (0 < counts) {
+            invList = whSkuInventoryDao.findLocToBeFilledInventoryByInsideContainerId(ouId, containerId);
+        } else {
+            invList = whSkuInventoryDao.findContainerOnHandInventoryByInsideContainerId(ouId, containerId);
+        }
+        // invList = whSkuInventoryDao.findWhSkuInventoryByInsideContainerCode(ouId, codelist);
         if (null == invList || 0 == invList.size()) {
             log.error("sys guide splitContainer putaway container:[{}] rcvd inventory not found error!, logId is:[{}]", containerCode, logId);
             throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_RCVD_INV_ERROR, new Object[] {containerCode});
@@ -1476,11 +1503,17 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
         }
         String containerCode = containerCmd.getCode();
         // 缓存所有库存
-        List<String> codelist = new ArrayList<String>();
-        codelist.add(containerCode);
+        // List<String> codelist = new ArrayList<String>();
+        // codelist.add(containerCode);
         // 查询所有对应容器号的库存信息
         List<WhSkuInventoryCommand> invList = null;
-        invList = whSkuInventoryDao.findWhSkuInventoryByInsideContainerCode(ouId, codelist);
+        int counts = whSkuInventoryDao.findLocToBeFilledInventoryCountsByInsideContainerId(ouId, containerId);
+        if (0 < counts) {
+            invList = whSkuInventoryDao.findLocToBeFilledInventoryByInsideContainerId(ouId, containerId);
+        } else {
+            invList = whSkuInventoryDao.findContainerOnHandInventoryByInsideContainerId(ouId, containerId);
+        }
+        // invList = whSkuInventoryDao.findWhSkuInventoryByInsideContainerCode(ouId, codelist); 
         if (null == invList || 0 == invList.size()) {
             log.error("sys guide container putaway container:[{}] rcvd inventory not found error!, logId is:[{}]", containerCode, logId);
             throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_RCVD_INV_ERROR, new Object[] {containerCode});
