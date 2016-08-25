@@ -677,10 +677,12 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     BeanUtils.copyProperties(invCmd, inv);
                     inv.setOnHandQty(inv.getToBeFilledQty());// 在库库存
                     inv.setToBeFilledQty(0.0);
-                    if (!StringUtils.isEmpty(containerCode)) {
-                        if (0 != containerId.compareTo(inv.getOuterContainerId())) {
-                            log.error("outer container is not matching, paramContainerId is:[{}], invOuterContainerId is:[{}]", containerId, inv.getOuterContainerId());
-                            throw new BusinessException(ErrorCodes.COMMON_OUTER_CONTAINER_IS_NOT_MATCH);
+                    if (WhPutawayPatternDetailType.PALLET_PUTAWAY == putawayPatternDetailType) {
+                        if (!StringUtils.isEmpty(containerCode)) {
+                            if (0 != containerId.compareTo(inv.getOuterContainerId())) {
+                                log.error("outer container is not matching, paramContainerId is:[{}], invOuterContainerId is:[{}]", containerId, inv.getOuterContainerId());
+                                throw new BusinessException(ErrorCodes.COMMON_OUTER_CONTAINER_IS_NOT_MATCH);
+                            }
                         }
                     }
                     if (null == inv.getLocationId() || 0 != loc.getId().compareTo(inv.getLocationId())) {
