@@ -102,11 +102,11 @@ public class WhLocationInvVolumeWieghtManagerImpl extends BaseManagerImpl implem
                 Double ocHeight = outerContainer2.getHigh();
                 Double ocWeight = outerContainer2.getWeight();
                 if (null == ocLength || null == ocWidth || null == ocHeight) {
-                    log.error("sys guide pallet putaway inside container length、width、height is null error, ocId is:[{}], logId is:[{}]", outerContainerId, logId);
+                    log.error("sys guide putaway inside container length、width、height is null error, ocId is:[{}], logId is:[{}]", outerContainerId, logId);
                     throw new BusinessException(ErrorCodes.CONTAINER_LENGTH_WIDTH_HIGHT_IS_NULL_ERROR, new Object[] {container.getCode()});
                 }
                 if (null == ocWeight) {
-                    log.error("sys guide pallet putaway inside container weight is null error, ocId is:[{}], logId is:[{}]", outerContainerId, logId);
+                    log.error("sys guide putaway inside container weight is null error, ocId is:[{}], logId is:[{}]", outerContainerId, logId);
                     throw new BusinessException(ErrorCodes.CONTAINER_WEIGHT_IS_NULL_ERROR, new Object[] {container.getCode()});
                 }
                 cubeCal.accumulationStuffVolume(ocLength, ocWidth, ocHeight);
@@ -114,15 +114,15 @@ public class WhLocationInvVolumeWieghtManagerImpl extends BaseManagerImpl implem
             } else {
                 if (null != insideContainerId && !insideContainerIds.contains(insideContainerId)) {
                     // 无外部容器但有内部容器
-                    Container container = containerDao.findByIdExt(outerContainerId, ouId);
-                    Long outerContainerCate = container.getTwoLevelType();
-                    Container2ndCategory insideContainer2 = container2ndCategoryDao.findByIdExt(outerContainerCate, ouId);
+                    Container container = containerDao.findByIdExt(insideContainerId, ouId);
+                    Long insideContainerCate = container.getTwoLevelType();
+                    Container2ndCategory insideContainer2 = container2ndCategoryDao.findByIdExt(insideContainerCate, ouId);
                     if (null == insideContainer2) {
-                        log.error("container2ndCategory is null error, cId is:[{}], 2endCategoryId is:[{}], logId is:[{}]", outerContainerId, outerContainerCate, logId);
+                        log.error("container2ndCategory is null error, cId is:[{}], 2endCategoryId is:[{}], logId is:[{}]", insideContainerId, insideContainerCate, logId);
                         throw new BusinessException(ErrorCodes.CONTAINER2NDCATEGORY_NULL_ERROR);
                     }
                     if (1 != insideContainer2.getLifecycle()) {
-                        log.error("container2ndCategory lifecycle is not normal error, cId is:[{}], 2endCategoryId is:[{}], logId is:[{}]", outerContainerId, insideContainer2.getId(), logId);
+                        log.error("container2ndCategory lifecycle is not normal error, cId is:[{}], 2endCategoryId is:[{}], logId is:[{}]", insideContainerId, insideContainer2.getId(), logId);
                         throw new BusinessException(ErrorCodes.COMMON_CONTAINER_LIFECYCLE_IS_NOT_NORMAL);
                     }
                     Double icLength = insideContainer2.getLength();
@@ -130,11 +130,11 @@ public class WhLocationInvVolumeWieghtManagerImpl extends BaseManagerImpl implem
                     Double icHeight = insideContainer2.getHigh();
                     Double icWeight = insideContainer2.getWeight();
                     if (null == icLength || null == icWidth || null == icHeight) {
-                        log.error("sys guide pallet putaway inside container length、width、height is null error, ocId is:[{}], logId is:[{}]", outerContainerId, logId);
+                        log.error("sys guide putaway inside container length、width、height is null error, ocId is:[{}], logId is:[{}]", insideContainerId, logId);
                         throw new BusinessException(ErrorCodes.CONTAINER_LENGTH_WIDTH_HIGHT_IS_NULL_ERROR, new Object[] {container.getCode()});
                     }
                     if (null == icWeight) {
-                        log.error("sys guide pallet putaway inside container weight is null error, ocId is:[{}], logId is:[{}]", outerContainerId, logId);
+                        log.error("sys guide putaway inside container weight is null error, ocId is:[{}], logId is:[{}]", insideContainerId, logId);
                         throw new BusinessException(ErrorCodes.CONTAINER_WEIGHT_IS_NULL_ERROR, new Object[] {container.getCode()});
                     }
                     cubeCal.accumulationStuffVolume(icLength, icWidth, icHeight);
@@ -144,14 +144,14 @@ public class WhLocationInvVolumeWieghtManagerImpl extends BaseManagerImpl implem
                         // 既无外部容器也无内部容器
                         WhSkuCommand skuCmd = whSkuDao.findWhSkuByIdExt(skuId, ouId);
                         if (null == skuCmd) {
-                            log.error("sys guide pallet putaway sku is not exists error, skuId is:[{}], logId is:[{}]", skuId, logId);
+                            log.error("sys guide putaway sku is not exists error, skuId is:[{}], logId is:[{}]", skuId, logId);
                             throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
                         }
                         Double skuLength = skuCmd.getLength();
                         Double skuWidth = skuCmd.getWidth();
                         Double skuHeight = skuCmd.getHeight();
                         if (null == skuLength || null == skuWidth || null == skuHeight) {
-                            log.error("sys guide pallet putaway sku length、width、height is null error, skuId is:[{}], logId is:[{}]", skuId, logId);
+                            log.error("sys guide putaway sku length、width、height is null error, skuId is:[{}], logId is:[{}]", skuId, logId);
                             throw new BusinessException(ErrorCodes.SKU_LENGTH_WIDTH_HIGHT_IS_NULL_ERROR, new Object[] {skuCmd.getBarCode()});
                         }
                         Double onHandQty = invCmd.getOnHandQty();
@@ -168,12 +168,12 @@ public class WhLocationInvVolumeWieghtManagerImpl extends BaseManagerImpl implem
             Double toBeFillQty = invCmd.getToBeFilledQty();
             WhSkuCommand skuCmd = whSkuDao.findWhSkuByIdExt(skuId, ouId);
             if (null == skuCmd) {
-                log.error("sys guide pallet putaway sku is not exists error, skuId is:[{}], logId is:[{}]", skuId, logId);
+                log.error("sys guide putaway sku is not exists error, skuId is:[{}], logId is:[{}]", skuId, logId);
                 throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
             }
             Double skuWeight = skuCmd.getWeight();
             if (null == skuWeight) {
-                log.error("sys guide pallet putaway sku weight is null error, skuId is:[{}], logId is:[{}]", skuId, logId);
+                log.error("sys guide putaway sku weight is null error, skuId is:[{}], logId is:[{}]", skuId, logId);
                 throw new BusinessException(ErrorCodes.SKU_WEIGHT_IS_NULL_ERROR, new Object[] {skuCmd.getBarCode()});
             }
             Double sWeight = weightCal.calculateStuffWeight(skuWeight);
