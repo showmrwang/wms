@@ -108,6 +108,229 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
 	</sql>
 	
+	<sql id="whPoSearchWhereExt">
+		<where>
+			po.status &lt;&gt; 0
+			<if test="ouId!=null">
+				and po.ou_id=#{ouId}
+			</if>
+			<if test="poCode!=null and poCode!=''">
+				and po.po_code like #{poCode}
+			</if>
+			<if test="extCode!=null and extCode!=''">
+				and po.ext_code LIKE #{extCode}
+			</if>
+			<if test="customerId!=null">
+				and  po.customer_id in 
+				<foreach collection="customerId" item="s" open="(" separator="," close=")">
+					#{s}
+				</foreach>
+			</if>
+			<if test="storeId!=null">
+				and  po.store_id in 
+				<foreach collection="storeId" item="s" open="(" separator="," close=")">
+					#{s}
+				</foreach>
+			</if>
+			<if test="supplierId!=null">
+				and  po.supplier_id in 
+				<foreach collection="supplierId" item="s" open="(" separator="," close=")">
+					#{s}
+				</foreach>
+			</if>
+			<if test="logisticsProviderId!=null">
+				and  po.logistics_provider_id in 
+				<foreach collection="logisticsProviderId" item="s" open="(" separator="," close=")">
+					#{s}
+				</foreach>
+			</if>
+			<if test="poType!=null">
+				and  po.po_type in 
+				<foreach collection="poType" item="s" open="(" separator="," close=")">
+					#{s}
+				</foreach>
+			</if>
+			<if test="poStatus!=null">
+				and  po.status in 
+				<foreach collection="poStatus" item="s" open="(" separator="," close=")">
+					#{s}
+				</foreach>
+			</if>
+			<if test="isIqc!=null and isIqc!=''">
+				and po.is_iqc=#{isIqc}
+			</if>
+			<if test="poDateStart!=null and poDateStart!=''">
+				and DATE_FORMAT(po.po_date,'%Y-%m-%d')&gt;=#{poDateStart}
+			 </if>
+			<if test="poDateEnd!=null and poDateEnd!=''">
+				and DATE_FORMAT(po.po_date,'%Y-%m-%d')&lt;=#{poDateEnd}
+			 </if>
+			 <if test="etaStart!=null and etaStart!=''">
+				and DATE_FORMAT(po.eta,'%Y-%m-%d')&gt;=#{etaStart}
+			 </if>
+			<if test="etaEnd!=null and etaEnd!=''">
+				and DATE_FORMAT(po.eta,'%Y-%m-%d')&lt;=#{etaEnd}
+			 </if>
+			 <if test="deliveryTimeStart!=null and deliveryTimeStart!=''">
+				and DATE_FORMAT(po.delivery_time,'%Y-%m-%d')&gt;=#{deliveryTimeStart}
+			 </if>
+			<if test="deliveryTimeEnd!=null and deliveryTimeEnd!=''">
+				and DATE_FORMAT(po.delivery_time,'%Y-%m-%d')&lt;=#{deliveryTimeEnd}
+			 </if>
+			 <if test="startTimeStart!=null and startTimeStart!=''">
+				and DATE_FORMAT(po.start_time,'%Y-%m-%d')&gt;=#{startTimeStart}
+			 </if>
+			<if test="startTimeEnd!=null and startTimeEnd!=''">
+				and DATE_FORMAT(po.start_time,'%Y-%m-%d')&lt;=#{startTimeEnd}
+			 </if>
+			 <if test="stopTimeStart!=null and stopTimeStart!=''">
+				and DATE_FORMAT(po.stop_time,'%Y-%m-%d')&gt;=#{stopTimeStart}
+			 </if>
+			<if test="stopTimeEnd!=null and stopTimeEnd!=''">
+				and DATE_FORMAT(po.stop_time,'%Y-%m-%d')&lt;=#{stopTimeEnd}
+			 </if>
+			 <if test="inboundTimeStart!=null and inboundTimeStart!=''">
+				and DATE_FORMAT(po.inbound_time,'%Y-%m-%d')&gt;=#{inboundTimeStart}
+			 </if>
+			<if test="inboundTimeEnd!=null and inboundTimeEnd!=''">
+				and DATE_FORMAT(po.inbound_time,'%Y-%m-%d')&lt;=#{inboundTimeEnd}
+			 </if>
+			 <if test="(linenum!=null and linenum!='') ||
+			 			(skuCode!=null and skuCode!='') ||
+			 			(skuName!=null and skuName!='') ||
+			 			(skuBarCode!=null and skuBarCode!='')||
+			 			(lineStatus!=null)||
+			 			(isIqcLine!=null and isIqcLine!='')||
+			 			(mfgDateStart!=null and mfgDateStart!='')||
+			 			(mfgDateEnd!=null and mfgDateEnd!='')||
+			 			(expDateStart!=null and expDateStart!='')||
+			 			(expDateEnd!=null and expDateEnd!='')||
+			 			(batchNo!=null and batchNo!='')||
+			 			(countryOfOrigin!=null and countryOfOrigin!='')||
+			 			(invStatus!=null)||
+			 			(invType!=null)||
+			 			(invAttr1!=null)||
+			 			(invAttr2!=null)||
+			 			(invAttr3!=null)||
+			 			(invAttr4!=null)||
+			 			(invAttr5!=null)||
+			 			(mixAttr!=null and mixAttr!='')">
+				and EXISTS(select 1 from t_wh_po_line poline
+									inner join t_wh_sku sku on sku.id=poline.sku_id
+									where poline.po_id=po.id 
+									<if test="linenum!=null and linenum!=''">
+										and poline.linenum like #{linenum}
+									</if>
+									<if test="skuCode!=null and skuCode!=''">
+										and sku.code like #{skuCode}
+									</if>
+									 <if test="skuName!=null and skuName!=''">
+										and sku.name like #{skuName}
+									 </if>
+									 <if test="skuBarCode!=null and skuBarCode!=''">
+										and sku.bar_code like #{skuBarCode}
+									 </if>
+									  <if test="lineStatus!=null">
+									    and poline.status IN
+										<foreach collection="lineStatus" item="s" open="(" separator="," close=")">
+										       #{s}
+									  	</foreach>
+									 </if>
+									 <if test="isIqcLine!=null and isIqcLine!=''">
+									 	and poline.is_iqc=#{isIqcLine}
+									 </if>
+									 <if test="mfgDateStart!=null and mfgDateStart!=''">
+										and DATE_FORMAT(poline.mfg_date,'%Y-%m-%d')&gt;=#{mfgDateStart}
+									 </if>
+									 <if test="mfgDateEnd!=null and mfgDateEnd!=''">
+										and DATE_FORMAT(poline.mfg_date,'%Y-%m-%d')&lt;=#{mfgDateEnd}
+									 </if>
+									 <if test="expDateStart!=null and expDateStart!=''">
+										and DATE_FORMAT(poline.exp_date,'%Y-%m-%d')&gt;=#{expDateStart}
+									 </if>
+									 <if test="expDateEnd!=null and expDateEnd!=''">
+										and DATE_FORMAT(poline.exp_date,'%Y-%m-%d')&lt;=#{expDateEnd}
+									 </if>
+									 <if test="batchNo!=null and batchNo!=''">
+										and poline.batch_no like #{batchNo}
+									 </if>
+									 <if test="countryOfOrigin!=null and countryOfOrigin!=''">
+										and poline.country_of_origin like #{countryOfOrigin}
+									 </if>
+									 <if test="invStatus!=null">
+									    and poline.inv_status IN
+										<foreach collection="invStatus" item="s" open="(" separator="," close=")">
+										       #{s}
+									  	</foreach>
+									 </if>
+									 <if test="invType!=null">
+									    and poline.inv_type IN
+										<foreach collection="invType" item="s" open="(" separator="," close=")">
+										       #{s}
+									  	</foreach>
+									 </if>
+									 <if test="invAttr1!=null">
+									    and poline.inv_attr1 IN
+										<foreach collection="invAttr1" item="s" open="(" separator="," close=")">
+										       #{s}
+									  	</foreach>
+									 </if>
+									 <if test="invAttr2!=null">
+									    and poline.inv_attr2 IN
+										<foreach collection="invAttr2" item="s" open="(" separator="," close=")">
+										       #{s}
+									  	</foreach>
+									 </if>
+									 <if test="invAttr3!=null">
+									    and poline.inv_attr3 IN
+										<foreach collection="invAttr3" item="s" open="(" separator="," close=")">
+										       #{s}
+									  	</foreach>
+									 </if>
+									 <if test="invAttr4!=null">
+									    and poline.inv_attr4 IN
+										<foreach collection="invAttr4" item="s" open="(" separator="," close=")">
+										       #{s}
+									  	</foreach>
+									 </if>
+									 <if test="invAttr5!=null">
+									    and poline.inv_attr5 IN
+										<foreach collection="invAttr5" item="s" open="(" separator="," close=")">
+										       #{s}
+									  	</foreach>
+									 </if>
+									 <if test="mixAttr!=null and mixAttr!=''">
+										and exists(select 1 from t_wh_sku_mgmt mgmt 
+																where mgmt.sku_id=sku.id 
+																<if test="mixAttr!=null and mixAttr!=''">
+																  	and mgmt.mix_attr like #{mixAttr}
+																 </if>
+												   )
+									  </if>
+						   )
+			</if>
+			<if test="(sn!=null and sn!='') ||(defectWareBarcode!=null and defectWareBarcode!='') ||(defectType!=null and defectType!='')||(defectReasons!=null and defectReasons!='')">						 
+				and EXISTS(select 1 from t_wh_asn_rcvd_sn_log sn
+										left join t_wh_asn_rcvd_log rcvd ON sn.asn_rcvd_id = rcvd.id
+										left join t_wh_asn asn ON rcvd.asn_id = asn.id
+										where asn.po_id = po.id
+						   				<if test="sn!=null and sn!=''">
+											and sn.sn like #{sn}
+										</if>
+										<if test="defectWareBarcode!=null and defectWareBarcode!=''">
+											and sn.defect_ware_barcode like #{defectWareBarcode}
+										</if>
+										<if test="defectType!=null and defectType!=''">
+											and sn.defect_type like #{defectType}
+										</if>
+										<if test="defectReasons!=null and defectReasons!=''">
+											and sn.defect_reasons like #{defectReasons}
+										</if>
+						   )			
+			</if>					
+		</where>
+	</sql>
+	
 
 		<update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.poasn.WhPo">
 		    <![CDATA[
@@ -198,29 +421,57 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	</resultMap>	
 		
 	<select id="findListByQueryMapWithPageExt" resultMap="WhPoCommand">
-    	select <include refid="whPoColumnsMapExt" />
+    	select 
+    		po.id as id,
+			po.po_code as poCode,
+			po.ext_code as extCode,
+			po.ou_id as ouId,
+			po.customer_id as customerId,
+			po.store_id as storeId,
+			po.supplier_id as supplierId,
+			po.logistics_provider_id as logisticsProviderId,
+			po.po_type as poType,
+			po.status as status,
+			po.is_iqc as isIqc,
+			po.po_date as poDate,
+			date_format(po.po_date,'%Y-%m-%d') as poDateStr,
+			po.eta as eta,
+			date_format(po.eta,'%Y-%m-%d %T') as etaStr,		
+			po.delivery_time as deliveryTime,
+			po.qty_planned as qtyPlanned,
+			po.qty_rcvd as qtyRcvd,
+			po.ctn_planned as ctnPlanned,
+			po.ctn_rcvd as ctnRcvd,
+			po.start_time as startTime,
+			date_format(start_time,'%Y-%m-%d') as startTimeStr,
+			po.stop_time as stopTime,
+			date_format(stop_time,'%Y-%m-%d') as stopTimeStr,		
+			po.inbound_time as inboundTime,
+			date_format(inbound_time,'%Y-%m-%d') as inboundTimeStr,		
+			po.is_wms as isWms,
+			po.is_vmi as isVmi,		
+			po.create_time as createTime,
+			po.created_id as createdId,
+			po.last_modify_time as lastModifyTime,
+			po.modified_id as modifiedId,
+			po.uuid as uuid,
+			po.overchage_rate as overChageRate,
+			provider.name as logisticsProviderName,
+			supplier.name as supplierName
 	    from 
 	    t_wh_po po 
-	    left join t_bi_customer c on po.customer_id = c.id
-		left join t_bi_store s on po.store_id = s.id 
-		left join sys_dictionary sys on sys.dic_value = po.status and sys.group_value = 'POSTATUS'
 		left join t_wh_logistics_provider provider on provider.id=po.logistics_provider_id
 		left join t_wh_supplier supplier on supplier.id=po.supplier_id
-		left join sys_dictionary potypedic on potypedic.group_value='PO_TYPE' and potypedic.dic_value=po.po_type
-		<include refid="whPoDynamicWhereExt"/>
+		<include refid="whPoSearchWhereExt"/>
     </select>
     		
 		
 	<select id="findListCountByQueryMapExt" resultType="long">
         select count(*) from 
         t_wh_po po 
-        left join t_bi_customer c on po.customer_id = c.id
-		left join t_bi_store s on po.store_id = s.id 
-		left join sys_dictionary sys on sys.dic_value = po.status and sys.group_value = 'POSTATUS'
 		left join t_wh_logistics_provider provider on provider.id=po.logistics_provider_id
 		left join t_wh_supplier supplier on supplier.id=po.supplier_id
-		left join sys_dictionary potypedic on potypedic.group_value='PO_TYPE' and potypedic.dic_value=po.po_type
-		<include refid="whPoDynamicWhereExt"/>
+		<include refid="whPoSearchWhereExt"/>
     </select>
     
     <select id="findWhPoById" resultMap="WhPoResultExt">
