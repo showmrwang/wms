@@ -51,6 +51,6 @@ public interface WhSkuInventoryManager extends BaseManager {
      * @param userId
      * @param logId
      */
-    void putaway(ContainerCommand containerCmd, String locationCode, Long funcId, Warehouse warehouse, List<LocationRecommendResultCommand> lrrList, Integer putawayPatternDetailType, Long ouId, Long userId, String logId);
+    void putaway(ContainerCommand containerCmd, ContainerCommand insideContainerCmd, String locationCode, Long funcId, Warehouse warehouse, List<LocationRecommendResultCommand> lrrList, Integer putawayPatternDetailType, Long ouId, Long userId, String logId);
 
 }
