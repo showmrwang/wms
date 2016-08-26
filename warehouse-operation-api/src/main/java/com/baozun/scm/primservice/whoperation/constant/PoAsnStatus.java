@@ -20,6 +20,7 @@ public class PoAsnStatus implements Serializable {
     public static final int PO_RCVD_FINISH = 10;// 收货完成
     public static final int PO_CANCELED = 17;// 取消
     public static final int PO_CLOSE = 20;// 关闭
+    public static final int PO_TOBECREATED = 99;// 待创建
     /** PO */
 
     /** PO LINE */
@@ -44,6 +45,7 @@ public class PoAsnStatus implements Serializable {
     public static final int ASN_RCVD_FINISH1 = 10;// 收货完成 不能
     public static final int ASN_CANCELED1 = 17;// 取消 不能
     public static final int ASN_CLOSE1 = 20;// 关闭 不能
+    public static final int ASN_TOBECREATED = 99;// 待创建
     /** ASN */
 
     /** ASN LINE */
@@ -71,6 +73,7 @@ public class PoAsnStatus implements Serializable {
     public static final int BIPO_CANCELED = 17;// 取消
     public static final int BIPO_CLOSE = 20;// 关闭
     public static final int BIPO_ALLOT = 5;// 已分配仓库
+    public static final int BIPO_TOBECREATED = 99;// 待创建
     /** PO */
 
     /** BIPO LINE */

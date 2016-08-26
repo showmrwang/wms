@@ -445,25 +445,11 @@
 		from t_wh_odo odo
 		left join t_wh_odo_address address on address.odo_id=odo.id
 		left join t_wh_odo_transport_mgmt transmgmt on transmgmt.odo_id=odo.id
-		left join t_bi_customer customer on customer.id=odo.customer_id
-		left join t_bi_store store on store.id=odo.store_id
 		left join t_ma_transport_provider transprovider on transmgmt.transport_service_provider=transprovider.code
 		left join t_ma_transport_service_type transType on transType.tp_id=transprovider.id and transType.code=transmgmt.courier_service_type
 		left join t_wh_out_inventory_box_type boxType on boxType.id=odo.outbound_carton_type and odo.ou_id=boxType.ou_id
 		left join oper_user user1 on user1.id=odo.created_id
 		left join oper_user user2 on user2.id=odo.modified_id
-		left join sys_dictionary dic1 on dic1.dic_value=odo.is_whole_order_outbound and dic1.group_value="IS_WHOLE_ORDER_OUTBOUND"
-		left join sys_dictionary dic2 on dic2.dic_value=odo.part_outbound_strategy and dic2.group_value="PART_OUTBOUND_STRATEGY"
-		left join sys_dictionary dic3 on dic3.dic_value=odo.cross_docking_symbol and dic3.group_value="ODO_CROSS_DOCKING_SYSMBOL"
-		left join sys_dictionary dic4 on dic4.dic_value=transmgmt.mode_of_transport and dic4.group_value="TRANSPORT_MODE"
-		left join sys_dictionary dic5 on dic5.dic_value=odo.epistatic_systems_order_type and dic5.group_value="ODO_PRE_TYPE"
-		left join sys_dictionary dic6 on dic6.dic_value=odo.odo_type and dic6.group_value="ODO_TYPE"
-		left join sys_dictionary dic7 on dic7.dic_value=odo.distribute_mode and dic7.group_value="DISTRIBUTE_MODE"
-		left join sys_dictionary dic8 on dic8.dic_value=odo.odo_status and dic8.group_value="ODO_STATUS"
-		left join sys_dictionary dic9 on dic9.dic_value=transmgmt.outbound_target_type and dic9.group_value="ODO_AIM_TYPE"
-		left join sys_dictionary dic10 on dic10.dic_value=transmgmt.deliver_goods_time_mode and dic10.group_value="ODO_DELIVER_GOODS_TIME_MODE"
-		left join sys_dictionary dic11 on dic11.dic_value=odo.include_fragile_cargo and dic11.group_value="INCLUDE_FRAGILE_CARGO"
-		left join sys_dictionary dic12 on dic12.dic_value=odo.include_hazardous_cargo and dic12.group_value="INCLUDE_HAZARDOUS_CARGO"
 		<include refid="whOdoDynamicWherePageExt"/>
  
  
@@ -472,6 +458,7 @@
  <select id="findListByQueryMapWithPageExt" resultMap="WhOdoResultCommandExt" parameterType="com.baozun.scm.primservice.whoperation.command.odo.OdoSearchCommand">
        
 		SELECT
+			odo.id as id,
 			odo.odo_code as odoCode,
 			odo.ext_code as extCode,
 			odo.priority_level as priorityLevel,
@@ -483,9 +470,7 @@
 			
 			odo.ec_order_code as ecOrderCode,
 			odo.customer_id as customerId,
-			customer.customer_name as customerName,
 			odo.store_id AS storeId,
-			store.store_name as storeName,
 			DATE_FORMAT(odo.order_time,'%Y-%m-%d') as orderTime,
 			odo.sku_number_of_packages AS skuNumberOfPackages,
 			odo.amt as amt,
@@ -549,13 +534,70 @@
 		from t_wh_odo odo
 		left join t_wh_odo_address address on address.odo_id=odo.id
 		left join t_wh_odo_transport_mgmt transmgmt on transmgmt.odo_id=odo.id
-		left join t_bi_customer customer on customer.id=odo.customer_id
-		left join t_bi_store store on store.id=odo.store_id
 		left join t_ma_transport_provider transprovider on transmgmt.transport_service_provider=transprovider.code
 		left join t_ma_transport_service_type transType on transType.tp_id=transprovider.id and transType.code=transmgmt.courier_service_type
 		left join t_wh_out_inventory_box_type boxType on boxType.id=odo.outbound_carton_type and odo.ou_id=boxType.ou_id
 		left join oper_user user1 on user1.id=odo.created_id
 		left join oper_user user2 on user2.id=odo.modified_id
 		<include refid="whOdoDynamicWherePageExt"/>
+    </select>
+    
+    
+    <update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.odo.WhOdo">
+        <![CDATA[
+            UPDATE t_wh_odo SET
+                odo_code = #{odoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                ext_code = #{extCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                ec_order_code = #{ecOrderCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                customer_id = #{customerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                store_id = #{storeId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                odo_type = #{odoType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                original_odo_code = #{originalOdoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                priority_level = #{priorityLevel,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                is_whole_order_outbound = #{isWholeOrderOutbound,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                part_outbound_strategy = #{partOutboundStrategy,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                cross_docking_symbol = #{crossDockingSymbol,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                order_type = #{orderType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                order_time = #{orderTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                odo_status = #{odoStatus,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                qty = #{qty,javaType=Double,jdbcType=DECIMAL} ,
+                current_qty = #{currentQty,javaType=Double,jdbcType=DECIMAL} ,
+                actual_qty = #{actualQty,javaType=Double,jdbcType=DECIMAL} ,
+                cancel_qty = #{cancelQty,javaType=Double,jdbcType=DECIMAL} ,
+                sku_number_of_packages = #{skuNumberOfPackages,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                amt = #{amt,javaType=Double,jdbcType=DECIMAL} ,
+                distribute_mode = #{distributeMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                epistatic_systems_order_type = #{epistaticSystemsOrderType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                outbound_carton_type = #{outboundCartonType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                include_hazardous_cargo = #{includeHazardousCargo,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                include_fragile_cargo = #{includeFragileCargo,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                is_locked = #{isLocked,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                last_modify_time = now() ,
+                modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
+           
+        ]]>
+        <where>
+		    		id = #{id} and ou_id=#{ouId}
+			        and last_modify_time	=  #{lastModifyTime}    
+		    </where>
+    </update>
+    
+    <select id="findByIdOuId" parameterType="map" resultMap="WhOdoResult" flushCache="false">
+        select
+        <include refid="whOdoColumns"/>
+        <![CDATA[
+                from t_wh_odo 
+                where 
+                id = #{id} and ou_id=#{ouId}
+            ]]>
+    </select>
+    
+    <select id="existsSkuInOdo" resultType="int">
+        select count(*) from t_wh_odo_line odoline
+        where odoline.odo_id=#{odoId} and odoline.ou_id=#{ouId}
+        and odoline.sku_id=#{skuId}
+        
     </select>
 </mapper>

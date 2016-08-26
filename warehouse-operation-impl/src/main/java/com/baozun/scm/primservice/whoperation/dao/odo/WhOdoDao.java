@@ -25,6 +25,8 @@ import lark.common.dao.QueryCondition;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.baozun.scm.primservice.whoperation.command.odo.OdoResultCommand;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 
@@ -46,5 +48,19 @@ public interface WhOdoDao extends BaseDao<WhOdo, Long> {
 
     @CommonQuery
     int saveOrUpdate(WhOdo o);
+
+    @CommonQuery
+    int saveOrUpdateByVersion(WhOdo o);
+
+    /**
+     * [通用方法]根据ID,OUID查找ODO
+     * 
+     * @param id
+     * @param ouId
+     * @return
+     */
+    WhOdo findByIdOuId(@Param("id") Long id, @Param("ouId") Long ouId);
+
+    int existsSkuInOdo(@Param("odoId") Long odoId, @Param("skuId") Long skuId, @Param("ouId") Long ouId);
 
 }

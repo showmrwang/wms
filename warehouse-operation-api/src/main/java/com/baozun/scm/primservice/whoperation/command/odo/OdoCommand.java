@@ -38,17 +38,17 @@ public class OdoCommand extends BaseCommand {
     /** 出库单状态 */
     private String odoStatus;
     /** 计划数量 */
-    private Long qty;
+    private Double qty;
     /** 本次出库数量 */
-    private Long currentQty;
+    private Double currentQty;
     /** 实际出库数量 */
-    private Long actualQty;
+    private Double actualQty;
     /** 取消数量 */
-    private Long cancelQty;
+    private Double cancelQty;
     /** SKU总件数 */
     private Integer skuNumberOfPackages;
     /** 订单总金额 */
-    private Long amt;
+    private Double amt;
     /** 配货模式 */
     private String distributeMode;
     /** 上位系统单据类型 */
@@ -71,6 +71,55 @@ public class OdoCommand extends BaseCommand {
     private java.util.Date lastModifyTime;
     /** 操作人ID */
     private Long modifiedId;
+    /** id */
+    private Long id;
+    // ------------------------------------------------------------------------------------
+    // 自定义字段
+    private Long userId;
+    private String createTimeStr;
+    private String lastModifyTimeStr;
+    private String orderTimeStr;
+
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getOrderTimeStr() {
+        return orderTimeStr;
+    }
+
+    public void setOrderTimeStr(String orderTimeStr) {
+        this.orderTimeStr = orderTimeStr;
+    }
+
+    public String getCreateTimeStr() {
+        return createTimeStr;
+    }
+
+    public void setCreateTimeStr(String createTimeStr) {
+        this.createTimeStr = createTimeStr;
+    }
+
+    public String getLastModifyTimeStr() {
+        return lastModifyTimeStr;
+    }
+
+    public void setLastModifyTimeStr(String lastModifyTimeStr) {
+        this.lastModifyTimeStr = lastModifyTimeStr;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
 
     public String getOdoCode() {
         return odoCode;
@@ -184,35 +233,36 @@ public class OdoCommand extends BaseCommand {
         this.odoStatus = odoStatus;
     }
 
-    public Long getQty() {
+
+    public Double getQty() {
         return qty;
     }
 
-    public void setQty(Long qty) {
+    public void setQty(Double qty) {
         this.qty = qty;
     }
 
-    public Long getCurrentQty() {
+    public Double getCurrentQty() {
         return currentQty;
     }
 
-    public void setCurrentQty(Long currentQty) {
+    public void setCurrentQty(Double currentQty) {
         this.currentQty = currentQty;
     }
 
-    public Long getActualQty() {
+    public Double getActualQty() {
         return actualQty;
     }
 
-    public void setActualQty(Long actualQty) {
+    public void setActualQty(Double actualQty) {
         this.actualQty = actualQty;
     }
 
-    public Long getCancelQty() {
+    public Double getCancelQty() {
         return cancelQty;
     }
 
-    public void setCancelQty(Long cancelQty) {
+    public void setCancelQty(Double cancelQty) {
         this.cancelQty = cancelQty;
     }
 
@@ -224,11 +274,11 @@ public class OdoCommand extends BaseCommand {
         this.skuNumberOfPackages = skuNumberOfPackages;
     }
 
-    public Long getAmt() {
+    public Double getAmt() {
         return amt;
     }
 
-    public void setAmt(Long amt) {
+    public void setAmt(Double amt) {
         this.amt = amt;
     }
 

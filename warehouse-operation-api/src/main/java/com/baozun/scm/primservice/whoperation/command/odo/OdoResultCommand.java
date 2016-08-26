@@ -8,7 +8,7 @@ public class OdoResultCommand extends BaseCommand{
      * 
      */
     private static final long serialVersionUID = 5830200103545531555L;
-
+    private Long id;
     private String odoCode;
     private String extCode;
     private String priorityLevel;
@@ -83,6 +83,14 @@ public class OdoResultCommand extends BaseCommand{
     private String modifiedId;
     private String modifiedName;
     private String isLocked;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getIsLocked() {
         return isLocked;

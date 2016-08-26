@@ -54,6 +54,9 @@
                     <value>com.baozun.scm.primservice.whoperation.model.warehouse.WhAsnRcvdSnLog</value>
                     <value>com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryLog</value>
                     <value>com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventorySnLog</value>
+                    <value>com.baozun.scm.primservice.whoperation.model.odo.WhOdo</value>
+                    <value>com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt</value>
+                    <value>com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine</value>
 				</list>
 			</property>
 			
