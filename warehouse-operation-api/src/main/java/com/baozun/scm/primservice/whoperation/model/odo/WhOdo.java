@@ -56,17 +56,17 @@ public class WhOdo extends BaseModel {
     /** 出库单状态 */
     private String odoStatus;
     /** 计划数量 */
-    private Long qty;
+    private Double qty;
     /** 本次出库数量 */
-    private Long currentQty;
+    private Double currentQty;
     /** 实际出库数量 */
-    private Long actualQty;
+    private Double actualQty;
     /** 取消数量 */
-    private Long cancelQty;
+    private Double cancelQty;
     /** SKU总件数 */
     private Integer skuNumberOfPackages;
     /** 订单总金额 */
-    private Long amt;
+    private Double amt;
     /** 配货模式 */
     private String distributeMode;
     /** 上位系统单据类型 */
@@ -202,35 +202,35 @@ public class WhOdo extends BaseModel {
         this.odoStatus = odoStatus;
     }
 
-    public Long getQty() {
+    public Double getQty() {
         return qty;
     }
 
-    public void setQty(Long qty) {
+    public void setQty(Double qty) {
         this.qty = qty;
     }
 
-    public Long getCurrentQty() {
+    public Double getCurrentQty() {
         return currentQty;
     }
 
-    public void setCurrentQty(Long currentQty) {
+    public void setCurrentQty(Double currentQty) {
         this.currentQty = currentQty;
     }
 
-    public Long getActualQty() {
+    public Double getActualQty() {
         return actualQty;
     }
 
-    public void setActualQty(Long actualQty) {
+    public void setActualQty(Double actualQty) {
         this.actualQty = actualQty;
     }
 
-    public Long getCancelQty() {
+    public Double getCancelQty() {
         return cancelQty;
     }
 
-    public void setCancelQty(Long cancelQty) {
+    public void setCancelQty(Double cancelQty) {
         this.cancelQty = cancelQty;
     }
 
@@ -242,11 +242,11 @@ public class WhOdo extends BaseModel {
         this.skuNumberOfPackages = skuNumberOfPackages;
     }
 
-    public Long getAmt() {
+    public Double getAmt() {
         return amt;
     }
 
-    public void setAmt(Long amt) {
+    public void setAmt(Double amt) {
         this.amt = amt;
     }
 

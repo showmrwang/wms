@@ -8,7 +8,44 @@ import lark.common.dao.Sort;
 
 import com.baozun.scm.primservice.whoperation.command.odo.OdoResultCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt;
 
 public interface OdoManager extends BaseManager {
     Pagination<OdoResultCommand> findListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params);
+
+    /**
+     * [业务方法]创建出库单TODO
+     * 
+     * @param odo
+     * @param transportMgmt
+     */
+    void createOdo(WhOdo odo, WhOdoTransportMgmt transportMgmt);
+
+    /**
+     * [通用方法]根据ID,OUID查找ODO
+     * 
+     * @param id
+     * @param ouId
+     * @return
+     */
+    WhOdo findOdoByIdOuId(Long id, Long ouId);
+
+    /**
+     * [通用商品]查找出库单是否包含某种商品
+     * 
+     * @param odoId
+     * @param skuId
+     * @param ouId
+     * @return
+     */
+    int existsSkuInOdo(Long odoId, Long skuId, Long ouId);
+
+    /**
+     * 
+     * @param line
+     * @param odo
+     */
+    void saveUnit(WhOdoLine line, WhOdo odo);
 }

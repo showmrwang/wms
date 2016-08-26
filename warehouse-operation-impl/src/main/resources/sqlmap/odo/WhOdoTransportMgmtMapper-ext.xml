@@ -79,5 +79,13 @@
             </if>
         </where>
     </sql>
-
+    <select id="findTransportMgmtByOdoIdOuId" parameterType="map" resultMap="WhOdoTransportMgmtResult" flushCache="false">
+        select
+        <include refid="whOdoTransportMgmtColumns"/>
+        <![CDATA[
+                from t_wh_odo_transport_mgmt 
+                where 
+                odo_id = #{odoId}  and ou_id=#{ouId}
+            ]]>
+    </select>
 </mapper>

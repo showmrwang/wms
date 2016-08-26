@@ -25,6 +25,8 @@ import lark.common.dao.QueryCondition;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
 
 public interface WhOdoLineDao extends BaseDao<WhOdoLine, Long> {
@@ -42,5 +44,17 @@ public interface WhOdoLineDao extends BaseDao<WhOdoLine, Long> {
 
     @CommonQuery
     int saveOrUpdate(WhOdoLine o);
+
+    @CommonQuery
+    int saveOrUpdateByVersion(WhOdoLine o);
+
+    /**
+     * [通用方法]根据ODOLINEID,OUID查找ODOLINE
+     * 
+     * @param id
+     * @param ouId
+     * @return
+     */
+    WhOdoLine findOdoLineById(@Param("id") Long id, @Param("ouId") Long ouId);
 
 }

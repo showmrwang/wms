@@ -309,4 +309,15 @@ public final class Constants {
 
     public static final String INCLUDE_HAZARDOUS_CARGO = "INCLUDE_HAZARDOUS_CARGO";
 
+    // 出库单默认优先级
+    public static final Integer ODO_DEFAULT_PRIORITYLEVLE = 50;
+
+    /** 调编码生成器出库单实体标识 */
+    public static final String WHODO_MODEL_URL = "com.baozun.scm.primservice.whoperation.model.odo.WhOdo";
+
+    /** 调编码生成器 出库单WMS内部单号分组 */
+    public static final String WMS_ODO_INNER = "WMS_ODO_INNER";
+
+    /** 调编码生成器 出库单WMS外部单号分组 */
+    public static final String WMS_ODO_EXT = "WMS_ODO_EXT";
 }

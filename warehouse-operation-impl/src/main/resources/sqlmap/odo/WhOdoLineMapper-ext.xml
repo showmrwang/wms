@@ -239,4 +239,63 @@
         </where>
     </sql>
 
+<select id="findOdoLineById" parameterType="map" resultMap="WhOdoLineResult" flushCache="false">
+        select
+        <include refid="whOdoLineColumns"/>
+        <![CDATA[
+                from t_wh_odo_line 
+                where 
+                id = #{id} and ou_id =#{ouId}
+            ]]>
+    </select>
+    
+    <update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine">
+        <![CDATA[
+            UPDATE t_wh_odo_line SET
+                odo_id = #{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                linenum = #{linenum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                store = #{store,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                ext_linenum = #{extLinenum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                sku_id = #{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                sku_bar_code = #{skuBarCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                sku_name = #{skuName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                ext_sku_name = #{extSkuName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                qty = #{qty,javaType=Double,jdbcType=DECIMAL} ,
+                current_qty = #{currentQty,javaType=Double,jdbcType=DECIMAL} ,
+                actual_qty = #{actualQty,javaType=Double,jdbcType=DECIMAL} ,
+                cancel_qty = #{cancelQty,javaType=Double,jdbcType=DECIMAL} ,
+                assign_qty = #{assignQty,javaType=Double,jdbcType=DECIMAL} ,
+                dieking_qty = #{diekingQty,javaType=Double,jdbcType=DECIMAL} ,
+                line_price = #{linePrice,javaType=Double,jdbcType=DECIMAL} ,
+                line_amt = #{lineAmt,javaType=Double,jdbcType=DECIMAL} ,
+                odo_line_status = #{odoLineStatus,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                is_check = #{isCheck,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                full_line_outbound = #{fullLineOutbound,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                part_outbound_strategy = #{partOutboundStrategy,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                mfg_date = #{mfgDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                exp_date = #{expDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                min_exp_date = #{minExpDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                max_exp_date = #{maxExpDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                batch_number = #{batchNumber,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                country_of_origin = #{countryOfOrigin,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                inv_status = #{invStatus,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                inv_type = #{invType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                inv_attr1 = #{invAttr1,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                inv_attr2 = #{invAttr2,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                inv_attr3 = #{invAttr3,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                inv_attr4 = #{invAttr4,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                inv_attr5 = #{invAttr5,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                outbound_carton_type = #{outboundCartonType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                color = #{color,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                style = #{style,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                size = #{size,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                mixing_attr = #{mixingAttr,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                last_modify_time = now() ,
+                modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
+            WHERE 
+                id = #{id} and ou_id=#{ouId} and last_modify_time=#{lastModifyTime}
+        ]]>
+    </update>
 </mapper>

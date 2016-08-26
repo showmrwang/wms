@@ -25,6 +25,8 @@ import lark.common.dao.QueryCondition;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt;
 
 public interface WhOdoTransportMgmtDao extends BaseDao<WhOdoTransportMgmt, Long> {
@@ -42,5 +44,17 @@ public interface WhOdoTransportMgmtDao extends BaseDao<WhOdoTransportMgmt, Long>
 
     @CommonQuery
     int saveOrUpdate(WhOdoTransportMgmt o);
+
+    @CommonQuery
+    int saveOrUpdateByVersion(WhOdoTransportMgmt o);
+
+    /**
+     * [通用方法]根据ODOID,OUID查找ODOTRANSPORTMGMT
+     * 
+     * @param odoId
+     * @param ouId
+     * @return
+     */
+    WhOdoTransportMgmt findTransportMgmtByOdoIdOuId(@Param("odoId") Long odoId, @Param("ouId") Long ouId);
 
 }
