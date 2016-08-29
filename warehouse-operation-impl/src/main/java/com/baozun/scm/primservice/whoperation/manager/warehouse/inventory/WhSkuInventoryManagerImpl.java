@@ -295,6 +295,26 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             }
         }
     }
+    
+    /**
+     * @author lichuan
+     * @param containerCmd
+     * @param insideContainerCmd
+     * @param locationCode
+     * @param funcId
+     * @param warehouse
+     * @param lrrList
+     * @param putawayPatternDetailType
+     * @param ouId
+     * @param userId
+     * @param logId
+     * @deprecated
+     */
+    @Override
+    public void putaway(ContainerCommand containerCmd, ContainerCommand insideContainerCmd, String locationCode, Long funcId, Warehouse warehouse, List<LocationRecommendResultCommand> lrrList, Integer putawayPatternDetailType, Long ouId, Long userId,
+            String logId) {
+        // 待删除
+    }
 
     /**
      * 执行上架（已分配容器库存出库及待移入库位库存入库）
