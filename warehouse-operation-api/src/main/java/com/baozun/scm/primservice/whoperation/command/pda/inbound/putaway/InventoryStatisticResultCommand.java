@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
+import com.baozun.scm.primservice.whoperation.model.warehouse.ContainerAssist;
 
 /**
  * @author lichuan
@@ -79,6 +80,20 @@ public class InventoryStatisticResultCommand extends BaseCommand {
     Map<Long, Map<Long, Set<String>>> insideContainerLocSkuAttrIds = new HashMap<Long, Map<Long, Set<String>>>();
     /** 内部容器所有店铺 */
     Map<Long, Set<Long>> insideContainerStoreIds = new HashMap<Long, Set<Long>>();
+    
+    private Double outerContainerWeight;
+    
+    private Double outerContainerVolume;
+    
+    private Map<Long, Double> insideContainerWeight;
+    
+    private Map<Long, Double> insideContainerVolume;
+    
+    private Map<String, Double> lenUomConversionRate;
+    
+    private Map<String, Double> weightUomConversionRate;
+    
+    private Map<Long, ContainerAssist> insideContainerAsists;
 
 
     public int getPutawayPatternType() {
@@ -281,6 +296,63 @@ public class InventoryStatisticResultCommand extends BaseCommand {
         this.insideContainerStoreIds = insideContainerStoreIds;
     }
 
+    public Double getOuterContainerWeight() {
+        return outerContainerWeight;
+    }
 
+    public void setOuterContainerWeight(Double outerContainerWeight) {
+        this.outerContainerWeight = outerContainerWeight;
+    }
+
+    public Double getOuterContainerVolume() {
+        return outerContainerVolume;
+    }
+
+    public void setOuterContainerVolume(Double outerContainerVolume) {
+        this.outerContainerVolume = outerContainerVolume;
+    }
+
+    public Map<Long, Double> getInsideContainerWeight() {
+        return insideContainerWeight;
+    }
+
+    public void setInsideContainerWeight(Map<Long, Double> insideContainerWeight) {
+        this.insideContainerWeight = insideContainerWeight;
+    }
+
+    public Map<Long, Double> getInsideContainerVolume() {
+        return insideContainerVolume;
+    }
+
+    public void setInsideContainerVolume(Map<Long, Double> insideContainerVolume) {
+        this.insideContainerVolume = insideContainerVolume;
+    }
+
+
+    public Map<String, Double> getLenUomConversionRate() {
+        return lenUomConversionRate;
+    }
+
+    public void setLenUomConversionRate(Map<String, Double> lenUomConversionRate) {
+        this.lenUomConversionRate = lenUomConversionRate;
+    }
+
+    public Map<String, Double> getWeightUomConversionRate() {
+        return weightUomConversionRate;
+    }
+
+    public void setWeightUomConversionRate(Map<String, Double> weightUomConversionRate) {
+        this.weightUomConversionRate = weightUomConversionRate;
+    }
+
+    public Map<Long, ContainerAssist> getInsideContainerAsists() {
+        return insideContainerAsists;
+    }
+
+    public void setInsideContainerAsists(Map<Long, ContainerAssist> insideContainerAsists) {
+        this.insideContainerAsists = insideContainerAsists;
+    }
+
+    
 
 }

@@ -595,7 +595,7 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                         cacheSkuIds.addFirst(skuId);
                         cacheSkuCmd.setScanSkuIds(cacheSkuIds);
                         cacheManager.setObject(CacheConstants.SCAN_SKU_QUEUE + icId.toString(), cacheSkuCmd, CacheConstants.CACHE_ONE_DAY);
-                        if (isCacheAllExists(icSkusIds, scanIcIds)) {
+                        if (isCacheAllExists(icSkusIds, cacheSkuIds)) {
                             // 全部商品已复核完毕
                             if (isCacheAllExists(insideContainerIds, scanIcIds)) {
                                 // 全部容器已复核完毕
