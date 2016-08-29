@@ -140,6 +140,22 @@ public interface PdaPutawayCacheManager extends BaseManager {
             WhSkuCommand skuCmd, String logId);
 
     /**
+     * pda整托上架复核sku并缓存及提示容器容器判断
+     * @author lichuan
+     * @param ocCmd
+     * @param icCmd
+     * @param insideContainerIds
+     * @param insideContainerSkuIds
+     * @param insideContainerSkuIdsQty
+     * @param skuCmd
+     * @param scanPattern
+     * @param logId
+     * @return
+     */
+    CheckScanSkuResultCommand sysGuidePalletPutawayCacheSkuOrTipContainer(ContainerCommand ocCmd, ContainerCommand icCmd, Set<Long> insideContainerIds, Map<Long, Set<Long>> insideContainerSkuIds, Map<Long, Map<Long, Long>> insideContainerSkuIdsQty,
+            WhSkuCommand skuCmd, Integer scanPattern, String logId);
+
+    /**
      * pda上架清理所有缓存
      * 
      * @author lichuan

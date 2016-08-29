@@ -43,6 +43,8 @@ public class TipScanSkuCacheCommand extends BaseCommand {
     private ArrayDeque<Long> scanSkuIds = new ArrayDeque<Long>();
     /** 已复合唯一商品列表 */
     private ArrayDeque<String> scanSkuAttrIds = new ArrayDeque<String>();
+    /** 逐件扫描商品列表 */
+    private ArrayDeque<Long> oneByOneScanSkuIds = new ArrayDeque<Long>();
 
     public int getPutawayPatternDetailType() {
         return putawayPatternDetailType;
@@ -116,6 +118,13 @@ public class TipScanSkuCacheCommand extends BaseCommand {
         this.scanSkuAttrIds = scanSkuAttrIds;
     }
 
+    public ArrayDeque<Long> getOneByOneScanSkuIds() {
+        return oneByOneScanSkuIds;
+    }
+
+    public void setOneByOneScanSkuIds(ArrayDeque<Long> oneByOneScanSkuIds) {
+        this.oneByOneScanSkuIds = oneByOneScanSkuIds;
+    }
 
 
 }
