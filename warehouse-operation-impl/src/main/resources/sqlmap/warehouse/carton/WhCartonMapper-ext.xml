@@ -327,6 +327,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    where id = #{id} and ou_id = #{ouid}
 	    and is_caselevel = 1
  </select>
+  <select id="findWhCartonCountByContainerId" resultType="Integer">
+	                select 
+					count(1)
+					from t_wh_carton 
+					where 
+					ou_id = #{ouId}
+					and container_id = #{containerId}
+					and is_caselevel = #{isCaselevel}
+					
+ </select>
  
   <select id="findWhCartonByParamExt" resultMap="WhCartonResultExt">
     	select <include refid="whCartonColumns" />

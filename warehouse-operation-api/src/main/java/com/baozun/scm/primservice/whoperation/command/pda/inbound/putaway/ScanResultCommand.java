@@ -120,7 +120,19 @@ public class ScanResultCommand extends BaseCommand {
     private boolean isRecommendFail;
     /** 库位推荐失败以后是否提示下一个容器 */
     private boolean isAfterRecommendTipContainer;
+    /**只扫caselevel的容器*/
+    private boolean isCaselevelScanContainer;
 
+    /**只扫非caselevel的容器*/
+    private boolean isNotCaselevelScanContainer;
+    /** 扫描所有的容器*/
+    private boolean scanContainer;
+    /**内部容器是否已经扫描完毕*/
+    private boolean isNotContainer;
+    /**继续扫描商品*/
+    private boolean isScanSku;
+    /**sku条码*/
+    private String skuBarCode;
 
     public int getPutawayPatternType() {
         return putawayPatternType;
@@ -506,6 +518,55 @@ public class ScanResultCommand extends BaseCommand {
         this.isAfterRecommendTipContainer = isAfterRecommendTipContainer;
     }
 
+    public boolean isCaselevelScanContainer() {
+        return isCaselevelScanContainer;
+    }
 
+    public void setCaselevelScanContainer(boolean isCaselevelScanContainer) {
+        this.isCaselevelScanContainer = isCaselevelScanContainer;
+    }
 
+    public boolean isNotCaselevelScanContainer() {
+        return isNotCaselevelScanContainer;
+    }
+
+    public void setNotCaselevelScanContainer(boolean isNotCaselevelScanContainer) {
+        this.isNotCaselevelScanContainer = isNotCaselevelScanContainer;
+    }
+
+    public boolean isScanContainer() {
+        return scanContainer;
+    }
+
+    public void setScanContainer(boolean scanContainer) {
+        this.scanContainer = scanContainer;
+    }
+
+    public boolean isNotContainer() {
+        return isNotContainer;
+    }
+
+    public void setNotContainer(boolean isNotContainer) {
+        this.isNotContainer = isNotContainer;
+    }
+
+    public boolean isScanSku() {
+        return isScanSku;
+    }
+
+    public void setScanSku(boolean isScanSku) {
+        this.isScanSku = isScanSku;
+    }
+
+    public String getSkuBarCode() {
+        return skuBarCode;
+    }
+
+    public void setSkuBarCode(String skuBarCode) {
+        this.skuBarCode = skuBarCode;
+    }
+
+    
+    
+    
 }

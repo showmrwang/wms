@@ -475,6 +475,18 @@ public class ErrorCodes {
     // 60001-70000 xiemingwei
 
     // 70001-80000 tangming
+    /** 当前容器状态不允许上架*/
+    public static final int COMMON_CONTAINER__NOT_PUTWAY = 70015;
+    /***扫描容器号不正确*/
+    public static final int CONTAINER_IS_ERROR = 70016;
+    /***数量扫描的商品数量大于货箱的商品的总数*/
+    public static final int GT_SKU_QTY = 70017;
+    /***数量扫描的商品数量小于一*/
+    public static final int LT_ONE = 70018;
+    /***该商品容器中不存在*/
+    public static final int SKU_IS_NOT_EXIST = 70019;
+    /***该商品不是当前库位绑定的商品*/
+    public static final int LOCATION_SKU_IS_NOT_EXISTS = 70020;
     // 70001-80000 tangming
 
 
