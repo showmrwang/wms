@@ -30,10 +30,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import com.baozun.redis.manager.CacheManager;
+import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.ContainerStatisticResultCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.LocationRecommendResultCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
+import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
 import com.baozun.scm.primservice.whoperation.constant.WhPutawayPatternDetailType;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
@@ -43,6 +46,7 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInven
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseInventoryManagerImpl;
+import com.baozun.scm.primservice.whoperation.manager.pda.inbound.cache.PdaPutawayCacheManager;
 import com.baozun.scm.primservice.whoperation.manager.pda.inbound.putaway.SkuCategoryProvider;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Location;
@@ -69,6 +73,10 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     private WhSkuInventoryLogManager whSkuInventoryLogManager;
     @Autowired
     private ContainerDao containerDao;
+    @Autowired
+    private CacheManager cacheManager;
+    @Autowired
+    private PdaPutawayCacheManager pdaPutawayCacheManager;
 
     /**
      * 库位绑定（分配容器库存及生成待移入库位库存）
@@ -1002,9 +1010,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         }
                     }
                 }
-                // 如果不跟踪容器号，则上架成功后需要释放容器
+                // 3.如果不跟踪容器号，则上架成功后需要释放容器
                 if (false == isTV) {
-                    // 3.修改所有内部容器状态为可用
+                    // 修改外部容器状态
                     if (WhPutawayPatternDetailType.PALLET_PUTAWAY == putawayPatternDetailType) {
                         Integer containerStatus = containerCmd.getStatus();
                         if (ContainerStatus.CONTAINER_STATUS_PUTAWAY == containerStatus) {
@@ -1016,9 +1024,41 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             insertGlobalLog(GLOBAL_LOG_UPDATE, container, ouId, userId, null, null);
                         }
                     } else {
-                        // 整箱上架需要判断所有内部容器全部都已上架才能修改外部容器状态
-                        
+                        // 整箱上架需要判断所有内部容器全部都已上架且状态可用才能修改外部容器状态
+                        ContainerStatisticResultCommand csrCmd = new ContainerStatisticResultCommand();
+                        if (null != containerCmd) {
+                            csrCmd = cacheManager.getMapObject(CacheConstants.CONTAINER_STATISTIC, containerCmd.getId().toString());
+                            if (null == csrCmd) {
+                                csrCmd = pdaPutawayCacheManager.sysGuideContainerPutawayCacheInsideContainerStatistic(containerCmd, ouId, logId);
+                            }
+                            Set<Long> cacheInsideContainerIds = csrCmd.getInsideContainerIds();
+                            boolean isUpdateOuterContainerStatus = true;
+                            for (Long icId : cacheInsideContainerIds) {
+                                Container insideContainer = containerDao.findByIdExt(icId, ouId);
+                                if (null != insideContainer) {
+                                    // 获取容器状态
+                                    Integer iContainerStatus = insideContainer.getStatus();
+                                    Integer lifecycle = insideContainer.getLifecycle();
+                                    if (ContainerStatus.CONTAINER_STATUS_USABLE != iContainerStatus || ContainerStatus.CONTAINER_LIFECYCLE_USABLE == lifecycle) {
+                                        isUpdateOuterContainerStatus = false;
+                                        break;
+                                    }
+                                }
+                            }
+                            if (true == isUpdateOuterContainerStatus) {
+                                Integer containerStatus = containerCmd.getStatus();
+                                if (ContainerStatus.CONTAINER_STATUS_PUTAWAY == containerStatus) {
+                                    Container container = new Container();
+                                    BeanUtils.copyProperties(containerCmd, container);
+                                    container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_USABLE);
+                                    container.setStatus(ContainerStatus.CONTAINER_STATUS_USABLE);
+                                    containerDao.saveOrUpdateByVersion(container);
+                                    insertGlobalLog(GLOBAL_LOG_UPDATE, container, ouId, userId, null, null);
+                                }
+                            }
+                        }
                     }
+                    // 修改内部容器状态
                     for (Long icId : insideContainerIds) {
                         Container insideContainer = containerDao.findByIdExt(icId, ouId);
                         if (null != insideContainer) {
