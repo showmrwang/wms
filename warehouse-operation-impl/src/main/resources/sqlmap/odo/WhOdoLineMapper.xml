@@ -4,578 +4,651 @@
         "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
 
 <mapper namespace="com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineDao">
-    <resultMap id="WhOdoLineResult" type="com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine">
-    </resultMap>
+	<resultMap id="WhOdoLineResult"
+		type="com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine">
+	</resultMap>
 
-    <resultMap id="WhOdoLinePaginationResult" type="lark.common.dao.Pagination">
-        <collection property="items" javaType="ArrayList" resultMap="WhOdoLineResult"/>
-    </resultMap>
+	<resultMap id="WhOdoLinePaginationResult" type="lark.common.dao.Pagination">
+		<collection property="items" javaType="ArrayList"
+			resultMap="WhOdoLineResult" />
+	</resultMap>
 
-    <!-- 用于select查询公用抽取的列 -->
-    <sql id="whOdoLineColumns">
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whOdoLineColumns">
         <![CDATA[
                 id as id,
-                odo_id as odoId,
-                linenum as linenum,
-                store as store,
-                ext_linenum as extLinenum,
-                sku_id as skuId,
-                sku_bar_code as skuBarCode,
-                sku_name as skuName,
-                ext_sku_name as extSkuName,
-                qty as qty,
-                current_qty as currentQty,
-                actual_qty as actualQty,
-                cancel_qty as cancelQty,
-                assign_qty as assignQty,
-                dieking_qty as diekingQty,
-                line_price as linePrice,
-                line_amt as lineAmt,
-                odo_line_status as odoLineStatus,
-                is_check as isCheck,
-                full_line_outbound as fullLineOutbound,
-                part_outbound_strategy as partOutboundStrategy,
-                mfg_date as mfgDate,
-                exp_date as expDate,
-                min_exp_date as minExpDate,
-                max_exp_date as maxExpDate,
-                batch_number as batchNumber,
-                country_of_origin as countryOfOrigin,
-                inv_status as invStatus,
-                inv_type as invType,
-                inv_attr1 as invAttr1,
-                inv_attr2 as invAttr2,
-                inv_attr3 as invAttr3,
-                inv_attr4 as invAttr4,
-                inv_attr5 as invAttr5,
-                outbound_carton_type as outboundCartonType,
-                color as color,
-                style as style,
-                size as size,
-                mixing_attr as mixingAttr,
-                ou_id as ouId,
-                create_time as createTime,
-                created_id as createdId,
-                last_modify_time as lastModifyTime,
-                modified_id as modifiedId
+	        	odo_id as odoId,
+	        	linenum as linenum,
+	        	original_linenum as originalLinenum,
+	        	store as store,
+	        	ext_linenum as extLinenum,
+	        	sku_id as skuId,
+	        	sku_bar_code as skuBarCode,
+	        	sku_name as skuName,
+	        	ext_sku_name as extSkuName,
+	        	qty as qty,
+	        	current_qty as currentQty,
+	        	actual_qty as actualQty,
+	        	cancel_qty as cancelQty,
+	        	assign_qty as assignQty,
+	        	dieking_qty as diekingQty,
+	        	line_price as linePrice,
+	        	line_amt as lineAmt,
+	        	odo_line_status as odoLineStatus,
+	        	is_check as isCheck,
+	        	full_line_outbound as fullLineOutbound,
+	        	part_outbound_strategy as partOutboundStrategy,
+	        	mfg_date as mfgDate,
+	        	exp_date as expDate,
+	        	min_exp_date as minExpDate,
+	        	max_exp_date as maxExpDate,
+	        	batch_number as batchNumber,
+	        	country_of_origin as countryOfOrigin,
+	        	inv_status as invStatus,
+	        	inv_type as invType,
+	        	inv_attr1 as invAttr1,
+	        	inv_attr2 as invAttr2,
+	        	inv_attr3 as invAttr3,
+	        	inv_attr4 as invAttr4,
+	        	inv_attr5 as invAttr5,
+	        	outbound_carton_type as outboundCartonType,
+	        	color as color,
+	        	style as style,
+	        	size as size,
+	        	mixing_attr as mixingAttr,
+	        	original_odo_code as originalOdoCode,
+	        	assign_fail_reason as assignFailReason,
+	        	is_assign_success as isAssignSuccess,
+	        	ou_id as ouId,
+	        	create_time as createTime,
+	        	created_id as createdId,
+	        	last_modify_time as lastModifyTime,
+	        	modified_id as modifiedId
         ]]>
-    </sql>
-    <sql id="whOdoLineConditionWhereExt">
-        <where>
-            <if test="likeEqualsMap != null">
-                <foreach collection="likeEqualsMap" index="key" item="value" separator="and" open=" and ">
-                    ${key} like CONCAT('%',#{value},'%')
-                </foreach>
-            </if>
+	</sql>
+	<sql id="whOdoLineConditionWhereExt">
+		<where>
+			<if test="likeEqualsMap != null">
+				<foreach collection="likeEqualsMap" index="key" item="value"
+					separator="and" open=" and ">
+					${key} like CONCAT('%',#{value},'%')
+				</foreach>
+			</if>
 
-            <if test="equalsMap != null">
-                <foreach collection="equalsMap" index="key" item="value" separator="and" open=" and ">
-                    ${key} = #{value}
-                </foreach>
-            </if>
+			<if test="equalsMap != null">
+				<foreach collection="equalsMap" index="key" item="value"
+					separator="and" open=" and ">
+					${key} = #{value}
+				</foreach>
+			</if>
 
-            <if test="notEqualsMap != null">
-                <foreach collection="notEqualsMap" index="key" item="value" separator="and" open=" and ">
-                    ${key} != #{value}
-                </foreach>
-            </if>
+			<if test="notEqualsMap != null">
+				<foreach collection="notEqualsMap" index="key" item="value"
+					separator="and" open=" and ">
+					${key} != #{value}
+				</foreach>
+			</if>
 
-            <if test="greateMap != null">
-                <foreach collection="greateMap" index="key" item="value" separator="and" open=" and ">
-                    ${key} &gt; #{value}
-                </foreach>
-            </if>
+			<if test="greateMap != null">
+				<foreach collection="greateMap" index="key" item="value"
+					separator="and" open=" and ">
+					${key} &gt; #{value}
+				</foreach>
+			</if>
 
-            <if test="greateEqualsMap != null">
-                <foreach collection="greateEqualsMap" index="key" item="value" separator="and" open=" and ">
-                    ${key} &gt;= #{value}
-                </foreach>
-            </if>
+			<if test="greateEqualsMap != null">
+				<foreach collection="greateEqualsMap" index="key" item="value"
+					separator="and" open=" and ">
+					${key} &gt;= #{value}
+				</foreach>
+			</if>
 
-            <if test="lessMap != null">
-                <foreach collection="lessMap" index="key" item="value" separator="and" open=" and ">
-                    ${key} &lt; #{value}
-                </foreach>
-            </if>
+			<if test="lessMap != null">
+				<foreach collection="lessMap" index="key" item="value"
+					separator="and" open=" and ">
+					${key} &lt; #{value}
+				</foreach>
+			</if>
 
-            <if test="lessEqualsMap != null">
-                <foreach collection="lessEqualsMap" index="key" item="value" separator="and" open=" and ">
-                    ${key} &lt;= #{value}
-                </foreach>
-            </if>
+			<if test="lessEqualsMap != null">
+				<foreach collection="lessEqualsMap" index="key" item="value"
+					separator="and" open=" and ">
+					${key} &lt;= #{value}
+				</foreach>
+			</if>
 
-            <if test="nullMap != null">
-                <foreach collection="nullMap" index="key" item="value" separator="and" open=" and ">
-                    ${key} is null
-                </foreach>
-            </if>
+			<if test="nullMap != null">
+				<foreach collection="nullMap" index="key" item="value"
+					separator="and" open=" and ">
+					${key} is null
+				</foreach>
+			</if>
 
-            <if test="notNullMap != null">
-                <foreach collection="notNullMap" index="key" item="value" separator="and" open=" and ">
-                    ${key} is not null
-                </foreach>
-            </if>
+			<if test="notNullMap != null">
+				<foreach collection="notNullMap" index="key" item="value"
+					separator="and" open=" and ">
+					${key} is not null
+				</foreach>
+			</if>
 
-            <if test="inMap != null">
-                <foreach collection="inMap" index="key" item="value" separator="and" open=" and (" close=")">
-                    <foreach collection="value" item="itemin" index="index" separator="or">
-                        ${key} = #{itemin}
-                    </foreach>
-                </foreach>
-            </if>
+			<if test="inMap != null">
+				<foreach collection="inMap" index="key" item="value"
+					separator="and" open=" and (" close=")">
+					<foreach collection="value" item="itemin" index="index"
+						separator="or">
+						${key} = #{itemin}
+					</foreach>
+				</foreach>
+			</if>
 
-            <if test="notInMap != null">
-                <foreach collection="notInMap" index="key" item="value" separator="and" open=" and (" close=")">
-                    <foreach collection="value" item="itemin" index="index" separator="and">
-                        ${key} != #{itemin}
-                    </foreach>
-                </foreach>
-            </if>
-        </where>
+			<if test="notInMap != null">
+				<foreach collection="notInMap" index="key" item="value"
+					separator="and" open=" and (" close=")">
+					<foreach collection="value" item="itemin" index="index"
+						separator="and">
+						${key} != #{itemin}
+					</foreach>
+				</foreach>
+			</if>
+		</where>
 
-        <if test="sortBy != null">
-            <foreach collection="sortBy" item="item" separator="," open=" order by ">
-                ${item.field} ${item.type}
-            </foreach>
-        </if>
-    </sql>
+		<if test="sortBy != null">
+			<foreach collection="sortBy" item="item" separator=","
+				open=" order by ">
+				${item.field} ${item.type}
+			</foreach>
+		</if>
+	</sql>
 
-    <!-- 如果有自增字段 -->
+	<!-- 如果有自增字段 -->
 
-    <!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
-    <insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine" flushCache="true">
+	<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+	<insert id="insert"
+		parameterType="com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine"
+		flushCache="true">
         <![CDATA[
                 INSERT INTO
                 t_wh_odo_line (
                     id,
                     odo_id ,
-                    linenum ,
-                    store ,
-                    ext_linenum ,
-                    sku_id ,
-                    sku_bar_code ,
-                    sku_name ,
-                    ext_sku_name ,
-                    qty ,
-                    current_qty ,
-                    actual_qty ,
-                    cancel_qty ,
-                    assign_qty ,
-                    dieking_qty ,
-                    line_price ,
-                    line_amt ,
-                    odo_line_status ,
-                    is_check ,
-                    full_line_outbound ,
-                    part_outbound_strategy ,
-                    mfg_date ,
-                    exp_date ,
-                    min_exp_date ,
-                    max_exp_date ,
-                    batch_number ,
-                    country_of_origin ,
-                    inv_status ,
-                    inv_type ,
-                    inv_attr1 ,
-                    inv_attr2 ,
-                    inv_attr3 ,
-                    inv_attr4 ,
-                    inv_attr5 ,
-                    outbound_carton_type ,
-                    color ,
-                    style ,
-                    size ,
-                    mixing_attr ,
-                    ou_id ,
-                    create_time ,
-                    created_id ,
-                    last_modify_time ,
-                    modified_id 
+		        	linenum ,
+		        	original_linenum ,
+		        	store ,
+		        	ext_linenum ,
+		        	sku_id ,
+		        	sku_bar_code ,
+		        	sku_name ,
+		        	ext_sku_name ,
+		        	qty ,
+		        	current_qty ,
+		        	actual_qty ,
+		        	cancel_qty ,
+		        	assign_qty ,
+		        	dieking_qty ,
+		        	line_price ,
+		        	line_amt ,
+		        	odo_line_status ,
+		        	is_check ,
+		        	full_line_outbound ,
+		        	part_outbound_strategy ,
+		        	mfg_date ,
+		        	exp_date ,
+		        	min_exp_date ,
+		        	max_exp_date ,
+		        	batch_number ,
+		        	country_of_origin ,
+		        	inv_status ,
+		        	inv_type ,
+		        	inv_attr1 ,
+		        	inv_attr2 ,
+		        	inv_attr3 ,
+		        	inv_attr4 ,
+		        	inv_attr5 ,
+		        	outbound_carton_type ,
+		        	color ,
+		        	style ,
+		        	size ,
+		        	mixing_attr ,
+		        	original_odo_code ,
+		        	assign_fail_reason ,
+		        	is_assign_success ,
+		        	ou_id ,
+		        	create_time ,
+		        	created_id ,
+		        	last_modify_time ,
+		        	modified_id 
                 ) VALUES (
                     #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
                     #{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-                    #{linenum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-                    #{store,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{extLinenum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-                    #{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-                    #{skuBarCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{skuName,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{extSkuName,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{qty,javaType=Double,jdbcType=DECIMAL} ,
-                    #{currentQty,javaType=Double,jdbcType=DECIMAL} ,
-                    #{actualQty,javaType=Double,jdbcType=DECIMAL} ,
-                    #{cancelQty,javaType=Double,jdbcType=DECIMAL} ,
-                    #{assignQty,javaType=Double,jdbcType=DECIMAL} ,
-                    #{diekingQty,javaType=Double,jdbcType=DECIMAL} ,
-                    #{linePrice,javaType=Double,jdbcType=DECIMAL} ,
-                    #{lineAmt,javaType=Double,jdbcType=DECIMAL} ,
-                    #{odoLineStatus,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{isCheck,javaType=java.lang.Boolean,jdbcType=BIT} ,
-                    #{fullLineOutbound,javaType=java.lang.Boolean,jdbcType=BIT} ,
-                    #{partOutboundStrategy,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{mfgDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-                    #{expDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-                    #{minExpDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-                    #{maxExpDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-                    #{batchNumber,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{countryOfOrigin,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{invStatus,javaType=java.lang.Long,jdbcType=BIGINT} ,
-                    #{invType,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{invAttr1,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{invAttr2,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{invAttr3,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{invAttr4,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{invAttr5,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{outboundCartonType,javaType=java.lang.Long,jdbcType=BIGINT} ,
-                    #{color,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{style,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{size,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{mixingAttr,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-                    #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-                    #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-                    #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-                    #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        	#{linenum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{originalLinenum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{store,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{extLinenum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{skuBarCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{skuName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{extSkuName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{qty,javaType=Long,jdbcType=DECIMAL} ,
+		        	#{currentQty,javaType=Long,jdbcType=DECIMAL} ,
+		        	#{actualQty,javaType=Long,jdbcType=DECIMAL} ,
+		        	#{cancelQty,javaType=Long,jdbcType=DECIMAL} ,
+		        	#{assignQty,javaType=Long,jdbcType=DECIMAL} ,
+		        	#{diekingQty,javaType=Long,jdbcType=DECIMAL} ,
+		        	#{linePrice,javaType=Long,jdbcType=DECIMAL} ,
+		        	#{lineAmt,javaType=Long,jdbcType=DECIMAL} ,
+		        	#{odoLineStatus,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{isCheck,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	#{fullLineOutbound,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	#{partOutboundStrategy,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{mfgDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{expDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{minExpDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{maxExpDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{batchNumber,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{countryOfOrigin,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invStatus,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{invType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invAttr1,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invAttr2,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invAttr3,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invAttr4,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invAttr5,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{outboundCartonType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{color,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{style,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{size,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{mixingAttr,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{originalOdoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{assignFailReason,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{isAssignSuccess,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
                 )
             ]]>
 
-    </insert>
+	</insert>
 
-    <update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine">
+	<update id="update"
+		parameterType="com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine">
         <![CDATA[
             UPDATE t_wh_odo_line SET
-                odo_id = #{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-                linenum = #{linenum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-                store = #{store,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                ext_linenum = #{extLinenum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-                sku_id = #{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-                sku_bar_code = #{skuBarCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                sku_name = #{skuName,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                ext_sku_name = #{extSkuName,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                qty = #{qty,javaType=Double,jdbcType=DECIMAL} ,
-                current_qty = #{currentQty,javaType=Double,jdbcType=DECIMAL} ,
-                actual_qty = #{actualQty,javaType=Double,jdbcType=DECIMAL} ,
-                cancel_qty = #{cancelQty,javaType=Double,jdbcType=DECIMAL} ,
-                assign_qty = #{assignQty,javaType=Double,jdbcType=DECIMAL} ,
-                dieking_qty = #{diekingQty,javaType=Double,jdbcType=DECIMAL} ,
-                line_price = #{linePrice,javaType=Double,jdbcType=DECIMAL} ,
-                line_amt = #{lineAmt,javaType=Double,jdbcType=DECIMAL} ,
-                odo_line_status = #{odoLineStatus,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                is_check = #{isCheck,javaType=java.lang.Boolean,jdbcType=BIT} ,
-                full_line_outbound = #{fullLineOutbound,javaType=java.lang.Boolean,jdbcType=BIT} ,
-                part_outbound_strategy = #{partOutboundStrategy,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                mfg_date = #{mfgDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-                exp_date = #{expDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-                min_exp_date = #{minExpDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-                max_exp_date = #{maxExpDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-                batch_number = #{batchNumber,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                country_of_origin = #{countryOfOrigin,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                inv_status = #{invStatus,javaType=java.lang.Long,jdbcType=BIGINT} ,
-                inv_type = #{invType,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                inv_attr1 = #{invAttr1,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                inv_attr2 = #{invAttr2,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                inv_attr3 = #{invAttr3,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                inv_attr4 = #{invAttr4,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                inv_attr5 = #{invAttr5,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                outbound_carton_type = #{outboundCartonType,javaType=java.lang.Long,jdbcType=BIGINT} ,
-                color = #{color,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                style = #{style,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                size = #{size,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                mixing_attr = #{mixingAttr,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-                create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-                created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-                last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-                modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
+               odo_id = #{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        linenum = #{linenum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        original_linenum = #{originalLinenum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        store = #{store,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        ext_linenum = #{extLinenum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        sku_id = #{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        sku_bar_code = #{skuBarCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        sku_name = #{skuName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        ext_sku_name = #{extSkuName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        qty = #{qty,javaType=Long,jdbcType=DECIMAL} ,
+		        current_qty = #{currentQty,javaType=Long,jdbcType=DECIMAL} ,
+		        actual_qty = #{actualQty,javaType=Long,jdbcType=DECIMAL} ,
+		        cancel_qty = #{cancelQty,javaType=Long,jdbcType=DECIMAL} ,
+		        assign_qty = #{assignQty,javaType=Long,jdbcType=DECIMAL} ,
+		        dieking_qty = #{diekingQty,javaType=Long,jdbcType=DECIMAL} ,
+		        line_price = #{linePrice,javaType=Long,jdbcType=DECIMAL} ,
+		        line_amt = #{lineAmt,javaType=Long,jdbcType=DECIMAL} ,
+		        odo_line_status = #{odoLineStatus,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        is_check = #{isCheck,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        full_line_outbound = #{fullLineOutbound,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        part_outbound_strategy = #{partOutboundStrategy,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        mfg_date = #{mfgDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        exp_date = #{expDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        min_exp_date = #{minExpDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        max_exp_date = #{maxExpDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        batch_number = #{batchNumber,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        country_of_origin = #{countryOfOrigin,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        inv_status = #{invStatus,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        inv_type = #{invType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        inv_attr1 = #{invAttr1,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        inv_attr2 = #{invAttr2,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        inv_attr3 = #{invAttr3,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        inv_attr4 = #{invAttr4,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        inv_attr5 = #{invAttr5,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        outbound_carton_type = #{outboundCartonType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        color = #{color,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        style = #{style,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        size = #{size,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        mixing_attr = #{mixingAttr,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        original_odo_code = #{originalOdoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        assign_fail_reason = #{assignFailReason,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        is_assign_success = #{isAssignSuccess,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
             WHERE 
                 id = #{id} 
         ]]>
-    </update>
+	</update>
 
-    <update id="batchUpdate">
-        UPDATE t_wh_odo_line SET
-        <foreach collection="batchUpdateMap" index="key" item="value" separator=",">
-            ${key} = #{value}
-        </foreach>
-        <include refid="whOdoLineConditionWhereExt"/>
-    </update>
+	<update id="batchUpdate">
+		UPDATE t_wh_odo_line SET
+		<foreach collection="batchUpdateMap" index="key" item="value"
+			separator=",">
+			${key} = #{value}
+		</foreach>
+		<include refid="whOdoLineConditionWhereExt" />
+	</update>
 
-    <delete id="delete" parameterType="java.lang.Long">
+	<delete id="delete" parameterType="java.lang.Long">
         <![CDATA[
             delete from t_wh_odo_line where
                 id = #{id} 
         ]]>
-    </delete>
+	</delete>
 
-    <delete id="deleteByIds" parameterType="list">
+	<delete id="deleteByIds" parameterType="list">
 
-        delete from t_wh_odo_line
-        where id in
-        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
-            #{item}
-        </foreach>
+		delete from t_wh_odo_line
+		where id in
+		<foreach item="item" index="index" collection="list" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
 
-    </delete>
+	</delete>
 
-    <update id="batchDelete">
-        delete from t_wh_odo_line
-        <include refid="whOdoLineConditionWhereExt"/>
-    </update>
+	<update id="batchDelete">
+		delete from t_wh_odo_line
+		<include refid="whOdoLineConditionWhereExt" />
+	</update>
 
-    <select id="findById" parameterType="java.lang.Long" resultMap="WhOdoLineResult" flushCache="false">
-        select
-        <include refid="whOdoLineColumns"/>
+	<select id="findById" parameterType="java.lang.Long" resultMap="WhOdoLineResult"
+		flushCache="false">
+		select
+		<include refid="whOdoLineColumns" />
         <![CDATA[
                 from t_wh_odo_line 
                 where 
                 id = #{id} 
             ]]>
-    </select>
+	</select>
 
-    <select id="getByIds" parameterType="list" resultMap="WhOdoLineResult" flushCache="false">
-        select
-        <include refid="whOdoLineColumns"/>
-        from t_wh_odo_line
-        where id in
-        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
-            #{item}
-        </foreach>
-    </select>
+	<select id="getByIds" parameterType="list" resultMap="WhOdoLineResult"
+		flushCache="false">
+		select
+		<include refid="whOdoLineColumns" />
+		from t_wh_odo_line
+		where id in
+		<foreach item="item" index="index" collection="list" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
 
-    <sql id="whOdoLineDynamicWhere">
-        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
-        <where>
+	<sql id="whOdoLineDynamicWhere">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+			<if test="id!=null">
+				and id = #{id}
+			</if>
 
-            <if test="id!=null">
-                and id = #{id}
-            </if>
+			<if test="odoId!=null">
+				and odo_id = #{odoId}
+			</if>
 
-            <if test="odoId!=null">
-                and odo_id = #{odoId}
-            </if>
+			<if test="linenum!=null">
+				and linenum = #{linenum}
+			</if>
 
-            <if test="linenum!=null">
-                and linenum = #{linenum}
-            </if>
+			<if test="originalLinenum!=null">
+				and original_linenum = #{originalLinenum}
+			</if>
 
-            <if test="store!=null and store!=''">
-                and store = #{store}
-            </if>
 
-            <if test="extLinenum!=null">
-                and ext_linenum = #{extLinenum}
-            </if>
+			<if test="store!=null and store!=''">
+				and store = #{store}
+			</if>
 
-            <if test="skuId!=null">
-                and sku_id = #{skuId}
-            </if>
+			<if test="extLinenum!=null">
+				and ext_linenum = #{extLinenum}
+			</if>
 
-            <if test="skuBarCode!=null and skuBarCode!=''">
-                and sku_bar_code = #{skuBarCode}
-            </if>
+			<if test="skuId!=null">
+				and sku_id = #{skuId}
+			</if>
 
-            <if test="skuName!=null and skuName!=''">
-                and sku_name = #{skuName}
-            </if>
 
-            <if test="extSkuName!=null and extSkuName!=''">
-                and ext_sku_name = #{extSkuName}
-            </if>
+			<if test="skuBarCode!=null and skuBarCode!=''">
+				and sku_bar_code = #{skuBarCode}
+			</if>
 
-            <if test="qty!=null">
-                and qty = #{qty}
-            </if>
 
-            <if test="currentQty!=null">
-                and current_qty = #{currentQty}
-            </if>
+			<if test="skuName!=null and skuName!=''">
+				and sku_name = #{skuName}
+			</if>
 
-            <if test="actualQty!=null">
-                and actual_qty = #{actualQty}
-            </if>
 
-            <if test="cancelQty!=null">
-                and cancel_qty = #{cancelQty}
-            </if>
+			<if test="extSkuName!=null and extSkuName!=''">
+				and ext_sku_name = #{extSkuName}
+			</if>
 
-            <if test="assignQty!=null">
-                and assign_qty = #{assignQty}
-            </if>
+			<if test="qty!=null">
+				and qty = #{qty}
+			</if>
 
-            <if test="diekingQty!=null">
-                and dieking_qty = #{diekingQty}
-            </if>
+			<if test="currentQty!=null">
+				and current_qty = #{currentQty}
+			</if>
 
-            <if test="linePrice!=null">
-                and line_price = #{linePrice}
-            </if>
+			<if test="actualQty!=null">
+				and actual_qty = #{actualQty}
+			</if>
 
-            <if test="lineAmt!=null">
-                and line_amt = #{lineAmt}
-            </if>
+			<if test="cancelQty!=null">
+				and cancel_qty = #{cancelQty}
+			</if>
 
-            <if test="odoLineStatus!=null and odoLineStatus!=''">
-                and odo_line_status = #{odoLineStatus}
-            </if>
+			<if test="assignQty!=null">
+				and assign_qty = #{assignQty}
+			</if>
 
-            <if test="isCheck!=null">
-                and is_check = #{isCheck}
-            </if>
+			<if test="diekingQty!=null">
+				and dieking_qty = #{diekingQty}
+			</if>
 
-            <if test="fullLineOutbound!=null">
-                and full_line_outbound = #{fullLineOutbound}
-            </if>
+			<if test="linePrice!=null">
+				and line_price = #{linePrice}
+			</if>
 
-            <if test="partOutboundStrategy!=null and partOutboundStrategy!=''">
-                and part_outbound_strategy = #{partOutboundStrategy}
-            </if>
+			<if test="lineAmt!=null">
+				and line_amt = #{lineAmt}
+			</if>
 
-            <if test="mfgDate!=null">
-                and mfg_date = #{mfgDate}
-            </if>
 
-            <if test="expDate!=null">
-                and exp_date = #{expDate}
-            </if>
+			<if test="odoLineStatus!=null and odoLineStatus!=''">
+				and odo_line_status = #{odoLineStatus}
+			</if>
 
-            <if test="minExpDate!=null">
-                and min_exp_date = #{minExpDate}
-            </if>
+			<if test="isCheck!=null">
+				and is_check = #{isCheck}
+			</if>
 
-            <if test="maxExpDate!=null">
-                and max_exp_date = #{maxExpDate}
-            </if>
+			<if test="fullLineOutbound!=null">
+				and full_line_outbound = #{fullLineOutbound}
+			</if>
 
-            <if test="batchNumber!=null and batchNumber!=''">
-                and batch_number = #{batchNumber}
-            </if>
 
-            <if test="countryOfOrigin!=null and countryOfOrigin!=''">
-                and country_of_origin = #{countryOfOrigin}
-            </if>
+			<if test="partOutboundStrategy!=null and partOutboundStrategy!=''">
+				and part_outbound_strategy = #{partOutboundStrategy}
+			</if>
 
-            <if test="invStatus!=null">
-                and inv_status = #{invStatus}
-            </if>
+			<if test="mfgDate!=null">
+				and mfg_date = #{mfgDate}
+			</if>
 
-            <if test="invType!=null and invType!=''">
-                and inv_type = #{invType}
-            </if>
+			<if test="expDate!=null">
+				and exp_date = #{expDate}
+			</if>
 
-            <if test="invAttr1!=null and invAttr1!=''">
-                and inv_attr1 = #{invAttr1}
-            </if>
+			<if test="minExpDate!=null">
+				and min_exp_date = #{minExpDate}
+			</if>
 
-            <if test="invAttr2!=null and invAttr2!=''">
-                and inv_attr2 = #{invAttr2}
-            </if>
+			<if test="maxExpDate!=null">
+				and max_exp_date = #{maxExpDate}
+			</if>
 
-            <if test="invAttr3!=null and invAttr3!=''">
-                and inv_attr3 = #{invAttr3}
-            </if>
 
-            <if test="invAttr4!=null and invAttr4!=''">
-                and inv_attr4 = #{invAttr4}
-            </if>
+			<if test="batchNumber!=null and batchNumber!=''">
+				and batch_number = #{batchNumber}
+			</if>
 
-            <if test="invAttr5!=null and invAttr5!=''">
-                and inv_attr5 = #{invAttr5}
-            </if>
 
-            <if test="outboundCartonType!=null">
-                and outbound_carton_type = #{outboundCartonType}
-            </if>
+			<if test="countryOfOrigin!=null and countryOfOrigin!=''">
+				and country_of_origin = #{countryOfOrigin}
+			</if>
 
-            <if test="color!=null and color!=''">
-                and color = #{color}
-            </if>
+			<if test="invStatus!=null">
+				and inv_status = #{invStatus}
+			</if>
 
-            <if test="style!=null and style!=''">
-                and style = #{style}
-            </if>
 
-            <if test="size!=null and size!=''">
-                and size = #{size}
-            </if>
+			<if test="invType!=null and invType!=''">
+				and inv_type = #{invType}
+			</if>
 
-            <if test="mixingAttr!=null and mixingAttr!=''">
-                and mixing_attr = #{mixingAttr}
-            </if>
 
-            <if test="ouId!=null">
-                and ou_id = #{ouId}
-            </if>
+			<if test="invAttr1!=null and invAttr1!=''">
+				and inv_attr1 = #{invAttr1}
+			</if>
 
-            <if test="createTime!=null">
-                and create_time = #{createTime}
-            </if>
 
-            <if test="createdId!=null">
-                and created_id = #{createdId}
-            </if>
+			<if test="invAttr2!=null and invAttr2!=''">
+				and inv_attr2 = #{invAttr2}
+			</if>
 
-            <if test="lastModifyTime!=null">
-                and last_modify_time = #{lastModifyTime}
-            </if>
 
-            <if test="modifiedId!=null">
-                and modified_id = #{modifiedId}
-            </if>
-        </where>
-    </sql>
+			<if test="invAttr3!=null and invAttr3!=''">
+				and inv_attr3 = #{invAttr3}
+			</if>
 
-    <select id="getCount" resultType="long">
-        select count(*) from t_wh_odo_line
-    </select>
 
-    <select id="findListCountByQueryMap" resultType="long">
-        select count(*) from t_wh_odo_line
-        <include refid="whOdoLineDynamicWhere"/>
-    </select>
+			<if test="invAttr4!=null and invAttr4!=''">
+				and inv_attr4 = #{invAttr4}
+			</if>
 
-    <select id="findListCountByParam" resultType="long">
-        select count(*) from t_wh_odo_line
-        <include refid="whOdoLineDynamicWhere"/>
-    </select>
 
-    <!--
-        分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
-        因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
-    -->
-    <select id="findListByQueryMapWithPage" resultMap="WhOdoLineResult">
-        select
-        <include refid="whOdoLineColumns"/>
-        from t_wh_odo_line
-        <include refid="whOdoLineDynamicWhere"/>
+			<if test="invAttr5!=null and invAttr5!=''">
+				and inv_attr5 = #{invAttr5}
+			</if>
 
-    </select>
+			<if test="outboundCartonType!=null">
+				and outbound_carton_type = #{outboundCartonType}
+			</if>
 
-    <select id="findListByQueryMap" resultMap="WhOdoLineResult">
-        select
-        <include refid="whOdoLineColumns"/>
-        from t_wh_odo_line
-        <include refid="whOdoLineDynamicWhere"/>
 
-    </select>
+			<if test="color!=null and color!=''">
+				and color = #{color}
+			</if>
 
-    <select id="findListByParam" resultMap="WhOdoLineResult">
-        select
-        <include refid="whOdoLineColumns"/>
-        from t_wh_odo_line
-        <include refid="whOdoLineDynamicWhere"/>
 
-    </select>
+			<if test="style!=null and style!=''">
+				and style = #{style}
+			</if>
 
-    <select id="query" resultMap="WhOdoLineResult">
-        select
-        <include refid="whOdoLineColumns"/>
-        from t_wh_odo_line
-        <include refid="whOdoLineConditionWhereExt"/>
-    </select>
 
-    <select id="queryCount" resultType="long">
-        select count(*) from t_wh_odo_line
-        <include refid="whOdoLineConditionWhereExt"/>
-    </select>
+			<if test="size!=null and size!=''">
+				and size = #{size}
+			</if>
+
+
+			<if test="mixingAttr!=null and mixingAttr!=''">
+				and mixing_attr = #{mixingAttr}
+			</if>
+
+
+			<if test="originalOdoCode!=null and originalOdoCode!=''">
+				and original_odo_code = #{originalOdoCode}
+			</if>
+
+
+			<if test="assignFailReason!=null and assignFailReason!=''">
+				and assign_fail_reason = #{assignFailReason}
+			</if>
+
+			<if test="isAssignSuccess!=null">
+				and is_assign_success = #{isAssignSuccess}
+			</if>
+
+			<if test="ouId!=null">
+				and ou_id = #{ouId}
+			</if>
+
+			<if test="createTime!=null">
+				and create_time = #{createTime}
+			</if>
+
+			<if test="createdId!=null">
+				and created_id = #{createdId}
+			</if>
+
+			<if test="lastModifyTime!=null">
+				and last_modify_time = #{lastModifyTime}
+			</if>
+
+			<if test="modifiedId!=null">
+				and modified_id = #{modifiedId}
+			</if>
+		</where>
+	</sql>
+
+	<select id="getCount" resultType="long">
+		select count(*) from t_wh_odo_line
+	</select>
+
+	<select id="findListCountByQueryMap" resultType="long">
+		select count(*) from t_wh_odo_line
+		<include refid="whOdoLineDynamicWhere" />
+	</select>
+
+	<select id="findListCountByParam" resultType="long">
+		select count(*) from t_wh_odo_line
+		<include refid="whOdoLineDynamicWhere" />
+	</select>
+
+	<!-- 分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页 因为分页查询将传 offset,pageSize,lastRows 
+		三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现 -->
+	<select id="findListByQueryMapWithPage" resultMap="WhOdoLineResult">
+		select
+		<include refid="whOdoLineColumns" />
+		from t_wh_odo_line
+		<include refid="whOdoLineDynamicWhere" />
+
+	</select>
+
+	<select id="findListByQueryMap" resultMap="WhOdoLineResult">
+		select
+		<include refid="whOdoLineColumns" />
+		from t_wh_odo_line
+		<include refid="whOdoLineDynamicWhere" />
+
+	</select>
+
+	<select id="findListByParam" resultMap="WhOdoLineResult">
+		select
+		<include refid="whOdoLineColumns" />
+		from t_wh_odo_line
+		<include refid="whOdoLineDynamicWhere" />
+
+	</select>
+
+	<select id="query" resultMap="WhOdoLineResult">
+		select
+		<include refid="whOdoLineColumns" />
+		from t_wh_odo_line
+		<include refid="whOdoLineConditionWhereExt" />
+	</select>
+
+	<select id="queryCount" resultType="long">
+		select count(*) from t_wh_odo_line
+		<include refid="whOdoLineConditionWhereExt" />
+	</select>
 
 </mapper>
