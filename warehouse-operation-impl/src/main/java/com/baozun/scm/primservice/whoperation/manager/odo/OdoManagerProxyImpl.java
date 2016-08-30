@@ -24,7 +24,7 @@ import com.baozun.scm.primservice.whoperation.command.odo.OdoLineCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoResultCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoTransportMgmtCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
-import com.baozun.scm.primservice.whoperation.constant.ODOStatus;
+import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
@@ -48,6 +48,7 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
     private OdoLineManager OdoLineManager;
     @Autowired
     private OdoTransportMgmtManager odoTransportMgmtManager;
+
     @Override
     public Pagination<OdoResultCommand> findOdoListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params) {
         return this.odoManager.findListByQueryMapWithPageExt(page, sorts, params);
@@ -126,7 +127,7 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
                 odo.setAmt(Constants.DEFAULT_DOUBLE);
             }
             // TODO yimin.lu
-            odo.setOdoStatus(ODOStatus.ODO_TOBECREATED);
+            odo.setOdoStatus(OdoStatus.ODO_TOBECREATED);
             odo.setOuId(ouId);
             // 设置单号和外部对接编码
             String odoCode = codeManager.generateCode(Constants.WMS, Constants.WHODO_MODEL_URL, Constants.WMS_ODO_INNER, "ODO", null);
@@ -218,7 +219,7 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
         line.setQty(lineCommand.getQty());
         line.setLinePrice(lineCommand.getLinePrice());
         line.setLineAmt(lineCommand.getLineAmt());
-        line.setOdoLineStatus(ODOStatus.ODOLINE_NEW);
+        line.setOdoLineStatus(OdoStatus.ODOLINE_NEW);
         line.setIsCheck(lineCommand.getIsCheck());
         line.setFullLineOutbound(lineCommand.getFullLineOutbound());
         line.setPartOutboundStrategy(lineCommand.getPartOutboundStrategy());
