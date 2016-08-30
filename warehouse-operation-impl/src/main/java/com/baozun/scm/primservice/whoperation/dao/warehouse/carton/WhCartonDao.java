@@ -106,6 +106,13 @@ public interface WhCartonDao extends BaseDao<WhCarton, Long> {
     WhCarton findWhCaselevelCartonById(@Param("id") Long id, @Param("ouid") Long ouid);
 
     /**
+     * 包含内部容器是caselevel货箱或非caselevel货箱
+     * @param ouId
+     * @param containerIds
+     * @return
+     */
+    public int findWhCartonCountByContainerId(@Param("ouId") Long ouId,Long containerId,Boolean isCaselevel);
+    /**
      * 通用功能
      * 
      * @param whCartonCommand

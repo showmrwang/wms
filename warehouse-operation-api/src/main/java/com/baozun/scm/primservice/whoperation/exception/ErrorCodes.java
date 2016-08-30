@@ -266,6 +266,10 @@ public class ErrorCodes {
     public static final int COMMON_INV_ATTR4_NOT_FOUND_ERROR = 5030;
     /** 库存属性5[{0}]未找到！ */
     public static final int COMMON_INV_ATTR5_NOT_FOUND_ERROR = 5031;
+    /** 逐件扫描数量不正确！ */
+    public static final int COMMON_ONE_BY_ONE_SCAN_QTY_ERROR = 5032;
+    /** 商品多条码数量无法完成核对 */
+    public static final int COMMON_MULTI_BARCODE_QTY_NOT_SUITABLE = 5033;
     // 5001-10000 common end
 
     // 10001-20000 luyimin
@@ -416,6 +420,8 @@ public class ErrorCodes {
     public static final int TIP_NEXT_CONTAINER_IS_ERROR = 40024;
     /** 收货库存信息商品数量异常！ */
     public static final int RCVD_INV_SKU_QTY_ERROR = 40025;
+    /** 商品扫描数量[{0}]大于收货量 */
+    public static final int SCAN_SKU_QTY_IS_MORE_THAN_RCVD_QTY = 40026;
     // 40001-50000 lichuan
 
     // 50001-60000 hubin
@@ -469,6 +475,18 @@ public class ErrorCodes {
     // 60001-70000 xiemingwei
 
     // 70001-80000 tangming
+    /** 当前容器状态不允许上架*/
+    public static final int COMMON_CONTAINER__NOT_PUTWAY = 70015;
+    /***扫描容器号不正确*/
+    public static final int CONTAINER_IS_ERROR = 70016;
+    /***数量扫描的商品数量大于货箱的商品的总数*/
+    public static final int GT_SKU_QTY = 70017;
+    /***数量扫描的商品数量小于一*/
+    public static final int LT_ONE = 70018;
+    /***该商品容器中不存在*/
+    public static final int SKU_IS_NOT_EXIST = 70019;
+    /***该商品不是当前库位绑定的商品*/
+    public static final int LOCATION_SKU_IS_NOT_EXISTS = 70020;
     // 70001-80000 tangming
 
 

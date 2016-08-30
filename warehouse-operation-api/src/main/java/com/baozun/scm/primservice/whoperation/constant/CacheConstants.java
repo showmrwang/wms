@@ -48,8 +48,6 @@ public final class CacheConstants {
     public static final String CONTAINER_STATISTIC = "CONTAINER_STATISTIC";
     /** 已扫描的库位队列 */
     public static final String SCAN_LOCATION_QUEUE = "SCAN_LOCATION_QUEUE_";
-    
-    
-    
-
+    /** 缓存库位推荐队列 */
+    public static final String LOCATION_RECOMMEND = "LOCATION_RECOMMEND";
 }

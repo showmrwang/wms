@@ -93,5 +93,5 @@ public interface Container2ndCategoryDao extends BaseDao<Container2ndCategory, L
      * @return
      */
     long uniqueCodeOrName(Container2ndCategory container2ndCategory);
-    
+
 }
