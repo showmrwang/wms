@@ -25,7 +25,6 @@ import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.Invent
 import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.LocationRecommendResultCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.ScanResultCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.TipContainerCacheCommand;
-import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.TipLocationCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.rule.RuleAfferCommand;
 import com.baozun.scm.primservice.whoperation.command.rule.RuleExportCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
@@ -1206,11 +1205,6 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
             log.error("location recommend fail! outContainerCodeis:[{}], logId is:[{}]", containerCode, logId);
             throw new BusinessException(ErrorCodes.COMMON_LOCATION_RECOMMEND_ERROR);
         }
-        //将lrrList存入缓存
-        List<LocationRecommendResultCommand> list = cacheManager.getMapObject(CacheConstants.LOCATION_RECOMMEND,containerId.toString());  //containerId ,内部容器id
-        if(null == list) {
-            cacheManager.setMapObject(CacheConstants.LOCATION_RECOMMEND, containerId.toString(), lrrList, CacheConstants.CACHE_ONE_DAY);
-        }
         Set<Long> suggestLocationIds = new HashSet<Long>();
         Map<String, Long> invRecommendLocId = new HashMap<String, Long>();
         Map<String, String> invRecommendLocCode = new HashMap<String, String>();
@@ -1365,11 +1359,6 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
         if (null == lrrList || 0 == lrrList.size() || StringUtils.isEmpty(lrrList.get(0).getLocationCode())) {
             log.error("location recommend fail! outContainerCodeis:[{}], logId is:[{}]", outContainerCode, logId);
             throw new BusinessException(ErrorCodes.COMMON_LOCATION_RECOMMEND_ERROR);
-        }
-        //将lrrList存入缓存
-        List<LocationRecommendResultCommand> list = cacheManager.getMapObject(CacheConstants.LOCATION_RECOMMEND,containerId.toString());  //整托上架，外部容器id
-        if(null == list) {
-            cacheManager.setMapObject(CacheConstants.LOCATION_RECOMMEND, containerId.toString(), ruleList, CacheConstants.CACHE_ONE_DAY);
         }
         LocationRecommendResultCommand lrr = lrrList.get(0);
         Long lrrLocId = lrr.getLocationId();  //推荐库位id
@@ -1821,7 +1810,6 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
             log.error("container is not exists, logId is:[{}]", logId);
             throw new BusinessException(ErrorCodes.COMMON_CONTAINER_IS_NOT_EXISTS);
         }
-        Long outContainerId = outContainerCmd.getId();    //当前内部容器id
         // 获取容器状态
         Integer containerStatus = insideContainerCmd.getStatus();
         if (ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY != containerStatus && ContainerStatus.CONTAINER_STATUS_PUTAWAY != containerStatus) {
@@ -1836,7 +1824,6 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
         }
         Boolean isCaselevelScanSku = (null == putawyaFunc.getIsCaselevelScanSku() ? false : putawyaFunc.getIsCaselevelScanSku());
         Boolean isNotcaselevelScanSku = (null == putawyaFunc.getIsNotcaselevelScanSku() ? false : putawyaFunc.getIsNotcaselevelScanSku());
-        List<LocationRecommendResultCommand> lrrList = cacheManager.getMapObject(CacheConstants.LOCATION_RECOMMEND,outContainerId.toString());  //整托上架，外部容器id
         //获取库存缓存信息
         ScanResultCommand srCmd = new ScanResultCommand();  //默认不需要扫描容器号
         srCmd.setPutawayPatternType(WhPutawayPatternDetailType.PALLET_PUTAWAY);
@@ -1848,7 +1835,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
                int count = whCartonDao.findWhCartonCountByContainerId(ouId,insideContainerId,true);
                if(count < 1) {  //此货箱不是caselevel货箱,直接上架
                    srCmd.setPutaway(true);
-                   whSkuInventoryManager.putaway(null,insideContainerCmd, locationCode, functionId, warehouse, lrrList, putawayPatternDetailType, ouId, userId, outerContainerCode);
+                   whSkuInventoryManager.putaway(null,insideContainerCmd, locationCode, functionId, warehouse, putawayPatternDetailType, ouId, userId, logId);
                    this.updateContainerStatus(outContainerCmd, insideContainerCmd, ouId, userId, srCmd);   //更新容器状态
                }else{
                    // 是caselevel货箱扫描商品
@@ -1859,14 +1846,14 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
                int count = whCartonDao.findWhCartonCountByContainerId(ouId,insideContainerId,false);
                if(count < 1) {  //此货箱不是caselevel货箱,直接上架
                    srCmd.setPutaway(true);
-                   whSkuInventoryManager.putaway(null,insideContainerCmd, locationCode, functionId, warehouse, lrrList, putawayPatternDetailType, ouId, userId, outerContainerCode);
+                   whSkuInventoryManager.putaway(null,insideContainerCmd, locationCode, functionId, warehouse, putawayPatternDetailType, ouId, userId, logId);
                    this.updateContainerStatus(outContainerCmd, insideContainerCmd, ouId, userId, srCmd);   //更新容器状态
                }else{
                    srCmd.setNeedScanSku(true);// 直接扫描商品
                }
            }else if(false == isCaselevelScanSku && false == isNotcaselevelScanSku) {  //整箱上架,直接执行上架流程
                srCmd.setPutaway(true);
-               whSkuInventoryManager.putaway(null,insideContainerCmd, locationCode, functionId, warehouse, lrrList, putawayPatternDetailType, ouId, userId, outerContainerCode);
+               whSkuInventoryManager.putaway(null,insideContainerCmd, locationCode, functionId, warehouse, putawayPatternDetailType, ouId, userId, logId);
                this.updateContainerStatus(outContainerCmd, insideContainerCmd, ouId, userId, srCmd);   //更新容器状态
            }
         log.info("PdaSysSuggestPutwayManagerImpl contianerUserSuggestLocation is end");
@@ -1982,7 +1969,6 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
         InventoryStatisticResultCommand isrCmd = cacheManager.getMapObject(CacheConstants.CONTAINER_INVENTORY_STATISTIC, outContainerId.toString());
         ContainerStatisticResultCommand csrCmd =  cacheManager.getMapObject(CacheConstants.CONTAINER_STATISTIC, outContainerId.toString());
         Map<Long, String> insideContainerIdsCode = csrCmd.getInsideContainerIdsCode();
-        List<LocationRecommendResultCommand> lrrList = cacheManager.getMapObject(CacheConstants.LOCATION_RECOMMEND,outContainerId.toString());  //整托上架，外部容器id
         Set<Long>  insideContainerIds = isrCmd.getInsideContainerIds();  //所有内部容器id集合
         Set<Long> caselevelContainerIds = isrCmd.getCaselevelContainerIds(); //caselevel货箱id集合
         Set<Long> noCaselevelContainerIds = isrCmd.getNotcaselevelContainerIds();  //非caselevel货箱Id集合
@@ -2001,7 +1987,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
                     // 提示下一个容器
                     srCmd.setTipContainerCode(insideContainerIdsCode.get(tipInsideContainerId));
                 }else{
-                    whSkuInventoryManager.putaway(null,containerCmd, locationCode, functionId, warehouse, lrrList, putawayPatternDetailType, ouId, userId, outerContainerCode);
+                    whSkuInventoryManager.putaway(null,containerCmd, locationCode, functionId, warehouse, putawayPatternDetailType, ouId, userId, logId);
                     srCmd.setPutaway(true);  //上架成功，返回到首页
                     this.updateContainerStatus(containerCmd, null, ouId, userId, srCmd);
                 }
@@ -2015,12 +2001,12 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
                   srCmd.setTipContainerCode(insideContainerIdsCode.get(tipInsideContainerId));
                   srCmd.setNotCaselevelScanContainer(true);
               }else{
-                  whSkuInventoryManager.putaway(null,containerCmd, locationCode, functionId, warehouse, lrrList, putawayPatternDetailType, ouId, userId, outerContainerCode);
+                  whSkuInventoryManager.putaway(null,containerCmd, locationCode, functionId, warehouse, putawayPatternDetailType, ouId, userId, logId);
                   srCmd.setPutaway(true);  //上架成功，返回到首页
                   this.updateContainerStatus(containerCmd, null, ouId, userId, srCmd);
               }
             } else if(false == isCaselevelScanSku && false == isNotcaselevelScanSku) {
-                    whSkuInventoryManager.putaway(null,containerCmd, locationCode, functionId, warehouse, lrrList, putawayPatternDetailType, ouId, userId,outerContainerCode);
+                    whSkuInventoryManager.putaway(null,containerCmd, locationCode, functionId, warehouse, putawayPatternDetailType, ouId, userId,logId);
                     srCmd.setPutaway(true);  //上架成功，返回到首页
                     this.updateContainerStatus(containerCmd, null, ouId, userId, srCmd);
             }else{
@@ -2052,7 +2038,6 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
             if(null == outCommand) {
                 throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);    //外部容器不存在
             }
-            Long outContainerId = outCommand.getId();  //外部容器id
             String barCode = skuCmd.getBarCode();
             Double scanQty = skuCmd.getScanSkuQty();
             if (null == scanQty || scanQty.longValue() < 1) {
@@ -2107,7 +2092,6 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
             }
             Boolean isCaselevelScanSku = (null == putawyaFunc.getIsCaselevelScanSku() ? false : putawyaFunc.getIsCaselevelScanSku());
             Boolean isNotcaselevelScanSku = (null == putawyaFunc.getIsNotcaselevelScanSku() ? false : putawyaFunc.getIsNotcaselevelScanSku());
-            List<LocationRecommendResultCommand> lrrList = cacheManager.getMapObject(CacheConstants.LOCATION_RECOMMEND,outContainerId.toString());  //整托上架，外部容器id
             if (true == isCaselevelScanSku && true == isNotcaselevelScanSku) {
                 // 全部货箱扫描
                 CheckScanSkuResultCommand cssrCmd = pdaPutawayCacheManager.sysGuidePalletPutawayCacheSkuOrTipContainer(outCommand, insideCommand, insideContainerIds, insideContainerSkuIds, insideContainerSkuIdsQty, whSkuCommand, logId);
@@ -2123,7 +2107,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
                     srCmd.setTipContainerCode(tipContainer.getCode());
                 } else {
                     srCmd.setPutaway(true);
-                    whSkuInventoryManager.putaway(outCommand,null, locationCode, functionId, warehouse, lrrList, putawayPatternDetailType, ouId, userId, containerCode);
+                    whSkuInventoryManager.putaway(outCommand,null, locationCode, functionId, warehouse, putawayPatternDetailType, ouId, userId, logId);
                     this.updateContainerStatus(outCommand, null, ouId, userId, srCmd);
                 }
             } else if (true == isCaselevelScanSku && false == isNotcaselevelScanSku) {
@@ -2131,7 +2115,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
                 if (null == caselevelContainerIds || 0 == caselevelContainerIds.size()) {
                     // 无caselevel货箱，直接上架
                     srCmd.setPutaway(true);
-                    whSkuInventoryManager.putaway(outCommand,null, locationCode, functionId, warehouse, lrrList, putawayPatternDetailType, ouId, userId, containerCode);
+                    whSkuInventoryManager.putaway(outCommand,null, locationCode, functionId, warehouse, putawayPatternDetailType, ouId, userId, logId);
                     this.updateContainerStatus(outCommand, null, ouId, userId, srCmd);
                 } else {
                     CheckScanSkuResultCommand cssrCmd = pdaPutawayCacheManager.sysGuidePalletPutawayCacheSkuOrTipContainer(outCommand, insideCommand, caselevelContainerIds, insideContainerSkuIds, insideContainerSkuIdsQty, whSkuCommand, logId);
@@ -2147,7 +2131,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
                         srCmd.setTipContainerCode(tipContainer.getCode());
                     } else {
                         srCmd.setPutaway(true);
-                        whSkuInventoryManager.putaway(outCommand,null, locationCode, functionId, warehouse, lrrList, putawayPatternDetailType, ouId, userId, containerCode);
+                        whSkuInventoryManager.putaway(outCommand,null, locationCode, functionId, warehouse, putawayPatternDetailType, ouId, userId, logId);
                         this.updateContainerStatus(outCommand, null, ouId, userId, srCmd);
                     }
                 }
@@ -2157,7 +2141,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
                 if (null == notcaselevelContainerIds || 0 == notcaselevelContainerIds.size()) {
                     // 无caselevel货箱，直接上架
                     srCmd.setPutaway(true);
-                    whSkuInventoryManager.putaway(outCommand, null,locationCode, functionId, warehouse, lrrList, putawayPatternDetailType, ouId, userId, containerCode);
+                    whSkuInventoryManager.putaway(outCommand, null,locationCode, functionId, warehouse, putawayPatternDetailType, ouId, userId, logId);
                 } else {
                     CheckScanSkuResultCommand cssrCmd = pdaPutawayCacheManager.sysGuidePalletPutawayCacheSkuOrTipContainer(outCommand, insideCommand, notcaselevelContainerIds, insideContainerSkuIds, insideContainerSkuIdsQty, whSkuCommand, logId);
                     if (cssrCmd.isNeedScanSku()) {
@@ -2172,7 +2156,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
                         srCmd.setTipContainerCode(tipContainer.getCode());
                     } else {
                         srCmd.setPutaway(true);
-                        whSkuInventoryManager.putaway(outCommand,null, locationCode, functionId, warehouse, lrrList, putawayPatternDetailType, ouId, userId, containerCode);
+                        whSkuInventoryManager.putaway(outCommand,null, locationCode, functionId, warehouse, putawayPatternDetailType, ouId, userId, logId);
                         this.updateContainerStatus(outCommand, null, ouId, userId, srCmd);
                     }
                 }
@@ -2260,7 +2244,6 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
         }
         Boolean isCaselevelScanSku = (null == putawyaFunc.getIsCaselevelScanSku() ? false : putawyaFunc.getIsCaselevelScanSku());
         Boolean isNotcaselevelScanSku = (null == putawyaFunc.getIsNotcaselevelScanSku() ? false : putawyaFunc.getIsNotcaselevelScanSku());
-        List<LocationRecommendResultCommand> lrrList = cacheManager.getMapObject(CacheConstants.LOCATION_RECOMMEND,outContainerId.toString());  //整托上架，外部容器id
         if (true == isCaselevelScanSku && true == isNotcaselevelScanSku) {
             // 是caselevel货箱扫描商品
             CheckScanSkuResultCommand cssrCmd = pdaPutawayCacheManager.sysGuideContainerPutawayCacheSkuAndCheckContainer(outCommand, insideContainerCmd, insideContainerIds, insideContainerSkuIds, insideContainerSkuIdsQty, whSkuCommand,logId);
@@ -2268,7 +2251,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
                 srCmd.setNeedScanSku(true);// 直接扫描商品
             } else if (cssrCmd.isNeedTipContainer()) { //一个容器扫描完,整箱上架，提示下一个容器
                 srCmd.setPutaway(true);
-                whSkuInventoryManager.putaway(outCommand,insideContainerCmd, locationCode, functionId, warehouse, lrrList, putawayPatternDetailType, ouId, userId,  containerCode);
+                whSkuInventoryManager.putaway(outCommand,insideContainerCmd, locationCode, functionId, warehouse, putawayPatternDetailType, ouId, userId,  logId);
                 srCmd.setAfterPutawayTipContianer(true);
                 this.updateContainerStatus( outCommand, insideContainerCmd, ouId, userId, srCmd);
                 // 提示下一个容器
@@ -2276,13 +2259,13 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
                 srCmd.setTipContainerCode(tipContainerCode);
             } else {
                 srCmd.setPutaway(true);
-                whSkuInventoryManager.putaway(outCommand,insideContainerCmd, locationCode, functionId, warehouse, lrrList, putawayPatternDetailType, ouId, userId, containerCode);
+                whSkuInventoryManager.putaway(outCommand,insideContainerCmd, locationCode, functionId, warehouse, putawayPatternDetailType, ouId, userId, logId);
                 this.updateContainerStatus(outCommand, insideContainerCmd, ouId, userId, srCmd);
             }
         } else if (true == isCaselevelScanSku && false == isNotcaselevelScanSku) {
             int count = whCartonDao.findWhCartonCountByContainerId(ouId,insideContainerId,true);
             if(count < 1) {  //此货箱不是caselevel货箱,直接上架
-                whSkuInventoryManager.putaway(null,insideContainerCmd, locationCode, functionId, warehouse, lrrList, putawayPatternDetailType, ouId, userId, containerCode);
+                whSkuInventoryManager.putaway(null,insideContainerCmd, locationCode, functionId, warehouse, putawayPatternDetailType, ouId, userId, logId);
             }
             // 是caselevel货箱扫描商品
             CheckScanSkuResultCommand cssrCmd = pdaPutawayCacheManager.sysGuideContainerPutawayCacheSkuAndCheckContainer(outCommand, insideContainerCmd, caselevelContainerIds, insideContainerSkuIds, insideContainerSkuIdsQty,whSkuCommand,logId);
@@ -2290,7 +2273,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
                 srCmd.setNeedScanSku(true);// 直接扫描商品
             } else if (cssrCmd.isNeedTipContainer()) { //一个容器扫描完,整箱上架，提示下一个容器
                 srCmd.setPutaway(true);
-                whSkuInventoryManager.putaway(outCommand,insideContainerCmd, locationCode, functionId, warehouse, lrrList, putawayPatternDetailType, ouId, userId, containerCode);
+                whSkuInventoryManager.putaway(outCommand,insideContainerCmd, locationCode, functionId, warehouse, putawayPatternDetailType, ouId, userId,logId);
                 srCmd.setAfterPutawayTipContianer(true);
                 this.updateContainerStatus( outCommand, insideContainerCmd, ouId, userId, srCmd);
                 // 提示下一个容器
@@ -2298,13 +2281,13 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
                 srCmd.setTipContainerCode(tipContainerCode);
             } else {
                 srCmd.setPutaway(true);
-                whSkuInventoryManager.putaway(outCommand,insideContainerCmd, locationCode, functionId, warehouse, lrrList, putawayPatternDetailType, ouId, userId, containerCode);
+                whSkuInventoryManager.putaway(outCommand,insideContainerCmd, locationCode, functionId, warehouse, putawayPatternDetailType, ouId, userId,logId);
                 this.updateContainerStatus( outCommand, insideContainerCmd, ouId, userId, srCmd);
             }
         } else if (false == isCaselevelScanSku && true == isNotcaselevelScanSku) {
             int count = whCartonDao.findWhCartonCountByContainerId(ouId,insideContainerId,false);
             if(count < 1) {  //此货箱不是caselevel货箱,直接上架
-                whSkuInventoryManager.putaway(outCommand,insideContainerCmd, locationCode, functionId, warehouse, lrrList, putawayPatternDetailType, ouId, userId, containerCode);
+                whSkuInventoryManager.putaway(outCommand,insideContainerCmd, locationCode, functionId, warehouse, putawayPatternDetailType, ouId, userId, logId);
             }
             // 是caselevel货箱扫描商品
             CheckScanSkuResultCommand cssrCmd = pdaPutawayCacheManager.sysGuideContainerPutawayCacheSkuAndCheckContainer(outCommand, insideContainerCmd, noCaselevelContainerIds, insideContainerSkuIds, insideContainerSkuIdsQty,whSkuCommand,logId);
@@ -2312,7 +2295,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
                 srCmd.setNeedScanSku(true);// 直接扫描商品
             } else if (cssrCmd.isNeedTipContainer()) { //一个容器扫描完,整箱上架，提示下一个容器
                 srCmd.setPutaway(true);
-                whSkuInventoryManager.putaway(outCommand,insideContainerCmd, locationCode, functionId, warehouse, lrrList, putawayPatternDetailType, ouId, userId, containerCode);
+                whSkuInventoryManager.putaway(outCommand,insideContainerCmd, locationCode, functionId, warehouse, putawayPatternDetailType, ouId, userId, logId);
                 srCmd.setAfterPutawayTipContianer(true);
                 this.updateContainerStatus( outCommand, insideContainerCmd, ouId, userId, srCmd);
                 // 提示下一个容器
@@ -2320,12 +2303,12 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
                 srCmd.setTipContainerCode(tipContainerCode);
             } else {
                 srCmd.setPutaway(true);
-                whSkuInventoryManager.putaway(outCommand,insideContainerCmd, locationCode, functionId, warehouse, lrrList, putawayPatternDetailType, ouId, userId, containerCode);
+                whSkuInventoryManager.putaway(outCommand,insideContainerCmd, locationCode, functionId, warehouse, putawayPatternDetailType, ouId, userId, logId);
                 this.updateContainerStatus( outCommand, insideContainerCmd, ouId, userId, srCmd);
             }
         }else if (false == isCaselevelScanSku && false == isNotcaselevelScanSku){
                 srCmd.setPutaway(true);
-                whSkuInventoryManager.putaway(outCommand,insideContainerCmd, locationCode, functionId, warehouse, lrrList, putawayPatternDetailType, ouId, userId, containerCode);
+                whSkuInventoryManager.putaway(outCommand,insideContainerCmd, locationCode, functionId, warehouse, putawayPatternDetailType, ouId, userId, logId);
                 this.updateContainerStatus( outCommand, insideContainerCmd, ouId, userId, srCmd);
         } else {
             log.error("function conf is error, should check scan sku detail, logId is:[{}]", logId);
@@ -2486,7 +2469,6 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
               log.error("sys guide splitContainer putaway check san sku, inside container is null error, logId is:[{}]", logId);
               throw new BusinessException(ErrorCodes.COMMON_INSIDE_CONTAINER_IS_NOT_EXISTS);
           }
-          Long insideContainerId = icCmd.getId();  //内部容器id
           if(!StringUtils.isEmpty(outerContainerCode)) {
               ocCmd = containerDao.getContainerByCode(outerContainerCode, ouId);
           }
@@ -2507,14 +2489,12 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
                       csrCmd = pdaPutawayCacheManager.sysGuideContainerPutawayCacheInsideContainerStatistic(ocCmd, ouId, logId);
               }
           }
-          List<LocationRecommendResultCommand> lrrList = cacheManager.getMapObject(CacheConstants.LOCATION_RECOMMEND, insideContainerId.toString());  //containerId ,内部容器id
           // 1.判断当前商品是否扫完、是否提示下一个库位、容器或上架
           Set<Long> insideContainerIds = isCmd.getInsideContainerIds();
           Map<Long, Map<String, Long>> insideContainerSkuAttrIdsQty = isCmd.getInsideContainerSkuAttrIdsQty();   //内部容器唯一sku总件数
           Map<Long, Map<String, Set<String>>> insideContainerSkuAttrIdsSnDefect = isCmd.getInsideContainerSkuAttrIdsSnDefect();  //内部容器唯一sku对应所有残次条码
           Map<Long, Map<Long, Set<String>>> insideContainerLocSkuAttrIds = isCmd.getInsideContainerLocSkuAttrIds();  // 内部容器推荐库位对应唯一sku及残次条码
           Map<Long, Set<String>> locSkuAttrIds = insideContainerLocSkuAttrIds.get(icCmd.getId());   //获取当前内部容器度一应sku和残次条码
-          Set<Long> locationIds = locSkuAttrIds.keySet();  //当前库位集合
           Map<String, Long> skuAttrIdsQty = insideContainerSkuAttrIdsQty.get(icCmd.getId());
           Location loc = locationDao.findLocationByCode(locationCode, ouId);
           if (null == loc) {
@@ -2586,7 +2566,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
           } else {
               // 执行上架
               srCmd.setPutaway(true);
-              whSkuInventoryManager.putaway(ocCmd,icCmd, locationCode, funcId, warehouse, lrrList, putawayPatternDetailType, ouId, userId, insideContainerCode);
+              whSkuInventoryManager.putaway(ocCmd,icCmd, locationCode, funcId, warehouse, putawayPatternDetailType, ouId, userId, logId);
               this.updateContainerStatus(ocCmd, icCmd, ouId, userId, srCmd);
           }
           return srCmd;
