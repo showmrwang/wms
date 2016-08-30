@@ -52,21 +52,21 @@ public class WhOdoLine extends BaseModel {
     /** 上位系统商品名称 */
     private String extSkuName;
     /** 计划数量 */
-    private Long qty;
+    private Double qty;
     /** 本次出库数量 */
-    private Long currentQty;
+    private Double currentQty;
     /** 实际出库数量 */
-    private Long actualQty;
+    private Double actualQty;
     /** 取消数量 */
-    private Long cancelQty;
+    private Double cancelQty;
     /** 已分配数量 */
-    private Long assignQty;
+    private Double assignQty;
     /** 已拣货数量 */
-    private Long diekingQty;
+    private Double diekingQty;
     /** 行单价 */
-    private Long linePrice;
+    private Double linePrice;
     /** 行总金额 */
-    private Long lineAmt;
+    private Double lineAmt;
     /** 出库单明细状态 */
     private String odoLineStatus;
     /** 是否复核 */
@@ -202,67 +202,67 @@ public class WhOdoLine extends BaseModel {
         this.extSkuName = extSkuName;
     }
 
-    public Long getQty() {
+    public Double getQty() {
         return qty;
     }
 
-    public void setQty(Long qty) {
+    public void setQty(Double qty) {
         this.qty = qty;
     }
 
-    public Long getCurrentQty() {
+    public Double getCurrentQty() {
         return currentQty;
     }
 
-    public void setCurrentQty(Long currentQty) {
+    public void setCurrentQty(Double currentQty) {
         this.currentQty = currentQty;
     }
 
-    public Long getActualQty() {
+    public Double getActualQty() {
         return actualQty;
     }
 
-    public void setActualQty(Long actualQty) {
+    public void setActualQty(Double actualQty) {
         this.actualQty = actualQty;
     }
 
-    public Long getCancelQty() {
+    public Double getCancelQty() {
         return cancelQty;
     }
 
-    public void setCancelQty(Long cancelQty) {
+    public void setCancelQty(Double cancelQty) {
         this.cancelQty = cancelQty;
     }
 
-    public Long getAssignQty() {
+    public Double getAssignQty() {
         return assignQty;
     }
 
-    public void setAssignQty(Long assignQty) {
+    public void setAssignQty(Double assignQty) {
         this.assignQty = assignQty;
     }
 
-    public Long getDiekingQty() {
+    public Double getDiekingQty() {
         return diekingQty;
     }
 
-    public void setDiekingQty(Long diekingQty) {
+    public void setDiekingQty(Double diekingQty) {
         this.diekingQty = diekingQty;
     }
 
-    public Long getLinePrice() {
+    public Double getLinePrice() {
         return linePrice;
     }
 
-    public void setLinePrice(Long linePrice) {
+    public void setLinePrice(Double linePrice) {
         this.linePrice = linePrice;
     }
 
-    public Long getLineAmt() {
+    public Double getLineAmt() {
         return lineAmt;
     }
 
-    public void setLineAmt(Long lineAmt) {
+    public void setLineAmt(Double lineAmt) {
         this.lineAmt = lineAmt;
     }
 
