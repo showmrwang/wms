@@ -2238,17 +2238,29 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
     public Long sysGuideSplitContainerPutawayTipLocation0(ContainerCommand insideContainerCmd, Set<Long> locationIds, String logId) {
         Long containerId = insideContainerCmd.getId();
         Long tipLocationId = null;
-        long len = cacheManager.listLen(CacheConstants.SCAN_LOCATION_QUEUE + containerId.toString());
-        if (0 < len) {
-            String insideContainerId = cacheManager.findListItem(CacheConstants.SCAN_LOCATION_QUEUE + containerId.toString(), 0);
-            tipLocationId = new Long(insideContainerId);
+        TipLocationCacheCommand tipLocCmd = cacheManager.getObject(CacheConstants.SCAN_LOCATION_QUEUE + containerId.toString());
+        ArrayDeque<Long> cacheLocIds = null;
+        if (null != tipLocCmd) {
+            cacheLocIds = tipLocCmd.getTipLocationIds();
+        }
+        if (null != cacheLocIds && !cacheLocIds.isEmpty()) {
+            Long id = cacheLocIds.peekFirst();
+            tipLocationId = id;
         } else {
-            // 随机取一个容器
+            // 随机提示一个
+            // TODO 这里需要计算上架顺序，包括后续的提示库位过程均需要计算
             for (Long id : locationIds) {
                 Long locId = id;
                 if (null != locId) {
                     tipLocationId = locId;
-                    cacheManager.pushToListHead(CacheConstants.SCAN_LOCATION_QUEUE + containerId.toString(), locId.toString());
+                    TipLocationCacheCommand tipCmd = new TipLocationCacheCommand();
+                    tipCmd.setPutawayPatternDetailType(WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY);
+                    tipCmd.setInsideContainerId(containerId);
+                    tipCmd.setInsideContainerCode(insideContainerCmd.getCode());
+                    ArrayDeque<Long> tipLocIds = new ArrayDeque<Long>();
+                    tipLocIds.addFirst(tipLocationId);
+                    tipCmd.setTipLocationIds(tipLocIds);
+                    cacheManager.setObject(CacheConstants.SCAN_LOCATION_QUEUE + containerId.toString(), tipCmd, CacheConstants.CACHE_ONE_DAY);
                     break;
                 }
             }
