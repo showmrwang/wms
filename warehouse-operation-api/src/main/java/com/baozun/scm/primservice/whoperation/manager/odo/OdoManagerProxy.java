@@ -6,12 +6,14 @@ import lark.common.dao.Page;
 import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 
+import com.baozun.scm.primservice.whoperation.command.odo.OdoAddressCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoGroupCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoLineCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoResultCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAddress;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt;
 
@@ -67,4 +69,30 @@ public interface OdoManagerProxy extends BaseManager {
      * @param lineCommand
      */
     void saveOdoUnit(OdoLineCommand lineCommand);
+
+    /**
+     * [业务方法]出库单明细分页查询
+     * 
+     * @param page
+     * @param sorts
+     * @param params
+     * @return
+     */
+    Pagination<OdoLineCommand> findOdoLineListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params);
+
+    /**
+     * [通用方法]根据ODOID和OUID查找配货信息
+     * 
+     * @param odoId
+     * @param ouId
+     * @return
+     */
+    WhOdoAddress findOdoAddressByOdoId(Long odoId, Long ouId);
+
+    /**
+     * [业务方法]创建出库单分支:保存配送对象
+     * 
+     * @param odoAddressCommand
+     */
+    void saveDistributionUnit(OdoAddressCommand odoAddressCommand);
 }

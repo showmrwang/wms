@@ -57,6 +57,7 @@
                     <value>com.baozun.scm.primservice.whoperation.model.odo.WhOdo</value>
                     <value>com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt</value>
                     <value>com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine</value>
+                    <value>com.baozun.scm.primservice.whoperation.model.odo.WhOdoAddress</value>
 				</list>
 			</property>
 			

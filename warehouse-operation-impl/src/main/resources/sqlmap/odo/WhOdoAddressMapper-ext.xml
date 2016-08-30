@@ -148,5 +148,13 @@
             </if>
         </where>
     </sql>
-
+<select id="findOdoAddressByOdoId" parameterType="map" resultMap="WhOdoAddressResult" flushCache="false">
+        select
+        <include refid="whOdoAddressColumns"/>
+        <![CDATA[
+                from t_wh_odo_address 
+                where 
+                odo_id = #{odoId}  and ou_id=#{ouId}
+            ]]>
+    </select>
 </mapper>
