@@ -27,6 +27,7 @@ import lark.orm.dao.supports.BaseDao;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.baozun.scm.primservice.whoperation.command.odo.OdoLineCommand;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
 
 public interface WhOdoLineDao extends BaseDao<WhOdoLine, Long> {
@@ -56,5 +57,34 @@ public interface WhOdoLineDao extends BaseDao<WhOdoLine, Long> {
      * @return
      */
     WhOdoLine findOdoLineById(@Param("id") Long id, @Param("ouId") Long ouId);
+
+    /**
+     * [业务方法]出库单明细分页查询
+     * 
+     * @param page
+     * @param sorts
+     * @param params
+     * @return
+     */
+    @QueryPage("findListCountByQueryMapExt")
+    Pagination<OdoLineCommand> findListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params);
+
+    /**
+     * [通用方法]根据ODOID和OUID查找明细数量
+     * 
+     * @param odoId
+     * @param ouId
+     * @return
+     */
+    long findOdoLineListCountByOdoIdOuId(Long odoId, Long ouId);
+
+    /**
+     * [通用方法]根据ODOID和OUID查找明细
+     * 
+     * @param odoId
+     * @param ouId
+     * @return
+     */
+    List<WhOdoLine> findOdoLineListByOdoIdOuId(Long odoId, Long ouId);
 
 }

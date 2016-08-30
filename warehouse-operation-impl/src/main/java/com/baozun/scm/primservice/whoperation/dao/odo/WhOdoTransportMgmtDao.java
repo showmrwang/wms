@@ -45,9 +45,6 @@ public interface WhOdoTransportMgmtDao extends BaseDao<WhOdoTransportMgmt, Long>
     @CommonQuery
     int saveOrUpdate(WhOdoTransportMgmt o);
 
-    @CommonQuery
-    int saveOrUpdateByVersion(WhOdoTransportMgmt o);
-
     /**
      * [通用方法]根据ODOID,OUID查找ODOTRANSPORTMGMT
      * 

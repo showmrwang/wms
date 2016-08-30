@@ -358,6 +358,8 @@ public class ErrorCodes {
     public static final int PO_CHECK_EXTCODE_ERROR = 10040;
     /** 收货的货箱号不能和托盘号相同! */
     public static final int RCVD_CONTAINER_NO_DUPLICATION = 10041;
+    /** 未找到对应的出库单！ */
+    public static final int NO_ODO_FOUND = 10042;
     // 10001-20000 luyimin
 
 

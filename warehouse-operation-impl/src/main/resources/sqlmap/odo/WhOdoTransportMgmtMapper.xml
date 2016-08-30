@@ -159,10 +159,9 @@
                 deliver_goods_time_mode = #{deliverGoodsTimeMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
                 deliver_goods_time = #{deliverGoodsTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
                 plan_deliver_goods_time = #{planDeliverGoodsTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-                actual_deliver_goods_time = #{actualDeliverGoodsTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-                ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+                actual_deliver_goods_time = #{actualDeliverGoodsTime,javaType=java.util.Date,jdbcType=TIMESTAMP}
             WHERE 
-                id = #{id} 
+                id = #{id} and ou_id=#{ouId}
         ]]>
     </update>
 

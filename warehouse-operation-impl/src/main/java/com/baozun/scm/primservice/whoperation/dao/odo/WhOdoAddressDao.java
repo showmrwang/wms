@@ -25,6 +25,8 @@ import lark.common.dao.QueryCondition;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAddress;
 
 public interface WhOdoAddressDao extends BaseDao<WhOdoAddress, Long> {
@@ -42,5 +44,14 @@ public interface WhOdoAddressDao extends BaseDao<WhOdoAddress, Long> {
 
     @CommonQuery
     int saveOrUpdate(WhOdoAddress o);
+
+    /**
+     * [通用方法]根据ODOID和OUID查找ADDRESS
+     * 
+     * @param odoId
+     * @param ouId
+     * @return
+     */
+    WhOdoAddress findOdoAddressByOdoId(@Param("odoId") Long odoId, @Param("ouId") Long ouId);
 
 }

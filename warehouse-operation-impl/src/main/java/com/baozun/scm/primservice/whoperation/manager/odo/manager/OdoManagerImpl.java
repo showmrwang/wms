@@ -22,6 +22,7 @@ import org.springframework.util.StringUtils;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoResultCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
+import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoAddressDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoTransportMgmtDao;
@@ -29,6 +30,7 @@ import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAddress;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt;
 import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
@@ -45,6 +47,8 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     private WhOdoLineDao whOdoLineDao;
     @Autowired
     private WhOdoTransportMgmtDao whOdoTransportMgmtDao;
+    @Autowired
+    private WhOdoAddressDao whOdoAddressDao;
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public Pagination<OdoResultCommand> findListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params) {
@@ -261,6 +265,30 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
             throw e;
         } catch (Exception ex) {
             log.error("" + ex);
+            throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
+        }
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void saveDistributionUnit(WhOdoAddress odoAddress, WhOdo odo) {
+        try {
+            if (odoAddress.getId() != null) {
+                int updateAddressCount = this.whOdoAddressDao.saveOrUpdate(odoAddress);
+                if (updateAddressCount <= 0) {
+                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                }
+            } else {
+                this.whOdoAddressDao.insert(odoAddress);
+            }
+            int updateOdoCount = this.whOdoDao.saveOrUpdateByVersion(odo);
+            if (updateOdoCount <= 0) {
+                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            }
+        } catch (BusinessException ex) {
+            throw ex;
+        } catch (Exception e) {
+            log.error(e + "");
             throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
         }
     }

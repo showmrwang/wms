@@ -12,6 +12,7 @@ public class OdoStatus implements Serializable {
     /** ODO */
     public static final String ODO_NEW = "1";// 新建
     public static final String ODO_OUTSTOCK = "2";// 部分出库
+    public static final String ODO_MERGE = "5";// 已合并
     public static final String ODO_OUTSTOCK_FINISH = "10";// 出库完成
     public static final String ODO_CANCEL = "17";// 取消
     public static final String ODO_TOBECREATED = "99";// 待创建
@@ -19,5 +20,6 @@ public class OdoStatus implements Serializable {
 
     /** ODO_LINE */
     public static final String ODOLINE_NEW = "1";// 新建
+    public static final String ODOLINE_MERGE = "5";// 已合并
     /** ODO_LINE */
 }

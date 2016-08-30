@@ -214,10 +214,9 @@
                 consignee_target_villages_towns = #{consigneeTargetVillagesTowns,javaType=java.lang.String,jdbcType=VARCHAR} ,
                 consignee_target_address = #{consigneeTargetAddress,javaType=java.lang.String,jdbcType=VARCHAR} ,
                 consignee_target_email = #{consigneeTargetEmail,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                consignee_target_zip = #{consigneeTargetZip,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+                consignee_target_zip = #{consigneeTargetZip,javaType=java.lang.String,jdbcType=VARCHAR} 
             WHERE 
-                id = #{id} 
+                id = #{id} and ou_id=#{ouId}
         ]]>
     </update>
 

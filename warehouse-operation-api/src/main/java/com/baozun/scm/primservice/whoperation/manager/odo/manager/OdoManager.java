@@ -9,6 +9,7 @@ import lark.common.dao.Sort;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoResultCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAddress;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt;
 
@@ -43,9 +44,19 @@ public interface OdoManager extends BaseManager {
     int existsSkuInOdo(Long odoId, Long skuId, Long ouId);
 
     /**
+     * [业务方法]创建明细
      * 
      * @param line
      * @param odo
      */
     void saveUnit(WhOdoLine line, WhOdo odo);
+
+    /**
+     * [业务方法]配置配货对象
+     * 
+     * @param odoAddress
+     * @param transportMgmt
+     * @param odo
+     */
+    void saveDistributionUnit(WhOdoAddress odoAddress, WhOdo odo);
 }

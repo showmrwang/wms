@@ -18,6 +18,7 @@ import java.util.Date;
 
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 
+
 /**
  * 
  * @author larkark
@@ -25,12 +26,19 @@ import com.baozun.scm.primservice.whoperation.model.BaseModel;
  */
 public class WhOdoLine extends BaseModel {
 
-    private static final long serialVersionUID = -6697779077925637358L;
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -2071411398425434080L;
+
+    // columns START
     /** 出库单ID */
     private Long odoId;
     /** 行号 */
     private Integer linenum;
+    /** 原始出库单明细行号 */
+    private Integer originalLinenum;
     /** 店铺CODE 或者* */
     private String store;
     /** 外部单据行号 */
@@ -68,13 +76,13 @@ public class WhOdoLine extends BaseModel {
     /** 部分出库策略 */
     private String partOutboundStrategy;
     /** 生产日期 */
-    private java.util.Date mfgDate;
+    private Date mfgDate;
     /** 失效日期 */
-    private java.util.Date expDate;
+    private Date expDate;
     /** 最小失效日期 */
-    private java.util.Date minExpDate;
+    private Date minExpDate;
     /** 最大失效日期 */
-    private java.util.Date maxExpDate;
+    private Date maxExpDate;
     /** 批次号 */
     private String batchNumber;
     /** 原产地 */
@@ -103,16 +111,24 @@ public class WhOdoLine extends BaseModel {
     private String size;
     /** 混放属性 */
     private String mixingAttr;
+    /** 对应原始出库单CODE */
+    private String originalOdoCode;
+    /** 分配失败原因 */
+    private String assignFailReason;
+    /** 是否分配成功 */
+    private Boolean isAssignSuccess;
     /** 仓库组织ID */
     private Long ouId;
     /** 创建时间 */
-    private java.util.Date createTime;
+    private Date createTime;
     /** 创建人ID */
     private Long createdId;
     /** 最后修改时间 */
-    private java.util.Date lastModifyTime;
+    private Date lastModifyTime;
     /** 操作人ID */
     private Long modifiedId;
+
+    // columns END
 
     public Long getOdoId() {
         return odoId;
@@ -128,6 +144,14 @@ public class WhOdoLine extends BaseModel {
 
     public void setLinenum(Integer linenum) {
         this.linenum = linenum;
+    }
+
+    public Integer getOriginalLinenum() {
+        return originalLinenum;
+    }
+
+    public void setOriginalLinenum(Integer originalLinenum) {
+        this.originalLinenum = originalLinenum;
     }
 
     public String getStore() {
@@ -416,6 +440,30 @@ public class WhOdoLine extends BaseModel {
 
     public void setMixingAttr(String mixingAttr) {
         this.mixingAttr = mixingAttr;
+    }
+
+    public String getOriginalOdoCode() {
+        return originalOdoCode;
+    }
+
+    public void setOriginalOdoCode(String originalOdoCode) {
+        this.originalOdoCode = originalOdoCode;
+    }
+
+    public String getAssignFailReason() {
+        return assignFailReason;
+    }
+
+    public void setAssignFailReason(String assignFailReason) {
+        this.assignFailReason = assignFailReason;
+    }
+
+    public Boolean getIsAssignSuccess() {
+        return isAssignSuccess;
+    }
+
+    public void setIsAssignSuccess(Boolean isAssignSuccess) {
+        this.isAssignSuccess = isAssignSuccess;
     }
 
     public Long getOuId() {

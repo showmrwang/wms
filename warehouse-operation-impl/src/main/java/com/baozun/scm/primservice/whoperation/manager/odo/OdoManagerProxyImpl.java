@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.baozun.scm.baseservice.sac.manager.CodeManager;
+import com.baozun.scm.primservice.whoperation.command.odo.OdoAddressCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoGroupCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoLineCommand;
@@ -28,11 +29,13 @@ import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
+import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoAddressManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoLineManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoTransportMgmtManager;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAddress;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt;
 
@@ -45,7 +48,9 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
     @Autowired
     private CodeManager codeManager;
     @Autowired
-    private OdoLineManager OdoLineManager;
+    private OdoLineManager odoLineManager;
+    @Autowired
+    private OdoAddressManager odoAddressManager;
     @Autowired
     private OdoTransportMgmtManager odoTransportMgmtManager;
 
@@ -195,7 +200,7 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
 
     @Override
     public WhOdoLine findOdoLineById(Long id, Long ouId) {
-        return this.OdoLineManager.findOdoLineById(id, ouId);
+        return this.odoLineManager.findOdoLineById(id, ouId);
     }
 
     @Override
@@ -289,6 +294,70 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
         }
         odo.setModifiedId(userId);
         this.odoManager.saveUnit(line, odo);
+    }
+
+    @Override
+    public Pagination<OdoLineCommand> findOdoLineListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params) {
+        return this.odoLineManager.findOdoLineListByQueryMapWithPageExt(page, sorts, params);
+    }
+
+    @Override
+    public WhOdoAddress findOdoAddressByOdoId(Long odoId, Long ouId) {
+        return this.odoAddressManager.findOdoAddressByOdoId(odoId, ouId);
+    }
+
+    @Override
+    public void saveDistributionUnit(OdoAddressCommand odoAddressCommand) {
+        Long ouId = odoAddressCommand.getOuId();
+        Long userId = odoAddressCommand.getUserId();
+        Long odoId = odoAddressCommand.getOdoId();
+        try {
+            WhOdo odo = this.odoManager.findOdoByIdOuId(odoId, ouId);
+            if (odo == null) {
+                throw new BusinessException(ErrorCodes.NO_ODO_FOUND);
+            }
+            /*
+             * WhOdoTransportMgmt transportMgmt =
+             * this.odoTransportMgmtManager.findTransportMgmtByOdoIdOuId(odoId, ouId); if
+             * (transportMgmt == null) { throw new BusinessException(ErrorCodes.NO_ODO_FOUND); }
+             */
+
+            /** 以下逻辑判断ODO状态 */
+            long lineCount = this.odoLineManager.findOdoLineListCountByOdoId(odoId, ouId);
+            if (lineCount > 0) {
+                if (OdoStatus.ODO_TOBECREATED.equals(odo.getOdoStatus())) {
+                    odo.setOdoStatus(OdoStatus.ODO_NEW);
+                    odo.setModifiedId(userId);
+                }
+            }
+            // transportMgmt.setOutboundTargetType(odoAddressCommand.getOutboundTargetType());
+
+            WhOdoAddress odoAddress = this.odoAddressManager.findOdoAddressByOdoId(odoId, ouId);
+            if (odoAddress == null) {
+                odoAddress = new WhOdoAddress();
+                odoAddress.setOdoId(odoId);
+                odoAddress.setOuId(ouId);
+            }
+            odoAddress.setDistributionTargetName(odoAddressCommand.getDistributionTargetName());
+            odoAddress.setDistributionTargetMobilePhone(odoAddressCommand.getDistributionTargetMobilePhone());
+            odoAddress.setDistributionTargetTelephone(odoAddressCommand.getDistributionTargetTelephone());
+            odoAddress.setDistributionTargetCountry(odoAddressCommand.getDistributionTargetCountry());
+            odoAddress.setDistributionTargetProvince(odoAddressCommand.getDistributionTargetProvince());
+            odoAddress.setDistributionTargetCity(odoAddressCommand.getDistributionTargetCity());
+            odoAddress.setDistributionTargetDistrict(odoAddressCommand.getDistributionTargetDistrict());
+            odoAddress.setDistributionTargetVillagesTowns(odoAddressCommand.getDistributionTargetVillagesTowns());
+            odoAddress.setDistributionTargetAddress(odoAddressCommand.getDistributionTargetAddress());
+            odoAddress.setDistributionTargetEmail(odoAddressCommand.getDistributionTargetEmail());
+            odoAddress.setDistributionTargetZip(odoAddressCommand.getDistributionTargetZip());
+
+            this.odoManager.saveDistributionUnit(odoAddress, odo);
+        } catch (BusinessException ex) {
+            throw ex;
+        } catch (Exception e) {
+            log.error(e + "");
+            throw new BusinessException(ErrorCodes.PACKAGING_ERROR);
+        }
+
     }
 
 }
