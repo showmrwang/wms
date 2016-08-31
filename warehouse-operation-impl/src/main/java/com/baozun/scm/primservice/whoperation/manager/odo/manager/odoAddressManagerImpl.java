@@ -22,4 +22,10 @@ public class odoAddressManagerImpl extends BaseManagerImpl implements OdoAddress
         return this.whOdoAddressDao.findOdoAddressByOdoId(odoId, ouId);
     }
 
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public WhOdoAddress findOdoAddressByIdOuId(Long id, Long ouId) {
+        return this.whOdoAddressDao.findOdoAddressByIdOuId(id, ouId);
+    }
+
 }

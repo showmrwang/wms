@@ -271,7 +271,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void saveDistributionUnit(WhOdoAddress odoAddress, WhOdo odo) {
+    public void saveAddressUnit(WhOdoAddress odoAddress, WhOdo odo) {
         try {
             if (odoAddress.getId() != null) {
                 int updateAddressCount = this.whOdoAddressDao.saveOrUpdate(odoAddress);

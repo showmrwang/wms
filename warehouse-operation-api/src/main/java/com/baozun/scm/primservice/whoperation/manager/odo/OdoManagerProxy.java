@@ -95,4 +95,20 @@ public interface OdoManagerProxy extends BaseManager {
      * @param odoAddressCommand
      */
     void saveDistributionUnit(OdoAddressCommand odoAddressCommand);
+
+    /**
+     * [通用方法]根据ID查找odoAddress
+     * 
+     * @param id
+     * @param ouId
+     * @return
+     */
+    WhOdoAddress findOdoAddressById(Long id, Long ouId);
+
+    /**
+     * [业务方法]创建出库单分支：保存出库对象
+     * 
+     * @param odoAddressCommand
+     */
+    void saveConsigneeUnit(OdoAddressCommand odoAddressCommand);
 }

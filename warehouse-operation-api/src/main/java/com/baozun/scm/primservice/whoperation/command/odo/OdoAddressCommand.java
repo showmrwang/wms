@@ -7,6 +7,8 @@ public class OdoAddressCommand extends BaseCommand {
      * 
      */
     private static final long serialVersionUID = -6732342642534846712L;
+    /***/
+    private Long id;
     /** 出库单ID */
     private Long odoId;
     /** 购买人平台账号 */
@@ -64,7 +66,75 @@ public class OdoAddressCommand extends BaseCommand {
     /** USERID */
     private Long userId;
 
+    /** 配送人区号 */
+    private String distributionTargetTelephoneCode;
+    /** 配送人号码 */
+    private String distributionTargetTelephoneNumber;
+    /** 配送人分机号 */
+    private String distributionTargetTelephoneDivision;
+    /** 收货人区号 */
+    private String consigneeTargetTelephoneCode;
+    /** 收货人号码 */
+    private String consigneeTargetTelephoneNumber;
+    /** 收货人分机号 */
+    private String consigneeTargetTelephoneDivision;
 
+
+    public String getConsigneeTargetTelephoneCode() {
+        return consigneeTargetTelephoneCode;
+    }
+
+    public void setConsigneeTargetTelephoneCode(String consigneeTargetTelephoneCode) {
+        this.consigneeTargetTelephoneCode = consigneeTargetTelephoneCode;
+    }
+
+    public String getConsigneeTargetTelephoneNumber() {
+        return consigneeTargetTelephoneNumber;
+    }
+
+    public void setConsigneeTargetTelephoneNumber(String consigneeTargetTelephoneNumber) {
+        this.consigneeTargetTelephoneNumber = consigneeTargetTelephoneNumber;
+    }
+
+    public String getConsigneeTargetTelephoneDivision() {
+        return consigneeTargetTelephoneDivision;
+    }
+
+    public void setConsigneeTargetTelephoneDivision(String consigneeTargetTelephoneDivision) {
+        this.consigneeTargetTelephoneDivision = consigneeTargetTelephoneDivision;
+    }
+
+    public String getDistributionTargetTelephoneCode() {
+        return distributionTargetTelephoneCode;
+    }
+
+    public void setDistributionTargetTelephoneCode(String distributionTargetTelephoneCode) {
+        this.distributionTargetTelephoneCode = distributionTargetTelephoneCode;
+    }
+
+    public String getDistributionTargetTelephoneNumber() {
+        return distributionTargetTelephoneNumber;
+    }
+
+    public void setDistributionTargetTelephoneNumber(String distributionTargetTelephoneNumber) {
+        this.distributionTargetTelephoneNumber = distributionTargetTelephoneNumber;
+    }
+
+    public String getDistributionTargetTelephoneDivision() {
+        return distributionTargetTelephoneDivision;
+    }
+
+    public void setDistributionTargetTelephoneDivision(String distributionTargetTelephoneDivision) {
+        this.distributionTargetTelephoneDivision = distributionTargetTelephoneDivision;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public Long getUserId() {
         return userId;

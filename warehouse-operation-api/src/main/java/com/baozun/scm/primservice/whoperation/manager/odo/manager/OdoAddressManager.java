@@ -14,4 +14,13 @@ public interface OdoAddressManager extends BaseManager {
      */
     WhOdoAddress findOdoAddressByOdoId(Long odoId, Long ouId);
 
+    /**
+     * [通用方法]根据ID查找odoAddress
+     * 
+     * @param id
+     * @param ouId
+     * @return
+     */
+    WhOdoAddress findOdoAddressByIdOuId(Long id, Long ouId);
+
 }

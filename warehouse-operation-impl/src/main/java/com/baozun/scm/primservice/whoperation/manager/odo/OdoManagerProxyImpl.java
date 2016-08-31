@@ -340,7 +340,16 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
             }
             odoAddress.setDistributionTargetName(odoAddressCommand.getDistributionTargetName());
             odoAddress.setDistributionTargetMobilePhone(odoAddressCommand.getDistributionTargetMobilePhone());
-            odoAddress.setDistributionTargetTelephone(odoAddressCommand.getDistributionTargetTelephone());
+            if (StringUtils.hasText(odoAddressCommand.getDistributionTargetTelephoneNumber())) {
+                String telephone = StringUtils.hasText(odoAddressCommand.getDistributionTargetTelephoneCode()) ? odoAddressCommand.getDistributionTargetTelephoneCode() + "-" : "";
+                if (StringUtils.hasText(odoAddressCommand.getDistributionTargetTelephoneDivision())) {
+                    telephone += odoAddressCommand.getDistributionTargetTelephoneNumber() + "-" + odoAddressCommand.getDistributionTargetTelephoneDivision();
+                } else {
+                    telephone += odoAddressCommand.getDistributionTargetTelephoneNumber();
+                }
+                odoAddress.setDistributionTargetTelephone(telephone);
+            }
+
             odoAddress.setDistributionTargetCountry(odoAddressCommand.getDistributionTargetCountry());
             odoAddress.setDistributionTargetProvince(odoAddressCommand.getDistributionTargetProvince());
             odoAddress.setDistributionTargetCity(odoAddressCommand.getDistributionTargetCity());
@@ -350,7 +359,75 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
             odoAddress.setDistributionTargetEmail(odoAddressCommand.getDistributionTargetEmail());
             odoAddress.setDistributionTargetZip(odoAddressCommand.getDistributionTargetZip());
 
-            this.odoManager.saveDistributionUnit(odoAddress, odo);
+            this.odoManager.saveAddressUnit(odoAddress, odo);
+        } catch (BusinessException ex) {
+            throw ex;
+        } catch (Exception e) {
+            log.error(e + "");
+            throw new BusinessException(ErrorCodes.PACKAGING_ERROR);
+        }
+
+    }
+
+    @Override
+    public WhOdoAddress findOdoAddressById(Long id, Long ouId) {
+        return this.odoAddressManager.findOdoAddressByIdOuId(id, ouId);
+    }
+
+    @Override
+    public void saveConsigneeUnit(OdoAddressCommand odoAddressCommand) {
+        Long ouId = odoAddressCommand.getOuId();
+        Long userId = odoAddressCommand.getUserId();
+        Long odoId = odoAddressCommand.getOdoId();
+        try {
+            WhOdo odo = this.odoManager.findOdoByIdOuId(odoId, ouId);
+            if (odo == null) {
+                throw new BusinessException(ErrorCodes.NO_ODO_FOUND);
+            }
+            /*
+             * WhOdoTransportMgmt transportMgmt =
+             * this.odoTransportMgmtManager.findTransportMgmtByOdoIdOuId(odoId, ouId); if
+             * (transportMgmt == null) { throw new BusinessException(ErrorCodes.NO_ODO_FOUND); }
+             */
+
+            /** 以下逻辑判断ODO状态 */
+            long lineCount = this.odoLineManager.findOdoLineListCountByOdoId(odoId, ouId);
+            if (lineCount > 0) {
+                if (OdoStatus.ODO_TOBECREATED.equals(odo.getOdoStatus())) {
+                    odo.setOdoStatus(OdoStatus.ODO_NEW);
+                    odo.setModifiedId(userId);
+                }
+            }
+            // transportMgmt.setOutboundTargetType(odoAddressCommand.getOutboundTargetType());
+
+            WhOdoAddress odoAddress = this.odoAddressManager.findOdoAddressByOdoId(odoId, ouId);
+            if (odoAddress == null) {
+                odoAddress = new WhOdoAddress();
+                odoAddress.setOdoId(odoId);
+                odoAddress.setOuId(ouId);
+            }
+            odoAddress.setConsigneeTargetName(odoAddressCommand.getConsigneeTargetName());
+            odoAddress.setConsigneeTargetMobilePhone(odoAddressCommand.getConsigneeTargetMobilePhone());
+            if (StringUtils.hasText(odoAddressCommand.getConsigneeTargetTelephoneNumber())) {
+                String telephone = StringUtils.hasText(odoAddressCommand.getConsigneeTargetTelephoneCode()) ? odoAddressCommand.getConsigneeTargetTelephoneCode() + "-" : "";
+                if (StringUtils.hasText(odoAddressCommand.getConsigneeTargetTelephoneDivision())) {
+                    telephone += odoAddressCommand.getConsigneeTargetTelephoneNumber() + "-" + odoAddressCommand.getConsigneeTargetTelephoneDivision();
+                } else {
+                    telephone += odoAddressCommand.getConsigneeTargetTelephoneNumber();
+                }
+                odoAddress.setConsigneeTargetTelephone(telephone);
+            }
+
+            odoAddress.setConsigneeTargetCountry(odoAddressCommand.getConsigneeTargetCountry());
+            odoAddress.setConsigneeTargetProvince(odoAddressCommand.getConsigneeTargetProvince());
+            odoAddress.setConsigneeTargetCity(odoAddressCommand.getConsigneeTargetCity());
+            odoAddress.setConsigneeTargetDistrict(odoAddressCommand.getConsigneeTargetDistrict());
+            odoAddress.setConsigneeTargetVillagesTowns(odoAddressCommand.getConsigneeTargetVillagesTowns());
+            odoAddress.setConsigneeTargetAddress(odoAddressCommand.getConsigneeTargetAddress());
+            odoAddress.setConsigneeTargetEmail(odoAddressCommand.getConsigneeTargetEmail());
+            odoAddress.setConsigneeTargetZip(odoAddressCommand.getConsigneeTargetZip());
+
+            this.odoManager.saveAddressUnit(odoAddress, odo);
         } catch (BusinessException ex) {
             throw ex;
         } catch (Exception e) {

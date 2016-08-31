@@ -157,4 +157,15 @@
                 odo_id = #{odoId}  and ou_id=#{ouId}
             ]]>
     </select>
+    
+    <select id="findOdoAddressByIdOuId" parameterType="map" resultMap="WhOdoAddressResult" flushCache="false">
+        select
+        <include refid="whOdoAddressColumns"/>
+        <![CDATA[
+                from t_wh_odo_address 
+                where 
+                id = #{id} and ou_id=#{ouId}
+            ]]>
+    </select>
+    
 </mapper>
