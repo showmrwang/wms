@@ -182,6 +182,16 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
     List<WhSkuInventoryCommand> findLocToBeFilledInventoryByOuterContainerId(@Param("ouId") Long ouId, @Param("outerContainerId") Long outerContainerId);
     
     /**
+     * 根据外部容器查询对应待移入库存
+     * @author lichuan
+     * @param ouId
+     * @param outerContainerId
+     * @param locId
+     * @return
+     */
+    List<WhSkuInventoryCommand> findLocToBeFilledInventoryByOuterContainerIdAndLocId(@Param("ouId") Long ouId, @Param("outerContainerId") Long outerContainerId, @Param("locId") Long locId);
+    
+    /**
      * 根据外部容器查询待移入数量
      * @author lichuan
      * @param ouid
