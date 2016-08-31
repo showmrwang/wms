@@ -410,6 +410,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         inv.setBatchNumber(null);
                     }
                     if (false == isVM) {
+                        inv.setMfgDate(null);
                         inv.setExpDate(null);
                     }
                     inv.setOccupationCode(null);
@@ -535,6 +536,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         inv.setBatchNumber(null);
                     }
                     if (false == isVM) {
+                        inv.setMfgDate(null);
                         inv.setExpDate(null);
                     }
                     inv.setOccupationCode(null);
@@ -796,6 +798,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         inv.setBatchNumber(null);
                     }
                     if (false == isVM) {
+                        inv.setMfgDate(null);
                         inv.setExpDate(null);
                     }
                     inv.setOccupationCode(null);
@@ -927,6 +930,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         inv.setBatchNumber(null);
                     }
                     if (false == isVM) {
+                        inv.setMfgDate(null);
                         inv.setExpDate(null);
                     }
                     inv.setOccupationCode(null);
