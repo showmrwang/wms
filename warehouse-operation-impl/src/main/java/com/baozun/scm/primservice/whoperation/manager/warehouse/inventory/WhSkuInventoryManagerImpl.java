@@ -700,6 +700,24 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             insertGlobalLog(GLOBAL_LOG_UPDATE, insideContainer, ouId, userId, null, null);
                         }
                     }
+                } else {
+                    int toBeFilledCounts = whSkuInventoryDao.findLocToBeFilledInventoryCountsByInsideContainerId(ouId, insideContainerCmd.getId());
+                    int rcvdCounts = whSkuInventoryDao.findRcvdInventoryCountsByInsideContainerId(ouId, insideContainerCmd.getId());
+                    if (0 < rcvdCounts && 0 == toBeFilledCounts) {
+                        // 库位待移入库存已全部上架，但还有容器库存未上架
+                        Container insideContainer = containerDao.findByIdExt(insideContainerCmd.getId(), ouId);
+                        if (null != insideContainer) {
+                            // 获取容器状态
+                            Integer iContainerStatus = insideContainer.getStatus();
+                            // 修改内部容器状态为：待上架，且占用中
+                            if (ContainerStatus.CONTAINER_STATUS_PUTAWAY == iContainerStatus) {
+                                insideContainer.setLifecycle(ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY);
+                                insideContainer.setStatus(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
+                                containerDao.saveOrUpdateByVersion(insideContainer);
+                                insertGlobalLog(GLOBAL_LOG_UPDATE, insideContainer, ouId, userId, null, null);
+                            }
+                        }
+                    }
                 }
                 // 判断修改外部容器状态
                 // 拆箱上架需要判断所有内部容器全部都已上架且状态可用才能修改外部容器状态
