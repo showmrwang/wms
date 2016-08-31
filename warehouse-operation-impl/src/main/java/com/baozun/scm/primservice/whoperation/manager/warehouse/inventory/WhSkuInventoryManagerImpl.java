@@ -303,7 +303,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             }
         }
     }
-    
+
     /**
      * @author lichuan
      * @param containerCmd
@@ -337,8 +337,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
      * @param logId
      */
     @Override
-    public void putaway(ContainerCommand containerCmd, ContainerCommand insideContainerCmd, String locationCode, Long funcId, Warehouse warehouse, Integer putawayPatternDetailType, Long ouId, Long userId,
-            String logId) {
+    public void putaway(ContainerCommand containerCmd, ContainerCommand insideContainerCmd, String locationCode, Long funcId, Warehouse warehouse, Integer putawayPatternDetailType, Long ouId, Long userId, String logId) {
         Long containerId = null;
         String containerCode = null;
         Long insideContainerId = null;
@@ -494,7 +493,6 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             WhSkuInventory cInv = new WhSkuInventory();
                             BeanUtils.copyProperties(cInvCmd, cInv);
                             whSkuInventoryDao.delete(cInv.getId());
-                            cInv.setAllocatedQty(actualOutboundQty);
                             // 记录操作日志
                             insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
                             // 剩余已分配容器库存插入新的库存份
@@ -502,8 +500,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             BeanUtils.copyProperties(cInvCmd, remainInv);
                             remainInv.setAllocatedQty(remainAllocatedQty);
                             remainInv.setId(null);
-                            inv.setLastModifyTime(new Date());
-                            whSkuInventoryDao.insert(inv);
+                            remainInv.setLastModifyTime(new Date());
+                            whSkuInventoryDao.insert(remainInv);
+                            insertGlobalLog(GLOBAL_LOG_INSERT, remainInv, ouId, userId, null, null);
                             break;
                         }
                     }
@@ -562,8 +561,18 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     insertGlobalLog(GLOBAL_LOG_UPDATE, inv, ouId, userId, null, null);
                     // 记录入库库存日志
                     insertSkuInventoryLog(inv.getId(), inv.getOnHandQty(), oldQty, warehouse.getIsTabbInvTotal(), ouId, userId);
-                    // 记录SN日志
-                    insertSkuInventorySnLog(inv.getUuid(), ouId);
+                    if (!uuid.equals(invCmd.getUuid())) {
+                        // uuid发生变更,重新插入sn
+                        for (WhSkuInventorySnCommand cSnCmd : snList) {
+                            WhSkuInventorySn sn = new WhSkuInventorySn();
+                            BeanUtils.copyProperties(cSnCmd, sn);
+                            sn.setUuid(inv.getUuid());
+                            whSkuInventorySnDao.saveOrUpdate(sn);
+                            insertGlobalLog(GLOBAL_LOG_UPDATE, sn, ouId, userId, null, null);
+                        }
+                        // 记录SN日志
+                        insertSkuInventorySnLog(inv.getUuid(), ouId);
+                    }
                     Double outboundQty = inv.getOnHandQty();
                     String cUuid = "";
                     WhSkuInventory containerInv = new WhSkuInventory();
@@ -638,7 +647,6 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             WhSkuInventory cInv = new WhSkuInventory();
                             BeanUtils.copyProperties(cInvCmd, cInv);
                             whSkuInventoryDao.delete(cInv.getId());
-                            cInv.setAllocatedQty(actualOutboundQty);
                             // 记录操作日志
                             insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
                             // 剩余已分配容器库存插入新的库存份
@@ -646,8 +654,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             BeanUtils.copyProperties(cInvCmd, remainInv);
                             remainInv.setAllocatedQty(remainAllocatedQty);
                             remainInv.setId(null);
-                            inv.setLastModifyTime(new Date());
-                            whSkuInventoryDao.insert(inv);
+                            remainInv.setLastModifyTime(new Date());
+                            whSkuInventoryDao.insert(remainInv);
+                            insertGlobalLog(GLOBAL_LOG_INSERT, remainInv, ouId, userId, null, null);
                             List<WhSkuInventorySnCommand> cSnList = whSkuInventorySnDao.findWhSkuInventoryByUuid(ouId, cInvCmd.getUuid());
                             Double count = 0.0;
                             for (WhSkuInventorySnCommand cSnCmd : cSnList) {
@@ -672,9 +681,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             }
             // 3.上架库存校验
             // TODO
-            
+
             // 4.如果不跟踪容器号，则上架后需判断是否释放容器
-            if(false == isTV){
+            if (false == isTV) {
                 // 判断修改内部容器状态
                 int allCounts = whSkuInventoryDao.findAllInventoryCountsByInsideContainerId(ouId, insideContainerCmd.getId());
                 if (0 == allCounts) {
@@ -888,7 +897,6 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             WhSkuInventory cInv = new WhSkuInventory();
                             BeanUtils.copyProperties(cInvCmd, cInv);
                             whSkuInventoryDao.delete(cInv.getId());
-                            cInv.setAllocatedQty(actualOutboundQty);
                             // 记录操作日志
                             insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
                             // 剩余已分配容器库存插入新的库存份
@@ -896,7 +904,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             BeanUtils.copyProperties(cInvCmd, remainInv);
                             remainInv.setAllocatedQty(remainAllocatedQty);
                             remainInv.setId(null);
-                            inv.setLastModifyTime(new Date());
+                            remainInv.setLastModifyTime(new Date());
                             whSkuInventoryDao.insert(remainInv);
                             insertGlobalLog(GLOBAL_LOG_INSERT, remainInv, ouId, userId, null, null);
                             break;
@@ -963,8 +971,18 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     insertGlobalLog(GLOBAL_LOG_UPDATE, inv, ouId, userId, null, null);
                     // 记录入库库存日志
                     insertSkuInventoryLog(inv.getId(), inv.getOnHandQty(), oldQty, warehouse.getIsTabbInvTotal(), ouId, userId);
-                    // 记录SN日志
-                    insertSkuInventorySnLog(inv.getUuid(), ouId);
+                    if (!uuid.equals(invCmd.getUuid())) {
+                        // uuid发生变更,重新插入sn
+                        for (WhSkuInventorySnCommand cSnCmd : snList) {
+                            WhSkuInventorySn sn = new WhSkuInventorySn();
+                            BeanUtils.copyProperties(cSnCmd, sn);
+                            sn.setUuid(inv.getUuid());
+                            whSkuInventorySnDao.saveOrUpdate(sn);
+                            insertGlobalLog(GLOBAL_LOG_UPDATE, sn, ouId, userId, null, null);
+                        }
+                        // 记录SN日志
+                        insertSkuInventorySnLog(inv.getUuid(), ouId);
+                    }
                     Double outboundQty = inv.getOnHandQty();
                     String cUuid = "";
                     WhSkuInventory containerInv = new WhSkuInventory();
@@ -1039,7 +1057,6 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             WhSkuInventory cInv = new WhSkuInventory();
                             BeanUtils.copyProperties(cInvCmd, cInv);
                             whSkuInventoryDao.delete(cInv.getId());
-                            cInv.setAllocatedQty(actualOutboundQty);
                             // 记录操作日志
                             insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
                             // 剩余已分配容器库存插入新的库存份
@@ -1047,14 +1064,14 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             BeanUtils.copyProperties(cInvCmd, remainInv);
                             remainInv.setAllocatedQty(remainAllocatedQty);
                             remainInv.setId(null);
-                            inv.setLastModifyTime(new Date());
+                            remainInv.setLastModifyTime(new Date());
                             whSkuInventoryDao.insert(remainInv);
                             insertGlobalLog(GLOBAL_LOG_INSERT, remainInv, ouId, userId, null, null);
                             List<WhSkuInventorySnCommand> cSnList = whSkuInventorySnDao.findWhSkuInventoryByUuid(ouId, cInvCmd.getUuid());
                             Double count = 0.0;
                             for (WhSkuInventorySnCommand cSnCmd : cSnList) {
                                 count++;
-                                if (0 <= count.compareTo(actualOutboundQty)) {
+                                if (0 <= count.compareTo(qty)) {
                                     // insertSkuInventorySnLog(cSnCmd.getUuid(), ouId);
                                     WhSkuInventorySn sn = new WhSkuInventorySn();
                                     BeanUtils.copyProperties(cSnCmd, sn);
@@ -1073,7 +1090,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 }
                 // 3.上架库存校验
                 // TODO
-                
+
                 // 4.如果不跟踪容器号，则上架成功后需要释放容器
                 if (false == isTV) {
                     // 修改内部容器状态
