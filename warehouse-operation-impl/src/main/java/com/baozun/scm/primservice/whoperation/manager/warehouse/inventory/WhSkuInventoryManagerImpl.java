@@ -362,7 +362,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 log.error("location is null error, locationCode is:[{}], logId is:[{}]", locationCode, logId);
                 throw new BusinessException(ErrorCodes.COMMON_LOCATION_IS_NOT_EXISTS);
             }
-            isTV = (null == loc.getIsTrackVessel() ? false : loc.getIsTrackVessel());
+            isTV = false;// 拆箱上架默认不跟踪容器号，不管库位是否跟踪容器号
             isBM = (null == loc.getIsBatchMgt() ? false : loc.getIsBatchMgt());
             isVM = (null == loc.getIsValidMgt() ? false : loc.getIsValidMgt());
             List<WhSkuInventoryCommand> invList = null;
