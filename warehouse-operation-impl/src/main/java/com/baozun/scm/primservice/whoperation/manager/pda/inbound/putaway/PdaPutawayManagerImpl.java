@@ -125,6 +125,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
     private WhAsnDao whAsnDao;
     @Autowired
     private WhCartonDao whCartonDao;
+    @SuppressWarnings("unused")
     @Autowired
     private WhSkuDao whSkuDao;
     @Autowired
@@ -647,24 +648,30 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                     }
                     if (null != skuId) {
                         skuIds.add(skuId);
-                        WhSkuCommand skuCmd = whSkuDao.findWhSkuByIdExt(skuId, ouId);
-                        if (null == skuCmd) {
+                        SkuRedisCommand cacheSku = skuRedisManager.findSkuMasterBySkuId(skuId, ouId, logId);
+                        if(null == cacheSku){
                             log.error("sys guide pallet putaway sku is not exists error, skuId is:[{}], logId is:[{}]", skuId, logId);
                             throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
                         }
+                        Sku sku = cacheSku.getSku();
+//                        WhSkuCommand skuCmd = whSkuDao.findWhSkuByIdExt(skuId, ouId);
+//                        if (null == skuCmd) {
+//                            log.error("sys guide pallet putaway sku is not exists error, skuId is:[{}], logId is:[{}]", skuId, logId);
+//                            throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
+//                        }
                         // String skuLenUom = skuCmd.getLengthUom();
-                        Double skuLength = skuCmd.getLength();
-                        Double skuWidth = skuCmd.getWidth();
-                        Double skuHeight = skuCmd.getHeight();
+                        Double skuLength = sku.getLength();
+                        Double skuWidth = sku.getWidth();
+                        Double skuHeight = sku.getHeight();
                         // String skuWeightUom = skuCmd.getWeightUom();
-                        Double skuWeight = skuCmd.getWeight();
+                        Double skuWeight = sku.getWeight();
                         if (null == skuLength || null == skuWidth || null == skuHeight) {
                             log.error("sys guide pallet putaway sku length、width、height is null error, skuId is:[{}], logId is:[{}]", skuId, logId);
-                            throw new BusinessException(ErrorCodes.SKU_LENGTH_WIDTH_HIGHT_IS_NULL_ERROR, new Object[] {skuCmd.getBarCode()});
+                            throw new BusinessException(ErrorCodes.SKU_LENGTH_WIDTH_HIGHT_IS_NULL_ERROR, new Object[] {sku.getBarCode()});
                         }
                         if (null == skuWeight) {
                             log.error("sys guide pallet putaway sku weight is null error, skuId is:[{}], logId is:[{}]", skuId, logId);
-                            throw new BusinessException(ErrorCodes.SKU_WEIGHT_IS_NULL_ERROR, new Object[] {skuCmd.getBarCode()});
+                            throw new BusinessException(ErrorCodes.SKU_WEIGHT_IS_NULL_ERROR, new Object[] {sku.getBarCode()});
                         }
                         // totalSkuVolume = cubeCalculator.accumulationStuffVolume(skuLength,
                         // skuWidth,
@@ -1453,24 +1460,30 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                     }
                     if (null != skuId) {
                         skuIds.add(skuId);
-                        WhSkuCommand skuCmd = whSkuDao.findWhSkuByIdExt(skuId, ouId);
-                        if (null == skuCmd) {
-                            log.error("sys guide pallet putaway sku is not exists error, skuId is:[{}], logId is:[{}]", skuId, logId);
+                        SkuRedisCommand cacheSku = skuRedisManager.findSkuMasterBySkuId(skuId, ouId, logId);
+                        if(null == cacheSku){
+                            log.error("sys guide container putaway sku is not exists error, skuId is:[{}], logId is:[{}]", skuId, logId);
                             throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
                         }
+                        Sku sku = cacheSku.getSku();
+//                        WhSkuCommand skuCmd = whSkuDao.findWhSkuByIdExt(skuId, ouId);
+//                        if (null == skuCmd) {
+//                            log.error("sys guide container putaway sku is not exists error, skuId is:[{}], logId is:[{}]", skuId, logId);
+//                            throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
+//                        }
                         // String skuLenUom = skuCmd.getLengthUom();
-                        Double skuLength = skuCmd.getLength();
-                        Double skuWidth = skuCmd.getWidth();
-                        Double skuHeight = skuCmd.getHeight();
+                        Double skuLength = sku.getLength();
+                        Double skuWidth = sku.getWidth();
+                        Double skuHeight = sku.getHeight();
                         // String skuWeightUom = skuCmd.getWeightUom();
-                        Double skuWeight = skuCmd.getWeight();
+                        Double skuWeight = sku.getWeight();
                         if (null == skuLength || null == skuWidth || null == skuHeight) {
-                            log.error("sys guide pallet putaway sku length、width、height is null error, skuId is:[{}], logId is:[{}]", skuId, logId);
-                            throw new BusinessException(ErrorCodes.SKU_LENGTH_WIDTH_HIGHT_IS_NULL_ERROR, new Object[] {skuCmd.getBarCode()});
+                            log.error("sys guide container putaway sku length、width、height is null error, skuId is:[{}], logId is:[{}]", skuId, logId);
+                            throw new BusinessException(ErrorCodes.SKU_LENGTH_WIDTH_HIGHT_IS_NULL_ERROR, new Object[] {sku.getBarCode()});
                         }
                         if (null == skuWeight) {
-                            log.error("sys guide pallet putaway sku weight is null error, skuId is:[{}], logId is:[{}]", skuId, logId);
-                            throw new BusinessException(ErrorCodes.SKU_WEIGHT_IS_NULL_ERROR, new Object[] {skuCmd.getBarCode()});
+                            log.error("sys guide container putaway sku weight is null error, skuId is:[{}], logId is:[{}]", skuId, logId);
+                            throw new BusinessException(ErrorCodes.SKU_WEIGHT_IS_NULL_ERROR, new Object[] {sku.getBarCode()});
                         }
                         // totalSkuVolume = cubeCalculator.accumulationStuffVolume(skuLength,
                         // skuWidth,
@@ -2191,24 +2204,30 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                     }
                     if (null != skuId) {
                         skuIds.add(skuId);
-                        WhSkuCommand skuCmd = whSkuDao.findWhSkuByIdExt(skuId, ouId);
-                        if (null == skuCmd) {
-                            log.error("sys guide pallet putaway sku is not exists error, skuId is:[{}], logId is:[{}]", skuId, logId);
+                        SkuRedisCommand cacheSku = skuRedisManager.findSkuMasterBySkuId(skuId, ouId, logId);
+                        if(null == cacheSku){
+                            log.error("sys guide container putaway sku is not exists error, skuId is:[{}], logId is:[{}]", skuId, logId);
                             throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
                         }
+                        Sku sku = cacheSku.getSku();
+//                        WhSkuCommand skuCmd = whSkuDao.findWhSkuByIdExt(skuId, ouId);
+//                        if (null == skuCmd) {
+//                            log.error("sys guide  splitContainer putaway sku is not exists error, skuId is:[{}], logId is:[{}]", skuId, logId);
+//                            throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
+//                        }
                         // String skuLenUom = skuCmd.getLengthUom();
-                        Double skuLength = skuCmd.getLength();
-                        Double skuWidth = skuCmd.getWidth();
-                        Double skuHeight = skuCmd.getHeight();
+                        Double skuLength = sku.getLength();
+                        Double skuWidth = sku.getWidth();
+                        Double skuHeight = sku.getHeight();
                         // String skuWeightUom = skuCmd.getWeightUom();
-                        Double skuWeight = skuCmd.getWeight();
+                        Double skuWeight = sku.getWeight();
                         if (null == skuLength || null == skuWidth || null == skuHeight) {
-                            log.error("sys guide pallet putaway sku length、width、height is null error, skuId is:[{}], logId is:[{}]", skuId, logId);
-                            throw new BusinessException(ErrorCodes.SKU_LENGTH_WIDTH_HIGHT_IS_NULL_ERROR, new Object[] {skuCmd.getBarCode()});
+                            log.error("sys guide splitContainer putaway sku length、width、height is null error, skuId is:[{}], logId is:[{}]", skuId, logId);
+                            throw new BusinessException(ErrorCodes.SKU_LENGTH_WIDTH_HIGHT_IS_NULL_ERROR, new Object[] {sku.getBarCode()});
                         }
                         if (null == skuWeight) {
-                            log.error("sys guide pallet putaway sku weight is null error, skuId is:[{}], logId is:[{}]", skuId, logId);
-                            throw new BusinessException(ErrorCodes.SKU_WEIGHT_IS_NULL_ERROR, new Object[] {skuCmd.getBarCode()});
+                            log.error("sys guide splitContainer putaway sku weight is null error, skuId is:[{}], logId is:[{}]", skuId, logId);
+                            throw new BusinessException(ErrorCodes.SKU_WEIGHT_IS_NULL_ERROR, new Object[] {sku.getBarCode()});
                         }
                         // totalSkuVolume = cubeCalculator.accumulationStuffVolume(skuLength,
                         // skuWidth,
@@ -3071,14 +3090,20 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         Map<String, Long> skuAttrIdsQty = insideContainerSkuAttrIdsQty.get(containerId);
         String tipSkuAttrId = pdaPutawayCacheManager.sysGuideSplitContainerPutawayTipSku0(insideContainerCmd, loc.getId(), locSkuAttrIds, logId);
         Long skuId = SkuCategoryProvider.getSkuId(tipSkuAttrId);
-        WhSkuCommand skuCmd = whSkuDao.findWhSkuByIdExt(skuId, ouId);
-        if (null == skuCmd) {
+        SkuRedisCommand cacheSku = skuRedisManager.findSkuMasterBySkuId(skuId, ouId, logId);
+        if (null == cacheSku) {
             log.error("sku is not found error, logId is:[{}]", logId);
             throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
         }
+        Sku sku = cacheSku.getSku();
+//        WhSkuCommand skuCmd = whSkuDao.findWhSkuByIdExt(skuId, ouId);
+//        if (null == skuCmd) {
+//            log.error("sku is not found error, logId is:[{}]", logId);
+//            throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
+//        }
         tipSkuDetailAspect(srCmd, tipSkuAttrId, locSkuAttrIds, skuAttrIdsQty, logId);
         srCmd.setNeedTipSku(true);
-        srCmd.setTipSkuBarcode(skuCmd.getBarCode());
+        srCmd.setTipSkuBarcode(sku.getBarCode());
         return srCmd;
     }
 
@@ -4034,26 +4059,38 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
             srCmd.setNeedScanSkuSn(true);// 继续扫sn
             String tipSkuAttrId = cssrCmd.getTipSkuAttrId();
             Long skuId = SkuCategoryProvider.getSkuId(tipSkuAttrId);
-            WhSkuCommand tipSkuCmd = whSkuDao.findWhSkuByIdExt(skuId, ouId);
-            if (null == tipSkuCmd) {
+            SkuRedisCommand cacheSku = skuRedisManager.findSkuMasterBySkuId(skuId, ouId, logId);
+            if (null == cacheSku) {
                 log.error("sku is not found error, logId is:[{}]", logId);
                 throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
             }
+            Sku tipSku = cacheSku.getSku();
+//            WhSkuCommand tipSkuCmd = whSkuDao.findWhSkuByIdExt(skuId, ouId);
+//            if (null == tipSkuCmd) {
+//                log.error("sku is not found error, logId is:[{}]", logId);
+//                throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
+//            }
             tipSkuDetailAspect(srCmd, tipSkuAttrId, locSkuAttrIds, skuAttrIdsQty, logId);
-            srCmd.setTipSkuBarcode(skuCmd.getBarCode());
+            srCmd.setTipSkuBarcode(tipSku.getBarCode());
             pdaPutawayCacheManager.sysGuideSplitContainerPutawayTipSku(icCmd, loc.getId(), locSkuAttrIds, tipSkuAttrId, logId);
         } else if (cssrCmd.isNeedTipSku()) {
             // 当前商品复核完毕，提示下一个商品
             srCmd.setNeedTipSku(true);// 提示下一个sku
             String tipSkuAttrId = cssrCmd.getTipSkuAttrId();
             Long skuId = SkuCategoryProvider.getSkuId(tipSkuAttrId);
-            WhSkuCommand tipSkuCmd = whSkuDao.findWhSkuByIdExt(skuId, ouId);
-            if (null == tipSkuCmd) {
+            SkuRedisCommand cacheSku = skuRedisManager.findSkuMasterBySkuId(skuId, ouId, logId);
+            if (null == cacheSku) {
                 log.error("sku is not found error, logId is:[{}]", logId);
                 throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
             }
+            Sku tipSku = cacheSku.getSku();
+//            WhSkuCommand tipSkuCmd = whSkuDao.findWhSkuByIdExt(skuId, ouId);
+//            if (null == tipSkuCmd) {
+//                log.error("sku is not found error, logId is:[{}]", logId);
+//                throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
+//            }
             tipSkuDetailAspect(srCmd, tipSkuAttrId, locSkuAttrIds, skuAttrIdsQty, logId);
-            srCmd.setTipSkuBarcode(skuCmd.getBarCode());
+            srCmd.setTipSkuBarcode(tipSku.getBarCode());
             pdaPutawayCacheManager.sysGuideSplitContainerPutawayTipSku(icCmd, loc.getId(), locSkuAttrIds, tipSkuAttrId, logId);
         } else if (cssrCmd.isNeedTipLoc()) {
             // 当前库位对应的商品已扫描完毕，可上架，并提示下一个库位
