@@ -76,7 +76,7 @@ public interface WhOdoLineDao extends BaseDao<WhOdoLine, Long> {
      * @param ouId
      * @return
      */
-    long findOdoLineListCountByOdoIdOuId(Long odoId, Long ouId);
+    long findOdoLineListCountByOdoIdOuId(@Param("odoId") Long odoId, @Param("ouId") Long ouId);
 
     /**
      * [通用方法]根据ODOID和OUID查找明细
@@ -85,6 +85,6 @@ public interface WhOdoLineDao extends BaseDao<WhOdoLine, Long> {
      * @param ouId
      * @return
      */
-    List<WhOdoLine> findOdoLineListByOdoIdOuId(Long odoId, Long ouId);
+    List<WhOdoLine> findOdoLineListByOdoIdOuId(@Param("odoId") Long odoId, @Param("ouId") Long ouId);
 
 }

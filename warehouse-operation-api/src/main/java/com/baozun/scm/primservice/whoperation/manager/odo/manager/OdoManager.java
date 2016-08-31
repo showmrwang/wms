@@ -52,11 +52,11 @@ public interface OdoManager extends BaseManager {
     void saveUnit(WhOdoLine line, WhOdo odo);
 
     /**
-     * [业务方法]配置配货对象
+     * [业务方法]配置地址信息
      * 
      * @param odoAddress
      * @param transportMgmt
      * @param odo
      */
-    void saveDistributionUnit(WhOdoAddress odoAddress, WhOdo odo);
+    void saveAddressUnit(WhOdoAddress odoAddress, WhOdo odo);
 }
