@@ -203,9 +203,9 @@ public final class Constants {
     public static final int INVENTORY_SN_STATUS_FROZEN = 3;// 冻结
 
     // 残次品条码编码生成实体
-    public static final String INVENTORY_SN_BARCODE = "SN";
+    public static final String INVENTORY_DEFECT_WARE_BARCODE = "DEFECT_WARE";
     // 残次品条码编码生成 前缀
-    public static final String INVENTORY_SN_BARCODE_PREFIX = "SN";
+    // public static final String INVENTORY_SN_BARCODE_PREFIX = "SN";
 
     // 商品属性管理跳转
     public static final String ATTR_CONTROL_HEADER = "containerReceiving/receiving-sku-"; // 页面头

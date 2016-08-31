@@ -327,7 +327,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                         // #条码 调用条码生成器
                         String barCode = null;
                         if (null != rcvdSn.getDefectTypeId()) {
-                            barCode = this.codeManager.generateCode(Constants.WMS, Constants.INVENTORY_SN_BARCODE, null, Constants.INVENTORY_SN_BARCODE_PREFIX, null);
+                            barCode = this.codeManager.generateCode(Constants.WMS, Constants.INVENTORY_DEFECT_WARE_BARCODE, null, null, null);
                         }
                         WhSkuInventorySnCommand skuInvSn = new WhSkuInventorySnCommand();
                         skuInvSn.setSn(rcvdSn.getSn());
@@ -1717,7 +1717,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
 
         // 清除容器-商品缓存
         List<String> containerList = this.cacheManager.findLists(CacheKeyConstant.CACHE_RCVD_PALLET_PREFIX + outerContainerId, 0, this.cacheManager.listLen(CacheKeyConstant.CACHE_RCVD_PALLET_PREFIX + outerContainerId));
-        if(containerList!=null){
+        if (containerList != null) {
             for (String containerId : containerList) {
                 this.cacheManager.remove(CacheKeyConstant.CACHE_RCVD_CONTAINER_PREFIX + containerId);
             }
@@ -1749,11 +1749,11 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
 
     @Override
     public WhSkuInventoryCommand initSkuWhenScanning(WhSkuInventoryCommand command) {
-        //LOGID
-        String logId=command.getLogId();
+        // LOGID
+        String logId = command.getLogId();
         Long skuId = null;
         Integer quantity = null;
-        Long ouId=command.getOuId();
+        Long ouId = command.getOuId();
         // 累计数量
         if (null == command.getSkuAddUpCount()) {
             command.setSkuAddUpCount(0);
