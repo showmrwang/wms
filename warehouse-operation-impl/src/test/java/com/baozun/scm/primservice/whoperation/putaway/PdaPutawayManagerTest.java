@@ -32,6 +32,9 @@ import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.TipCon
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
+import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
+import com.baozun.scm.primservice.whoperation.util.SkuInventoryUuid;
 import com.baozun.scm.primservice.whoperation.util.formula.SimpleStandardCubeCalculator;
 
 /**
@@ -50,6 +53,8 @@ public class PdaPutawayManagerTest extends AbstractJUnit4SpringContextTests {
     
     @Autowired
     private CacheManager cacheManagr;
+    @Autowired
+    private WhSkuInventoryDao whSkuInventoryDao;
     
     @Test
     public void getPK(){
@@ -192,6 +197,33 @@ public class PdaPutawayManagerTest extends AbstractJUnit4SpringContextTests {
 //        cacheManagr.popListHead(CacheConstants.LOCATION_RECOMMEND_QUEUE);
 //        String id = "1111" + "_" + new Date().getTime();
 //        cacheManagr.pushToListHead(CacheConstants.LOCATION_RECOMMEND_QUEUE, id);
+    }
+    
+    @Test
+    public void invPutawayTest() throws Exception{
+        // dev： 16100088L 16100165L
+        // test: 29100028L 29100058L
+        WhSkuInventory inv = whSkuInventoryDao.findById(29100028L);
+        System.out.println(inv.getUuid());
+        String uuid = SkuInventoryUuid.invUuid(inv);
+        System.out.println(uuid);
+        //预期：49bcac59d9212ab139db0b49fdf23763
+        //实际：ca95ba1fe4d1960942edd64bfa68f727
+        inv.setLocationId(112100000L);
+        uuid = SkuInventoryUuid.invUuid(inv);
+        System.out.println(uuid);
+        inv.setLocationId(new Long("112100000"));
+        uuid = SkuInventoryUuid.invUuid(inv);
+        System.out.println(uuid);
+        //预期：634ae2ba30cbbae174e93dfdf63f8d51
+        System.out.println("-------------------------");
+        WhSkuInventory locInv = whSkuInventoryDao.findById(29100058L);
+        System.out.println(locInv.getUuid());
+        uuid = SkuInventoryUuid.invUuid(locInv);
+        System.out.println(uuid);
+        locInv.setLocationId(null);
+        uuid = SkuInventoryUuid.invUuid(locInv);
+        System.out.println(uuid);
     }
     
     public static void main(String[] args) {

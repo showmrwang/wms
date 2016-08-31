@@ -245,7 +245,7 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
                         skuInvSn.setDefectReasonsId(RcvdSn.getDefectReasonsId());
                         skuInvSn.setStatus(Constants.INVENTORY_SN_STATUS_ONHAND);
                         // #条码 调用条码生成器
-                        String barCode = this.codeManager.generateCode(Constants.WMS, Constants.INVENTORY_SN_BARCODE, null, Constants.INVENTORY_SN_BARCODE_PREFIX, null);
+                        String barCode = this.codeManager.generateCode(Constants.WMS, Constants.INVENTORY_DEFECT_WARE_BARCODE, null, null, null);
                         skuInvSn.setDefectWareBarcode(barCode);
                         skuInvSn.setOuId(ouId);
                         skuInvSn.setUuid(uuid);
@@ -446,8 +446,8 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void saveScanedSkuWhenGeneralRcvdForPda(List<WhSkuInventorySnCommand> saveSnList, List<WhSkuInventory> saveInvList, List<WhAsnRcvdLogCommand> saveInvLogList, List<WhAsnLine> saveAsnLineList, WhAsn asn,
-            List<WhPoLine> savePoLineList, WhPo po, Container container, List<WhCarton> saveWhCartonList) {
+    public void saveScanedSkuWhenGeneralRcvdForPda(List<WhSkuInventorySnCommand> saveSnList, List<WhSkuInventory> saveInvList, List<WhAsnRcvdLogCommand> saveInvLogList, List<WhAsnLine> saveAsnLineList, WhAsn asn, List<WhPoLine> savePoLineList, WhPo po,
+            Container container, List<WhCarton> saveWhCartonList) {
         try {
             Long userId = po.getModifiedId();
             // 保存残次信息
