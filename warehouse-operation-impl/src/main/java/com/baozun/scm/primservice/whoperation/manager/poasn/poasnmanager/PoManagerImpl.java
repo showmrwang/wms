@@ -121,7 +121,7 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
                         SysDictionary sys = dicMap.get(Constants.PO_TYPE + "_" + command.getPoType());
                         command.setPoTypeName(sys == null ? command.getPoType().toString() : sys.getDicLabel());
                     }
-                    if (StringUtils.hasText(command.getPoType().toString())) {
+                    if (StringUtils.hasText(command.getStatus().toString())) {
                         // 通过groupValue+divValue获取对应系统参数对象
                         SysDictionary sys = dicMap.get(Constants.POSTATUS + "_" + command.getStatus());
                         command.setStatusName(sys == null ? command.getStatus().toString() : sys.getDicLabel());
