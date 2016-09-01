@@ -604,22 +604,22 @@ public class CheckInQueueManagerImpl extends BaseManagerImpl implements CheckInQ
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public Long freePlatform(Long platformId, Long ouId, Long userId, String logId) {
+    public Long releasePlatform(Long platformId, Long ouId, Long userId, String logId) {
         if (log.isInfoEnabled()) {
-            log.info("CheckInQueueManagerImpl.freePlatform start, platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", platformId, ouId, userId, logId);
+            log.info("CheckInQueueManagerImpl.releasePlatform start, platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", platformId, ouId, userId, logId);
         }
         if (null == platformId || null == ouId || null == userId) {
-            log.error("CheckInQueueManagerImpl.freePlatform param is null, platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", platformId, ouId, userId, logId);
+            log.error("CheckInQueueManagerImpl.releasePlatform param is null, platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", platformId, ouId, userId, logId);
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
 
         Platform originPlatform = platformDao.findByIdExt(platformId, ouId);
         if (null == originPlatform) {
-            log.error("CheckInQueueManagerImpl freePlatform failed, originPlatform is null, platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", platformId, ouId, userId, logId);
+            log.error("CheckInQueueManagerImpl releasePlatform failed, originPlatform is null, platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", platformId, ouId, userId, logId);
             throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
         }
         if (!originPlatform.getIsOccupied() || !BaseModel.LIFECYCLE_NORMAL.equals(originPlatform.getLifecycle())) {
-            log.error("CheckInQueueManagerImpl freePlatform failed, originPlatform invalid, platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}], originPlatform is:[{}]", platformId, ouId, userId, logId, originPlatform);
+            log.error("CheckInQueueManagerImpl releasePlatform failed, originPlatform invalid, platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}], originPlatform is:[{}]", platformId, ouId, userId, logId, originPlatform);
             throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
         }
         originPlatform.setIsOccupied(false);
@@ -627,17 +627,17 @@ public class CheckInQueueManagerImpl extends BaseManagerImpl implements CheckInQ
         originPlatform.setModifiedId(userId);
 
         if (log.isDebugEnabled()) {
-            log.debug("CheckInQueueManagerImpl.freePlatform -> platformDao.freePlatform invoke, platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", platformId, ouId, userId, logId);
+            log.debug("CheckInQueueManagerImpl.releasePlatform -> platformDao.releasePlatform invoke, platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", platformId, ouId, userId, logId);
         }
-        long resultCount = platformDao.freePlatform(originPlatform);
+        long resultCount = platformDao.releasePlatform(originPlatform);
         if (resultCount != 1) {
-            log.error("CheckInQueueManagerImpl.freePlatform -> platformDao.freePlatform  update to sharedDB failed, update count != 1, platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", platformId, ouId, userId, logId);
+            log.error("CheckInQueueManagerImpl.releasePlatform -> platformDao.releasePlatform  update to sharedDB failed, update count != 1, platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", platformId, ouId, userId, logId);
             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
         }
         insertGlobalLog(Constants.GLOBAL_LOG_UPDATE, originPlatform, ouId, userId, null, null);
 
         if (log.isInfoEnabled()) {
-            log.info("CheckInQueueManagerImpl.freePlatform end, vacantPlatformList is:[{}], platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", platformId, ouId, userId, logId);
+            log.info("CheckInQueueManagerImpl.releasePlatform end, vacantPlatformList is:[{}], platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", platformId, ouId, userId, logId);
         }
         return resultCount;
     }
