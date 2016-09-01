@@ -308,6 +308,8 @@ public final class Constants {
     public static final String INCLUDE_FRAGILE_CARGO = "INCLUDE_FRAGILE_CARGO";
 
     public static final String INCLUDE_HAZARDOUS_CARGO = "INCLUDE_HAZARDOUS_CARGO";
+    
+    public static final String ASNLINESTATUS = "ASNLINESTATUS";
 
     // 出库单默认优先级
     public static final Integer ODO_DEFAULT_PRIORITYLEVLE = 50;
