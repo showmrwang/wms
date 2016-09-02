@@ -953,8 +953,40 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         if (null == lrrList || 0 == lrrList.size() || StringUtils.isEmpty(lrrList.get(0).getLocationCode())) {
             // 弹出排队队列
             pdaPutawayCacheManager.sysGuidePutawayLocRecommendPopQueue(containerId, logId);
-            log.error("location recommend fail! containerCode is:[{}], logId is:[{}]", containerCode, logId);
-            throw new BusinessException(ErrorCodes.COMMON_LOCATION_RECOMMEND_ERROR);
+            srCmd.setRecommendFail(true);
+            // 将内部容器状态修改为待上架
+            for (Long icId : insideContainerIds) {
+                Container insideContainer = containerDao.findByIdExt(icId, ouId);
+                if (null == insideContainer) {
+                    // 容器信息不存在
+                    log.error("container is not exists, logId is:[{}]", logId);
+                    throw new BusinessException(ErrorCodes.COMMON_CONTAINER_IS_NOT_EXISTS);
+                }
+                // 获取容器状态
+                Integer insideContainerStatus = insideContainer.getStatus();
+                // 修改内部容器状态为：上架中，且占用中
+                if (ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY == insideContainerStatus) {
+                    insideContainer.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
+                    insideContainer.setStatus(ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY);
+                    containerDao.saveOrUpdateByVersion(insideContainer);
+                    insertGlobalLog(GLOBAL_LOG_UPDATE, insideContainer, ouId, userId, null, null);
+                }
+            }
+            if (null != containerCmd) {
+                // 包含外部容器，需要将外部容器状态也修改为待上架
+                if (ContainerStatus.CONTAINER_STATUS_PUTAWAY == containerStatus) {
+                    Container container = new Container();
+                    BeanUtils.copyProperties(containerCmd, container);
+                    container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
+                    container.setStatus(ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY);
+                    containerDao.saveOrUpdateByVersion(container);
+                    insertGlobalLog(GLOBAL_LOG_UPDATE, container, ouId, userId, null, null);
+                }
+            }
+            // log.error("location recommend fail! containerCode is:[{}], logId is:[{}]",
+            // containerCode, logId);
+            // throw new BusinessException(ErrorCodes.COMMON_LOCATION_RECOMMEND_ERROR);
+            return srCmd;
         }
         LocationRecommendResultCommand lrr = lrrList.get(0);
         Long lrrLocId = lrr.getLocationId();
