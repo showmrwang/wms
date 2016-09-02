@@ -141,40 +141,40 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					</foreach>
 				</if>
 				<if test="poDateStart!=null and poDateStart!=''">
-					and DATE_FORMAT(po.po_date,'%Y-%m-%d')&gt;=#{poDateStart}
+					and DATE_FORMAT(asn.po_date,'%Y-%m-%d')&gt;=#{poDateStart}
 				</if>
 				<if test="poDateEnd!=null and poDateEnd!=''">
-					and DATE_FORMAT(po.po_date,'%Y-%m-%d')&lt;=#{poDateEnd}
+					and DATE_FORMAT(asn.po_date,'%Y-%m-%d')&lt;=#{poDateEnd}
 				</if>
 				<if test="etaStart!=null and etaStart!=''">
-					and DATE_FORMAT(po.eta,'%Y-%m-%d')&gt;=#{etaStart}
+					and DATE_FORMAT(asn.eta,'%Y-%m-%d')&gt;=#{etaStart}
 				</if>
 				<if test="etaEnd!=null and etaEnd!=''">
-					and DATE_FORMAT(po.eta,'%Y-%m-%d')&lt;=#{etaEnd}
+					and DATE_FORMAT(asn.eta,'%Y-%m-%d')&lt;=#{etaEnd}
 				</if>
 				<if test="deliveryTimeStart!=null and deliveryTimeStart!=''">
-					and DATE_FORMAT(po.delivery_time,'%Y-%m-%d')&gt;=#{deliveryTimeStart}
+					and DATE_FORMAT(asn.delivery_time,'%Y-%m-%d')&gt;=#{deliveryTimeStart}
 				</if>
 				<if test="deliveryTimeEnd!=null and deliveryTimeEnd!=''">
-					and DATE_FORMAT(po.delivery_time,'%Y-%m-%d')&lt;=#{deliveryTimeEnd}
+					and DATE_FORMAT(asn.delivery_time,'%Y-%m-%d')&lt;=#{deliveryTimeEnd}
 				</if>
 				<if test="startTimeStart!=null and startTimeStart!=''">
-					and DATE_FORMAT(po.start_time,'%Y-%m-%d')&gt;=#{startTimeStart}
+					and DATE_FORMAT(asn.start_time,'%Y-%m-%d')&gt;=#{startTimeStart}
 				</if>
 				<if test="startTimeEnd!=null and startTimeEnd!=''">
-					and DATE_FORMAT(po.start_time,'%Y-%m-%d')&lt;=#{startTimeEnd}
+					and DATE_FORMAT(asn.start_time,'%Y-%m-%d')&lt;=#{startTimeEnd}
 				</if>
 				<if test="stopTimeStart!=null and stopTimeStart!=''">
-					and DATE_FORMAT(po.stop_time,'%Y-%m-%d')&gt;=#{stopTimeStart}
+					and DATE_FORMAT(asn.stop_time,'%Y-%m-%d')&gt;=#{stopTimeStart}
 				</if>
 				<if test="stopTimeEnd!=null and stopTimeEnd!=''">
-					and DATE_FORMAT(po.stop_time,'%Y-%m-%d')&lt;=#{stopTimeEnd}
+					and DATE_FORMAT(asn.stop_time,'%Y-%m-%d')&lt;=#{stopTimeEnd}
 				</if>
 				<if test="inboundTimeStart!=null and inboundTimeStart!=''">
-					and DATE_FORMAT(po.inbound_time,'%Y-%m-%d')&gt;=#{inboundTimeStart}
+					and DATE_FORMAT(asn.inbound_time,'%Y-%m-%d')&gt;=#{inboundTimeStart}
 				</if>
 				<if test="inboundTimeEnd!=null and inboundTimeEnd!=''">
-					and DATE_FORMAT(po.inbound_time,'%Y-%m-%d')&lt;=#{inboundTimeEnd}
+					and DATE_FORMAT(asn.inbound_time,'%Y-%m-%d')&lt;=#{inboundTimeEnd}
 				</if>
 				<if test="customerList!=null">
 		        	and asn.customer_id in
