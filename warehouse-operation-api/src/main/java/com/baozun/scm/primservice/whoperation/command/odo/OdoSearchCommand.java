@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
 
-public class OdoSearchCommand extends BaseCommand{
+public class OdoSearchCommand extends BaseCommand {
 
     /**
      * 
@@ -64,6 +64,12 @@ public class OdoSearchCommand extends BaseCommand{
     private String minExpDateEnd;
     private String maxExpDateStart;
     private String maxExpDateEnd;
+    private String ids;
+    private Long ouId;
+    private boolean needOutboundCartonType;
+    private boolean needEpistaticSystemsOrderType;
+    private boolean needStore;
+    private boolean needDeliverGoodsTime;
 
     public String getOdoCode() {
         return odoCode;
@@ -497,6 +503,52 @@ public class OdoSearchCommand extends BaseCommand{
         this.transportServiceProvider = transportServiceProvider;
     }
 
+    public String getIds() {
+        return ids;
+    }
 
+    public void setIds(String ids) {
+        this.ids = ids;
+    }
+
+    public Long getOuId() {
+        return ouId;
+    }
+
+    public void setOuId(Long ouId) {
+        this.ouId = ouId;
+    }
+
+    public boolean isNeedOutboundCartonType() {
+        return needOutboundCartonType;
+    }
+
+    public void setNeedOutboundCartonType(boolean needOutboundCartonType) {
+        this.needOutboundCartonType = needOutboundCartonType;
+    }
+
+    public boolean isNeedEpistaticSystemsOrderType() {
+        return needEpistaticSystemsOrderType;
+    }
+
+    public void setNeedEpistaticSystemsOrderType(boolean needEpistaticSystemsOrderType) {
+        this.needEpistaticSystemsOrderType = needEpistaticSystemsOrderType;
+    }
+
+    public boolean isNeedStore() {
+        return needStore;
+    }
+
+    public void setNeedStore(boolean needStore) {
+        this.needStore = needStore;
+    }
+
+    public boolean isNeedDeliverGoodsTime() {
+        return needDeliverGoodsTime;
+    }
+
+    public void setNeedDeliverGoodsTime(boolean needDeliverGoodsTime) {
+        this.needDeliverGoodsTime = needDeliverGoodsTime;
+    }
 
 }

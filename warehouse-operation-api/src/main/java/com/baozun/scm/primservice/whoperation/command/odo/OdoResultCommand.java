@@ -2,7 +2,7 @@ package com.baozun.scm.primservice.whoperation.command.odo;
 
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
 
-public class OdoResultCommand extends BaseCommand{
+public class OdoResultCommand extends BaseCommand {
 
     /**
      * 

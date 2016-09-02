@@ -54,4 +54,6 @@ public interface WhOdoTransportMgmtDao extends BaseDao<WhOdoTransportMgmt, Long>
      */
     WhOdoTransportMgmt findTransportMgmtByOdoIdOuId(@Param("odoId") Long odoId, @Param("ouId") Long ouId);
 
+    WhOdoTransportMgmt findObject(WhOdoTransportMgmt o);
+
 }

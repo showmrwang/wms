@@ -61,6 +61,61 @@
         ]]>
 	</sql>
 
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whOdoLineColumnsCommandExt">
+        <![CDATA[
+                line.id as id,
+	        	line.odo_id as odoId,
+	        	line.linenum as linenum,
+	        	line.original_linenum as originalLinenum,
+	        	line.store as store,
+	        	line.ext_linenum as extLinenum,
+	        	line.sku_id as skuId,
+	        	line.sku_bar_code as skuBarCode,
+	        	line.sku_name as skuName,
+	        	line.ext_sku_name as extSkuName,
+	        	line.qty as qty,
+	        	line.current_qty as currentQty,
+	        	line.actual_qty as actualQty,
+	        	line.cancel_qty as cancelQty,
+	        	line.assign_qty as assignQty,
+	        	line.dieking_qty as diekingQty,
+	        	line.line_price as linePrice,
+	        	line.line_amt as lineAmt,
+	        	line.odo_line_status as odoLineStatus,
+	        	line.is_check as isCheck,
+	        	line.full_line_outbound as fullLineOutbound,
+	        	line.part_outbound_strategy as partOutboundStrategy,
+	        	line.mfg_date as mfgDate,
+	        	line.exp_date as expDate,
+	        	line.min_exp_date as minExpDate,
+	        	line.max_exp_date as maxExpDate,
+	        	line.batch_number as batchNumber,
+	        	line.country_of_origin as countryOfOrigin,
+	        	line.inv_status as invStatus,
+	        	line.inv_type as invType,
+	        	line.inv_attr1 as invAttr1,
+	        	line.inv_attr2 as invAttr2,
+	        	line.inv_attr3 as invAttr3,
+	        	line.inv_attr4 as invAttr4,
+	        	line.inv_attr5 as invAttr5,
+	        	line.outbound_carton_type as outboundCartonType,
+	        	line.color as color,
+	        	line.style as style,
+	        	line.size as size,
+	        	line.mixing_attr as mixingAttr,
+	        	line.original_odo_code as originalOdoCode,
+	        	line.assign_fail_reason as assignFailReason,
+	        	line.is_assign_success as isAssignSuccess,
+	        	line.ou_id as ouId,
+	        	line.create_time as createTime,
+	        	line.created_id as createdId,
+	        	line.last_modify_time as lastModifyTime,
+	        	line.modified_id as modifiedId,
+	        	odo.odo_code as odoCode
+        ]]>
+	</sql>
+
 	<sql id="whOdoLineDynamicWhereExt">
 		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
 		<where>
@@ -278,6 +333,223 @@
 		</where>
 	</sql>
 
+	<sql id="whOdoLineDynamicWhereCommandExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+			<if test="id!=null">
+				and line.id = #{id}
+			</if>
+
+			<if test="odoId!=null">
+				and line.odo_id = #{odoId}
+			</if>
+
+			<if test="linenum!=null">
+				and line.linenum = #{linenum}
+			</if>
+
+			<if test="originalLinenum!=null">
+				and line.original_linenum = #{originalLinenum}
+			</if>
+
+
+			<if test="store!=null and store!=''">
+				and line.store = #{store}
+			</if>
+
+			<if test="extLinenum!=null">
+				and line.ext_linenum = #{extLinenum}
+			</if>
+
+			<if test="skuId!=null">
+				and line.sku_id = #{skuId}
+			</if>
+
+
+			<if test="skuBarCode!=null and skuBarCode!=''">
+				and line.sku_bar_code = #{skuBarCode}
+			</if>
+
+
+			<if test="skuName!=null and skuName!=''">
+				and line.sku_name = #{skuName}
+			</if>
+
+
+			<if test="extSkuName!=null and extSkuName!=''">
+				and line.ext_sku_name = #{extSkuName}
+			</if>
+
+			<if test="qty!=null">
+				and line.qty = #{qty}
+			</if>
+
+			<if test="currentQty!=null">
+				and line.current_qty = #{currentQty}
+			</if>
+
+			<if test="actualQty!=null">
+				and line.actual_qty = #{actualQty}
+			</if>
+
+			<if test="cancelQty!=null">
+				and line.cancel_qty = #{cancelQty}
+			</if>
+
+			<if test="assignQty!=null">
+				and line.assign_qty = #{assignQty}
+			</if>
+
+			<if test="diekingQty!=null">
+				and line.dieking_qty = #{diekingQty}
+			</if>
+
+			<if test="linePrice!=null">
+				and line.line_price = #{linePrice}
+			</if>
+
+			<if test="lineAmt!=null">
+				and line.line_amt = #{lineAmt}
+			</if>
+
+
+			<if test="odoLineStatus!=null and odoLineStatus!=''">
+				and line.odo_line_status = #{odoLineStatus}
+			</if>
+
+			<if test="isCheck!=null">
+				and line.is_check = #{isCheck}
+			</if>
+
+			<if test="fullLineOutbound!=null">
+				and line.full_line_outbound = #{fullLineOutbound}
+			</if>
+
+
+			<if test="partOutboundStrategy!=null and partOutboundStrategy!=''">
+				and line.part_outbound_strategy = #{partOutboundStrategy}
+			</if>
+
+			<if test="mfgDate!=null">
+				and line.mfg_date = #{mfgDate}
+			</if>
+
+			<if test="expDate!=null">
+				and line.exp_date = #{expDate}
+			</if>
+
+			<if test="minExpDate!=null">
+				and line.min_exp_date = #{minExpDate}
+			</if>
+
+			<if test="maxExpDate!=null">
+				and line.max_exp_date = #{maxExpDate}
+			</if>
+
+
+			<if test="batchNumber!=null and batchNumber!=''">
+				and line.batch_number = #{batchNumber}
+			</if>
+
+
+			<if test="countryOfOrigin!=null and countryOfOrigin!=''">
+				and line.country_of_origin = #{countryOfOrigin}
+			</if>
+
+			<if test="invStatus!=null">
+				and line.inv_status = #{invStatus}
+			</if>
+
+
+			<if test="invType!=null and invType!=''">
+				and line.inv_type = #{invType}
+			</if>
+
+
+			<if test="invAttr1!=null and invAttr1!=''">
+				and line.inv_attr1 = #{invAttr1}
+			</if>
+
+
+			<if test="invAttr2!=null and invAttr2!=''">
+				and line.inv_attr2 = #{invAttr2}
+			</if>
+
+
+			<if test="invAttr3!=null and invAttr3!=''">
+				and line.inv_attr3 = #{invAttr3}
+			</if>
+
+
+			<if test="invAttr4!=null and invAttr4!=''">
+				and line.inv_attr4 = #{invAttr4}
+			</if>
+
+
+			<if test="invAttr5!=null and invAttr5!=''">
+				and line.inv_attr5 = #{invAttr5}
+			</if>
+
+			<if test="outboundCartonType!=null">
+				and line.outbound_carton_type = #{outboundCartonType}
+			</if>
+
+
+			<if test="color!=null and color!=''">
+				and line.color = #{color}
+			</if>
+
+
+			<if test="style!=null and style!=''">
+				and line.style = #{style}
+			</if>
+
+
+			<if test="size!=null and size!=''">
+				and line.size = #{size}
+			</if>
+
+
+			<if test="mixingAttr!=null and mixingAttr!=''">
+				and line.mixing_attr = #{mixingAttr}
+			</if>
+
+
+			<if test="originalOdoCode!=null and originalOdoCode!=''">
+				and line.original_odo_code = #{originalOdoCode}
+			</if>
+
+
+			<if test="assignFailReason!=null and assignFailReason!=''">
+				and line.assign_fail_reason = #{assignFailReason}
+			</if>
+
+			<if test="isAssignSuccess!=null">
+				and line.is_assign_success = #{isAssignSuccess}
+			</if>
+
+			<if test="ouId!=null">
+				and line.ou_id = #{ouId}
+			</if>
+
+			<if test="createTime!=null">
+				and line.create_time = #{createTime}
+			</if>
+
+			<if test="createdId!=null">
+				and line.created_id = #{createdId}
+			</if>
+
+			<if test="lastModifyTime!=null">
+				and line.last_modify_time = #{lastModifyTime}
+			</if>
+
+			<if test="modifiedId!=null">
+				and line.modified_id = #{modifiedId}
+			</if>
+		</where>
+	</sql>
+
 	<select id="findOdoLineById" parameterType="map" resultMap="WhOdoLineResult"
 		flushCache="false">
 		select
@@ -379,4 +651,11 @@
                 odo_id = #{odoId} and ou_id =#{ouId}
             ]]>
     </select>
+    
+    <select id="findObject" resultMap="WhOdoLineResultExt">
+		select
+		<include refid="whOdoLineColumnsCommandExt" />
+		from t_wh_odo_line line left join t_wh_odo odo on line.odo_id = odo.id
+		<include refid="whOdoLineDynamicWhereCommandExt" />
+	</select>
 </mapper>
