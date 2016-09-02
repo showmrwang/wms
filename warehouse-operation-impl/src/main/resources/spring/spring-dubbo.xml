@@ -49,6 +49,7 @@
    	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryLogManager" ref="whSkuInventoryLogManager" />  
    	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventorySnLogManager" ref="whSkuInventorySnLogManager" />
    	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.odo.OdoManagerProxy" ref="odoManagerProxy" />
+   	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.odo.OdoMergeManagerProxy" ref="odoMergeManagerProxy" />
 
     	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.sortation.WhContainerAssignManager" ref="whContainerAssignManager" />  
     	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryLogManager" ref="whSkuInventoryLogManager" />  
