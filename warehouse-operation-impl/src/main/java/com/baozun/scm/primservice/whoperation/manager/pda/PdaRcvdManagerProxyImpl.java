@@ -1733,7 +1733,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
         // userId.toString());
         // 释放月台 不必强制事务，可以手动释放月台
         try {
-            checkInManagerProxy.freePlatformByRcvdFinish(occupationId, ouId, userId, null);
+            checkInManagerProxy.releasePlatformByRcvdFinish(occupationId, ouId, userId, null);
         } catch (Exception e) {
             throw new BusinessException(ErrorCodes.RCVD_PLATFORM_REALEASE_ERROR);
         }

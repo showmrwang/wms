@@ -91,6 +91,6 @@ public interface CheckInQueueManager extends BaseManager {
      * @param logId
      * @return
      */
-    Long freePlatform(Long platformId, Long ouId, Long userId, String logId);
+    Long releasePlatform(Long platformId, Long ouId, Long userId, String logId);
 
 }

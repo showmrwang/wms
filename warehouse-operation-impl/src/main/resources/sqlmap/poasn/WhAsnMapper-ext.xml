@@ -84,6 +84,252 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
 	</sql>
 
+	<sql id="whAsnSearchWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+				asn.status &lt;&gt; 0 
+				<if test="ouId!=null">
+					and asn.ou_id = #{ouId}
+				</if>
+				<if test="asnCode!=null and asnCode!=''">
+					and asn.asn_code like #{asnCode}
+				</if>
+				<if test="extCode!=null and extCode!=''">
+					and asn.ext_code like #{extCode}
+				</if>
+				<if test="asnExtCode!=null and asnExtCode!=''">
+					and asn.asn_ext_code like #{asnExtCode}
+				</if>
+				<if test="isIqc!=null and isIqc!=''">
+					and asn.is_iqc = #{isIqc}
+				</if>
+				
+				<if test="asnType!=null">
+					and asn.asn_type in
+					<foreach collection="asnType" item="s" open="(" separator="," close=")">
+						#{s}
+					</foreach>
+				</if>
+				<if test="customerId!=null">
+					and asn.customer_id in 
+					<foreach collection="customerId" item="s" open="(" separator="," close=")">
+						#{s}
+					</foreach>
+				</if>
+				<if test="storeId!=null">
+					and asn.store_id in 
+					<foreach collection="storeId" item="s" open="(" separator="," close=")">
+						#{s}
+					</foreach>
+				</if>
+				<if test="supplierId!=null">
+					and asn.supplier_id in 
+					<foreach collection="supplierId" item="s" open="(" separator="," close=")">
+						#{s}
+					</foreach>
+				</if>
+				<if test="logisticsProviderId!=null">
+					and asn.logistics_provider_id in 
+					<foreach collection="logisticsProviderId" item="s" open="(" separator="," close=")">
+						#{s}
+					</foreach>
+				</if>
+				<if test="asnStatus!=null">
+					and asn.status in 
+					<foreach collection="asnStatus" item="s" open="(" separator="," close=")">
+						#{s}
+					</foreach>
+				</if>
+				<if test="poDateStart!=null and poDateStart!=''">
+					and DATE_FORMAT(asn.po_date,'%Y-%m-%d')&gt;=#{poDateStart}
+				</if>
+				<if test="poDateEnd!=null and poDateEnd!=''">
+					and DATE_FORMAT(asn.po_date,'%Y-%m-%d')&lt;=#{poDateEnd}
+				</if>
+				<if test="etaStart!=null and etaStart!=''">
+					and DATE_FORMAT(asn.eta,'%Y-%m-%d')&gt;=#{etaStart}
+				</if>
+				<if test="etaEnd!=null and etaEnd!=''">
+					and DATE_FORMAT(asn.eta,'%Y-%m-%d')&lt;=#{etaEnd}
+				</if>
+				<if test="deliveryTimeStart!=null and deliveryTimeStart!=''">
+					and DATE_FORMAT(asn.delivery_time,'%Y-%m-%d')&gt;=#{deliveryTimeStart}
+				</if>
+				<if test="deliveryTimeEnd!=null and deliveryTimeEnd!=''">
+					and DATE_FORMAT(asn.delivery_time,'%Y-%m-%d')&lt;=#{deliveryTimeEnd}
+				</if>
+				<if test="startTimeStart!=null and startTimeStart!=''">
+					and DATE_FORMAT(asn.start_time,'%Y-%m-%d')&gt;=#{startTimeStart}
+				</if>
+				<if test="startTimeEnd!=null and startTimeEnd!=''">
+					and DATE_FORMAT(asn.start_time,'%Y-%m-%d')&lt;=#{startTimeEnd}
+				</if>
+				<if test="stopTimeStart!=null and stopTimeStart!=''">
+					and DATE_FORMAT(asn.stop_time,'%Y-%m-%d')&gt;=#{stopTimeStart}
+				</if>
+				<if test="stopTimeEnd!=null and stopTimeEnd!=''">
+					and DATE_FORMAT(asn.stop_time,'%Y-%m-%d')&lt;=#{stopTimeEnd}
+				</if>
+				<if test="inboundTimeStart!=null and inboundTimeStart!=''">
+					and DATE_FORMAT(asn.inbound_time,'%Y-%m-%d')&gt;=#{inboundTimeStart}
+				</if>
+				<if test="inboundTimeEnd!=null and inboundTimeEnd!=''">
+					and DATE_FORMAT(asn.inbound_time,'%Y-%m-%d')&lt;=#{inboundTimeEnd}
+				</if>
+				<if test="customerList!=null">
+		        	and asn.customer_id in
+					<foreach collection="customerList" item="cid" open="(" separator="," close=")">
+				       #{cid}
+			        </foreach>
+			    </if>
+                <if test="customerList==null">
+                	and  asn.customer_id in (null)
+			    </if>
+			    <if test="storeList!=null">
+			        and asn.store_id in
+					<foreach collection="storeList" item="sid" open="(" separator="," close=")">
+				       #{sid}
+			        </foreach>
+			    </if>
+                <if test="storeList==null">
+                   and asn.store_id in (null)
+			    </if>
+			    
+			    <if test="(poLinenum!=null and poLinenum!='') ||
+			 			(skuCode!=null and skuCode!='') ||
+			 			(skuName!=null and skuName!='') ||
+			 			(skuBarCode!=null and skuBarCode!='')||
+			 			(lineStatus!=null)||
+			 			(lineIsIqc!=null and lineIsIqc!='')||
+			 			(mfgDateStart!=null and mfgDateStart!='')||
+			 			(mfgDateEnd!=null and mfgDateEnd!='')||
+			 			(expDateStart!=null and expDateStart!='')||
+			 			(expDateEnd!=null and expDateEnd!='')||
+			 			(batchNo!=null and batchNo!='')||
+			 			(countryOfOrigin!=null and countryOfOrigin!='')||
+			 			(invStatus!=null)||
+			 			(invType!=null)||
+			 			(invAttr1!=null)||
+			 			(invAttr2!=null)||
+			 			(invAttr3!=null)||
+			 			(invAttr4!=null)||
+			 			(invAttr5!=null)||
+			 			(mixAttr!=null and mixAttr!='')">
+					and EXISTS(select 1 from t_wh_asn_line asnline
+									inner join t_wh_sku sku on sku.id=asnline.sku_id
+									where asnline.asn_id=asn.id
+									<if test="poLinenum!=null and poLinenum!=''">
+										and asnline.po_linenum like #{poLinenum}
+									</if>
+									<if test="skuCode!=null and skuCode!=''">
+										and sku.code like #{skuCode}
+									</if>
+									 <if test="skuName!=null and skuName!=''">
+										and sku.name like #{skuName}
+									 </if>
+									 <if test="skuBarCode!=null and skuBarCode!=''">
+										and sku.bar_code like #{skuBarCode}
+									 </if>
+									 <if test="lineStatus!=null">
+									    and asnline.status IN
+										<foreach collection="lineStatus" item="s" open="(" separator="," close=")">
+										       #{s}
+									  	</foreach>
+									 </if>
+									 <if test="lineIsIqc!=null and lineIsIqc!=''">
+									 	and asnline.is_iqc=#{lineIsIqc}
+									 </if>
+									 <if test="mfgDateStart!=null and mfgDateStart!=''">
+										and DATE_FORMAT(asnline.mfg_date,'%Y-%m-%d')&gt;=#{mfgDateStart}
+									 </if>
+									 <if test="mfgDateEnd!=null and mfgDateEnd!=''">
+										and DATE_FORMAT(asnline.mfg_date,'%Y-%m-%d')&lt;=#{mfgDateEnd}
+									 </if>
+									 <if test="expDateStart!=null and expDateStart!=''">
+										and DATE_FORMAT(asnline.exp_date,'%Y-%m-%d')&gt;=#{expDateStart}
+									 </if>
+									 <if test="expDateEnd!=null and expDateEnd!=''">
+										and DATE_FORMAT(asnline.exp_date,'%Y-%m-%d')&lt;=#{expDateEnd}
+									 </if>
+									 <if test="batchNo!=null and batchNo!=''">
+										and asnline.batch_no like #{batchNo}
+									 </if>
+									 <if test="countryOfOrigin!=null and countryOfOrigin!=''">
+										and asnline.country_of_origin like #{countryOfOrigin}
+									 </if>
+									 <if test="invStatus!=null">
+									    and asnline.inv_status IN
+										<foreach collection="invStatus" item="s" open="(" separator="," close=")">
+										       #{s}
+									  	</foreach>
+									 </if>
+									 <if test="invType!=null">
+									    and asnline.inv_type IN
+										<foreach collection="invType" item="s" open="(" separator="," close=")">
+										       #{s}
+									  	</foreach>
+									 </if>
+									 <if test="invAttr1!=null">
+									    and asnline.inv_attr1 IN
+										<foreach collection="invAttr1" item="s" open="(" separator="," close=")">
+										       #{s}
+									  	</foreach>
+									 </if>
+									 <if test="invAttr2!=null">
+									    and asnline.inv_attr2 IN
+										<foreach collection="invAttr2" item="s" open="(" separator="," close=")">
+										       #{s}
+									  	</foreach>
+									 </if>
+									 <if test="invAttr3!=null">
+									    and asnline.inv_attr3 IN
+										<foreach collection="invAttr3" item="s" open="(" separator="," close=")">
+										       #{s}
+									  	</foreach>
+									 </if>
+									 <if test="invAttr4!=null">
+									    and asnline.inv_attr4 IN
+										<foreach collection="invAttr4" item="s" open="(" separator="," close=")">
+										       #{s}
+									  	</foreach>
+									 </if>
+									 <if test="invAttr5!=null">
+									    and asnline.inv_attr5 IN
+										<foreach collection="invAttr5" item="s" open="(" separator="," close=")">
+										       #{s}
+									  	</foreach>
+									 </if>
+									 <if test="mixAttr!=null and mixAttr!=''">
+										and exists(select 1 from t_wh_sku_mgmt mgmt 
+																where mgmt.sku_id=sku.id 
+																<if test="mixAttr!=null and mixAttr!=''">
+																  	and mgmt.mix_attr like #{mixAttr}
+																 </if>
+												   )
+									  </if>
+						   )
+			</if>
+			<if test="(sn!=null and sn!='') ||(defectWareBarcode!=null and defectWareBarcode!='') ||(defectType!=null and defectType!='')||(defectReasons!=null and defectReasons!='')">						 
+				and EXISTS(select 1 from t_wh_asn_rcvd_sn_log sn
+										left join t_wh_asn_rcvd_log rcvd ON sn.asn_rcvd_id = rcvd.id
+										where rcvd.asn_id = asn.id
+						   				<if test="sn!=null and sn!=''">
+											and sn.sn like #{sn}
+										</if>
+										<if test="defectWareBarcode!=null and defectWareBarcode!=''">
+											and sn.defect_ware_barcode like #{defectWareBarcode}
+										</if>
+										<if test="defectType!=null and defectType!=''">
+											and sn.defect_type like #{defectType}
+										</if>
+										<if test="defectReasons!=null and defectReasons!=''">
+											and sn.defect_reasons like #{defectReasons}
+										</if>
+						   )			
+			</if>
+		</where>
+	</sql>
+
 	
 	<!-- 用于select查询公用抽取的列 -->
 	<sql id="whAsnColumnsExt">
@@ -214,24 +460,58 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    ]]>
 	</sql>
 	
+	<sql id="whAsnSearchMapExt">
+	    <![CDATA[
+				asn.id as id,
+				asn.asn_code as asnCode,
+				asn.asn_ext_code as asnExtCode,
+				asn.po_id as poId,
+				asn.ou_id as ouId,
+				asn.customer_id as customerId,
+				asn.store_id as storeId,
+				asn.po_date as poDate,
+				asn.eta as eta,
+				asn.delivery_time as deliveryTime,
+				asn.qty_planned as qtyPlanned,
+				asn.qty_rcvd as qtyRcvd,
+				asn.ctn_planned as ctnPlanned,
+				asn.ctn_rcvd as ctnRcvd,
+				asn.supplier_id as supplierId,
+				asn.logistics_provider_id as logisticsProviderId,
+				asn.asn_type as asnType,
+				asn.status as status,
+				asn.is_iqc as isIqc,
+				asn.start_time as startTime,
+				asn.stop_time as stopTime,
+				asn.inbound_time as inboundTime,
+				asn.create_time as createTime,
+				asn.created_id as createdId,
+				asn.last_modify_time as lastModifyTime,
+				asn.modified_id as modifiedId,
+				asn.po_ou_id as poOuId,
+				asn.ext_code as extCode,
+				asn.urgent_status as urgentStatus,
+				asn.uuid as uuid,
+				asn.overchage_rate as overChageRate,
+				provider.name as logisticsProviderName,
+				supplier.name as supplierName
+	    ]]>
+	</sql>
+	
 	<select id="findListByQueryMapWithPageExt" resultMap="whAsnCommand">
-    	select <include refid="whAsnColumnsMapExt" />
+    	select <include refid="whAsnSearchMapExt" />
 		    from 
 		    t_wh_asn asn
-		    left join t_bi_customer c on asn.customer_id = c.id
-			left join t_bi_store s on asn.store_id = s.id 
-			left join sys_dictionary sys on sys.dic_value = asn.status and sys.group_value = 'ASNSTATUS'
-			<include refid="whAsnDynamicWhereExt"/>
+		    left join t_ma_transport_provider provider on provider.id=asn.logistics_provider_id
+			left join t_wh_supplier supplier on supplier.id=asn.supplier_id
+			<include refid="whAsnSearchWhereExt"/>
     </select>
     		
 		
 	<select id="findListCountByQueryMapExt" resultType="long">
         select count(*) from 
-		    t_wh_asn asn 
-		    left join t_bi_customer c on asn.customer_id = c.id
-			left join t_bi_store s on asn.store_id = s.id 
-			left join sys_dictionary sys on sys.dic_value = asn.status and sys.group_value = 'ASNSTATUS'
-			<include refid="whAsnDynamicWhereExt"/>
+		    t_wh_asn asn
+			<include refid="whAsnSearchWhereExt"/>
     </select>
 	
 	

@@ -1,8 +1,12 @@
 package com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import lark.common.annotation.MoreDB;
 import lark.common.dao.Page;
@@ -15,6 +19,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnLineCommand;
@@ -35,6 +40,9 @@ import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
+import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
 import com.baozun.scm.primservice.whoperation.util.StringUtil;
 
 
@@ -100,7 +108,74 @@ public class AsnManagerImpl extends BaseManagerImpl implements AsnManager {
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public Pagination<WhAsnCommand> findListByQueryMapWithPageExtByShard(Page page, Sort[] sorts, Map<String, Object> params) {
-        return whAsnDao.findListByQueryMapWithPageExt(page, sorts, params);
+        Pagination<WhAsnCommand> pages = this.whAsnDao.findListByQueryMapWithPageExt(page, sorts, params);
+        if (pages != null) {
+            List<WhAsnCommand> list = pages.getItems();
+            Set<String> dic1 = new HashSet<String>();
+            Set<String> dic2 = new HashSet<String>();
+            List<Long> customerIdList = new ArrayList<Long>();
+            List<Long> storeIdList = new ArrayList<Long>();
+            boolean b = false;
+            if (list != null && list.size() > 0) {
+                for (WhAsnCommand command : list) {
+                    if (StringUtils.hasText(command.getAsnType().toString())) {
+                        dic1.add(command.getAsnType().toString());
+                    }
+                    if (StringUtils.hasText(command.getStatus().toString())) {
+                        dic2.add(command.getStatus().toString());
+                    }
+                    // 客户
+                    b = customerIdList.contains(command.getCustomerId());
+                    if (!b) {
+                        customerIdList.add(command.getCustomerId());
+                    }
+                    // 店铺
+                    b = storeIdList.contains(command.getStoreId());
+                    if (!b) {
+                        storeIdList.add(command.getStoreId());
+                    }
+                }
+                Map<String, List<String>> map = new HashMap<String, List<String>>();
+                map.put(Constants.PO_TYPE, new ArrayList<String>(dic1));
+                map.put(Constants.ASNSTATUS, new ArrayList<String>(dic2));
+                // 调用系统参数redis缓存方法获取对应数据
+                Map<String, SysDictionary> dicMap = this.findSysDictionaryByRedis(map);
+                // 调用客户redis缓存方法获取对应数据
+                Map<Long, Customer> customer = findCustomerByRedis(customerIdList);
+                Map<Long, Store> store = findStoreByRedis(storeIdList);
+                // 封装数据放入List
+                for (WhAsnCommand command : list) {
+                    Customer c = null;
+                    Store s = null;
+                    if (StringUtils.hasText(command.getStatus().toString())) {
+                        // 通过groupValue+divValue获取对应系统参数对象
+                        SysDictionary sys = dicMap.get(Constants.ASNSTATUS + "_" + command.getStatus());
+                        command.setStatusName(sys == null ? command.getStatus().toString() : sys.getDicLabel());
+                    }
+                    if (StringUtils.hasText(command.getStatus().toString())) {
+                        // 通过groupValue+divValue获取对应系统参数对象
+                        SysDictionary sys = dicMap.get(Constants.PO_TYPE + "_" + command.getAsnType());
+                        command.setPoTypeName(sys == null ? command.getAsnType().toString() : sys.getDicLabel());
+                    }
+                    // 客户                    
+                    c = customer.get(command.getCustomerId());
+                    if (null == c) {
+                        command.setCustomerName(command.getCustomerId().toString());
+                    } else {
+                        command.setCustomerName(c.getCustomerName());
+                    }
+                    // 商铺                   
+                    s = store.get(command.getStoreId());
+                    if (null == s) {
+                        command.setStoreName(command.getStoreId().toString());
+                    } else {
+                        command.setStoreName(s.getStoreName());
+                    }
+                }
+                pages.setItems(list);
+            }
+        }
+        return pages;
     }
 
     /**
