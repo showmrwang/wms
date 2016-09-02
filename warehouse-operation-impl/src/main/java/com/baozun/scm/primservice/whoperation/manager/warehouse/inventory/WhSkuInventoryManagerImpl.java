@@ -15,9 +15,11 @@
 package com.baozun.scm.primservice.whoperation.manager.warehouse.inventory;
 
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayDeque;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -33,6 +35,7 @@ import org.springframework.util.StringUtils;
 import com.baozun.redis.manager.CacheManager;
 import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.ContainerStatisticResultCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.LocationRecommendResultCommand;
+import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.TipContainerCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
@@ -527,10 +530,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         log.error("binding location is more than one error, logId is:[{}]", logId);
                         throw new BusinessException(ErrorCodes.CONTAINER_PUTAWAY_BINDING_MORE_THAN_ONE_LOC);
                     }
-                    if (false == isTV) {
-                        inv.setOuterContainerId(null);
-                        inv.setInsideContainerId(null);
-                    }
+                    // 拆箱上架默认不跟踪容器号
+                    inv.setOuterContainerId(null);
+                    inv.setInsideContainerId(null);
                     if (false == isBM) {
                         inv.setBatchNumber(null);
                     }
@@ -720,36 +722,58 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     }
                 }
                 // 判断修改外部容器状态
-                // 拆箱上架需要判断所有内部容器全部都已上架且状态可用才能修改外部容器状态
+                // 拆箱上架需要判断所有内部容器全部都已上架才能释放外部容器
                 ContainerStatisticResultCommand csrCmd = new ContainerStatisticResultCommand();
                 if (null != containerCmd) {
                     csrCmd = cacheManager.getMapObject(CacheConstants.CONTAINER_STATISTIC, containerCmd.getId().toString());
                     if (null == csrCmd) {
-                        csrCmd = pdaPutawayCacheManager.sysGuideSplitContainerPutawayCacheInsideContainerStatistic(containerCmd, ouId, logId);
+                        csrCmd = pdaPutawayCacheManager.sysGuideContainerPutawayCacheInsideContainerStatistic(containerCmd, ouId, logId);
                     }
                     Set<Long> cacheInsideContainerIds = csrCmd.getInsideContainerIds();
-                    boolean isUpdateOuterContainerStatus = true;
-                    for (Long icId : cacheInsideContainerIds) {
-                        Container insideContainer = containerDao.findByIdExt(icId, ouId);
-                        if (null != insideContainer) {
-                            // 获取容器状态
-                            Integer iContainerStatus = insideContainer.getStatus();
-                            Integer lifecycle = insideContainer.getLifecycle();
-                            if (ContainerStatus.CONTAINER_STATUS_USABLE != iContainerStatus || ContainerStatus.CONTAINER_LIFECYCLE_USABLE == lifecycle) {
-                                isUpdateOuterContainerStatus = false;
+                    // 先判断内部容器是否全部已提示，只有全部提示了才能修改外部容器状态，否则外部容器一定是上架中
+                    TipContainerCacheCommand cacheContainerCmd = cacheManager.getObject(CacheConstants.SCAN_CONTAINER_QUEUE + containerId.toString());
+                    ArrayDeque<Long> cacheContainerIds = null;
+                    if (null != cacheContainerCmd) {
+                        cacheContainerIds = cacheContainerCmd.getTipInsideContainerIds();
+                    }
+                    boolean isAllTip = isCacheAllExists(cacheInsideContainerIds, cacheContainerIds);
+                    if (true == isAllTip) {
+                        boolean isUpdateOuterStatusUsable = true;
+                        boolean isUpdateOuterStatusCanPutaway = false;
+                        for (Long icId : cacheInsideContainerIds) {
+                            int toBeFilledCounts = whSkuInventoryDao.findLocToBeFilledInventoryCountsByInsideContainerId(ouId, icId);
+                            int rcvdCounts = whSkuInventoryDao.findRcvdInventoryCountsByInsideContainerId(ouId, icId);
+                            if (0 < rcvdCounts && 0 == toBeFilledCounts) {
+                                // 库位待移入库存已全部上架，但还有容器库存未上架
+                                isUpdateOuterStatusUsable = false;
+                                isUpdateOuterStatusCanPutaway = true;
+                                break;
+                            } else if (0 < rcvdCounts && 0 < toBeFilledCounts) {
+                                isUpdateOuterStatusUsable = false;
                                 break;
                             }
                         }
-                    }
-                    if (true == isUpdateOuterContainerStatus) {
                         Integer containerStatus = containerCmd.getStatus();
-                        if (ContainerStatus.CONTAINER_STATUS_PUTAWAY == containerStatus) {
-                            Container container = new Container();
-                            BeanUtils.copyProperties(containerCmd, container);
-                            container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_USABLE);
-                            container.setStatus(ContainerStatus.CONTAINER_STATUS_USABLE);
-                            containerDao.saveOrUpdateByVersion(container);
-                            insertGlobalLog(GLOBAL_LOG_UPDATE, container, ouId, userId, null, null);
+                        if (true == isUpdateOuterStatusUsable) {
+                            if (ContainerStatus.CONTAINER_STATUS_PUTAWAY == containerStatus) {
+                                Container container = new Container();
+                                BeanUtils.copyProperties(containerCmd, container);
+                                container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_USABLE);
+                                container.setStatus(ContainerStatus.CONTAINER_STATUS_USABLE);
+                                containerDao.saveOrUpdateByVersion(container);
+                                insertGlobalLog(GLOBAL_LOG_UPDATE, container, ouId, userId, null, null);
+                            }
+                        } else {
+                            if (true == isUpdateOuterStatusCanPutaway) {
+                                if (ContainerStatus.CONTAINER_STATUS_PUTAWAY == containerStatus) {
+                                    Container container = new Container();
+                                    BeanUtils.copyProperties(containerCmd, container);
+                                    container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
+                                    container.setStatus(ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY);
+                                    containerDao.saveOrUpdateByVersion(container);
+                                    insertGlobalLog(GLOBAL_LOG_UPDATE, container, ouId, userId, null, null);
+                                }
+                            }
                         }
                     }
                 }
@@ -820,6 +844,10 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     if (false == isTV) {
                         inv.setOuterContainerId(null);
                         inv.setInsideContainerId(null);
+                    } else {
+                        if (WhPutawayPatternDetailType.CONTAINER_PUTAWAY == putawayPatternDetailType) {
+                            inv.setOuterContainerId(null);// 整箱上架不跟踪外部容器号
+                        }
                     }
                     if (false == isBM) {
                         inv.setBatchNumber(null);
@@ -1110,57 +1138,58 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 // TODO
 
                 // 4.如果不跟踪容器号，则上架成功后需要释放容器
-                if (false == isTV) {
-                    // 修改内部容器状态
-                    for (Long icId : insideContainerIds) {
-                        Container insideContainer = containerDao.findByIdExt(icId, ouId);
-                        if (null != insideContainer) {
-                            // 获取容器状态
-                            Integer iContainerStatus = insideContainer.getStatus();
-                            // 修改内部容器状态为：上架中，且占用中
-                            if (ContainerStatus.CONTAINER_STATUS_PUTAWAY == iContainerStatus) {
-                                insideContainer.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_USABLE);
-                                insideContainer.setStatus(ContainerStatus.CONTAINER_STATUS_USABLE);
-                                containerDao.saveOrUpdateByVersion(insideContainer);
-                                insertGlobalLog(GLOBAL_LOG_UPDATE, insideContainer, ouId, userId, null, null);
-                            }
+                // 修改内部容器状态(整托、整箱上架均不能修改内部容器状态)
+                // if (false == isTV) {
+                // for (Long icId : insideContainerIds) {
+                // Container insideContainer = containerDao.findByIdExt(icId, ouId);
+                // if (null != insideContainer) {
+                // // 获取容器状态
+                // Integer iContainerStatus = insideContainer.getStatus();
+                // // 修改内部容器状态为：上架中，且占用中
+                // if (ContainerStatus.CONTAINER_STATUS_PUTAWAY == iContainerStatus) {
+                // insideContainer.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_USABLE);
+                // insideContainer.setStatus(ContainerStatus.CONTAINER_STATUS_USABLE);
+                // containerDao.saveOrUpdateByVersion(insideContainer);
+                // insertGlobalLog(GLOBAL_LOG_UPDATE, insideContainer, ouId, userId, null, null);
+                // }
+                // }
+                // }
+                // }
+                // 修改外部容器状态(整托上架不能修改外部容器状态)
+                if (WhPutawayPatternDetailType.CONTAINER_PUTAWAY == putawayPatternDetailType) {
+                    // 整箱上架需要判断所有内部容器全部都已上架即可释放外部容器
+                    ContainerStatisticResultCommand csrCmd = new ContainerStatisticResultCommand();
+                    if (null != containerCmd) {
+                        csrCmd = cacheManager.getMapObject(CacheConstants.CONTAINER_STATISTIC, containerCmd.getId().toString());
+                        if (null == csrCmd) {
+                            csrCmd = pdaPutawayCacheManager.sysGuideContainerPutawayCacheInsideContainerStatistic(containerCmd, ouId, logId);
                         }
-                    }
-                    // 修改外部容器状态
-                    if (WhPutawayPatternDetailType.PALLET_PUTAWAY == putawayPatternDetailType) {
-                        Integer containerStatus = containerCmd.getStatus();
-                        if (ContainerStatus.CONTAINER_STATUS_PUTAWAY == containerStatus) {
-                            Container container = new Container();
-                            BeanUtils.copyProperties(containerCmd, container);
-                            container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_USABLE);
-                            container.setStatus(ContainerStatus.CONTAINER_STATUS_USABLE);
-                            containerDao.saveOrUpdateByVersion(container);
-                            insertGlobalLog(GLOBAL_LOG_UPDATE, container, ouId, userId, null, null);
+                        Set<Long> cacheInsideContainerIds = csrCmd.getInsideContainerIds();
+                        // 先判断内部容器是否全部已提示，只有全部提示了才能修改外部容器状态，否则外部容器一定是上架中
+                        TipContainerCacheCommand cacheContainerCmd = cacheManager.getObject(CacheConstants.SCAN_CONTAINER_QUEUE + containerId.toString());
+                        ArrayDeque<Long> cacheContainerIds = null;
+                        if (null != cacheContainerCmd) {
+                            cacheContainerIds = cacheContainerCmd.getTipInsideContainerIds();
                         }
-                    } else {
-                        // 整箱上架需要判断所有内部容器全部都已上架且状态可用才能修改外部容器状态
-                        ContainerStatisticResultCommand csrCmd = new ContainerStatisticResultCommand();
-                        if (null != containerCmd) {
-                            csrCmd = cacheManager.getMapObject(CacheConstants.CONTAINER_STATISTIC, containerCmd.getId().toString());
-                            if (null == csrCmd) {
-                                csrCmd = pdaPutawayCacheManager.sysGuideContainerPutawayCacheInsideContainerStatistic(containerCmd, ouId, logId);
-                            }
-                            Set<Long> cacheInsideContainerIds = csrCmd.getInsideContainerIds();
-                            boolean isUpdateOuterContainerStatus = true;
+                        boolean isAllTip = isCacheAllExists(cacheInsideContainerIds, cacheContainerIds);
+                        if (true == isAllTip) {
+                            boolean isUpdateOuterStatusUsable = true;
+                            boolean isUpdateOuterStatusCanPutaway = false;
                             for (Long icId : cacheInsideContainerIds) {
-                                Container insideContainer = containerDao.findByIdExt(icId, ouId);
-                                if (null != insideContainer) {
-                                    // 获取容器状态
-                                    Integer iContainerStatus = insideContainer.getStatus();
-                                    Integer lifecycle = insideContainer.getLifecycle();
-                                    if (ContainerStatus.CONTAINER_STATUS_USABLE != iContainerStatus || ContainerStatus.CONTAINER_LIFECYCLE_USABLE == lifecycle) {
-                                        isUpdateOuterContainerStatus = false;
-                                        break;
-                                    }
+                                int toBeFilledCounts = whSkuInventoryDao.findLocToBeFilledInventoryCountsByInsideContainerId(ouId, icId);
+                                int rcvdCounts = whSkuInventoryDao.findRcvdInventoryCountsByInsideContainerId(ouId, icId);
+                                if (0 < rcvdCounts && 0 == toBeFilledCounts) {
+                                    // 库位待移入库存已全部上架，但还有容器库存未上架
+                                    isUpdateOuterStatusUsable = false;
+                                    isUpdateOuterStatusCanPutaway = true;
+                                    break;
+                                } else if (0 < rcvdCounts && 0 < toBeFilledCounts) {
+                                    isUpdateOuterStatusUsable = false;
+                                    break;
                                 }
                             }
-                            if (true == isUpdateOuterContainerStatus) {
-                                Integer containerStatus = containerCmd.getStatus();
+                            Integer containerStatus = containerCmd.getStatus();
+                            if (true == isUpdateOuterStatusUsable) {
                                 if (ContainerStatus.CONTAINER_STATUS_PUTAWAY == containerStatus) {
                                     Container container = new Container();
                                     BeanUtils.copyProperties(containerCmd, container);
@@ -1169,12 +1198,48 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                     containerDao.saveOrUpdateByVersion(container);
                                     insertGlobalLog(GLOBAL_LOG_UPDATE, container, ouId, userId, null, null);
                                 }
+                            } else {
+                                if (true == isUpdateOuterStatusCanPutaway) {
+                                    if (ContainerStatus.CONTAINER_STATUS_PUTAWAY == containerStatus) {
+                                        Container container = new Container();
+                                        BeanUtils.copyProperties(containerCmd, container);
+                                        container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
+                                        container.setStatus(ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY);
+                                        containerDao.saveOrUpdateByVersion(container);
+                                        insertGlobalLog(GLOBAL_LOG_UPDATE, container, ouId, userId, null, null);
+                                    }
+                                }
                             }
                         }
                     }
                 }
             }
         }
+    }
+
+    private boolean isCacheAllExists(Set<Long> ids, ArrayDeque<Long> cacheKeys) {
+        boolean allExists = true;
+        if (null != cacheKeys && !cacheKeys.isEmpty()) {
+            for (Long id : ids) {
+                Long cId = id;
+                boolean isExists = false;
+                Iterator<Long> iter = cacheKeys.iterator();
+                while (iter.hasNext()) {
+                    Long value = iter.next();
+                    if (null == value) value = -1L;
+                    if (0 == value.compareTo(cId)) {
+                        isExists = true;
+                        break;
+                    }
+                }
+                if (false == isExists) {
+                    allExists = false;
+                }
+            }
+        } else {
+            allExists = false;
+        }
+        return allExists;
     }
 
 }
