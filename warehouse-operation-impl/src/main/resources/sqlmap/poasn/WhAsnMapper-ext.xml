@@ -200,7 +200,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			 			(skuName!=null and skuName!='') ||
 			 			(skuBarCode!=null and skuBarCode!='')||
 			 			(lineStatus!=null)||
-			 			(isIqcLine!=null and isIqcLine!='')||
+			 			(lineIsIqc!=null and lineIsIqc!='')||
 			 			(mfgDateStart!=null and mfgDateStart!='')||
 			 			(mfgDateEnd!=null and mfgDateEnd!='')||
 			 			(expDateStart!=null and expDateStart!='')||
@@ -236,7 +236,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 										       #{s}
 									  	</foreach>
 									 </if>
-									 <if test="isIqcLine!=null and isIqcLine!=''">
+									 <if test="lineIsIqc!=null and lineIsIqc!=''">
 									 	and asnline.is_iqc=#{lineIsIqc}
 									 </if>
 									 <if test="mfgDateStart!=null and mfgDateStart!=''">
