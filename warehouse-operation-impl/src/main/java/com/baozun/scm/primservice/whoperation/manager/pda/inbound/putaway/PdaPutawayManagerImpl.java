@@ -1690,12 +1690,42 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                 srCmd.setAfterRecommendTipContainer(true);
             }
             if (true == srCmd.isAfterRecommendTipContainer()) {
+                // 将当前内部容器状态修改为待上架
+                if (ContainerStatus.CONTAINER_STATUS_PUTAWAY == insideContainerStatus) {
+                    Container container = new Container();
+                    BeanUtils.copyProperties(insideContainerCmd, container);
+                    container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
+                    container.setStatus(ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY);
+                    containerDao.saveOrUpdateByVersion(container);
+                    insertGlobalLog(GLOBAL_LOG_UPDATE, container, ouId, userId, null, null);
+                }
                 // 提示下一个容器
                 String tipContainerCode = sysGuideTipContainer((null == containerCmd ? null : containerCmd.getCode()), funcId, WhPutawayPatternDetailType.CONTAINER_PUTAWAY, ouId, userId, logId);
                 srCmd.setTipContainerCode(tipContainerCode);
             } else {
-                log.error("location recommend fail! containerCode is:[{}], logId is:[{}]", insideContainerCode, logId);
-                throw new BusinessException(ErrorCodes.COMMON_LOCATION_RECOMMEND_ERROR);
+                // 将当前内部容器状态修改为待上架
+                if (ContainerStatus.CONTAINER_STATUS_PUTAWAY == insideContainerStatus) {
+                    Container container = new Container();
+                    BeanUtils.copyProperties(insideContainerCmd, container);
+                    container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
+                    container.setStatus(ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY);
+                    containerDao.saveOrUpdateByVersion(container);
+                    insertGlobalLog(GLOBAL_LOG_UPDATE, container, ouId, userId, null, null);
+                }
+                if (null != containerCmd) {
+                    // 包含外部容器，需要将外部容器状态也修改为待上架
+                    if (ContainerStatus.CONTAINER_STATUS_PUTAWAY == containerStatus) {
+                        Container container = new Container();
+                        BeanUtils.copyProperties(containerCmd, container);
+                        container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
+                        container.setStatus(ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY);
+                        containerDao.saveOrUpdateByVersion(container);
+                        insertGlobalLog(GLOBAL_LOG_UPDATE, container, ouId, userId, null, null);
+                    }
+                }
+                // log.error("location recommend fail! containerCode is:[{}], logId is:[{}]",
+                // insideContainerCode, logId);
+                // throw new BusinessException(ErrorCodes.COMMON_LOCATION_RECOMMEND_ERROR);
             }
             return srCmd;
         }
@@ -2455,12 +2485,42 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                 srCmd.setAfterRecommendTipContainer(true);
             }
             if (true == srCmd.isAfterRecommendTipContainer()) {
+                // 将当前内部容器状态修改为待上架
+                if (ContainerStatus.CONTAINER_STATUS_PUTAWAY == insideContainerStatus) {
+                    Container container = new Container();
+                    BeanUtils.copyProperties(insideContainerCmd, container);
+                    container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
+                    container.setStatus(ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY);
+                    containerDao.saveOrUpdateByVersion(container);
+                    insertGlobalLog(GLOBAL_LOG_UPDATE, container, ouId, userId, null, null);
+                }
                 // 提示下一个容器
                 String tipContainerCode = sysGuideTipContainer((null == containerCmd ? null : containerCmd.getCode()), funcId, WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY, ouId, userId, logId);
                 srCmd.setTipContainerCode(tipContainerCode);
             } else {
-                log.error("location recommend fail! containerCode is:[{}], logId is:[{}]", insideContainerCode, logId);
-                throw new BusinessException(ErrorCodes.COMMON_LOCATION_RECOMMEND_ERROR);
+                // 将当前内部容器状态修改为待上架
+                if (ContainerStatus.CONTAINER_STATUS_PUTAWAY == insideContainerStatus) {
+                    Container container = new Container();
+                    BeanUtils.copyProperties(insideContainerCmd, container);
+                    container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
+                    container.setStatus(ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY);
+                    containerDao.saveOrUpdateByVersion(container);
+                    insertGlobalLog(GLOBAL_LOG_UPDATE, container, ouId, userId, null, null);
+                }
+                if (null != containerCmd) {
+                    // 包含外部容器，需要将外部容器状态也修改为待上架
+                    if (ContainerStatus.CONTAINER_STATUS_PUTAWAY == containerStatus) {
+                        Container container = new Container();
+                        BeanUtils.copyProperties(containerCmd, container);
+                        container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
+                        container.setStatus(ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY);
+                        containerDao.saveOrUpdateByVersion(container);
+                        insertGlobalLog(GLOBAL_LOG_UPDATE, container, ouId, userId, null, null);
+                    }
+                }
+                // log.error("location recommend fail! containerCode is:[{}], logId is:[{}]",
+                // insideContainerCode, logId);
+                // throw new BusinessException(ErrorCodes.COMMON_LOCATION_RECOMMEND_ERROR);
             }
             return srCmd;
         }
