@@ -336,10 +336,10 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
             /** end */
         }
         if (StringUtils.hasText(failMergeOdoIds)) {
-            failMergeOdoIds.substring(0, failMergeOdoIds.length() - 1);
+            failMergeOdoIds = failMergeOdoIds.substring(0, failMergeOdoIds.length() - 1);
         }
         if (StringUtils.hasText(successMergeOdoIds)) {
-            successMergeOdoIds.substring(0, successMergeOdoIds.length() - 1);
+            successMergeOdoIds = successMergeOdoIds.substring(0, successMergeOdoIds.length() - 1);
         }
         response.put("fail", failMergeOdoIds);
         response.put("success", successMergeOdoIds);
@@ -572,9 +572,9 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
         whOdoLineObject.setOuId(ouId);
         whOdoLineObject.setOdoId(whOdoId);
         List<OdoLineCommand> whOdoLineList = this.whOdoLineDao.findObject(whOdoLineObject);
-        if (null == whOdoLineList || whOdoLineList.isEmpty()) {
-            throw new BusinessException("出库单没有明细");
-        }
+        // if (null == whOdoLineList || whOdoLineList.isEmpty()) {
+        // throw new BusinessException("出库单没有明细");
+        // }
         return whOdoLineList;
 
     }
