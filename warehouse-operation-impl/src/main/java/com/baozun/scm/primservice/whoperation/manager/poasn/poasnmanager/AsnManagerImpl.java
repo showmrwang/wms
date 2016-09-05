@@ -3,10 +3,8 @@ package com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import lark.common.annotation.MoreDB;
 import lark.common.dao.Page;
@@ -19,7 +17,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnLineCommand;
@@ -108,74 +105,89 @@ public class AsnManagerImpl extends BaseManagerImpl implements AsnManager {
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public Pagination<WhAsnCommand> findListByQueryMapWithPageExtByShard(Page page, Sort[] sorts, Map<String, Object> params) {
-        Pagination<WhAsnCommand> pages = this.whAsnDao.findListByQueryMapWithPageExt(page, sorts, params);
-        if (pages != null) {
-            List<WhAsnCommand> list = pages.getItems();
-            Set<String> dic1 = new HashSet<String>();
-            Set<String> dic2 = new HashSet<String>();
-            List<Long> customerIdList = new ArrayList<Long>();
-            List<Long> storeIdList = new ArrayList<Long>();
-            boolean b = false;
-            if (list != null && list.size() > 0) {
-                for (WhAsnCommand command : list) {
-                    if (StringUtils.hasText(command.getAsnType().toString())) {
-                        dic1.add(command.getAsnType().toString());
-                    }
-                    if (StringUtils.hasText(command.getStatus().toString())) {
-                        dic2.add(command.getStatus().toString());
-                    }
-                    // 客户
-                    b = customerIdList.contains(command.getCustomerId());
-                    if (!b) {
-                        customerIdList.add(command.getCustomerId());
-                    }
-                    // 店铺
-                    b = storeIdList.contains(command.getStoreId());
-                    if (!b) {
-                        storeIdList.add(command.getStoreId());
-                    }
+        Pagination<WhAsnCommand> paginationInvList = this.whAsnDao.findListByQueryMapWithPageExt(page, sorts, params);
+        List<WhAsnCommand> asnList = paginationInvList.getItems();
+        Map<String, List<String>> sysMap = new HashMap<String, List<String>>();
+        List<String> dic1 = new ArrayList<String>();
+        List<String> dic2 = new ArrayList<String>();
+        List<Long> customerIdList = new ArrayList<Long>();
+        List<Long> storeIdList = new ArrayList<Long>();
+        boolean b = false;
+        for (WhAsnCommand command : asnList) {
+            // 封装系统参数值 INVENTORY_TYPE
+            if (!StringUtil.isEmpty(command.getAsnType().toString())) {
+                b = dic1.contains(command.getAsnType());
+                if (!b) {
+                    dic1.add(command.getAsnType().toString());
                 }
-                Map<String, List<String>> map = new HashMap<String, List<String>>();
-                map.put(Constants.PO_TYPE, new ArrayList<String>(dic1));
-                map.put(Constants.ASNSTATUS, new ArrayList<String>(dic2));
-                // 调用系统参数redis缓存方法获取对应数据
-                Map<String, SysDictionary> dicMap = this.findSysDictionaryByRedis(map);
-                // 调用客户redis缓存方法获取对应数据
-                Map<Long, Customer> customer = findCustomerByRedis(customerIdList);
-                Map<Long, Store> store = findStoreByRedis(storeIdList);
-                // 封装数据放入List
-                for (WhAsnCommand command : list) {
-                    Customer c = null;
-                    Store s = null;
-                    if (StringUtils.hasText(command.getStatus().toString())) {
-                        // 通过groupValue+divValue获取对应系统参数对象
-                        SysDictionary sys = dicMap.get(Constants.ASNSTATUS + "_" + command.getStatus());
-                        command.setStatusName(sys == null ? command.getStatus().toString() : sys.getDicLabel());
-                    }
-                    if (StringUtils.hasText(command.getStatus().toString())) {
-                        // 通过groupValue+divValue获取对应系统参数对象
-                        SysDictionary sys = dicMap.get(Constants.PO_TYPE + "_" + command.getAsnType());
-                        command.setPoTypeName(sys == null ? command.getAsnType().toString() : sys.getDicLabel());
-                    }
-                    // 客户                    
-                    c = customer.get(command.getCustomerId());
-                    if (null == c) {
-                        command.setCustomerName(command.getCustomerId().toString());
-                    } else {
-                        command.setCustomerName(c.getCustomerName());
-                    }
-                    // 商铺                   
-                    s = store.get(command.getStoreId());
-                    if (null == s) {
-                        command.setStoreName(command.getStoreId().toString());
-                    } else {
-                        command.setStoreName(s.getStoreName());
-                    }
+            }
+            if (!StringUtil.isEmpty(command.getStatus().toString())) {
+                b = dic2.contains(command.getStatus());
+                if (!b) {
+                    dic2.add(command.getStatus().toString());
                 }
-                pages.setItems(list);
+            }
+            // 客户
+            b = customerIdList.contains(command.getCustomerId());
+            if (!b) {
+                customerIdList.add(command.getCustomerId());
+            }
+            // 店铺
+            b = storeIdList.contains(command.getStoreId());
+            if (!b) {
+                storeIdList.add(command.getStoreId());
             }
         }
-        return pages;
+        if (dic1.size() > 0) {
+            sysMap.put(Constants.PO_TYPE, dic1);
+        }
+        if (dic1.size() > 0) {
+            sysMap.put(Constants.ASNSTATUS, dic2);
+        }
+        // 调用系统参数redis缓存方法获取对应数据
+        Map<String, SysDictionary> sysDictionary = findSysDictionaryByRedis(sysMap);
+        // 调用客户redis缓存方法获取对应数据
+        Map<Long, Customer> customer = findCustomerByRedis(customerIdList);
+        Map<Long, Store> store = findStoreByRedis(storeIdList);
+        // 封装数据放入List
+        for (WhAsnCommand command : paginationInvList.getItems()) {
+            // 封装数据放入List
+            String invStr = "";
+            String invType = "";
+            SysDictionary sys = null;
+            Customer c = null;
+            Store s = null;
+            if (!StringUtil.isEmpty(command.getStatus().toString())) {
+                // 通过groupValue+divValue获取对应系统参数对象
+                sys = sysDictionary.get(Constants.ASNSTATUS + "_" + command.getStatus());
+                if (null != sys) {
+                    invStr = sys.getDicLabel();
+                }
+            }
+            command.setStatusName(invStr);
+            invStr = "";
+            if (!StringUtil.isEmpty(command.getAsnType().toString())) {
+                // 通过groupValue+divValue获取对应系统参数对象
+                sys = sysDictionary.get(Constants.PO_TYPE + "_" + command.getAsnType());
+                if (null != sys) {
+                    invStr = sys.getDicLabel();
+                }
+            }
+            command.setPoTypeName(invStr);
+            c = customer.get(command.getCustomerId());
+            if (null == c) {
+                command.setCustomerName(command.getCustomerId().toString());
+            } else {
+                command.setCustomerName(c.getCustomerName());
+            }
+            s = store.get(command.getStoreId());
+            if (null == s) {
+                command.setStoreName(command.getStoreId().toString());
+            } else {
+                command.setStoreName(s.getStoreName());
+            }
+        }        
+        return paginationInvList;
     }
 
     /**
