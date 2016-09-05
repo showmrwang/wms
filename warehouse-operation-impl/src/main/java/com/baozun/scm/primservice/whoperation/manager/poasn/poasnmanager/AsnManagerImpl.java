@@ -794,8 +794,8 @@ public class AsnManagerImpl extends BaseManagerImpl implements AsnManager {
      */
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     @Override
-    public List<WhAsnCommand> findAsnListByStatus(int status, Long ouId, List<Long> asnList) {
-        return whAsnDao.findAsnListByStatus(status, ouId, asnList);
+    public List<WhAsnCommand> findAsnListByStatus(int status, Long ouId, List<Long> customerList,List<Long> storeList) {
+        return whAsnDao.findAsnListByStatus(status, ouId,customerList,storeList);
     }
 
     @Override

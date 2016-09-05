@@ -718,15 +718,26 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
             left join sys_dictionary sys on sys.dic_value = asn.status and sys.group_value = 'ASNSTATUS'
         where asn.status = #{status}
         and asn.ou_id = #{ouId}
-         <if test="asnList!=null and asnList.size() != 0">
-         and asn.id in
-                 <foreach collection="asnList" item="aid" open="("
+         and asn.customer_id in
+         <if test="customerList!=null and customerList.size() != 0">
+                 <foreach collection="customerList" item="cid" open="("
               separator="," close=")">
-                   #{aid}
+                   #{cid}
               </foreach>
         </if>
-        <if test="asnList==null or asnList.size() == 0">
-           and asn.id in    (null)
+             
+        <if test="customerList==null or customerList.size() == 0">
+               (null)
+        </if>
+        and asn.store_id in
+        <if test="storeList!=null and storeList.size() != 0">
+                 <foreach collection="storeList" item="ids" open="("
+              separator="," close=")">
+                   #{ids}
+              </foreach>
+        </if>
+        <if test="storeList==null or storeList.size() == 0">
+              (null)
         </if>
     </select>
 	<select id="checkIsRcvdFinished" resultType="boolean">
