@@ -78,71 +78,68 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public Pagination<WhPoCommand> findListByQueryMapWithPageExtByShard(Page page, Sort[] sorts, Map<String, Object> params) {
         Pagination<WhPoCommand> pages = this.whPoDao.findListByQueryMapWithPageExt(page, sorts, params);
-        if (pages != null) {
-            List<WhPoCommand> list = pages.getItems();
-            Set<String> dic1 = new HashSet<String>();
-            Set<String> dic2 = new HashSet<String>();
-            List<Long> customerIdList = new ArrayList<Long>();
-            List<Long> storeIdList = new ArrayList<Long>();
-            boolean b = false;
-            if (list != null && list.size() > 0) {
-                for (WhPoCommand command : list) {
-                    if (StringUtils.hasText(command.getPoType().toString())) {
-                        dic1.add(command.getPoType().toString());
+        try {
+            if (pages != null) {
+                List<WhPoCommand> list = pages.getItems();
+                Set<String> dic1 = new HashSet<String>();
+                Set<String> dic2 = new HashSet<String>();
+                Set<Long> customerIdSet = new HashSet<Long>();
+                Set<Long> storeIdSet = new HashSet<Long>();
+                boolean b = false;
+                if (list != null && list.size() > 0) {
+                    for (WhPoCommand command : list) {
+                        if (StringUtils.hasText(command.getPoType().toString())) {
+                            dic1.add(command.getPoType().toString());
+                        }
+                        if (StringUtils.hasText(command.getStatus().toString())) {
+                            dic2.add(command.getStatus().toString());
+                        }
+                        // 客户
+                        if (StringUtils.hasText(command.getCustomerId().toString())) {
+                            customerIdSet.add(command.getCustomerId());
+                        }
+                        // 店铺
+                        if (StringUtils.hasText(command.getStoreId().toString())) {
+                            storeIdSet.add(command.getStoreId());
+                        }
                     }
-                    if (StringUtils.hasText(command.getStatus().toString())) {
-                        dic2.add(command.getStatus().toString());
+                    Map<String, List<String>> map = new HashMap<String, List<String>>();
+                    map.put(Constants.PO_TYPE, new ArrayList<String>(dic1));
+                    map.put(Constants.POSTATUS, new ArrayList<String>(dic2));
+                    // 调用系统参数redis缓存方法获取对应数据
+                    Map<String, SysDictionary> dicMap = this.findSysDictionaryByRedis(map);
+                    // 调用客户redis缓存方法获取对应数据
+                    Map<Long, Customer> customerMap = findCustomerByRedis(new ArrayList<Long>(customerIdSet));
+                    Map<Long, Store> storeMap = findStoreByRedis(new ArrayList<Long>(storeIdSet));
+                    // 封装数据放入List
+                    for (WhPoCommand command : list) {
+                        if (StringUtils.hasText(command.getPoType().toString())) {
+                            // 通过groupValue+divValue获取对应系统参数对象
+                            SysDictionary sys = dicMap.get(Constants.PO_TYPE + "_" + command.getPoType());
+                            command.setPoTypeName(sys == null ? command.getPoType().toString() : sys.getDicLabel());
+                        }
+                        if (StringUtils.hasText(command.getStatus().toString())) {
+                            // 通过groupValue+divValue获取对应系统参数对象
+                            SysDictionary sys = dicMap.get(Constants.POSTATUS + "_" + command.getStatus());
+                            command.setStatusName(sys == null ? command.getStatus().toString() : sys.getDicLabel());
+                        }
+                        // 客户
+                        if (StringUtils.hasText(command.getCustomerId().toString())) {
+                            Customer customer = customerMap.get(command.getCustomerId());
+                            command.setCustomerName(customer == null ? command.getCustomerId().toString() : customer.getCustomerName());
+                        }
+                        // 商铺  
+                        if (StringUtils.hasText(command.getStoreId().toString())) {
+                            Store store = storeMap.get(command.getStoreId());
+                            command.setStoreName(store == null ? command.getStoreId().toString() : store.getStoreName());
+                        }
                     }
-                    // 客户
-                    b = customerIdList.contains(command.getCustomerId());
-                    if (!b) {
-                        customerIdList.add(command.getCustomerId());
-                    }
-                    // 店铺
-                    b = storeIdList.contains(command.getStoreId());
-                    if (!b) {
-                        storeIdList.add(command.getStoreId());
-                    }
+                    pages.setItems(list);
                 }
-                Map<String, List<String>> map = new HashMap<String, List<String>>();
-                map.put(Constants.PO_TYPE, new ArrayList<String>(dic1));
-                map.put(Constants.POSTATUS, new ArrayList<String>(dic2));
-                // 调用系统参数redis缓存方法获取对应数据
-                Map<String, SysDictionary> dicMap = this.findSysDictionaryByRedis(map);
-                // 调用客户redis缓存方法获取对应数据
-                Map<Long, Customer> customer = findCustomerByRedis(customerIdList);
-                Map<Long, Store> store = findStoreByRedis(storeIdList);
-                // 封装数据放入List
-                for (WhPoCommand command : list) {
-                    Customer c = null;
-                    Store s = null;
-                    if (StringUtils.hasText(command.getPoType().toString())) {
-                        // 通过groupValue+divValue获取对应系统参数对象
-                        SysDictionary sys = dicMap.get(Constants.PO_TYPE + "_" + command.getPoType());
-                        command.setPoTypeName(sys == null ? command.getPoType().toString() : sys.getDicLabel());
-                    }
-                    if (StringUtils.hasText(command.getStatus().toString())) {
-                        // 通过groupValue+divValue获取对应系统参数对象
-                        SysDictionary sys = dicMap.get(Constants.POSTATUS + "_" + command.getStatus());
-                        command.setStatusName(sys == null ? command.getStatus().toString() : sys.getDicLabel());
-                    }
-                    // 客户                    
-                    c = customer.get(command.getCustomerId());
-                    if (null == c) {
-                        command.setCustomerName(command.getCustomerId().toString());
-                    } else {
-                        command.setCustomerName(c.getCustomerName());
-                    }
-                    // 商铺                   
-                    s = store.get(command.getStoreId());
-                    if (null == s) {
-                        command.setStoreName(command.getStoreId().toString());
-                    } else {
-                        command.setStoreName(s.getStoreName());
-                    }
-                }
-                pages.setItems(list);
             }
+        } catch (Exception ex) {
+            log.error(ex + "");
+            throw new BusinessException(ErrorCodes.PACKAGING_ERROR);
         }
         return pages;
     }

@@ -235,6 +235,6 @@ public interface AsnManager extends BaseManager {
      * @param asnList
      * @return
      */
-    List<WhAsnCommand> findAsnListByStatus(int status, Long ouId, List<Long> asnList);
+    List<WhAsnCommand> findAsnListByStatus(int status, Long ouId,  List<Long> customerList,List<Long> storeList);
 
 }

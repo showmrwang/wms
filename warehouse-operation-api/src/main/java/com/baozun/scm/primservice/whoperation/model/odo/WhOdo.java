@@ -89,6 +89,15 @@ public class WhOdo extends BaseModel {
     private java.util.Date lastModifyTime;
     /** 操作人ID */
     private Long modifiedId;
+    /** 合并后出库单单号 */
+    private String groupOdoCode;
+    /** 是否分配成功 */
+    private java.lang.Boolean isAssignSuccess;
+    /** 分配失败原因 */
+    private java.lang.String assignFailReason;
+    /** 是否允许合并 1：允许 0：不允许 */
+    private java.lang.Boolean isAllowMerge;
+
 
     public String getOdoCode() {
         return odoCode;
@@ -337,4 +346,37 @@ public class WhOdo extends BaseModel {
     public void setModifiedId(Long modifiedId) {
         this.modifiedId = modifiedId;
     }
+
+    public String getGroupOdoCode() {
+        return groupOdoCode;
+    }
+
+    public void setGroupOdoCode(String groupOdoCode) {
+        this.groupOdoCode = groupOdoCode;
+    }
+
+    public java.lang.Boolean getIsAssignSuccess() {
+        return isAssignSuccess;
+    }
+
+    public void setIsAssignSuccess(java.lang.Boolean isAssignSuccess) {
+        this.isAssignSuccess = isAssignSuccess;
+    }
+
+    public java.lang.String getAssignFailReason() {
+        return assignFailReason;
+    }
+
+    public void setAssignFailReason(java.lang.String assignFailReason) {
+        this.assignFailReason = assignFailReason;
+    }
+
+    public java.lang.Boolean getIsAllowMerge() {
+        return isAllowMerge;
+    }
+
+    public void setIsAllowMerge(java.lang.Boolean isAllowMerge) {
+        this.isAllowMerge = isAllowMerge;
+    }
+
 }

@@ -297,7 +297,7 @@ public interface SelectPoAsnManagerProxy extends BaseManager {
      * @param ouId
      * @return
      */
-    List<WhAsnCommand> findAsnListByStatus(int status, Long ouId,List<Long> asnList);
+    List<WhAsnCommand> findAsnListByStatus(int status, Long ouId,List<Long> customerList,List<Long> storeList);
 
     /**
      * [通用方法]根据EXTCODE+STOREID查找BIPO

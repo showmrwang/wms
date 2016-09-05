@@ -43,4 +43,6 @@ public interface WhOdoAttrDao extends BaseDao<WhOdoAttr, Long> {
     @CommonQuery
     int saveOrUpdate(WhOdoAttr o);
 
+    WhOdoAttr findObject(WhOdoAttr o);
+
 }

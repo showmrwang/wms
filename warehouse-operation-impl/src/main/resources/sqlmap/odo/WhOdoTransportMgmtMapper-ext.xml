@@ -88,4 +88,11 @@
                 odo_id = #{odoId}  and ou_id=#{ouId}
             ]]>
     </select>
+    
+    <select id="findObject" resultMap="WhOdoTransportMgmtResultExt">
+		select
+		<include refid="whOdoTransportMgmtColumnsExt" />
+		from t_wh_odo_transport_mgmt
+		<include refid="whOdoTransportMgmtDynamicWhereExt" />
+	</select>
 </mapper>

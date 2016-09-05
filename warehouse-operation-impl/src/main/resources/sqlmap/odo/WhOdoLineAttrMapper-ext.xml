@@ -133,5 +133,12 @@
             </if>
         </where>
     </sql>
+    
+    <select id="findObject" resultMap="WhOdoLineAttrResultExt">
+		select
+		<include refid="whOdoLineAttrColumnsExt" />
+		from t_wh_odo_line_attr
+		<include refid="whOdoLineAttrDynamicWhereExt" />
+	</select>
 
 </mapper>

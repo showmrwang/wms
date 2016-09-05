@@ -317,13 +317,14 @@
 		        original_odo_code = #{originalOdoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        assign_fail_reason = #{assignFailReason,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        is_assign_success = #{isAssignSuccess,javaType=java.lang.Boolean,jdbcType=BIT} ,
-		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        last_modify_time = now() ,
 		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
             WHERE 
                 id = #{id} 
+                and ou_id = #{ouId}
+                and last_modify_time = #{lastModifyTime}
         ]]>
 	</update>
 

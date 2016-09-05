@@ -191,20 +191,20 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
         // 查询所有可用上架规则 并且排序
         List<ShelveRecommendRuleCommand> shelveRuleList = shelveRecommendRuleDao.findShelveRecommendRuleByOuid(ruleAffer.getOuid());
         // 存放规则对应哪些库存记录
-        Map<ShelveRecommendRuleCommand, List<String>> ruleInvSnMmap = new HashMap<ShelveRecommendRuleCommand, List<String>>();
+        Map<ShelveRecommendRuleCommand, List<String>> ruleInvSnMap = new HashMap<ShelveRecommendRuleCommand, List<String>>();
         for (ShelveRecommendRuleCommand shelveRule : shelveRuleList) {
             // 查询上架规则对应库存信息ID LIST
             List<String> invIdSnIdStrList = shelveRecommendRuleDao.executeRuleSql(shelveRule.getRuleSql().replace(Constants.SHELVE_RULE_PLACEHOLDER, insideContainerIdListStr), ruleAffer.getOuid());
             if (invIdSnIdStrList.size() > 0) {
-                ruleInvSnMmap.put(shelveRule, invIdSnIdStrList);
+                ruleInvSnMap.put(shelveRule, invIdSnIdStrList);
             }
         }
         // 存放库存记录对应哪些规则
         Map<String, List<ShelveRecommendRuleCommand>> invSnRuleMap = new HashMap<String, List<ShelveRecommendRuleCommand>>();
         // 把map Map<ShelveRecommendRuleCommand, List<Long>>封装成map Map<Long,
         // List<ShelveRecommendRuleCommand>>
-        for (ShelveRecommendRuleCommand shelveRule : ruleInvSnMmap.keySet()) {
-            List<String> invIdSnIdStrList = ruleInvSnMmap.get(shelveRule);// 规则对应库存记录LIST
+        for (ShelveRecommendRuleCommand shelveRule : ruleInvSnMap.keySet()) {
+            List<String> invIdSnIdStrList = ruleInvSnMap.get(shelveRule);// 规则对应库存记录LIST
             for (String invIdSnIdStr : invIdSnIdStrList) {
                 List<ShelveRecommendRuleCommand> shelveRuList = invSnRuleMap.get(invIdSnIdStr);// 库存记录对应的规则List
                 if (null == shelveRuList) {

@@ -63,4 +63,6 @@ public interface WhOdoAddressDao extends BaseDao<WhOdoAddress, Long> {
      */
     WhOdoAddress findOdoAddressByIdOuId(@Param("id") Long id, @Param("ouId") Long ouId);
 
+    WhOdoAddress findObject(WhOdoAddress o);
+
 }

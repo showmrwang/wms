@@ -87,4 +87,11 @@ public interface WhOdoLineDao extends BaseDao<WhOdoLine, Long> {
      */
     List<WhOdoLine> findOdoLineListByOdoIdOuId(@Param("odoId") Long odoId, @Param("ouId") Long ouId);
 
+    /**
+     * 获取出库单明细列表
+     * @param o
+     * @return
+     */
+    List<OdoLineCommand> findObject(WhOdoLine o);
+
 }
