@@ -307,25 +307,6 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         }
     }
 
-    /**
-     * @author lichuan
-     * @param containerCmd
-     * @param insideContainerCmd
-     * @param locationCode
-     * @param funcId
-     * @param warehouse
-     * @param lrrList
-     * @param putawayPatternDetailType
-     * @param ouId
-     * @param userId
-     * @param logId
-     * @deprecated
-     */
-    @Override
-    public void putaway(ContainerCommand containerCmd, ContainerCommand insideContainerCmd, String locationCode, Long funcId, Warehouse warehouse, List<LocationRecommendResultCommand> lrrList, Integer putawayPatternDetailType, Long ouId, Long userId,
-            String logId) {
-        // 待删除
-    }
 
     /**
      * 执行上架（已分配容器库存出库及待移入库位库存入库）
@@ -1137,24 +1118,22 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 // 3.上架库存校验
                 // TODO
 
-                // 4.如果不跟踪容器号，则上架成功后需要释放容器
-                // 修改内部容器状态(整托、整箱上架均不能修改内部容器状态)
-                // if (false == isTV) {
-                // for (Long icId : insideContainerIds) {
-                // Container insideContainer = containerDao.findByIdExt(icId, ouId);
-                // if (null != insideContainer) {
-                // // 获取容器状态
-                // Integer iContainerStatus = insideContainer.getStatus();
-                // // 修改内部容器状态为：上架中，且占用中
-                // if (ContainerStatus.CONTAINER_STATUS_PUTAWAY == iContainerStatus) {
-                // insideContainer.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_USABLE);
-                // insideContainer.setStatus(ContainerStatus.CONTAINER_STATUS_USABLE);
-                // containerDao.saveOrUpdateByVersion(insideContainer);
-                // insertGlobalLog(GLOBAL_LOG_UPDATE, insideContainer, ouId, userId, null, null);
-                // }
-                // }
-                // }
-                // }
+                // 4.上架成功后需要释放容器
+                // 修改内部容器状态(整托、整箱上架均修改内部容器状态为已上架且占用中)
+                for (Long icId : insideContainerIds) {
+                    Container insideContainer = containerDao.findByIdExt(icId, ouId);
+                    if (null != insideContainer) {
+                        // 获取容器状态
+                        Integer iContainerStatus = insideContainer.getStatus();
+                        // 修改内部容器状态为：上架中，且占用中
+                        if (ContainerStatus.CONTAINER_STATUS_PUTAWAY == iContainerStatus) {
+                            insideContainer.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
+                            insideContainer.setStatus(ContainerStatus.CONTAINER_STATUS_SHEVLED);
+                            containerDao.saveOrUpdateByVersion(insideContainer);
+                            insertGlobalLog(GLOBAL_LOG_UPDATE, insideContainer, ouId, userId, null, null);
+                        }
+                    }
+                }
                 // 修改外部容器状态(整托上架不能修改外部容器状态)
                 if (WhPutawayPatternDetailType.CONTAINER_PUTAWAY == putawayPatternDetailType) {
                     // 整箱上架需要判断所有内部容器全部都已上架即可释放外部容器
@@ -1211,6 +1190,17 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                 }
                             }
                         }
+                    }
+                } else {
+                    // 整托上架，外部容器状态修改为已上架且占用中
+                    Integer containerStatus = containerCmd.getStatus();
+                    if (ContainerStatus.CONTAINER_STATUS_PUTAWAY == containerStatus) {
+                        Container container = new Container();
+                        BeanUtils.copyProperties(containerCmd, container);
+                        container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
+                        container.setStatus(ContainerStatus.CONTAINER_STATUS_SHEVLED);
+                        containerDao.saveOrUpdateByVersion(container);
+                        insertGlobalLog(GLOBAL_LOG_UPDATE, container, ouId, userId, null, null);
                     }
                 }
             }
