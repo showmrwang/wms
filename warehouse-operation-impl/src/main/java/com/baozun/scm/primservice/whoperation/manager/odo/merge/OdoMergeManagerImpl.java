@@ -44,6 +44,8 @@ import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLineAttr;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt;
 import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
 import com.baozun.scm.primservice.whoperation.util.StringUtil;
 
 @Service("odoMergeManager")
@@ -644,7 +646,30 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
             return null;
         }
         String idString = "(" + ids + ")";
-        List<OdoCommand> idList = this.whOdoDao.findOdoListByIdOuId(idString, ouId, odoStatus);
-        return idList;
+        List<OdoCommand> OdoCommandList = this.whOdoDao.findOdoListByIdOuId(idString, ouId, odoStatus);
+        OdoCommandList = setCustomerAndStore(OdoCommandList);
+        return OdoCommandList;
+    }
+
+    private List<OdoCommand> setCustomerAndStore(List<OdoCommand> OdoCommandList) {
+        if (null != OdoCommandList && !OdoCommandList.isEmpty()) {
+            for (OdoCommand odoCommand : OdoCommandList) {
+                List<Long> storeList = new ArrayList<Long>();
+                List<Long> customerList = new ArrayList<Long>();
+                Long storeId = odoCommand.getStoreId();
+                Long customerId = odoCommand.getCustomerId();
+                storeList.add(storeId);
+                customerList.add(customerId);
+                Map<Long, Customer> customerMap = this.findCustomerByRedis(customerList);
+                if (null != customerMap && !customerMap.isEmpty()) {
+                    odoCommand.setCustomerName(customerMap.get(customerId).getCustomerName());
+                }
+                Map<Long, Store> storeMap = this.findStoreByRedis(storeList);
+                if (null != storeMap && !storeMap.isEmpty()) {
+                    odoCommand.setStoreName(storeMap.get(storeId).getStoreName());
+                }
+            }
+        }
+        return OdoCommandList;
     }
 }
