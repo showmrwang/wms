@@ -79,14 +79,13 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
     public Pagination<WhPoCommand> findListByQueryMapWithPageExtByShard(Page page, Sort[] sorts, Map<String, Object> params) {
         Pagination<WhPoCommand> pages = this.whPoDao.findListByQueryMapWithPageExt(page, sorts, params);
         try {
-            if (pages != null) {
+            if (null != pages) {
                 List<WhPoCommand> list = pages.getItems();
                 Set<String> dic1 = new HashSet<String>();
                 Set<String> dic2 = new HashSet<String>();
                 Set<Long> customerIdSet = new HashSet<Long>();
                 Set<Long> storeIdSet = new HashSet<Long>();
-                boolean b = false;
-                if (list != null && list.size() > 0) {
+                if (null != list && list.size() > 0) {
                     for (WhPoCommand command : list) {
                         if (StringUtils.hasText(command.getPoType().toString())) {
                             dic1.add(command.getPoType().toString());

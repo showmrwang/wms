@@ -89,14 +89,14 @@ public class BiPoManagerImpl extends BaseManagerImpl implements BiPoManager {
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public Pagination<BiPoCommand> findListByQueryMapWithPageExtByInfo(Page page, Sort[] sorts, Map<String, Object> params) {
         Pagination<BiPoCommand> pages = this.biPoDao.findListByQueryMapWithPageExt(page, sorts, params);
-        if (pages != null) {
+        if (null != pages) {
             List<BiPoCommand> list = pages.getItems();
             Set<String> dic1 = new HashSet<String>();
             Set<String> dic2 = new HashSet<String>();
             List<Long> customerIdList = new ArrayList<Long>();
             List<Long> storeIdList = new ArrayList<Long>();
             boolean b = false;
-            if (list != null && list.size() > 0) {
+            if (null != list && list.size() > 0) {
                 for (BiPoCommand command : list) {
                     if (StringUtils.hasText(command.getPoType().toString())) {
                         dic1.add(command.getPoType().toString());

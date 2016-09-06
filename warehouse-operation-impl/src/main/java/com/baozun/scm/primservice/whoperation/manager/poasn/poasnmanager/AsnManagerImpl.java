@@ -147,12 +147,8 @@ public class AsnManagerImpl extends BaseManagerImpl implements AsnManager {
         // 调用系统参数redis缓存方法获取对应数据
         Map<String, SysDictionary> sysDictionary = findSysDictionaryByRedis(sysMap);
         // 调用客户redis缓存方法获取对应数据
-        log.info("ASN customerIdList is" + customerIdList);
         Map<Long, Customer> customer = findCustomerByRedis(customerIdList);
-        log.info("ASN customer is" + customer);
-        log.info("ASN storeIdList is" + storeIdList);
         Map<Long, Store> store = findStoreByRedis(storeIdList);
-        log.info("ASN store is" + store);
         // 封装数据放入List
         for (WhAsnCommand command : paginationInvList.getItems()) {
             // 封装数据放入List
