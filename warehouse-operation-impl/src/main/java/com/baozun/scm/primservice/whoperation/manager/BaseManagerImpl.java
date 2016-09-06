@@ -206,6 +206,7 @@ public abstract class BaseManagerImpl implements BaseManager {
                 // redis出错只记录log
                 log.error("findCustomerByRedis cacheManager.getObject(" + redisKey + id + ") error");
             }
+            log.info("ASN customer redis is" + c);
             if (null == c) {
                 // 缓存无对应数据 查询数据库
                 c = customerDao.findById(id);
@@ -241,9 +242,11 @@ public abstract class BaseManagerImpl implements BaseManager {
                 // redis出错只记录log
                 log.error("findStoreByRedis cacheManager.Keys(" + redisKey + id + ") error");
             }
+            log.info("ASN store redis size is" + redis.size());
             if (redis.size() != 0) {
                 // 获取对应Redis数据
                 s = cacheManager.getObject(redis.get(0).split("_")[1]);
+                log.info("ASN store redis is" + s);
                 if (null == s) {
                     // 查询数据库
                     s = storeDao.findById(id);
