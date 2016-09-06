@@ -105,7 +105,7 @@ public class AsnManagerImpl extends BaseManagerImpl implements AsnManager {
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public Pagination<WhAsnCommand> findListByQueryMapWithPageExtByShard(Page page, Sort[] sorts, Map<String, Object> params) {
-        Pagination<WhAsnCommand> paginationInvList = this.whAsnDao.findListByQueryMapWithPageExt(page, sorts, params);
+        Pagination<WhAsnCommand> paginationInvList = whAsnDao.findListByQueryMapWithPageExt(page, sorts, params);
         List<WhAsnCommand> asnList = paginationInvList.getItems();
         Map<String, List<String>> sysMap = new HashMap<String, List<String>>();
         List<String> dic1 = new ArrayList<String>();
@@ -141,7 +141,7 @@ public class AsnManagerImpl extends BaseManagerImpl implements AsnManager {
         if (dic1.size() > 0) {
             sysMap.put(Constants.PO_TYPE, dic1);
         }
-        if (dic1.size() > 0) {
+        if (dic2.size() > 0) {
             sysMap.put(Constants.ASNSTATUS, dic2);
         }
         // 调用系统参数redis缓存方法获取对应数据
@@ -186,7 +186,7 @@ public class AsnManagerImpl extends BaseManagerImpl implements AsnManager {
             } else {
                 command.setStoreName(s.getStoreName());
             }
-        }        
+        }
         return paginationInvList;
     }
 
