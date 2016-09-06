@@ -2338,8 +2338,8 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
                 //修改内部容器状态
                 Container container = new Container();
                 BeanUtils.copyProperties(insideCmd, container);
-                container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_USABLE);
-                container.setStatus(ContainerStatus.CONTAINER_STATUS_USABLE);
+                container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
+                container.setStatus(ContainerStatus.CONTAINER_STATUS_SHEVLED);
                 containerDao.saveOrUpdateByVersion(container);
                 insertGlobalLog(GLOBAL_LOG_UPDATE, container, ouId, userId, null, null);
                 //整托上架清除缓存
@@ -2348,8 +2348,8 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
                 if(sCommand.isAfterPutawayTipContianer()) {   //托盘内还有内有上架的货箱,只更新货箱转态,不更新托盘状态
                     Container container = new Container();
                     BeanUtils.copyProperties(insideCmd, container);
-                    container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_USABLE);
-                    container.setStatus(ContainerStatus.CONTAINER_STATUS_USABLE);
+                    container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
+                    container.setStatus(ContainerStatus.CONTAINER_STATUS_SHEVLED);
                     containerDao.saveOrUpdateByVersion(container);
                     insertGlobalLog(GLOBAL_LOG_UPDATE, container, ouId, userId, null, null);
                 }else{  //托盘中的货箱全部上架，更新托盘的状态
@@ -2370,15 +2370,15 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
             //修改外部容器状态
             Container container = new Container();
             BeanUtils.copyProperties(outCmd, container);
-            container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_USABLE);
-            container.setStatus(ContainerStatus.CONTAINER_STATUS_USABLE);
+            container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
+            container.setStatus(ContainerStatus.CONTAINER_STATUS_SHEVLED);
             containerDao.saveOrUpdateByVersion(container);
             insertGlobalLog(GLOBAL_LOG_UPDATE, container, ouId, userId, null, null);
             //修改内部容器状态
             for(Long insideContainerId:insideContainerIds) {
                Container c = containerDao.findByIdExt(insideContainerId, ouId);
-               c.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_USABLE);
-               c.setStatus(ContainerStatus.CONTAINER_STATUS_USABLE);
+               c.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
+               c.setStatus(ContainerStatus.CONTAINER_STATUS_SHEVLED);
                containerDao.saveOrUpdateByVersion(c);
                insertGlobalLog(GLOBAL_LOG_UPDATE, container, ouId, userId, null, null);
             }
