@@ -252,9 +252,8 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
             log.error("container is not exists, logId is:[{}]", logId);
             throw new BusinessException(ErrorCodes.COMMON_CONTAINER_IS_NOT_EXISTS);
         }
-        cacheManager.remove(CacheConstants.SCAN_LOCATION_QUEUE+containerCmd.getId().toString());
         // 验证容器状态是否可用
-        if (!containerCmd.getLifecycle().equals(BaseModel.LIFECYCLE_NORMAL)) {
+        if (!containerCmd.getLifecycle().equals(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED)) {
             log.error("container lifecycle is not normal, logId is:[{}]", logId);
             throw new BusinessException(ErrorCodes.COMMON_CONTAINER__NOT_PUTWAY);
         }
@@ -371,7 +370,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
             throw new BusinessException(ErrorCodes.COMMON_CONTAINER_IS_NOT_EXISTS);
         }
         // 验证容器状态是否可用
-        if (!containerCmd.getLifecycle().equals(BaseModel.LIFECYCLE_NORMAL)) {
+        if (!containerCmd.getLifecycle().equals(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED)) {
             log.error("container lifecycle is not normal, logId is:[{}]", logId);
             throw new BusinessException(ErrorCodes.COMMON_CONTAINER__NOT_PUTWAY);
         }
@@ -494,7 +493,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
         }
         String containerCode = containerCmd.getCode();
         // 验证容器状态是否可用
-        if (!containerCmd.getLifecycle().equals(BaseModel.LIFECYCLE_NORMAL)) {
+        if (!containerCmd.getLifecycle().equals(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED)) {
             log.error("container lifecycle is not normal, logId is:[{}]", logId);
             throw new BusinessException(ErrorCodes.COMMON_CONTAINER__NOT_PUTWAY);
         }
