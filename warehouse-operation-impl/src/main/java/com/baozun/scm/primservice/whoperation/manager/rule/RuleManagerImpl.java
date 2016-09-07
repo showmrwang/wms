@@ -98,6 +98,10 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
         if (ruleAffer.getRuleType().equals(Constants.SHELVE_RECOMMEND_RULE)) {
             export = exportShelveRule(ruleAffer);
         }
+        // 分配规则
+        if (ruleAffer.getRuleType().equals(Constants.ALLOCATE_RULE)) {
+            export = allocateRule(ruleAffer);
+        }
         log.info(this.getClass().getSimpleName() + ".ruleExport method end! logid: " + ruleAffer.getLogId());
         return export;
     }
@@ -294,6 +298,17 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
                 }
             }
         }
+        return export;
+    }
+
+    /**
+     * 分配规则
+     * 
+     * @param ruleAffer odoLineId 出库单明细ID
+     * @return allocateRuleOdoLineId 出库单明细对应分配规则ID
+     */
+    private RuleExportCommand allocateRule(RuleAfferCommand ruleAffer) {
+        RuleExportCommand export = new RuleExportCommand();
         return export;
     }
 

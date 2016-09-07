@@ -44,6 +44,9 @@ public class RuleExportCommand extends BaseCommand {
     /** 商品是否匹配容器 */
     private Boolean isSkuMatchContainer;
 
+    /** 出库单明细对应分配规则 */
+    private Map<List<Long>, Long> allocateRuleOdoLineId;
+
     public Boolean getUsableness() {
         return usableness;
     }
@@ -107,4 +110,14 @@ public class RuleExportCommand extends BaseCommand {
     public void setIsSkuMatchContainer(Boolean isSkuMatchContainer) {
         this.isSkuMatchContainer = isSkuMatchContainer;
     }
+
+    public Map<List<Long>, Long> getAllocateRuleOdoLineId() {
+        return allocateRuleOdoLineId;
+    }
+
+    public void setAllocateRuleOdoLineId(Map<List<Long>, Long> allocateRuleOdoLineId) {
+        this.allocateRuleOdoLineId = allocateRuleOdoLineId;
+    }
+
+
 }

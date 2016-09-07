@@ -172,6 +172,9 @@ public final class Constants {
     public static final String CHECK_IN_TYPE_NORMAL_CHECKIN = "normalCheckIn";
     /** 分配月台签入类型 */
     public static final String CHECK_IN_TYPE_MANUAL_CHECKIN = "manualCheckIn";
+    
+    /** 分配规则 */
+    public static final String ALLOCATE_RULE = "ALLOCATE_RULE";
 
     // enum:通用收货商品属性扫描序列
     public static final int GENERAL_RECEIVING_START = -1;// 开始
