@@ -518,22 +518,22 @@ public class CheckInManagerProxyImpl extends BaseManagerImpl implements CheckInM
      * @return
      */
     @Override
-    public Long freePlatform(Long platformId, Long ouId, Long userId, String logId) {
+    public Long releasePlatform(Long platformId, Long ouId, Long userId, String logId) {
         if (log.isInfoEnabled()) {
-            log.info("CheckInManagerProxyImpl.freePlatform start, platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", platformId, ouId, userId, logId);
+            log.info("CheckInManagerProxyImpl.releasePlatform start, platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", platformId, ouId, userId, logId);
         }
         if (null == platformId || null == ouId || null == userId) {
-            log.error("CheckInManagerProxyImpl.freePlatform param is null, platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", platformId, ouId, userId, logId);
+            log.error("CheckInManagerProxyImpl.releasePlatform param is null, platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", platformId, ouId, userId, logId);
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
         if (log.isDebugEnabled()) {
-            log.debug("CheckInManagerProxyImpl.freePlatform -> checkInQueueManager.freePlatform invoke, platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", platformId, ouId, userId, logId);
+            log.debug("CheckInManagerProxyImpl.releasePlatform -> checkInQueueManager.releasePlatform invoke, platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", platformId, ouId, userId, logId);
         }
-        long resultCount = checkInQueueManager.freePlatform(platformId, ouId, userId, logId);
+        long resultCount = checkInQueueManager.releasePlatform(platformId, ouId, userId, logId);
         // TODO 触发检查队列的操作，将空出的月台进行分配
         this.autoCheckIn(ouId, userId, logId);
         if (log.isInfoEnabled()) {
-            log.info("CheckInManagerProxyImpl.freePlatform end, vacantPlatformList is:[{}], platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", platformId, ouId, userId, logId);
+            log.info("CheckInManagerProxyImpl.releasePlatform end, vacantPlatformList is:[{}], platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", platformId, ouId, userId, logId);
         }
         return resultCount;
     }
@@ -549,49 +549,49 @@ public class CheckInManagerProxyImpl extends BaseManagerImpl implements CheckInM
      * @return
      */
     @Override
-    public void freePlatformByRcvdFinish(Long asnId, Long ouId, Long userId, String logId) {
+    public void releasePlatformByRcvdFinish(Long asnId, Long ouId, Long userId, String logId) {
         try {
             if (log.isInfoEnabled()) {
-                log.info("CheckInManagerProxyImpl.freePlatformByRcvdFinish start, asnId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", asnId, ouId, userId, logId);
+                log.info("CheckInManagerProxyImpl.releasePlatformByRcvdFinish start, asnId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", asnId, ouId, userId, logId);
             }
             if (null == asnId || null == ouId || null == userId) {
-                log.error("CheckInManagerProxyImpl.freePlatformByRcvdFinish param is null, asnId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", asnId, ouId, userId, logId);
+                log.error("CheckInManagerProxyImpl.releasePlatformByRcvdFinish param is null, asnId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", asnId, ouId, userId, logId);
                 throw new BusinessException(ErrorCodes.PARAMS_ERROR);
             }
 
 
             if (log.isDebugEnabled()) {
-                log.debug("CheckInManagerProxyImpl.freePlatformByRcvdFinish -> selectPoAsnManagerProxy.findWhAsnCommandById invoke, queryWhAsnCommand is:[id:{},ouId:{}], logId is:[{}]", asnId, ouId, logId);
+                log.debug("CheckInManagerProxyImpl.releasePlatformByRcvdFinish -> selectPoAsnManagerProxy.findWhAsnCommandById invoke, queryWhAsnCommand is:[id:{},ouId:{}], logId is:[{}]", asnId, ouId, logId);
             }
             WhAsnCommand originWhAsnCommand = selectPoAsnManagerProxy.findWhAsnCommandById(asnId,ouId);
             if (null == originWhAsnCommand) {
-                log.error("CheckInManagerProxyImpl.freePlatformByRcvdFinish -> selectPoAsnManagerProxy.findWhAsnCommandById error, result is null, queryWhAsnCommand is:[id:{},ouId:{}], logId is:[{}]", asnId, ouId, logId);
+                log.error("CheckInManagerProxyImpl.releasePlatformByRcvdFinish -> selectPoAsnManagerProxy.findWhAsnCommandById error, result is null, queryWhAsnCommand is:[id:{},ouId:{}], logId is:[{}]", asnId, ouId, logId);
                 throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
             }
             if (log.isDebugEnabled()) {
-                log.debug("CheckInManagerProxyImpl.freePlatformByRcvdFinish -> selectPoAsnManagerProxy.findWhAsnCommandById result, queryWhAsnCommand is:[{}], logId is:[{}], originWhAsnCommand is:[id:{},ouId:{}]", asnId, ouId, logId, originWhAsnCommand);
+                log.debug("CheckInManagerProxyImpl.releasePlatformByRcvdFinish -> selectPoAsnManagerProxy.findWhAsnCommandById result, queryWhAsnCommand is:[{}], logId is:[{}], originWhAsnCommand is:[id:{},ouId:{}]", asnId, ouId, logId, originWhAsnCommand);
             }
 
             if (log.isDebugEnabled()) {
-                log.debug("CheckInManagerProxyImpl.freePlatformByRcvdFinish -> platformManager.findByOccupationCode invoke, asnCode is:[{}], ouId is:[{}], logId is:[{}]", originWhAsnCommand.getAsnCode(), ouId, logId);
+                log.debug("CheckInManagerProxyImpl.releasePlatformByRcvdFinish -> platformManager.findByOccupationCode invoke, asnCode is:[{}], ouId is:[{}], logId is:[{}]", originWhAsnCommand.getAsnCode(), ouId, logId);
             }
             Platform platform = platformManager.findByOccupationCode(originWhAsnCommand.getAsnCode(), ouId, BaseModel.LIFECYCLE_NORMAL);
             if (log.isDebugEnabled()) {
-                log.debug("CheckInManagerProxyImpl.freePlatformByRcvdFinish -> platformManager.findByOccupationCode result, asnCode is:[{}], ouId is:[{}], logId is:[{}], platform is:[{}]", originWhAsnCommand.getAsnCode(), ouId, logId, platform);
+                log.debug("CheckInManagerProxyImpl.releasePlatformByRcvdFinish -> platformManager.findByOccupationCode result, asnCode is:[{}], ouId is:[{}], logId is:[{}], platform is:[{}]", originWhAsnCommand.getAsnCode(), ouId, logId, platform);
             }
             if (null != platform) {
                 if (log.isDebugEnabled()) {
-                    log.debug("CheckInManagerProxyImpl.freePlatformByRcvdFinish -> checkInQueueManager.freePlatform invoke, asnId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", asnId, ouId, userId, logId);
+                    log.debug("CheckInManagerProxyImpl.releasePlatformByRcvdFinish -> checkInQueueManager.releasePlatform invoke, asnId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", asnId, ouId, userId, logId);
                 }
-                checkInQueueManager.freePlatform(platform.getId(), ouId, userId, logId);
+                checkInQueueManager.releasePlatform(platform.getId(), ouId, userId, logId);
                 // TODO 触发检查队列的操作，将空出的月台进行分配
                 this.autoCheckIn(ouId, userId, logId);
             }
             if (log.isInfoEnabled()) {
-                log.info("CheckInManagerProxyImpl.freePlatformByRcvdFinish end, vacantPlatformList is:[{}], asnId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", asnId, ouId, userId, logId);
+                log.info("CheckInManagerProxyImpl.releasePlatformByRcvdFinish end, vacantPlatformList is:[{}], asnId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", asnId, ouId, userId, logId);
             }
         } catch (Exception e) {
-            log.error("CheckInManagerProxyImpl freePlatformByRcvdFinish error, ouId is:[{}], userId is:[{}], logId is:[{}], exception is:[{}]", ouId, userId, logId, e);
+            log.error("CheckInManagerProxyImpl releasePlatformByRcvdFinish error, ouId is:[{}], userId is:[{}], logId is:[{}], exception is:[{}]", ouId, userId, logId, e);
             throw e;
         }
     }

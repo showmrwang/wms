@@ -276,7 +276,7 @@
             and last_modify_time = #{lastModifyTime}
     </update>
     
-    <update id="freePlatform" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Platform">
+    <update id="releasePlatform" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Platform">
         UPDATE t_wh_platform SET
             occupation_code = null ,
             is_occupied = 0 ,

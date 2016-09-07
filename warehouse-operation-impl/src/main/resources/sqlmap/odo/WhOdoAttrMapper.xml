@@ -201,10 +201,10 @@
                 odo_attr17 = #{odoAttr17,javaType=java.lang.String,jdbcType=VARCHAR} ,
                 odo_attr18 = #{odoAttr18,javaType=java.lang.String,jdbcType=VARCHAR} ,
                 odo_attr19 = #{odoAttr19,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                odo_attr20 = #{odoAttr20,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+                odo_attr20 = #{odoAttr20,javaType=java.lang.String,jdbcType=VARCHAR} 
             WHERE 
                 id = #{id} 
+                and ou_id = #{ouId}
         ]]>
     </update>
 

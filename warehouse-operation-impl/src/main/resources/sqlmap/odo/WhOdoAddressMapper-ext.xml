@@ -168,4 +168,11 @@
             ]]>
     </select>
     
+    
+    <select id="findObject" resultMap="WhOdoAddressResultExt">
+		select
+		<include refid="whOdoAddressColumnsExt" />
+		from t_wh_odo_address
+		<include refid="whOdoAddressDynamicWhereExt" />
+	</select>
 </mapper>

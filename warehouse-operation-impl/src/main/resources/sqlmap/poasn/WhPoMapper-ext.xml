@@ -194,8 +194,26 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			 </if>
 			<if test="inboundTimeEnd!=null and inboundTimeEnd!=''">
 				and DATE_FORMAT(po.inbound_time,'%Y-%m-%d')&lt;=#{inboundTimeEnd}
-			 </if>
-			 <if test="(linenum!=null and linenum!='') ||
+			</if>
+			<if test="customerList!=null">
+	        	and po.customer_id in
+				<foreach collection="customerList" item="cid" open="(" separator="," close=")">
+			       #{cid}
+		        </foreach>
+		    </if>
+            <if test="customerList==null">
+               	and  po.customer_id in (null)
+		    </if>
+		    <if test="storeList!=null">
+		        and po.store_id in
+				<foreach collection="storeList" item="sid" open="(" separator="," close=")">
+			       #{sid}
+		        </foreach>
+		    </if>
+            <if test="storeList==null">
+                  and po.store_id in (null)
+		    </if>
+			<if test="(linenum!=null and linenum!='') ||
 			 			(skuCode!=null and skuCode!='') ||
 			 			(skuName!=null and skuName!='') ||
 			 			(skuBarCode!=null and skuBarCode!='')||
@@ -460,7 +478,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			supplier.name as supplierName
 	    from 
 	    t_wh_po po 
-		left join t_wh_logistics_provider provider on provider.id=po.logistics_provider_id
+		left join t_ma_transport_provider provider on provider.id=po.logistics_provider_id
 		left join t_wh_supplier supplier on supplier.id=po.supplier_id
 		<include refid="whPoSearchWhereExt"/>
     </select>
@@ -469,7 +487,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<select id="findListCountByQueryMapExt" resultType="long">
         select count(*) from 
         t_wh_po po 
-		left join t_wh_logistics_provider provider on provider.id=po.logistics_provider_id
+		left join t_ma_transport_provider provider on provider.id=po.logistics_provider_id
 		left join t_wh_supplier supplier on supplier.id=po.supplier_id
 		<include refid="whPoSearchWhereExt"/>
     </select>

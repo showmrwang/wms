@@ -201,10 +201,10 @@
                 odo_line_attr17 = #{odoLineAttr17,javaType=java.lang.String,jdbcType=VARCHAR} ,
                 odo_line_attr18 = #{odoLineAttr18,javaType=java.lang.String,jdbcType=VARCHAR} ,
                 odo_line_attr19 = #{odoLineAttr19,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                odo_line_attr20 = #{odoLineAttr20,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+                odo_line_attr20 = #{odoLineAttr20,javaType=java.lang.String,jdbcType=VARCHAR} 
             WHERE 
                 id = #{id} 
+                and ou_id = #{ouId}
         ]]>
     </update>
     <update id="batchUpdate">

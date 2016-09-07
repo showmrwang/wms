@@ -27,6 +27,8 @@ import lark.orm.dao.supports.BaseDao;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.baozun.scm.primservice.whoperation.command.odo.OdoCommand;
+import com.baozun.scm.primservice.whoperation.command.odo.OdoMergeCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoResultCommand;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 
@@ -62,5 +64,13 @@ public interface WhOdoDao extends BaseDao<WhOdo, Long> {
     WhOdo findByIdOuId(@Param("id") Long id, @Param("ouId") Long ouId);
 
     int existsSkuInOdo(@Param("odoId") Long odoId, @Param("skuId") Long skuId, @Param("ouId") Long ouId);
+
+    String findOdoMergableIds(@Param("ouId") Long ouId, @Param("outboundCartonType") String outboundCartonType, @Param("epistaticSystemsOrderType") String epistaticSystemsOrderType, @Param("store") String store,
+            @Param("deliverGoodsTime") String deliverGoodsTime);
+
+    List<OdoMergeCommand> odoMerge(@Param("odoIdString") String odoIdString, @Param("ouId") Long ouId, @Param("outboundCartonType") String outboundCartonType, @Param("epistaticSystemsOrderType") String epistaticSystemsOrderType,
+            @Param("store") String store, @Param("deliverGoodsTime") String deliverGoodsTime);
+
+    List<OdoCommand> findOdoListByIdOuId(@Param("ids") String idString, @Param("ouId") Long ouId, @Param("odoStatus") String odoStatus);
 
 }

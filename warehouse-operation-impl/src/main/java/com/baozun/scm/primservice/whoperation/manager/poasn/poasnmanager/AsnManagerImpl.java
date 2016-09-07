@@ -1,6 +1,8 @@
 package com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,6 +37,9 @@ import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
+import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
 import com.baozun.scm.primservice.whoperation.util.StringUtil;
 
 
@@ -100,7 +105,89 @@ public class AsnManagerImpl extends BaseManagerImpl implements AsnManager {
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public Pagination<WhAsnCommand> findListByQueryMapWithPageExtByShard(Page page, Sort[] sorts, Map<String, Object> params) {
-        return whAsnDao.findListByQueryMapWithPageExt(page, sorts, params);
+        Pagination<WhAsnCommand> paginationInvList = whAsnDao.findListByQueryMapWithPageExt(page, sorts, params);
+        List<WhAsnCommand> asnList = paginationInvList.getItems();
+        Map<String, List<String>> sysMap = new HashMap<String, List<String>>();
+        List<String> dic1 = new ArrayList<String>();
+        List<String> dic2 = new ArrayList<String>();
+        List<Long> customerIdList = new ArrayList<Long>();
+        List<Long> storeIdList = new ArrayList<Long>();
+        boolean b = false;
+        for (WhAsnCommand command : asnList) {
+            // 封装系统参数值 INVENTORY_TYPE
+            if (!StringUtil.isEmpty(command.getAsnType().toString())) {
+                b = dic1.contains(command.getAsnType());
+                if (!b) {
+                    dic1.add(command.getAsnType().toString());
+                }
+            }
+            if (!StringUtil.isEmpty(command.getStatus().toString())) {
+                b = dic2.contains(command.getStatus());
+                if (!b) {
+                    dic2.add(command.getStatus().toString());
+                }
+            }
+            // 客户
+            b = customerIdList.contains(command.getCustomerId());
+            if (!b) {
+                customerIdList.add(command.getCustomerId());
+            }
+            // 店铺
+            b = storeIdList.contains(command.getStoreId());
+            if (!b) {
+                storeIdList.add(command.getStoreId());
+            }
+        }
+        if (dic1.size() > 0) {
+            sysMap.put(Constants.PO_TYPE, dic1);
+        }
+        if (dic2.size() > 0) {
+            sysMap.put(Constants.ASNSTATUS, dic2);
+        }
+        // 调用系统参数redis缓存方法获取对应数据
+        Map<String, SysDictionary> sysDictionary = findSysDictionaryByRedis(sysMap);
+        // 调用客户redis缓存方法获取对应数据
+        Map<Long, Customer> customer = findCustomerByRedis(customerIdList);
+        Map<Long, Store> store = findStoreByRedis(storeIdList);
+        // 封装数据放入List
+        for (WhAsnCommand command : paginationInvList.getItems()) {
+            // 封装数据放入List
+            String invStr = "";
+            String invType = "";
+            SysDictionary sys = null;
+            Customer c = null;
+            Store s = null;
+            if (!StringUtil.isEmpty(command.getStatus().toString())) {
+                // 通过groupValue+divValue获取对应系统参数对象
+                sys = sysDictionary.get(Constants.ASNSTATUS + "_" + command.getStatus());
+                if (null != sys) {
+                    invStr = sys.getDicLabel();
+                }
+            }
+            command.setStatusName(invStr);
+            invStr = "";
+            if (!StringUtil.isEmpty(command.getAsnType().toString())) {
+                // 通过groupValue+divValue获取对应系统参数对象
+                sys = sysDictionary.get(Constants.PO_TYPE + "_" + command.getAsnType());
+                if (null != sys) {
+                    invStr = sys.getDicLabel();
+                }
+            }
+            command.setPoTypeName(invStr);
+            c = customer.get(command.getCustomerId());
+            if (null == c) {
+                command.setCustomerName(command.getCustomerId().toString());
+            } else {
+                command.setCustomerName(c.getCustomerName());
+            }
+            s = store.get(command.getStoreId());
+            if (null == s) {
+                command.setStoreName(command.getStoreId().toString());
+            } else {
+                command.setStoreName(s.getStoreName());
+            }
+        }
+        return paginationInvList;
     }
 
     /**
@@ -719,8 +806,8 @@ public class AsnManagerImpl extends BaseManagerImpl implements AsnManager {
      */
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     @Override
-    public List<WhAsnCommand> findAsnListByStatus(int status, Long ouId, List<Long> asnList) {
-        return whAsnDao.findAsnListByStatus(status, ouId, asnList);
+    public List<WhAsnCommand> findAsnListByStatus(int status, Long ouId, List<Long> customerList,List<Long> storeList) {
+        return whAsnDao.findAsnListByStatus(status, ouId,customerList,storeList);
     }
 
     @Override

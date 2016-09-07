@@ -194,7 +194,7 @@ public interface CheckInManagerProxy extends BaseManager {
      * @param logId
      * @return
      */
-    Long freePlatform(Long platformId, Long ouId, Long userId, String logId);
+    Long releasePlatform(Long platformId, Long ouId, Long userId, String logId);
 
     /**
      * 释放月台
@@ -206,7 +206,7 @@ public interface CheckInManagerProxy extends BaseManager {
      * @param userId
      * @return
      */
-    void freePlatformByRcvdFinish(Long asnId, Long ouId, Long userId, String logId);
+    void releasePlatformByRcvdFinish(Long asnId, Long ouId, Long userId, String logId);
 
 
 }

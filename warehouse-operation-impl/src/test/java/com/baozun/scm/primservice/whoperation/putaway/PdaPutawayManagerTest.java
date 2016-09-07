@@ -76,7 +76,7 @@ public class PdaPutawayManagerTest extends AbstractJUnit4SpringContextTests {
        
 //       Long id = pkManager.generatePk(Constants.WMS, "com.baozun.scm.primservice.whinfo.model.warehouse.WhSkuLocation");
 //       System.out.println(id);
-       List<Long> ids = pkManager.generatePkList(Constants.WMS, "com.baozun.scm.primservice.whinfo.model.warehouse.WhSkuLocation", 2).toArray();
+       List<Long> ids = pkManager.generatePkList(Constants.WMS, "com.baozun.scm.primservice.whinfo.model.system.SysDictionary", 1).toArray();
        for(Long id : ids){
            System.out.println(id);
        }
@@ -203,7 +203,7 @@ public class PdaPutawayManagerTest extends AbstractJUnit4SpringContextTests {
     public void invPutawayTest() throws Exception{
         // dev： 16100088L 16100165L
         // test: 29100028L 29100058L
-        WhSkuInventory inv = whSkuInventoryDao.findById(29100028L);
+        WhSkuInventory inv = whSkuInventoryDao.findById(29100063L);
         System.out.println(inv.getUuid());
         String uuid = SkuInventoryUuid.invUuid(inv);
         System.out.println(uuid);
@@ -217,7 +217,7 @@ public class PdaPutawayManagerTest extends AbstractJUnit4SpringContextTests {
         System.out.println(uuid);
         //预期：634ae2ba30cbbae174e93dfdf63f8d51
         System.out.println("-------------------------");
-        WhSkuInventory locInv = whSkuInventoryDao.findById(29100058L);
+        WhSkuInventory locInv = whSkuInventoryDao.findById(29100065L);
         System.out.println(locInv.getUuid());
         uuid = SkuInventoryUuid.invUuid(locInv);
         System.out.println(uuid);

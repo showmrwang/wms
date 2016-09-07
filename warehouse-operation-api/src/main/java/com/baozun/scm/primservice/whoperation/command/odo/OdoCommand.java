@@ -79,6 +79,8 @@ public class OdoCommand extends BaseCommand {
     private String createTimeStr;
     private String lastModifyTimeStr;
     private String orderTimeStr;
+    private String storeName;
+    private String customerName;
 
 
     public Long getId() {
@@ -370,6 +372,20 @@ public class OdoCommand extends BaseCommand {
         this.modifiedId = modifiedId;
     }
 
+    public String getStoreName() {
+        return storeName;
+    }
 
+    public void setStoreName(String storeName) {
+        this.storeName = storeName;
+    }
+
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
+    }
 
 }

@@ -98,7 +98,7 @@ public interface PlatformDao extends BaseDao<Platform, Long> {
      * @param platform
      * @return
      */
-    Long freePlatform(Platform platform);
+    Long releasePlatform(Platform platform);
 
     /**
      * 根据占用码查询月台

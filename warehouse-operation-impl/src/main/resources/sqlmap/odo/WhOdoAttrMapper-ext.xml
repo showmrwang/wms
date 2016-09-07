@@ -4,11 +4,12 @@
         "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
 
 <mapper namespace="com.baozun.scm.primservice.whoperation.dao.odo.WhOdoAttrDao">
-    <resultMap id="WhOdoAttrResultExt" type="com.baozun.scm.primservice.whoperation.model.odo.WhOdoAttr">
-    </resultMap>
+	<resultMap id="WhOdoAttrResultExt"
+		type="com.baozun.scm.primservice.whoperation.model.odo.WhOdoAttr">
+	</resultMap>
 
-    <!-- 用于select查询公用抽取的列 -->
-    <sql id="whOdoAttrColumnsExt">
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whOdoAttrColumnsExt">
         <![CDATA[
                 id as id,
                 odo_id as odoId,
@@ -34,104 +35,112 @@
                 odo_attr20 as odoAttr20,
                 ou_id as ouId
         ]]>
-    </sql>
+	</sql>
 
-    <sql id="whOdoAttrDynamicWhereExt">
-        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
-        <where>
+	<sql id="whOdoAttrDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
 
-            <if test="id!=null">
-                and id = #{id}
-            </if>
+			<if test="id!=null">
+				and id = #{id}
+			</if>
 
-            <if test="odoId!=null">
-                and odo_id = #{odoId}
-            </if>
+			<if test="odoId!=null">
+				and odo_id = #{odoId}
+			</if>
 
-            <if test="odoAttr1!=null and odoAttr1!=''">
-                and odo_attr1 = #{odoAttr1}
-            </if>
+			<if test="odoAttr1!=null and odoAttr1!=''">
+				and odo_attr1 = #{odoAttr1}
+			</if>
 
-            <if test="odoAttr2!=null and odoAttr2!=''">
-                and odo_attr2 = #{odoAttr2}
-            </if>
+			<if test="odoAttr2!=null and odoAttr2!=''">
+				and odo_attr2 = #{odoAttr2}
+			</if>
 
-            <if test="odoAttr3!=null and odoAttr3!=''">
-                and odo_attr3 = #{odoAttr3}
-            </if>
+			<if test="odoAttr3!=null and odoAttr3!=''">
+				and odo_attr3 = #{odoAttr3}
+			</if>
 
-            <if test="odoAttr4!=null and odoAttr4!=''">
-                and odo_attr4 = #{odoAttr4}
-            </if>
+			<if test="odoAttr4!=null and odoAttr4!=''">
+				and odo_attr4 = #{odoAttr4}
+			</if>
 
-            <if test="odoAttr5!=null and odoAttr5!=''">
-                and odo_attr5 = #{odoAttr5}
-            </if>
+			<if test="odoAttr5!=null and odoAttr5!=''">
+				and odo_attr5 = #{odoAttr5}
+			</if>
 
-            <if test="odoAttr6!=null and odoAttr6!=''">
-                and odo_attr6 = #{odoAttr6}
-            </if>
+			<if test="odoAttr6!=null and odoAttr6!=''">
+				and odo_attr6 = #{odoAttr6}
+			</if>
 
-            <if test="odoAttr7!=null and odoAttr7!=''">
-                and odo_attr7 = #{odoAttr7}
-            </if>
+			<if test="odoAttr7!=null and odoAttr7!=''">
+				and odo_attr7 = #{odoAttr7}
+			</if>
 
-            <if test="odoAttr8!=null and odoAttr8!=''">
-                and odo_attr8 = #{odoAttr8}
-            </if>
+			<if test="odoAttr8!=null and odoAttr8!=''">
+				and odo_attr8 = #{odoAttr8}
+			</if>
 
-            <if test="odoAttr9!=null and odoAttr9!=''">
-                and odo_attr9 = #{odoAttr9}
-            </if>
+			<if test="odoAttr9!=null and odoAttr9!=''">
+				and odo_attr9 = #{odoAttr9}
+			</if>
 
-            <if test="odoAttr10!=null and odoAttr10!=''">
-                and odo_attr10 = #{odoAttr10}
-            </if>
+			<if test="odoAttr10!=null and odoAttr10!=''">
+				and odo_attr10 = #{odoAttr10}
+			</if>
 
-            <if test="odoAttr11!=null and odoAttr11!=''">
-                and odo_attr11 = #{odoAttr11}
-            </if>
+			<if test="odoAttr11!=null and odoAttr11!=''">
+				and odo_attr11 = #{odoAttr11}
+			</if>
 
-            <if test="odoAttr12!=null and odoAttr12!=''">
-                and odo_attr12 = #{odoAttr12}
-            </if>
+			<if test="odoAttr12!=null and odoAttr12!=''">
+				and odo_attr12 = #{odoAttr12}
+			</if>
 
-            <if test="odoAttr13!=null and odoAttr13!=''">
-                and odo_attr13 = #{odoAttr13}
-            </if>
+			<if test="odoAttr13!=null and odoAttr13!=''">
+				and odo_attr13 = #{odoAttr13}
+			</if>
 
-            <if test="odoAttr14!=null and odoAttr14!=''">
-                and odo_attr14 = #{odoAttr14}
-            </if>
+			<if test="odoAttr14!=null and odoAttr14!=''">
+				and odo_attr14 = #{odoAttr14}
+			</if>
 
-            <if test="odoAttr15!=null and odoAttr15!=''">
-                and odo_attr15 = #{odoAttr15}
-            </if>
+			<if test="odoAttr15!=null and odoAttr15!=''">
+				and odo_attr15 = #{odoAttr15}
+			</if>
 
-            <if test="odoAttr16!=null and odoAttr16!=''">
-                and odo_attr16 = #{odoAttr16}
-            </if>
+			<if test="odoAttr16!=null and odoAttr16!=''">
+				and odo_attr16 = #{odoAttr16}
+			</if>
 
-            <if test="odoAttr17!=null and odoAttr17!=''">
-                and odo_attr17 = #{odoAttr17}
-            </if>
+			<if test="odoAttr17!=null and odoAttr17!=''">
+				and odo_attr17 = #{odoAttr17}
+			</if>
 
-            <if test="odoAttr18!=null and odoAttr18!=''">
-                and odo_attr18 = #{odoAttr18}
-            </if>
+			<if test="odoAttr18!=null and odoAttr18!=''">
+				and odo_attr18 = #{odoAttr18}
+			</if>
 
-            <if test="odoAttr19!=null and odoAttr19!=''">
-                and odo_attr19 = #{odoAttr19}
-            </if>
+			<if test="odoAttr19!=null and odoAttr19!=''">
+				and odo_attr19 = #{odoAttr19}
+			</if>
 
-            <if test="odoAttr20!=null and odoAttr20!=''">
-                and odo_attr20 = #{odoAttr20}
-            </if>
+			<if test="odoAttr20!=null and odoAttr20!=''">
+				and odo_attr20 = #{odoAttr20}
+			</if>
 
-            <if test="ouId!=null">
-                and ou_id = #{ouId}
-            </if>
-        </where>
-    </sql>
+			<if test="ouId!=null">
+				and ou_id = #{ouId}
+			</if>
+		</where>
+	</sql>
+
+	<select id="findObject" resultMap="WhOdoAttrResultExt">
+		select
+		<include refid="whOdoAttrColumns" />
+		from t_wh_odo_attr
+		<include refid="whOdoAttrDynamicWhereExt" />
+	</select>
+
 
 </mapper>

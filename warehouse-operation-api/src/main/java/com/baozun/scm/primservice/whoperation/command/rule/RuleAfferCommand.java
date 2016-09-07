@@ -52,6 +52,9 @@ public class RuleAfferCommand extends BaseCommand {
     /** 店铺List */
     private List<Long> storeIdList;
 
+    /** 出库单明细ID */
+    private List<Long> odoLineId;
+
 
     public String getRuleType() {
         return ruleType;
@@ -154,4 +157,14 @@ public class RuleAfferCommand extends BaseCommand {
     public void setAfferInsideContainerIdList(List<Long> afferInsideContainerIdList) {
         this.afferInsideContainerIdList = afferInsideContainerIdList;
     }
+
+    public List<Long> getOdoLineId() {
+        return odoLineId;
+    }
+
+    public void setOdoLineId(List<Long> odoLineId) {
+        this.odoLineId = odoLineId;
+    }
+
+
 }
