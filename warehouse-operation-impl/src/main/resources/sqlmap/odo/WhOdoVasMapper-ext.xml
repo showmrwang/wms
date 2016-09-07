@@ -5,7 +5,7 @@
 
 <mapper namespace="com.baozun.scm.primservice.whoperation.dao.odo.WhOdoVasDao">
 
-    <resultMap id="WhOdoVasResultExt" type="com.baozun.scm.primservice.whoperation.model.odo.WhOdoVas">
+    <resultMap id="WhOdoVasResultExt" type="com.baozun.scm.primservice.whoperation.command.odo.WhOdoVasCommand">
     </resultMap>
 
     <!-- 用于select查询公用抽取的列 -->
@@ -114,5 +114,115 @@
             </if>
         </where>
     </sql>
-
+    
+ <select id="findOdoVasByOdoIdOdoLineIdType" resultMap="WhOdoVasResult">
+        select
+        <include refid="whOdoVasColumns"/>
+        from t_wh_odo_vas
+        <where>
+			<if test="odoId!=null">
+                and odo_id = #{odoId}
+            </if>
+			<if test="odoLineId!=null">
+                and odo_line_id = #{odoLineId}
+            </if>
+			<if test="odoLineId==null">
+                and odo_line_id is null
+            </if>
+			<if test="vasType!=null and vasType!=''">
+                and vas_type = #{vasType}
+            </if>
+            <if test="ouId!=null">
+                and ou_id = #{ouId}
+            </if>
+         </where>
+    </select>
+ <select id="findOdoOuVasCommandByOdoIdOdoLineIdType" resultMap="WhOdoVasResultExt">
+        select
+        	odovas.id as id,
+            odovas.odo_id as odoId,
+            odovas.odo_line_id as odoLineId,
+            odovas.vas_type as vasType,
+            odovas.wh_vas_type as whVasType,
+            odovas.express_vas_type as expressVasType,
+            odovas.print_templet as printTemplet,
+            odovas.sku_bar_code as skuBarCode,
+            odovas.content as content,
+            odovas.carton_no as cartonNo,
+            odovas.qty as qty,
+            odovas.amt as amt,
+            odovas.mode_of_payment as modeOfPayment,
+            odovas.vas_attr1 as vasAttr1,
+            odovas.vas_attr2 as vasAttr2,
+            odovas.vas_attr3 as vasAttr3,
+            odovas.vas_attr4 as vasAttr4,
+            odovas.vas_attr5 as vasAttr5,
+            odovas.ou_id as ouId,
+            whvas.code as whVasTypeCode,
+            sys.dic_label as whVasTypeText,
+            whvas.type as whVasTypeValue
+        from t_wh_odo_vas odovas
+        inner join t_wh_vas  whvas on odovas.wh_vas_type=whvas.id
+        left join sys_dictionary sys on sys.dic_value=whvas.type  and sys.group_value='WH_VAS_TYPE'
+        <where>
+			<if test="odoId!=null">
+                and odovas.odo_id = #{odoId}
+            </if>
+			<if test="odoLineId!=null">
+                and odovas.odo_line_id = #{odoLineId}
+            </if>
+			<if test="odoLineId==null">
+                and odovas.odo_line_id is null
+            </if>
+            <if test="ouId!=null">
+                and odovas.ou_id = #{ouId}
+            </if>
+         </where>
+    </select>
+    
+ <select id="findOdoExpressVasCommandByOdoIdOdoLineId" resultMap="WhOdoVasResultExt">
+        select
+        	odovas.id as id,
+            odovas.odo_id as odoId,
+            odovas.odo_line_id as odoLineId,
+            odovas.vas_type as vasType,
+            odovas.wh_vas_type as whVasType,
+            odovas.express_vas_type as expressVasType,
+            odovas.print_templet as printTemplet,
+            odovas.sku_bar_code as skuBarCode,
+            odovas.content as content,
+            odovas.carton_no as cartonNo,
+            odovas.qty as qty,
+            odovas.amt as amt,
+            odovas.mode_of_payment as modeOfPayment,
+            odovas.vas_attr1 as vasAttr1,
+            odovas.vas_attr2 as vasAttr2,
+            odovas.vas_attr3 as vasAttr3,
+            odovas.vas_attr4 as vasAttr4,
+            odovas.vas_attr5 as vasAttr5,
+            odovas.ou_id as ouId
+        from t_wh_odo_vas odovas
+        inner join t_ma_transport_vas transVas on transVas.id=odovas.express_vas_type
+        <where>
+			<if test="odoId!=null">
+                and odovas.odo_id = #{odoId}
+            </if>
+			<if test="odoLineId!=null">
+                and odovas.odo_line_id = #{odoLineId}
+            </if>
+			<if test="odoLineId==null">
+                and odovas.odo_line_id is null
+            </if>
+            <if test="ouId!=null">
+                and odovas.ou_id = #{ouId}
+            </if>
+         </where>
+    </select>
+    
+     <delete id="deleteByIdOuId" parameterType="map">
+        <![CDATA[
+            delete from t_wh_odo_vas where
+                id = #{id} and ou_id=#{ouId}
+        ]]>
+    </delete>
 </mapper>

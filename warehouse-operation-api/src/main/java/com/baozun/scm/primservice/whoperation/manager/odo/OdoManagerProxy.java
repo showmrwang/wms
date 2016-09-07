@@ -1,5 +1,6 @@
 package com.baozun.scm.primservice.whoperation.manager.odo;
 
+import java.util.List;
 import java.util.Map;
 
 import lark.common.dao.Page;
@@ -10,12 +11,14 @@ import com.baozun.scm.primservice.whoperation.command.odo.OdoAddressCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoGroupCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoLineCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoResultCommand;
+import com.baozun.scm.primservice.whoperation.command.odo.WhOdoVasCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAddress;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoVas;
 
 public interface OdoManagerProxy extends BaseManager {
     /**
@@ -111,4 +114,58 @@ public interface OdoManagerProxy extends BaseManager {
      * @param odoAddressCommand
      */
     void saveConsigneeUnit(OdoAddressCommand odoAddressCommand);
+
+    /**
+     * [通用方法]查找出库单增值服务
+     * 
+     * @param odoId
+     * @param object
+     * @param odoLineId
+     * @param vasType
+     * @param ouId
+     * @return
+     */
+    List<WhOdoVas> findOdoVasByOdoIdOdoLineIdType(Long odoId, Long odoLineId, String vasType, Long ouId);
+
+    /**
+     * [通用方法]查找出库单仓库增值服务;
+     * 
+     * @param odoId
+     * @param odoLineId
+     * @param ouId
+     * @return
+     */
+    List<WhOdoVasCommand> findOdoOuVasCommandByOdoIdOdoLineIdType(Long odoId, Long odoLineId, Long ouId);
+
+    /**
+     * 保存出库单仓库增值服务
+     * 
+     * @param odoId
+     * @param odoLineId
+     * @param ouId
+     * @param odoVasList
+     * @param logId
+     */
+    void saveOdoOuVas(Long odoId, Long odoLineId, Long ouId, List<WhOdoVasCommand> odoVasList, String logId);
+
+    /**
+     * [通用方法]查找出库单快递增值服务
+     * 
+     * @param odoId
+     * @param odoLineId
+     * @param ouId
+     * @return
+     */
+    List<WhOdoVasCommand> findOdoExpressVasCommandByOdoIdOdoLineId(Long odoId, Long odoLineId, Long ouId);
+
+    /**
+     * [业务方法]保存出库单快递增值服务
+     * 
+     * @param odoId
+     * @param odoLineId
+     * @param ouId
+     * @param odoVasList
+     * @param logId
+     */
+    void saveOdoExpressVas(Long odoId, Long odoLineId, Long ouId, List<WhOdoVasCommand> odoVasList, String logId);
 }

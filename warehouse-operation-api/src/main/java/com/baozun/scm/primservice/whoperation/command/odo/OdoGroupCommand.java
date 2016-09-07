@@ -19,7 +19,26 @@ public class OdoGroupCommand extends BaseCommand {
     private Long userId;
     /***/
     private Long ouId;
+    /***/
+    private Long odoId;
+    /***/
+    private Long odoLineId;
 
+    public Long getOdoLineId() {
+        return odoLineId;
+    }
+
+    public void setOdoLineId(Long odoLineId) {
+        this.odoLineId = odoLineId;
+    }
+
+    public Long getOdoId() {
+        return odoId;
+    }
+
+    public void setOdoId(Long odoId) {
+        this.odoId = odoId;
+    }
 
     public Long getOuId() {
         return ouId;

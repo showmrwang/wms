@@ -1,7 +1,9 @@
 package com.baozun.scm.primservice.whoperation.manager.odo;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +26,7 @@ import com.baozun.scm.primservice.whoperation.command.odo.OdoGroupCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoLineCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoResultCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoTransportMgmtCommand;
+import com.baozun.scm.primservice.whoperation.command.odo.WhOdoVasCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
@@ -33,11 +36,13 @@ import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoAddressMana
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoLineManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoTransportMgmtManager;
+import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoVasManager;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAddress;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoVas;
 
 @Service("odoManagerProxy")
 public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerProxy {
@@ -53,6 +58,8 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
     private OdoAddressManager odoAddressManager;
     @Autowired
     private OdoTransportMgmtManager odoTransportMgmtManager;
+    @Autowired
+    private OdoVasManager odoVasManager;
 
     @Override
     public Pagination<OdoResultCommand> findOdoListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params) {
@@ -62,6 +69,7 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
     @Override
     public ResponseMsg createOdoFromWms(OdoGroupCommand odoGroup) {
         ResponseMsg msg = new ResponseMsg();
+        Long returnOdoId = null;
         try {
             Long ouId = odoGroup.getOuId();
             Long userId = odoGroup.getUserId();
@@ -78,6 +86,7 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
              */
             WhOdoTransportMgmt transportMgmt = this.copyTransportMgmtProperties(transportMgmtCommand);
             this.createOdo(odo, transportMgmt, null, ouId, userId);
+            returnOdoId = odo.getId();
         } catch (BusinessException e) {
             msg.setResponseStatus(ResponseMsg.STATUS_ERROR);
             msg.setMsg(e.getErrorCode() + "");
@@ -88,7 +97,7 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
             msg.setMsg(ErrorCodes.PARAMS_ERROR + "");
             return msg;
         }
-        msg.setMsg("SUCCESS");
+        msg.setMsg(returnOdoId + "");
         msg.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
         return msg;
     }
@@ -435,6 +444,109 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
             throw new BusinessException(ErrorCodes.PACKAGING_ERROR);
         }
 
+    }
+
+    @Override
+    public List<WhOdoVas> findOdoVasByOdoIdOdoLineIdType(Long odoId,Long odoLineId, String vasType, Long ouId) {
+        return this.odoVasManager.findOdoVasByOdoIdOdoLineIdType(odoId, odoLineId, vasType, ouId);
+    }
+
+    @Override
+    public List<WhOdoVasCommand> findOdoOuVasCommandByOdoIdOdoLineIdType(Long odoId, Long odoLineId, Long ouId) {
+        return this.odoVasManager.findOdoOuVasCommandByOdoIdOdoLineIdType(odoId, odoLineId, ouId);
+    }
+
+    @Override
+    public void saveOdoOuVas(Long odoId, Long odoLineId, Long ouId, List<WhOdoVasCommand> odoVasList, String logId) {
+        // 这边的逻辑如下
+        // 1.将没有ID的作为插入的数据
+        // 2.将有ID的进行校验判断是否修改，并做更新操作
+        // 3.将数据库中有但是数据集合中没有的，做删除操作
+        Map<Long, WhOdoVasCommand> vasMap = new HashMap<Long, WhOdoVasCommand>();
+        List<WhOdoVas> insertVasList = new ArrayList<WhOdoVas>();
+        List<WhOdoVas> updateVasList = new ArrayList<WhOdoVas>();
+        List<WhOdoVas> delVasList = new ArrayList<WhOdoVas>();
+        if (odoVasList != null && odoVasList.size() > 0) {
+            for (WhOdoVasCommand vc : odoVasList) {
+                if (vc.getId() == null) {
+                    WhOdoVas ov = new WhOdoVas();
+                    BeanUtils.copyProperties(vc, ov);
+                    ov.setVasType(Constants.ODO_VAS_TYPE_WH);
+                    ov.setOdoId(odoId);
+                    ov.setOdoLineId(odoLineId);
+                    ov.setOuId(ouId);
+                    insertVasList.add(ov);
+                } else {
+                    vasMap.put(vc.getId(), vc);
+                }
+            }
+        }
+        List<WhOdoVas> oldVasList = this.odoVasManager.findOdoVasByOdoIdOdoLineIdType(odoId, odoLineId, Constants.ODO_VAS_TYPE_WH, ouId);
+
+        if (oldVasList != null && oldVasList.size() > 0) {
+            for (WhOdoVas odoVas : oldVasList) {
+                if (vasMap.containsKey(odoVas.getId())) {
+                    WhOdoVasCommand ovc = vasMap.get(odoVas.getId());
+                    odoVas.setPrintTemplet(ovc.getPrintTemplet());
+                    odoVas.setSkuBarCode(ovc.getSkuBarCode());
+                    odoVas.setContent(ovc.getContent());
+                    odoVas.setCartonNo(ovc.getCartonNo());
+                    odoVas.setQty(ovc.getQty());
+                    updateVasList.add(odoVas);
+                } else {
+                    delVasList.add(odoVas);
+                }
+            }
+        }
+        this.odoVasManager.saveOdoOuVas(insertVasList, updateVasList, delVasList);
+
+    }
+
+    @Override
+    public List<WhOdoVasCommand> findOdoExpressVasCommandByOdoIdOdoLineId(Long odoId, Long odoLineId, Long ouId) {
+        return this.odoVasManager.findOdoExpressVasCommandByOdoIdOdoLineId(odoId, odoLineId, ouId);
+    }
+
+    @Override
+    public void saveOdoExpressVas(Long odoId, Long odoLineId, Long ouId, List<WhOdoVasCommand> odoVasList, String logId) {
+        // 这边的逻辑如下
+        // 1.将没有ID的作为插入的数据
+        // 2.将有ID的进行校验判断是否修改，并做更新操作
+        // 3.将数据库中有但是数据集合中没有的，做删除操作
+        Map<Long, WhOdoVasCommand> vasMap = new HashMap<Long, WhOdoVasCommand>();
+        List<WhOdoVas> insertVasList = new ArrayList<WhOdoVas>();
+        List<WhOdoVas> updateVasList = new ArrayList<WhOdoVas>();
+        List<WhOdoVas> delVasList = new ArrayList<WhOdoVas>();
+        if (odoVasList != null && odoVasList.size() > 0) {
+            for (WhOdoVasCommand vc : odoVasList) {
+                if (vc.getId() == null) {
+                    WhOdoVas ov = new WhOdoVas();
+                    BeanUtils.copyProperties(vc, ov);
+                    ov.setVasType(Constants.ODO_VAS_TYPE_EXPRESS);
+                    ov.setOdoId(odoId);
+                    ov.setOdoLineId(odoLineId);
+                    ov.setOuId(ouId);
+                    insertVasList.add(ov);
+                } else {
+                    vasMap.put(vc.getId(), vc);
+                }
+            }
+        }
+        List<WhOdoVas> oldVasList = this.odoVasManager.findOdoVasByOdoIdOdoLineIdType(odoId, odoLineId, Constants.ODO_VAS_TYPE_EXPRESS, ouId);
+
+        if (oldVasList != null && oldVasList.size() > 0) {
+            for (WhOdoVas odoVas : oldVasList) {
+                if (vasMap.containsKey(odoVas.getId())) {
+                    WhOdoVasCommand ovc = vasMap.get(odoVas.getId());
+                    odoVas.setAmt(ovc.getAmt());
+                    odoVas.setModeOfPayment(ovc.getModeOfPayment());
+                    updateVasList.add(odoVas);
+                } else {
+                    delVasList.add(odoVas);
+                }
+            }
+        }
+        this.odoVasManager.saveOdoOuVas(insertVasList, updateVasList, delVasList);
     }
 
 }

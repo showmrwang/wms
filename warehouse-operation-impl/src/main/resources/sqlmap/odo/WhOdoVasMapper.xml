@@ -187,10 +187,9 @@
                 vas_attr2 = #{vasAttr2,javaType=java.lang.String,jdbcType=VARCHAR} ,
                 vas_attr3 = #{vasAttr3,javaType=java.lang.String,jdbcType=VARCHAR} ,
                 vas_attr4 = #{vasAttr4,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                vas_attr5 = #{vasAttr5,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+                vas_attr5 = #{vasAttr5,javaType=java.lang.String,jdbcType=VARCHAR} 
             WHERE 
-                id = #{id} 
+                id = #{id} and ou_id=#{ouId}
         ]]>
     </update>
 

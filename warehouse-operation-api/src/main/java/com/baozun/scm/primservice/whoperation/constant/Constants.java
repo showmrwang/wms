@@ -320,4 +320,8 @@ public final class Constants {
 
     /** 调编码生成器 出库单WMS外部单号分组 */
     public static final String WMS_ODO_EXT = "WMS_ODO_EXT";
+
+    /** 出库单增值服务类型 */
+    public static final String ODO_VAS_TYPE_WH = "WH";
+    public static final String ODO_VAS_TYPE_EXPRESS = "EXPRESS";
 }

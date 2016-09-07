@@ -25,6 +25,9 @@ import lark.common.dao.QueryCondition;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
 
+import org.apache.ibatis.annotations.Param;
+
+import com.baozun.scm.primservice.whoperation.command.odo.WhOdoVasCommand;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoVas;
 
 public interface WhOdoVasDao extends BaseDao<WhOdoVas, Long> {
@@ -41,5 +44,44 @@ public interface WhOdoVasDao extends BaseDao<WhOdoVas, Long> {
 
     @CommonQuery
     int saveOrUpdate(WhOdoVas o);
+
+    /**
+     * [通用方法]查找出库单增值服务
+     * 
+     * @param odoId
+     * @param odoLineId
+     * @param vasType
+     * @param ouId
+     * @return
+     */
+    List<WhOdoVas> findOdoVasByOdoIdOdoLineIdType(@Param("odoId") Long odoId, @Param("odoLineId") Long odoLineId, @Param("vasType") String vasType, @Param("ouId") Long ouId);
+
+    /**
+     * [通用方法]查找出库单仓库增值服务
+     * 
+     * @param odoId
+     * @param odoLineId
+     * @param ouId
+     * @return
+     */
+    List<WhOdoVasCommand> findOdoOuVasCommandByOdoIdOdoLineIdType(@Param("odoId") Long odoId, @Param("odoLineId") Long odoLineId, @Param("ouId") Long ouId);
+
+    /**
+     * [通用方法]删除
+     * 
+     * @param id
+     * @param ouId
+     */
+    void deleteByIdOuId(@Param("id") Long id, @Param("ouId") Long ouId);
+
+    /**
+     * [通用方法]查找出库单快递增值
+     * 
+     * @param odoId
+     * @param odoLineId
+     * @param ouId
+     * @return
+     */
+    List<WhOdoVasCommand> findOdoExpressVasCommandByOdoIdOdoLineId(@Param("odoId") Long odoId, @Param("odoLineId") Long odoLineId, @Param("ouId") Long ouId);
 
 }

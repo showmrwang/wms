@@ -44,6 +44,50 @@ public class WhOdoVasCommand extends BaseCommand {
     /** 仓库组织ID */
     private Long ouId;
 
+    // --------------------------------------------------------
+    // 用户自定义
+    /** 仓库增值服务类型编码 */
+    private String whVasTypeCode;
+    /***/
+    private String whVasTypeText;
+    /***/
+    private String whVasTypeValue;
+    /***/
+    private Long id;
+
+
+    public String getWhVasTypeValue() {
+        return whVasTypeValue;
+    }
+
+    public void setWhVasTypeValue(String whVasTypeValue) {
+        this.whVasTypeValue = whVasTypeValue;
+    }
+
+    public String getWhVasTypeText() {
+        return whVasTypeText;
+    }
+
+    public void setWhVasTypeText(String whVasTypeText) {
+        this.whVasTypeText = whVasTypeText;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getWhVasTypeCode() {
+        return whVasTypeCode;
+    }
+
+    public void setWhVasTypeCode(String whVasTypeCode) {
+        this.whVasTypeCode = whVasTypeCode;
+    }
+
     public Long getOdoId() {
         return odoId;
     }
