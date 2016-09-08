@@ -71,6 +71,10 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public Pagination<OdoResultCommand> findListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params) {
+        String pageOption = (String) params.get("pageOption");
+        if(StringUtils.hasText(pageOption)){
+            page.setSize(Integer.parseInt(pageOption));
+        }
         String ids = this.findOdoMergableIds(params);
         params.put("ids", ids);
         Pagination<OdoResultCommand> list = this.findOdoMergableInfo(page, sorts, params);
