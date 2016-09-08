@@ -242,8 +242,6 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
      */
     private ScanResultCommand splitContainerPutwayScanContainer(ContainerCommand containerCmd,Long ouId,String logId,Long userId){
         log.info("PdaSysSuggestPutwayManagerImpl scanContainerByBox is start"); 
-        //整托上架清除缓存
-        pdaPutawayCacheManager.sysGuidePalletPutawayRemoveAllCache(containerCmd, logId);
         ScanResultCommand srCmd = new ScanResultCommand();  //扫描返回结果
         srCmd.setPutawayPatternType(WhPutawayPatternType.SYS_SUGGEST_PUTAWAY);
         srCmd.setPutawayPatternDetailType(WhPutawayPatternDetailType.PALLET_PUTAWAY);
