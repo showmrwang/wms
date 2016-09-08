@@ -1,13 +1,17 @@
 package com.baozun.scm.primservice.whoperation.manager.pda;
 
 import java.util.List;
+import java.util.Set;
 
+import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdContainerAttrCommand;
+import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdSnCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.sku.skucommand.SkuCommand;
 import com.baozun.scm.primservice.whoperation.command.sku.skucommand.SkuStandardPackingCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine;
 
 public interface PdaContainerRcvdManagerProxy extends BaseManager {
 
@@ -75,5 +79,21 @@ public interface PdaContainerRcvdManagerProxy extends BaseManager {
      * @return
      */
     void completeScanning(WhSkuInventoryCommand command);
+
+    String getAsnSkuCount(Long occupationId, Long skuId);
+
+    Set<String> getLineSet(Long occupationId);
+
+    WhAsnLine getAsnLine(Long occupationId, String lineId);
+
+    List<RcvdSnCacheCommand> getCacheSn(String userId);
+
+    List<RcvdCacheCommand> getRcvdCacheCommandList(String userId);
+
+    void cancelOperation(WhSkuInventoryCommand command, List<RcvdCacheCommand> list, String userId, Long ouId);
+
+    void setCacheSn(String userId, List<RcvdSnCacheCommand> cacheSn);
+
+    void setCache(String userId, List<RcvdCacheCommand> list);
 
 }

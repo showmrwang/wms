@@ -614,10 +614,18 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
         skuCommand.setOuId(ouId);
         skuCommand.setCustomerId(customerId);
         List<SkuCommand> skuList = this.skuDao.findListByParamShared(skuCommand);
-        if (skuList == null || skuList.size() > 1 || 0 == skuList.size()) {
-            throw new BusinessException("找到多个对应的sku");
+        if (null != skuList && !skuList.isEmpty()) {
+            skuList.get(0).setQuantity(1L);
+            return skuList.get(0);
+        } else {
+            skuCommand.setBarCode(null);
+            skuCommand.setBatchBarcode(skuCode);
+            List<SkuCommand> skuBarcodeList = this.skuDao.findListByBarcode(skuCommand);
+            if (null == skuBarcodeList || skuBarcodeList.isEmpty()) {
+                throw new BusinessException("结果为空");
+            }
+            return skuBarcodeList.get(0);
         }
-        return skuList.get(0);
     }
 
     @Override

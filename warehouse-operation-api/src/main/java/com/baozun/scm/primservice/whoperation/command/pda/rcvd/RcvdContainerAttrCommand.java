@@ -39,7 +39,7 @@ public class RcvdContainerAttrCommand extends BaseCommand {
     /** 用户ID */
     private Long userId;
     /** 商品url */
-    private String url;
+    private String skuUrl;
     /** 当前url标记 */
     private Integer currUrl;
     /** 下一个url */
@@ -96,6 +96,8 @@ public class RcvdContainerAttrCommand extends BaseCommand {
     private Integer scanPattern;
     /** 效期 */
     private Integer validDate;
+    /** 多条码数量 */
+    private Integer quantity;
 
 
     public Long getInsideContainerId() {
@@ -210,16 +212,24 @@ public class RcvdContainerAttrCommand extends BaseCommand {
         this.userId = userId;
     }
 
-    public String getUrl() {
-        return url;
-    }
+    /*
+     * public String getUrl() { return url; }
+     * 
+     * public void setUrl(String url) { this.url = url; }
+     */
 
-    public void setUrl(String url) {
-        this.url = url;
-    }
+
 
     public String getNextUrl() {
         return nextUrl;
+    }
+
+    public String getSkuUrl() {
+        return skuUrl;
+    }
+
+    public void setSkuUrl(String skuUrl) {
+        this.skuUrl = skuUrl;
     }
 
     public void setNextUrl(String nextUrl) {
@@ -440,6 +450,14 @@ public class RcvdContainerAttrCommand extends BaseCommand {
 
     public void setValidDate(Integer validDate) {
         this.validDate = validDate;
+    }
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
     }
 
 }
