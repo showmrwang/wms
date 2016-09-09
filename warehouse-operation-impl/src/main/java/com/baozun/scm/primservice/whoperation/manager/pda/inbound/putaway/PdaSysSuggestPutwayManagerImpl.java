@@ -257,7 +257,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
         }
         
         // 验证容器状态是否是待上架
-        if (!containerCmd.getStatus().equals(ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY)) {
+        if (!(containerCmd.getStatus().equals(ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY) || containerCmd.getStatus().equals(ContainerStatus.CONTAINER_STATUS_PUTAWAY))) {
             log.error("container lifecycle is not normal, logId is:[{}]", logId);
             throw new BusinessException(ErrorCodes.COMMON_CONTAINER__NOT_PUTWAY);
         }
@@ -374,7 +374,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
         }
         
         // 验证容器状态是否是待上架
-        if (!containerCmd.getStatus().equals(ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY)) {
+        if (!(containerCmd.getStatus().equals(ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY) || containerCmd.getStatus().equals(ContainerStatus.CONTAINER_STATUS_PUTAWAY))) {
             log.error("container lifecycle is not normal, logId is:[{}]", logId);
             throw new BusinessException(ErrorCodes.COMMON_CONTAINER__NOT_PUTWAY);
         }
@@ -497,7 +497,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
         }
         
         // 验证容器状态是否是待上架
-        if (!containerCmd.getStatus().equals(ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY)) {
+        if (!(containerCmd.getStatus().equals(ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY) || containerCmd.getStatus().equals(ContainerStatus.CONTAINER_STATUS_PUTAWAY))) {
             log.error("container lifecycle is not normal, logId is:[{}]", logId);
             throw new BusinessException(ErrorCodes.COMMON_CONTAINER__NOT_PUTWAY);
         }
