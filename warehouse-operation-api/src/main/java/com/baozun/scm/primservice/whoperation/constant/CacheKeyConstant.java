@@ -24,6 +24,10 @@ public final class CacheKeyConstant {
     public static final String CACHE_STORE_PO_OVERCHARGE = "%CACHE-STORE-PO-OVERCHARGE$";
     public static final String CACHE_WAREHOUSE_ASN_OVERCHARGE = "%CACHE-WAREHOUSE-ASN-OVERCHARGE$";
     public static final String CACHE_WAREHOUSE_PO_OVERCHARGE = "%CACHE-WAREHOUSE-PO-OVERCHARGE$";
+
+    /** SN缓存 asnlineId */
+    public static final String CACHE_ASNLINE_SN = "%CACHE-ASNLINE-SN$";
+
     /** 缓存Key多属性分隔符 */
     public static final String CACHE_KEY_SPLIT = "$";
     // --------------------------------------------------------------------------------------
@@ -56,7 +60,6 @@ public final class CacheKeyConstant {
 
     /** 商品主档信息缓存 前缀+SKUID+OUID */
     public static final String WMS_CACHE_SKU_MASTER = "%WMS-CACHE-SKU-MASTER-";
-
 
     /**
      * 容器对应skuId缓存:根据容器号查询出库存，再根据库存查询该库存对应的有哪些sku_id,然后将sku_id存入缓存中

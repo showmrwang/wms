@@ -360,6 +360,14 @@ public class ErrorCodes {
     public static final int RCVD_CONTAINER_NO_DUPLICATION = 10041;
     /** 未找到对应的出库单！ */
     public static final int NO_ODO_FOUND = 10042;
+    /** 商品管控效期，生产日期、失效日期必填 */
+    public static final int RCVD_SKU_VALIDDATE = 10043;
+    /** 商品管控的效期与输入的生产日期失效日期计算不一致 */
+    public static final int RCVD_SKU_VALIDDATE_DIFFERENT = 10044;
+    /** 输入的商品效期大于商品管控的最大效期天数 */
+    public static final int RCVD_SKU_VALIDDATE_MAX_ERROR = 10045;
+    /** 输入的商品效期小于商品管控的最小效期天数 */
+    public static final int RCVD_SKU_VALIDDATE_MIN_ERROR = 10046;
     // 10001-20000 luyimin
 
 

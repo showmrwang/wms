@@ -27,7 +27,6 @@ import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdSnCacheComman
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
 import com.baozun.scm.primservice.whoperation.command.sku.SkuRedisCommand;
-import com.baozun.scm.primservice.whoperation.command.sku.skucommand.SkuMgmtCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhAsnRcvdLogCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.carton.WhCartonCommand;
@@ -43,6 +42,7 @@ import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.pda.inbound.rcvd.GeneralRcvdManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnLineManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnManager;
+import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnSnManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoLineManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoManager;
 import com.baozun.scm.primservice.whoperation.manager.redis.SkuRedisManager;
@@ -51,6 +51,7 @@ import com.baozun.scm.primservice.whoperation.manager.warehouse.WarehouseManager
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnSn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 import com.baozun.scm.primservice.whoperation.model.sku.Sku;
@@ -99,6 +100,8 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
     private SkuRedisManager skuRedisManager;
     @Autowired
     private PkManager pkManager;
+    @Autowired
+    private AsnSnManager asnSnManager;
 
     /**
      * 扫描ASN时 初始化缓存
@@ -151,6 +154,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                 Map<Long, Integer> skuMap = new HashMap<Long, Integer>();
                 for (WhAsnLine asnline : asnlineList) {// 缓存ASN明细信息
                     // @mender yimin.lu 只缓存非caseLEVEL的明细
+                    // @mender yimin.lu 2016/9/8 SN号缓存
                     WhCartonCommand cartonCommand = new WhCartonCommand();
                     cartonCommand.setAsnId(occupationId);
                     cartonCommand.setOuId(ouId);
@@ -172,6 +176,20 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                         } else {
                             skuMap.put(asnline.getSkuId(), count);
                         }
+                        //缓存Asn的SN号
+                        // @mender yimin.lu 2016/9/8
+                        WhAsnSn sn=new WhAsnSn();
+                        sn.setAsnLineId(asnline.getId());
+                        sn.setSkuId(asnline.getSkuId());
+                        sn.setOuId(ouId);
+                        List<WhAsnSn> snList = this.asnSnManager.findListByParamToShard(sn);
+                        if (snList != null && snList.size() > 0) {
+                            String[] snArray = new String[snList.size()];
+                            for (int i = 0; i < snList.size(); i++) {
+                                snArray[i] = snList.get(i).getSn();
+                            }
+                            this.cacheManager.addSet(CacheKeyConstant.CACHE_ASNLINE_SN + asnline.getId(), snArray);
+                        }
                     }
                 }
                 // Asn商品缓存列表
@@ -181,6 +199,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                     long asnSku = cacheManager.incr(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + cacheAsn.getId() + CacheKeyConstant.CACHE_KEY_SPLIT + skuEntry.getKey());
                     cacheManager.decrBy(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + cacheAsn.getId() + CacheKeyConstant.CACHE_KEY_SPLIT + skuEntry.getKey(), (int) asnSku);
                     cacheManager.incrBy(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + cacheAsn.getId() + CacheKeyConstant.CACHE_KEY_SPLIT + skuEntry.getKey(), skuEntry.getValue());
+
                 }
                 // 缓存ASN头信息
                 cacheManager.setObject(CacheKeyConstant.CACHE_ASN_PREFIX + occupationId, cacheAsn, 24 * 60 * 60);
@@ -1007,14 +1026,14 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
         }
         lineIdListStr = lineIdListStr.substring(0, lineIdListStr.length() - 1);
         if (asnSkuCount < skuPlannedCount) {
-            if (functionRcvd.getIsInvattrDiscrepancyAllowrcvd()) {
+            if (!functionRcvd.getIsInvattrDiscrepancyAllowrcvd()) {
                 throw new BusinessException(ErrorCodes.SKU_OVERCHARGE_ERROR);
             } else {
                 lineIdListStr = lineIdListString;
             }
         }
         if (asnlineSkuCount < skuPlannedCount) {
-            if (functionRcvd.getIsInvattrDiscrepancyAllowrcvd()) {
+            if (!functionRcvd.getIsInvattrDiscrepancyAllowrcvd()) {
                 throw new BusinessException(ErrorCodes.SKU_OVERCHARGE_ERROR);
             } else {
                 lineIdListStr = lineIdListString;
@@ -1046,36 +1065,62 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                     // @mender yimin.lu 2016/6/24 修改日期校验逻辑
                     String lineMfgDateStr = null == line.getMfgDate() ? null : DateUtil.format(line.getMfgDate(), Constants.DATE_PATTERN_YMD);
                     String lineExpDateStr = null == line.getExpDate() ? null : DateUtil.format(line.getExpDate(), Constants.DATE_PATTERN_YMD);
+                    //@mender yimin.lu 2016/6/24
                     String mfgDateStr = command.getMfgDateStr();
+                    if(StringUtils.isEmpty(mfgDateStr)){
+                        throw new BusinessException(ErrorCodes.RCVD_SKU_VALIDDATE);
+                    }
                     String expDateStr = command.getExpDateStr();
+                    if(StringUtils.isEmpty(expDateStr)){
+                        throw new BusinessException(ErrorCodes.RCVD_SKU_VALIDDATE);
+                    }
                     Date mfgDate = null;
                     Date expDate = null;
-                    if (StringUtils.hasText(mfgDateStr)) {
-                        try {
-                            mfgDate = DateUtil.parse(mfgDateStr, Constants.DATE_PATTERN_YMD);
-                        } catch (ParseException e) {
-                            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+                    try {
+                        mfgDate = DateUtil.parse(mfgDateStr, Constants.DATE_PATTERN_YMD);
+                    } catch (ParseException e) {
+                        throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+                    }
+                    try {
+                        expDate = DateUtil.parse(mfgDateStr, Constants.DATE_PATTERN_YMD);
+                    } catch (ParseException e) {
+                        throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+                    }
+                    // 校验效期
+                    if (command.getDayOfValidDate() != null) {
+                        Date expDateAcl = DateUtil.addDays(mfgDate, command.getDayOfValidDate());
+                        String expDateAclStr = DateUtil.format(expDateAcl, Constants.DATE_PATTERN_YMD);
+                        if (!expDateAclStr.equals(expDateStr)) {
+                            throw new BusinessException(ErrorCodes.RCVD_SKU_VALIDDATE_DIFFERENT);
                         }
                     }
-                    if (StringUtils.hasText(expDateStr)) {
-                        try {
-                            expDate = DateUtil.parse(mfgDateStr, Constants.DATE_PATTERN_YMD);
-                        } catch (ParseException e) {
-                            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
-                        }
-                    }
-                    if (null != command.getSkuMgmt()) {
+                    // @mender yimin.lu 2016/9/8
+                    // 校验过期商品以及最大失效日期最小失效日期
+                    SkuRedisCommand sku = this.skuRedisManager.findSkuMasterBySkuId(command.getSkuId(), command.getOuId(), command.getLogId());
+                    if (null != sku && null!=sku.getSkuMgmt()) {
 
-                        SkuMgmtCommand skuMgmt = command.getSkuMgmt();
+                        SkuMgmt skuMgmt = sku.getSkuMgmt();
                         if (null != skuMgmt.getIsExpiredGoodsReceive() && !skuMgmt.getIsExpiredGoodsReceive()) {
-                            if (expDate.after(new Date())) {
+                            if (expDate.before(new Date())) {
                                 throw new BusinessException(ErrorCodes.SKU_EXPIRE_ERROR);
                             }
                         }
-                    }
-                    if (command.getDayOfValidDate() != null) {
+                        if (null == command.getDayOfValidDate()) {
+                            int vd = DateUtil.getInterval(expDate, mfgDate);
+                            if (skuMgmt.getMaxValidDate() != null) {
+                                if (skuMgmt.getMaxValidDate() < vd) {
+                                    throw new BusinessException(ErrorCodes.RCVD_SKU_VALIDDATE_MAX_ERROR);
+                                }
+                            }
+                            if (skuMgmt.getMinValidDate() != null) {
+                                if (skuMgmt.getMinValidDate() > vd) {
+                                    throw new BusinessException(ErrorCodes.RCVD_SKU_VALIDDATE_MIN_ERROR);
+                                }
+                            }
+                        }
 
                     }
+
 
                     if (functionRcvd.getIsLimitUniqueDateOfManufacture() && flag) {
                         if (!mfgDateStr.equals(rcvdContainerCacheCommand.getMfgDate())) {
@@ -1089,9 +1134,8 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                             // throw new BusinessException(ErrorCodes.RCVD_CONTAINER_LIMIT_ERROR);
                         }
                     }
-                    if ((StringUtils.isEmpty(lineMfgDateStr) || lineMfgDateStr.equals(mfgDateStr)) && (StringUtils.isEmpty(lineExpDateStr) || lineExpDateStr.equals(expDateStr))) {
-                        lineList.add(lineId);
-                    }
+                    if ((StringUtils.isEmpty(lineMfgDateStr) || lineMfgDateStr.equals(mfgDateStr)) && (StringUtils.isEmpty(lineExpDateStr) || lineExpDateStr.equals(expDateStr))) {}
+                    lineList.add(lineId);
                     break;
                 case Constants.GENERAL_RECEIVING_ISBATCHNO:
                     if (functionRcvd.getIsLimitUniqueBatch() && flag) {
@@ -1198,8 +1242,23 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
 
                     break;
                 case Constants.GENERAL_RECEIVING_ISSERIALNUMBER:
-                    // TODO 根据序列号确认lineList
-                    lineList.add(lineId);
+                    // @mender yimin.lu 2016/9/8
+                    String sn = command.getSn().getSn();
+                    if (this.cacheManager.existsInSet(CacheKeyConstant.CACHE_ASNLINE_SN + lineId, sn)) {
+                        List<RcvdSnCacheCommand> cacheSn = this.cacheManager.getObject(CacheKeyConstant.CACHE_RCVD_SN_PREFIX + command.getUserId());
+                        if (cacheSn != null && cacheSn.size() > 0) {
+                            boolean snflag = true;
+                            for (int i = 0; i < cacheSn.size(); i++) {
+                                if (sn.equals(cacheSn.get(i).getSn())) {
+                                    snflag = false;
+                                    break;
+                                }
+                            }
+                            if (snflag) {
+                                lineList.add(lineId);
+                            }
+                        }
+                    }
                     break;
 
             }
@@ -1215,8 +1274,11 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
         }
         RcvdSnCacheCommand rcvdSn = command.getSn();
         rcvdSn.setDefectSource(command.getSnSource());
-        if (null != command.getSkuMgmt()) {
-            SkuMgmtCommand skuMgmt = command.getSkuMgmt();
+        // @mender yimin.lu 2016/9/8
+        SkuRedisCommand sku = this.skuRedisManager.findSkuMasterBySkuId(command.getSkuId(), command.getOuId(), command.getLogId());
+        if (null != sku && null != sku.getSkuMgmt()) {
+
+            SkuMgmt skuMgmt = sku.getSkuMgmt();
             rcvdSn.setSerialNumberType(skuMgmt.getSerialNumberType());
         }
         for (int i = 0; i < snCount; i++) {
@@ -1588,6 +1650,13 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
         // 下面这个IF-ELSE逻辑：
         // 如果没有缓存数据，则初始化缓存
         // 如果有的话，则刷新缓存
+        // this.cacheManager.remove(CacheKeyConstant.CACHE_ASN_PREFIX + occupationId);
+        // try {
+        // Thread.sleep(1000);
+        // } catch (InterruptedException e) {
+        // // TODO Auto-generated catch block
+        // e.printStackTrace();
+        // }
         WhAsn cacheAsn = cacheManager.getObject(CacheKeyConstant.CACHE_ASN_PREFIX + occupationId);
         log.info(this.getClass().getSimpleName() + "initOrFreshCacheForScanningAsn PARAM:[cahceAsn:{}]", cacheAsn);
         if (null == cacheAsn) {
@@ -1774,7 +1843,6 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                 if (StringUtils.hasText(asnSkuCount)) {
                     skuId = entry.getKey();
                     quantity = entry.getValue();
-                    break;
                 }
 
             }
@@ -1794,11 +1862,12 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
 
             String optList = this.getOptMapStr(sku);
             command.setSkuUrl(optList);
+            // @mender yimin.lu 缓存商品辅助表信息，不需要再进行效期的计算
+            // 缓存商品辅助表信息
+            // @mender yimin.lu 2016/9/8
+            
             // @mender yimin.lu 2016/6/24 效期
             if (null != sku.getSkuMgmt()) {
-                SkuMgmtCommand skuMgmt = new SkuMgmtCommand();
-                BeanUtils.copyProperties(sku.getSkuMgmt(), skuMgmt);
-                command.setSkuMgmt(skuMgmt);
                 if (null != sku.getSkuMgmt().getValidDate()) {
                     int day = sku.getSkuMgmt().getValidDate();
                     if (Constants.TIME_UOM_YEAR.equals(sku.getSkuMgmt().getGoodShelfLifeUnit())) {

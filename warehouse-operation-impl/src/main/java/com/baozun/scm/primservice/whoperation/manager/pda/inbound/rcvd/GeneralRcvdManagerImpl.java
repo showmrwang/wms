@@ -814,6 +814,12 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public SkuMgmt findSkuMgmtBySkuIdOuId(Long skuId, Long ouId) {
+        return skuMgmtDao.findSkuMgmtBySkuIdShared(skuId, ouId);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<WhCartonCommand> findWhCartonByParamExt(WhCartonCommand cartonCommand) {
         return this.whCartonDao.findWhCartonByParamExt(cartonCommand);
     }

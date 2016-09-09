@@ -19,7 +19,6 @@ import java.util.List;
 
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdSnCacheCommand;
-import com.baozun.scm.primservice.whoperation.command.sku.skucommand.SkuMgmtCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ShelveRecommendRuleCommand;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionRcvd;
 
@@ -139,8 +138,6 @@ public class WhSkuInventoryCommand extends BaseCommand {
     private Date lastModifyTime;
 
     // 用于通用收货的流程-------------------------------------------------------------------------------------
-    /** 通用收货商品管控属性 */
-    private SkuMgmtCommand skuMgmt;
     /** 通用收货所选择的功能 */
     private WhFunctionRcvd rcvd;
     /** 通用收货功能菜单Index */
@@ -173,6 +170,7 @@ public class WhSkuInventoryCommand extends BaseCommand {
     private Integer snAddUpCount;
 
     /** 效期天数 */
+    @Deprecated
     private Integer dayOfValidDate;
     /** 残次来源 */
     private String snSource;
@@ -814,16 +812,6 @@ public class WhSkuInventoryCommand extends BaseCommand {
 
     public void setAsnSkuCount(Long asnSkuCount) {
         this.asnSkuCount = asnSkuCount;
-    }
-
-
-
-    public SkuMgmtCommand getSkuMgmt() {
-        return skuMgmt;
-    }
-
-    public void setSkuMgmt(SkuMgmtCommand skuMgmt) {
-        this.skuMgmt = skuMgmt;
     }
 
     public String getSerialNumberType() {
