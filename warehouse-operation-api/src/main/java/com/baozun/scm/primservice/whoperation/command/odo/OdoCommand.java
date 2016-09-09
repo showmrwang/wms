@@ -27,8 +27,6 @@ public class OdoCommand extends BaseCommand {
     private Integer priorityLevel;
     /** 是否整单出库0：否 1：是 */
     private Boolean isWholeOrderOutbound;
-    /** 部分出库策略 */
-    private String partOutboundStrategy;
     /** 越库标志 */
     private String crossDockingSymbol;
     /** 订单平台类型 */
@@ -193,14 +191,6 @@ public class OdoCommand extends BaseCommand {
 
     public void setIsWholeOrderOutbound(Boolean isWholeOrderOutbound) {
         this.isWholeOrderOutbound = isWholeOrderOutbound;
-    }
-
-    public String getPartOutboundStrategy() {
-        return partOutboundStrategy;
-    }
-
-    public void setPartOutboundStrategy(String partOutboundStrategy) {
-        this.partOutboundStrategy = partOutboundStrategy;
     }
 
     public String getCrossDockingSymbol() {

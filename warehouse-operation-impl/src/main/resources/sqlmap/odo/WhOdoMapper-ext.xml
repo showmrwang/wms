@@ -31,7 +31,6 @@
 	        	original_odo_code as originalOdoCode,
 	        	priority_level as priorityLevel,
 	        	is_whole_order_outbound as isWholeOrderOutbound,
-	        	part_outbound_strategy as partOutboundStrategy,
 	        	cross_docking_symbol as crossDockingSymbol,
 	        	order_type as orderType,
 	        	order_time as orderTime,
@@ -121,11 +120,6 @@
 
 			<if test="isWholeOrderOutbound!=null">
 				and is_whole_order_outbound = #{isWholeOrderOutbound}
-			</if>
-
-
-			<if test="partOutboundStrategy!=null and partOutboundStrategy!=''">
-				and part_outbound_strategy = #{partOutboundStrategy}
 			</if>
 
 
@@ -574,11 +568,7 @@
 		odo.odo_code as odoCode,
 		odo.ext_code as extCode,
 		odo.priority_level as priorityLevel,
-		odo.is_whole_order_outbound as
-		isWholeOrderOutbound,
-
-		odo.part_outbound_strategy as
-		partOutboundStrategy,
+		odo.is_whole_order_outbound as isWholeOrderOutbound,
 
 		odo.cross_docking_symbol as crossDockingSysmbol,
 
@@ -588,8 +578,7 @@
 		DATE_FORMAT(odo.order_time,'%Y-%m-%d') as
 		orderTime,
 		odo.sku_number_of_packages AS skuNumberOfPackages,
-		odo.amt as
-		amt,
+		odo.amt as amt,
 		transmgmt.transport_service_provider as transportServiceProvider,
 		transprovider.name as transportServiceProviderName,
 		transmgmt.mode_of_transport as modeOfTransport,
@@ -719,7 +708,6 @@
 			        original_odo_code = #{originalOdoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        priority_level = #{priorityLevel,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 			        is_whole_order_outbound = #{isWholeOrderOutbound,javaType=java.lang.Boolean,jdbcType=BIT} ,
-			        part_outbound_strategy = #{partOutboundStrategy,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        cross_docking_symbol = #{crossDockingSymbol,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        order_type = #{orderType,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        order_time = #{orderTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
@@ -748,8 +736,7 @@
         ]]>
 		<where>
 			id = #{id} and ou_id=#{ouId}
-			and last_modify_time =
-			#{lastModifyTime}
+			and last_modify_time = #{lastModifyTime}
 		</where>
 	</update>
 
