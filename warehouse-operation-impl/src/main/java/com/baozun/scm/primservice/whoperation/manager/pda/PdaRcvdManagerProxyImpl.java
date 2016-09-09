@@ -1255,7 +1255,11 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                             }
                             if (snflag) {
                                 lineList.add(lineId);
+                            } else {
+                                throw new BusinessException(ErrorCodes.RCVD_SN_DUP_ERROR);
                             }
+                        } else {
+                            lineList.add(lineId);
                         }
                     } else {
                         if (this.cacheManager.existsInSet(CacheKeyConstant.CACHE_ASNLINE_SN + lineId, sn)) {
@@ -1270,8 +1274,14 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                                 }
                                 if (snflag) {
                                     lineList.add(lineId);
+                                } else {
+                                    throw new BusinessException(ErrorCodes.RCVD_SN_DUP_ERROR);
                                 }
+                            } else {
+                                lineList.add(lineId);
                             }
+                        } else {
+                            throw new BusinessException(ErrorCodes.RCVD_SN_NO_EXISTS_ERROR);
                         }
                     }
                     break;
@@ -1795,7 +1805,6 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
             command.setQuantity(quantity);
             command.setSkuId(skuId);
             // 校验扫描的商品是否在缓存中，如果不在，推出错误
-            // TODO 理论上需要调用ASN数据，查看是否存在此商品，存在，则刷新缓存，不存在，则推出错误
             // 校验商品数量是否超过超收数量，此处不校验，放到匹配明细逻辑校验
 
             String optList = RcvdWorkFlow.getOptMapStr(sku);

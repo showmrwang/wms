@@ -368,6 +368,10 @@ public class ErrorCodes {
     public static final int RCVD_SKU_VALIDDATE_MAX_ERROR = 10045;
     /** 输入的商品效期小于商品管控的最小效期天数 */
     public static final int RCVD_SKU_VALIDDATE_MIN_ERROR = 10046;
+    /** 输入的商品序列号重复 */
+    public static final int RCVD_SN_DUP_ERROR = 10047;
+    /** 输入的商品序列号不存在 */
+    public static final int RCVD_SN_NO_EXISTS_ERROR = 10048;
     // 10001-20000 luyimin
 
 
