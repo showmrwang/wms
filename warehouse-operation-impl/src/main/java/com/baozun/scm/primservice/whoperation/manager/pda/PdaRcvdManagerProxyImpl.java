@@ -24,6 +24,7 @@ import com.baozun.scm.baseservice.sac.manager.PkManager;
 import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdContainerCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdSnCacheCommand;
+import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdWorkFlow;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
 import com.baozun.scm.primservice.whoperation.command.sku.SkuRedisCommand;
@@ -55,7 +56,6 @@ import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnSn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 import com.baozun.scm.primservice.whoperation.model.sku.Sku;
-import com.baozun.scm.primservice.whoperation.model.sku.SkuExtattr;
 import com.baozun.scm.primservice.whoperation.model.sku.SkuMgmt;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
@@ -846,13 +846,13 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
         }
         // @mender yimin.lu 2016/6/22添加逻辑：当功能菜单上指定了库存状态和类型之后
         // 1.库存状态
-        if (command.getSkuUrl().charAt(Constants.GENERAL_RECEIVING_ISINVSTATUS) == '1' && command.getInvStatus() != null) {
-            lineIdListStr = this.getMatchedLineIdStrForSkuAttr(Constants.GENERAL_RECEIVING_ISINVSTATUS, command, lineIdListStr);
+        if (command.getSkuUrl().charAt(RcvdWorkFlow.GENERAL_RECEIVING_ISINVSTATUS) == '1' && command.getInvStatus() != null) {
+            lineIdListStr = this.getMatchedLineIdStrForSkuAttr(RcvdWorkFlow.GENERAL_RECEIVING_ISINVSTATUS, command, lineIdListStr);
         }
         // 2.库存类型
         // 如果库存类型为管控的属性的时候
-        if (command.getSkuUrl().charAt(Constants.GENERAL_RECEIVING_ISINVTYPE) == '1' && StringUtils.hasText(command.getInvType())) {
-            lineIdListStr = this.getMatchedLineIdStrForSkuAttr(Constants.GENERAL_RECEIVING_ISINVSTATUS, command, lineIdListStr);
+        if (command.getSkuUrl().charAt(RcvdWorkFlow.GENERAL_RECEIVING_ISINVTYPE) == '1' && StringUtils.hasText(command.getInvType())) {
+            lineIdListStr = this.getMatchedLineIdStrForSkuAttr(RcvdWorkFlow.GENERAL_RECEIVING_ISINVSTATUS, command, lineIdListStr);
         }
         return lineIdListStr;
     }
@@ -1061,7 +1061,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
         for (String lineId : lineIdArray) {
             WhAsnLine line = this.cacheManager.getMapObject(CacheKeyConstant.CACHE_ASNLINE_PREFIX + command.getOccupationId(), lineId + "");
             switch (operator) {
-                case Constants.GENERAL_RECEIVING_ISVALID:
+                case RcvdWorkFlow.GENERAL_RECEIVING_ISVALID:
                     // @mender yimin.lu 2016/6/24 修改日期校验逻辑
                     String lineMfgDateStr = null == line.getMfgDate() ? null : DateUtil.format(line.getMfgDate(), Constants.DATE_PATTERN_YMD);
                     String lineExpDateStr = null == line.getExpDate() ? null : DateUtil.format(line.getExpDate(), Constants.DATE_PATTERN_YMD);
@@ -1082,7 +1082,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                         throw new BusinessException(ErrorCodes.PARAMS_ERROR);
                     }
                     try {
-                        expDate = DateUtil.parse(mfgDateStr, Constants.DATE_PATTERN_YMD);
+                        expDate = DateUtil.parse(expDateStr, Constants.DATE_PATTERN_YMD);
                     } catch (ParseException e) {
                         throw new BusinessException(ErrorCodes.PARAMS_ERROR);
                     }
@@ -1105,17 +1105,15 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                                 throw new BusinessException(ErrorCodes.SKU_EXPIRE_ERROR);
                             }
                         }
-                        if (null == command.getDayOfValidDate()) {
-                            int vd = DateUtil.getInterval(expDate, mfgDate);
-                            if (skuMgmt.getMaxValidDate() != null) {
-                                if (skuMgmt.getMaxValidDate() < vd) {
-                                    throw new BusinessException(ErrorCodes.RCVD_SKU_VALIDDATE_MAX_ERROR);
-                                }
+                        int vd = DateUtil.getInterval(expDate, new Date());
+                        if (skuMgmt.getMaxValidDate() != null) {
+                            if (skuMgmt.getMaxValidDate() < vd) {
+                                throw new BusinessException(ErrorCodes.RCVD_SKU_VALIDDATE_MAX_ERROR);
                             }
-                            if (skuMgmt.getMinValidDate() != null) {
-                                if (skuMgmt.getMinValidDate() > vd) {
-                                    throw new BusinessException(ErrorCodes.RCVD_SKU_VALIDDATE_MIN_ERROR);
-                                }
+                        }
+                        if (skuMgmt.getMinValidDate() != null) {
+                            if (skuMgmt.getMinValidDate() > vd) {
+                                throw new BusinessException(ErrorCodes.RCVD_SKU_VALIDDATE_MIN_ERROR);
                             }
                         }
 
@@ -1137,7 +1135,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                     if ((StringUtils.isEmpty(lineMfgDateStr) || lineMfgDateStr.equals(mfgDateStr)) && (StringUtils.isEmpty(lineExpDateStr) || lineExpDateStr.equals(expDateStr))) {}
                     lineList.add(lineId);
                     break;
-                case Constants.GENERAL_RECEIVING_ISBATCHNO:
+                case RcvdWorkFlow.GENERAL_RECEIVING_ISBATCHNO:
                     if (functionRcvd.getIsLimitUniqueBatch() && flag) {
                         if (!command.getBatchNumber().equals(rcvdContainerCacheCommand.getBatchNumber())) {
                             break;
@@ -1148,7 +1146,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                         lineList.add(lineId);
                     }
                     break;
-                case Constants.GENERAL_RECEIVING_ISCOUNTRYOFORIGIN:
+                case RcvdWorkFlow.GENERAL_RECEIVING_ISCOUNTRYOFORIGIN:
                     if (functionRcvd.getIsLimitUniquePlaceoforigin() && flag) {
                         if (!command.getCountryOfOrigin().equals(rcvdContainerCacheCommand.getCountryOfOrigin())) {
                             break;
@@ -1159,7 +1157,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                         lineList.add(lineId);
                     }
                     break;
-                case Constants.GENERAL_RECEIVING_ISINVTYPE:
+                case RcvdWorkFlow.GENERAL_RECEIVING_ISINVTYPE:
                     if (functionRcvd.getIsLimitUniqueInvType() && flag) {
                         if (!command.getInvType().equals(rcvdContainerCacheCommand.getInvType())) {
                             break;
@@ -1170,7 +1168,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                         lineList.add(lineId);
                     }
                     break;
-                case Constants.GENERAL_RECEIVING_INVATTR1:
+                case RcvdWorkFlow.GENERAL_RECEIVING_INVATTR1:
                     if (functionRcvd.getIsLimitUniqueInvAttr1() && flag) {
                         if (!command.getInvAttr1().equals(rcvdContainerCacheCommand.getInvAttr1())) {
                             break;
@@ -1181,7 +1179,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                         lineList.add(lineId);
                     }
                     break;
-                case Constants.GENERAL_RECEIVING_INVATTR2:
+                case RcvdWorkFlow.GENERAL_RECEIVING_INVATTR2:
                     if (functionRcvd.getIsLimitUniqueInvAttr2() && flag) {
                         if (!command.getInvAttr2().equals(rcvdContainerCacheCommand.getInvAttr2())) {
                             break;
@@ -1192,7 +1190,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                         lineList.add(lineId);
                     }
                     break;
-                case Constants.GENERAL_RECEIVING_INVATTR3:
+                case RcvdWorkFlow.GENERAL_RECEIVING_INVATTR3:
                     if (functionRcvd.getIsLimitUniqueInvAttr3() && flag) {
                         if (!command.getInvAttr3().equals(rcvdContainerCacheCommand.getInvAttr3())) {
                             break;
@@ -1203,7 +1201,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                         lineList.add(lineId);
                     }
                     break;
-                case Constants.GENERAL_RECEIVING_INVATTR4:
+                case RcvdWorkFlow.GENERAL_RECEIVING_INVATTR4:
                     if (functionRcvd.getIsLimitUniqueInvAttr4() && flag) {
                         if (!command.getInvAttr4().equals(rcvdContainerCacheCommand.getInvAttr4())) {
                             break;
@@ -1215,7 +1213,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                     }
                     break;
 
-                case Constants.GENERAL_RECEIVING_INVATTR5:
+                case RcvdWorkFlow.GENERAL_RECEIVING_INVATTR5:
                     if (functionRcvd.getIsLimitUniqueInvAttr5() && flag) {
                         if (!command.getInvAttr5().equals(rcvdContainerCacheCommand.getInvAttr5())) {
                             break;
@@ -1226,7 +1224,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                         lineList.add(lineId);
                     }
                     break;
-                case Constants.GENERAL_RECEIVING_ISINVSTATUS:
+                case RcvdWorkFlow.GENERAL_RECEIVING_ISINVSTATUS:
                     if (functionRcvd.getIsLimitUniqueInvStatus() && flag) {
                         if (!command.getInvStatus().toString().equals(rcvdContainerCacheCommand.getInvStatus())) {
                             break;
@@ -1237,14 +1235,15 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                         lineList.add(lineId);
                     }
                     break;
-                case Constants.GENERAL_RECEIVING_ISDEFEAT:
+                case RcvdWorkFlow.GENERAL_RECEIVING_ISDEFEAT:
                     lineList.add(lineId);
 
                     break;
-                case Constants.GENERAL_RECEIVING_ISSERIALNUMBER:
-                    // @mender yimin.lu 2016/9/8
+                case RcvdWorkFlow.GENERAL_RECEIVING_ISSERIALNUMBER:
+                    // @mender yimin.lu 2016/9/8 添加SN校验;
                     String sn = command.getSn().getSn();
-                    if (this.cacheManager.existsInSet(CacheKeyConstant.CACHE_ASNLINE_SN + lineId, sn)) {
+                    long count = this.cacheManager.findSetCount(CacheKeyConstant.CACHE_ASNLINE_SN + lineId);
+                    if (count == 0) {
                         List<RcvdSnCacheCommand> cacheSn = this.cacheManager.getObject(CacheKeyConstant.CACHE_RCVD_SN_PREFIX + command.getUserId());
                         if (cacheSn != null && cacheSn.size() > 0) {
                             boolean snflag = true;
@@ -1256,6 +1255,22 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                             }
                             if (snflag) {
                                 lineList.add(lineId);
+                            }
+                        }
+                    } else {
+                        if (this.cacheManager.existsInSet(CacheKeyConstant.CACHE_ASNLINE_SN + lineId, sn)) {
+                            List<RcvdSnCacheCommand> cacheSn = this.cacheManager.getObject(CacheKeyConstant.CACHE_RCVD_SN_PREFIX + command.getUserId());
+                            if (cacheSn != null && cacheSn.size() > 0) {
+                                boolean snflag = true;
+                                for (int i = 0; i < cacheSn.size(); i++) {
+                                    if (sn.equals(cacheSn.get(i).getSn())) {
+                                        snflag = false;
+                                        break;
+                                    }
+                                }
+                                if (snflag) {
+                                    lineList.add(lineId);
+                                }
                             }
                         }
                     }
@@ -1503,7 +1518,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
         // 10:残次品类型及残次原因
         // 11:是否管理序列号
         if (isInvattrAsnPointoutUser) {
-            if (Constants.GENERAL_RECEIVING_ISVALID == nextOpt) {
+            if (RcvdWorkFlow.GENERAL_RECEIVING_ISVALID == nextOpt) {
                 if (null != line.getExpDate()) {
                     command.setExpDateStr(DateUtil.format(line.getExpDate(), Constants.DATE_PATTERN_YMD));
                 }
@@ -1511,121 +1526,44 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                     command.setMfgDateStr(DateUtil.format(line.getMfgDate(), Constants.DATE_PATTERN_YMD));
                 }
             }
-            if (Constants.GENERAL_RECEIVING_ISBATCHNO == nextOpt) {
+            if (RcvdWorkFlow.GENERAL_RECEIVING_ISBATCHNO == nextOpt) {
                 command.setBatchNumber(line.getBatchNo());
             }
-            if (Constants.GENERAL_RECEIVING_ISCOUNTRYOFORIGIN == nextOpt) {
+            if (RcvdWorkFlow.GENERAL_RECEIVING_ISCOUNTRYOFORIGIN == nextOpt) {
                 command.setCountryOfOrigin(line.getCountryOfOrigin());
             }
-            if (Constants.GENERAL_RECEIVING_ISINVTYPE == nextOpt) {
+            if (RcvdWorkFlow.GENERAL_RECEIVING_ISINVTYPE == nextOpt) {
                 command.setInvType(line.getInvType());
             }
-            if (Constants.GENERAL_RECEIVING_INVATTR1 == nextOpt) {
+            if (RcvdWorkFlow.GENERAL_RECEIVING_INVATTR1 == nextOpt) {
                 if (null == line.getInvAttr1()) {
                     command.setInvAttr1(line.getInvAttr1());
                 }
             }
-            if (Constants.GENERAL_RECEIVING_INVATTR2 == nextOpt) {
+            if (RcvdWorkFlow.GENERAL_RECEIVING_INVATTR2 == nextOpt) {
                 command.setInvAttr2(line.getInvAttr2());
             }
-            if (Constants.GENERAL_RECEIVING_INVATTR3 == nextOpt) {
+            if (RcvdWorkFlow.GENERAL_RECEIVING_INVATTR3 == nextOpt) {
                 command.setInvAttr3(line.getInvAttr3());
             }
-            if (Constants.GENERAL_RECEIVING_INVATTR4 == nextOpt) {
+            if (RcvdWorkFlow.GENERAL_RECEIVING_INVATTR4 == nextOpt) {
                 command.setInvAttr4(line.getInvAttr4());
             }
-            if (Constants.GENERAL_RECEIVING_INVATTR5 == nextOpt) {
+            if (RcvdWorkFlow.GENERAL_RECEIVING_INVATTR5 == nextOpt) {
                 command.setInvAttr5(line.getInvAttr5());
             }
-            if (Constants.GENERAL_RECEIVING_ISINVSTATUS == nextOpt) {
+            if (RcvdWorkFlow.GENERAL_RECEIVING_ISINVSTATUS == nextOpt) {
                 command.setInvStatus(line.getInvStatus());
             }
-            if (Constants.GENERAL_RECEIVING_ISDEFEAT == nextOpt) {
+            if (RcvdWorkFlow.GENERAL_RECEIVING_ISDEFEAT == nextOpt) {
 
             }
-            if (Constants.GENERAL_RECEIVING_ISSERIALNUMBER == nextOpt) {}// 序列号不用提示
+            if (RcvdWorkFlow.GENERAL_RECEIVING_ISSERIALNUMBER == nextOpt) {}// 序列号不用提示
         }
         return command;
     }
 
-    @Override
-    public Integer getNextSkuAttrOperatorForScanning(WhSkuInventoryCommand command) {
-        char[] optCharArray = this.getOptMapList(command.getSkuUrl());
-        Integer nextOpt = this.getNextOperator(command.getSkuUrlOperator(), optCharArray);
-        if (Constants.GENERAL_RECEIVING_ISINVSTATUS == command.getSkuUrlOperator() && !(Constants.INVENTORY_STATUS_DEFEATSALE == command.getInvStatus() || Constants.INVENTORY_STATUS_DEFEATNOTSALE == command.getInvStatus())) {
-            nextOpt = this.getNextOperator(nextOpt, optCharArray);
-        }
-        if (Constants.GENERAL_RECEIVING_END == nextOpt) {
-            nextOpt = command.getSkuUrlOperator();
-        }
-        return nextOpt;
-    }
 
-    private char[] getOptMapList(String skuUrl) {
-        return skuUrl.toCharArray();
-    }
-
-    /**
-     * 获取下一个
-     * 
-     * @param operator
-     * @param optMapList
-     * @return
-     */
-    private Integer getNextOperator(Integer operator, char[] optMapList) {
-        operator = null == operator ? Constants.GENERAL_RECEIVING_START : operator;
-        int nextOpt = operatorCursor(operator);
-        if (nextOpt == Constants.GENERAL_RECEIVING_START || Constants.GENERAL_RECEIVING_END == nextOpt || '1' == optMapList[nextOpt]) {
-            return nextOpt;
-        }
-        return getNextOperator(nextOpt, optMapList);
-    }
-
-    private int operatorCursor(int operator) {
-        int nextCursor = Constants.GENERAL_RECEIVING_START;
-        switch (operator) {
-            case Constants.GENERAL_RECEIVING_START:
-                nextCursor = Constants.GENERAL_RECEIVING_ISVALID;
-                break;
-            case Constants.GENERAL_RECEIVING_ISVALID:
-                nextCursor = Constants.GENERAL_RECEIVING_ISBATCHNO;
-                break;
-            case Constants.GENERAL_RECEIVING_ISBATCHNO:
-                nextCursor = Constants.GENERAL_RECEIVING_ISCOUNTRYOFORIGIN;
-                break;
-            case Constants.GENERAL_RECEIVING_ISCOUNTRYOFORIGIN:
-                nextCursor = Constants.GENERAL_RECEIVING_ISINVTYPE;
-                break;
-            case Constants.GENERAL_RECEIVING_ISINVTYPE:
-                nextCursor = Constants.GENERAL_RECEIVING_INVATTR1;
-                break;
-            case Constants.GENERAL_RECEIVING_INVATTR1:
-                nextCursor = Constants.GENERAL_RECEIVING_INVATTR2;
-                break;
-            case Constants.GENERAL_RECEIVING_INVATTR2:
-                nextCursor = Constants.GENERAL_RECEIVING_INVATTR3;
-                break;
-            case Constants.GENERAL_RECEIVING_INVATTR3:
-                nextCursor = Constants.GENERAL_RECEIVING_INVATTR4;
-                break;
-            case Constants.GENERAL_RECEIVING_INVATTR4:
-                nextCursor = Constants.GENERAL_RECEIVING_INVATTR5;
-                break;
-            case Constants.GENERAL_RECEIVING_INVATTR5:
-                nextCursor = Constants.GENERAL_RECEIVING_ISINVSTATUS;
-                break;
-            case Constants.GENERAL_RECEIVING_ISINVSTATUS:
-                nextCursor = Constants.GENERAL_RECEIVING_ISDEFEAT;
-                break;
-            case Constants.GENERAL_RECEIVING_ISDEFEAT:
-                nextCursor = Constants.GENERAL_RECEIVING_ISSERIALNUMBER;
-                break;
-            case Constants.GENERAL_RECEIVING_ISSERIALNUMBER:
-                nextCursor = Constants.GENERAL_RECEIVING_END;
-                break;
-        }
-        return nextCursor;
-    }
 
     @Override
     public void initOrFreshCacheForScanningAsn(WhSkuInventoryCommand command) {
@@ -1860,7 +1798,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
             // TODO 理论上需要调用ASN数据，查看是否存在此商品，存在，则刷新缓存，不存在，则推出错误
             // 校验商品数量是否超过超收数量，此处不校验，放到匹配明细逻辑校验
 
-            String optList = this.getOptMapStr(sku);
+            String optList = RcvdWorkFlow.getOptMapStr(sku);
             command.setSkuUrl(optList);
             // @mender yimin.lu 缓存商品辅助表信息，不需要再进行效期的计算
             // 缓存商品辅助表信息
@@ -1881,86 +1819,6 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
             }
         }
         return command;
-    }
-
-    /**
-     * 生成扫描商品的指针列表
-     * 
-     * @param sku
-     * @return
-     */
-    private String getOptMapStr(SkuRedisCommand sku) {
-        // 指针列表：
-        // 0：是否管理效期
-        // 1:是否管理批次号
-        // 2:是否管理原产地
-        // 3:是否管理库存类型
-        // 4:是否管理库存属性1
-        // 5:是否管理库存属性2
-        // 6:是否管理库存属性3
-        // 7:是否管理库存属性4
-        // 8:是否管理库存属性5
-        // 9:是否管理库存状态
-        // 10:残次品类型及残次原因
-        // 11:是否管理序列号
-        char[] list = new char[12];
-        SkuMgmt mgt = sku.getSkuMgmt();
-        list[Constants.GENERAL_RECEIVING_ISINVSTATUS] = '1';
-        list[Constants.GENERAL_RECEIVING_ISDEFEAT] = '1';
-        if (mgt != null) {
-            list[Constants.GENERAL_RECEIVING_ISVALID] = null != mgt.getIsValid() && mgt.getIsValid() ? '1' : '0';
-            list[Constants.GENERAL_RECEIVING_ISBATCHNO] = null != mgt.getIsBatchNo() && mgt.getIsBatchNo() ? '1' : '0';
-            list[Constants.GENERAL_RECEIVING_ISCOUNTRYOFORIGIN] = null != mgt.getIsCountryOfOrigin() && mgt.getIsCountryOfOrigin() ? '1' : '0';
-            list[Constants.GENERAL_RECEIVING_ISINVTYPE] = null != mgt.getIsInvType() && mgt.getIsInvType() ? '1' : '0';
-            if (null == mgt.getSerialNumberType() || Constants.SERIAL_NUMBER_TYPE_OUT.equals(mgt.getSerialNumberType()) || Constants.SERIAL_NUMBER_TYPE_ALL_NOT.equals(mgt.getSerialNumberType())) {
-                list[Constants.GENERAL_RECEIVING_ISSERIALNUMBER] = '0';
-            } else {
-                list[Constants.GENERAL_RECEIVING_ISSERIALNUMBER] = '1';
-
-            }
-
-        } else {
-            list[Constants.GENERAL_RECEIVING_ISVALID] = '0';
-            list[Constants.GENERAL_RECEIVING_ISBATCHNO] = '0';
-            list[Constants.GENERAL_RECEIVING_ISCOUNTRYOFORIGIN] = '0';
-            list[Constants.GENERAL_RECEIVING_ISINVTYPE] = '0';
-            list[Constants.GENERAL_RECEIVING_ISSERIALNUMBER] = '0';
-        }
-        SkuExtattr attr = sku.getSkuExtattr();
-        if (attr != null) {
-            if (null == attr.getInvAttr1()) {
-                list[Constants.GENERAL_RECEIVING_INVATTR1] = '0';
-            } else {
-                list[Constants.GENERAL_RECEIVING_INVATTR1] = attr.getInvAttr1() ? '1' : '0';
-            }
-            if (null == attr.getInvAttr2()) {
-                list[Constants.GENERAL_RECEIVING_INVATTR2] = '0';
-            } else {
-                list[Constants.GENERAL_RECEIVING_INVATTR2] = attr.getInvAttr1() ? '1' : '0';
-            }
-            if (null == attr.getInvAttr3()) {
-                list[Constants.GENERAL_RECEIVING_INVATTR3] = '0';
-            } else {
-                list[Constants.GENERAL_RECEIVING_INVATTR3] = attr.getInvAttr1() ? '1' : '0';
-            }
-            if (null == attr.getInvAttr4()) {
-                list[Constants.GENERAL_RECEIVING_INVATTR4] = '0';
-            } else {
-                list[Constants.GENERAL_RECEIVING_INVATTR4] = attr.getInvAttr1() ? '1' : '0';
-            }
-            if (null == attr.getInvAttr5()) {
-                list[Constants.GENERAL_RECEIVING_INVATTR5] = '0';
-            } else {
-                list[Constants.GENERAL_RECEIVING_INVATTR5] = attr.getInvAttr1() ? '1' : '0';
-            }
-        } else {
-            list[Constants.GENERAL_RECEIVING_INVATTR1] = '0';
-            list[Constants.GENERAL_RECEIVING_INVATTR2] = '0';
-            list[Constants.GENERAL_RECEIVING_INVATTR3] = '0';
-            list[Constants.GENERAL_RECEIVING_INVATTR4] = '0';
-            list[Constants.GENERAL_RECEIVING_INVATTR5] = '0';
-        }
-        return String.copyValueOf(list);
     }
 
     @Override
