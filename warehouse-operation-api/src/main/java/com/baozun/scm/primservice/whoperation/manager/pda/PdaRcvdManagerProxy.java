@@ -77,14 +77,6 @@ public interface PdaRcvdManagerProxy extends BaseManager {
     WhSkuInventoryCommand initAttrWhenScanningSku(Boolean isInvattrAsnPointoutUser, Integer nextOpt, WhSkuInventoryCommand command);
 
     /**
-     * 获取下一个扫描的ASN属性
-     * 
-     * @param command
-     * @return
-     */
-    Integer getNextSkuAttrOperatorForScanning(WhSkuInventoryCommand command);
-
-    /**
      * 初始化ASN缓存【业务方法】
      * 
      * @param command

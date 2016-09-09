@@ -176,21 +176,6 @@ public final class Constants {
     /** 分配规则 */
     public static final String ALLOCATE_RULE = "ALLOCATE_RULE";
 
-    // enum:通用收货商品属性扫描序列
-    public static final int GENERAL_RECEIVING_START = -1;// 开始
-    public static final int GENERAL_RECEIVING_END = 99;// 结束
-    public static final int GENERAL_RECEIVING_ISVALID = 0;// 0：是否管理效期
-    public static final int GENERAL_RECEIVING_ISBATCHNO = 1; // 1:是否管理批次号
-    public static final int GENERAL_RECEIVING_ISCOUNTRYOFORIGIN = 2;// 2:是否管理原产地
-    public static final int GENERAL_RECEIVING_ISINVTYPE = 3; // 3:是否管理库存类型
-    public static final int GENERAL_RECEIVING_INVATTR1 = 4; // 4:是否管理库存属性1
-    public static final int GENERAL_RECEIVING_INVATTR2 = 5; // 5:是否管理库存属性2
-    public static final int GENERAL_RECEIVING_INVATTR3 = 6;// 6:是否管理库存属性3
-    public static final int GENERAL_RECEIVING_INVATTR4 = 7; // 7:是否管理库存属性4
-    public static final int GENERAL_RECEIVING_INVATTR5 = 8;// 8:是否管理库存属性5
-    public static final int GENERAL_RECEIVING_ISINVSTATUS = 9; // 9:是否管理库存状态
-    public static final int GENERAL_RECEIVING_ISDEFEAT = 10;// 10:残次品类型及残次原因
-    public static final int GENERAL_RECEIVING_ISSERIALNUMBER = 11;// 11:是否管理序列号
 
     // 库存状态
     public static final Long INVENTORY_STATUS_GOOD = 3L;// 良品

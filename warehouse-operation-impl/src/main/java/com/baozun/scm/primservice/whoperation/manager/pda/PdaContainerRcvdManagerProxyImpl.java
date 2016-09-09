@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.baozun.redis.manager.CacheManager;
+import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdContainerAttrCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdSnCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnLineCommand;
@@ -383,7 +385,7 @@ public class PdaContainerRcvdManagerProxyImpl extends BaseManagerImpl implements
         // 取消获取明细行 start
         WhSkuInventoryCommand wsic = compileCommand(command);
         wsic.setSkuUrlOperator(rca.getCurrUrl());
-        wsic.setSkuUrl(rca.getUrl());
+        wsic.setSkuUrl(rca.getSkuUrl());
         String lineIdListStr = pdaRcvdManagerProxy.getMatchLineListStr(wsic);
         command.setLineIdListString(lineIdListStr);
         // 取消获取明细行 end
@@ -610,7 +612,8 @@ public class PdaContainerRcvdManagerProxyImpl extends BaseManagerImpl implements
 
     @Override
     public void completeScanning(WhSkuInventoryCommand command) {
-        String lineIds = pdaRcvdManagerProxy.initMatchedLineIdStr(command);
+        WhSkuInventoryCommand newNommand = compileCommand(command);
+        String lineIds = pdaRcvdManagerProxy.initMatchedLineIdStr(newNommand);
         command.setLineIdListString(lineIds);
         this.pdaRcvdManagerProxy.cacheScanedSkuWhenGeneralRcvd(command);
     }
@@ -647,4 +650,85 @@ public class PdaContainerRcvdManagerProxyImpl extends BaseManagerImpl implements
         return command;
     }
 
+    @Override
+    public String getAsnSkuCount(Long occupationId, Long skuId) {
+        String asnSkuCount = cacheManager.getValue(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + occupationId + CacheKeyConstant.CACHE_KEY_SPLIT + skuId);
+        return asnSkuCount;
+    }
+
+    @Override
+    public Set<String> getLineSet(Long occupationId) {
+        Set<String> lineIdSet = this.cacheManager.getAllMap(CacheKeyConstant.CACHE_ASNLINE_PREFIX + occupationId).keySet();
+        return lineIdSet;
+    }
+
+    @Override
+    public WhAsnLine getAsnLine(Long occupationId, String lineId) {
+        WhAsnLine asnLine = this.cacheManager.getMapObject(CacheKeyConstant.CACHE_ASNLINE_PREFIX + occupationId, lineId);
+        return asnLine;
+    }
+
+    @Override
+    public List<RcvdSnCacheCommand> getCacheSn(String userId) {
+        List<RcvdSnCacheCommand> cacheSn = this.cacheManager.getObject(CacheKeyConstant.CACHE_RCVD_SN_PREFIX + userId);
+        return cacheSn;
+    }
+
+    @Override
+    public List<RcvdCacheCommand> getRcvdCacheCommandList(String userId) {
+        List<RcvdCacheCommand> list = this.cacheManager.getObject(CacheKeyConstant.CACHE_RCVD_PREFIX + userId);
+        return list;
+    }
+
+    @Override
+    public void cancelOperation(WhSkuInventoryCommand command, List<RcvdCacheCommand> list, String userId, Long ouId) {
+        // 撤销缓存
+        // 1.SN缓存
+        // this.cacheManager.removeMapValue(CacheKeyConstant.CACHE_RCVD_SN, userId);
+        if (null != list) {
+            // 发生异常抛出。回滚数据。
+            for (RcvdCacheCommand rcvd : list) {
+                try {
+                    this.cacheManager.incrBy(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + rcvd.getOccupationId() + "_" + rcvd.getLineId() + "_" + rcvd.getSkuId(), rcvd.getSkuBatchCount());
+                } catch (Exception e) {
+                    this.cacheManager.decrBy(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + rcvd.getOccupationId() + "_" + rcvd.getLineId() + "_" + rcvd.getSkuId(), rcvd.getSkuBatchCount());
+                    throw e;
+                }
+                try {
+                    this.cacheManager.incrBy(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + rcvd.getOccupationId() + "_" + rcvd.getSkuId(), rcvd.getSkuBatchCount());
+                } catch (Exception e) {
+                    this.cacheManager.decrBy(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + rcvd.getOccupationId() + "_" + rcvd.getLineId() + "_" + rcvd.getSkuId(), rcvd.getSkuBatchCount());
+                    this.cacheManager.decrBy(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + rcvd.getOccupationId() + "_" + rcvd.getSkuId(), rcvd.getSkuBatchCount());
+                    throw e;
+                }
+            }
+
+        }
+        if (null != command.getInsideContainerId()) {
+            // 释放容器
+            this.pdaRcvdManagerProxy.revokeContainer(command.getInsideContainerId(), ouId, Long.parseLong(userId));
+            // 清除容器-用户缓存
+            this.cacheManager.remove(CacheKeyConstant.CACHE_RCVD_CONTAINER_USER_PREFIX + command.getInsideContainerId());
+            // 清除容器-商品缓存
+            this.cacheManager.remove(CacheKeyConstant.CACHE_RCVD_CONTAINER_PREFIX + command.getInsideContainerId());
+        }
+        // 2.CACHE_RCVD中UserId对应缓存
+        this.cacheManager.remove(CacheKeyConstant.CACHE_RCVD_PREFIX + userId);
+        this.cacheManager.remove(CacheKeyConstant.CACHE_RCVD_SN_PREFIX + userId);
+        // 清除托盘-货箱缓存
+        if (command.getOuterContainerId() != null) {
+            this.cacheManager.popListHead(CacheKeyConstant.CACHE_RCVD_PALLET_PREFIX + command.getOuterContainerId());
+        }
+
+    }
+
+    @Override
+    public void setCacheSn(String userId, List<RcvdSnCacheCommand> cacheSn) {
+        this.cacheManager.setObject(CacheKeyConstant.CACHE_RCVD_SN_PREFIX + userId, cacheSn, 24 * 60 * 60);
+    }
+
+    @Override
+    public void setCache(String userId, List<RcvdCacheCommand> list) {
+        this.cacheManager.setObject(CacheKeyConstant.CACHE_RCVD_PREFIX + userId, list, 24 * 60 * 60);
+    }
 }

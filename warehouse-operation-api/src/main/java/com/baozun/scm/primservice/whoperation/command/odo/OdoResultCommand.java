@@ -14,8 +14,6 @@ public class OdoResultCommand extends BaseCommand {
     private String priorityLevel;
     private String isWholeOrderOutbound;
     private String isWholeOrderOutboundName;
-    private String partOutboundStrategy;
-    private String partOutboundStrategyName;
     private String crossDockingSysmbol;
     private String crossDockingSysmbolName;
     private String ecOrderCode;
@@ -138,22 +136,6 @@ public class OdoResultCommand extends BaseCommand {
 
     public void setIsWholeOrderOutboundName(String isWholeOrderOutboundName) {
         this.isWholeOrderOutboundName = isWholeOrderOutboundName;
-    }
-
-    public String getPartOutboundStrategy() {
-        return partOutboundStrategy;
-    }
-
-    public void setPartOutboundStrategy(String partOutboundStrategy) {
-        this.partOutboundStrategy = partOutboundStrategy;
-    }
-
-    public String getPartOutboundStrategyName() {
-        return partOutboundStrategyName;
-    }
-
-    public void setPartOutboundStrategyName(String partOutboundStrategyName) {
-        this.partOutboundStrategyName = partOutboundStrategyName;
     }
 
     public String getCrossDockingSysmbol() {

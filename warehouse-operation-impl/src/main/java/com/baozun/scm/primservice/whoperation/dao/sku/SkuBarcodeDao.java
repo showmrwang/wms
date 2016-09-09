@@ -26,6 +26,7 @@ import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
 
 import org.apache.ibatis.annotations.Param;
+
 import com.baozun.scm.primservice.whoperation.command.sku.skucommand.SkuBarcodeCommand;
 import com.baozun.scm.primservice.whoperation.model.sku.SkuBarcode;
 

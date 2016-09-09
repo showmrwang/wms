@@ -61,6 +61,15 @@ public interface SkuDao extends BaseDao<Sku, Long> {
     List<SkuCommand> findListByParamShared(SkuCommand skuCommand);
 
     /**
+     * 根据条件[barcode]查询sku信息
+     * 
+     * @author gianni.zhang
+     * @param skuCommand
+     * @return
+     */
+    List<SkuCommand> findListByBarcode(SkuCommand skuCommand);
+
+    /**
      * 根据条件查询sku完整信息
      * 
      * @author mingwei.xie

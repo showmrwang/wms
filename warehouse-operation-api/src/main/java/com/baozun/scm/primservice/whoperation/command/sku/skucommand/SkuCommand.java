@@ -77,6 +77,11 @@ public class SkuCommand extends BaseCommand {
 
     private Boolean isFoldable;
 
+    /** barcode 对应数量*/
+    private Long quantity;
+    /** barcode表中barcode字段*/
+    private String batchBarcode;
+
     public Boolean getIsFoldable() {
         return isFoldable;
     }
@@ -347,8 +352,24 @@ public class SkuCommand extends BaseCommand {
         return validDate;
     }
 
+    public Long getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Long quantity) {
+        this.quantity = quantity;
+    }
+
     public void setValidDate(Integer validDate) {
         this.validDate = validDate;
+    }
+
+    public String getBatchBarcode() {
+        return batchBarcode;
+    }
+
+    public void setBatchBarcode(String batchBarcode) {
+        this.batchBarcode = batchBarcode;
     }
 
 }

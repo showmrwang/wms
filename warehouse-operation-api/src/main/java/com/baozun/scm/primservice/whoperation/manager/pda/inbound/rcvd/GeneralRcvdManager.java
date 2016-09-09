@@ -17,6 +17,7 @@ import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 import com.baozun.scm.primservice.whoperation.model.sku.Sku;
+import com.baozun.scm.primservice.whoperation.model.sku.SkuMgmt;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
 import com.baozun.scm.primservice.whoperation.model.warehouse.StoreDefectReasons;
 import com.baozun.scm.primservice.whoperation.model.warehouse.StoreDefectType;
@@ -216,4 +217,12 @@ public interface GeneralRcvdManager extends BaseManager {
     List<WhCartonCommand> findWhCartonByParamExt(WhCartonCommand cartonCommand);
 
     Boolean skuDateCheck(Long skuId, Long ouId, String mfgDate, String expDate);
+
+    /**
+     * 
+     * @param skuId
+     * @param ouId
+     * @return
+     */
+    SkuMgmt findSkuMgmtBySkuIdOuId(Long skuId, Long ouId);
 }

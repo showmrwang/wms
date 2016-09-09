@@ -70,6 +70,7 @@ public class OdoSearchCommand extends BaseCommand {
     private boolean needEpistaticSystemsOrderType;
     private boolean needStore;
     private boolean needDeliverGoodsTime;
+    private String pageOption;
 
     public String getOdoCode() {
         return odoCode;
@@ -549,6 +550,14 @@ public class OdoSearchCommand extends BaseCommand {
 
     public void setNeedDeliverGoodsTime(boolean needDeliverGoodsTime) {
         this.needDeliverGoodsTime = needDeliverGoodsTime;
+    }
+
+    public String getPageOption() {
+        return pageOption;
+    }
+
+    public void setPageOption(String pageOption) {
+        this.pageOption = pageOption;
     }
 
 }

@@ -58,7 +58,6 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
             if (pages != null) {
                 List<OdoResultCommand> list = pages.getItems();
                 Set<String> dic1 = new HashSet<String>();
-                Set<String> dic2 = new HashSet<String>();
                 Set<String> dic3 = new HashSet<String>();
                 Set<String> dic4 = new HashSet<String>();
                 Set<String> dic5 = new HashSet<String>();
@@ -76,10 +75,6 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                     for (OdoResultCommand command : list) {
                         if (StringUtils.hasText(command.getIsWholeOrderOutbound())) {
                             dic1.add(command.getIsWholeOrderOutbound());
-                        }
-                        if (StringUtils.hasText(command.getPartOutboundStrategy())) {
-
-                            dic2.add(command.getPartOutboundStrategy());
                         }
                         if (StringUtils.hasText(command.getCrossDockingSysmbol())) {
 
@@ -137,7 +132,6 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                     }
                     Map<String, List<String>> map = new HashMap<String, List<String>>();
                     map.put(Constants.IS_WHOLE_ORDER_OUTBOUND, new ArrayList<String>(dic1));
-                    map.put(Constants.PART_OUTBOUND_STRATEGY, new ArrayList<String>(dic2));
                     map.put(Constants.ODO_CROSS_DOCKING_SYSMBOL, new ArrayList<String>(dic3));
                     map.put(Constants.TRANSPORT_MODE, new ArrayList<String>(dic4));
                     map.put(Constants.ODO_PRE_TYPE, new ArrayList<String>(dic5));
@@ -156,10 +150,6 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                         if (StringUtils.hasText(command.getIsWholeOrderOutbound())) {
                             SysDictionary sys = dicMap.get(Constants.IS_WHOLE_ORDER_OUTBOUND + "_" + command.getIsWholeOrderOutbound());
                             command.setIsWholeOrderOutboundName(sys == null ? command.getIsWholeOrderOutbound() : sys.getDicLabel());
-                        }
-                        if (StringUtils.hasText(command.getPartOutboundStrategy())) {
-                            SysDictionary sys = dicMap.get(Constants.PART_OUTBOUND_STRATEGY + "_" + command.getPartOutboundStrategy());
-                            command.setPartOutboundStrategyName(sys == null ? command.getPartOutboundStrategy() : sys.getDicLabel());
                         }
                         if (StringUtils.hasText(command.getCrossDockingSysmbol())) {
                             SysDictionary sys = dicMap.get(Constants.ODO_CROSS_DOCKING_SYSMBOL + "_" + command.getCrossDockingSysmbol());

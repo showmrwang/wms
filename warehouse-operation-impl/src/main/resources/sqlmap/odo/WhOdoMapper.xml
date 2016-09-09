@@ -26,7 +26,6 @@
 	        	original_odo_code as originalOdoCode,
 	        	priority_level as priorityLevel,
 	        	is_whole_order_outbound as isWholeOrderOutbound,
-	        	part_outbound_strategy as partOutboundStrategy,
 	        	cross_docking_symbol as crossDockingSymbol,
 	        	order_type as orderType,
 	        	order_time as orderTime,
@@ -148,7 +147,6 @@
 		        	original_odo_code ,
 		        	priority_level ,
 		        	is_whole_order_outbound ,
-		        	part_outbound_strategy ,
 		        	cross_docking_symbol ,
 		        	order_type ,
 		        	order_time ,
@@ -228,7 +226,6 @@
 		        original_odo_code = #{originalOdoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        priority_level = #{priorityLevel,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        is_whole_order_outbound = #{isWholeOrderOutbound,javaType=java.lang.Boolean,jdbcType=BIT} ,
-		        part_outbound_strategy = #{partOutboundStrategy,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        cross_docking_symbol = #{crossDockingSymbol,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        order_type = #{orderType,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        order_time = #{orderTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
@@ -361,11 +358,6 @@
 	       
 				<if test="isWholeOrderOutbound!=null">
 					and is_whole_order_outbound = #{isWholeOrderOutbound}
-				</if>
-	       
-	       
-		       <if test="partOutboundStrategy!=null and partOutboundStrategy!=''">
-					and part_outbound_strategy = #{partOutboundStrategy}
 				</if>
 	       
 	       
