@@ -51,7 +51,7 @@ public class WhSkuInventoryCommand extends BaseCommand {
     private String occupationCode;
     /** 调整数量 */
     private Double modifyQty;
-    /** 在库库存 */
+    /** 在库可用库存 */
     private Double onHandQty;
     /** 已分配库存 */
     private Double allocatedQty;
@@ -110,7 +110,7 @@ public class WhSkuInventoryCommand extends BaseCommand {
     private String storeName;
     /** 库存类型 */
     private String invTypeName;
-    /** 可用数量 */
+    /** 在库数量 */
     private Double qty;
     /** 库存状态 */
     private String invstatusName;

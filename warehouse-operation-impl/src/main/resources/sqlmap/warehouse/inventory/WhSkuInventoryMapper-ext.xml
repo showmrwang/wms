@@ -223,7 +223,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			t.to_be_filled_qty as to_be_filled_qty,
 			t.frozen_qty as frozen_qty,
 			t.inv_status as inv_status,
-			t.on_hand_qty+t.to_be_filled_qty-t.allocated_qty-t.frozen_qty as qty,
+			t.on_hand_qty+t.to_be_filled_qty+t.allocated_qty+t.frozen_qty as qty,
 			t.inv_type as inv_type,
 			t.batch_number as batch_number,
 			t.mfg_date as mfg_date,
@@ -1440,7 +1440,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     </select>
     
     <select id="findAllValidInventoryBySkuAndUuid" resultMap="WhSkuInventoryCommandResultExt">
-		select inv.*,(inv.on_hand_qty+inv.to_be_filled_qty-inv.allocated_qty-inv.frozen_qty) as qty,concat_ws('-',sku.id, store.id, l.id, iout.id) as occupyKey, #{expectQty} as expectQty
+		select inv.*,(inv.on_hand_qty) as qty,concat_ws('-',sku.id, store.id, l.id, iout.id) as occupyKey, #{expectQty} as expectQty
 			from t_wh_sku_inventory inv 
 				left join t_wh_location l on inv.location_id = l.id 
 				left join t_wh_container cout on inv.outer_container_id = cout.id 

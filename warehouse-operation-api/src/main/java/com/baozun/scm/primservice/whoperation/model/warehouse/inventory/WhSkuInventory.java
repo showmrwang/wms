@@ -46,7 +46,7 @@ public class WhSkuInventory extends BaseModel {
     private Long storeId;
     /** 占用单据号 */
     private String occupationCode;
-    /** 在库库存 */
+    /** 在库可用库存 */
     private Double onHandQty;
     /** 已分配库存 */
     private Double allocatedQty;

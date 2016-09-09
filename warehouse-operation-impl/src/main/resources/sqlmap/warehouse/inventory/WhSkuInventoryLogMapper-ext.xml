@@ -230,7 +230,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     
 	 <select id="sumSkuInvOnHandQty" resultType="Double">
 			select  
-					sum(on_hand_qty)
+					sum(on_hand_qty+allocated_qty+to_be_filled_qty+frozen_qty)
 					from 
 					t_wh_sku_inventory 
 					where 
