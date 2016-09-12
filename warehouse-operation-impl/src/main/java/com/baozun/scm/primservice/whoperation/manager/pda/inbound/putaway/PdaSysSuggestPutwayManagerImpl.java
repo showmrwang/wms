@@ -172,10 +172,10 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
                 throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
             }
             return srCommand;
-        }else if(putawayPatternDetailType == WhPutawayPatternDetailType.PALLET_PUTAWAY) {   //整箱上架
+        }else if(putawayPatternDetailType == WhPutawayPatternDetailType.CONTAINER_PUTAWAY) {   //整箱上架
             //根据容器号,查询容器信息
             ContainerCommand containerCmd = containerDao.getContainerByCode(containerCode, ouId);
-            ScanResultCommand  scanResult =  this.containerPutwayScanContainer(containerCmd, ouId, logId, userId);  //整托容器信息判断流程
+            ScanResultCommand  scanResult =  this.containerPutwayScanContainer(outerContainerCode,containerCmd, ouId, logId, userId);  //整托容器信息判断流程
             if(scanResult.isHasOuterContainer()) {   //扫描的是外部容器
                 return scanResult;   //返回扫描容器页面,提示容器号
             }
@@ -203,7 +203,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
             return srCommand;   //下一步扫库位
         }else {   //拆箱上架
             ContainerCommand containerCmd = containerDao.getContainerByCode(containerCode, ouId);
-            ScanResultCommand  scanResult = this.splitContainerPutwayScanContainer(containerCmd, ouId, logId, userId);
+            ScanResultCommand  scanResult = this.splitContainerPutwayScanContainer(outerContainerCode,containerCmd, ouId, logId, userId);
             if(scanResult.isHasOuterContainer()) {   //扫描的是外部容器
                 return scanResult;   //返回扫描容器页面,提示一个内容器号
             }
@@ -240,7 +240,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
      * @param userId
      * @return
      */
-    private ScanResultCommand splitContainerPutwayScanContainer(ContainerCommand containerCmd,Long ouId,String logId,Long userId){
+    private ScanResultCommand splitContainerPutwayScanContainer(String outerContainerCode,ContainerCommand containerCmd,Long ouId,String logId,Long userId){
         log.info("PdaSysSuggestPutwayManagerImpl scanContainerByBox is start"); 
         ScanResultCommand srCmd = new ScanResultCommand();  //扫描返回结果
         srCmd.setPutawayPatternType(WhPutawayPatternType.SYS_SUGGEST_PUTAWAY);
@@ -270,8 +270,10 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
             // 拆箱上架判断是是否有外部容器号
             int ocCount = whSkuInventoryDao.findRcvdInventoryCountsByInsideContainerId1(ouId, containerId);
             if (0 < ocCount) {
-                log.error("sys guide container putaway scan container has outer container, should scan outer container first, containerCode is:[{}], logId is:[{}]", containerCode, logId);
-                throw new BusinessException(ErrorCodes.CONTAINER_HAS_OUTER_CONTAINER_SCAN_OUTER_FIRST, new Object[] {containerCode});
+                if(null == outerContainerCode) {
+                    log.error("sys guide container putaway scan container has outer container, should scan outer container first, containerCode is:[{}], logId is:[{}]", containerCode, logId);
+                    throw new BusinessException(ErrorCodes.CONTAINER_HAS_OUTER_CONTAINER_SCAN_OUTER_FIRST, new Object[] {containerCode});
+                }
             } else {
                 srCmd.setContainerType(WhContainerType.INSIDE_CONTAINER);// 内部容器,无外部容器，无需循环提示容器
                 srCmd.setInsideContainerCode(containerCode);
@@ -357,7 +359,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
      * @param userId
      * @return
      */
-    private ScanResultCommand containerPutwayScanContainer(ContainerCommand containerCmd,Long ouId,String logId,Long userId){
+    private ScanResultCommand containerPutwayScanContainer(String outerContainerCode,ContainerCommand containerCmd,Long ouId,String logId,Long userId){
         log.info("PdaSysSuggestPutwayManagerImpl scanContainerByBox is start"); 
         ScanResultCommand srCmd = new ScanResultCommand();  //扫描返回结果
         srCmd.setPutawayPatternType(WhPutawayPatternType.SYS_SUGGEST_PUTAWAY);
@@ -387,8 +389,11 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
          // 整箱上架判断是是否有外部容器号
             int ocCount = whSkuInventoryDao.findRcvdInventoryCountsByInsideContainerId1(ouId, containerId);
             if (0 < ocCount) {
-                log.error("sys guide container putaway scan container has outer container, should scan outer container first, containerCode is:[{}], logId is:[{}]", containerCode, logId);
-                throw new BusinessException(ErrorCodes.CONTAINER_HAS_OUTER_CONTAINER_SCAN_OUTER_FIRST, new Object[] {containerCode});
+                //判断外部容器是否已经扫描
+                if(null == outerContainerCode){   //外部容器没有扫描
+                    log.error("sys guide container putaway scan container has outer container, should scan outer container first, containerCode is:[{}], logId is:[{}]", containerCode, logId);
+                    throw new BusinessException(ErrorCodes.CONTAINER_HAS_OUTER_CONTAINER_SCAN_OUTER_FIRST, new Object[] {containerCode});
+                }
             } else {
                 srCmd.setContainerType(WhContainerType.INSIDE_CONTAINER);// 内部容器,无外部容器，无需循环提示容器
                 srCmd.setInsideContainerCode(containerCode);
@@ -2139,6 +2144,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
                     // 无caselevel货箱，直接上架
                     srCmd.setPutaway(true);
                     whSkuInventoryManager.putaway(outCommand, null,locationCode, functionId, warehouse, putawayPatternDetailType, ouId, userId, logId);
+                    this.updateContainerStatus( outCommand, null, ouId, userId, srCmd);
                 } else {
                     CheckScanSkuResultCommand cssrCmd = pdaPutawayCacheManager.sysGuidePalletPutawayCacheSkuOrTipContainer(outCommand, insideCommand, notcaselevelContainerIds, insideContainerSkuIds, insideContainerSkuIdsQty, whSkuCommand, logId);
                     if (cssrCmd.isNeedScanSku()) {
