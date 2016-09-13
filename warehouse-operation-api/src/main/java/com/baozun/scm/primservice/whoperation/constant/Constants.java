@@ -314,4 +314,7 @@ public final class Constants {
     /** 出库单增值服务类型 */
     public static final String ODO_VAS_TYPE_WH = "WH";
     public static final String ODO_VAS_TYPE_EXPRESS = "EXPRESS";
+    
+    /** TABLE_FIELD 类型 */
+    public static final String TABLE_FIELD_TYPE_WH_ASN = "WH_ASN";
 }
