@@ -76,7 +76,7 @@ public class OdoResultCommand extends BaseCommand {
     private String outboundCartonTypeName;
     private String createTime;
     private String createId;
-    private String createName;
+    private String createdName;
     private String lastModifyTime;
     private String modifiedId;
     private String modifiedName;
@@ -626,14 +626,6 @@ public class OdoResultCommand extends BaseCommand {
         this.createId = createId;
     }
 
-    public String getCreateName() {
-        return createName;
-    }
-
-    public void setCreateName(String createName) {
-        this.createName = createName;
-    }
-
     public String getLastModifyTime() {
         return lastModifyTime;
     }
@@ -664,6 +656,14 @@ public class OdoResultCommand extends BaseCommand {
 
     public void setEcOrderCode(String ecOrderCode) {
         this.ecOrderCode = ecOrderCode;
+    }
+
+    public String getCreatedName() {
+        return createdName;
+    }
+
+    public void setCreatedName(String createdName) {
+        this.createdName = createdName;
     }
 
 }

@@ -73,4 +73,12 @@ public interface WhOdoDao extends BaseDao<WhOdo, Long> {
 
     List<OdoCommand> findOdoListByIdOuId(@Param("ids") String idString, @Param("ouId") Long ouId, @Param("odoStatus") String odoStatus);
 
+    /**
+     * [业务方法]删除出库单
+     * 
+     * @param id
+     * @param ouId
+     */
+    int deleteByIdOuId(@Param("id") Long id, @Param("ouId") Long ouId);
+
 }

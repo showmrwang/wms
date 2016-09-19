@@ -168,4 +168,20 @@ public interface OdoManagerProxy extends BaseManager {
      * @param logId
      */
     void saveOdoExpressVas(Long odoId, Long odoLineId, Long ouId, List<WhOdoVasCommand> odoVasList, String logId);
+
+    /**
+     * [业务方法]删除出库单
+     * 
+     * @param id
+     * @param ouId
+     * @param logId
+     */
+    void deleteOdo(Long id, Long ouId, String logId);
+
+    /**
+     * [业务方法]删除出库单;可批量
+     * 
+     * @param lineCommand
+     */
+    void deleteLines(OdoLineCommand lineCommand);
 }

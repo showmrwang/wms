@@ -20,7 +20,7 @@
 	        	odo_id as odoId,
 	        	linenum as linenum,
 	        	original_linenum as originalLinenum,
-	        	store as store,
+	        	store_id as storeId,
 	        	ext_linenum as extLinenum,
 	        	sku_id as skuId,
 	        	sku_bar_code as skuBarCode,
@@ -173,7 +173,7 @@
                     odo_id ,
 		        	linenum ,
 		        	original_linenum ,
-		        	store ,
+		        	store_id ,
 		        	ext_linenum ,
 		        	sku_id ,
 		        	sku_bar_code ,
@@ -222,7 +222,7 @@
                     #{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{linenum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        	#{originalLinenum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-		        	#{store,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{storeId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{extLinenum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        	#{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{skuBarCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -278,7 +278,7 @@
                odo_id = #{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        linenum = #{linenum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        original_linenum = #{originalLinenum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-		        store = #{store,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        store_id = #{storeId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        ext_linenum = #{extLinenum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        sku_id = #{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        sku_bar_code = #{skuBarCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -403,8 +403,8 @@
 			</if>
 
 
-			<if test="store!=null and store!=''">
-				and store = #{store}
+			<if test="storeId!=null">
+				and store_id = #{storeId}
 			</if>
 
 			<if test="extLinenum!=null">

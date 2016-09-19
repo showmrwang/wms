@@ -1,5 +1,6 @@
 package com.baozun.scm.primservice.whoperation.manager.odo.manager;
 
+import java.util.List;
 import java.util.Map;
 
 import lark.common.dao.Page;
@@ -59,4 +60,22 @@ public interface OdoManager extends BaseManager {
      * @param odo
      */
     void saveAddressUnit(WhOdoAddress odoAddress, WhOdo odo);
+
+    /**
+     * [业务方法]删除Odo
+     * 
+     * @param id
+     * @param ouId
+     * @param logId
+     */
+    void deleteOdo(Long id, Long ouId, String logId);
+
+    /**
+     * [业务方法]查询移除某些明细后，出库单的商品种类数；参数可选
+     * 
+     * @param idList
+     * @param ouId
+     * @return
+     */
+    Integer getSkuNumberAwayFormSomeLines(List<Long> idList, Long ouId);
 }

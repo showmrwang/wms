@@ -22,6 +22,8 @@
                 deliver_goods_time as deliverGoodsTime,
                 plan_deliver_goods_time as planDeliverGoodsTime,
                 actual_deliver_goods_time as actualDeliverGoodsTime,
+                is_cod as isCod,
+                cod_amt as codAmt,
                 ou_id as ouId
         ]]>
     </sql>
@@ -95,4 +97,11 @@
 		from t_wh_odo_transport_mgmt
 		<include refid="whOdoTransportMgmtDynamicWhereExt" />
 	</select>
+	
+	<delete id="deleteByIdOuId" parameterType="map">
+        <![CDATA[
+            delete from t_wh_odo_transport_mgmt where
+                id = #{id} and ou_id=#{ouId}
+        ]]>
+    </delete>
 </mapper>

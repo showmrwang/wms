@@ -72,7 +72,7 @@ public interface WhOdoVasDao extends BaseDao<WhOdoVas, Long> {
      * @param id
      * @param ouId
      */
-    void deleteByIdOuId(@Param("id") Long id, @Param("ouId") Long ouId);
+    int deleteByIdOuId(@Param("id") Long id, @Param("ouId") Long ouId);
 
     /**
      * [通用方法]查找出库单快递增值

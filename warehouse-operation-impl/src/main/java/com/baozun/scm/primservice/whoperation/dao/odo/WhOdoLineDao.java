@@ -94,4 +94,6 @@ public interface WhOdoLineDao extends BaseDao<WhOdoLine, Long> {
      */
     List<OdoLineCommand> findObject(WhOdoLine o);
 
+    int deleteByIdOuId(@Param("id") Long id, @Param("ouId") Long ouId);
+
 }

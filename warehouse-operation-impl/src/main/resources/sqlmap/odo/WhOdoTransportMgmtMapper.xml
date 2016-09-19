@@ -26,6 +26,8 @@
                 deliver_goods_time as deliverGoodsTime,
                 plan_deliver_goods_time as planDeliverGoodsTime,
                 actual_deliver_goods_time as actualDeliverGoodsTime,
+                is_cod as isCod,
+                cod_amt as codAmt,
                 ou_id as ouId
         ]]>
     </sql>
@@ -128,9 +130,11 @@
                     deliver_goods_time ,
                     plan_deliver_goods_time ,
                     actual_deliver_goods_time ,
+                    is_cod,
+                    cod_amt,
                     ou_id 
                 ) VALUES (
-                #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
                     #{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
                     #{transportServiceProvider,javaType=java.lang.String,jdbcType=VARCHAR} ,
                     #{modeOfTransport,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -141,6 +145,8 @@
                     #{deliverGoodsTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
                     #{planDeliverGoodsTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
                     #{actualDeliverGoodsTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                    #{isCod,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                    #{codAmt,javaType=Double,jdbcType=DECIMAL} ,
                     #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
                 )
             ]]>
@@ -159,6 +165,8 @@
                 deliver_goods_time_mode = #{deliverGoodsTimeMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
                 deliver_goods_time = #{deliverGoodsTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
                 plan_deliver_goods_time = #{planDeliverGoodsTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                is_cod = #{isCod,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                cod_amt = #{codAmt,javaType=Double,jdbcType=DECIMAL} ,
                 actual_deliver_goods_time = #{actualDeliverGoodsTime,javaType=java.util.Date,jdbcType=TIMESTAMP}
             WHERE 
                 id = #{id} and ou_id=#{ouId}

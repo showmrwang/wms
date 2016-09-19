@@ -50,6 +50,26 @@ public class WhOdoTransportMgmt extends BaseModel {
     private java.util.Date actualDeliverGoodsTime;
     /** 仓库组织ID */
     private Long ouId;
+    /** 是否COD */
+    private Boolean isCod;
+    /** COD金额 */
+    private Double codAmt;
+
+    public Boolean getIsCod() {
+        return isCod;
+    }
+
+    public void setIsCod(Boolean isCod) {
+        this.isCod = isCod;
+    }
+
+    public Double getCodAmt() {
+        return codAmt;
+    }
+
+    public void setCodAmt(Double codAmt) {
+        this.codAmt = codAmt;
+    }
 
     public Long getOdoId() {
         return odoId;

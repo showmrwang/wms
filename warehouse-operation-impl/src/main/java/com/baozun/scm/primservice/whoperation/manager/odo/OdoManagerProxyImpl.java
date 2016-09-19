@@ -228,7 +228,7 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
         line.setOdoId(lineCommand.getOdoId());
         line.setOuId(ouId);
         line.setSkuBarCode(lineCommand.getSkuBarCode());
-        line.setStore(lineCommand.getStore());
+        line.setStoreId(lineCommand.getStoreId());
         line.setSkuName(lineCommand.getSkuName());
         line.setQty(lineCommand.getQty());
         line.setLinePrice(lineCommand.getLinePrice());
@@ -547,6 +547,57 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
             }
         }
         this.odoVasManager.saveOdoOuVas(insertVasList, updateVasList, delVasList);
+    }
+
+    @Override
+    public void deleteOdo(Long id, Long ouId, String logId) {
+        this.odoManager.deleteOdo(id, ouId, logId);
+    }
+
+    @Override
+    public void deleteLines(OdoLineCommand lineCommand) {
+        List<WhOdoLine> lineList = new ArrayList<WhOdoLine>();
+        Long ouId = lineCommand.getOuId();
+        Long userId = lineCommand.getUserId();
+        String logId = lineCommand.getLogId();
+        try {
+            if (StringUtils.isEmpty(lineCommand.getIds())) {
+                throw new BusinessException(ErrorCodes.PARAM_IS_NULL);
+            }
+            String[] idArray = lineCommand.getIds().replace(" ", "").split(",");
+            List<Long> idList = new ArrayList<Long>();
+            WhOdo odo = null;
+            for (String id : idArray) {
+                WhOdoLine line = this.odoLineManager.findOdoLineById(Long.parseLong(id), ouId);
+                if (line == null) {
+                    throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+                }
+                lineList.add(line);
+                if (odo == null) {
+                    odo = this.odoManager.findOdoByIdOuId(line.getOdoId(), ouId);
+                }
+                if (odo == null) {
+                    throw new BusinessException(ErrorCodes.PARAM_IS_NULL);
+                }
+                // 设置出库单数量
+                odo.setQty(odo.getQty() - line.getQty());
+                // 设置出库单金额
+                odo.setAmt(odo.getAmt() - line.getLineAmt());
+                idList.add(Long.parseLong(id));
+            }
+            // #TODO 设置ODO总件数
+            Integer skuCount = this.odoManager.getSkuNumberAwayFormSomeLines(idList, ouId);
+            // #TODO 是否含有危险品、易碎品
+
+
+
+            this.odoLineManager.deleteLines(lineList, ouId, userId, logId);
+        } catch (BusinessException ex) {
+            throw ex;
+        } catch (Exception e) {
+            log.error(e + "");
+            throw new BusinessException(ErrorCodes.PACKAGING_ERROR);
+        }
     }
 
 }
