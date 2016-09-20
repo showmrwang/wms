@@ -12,8 +12,8 @@ public class OdoLineCommand extends BaseCommand {
     private Long odoId;
     /** 行号 */
     private Integer linenum;
-    /** 店铺CODE 或者* */
-    private String store;
+    /** 店铺ID 或者* */
+    private Long storeId;
     /** 外部单据行号 */
     private Integer extLinenum;
     /** 商品ID */
@@ -123,7 +123,25 @@ public class OdoLineCommand extends BaseCommand {
     private String maxExpDateStr;
     /** 出库单code */
     private String odoCode;
+    /** id集合，逗号分隔 */
+    private String ids;
 
+
+    public Long getStoreId() {
+        return storeId;
+    }
+
+    public void setStoreId(Long storeId) {
+        this.storeId = storeId;
+    }
+
+    public String getIds() {
+        return ids;
+    }
+
+    public void setIds(String ids) {
+        this.ids = ids;
+    }
 
     public String getMfgDateStr() {
         return mfgDateStr;
@@ -213,13 +231,6 @@ public class OdoLineCommand extends BaseCommand {
         this.linenum = linenum;
     }
 
-    public String getStore() {
-        return store;
-    }
-
-    public void setStore(String store) {
-        this.store = store;
-    }
 
     public Integer getExtLinenum() {
         return extLinenum;

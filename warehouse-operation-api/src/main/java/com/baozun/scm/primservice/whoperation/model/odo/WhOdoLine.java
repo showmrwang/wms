@@ -39,8 +39,8 @@ public class WhOdoLine extends BaseModel {
     private Integer linenum;
     /** 原始出库单明细行号 */
     private Integer originalLinenum;
-    /** 店铺CODE 或者* */
-    private String store;
+    /** 店铺ID 或者* */
+    private Long storeId;
     /** 外部单据行号 */
     private Integer extLinenum;
     /** 商品ID */
@@ -154,12 +154,12 @@ public class WhOdoLine extends BaseModel {
         this.originalLinenum = originalLinenum;
     }
 
-    public String getStore() {
-        return store;
+    public Long getStoreId() {
+        return storeId;
     }
 
-    public void setStore(String store) {
-        this.store = store;
+    public void setStoreId(Long storeId) {
+        this.storeId = storeId;
     }
 
     public Integer getExtLinenum() {

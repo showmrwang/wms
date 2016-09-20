@@ -65,4 +65,6 @@ public interface WhOdoAddressDao extends BaseDao<WhOdoAddress, Long> {
 
     WhOdoAddress findObject(WhOdoAddress o);
 
+    int deleteByIdOuId(@Param("id") Long odoId, @Param("ouId") Long ouId);
+
 }

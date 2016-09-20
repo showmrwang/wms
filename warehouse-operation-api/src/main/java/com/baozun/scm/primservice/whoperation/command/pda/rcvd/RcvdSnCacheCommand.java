@@ -19,6 +19,16 @@ public class RcvdSnCacheCommand implements Serializable {
     private String defectSource;
     /** 序列号管理类型 */
     private String serialNumberType;
+    /** 残次品数量:在不管理序列号的时候有值 */
+    private Integer defectCount;
+
+    public Integer getDefectCount() {
+        return defectCount;
+    }
+
+    public void setDefectCount(Integer defectCount) {
+        this.defectCount = defectCount;
+    }
 
     public String getDefectSource() {
         return defectSource;

@@ -26,6 +26,7 @@ import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoAddressDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoTransportMgmtDao;
+import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoVasDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
@@ -33,6 +34,7 @@ import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAddress;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoVas;
 import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
@@ -49,6 +51,8 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     private WhOdoTransportMgmtDao whOdoTransportMgmtDao;
     @Autowired
     private WhOdoAddressDao whOdoAddressDao;
+    @Autowired
+    private WhOdoVasDao whOdoVasDao;
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public Pagination<OdoResultCommand> findListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params) {
@@ -281,6 +285,67 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
             log.error(e + "");
             throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
         }
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void deleteOdo(Long id, Long ouId, String logId) {
+        try {
+            // 增值服务删除
+            List<WhOdoVas> vasList = this.whOdoVasDao.findOdoVasByOdoIdOdoLineIdType(id, null, null, ouId);
+            if (vasList != null && vasList.size() > 0) {
+                for (WhOdoVas vas : vasList) {
+                    int delVasCount = this.whOdoVasDao.deleteByIdOuId(vas.getId(), ouId);
+                    if (delVasCount <= 0) {
+                        throw new BusinessException(ErrorCodes.DELETE_DATA_ERROR);
+                    }
+                }
+            }
+            // 明细删除
+            List<WhOdoLine> lineList = this.whOdoLineDao.findOdoLineListByOdoIdOuId(id, ouId);
+            if (lineList != null && lineList.size() > 0) {
+                for (WhOdoLine line : lineList) {
+                    int delLineCount = this.whOdoLineDao.deleteByIdOuId(line.getId(), ouId);
+                    if (delLineCount <= 0) {
+                        throw new BusinessException(ErrorCodes.DELETE_DATA_ERROR);
+                    }
+                }
+            }
+            // 运输服务删除
+            WhOdoTransportMgmt transMgmt = this.whOdoTransportMgmtDao.findTransportMgmtByOdoIdOuId(id, ouId);
+            if (transMgmt != null) {
+                int delTransCount = this.whOdoTransportMgmtDao.deleteByIdOuId(transMgmt.getId(), ouId);
+                if (delTransCount <= 0) {
+                    throw new BusinessException(ErrorCodes.DELETE_DATA_ERROR);
+                }
+            }
+            // 配货人信息删除
+            WhOdoAddress address = this.whOdoAddressDao.findOdoAddressByOdoId(id, ouId);
+            if (address != null) {
+                int delAdCount = this.whOdoAddressDao.deleteByIdOuId(address.getId(), ouId);
+                if (delAdCount <= 0) {
+                    throw new BusinessException(ErrorCodes.DELETE_DATA_ERROR);
+                }
+            }
+            WhOdo odo = this.whOdoDao.findByIdOuId(id, ouId);
+            if (odo == null) {
+                throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+            }
+            int delOdoCount = this.whOdoDao.deleteByIdOuId(id, ouId);
+            if (delOdoCount <= 0) {
+                throw new BusinessException(ErrorCodes.DELETE_DATA_ERROR);
+            }
+
+        } catch (BusinessException e) {
+            throw e;
+        } catch (Exception ex) {
+            log.error("" + ex);
+        }
+    }
+
+    @Override
+    public Integer getSkuNumberAwayFormSomeLines(List<Long> idArray, Long ouId) {
+        return null;
     }
 
 }

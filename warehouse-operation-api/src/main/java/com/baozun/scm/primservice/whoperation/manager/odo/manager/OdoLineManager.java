@@ -50,4 +50,14 @@ public interface OdoLineManager extends BaseManager {
      */
     List<WhOdoLine> findOdoLineListByOdoId(Long odoId, Long ouId);
 
+    /**
+     * [删除出库单明细]可批量
+     * 
+     * @param lineList
+     * @param ouId
+     * @param userId
+     * @param logId
+     */
+    void deleteLines(List<WhOdoLine> lineList, Long ouId, Long userId, String logId);
+
 }

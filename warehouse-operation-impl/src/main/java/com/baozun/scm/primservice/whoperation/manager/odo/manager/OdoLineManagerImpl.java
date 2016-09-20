@@ -47,4 +47,10 @@ public class OdoLineManagerImpl extends BaseManagerImpl implements OdoLineManage
         return this.whOdoLineDao.findOdoLineListByOdoIdOuId(odoId, ouId);
     }
 
+    @Override
+    public void deleteLines(List<WhOdoLine> lineList, Long ouId, Long userId, String logId) {
+        // TODO Auto-generated method stub
+
+    }
+
 }

@@ -14,7 +14,7 @@
 	        	odo_id as odoId,
 	        	linenum as linenum,
 	        	original_linenum as originalLinenum,
-	        	store as store,
+	        	store_id as storeId,
 	        	ext_linenum as extLinenum,
 	        	sku_id as skuId,
 	        	sku_bar_code as skuBarCode,
@@ -68,7 +68,7 @@
 	        	line.odo_id as odoId,
 	        	line.linenum as linenum,
 	        	line.original_linenum as originalLinenum,
-	        	line.store as store,
+	        	line.store_id as storeId,
 	        	line.ext_linenum as extLinenum,
 	        	line.sku_id as skuId,
 	        	line.sku_bar_code as skuBarCode,
@@ -136,8 +136,8 @@
 			</if>
 
 
-			<if test="store!=null and store!=''">
-				and store = #{store}
+			<if test="storeId!=null">
+				and store_id = #{storeId}
 			</if>
 
 			<if test="extLinenum!=null">
@@ -353,8 +353,8 @@
 			</if>
 
 
-			<if test="store!=null and store!=''">
-				and line.store = #{store}
+			<if test="storeId!=nul">
+				and line.store_id = #{storeId}
 			</if>
 
 			<if test="extLinenum!=null">
@@ -568,7 +568,7 @@
             	odo_id = #{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        linenum = #{linenum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        original_linenum = #{originalLinenum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-		        store = #{store,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        store_id = #{storeId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        ext_linenum = #{extLinenum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        sku_id = #{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        sku_bar_code = #{skuBarCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -658,4 +658,11 @@
 		from t_wh_odo_line line left join t_wh_odo odo on line.odo_id = odo.id
 		<include refid="whOdoLineDynamicWhereCommandExt" />
 	</select>
+	
+	<delete id="deleteByIdOuId" parameterType="map">
+        <![CDATA[
+            delete from t_wh_odo_line where
+                id = #{id} and ou_id=#{ouId}
+        ]]>
+	</delete>
 </mapper>
