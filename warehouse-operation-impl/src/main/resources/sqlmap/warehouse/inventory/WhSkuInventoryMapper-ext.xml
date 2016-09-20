@@ -292,7 +292,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    ]]>
 	</sql>
 	
-		<sql id="findListByQueryMapWithPageWhereExt">
+	<sql id="findListByQueryMapWithPageWhereExt">
 		<where>
 	       		t.ou_id = #{ouId}
 	       		<!-- 库位号 -->
@@ -382,6 +382,119 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
 	</sql>
 	
+	<sql id="WhSkuInventorySearchWhereExt">
+		<where>
+	       		t.ou_id = #{ouId}
+	       		<!-- 库位号 -->
+				<if test="locationCode!=null and locationCode!=''">
+					 and l.code like #{locationCode}
+				</if>
+				<!-- 外部容器号 -->
+				<if test="outerContainerCode!=null and outerContainerCode!=''">
+					 and cout.code like #{outerContainerCode}
+				</if>
+				<!-- 内部容器号 -->
+				<if test="insideContainerCode!=null and insideContainerCode!=''">
+					 and iout.code like #{insideContainerCode}
+				</if>
+				<!-- 商品编码 -->
+				<if test="skuCode!=null and skuCode!=''">
+					 and sku.code like #{skuCode}
+				</if>
+				<!-- 商品名称 -->
+				<if test="skuName!=null  and skuName!=''">
+					 and sku.name like #{skuName}
+				</if>
+				<!-- 客户名称 -->
+				<if test="customerId!=null">
+					 and t.customer_id IN
+					<foreach collection="customerId" item="s" open="(" separator="," close=")">
+					       #{s}
+				  	</foreach>
+				</if>
+				<!-- 店铺名称 -->
+				<if test="storeId!=null">
+					 and t.store_id IN
+					<foreach collection="storeId" item="s" open="(" separator="," close=")">
+					       #{s}
+				  	</foreach>
+				</if>
+				<!-- 库存状态 -->
+				<if test="invstatusName!=null">
+					 and t.inv_status IN
+					<foreach collection="invstatusName" item="s" open="(" separator="," close=")">
+					       #{s}
+				  	</foreach>
+				</if>
+				<!-- 库存类型 -->
+				<if test="invTypeName!=null">
+					 and t.inv_type IN
+					<foreach collection="invTypeName" item="s" open="(" separator="," close=")">
+					       #{s}
+				  	</foreach>
+				</if>
+				<!-- 批次号 -->
+				<if test="batchNumber!=null and batchNumber!=''">
+					 and t.batch_number like #{batchNumber}
+				</if>
+				<!-- 生产日期 -->
+				<if test="mfgDateStart!=null and mfgDateStart!=''">
+					and DATE_FORMAT(t.mfg_date,'%Y-%m-%d')&gt;=#{mfgDateStart}
+				</if>
+				<!-- 生产日期 -->
+				<if test="mfgDateEnd!=null and mfgDateEnd!=''">
+					and DATE_FORMAT(t.mfg_date,'%Y-%m-%d')&lt;=#{mfgDateEnd}
+				</if>
+				<!-- 失效日期 -->
+				<if test="expDateStart!=null and expDateStart!=''">
+					and DATE_FORMAT(t.exp_date,'%Y-%m-%d')&gt;=#{expDateStart}
+				</if>
+				<!-- 失效日期 -->
+				<if test="expDateEnd!=null and expDateEnd!=''">
+					and DATE_FORMAT(t.exp_date,'%Y-%m-%d')&lt;=#{expDateEnd}
+				</if>
+				<!-- 原产地 -->
+				<if test="countryOfOrigin!=null and countryOfOrigin!=''">
+					 and t.country_of_origin = #{countryOfOrigin}
+				</if>
+				<!-- 库存属性1 -->
+				<if test="invAttr1!=null">
+				    and t.inv_attr1 IN
+					<foreach collection="invAttr1" item="s" open="(" separator="," close=")">
+					       #{s}
+				  	</foreach>
+				</if>
+				<!-- 库存属性2 -->
+				<if test="invAttr2!=null">
+				    and t.inv_attr2 IN
+					<foreach collection="invAttr2" item="s" open="(" separator="," close=")">
+					       #{s}
+				  	</foreach>
+				 </if>
+				<!-- 库存属性3 -->
+				<if test="invAttr3!=null">
+				    and t.inv_attr3 IN
+					<foreach collection="invAttr3" item="s" open="(" separator="," close=")">
+					       #{s}
+				  	</foreach>
+				</if>
+				<!-- 库存属性4 -->
+				 <if test="invAttr4!=null">
+				    and t.inv_attr4 IN
+					<foreach collection="invAttr4" item="s" open="(" separator="," close=")">
+					       #{s}
+				  	</foreach>
+				 </if>
+				<!-- 库存属性5 -->
+				<if test="invAttr5!=null">
+				    and t.inv_attr5 IN
+					<foreach collection="invAttr5" item="s" open="(" separator="," close=")">
+					       #{s}
+				  	</foreach>
+				</if>
+		</where>
+	</sql>
+	
 
 	<select id="findListCountByQueryMapExt" resultType="long">
 		select count(t.uuid) from (
@@ -395,7 +508,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 						left join t_wh_container cout on t.outer_container_id = cout.id 
 						left join t_wh_container iout on t.inside_container_id = iout.id 
 						left join t_wh_inventory_status invstatus on t.inv_status = invstatus.id
-						<include refid="findListByQueryMapWithPageWhereExt"/> )
+						<include refid="WhSkuInventorySearchWhereExt"/> )
 			t group by t.uuid) t
     </select>
 	
@@ -411,7 +524,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 							left join t_wh_container cout on t.outer_container_id = cout.id 
 							left join t_wh_container iout on t.inside_container_id = iout.id 
 							left join t_wh_inventory_status invstatus on t.inv_status = invstatus.id
-						<include refid="findListByQueryMapWithPageWhereExt"/> )
+						<include refid="WhSkuInventorySearchWhereExt"/> )
 			t group by t.uuid
     </select>
     

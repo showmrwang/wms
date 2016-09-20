@@ -7,7 +7,7 @@ debug="false">
 <param name="ConversionPattern" value="[%d{yyyy-MM-dd HH:mm:ss:SSS z}] %5p %l: %m%n" />
 </layout>
 <filter class="org.apache.log4j.varia.LevelRangeFilter">
-<param name="LevelMin" value="info" />
+<param name="LevelMin" value="debug" />
 <!-- <param name="LevelMax" value="debug" /> -->
 <param name="AcceptOnMatch" value="false" />
 </filter>
@@ -75,7 +75,7 @@ debug="false">
 
 <root>
 
-<level value="INFO" />
+<level value="DEBUG" />
 <appender-ref ref="CONSOLE" />
 <!-- <appender-ref ref="dfileInfo" />
 <appender-ref ref="dfileWarn" />
