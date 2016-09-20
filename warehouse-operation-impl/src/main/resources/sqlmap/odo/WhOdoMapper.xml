@@ -183,7 +183,6 @@
 		        	#{originalOdoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{priorityLevel,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        	#{isWholeOrderOutbound,javaType=java.lang.Boolean,jdbcType=BIT} ,
-		        	#{partOutboundStrategy,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{crossDockingSymbol,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{orderType,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{orderTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,

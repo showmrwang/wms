@@ -727,7 +727,6 @@
 			        assign_fail_reason = #{assignFailReason,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        is_allow_merge = #{isAllowMerge,javaType=java.lang.Boolean,jdbcType=BIT} ,
 			        is_locked = #{isLocked,javaType=java.lang.Boolean,jdbcType=BIT} ,
-			        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        last_modify_time = now() ,

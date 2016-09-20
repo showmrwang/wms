@@ -140,6 +140,9 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
             if (null == odo.getAmt()) {
                 odo.setAmt(Constants.DEFAULT_DOUBLE);
             }
+            if (null == odo.getIsAllowMerge()) {
+            	odo.setIsAllowMerge(true);
+            }
             // TODO yimin.lu
             odo.setOdoStatus(OdoStatus.ODO_TOBECREATED);
             odo.setOuId(ouId);
