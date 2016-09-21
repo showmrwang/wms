@@ -111,7 +111,7 @@ public interface WhCartonDao extends BaseDao<WhCarton, Long> {
      * @param containerIds
      * @return
      */
-    public int findWhCartonCountByContainerId(@Param("ouId") Long ouId,Long containerId,Boolean isCaselevel);
+    public int findWhCartonCountByContainerId(@Param("ouId") Long ouId,@Param("containerId") Long containerId,@Param("isCaselevel") Boolean isCaselevel);
     /**
      * 通用功能
      * 
