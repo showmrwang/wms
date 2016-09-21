@@ -1,0 +1,461 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveLineDao">
+	<resultMap id="WhWaveLineResult" type="com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whWaveLineColumns">
+	    <![CDATA[
+	        	id as id,
+	        	wave_id as waveId,
+	        	odo_line_id as odoLineId,
+	        	odo_id as odoId,
+	        	odo_code as odoCode,
+	        	odo_priority_level as odoPriorityLevel,
+	        	odo_plan_deliver_goods_time as odoPlanDeliverGoodsTime,
+	        	odo_order_time as odoOrderTime,
+	        	allocate_rule_id as allocateRuleId,
+	        	linenum as linenum,
+	        	store_id as storeId,
+	        	ext_linenum as extLinenum,
+	        	sku_id as skuId,
+	        	sku_bar_code as skuBarCode,
+	        	sku_name as skuName,
+	        	ext_sku_name as extSkuName,
+	        	qty as qty,
+	        	is_whole_order_outbound as isWholeOrderOutbound,
+	        	full_line_outbound as fullLineOutbound,
+	        	mfg_date as mfgDate,
+	        	exp_date as expDate,
+	        	min_exp_date as minExpDate,
+	        	max_exp_date as maxExpDate,
+	        	batch_number as batchNumber,
+	        	country_of_origin as countryOfOrigin,
+	        	inv_status as invStatus,
+	        	inv_type as invType,
+	        	inv_attr1 as invAttr1,
+	        	inv_attr2 as invAttr2,
+	        	inv_attr3 as invAttr3,
+	        	inv_attr4 as invAttr4,
+	        	inv_attr5 as invAttr5,
+	        	outbound_carton_type as outboundCartonType,
+	        	color as color,
+	        	style as style,
+	        	size as size,
+	        	ou_id as ouId,
+	        	create_time as createTime,
+	        	created_id as createdId,
+	        	last_modify_time as lastModifyTime,
+	        	modified_id as modifiedId
+	    ]]>
+	</sql>
+	
+		<!-- 如果有自增字段 -->
+		
+			<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+			<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine" 
+				
+			 flushCache="true">
+		    <![CDATA[
+		        INSERT INTO
+		        t_wh_wave_line (
+		        id,
+		        	wave_id ,
+		        	odo_line_id ,
+		        	odo_id ,
+		        	odo_code ,
+		        	odo_priority_level ,
+		        	odo_plan_deliver_goods_time ,
+		        	odo_order_time ,
+		        	allocate_rule_id ,
+		        	linenum ,
+		        	store_id ,
+		        	ext_linenum ,
+		        	sku_id ,
+		        	sku_bar_code ,
+		        	sku_name ,
+		        	ext_sku_name ,
+		        	qty ,
+		        	is_whole_order_outbound ,
+		        	full_line_outbound ,
+		        	mfg_date ,
+		        	exp_date ,
+		        	min_exp_date ,
+		        	max_exp_date ,
+		        	batch_number ,
+		        	country_of_origin ,
+		        	inv_status ,
+		        	inv_type ,
+		        	inv_attr1 ,
+		        	inv_attr2 ,
+		        	inv_attr3 ,
+		        	inv_attr4 ,
+		        	inv_attr5 ,
+		        	outbound_carton_type ,
+		        	color ,
+		        	style ,
+		        	size ,
+		        	ou_id ,
+		        	create_time ,
+		        	created_id ,
+		        	last_modify_time ,
+		        	modified_id 
+		        ) VALUES (
+		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{waveId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{odoLineId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{odoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{odoPriorityLevel,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{odoPlanDeliverGoodsTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{odoOrderTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{allocateRuleId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{linenum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{storeId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{extLinenum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{skuBarCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{skuName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{extSkuName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{qty,javaType=Long,jdbcType=DECIMAL} ,
+		        	#{isWholeOrderOutbound,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	#{fullLineOutbound,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	#{mfgDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{expDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{minExpDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{maxExpDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{batchNumber,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{countryOfOrigin,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invStatus,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{invType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invAttr1,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invAttr2,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invAttr3,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invAttr4,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invAttr5,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{outboundCartonType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{color,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{style,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{size,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        )
+		    ]]>
+
+		</insert>
+		
+		
+		<update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine">
+	    <![CDATA[
+	        UPDATE t_wh_wave_line SET
+		        wave_id = #{waveId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        odo_line_id = #{odoLineId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        odo_id = #{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        odo_code = #{odoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        odo_priority_level = #{odoPriorityLevel,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        odo_plan_deliver_goods_time = #{odoPlanDeliverGoodsTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        odo_order_time = #{odoOrderTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        allocate_rule_id = #{allocateRuleId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        linenum = #{linenum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        store_id = #{storeId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        ext_linenum = #{extLinenum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        sku_id = #{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        sku_bar_code = #{skuBarCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        sku_name = #{skuName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        ext_sku_name = #{extSkuName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        qty = #{qty,javaType=Long,jdbcType=DECIMAL} ,
+		        is_whole_order_outbound = #{isWholeOrderOutbound,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        full_line_outbound = #{fullLineOutbound,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        mfg_date = #{mfgDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        exp_date = #{expDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        min_exp_date = #{minExpDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        max_exp_date = #{maxExpDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        batch_number = #{batchNumber,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        country_of_origin = #{countryOfOrigin,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        inv_status = #{invStatus,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        inv_type = #{invType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        inv_attr1 = #{invAttr1,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        inv_attr2 = #{invAttr2,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        inv_attr3 = #{invAttr3,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        inv_attr4 = #{invAttr4,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        inv_attr5 = #{invAttr5,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        outbound_carton_type = #{outboundCartonType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        color = #{color,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        style = #{style,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        size = #{size,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
+	        WHERE 
+		        id = #{id} 
+		        and ou_id = #{ouId}
+	    ]]>
+		</update>
+	   <delete id="delete" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from t_wh_wave_line where
+		        id = #{id} 
+	    ]]>
+	    </delete> 
+	    
+	     <delete id="deleteByIds" parameterType="list">
+	    
+	        delete from t_wh_wave_line 
+	        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+					#{item}				
+				</foreach>	
+	  
+	    </delete>  
+	         
+	    <select id="findById" parameterType="java.lang.Long" resultMap="WhWaveLineResult" flushCache="false">
+			select <include refid="whWaveLineColumns" />
+		    <![CDATA[
+			    from t_wh_wave_line 
+		        where 
+		        id = #{id} 
+		    ]]>
+		</select>	
+		<select id="getByIds" parameterType="list"  resultMap="WhWaveLineResult" flushCache="false">
+			select <include refid="whWaveLineColumns" />
+			    from t_wh_wave_line 
+		        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+					#{item}				
+				</foreach>					
+		</select>	
+	<sql id="whWaveLineDynamicWhere">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+				<if test="waveId!=null">
+					and wave_id = #{waveId}
+				</if>
+	       
+				<if test="odoLineId!=null">
+					and odo_line_id = #{odoLineId}
+				</if>
+	       
+				<if test="odoId!=null">
+					and odo_id = #{odoId}
+				</if>
+	       
+	       
+		       <if test="odoCode!=null and odoCode!=''">
+					and odo_code = #{odoCode}
+				</if>
+	       
+				<if test="odoPriorityLevel!=null">
+					and odo_priority_level = #{odoPriorityLevel}
+				</if>
+	       
+				<if test="odoPlanDeliverGoodsTime!=null">
+					and odo_plan_deliver_goods_time = #{odoPlanDeliverGoodsTime}
+				</if>
+	       
+				<if test="odoOrderTime!=null">
+					and odo_order_time = #{odoOrderTime}
+				</if>
+	       
+				<if test="allocateRuleId!=null">
+					and allocate_rule_id = #{allocateRuleId}
+				</if>
+	       
+				<if test="linenum!=null">
+					and linenum = #{linenum}
+				</if>
+	       
+				<if test="storeId!=null">
+					and store_id = #{storeId}
+				</if>
+	       
+				<if test="extLinenum!=null">
+					and ext_linenum = #{extLinenum}
+				</if>
+	       
+				<if test="skuId!=null">
+					and sku_id = #{skuId}
+				</if>
+	       
+	       
+		       <if test="skuBarCode!=null and skuBarCode!=''">
+					and sku_bar_code = #{skuBarCode}
+				</if>
+	       
+	       
+		       <if test="skuName!=null and skuName!=''">
+					and sku_name = #{skuName}
+				</if>
+	       
+	       
+		       <if test="extSkuName!=null and extSkuName!=''">
+					and ext_sku_name = #{extSkuName}
+				</if>
+	       
+				<if test="qty!=null">
+					and qty = #{qty}
+				</if>
+	       
+				<if test="isWholeOrderOutbound!=null">
+					and is_whole_order_outbound = #{isWholeOrderOutbound}
+				</if>
+	       
+				<if test="fullLineOutbound!=null">
+					and full_line_outbound = #{fullLineOutbound}
+				</if>
+	       
+				<if test="mfgDate!=null">
+					and mfg_date = #{mfgDate}
+				</if>
+	       
+				<if test="expDate!=null">
+					and exp_date = #{expDate}
+				</if>
+	       
+				<if test="minExpDate!=null">
+					and min_exp_date = #{minExpDate}
+				</if>
+	       
+				<if test="maxExpDate!=null">
+					and max_exp_date = #{maxExpDate}
+				</if>
+	       
+	       
+		       <if test="batchNumber!=null and batchNumber!=''">
+					and batch_number = #{batchNumber}
+				</if>
+	       
+	       
+		       <if test="countryOfOrigin!=null and countryOfOrigin!=''">
+					and country_of_origin = #{countryOfOrigin}
+				</if>
+	       
+				<if test="invStatus!=null">
+					and inv_status = #{invStatus}
+				</if>
+	       
+	       
+		       <if test="invType!=null and invType!=''">
+					and inv_type = #{invType}
+				</if>
+	       
+	       
+		       <if test="invAttr1!=null and invAttr1!=''">
+					and inv_attr1 = #{invAttr1}
+				</if>
+	       
+	       
+		       <if test="invAttr2!=null and invAttr2!=''">
+					and inv_attr2 = #{invAttr2}
+				</if>
+	       
+	       
+		       <if test="invAttr3!=null and invAttr3!=''">
+					and inv_attr3 = #{invAttr3}
+				</if>
+	       
+	       
+		       <if test="invAttr4!=null and invAttr4!=''">
+					and inv_attr4 = #{invAttr4}
+				</if>
+	       
+	       
+		       <if test="invAttr5!=null and invAttr5!=''">
+					and inv_attr5 = #{invAttr5}
+				</if>
+	       
+				<if test="outboundCartonType!=null">
+					and outbound_carton_type = #{outboundCartonType}
+				</if>
+	       
+	       
+		       <if test="color!=null and color!=''">
+					and color = #{color}
+				</if>
+	       
+	       
+		       <if test="style!=null and style!=''">
+					and style = #{style}
+				</if>
+	       
+	       
+		       <if test="size!=null and size!=''">
+					and size = #{size}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+	       
+				<if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="createdId!=null">
+					and created_id = #{createdId}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="modifiedId!=null">
+					and modified_id = #{modifiedId}
+				</if>
+		</where>
+	</sql>
+	
+
+	<select id="getCount" resultType="long">
+        select count(*) from t_wh_wave_line 
+    </select>
+    <select id="findListCountByQueryMap" resultType="long">
+        select count(*) from t_wh_wave_line 
+		<include refid="whWaveLineDynamicWhere"/>    
+    </select>
+    
+    <select id="findListCountByParam" resultType="long">
+        select count(*) from t_wh_wave_line 
+		<include refid="whWaveLineDynamicWhere"/>    
+    </select>
+    
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPage" resultMap="WhWaveLineResult">
+    	select <include refid="whWaveLineColumns" />
+	    from t_wh_wave_line 
+		<include refid="whWaveLineDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByQueryMap" resultMap="WhWaveLineResult">
+    	select <include refid="whWaveLineColumns" />
+	    from t_wh_wave_line 
+		<include refid="whWaveLineDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByParam" resultMap="WhWaveLineResult">
+    	select <include refid="whWaveLineColumns" />
+	    from t_wh_wave_line 
+		<include refid="whWaveLineDynamicWhere"/>
+		
+    </select>
+
+	
+</mapper>

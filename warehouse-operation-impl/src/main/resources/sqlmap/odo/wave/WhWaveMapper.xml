@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveDao">
+	<resultMap id="WhWaveResult" type="com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whWaveColumns">
+	    <![CDATA[
+	        	id as id,
+	        	code as code,
+	        	status as status,
+	        	ou_id as ouId,
+	        	wave_master_id as waveMasterId,
+	        	phase_code as phaseCode,
+	        	allocate_phase as allocatePhase,
+	        	start_time as startTime,
+	        	finish_time as finishTime,
+	        	total_odo_qty as totalOdoQty,
+	        	total_odo_line_qty as totalOdoLineQty,
+	        	total_amount as totalAmount,
+	        	total_volume as totalVolume,
+	        	total_weight as totalWeight,
+	        	total_sku_qty as totalSkuQty,
+	        	sku_category_qty as skuCategoryQty,
+	        	exec_odo_qty as execOdoQty,
+	        	exec_odo_line_qty as execOdoLineQty,
+	        	outbound_carton_qty as outboundCartonQty,
+	        	create_time as createTime,
+	        	last_modify_time as lastModifyTime,
+	        	created_id as createdId,
+	        	modified_id as modifiedId,
+	        	lifecycle as lifecycle
+	    ]]>
+	</sql>
+	
+		<!-- 如果有自增字段 -->
+		
+			<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+			<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave" 
+				
+			 flushCache="true">
+		    <![CDATA[
+		        INSERT INTO
+		        t_wh_wave (
+		        id,
+		        	code ,
+		        	status ,
+		        	ou_id ,
+		        	wave_master_id ,
+		        	phase_code ,
+		        	allocate_phase ,
+		        	start_time ,
+		        	finish_time ,
+		        	total_odo_qty ,
+		        	total_odo_line_qty ,
+		        	total_amount ,
+		        	total_volume ,
+		        	total_weight ,
+		        	total_sku_qty ,
+		        	sku_category_qty ,
+		        	exec_odo_qty ,
+		        	exec_odo_line_qty ,
+		        	outbound_carton_qty ,
+		        	create_time ,
+		        	last_modify_time ,
+		        	created_id ,
+		        	modified_id ,
+		        	lifecycle 
+		        ) VALUES (
+		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{status,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{waveMasterId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{phaseCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{allocatePhase,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{startTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{finishTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{totalOdoQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{totalOdoLineQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{totalAmount,javaType=Long,jdbcType=DECIMAL} ,
+		        	#{totalVolume,javaType=Long,jdbcType=DECIMAL} ,
+		        	#{totalWeight,javaType=Long,jdbcType=DECIMAL} ,
+		        	#{totalSkuQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{skuCategoryQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{execOdoQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{execOdoLineQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{outboundCartonQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
+		        )
+		    ]]>
+
+		</insert>
+		
+		
+		<update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave">
+	    <![CDATA[
+	        UPDATE t_wh_wave SET
+		        code = #{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        status = #{status,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        wave_master_id = #{waveMasterId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        phase_code = #{phaseCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        allocate_phase = #{allocatePhase,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        start_time = #{startTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        finish_time = #{finishTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        total_odo_qty = #{totalOdoQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        total_odo_line_qty = #{totalOdoLineQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        total_amount = #{totalAmount,javaType=Long,jdbcType=DECIMAL} ,
+		        total_volume = #{totalVolume,javaType=Long,jdbcType=DECIMAL} ,
+		        total_weight = #{totalWeight,javaType=Long,jdbcType=DECIMAL} ,
+		        total_sku_qty = #{totalSkuQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        sku_category_qty = #{skuCategoryQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        exec_odo_qty = #{execOdoQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        exec_odo_line_qty = #{execOdoLineQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        outbound_carton_qty = #{outboundCartonQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
+	        WHERE 
+		        id = #{id}
+		        and ou_id = #{ouId}
+	    ]]>
+		</update>
+	   <delete id="delete" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from t_wh_wave where
+		        id = #{id} 
+	    ]]>
+	    </delete> 
+	    
+	     <delete id="deleteByIds" parameterType="list">
+	    
+	        delete from t_wh_wave 
+	        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+					#{item}				
+				</foreach>	
+	  
+	    </delete>  
+	         
+	    <select id="findById" parameterType="java.lang.Long" resultMap="WhWaveResult" flushCache="false">
+			select <include refid="whWaveColumns" />
+		    <![CDATA[
+			    from t_wh_wave 
+		        where 
+		        id = #{id} 
+		    ]]>
+		</select>	
+		<select id="getByIds" parameterType="list"  resultMap="WhWaveResult" flushCache="false">
+			select <include refid="whWaveColumns" />
+			    from t_wh_wave 
+		        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+					#{item}				
+				</foreach>					
+		</select>	
+	<sql id="whWaveDynamicWhere">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+	       
+		       <if test="code!=null and code!=''">
+					and code = #{code}
+				</if>
+	       
+	       
+		       <if test="status!=null and status!=''">
+					and status = #{status}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+	       
+				<if test="waveMasterId!=null">
+					and wave_master_id = #{waveMasterId}
+				</if>
+	       
+	       
+		       <if test="phaseCode!=null and phaseCode!=''">
+					and phase_code = #{phaseCode}
+				</if>
+	       
+				<if test="allocatePhase!=null">
+					and allocate_phase = #{allocatePhase}
+				</if>
+	       
+				<if test="startTime!=null">
+					and start_time = #{startTime}
+				</if>
+	       
+				<if test="finishTime!=null">
+					and finish_time = #{finishTime}
+				</if>
+	       
+				<if test="totalOdoQty!=null">
+					and total_odo_qty = #{totalOdoQty}
+				</if>
+	       
+				<if test="totalOdoLineQty!=null">
+					and total_odo_line_qty = #{totalOdoLineQty}
+				</if>
+	       
+				<if test="totalAmount!=null">
+					and total_amount = #{totalAmount}
+				</if>
+	       
+				<if test="totalVolume!=null">
+					and total_volume = #{totalVolume}
+				</if>
+	       
+				<if test="totalWeight!=null">
+					and total_weight = #{totalWeight}
+				</if>
+	       
+				<if test="totalSkuQty!=null">
+					and total_sku_qty = #{totalSkuQty}
+				</if>
+	       
+				<if test="skuCategoryQty!=null">
+					and sku_category_qty = #{skuCategoryQty}
+				</if>
+	       
+				<if test="execOdoQty!=null">
+					and exec_odo_qty = #{execOdoQty}
+				</if>
+	       
+				<if test="execOdoLineQty!=null">
+					and exec_odo_line_qty = #{execOdoLineQty}
+				</if>
+	       
+				<if test="outboundCartonQty!=null">
+					and outbound_carton_qty = #{outboundCartonQty}
+				</if>
+	       
+				<if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="createdId!=null">
+					and created_id = #{createdId}
+				</if>
+	       
+				<if test="modifiedId!=null">
+					and modified_id = #{modifiedId}
+				</if>
+	       
+				<if test="lifecycle!=null">
+					and lifecycle = #{lifecycle}
+				</if>
+		</where>
+	</sql>
+	
+
+	<select id="getCount" resultType="long">
+        select count(*) from t_wh_wave 
+    </select>
+    <select id="findListCountByQueryMap" resultType="long">
+        select count(*) from t_wh_wave 
+		<include refid="whWaveDynamicWhere"/>    
+    </select>
+    
+    <select id="findListCountByParam" resultType="long">
+        select count(*) from t_wh_wave 
+		<include refid="whWaveDynamicWhere"/>    
+    </select>
+    
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPage" resultMap="WhWaveResult">
+    	select <include refid="whWaveColumns" />
+	    from t_wh_wave 
+		<include refid="whWaveDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByQueryMap" resultMap="WhWaveResult">
+    	select <include refid="whWaveColumns" />
+	    from t_wh_wave 
+		<include refid="whWaveDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByParam" resultMap="WhWaveResult">
+    	select <include refid="whWaveColumns" />
+	    from t_wh_wave 
+		<include refid="whWaveDynamicWhere"/>
+		
+    </select>
+
+	
+</mapper>
