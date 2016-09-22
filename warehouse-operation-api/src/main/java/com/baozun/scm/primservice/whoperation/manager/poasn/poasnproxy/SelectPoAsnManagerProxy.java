@@ -307,5 +307,14 @@ public interface SelectPoAsnManagerProxy extends BaseManager {
      * @return
      */
     BiPo findBiPoByExtCodeStoreId(String extCode, Long storeId);
+    
+    /**
+     * [通用方法]根据EXTCODE+STOREID查找WHPO列表
+     * 
+     * @param extCode
+     * @param storeId
+     * @return
+     */
+    List<WhPoCommand> findPoListByExtCodeStoreId(String extCode, String storeId);
 
 }

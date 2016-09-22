@@ -140,5 +140,14 @@ public interface WhPoDao extends BaseDao<WhPo, Long> {
      * @return
      */
     boolean checkIsRcvdFinished(@Param("poId") Long id, @Param("ouId") Long ouId);
+    
+    /**
+     * EXTCODE,STOREID的查找WHPO
+     * 
+     * @param extCode @required
+     * @param storeId @required
+     * @return
+     */
+    List<WhPoCommand> findPoListByExtCodeStoreId(@Param("extCode") String extCode, @Param("storeId") String storeId);
 
 }

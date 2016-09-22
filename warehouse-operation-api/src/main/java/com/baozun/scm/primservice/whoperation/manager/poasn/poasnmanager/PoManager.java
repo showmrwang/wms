@@ -174,5 +174,14 @@ public interface PoManager extends BaseManager {
      * @param infoPoLineList
      */
     void saveSubPoToShard(String extCode, Long storeId, Long ouId, Long userId, String poCode, WhPo infoPo, List<WhPoLine> infoPoLineList);
+    
+    /**
+     * [通用方法]根据EXTCODE+STOREID查找WHPO列表
+     * 
+     * @param extCode @required
+     * @param storeId @required
+     * @return
+     */
+    List<WhPoCommand> findPoListByExtCodeStoreId(String extCode, String storeId);
 
 }

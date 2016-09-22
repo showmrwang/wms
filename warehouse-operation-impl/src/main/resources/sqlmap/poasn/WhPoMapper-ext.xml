@@ -591,4 +591,49 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		and exists (select 1 from t_wh_po_line l where l.po_id=p.id and l.ou_id=p.ou_id and l.status in('1','2','10') )  
 		and not exists (select 1 from t_wh_po_line l where l.po_id=p.id and l.ou_id=p.ou_id and l.status in('1','2') )   
 	</select>
+	
+	<select id="findPoListByExtCodeStoreId" resultMap="WhPoCommand">
+		select 
+    		po.id as id,
+			po.po_code as poCode,
+			po.ext_code as extCode,
+			po.ou_id as ouId,
+			po.customer_id as customerId,
+			po.store_id as storeId,
+			po.supplier_id as supplierId,
+			po.logistics_provider_id as logisticsProviderId,
+			po.po_type as poType,
+			po.status as status,
+			po.is_iqc as isIqc,
+			po.po_date as poDate,
+			po.eta as eta,
+			po.delivery_time as deliveryTime,
+			po.qty_planned as qtyPlanned,
+			po.qty_rcvd as qtyRcvd,
+			po.ctn_planned as ctnPlanned,
+			po.ctn_rcvd as ctnRcvd,
+			po.start_time as startTime,
+			po.stop_time as stopTime,
+			po.inbound_time as inboundTime,
+			po.is_wms as isWms,
+			po.is_vmi as isVmi,		
+			po.create_time as createTime,
+			po.created_id as createdId,
+			po.last_modify_time as lastModifyTime,
+			po.modified_id as modifiedId,
+			po.uuid as uuid,
+			po.overchage_rate as overChageRate,
+			provider.name as logisticsProviderName,
+			supplier.name as supplierName,
+			w.name as ouName
+	    from 
+	    t_wh_po po 
+		left join t_ma_transport_provider provider on provider.id=po.logistics_provider_id
+		left join t_wh_supplier supplier on supplier.id=po.supplier_id
+		left join t_bi_warehouse w ON po.ou_id = w.id
+		<where>
+				and ext_code = #{extCode}
+				and store_id = #{storeId}
+		</where>
+    </select>
 </mapper>
