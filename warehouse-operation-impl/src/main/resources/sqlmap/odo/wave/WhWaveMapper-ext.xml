@@ -17,6 +17,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	ou_id as ouId,
 	        	wave_master_id as waveMasterId,
 	        	phase_code as phaseCode,
+	        	is_weak_allocated as isWeakAllocated,
 	        	allocate_phase as allocatePhase,
 	        	start_time as startTime,
 	        	finish_time as finishTime,
@@ -30,6 +31,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	exec_odo_qty as execOdoQty,
 	        	exec_odo_line_qty as execOdoLineQty,
 	        	outbound_carton_qty as outboundCartonQty,
+	        	is_error as isError,
+	        	error_count as errorCount,
 	        	create_time as createTime,
 	        	last_modify_time as lastModifyTime,
 	        	created_id as createdId,
@@ -51,8 +54,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					and code = #{code}
 				</if>
 	       
-	       
-		       <if test="status!=null and status!=''">
+				<if test="status!=null">
 					and status = #{status}
 				</if>
 	       
@@ -67,6 +69,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	       
 		       <if test="phaseCode!=null and phaseCode!=''">
 					and phase_code = #{phaseCode}
+				</if>
+	       
+				<if test="isWeakAllocated!=null">
+					and is_weak_allocated = #{isWeakAllocated}
 				</if>
 	       
 				<if test="allocatePhase!=null">
@@ -121,6 +127,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					and outbound_carton_qty = #{outboundCartonQty}
 				</if>
 	       
+				<if test="isError!=null">
+					and is_error = #{isError}
+				</if>
+	       
+				<if test="errorCount!=null">
+					and error_count = #{errorCount}
+				</if>
+	       
 				<if test="createTime!=null">
 					and create_time = #{createTime}
 				</if>
@@ -148,9 +162,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    <![CDATA[
 		        UPDATE t_wh_wave SET
 			        code = #{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        status = #{status,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        status = #{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 			        wave_master_id = #{waveMasterId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        phase_code = #{phaseCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        is_weak_allocated = #{isWeakAllocated,javaType=java.lang.Boolean,jdbcType=BIT} ,
 			        allocate_phase = #{allocatePhase,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 			        start_time = #{startTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        finish_time = #{finishTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
@@ -164,14 +179,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        exec_odo_qty = #{execOdoQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 			        exec_odo_line_qty = #{execOdoLineQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 			        outbound_carton_qty = #{outboundCartonQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        is_error = #{isError,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        error_count = #{errorCount,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-			        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+			        last_modify_time = now() ,
 			        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
 		        WHERE 
 			        id = #{id} 
-			        and ou_id = #{ouId} 
+			        
 			        and last_modify_time	<=  #{lastModifyTime}    
 		    ]]>
 		</update>
