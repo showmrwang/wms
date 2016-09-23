@@ -184,11 +184,6 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
             if(scanResult.isHasOuterContainer()) {   //扫描的是外部容器
                 return scanResult;   //返回扫描容器页面,提示容器号
             }
-            Long icId = containerCmd.getId();
-            cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icId.toString());
-            cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icId.toString()+"85");
-            cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY_STATISTIC, icId.toString());
-            cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY, icId.toString());
             //如果扫描的不是外部容器,缓存内部容器库存
             List<WhSkuInventoryCommand>  invList =  this.containerPutwayCacheInventory(containerCmd, ouId, logId);
             //容器库存统计缓存
@@ -218,7 +213,6 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
             if(scanResult.isHasOuterContainer()) {   //扫描的是外部容器
                 return scanResult;   //返回扫描容器页面,提示一个内容器号
             }
-          
             //如果扫描的不是外部容器,缓存内部容器库存
             List<WhSkuInventoryCommand>  invList =  this.splitPutwayCacheInventory(containerCmd, ouId, logId);
             //容器库存统计缓存
@@ -2379,6 +2373,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
             int count = whCartonDao.findWhCartonCountByContainerId(ouId,insideContainerId,false);
             if(count < 1) {  //此货箱不是caselevel货箱,直接上架
                 whSkuInventoryManager.putaway(outCommand,insideContainerCmd, locationCode, functionId, warehouse, putawayPatternDetailType, ouId, userId, logId);
+                this.putawayRemoveAllCache( outCommand, insideContainerCmd, ouId, userId, srCmd);
             }
             // 是caselevel货箱扫描商品
             CheckScanSkuResultCommand cssrCmd = pdaPutawayCacheManager.sysGuideContainerPutawayCacheSkuAndCheckContainer(outCommand, insideContainerCmd, noCaselevelContainerIds, insideContainerSkuIds, insideContainerSkuIdsQty,skuCmd, scanPattern,logId);
