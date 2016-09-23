@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.system.SysThreadDeployDao">
+	<resultMap id="SysThreadDeployResultExt" type="com.baozun.scm.primservice.whoperation.model.system.SysThreadDeploy">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="sysThreadDeployColumnsExt">
+	    <![CDATA[
+	        	id as id,
+	        	thread_code as threadCode,
+	        	description as description,
+	        	thread_qty as threadQty,
+	        	run_qty as runQty,
+	        	ou_id as ouId,
+	        	create_time as createTime,
+	        	create_id as createId,
+	        	last_modify_time as lastModifyTime,
+	        	operator_id as operatorId
+	    ]]>
+	</sql>
+	
+	<sql id="sysThreadDeployDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+	       
+		       <if test="threadCode!=null and threadCode!=''">
+					and thread_code = #{threadCode}
+				</if>
+	       
+	       
+		       <if test="description!=null and description!=''">
+					and description = #{description}
+				</if>
+	       
+				<if test="threadQty!=null">
+					and thread_qty = #{threadQty}
+				</if>
+	       
+				<if test="runQty!=null">
+					and run_qty = #{runQty}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+	       
+				<if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="createId!=null">
+					and create_id = #{createId}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="operatorId!=null">
+					and operator_id = #{operatorId}
+				</if>
+		</where>
+	</sql>
+	
+
+		<update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.system.SysThreadDeploy">
+		    <![CDATA[
+		        UPDATE sys_thread_deploy SET
+			        thread_code = #{threadCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        description = #{description,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        thread_qty = #{threadQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        run_qty = #{runQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+			        create_id = #{createId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+			        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        WHERE 
+			        id = #{id} 
+			        and ou_id = #{ouId}
+			        and last_modify_time	<=  #{lastModifyTime}    
+		    ]]>
+		</update>
+	
+</mapper>
