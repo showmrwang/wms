@@ -7,6 +7,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.carton.WhCartonDao">
 	<resultMap id="WhCartonResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.carton.WhCarton">
 	</resultMap>
+    <resultMap id="WhCartonCommandExt" type="com.baozun.scm.primservice.whoperation.command.warehouse.carton.WhCartonCommand">
+    </resultMap>
 	
 	<!-- 用于select查询公用抽取的列 -->
 	<sql id="whCartonColumnsExt">
@@ -354,4 +356,28 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    and container_id = #{containerid}
  </select>
  
+
+
+
+    <select id="getCaseLevelWhCartonListByContainer" resultMap="WhCartonCommandExt">
+        select
+            <include refid="whCartonColumnsExt" />
+        from t_wh_carton as carton
+        where
+            carton.asn_id = #{asnId}
+            and carton.container_id = #{containerId}
+            and carton.ou_id = #{ouId}
+            and carton.is_caselevel = 1
+    </select>
+
+    <select id="isAsnCaseLevelNeedToRcvd" resultType="java.lang.Boolean">
+        select count(1) from t_wh_carton as carton
+            left join t_wh_container as container
+                on container.id = carton.container_id
+        where carton.asn_id = #{asnId}
+        and carton.ou_id = #{ouId}
+        and container.lifecycle = 1
+        and container.status = 1
+    </select>
+
 </mapper>

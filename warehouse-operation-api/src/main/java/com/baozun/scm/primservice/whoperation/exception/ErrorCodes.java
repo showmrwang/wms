@@ -486,6 +486,138 @@ public class ErrorCodes {
 
 
     // 60001-70000 xiemingwei
+
+    /** [{0}]存在SN商品,请更换收货功能 */
+    public static final int CASELEVEL_SKU_SN_EXIST= 60002;
+    /** [{0}]存在SN商品,请更换收货功能 */
+    public static final int CASELEVEL_CONTAINER_NULL= 60003;
+    /** 容器[{0}]不可用或已完成收货 */
+    public static final int CASELEVEL_CONTAINER_UNAVAILABLE = 60004;
+    /** 容器[{0}]已被他人操作 */
+    public static final int CASELEVEL_CONTAINER_OCCUPIED= 60005;
+    /** [{0}]无caseLevel装箱信息 */
+    public static final int CASELEVEL_NULL= 60006;
+    /** 属性未维护,请更换收货功能 */
+    public static final int CASELEVEL_SKU_ATTR_NULL= 60007;
+    /** 已过保质期且不收过期商品,无法收货 */
+    public static final int CASELEVEL_SKU_EXPIRED= 60008;
+    /** 有效天数达不到系统要求,无法收货 */
+    public static final int CASELEVEL_SKU_VALID_LT= 60009;
+    /** 有效天数大于系统要求,无法收货 */
+    public static final int CASELEVEL_SKU_VALID_GT= 60010;
+    /** 库存类型不一致,请更换收货功能 */
+    public static final int CASELEVEL_SKU_INV_TYPE_DIFF= 60011;
+    /** 库存状态不一致,请更换收货功能 */
+    public static final int CASELEVEL_SKU_INV_STATUS_DIFF= 60012;
+    /** 需要录入残次信息,请更换收货功能 */
+    public static final int CASELEVEL_SKU_IS_DEFECTIVE= 60013;
+    /** 商品[{0}]不在货箱内 */
+    public static final int CASELEVEL_SKU_NOT_IN_CARTON_ERROR = 60014;
+    /** 商品[{0}]不可用 */
+    public static final int CASELEVEL_SKU_UNAVAILABLE= 60015;
+    /** 商品属性录入失败 */
+    public static final int CASELEVEL_SKU_ATTR_INPUT_NULL= 60016;
+    /** 缓存key错误 */
+    public static final int CASELEVEL_CACHE_KEY_ERROR= 60017;
+    /** 容器占用失败 */
+    public static final int CASELEVEL_CONTAINER_OCCUPIED_FAILED = 60018;
+    /** 日期解析异常 */
+    public static final int CASELEVEL_PARSE_DATE_ERROR= 60019;
+    /** 收货功能信息为空 */
+    public static final int CASELEVEL_RCVD_FUN_NULL = 60020;
+    /** 序列化异常 */
+    public static final int CASELEVEL_SERIALIZE_ERROR= 60021;
+    /** 收货数错误 */
+    public static final int CASELEVEL_SKU_QTY_ERROR= 60022;
+    /** 请求错误,属性扫描已结束 */
+    public static final int CASELEVEL_REQUEST_ERROR= 60023;
+    /** 不存在该属性的装箱记录 */
+    public static final int CASELEVEL_SKU_ATTR_ERROR= 60024;
+    /** 扫描序列错误 */
+    public static final int CASELEVEL_SCAN_SQE_ERROR= 60025;
+    /** 目标不在列表中 */
+    public static final int CASELEVEL_TARGET_NOT_EXIST= 60026;
+    /** SN号[{0}]已收入 */
+    public static final int CASELEVEL_SN_EXIST_ERROR= 60027;
+    /** SN号[{0}]不在此货箱中 */
+    public static final int CASELEVEL_SN_NOT_EXIST_ERROR= 60028;
+    /** 残次条码创建失败 */
+    public static final int CASELEVEL_SN_DEFECT_WARE_BARCODE_ERROR= 60029;
+    /** SN缓存操作失败 */
+    public static final int CASELEVEL_SN_CACHE_ERROR= 60030;
+    /** UUID获取失败 */
+    public static final int CASELEVEL_UUID_ERROR= 60031;
+    /** 缓存商品失败 */
+    public static final int CASELEVEL_SKU_CACHE_ERROR= 60032;
+    /** 无匹配的计划收货信息 */
+    public static final int CASELEVEL_SKU_MATCH_ERROR= 60033;
+    /** 缓存读取失败 */
+    public static final int CASELEVEL_GET_CACHE_ERROR= 60034;
+    /** 商品[{0}]存在差异 */
+    public static final int CASELEVEL_RCVD_SKU_DIFF_ERROR = 60035;
+    /** 收货存在差异 */
+    public static final int CASELEVEL_RCVD_DIFF_ERROR = 60036;
+    /** 商品[{0}]无收货数据 */
+    public static final int CASELEVEL_RCVD_SKU_DATA_NULL_ERROR = 60037;
+    /** 商品[{0}]收入的都是残次品,不允许调整数量 */
+    public static final int CASELEVEL_RCVD_IS_DEFECTIVE_ERROR = 60038;
+    /** 商品[{0}]是SN商品,不允许调整数量 */
+    public static final int CASELEVEL_RCVD_IS_SN_ERROR = 60039;
+    /** 商品[{0}]不存在差异 */
+    public static final int CASELEVEL_RCVD_NOT_DIFF_ERROR = 60040;
+    /** 残次品数量大于收货数量 */
+    public static final int CASELEVEL_DEFECT_QTY_GL_RCVD_QTY_ERROR = 60041;
+    /** 缓存SN/残次信息失败 */
+    public static final int CASELEVEL_SN_DEFECT_INFO_CACHE_ERROR = 60042;
+    /** 未找到uuid对应的缓存信息 */
+    public static final int CASELEVEL_UUID_RCVD_INFO_NULL_ERROR = 60043;
+    /** 收货数错误 */
+    public static final int CASELEVEL_RCVD_QTY_ERROR = 60044;
+    /** 商品有效期换算率错误 */
+    public static final int CASELEVEL_SKU_DATE_UOM_ERROR = 60045;
+    /** 容器[{0}]无收货数据 */
+    public static final int CASELEVEL_RCVD_DATA_NULL_ERROR = 60046;
+    /** 缓存操作失败 */
+    public static final int CASELEVEL_CACHE_ERROR = 60047;
+    /** SN/残次信息错误 */
+    public static final int CASELEVEL_RCVD_SN_DEFECT_ERROR = 60048;
+    /** 残次条码不存在 */
+    public static final int CASELEVEL_RCVD_DEFECT_CODE_ERROR = 60049;
+    /** 残次条码[{0}]重复 */
+    public static final int CASELEVEL_RCVD_DEFECT_CODE_REPEAT_ERROR = 60050;
+    /** SN号不存在 */
+    public static final int CASELEVEL_SN_CODE_NULL_ERROR = 60051;
+    /** 生产日期不合法 */
+    public static final int CASELEVEL_SKU_MFGDATE_ERROR = 60052;
+    /** 残次原因不存在 */
+    public static final int CASELEVEL_DEFECT_REASONS_ID_NULL_ERROR = 60053;
+    /** 残次类型不存在 */
+    public static final int CASELEVEL_DEFECT_TYPE_ID_NULL_ERROR = 60054;
+    /** 残次来源不存在 */
+    public static final int CASELEVEL_DEFECT_SOURCE_NULL_ERROR = 60055;
+    /** 商品信息未找到 */
+    public static final int CASELEVEL_SKU_INFO_NULL_ERROR = 60056;
+    /** 商品属性为空 */
+    public static final int CASELEVEL_SKU_ATTR_NULL_ERROR = 60057;
+    /** ASN信息为空 */
+    public static final int CASELEVEL_ASN_NULL_ERROR = 60058;
+    /** 容器信息为空 */
+    public static final int CASELEVEL_CONTAINER_NULL_ERROR = 60059;
+    /** 库存状态是否残次属性为空 */
+    public static final int CASELEVEL_INVENTORY_ISDEFECT_NULL_ERROR = 60060;
+    /** 收货功能属性缺失 */
+    public static final int CASELEVEL_INV_FUN_ATTR_NULL_ERROR = 60061;
+    /** 店铺信息缺失 */
+    public static final int CASELEVEL_STORE_ATTR_NULL_ERROR = 60062;
+    /** 数据库保存失败 */
+    public static final int CASELEVEL_DATABASE_SAVE_ERROR = 60063;
+    /** 容器取消占用失败 */
+    public static final int CASELEVEL_RELEASE_CONTAINER_ERROR = 60064;
+    /** 未找到商品[{0}]默认收货数量 */
+    public static final int CASELEVEL_SKU_DEFAULT_RCVD_QTY_ERROR = 60065;
+    /** 装箱信息计划数未维护 */
+    public static final int CASELEVEL_CARTON_PLAN_QTY_NULL_ERROR = 60066;
+
     // 60001-70000 xiemingwei
 
     // 70001-80000 tangming

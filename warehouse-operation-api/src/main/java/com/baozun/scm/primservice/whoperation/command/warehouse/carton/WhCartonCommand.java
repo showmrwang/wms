@@ -16,8 +16,10 @@ package com.baozun.scm.primservice.whoperation.command.warehouse.carton;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
+import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventorySn;
 
 /**
  * 拆箱记录表
@@ -113,6 +115,35 @@ public class WhCartonCommand extends BaseCommand {
     private String categoryId;
     /** asnline状态 */
     private Integer asnLineStatus;
+
+    // caseLeve收货
+    private String asnExtCode;
+    // 商品扫描条码
+    private String skuBarcode;
+    // 商品扫描数量
+    private Double skuQty;
+    // 残次类型
+    private Long defectType;
+    // 残次原因
+    private Long defectReason;
+    // 残次数量
+    private Integer defectQty;
+    // 残次来源
+    private String defectSource;
+    // SN号
+    private String snCode;
+    // 缓存中的UUID标识
+    private String uuid;
+    // SN/残次信息列表
+    private List<WhSkuInventorySn> skuInventorySnList;
+    // 已收残次数量
+    private Integer defectRcvdQty;
+    // 上次收货数
+    private Double lastRcvdSkuQty;
+    // 更新数据库类型
+    private Boolean insert;
+    // 调整数量,key是UUID,value是调整值
+    private Map<String, Double> alterQtyMap;
 
     public Long getId() {
         return id;
@@ -462,4 +493,115 @@ public class WhCartonCommand extends BaseCommand {
     }
 
 
+    public String getAsnExtCode() {
+        return asnExtCode;
+    }
+
+    public void setAsnExtCode(String asnExtCode) {
+        this.asnExtCode = asnExtCode;
+    }
+
+    public String getSkuBarcode() {
+        return skuBarcode;
+    }
+
+    public void setSkuBarcode(String skuBarcode) {
+        this.skuBarcode = skuBarcode;
+    }
+
+    public Double getSkuQty() {
+        return skuQty;
+    }
+
+    public void setSkuQty(Double skuQty) {
+        this.skuQty = skuQty;
+    }
+
+    public Long getDefectType() {
+        return defectType;
+    }
+
+    public void setDefectType(Long defectType) {
+        this.defectType = defectType;
+    }
+
+    public Long getDefectReason() {
+        return defectReason;
+    }
+
+    public void setDefectReason(Long defectReason) {
+        this.defectReason = defectReason;
+    }
+
+    public Integer getDefectQty() {
+        return defectQty;
+    }
+
+    public void setDefectQty(Integer defectQty) {
+        this.defectQty = defectQty;
+    }
+
+    public String getDefectSource() {
+        return defectSource;
+    }
+
+    public void setDefectSource(String defectSource) {
+        this.defectSource = defectSource;
+    }
+
+    public String getSnCode() {
+        return snCode;
+    }
+
+    public void setSnCode(String snCode) {
+        this.snCode = snCode;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public List<WhSkuInventorySn> getSkuInventorySnList() {
+        return skuInventorySnList;
+    }
+
+    public void setSkuInventorySnList(List<WhSkuInventorySn> skuInventorySnList) {
+        this.skuInventorySnList = skuInventorySnList;
+    }
+
+    public Integer getDefectRcvdQty() {
+        return defectRcvdQty;
+    }
+
+    public void setDefectRcvdQty(Integer defectRcvdQty) {
+        this.defectRcvdQty = defectRcvdQty;
+    }
+
+    public Double getLastRcvdSkuQty() {
+        return lastRcvdSkuQty;
+    }
+
+    public void setLastRcvdSkuQty(Double lastRcvdSkuQty) {
+        this.lastRcvdSkuQty = lastRcvdSkuQty;
+    }
+
+    public Boolean getInsert() {
+        return insert;
+    }
+
+    public void setInsert(Boolean insert) {
+        this.insert = insert;
+    }
+
+    public Map<String, Double> getAlterQtyMap() {
+        return alterQtyMap;
+    }
+
+    public void setAlterQtyMap(Map<String, Double> alterQtyMap) {
+        this.alterQtyMap = alterQtyMap;
+    }
 }

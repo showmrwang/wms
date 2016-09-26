@@ -78,5 +78,8 @@
 	
 	<dubbo:reference id="codeManager" url="${dubbo.sac.server}" interface="com.baozun.scm.baseservice.sac.manager.CodeManager"/>
 
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.redis.SkuRedisManager"  ref="skuRedisManager" />
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.pda.caseLevel.CaseLevelManagerProxy"  ref="caseLevelManagerProxy" />
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.pda.inbound.rcvd.CaseLevelRcvdManager"  ref="caseLevelRcvdManager" />
 
 </beans>

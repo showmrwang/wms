@@ -197,4 +197,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        and last_modify_time	=  #{lastModifyTime}    
 		    ]]>
 	</update>
+
+    <select id="findUomByParam" resultMap="UomResultExt">
+        select <include refid="uomColumnsExt"/>
+        from t_wh_uom
+        where uom_code = #{uomCode} and group_code=#{groupCode}
+    </select>
 </mapper>

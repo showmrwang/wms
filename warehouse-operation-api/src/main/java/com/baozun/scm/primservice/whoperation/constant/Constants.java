@@ -317,4 +317,19 @@ public final class Constants {
     
     /** TABLE_FIELD 类型 */
     public static final String TABLE_FIELD_TYPE_WH_ASN = "WH_ASN";
+
+    //caseLevel收货属性扫描序列
+    public static final String CASELEVEL_SCAN_SIGN_START = "start";// 开始
+    public static final String CASELEVEL_SCAN_SIGN_END = "end";// 结束
+    public static final String CASELEVEL_SCAN_SIGN_ISVALID = "isValid";// 是否管理效期
+    public static final String CASELEVEL_SCAN_SIGN_ISBATCHNO = "isBatchNo"; // 是否管理批次号
+    public static final String CASELEVEL_SCAN_SIGN_ISCOUNTRYOFORIGIN = "isCountryOfOrigin";// 是否管理原产地
+    public static final String CASELEVEL_SCAN_SIGN_INVATTR1 = "invAttr1"; // 是否管理库存属性1
+    public static final String CASELEVEL_SCAN_SIGN_INVATTR2 = "invAttr2"; // 是否管理库存属性2
+    public static final String CASELEVEL_SCAN_SIGN_INVATTR3 = "invAttr3";// 是否管理库存属性3
+    public static final String CASELEVEL_SCAN_SIGN_INVATTR4 = "invAttr4"; // 是否管理库存属性4
+    public static final String CASELEVEL_SCAN_SIGN_INVATTR5 = "invAttr5";// 是否管理库存属性5
+    public static final String CASELEVEL_SCAN_SIGN_ISINVTYPE = "isInvType"; // 是否管理库存类型
+    public static final String CASELEVEL_SCAN_SIGN_ISINVSTATUS = "isInvStatus"; // 是否管理库存状态
+    public static final String CASELEVEL_SCAN_SIGN_ISDEFEAT = "isDefeat";// 残次品类型及残次原因
 }

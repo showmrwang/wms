@@ -52,4 +52,12 @@ public interface UomDao extends BaseDao<Uom, Long> {
     List<UomCommand> findUomByGroupCode(@Param("groupCode") String groupCode,@Param("lifecycle") Integer lifecycle);
 
     int bacthUpdate(@Param("ids") List<Long> list, @Param("lifecycle") Integer lifecycle, @Param("operatorId") Long operatorId);
+
+    /**
+     * 根据参数查询度量单位
+     * @param
+     * @param groupCode
+     * @return
+     */
+    public Uom findUomByParam(@Param("uomCode") String uomCode,@Param("groupCode") String groupCode);
 }

@@ -128,4 +128,25 @@ public interface WhCartonDao extends BaseDao<WhCarton, Long> {
     List<WhCarton> findWhCartonListByAsnSkuContainer(@Param("asnid") Long asnid, @Param("containerid") Long containerid, @Param("ouid") Long ouid);
 
 
+    /**
+     * 查询asn对应的caseLevel的货箱信息
+     *
+     * @author mingwei.xie
+     * @param asnId
+     * @param containerId
+     * @param ouId
+     * @return
+     */
+    List<WhCartonCommand> getCaseLevelWhCartonListByContainer(@Param("asnId") Long asnId, @Param("containerId") Long containerId, @Param("ouId") Long ouId);
+
+    /**
+     * 判断ASN的caseLevel收货是否完成
+     *
+     * @author mingwei.xie
+     * @param asnId
+     * @param ouId
+     * @return
+     */
+    boolean isAsnCaseLevelNeedToRcvd(@Param("asnId") Long asnId, @Param("ouId") Long ouId);
+
 }
