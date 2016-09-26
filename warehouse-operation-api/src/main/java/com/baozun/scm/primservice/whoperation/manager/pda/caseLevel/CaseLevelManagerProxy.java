@@ -65,7 +65,7 @@ public interface CaseLevelManagerProxy extends BaseManager {
      * @param containerId
      * @return
      */
-    public String getContainerOptUserFromCache(Long asnId, Long containerId);
+    public String getContainerOptUserFromCache(Long asnId, Long containerId, Long userId, Long ouId, String logId);
 
     /**
      * 占用容器
@@ -95,6 +95,17 @@ public interface CaseLevelManagerProxy extends BaseManager {
     public void cancelCurrentContainerRcvd(Long asnId, Long containerId, Long userId, Long ouId, String logId);
 
     /**
+     * 返回通用收货/容器收货，释放该用户下所有占用的容器，清除相关容器的收货缓存
+     *
+     * @author mingwei.xie
+     * @param asnId
+     * @param userId
+     * @param ouId
+     * @param logId
+     */
+    public void clearCacheForForwardGeneralRcvd(Long asnId, Long userId, Long ouId, String logId);
+
+    /**
      * 获取caseLevel的装箱信息
      *
      * @author mingwei.xie
@@ -102,7 +113,7 @@ public interface CaseLevelManagerProxy extends BaseManager {
      * @param containerId
      * @return
      */
-    public List<WhCartonCommand> getWhCartonListByContainer(Long asnId, Long containerId, Long ouId, String logId);
+    public List<WhCartonCommand> getWhCartonListByContainer(Long asnId, Long containerId, Long userId, Long ouId, String logId);
 
     /**
      * 获取caseLevel箱中指定商品的信息
@@ -112,7 +123,7 @@ public interface CaseLevelManagerProxy extends BaseManager {
      * @param containerId
      * @return
      */
-    public List<WhCartonCommand> getWhCartonListBySku(Long asnId, Long containerId, Long skuId, Long ouId, String logId);
+    public List<WhCartonCommand> getWhCartonListBySku(Long asnId, Long containerId, Long skuId, Long userId, Long ouId, String logId);
 
     /**
      * 根据商品条码获取skuId及默认数量
@@ -196,7 +207,7 @@ public interface CaseLevelManagerProxy extends BaseManager {
      * @param logId
      * @return
      */
-    public boolean isRcvdSnCacheExist(Long asnId, Long containerId, Long skuId, String snCode, Long ouId, String logId);
+    public boolean isRcvdSnCacheExist(Long asnId, Long containerId, Long skuId, String snCode, Long userId, Long ouId, String logId);
 
     /**
      * 保存已收商品的缓存
@@ -220,7 +231,7 @@ public interface CaseLevelManagerProxy extends BaseManager {
      * @param logId
      * @return
      */
-    public List<WhCartonCommand> getRcvdCartonBySkuFromCache(Long asnId, Long containerId, Long skuId, String logId);
+    public List<WhCartonCommand> getRcvdCartonBySkuFromCache(Long asnId, Long containerId, Long skuId, Long userId, Long ouId, String logId);
 
     /**
      * 获取商品已收数量
@@ -245,7 +256,7 @@ public interface CaseLevelManagerProxy extends BaseManager {
      * @param logId
      * @return
      */
-    public Map<Long, Double> getCurrentRcvdSkuQtyMap(Long asnId, Long containerId, String logId);
+    public Map<Long, Double> getCurrentRcvdSkuQtyMap(Long asnId, Long containerId, Long userId, Long ouId, String logId);
 
     /**
      * 根据UUID更新收货数量
@@ -270,7 +281,7 @@ public interface CaseLevelManagerProxy extends BaseManager {
      * @param containerId
      * @param logId
      */
-    public void reRcvd(Long asnId, Long containerId, String logId);
+    public void reRcvd(Long asnId, Long containerId, Long userId, Long ouId, String logId);
 
     /**
      * 获取上次收货的商品数量
@@ -281,7 +292,7 @@ public interface CaseLevelManagerProxy extends BaseManager {
      * @param logId
      * @return
      */
-    public Map<Long, Double> getLastRcvdSkuQty(Long asnId, Long containerId, String logId);
+    public Map<Long, Double> getLastRcvdSkuQty(Long asnId, Long containerId, Long userId, Long ouId, String logId);
 
     /**
      * 获取指定sku的上次收货数
@@ -293,7 +304,7 @@ public interface CaseLevelManagerProxy extends BaseManager {
      * @param logId
      * @return
      */
-    public Double getLastRcvdSkuQtyBySkuId(Long asnId, Long containerId, Long skuId, String logId);
+    public Double getLastRcvdSkuQtyBySkuId(Long asnId, Long containerId, Long skuId, Long userId, Long ouId, String logId);
 
     /**
      * 根据店铺ID获取店铺信息

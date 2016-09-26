@@ -145,7 +145,7 @@ public class WhSkuInventoryCommand extends BaseCommand {
     /** 通用收货URL流程参数字符串 */
     private String functionUrl;
     /** 功能菜单Id */
-    private Long FunctionId;
+    private Long functionId;
     /** 通用收货功能商品扫描流程参数字符串 */
     private String skuUrl;
     /** 通用收货功能商品扫描流程指针 */
@@ -663,11 +663,11 @@ public class WhSkuInventoryCommand extends BaseCommand {
     }
 
     public Long getFunctionId() {
-        return FunctionId;
+        return functionId;
     }
 
     public void setFunctionId(Long functionId) {
-        FunctionId = functionId;
+        this.functionId = functionId;
     }
 
     public String getSkuUrl() {
