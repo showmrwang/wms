@@ -160,4 +160,15 @@ public interface CaseLevelRcvdManager extends BaseManager {
     public void caseLevelReceivingCompleted(List<WhCartonCommand> rcvdCartonList, List<WhSkuInventory> toSaveSkuInventoryList, Map<String, List<WhSkuInventorySn>> toSaveSkuSerialGroupInvSnMap, List<WhAsnRcvdLogCommand> toSaveWhAsnRcvdLogCommandList,
             List<WhAsnLine> toUpdateAsnLineList, WhAsn toUpdateWhAsn, List<WhPoLine> toUpdatePoLineList, List<WhPo> toUpdateWhPoList, Container toUpdateContainer, ContainerAssist toSaveContainerAssist, Boolean isTabbInvTotal, Long userId, Long ouId,
             String logId);
+
+    /**
+     * 校验ASN是否收货完成
+     *
+     * @author mingwei.xie
+     * @param asnId
+     * @param ouId
+     * @param logId
+     * @return
+     */
+    public Boolean checkIsAsnRcvdFinished(Long asnId, Long ouId, String logId);
 }

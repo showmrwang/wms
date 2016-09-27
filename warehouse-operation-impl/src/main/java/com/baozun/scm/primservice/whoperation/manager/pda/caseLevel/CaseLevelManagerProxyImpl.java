@@ -53,6 +53,7 @@ import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
+import com.baozun.scm.primservice.whoperation.manager.pda.CheckInManagerProxy;
 import com.baozun.scm.primservice.whoperation.manager.pda.inbound.rcvd.CaseLevelRcvdManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnLineManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoLineManager;
@@ -111,6 +112,9 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
 
     @Autowired
     private SelectPoAsnManagerProxy selectPoAsnManagerProxy;
+
+    @Autowired
+    private CheckInManagerProxy checkInManagerProxy;
 
     private final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
     private final DateFormat dateFormatUn = new SimpleDateFormat("MM/dd/yyyy");
@@ -313,8 +317,8 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
                 if (ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED == container.getLifecycle() && ContainerStatus.CONTAINER_STATUS_USABLE == container.getStatus()) {
                     // 容器如果是占用的收货中状态，缓存释放和数据库释放
                     this.releaseContainerByOptUser(asnId, container.getId(), userId, ouId, logId);
-                }else {
-                    //容器不是占用的收货中状态，释放缓存
+                } else {
+                    // 容器不是占用的收货中状态，释放缓存
                     String cacheKey = CacheKeyConstant.WMS_CACHE_CL_OPT_USER_PREFIX + userId + "-" + asnId + "-" + containerId;
                     cacheManager.remove(cacheKey);
                 }
@@ -689,19 +693,19 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
         List<WhCartonCommand> rcvdCartonList = this.getRcvdCartonBySkuFromCache(asnId, containerId, skuId, userId, ouId, logId);
-        boolean cacheResult = true;
+        boolean cacheResult = false;
         if (null != rcvdCartonList) {
             for (WhCartonCommand rcvdCarton : rcvdCartonList) {
                 List<WhSkuInventorySn> rcvdSkuInventorySnList = rcvdCarton.getSkuInventorySnList();
                 if (null != rcvdSkuInventorySnList && !rcvdSkuInventorySnList.isEmpty()) {
                     for (WhSkuInventorySn rcvdInvSn : rcvdSkuInventorySnList) {
                         if (snCode.equals(rcvdInvSn.getSn())) {
-                            cacheResult = false;
+                            cacheResult = true;
                             break;
                         }
                     }
                 }
-                if (!cacheResult) {
+                if (cacheResult) {
                     break;
                 }
             }
@@ -1015,6 +1019,26 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
     }
 
     /**
+     * 获取指定系统参数
+     *
+     * @param groupValue
+     * @param dicValue
+     * @return
+     */
+    @Override
+    public SysDictionary getSysDictionary(String groupValue, String dicValue) {
+        List<SysDictionary> sysDictionaryList = this.findSysDictionaryByGroupValueAndRedis(groupValue, BaseModel.LIFECYCLE_NORMAL);
+        SysDictionary sysDictionary = null;
+        for (SysDictionary sysDic : sysDictionaryList) {
+            if (sysDic.getDicValue().equals(dicValue)) {
+                sysDictionary = sysDic;
+                break;
+            }
+        }
+        return sysDictionary;
+    }
+
+    /**
      * 获取系统参数
      *
      * @author mingwei.xie
@@ -1259,6 +1283,16 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
         }
         // 清除该货箱前次收货数据
         cacheManager.remonKeys(CacheKeyConstant.WMS_CACHE_CL_LAST_RECD_QTY_PERFIX + userId + "-" + whCartonCommand.getAsnId() + "-" + whCartonCommand.getContainerId() + "-*");
+
+        boolean isAsnRcvdFinished = caseLevelRcvdManager.checkIsAsnRcvdFinished(whCartonCommand.getAsnId(), ouId, logId);
+        if (isAsnRcvdFinished) {
+            try {
+                checkInManagerProxy.releasePlatformByRcvdFinish(whCartonCommand.getAsnId(), userId, ouId, logId);
+            } catch (Exception e) {
+                // 释放月台，不需要和收货在一个事务，可以手工释放
+                throw new BusinessException(ErrorCodes.CASELEVEL_RELEASE_PLATFORM_ERROR);
+            }
+        }
     }
 
     /**
@@ -1682,17 +1716,6 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
         return whPo;
     }
 
-    private SysDictionary getSysDictionary(String groupValue, String dicValue) {
-        List<SysDictionary> sysDictionaryList = this.findSysDictionaryByGroupValueAndRedis(groupValue, BaseModel.LIFECYCLE_NORMAL);
-        SysDictionary sysDictionary = null;
-        for (SysDictionary sysDic : sysDictionaryList) {
-            if (sysDic.getDicValue().equals(dicValue)) {
-                sysDictionary = sysDic;
-                break;
-            }
-        }
-        return sysDictionary;
-    }
 
     private List<WhCartonCommand> getRcvdCartonFromCache(Long asnId, Long containerId, Long userId, Long ouId, String logId) {
         String cacheKeyPattern = CacheKeyConstant.WMS_CACHE_CL_RECD_CARTON_PREFIX + userId + "-" + asnId + "-" + containerId + "-*";
@@ -2026,11 +2049,15 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
             Set<String> snSet = new HashSet<>();
             for (WhSkuInventorySn skuInventorySn : skuInventorySnList) {
                 // 验证SN号是否存在caseLevel货箱中（此处检测的是caseLevel货箱所涉及的asnLine所包含的所有SN号，也许存有其他货箱的SN号）
-                boolean isSnCodeExist = this.isCaseLevelSnExist(whCartonCommand.getAsnId(), whCartonCommand.getContainerId(), whCartonCommand.getSkuId(), whCartonCommand.getSnCode(), null, ouId, logId);
-                if (!isSnCodeExist) {
-                    // SN号不在货箱内
-                    throw new BusinessException(ErrorCodes.CASELEVEL_SN_NOT_EXIST_ERROR, new Object[] {skuInventorySn.getSn()});
-                } else if (snSet.contains(skuInventorySn.getSn())) {
+                // boolean isSnCodeExist = this.isCaseLevelSnExist(whCartonCommand.getAsnId(),
+                // whCartonCommand.getContainerId(), whCartonCommand.getSkuId(),
+                // whCartonCommand.getSnCode(), null, ouId, logId);
+                // if (!isSnCodeExist) {
+                // // SN号不在货箱内
+                // throw new BusinessException(ErrorCodes.CASELEVEL_SN_NOT_EXIST_ERROR, new Object[]
+                // {skuInventorySn.getSn()});
+                // } else
+                if (snSet.contains(skuInventorySn.getSn())) {
                     // SN号重复收入
                     throw new BusinessException(ErrorCodes.CASELEVEL_SN_EXIST_ERROR, new Object[] {skuInventorySn.getSn()});
                 } else if (StringUtil.isEmpty(skuInventorySn.getSn())) {
@@ -2078,6 +2105,11 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
         if (skuRedisCommand.getSkuExtattr().getInvAttr1()) {
             if (StringUtil.isEmpty(whCartonCommand.getInvAttr1())) {
                 throw new BusinessException(ErrorCodes.CASELEVEL_SKU_ATTR_NULL);
+            } else {
+                SysDictionary targetSysDictionaryInvAttr1 = this.getSysDictionary(Constants.INVENTORY_ATTR_1, whCartonCommand.getInvAttr1());
+                if (null == targetSysDictionaryInvAttr1) {
+                    throw new BusinessException(ErrorCodes.CASELEVEL_SKU_ATTR_SYSDIC_NULL_ERROR);
+                }
             }
         }
 
@@ -2085,6 +2117,11 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
         if (skuRedisCommand.getSkuExtattr().getInvAttr2()) {
             if (StringUtil.isEmpty(whCartonCommand.getInvAttr2())) {
                 throw new BusinessException(ErrorCodes.CASELEVEL_SKU_ATTR_NULL);
+            } else {
+                SysDictionary targetSysDictionaryInvAttr2 = this.getSysDictionary(Constants.INVENTORY_ATTR_2, whCartonCommand.getInvAttr2());
+                if (null == targetSysDictionaryInvAttr2) {
+                    throw new BusinessException(ErrorCodes.CASELEVEL_SKU_ATTR_SYSDIC_NULL_ERROR);
+                }
             }
         }
 
@@ -2092,6 +2129,11 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
         if (skuRedisCommand.getSkuExtattr().getInvAttr3()) {
             if (StringUtil.isEmpty(whCartonCommand.getInvAttr3())) {
                 throw new BusinessException(ErrorCodes.CASELEVEL_SKU_ATTR_NULL);
+            } else {
+                SysDictionary targetSysDictionaryInvAttr3 = this.getSysDictionary(Constants.INVENTORY_ATTR_3, whCartonCommand.getInvAttr3());
+                if (null == targetSysDictionaryInvAttr3) {
+                    throw new BusinessException(ErrorCodes.CASELEVEL_SKU_ATTR_SYSDIC_NULL_ERROR);
+                }
             }
         }
 
@@ -2099,6 +2141,11 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
         if (skuRedisCommand.getSkuExtattr().getInvAttr4()) {
             if (StringUtil.isEmpty(whCartonCommand.getInvAttr4())) {
                 throw new BusinessException(ErrorCodes.CASELEVEL_SKU_ATTR_NULL);
+            } else {
+                SysDictionary targetSysDictionaryInvAttr4 = this.getSysDictionary(Constants.INVENTORY_ATTR_4, whCartonCommand.getInvAttr4());
+                if (null == targetSysDictionaryInvAttr4) {
+                    throw new BusinessException(ErrorCodes.CASELEVEL_SKU_ATTR_SYSDIC_NULL_ERROR);
+                }
             }
         }
 
@@ -2106,6 +2153,11 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
         if (skuRedisCommand.getSkuExtattr().getInvAttr5()) {
             if (StringUtil.isEmpty(whCartonCommand.getInvAttr5())) {
                 throw new BusinessException(ErrorCodes.CASELEVEL_SKU_ATTR_NULL);
+            } else {
+                SysDictionary targetSysDictionaryInvAttr5 = this.getSysDictionary(Constants.INVENTORY_ATTR_5, whCartonCommand.getInvAttr5());
+                if (null == targetSysDictionaryInvAttr5) {
+                    throw new BusinessException(ErrorCodes.CASELEVEL_SKU_ATTR_SYSDIC_NULL_ERROR);
+                }
             }
         }
 
@@ -2113,6 +2165,11 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
         if (skuRedisCommand.getSkuMgmt().getIsInvType()) {
             if (StringUtil.isEmpty(whCartonCommand.getInvType())) {
                 throw new BusinessException(ErrorCodes.CASELEVEL_SKU_ATTR_NULL);
+            } else {
+                SysDictionary targetSysDictionaryInvType = this.getSysDictionary(Constants.INVENTORY_TYPE, whCartonCommand.getInvType());
+                if (null == targetSysDictionaryInvType) {
+                    throw new BusinessException(ErrorCodes.CASELEVEL_SKU_ATTR_SYSDIC_NULL_ERROR);
+                }
             }
         }
 
@@ -2380,44 +2437,91 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
                 break;
             case Constants.CASELEVEL_SCAN_SIGN_INVATTR1:
                 // 是否管理库存属性1
-                if (skuRedisCommand.getSkuExtattr().getInvAttr1() && StringUtil.isEmpty(whCartonCommand.getInvAttr1())) {
-                    checkResult = false;
+                if (skuRedisCommand.getSkuExtattr().getInvAttr1()) {
+                    if (StringUtil.isEmpty(whCartonCommand.getInvAttr1())) {
+                        checkResult = false;
+                    } else {
+                        SysDictionary targetSysDictionaryInvAttr1 = this.getSysDictionary(Constants.INVENTORY_ATTR_1, whCartonCommand.getInvAttr1());
+                        if (null == targetSysDictionaryInvAttr1) {
+                            checkResult = false;
+                        }
+                    }
                 }
                 break;
             case Constants.CASELEVEL_SCAN_SIGN_INVATTR2:
                 // 是否管理库存属性2
-                if (skuRedisCommand.getSkuExtattr().getInvAttr2() && StringUtil.isEmpty(whCartonCommand.getInvAttr2())) {
-                    checkResult = false;
+                if (skuRedisCommand.getSkuExtattr().getInvAttr2()) {
+                    if (StringUtil.isEmpty(whCartonCommand.getInvAttr2())) {
+                        checkResult = false;
+                    } else {
+                        SysDictionary targetSysDictionaryInvAttr2 = this.getSysDictionary(Constants.INVENTORY_ATTR_2, whCartonCommand.getInvAttr2());
+                        if (null == targetSysDictionaryInvAttr2) {
+                            checkResult = false;
+                        }
+                    }
                 }
                 break;
             case Constants.CASELEVEL_SCAN_SIGN_INVATTR3:
                 // 是否管理库存属性3
-                if (skuRedisCommand.getSkuExtattr().getInvAttr3() && StringUtil.isEmpty(whCartonCommand.getInvAttr3())) {
-                    checkResult = false;
+                if (skuRedisCommand.getSkuExtattr().getInvAttr3()) {
+                    if (StringUtil.isEmpty(whCartonCommand.getInvAttr3())) {
+                        checkResult = false;
+                    } else {
+                        SysDictionary targetSysDictionaryInvAttr3 = this.getSysDictionary(Constants.INVENTORY_ATTR_3, whCartonCommand.getInvAttr3());
+                        if (null == targetSysDictionaryInvAttr3) {
+                            checkResult = false;
+                        }
+                    }
                 }
                 break;
             case Constants.CASELEVEL_SCAN_SIGN_INVATTR4:
                 // 是否管理库存属性4
-                if (skuRedisCommand.getSkuExtattr().getInvAttr4() && StringUtil.isEmpty(whCartonCommand.getInvAttr4())) {
-                    checkResult = false;
+                if (skuRedisCommand.getSkuExtattr().getInvAttr4()) {
+                    if (StringUtil.isEmpty(whCartonCommand.getInvAttr4())) {
+                        checkResult = false;
+                    } else {
+                        SysDictionary targetSysDictionaryInvAttr4 = this.getSysDictionary(Constants.INVENTORY_ATTR_4, whCartonCommand.getInvAttr4());
+                        if (null == targetSysDictionaryInvAttr4) {
+                            checkResult = false;
+                        }
+                    }
                 }
                 break;
             case Constants.CASELEVEL_SCAN_SIGN_INVATTR5:
                 // 是否管理库存属性5
-                if (skuRedisCommand.getSkuExtattr().getInvAttr5() && StringUtil.isEmpty(whCartonCommand.getInvAttr5())) {
-                    checkResult = false;
+                if (skuRedisCommand.getSkuExtattr().getInvAttr5()) {
+                    if (StringUtil.isEmpty(whCartonCommand.getInvAttr5())) {
+                        checkResult = false;
+                    } else {
+                        SysDictionary targetSysDictionaryInvAttr5 = this.getSysDictionary(Constants.INVENTORY_ATTR_5, whCartonCommand.getInvAttr5());
+                        if (null == targetSysDictionaryInvAttr5) {
+                            checkResult = false;
+                        }
+                    }
                 }
                 break;
             case Constants.CASELEVEL_SCAN_SIGN_ISINVTYPE:
                 // 是否管理库存类型
-                if (skuRedisCommand.getSkuMgmt().getIsInvType() && StringUtil.isEmpty(whCartonCommand.getInvType())) {
-                    checkResult = false;
+                if (skuRedisCommand.getSkuMgmt().getIsInvType()) {
+                    if (StringUtil.isEmpty(whCartonCommand.getInvType())) {
+                        checkResult = false;
+                    } else {
+                        SysDictionary targetSysDictionaryInvType = this.getSysDictionary(Constants.INVENTORY_TYPE, whCartonCommand.getInvType());
+                        if (null == targetSysDictionaryInvType) {
+                            checkResult = false;
+                        }
+                    }
                 }
                 break;
             case Constants.CASELEVEL_SCAN_SIGN_ISINVSTATUS:
                 // 是否管理库存状态
                 if (null == whCartonCommand.getInvStatus()) {
                     checkResult = false;
+                } else {
+                    InventoryStatus inventoryStatus = this.getInventoryStatusById(whCartonCommand.getInvStatus());
+                    if (null == inventoryStatus) {
+                        checkResult = false;
+                    }
                 }
                 break;
             default:

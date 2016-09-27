@@ -372,6 +372,21 @@ public class CaseLevelRcvdManagerImpl extends BaseManagerImpl implements CaseLev
     }
 
     /**
+     * 校验ASN是否收货完成
+     *
+     * @author mingwei.xie
+     * @param asnId
+     * @param ouId
+     * @param logId
+     * @return
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public Boolean checkIsAsnRcvdFinished(Long asnId, Long ouId, String logId) {
+        return whAsnDao.checkIsRcvdFinished(asnId, ouId);
+    }
+
+    /**
      * 更新/保存装箱信息carton到数据库
      *
      * @author mingwei.xie

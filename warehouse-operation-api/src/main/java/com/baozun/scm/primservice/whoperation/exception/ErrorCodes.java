@@ -493,7 +493,7 @@ public class ErrorCodes {
     public static final int CASELEVEL_CONTAINER_NULL= 60003;
     /** 容器[{0}]不可用或已完成收货 */
     public static final int CASELEVEL_CONTAINER_UNAVAILABLE = 60004;
-    /** 容器[{0}]已被他人操作 */
+    /** 容器[{0}]已被[{1}]操作 */
     public static final int CASELEVEL_CONTAINER_OCCUPIED= 60005;
     /** [{0}]无caseLevel装箱信息 */
     public static final int CASELEVEL_NULL= 60006;
@@ -617,6 +617,10 @@ public class ErrorCodes {
     public static final int CASELEVEL_SKU_DEFAULT_RCVD_QTY_ERROR = 60065;
     /** 装箱信息计划数未维护 */
     public static final int CASELEVEL_CARTON_PLAN_QTY_NULL_ERROR = 60066;
+    /** 商品属性对应的字典项不存在 */
+    public static final int CASELEVEL_SKU_ATTR_SYSDIC_NULL_ERROR = 60067;
+    /** 释放月台失败,请手工释放月台 */
+    public static final int CASELEVEL_RELEASE_PLATFORM_ERROR = 60068;
 
     // 60001-70000 xiemingwei
 

@@ -317,6 +317,15 @@ public interface CaseLevelManagerProxy extends BaseManager {
     public Store getStoreById(Long storeId, String logId);
 
     /**
+     * 获取指定系统参数
+     *
+     * @param groupValue
+     * @param dicValue
+     * @return
+     */
+    public SysDictionary getSysDictionary(String groupValue, String dicValue);
+
+    /**
      * 获取系统参数
      *
      * @author mingwei.xie
