@@ -305,8 +305,20 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
                     throw new BusinessException(ErrorCodes.CASELEVEL_CACHE_ERROR);
                 }
 
-                // 操作人缓存需要配合数据库操作
-                this.releaseContainerByOptUser(asnId, Long.parseLong(containerId), userId, ouId, logId);
+                Container container = this.getContainerById(Long.parseLong(containerId), ouId);
+                if (null == container) {
+                    throw new BusinessException(ErrorCodes.CASELEVEL_NULL);
+                }
+
+                if (ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED == container.getLifecycle() && ContainerStatus.CONTAINER_STATUS_USABLE == container.getStatus()) {
+                    // 容器如果是占用的收货中状态，缓存释放和数据库释放
+                    this.releaseContainerByOptUser(asnId, container.getId(), userId, ouId, logId);
+                }else {
+                    //容器不是占用的收货中状态，释放缓存
+                    String cacheKey = CacheKeyConstant.WMS_CACHE_CL_OPT_USER_PREFIX + userId + "-" + asnId + "-" + containerId;
+                    cacheManager.remove(cacheKey);
+                }
+
                 // 释放本次收货缓存
                 this.clearRcvdCache(asnId, Long.parseLong(containerId), userId, ouId, logId);
                 try {
@@ -492,7 +504,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
     @Override
     public String getWhCartonInfoStr(WhCartonCommand whCartonCommand) {
         if (null == whCartonCommand) {
-            throw new BusinessException(ErrorCodes.CASELEVEL_SKU_NOT_IN_CARTON_ERROR);
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
         StringBuilder stringBuilder = new StringBuilder();
         Method[] methodArray = whCartonCommand.getClass().getMethods();
