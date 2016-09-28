@@ -17,7 +17,6 @@ package com.baozun.scm.primservice.whoperation.manager.pda.inbound.rcvd;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import lark.common.annotation.MoreDB;
 
@@ -35,7 +34,6 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.WhAsnRcvdLogComm
 import com.baozun.scm.primservice.whoperation.command.warehouse.carton.WhCartonCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.conf.basis.WarehouseDefectReasonsCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.conf.basis.WarehouseDefectTypeCommand;
-import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnDao;
@@ -333,20 +331,18 @@ public class CaseLevelRcvdManagerImpl extends BaseManagerImpl implements CaseLev
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void caseLevelReceivingCompleted(List<WhCartonCommand> rcvdCartonList, List<WhSkuInventory> toSaveSkuInventoryList, Map<String, List<WhSkuInventorySn>> toSaveSkuSerialGroupInvSnMap, List<WhAsnRcvdLogCommand> toSaveWhAsnRcvdLogCommandList,
+    public void caseLevelReceivingCompleted(List<WhCartonCommand> rcvdCartonList, List<WhSkuInventory> toSaveSkuInventoryList, List<WhSkuInventorySn> toSaveSkuInventorySnList, List<WhAsnRcvdLogCommand> toSaveWhAsnRcvdLogCommandList,
             List<WhAsnLine> toUpdateAsnLineList, WhAsn toUpdateWhAsn, List<WhPoLine> toUpdatePoLineList, List<WhPo> toUpdateWhPoList, Container toUpdateContainer, ContainerAssist toSaveContainerAssist, Boolean isTabbInvTotal, Long userId, Long ouId,
             String logId) {
         // 更新/创建 装箱信息WhCarton
         this.saveOrUpdateWhCartonToDB(rcvdCartonList, userId, ouId, logId);
+
         // 创建 库存信息 WhSkuInventory
         this.saveWhSkuInventoryToDB(toSaveSkuInventoryList, isTabbInvTotal, userId, ouId, logId);
+
         // 根据序列号管理类型 创建SN/残次库存 WhSkuInventorySn
-        for (String skuSerialType : toSaveSkuSerialGroupInvSnMap.keySet()) {
-            // 序列号管理类型为出入库全部管的才保存SN/残次库存信息
-            if (Constants.SERIAL_NUMBER_TYPE_ALL.equals(skuSerialType)) {
-                this.saveWhSkuInventorySnToDB(toSaveSkuSerialGroupInvSnMap.get(skuSerialType), userId, ouId, logId);
-            }
-        }
+        this.saveWhSkuInventorySnToDB(toSaveSkuInventorySnList, userId, ouId, logId);
+
         // 创建asn收货日志 WhAsnRcvdLog 获取ID 创建asn收货SN/残次日志 WhAsnRcvdSnLog
         for (WhAsnRcvdLogCommand whAsnRcvdLogCommand : toSaveWhAsnRcvdLogCommandList) {
             WhAsnRcvdLog whAsnRcvdLog = new WhAsnRcvdLog();
@@ -356,16 +352,22 @@ public class CaseLevelRcvdManagerImpl extends BaseManagerImpl implements CaseLev
             // 保存asn收货的SN/残次日志
             this.saveWhAsnRcvdSnLogToDB(whAsnRcvdLog, whAsnRcvdLogCommand.getWhAsnRcvdSnLogList(), userId, ouId, logId);
         }
+
         // 更新ASN明细信息 WhAsnLine，必须先更新明细，再更新主信息，因为要根据明细的完成情况判断主信息是否完成
         this.updateWhAsnLineToDB(toUpdateAsnLineList, userId, ouId, logId);
+
         // 更新ASN主信息 WhAsn
         this.updateWhAsnToDB(toUpdateWhAsn, userId, ouId, logId);
+
         // 更新PO明细信息 WhPoLine 必须先更新明细，再更新主信息，因为要根据明细的完成情况判断主信息是否完成
         this.updateWhPoLineToDB(toUpdatePoLineList, userId, ouId, logId);
+
         // 更新PO信息 WhPo
         this.updateWhPoToDB(toUpdateWhPoList, userId, ouId, logId);
+
         // 更新容器信息 Container
         this.updateContainerToDB(toUpdateContainer, userId, ouId, logId);
+
         // 保存容器辅助表数据
         this.saveContainerAssistToDB(toSaveContainerAssist, userId, ouId, logId);
 

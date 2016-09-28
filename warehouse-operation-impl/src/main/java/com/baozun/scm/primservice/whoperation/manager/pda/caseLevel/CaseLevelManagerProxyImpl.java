@@ -1200,7 +1200,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
         // 库存信息列表
         List<WhSkuInventory> toSaveSkuInventoryList = new ArrayList<>();
         // 按照序列号管理类型分组的SN/残次库存信息
-        Map<String, List<WhSkuInventorySn>> toSaveSkuSerialGroupInvSnMap = new HashMap<>();
+        List<WhSkuInventorySn> toSaveSkuInventorySnList = new ArrayList<>();
         // ASN收货日志对应的的SN/残次信息日志列表
         List<WhAsnRcvdLogCommand> whAsnRcvdLogCommandList = new ArrayList<>();
 
@@ -1228,7 +1228,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
                 whAsnRcvdLogCommand.setWhAsnRcvdSnLogList(asnRcvdSnLogList);
 
                 // 创建SN/残次库存信息并且按照商品序列号管理类型分组保存
-                this.getSkuSerialGroupInvSnMap(skuInventory, skuInventorySnList, toSaveSkuSerialGroupInvSnMap, ouId, logId);
+                this.getSkuInventorySnList(skuInventory, skuInventorySnList, toSaveSkuInventorySnList, ouId, logId);
             }// end-if 存在SN/残次信息
         }// end-for 遍历待保存的收货carton
 
@@ -1266,7 +1266,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
 
         try {
             // 在一个事务中保存所有数据到数据库
-            caseLevelRcvdManager.caseLevelReceivingCompleted(rcvdCartonList, toSaveSkuInventoryList, toSaveSkuSerialGroupInvSnMap, whAsnRcvdLogCommandList, toUpdateAsnLineList, toUpdateWhAsn, toUpdatePoLineList, toUpdateWhPoList, toUpdateContainer,
+            caseLevelRcvdManager.caseLevelReceivingCompleted(rcvdCartonList, toSaveSkuInventoryList, toSaveSkuInventorySnList, whAsnRcvdLogCommandList, toUpdateAsnLineList, toUpdateWhAsn, toUpdatePoLineList, toUpdateWhPoList, toUpdateContainer,
                     toSaveContainerAssist, isTabbInvTotal, userId, ouId, logId);
         } catch (BusinessException be) {
             throw be;
@@ -1352,19 +1352,29 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
         return container2ndCategory;
     }
 
-    private void getSkuSerialGroupInvSnMap(WhSkuInventory skuInventory, List<WhSkuInventorySn> skuInventorySnList, Map<String, List<WhSkuInventorySn>> skuSerialGroupInvSnMap, Long ouId, String logId) {
+    private void getSkuInventorySnList(WhSkuInventory skuInventory, List<WhSkuInventorySn> skuInventorySnList, List<WhSkuInventorySn> toSaveSkuInventorySnList, Long ouId, String logId) {
         // 创建SN/残次库存信息
         this.createWhSkuInventorySn(skuInventory, skuInventorySnList, ouId, logId);
         // 商品主档信息
         SkuRedisCommand skuRedisCommand = this.getSkuMasterBySkuId(skuInventory.getSkuId(), ouId, logId);
-        // 已按照序列号管理类型分组保存的SN/残次信息
-        List<WhSkuInventorySn> skuSerialGroupInvSnList = skuSerialGroupInvSnMap.get(skuRedisCommand.getSkuMgmt().getSerialNumberType());
-        if (null == skuSerialGroupInvSnList) {
-            skuSerialGroupInvSnList = new ArrayList<>();
+        // 库存状态
+        InventoryStatus inventoryStatus = this.getInventoryStatusById(skuInventory.getInvStatus());
+        // 如果仅是入库管，非残次品，不保存InventorySn及log记录
+        // 非残次品，不是入库管和全部管的类型，skuInventorySnList不会有数据
+        if (inventoryStatus.getIsDefective() || Constants.SERIAL_NUMBER_TYPE_ALL.equals(skuRedisCommand.getSkuMgmt().getSerialNumberType())) {
+            // 仅入库管的残次品，不保存SN号
+            if (Constants.SERIAL_NUMBER_TYPE_IN.equals(skuRedisCommand.getSkuMgmt().getSerialNumberType())) {
+                for (WhSkuInventorySn rcvdInventorySn : skuInventorySnList) {
+                    WhSkuInventorySn invSn = new WhSkuInventorySn();
+                    BeanUtils.copyProperties(rcvdInventorySn, invSn);
+                    invSn.setSn(null);
+                    toSaveSkuInventorySnList.add(invSn);
+                }
+            } else {
+                // 添加到已保存的SN/残次信息分组中
+                toSaveSkuInventorySnList.addAll(skuInventorySnList);
+            }
         }
-        // 添加到已保存的SN/残次信息分组中
-        skuSerialGroupInvSnList.addAll(skuInventorySnList);
-        skuSerialGroupInvSnMap.put(skuRedisCommand.getSkuMgmt().getSerialNumberType(), skuSerialGroupInvSnList);
     }
 
     private Map<Long, BigDecimal> getAsnLineRcvdQtyMap(List<WhCartonCommand> whCartonCommandList) {

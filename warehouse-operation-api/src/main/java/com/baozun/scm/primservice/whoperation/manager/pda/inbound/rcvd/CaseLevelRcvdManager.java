@@ -1,7 +1,6 @@
 package com.baozun.scm.primservice.whoperation.manager.pda.inbound.rcvd;
 
 import java.util.List;
-import java.util.Map;
 
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.StoreDefectReasonsCommand;
@@ -157,7 +156,7 @@ public interface CaseLevelRcvdManager extends BaseManager {
      */
     public boolean isAsnCaseLevelNeedToRcvd(Long asnId, Long ouId);
 
-    public void caseLevelReceivingCompleted(List<WhCartonCommand> rcvdCartonList, List<WhSkuInventory> toSaveSkuInventoryList, Map<String, List<WhSkuInventorySn>> toSaveSkuSerialGroupInvSnMap, List<WhAsnRcvdLogCommand> toSaveWhAsnRcvdLogCommandList,
+    public void caseLevelReceivingCompleted(List<WhCartonCommand> rcvdCartonList, List<WhSkuInventory> toSaveSkuInventoryList, List<WhSkuInventorySn> toSaveSkuInventorySnList, List<WhAsnRcvdLogCommand> toSaveWhAsnRcvdLogCommandList,
             List<WhAsnLine> toUpdateAsnLineList, WhAsn toUpdateWhAsn, List<WhPoLine> toUpdatePoLineList, List<WhPo> toUpdateWhPoList, Container toUpdateContainer, ContainerAssist toSaveContainerAssist, Boolean isTabbInvTotal, Long userId, Long ouId,
             String logId);
 
