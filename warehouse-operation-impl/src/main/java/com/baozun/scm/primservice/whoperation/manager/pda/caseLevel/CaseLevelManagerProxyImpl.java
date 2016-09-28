@@ -1287,7 +1287,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
         boolean isAsnRcvdFinished = caseLevelRcvdManager.checkIsAsnRcvdFinished(whCartonCommand.getAsnId(), ouId, logId);
         if (isAsnRcvdFinished) {
             try {
-                checkInManagerProxy.releasePlatformByRcvdFinish(whCartonCommand.getAsnId(), userId, ouId, logId);
+                checkInManagerProxy.releasePlatformByRcvdFinish(whCartonCommand.getAsnId(), ouId, userId, logId);
             } catch (Exception e) {
                 // 释放月台，不需要和收货在一个事务，可以手工释放
                 throw new BusinessException(ErrorCodes.CASELEVEL_RELEASE_PLATFORM_ERROR);
@@ -2176,9 +2176,9 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
         // 库存状态是否为null
         if (null == whCartonCommand.getInvStatus()) {
             throw new BusinessException(ErrorCodes.CASELEVEL_SKU_ATTR_NULL);
-        }else {
+        } else {
             InventoryStatus inventoryStatus = this.getInventoryStatusById(whCartonCommand.getInvStatus());
-            if(null == inventoryStatus){
+            if (null == inventoryStatus) {
                 throw new BusinessException(ErrorCodes.CASELEVEL_SKU_ATTR_NULL);
             }
         }
