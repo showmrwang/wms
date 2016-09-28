@@ -452,12 +452,16 @@ public class CaseLevelRcvdManagerImpl extends BaseManagerImpl implements CaseLev
      * @param logId
      */
     private void saveWhSkuInventorySnToDB(List<WhSkuInventorySn> toSaveWhSkuInventoryList, Long userId, Long ouId, String logId) {
-        // 创建SN/残次库存 WhSkuInventorySn
-        for (WhSkuInventorySn whSkuInventorySn : toSaveWhSkuInventoryList) {
-            whSkuInventorySnDao.insert(whSkuInventorySn);
-            log.warn("CaseLevelRcvdManagerImpl.saveWhSkuInventorySnToDB save whSkuInventorySn to share DB, whSkuInventorySn is:[{}], logId is:[{}]", whSkuInventorySn, logId);
-            this.insertGlobalLog(GLOBAL_LOG_INSERT, whSkuInventorySn, ouId, userId, null, null);
-            this.insertSkuInventorySnLog(whSkuInventorySn.getUuid(), ouId);
+        if (null != toSaveWhSkuInventoryList) {
+            // 创建SN/残次库存 WhSkuInventorySn
+            for (WhSkuInventorySn whSkuInventorySn : toSaveWhSkuInventoryList) {
+                whSkuInventorySnDao.insert(whSkuInventorySn);
+                log.warn("CaseLevelRcvdManagerImpl.saveWhSkuInventorySnToDB save whSkuInventorySn to share DB, whSkuInventorySn is:[{}], logId is:[{}]", whSkuInventorySn, logId);
+                this.insertGlobalLog(GLOBAL_LOG_INSERT, whSkuInventorySn, ouId, userId, null, null);
+            }
+            if (!toSaveWhSkuInventoryList.isEmpty()) {
+                this.insertSkuInventorySnLog(toSaveWhSkuInventoryList.get(0).getUuid(), ouId);
+            }
         }
     }
 
