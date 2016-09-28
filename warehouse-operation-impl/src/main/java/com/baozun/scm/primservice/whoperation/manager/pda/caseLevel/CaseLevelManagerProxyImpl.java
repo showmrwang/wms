@@ -2176,6 +2176,11 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
         // 库存状态是否为null
         if (null == whCartonCommand.getInvStatus()) {
             throw new BusinessException(ErrorCodes.CASELEVEL_SKU_ATTR_NULL);
+        }else {
+            InventoryStatus inventoryStatus = this.getInventoryStatusById(whCartonCommand.getInvStatus());
+            if(null == inventoryStatus){
+                throw new BusinessException(ErrorCodes.CASELEVEL_SKU_ATTR_NULL);
+            }
         }
     }
 

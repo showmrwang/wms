@@ -621,6 +621,16 @@ public class ErrorCodes {
     public static final int CASELEVEL_SKU_ATTR_SYSDIC_NULL_ERROR = 60067;
     /** 释放月台失败,请手工释放月台 */
     public static final int CASELEVEL_RELEASE_PLATFORM_ERROR = 60068;
+    /** 未维护残次类型 */
+    public static final int CASELEVEL_DEFECT_INFO_NULL_ERROR = 60069;
+    /** 店铺残次原因未配置 */
+    public static final int CASELEVEL_STORE_DEFECT_REASON_NULL_ERROR = 60070;
+    /** 仓库残次原因未配置 */
+    public static final int CASELEVEL_WAREHOUSE_DEFECT_REASON_NULL_ERROR = 60071;
+    /** 收货功能配置的库存类型无效 */
+    public static final int CASELEVEL_FUN_INV_TYPE_ERROR = 60072;
+    /** 收货功能配置的库存状态无效 */
+    public static final int CASELEVEL_FUN_INV_STATUS_ERROR = 60073;
 
     // 60001-70000 xiemingwei
 
