@@ -314,7 +314,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
                     throw new BusinessException(ErrorCodes.CASELEVEL_NULL);
                 }
 
-                if (ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED == container.getLifecycle() && ContainerStatus.CONTAINER_STATUS_USABLE == container.getStatus()) {
+                if (ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED == container.getLifecycle() && ContainerStatus.CONTAINER_STATUS_RCVD == container.getStatus()) {
                     // 容器如果是占用的收货中状态，缓存释放和数据库释放
                     this.releaseContainerByOptUser(asnId, container.getId(), userId, ouId, logId);
                 } else {
