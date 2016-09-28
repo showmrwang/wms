@@ -79,7 +79,7 @@ public class WhSkuInventory extends BaseModel {
     /** 内部对接码 */
     private String uuid;
     /** 是否可用 */
-    private Boolean isLocked;
+    private Boolean isLocked = false;
     /** 对应仓库ID */
     private Long ouId;
     /** 占用单据号来源 */
