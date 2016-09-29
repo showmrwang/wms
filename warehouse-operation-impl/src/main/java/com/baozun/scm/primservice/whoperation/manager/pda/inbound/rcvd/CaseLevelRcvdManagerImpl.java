@@ -16,7 +16,9 @@ package com.baozun.scm.primservice.whoperation.manager.pda.inbound.rcvd;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import lark.common.annotation.MoreDB;
 
@@ -456,13 +458,17 @@ public class CaseLevelRcvdManagerImpl extends BaseManagerImpl implements CaseLev
     private void saveWhSkuInventorySnToDB(List<WhSkuInventorySn> toSaveWhSkuInventoryList, Long userId, Long ouId, String logId) {
         if (null != toSaveWhSkuInventoryList) {
             // 创建SN/残次库存 WhSkuInventorySn
+            Set<String> uuidSet = new HashSet<>();
             for (WhSkuInventorySn whSkuInventorySn : toSaveWhSkuInventoryList) {
                 whSkuInventorySnDao.insert(whSkuInventorySn);
                 log.warn("CaseLevelRcvdManagerImpl.saveWhSkuInventorySnToDB save whSkuInventorySn to share DB, whSkuInventorySn is:[{}], logId is:[{}]", whSkuInventorySn, logId);
                 this.insertGlobalLog(GLOBAL_LOG_INSERT, whSkuInventorySn, ouId, userId, null, null);
+                uuidSet.add(whSkuInventorySn.getUuid());
             }
-            if (!toSaveWhSkuInventoryList.isEmpty()) {
-                this.insertSkuInventorySnLog(toSaveWhSkuInventoryList.get(0).getUuid(), ouId);
+            if (!uuidSet.isEmpty()) {
+                for (String uuid : uuidSet) {
+                    this.insertSkuInventorySnLog(uuid, ouId);
+                }
             }
         }
     }
