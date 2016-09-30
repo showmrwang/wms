@@ -689,9 +689,9 @@ public class PdaContainerRcvdManagerProxyImpl extends BaseManagerImpl implements
             // 发生异常抛出。回滚数据。
             for (RcvdCacheCommand rcvd : list) {
                 try {
-                    this.cacheManager.incrBy(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + rcvd.getOccupationId() + "_" + rcvd.getLineId() + "_" + rcvd.getSkuId(), rcvd.getSkuBatchCount());
+                    this.cacheManager.incrBy(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + rcvd.getOccupationId() + CacheKeyConstant.CACHE_KEY_SPLIT + rcvd.getLineId() + CacheKeyConstant.CACHE_KEY_SPLIT + rcvd.getSkuId(), rcvd.getSkuBatchCount());
                 } catch (Exception e) {
-                    this.cacheManager.decrBy(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + rcvd.getOccupationId() + "_" + rcvd.getLineId() + "_" + rcvd.getSkuId(), rcvd.getSkuBatchCount());
+                    this.cacheManager.decrBy(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + rcvd.getOccupationId() + CacheKeyConstant.CACHE_KEY_SPLIT + rcvd.getLineId() + CacheKeyConstant.CACHE_KEY_SPLIT + rcvd.getSkuId(), rcvd.getSkuBatchCount());
                     throw e;
                 }
                 try {
@@ -701,8 +701,8 @@ public class PdaContainerRcvdManagerProxyImpl extends BaseManagerImpl implements
                     String asnSkuCount2 = cacheManager.getValue(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + rcvd.getOccupationId() + CacheKeyConstant.CACHE_KEY_SPLIT + rcvd.getSkuId());
                     System.out.println(asnSkuCount2);
                 } catch (Exception e) {
-                    this.cacheManager.decrBy(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + rcvd.getOccupationId() + "_" + rcvd.getLineId() + "_" + rcvd.getSkuId(), rcvd.getSkuBatchCount());
-                    this.cacheManager.decrBy(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + rcvd.getOccupationId() + "_" + rcvd.getSkuId(), rcvd.getSkuBatchCount());
+                    this.cacheManager.decrBy(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + rcvd.getOccupationId() + CacheKeyConstant.CACHE_KEY_SPLIT + rcvd.getLineId() + CacheKeyConstant.CACHE_KEY_SPLIT + rcvd.getSkuId(), rcvd.getSkuBatchCount());
+                    this.cacheManager.decrBy(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + rcvd.getOccupationId() + CacheKeyConstant.CACHE_KEY_SPLIT + rcvd.getSkuId(), rcvd.getSkuBatchCount());
                     throw e;
                 }
             }
