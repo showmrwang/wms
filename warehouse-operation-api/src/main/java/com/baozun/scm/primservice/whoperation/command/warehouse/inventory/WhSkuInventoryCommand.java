@@ -222,6 +222,8 @@ public class WhSkuInventoryCommand extends BaseCommand {
 
     private Integer qtyRest;
 
+    private Integer qtyRestContainer;
+
     public Boolean getIsPalletRcvdFinished() {
         return isPalletRcvdFinished;
     }
@@ -868,6 +870,14 @@ public class WhSkuInventoryCommand extends BaseCommand {
 
     public void setQtyRest(Integer qtyRest) {
         this.qtyRest = qtyRest;
+    }
+
+    public Integer getQtyRestContainer() {
+        return qtyRestContainer;
+    }
+
+    public void setQtyRestContainer(Integer qtyRestContainer) {
+        this.qtyRestContainer = qtyRestContainer;
     }
 
 }
