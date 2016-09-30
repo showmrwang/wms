@@ -735,6 +735,8 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
         containerCommand.setCode(code);
         containerCommand.setOuId(ouId);
         containerCommand.setTwoLevelType(containerTypeId);
+        containerCommand.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_USABLE);
+        containerCommand.setStatus(ContainerStatus.CONTAINER_STATUS_USABLE);
         // TODO 这里是指定了容器类型
         // containerCommand.setTwoLevelType(14100014L);
         // 返回一个command list
@@ -750,6 +752,10 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
         Integer lifecycle = command.getLifecycle();
         if (ContainerStatus.CONTAINER_LIFECYCLE_USABLE == lifecycle/* && 1 == command.getIsUsed() */) {
             // 实际上是返回容器id
+            Container container = new Container();
+            BeanUtils.copyProperties(command, container);
+            container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
+            this.containerDao.update(container);
             return command;
         } else {
             throw new BusinessException("找到的容器不符合");
@@ -883,5 +889,12 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
             e.printStackTrace();
         }
         return res;
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public SkuStandardPackingCommand getContainerQty(Long skuId, Long ouId, Long containerType) {
+        SkuStandardPackingCommand command = this.skuStandardPackingDao.findSkuStandardPackingBySkuIdAndContainerType(skuId, containerType, ouId);
+        return command;
     }
 }

@@ -102,8 +102,8 @@ public interface GeneralRcvdManager extends BaseManager {
      * @param po
      * @param saveWhCartonList
      */
-    void saveScanedSkuWhenGeneralRcvdForPda(List<WhSkuInventorySnCommand> saveSnList, List<WhSkuInventory> saveInvList, List<WhAsnRcvdLogCommand> saveInvLogList, List<WhAsnLine> saveAsnLineList, WhAsn asn,
-            List<WhPoLine> savePoLineList, WhPo po, Container container, List<WhCarton> saveWhCartonList);
+    void saveScanedSkuWhenGeneralRcvdForPda(List<WhSkuInventorySnCommand> saveSnList, List<WhSkuInventory> saveInvList, List<WhAsnRcvdLogCommand> saveInvLogList, List<WhAsnLine> saveAsnLineList, WhAsn asn, List<WhPoLine> savePoLineList, WhPo po,
+            Container container, List<WhCarton> saveWhCartonList);
 
     /**
      * version更新容器
@@ -114,6 +114,8 @@ public interface GeneralRcvdManager extends BaseManager {
     int updateContainerByVersion(Container container);
 
     List<SkuStandardPackingCommand> findSkuStandardPacking(String skuBarCode, Long ouId, String logId);
+
+    SkuStandardPackingCommand getContainerQty(Long skuId, Long ouId, Long containerType);
 
 
     /**

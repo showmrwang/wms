@@ -73,6 +73,8 @@ public interface PdaContainerRcvdManagerProxy extends BaseManager {
 
     List<SkuStandardPackingCommand> getContainerType(Long skuId, Long ouId);
 
+    SkuStandardPackingCommand getContainerQty(Long skuId, Long ouId, Long containerType);
+
     /**
      * 点击完成后,将此次的扫描数据写入缓存
      * @param command

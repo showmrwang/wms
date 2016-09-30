@@ -176,9 +176,9 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                         } else {
                             skuMap.put(asnline.getSkuId(), count);
                         }
-                        //缓存Asn的SN号
+                        // 缓存Asn的SN号
                         // @mender yimin.lu 2016/9/8
-                        WhAsnSn sn=new WhAsnSn();
+                        WhAsnSn sn = new WhAsnSn();
                         sn.setAsnLineId(asnline.getId());
                         sn.setSkuId(asnline.getSkuId());
                         sn.setOuId(ouId);
@@ -1098,13 +1098,13 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                     // @mender yimin.lu 2016/6/24 修改日期校验逻辑
                     String lineMfgDateStr = null == line.getMfgDate() ? null : DateUtil.format(line.getMfgDate(), Constants.DATE_PATTERN_YMD);
                     String lineExpDateStr = null == line.getExpDate() ? null : DateUtil.format(line.getExpDate(), Constants.DATE_PATTERN_YMD);
-                    //@mender yimin.lu 2016/6/24
+                    // @mender yimin.lu 2016/6/24
                     String mfgDateStr = command.getMfgDateStr();
-                    if(StringUtils.isEmpty(mfgDateStr)){
+                    if (StringUtils.isEmpty(mfgDateStr)) {
                         throw new BusinessException(ErrorCodes.RCVD_SKU_VALIDDATE);
                     }
                     String expDateStr = command.getExpDateStr();
-                    if(StringUtils.isEmpty(expDateStr)){
+                    if (StringUtils.isEmpty(expDateStr)) {
                         throw new BusinessException(ErrorCodes.RCVD_SKU_VALIDDATE);
                     }
                     Date mfgDate = null;
@@ -1130,7 +1130,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                     // @mender yimin.lu 2016/9/8
                     // 校验过期商品以及最大失效日期最小失效日期
                     SkuRedisCommand sku = this.skuRedisManager.findSkuMasterBySkuId(command.getSkuId(), command.getOuId(), command.getLogId());
-                    if (null != sku && null!=sku.getSkuMgmt()) {
+                    if (null != sku && null != sku.getSkuMgmt()) {
 
                         SkuMgmt skuMgmt = sku.getSkuMgmt();
                         if (null != skuMgmt.getIsExpiredGoodsReceive() && !skuMgmt.getIsExpiredGoodsReceive()) {
@@ -1850,7 +1850,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
             // @mender yimin.lu 缓存商品辅助表信息，不需要再进行效期的计算
             // 缓存商品辅助表信息
             // @mender yimin.lu 2016/9/8
-            
+
             // @mender yimin.lu 2016/6/24 效期
             if (null != sku.getSkuMgmt()) {
                 if (null != sku.getSkuMgmt().getValidDate()) {

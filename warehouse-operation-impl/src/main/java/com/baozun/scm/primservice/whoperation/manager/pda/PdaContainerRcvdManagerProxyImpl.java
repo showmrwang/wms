@@ -501,7 +501,7 @@ public class PdaContainerRcvdManagerProxyImpl extends BaseManagerImpl implements
         rcvdCommand.setSerialNumberType(serialNumberType);
         rcvdCommand.setSn(serialNumber);
         command.setSn(rcvdCommand);
-        pdaRcvdManagerProxy.cacheScanedSkuSnWhenGeneralRcvd(command, 1);
+        // pdaRcvdManagerProxy.cacheScanedSkuSnWhenGeneralRcvd(command, 1);
         // cacheSnForContainerRcvd(command);
         return command;
     }
@@ -695,7 +695,11 @@ public class PdaContainerRcvdManagerProxyImpl extends BaseManagerImpl implements
                     throw e;
                 }
                 try {
-                    this.cacheManager.incrBy(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + rcvd.getOccupationId() + "_" + rcvd.getSkuId(), rcvd.getSkuBatchCount());
+                    String asnSkuCount1 = cacheManager.getValue(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + rcvd.getOccupationId() + CacheKeyConstant.CACHE_KEY_SPLIT + rcvd.getSkuId());
+                    System.out.println(asnSkuCount1);
+                    this.cacheManager.incrBy(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + rcvd.getOccupationId() + CacheKeyConstant.CACHE_KEY_SPLIT + rcvd.getSkuId(), rcvd.getSkuBatchCount());
+                    String asnSkuCount2 = cacheManager.getValue(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + rcvd.getOccupationId() + CacheKeyConstant.CACHE_KEY_SPLIT + rcvd.getSkuId());
+                    System.out.println(asnSkuCount2);
                 } catch (Exception e) {
                     this.cacheManager.decrBy(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + rcvd.getOccupationId() + "_" + rcvd.getLineId() + "_" + rcvd.getSkuId(), rcvd.getSkuBatchCount());
                     this.cacheManager.decrBy(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + rcvd.getOccupationId() + "_" + rcvd.getSkuId(), rcvd.getSkuBatchCount());
@@ -730,5 +734,11 @@ public class PdaContainerRcvdManagerProxyImpl extends BaseManagerImpl implements
     @Override
     public void setCache(String userId, List<RcvdCacheCommand> list) {
         this.cacheManager.setObject(CacheKeyConstant.CACHE_RCVD_PREFIX + userId, list, 24 * 60 * 60);
+    }
+
+    @Override
+    public SkuStandardPackingCommand getContainerQty(Long skuId, Long ouId, Long containerType) {
+        SkuStandardPackingCommand skuStandardPackingCommand = this.generalRcvdManager.getContainerQty(skuId, ouId, containerType);
+        return skuStandardPackingCommand;
     }
 }
