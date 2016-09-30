@@ -73,13 +73,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        two_level_type = #{twoLevelType,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        is_full = #{isFull,javaType=java.lang.Boolean,jdbcType=BIT} ,
 		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        last_modify_time = now() ,
 		        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        status=#{status,javaType=java.lang.Integer,jdbcType=INTEGER} 
 	        WHERE 
 		        id = #{id} 
+		        and ou_id = #{ouId}
+		        and last_modify_time <= #{lastModifyTime}
 	    ]]>
 		</update>
 	   <delete id="delete" parameterType="java.lang.Long">

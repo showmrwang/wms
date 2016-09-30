@@ -125,5 +125,8 @@ public interface ContainerDao extends BaseDao<Container, Long> {
      * @param typeList
      * @return
      */
-    List<ContainerCommand> getContainerByCodeAndType(ContainerCommand command);
+    List<ContainerCommand> getContainerByCodeAndType1(ContainerCommand command);
+
+
+    List<ContainerCommand> getContainerByCodeAndType(ContainerCommand commnad);
 }

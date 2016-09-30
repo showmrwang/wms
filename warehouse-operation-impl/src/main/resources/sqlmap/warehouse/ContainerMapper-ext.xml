@@ -266,7 +266,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    ]]>
 		</select>
 
-		 <select id="getContainerByCodeAndType1" parameterType="map" resultMap="ContainerCommandResultExt" flushCache="false">
+		 <select id="getContainerByCodeAndType" parameterType="map" resultMap="ContainerCommandResultExt" flushCache="false">
 			select
 				s.id as id,
 	        	s.name as name,
@@ -289,10 +289,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        s.code = #{code} 
 		        and s.ou_id = #{ouId}
 		        and s.two_level_type = #{twoLevelType}
+		        and s.lifecycle = #{lifecycle} 
+			    and s.status = #{status}
 		    ]]>
 		</select>
 
-		 <select id="getContainerByCodeAndType" parameterType="map" resultMap="ContainerCommandResultExt" flushCache="false">
+		 <select id="getContainerByCodeAndType1" parameterType="map" resultMap="ContainerCommandResultExt" flushCache="false">
 			select
 				s.id as id,
 	        	s.name as name,
