@@ -98,6 +98,8 @@ public class RcvdContainerAttrCommand extends BaseCommand {
     private Integer validDate;
     /** 多条码数量 */
     private Integer quantity;
+    /** 容器中待扫描商品数量 */
+    private Integer qtyRestContainer;
 
 
     public Long getInsideContainerId() {
@@ -458,6 +460,14 @@ public class RcvdContainerAttrCommand extends BaseCommand {
 
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
+    }
+
+    public Integer getQtyRestContainer() {
+        return qtyRestContainer;
+    }
+
+    public void setQtyRestContainer(Integer qtyRestContainer) {
+        this.qtyRestContainer = qtyRestContainer;
     }
 
 }
