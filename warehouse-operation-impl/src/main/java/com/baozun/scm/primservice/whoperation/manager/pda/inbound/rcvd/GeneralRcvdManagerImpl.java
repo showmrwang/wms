@@ -755,6 +755,7 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
             Container container = new Container();
             BeanUtils.copyProperties(command, container);
             container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
+            container.setStatus(ContainerStatus.CONTAINER_STATUS_RCVD);
             this.containerDao.update(container);
             return command;
         } else {
