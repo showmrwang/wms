@@ -16,6 +16,8 @@
  */
 package com.baozun.scm.primservice.whoperation.model.system;
 
+import java.util.Date;
+
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 
 public class SysThreadDeploy extends BaseModel {
@@ -23,93 +25,93 @@ public class SysThreadDeploy extends BaseModel {
 	private static final long serialVersionUID = 139612677153024697L;
 	
 	/** 线程CODE */
-	private java.lang.String threadCode;
+	private String threadCode;
 	/** 描述 */
-	private java.lang.String description;
+	private String description;
 	/** 线程数量 */
-	private java.lang.Integer threadQty;
+	private Integer threadQty;
 	/** 每次执行单据数 */
-	private java.lang.Integer runQty;
+	private Integer runQty;
 	/** 仓库组织ID */
-	private java.lang.Long ouId;
+	private Long ouId;
 	/** 创建时间 */
-	private java.util.Date createTime;
+	private Date createTime;
 	/** 创建人ID */
-	private java.lang.Long createId;
+	private Long createId;
 	/** 操作时间 */
-	private java.util.Date lastModifyTime;
+	private Date lastModifyTime;
 	/** 操作人ID */
-	private java.lang.Long operatorId;
+	private Long operatorId;
 
-	public java.lang.String getThreadCode() {
+	public String getThreadCode() {
 		return this.threadCode;
 	}
 	
-	public void setThreadCode(java.lang.String value) {
+	public void setThreadCode(String value) {
 		this.threadCode = value;
 	}
 	
-	public java.lang.String getDescription() {
+	public String getDescription() {
 		return this.description;
 	}
 	
-	public void setDescription(java.lang.String value) {
+	public void setDescription(String value) {
 		this.description = value;
 	}
 	
-	public java.lang.Integer getThreadQty() {
+	public Integer getThreadQty() {
 		return this.threadQty;
 	}
 	
-	public void setThreadQty(java.lang.Integer value) {
+	public void setThreadQty(Integer value) {
 		this.threadQty = value;
 	}
 	
-	public java.lang.Integer getRunQty() {
+	public Integer getRunQty() {
 		return this.runQty;
 	}
 	
-	public void setRunQty(java.lang.Integer value) {
+	public void setRunQty(Integer value) {
 		this.runQty = value;
 	}
 	
-	public java.lang.Long getOuId() {
+	public Long getOuId() {
 		return this.ouId;
 	}
 	
-	public void setOuId(java.lang.Long value) {
+	public void setOuId(Long value) {
 		this.ouId = value;
 	}
 	
-	public java.util.Date getCreateTime() {
+	public Date getCreateTime() {
 		return this.createTime;
 	}
 	
-	public void setCreateTime(java.util.Date value) {
+	public void setCreateTime(Date value) {
 		this.createTime = value;
 	}
 	
-	public java.lang.Long getCreateId() {
+	public Long getCreateId() {
 		return this.createId;
 	}
 	
-	public void setCreateId(java.lang.Long value) {
+	public void setCreateId(Long value) {
 		this.createId = value;
 	}
 	
-	public java.util.Date getLastModifyTime() {
+	public Date getLastModifyTime() {
 		return this.lastModifyTime;
 	}
 	
-	public void setLastModifyTime(java.util.Date value) {
+	public void setLastModifyTime(Date value) {
 		this.lastModifyTime = value;
 	}
 	
-	public java.lang.Long getOperatorId() {
+	public Long getOperatorId() {
 		return this.operatorId;
 	}
 	
-	public void setOperatorId(java.lang.Long value) {
+	public void setOperatorId(Long value) {
 		this.operatorId = value;
 	}
 	

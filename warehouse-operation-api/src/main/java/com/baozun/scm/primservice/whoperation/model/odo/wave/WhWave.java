@@ -25,8 +25,9 @@ import com.baozun.scm.primservice.whoperation.model.BaseModel;
  */
 public class WhWave extends BaseModel {
 
-
-    // columns START
+	private static final long serialVersionUID = 4565349216060760167L;
+	
+	// columns START
     /** 波次主档编码 */
     private String code;
     /** 波次状态，系统常量 */
@@ -39,8 +40,8 @@ public class WhWave extends BaseModel {
     private String phaseCode;
     /** isWeakAllocated */
     private Boolean isWeakAllocated;
-    /** 硬分配阶段0：分配规则1：硬分配 */
-    private Integer allocatePhase;
+    /** 硬分配阶段0：分配规则1：硬分配  默认为0*/
+    private Integer allocatePhase = 0;
     /** 开始运行时间 */
     private Date startTime;
     /** 结束运行时间 */
