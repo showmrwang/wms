@@ -134,7 +134,7 @@ public interface CaseLevelRcvdManager extends BaseManager {
      * @param container
      * @return
      */
-    public int saveOrUpdateByVersion(Container container);
+    public int updateContainerStatus(Container container);
 
     /**
      * 根据Id获取容器

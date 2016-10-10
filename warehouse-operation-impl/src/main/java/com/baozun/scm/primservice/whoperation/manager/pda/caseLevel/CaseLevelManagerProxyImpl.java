@@ -227,10 +227,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
                 container.setStatus(ContainerStatus.CONTAINER_STATUS_RCVD);
                 container.setOperatorId(userId);
                 // 从数据库占用货箱
-                int updateCount = caseLevelRcvdManager.saveOrUpdateByVersion(container);
-                if (1 != updateCount) {
-                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-                }
+                caseLevelRcvdManager.updateContainerStatus(container);
             } catch (Exception e) {
                 // 数据库修改失败，回滚缓存
                 cacheManager.remove(cacheKey);
@@ -1780,10 +1777,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
             container.setStatus(ContainerStatus.CONTAINER_STATUS_USABLE);
             container.setOperatorId(userId);
             // 从数据库释放货箱
-            int updateCount = caseLevelRcvdManager.saveOrUpdateByVersion(container);
-            if (1 != updateCount) {
-                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-            }
+            caseLevelRcvdManager.updateContainerStatus(container);
 
             try {
                 // 从缓存删除货箱操作人
@@ -1793,10 +1787,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
                 container.setStatus(ContainerStatus.CONTAINER_STATUS_RCVD);
                 container.setOperatorId(userId);
                 // 回滚释放货箱操作
-                int count = caseLevelRcvdManager.saveOrUpdateByVersion(container);
-                if (1 != count) {
-                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-                }
+                caseLevelRcvdManager.updateContainerStatus(container);
             }
         } catch (Exception e) {
             throw new BusinessException(ErrorCodes.CASELEVEL_RELEASE_CONTAINER_ERROR);

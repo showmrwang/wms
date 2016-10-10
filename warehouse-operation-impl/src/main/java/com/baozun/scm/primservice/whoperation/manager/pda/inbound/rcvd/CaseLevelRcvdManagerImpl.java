@@ -297,10 +297,10 @@ public class CaseLevelRcvdManagerImpl extends BaseManagerImpl implements CaseLev
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public int saveOrUpdateByVersion(Container container) {
+    public int updateContainerStatus(Container container) {
         int updateCount = this.containerDao.saveOrUpdateByVersion(container);
         if (1 != updateCount) {
-            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            throw new BusinessException(ErrorCodes.CASELEVEL_CONTAINER_UPDATE_STATUS_ERROR, container.getCode());
         }
         return updateCount;
     }
@@ -413,7 +413,7 @@ public class CaseLevelRcvdManagerImpl extends BaseManagerImpl implements CaseLev
                 int updateCount = whCartonDao.saveOrUpdateByVersion(whCarton);
                 if (1 != updateCount) {
                     log.error("CaseLevelRcvdManagerImpl.saveOrUpdateWhCartonToDB save whCarton error, whCarton is:[{}], logId is:[{}]", whCarton, logId);
-                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                    throw new BusinessException(ErrorCodes.CASELEVEL_CARTON_UPDATE_ERROR, rcvdCarton.getSkuBarcode());
                 }
                 this.insertGlobalLog(GLOBAL_LOG_UPDATE, whCarton, ouId, userId, null, null);
             }
@@ -528,7 +528,7 @@ public class CaseLevelRcvdManagerImpl extends BaseManagerImpl implements CaseLev
             int updateCount = whAsnLineDao.saveOrUpdateByVersion(whAsnLine);
             if (1 != updateCount) {
                 log.error("CaseLevelRcvdManagerImpl.updateWhAsnLineToDB update whAsnLine error, whAsnLine is:[{}], logId is:[{}]", whAsnLine, logId);
-                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                throw new BusinessException(ErrorCodes.CASELEVEL_ASN_LINE_UPDATE_ERROR);
             }
             this.insertGlobalLog(GLOBAL_LOG_UPDATE, whAsnLine, ouId, userId, null, null);
         }
@@ -557,7 +557,7 @@ public class CaseLevelRcvdManagerImpl extends BaseManagerImpl implements CaseLev
         int updateCount = whAsnDao.saveOrUpdateByVersion(toUpdateWhAsn);
         if (1 != updateCount) {
             log.error("CaseLevelRcvdManagerImpl.updateWhAsnToDB update whAsn error, whAsn is:[{}], logId is:[{}]", toUpdateWhAsn, logId);
-            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            throw new BusinessException(ErrorCodes.CASELEVEL_AS_UPDATE_ERROR);
         }
         this.insertGlobalLog(GLOBAL_LOG_UPDATE, toUpdateWhAsn, ouId, userId, null, null);
     }
@@ -578,7 +578,7 @@ public class CaseLevelRcvdManagerImpl extends BaseManagerImpl implements CaseLev
             int updateCount = whPoLineDao.saveOrUpdateByVersion(whPoLine);
             if (1 != updateCount) {
                 log.error("CaseLevelRcvdManagerImpl.updateWhPoLineToDB update whPoLine error, whAsn is:[{}], logId is:[{}]", whPoLine, logId);
-                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                throw new BusinessException(ErrorCodes.CASELEVEL_PO_LINE_UPDATE_ERROR);
             }
             this.insertGlobalLog(GLOBAL_LOG_UPDATE, whPoLine, ouId, userId, null, null);
         }
@@ -607,7 +607,7 @@ public class CaseLevelRcvdManagerImpl extends BaseManagerImpl implements CaseLev
             int updateCount = whPoDao.saveOrUpdateByVersion(toUpdateWhPo);
             if (1 != updateCount) {
                 log.error("CaseLevelRcvdManagerImpl update whPo error, whAsn is:[{}], logId is:[{}]", toUpdateWhPo, logId);
-                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                throw new BusinessException(ErrorCodes.CASELEVEL_PO_UPDATE_ERROR);
             }
             this.insertGlobalLog(GLOBAL_LOG_UPDATE, toUpdateWhPo, ouId, userId, null, null);
         }
@@ -628,7 +628,7 @@ public class CaseLevelRcvdManagerImpl extends BaseManagerImpl implements CaseLev
         int updateCount = containerDao.saveOrUpdateByVersion(toUpdateContainer);
         if (1 != updateCount) {
             log.error("CaseLevelRcvdManagerImpl.updateContainerToDB update container error, whAsn is:[{}], logId is:[{}]", toUpdateContainer, logId);
-            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            throw new BusinessException(ErrorCodes.CASELEVEL_CONTAINER_UPDATE_STATUS_ERROR, toUpdateContainer.getCode());
         }
         this.insertGlobalLog(GLOBAL_LOG_UPDATE, toUpdateContainer, ouId, userId, null, null);
     }
