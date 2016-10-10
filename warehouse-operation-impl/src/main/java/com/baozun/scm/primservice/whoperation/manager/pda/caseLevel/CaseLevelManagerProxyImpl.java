@@ -754,6 +754,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
                 throw new BusinessException(ErrorCodes.CASELEVEL_RCVD_QTY_ERROR);
             }
             rcvdWhCarton.setSkuQty(rcvdSkuTotal);
+            rcvdWhCarton.setQtyRcvd(rcvdSkuTotal);
             if (null != rcvdWhCarton.getSkuInventorySnList()) {
                 rcvdWhCarton.getSkuInventorySnList().addAll(whCartonCommand.getSkuInventorySnList());
             } else {
