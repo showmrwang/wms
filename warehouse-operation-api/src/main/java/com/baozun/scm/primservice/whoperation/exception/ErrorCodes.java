@@ -631,9 +631,9 @@ public class ErrorCodes {
     public static final int CASELEVEL_FUN_INV_TYPE_ERROR = 60072;
     /** 收货功能配置的库存状态无效 */
     public static final int CASELEVEL_FUN_INV_STATUS_ERROR = 60073;
-    /** 容器{0}状态更新失败 */
+    /** 容器[{0}]状态更新失败 */
     public static final int CASELEVEL_CONTAINER_UPDATE_STATUS_ERROR = 60074;
-    /** 商品{0}装箱信息更新失败 */
+    /** 商品[{0}]装箱信息更新失败 */
     public static final int CASELEVEL_CARTON_UPDATE_ERROR = 60075;
     /** ASN明细更新失败 */
     public static final int CASELEVEL_ASN_LINE_UPDATE_ERROR = 60076;
