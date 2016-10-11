@@ -50,7 +50,7 @@ public class WhOdo extends BaseModel {
     /** 订单平台类型 */
     private String orderType;
     /** 下单时间 */
-    private java.util.Date orderTime;
+    private Date orderTime;
     /** 出库单状态 */
     private String odoStatus;
     /** 计划数量 */
@@ -80,19 +80,19 @@ public class WhOdo extends BaseModel {
     /** 仓库组织ID */
     private Long ouId;
     /** 创建时间 */
-    private java.util.Date createTime;
+    private Date createTime;
     /** 创建人ID */
     private Long createdId;
     /** 最后修改时间 */
-    private java.util.Date lastModifyTime;
+    private Date lastModifyTime;
     /** 操作人ID */
     private Long modifiedId;
     /** 合并后出库单单号 */
     private String groupOdoCode;
     /** 是否分配成功 */
-    private java.lang.Boolean isAssignSuccess;
+    private Boolean isAssignSuccess;
     /** 分配失败原因 */
-    private java.lang.String assignFailReason;
+    private String assignFailReason;
     /** 是否允许合并 1：允许 0：不允许 */
     private java.lang.Boolean isAllowMerge;
     /** 波次号 */
@@ -356,27 +356,27 @@ public class WhOdo extends BaseModel {
         this.groupOdoCode = groupOdoCode;
     }
 
-    public java.lang.Boolean getIsAssignSuccess() {
+    public Boolean getIsAssignSuccess() {
         return isAssignSuccess;
     }
 
-    public void setIsAssignSuccess(java.lang.Boolean isAssignSuccess) {
+    public void setIsAssignSuccess(Boolean isAssignSuccess) {
         this.isAssignSuccess = isAssignSuccess;
     }
 
-    public java.lang.String getAssignFailReason() {
+    public String getAssignFailReason() {
         return assignFailReason;
     }
 
-    public void setAssignFailReason(java.lang.String assignFailReason) {
+    public void setAssignFailReason(String assignFailReason) {
         this.assignFailReason = assignFailReason;
     }
 
-    public java.lang.Boolean getIsAllowMerge() {
+    public Boolean getIsAllowMerge() {
         return isAllowMerge;
     }
 
-    public void setIsAllowMerge(java.lang.Boolean isAllowMerge) {
+    public void setIsAllowMerge(Boolean isAllowMerge) {
         this.isAllowMerge = isAllowMerge;
     }
 

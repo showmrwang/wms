@@ -5,9 +5,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 
 
 <mapper namespace="com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveDao">
-	<resultMap id="WhWaveResultExt" type="com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave">
+	<resultMap id="WhWaveResultExt"
+		type="com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave">
 	</resultMap>
-	
+
+	<resultMap id="SoftAllocationCommand"
+		type="com.baozun.scm.primservice.whoperation.command.odo.wave.SoftAllocationCommand">
+	</resultMap>
+
 	<!-- 用于select查询公用抽取的列 -->
 	<sql id="whWaveColumnsExt">
 	    <![CDATA[
@@ -41,125 +46,158 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	is_run_wave as isRunWave
 	    ]]>
 	</sql>
-	
+
+	<sql id="whWaveColumnsExt1">
+	    <![CDATA[
+	        	waveLine.id as id,
+	        	waveLine.code as code,
+	        	waveLine.status as status,
+	        	waveLine.ou_id as ouId,
+	        	waveLine.wave_master_id as waveMasterId,
+	        	waveLine.phase_code as phaseCode,
+	        	waveLine.is_weak_allocated as isWeakAllocated,
+	        	waveLine.allocate_phase as allocatePhase,
+	        	waveLine.start_time as startTime,
+	        	waveLine.finish_time as finishTime,
+	        	waveLine.total_odo_qty as totalOdoQty,
+	        	waveLine.total_odo_line_qty as totalOdoLineQty,
+	        	waveLine.total_amount as totalAmount,
+	        	waveLine.total_volume as totalVolume,
+	        	waveLine.total_weight as totalWeight,
+	        	waveLine.total_sku_qty as totalSkuQty,
+	        	waveLine.sku_category_qty as skuCategoryQty,
+	        	waveLine.exec_odo_qty as execOdoQty,
+	        	waveLine.exec_odo_line_qty as execOdoLineQty,
+	        	waveLine.outbound_carton_qty as outboundCartonQty,
+	        	waveLine.is_error as isError,
+	        	waveLine.error_count as errorCount,
+	        	waveLine.create_time as createTime,
+	        	waveLine.last_modify_time as lastModifyTime,
+	        	waveLine.created_id as createdId,
+	        	waveLine.modified_id as modifiedId,
+	        	waveLine.lifecycle as lifecycle
+	    ]]>
+	</sql>
+
 	<sql id="whWaveDynamicWhereExt">
 		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
 		<where>
-	       
-				<if test="id!=null">
-					and id = #{id}
-				</if>
-	       
-	       
-		       <if test="code!=null and code!=''">
-					and code = #{code}
-				</if>
-	       
-				<if test="status!=null">
-					and status = #{status}
-				</if>
-	       
-				<if test="ouId!=null">
-					and ou_id = #{ouId}
-				</if>
-	       
-				<if test="waveMasterId!=null">
-					and wave_master_id = #{waveMasterId}
-				</if>
-	       
-	       
-		       <if test="phaseCode!=null and phaseCode!=''">
-					and phase_code = #{phaseCode}
-				</if>
-	       
-				<if test="isWeakAllocated!=null">
-					and is_weak_allocated = #{isWeakAllocated}
-				</if>
-	       
-				<if test="allocatePhase!=null">
-					and allocate_phase = #{allocatePhase}
-				</if>
-	       
-				<if test="startTime!=null">
-					and start_time = #{startTime}
-				</if>
-	       
-				<if test="finishTime!=null">
-					and finish_time = #{finishTime}
-				</if>
-	       
-				<if test="totalOdoQty!=null">
-					and total_odo_qty = #{totalOdoQty}
-				</if>
-	       
-				<if test="totalOdoLineQty!=null">
-					and total_odo_line_qty = #{totalOdoLineQty}
-				</if>
-	       
-				<if test="totalAmount!=null">
-					and total_amount = #{totalAmount}
-				</if>
-	       
-				<if test="totalVolume!=null">
-					and total_volume = #{totalVolume}
-				</if>
-	       
-				<if test="totalWeight!=null">
-					and total_weight = #{totalWeight}
-				</if>
-	       
-				<if test="totalSkuQty!=null">
-					and total_sku_qty = #{totalSkuQty}
-				</if>
-	       
-				<if test="skuCategoryQty!=null">
-					and sku_category_qty = #{skuCategoryQty}
-				</if>
-	       
-				<if test="execOdoQty!=null">
-					and exec_odo_qty = #{execOdoQty}
-				</if>
-	       
-				<if test="execOdoLineQty!=null">
-					and exec_odo_line_qty = #{execOdoLineQty}
-				</if>
-	       
-				<if test="outboundCartonQty!=null">
-					and outbound_carton_qty = #{outboundCartonQty}
-				</if>
-	       
-				<if test="isError!=null">
-					and is_error = #{isError}
-				</if>
-	       
-				<if test="errorCount!=null">
-					and error_count = #{errorCount}
-				</if>
-	       
-				<if test="createTime!=null">
-					and create_time = #{createTime}
-				</if>
-	       
-				<if test="lastModifyTime!=null">
-					and last_modify_time = #{lastModifyTime}
-				</if>
-	       
-				<if test="createdId!=null">
-					and created_id = #{createdId}
-				</if>
-	       
-				<if test="modifiedId!=null">
-					and modified_id = #{modifiedId}
-				</if>
-	       
-				<if test="lifecycle!=null">
-					and lifecycle = #{lifecycle}
-				</if>
+
+			<if test="id!=null">
+				and id = #{id}
+			</if>
+
+
+			<if test="code!=null and code!=''">
+				and code = #{code}
+			</if>
+
+			<if test="status!=null">
+				and status = #{status}
+			</if>
+
+			<if test="ouId!=null">
+				and ou_id = #{ouId}
+			</if>
+
+			<if test="waveMasterId!=null">
+				and wave_master_id = #{waveMasterId}
+			</if>
+
+
+			<if test="phaseCode!=null and phaseCode!=''">
+				and phase_code = #{phaseCode}
+			</if>
+
+			<if test="isWeakAllocated!=null">
+				and is_weak_allocated = #{isWeakAllocated}
+			</if>
+
+			<if test="allocatePhase!=null">
+				and allocate_phase = #{allocatePhase}
+			</if>
+
+			<if test="startTime!=null">
+				and start_time = #{startTime}
+			</if>
+
+			<if test="finishTime!=null">
+				and finish_time = #{finishTime}
+			</if>
+
+			<if test="totalOdoQty!=null">
+				and total_odo_qty = #{totalOdoQty}
+			</if>
+
+			<if test="totalOdoLineQty!=null">
+				and total_odo_line_qty = #{totalOdoLineQty}
+			</if>
+
+			<if test="totalAmount!=null">
+				and total_amount = #{totalAmount}
+			</if>
+
+			<if test="totalVolume!=null">
+				and total_volume = #{totalVolume}
+			</if>
+
+			<if test="totalWeight!=null">
+				and total_weight = #{totalWeight}
+			</if>
+
+			<if test="totalSkuQty!=null">
+				and total_sku_qty = #{totalSkuQty}
+			</if>
+
+			<if test="skuCategoryQty!=null">
+				and sku_category_qty = #{skuCategoryQty}
+			</if>
+
+			<if test="execOdoQty!=null">
+				and exec_odo_qty = #{execOdoQty}
+			</if>
+
+			<if test="execOdoLineQty!=null">
+				and exec_odo_line_qty = #{execOdoLineQty}
+			</if>
+
+			<if test="outboundCartonQty!=null">
+				and outbound_carton_qty = #{outboundCartonQty}
+			</if>
+
+			<if test="isError!=null">
+				and is_error = #{isError}
+			</if>
+
+			<if test="errorCount!=null">
+				and error_count = #{errorCount}
+			</if>
+
+			<if test="createTime!=null">
+				and create_time = #{createTime}
+			</if>
+
+			<if test="lastModifyTime!=null">
+				and last_modify_time = #{lastModifyTime}
+			</if>
+
+			<if test="createdId!=null">
+				and created_id = #{createdId}
+			</if>
+
+			<if test="modifiedId!=null">
+				and modified_id = #{modifiedId}
+			</if>
+
+			<if test="lifecycle!=null">
+				and lifecycle = #{lifecycle}
+			</if>
 		</where>
 	</sql>
-	
 
-		<update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave">
+
+	<update id="updateByVersion"
+		parameterType="com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave">
 		    <![CDATA[
 		        UPDATE t_wh_wave SET
 			        code = #{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -190,9 +228,119 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        is_run_wave=#{isRunWave,javaType=java.lang.Boolean,jdbcType=BIT} 
 		        WHERE 
 			        id = #{id} 
-			        
+			        and ou_id = #{ouId}
 			        and last_modify_time	<=  #{lastModifyTime}    
 		    ]]>
-		</update>
+	</update>
+
+
+	<select id="findSoftAllocationWhWaveLine" resultMap="WhWaveResult">
+		select
+		<include refid="whWaveColumnsExt1" />
+		from t_wh_wave wave,t_wh_wave_line waveLine
+		where
+		waveLine.wave_id=wave.id
+		and waveLine.ou_id=wave.ou_id
+		and wave.status = #{waveStatus}
+		and wave.lifecycle = #{lifecycle}
+		and wave.id = #{waveId}
+		and wave.ou_id = #{ouId}
+		order by
+		waveLine.odo_priority_level,waveLine.odo_plan_deliver_goods_time,
+		waveLine.odo_order_time desc,waveLine.qty, waveLine.odo_id asc
+	</select>
+
+
+	<select id="getSkuInvTotalQty" resultMap="SoftAllocationCommand">
+		SELECT
+			waveline.ouId,
+			waveline.skuId,
+			waveline.qtys,
+			sum(IFNULL(inv.on_hand_qty, 0)) AS sQtys
+		FROM
+		(
+			SELECT
+			wave.ou_id AS ouId,
+			waveLine.sku_id skuId,
+			sum(IFNULL(waveLine.qty, 0)) qtys
+			FROM
+			t_wh_wave_line waveLine
+			LEFT JOIN t_wh_wave wave ON waveLine.wave_id = wave.id
+			WHERE
+			wave.ou_id = waveLine.ou_id
+			AND wave.id = #{waveId}
+			AND wave.ou_id = #{ouId}
+			AND wave. STATUS = 1
+			GROUP BY
+			waveLine.sku_id
+		) waveline
+		LEFT JOIN t_wh_sku_inventory inv ON (
+			waveline.skuId = inv.sku_id
+			AND waveline.ouId = inv.ou_id
+		)
+		LEFT JOIN t_wh_location loc ON (
+			inv.location_id = loc.id
+			AND inv.ou_id = loc.ou_id
+		)
+		WHERE
+			loc.is_temporary_location != 1
+			AND inv.on_hand_qty > 0.0
+			AND inv.occupation_code IS NULL
+		GROUP BY
+			waveline.skuId
+	</select>
+
+	<select id="getSkuInvOccupiedQty" resultMap="SoftAllocationCommand">
+		SELECT
+			waveline.ouId,
+			waveline.skuId,
+			waveline.qtys,
+			sum(IFNULL(- occupyWaveline.qty, 0)) AS sQtys
+		FROM
+		(
+			SELECT
+			wave.ou_id AS ouId,
+			waveLine.sku_id skuId,
+			sum(IFNULL(waveLine.qty, 0)) qtys
+			FROM
+			t_wh_wave_line waveLine
+			LEFT JOIN t_wh_wave wave ON waveLine.wave_id = wave.id
+			WHERE
+			wave.ou_id = waveLine.ou_id
+			-- AND wave.id = 1
+			AND wave.id = #{waveId}
+			AND wave.ou_id = #{ouId}
+			GROUP BY
+			waveLine.sku_id
+		) waveline
+		LEFT JOIN t_wh_wave_line occupyWaveline ON (
+			waveline.skuId = occupyWaveline.sku_id
+			AND waveline.ouId = occupyWaveline.ou_id
+		)
+		LEFT JOIN t_wh_wave occupyWave ON (
+			waveline.ouId = occupyWave.ou_id
+			AND occupyWave.id = occupyWaveline.wave_id
+		)
+		WHERE
+			occupyWave. STATUS = 5
+			AND ((
+			--软分配阶段
+				occupyWave.phase_code = 'WEAK_ALLOCATED'
+				AND occupyWave.is_weak_allocated = 1
+			)
+			OR (
+			--合并订单
+				occupyWave.phase_code = 'MERGE_ODO'
+				AND occupyWave.is_weak_allocated = 1
+			)
+			OR(
+			--硬分配匹配规则阶段
+				occupyWave.phase_code = 'ALLOCATED'
+				AND occupyWave.allocate_phase = 0
+			)
+			)
+		GROUP BY
+			waveline.skuId
+	</select>
 	
 </mapper>

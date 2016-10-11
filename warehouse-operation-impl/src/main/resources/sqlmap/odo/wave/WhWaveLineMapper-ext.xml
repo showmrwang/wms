@@ -8,6 +8,136 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<resultMap id="WhWaveLineResultExt" type="com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine">
 	</resultMap>
 	
+	<resultMap id="WaveLineSku"
+		type="com.baozun.scm.primservice.whoperation.command.odo.wave.SoftAllocationCommand">
+		<id column="skuId" property="skuId" />
+		<result column="ouId1" property="ouId" />
+		<result column="qtys1" property="qtys" />
+		<result column="sQtys1" property="sQtys" />
+		<association property="whWaveLine" javaType="com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine">
+			<id column="waveLineId" property="id" />
+			<result column="waveLineWaveId" property="waveId" />
+			<result column="waveLineOdoLineId" property="odoLineId" />
+			<result column="waveLineOdoId" property="odoId" />
+			<result column="waveLineOdoCode" property="odoCode" />
+			<result column="waveLineOdoPriorityLevel" property="odoPriorityLevel" />
+			<result column="waveLineOdoPlanDeliverGoodsTime" property="odoPlanDeliverGoodsTime" />
+			<result column="waveLineOdoOrderTime" property="odoOrderTime" />
+			<result column="waveLineAllocateRuleId" property="allocateRuleId" />
+			<result column="waveLineLinenum" property="linenum" />
+			<result column="waveLineStoreId" property="storeId" />
+			<result column="waveLineExtLinenum" property="extLinenum" />
+			<result column="waveLineSkuId" property="skuId" />
+			<result column="waveLineSkuBarCode" property="skuBarCode" />
+			<result column="waveLineSkuName" property="skuName" />
+			<result column="waveLineExtSkuName" property="extSkuName" />
+			<result column="waveLineQty" property="qty" />
+			<result column="waveLineIsWholeOrderOutbound" property="isWholeOrderOutbound" />
+			<result column="waveLineFullLineOutbound" property="fullLineOutbound" />
+			<result column="waveLineMfgDate" property="mfgDate" />
+			<result column="waveLineExpDate" property="expDate" />
+			<result column="waveLineMinExpDate" property="minExpDate" />
+			<result column="waveLineMaxExpDate" property="maxExpDate" />
+			<result column="waveLineBatchNumber" property="batchNumber" />
+			<result column="waveLineCountryOfOrigin" property="countryOfOrigin" />
+			<result column="waveLineInvStatus" property="invStatus" />
+			<result column="waveLineInvType" property="invType" />
+			<result column="waveLineInvAttr1" property="invAttr1" />
+			<result column="waveLineInvAttr2" property="invAttr2" />
+			<result column="waveLineInvAttr3" property="invAttr3" />
+			<result column="waveLineInvAttr4" property="invAttr4" />
+			<result column="waveLineInvAttr5" property="invAttr5" />
+			<result column="waveLineOutboundCartonType" property="outboundCartonType" />
+			<result column="waveLineColor" property="color" />
+			<result column="waveLineStyle" property="style" />
+			<result column="waveLineSize" property="size" />
+			<result column="waveLineOuId" property="ouId" />
+			<result column="waveLineCreateTime" property="createTime" />
+			<result column="waveLineCreatedId" property="createdId" />
+			<result column="waveLineLastModifyTime" property="lastModifyTime" />
+			<result column="waveLineModifiedId" property="modifiedId" />
+		</association>
+		<association property="sku" javaType="com.baozun.scm.primservice.whoperation.model.sku.Sku">
+			<id column="skuSkuId" property="id" />
+			<result column="skuCode" property="code" />
+			<result column="skuExtCode" property="extCode" />
+			<result column="skuBarCode" property="barCode" />
+			<result column="skuName" property="name" />
+			<result column="skuEnName" property="enName" />
+			<result column="skuDescription" property="description" />
+			<result column="skuColor" property="color" />
+			<result column="skuStyle" property="style" />
+			<result column="skuSize" property="size" />
+			<result column="skuLength" property="length" />
+			<result column="skuWidth" property="width" />
+			<result column="skuHeight" property="height" />
+			<result column="skuLengthUom" property="lengthUom" />
+			<result column="skuVolumeUom" property="volumeUom" />
+			<result column="skuWeightUom" property="weightUom" />
+			<result column="skuVolume" property="volume" />
+			<result column="skuWeight" property="weight" />
+			<result column="skuBrandId" property="brandId" />
+			<result column="skuCustomerId" property="customerId" />
+			<result column="skuOuId" property="ouId" />
+			<result column="skuCreateTime" property="createTime" />
+			<result column="skuCreatedId" property="createdId" />
+			<result column="skuLastModifyTime" property="lastModifyTime" />
+			<result column="skuModifiedId" property="modifiedId" />
+			<result column="skuLifecycle" property="lifecycle" />
+		</association>
+		<association property="whOdoLine" javaType="com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine">
+			<id column="odoLineId" property="id" />
+			<result column="odoLineOdoId" property="odoId" />
+			<result column="odoLineLinenum" property="linenum" />
+			<result column="odoLineOriginalLinenum" property="originalLinenum" />
+			<result column="odoLineStoreId" property="storeId" />
+			<result column="odoLineExtLinenum" property="extLinenum" />
+			<result column="odoLineSkuId" property="skuId" />
+			<result column="odoLineSkuBarCode" property="skuBarCode" />
+			<result column="odoLineSkuName" property="skuName" />
+			<result column="odoLineExtSkuName" property="extSkuName" />
+			<result column="odoLineQty" property="qty" />
+			<result column="odoLineCurrentQty" property="currentQty" />
+			<result column="odoLineActualQty" property="actualQty" />
+			<result column="odoLineCancelQty" property="cancelQty" />
+			<result column="odoLineAssignQty" property="assignQty" />
+			<result column="odoLineDiekingQty" property="diekingQty" />
+			<result column="odoLineLinePrice" property="linePrice" />
+			<result column="odoLineLineAmt" property="lineAmt" />
+			<result column="odoLineOdoLineStatus" property="odoLineStatus" />
+			<result column="odoLineIsCheck" property="isCheck" />
+			<result column="odoLineFullLineOutbound" property="fullLineOutbound" />
+			<result column="odoLinePartOutboundStrategy" property="partOutboundStrategy" />
+			<result column="odoLineMfgDate" property="mfgDate" />
+			<result column="odoLineExpDate" property="expDate" />
+			<result column="odoLineMinExpDate" property="minExpDate" />
+			<result column="odoLineMaxExpDate" property="maxExpDate" />
+			<result column="odoLineBatchNumber" property="batchNumber" />
+			<result column="odoLineCountryOfOrigin" property="countryOfOrigin" />
+			<result column="odoLineInvStatus" property="invStatus" />
+			<result column="odoLineInvType" property="invType" />
+			<result column="odoLineInvAttr1" property="invAttr1" />
+			<result column="odoLineInvAttr2" property="invAttr2" />
+			<result column="odoLineInvAttr3" property="invAttr3" />
+			<result column="odoLineInvAttr4" property="invAttr4" />
+			<result column="odoLineInvAttr5" property="invAttr5" />
+			<result column="odoLineOutboundCartonType" property="outboundCartonType" />
+			<result column="odoLineColor" property="color" />
+			<result column="odoLineStyle" property="style" />
+			<result column="odoLineSize" property="size" />
+			<result column="odoLineMixingAttr" property="mixingAttr" />
+			<result column="odoLineOriginalOdoCode" property="originalOdoCode" />
+			<result column="odoLineAssignFailReason" property="assignFailReason" />
+			<result column="odoLineIsAssignSuccess" property="isAssignSuccess" />
+			<result column="odoLineOuId" property="ouId" />
+			<result column="odoLineCreateTime" property="createTime" />
+			<result column="odoLineCreatedId" property="createdId" />
+			<result column="odoLineLastModifyTime" property="lastModifyTime" />
+			<result column="odoLineModifiedId" property="modifiedId" />
+			<result column="odoLineWaveCode" property="waveCode" />
+		</association>
+	</resultMap>
+	
 	<!-- 用于select查询公用抽取的列 -->
 	<sql id="whWaveLineColumnsExt">
 	    <![CDATA[
@@ -291,5 +421,142 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        and last_modify_time	<=  #{lastModifyTime}    
 		    ]]>
 		</update>
+		
+		<sql id="waveLineSkuColumn">
+	    <![CDATA[
+	        	waveline.id as waveLineId,
+	        	waveline.wave_id as waveLineWaveId,
+	        	waveline.odo_line_id as waveLineOdoLineId,
+	        	waveline.odo_id as waveLineOdoId,
+	        	waveline.odo_code as waveLineOdoCode,
+	        	waveline.odo_priority_level as waveLineOdoPriorityLevel,
+	        	waveline.odo_plan_deliver_goods_time as waveLineOdoPlanDeliverGoodsTime,
+	        	waveline.odo_order_time as waveLineOdoOrderTime,
+	        	waveline.allocate_rule_id as waveLineAllocateRuleId,
+	        	waveline.linenum as waveLineLinenum,
+	        	waveline.store_id as waveLineStoreId,
+	        	waveline.ext_linenum as waveLineExtLinenum,
+	        	waveline.sku_id as waveLineSkuId,
+	        	waveline.sku_bar_code as waveLineSkuBarCode,
+	        	waveline.sku_name as waveLineSkuName,
+	        	waveline.ext_sku_name as waveLineExtSkuName,
+	        	waveline.qty as waveLineQty,
+	        	waveline.is_whole_order_outbound as waveLineIsWholeOrderOutbound,
+	        	waveline.full_line_outbound as waveLineFullLineOutbound,
+	        	waveline.mfg_date as waveLineMfgDate,
+	        	waveline.exp_date as waveLineExpDate,
+	        	waveline.min_exp_date as waveLineMinExpDate,
+	        	waveline.max_exp_date as waveLineMaxExpDate,
+	        	waveline.batch_number as waveLineBatchNumber,
+	        	waveline.country_of_origin as waveLineCountryOfOrigin,
+	        	waveline.inv_status as waveLineInvStatus,
+	        	waveline.inv_type as waveLineInvType,
+	        	waveline.inv_attr1 as waveLineInvAttr1,
+	        	waveline.inv_attr2 as waveLineInvAttr2,
+	        	waveline.inv_attr3 as waveLineInvAttr3,
+	        	waveline.inv_attr4 as waveLineInvAttr4,
+	        	waveline.inv_attr5 as waveLineInvAttr5,
+	        	waveline.outbound_carton_type as waveLineOutboundCartonType,
+	        	waveline.color as waveLineColor,
+	        	waveline.style as waveLineStyle,
+	        	waveline.size as waveLineSize,
+	        	waveline.ou_id as waveLineOuId,
+	        	waveline.create_time as waveLineCreateTime,
+	        	waveline.created_id as waveLineCreatedId,
+	        	waveline.last_modify_time as waveLineLastModifyTime,
+	        	waveline.modified_id as waveLineModifiedId,
+	        	
+	        	sku.id as skuSkuId,
+                sku.code as skuCode,
+                sku.bar_code as skuBarCode,
+                sku.name as skuName,
+                sku.en_name as skuEnName,
+                sku.description as skuDescription,
+                sku.color as skuColor,
+                sku.length as skuLength,
+                sku.width as skuWidth,
+                sku.height as skuHeight,
+                sku.volume as skuVolume,
+                sku.weight as skuWeight,
+                sku.brand_id as skuBrandId,
+                sku.customer_id as skuCustomerId,
+                sku.create_time as skuCreateTime,
+                sku.created_id as skuCreatedId,
+                sku.last_modify_time as skuLastModifyTime,
+                sku.modified_id as skuModifiedId, 
+                sku.style as skuStyle,
+                sku.size as skuSize,
+                sku.lifecycle as skuLifecycle,
+                sku.ext_code as skuExtCode,
+                
+                odoLine.id as odoLineId,
+	        	odoLine.odo_id as odoLineOdoId,
+	        	odoLine.linenum as odoLineLinenum,
+	        	odoLine.original_linenum as odoLineOriginalLinenum,
+	        	odoLine.store_id as odoLineStoreId,
+	        	odoLine.ext_linenum as odoLineExtLinenum,
+	        	odoLine.sku_id as odoLineSkuId,
+	        	odoLine.sku_bar_code as odoLineSkuBarCode,
+	        	odoLine.sku_name as odoLineSkuName,
+	        	odoLine.ext_sku_name as odoLineExtSkuName,
+	        	odoLine.qty as odoLineQty,
+	        	odoLine.current_qty as odoLineCurrentQty,
+	        	odoLine.actual_qty as odoLineActualQty,
+	        	odoLine.cancel_qty as odoLineCancelQty,
+	        	odoLine.assign_qty as odoLineAssignQty,
+	        	odoLine.dieking_qty as odoLineDiekingQty,
+	        	odoLine.line_price as odoLineLinePrice,
+	        	odoLine.line_amt as odoLineLineAmt,
+	        	odoLine.odo_line_status as odoLineOdoLineStatus,
+	        	odoLine.is_check as odoLineIsCheck,
+	        	odoLine.full_line_outbound as odoLineFullLineOutbound,
+	        	odoLine.part_outbound_strategy as odoLinePartOutboundStrategy,
+	        	odoLine.mfg_date as odoLineMfgDate,
+	        	odoLine.exp_date as odoLineExpDate,
+	        	odoLine.min_exp_date as odoLineMinExpDate,
+	        	odoLine.max_exp_date as odoLineMaxExpDate,
+	        	odoLine.batch_number as odoLineBatchNumber,
+	        	odoLine.country_of_origin as odoLineCountryOfOrigin,
+	        	odoLine.inv_status as odoLineInvStatus,
+	        	odoLine.inv_type as odoLineInvType,
+	        	odoLine.inv_attr1 as odoLineInvAttr1,
+	        	odoLine.inv_attr2 as odoLineInvAttr2,
+	        	odoLine.inv_attr3 as odoLineInvAttr3,
+	        	odoLine.inv_attr4 as odoLineInvAttr4,
+	        	odoLine.inv_attr5 as odoLineInvAttr5,
+	        	odoLine.outbound_carton_type as odoLineOutboundCartonType,
+	        	odoLine.color as odoLineColor,
+	        	odoLine.style as odoLineStyle,
+	        	odoLine.size as odoLineSize,
+	        	odoLine.mixing_attr as odoLineMixingAttr,
+	        	odoLine.original_odo_code as odoLineOriginalOdoCode,
+	        	odoLine.assign_fail_reason as odoLineAssignFailReason,
+	        	odoLine.is_assign_success as odoLineIsAssignSuccess,
+	        	odoLine.ou_id as odoLineOuId,
+	        	odoLine.create_time as odoLineCreateTime,
+	        	odoLine.created_id as odoLineCreatedId,
+	        	odoLine.last_modify_time as odoLineLastModifyTime,
+	        	odoLine.modified_id as odoLineModifiedId,
+	        	odoLine.wave_code as odoLineWaveCode
+	    ]]>
+	</sql>
+	
+	<select id="findWaveLineCommandByWaveIdAndStatus" resultMap="WaveLineSku">
+		select
+		<include refid="waveLineSkuColumn" />
+		from t_wh_wave wave,t_wh_wave_line waveLine,t_wh_sku sku, t_wh_odo_line odoLine
+		where
+		waveLine.wave_id=wave.id
+		and waveLine.sku_id = sku.id
+		and waveLine.ou_id=wave.ou_id
+		and waveLine.odo_line_id = odoLine.id
+		and wave.status = #{waveStatus}
+		and wave.lifecycle = #{lifecycle}
+		and wave.id = #{waveId}
+		and wave.ou_id = #{ouId}
+		order by
+		waveLine.odo_priority_level,waveLine.odo_plan_deliver_goods_time,
+		waveLine.odo_order_time desc,waveLine.qty, waveLine.odo_id asc
+	</select>
 	
 </mapper>

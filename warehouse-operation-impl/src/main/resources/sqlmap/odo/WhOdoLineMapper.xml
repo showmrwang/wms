@@ -606,6 +606,10 @@
 			<if test="modifiedId!=null">
 				and modified_id = #{modifiedId}
 			</if>
+
+			<if test="waveCode!=null and waveCode!=''">
+				and wave_code = #{waveCode}
+			</if>
 		</where>
 	</sql>
 
