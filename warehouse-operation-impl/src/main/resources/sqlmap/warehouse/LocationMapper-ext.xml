@@ -974,16 +974,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
      <select id="getLocationByBarcode" resultMap="LocationResultExt">
     	select <include refid="locationColumnsExt" />
 	    from t_wh_location 
-		WHERE  bar_code = #{barCode}
+		where  bar_code = #{barCode} and ou_id=#{ouId}
     </select>
     
-	<!-- 根据locationid查询库位信息 lijun.shen --> 
+	<!-- 根据locationid查询库位信息 lijun.shen 
 	<select id="getByLocationId" resultMap="LocationResultExt">
     	select <include refid="locationColumnsExt" />
 	    from t_wh_location 
-		WHERE  id = #{id}
+		WHERE  id = #{id} and ou_id=#{ouId}
     </select>
 	
-	
+	--> 
 
 </mapper>

@@ -79,6 +79,10 @@ public final class CacheKeyConstant {
      * 人为指定上架:容器信息缓存
      */
     public static final String CACHE_MMP_CONTAINER_ID_PREFIX = "CACHE_MMP_CONTAINER_ID_PREFIX";
+    
+    public static final String MANMADE_PUTWAY_CACHE_CONTAINER = "MANMADE_PUTWAY_CACHE_CONTAINER";
+    
+    public static final String MAN_MADE_PUTWAY_CHCHE_SKU_INVENTORY = "MAN_MADE_PUTWAY_CHCHE_SKU_INVENTORY ";
 
     /** caseLevel收货人缓存前缀 规则：前缀 + userId + asnId + containerId；间隔符："-" */
     public static final String WMS_CACHE_CL_OPT_USER_PREFIX = "WMS-CACHE-CL-OPT-USER-";

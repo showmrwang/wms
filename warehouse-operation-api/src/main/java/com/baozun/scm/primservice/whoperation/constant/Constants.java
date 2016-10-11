@@ -332,4 +332,16 @@ public final class Constants {
     public static final String CASELEVEL_SCAN_SIGN_ISINVTYPE = "isInvType"; // 是否管理库存类型
     public static final String CASELEVEL_SCAN_SIGN_ISINVSTATUS = "isInvStatus"; // 是否管理库存状态
     public static final String CASELEVEL_SCAN_SIGN_ISDEFEAT = "isDefeat";// 残次品类型及残次原因
+    
+    public static final String INV_ATTR_TYPE = "1";   //库存类型
+    public static final String INV_ATTR_STATUS = "2";   //库存状态
+    public static final String INV_ATTR_BATCH = "3";   //批次号
+    public static final String INV_ATTR_MFG_DATE = "4";   //生产日期
+    public static final String INV_ATTR_EXP_DATE = "5";   //失效日期
+    public static final String INV_ATTR_ORIGIN = "6";   //原产地
+    public static final String INV_ATTR1 = "7";   //库存属性1
+    public static final String INV_ATTR2 = "8";   //库存属性2
+    public static final String INV_ATTR3 = "9";   //库存属性3
+    public static final String INV_ATTR4 = "10";   //库存属性4
+    public static final String INV_ATTR5 = "11";   //库存属性5
 }
