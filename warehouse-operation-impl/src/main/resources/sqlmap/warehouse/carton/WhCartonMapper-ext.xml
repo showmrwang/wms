@@ -380,4 +380,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         and ( (container.lifecycle = 1 and container.status = 1) or container.lifecycle = 3 and container.status = 2) )
     </select>
 
+
+    <select id="findWhCaselevelCartonByContainerId" resultMap="WhCartonResultExt">
+    	select <include refid="whCartonColumnsExt" />
+	    from t_wh_carton 
+	    where container_id = #{containerId} and ou_id = #{ouId}
+	    and is_caselevel = 1
+ </select>
 </mapper>

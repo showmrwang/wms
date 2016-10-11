@@ -23,8 +23,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	store_id as storeId,
 	        	occupation_code as occupationCode,
 	        	on_hand_qty as onHandQty,
-	        	allocated_qty as allocatedQty,
-	        	to_be_filled_qty as toBeFilledQty,
 	        	frozen_qty as frozenQty,
 	        	inv_status as invStatus,
 	        	inv_type as invType,

@@ -1,60 +1,56 @@
 package com.baozun.scm.primservice.whoperation.manager.pda.putaway;
 
 import com.baozun.scm.primservice.whoperation.command.pda.putaway.PdaManMadePutawayCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 
 public interface PdaManMadePutawayManager extends BaseManager{
 
    /**
     * 验证容器号
     * 
-    * @author lijun.shen
     * @param pdaManMadePutawayCommand
     * @return
     */
-    PdaManMadePutawayCommand pdaScanContainer(PdaManMadePutawayCommand pdaManMadePutawayCommand);
+   public PdaManMadePutawayCommand pdaScanContainer(PdaManMadePutawayCommand pdaManMadePutawayCommand);
 
-    
-    /**
-     * 验证货箱容器号
-     * 
-     * @author lijun.shen
-     * @param pdaManMadePutawayCommand
-     * @return
-     */
-    PdaManMadePutawayCommand pdaScanBinContainer(PdaManMadePutawayCommand pdaManMadePutawayCommand);
-
-    
 
     /**
      * 验证库位号
      * 
-     * @author lijun.shen
      * @param pdaManMadePutawayCommand
      * @return
      */
-    PdaManMadePutawayCommand pdaScanLocation(PdaManMadePutawayCommand pdaManMadePutawayCommand);
-
-
-    /**
-     * 库位不允许混放逻辑
-     * 
-     * @author lijun.shen
-     * @param command
-     * @return
-     */
-    PdaManMadePutawayCommand pdaLocationNotMix(PdaManMadePutawayCommand command);
-
-    /**
-     * 库位允许混放逻辑
-     * 
-     * @author lijun.shen
-     * @param command
-     * @return
-     */
-    PdaManMadePutawayCommand pdaLocationIsMix(PdaManMadePutawayCommand command);
-
-
+   public PdaManMadePutawayCommand pdaScanLocation(PdaManMadePutawayCommand pdaManMadePutawayCommand,String invAttrMgmtHouse,Warehouse warehouse);
+   
+   
+   /***
+    * 扫描内部容器
+    * @param pdaManMadePutawayCommand
+    * @return
+    */
+   public PdaManMadePutawayCommand manScanInsideContainer(PdaManMadePutawayCommand pdaManMadePutawayCommand,Long ouId,Warehouse warehouse);
+   
+   
+   /***
+    * 整托上架:扫描sku
+    * @param pdaManMadePutawayCommand
+    * @param ouId
+    * @return
+    */
+   public PdaManMadePutawayCommand manMadeScanSku(PdaManMadePutawayCommand pdaManMadePutawayCommand,Long ouId,WhSkuCommand skuCmd,Warehouse wareHouse);
+   
+   
+   /***
+    * 整箱上架:扫描sku
+    * @param pdaManMadePutawayCommand
+    * @param ouId
+    * @param skuCmd
+    * @param wareHouse
+    * @return
+    */
+   public PdaManMadePutawayCommand containerPutwayScanSku(PdaManMadePutawayCommand pdaManMadePutawayCommand,Long ouId,WhSkuCommand skuCmd,Warehouse wareHouse);
 
 
 }

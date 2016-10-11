@@ -64,8 +64,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			inv.store_id as storeId,
 			inv.occupation_code as occupationCode,
 			inv.on_hand_qty as onHandQty,
-			inv.allocated_qty as allocatedQty,
-			inv.to_be_filled_qty as toBeFilledQty,
 			inv.frozen_qty as frozenQty,
 			inv.inv_status as invStatus,
 			inv.inv_type as invType,
@@ -510,8 +508,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					inv.store_id as storeId,
 					inv.occupation_code as occupationCode,
 					inv.on_hand_qty as onHandQty,
-					inv.allocated_qty as allocatedQty,
-					inv.to_be_filled_qty as toBeFilledQty,
 					inv.frozen_qty as frozenQty,
 					inv.inv_status as invStatus,
 					inv.inv_type as invType,
@@ -552,8 +548,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					inv.store_id as storeId,
 					inv.occupation_code as invOccupationCode,
 					inv.on_hand_qty as onHandQty,
-					inv.allocated_qty as allocatedQty,
-					inv.to_be_filled_qty as toBeFilledQty,
 					inv.frozen_qty as frozenQty,
 					inv.inv_status as invStatus,
 					inv.inv_type as invType,
@@ -1906,36 +1900,33 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 
 
 
-	<!-- 查询外部容器库存记录的数量-->
-	<select id="findContainerInventoryCountsByOuterContainerId" resultType="Integer">
-		select count(*)
-		from
-		t_wh_sku_inventory as inv
-		where
-		inv.ou_id = #{ouId}
-		and inv.outer_container_id = #{containerId}
+	<!-- -->
+	<select id="findContainerInventoryCountsByOuterContainerId" resultMap="WhSkuInventoryResultExt">
+		select <include refid="whSkuInventoryColumnsInvExt"/>
+		from t_wh_sku_inventory inv,t_wh_asn asn where inv.occupation_code is not null 
+		and inv.ou_id=#{ouId}
+	    and inv.occupation_code=asn.asn_code and (asn.status=5 or asn.status=10)
+		and inv.outer_container_id = #{outerContainerId}
 	</select>
 
 
-    <!-- 查询内部容器库存记录的数量 lijun.shen-->
-	<select id="findContainerInventoryCountsByInsideContainerId"  resultType="Integer">
-		select count(*)
-		from
-		t_wh_sku_inventory as inv
-		where
-		inv.ou_id = #{ouId}
-		and inv.inside_container_id = #{containerId}
+    <!-- lijun.shen-->
+	<select id="findContainerInventoryCountsByInsideContainerId"  resultMap="WhSkuInventoryResultExt">
+		select <include refid="whSkuInventoryColumnsInvExt"/>
+		from t_wh_sku_inventory inv,t_wh_asn asn where inv.occupation_code is not null 
+		and inv.ou_id=#{ouId}
+		and inv.occupation_code=asn.asn_code and (asn.status=5 or asn.status=10)
+		and inv.inside_container_id = #{insideContainerId}
 	</select>
 
 
  	<!--  查询容器内的商品种类  lijun.shen-->
 	<select id="getSkuInvListByOutContainerID" resultMap="WhSkuInventoryCommandResultExt">
-		select *, count(distinct sku_id) 
-		from
-		t_wh_sku_inventory as inv
-		where
-		inv.ou_id = #{ouId}
-		and inv.outer_container_id = #{containerId}  group by sku_id
+		select <include refid="whSkuInventoryColumnsInvExt"/>
+		    from t_wh_sku_inventory inv,t_wh_asn asn where inv.occupation_code is not null 
+			and inv.ou_id=#{ouId}
+			and inv.occupation_code=asn.asn_code and (asn.status=5 or asn.status=10)
+		    and inv.outer_container_id = #{containerId}
 	</select>
     
     <select id="findWhSkuInventoryByContainerIdLocationIsNull" resultMap="WhSkuInventoryResultExt">
@@ -1954,5 +1945,23 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				</where>
   	</select>
 
+
+     <select id="findWhSkuInventoryByCId" resultMap="WhSkuInventoryResultExt">
+			select  <include refid="whSkuInventoryColumnsInvExt"/>
+			from 
+			t_wh_sku_inventory inv,t_wh_asn asn
+			where
+				 inv.occupation_code is not null 
+			     and asn.asn_code = inv.occupation_code
+		    	 and (asn.status=5 or asn.status=10)
+			     and inv.on_hand_qty > 0.0
+			     and inv.ou_id = #{ouId}
+				 <if test="insideContainerId != null">
+					 and inv.inside_container_id = #{insideContainerId} 
+				 </if>
+				 <if test="outerContainerId != null">
+					 and inv.outer_container_id = #{outerContainerId} 
+				 </if>
+  	</select>
 
 </mapper>

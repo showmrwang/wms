@@ -466,24 +466,24 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
     /**
      * 根据容器号查询外部容器库存记录的数量
      * 
-     * @author lijun.shen
+     * @author lijun.shen(待验证,待删除)
      * @param pdaManMadePutawayCommand
      * @param
      * @param
      * @return
      */
-    int findContainerInventoryCountsByOuterContainerId(PdaManMadePutawayCommand pdaManMadePutawayCommand);
+    List<WhSkuInventory> findContainerInventoryCountsByOuterContainerId(@Param("outerContainerId")Long outerContainerId,@Param("ouId") Long ouId);
 
 
     /**
-     * 根据容器号查询外部容器库存记录的数量
+     * 根据容器号查询外部容器库存记录的数量(待验证,待删除)
      * 
      * @author lijun.shen
      * @param
      * @param
      * @return
      */
-    int findContainerInventoryCountsByInsideContainerId(PdaManMadePutawayCommand pdaManMadePutawayCommand);
+    List<WhSkuInventory> findContainerInventoryCountsByInsideContainerId(@Param("insideContainerId") Long insideContainerId,@Param("ouId") Long ouId);
 
 
     /**
@@ -494,7 +494,7 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @param containerId
      * @return
      */
-    List<WhSkuInventoryCommand> getSkuInvListByOutContainerID(Long ouId, Long containerId, String logId);
+    List<WhSkuInventoryCommand> getSkuInvListByOutContainerID(@Param("ouId")Long ouId,@Param("containerId") Long containerId);
 
 
     /**
@@ -512,14 +512,25 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @return
      */
     List<WhSkuInventory> findWhSkuInventoryByPramas(WhSkuInventory inventory);
-
+//
+//    /**
+//     * 根据外部容器id查询外部容器里的内部容器id值 (待验证)
+//     * 
+//     * @author lijun.shen
+//     * @param whSkuInventory
+//     * @return
+//     */
+//    List<WhSkuInventory> findSkuInventoryByOutContainerId(WhSkuInventory whSkuInventory);
+    
+    
     /**
-     * 根据外部容器id查询外部容器里的内部容器id值
+     * 通过内部/外部容器号查询对应容器库存 
      * 
-     * @author lijun.shen
-     * @param whSkuInventory
+     * @param ouid
      * @return
      */
-    List<WhSkuInventory> findSkuInventoryByOutContainerId(WhSkuInventory whSkuInventory);
+    public List<WhSkuInventory> findWhSkuInventoryByCId(@Param("ouId") Long ouId, @Param("insideContainerId") Long insideContainerId, @Param("outerContainerId") Long outerContainerId);
+    
+    
 
 }

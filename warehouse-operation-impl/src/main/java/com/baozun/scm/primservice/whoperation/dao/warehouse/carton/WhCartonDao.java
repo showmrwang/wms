@@ -148,5 +148,17 @@ public interface WhCartonDao extends BaseDao<WhCarton, Long> {
      * @return
      */
     boolean isAsnCaseLevelNeedToRcvd(@Param("asnId") Long asnId, @Param("ouId") Long ouId);
+    
+    
+    /**
+     * 查找caselevel箱信息
+     * 
+     * @author tangming
+     * @param id
+     * @param ouid
+     * @return
+     */
+    WhCarton findWhCaselevelCartonByContainerId(@Param("containerId") Long containerId, @Param("ouId") Long ouid);
+
 
 }

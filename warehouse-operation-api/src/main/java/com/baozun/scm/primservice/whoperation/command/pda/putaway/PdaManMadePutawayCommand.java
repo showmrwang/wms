@@ -30,6 +30,7 @@ public class PdaManMadePutawayCommand extends BaseCommand {
     private static final long serialVersionUID = -8669489713555504047L;
 
 
+    
     /** 仓库组织ID */
     private Long ouId;
     /** 操作人ID */
@@ -38,66 +39,44 @@ public class PdaManMadePutawayCommand extends BaseCommand {
     private String containerCode;
     /** 容器ID */
     private Long containerId;
-    /** 是否外部容器库存 */
-    private Boolean isOutContainerInv;
-    /** 货箱容器号 */
-    private String binContainerCode;
-    /** 返回的url */
-    private String returnURL;
+    /** 是否外部容器库存 ,true时，外部容器,false时内部容器*/
+    private Boolean isOuterContainer;
     /** 对应功能ID */
     private Long functionId;
     /** 库存ID */
     private Long locationId;
-    /** 是否静态库存 */
-    private Boolean isStatic;
-    /** 是否允许混放 */
-    private Boolean isMixStacking;
     /** 库位条码 */
     private String barCode;
-    /** 库存状态*/
-    private Long statusId;
-    /** sku条码*/
-    private String skuBarcode;
-    /** 是否整箱上架 */
-    private Boolean isEntireTrayPutaway;
-    /** 是否整箱上架 */
-    private Boolean isEntireBinPutaway;
-    /** CASELEVEL是否需要扫描SKU */
-    private Boolean isCaselevelScanSku;
-    /** 非CASELEVEL是否需要扫描SKU */
-    private Boolean isNotcaselevelScanSku;
+    /** 库位编码 */
+    private String locationCode;
     
-    
-    
-    
-
-    
-    
-    
-    
-    /** 上架模式 系统指导上架 人为指定上架 系统建议上架 */
-    private Integer putawayPattern;
+    private String insideContainerCode;
     /** 扫描模式 逐件扫描 数量扫描 默认数量扫描 */
     private Integer scanPattern;
-   
+    /** 上架类型 */
+    private Integer putawayPatternDetailType;
+    /**是否上架*/
+    private Boolean putway;
+    /**托盘内是否还有没扫描到容器*/
+    private Boolean isNeedScanContainer;
+    
+    private Boolean isNeedScanSku;  //是否需要扫描sku
+    
+    private String tipContainerCode;
+    
+    private Boolean isTipContainerCode;  //是否提示容器号 
+    
+    private Boolean isAfterPutawayTipContianer;
+    
+    private Boolean isInboundLocationBarcode;    //上架是否启用校验码false：否 true：是 
+    
 
-
-
-
-    public String getReturnURL() {
-        return returnURL;
+    public Boolean getIsOuterContainer() {
+        return isOuterContainer;
     }
 
-    public void setReturnURL(String returnURL) {
-        this.returnURL = returnURL;
-    }
-
-    public Boolean getIsOutContainerInv() {
-        return isOutContainerInv;
-    }
-
-    public void setIsOutContainerInv(Boolean isOutContainerInv) {
-        this.isOutContainerInv = isOutContainerInv;
+    public void setIsOuterContainer(Boolean isOuterContainer) {
+        this.isOuterContainer = isOuterContainer;
     }
 
     public Long getOuId() {
@@ -140,14 +119,6 @@ public class PdaManMadePutawayCommand extends BaseCommand {
         this.functionId = functionId;
     }
 
-    public Integer getPutawayPattern() {
-        return putawayPattern;
-    }
-
-    public void setPutawayPattern(Integer putawayPattern) {
-        this.putawayPattern = putawayPattern;
-    }
-
     public Integer getScanPattern() {
         return scanPattern;
     }
@@ -160,47 +131,6 @@ public class PdaManMadePutawayCommand extends BaseCommand {
         this.barCode = barCode;
     }
 
-    public Boolean getIsEntireTrayPutaway() {
-        return isEntireTrayPutaway;
-    }
-
-    public void setIsEntireTrayPutaway(Boolean isEntireTrayPutaway) {
-        this.isEntireTrayPutaway = isEntireTrayPutaway;
-    }
-
-    public Boolean getIsEntireBinPutaway() {
-        return isEntireBinPutaway;
-    }
-
-    public void setIsEntireBinPutaway(Boolean isEntireBinPutaway) {
-        this.isEntireBinPutaway = isEntireBinPutaway;
-    }
-
-    public Boolean getIsCaselevelScanSku() {
-        return isCaselevelScanSku;
-    }
-
-    public void setIsCaselevelScanSku(Boolean isCaselevelScanSku) {
-        this.isCaselevelScanSku = isCaselevelScanSku;
-    }
-
-    public Boolean getIsNotcaselevelScanSku() {
-        return isNotcaselevelScanSku;
-    }
-
-    public void setIsNotcaselevelScanSku(Boolean isNotcaselevelScanSku) {
-        this.isNotcaselevelScanSku = isNotcaselevelScanSku;
-    }
-
-    public String getBinContainerCode() {
-        return binContainerCode;
-    }
-
-    public void setBinContainerCode(String binContainerCode) {
-        this.binContainerCode = binContainerCode;
-    }
-
-
     public Long getLocationId() {
         return locationId;
     }
@@ -209,40 +139,93 @@ public class PdaManMadePutawayCommand extends BaseCommand {
         this.locationId = locationId;
     }
 
-    public Boolean getIsStatic() {
-        return isStatic;
-    }
-
-    public void setIsStatic(Boolean isStatic) {
-        this.isStatic = isStatic;
-    }
-
-    public Boolean getIsMixStacking() {
-        return isMixStacking;
-    }
-
-    public void setIsMixStacking(Boolean isMixStacking) {
-        this.isMixStacking = isMixStacking;
-    }
-
     public String getBarCode() {
         return barCode;
     }
 
-    public Long getStatusId() {
-        return statusId;
+    public String getInsideContainerCode() {
+        return insideContainerCode;
     }
 
-    public void setStatusId(Long statusId) {
-        this.statusId = statusId;
+    public void setInsideContainerCode(String insideContainerCode) {
+        this.insideContainerCode = insideContainerCode;
     }
 
-    public String getSkuBarcode() {
-        return skuBarcode;
+
+    public Boolean getPutway() {
+        return putway;
     }
 
-    public void setSkuBarcode(String skuBarcode) {
-        this.skuBarcode = skuBarcode;
+    public void setPutway(Boolean putway) {
+        this.putway = putway;
     }
+
+    public Boolean getIsNeedScanSku() {
+        return isNeedScanSku;
+    }
+
+    public void setIsNeedScanSku(Boolean isNeedScanSku) {
+        this.isNeedScanSku = isNeedScanSku;
+    }
+
+    public Boolean getIsNeedScanContainer() {
+        return isNeedScanContainer;
+    }
+
+    public void setIsNeedScanContainer(Boolean isNeedScanContainer) {
+        this.isNeedScanContainer = isNeedScanContainer;
+    }
+
+    public String getTipContainerCode() {
+        return tipContainerCode;
+    }
+
+    public void setTipContainerCode(String tipContainerCode) {
+        this.tipContainerCode = tipContainerCode;
+    }
+
+    public Boolean getIsTipContainerCode() {
+        return isTipContainerCode;
+    }
+
+    public void setIsTipContainerCode(Boolean isTipContainerCode) {
+        this.isTipContainerCode = isTipContainerCode;
+    }
+
+    public Boolean getIsAfterPutawayTipContianer() {
+        return isAfterPutawayTipContianer;
+    }
+
+    public void setIsAfterPutawayTipContianer(Boolean isAfterPutawayTipContianer) {
+        this.isAfterPutawayTipContianer = isAfterPutawayTipContianer;
+    }
+
+    public Boolean getIsInboundLocationBarcode() {
+        return isInboundLocationBarcode;
+    }
+
+    public void setIsInboundLocationBarcode(Boolean isInboundLocationBarcode) {
+        this.isInboundLocationBarcode = isInboundLocationBarcode;
+    }
+
+    public String getLocationCode() {
+        return locationCode;
+    }
+
+    public void setLocationCode(String locationCode) {
+        this.locationCode = locationCode;
+    }
+
+    public Integer getPutawayPatternDetailType() {
+        return putawayPatternDetailType;
+    }
+
+    public void setPutawayPatternDetailType(Integer putawayPatternDetailType) {
+        this.putawayPatternDetailType = putawayPatternDetailType;
+    }
+    
+    
+    
+    
 }
 

@@ -553,7 +553,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                     }
                     Double icVolume = cubeCalculator.calculateStuffVolume(icLength, icWidth, icHeight);
                     insideContainerVolume.put(icId, icVolume);
-                    WhCarton carton = whCartonDao.findWhCaselevelCartonById(icId, ouId);
+                    WhCarton carton = whCartonDao.findWhCaselevelCartonByContainerId(icId,ouId);
                     if (null != carton) {
                         caselevelContainerIds.add(icId);
                     } else {
