@@ -106,4 +106,7 @@ public final class CacheKeyConstant {
     public static final int CACHE_ONE_WEEK = 7 * 24 * 60 * 60;
     public static final int CACHE_ONE_MONTH = 30 * 24 * 60 * 60;
     public static final int CACHE_ONE_YEAR = 365 * 24 * 60 * 60;
+
+    /** 波次分配前缀 规则: 前缀+waveId; 间隔符:"$" */
+    public static final String CACHE_ALLOCATE_SOFT = "%CACHE-ALLOCATE_SOFT$";
 }

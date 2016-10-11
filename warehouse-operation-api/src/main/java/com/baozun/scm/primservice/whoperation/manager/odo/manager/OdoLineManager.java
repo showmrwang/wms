@@ -60,4 +60,14 @@ public interface OdoLineManager extends BaseManager {
      */
     void deleteLines(List<WhOdoLine> lineList, Long ouId, Long userId, String logId);
 
+    /**
+     * [通用方法] 修改出库单明细状态,方法统一放在OdoManager中进行事务处理
+     * @param odoLineId
+     * @param ouId
+     * @param status
+     * @return
+     */
+    @Deprecated
+    Boolean updateOdoLineStatus(Long odoLineId, Long ouId, String status);
+
 }

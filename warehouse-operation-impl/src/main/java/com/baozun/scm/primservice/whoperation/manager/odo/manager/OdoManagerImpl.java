@@ -17,6 +17,7 @@ import lark.common.dao.Sort;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -160,7 +161,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                         if (StringUtils.hasText(command.getModifiedId())) {
                             userIdSet.add(Long.parseLong(command.getModifiedId()));
                         }
-                        
+
                     }
                     Map<String, List<String>> map = new HashMap<String, List<String>>();
                     map.put(Constants.IS_WHOLE_ORDER_OUTBOUND, new ArrayList<String>(dic1));
@@ -246,11 +247,11 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void createOdo(WhOdo odo, WhOdoTransportMgmt transportMgmt) {
-        try{
+        try {
             this.whOdoDao.insert(odo);
             transportMgmt.setOdoId(odo.getId());
             this.whOdoTransportMgmtDao.insert(transportMgmt);
-        }catch(Exception e){
+        } catch (Exception e) {
             log.error(e + "");
             throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
         }
@@ -498,4 +499,86 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
         }
     }
 
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public Boolean updateOdoStatus(Long odoId, Long odoLineId, Long ouId, String status) {
+        if (null == ouId || null == status) {
+            throw new BusinessException("没有数据");
+        }
+        if (null != odoId) {
+            // 需要更新出库单头状态
+            WhOdo odo = this.whOdoDao.findByIdOuId(odoId, ouId);
+            WhOdo whOdo = new WhOdo();
+            BeanUtils.copyProperties(odo, whOdo);
+            whOdo.setOdoStatus(status);
+            int cnt = whOdoDao.saveOrUpdateByVersion(whOdo);
+            if (cnt <= 0) {
+                throw new BusinessException("更新出库单头状态失败");
+            }
+        }
+        if (null != odoLineId) {
+            // 需要更新出库单明细行状态
+            WhOdoLine odoLine = this.whOdoLineDao.findOdoLineById(odoLineId, ouId);
+            WhOdoLine whOdoLine = new WhOdoLine();
+            BeanUtils.copyProperties(odoLine, whOdoLine);
+            whOdoLine.setOdoLineStatus(status);
+            int cnt = whOdoLineDao.saveOrUpdateByVersion(whOdoLine);
+            if (cnt <= 0) {
+                throw new BusinessException("更新出库单明细状态失败");
+            }
+        }
+        return true;
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void removeOdoAndLineWhole(Long waveId, Long odoId, List<Long> odoLineIds, Long ouId) {
+        // 1.剔除出库单明细行
+        removeOdoLine(odoLineIds, ouId);
+        // 2.剔除出库单头
+        removeOdo(odoId, ouId);
+        this.removeWaveLineWhole(waveId, odoId, ouId);
+    }
+
+    /**
+     * 剔除出库单明细行
+     * @param whWaveLineIds
+     * @param ouId
+     */
+    private void removeOdoLine(List<Long> odoLineIds, Long ouId) {
+        if (null != odoLineIds && !odoLineIds.isEmpty()) {
+            for (Long odoLineId : odoLineIds) {
+                WhOdoLine whOdoLine = this.whOdoLineDao.findOdoLineById(odoLineId, ouId);
+                whOdoLine.setWaveCode(null);
+                whOdoLine.setOdoLineStatus(OdoStatus.ODOLINE_NEW);
+                int cnt = this.whOdoLineDao.saveOrUpdateByVersion(null);
+                if (cnt <= 0) {
+                    throw new BusinessException("剔除逻辑-更新出库单明细-失败");
+                }
+            }
+        }
+    }
+
+    /**
+     * 剔除出库单头
+     * @param odoId
+     * @param ouId
+     */
+    private void removeOdo(Long odoId, Long ouId) {
+        WhOdoLine whOdoLine = new WhOdoLine();
+        whOdoLine.setOdoId(odoId);
+        whOdoLine.setOuId(ouId);
+        whOdoLine.setOdoLineStatus(OdoStatus.ODOLINE_NEW);
+        WhOdo whOdo = this.whOdoDao.findByIdOuId(odoId, ouId);
+        Long cnt = this.whOdoLineDao.findListCountByParam(whOdoLine);
+        if (0 == cnt) {
+            whOdo.setOdoStatus(OdoStatus.ODO_NEW);
+        }
+        whOdo.setWaveCode(null);
+        int count = this.whOdoDao.saveOrUpdateByVersion(whOdo);
+        if (count <= 0) {
+            throw new BusinessException("剔除逻辑-更新出库单头-失败");
+        }
+
+    }
 }

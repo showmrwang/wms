@@ -8,6 +8,7 @@ import lark.common.dao.Page;
 import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoLineCommand;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineDao;
+import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
 
@@ -23,6 +25,7 @@ import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
 public class OdoLineManagerImpl extends BaseManagerImpl implements OdoLineManager {
     @Autowired
     private WhOdoLineDao whOdoLineDao;
+
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public WhOdoLine findOdoLineById(Long id, Long ouId) {
@@ -54,4 +57,21 @@ public class OdoLineManagerImpl extends BaseManagerImpl implements OdoLineManage
 
     }
 
+    @Override
+    @Deprecated
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public Boolean updateOdoLineStatus(Long odoLineId, Long ouId, String status) {
+        if (null == odoLineId || null == ouId || null == status) {
+            throw new BusinessException("没有数据");
+        }
+        WhOdoLine odoLine = this.whOdoLineDao.findOdoLineById(odoLineId, ouId);
+        WhOdoLine whOdoLine = new WhOdoLine();
+        BeanUtils.copyProperties(odoLine, whOdoLine);
+        whOdoLine.setOdoLineStatus(status);
+        int cnt = whOdoLineDao.saveOrUpdateByVersion(whOdoLine);
+        if (cnt <= 0) {
+            throw new BusinessException("更新出库单明细状态失败");
+        }
+        return true;
+    }
 }

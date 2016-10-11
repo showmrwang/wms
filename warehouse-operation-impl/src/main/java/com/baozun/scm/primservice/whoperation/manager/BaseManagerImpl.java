@@ -28,6 +28,7 @@ import com.baozun.redis.manager.CacheManager;
 import com.baozun.scm.primservice.whoperation.command.system.GlobalLogCommand;
 import com.baozun.scm.primservice.whoperation.constant.CacheKeyConstant;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
+import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveLineDao;
 import com.baozun.scm.primservice.whoperation.dao.system.SysDictionaryDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.CustomerDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.StoreDao;
@@ -71,6 +72,8 @@ public abstract class BaseManagerImpl implements BaseManager {
     private CustomerDao customerDao;
     @Autowired
     private StoreDao storeDao;
+    @Autowired
+    private WhWaveLineDao whWaveLineDao;
 
 
     /**
@@ -470,6 +473,10 @@ public abstract class BaseManagerImpl implements BaseManager {
      */
     protected String getLogMsg(String format, Object... argArray) {
         return LogUtil.getLogMsg(format, argArray);
+    }
+
+    protected void removeWaveLineWhole(Long waveId, Long odoId, Long ouId) {
+        whWaveLineDao.removeWaveLineWhole(waveId, odoId, ouId);
     }
 
     /**
