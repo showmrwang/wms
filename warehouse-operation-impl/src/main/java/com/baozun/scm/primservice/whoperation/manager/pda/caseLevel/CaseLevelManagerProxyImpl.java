@@ -1240,6 +1240,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
         List<WhCartonCommand> originCartonList = this.getWhCartonListByContainer(whCartonCommand.getAsnId(), whCartonCommand.getContainerId(), userId, ouId, logId);
         for(WhCartonCommand originCarton : originCartonList){
             if(!originUpdateCartonIdList.contains(originCarton.getId())){
+                originCarton.setSkuQty(0d);
                 // 创建ASN收货日志
                 WhAsnRcvdLogCommand whAsnRcvdLogCommand = this.createWhAsnRcvdLog(originCarton, userId, ouId, logId);
                 whAsnRcvdLogCommandList.add(whAsnRcvdLogCommand);
