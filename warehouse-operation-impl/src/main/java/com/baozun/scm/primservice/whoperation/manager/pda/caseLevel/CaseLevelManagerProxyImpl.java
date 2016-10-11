@@ -1202,6 +1202,8 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
         // ASN收货日志对应的的SN/残次信息日志列表
         List<WhAsnRcvdLogCommand> whAsnRcvdLogCommandList = new ArrayList<>();
 
+        //已更新的原装箱信息ID列表
+        Set<Long> originUpdateCartonIdList = new HashSet<>();
         for (WhCartonCommand rcvdCartonCache : rcvdCartonList) {
             // 存入数据库之前数据校验
             this.checkRcvdCarton(rcvdCartonCache, whFunctionRcvd, userId, ouId, logId);
@@ -1214,6 +1216,10 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
             // 创建ASN收货日志
             WhAsnRcvdLogCommand whAsnRcvdLogCommand = this.createWhAsnRcvdLog(rcvdCartonCache, userId, ouId, logId);
             whAsnRcvdLogCommandList.add(whAsnRcvdLogCommand);
+            if(null != rcvdCartonCache.getId()){
+                //记录哪些原装箱记录已更新，为了记录ASN收货日志
+                originUpdateCartonIdList.add(rcvdCartonCache.getId());
+            }
 
             // SN/残次信息库存表,待保存到数据库，需要根据序列号管理类型判断是否保存到其他表
             List<WhSkuInventorySn> skuInventorySnList = rcvdCartonCache.getSkuInventorySnList();
@@ -1229,6 +1235,16 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
                 this.getSkuInventorySnList(skuInventory, skuInventorySnList, toSaveSkuInventorySnList, ouId, logId);
             }// end-if 存在SN/残次信息
         }// end-for 遍历待保存的收货carton
+
+        // ASN收货日志，在全都是新增的情况下，添加原计划收货数记录
+        List<WhCartonCommand> originCartonList = this.getWhCartonListByContainer(whCartonCommand.getAsnId(), whCartonCommand.getContainerId(), userId, ouId, logId);
+        for(WhCartonCommand originCarton : originCartonList){
+            if(!originUpdateCartonIdList.contains(originCarton.getId())){
+                // 创建ASN收货日志
+                WhAsnRcvdLogCommand whAsnRcvdLogCommand = this.createWhAsnRcvdLog(originCarton, userId, ouId, logId);
+                whAsnRcvdLogCommandList.add(whAsnRcvdLogCommand);
+            }
+        }
 
         // 统计asnLine收货数量
         Map<Long, BigDecimal> asnLineRcvdQtyMap = this.getAsnLineRcvdQtyMap(rcvdCartonList);
@@ -1434,6 +1450,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
             BigDecimal asnLineRcvdQtyOrg = new BigDecimal(whAsnLine.getQtyRcvd().toString());
             // 设置asnLine的总收货量： asnLine收入总量 + asnLine原有收货量
             whAsnLine.setQtyRcvd(asnLineRcvdQtyTotal.add(asnLineRcvdQtyOrg).doubleValue());
+            whAsnLine.setCtnRcvd(whAsnLine.getCtnRcvd() + 1);
             whAsnLine.setModifiedId(userId);
             if (whAsnLine.getQtyRcvd() >= whAsnLine.getQtyPlanned()) {
                 whAsnLine.setStatus(PoAsnStatus.ASNLINE_RCVD_FINISH);
@@ -1475,6 +1492,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
             } else {
                 whPoLine.setStatus(PoAsnStatus.POLINE_RCVD);
             }
+            whPoLine.setCtnRcvd(whPoLine.getCtnRcvd() + 1);
             whPoLine.setModifiedId(userId);
             // 待保存的poLine
             toUpdatePoLineList.add(whPoLine);
@@ -1812,7 +1830,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
 
     /**
      * 获取确认收货的商品的序列化信息作为标识
-     * 
+     *
      * @author mingwei.xie
      * @param whCarton
      * @param logId
