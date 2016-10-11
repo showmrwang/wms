@@ -9,7 +9,7 @@
 
 	<!-- 用于select查询公用抽取的列 -->
 	<sql id="whOdoLineColumnsExt">
-        <![CDATA[
+        <![CDATA[ 
                 id as id,
 	        	odo_id as odoId,
 	        	linenum as linenum,
@@ -21,6 +21,7 @@
 	        	sku_name as skuName,
 	        	ext_sku_name as extSkuName,
 	        	qty as qty,
+	        	plan_qty as planQty,
 	        	current_qty as currentQty,
 	        	actual_qty as actualQty,
 	        	cancel_qty as cancelQty,
@@ -57,7 +58,8 @@
 	        	create_time as createTime,
 	        	created_id as createdId,
 	        	last_modify_time as lastModifyTime,
-	        	modified_id as modifiedId
+	        	modified_id as modifiedId,
+	        	wave_code as waveCode
         ]]>
 	</sql>
 
@@ -75,6 +77,7 @@
 	        	line.sku_name as skuName,
 	        	line.ext_sku_name as extSkuName,
 	        	line.qty as qty,
+	        	line.plan_qty as planQty,
 	        	line.current_qty as currentQty,
 	        	line.actual_qty as actualQty,
 	        	line.cancel_qty as cancelQty,
@@ -112,6 +115,7 @@
 	        	line.created_id as createdId,
 	        	line.last_modify_time as lastModifyTime,
 	        	line.modified_id as modifiedId,
+	        	line.wave_code as waveCode,
 	        	odo.odo_code as odoCode
         ]]>
 	</sql>
@@ -575,6 +579,7 @@
 		        sku_name = #{skuName,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        ext_sku_name = #{extSkuName,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        qty = #{qty,javaType=Double,jdbcType=DECIMAL} ,
+		        plan_qty = #{planQty,javaType=Double,jdbcType=DECIMAL} ,
 		        current_qty = #{currentQty,javaType=Double,jdbcType=DECIMAL} ,
 		        actual_qty = #{actualQty,javaType=Double,jdbcType=DECIMAL} ,
 		        cancel_qty = #{cancelQty,javaType=Double,jdbcType=DECIMAL} ,
@@ -607,11 +612,11 @@
 		        original_odo_code = #{originalOdoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        assign_fail_reason = #{assignFailReason,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        is_assign_success = #{isAssignSuccess,javaType=java.lang.Boolean,jdbcType=BIT} ,
-		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
                 last_modify_time = now() ,
-                modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
+                modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                wave_code=#{waveCode,javaType=java.lang.String,jdbcType=VARCHAR} 
             WHERE 
                 id = #{id} and ou_id=#{ouId} and last_modify_time=#{lastModifyTime}
         ]]>

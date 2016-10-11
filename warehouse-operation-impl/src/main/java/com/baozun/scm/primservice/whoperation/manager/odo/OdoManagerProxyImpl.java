@@ -4,8 +4,12 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import lark.common.dao.Page;
 import lark.common.dao.Pagination;
@@ -25,10 +29,17 @@ import com.baozun.scm.primservice.whoperation.command.odo.OdoCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoGroupCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoLineCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoResultCommand;
+import com.baozun.scm.primservice.whoperation.command.odo.OdoSearchCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoTransportMgmtCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.WhOdoVasCommand;
+import com.baozun.scm.primservice.whoperation.command.odo.wave.OdoWaveGroupResultCommand;
+import com.baozun.scm.primservice.whoperation.command.odo.wave.OdoWaveGroupSearchCommand;
+import com.baozun.scm.primservice.whoperation.command.odo.wave.OdoWaveGroupSearchCondition;
+import com.baozun.scm.primservice.whoperation.command.warehouse.UomCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
+import com.baozun.scm.primservice.whoperation.constant.WaveStatus;
+import com.baozun.scm.primservice.whoperation.constant.WhUomType;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
@@ -37,12 +48,22 @@ import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoLineManager
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoTransportMgmtManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoVasManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.InventoryStatusManager;
+import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAddress;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoVas;
+import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
+import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine;
+import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveMaster;
+import com.baozun.scm.primservice.whoperation.model.sku.Sku;
+import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
+import com.baozun.scm.primservice.whoperation.model.warehouse.InventoryStatus;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
 
 @Service("odoManagerProxy")
 public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerProxy {
@@ -60,6 +81,8 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
     private OdoTransportMgmtManager odoTransportMgmtManager;
     @Autowired
     private OdoVasManager odoVasManager;
+    @Autowired
+    private InventoryStatusManager inventoryStatusManager;
 
     @Override
     public Pagination<OdoResultCommand> findOdoListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params) {
@@ -234,6 +257,8 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
         line.setStoreId(lineCommand.getStoreId());
         line.setSkuName(lineCommand.getSkuName());
         line.setQty(lineCommand.getQty());
+        // @mender yimin.lu 201 6/9/28
+        line.setPlanQty(lineCommand.getQty());
         line.setLinePrice(lineCommand.getLinePrice());
         line.setLineAmt(lineCommand.getLineAmt());
         line.setOdoLineStatus(OdoStatus.ODOLINE_NEW);
@@ -310,7 +335,20 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
 
     @Override
     public Pagination<OdoLineCommand> findOdoLineListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params) {
-        return this.odoLineManager.findOdoLineListByQueryMapWithPageExt(page, sorts, params);
+        Pagination<OdoLineCommand> pages = this.odoLineManager.findOdoLineListByQueryMapWithPageExt(page, sorts, params);
+        List<OdoLineCommand> odoLineList=pages.getItems();
+        if(odoLineList!=null&&odoLineList.size()>0){
+            //库存状态
+            List<InventoryStatus> invStatusList=this.inventoryStatusManager.findAllInventoryStatus();
+            Map<Long,String> invStatusMap=new HashMap<Long,String>();
+            for(InventoryStatus s:invStatusList){
+                invStatusMap.put(s.getId(), s.getName());
+            }
+            for(OdoLineCommand odo:odoLineList){
+                odo.setInvStatusName(invStatusMap.get(odo.getInvStatus()));
+            }
+        }
+        return pages;
     }
 
     @Override
@@ -601,6 +639,373 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
             log.error(e + "");
             throw new BusinessException(ErrorCodes.PACKAGING_ERROR);
         }
+    }
+
+    @Override
+    public Pagination<OdoWaveGroupResultCommand> findOdoSummaryListForWaveByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params) {
+        return this.odoManager.findOdoListForWaveByQueryMapWithPageExt(page, sorts, params);
+    }
+
+    @Override
+    public List<OdoResultCommand> findOdoCommandListForWave(OdoSearchCommand command) {
+        List<OdoResultCommand> list = this.odoManager.findOdoCommandListForWave(command);
+        // 出库单状态
+        Set<String> dic1 = new HashSet<String>();// ODO_STATUS
+        // 订单平台类型
+        Set<String> dic2 = new HashSet<String>();// ODO_ORDER_TYPE
+        // 上位单据类型
+        Set<String> dic3 = new HashSet<String>();// ODO_PRE_TYPE
+        // 出库单类型
+        Set<String> dic4 = new HashSet<String>();// ODO_TYPE
+        // 业务模式（配货模式）
+        Set<String> dic5 = new HashSet<String>();// DISTRIBUTE_MODE
+        // 整单出库标志
+        Set<String> dic6 = new HashSet<String>();// IS_NOT
+        // 越库标志
+        Set<String> dic7 = new HashSet<String>();// ODO_CROSS_DOCKING_SYSMBOL
+        // 运行标志
+        Set<String> dic8 = new HashSet<String>();//
+        // 客户
+        Set<Long> customerIdSet = new HashSet<Long>();
+        // 店铺
+        Set<Long> storeIdSet = new HashSet<Long>();
+        if (list != null && list.size() > 0) {
+            for (OdoResultCommand res : list) {
+                if (StringUtils.hasText(res.getOdoStatus())) {
+                    dic1.add(res.getOdoStatus());
+                }
+                if (StringUtils.hasText(res.getOrderType())) {
+                    dic2.add(res.getOrderType());
+                }
+                if (StringUtils.hasText(res.getEpistaticSystemsOrderType())) {
+                    dic3.add(res.getEpistaticSystemsOrderType());
+                }
+                if (StringUtils.hasText(res.getOdoType())) {
+                    dic4.add(res.getOdoType());
+                }
+                if (StringUtils.hasText(res.getDistributeMode())) {
+                    dic5.add(res.getDistributeMode());
+                }
+                if (StringUtils.hasText(res.getIsWholeOrderOutbound())) {
+                    dic6.add(res.getIsWholeOrderOutbound());
+                }
+                if (StringUtils.hasText(res.getCrossDockingSysmbol())) {
+                    dic7.add(res.getCrossDockingSysmbol());
+                }
+                customerIdSet.add(Long.parseLong(res.getCustomerId()));
+                storeIdSet.add(Long.parseLong(res.getStoreId()));
+            }
+            Map<String, List<String>> map = new HashMap<String, List<String>>();
+            map.put(Constants.ODO_STATUS, new ArrayList<String>(dic1));
+            map.put(Constants.ODO_ORDER_TYPE, new ArrayList<String>(dic2));
+            map.put(Constants.ODO_PRE_TYPE, new ArrayList<String>(dic3));
+            map.put(Constants.ODO_TYPE, new ArrayList<String>(dic4));
+            map.put(Constants.DISTRIBUTE_MODE, new ArrayList<String>(dic5));
+            map.put(Constants.IS_WHOLE_ORDER_OUTBOUND, new ArrayList<String>(dic6));
+            map.put(Constants.ODO_CROSS_DOCKING_SYSMBOL, new ArrayList<String>(dic7));
+            Map<String, SysDictionary> dicMap = this.findSysDictionaryByRedis(map);
+            Map<Long, Customer> customerMap = this.findCustomerByRedis(new ArrayList<Long>(customerIdSet));
+            Map<Long, Store> storeMap = this.findStoreByRedis(new ArrayList<Long>(storeIdSet));
+            for (OdoResultCommand result : list) {
+                if (StringUtils.hasText(result.getOdoStatus())) {
+                    SysDictionary sys = dicMap.get(Constants.ODO_STATUS + "_" + result.getOdoStatus());
+                    result.setOdoStatusName(sys == null ? result.getOdoStatus() : sys.getDicLabel());
+                }
+                if (StringUtils.hasText(result.getOrderType())) {
+                    SysDictionary sys = dicMap.get(Constants.ODO_ORDER_TYPE + "_" + result.getOrderType());
+                    result.setOrderTypeName(sys == null ? result.getOrderType() : sys.getDicLabel());
+                }
+                if (StringUtils.hasText(result.getEpistaticSystemsOrderType())) {
+                    SysDictionary sys = dicMap.get(Constants.ODO_PRE_TYPE + "_" + result.getEpistaticSystemsOrderType());
+                    result.setEpistaticSystemsOrderTypeName(sys == null ? result.getEpistaticSystemsOrderType() : sys.getDicLabel());
+                }
+                if (StringUtils.hasText(result.getOdoType())) {
+                    SysDictionary sys = dicMap.get(Constants.ODO_TYPE + "_" + result.getOdoType());
+                    result.setOdoTypeName(sys == null ? result.getOdoType() : sys.getDicLabel());
+                }
+                if (StringUtils.hasText(result.getDistributeMode())) {
+                    SysDictionary sys = dicMap.get(Constants.DISTRIBUTE_MODE + "_" + result.getDistributeMode());
+                    result.setDistributeModeName(sys == null ? result.getDistributeMode() : sys.getDicLabel());
+                }
+                if (StringUtils.hasText(result.getIsWholeOrderOutbound())) {
+                    SysDictionary sys = dicMap.get(Constants.IS_WHOLE_ORDER_OUTBOUND + "_" + result.getIsWholeOrderOutbound());
+                    result.setIsWholeOrderOutboundName(sys == null ? result.getIsWholeOrderOutbound() : sys.getDicLabel());
+                }
+                if (StringUtils.hasText(result.getCrossDockingSysmbol())) {
+                    SysDictionary sys = dicMap.get(Constants.ODO_CROSS_DOCKING_SYSMBOL + "_" + result.getCrossDockingSysmbol());
+                    result.setCrossDockingSysmbolName(sys == null ? result.getCrossDockingSysmbol() : sys.getDicLabel());
+                }
+                Customer customer = customerMap.get(Long.parseLong(result.getCustomerId()));
+                result.setCustomerName(customer == null ? result.getCustomerId() : customer.getCustomerName());
+                Store store = storeMap.get(Long.parseLong(result.getStoreId()));
+                result.setStoreName(store == null ? result.getStoreId() : store.getStoreName());
+            }
+        }
+
+        return list;
+    }
+
+    @Override
+    public OdoWaveGroupResultCommand findOdoSummaryForWave(OdoWaveGroupSearchCommand command) {
+        return this.odoManager.findOdoSummaryForWave(command);
+    }
+
+    @Override
+    public String createOdoWave(OdoWaveGroupSearchCommand command) {
+        /**
+         * 校验阶段
+         */
+        /**
+         * 校验出库单头和明细状态；以及是否处于别的波次中
+         */
+        String logId = command.getLogId();
+        Long ouId = command.getOuId();
+        Long userId = command.getUserId();
+        Map<Long, WhOdo> odoMap = new HashMap<Long, WhOdo>();
+        Map<Long, WhOdoTransportMgmt> transMap = new HashMap<Long, WhOdoTransportMgmt>();
+        List<WhOdoLine> odolineList = new ArrayList<WhOdoLine>();
+        Long waveMasterId = command.getWaveMasterId();// 波次主档信息
+        WhWaveMaster master = this.odoManager.findWaveMasterByIdouId(waveMasterId, ouId);
+        if (master == null) {
+            throw new BusinessException(ErrorCodes.PARAM_IS_NULL);
+        }
+        // 全选
+        if (command.getConditionList() != null && command.getConditionList().size() > 0) {
+            for (OdoWaveGroupSearchCondition gsc : command.getConditionList()) {
+                OdoSearchCommand search = new OdoSearchCommand();
+                BeanUtils.copyProperties(command, search);
+                search.setGroupCustomerId(gsc.getCustomerId());
+                search.setGroupOdoStatus(gsc.getOdoStatus());
+                search.setGroupStoreId(gsc.getStoreId());
+                List<WhOdo> liOdoList = this.odoManager.findOdoListForWave(search);
+                if(liOdoList!=null&&liOdoList.size()>0){
+                    for (WhOdo odo : liOdoList) {
+
+                        if (OdoStatus.ODO_NEW.equals(odo.getOdoStatus()) || OdoStatus.ODO_OUTSTOCK.equals(odo.getOdoStatus())) {
+                            if (StringUtils.hasText(odo.getWaveCode())) {
+                                throw new BusinessException(odo.getExtCode() + "已处于别的波次[波次编号：" + odo.getWaveCode() + "]中");
+                            }
+
+                            List<WhOdoLine> lineList = this.odoLineManager.findOdoLineListByOdoId(odo.getId(), odo.getOuId());
+                            // 整单出库逻辑
+                            if (odo.getIsWholeOrderOutbound()) {
+                                // boolean isWholeOrderOutboundFlag =
+                                // StringUtils.isEmpty(lineList.get(0).getWaveCode()) ? true :
+                                // false;
+                                for (WhOdoLine line : lineList) {
+                                    odolineList.add(line);
+                                }
+                                // 部分出库逻辑
+                            } else {
+                                for (WhOdoLine line : lineList) {
+                                    if (StringUtils.isEmpty(line.getWaveCode())) {
+                                        odolineList.add(line);
+                                    }
+                                }
+                            }
+                            odoMap.put(odo.getId(), odo);
+                            WhOdoTransportMgmt trans = this.odoTransportMgmtManager.findTransportMgmtByOdoIdOuId(odo.getId(), ouId);
+                            transMap.put(odo.getId(), trans);
+                        }
+                    }
+                }
+            }
+        }
+        // 部分点选
+        if (command.getOdoIdList() != null && command.getOdoIdList().size() > 0) {
+            for (Long odoId : command.getOdoIdList()) {
+                WhOdo odo = this.odoManager.findOdoByIdOuId(odoId, ouId);
+                OdoCommand odoComm = this.odoManager.findOdoCommandByIdOuId(odoId, ouId);
+                if (odo == null) {
+                    throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+                }
+                if (OdoStatus.ODO_NEW.equals(odo.getOdoStatus()) || OdoStatus.ODO_OUTSTOCK.equals(odo.getOdoStatus())) {
+
+                    if (StringUtils.hasText(odo.getWaveCode())) {
+                        throw new BusinessException(odo.getExtCode() + "已处于别的波次[波次编号：" + odo.getWaveCode() + "]中");
+                    }
+
+                    List<WhOdoLine> lineList = this.odoLineManager.findOdoLineListByOdoId(odo.getId(), odo.getOuId());
+                    // 整单出库逻辑
+                    if (odo.getIsWholeOrderOutbound()) {
+                        // boolean isWholeOrderOutboundFlag =
+                        // StringUtils.isEmpty(lineList.get(0).getWaveCode()) ? true : false;
+                        for (WhOdoLine line : lineList) {
+                            odolineList.add(line);
+                        }
+                        // 部分出库逻辑
+                    } else {
+                        for (WhOdoLine line : lineList) {
+                            if (StringUtils.isEmpty(line.getWaveCode())) {
+                                odolineList.add(line);
+                            }
+                        }
+                    }
+                    odoMap.put(odoId, odo);
+                    WhOdoTransportMgmt trans = this.odoTransportMgmtManager.findTransportMgmtByOdoIdOuId(odo.getId(), ouId);
+                    transMap.put(odo.getId(), trans);
+                }
+            }
+        }
+
+
+        /**
+         * 校验波次主档信息
+         */
+        int odoCount = odoMap.size();// 波次出库单总单数
+        int odolineCount = odolineList.size();// 波次明细数
+
+        Map<Long, Double> skuMap = new HashMap<Long, Double>();// 商品总件数
+        double totalAmt = Constants.DEFAULT_DOUBLE;// 总金额
+        double totalSkuQty = Constants.DEFAULT_DOUBLE;// 商品总件数
+        for (WhOdoLine line : odolineList) {
+            totalAmt += line.getPlanQty() * line.getLinePrice();
+            if (skuMap.containsKey(line.getSkuId())) {
+                skuMap.put(line.getSkuId(), skuMap.get(line.getSkuId()) + line.getPlanQty());
+            } else {
+
+                skuMap.put(line.getSkuId(), line.getPlanQty());
+            }
+            totalSkuQty += line.getPlanQty();
+        }
+        // 商品种类数
+        int skuCategoryQty = skuMap.size();
+        // 总体积
+        double totalVolume = Constants.DEFAULT_DOUBLE;
+        // 总重量
+        double totalWeight = Constants.DEFAULT_DOUBLE;
+
+        // 体积单位转换率
+        Map<String, Double> lenUomConversionRate = new HashMap<String, Double>();
+        List<UomCommand> lenUomCmds = this.odoManager.findUomByGroupCode(WhUomType.LENGTH_UOM, BaseModel.LIFECYCLE_NORMAL);
+        for (UomCommand lenUom : lenUomCmds) {
+            String uomCode = "";
+            Double uomRate = 0.0;
+            if (null != lenUom) {
+                uomCode = lenUom.getUomCode();
+                uomRate = lenUom.getConversionRate();
+                lenUomConversionRate.put(uomCode, uomRate);
+            }
+        }
+        // 重量单位转换率
+        Map<String, Double> weightUomConversionRate = new HashMap<String, Double>();
+        List<UomCommand> weightUomCmds = this.odoManager.findUomByGroupCode(WhUomType.WEIGHT_UOM, BaseModel.LIFECYCLE_NORMAL);
+        for (UomCommand lenUom : weightUomCmds) {
+            String uomCode = "";
+            Double uomRate = 0.0;
+            if (null != lenUom) {
+                uomCode = lenUom.getUomCode();
+                uomRate = lenUom.getConversionRate();
+                weightUomConversionRate.put(uomCode, uomRate);
+            }
+        }
+
+        Iterator<Entry<Long, Double>> skuIt = skuMap.entrySet().iterator();
+        while (skuIt.hasNext()) {
+            Entry<Long, Double> entry = skuIt.next();
+            Sku sku = this.odoManager.findSkuByIdToShard(entry.getKey(), ouId);
+            if (sku != null) {
+                totalVolume += sku.getVolume() * entry.getValue() * (StringUtils.isEmpty(sku.getVolumeUom()) ? 1 : lenUomConversionRate.get(sku.getVolumeUom()));
+                totalWeight = sku.getWeight() * entry.getValue() * (StringUtils.isEmpty(sku.getWeightUom()) ? 1 : weightUomConversionRate.get(sku.getWeightUom()));
+            }
+        }
+
+
+        if (master.getMinOdoQty() > odoCount) {
+            throw new BusinessException("出库单数目不满足波次最小出库单数");
+        }
+        if (master.getMaxOdoQty() < odoCount) {
+            throw new BusinessException("出库单数不满足波次最大出库单数");
+        }
+        if (master.getMaxOdoLineQty() < odolineCount) {
+            throw new BusinessException("出库单明细数不满足波次最大出库明细数");
+        }
+        if (master.getMaxSkuQty() < totalSkuQty) {
+            throw new BusinessException("商品数不满足波次最大出库商品数");
+        }
+        if (master.getMaxSkuCategoryQty() < skuCategoryQty) {
+            throw new BusinessException("商品种类数不满足波次最大出库商品种类数");
+        }
+        if (master.getMaxVolume() < totalVolume) {
+            throw new BusinessException("体积不满足波次最大出库体积");
+        }
+        if (master.getMaxWeight() < totalWeight) {
+            throw new BusinessException("重量不满足波次最大出库重量");
+        }
+        /**
+         * 创建波次头
+         */
+        WhWave wave = new WhWave();
+        // a 生成波次编码，校验唯一性；补偿措施
+        // #TODO 校验波次号
+        String waveCode = codeManager.generateCode(Constants.WMS, Constants.WHWAVE_MODEL_URL, "", "WAVE", null);
+        wave.setCode(waveCode);
+        wave.setStatus(WaveStatus.WAVE_NEW);
+        wave.setOuId(ouId);
+        wave.setWaveMasterId(waveMasterId);
+        wave.setTotalOdoQty(odoCount);
+        wave.setTotalOdoLineQty(odolineCount);
+        wave.setTotalAmount(totalAmt);
+        wave.setTotalVolume(totalVolume);
+        wave.setTotalWeight(totalWeight);
+        wave.setTotalSkuQty(totalSkuQty);
+        wave.setSkuCategoryQty(skuCategoryQty);
+        wave.setIsRunWave(false);
+        wave.setCreatedId(userId);
+        wave.setCreateTime(new Date());
+        wave.setModifiedId(userId);
+        wave.setLastModifyTime(new Date());
+        wave.setIsError(false);
+        wave.setLifecycle(Constants.LIFECYCLE_START);
+
+        List<WhWaveLine> waveLineList = new ArrayList<WhWaveLine>();
+        for (WhOdoLine line : odolineList) {
+            WhOdo odo = odoMap.get(line.getOdoId());
+            WhOdoTransportMgmt trans = transMap.get(line.getOdoId());
+            transMap.put(odo.getId(), trans);
+            WhWaveLine waveLine = new WhWaveLine();
+            waveLine.setOdoLineId(line.getId());
+            waveLine.setOdoId(line.getOdoId());
+            waveLine.setOdoCode(odo.getOdoCode());
+            waveLine.setOdoPriorityLevel(odo.getPriorityLevel());
+            waveLine.setOdoPlanDeliverGoodsTime(trans.getPlanDeliverGoodsTime());
+            waveLine.setOdoOrderTime(odo.getOrderTime());
+            waveLine.setLinenum(line.getLinenum());
+            waveLine.setStoreId(odo.getStoreId());
+            waveLine.setExtLinenum(line.getExtLinenum());
+            waveLine.setSkuId(line.getSkuId());
+            waveLine.setSkuBarCode(line.getSkuBarCode());
+            waveLine.setSkuName(line.getSkuName());
+            waveLine.setQty(line.getPlanQty());
+            waveLine.setAllocateQty(line.getAssignQty());
+            waveLine.setIsWholeOrderOutbound(odo.getIsWholeOrderOutbound());
+            waveLine.setFullLineOutbound(line.getFullLineOutbound());
+            waveLine.setMfgDate(line.getMfgDate());
+            waveLine.setExpDate(line.getMfgDate());
+            waveLine.setMinExpDate(line.getMinExpDate());
+            waveLine.setMaxExpDate(line.getMaxExpDate());
+            waveLine.setBatchNumber(line.getBatchNumber());
+            waveLine.setCountryOfOrigin(line.getCountryOfOrigin());
+            waveLine.setInvStatus(line.getInvStatus());
+            waveLine.setInvType(line.getInvType());
+            waveLine.setInvAttr1(line.getInvAttr1());
+            waveLine.setInvAttr2(line.getInvAttr2());
+            waveLine.setInvAttr3(line.getInvAttr3());
+            waveLine.setInvAttr4(line.getInvAttr4());
+            waveLine.setInvAttr5(line.getInvAttr5());
+            waveLine.setOutboundCartonType(line.getOutboundCartonType());
+            waveLine.setColor(line.getColor());
+            waveLine.setStyle(line.getStyle());
+            waveLine.setSize(line.getSize());
+            waveLine.setOuId(ouId);
+            waveLine.setCreateTime(new Date());
+            waveLine.setCreatedId(userId);
+            waveLine.setLastModifyTime(new Date());
+            waveLine.setModifiedId(userId);
+            waveLineList.add(waveLine);
+        }
+        this.odoManager.createOdoWave(wave, waveLineList, odoMap, odolineList, userId, logId);
+        return waveCode;
     }
 
 }

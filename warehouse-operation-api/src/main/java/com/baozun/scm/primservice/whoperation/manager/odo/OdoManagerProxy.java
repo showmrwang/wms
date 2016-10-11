@@ -11,7 +11,10 @@ import com.baozun.scm.primservice.whoperation.command.odo.OdoAddressCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoGroupCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoLineCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoResultCommand;
+import com.baozun.scm.primservice.whoperation.command.odo.OdoSearchCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.WhOdoVasCommand;
+import com.baozun.scm.primservice.whoperation.command.odo.wave.OdoWaveGroupResultCommand;
+import com.baozun.scm.primservice.whoperation.command.odo.wave.OdoWaveGroupSearchCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
@@ -184,4 +187,38 @@ public interface OdoManagerProxy extends BaseManager {
      * @param lineCommand
      */
     void deleteLines(OdoLineCommand lineCommand);
+
+    /**
+     * 查询创建波次分组出库单
+     * 
+     * @param page
+     * @param sorts
+     * @param params
+     * @return
+     */
+    Pagination<OdoWaveGroupResultCommand> findOdoSummaryListForWaveByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params);
+
+    /**
+     * [业务方法]根据参数查询出库单头信息
+     * 
+     * @param command
+     * @return
+     */
+    List<OdoResultCommand> findOdoCommandListForWave(OdoSearchCommand command);
+
+    /**
+     * [业务方法]创建波次的时候汇总信息
+     * 
+     * @param command
+     * @return
+     */
+    OdoWaveGroupResultCommand findOdoSummaryForWave(OdoWaveGroupSearchCommand command);
+
+    /**
+     * [出库单创建波次]
+     * 
+     * @param command
+     * @return 返回波次号
+     */
+    String createOdoWave(OdoWaveGroupSearchCommand command);
 }

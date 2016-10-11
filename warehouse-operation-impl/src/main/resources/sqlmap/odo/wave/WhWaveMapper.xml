@@ -37,7 +37,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	last_modify_time as lastModifyTime,
 	        	created_id as createdId,
 	        	modified_id as modifiedId,
-	        	lifecycle as lifecycle
+	        	lifecycle as lifecycle，
+	        	is_run_wave as isRunWave
 	    ]]>
 	</sql>
 	
@@ -76,7 +77,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	last_modify_time ,
 		        	created_id ,
 		        	modified_id ,
-		        	lifecycle 
+		        	lifecycle ,
+		        	is_run_wave
 		        ) VALUES (
 		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -90,10 +92,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{finishTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        	#{totalOdoQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        	#{totalOdoLineQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-		        	#{totalAmount,javaType=Long,jdbcType=DECIMAL} ,
-		        	#{totalVolume,javaType=Long,jdbcType=DECIMAL} ,
-		        	#{totalWeight,javaType=Long,jdbcType=DECIMAL} ,
-		        	#{totalSkuQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{totalAmount,javaType=Double,jdbcType=DECIMAL} ,
+		        	#{totalVolume,javaType=Double,jdbcType=DECIMAL} ,
+		        	#{totalWeight,javaType=Double,jdbcType=DECIMAL} ,
+		        	#{totalSkuQty,javaType=Double,jdbcType=DECIMAL} ,
 		        	#{skuCategoryQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        	#{execOdoQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        	#{execOdoLineQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
@@ -104,7 +106,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        	#{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        	#{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
+		        	#{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{isRunWave,javaType=java.lang.Boolean,jdbcType=BIT} 
 		        )
 		    ]]>
 
@@ -124,10 +127,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        finish_time = #{finishTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        total_odo_qty = #{totalOdoQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        total_odo_line_qty = #{totalOdoLineQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-		        total_amount = #{totalAmount,javaType=Long,jdbcType=DECIMAL} ,
-		        total_volume = #{totalVolume,javaType=Long,jdbcType=DECIMAL} ,
-		        total_weight = #{totalWeight,javaType=Long,jdbcType=DECIMAL} ,
-		        total_sku_qty = #{totalSkuQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        total_amount = #{totalAmount,javaType=Double,jdbcType=DECIMAL} ,
+		        total_volume = #{totalVolume,javaType=Double,jdbcType=DECIMAL} ,
+		        total_weight = #{totalWeight,javaType=Double,jdbcType=DECIMAL} ,
+		        total_sku_qty = #{totalSkuQty,javaType=Double,jdbcType=DECIMAL} ,
 		        sku_category_qty = #{skuCategoryQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        exec_odo_qty = #{execOdoQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        exec_odo_line_qty = #{execOdoLineQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
@@ -138,7 +141,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        last_modify_time = now() ,
 		        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
+		        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        is_run_wave=#{isRunWave,javaType=java.lang.Boolean,jdbcType=BIT} 
 	        WHERE 
 		        id = #{id} 
 		        and last_modify_time <= #{lastModifyTime}

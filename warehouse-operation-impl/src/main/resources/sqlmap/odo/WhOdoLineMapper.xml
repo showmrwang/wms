@@ -27,6 +27,7 @@
 	        	sku_name as skuName,
 	        	ext_sku_name as extSkuName,
 	        	qty as qty,
+	        	plan_qty as planQty,
 	        	current_qty as currentQty,
 	        	actual_qty as actualQty,
 	        	cancel_qty as cancelQty,
@@ -63,7 +64,9 @@
 	        	create_time as createTime,
 	        	created_id as createdId,
 	        	last_modify_time as lastModifyTime,
-	        	modified_id as modifiedId
+	        	modified_id as modifiedId,
+	        	wave_code as waveCode
+	        	
         ]]>
 	</sql>
 	<sql id="whOdoLineConditionWhereExt">
@@ -180,6 +183,7 @@
 		        	sku_name ,
 		        	ext_sku_name ,
 		        	qty ,
+		        	plan_qty ,
 		        	current_qty ,
 		        	actual_qty ,
 		        	cancel_qty ,
@@ -216,7 +220,8 @@
 		        	create_time ,
 		        	created_id ,
 		        	last_modify_time ,
-		        	modified_id 
+		        	modified_id ,
+		        	wave_code
                 ) VALUES (
                     #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
                     #{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -229,6 +234,7 @@
 		        	#{skuName,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{extSkuName,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{qty,javaType=Double,jdbcType=DECIMAL} ,
+		        	#{planQty,javaType=Double,jdbcType=DECIMAL} ,
 		        	#{currentQty,javaType=Double,jdbcType=DECIMAL} ,
 		        	#{actualQty,javaType=Double,jdbcType=DECIMAL} ,
 		        	#{cancelQty,javaType=Double,jdbcType=DECIMAL} ,
@@ -265,7 +271,8 @@
 		        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        	#{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-		        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{waveCode,javaType=java.lang.String,jdbcType=VARCHAR} 
                 )
             ]]>
 
@@ -285,6 +292,7 @@
 		        sku_name = #{skuName,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        ext_sku_name = #{extSkuName,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        qty = #{qty,javaType=Double,jdbcType=DECIMAL} ,
+		        plan_qty = #{planQty,javaType=Double,jdbcType=DECIMAL} ,
 		        current_qty = #{currentQty,javaType=Double,jdbcType=DECIMAL} ,
 		        actual_qty = #{actualQty,javaType=Double,jdbcType=DECIMAL} ,
 		        cancel_qty = #{cancelQty,javaType=Double,jdbcType=DECIMAL} ,
@@ -320,7 +328,8 @@
 		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        last_modify_time = now() ,
-		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        wave_code=#{waveCode,javaType=java.lang.String,jdbcType=VARCHAR} 
             WHERE 
                 id = #{id} 
                 and ou_id = #{ouId}

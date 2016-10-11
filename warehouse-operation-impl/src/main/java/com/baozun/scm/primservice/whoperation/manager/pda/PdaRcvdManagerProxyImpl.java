@@ -1054,17 +1054,9 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
             }
             String asnlineskuQtyCount = cacheManager.getValue(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + command.getOccupationId() + CacheKeyConstant.CACHE_KEY_SPLIT + lineId + CacheKeyConstant.CACHE_KEY_SPLIT + command.getSkuId());
             asnlineSkuCount += Integer.parseInt(asnlineskuQtyCount) + lineSkuOverchargeCount;
-            asnSkuCount = asnSkuCount + lineSkuOverchargeCount;
             lineIdListStr += lineId + ",";
         }
         lineIdListStr = lineIdListStr.substring(0, lineIdListStr.length() - 1);
-        if (asnSkuCount < skuPlannedCount) {
-            if (!functionRcvd.getIsInvattrDiscrepancyAllowrcvd()) {
-                throw new BusinessException(ErrorCodes.SKU_OVERCHARGE_ERROR);
-            } else {
-                lineIdListStr = lineIdListString;
-            }
-        }
         if (asnlineSkuCount < skuPlannedCount) {
             if (!functionRcvd.getIsInvattrDiscrepancyAllowrcvd()) {
                 throw new BusinessException(ErrorCodes.SKU_OVERCHARGE_ERROR);
@@ -1802,6 +1794,9 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
         return generalRcvdManager.findwFunctionRcvdByFunctionId(id, ouid);
     }
 
+    /**
+     * 用来初始化商品相关扫描属性的 1.多条码数量 2.skuId 3.效期 4.商品扫描序列
+     */
     @Override
     public WhSkuInventoryCommand initSkuWhenScanning(WhSkuInventoryCommand command) {
         // LOGID
@@ -1813,56 +1808,59 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
         if (null == command.getSkuAddUpCount()) {
             command.setSkuAddUpCount(0);
         }
+        // 如果已经扫描了商品，则不需要再缓存
+        if (StringUtils.hasText(command.getSkuUrl())) {
+            return command;
+        }
         // 校验是否已经扫描过此商品，不然就生成商品的信息序列
-        if (StringUtils.isEmpty(command.getSkuUrl())) {
-            // 取得扫描的商品
-            WhAsn asn = this.cacheManager.getObject(CacheKeyConstant.CACHE_ASN_PREFIX + command.getOccupationId());
-            if (asn == null) {
-                throw new BusinessException(ErrorCodes.ASN_CACHE_ERROR);
+        // 取得扫描的商品
+        // 以及商品的多条码
+        WhAsn asn = this.cacheManager.getObject(CacheKeyConstant.CACHE_ASN_PREFIX + command.getOccupationId());
+        if (asn == null) {
+            throw new BusinessException(ErrorCodes.ASN_CACHE_ERROR);
+        }
+        Map<Long, Integer> skuMap = this.skuRedisManager.findSkuByBarCode(command.getSkuCode(), logId);
+        Iterator<Entry<Long, Integer>> skuIt = skuMap.entrySet().iterator();
+        String asnSkuCount;
+        while (skuIt.hasNext()) {
+            Entry<Long, Integer> entry = skuIt.next();
+            asnSkuCount = cacheManager.getValue(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + command.getOccupationId() + CacheKeyConstant.CACHE_KEY_SPLIT + entry.getKey());
+            if (StringUtils.hasText(asnSkuCount)) {
+                skuId = entry.getKey();
+                quantity = entry.getValue();
             }
-            Map<Long, Integer> skuMap = this.skuRedisManager.findSkuByBarCode(command.getSkuCode(), logId);
-            Iterator<Entry<Long, Integer>> skuIt = skuMap.entrySet().iterator();
-            String asnSkuCount;
-            while (skuIt.hasNext()) {
-                Entry<Long, Integer> entry = skuIt.next();
-                asnSkuCount = cacheManager.getValue(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + command.getOccupationId() + CacheKeyConstant.CACHE_KEY_SPLIT + entry.getKey());
-                if (StringUtils.hasText(asnSkuCount)) {
-                    skuId = entry.getKey();
-                    quantity = entry.getValue();
+            
+        }
+        if (null == skuId) {
+            throw new BusinessException(ErrorCodes.SKU_CACHE_ERROR);
+        }
+
+        SkuRedisCommand sku = this.skuRedisManager.findSkuMasterBySkuId(skuId, ouId, logId);
+        if (null == sku) {
+            throw new BusinessException(ErrorCodes.RCVD_SKU_EXPRIED_ERROR);
+        }
+        command.setQuantity(quantity);
+        command.setSkuId(skuId);
+        // 校验扫描的商品是否在缓存中，如果不在，推出错误
+        // 校验商品数量是否超过超收数量，此处不校验，放到匹配明细逻辑校验
+
+        String optList = RcvdWorkFlow.getOptMapStr(sku);
+        command.setSkuUrl(optList);
+        // @mender yimin.lu 缓存商品辅助表信息，不需要再进行效期的计算
+        // 缓存商品辅助表信息
+        // @mender yimin.lu 2016/9/8
+
+        // @mender yimin.lu 2016/6/24 效期
+        if (null != sku.getSkuMgmt()) {
+            if (null != sku.getSkuMgmt().getValidDate()) {
+                int day = sku.getSkuMgmt().getValidDate();
+                if (Constants.TIME_UOM_YEAR.equals(sku.getSkuMgmt().getGoodShelfLifeUnit())) {
+                    day = day * 365;
+                } else if (Constants.TIME_UOM_MONTH.equals(sku.getSkuMgmt().getGoodShelfLifeUnit())) {
+                    day = day * 30;
                 }
-
-            }
-            if (null == skuId) {
-                throw new BusinessException(ErrorCodes.SKU_CACHE_ERROR);
-            }
-
-            SkuRedisCommand sku = this.skuRedisManager.findSkuMasterBySkuId(skuId, ouId, logId);
-            if (null == sku) {
-                throw new BusinessException(ErrorCodes.RCVD_SKU_EXPRIED_ERROR);
-            }
-            command.setQuantity(quantity);
-            command.setSkuId(skuId);
-            // 校验扫描的商品是否在缓存中，如果不在，推出错误
-            // 校验商品数量是否超过超收数量，此处不校验，放到匹配明细逻辑校验
-
-            String optList = RcvdWorkFlow.getOptMapStr(sku);
-            command.setSkuUrl(optList);
-            // @mender yimin.lu 缓存商品辅助表信息，不需要再进行效期的计算
-            // 缓存商品辅助表信息
-            // @mender yimin.lu 2016/9/8
-
-            // @mender yimin.lu 2016/6/24 效期
-            if (null != sku.getSkuMgmt()) {
-                if (null != sku.getSkuMgmt().getValidDate()) {
-                    int day = sku.getSkuMgmt().getValidDate();
-                    if (Constants.TIME_UOM_YEAR.equals(sku.getSkuMgmt().getGoodShelfLifeUnit())) {
-                        day = day * 365;
-                    } else if (Constants.TIME_UOM_MONTH.equals(sku.getSkuMgmt().getGoodShelfLifeUnit())) {
-                        day = day * 30;
-                    }
-                    // 效期
-                    command.setDayOfValidDate(day);
-                }
+                // 效期
+                command.setDayOfValidDate(day);
             }
         }
         return command;

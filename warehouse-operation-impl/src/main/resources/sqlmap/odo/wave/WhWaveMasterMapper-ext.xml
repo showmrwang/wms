@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveMasterDao">
+	<resultMap id="WhWaveMasterResultExt" type="com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveMaster">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whWaveMasterColumnsExt">
+	    <![CDATA[
+	        	id as id,
+	        	name as name,
+	        	code as code,
+	        	ou_id as ouId,
+	        	wave_condition_rule_id as waveConditionRuleId,
+	        	wave_template_id as waveTemplateId,
+	        	description as description,
+	        	min_odo_qty as minOdoQty,
+	        	max_odo_qty as maxOdoQty,
+	        	max_odo_line_qty as maxOdoLineQty,
+	        	max_sku_qty as maxSkuQty,
+	        	max_sku_category_qty as maxSkuCategoryQty,
+	        	max_volume as maxVolume,
+	        	max_weight as maxWeight,
+	        	is_whole_order_outbound as isWholeOrderOutbound,
+	        	create_time as createTime,
+	        	last_modify_time as lastModifyTime,
+	        	created_id as createdId,
+	        	modified_id as modifiedId,
+	        	lifecycle as lifecycle
+	    ]]>
+	</sql>
+	
+	<sql id="whWaveMasterDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+	       
+		       <if test="name!=null and name!=''">
+					and name = #{name}
+				</if>
+	       
+	       
+		       <if test="code!=null and code!=''">
+					and code = #{code}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+	       
+				<if test="waveConditionRuleId!=null">
+					and wave_condition_rule_id = #{waveConditionRuleId}
+				</if>
+	       
+				<if test="waveTemplateId!=null">
+					and wave_template_id = #{waveTemplateId}
+				</if>
+	       
+	       
+		       <if test="description!=null and description!=''">
+					and description = #{description}
+				</if>
+	       
+	            <if test=" minOdoQty!=null">
+					and min_odo_qty = #{ minOdoQty}
+				</if>
+				
+				<if test="maxOdoQty!=null">
+					and max_odo_qty = #{maxOdoQty}
+				</if>
+	       
+				<if test="maxOdoLineQty!=null">
+					and max_odo_line_qty = #{maxOdoLineQty}
+				</if>
+	       
+				<if test="maxSkuQty!=null">
+					and max_sku_qty = #{maxSkuQty}
+				</if>
+	       
+				<if test="maxSkuCategoryQty!=null">
+					and max_sku_category_qty = #{maxSkuCategoryQty}
+				</if>
+	       
+				<if test="maxVolume!=null">
+					and max_volume = #{maxVolume}
+				</if>
+	       
+				<if test="maxWeight!=null">
+					and max_weight = #{maxWeight}
+				</if>
+	       
+				<if test="isWholeOrderOutbound!=null">
+					and is_whole_order_outbound = #{isWholeOrderOutbound}
+				</if>
+	       
+				<if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="createdId!=null">
+					and created_id = #{createdId}
+				</if>
+	       
+				<if test="modifiedId!=null">
+					and modified_id = #{modifiedId}
+				</if>
+	       
+				<if test="lifecycle!=null">
+					and lifecycle = #{lifecycle}
+				</if>
+		</where>
+	</sql>
+	
+	<select id="findByIdExt" resultMap="WhWaveMasterResultExt">
+	      select <include refid="whWaveMasterColumnsExt"/>
+	          from t_wh_wave_master
+	          where id=#{id}  and ou_id =#{ouId}
+	</select>
+	
+	<delete id="deleteExt">
+	     delete from t_wh_wave_master where id=#{id} and ou_id=#{ouId}
+	</delete>
+	
+	
+	<update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveMaster">
+	    <![CDATA[
+	        UPDATE t_wh_wave_master SET
+		        name = #{name,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        code = #{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        wave_condition_rule_id = #{waveConditionRuleId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        wave_template_id = #{waveTemplateId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        description = #{description,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        max_odo_qty = #{maxOdoQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        max_odo_line_qty = #{maxOdoLineQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        max_sku_qty = #{maxSkuQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        max_sku_category_qty = #{maxSkuCategoryQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        max_volume = #{maxVolume,javaType=Double,jdbcType=DECIMAL} ,
+		        max_weight = #{maxWeight,javaType=Double,jdbcType=DECIMAL} ,
+		        is_whole_order_outbound = #{isWholeOrderOutbound,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        last_modify_time = now() ,
+		        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER},
+		        min_odo_qty = #{minOdoQty,javaType=java.lang.Integer,jdbcType=INTEGER} 
+	        WHERE 
+		        id = #{id} and ou_id = #{ouId} and last_modify_time = #{lastModifyTime}
+	    ]]>
+    </update>
+    
+    <select id="checkUnique" resultType="Long" parameterType="com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveMaster">
+         select count(*)
+         from t_wh_wave_master
+         where 	ou_id = #{ouId}
+		       <if test="name!=null">
+					and name = #{name}
+			  </if>
+	       
+		       <if test="code!=null">
+					and code = #{code}
+			   </if>
+    </select>
+    
+    
+    <select id="findWhWaveMasterByTemplateId" resultMap="WhWaveMasterResultExt">
+           select <include refid="whWaveMasterColumnsExt"/>
+	       from t_wh_wave_master
+	       where wave_template_id=#{waveTemplateId}  and ou_id =#{ouId}
+    </select>
+    
+    <select id="findWhWaveMasterConditionId" resultMap="WhWaveMasterResultExt">
+           select <include refid="whWaveMasterColumnsExt"/>
+	       from t_wh_wave_master
+	       where wave_condition_rule_id=#{waveConditionRuleId}  and ou_id =#{ouId}
+    </select>
+</mapper>

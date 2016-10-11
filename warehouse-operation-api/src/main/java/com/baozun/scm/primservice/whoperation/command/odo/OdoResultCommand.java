@@ -81,6 +81,33 @@ public class OdoResultCommand extends BaseCommand {
     private String modifiedId;
     private String modifiedName;
     private String isLocked;
+    private String orderType;
+    private String orderTypeName;
+    private String qty;
+
+    public String getQty() {
+        return qty;
+    }
+
+    public void setQty(String qty) {
+        this.qty = qty;
+    }
+
+    public String getOrderTypeName() {
+        return orderTypeName;
+    }
+
+    public void setOrderTypeName(String orderTypeName) {
+        this.orderTypeName = orderTypeName;
+    }
+
+    public String getOrderType() {
+        return orderType;
+    }
+
+    public void setOrderType(String orderType) {
+        this.orderType = orderType;
+    }
 
     public Long getId() {
         return id;

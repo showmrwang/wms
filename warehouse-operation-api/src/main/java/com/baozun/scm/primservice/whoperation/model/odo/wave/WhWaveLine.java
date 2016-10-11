@@ -20,8 +20,10 @@ import com.baozun.scm.primservice.whoperation.model.BaseModel;
 
 public class WhWaveLine extends BaseModel {
 
-    private static final long serialVersionUID = 7448650201760226012L;
-
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 79848539176778509L;
     /** 波次ID */
     private Long waveId;
     /** 出库单明细行ID */
@@ -53,7 +55,9 @@ public class WhWaveLine extends BaseModel {
     /** 上位系统商品名称 */
     private String extSkuName;
     /** 数量 */
-    private Long qty;
+    private Double qty;
+    /** 分配数量 */
+    private Double allocateQty;
     /** 是否整单出库 */
     private Boolean isWholeOrderOutbound;
     /** 整行出库标志 */
@@ -102,6 +106,14 @@ public class WhWaveLine extends BaseModel {
     private Date lastModifyTime;
     /** 操作人ID */
     private Long modifiedId;
+
+    public Double getAllocateQty() {
+        return allocateQty;
+    }
+
+    public void setAllocateQty(Double allocateQty) {
+        this.allocateQty = allocateQty;
+    }
 
     public Long getWaveId() {
         return this.waveId;
@@ -223,12 +235,12 @@ public class WhWaveLine extends BaseModel {
         this.extSkuName = value;
     }
 
-    public Long getQty() {
-        return this.qty;
+    public Double getQty() {
+        return qty;
     }
 
-    public void setQty(Long value) {
-        this.qty = value;
+    public void setQty(Double qty) {
+        this.qty = qty;
     }
 
     public Boolean getIsWholeOrderOutbound() {

@@ -16,6 +16,10 @@
 	<resultMap id="OdoCommand"
 		type="com.baozun.scm.primservice.whoperation.command.odo.OdoCommand">
 	</resultMap>
+	<resultMap id="OdoWaveGroupResultCommand"
+		type="com.baozun.scm.primservice.whoperation.command.odo.wave.OdoWaveGroupResultCommand">
+	</resultMap>
+
 
 	<!-- 用于select查询公用抽取的列 -->
 	<sql id="whOdoColumnsExt">
@@ -54,7 +58,8 @@
 	        	create_time as createTime,
 	        	created_id as createdId,
 	        	last_modify_time as lastModifyTime,
-	        	modified_id as modifiedId
+	        	modified_id as modifiedId,
+	        	wave_code as waveCode
         ]]>
 	</sql>
 
@@ -229,6 +234,15 @@
 
 	<sql id="whOdoDynamicWherePageExt">
 		<where>
+			<if test="groupCustomerId!=null">
+				and odo.customer_id=#{groupCustomerId}
+			</if>
+			<if test="groupStoreId!=null">
+				and odo.store_id=#{groupStoreId}
+			</if>
+			<if test="groupOdoStatus!=null and groupOdoStatus!=''">
+				and odo.odo_status=#{groupOdoStatus}
+			</if>
 			<if test="odoCode!=null and odoCode!=''">
 				and odo.odo_code like #{odoCode}
 			</if>
@@ -389,7 +403,7 @@
 				and EXISTS(select 1 from t_wh_odo_line odoline
 				inner join t_wh_sku
 				sku on sku.id=odoline.sku_id
-				where odoline.odoid=odo.id
+				where odoline.odo_id=odo.id
 				<if test="skuCode!=null and skuCode!=''">
 					and sku.code like #{skuCode}
 				</if>
@@ -424,7 +438,7 @@
 					</foreach>
 				</if>
 				<if
-					test="(sn!=null and sn!='') or(defectWareBarcode!=null and defectWareBarcode!='') or(defectType!=null and defectType!='')or(defectReasons!=null and defectReasons!='')">
+					test="(sn!=null and sn!='') ||(defectWareBarcode!=null and defectWareBarcode!='') ||(defectType!=null and defectType!='')||(defectReasons!=null and defectReasons!='')">
 					and exists(select 1 from t_wh_odo_line_sn linesn
 					where
 					linesn.odo_line_id=odoline.id
@@ -936,4 +950,443 @@
                 id = #{id} and ou_id=#{ouId}
         ]]>
     </delete>
+    
+     <select id="findOdoListForWaveByQueryMapWithPageExt" resultMap="OdoWaveGroupResultCommand">
+        select
+			<if test="isCustomer!=null">
+				odo.customer_id as customerId,
+			</if>
+			<if test="isStore!=null">
+				odo.store_id as storeId,
+			</if>
+			count(distinct odo.id) as odoCount,
+			count(1) as lineCount,
+			sum(odoLine.qty) as qty,
+			count(distinct odoLine.sku_id) as skuTypeCount,
+			count(distinct odo.store_id) as storeCount,
+			count(distinct odo.odo_type) as odoTypeCount
+		from t_wh_odo_line odoLine
+		inner join t_wh_odo odo on odoLine.odo_id=odo.id
+		inner join t_wh_odo odo on odoLine.odo_id=odo.id
+		left join t_wh_odo_address address on address.odo_id=odo.id
+		left join t_wh_odo_transport_mgmt transmgmt on transmgmt.odo_id=odo.id
+		<include refid="whOdoDynamicWherePageExt" />
+		group by 1
+		<if test="isCustomer!=null">
+				,odo.customer_id
+		</if>
+		<if test="isStore!=null">
+			,odo.store_id
+		</if>
+		<if test="isOdoStatus!=null">
+			,odo.odo_status
+		</if>
+    </select>
+    
+     <select id="findListCountForWaveByQueryMap" resultType="long">
+        select count(*) from (
+	        	select
+				<if test="isCustomer!=null">
+					odo.customer_id as customerId,
+				</if>
+				<if test="isStore!=null">
+					odo.store_id as storeId,
+				</if>
+				count(distinct odo.id) as odoCount,
+				count(1) as lineCount,
+				sum(odoLine.qty) as qty,
+				count(distinct odoLine.sku_id) as skuTypeCount,
+				count(distinct odo.store_id) as storeCount,
+				count(distinct odo.odo_type) as odoTypeCount
+			from t_wh_odo_line odoLine
+			inner join t_wh_odo odo on odoLine.odo_id=odo.id
+			left join t_wh_odo_address address on address.odo_id=odo.id
+			left join t_wh_odo_transport_mgmt transmgmt on transmgmt.odo_id=odo.id
+			<include refid="whOdoDynamicWherePageExt" />
+			group by 1
+			<if test="isCustomer!=null">
+					,odo.customer_id
+			</if>
+			<if test="isStore!=null">
+				,odo.store_id
+			</if>
+			<if test="isOdoStatus!=null">
+				,odo.odo_status
+			</if>
+        
+        )t
+    </select>
+    
+    
+    <select id="findCommandListForWave" resultMap="WhOdoResultCommandExt"
+		parameterType="com.baozun.scm.primservice.whoperation.command.odo.OdoSearchCommand">
+
+		SELECT
+		odo.id as id,
+		odo.odo_code as odoCode,
+		odo.ext_code as extCode,
+		odo.priority_level as priorityLevel,
+		odo.is_whole_order_outbound as isWholeOrderOutbound,
+
+		odo.cross_docking_symbol as crossDockingSysmbol,
+
+		odo.ec_order_code as ecOrderCode,
+		odo.customer_id as customerId,
+		odo.store_id AS storeId,
+		DATE_FORMAT(odo.order_time,'%Y-%m-%d') as
+		orderTime,
+		odo.sku_number_of_packages AS skuNumberOfPackages,
+		odo.amt as amt,
+		transmgmt.transport_service_provider as transportServiceProvider,
+		transprovider.name as transportServiceProviderName,
+		transmgmt.mode_of_transport as modeOfTransport,
+
+		odo.epistatic_systems_order_type as epistaticSystemsOrderType,
+
+		odo.odo_type as odoType,
+		odo.qty as qty,
+
+		odo.distribute_mode as distributeMode,
+
+		odo.odo_status as odoStatus,
+		odo.order_type as orderType,
+
+		transprovider.type as
+		transportServiceProviderType,
+		transType.name as
+		transportServiceProviderTypeName,
+		transmgmt.outbound_target_type as
+		outboundTargetType,
+
+		transmgmt.outbound_target as outboundTarget,
+		address.distribution_target_name as distributionTargetName,
+		address.distribution_target_mobile_phone as
+		distributionTargetMobilePhone,
+		address.distribution_target_telephone as
+		distributionTargetTelephone,
+		address.distribution_target_country as
+		distributionTargetCountry,
+		address.distribution_target_province as
+		distributionTargetProvince,
+		address.distribution_target_city as
+		distributionTargetCity,
+		address.distribution_target_district as
+		distributionTargetDistrict,
+		address.distribution_target_villages_towns
+		as
+		distributionTargetVillagesTowns,
+		address.distribution_target_address
+		as distributionTargetAddress,
+		address.distribution_target_email as
+		distributionTargetEmail,
+		address.distribution_target_zip as
+		distributionTargetZip,
+		address.consignee_target_name as
+		consigneeTargetName,
+		address.consignee_target_mobile_phone as
+		consigneeTargetMobilePhone,
+		address.consignee_target_telephone as
+		consigneeTargetTelephone,
+		address.consignee_target_country as
+		consigneeTargetCountry,
+		address.consignee_target_province as
+		consigneeTargetProvince,
+		address.consignee_target_city as
+		consigneeTargetCity,
+		address.consignee_target_district as
+		consigneeTargetDistrict,
+		address.consignee_target_villages_towns as
+		consigneeTargetVillagesTowns,
+		address.consignee_target_address as
+		consigneeTargetAddress,
+		address.consignee_target_email as
+		consigneeTargetEmail,
+		address.consignee_target_zip as
+		consigneeTargetZip,
+		transmgmt.deliver_goods_time_mode as
+		deliverGoodsTimeMode,
+
+		DATE_FORMAT(transmgmt.deliver_goods_time,'%Y-%m-%d') as
+		deliverGoodsTime,
+		DATE_FORMAT(transmgmt.plan_deliver_goods_time,'%Y-%m-%d') as
+		planDeliverGoodsTime,
+		DATE_FORMAT(transmgmt.actual_deliver_goods_time,'%Y-%m-%d') as
+		actualDeliverGoodsTime,
+		odo.include_fragile_cargo as
+		includeFragileCargo,
+
+		odo.include_hazardous_cargo as
+		includeHazardousCargo,
+
+		odo.outbound_carton_type as outboundCartonType,
+		boxType.name as outboundCartonTypeName,
+		DATE_FORMAT(odo.create_time,'%Y-%m-%d') as createTime,
+		odo.created_id
+		as createId,
+		user1.user_name as createName,
+		DATE_FORMAT(odo.last_modify_time,'%Y-%m-%d') as lastModifyTime,
+		odo.modified_id as modifiedId,
+		user2.user_name as modifiedName,
+		odo.is_locked as isLocked
+		
+		from t_wh_odo odo
+		left join t_wh_odo_address
+		address on
+		address.odo_id=odo.id
+		left join t_wh_odo_transport_mgmt
+		transmgmt on
+		transmgmt.odo_id=odo.id
+		left join t_ma_transport_provider
+		transprovider
+		on
+		transmgmt.transport_service_provider=transprovider.code
+		left join
+		t_ma_transport_service_type transType on
+		transType.tp_id=transprovider.id and
+		transType.code=transmgmt.courier_service_type
+		left join
+		t_wh_out_inventory_box_type boxType on
+		boxType.id=odo.outbound_carton_type and odo.ou_id=boxType.ou_id
+		left
+		join oper_user user1 on user1.id=odo.created_id
+		left join oper_user
+		user2 on user2.id=odo.modified_id
+		<include refid="whOdoDynamicWherePageExt" />
+		<if test="lineNum!=null">
+			limit #{lineNum}
+		</if>
+		
+	</select>
+    <select id="findListForWave" resultMap="WhOdoResultExt"
+		parameterType="com.baozun.scm.primservice.whoperation.command.odo.OdoSearchCommand">
+
+		SELECT
+		 	odo.id as id,
+	       	odo.odo_code as odoCode,
+	       odo.ext_code as extCode,
+	       	odo.ec_order_code as ecOrderCode,
+	       	odo.customer_id as customerId,
+	       	odo.store_id as storeId,
+	       	odo.odo_type as odoType,
+	       	odo.group_odo_code as groupOdoCode,
+	       	odo.original_odo_code as originalOdoCode,
+	       	odo.priority_level as priorityLevel,
+	       	odo.is_whole_order_outbound as isWholeOrderOutbound,
+	       	odo.cross_docking_symbol as crossDockingSymbol,
+	       	odo.order_type as orderType,
+	       	odo.order_time as orderTime,
+	       	odo.odo_status as odoStatus,
+	       	odo.qty as qty,
+	       	odo.current_qty as currentQty,
+	       	odo.actual_qty as actualQty,
+	       	odo.cancel_qty as cancelQty,
+	       	odo.sku_number_of_packages as skuNumberOfPackages,
+	       	odo.amt as amt,
+	       	odo.distribute_mode as distributeMode,
+	       	odo.epistatic_systems_order_type as epistaticSystemsOrderType,
+	       	odo.outbound_carton_type as outboundCartonType,
+	       	odo.include_hazardous_cargo as includeHazardousCargo,
+	       	odo.include_fragile_cargo as includeFragileCargo,
+	       	odo.is_assign_success as isAssignSuccess,
+	       	odo.assign_fail_reason as assignFailReason,
+	       	odo.is_allow_merge as isAllowMerge,
+	       	odo.is_locked as isLocked,
+	       	odo.ou_id as ouId,
+	       	odo.create_time as createTime,
+	       	odo.created_id as createdId,
+	       	odo.last_modify_time as lastModifyTime,
+	       	odo.modified_id as modifiedId,
+	       	odo.wave_code as waveCode,
+	       	transmgmt.plan_deliver_goods_time as planDeliverGoodsTime
+		
+		from t_wh_odo odo
+		left join t_wh_odo_address
+		address on
+		address.odo_id=odo.id
+		left join t_wh_odo_transport_mgmt
+		transmgmt on
+		transmgmt.odo_id=odo.id
+		left join t_ma_transport_provider
+		transprovider
+		on
+		transmgmt.transport_service_provider=transprovider.code
+		left join
+		t_ma_transport_service_type transType on
+		transType.tp_id=transprovider.id and
+		transType.code=transmgmt.courier_service_type
+		left join
+		t_wh_out_inventory_box_type boxType on
+		boxType.id=odo.outbound_carton_type and odo.ou_id=boxType.ou_id
+		left
+		join oper_user user1 on user1.id=odo.created_id
+		left join oper_user
+		user2 on user2.id=odo.modified_id
+		<where>
+			<if test="ouId!=null">
+				and odo.ou_id=#{ouId}
+			</if>
+			<if test="groupCustomerId!=null">
+				and odo.customer_id=#{groupCustomerId}
+			</if>
+			<if test="groupStoreId!=null">
+				and odo.store_id=#{groupStoreId}
+			</if>
+			<if test="groupOdoStatus!=null and groupOdoStatus!=''">
+				and odo.odo_status=#{groupOdoStatus}
+			</if>
+			and odo.odo_status in('1','5')
+		</where>
+		<if test="lineNum!=null">
+			limit #{lineNum}
+		</if>
+		
+	</select>
+	
+	<select id="findOdoSummaryForWave" resultMap="OdoWaveGroupResultCommand" parameterType="com.baozun.scm.primservice.whoperation.command.odo.wave.OdoWaveGroupSearchCommand">
+        select
+			count(distinct odo.id) as odoCount,
+			count(1) as lineCount,
+			sum(odoLine.qty) as qty,
+			count(distinct odoLine.sku_id) as skuTypeCount,
+			count(distinct odo.store_id) as storeCount,
+			count(distinct odo.odo_type) as odoTypeCount
+		from t_wh_odo_line odoLine
+		inner join t_wh_odo odo on odoLine.odo_id=odo.id
+		where odoLine.ou_id=#{ouId} and odo.odo_status in('1','5')
+    </select>
+    
+    <select id="findCommandByIdOuId" resultMap="OdoCommand"
+		parameterType="com.baozun.scm.primservice.whoperation.command.odo.OdoSearchCommand">
+
+		SELECT
+		odo.id as id,
+		odo.odo_code as odoCode,
+		odo.ext_code as extCode,
+		odo.priority_level as priorityLevel,
+		odo.is_whole_order_outbound as isWholeOrderOutbound,
+
+		odo.cross_docking_symbol as crossDockingSysmbol,
+
+		odo.ec_order_code as ecOrderCode,
+		odo.customer_id as customerId,
+		odo.store_id AS storeId,
+		DATE_FORMAT(odo.order_time,'%Y-%m-%d') as
+		orderTime,
+		odo.sku_number_of_packages AS skuNumberOfPackages,
+		odo.amt as amt,
+		transmgmt.transport_service_provider as transportServiceProvider,
+		transprovider.name as transportServiceProviderName,
+		transmgmt.mode_of_transport as modeOfTransport,
+
+		odo.epistatic_systems_order_type as epistaticSystemsOrderType,
+
+		odo.odo_type as odoType,
+
+		odo.distribute_mode as distributeMode,
+
+		odo.odo_status as odoStatus,
+
+		transprovider.type as
+		transportServiceProviderType,
+		transType.name as
+		transportServiceProviderTypeName,
+		transmgmt.outbound_target_type as
+		outboundTargetType,
+
+		transmgmt.outbound_target as outboundTarget,
+		address.distribution_target_name as distributionTargetName,
+		address.distribution_target_mobile_phone as
+		distributionTargetMobilePhone,
+		address.distribution_target_telephone as
+		distributionTargetTelephone,
+		address.distribution_target_country as
+		distributionTargetCountry,
+		address.distribution_target_province as
+		distributionTargetProvince,
+		address.distribution_target_city as
+		distributionTargetCity,
+		address.distribution_target_district as
+		distributionTargetDistrict,
+		address.distribution_target_villages_towns
+		as
+		distributionTargetVillagesTowns,
+		address.distribution_target_address
+		as distributionTargetAddress,
+		address.distribution_target_email as
+		distributionTargetEmail,
+		address.distribution_target_zip as
+		distributionTargetZip,
+		address.consignee_target_name as
+		consigneeTargetName,
+		address.consignee_target_mobile_phone as
+		consigneeTargetMobilePhone,
+		address.consignee_target_telephone as
+		consigneeTargetTelephone,
+		address.consignee_target_country as
+		consigneeTargetCountry,
+		address.consignee_target_province as
+		consigneeTargetProvince,
+		address.consignee_target_city as
+		consigneeTargetCity,
+		address.consignee_target_district as
+		consigneeTargetDistrict,
+		address.consignee_target_villages_towns as
+		consigneeTargetVillagesTowns,
+		address.consignee_target_address as
+		consigneeTargetAddress,
+		address.consignee_target_email as
+		consigneeTargetEmail,
+		address.consignee_target_zip as
+		consigneeTargetZip,
+		transmgmt.deliver_goods_time_mode as
+		deliverGoodsTimeMode,
+
+		DATE_FORMAT(transmgmt.deliver_goods_time,'%Y-%m-%d') as
+		deliverGoodsTime,
+		DATE_FORMAT(transmgmt.plan_deliver_goods_time,'%Y-%m-%d') as
+		planDeliverGoodsTime,
+		DATE_FORMAT(transmgmt.actual_deliver_goods_time,'%Y-%m-%d') as
+		actualDeliverGoodsTime,
+		odo.include_fragile_cargo as
+		includeFragileCargo,
+
+		odo.include_hazardous_cargo as
+		includeHazardousCargo,
+
+		odo.outbound_carton_type as outboundCartonType,
+		boxType.name as outboundCartonTypeName,
+		DATE_FORMAT(odo.create_time,'%Y-%m-%d') as createTime,
+		odo.created_id
+		as createId,
+		user1.user_name as createName,
+		DATE_FORMAT(odo.last_modify_time,'%Y-%m-%d') as lastModifyTime,
+		odo.modified_id as modifiedId,
+		user2.user_name as modifiedName,
+		odo.is_locked as isLocked
+		
+		from t_wh_odo odo
+		left join t_wh_odo_address
+		address on
+		address.odo_id=odo.id
+		left join t_wh_odo_transport_mgmt
+		transmgmt on
+		transmgmt.odo_id=odo.id
+		left join t_ma_transport_provider
+		transprovider
+		on
+		transmgmt.transport_service_provider=transprovider.code
+		left join
+		t_ma_transport_service_type transType on
+		transType.tp_id=transprovider.id and
+		transType.code=transmgmt.courier_service_type
+		left join
+		t_wh_out_inventory_box_type boxType on
+		boxType.id=odo.outbound_carton_type and odo.ou_id=boxType.ou_id
+		left
+		join oper_user user1 on user1.id=odo.created_id
+		left join oper_user
+		user2 on user2.id=odo.modified_id
+		where  odo.id = #{id} and odo.ou_id=#{ouId}
+		
+	</select>
 </mapper>

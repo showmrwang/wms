@@ -1,5 +1,7 @@
 package com.baozun.scm.primservice.whoperation.command.odo;
 
+import java.util.Date;
+
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
 
 public class OdoCommand extends BaseCommand {
@@ -71,6 +73,10 @@ public class OdoCommand extends BaseCommand {
     private Long modifiedId;
     /** id */
     private Long id;
+    /** 波次号 */
+    private String waveCode;
+    /** 计划发货时间 */
+    private Date planDeliverGoodsTime;
     // ------------------------------------------------------------------------------------
     // 自定义字段
     private Long userId;
@@ -80,6 +86,34 @@ public class OdoCommand extends BaseCommand {
     private String storeName;
     private String customerName;
 
+    // 分组字段
+    private String groupCode;
+
+
+
+    public Date getPlanDeliverGoodsTime() {
+        return planDeliverGoodsTime;
+    }
+
+    public void setPlanDeliverGoodsTime(Date planDeliverGoodsTime) {
+        this.planDeliverGoodsTime = planDeliverGoodsTime;
+    }
+
+    public String getWaveCode() {
+        return waveCode;
+    }
+
+    public void setWaveCode(String waveCode) {
+        this.waveCode = waveCode;
+    }
+
+    public String getGroupCode() {
+        return groupCode;
+    }
+
+    public void setGroupCode(String groupCode) {
+        this.groupCode = groupCode;
+    }
 
     public Long getId() {
         return id;

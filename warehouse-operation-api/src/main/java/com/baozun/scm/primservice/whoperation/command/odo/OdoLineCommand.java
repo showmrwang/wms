@@ -26,6 +26,8 @@ public class OdoLineCommand extends BaseCommand {
     private String extSkuName;
     /** 计划数量 */
     private Double qty;
+    /** 计划数量 */
+    private Double planQty;
     /** 本次出库数量 */
     private Double currentQty;
     /** 实际出库数量 */
@@ -100,7 +102,8 @@ public class OdoLineCommand extends BaseCommand {
     private java.util.Date lastModifyTime;
     /** 操作人ID */
     private Long modifiedId;
-
+    /** 波次号 */
+    private String waveCode;
     // -------------------------------------------------------------------------
     // 自定义字段
     /** 是否危险品 */
@@ -125,7 +128,25 @@ public class OdoLineCommand extends BaseCommand {
     private String odoCode;
     /** id集合，逗号分隔 */
     private String ids;
+    /** 库存状态 */
+    private String invStatusName;
 
+
+    public String getInvStatusName() {
+        return invStatusName;
+    }
+
+    public void setInvStatusName(String invStatusName) {
+        this.invStatusName = invStatusName;
+    }
+
+    public String getWaveCode() {
+        return waveCode;
+    }
+
+    public void setWaveCode(String waveCode) {
+        this.waveCode = waveCode;
+    }
 
     public Long getStoreId() {
         return storeId;
@@ -141,6 +162,14 @@ public class OdoLineCommand extends BaseCommand {
 
     public void setIds(String ids) {
         this.ids = ids;
+    }
+
+    public Double getPlanQty() {
+        return planQty;
+    }
+
+    public void setPlanQty(Double planQty) {
+        this.planQty = planQty;
     }
 
     public String getMfgDateStr() {

@@ -32,7 +32,8 @@ public class OdoLineManagerImpl extends BaseManagerImpl implements OdoLineManage
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public Pagination<OdoLineCommand> findOdoLineListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params) {
-        return this.whOdoLineDao.findListByQueryMapWithPageExt(page, sorts, params);
+        Pagination<OdoLineCommand> pages = this.whOdoLineDao.findListByQueryMapWithPageExt(page, sorts, params);
+        return pages;
     }
 
     @Override

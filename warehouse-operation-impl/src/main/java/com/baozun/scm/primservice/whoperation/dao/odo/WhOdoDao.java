@@ -30,6 +30,9 @@ import org.apache.ibatis.annotations.Param;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoMergeCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoResultCommand;
+import com.baozun.scm.primservice.whoperation.command.odo.OdoSearchCommand;
+import com.baozun.scm.primservice.whoperation.command.odo.wave.OdoWaveGroupResultCommand;
+import com.baozun.scm.primservice.whoperation.command.odo.wave.OdoWaveGroupSearchCommand;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 
 public interface WhOdoDao extends BaseDao<WhOdo, Long> {
@@ -63,6 +66,15 @@ public interface WhOdoDao extends BaseDao<WhOdo, Long> {
      */
     WhOdo findByIdOuId(@Param("id") Long id, @Param("ouId") Long ouId);
 
+    /**
+     * [通用方法]根据ID,OUID查找ODO
+     * 
+     * @param id
+     * @param ouId
+     * @return
+     */
+    OdoCommand findCommandByIdOuId(@Param("id") Long id, @Param("ouId") Long ouId);
+
     int existsSkuInOdo(@Param("odoId") Long odoId, @Param("skuId") Long skuId, @Param("ouId") Long ouId);
 
     String findOdoMergableIds(@Param("ouId") Long ouId, @Param("outboundCartonType") String outboundCartonType, @Param("epistaticSystemsOrderType") String epistaticSystemsOrderType, @Param("store") String store,
@@ -80,5 +92,29 @@ public interface WhOdoDao extends BaseDao<WhOdo, Long> {
      * @param ouId
      */
     int deleteByIdOuId(@Param("id") Long id, @Param("ouId") Long ouId);
+
+    /**
+     * [业务方法]
+     * 
+     * @param page
+     * @param sorts
+     * @param params
+     * @return
+     */
+    @QueryPage("findListCountForWaveByQueryMap")
+    Pagination<OdoWaveGroupResultCommand> findOdoListForWaveByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params);
+
+
+    List<OdoResultCommand> findCommandListForWave(OdoSearchCommand command);
+
+    /**
+     * [业务方法]获取创建波次的查询条件
+     * 
+     * @param command
+     * @return
+     */
+    OdoWaveGroupResultCommand findOdoSummaryForWave(OdoWaveGroupSearchCommand command);
+
+    List<WhOdo> findListForWave(OdoSearchCommand search);
 
 }

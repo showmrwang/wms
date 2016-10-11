@@ -95,7 +95,18 @@ public class WhOdo extends BaseModel {
     private java.lang.String assignFailReason;
     /** 是否允许合并 1：允许 0：不允许 */
     private java.lang.Boolean isAllowMerge;
+    /** 波次号 */
+    private String waveCode;
 
+
+
+    public String getWaveCode() {
+        return waveCode;
+    }
+
+    public void setWaveCode(String waveCode) {
+        this.waveCode = waveCode;
+    }
 
     public String getOdoCode() {
         return odoCode;

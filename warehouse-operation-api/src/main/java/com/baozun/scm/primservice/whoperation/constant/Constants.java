@@ -281,6 +281,8 @@ public final class Constants {
 
     public static final String TRANSPORT_MODE = "TRANSPORT_MODE";
 
+    public static final String ODO_ORDER_TYPE = "ODO_ORDER_TYPE";
+
     public static final String ODO_PRE_TYPE = "ODO_PRE_TYPE";
 
     public static final String ODO_TYPE = "ODO_TYPE";
@@ -304,6 +306,9 @@ public final class Constants {
 
     /** 调编码生成器出库单实体标识 */
     public static final String WHODO_MODEL_URL = "com.baozun.scm.primservice.whoperation.model.odo.WhOdo";
+
+    /** 调编码生成器波次实体标识 */
+    public static final String WHWAVE_MODEL_URL = "com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave";
 
     /** 调编码生成器 出库单WMS内部单号分组 */
     public static final String WMS_ODO_INNER = "WMS_ODO_INNER";

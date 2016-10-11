@@ -1,10 +1,13 @@
 package com.baozun.scm.primservice.whoperation.manager.odo.manager;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import lark.common.annotation.MoreDB;
@@ -19,14 +22,25 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import com.baozun.scm.primservice.whoperation.command.odo.OdoCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoResultCommand;
+import com.baozun.scm.primservice.whoperation.command.odo.OdoSearchCommand;
+import com.baozun.scm.primservice.whoperation.command.odo.wave.OdoWaveGroupResultCommand;
+import com.baozun.scm.primservice.whoperation.command.odo.wave.OdoWaveGroupSearchCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.UomCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
+import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoAddressDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoTransportMgmtDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoVasDao;
+import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveDao;
+import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveLineDao;
+import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveMasterDao;
+import com.baozun.scm.primservice.whoperation.dao.sku.SkuDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.UomDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
@@ -35,6 +49,10 @@ import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAddress;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoVas;
+import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
+import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine;
+import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveMaster;
+import com.baozun.scm.primservice.whoperation.model.sku.Sku;
 import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
@@ -53,6 +71,16 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     private WhOdoAddressDao whOdoAddressDao;
     @Autowired
     private WhOdoVasDao whOdoVasDao;
+    @Autowired
+    private UomDao uomDao;
+    @Autowired
+    private SkuDao skuDao;
+    @Autowired
+    private WhWaveMasterDao whWaveMasterDao;
+    @Autowired
+    private WhWaveDao whWaveDao;
+    @Autowired
+    private WhWaveLineDao whWaveLineDao;
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public Pagination<OdoResultCommand> findListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params) {
@@ -202,7 +230,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                         }
                         if (StringUtils.hasText(command.getStoreId())) {
                             Store store = storeMap.get(Long.parseLong(command.getStoreId()));
-                            command.setStoreId(store == null ? command.getStoreId() : store.getStoreName());
+                            command.setStoreName(store == null ? command.getStoreId() : store.getStoreName());
                         }
                     }
                     pages.setItems(list);
@@ -346,6 +374,128 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     @Override
     public Integer getSkuNumberAwayFormSomeLines(List<Long> idArray, Long ouId) {
         return null;
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public Pagination<OdoWaveGroupResultCommand> findOdoListForWaveByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params) {
+
+        Pagination<OdoWaveGroupResultCommand> pages = this.whOdoDao.findOdoListForWaveByQueryMapWithPageExt(page, sorts, params);
+        try {
+
+            if (pages != null) {
+                Set<String> dic1 = new HashSet<String>();
+                Set<Long> customerIdSet = new HashSet<Long>();
+                Set<Long> storeIdSet = new HashSet<Long>();
+                List<OdoWaveGroupResultCommand> list = pages.getItems();
+                if (list != null && list.size() > 0) {
+                    for (OdoWaveGroupResultCommand command : list) {
+                        dic1.add(command.getOdoStatus());
+                        customerIdSet.add(command.getCustomerId());
+                        storeIdSet.add(command.getStoreId());
+                    }
+                    Map<String, List<String>> map = new HashMap<String, List<String>>();
+                    map.put(Constants.ODO_STATUS, new ArrayList<String>(dic1));
+
+                    Map<String, SysDictionary> dicMap = this.findSysDictionaryByRedis(map);
+                    Map<Long, Customer> customerMap = this.findCustomerByRedis(new ArrayList<Long>(customerIdSet));
+                    Map<Long, Store> storeMap = this.findStoreByRedis(new ArrayList<Long>(storeIdSet));
+                    for (OdoWaveGroupResultCommand command : list) {
+                        String groupName = "";
+                        if (command.getCustomerId() != null) {
+                            Customer customer = customerMap.get(command.getCustomerId());
+                            command.setCustomerName(customer == null ? command.getCustomerId().toString() : customer.getCustomerName());
+                            groupName += "$" + command.getCustomerName();
+                        }
+                        if (command.getStoreId() != null) {
+                            Store store = storeMap.get(command.getStoreId());
+                            command.setStoreName(store == null ? command.getStoreId().toString() : store.getStoreName());
+                            groupName += "$" + command.getStoreName();
+                        }
+                        if (StringUtils.hasText(command.getOdoStatus())) {
+                            SysDictionary sys = dicMap.get(Constants.ODO_STATUS + "_" + command.getOdoStatus());
+                            command.setOdoStatusName(sys.getDicLabel());
+                            groupName += "$" + command.getOdoStatusName();
+                        }
+                        command.setGroupName(groupName);
+                    }
+                    pages.setItems(list);
+                }
+            }
+        } catch (Exception ex) {
+            log.error(ex + "");
+            throw new BusinessException(ErrorCodes.PACKAGING_ERROR);
+        }
+        return pages;
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<OdoResultCommand> findOdoCommandListForWave(OdoSearchCommand command) {
+
+        return this.whOdoDao.findCommandListForWave(command);
+    }
+
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public OdoWaveGroupResultCommand findOdoSummaryForWave(OdoWaveGroupSearchCommand command) {
+        return this.whOdoDao.findOdoSummaryForWave(command);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<WhOdo> findOdoListForWave(OdoSearchCommand search) {
+        return this.whOdoDao.findListForWave(search);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_GLOBALSOURCE)
+    public List<UomCommand> findUomByGroupCode(String groupCode, Integer lifecycle) {
+        return this.uomDao.findUomByGroupCode(groupCode, lifecycle);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public Sku findSkuByIdToShard(Long id, Long ouId) {
+        return this.skuDao.findByIdShared(id, ouId);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public WhWaveMaster findWaveMasterByIdouId(Long waveMasterId, Long ouId) {
+        return this.whWaveMasterDao.findByIdExt(waveMasterId, ouId);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public OdoCommand findOdoCommandByIdOuId(Long id, Long ouId) {
+        return this.whOdoDao.findCommandByIdOuId(id, ouId);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void createOdoWave(WhWave wave, List<WhWaveLine> waveLineList, Map<Long, WhOdo> odoMap, List<WhOdoLine> odolineList, Long userId, String logId) {
+        this.whWaveDao.insert(wave);
+        for (WhWaveLine waveLine : waveLineList) {
+            waveLine.setWaveId(wave.getId());
+            this.whWaveLineDao.insert(waveLine);
+        }
+        Iterator<Entry<Long, WhOdo>> odoIt = odoMap.entrySet().iterator();
+        while (odoIt.hasNext()) {
+            Entry<Long, WhOdo> entry = odoIt.next();
+            WhOdo odo = entry.getValue();
+            odo.setLastModifyTime(new Date());
+            odo.setModifiedId(userId);
+            odo.setWaveCode(wave.getCode());
+            odo.setOdoStatus(OdoStatus.ODO_WAVE);
+            this.whOdoDao.saveOrUpdateByVersion(odo);
+        }
+        for (WhOdoLine line : odolineList) {
+            line.setLastModifyTime(new Date());
+            line.setModifiedId(userId);
+            line.setWaveCode(wave.getCode());
+            line.setOdoLineStatus(OdoStatus.ODOLINE_WAVE);
+            this.whOdoLineDao.saveOrUpdateByVersion(line);
+        }
     }
 
 }

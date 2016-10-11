@@ -7,12 +7,21 @@ import lark.common.dao.Page;
 import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 
+import com.baozun.scm.primservice.whoperation.command.odo.OdoCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoResultCommand;
+import com.baozun.scm.primservice.whoperation.command.odo.OdoSearchCommand;
+import com.baozun.scm.primservice.whoperation.command.odo.wave.OdoWaveGroupResultCommand;
+import com.baozun.scm.primservice.whoperation.command.odo.wave.OdoWaveGroupSearchCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.UomCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAddress;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt;
+import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
+import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine;
+import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveMaster;
+import com.baozun.scm.primservice.whoperation.model.sku.Sku;
 
 public interface OdoManager extends BaseManager {
     Pagination<OdoResultCommand> findListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params);
@@ -33,6 +42,15 @@ public interface OdoManager extends BaseManager {
      * @return
      */
     WhOdo findOdoByIdOuId(Long id, Long ouId);
+
+    /**
+     * [通用方法]根据ID,OUID查找ODO
+     * 
+     * @param id
+     * @param ouId
+     * @return
+     */
+    OdoCommand findOdoCommandByIdOuId(Long id, Long ouId);
 
     /**
      * [通用商品]查找出库单是否包含某种商品
@@ -78,4 +96,71 @@ public interface OdoManager extends BaseManager {
      * @return
      */
     Integer getSkuNumberAwayFormSomeLines(List<Long> idList, Long ouId);
+
+    /**
+     * [业务方法]出库单分组列表
+     * 
+     * @param page
+     * @param sorts
+     * @param params
+     * @return
+     */
+    Pagination<OdoWaveGroupResultCommand> findOdoListForWaveByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params);
+
+    /**
+     * [业务方法]出库单分组列表
+     * 
+     * @param command
+     * @return
+     */
+    List<OdoResultCommand> findOdoCommandListForWave(OdoSearchCommand command);
+
+    OdoWaveGroupResultCommand findOdoSummaryForWave(OdoWaveGroupSearchCommand command);
+
+    /**
+     * [业务方法]出库单分组列表
+     * 
+     * @param search
+     * @return
+     */
+    List<WhOdo> findOdoListForWave(OdoSearchCommand search);
+
+    /**
+     * [通用方法]根据组别查找单位
+     * 
+     * @param groupCode
+     * @param lifecycle
+     * @return
+     */
+    List<UomCommand> findUomByGroupCode(String groupCode, Integer lifecycle);
+
+    /**
+     * 查找商品信息
+     * 
+     * @param skuId
+     * @param ouId
+     * @return
+     */
+    Sku findSkuByIdToShard(Long skuId, Long ouId);
+
+    /**
+     * [通用方法]查找波次主档
+     * 
+     * @param waveMasterId
+     * @param ouId
+     * @return
+     */
+    WhWaveMaster findWaveMasterByIdouId(Long waveMasterId, Long ouId);
+
+    /**
+     * [通用方法]
+     * 
+     * @param wave
+     * @param waveLineList
+     * @param odoMap
+     * @param odolineList
+     * @param userId
+     * @param logId
+     */
+    void createOdoWave(WhWave wave, List<WhWaveLine> waveLineList, Map<Long, WhOdo> odoMap, List<WhOdoLine> odolineList, Long userId, String logId);
 }

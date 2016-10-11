@@ -1,15 +1,17 @@
-package com.baozun.scm.primservice.whoperation.command.odo;
+package com.baozun.scm.primservice.whoperation.command.odo.wave;
 
 import java.util.List;
 
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
 
-public class OdoSearchCommand extends BaseCommand {
+public class OdoWaveGroupSearchCommand extends BaseCommand {
 
     /**
      * 
      */
-    private static final long serialVersionUID = 2989171570103313915L;
+    private static final long serialVersionUID = -1178828741164568705L;
+
+    // --------------------------
     private String odoCode;
     private String extCode;
     private List<String> odoStatus;
@@ -70,30 +72,29 @@ public class OdoSearchCommand extends BaseCommand {
     private boolean needStore;
     private boolean needDeliverGoodsTime;
     private String pageOption;
-
+    // ---------------------------
     private Long ouId;
     private Long userId;
-    private Long groupCustomerId;
-    private Long groupStoreId;
-    private String groupOdoStatus;
+    // --------------------------分组条件
+    private Boolean isCustomer;
 
-    // 限制行
-    private Integer lineNum;
+    private Boolean isStore;
 
-    public Integer getLineNum() {
-        return lineNum;
+    private Boolean isOdoStatus;
+
+    // ------------------用于创建出库单字段
+    private List<OdoWaveGroupSearchCondition> conditionList;
+
+    private List<Long> odoIdList;
+
+    private Long waveMasterId;
+
+    public Long getWaveMasterId() {
+        return waveMasterId;
     }
 
-    public void setLineNum(Integer lineNum) {
-        this.lineNum = lineNum;
-    }
-
-    public String getGroupOdoStatus() {
-        return groupOdoStatus;
-    }
-
-    public void setGroupOdoStatus(String groupOdoStatus) {
-        this.groupOdoStatus = groupOdoStatus;
+    public void setWaveMasterId(Long waveMasterId) {
+        this.waveMasterId = waveMasterId;
     }
 
     public Long getUserId() {
@@ -104,20 +105,36 @@ public class OdoSearchCommand extends BaseCommand {
         this.userId = userId;
     }
 
-    public Long getGroupCustomerId() {
-        return groupCustomerId;
+    public Long getOuId() {
+        return ouId;
     }
 
-    public void setGroupCustomerId(Long groupCustomerId) {
-        this.groupCustomerId = groupCustomerId;
+    public void setOuId(Long ouId) {
+        this.ouId = ouId;
     }
 
-    public Long getGroupStoreId() {
-        return groupStoreId;
+    public Boolean getIsCustomer() {
+        return isCustomer;
     }
 
-    public void setGroupStoreId(Long groupStoreId) {
-        this.groupStoreId = groupStoreId;
+    public void setIsCustomer(Boolean isCustomer) {
+        this.isCustomer = isCustomer;
+    }
+
+    public Boolean getIsStore() {
+        return isStore;
+    }
+
+    public void setIsStore(Boolean isStore) {
+        this.isStore = isStore;
+    }
+
+    public Boolean getIsOdoStatus() {
+        return isOdoStatus;
+    }
+
+    public void setIsOdoStatus(Boolean isOdoStatus) {
+        this.isOdoStatus = isOdoStatus;
     }
 
     public String getOdoCode() {
@@ -168,6 +185,14 @@ public class OdoSearchCommand extends BaseCommand {
         this.outboundTargetType = outboundTargetType;
     }
 
+    public List<String> getOdoType() {
+        return odoType;
+    }
+
+    public void setOdoType(List<String> odoType) {
+        this.odoType = odoType;
+    }
+
     public List<String> getStoreId() {
         return storeId;
     }
@@ -190,6 +215,14 @@ public class OdoSearchCommand extends BaseCommand {
 
     public void setModeOfTransport(List<String> modeOfTransport) {
         this.modeOfTransport = modeOfTransport;
+    }
+
+    public List<Long> getTransportServiceProvider() {
+        return transportServiceProvider;
+    }
+
+    public void setTransportServiceProvider(List<Long> transportServiceProvider) {
+        this.transportServiceProvider = transportServiceProvider;
     }
 
     public List<String> getTransportServiceProviderType() {
@@ -296,12 +329,28 @@ public class OdoSearchCommand extends BaseCommand {
         this.deliverGoodsTimeEnd = deliverGoodsTimeEnd;
     }
 
+    public Integer getIncludeFragileCargo() {
+        return includeFragileCargo;
+    }
+
+    public void setIncludeFragileCargo(Integer includeFragileCargo) {
+        this.includeFragileCargo = includeFragileCargo;
+    }
+
     public List<String> getCrossDockingSysmbol() {
         return crossDockingSysmbol;
     }
 
     public void setCrossDockingSysmbol(List<String> crossDockingSysmbol) {
         this.crossDockingSysmbol = crossDockingSysmbol;
+    }
+
+    public Integer getIsWholeOrderOutbound() {
+        return isWholeOrderOutbound;
+    }
+
+    public void setIsWholeOrderOutbound(Integer isWholeOrderOutbound) {
+        this.isWholeOrderOutbound = isWholeOrderOutbound;
     }
 
     public String getSkuCode() {
@@ -520,52 +569,12 @@ public class OdoSearchCommand extends BaseCommand {
         this.maxExpDateEnd = maxExpDateEnd;
     }
 
-    public List<String> getOdoType() {
-        return odoType;
-    }
-
-    public void setOdoType(List<String> odoType) {
-        this.odoType = odoType;
-    }
-
-    public Integer getIncludeFragileCargo() {
-        return includeFragileCargo;
-    }
-
-    public void setIncludeFragileCargo(Integer includeFragileCargo) {
-        this.includeFragileCargo = includeFragileCargo;
-    }
-
-    public Integer getIsWholeOrderOutbound() {
-        return isWholeOrderOutbound;
-    }
-
-    public void setIsWholeOrderOutbound(Integer isWholeOrderOutbound) {
-        this.isWholeOrderOutbound = isWholeOrderOutbound;
-    }
-
-    public List<Long> getTransportServiceProvider() {
-        return transportServiceProvider;
-    }
-
-    public void setTransportServiceProvider(List<Long> transportServiceProvider) {
-        this.transportServiceProvider = transportServiceProvider;
-    }
-
     public String getIds() {
         return ids;
     }
 
     public void setIds(String ids) {
         this.ids = ids;
-    }
-
-    public Long getOuId() {
-        return ouId;
-    }
-
-    public void setOuId(Long ouId) {
-        this.ouId = ouId;
     }
 
     public boolean isNeedOutboundCartonType() {
@@ -606,6 +615,22 @@ public class OdoSearchCommand extends BaseCommand {
 
     public void setPageOption(String pageOption) {
         this.pageOption = pageOption;
+    }
+
+    public List<OdoWaveGroupSearchCondition> getConditionList() {
+        return conditionList;
+    }
+
+    public void setConditionList(List<OdoWaveGroupSearchCondition> conditionList) {
+        this.conditionList = conditionList;
+    }
+
+    public List<Long> getOdoIdList() {
+        return odoIdList;
+    }
+
+    public void setOdoIdList(List<Long> odoIdList) {
+        this.odoIdList = odoIdList;
     }
 
 }

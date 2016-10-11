@@ -25,9 +25,11 @@ import com.baozun.scm.primservice.whoperation.model.BaseModel;
  */
 public class WhWave extends BaseModel {
 
-	private static final long serialVersionUID = 4565349216060760167L;
-	
-	// columns START
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 5959293224178918951L;
+    // columns START
     /** 波次主档编码 */
     private String code;
     /** 波次状态，系统常量 */
@@ -51,13 +53,13 @@ public class WhWave extends BaseModel {
     /** 出库单明细总行数 */
     private Integer totalOdoLineQty;
     /** 总金额 */
-    private Long totalAmount;
+    private Double totalAmount;
     /** 总体积 */
-    private Long totalVolume;
+    private Double totalVolume;
     /** 总重量 */
-    private Long totalWeight;
+    private Double totalWeight;
     /** 商品总件数 */
-    private Integer totalSkuQty;
+    private Double totalSkuQty;
     /** 商品种类数 */
     private Integer skuCategoryQty;
     /** 工作总单数 */
@@ -80,6 +82,8 @@ public class WhWave extends BaseModel {
     private Long modifiedId;
     /** 是否启用 1:启用 0:停用 */
     private Integer lifecycle;
+    /** 是否运行波次 0：否 1：是 */
+    private Boolean isRunWave;
 
     // columns END
 
@@ -171,36 +175,20 @@ public class WhWave extends BaseModel {
         this.totalOdoLineQty = totalOdoLineQty;
     }
 
-    public Long getTotalAmount() {
-        return totalAmount;
-    }
-
-    public void setTotalAmount(Long totalAmount) {
-        this.totalAmount = totalAmount;
-    }
-
-    public Long getTotalVolume() {
+    public Double getTotalVolume() {
         return totalVolume;
     }
 
-    public void setTotalVolume(Long totalVolume) {
+    public void setTotalVolume(Double totalVolume) {
         this.totalVolume = totalVolume;
     }
 
-    public Long getTotalWeight() {
+    public Double getTotalWeight() {
         return totalWeight;
     }
 
-    public void setTotalWeight(Long totalWeight) {
+    public void setTotalWeight(Double totalWeight) {
         this.totalWeight = totalWeight;
-    }
-
-    public Integer getTotalSkuQty() {
-        return totalSkuQty;
-    }
-
-    public void setTotalSkuQty(Integer totalSkuQty) {
-        this.totalSkuQty = totalSkuQty;
     }
 
     public Integer getSkuCategoryQty() {
@@ -289,6 +277,30 @@ public class WhWave extends BaseModel {
 
     public void setLifecycle(Integer lifecycle) {
         this.lifecycle = lifecycle;
+    }
+
+    public Double getTotalAmount() {
+        return totalAmount;
+    }
+
+    public void setTotalAmount(Double totalAmount) {
+        this.totalAmount = totalAmount;
+    }
+
+    public Double getTotalSkuQty() {
+        return totalSkuQty;
+    }
+
+    public void setTotalSkuQty(Double totalSkuQty) {
+        this.totalSkuQty = totalSkuQty;
+    }
+
+    public Boolean getIsRunWave() {
+        return isRunWave;
+    }
+
+    public void setIsRunWave(Boolean isRunWave) {
+        this.isRunWave = isRunWave;
     }
 
 

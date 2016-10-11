@@ -28,6 +28,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	sku_name as skuName,
 	        	ext_sku_name as extSkuName,
 	        	qty as qty,
+	        	allocate_qty as allocateQty,
 	        	is_whole_order_outbound as isWholeOrderOutbound,
 	        	full_line_outbound as fullLineOutbound,
 	        	mfg_date as mfgDate,
@@ -259,7 +260,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        sku_bar_code = #{skuBarCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        sku_name = #{skuName,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        ext_sku_name = #{extSkuName,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        qty = #{qty,javaType=Long,jdbcType=DECIMAL} ,
+			        qty = #{qty,javaType=Double,jdbcType=DECIMAL} ,
 			        is_whole_order_outbound = #{isWholeOrderOutbound,javaType=java.lang.Boolean,jdbcType=BIT} ,
 			        full_line_outbound = #{fullLineOutbound,javaType=java.lang.Boolean,jdbcType=BIT} ,
 			        mfg_date = #{mfgDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
@@ -282,7 +283,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-			        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
+			        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        allocateQty = #{allocateQty,javaType=Double,jdbcType=DECIMAL} ,
 		        WHERE 
 			        id = #{id} 
 			        and ou_id = #{ouId} 

@@ -53,6 +53,8 @@ public class WhOdoLine extends BaseModel {
     private String extSkuName;
     /** 计划数量 */
     private Double qty;
+    /** 计划数量 */
+    private Double planQty;
     /** 本次出库数量 */
     private Double currentQty;
     /** 实际出库数量 */
@@ -127,11 +129,20 @@ public class WhOdoLine extends BaseModel {
     private Date lastModifyTime;
     /** 操作人ID */
     private Long modifiedId;
-
+    /** 波次号 */
+    private String waveCode;
     // columns END
 
     public Long getOdoId() {
         return odoId;
+    }
+
+    public String getWaveCode() {
+        return waveCode;
+    }
+
+    public void setWaveCode(String waveCode) {
+        this.waveCode = waveCode;
     }
 
     public void setOdoId(Long odoId) {
@@ -505,4 +516,13 @@ public class WhOdoLine extends BaseModel {
     public void setModifiedId(Long modifiedId) {
         this.modifiedId = modifiedId;
     }
+
+    public Double getPlanQty() {
+        return planQty;
+    }
+
+    public void setPlanQty(Double planQty) {
+        this.planQty = planQty;
+    }
+
 }
