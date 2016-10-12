@@ -587,7 +587,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					left join t_wh_sku_inventory_sn sn on inv.uuid = sn.uuid
 					where 
 						inv.occupation_code is not null 
-						inv.location_id is null
+						and inv.location_id is null 
 						and asn.asn_code = inv.occupation_code
 						and (asn.status=5 or asn.status=10)
 					    and inv.ou_id = #{ouid}

@@ -694,6 +694,8 @@ public class ErrorCodes {
     
     /** 未找到外部容器对应的内部容器id */
     public static final int CONTAINER_NOT_FOUND_INSIDE_CONTAINER_ID = 70036;
+    /** 库位为静态库位，没有绑定对应的sku商品，不能上架 */
+    public static final int PDA_MAN_MADE_PUTAWAY_STATICLOCATION_NOT_SKU = 70026;
     
     
     

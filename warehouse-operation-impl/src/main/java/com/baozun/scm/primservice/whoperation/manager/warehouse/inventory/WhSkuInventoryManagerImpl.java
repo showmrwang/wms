@@ -1280,7 +1280,11 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 log.error("insideContainerId is null error, logId is:[{}]", logId);
                 throw new BusinessException(ErrorCodes.COMMON_INSIDE_CONTAINER_IS_NOT_EXISTS);
             }
-            invList = whSkuInventoryDao.findLocToBeFilledInventoryByInsideContainerIdAndLocId(ouId, insideContainerId, loc.getId());
+//            invList = whSkuInventoryDao.findLocToBeFilledInventoryByInsideContainerIdAndLocId(ouId, insideContainerId, loc.getId());
+            invList = whSkuInventoryDao.findContainerOnHandInventoryByInsideContainerId(ouId, insideContainerId);
+            if(null == invList || 0 == invList.size()) {
+                invList = whSkuInventoryDao.findContainerOnHandInventoryByOuterContainerId(ouId, containerId);
+            }
             if (null == invList || 0 == invList.size()) {
                 log.error("sys guide container putaway container:[{}] rcvd inventory not found error!, logId is:[{}]", insideContainerCode, logId);
                 throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_RCVD_INV_ERROR, new Object[] {insideContainerCode});
@@ -1504,19 +1508,21 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             isBM = (null == loc.getIsBatchMgt() ? false : loc.getIsBatchMgt());
             isVM = (null == loc.getIsValidMgt() ? false : loc.getIsValidMgt());
             List<WhSkuInventoryCommand> invList = null;
-            // 根据容器号查询所有库位待移入库存信息
             if (WhPutawayPatternDetailType.PALLET_PUTAWAY == putawayPatternDetailType) {
                 if (null == containerId) {
                     log.error("containerId is null error, logId is:[{}]", logId);
                     throw new BusinessException(ErrorCodes.COMMON_INSIDE_CONTAINER_IS_NOT_EXISTS);
                 }
-                invList = whSkuInventoryDao.findLocToBeFilledInventoryByOuterContainerIdAndLocId(ouId, containerId, loc.getId());
+                invList = whSkuInventoryDao.findContainerOnHandInventoryByOuterContainerId(ouId, containerId);
             } else if (WhPutawayPatternDetailType.CONTAINER_PUTAWAY == putawayPatternDetailType) {
                 if (null == insideContainerId) {
                     log.error("insideContainerId is null error, logId is:[{}]", logId);
                     throw new BusinessException(ErrorCodes.COMMON_INSIDE_CONTAINER_IS_NOT_EXISTS);
                 }
-                invList = whSkuInventoryDao.findLocToBeFilledInventoryByInsideContainerIdAndLocId(ouId, insideContainerId, loc.getId());
+                invList = whSkuInventoryDao.findContainerOnHandInventoryByInsideContainerId(ouId, insideContainerId);
+                if(null == invList || 0 == invList.size()) {
+                    invList = whSkuInventoryDao.findContainerOnHandInventoryByOuterContainerId(ouId, containerId);
+                }
             } else {
                 log.error("param putawayPatternDetailType is invalid, logId is:[{}]", logId);
                 throw new BusinessException(ErrorCodes.PARAMS_ERROR);

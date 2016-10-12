@@ -167,14 +167,13 @@ public class PdaManmadePutawayCacheManagerImpl extends BaseManagerImpl implement
     public List<WhSkuInventory> manMadePutwayCacheSkuInventory(Long containerId, Long ouId, int putawayPatternDetailType) {
         // TODO Auto-generated method stub
         List<WhSkuInventory> whskuList = cacheManager.getMapObject(CacheKeyConstant.MAN_MADE_PUTWAY_CHCHE_SKU_INVENTORY,containerId.toString());
-        int length = whskuList.size();
-        if(null == whskuList || length == 0) {
+        if(null == whskuList || whskuList.size() == 0) {
             // 验证是否外部容器
             if (putawayPatternDetailType == WhPutawayPatternDetailType.PALLET_PUTAWAY) {
                 whskuList = whSkuInventoryDao.findWhSkuInventoryByCId(ouId, null, containerId);  //整托
             } else{
                 whskuList = whSkuInventoryDao.findWhSkuInventoryByCId(ouId, containerId, null);  //整箱
-                if(null == whskuList || length == 0) {
+                if(null == whskuList || whskuList.size() == 0) {
                     whskuList = whSkuInventoryDao.findWhSkuInventoryByCId(ouId, null, containerId);  //整箱
                 }
             }
