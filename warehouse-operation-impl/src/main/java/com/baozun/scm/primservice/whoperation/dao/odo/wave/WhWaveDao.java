@@ -27,12 +27,24 @@ import lark.orm.dao.supports.BaseDao;
 import org.apache.ibatis.annotations.Param;
 
 import com.baozun.scm.primservice.whoperation.command.odo.wave.SoftAllocationCommand;
+import com.baozun.scm.primservice.whoperation.command.odo.wave.WaveCommand;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
 
 public interface WhWaveDao extends BaseDao<WhWave, Long> {
 
     @QueryPage("findListCountByQueryMap")
     Pagination<WhWave> findListByQueryMapWithPage(Page page, Sort[] sorts, Map<String, Object> params);
+
+    /**
+     * [业务方法]波次一览
+     * 
+     * @param page
+     * @param sorts
+     * @param params
+     * @return
+     */
+    @QueryPage("findListCountByQueryMapExt")
+    Pagination<WaveCommand> findListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params);
 
     @CommonQuery
     int saveOrUpdate(WhWave o);

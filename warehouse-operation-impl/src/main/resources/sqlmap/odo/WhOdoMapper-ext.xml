@@ -744,8 +744,8 @@
 			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        last_modify_time = now() ,
-			        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
-			        waveCode = #{waveCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        waveCode = #{waveCode,javaType=java.lang.String,jdbcType=VARCHAR} 
            
         ]]>
 		<where>

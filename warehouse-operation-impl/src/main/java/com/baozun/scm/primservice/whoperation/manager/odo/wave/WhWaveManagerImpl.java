@@ -156,6 +156,6 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
 
     @Override
     public Pagination<WaveCommand> findWaveListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params) {
-        return null;
+        return this.whWaveDao.findListByQueryMapWithPageExt(page, sorts, params);
     }
 }
