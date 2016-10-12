@@ -781,6 +781,7 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
                 search.setGroupCustomerId(gsc.getCustomerId());
                 search.setGroupOdoStatus(gsc.getOdoStatus());
                 search.setGroupStoreId(gsc.getStoreId());
+                search.setLineFlag(true);
                 List<WhOdo> liOdoList = this.odoManager.findOdoListForWave(search);
                 if(liOdoList!=null&&liOdoList.size()>0){
                     for (WhOdo odo : liOdoList) {

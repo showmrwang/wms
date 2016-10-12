@@ -499,7 +499,7 @@
 						#{s}
 					</foreach>
 				</if>
-				<if test="dcountryOfOrigin!=null and countryOfOrigin!=''">
+				<if test="countryOfOrigin!=null and countryOfOrigin!=''">
 					and odoline.country_of_origin LIKE #{countryOfOrigin}
 				</if>
 				<if test="batchNumber!=null and batchNumber!=''">
@@ -967,7 +967,6 @@
 			count(distinct odo.store_id) as storeCount,
 			count(distinct odo.odo_type) as odoTypeCount
 		from t_wh_odo_line odoLine
-		inner join t_wh_odo odo on odoLine.odo_id=odo.id
 		inner join t_wh_odo odo on odoLine.odo_id=odo.id
 		left join t_wh_odo_address address on address.odo_id=odo.id
 		left join t_wh_odo_transport_mgmt transmgmt on transmgmt.odo_id=odo.id

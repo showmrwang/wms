@@ -79,6 +79,17 @@ public class OdoSearchCommand extends BaseCommand {
 
     // 限制行
     private Integer lineNum;
+    // 是否行检索
+    private Boolean lineFlag;
+
+
+    public Boolean getLineFlag() {
+        return lineFlag;
+    }
+
+    public void setLineFlag(Boolean lineFlag) {
+        this.lineFlag = lineFlag;
+    }
 
     public Integer getLineNum() {
         return lineNum;
