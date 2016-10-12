@@ -8,6 +8,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<resultMap id="WhWaveResultExt"
 		type="com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave">
 	</resultMap>
+	
+	<resultMap id="WhWaveCommand"
+		type="com.baozun.scm.primservice.whoperation.command.odo.wave.WaveCommand">
+	</resultMap>
 
 	<resultMap id="SoftAllocationCommand"
 		type="com.baozun.scm.primservice.whoperation.command.odo.wave.SoftAllocationCommand">
@@ -342,5 +346,17 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		GROUP BY
 			waveline.skuId
 	</select>
+	
+	 <select id="findListByQueryMapWithPageExt" resultMap="WhWaveResult">
+    	select <include refid="whWaveColumns" />
+	    from t_wh_wave 
+		<include refid="whWaveDynamicWhere"/>
+		
+    </select>
+    
+      <select id="findListCountByQueryMapExt" resultType="long">
+        select count(*) from t_wh_wave 
+		<include refid="whWaveDynamicWhere"/>    
+    </select>
 	
 </mapper>
