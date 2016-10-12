@@ -349,7 +349,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	
 	 <select id="findListByQueryMapWithPageExt" resultMap="WhWaveResult">
     	select <include refid="whWaveColumns" />
-	    from t_wh_wave 
+	    from t_wh_wave wave
+	    left join oper_user user1 on user1.id=odo.created_id
 		<include refid="whWaveDynamicWhere"/>
 		
     </select>

@@ -391,16 +391,24 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                 List<OdoWaveGroupResultCommand> list = pages.getItems();
                 if (list != null && list.size() > 0) {
                     for (OdoWaveGroupResultCommand command : list) {
-                        dic1.add(command.getOdoStatus());
-                        customerIdSet.add(command.getCustomerId());
-                        storeIdSet.add(command.getStoreId());
+                        if (StringUtils.hasText(command.getOdoStatus())) {
+                            dic1.add(command.getOdoStatus());
+                        }
+                        if (command.getCustomerId() != null) {
+                            customerIdSet.add(command.getCustomerId());
+                        }
+                        if (command.getStoreId() != null) {
+                            storeIdSet.add(command.getStoreId());
+                        }
                     }
                     Map<String, List<String>> map = new HashMap<String, List<String>>();
-                    map.put(Constants.ODO_STATUS, new ArrayList<String>(dic1));
+                    if (dic1.size() > 0) {
+                        map.put(Constants.ODO_STATUS, new ArrayList<String>(dic1));
+                    }
+                    Map<String, SysDictionary> dicMap = map.size() > 0 ? this.findSysDictionaryByRedis(map) : null;
 
-                    Map<String, SysDictionary> dicMap = this.findSysDictionaryByRedis(map);
-                    Map<Long, Customer> customerMap = this.findCustomerByRedis(new ArrayList<Long>(customerIdSet));
-                    Map<Long, Store> storeMap = this.findStoreByRedis(new ArrayList<Long>(storeIdSet));
+                    Map<Long, Customer> customerMap = customerIdSet.size() > 0 ? this.findCustomerByRedis(new ArrayList<Long>(customerIdSet)) : null;
+                    Map<Long, Store> storeMap = storeIdSet.size() > 0 ? this.findStoreByRedis(new ArrayList<Long>(storeIdSet)) : null;
                     for (OdoWaveGroupResultCommand command : list) {
                         String groupName = "";
                         if (command.getCustomerId() != null) {
