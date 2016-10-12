@@ -15,6 +15,7 @@ import com.baozun.scm.primservice.whoperation.command.odo.OdoSearchCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.WhOdoVasCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.OdoWaveGroupResultCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.OdoWaveGroupSearchCommand;
+import com.baozun.scm.primservice.whoperation.command.odo.wave.WaveCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
@@ -215,10 +216,20 @@ public interface OdoManagerProxy extends BaseManager {
     OdoWaveGroupResultCommand findOdoSummaryForWave(OdoWaveGroupSearchCommand command);
 
     /**
-     * [出库单创建波次]
+     * [业务方法]出库单创建波次
      * 
      * @param command
      * @return 返回波次号
      */
     String createOdoWave(OdoWaveGroupSearchCommand command);
+
+    /**
+     * [业务方法]波次一览
+     * 
+     * @param page
+     * @param sorts
+     * @param params
+     * @return
+     */
+    Pagination<WaveCommand> findWaveListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params);
 }

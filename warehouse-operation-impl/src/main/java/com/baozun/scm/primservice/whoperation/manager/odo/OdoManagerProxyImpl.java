@@ -35,6 +35,7 @@ import com.baozun.scm.primservice.whoperation.command.odo.WhOdoVasCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.OdoWaveGroupResultCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.OdoWaveGroupSearchCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.OdoWaveGroupSearchCondition;
+import com.baozun.scm.primservice.whoperation.command.odo.wave.WaveCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.UomCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
@@ -48,6 +49,7 @@ import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoLineManager
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoTransportMgmtManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoVasManager;
+import com.baozun.scm.primservice.whoperation.manager.odo.wave.WhWaveManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.InventoryStatusManager;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
@@ -83,6 +85,8 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
     private OdoVasManager odoVasManager;
     @Autowired
     private InventoryStatusManager inventoryStatusManager;
+    @Autowired
+    private WhWaveManager waveManager;
 
     @Override
     public Pagination<OdoResultCommand> findOdoListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params) {
@@ -1006,6 +1010,11 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
         }
         this.odoManager.createOdoWave(wave, waveLineList, odoMap, odolineList, userId, logId);
         return waveCode;
+    }
+
+    @Override
+    public Pagination<WaveCommand> findWaveListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params) {
+        return this.waveManager.findWaveListByQueryMapWithPageExt(page, sorts, params);
     }
 
 }
