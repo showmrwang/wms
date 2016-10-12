@@ -16,7 +16,6 @@ package com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -30,6 +29,7 @@ public class ManMadeContainerStatisticCommand extends BaseCommand {
 
     private static final long serialVersionUID = -9120270662713405423L;
 
+    
     /** 上架类型 */
     private int putawayPatternDetailType;
     /** 外部容器id */
@@ -65,6 +65,7 @@ public class ManMadeContainerStatisticCommand extends BaseCommand {
     Map<String, Double> weightUomConversionRate = new HashMap<String, Double>();  //重量，度量单位转换率
     /** 内部容器单个sku总件数 */
     Map<Long, Map<Long, Long>> insideContainerSkuIdsQty = new HashMap<Long, Map<Long, Long>>();
+    Map<Long, Long> insideContainerSkuQty = new HashMap<Long, Long>();// 内部容器所有sku总件数
 
 
     public int getPutawayPatternDetailType() {
@@ -209,6 +210,14 @@ public class ManMadeContainerStatisticCommand extends BaseCommand {
 
     public void setInsideContainerIdSkuIds(Map<Long, Set<Long>> insideContainerIdSkuIds) {
         this.insideContainerIdSkuIds = insideContainerIdSkuIds;
+    }
+
+    public Map<Long, Long> getInsideContainerSkuQty() {
+        return insideContainerSkuQty;
+    }
+
+    public void setInsideContainerSkuQty(Map<Long, Long> insideContainerSkuQty) {
+        this.insideContainerSkuQty = insideContainerSkuQty;
     }
 
     

@@ -64,6 +64,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			inv.store_id as storeId,
 			inv.occupation_code as occupationCode,
 			inv.on_hand_qty as onHandQty,
+			inv.allocated_qty as allocatedQty,
+	        inv.to_be_filled_qty as toBeFilledQty,
 			inv.frozen_qty as frozenQty,
 			inv.inv_status as invStatus,
 			inv.inv_type as invType,
@@ -585,6 +587,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					left join t_wh_sku_inventory_sn sn on inv.uuid = sn.uuid
 					where 
 						inv.occupation_code is not null 
+						inv.location_id is null
 						and asn.asn_code = inv.occupation_code
 						and (asn.status=5 or asn.status=10)
 					    and inv.ou_id = #{ouid}
@@ -1963,5 +1966,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					 and inv.outer_container_id = #{outerContainerId} 
 				 </if>
   	</select>
+  	
+  	    <select id="findWhSkuInventoryCountByInsideContainerId" resultType="Integer">
+		select count(1) from t_wh_sku_inventory inv,t_wh_asn asn where inv.occupation_code is not null and inv.location_id is null and inv.on_hand_qty > 0.0 
+			and inv.ou_id=#{ouId}
+			and inv.occupation_code=asn.asn_code and (asn.status=5 or asn.status=10)
+			and inv.inside_container_id=#{insideContainerId}
+	</select>
 
 </mapper>

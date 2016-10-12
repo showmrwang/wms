@@ -39,7 +39,7 @@ public class PdaManMadePutawayCommand extends BaseCommand {
     private String containerCode;
     /** 容器ID */
     private Long containerId;
-    /** 是否外部容器库存 ,true时，外部容器,false时内部容器*/
+    /** 是否外部容器库存 ,true时，外部容器库存,false时内部容器库存*/
     private Boolean isOuterContainer;
     /** 对应功能ID */
     private Long functionId;
@@ -49,16 +49,18 @@ public class PdaManMadePutawayCommand extends BaseCommand {
     private String barCode;
     /** 库位编码 */
     private String locationCode;
-    
+    /**内部容器号*/
     private String insideContainerCode;
+    /**外部容器号*/
+    private String outerContainerCode;
     /** 扫描模式 逐件扫描 数量扫描 默认数量扫描 */
     private Integer scanPattern;
     /** 上架类型 */
     private Integer putawayPatternDetailType;
     /**是否上架*/
-    private Boolean putway;
+    private Boolean putway = false;
     /**托盘内是否还有没扫描到容器*/
-    private Boolean isNeedScanContainer;
+    private Boolean isNeedScanContainer = false;
     
     private Boolean isNeedScanSku;  //是否需要扫描sku
     
@@ -222,6 +224,14 @@ public class PdaManMadePutawayCommand extends BaseCommand {
 
     public void setPutawayPatternDetailType(Integer putawayPatternDetailType) {
         this.putawayPatternDetailType = putawayPatternDetailType;
+    }
+
+    public String getOuterContainerCode() {
+        return outerContainerCode;
+    }
+
+    public void setOuterContainerCode(String outerContainerCode) {
+        this.outerContainerCode = outerContainerCode;
     }
     
     

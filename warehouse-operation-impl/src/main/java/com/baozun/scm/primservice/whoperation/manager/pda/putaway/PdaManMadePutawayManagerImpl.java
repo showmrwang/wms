@@ -138,8 +138,10 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
             // 扫描容器
             this.manMandeScanContainer(ouId, container, logId,userId);
             containerId = container.getId();
+            pdaManMadePutawayCommand.setInsideContainerCode(pdaManMadePutawayCommand.getContainerCode());  //当前扫的是内部容器
             // 若为内部容器库存，则进入内部容器的相应判断
             WhFunctionPutAway whFunctionPutAway = whFunctionPutAwayManager.findWhFunctionPutAwayByFunctionId(functionId, ouId);
+            pdaManMadePutawayCommand.setScanPattern(whFunctionPutAway.getScanPattern());  //扫描方式
             if (whFunctionPutAway.getIsEntireBinPutaway()) { // 整箱上架
                 pdaManMadePutawayCommand.setPutawayPatternDetailType(WhPutawayPatternDetailType.CONTAINER_PUTAWAY);
                 // 判断托盘是否存在多个sku商品
@@ -168,6 +170,7 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
             if (manMandeCommand.getIsOuterContainer()) {
                 // 若为外部容器库存
                 WhFunctionPutAway whFunctionPutAway = whFunctionPutAwayManager.findWhFunctionPutAwayByFunctionId(functionId, ouId);
+                pdaManMadePutawayCommand.setScanPattern(whFunctionPutAway.getScanPattern());  //扫描方式
                 if (!whFunctionPutAway.getIsEntireTrayPutaway()) { // 不是整托上架,提示内部容器号,扫内部容器
                     pdaManMadePutawayCommand.setIsTipContainerCode(true);
                     return manMandeCommand;
@@ -190,6 +193,7 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
             } else {
                 // 若为内部容器库存，则进入内部容器的相应判断
                 WhFunctionPutAway whFunctionPutAway = whFunctionPutAwayManager.findWhFunctionPutAwayByFunctionId(functionId, ouId);
+                pdaManMadePutawayCommand.setScanPattern(whFunctionPutAway.getScanPattern());  //扫描方式
                 if (whFunctionPutAway.getIsEntireBinPutaway()) { // 整箱上架
                     manMandeCommand.setPutawayPatternDetailType(WhPutawayPatternDetailType.CONTAINER_PUTAWAY);
                     // 判断托盘是否存在多个sku商品
@@ -314,6 +318,7 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
             pdaManMadePutawayCommand.setInsideContainerCode(containerCode);
         }
         if (0 < outerContainerCount) {
+            pdaManMadePutawayCommand.setOuterContainerCode(containerCode);  //当前扫的是外部容器
             List<WhSkuInventoryCommand> skuInvList = whSkuInventoryDao.getSkuInvListByOutContainerID(ouId,containerId);
             WhSkuInventoryCommand skuInvCmd = skuInvList.get(0);
             if(null == skuInvCmd.getInsideContainerId()) { //内部容器库存
@@ -378,7 +383,7 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
         String locationCode = pdaManMadePutawayCommand.getLocationCode();
         Long functionId = pdaManMadePutawayCommand.getFunctionId();
         int putawayPatternDetailType = pdaManMadePutawayCommand.getPutawayPatternDetailType();
-        String outerContainerCode = pdaManMadePutawayCommand.getContainerCode();
+        String outerContainerCode = pdaManMadePutawayCommand.getOuterContainerCode();
         String insideContainerCode = pdaManMadePutawayCommand.getInsideContainerCode();
         ContainerCommand insideCommand = null;
         if(!StringUtil.isEmpty(insideContainerCode)) {
@@ -794,12 +799,12 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
             }
             // 库位已有商品重量加要上架货物的重量
             Double sum = livwWeight + putwayWeight;
-            if (locWeight > sum) {
+            if (locWeight < sum) {
                 throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_LOCATION_UNBEAR_WEIGHT); // 容器总重量已经超过库位的承重,请更换库位进行上架
             }
         }
         // 整箱上架
-        if (WhPutawayPatternDetailType.PALLET_PUTAWAY == putawayPatternDetailType) {
+        if (WhPutawayPatternDetailType.CONTAINER_PUTAWAY == putawayPatternDetailType) {
             Double putwayWeight = madeContainer.getInsideContainerWeight();
             Long insideContainerId = madeContainer.getInsideContainerId();
             Map<Long, Double> insideContainersWeight = madeContainer.getInsideContainersWeight();
@@ -990,7 +995,7 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
         // TODO Auto-generated method stub
         log.info("PdaManMadePutwayManagerImpl manScanInsideContainer start");
         String insideContainerCode = pdaManMadePutawayCommand.getInsideContainerCode();
-        String outerContainerCode = pdaManMadePutawayCommand.getContainerCode();
+        String outerContainerCode = pdaManMadePutawayCommand.getOuterContainerCode();
         Long outerContainerId = pdaManMadePutawayCommand.getContainerId(); // 外部容器id
         Long functionId = pdaManMadePutawayCommand.getFunctionId();
         Long locationId = pdaManMadePutawayCommand.getLocationId();
@@ -1002,39 +1007,36 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
             throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
         }
         // 验证容器Lifecycle是否有效
-        if (outCommand.getLifecycle().equals(ContainerStatus.CONTAINER_LIFECYCLE_FORBIDDEN)) {
+        if (!outCommand.getLifecycle().equals(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED)) {
             // 容器Lifecycle无效
-            log.error("pdaScanContainer container lifecycle error =" + outCommand.getLifecycle() + " logid: " + pdaManMadePutawayCommand.getLogId());
-            throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_LIFRCYCLE_ERROR);
+            log.error("pdaScanContainer container lifecycle error =" + outCommand.getLifecycle() + " logid: " + logId);
+            throw new BusinessException(ErrorCodes.COMMON_CONTAINER__NOT_PUTWAY);
         }
-        // 如果容器Lifecycle为占用 判断容器状态是否为待上架/可用状态
-        if (outCommand.getLifecycle().equals(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED)) {
-            if (!outCommand.getStatus().equals(ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY) && !outCommand.getStatus().equals(ContainerStatus.CONTAINER_STATUS_USABLE)) {
-                log.error("pdaScanContainer container status error =" + outCommand.getStatus() + " logid: " + pdaManMadePutawayCommand.getLogId());
-                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_STATUS_ERROR, new Object[] {outCommand.getStatus()});
-            }
+        // 验证容器状态是否是待上架
+        if (!(outCommand.getStatus().equals(ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY) || outCommand.getStatus().equals(ContainerStatus.CONTAINER_STATUS_PUTAWAY))) {
+                log.error("pdaScanContainer container status error =" + outCommand.getStatus() + " logid: " + logId);
+                throw new BusinessException(ErrorCodes.COMMON_CONTAINER__NOT_PUTWAY, new Object[] {outCommand.getStatus()});
         }
         
-        ContainerCommand container = containerDao.getContainerByCode(insideContainerCode, ouId);   //内部容器
-        if (null == container) {
+        ContainerCommand insideContainer = containerDao.getContainerByCode(insideContainerCode, ouId);   //内部容器
+        if (null == insideContainer) {
             // 容器信息不存在
             log.error("pdaScanContainer container is null logid: " + pdaManMadePutawayCommand.getLogId());
             throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
         }
         // 验证容器Lifecycle是否有效
-        if (container.getLifecycle().equals(ContainerStatus.CONTAINER_LIFECYCLE_FORBIDDEN)) {
+        if (!insideContainer.getLifecycle().equals(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED)) {
             // 容器Lifecycle无效
-            log.error("pdaScanContainer container lifecycle error =" + container.getLifecycle() + " logid: " + pdaManMadePutawayCommand.getLogId());
-            throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_LIFRCYCLE_ERROR);
+            log.error("pdaScanContainer container lifecycle error =" + insideContainer.getLifecycle() + " logid: " + logId);
+            throw new BusinessException(ErrorCodes.COMMON_CONTAINER__NOT_PUTWAY);
         }
-        // 如果容器Lifecycle为占用 判断容器状态是否为待上架/可用状态
-        if (container.getLifecycle().equals(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED)) {
-            if (!container.getStatus().equals(ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY) && !container.getStatus().equals(ContainerStatus.CONTAINER_STATUS_USABLE)) {
-                log.error("pdaScanContainer container status error =" + container.getStatus() + " logid: " + pdaManMadePutawayCommand.getLogId());
-                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_STATUS_ERROR, new Object[] {container.getStatus()});
-            }
+        // 验证容器状态是否是待上架
+        if (!(insideContainer.getStatus().equals(ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY) || insideContainer.getStatus().equals(ContainerStatus.CONTAINER_STATUS_PUTAWAY))) {
+                log.error("pdaScanContainer container status error =" + insideContainer.getStatus() + " logid: " + logId);
+                throw new BusinessException(ErrorCodes.COMMON_CONTAINER__NOT_PUTWAY, new Object[] {insideContainer.getStatus()});
         }
-        Long insideContainerId = container.getId(); // 内部容器ID
+        
+        Long insideContainerId = insideContainer.getId(); // 内部容器ID
         // 判断扫描的内部容器是否是托盘上的内部容器
         ManMadeContainerStatisticCommand madeContainer = cacheManager.getMapObject(CacheKeyConstant.MANMADE_PUTWAY_CACHE_CONTAINER, outerContainerId.toString());
         if (null == madeContainer) {
@@ -1050,13 +1052,13 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
         }
         // 缓存扫描的内部容器
         TipContainerCacheCommand tipCmd = new TipContainerCacheCommand();
-        tipCmd.setPutawayPatternDetailType(WhPutawayPatternDetailType.CONTAINER_PUTAWAY);
+        tipCmd.setPutawayPatternDetailType(WhPutawayPatternDetailType.PALLET_PUTAWAY);  //整托上架
         tipCmd.setOuterContainerId(outerContainerId);
-        tipCmd.setOuterContainerCode(pdaManMadePutawayCommand.getContainerCode());
+        tipCmd.setOuterContainerCode(pdaManMadePutawayCommand.getOuterContainerCode());
         ArrayDeque<Long> icIds = new ArrayDeque<Long>();
         icIds.addFirst(insideContainerId);
         tipCmd.setTipInsideContainerIds(icIds);
-        cacheManager.setObject(CacheConstants.SCAN_CONTAINER_QUEUE + insideContainerId.toString(), tipCmd, CacheConstants.CACHE_ONE_DAY);
+        cacheManager.setObject(CacheConstants.SCAN_CONTAINER_QUEUE + outerContainerId.toString(), tipCmd, CacheConstants.CACHE_ONE_DAY);
         WhFunctionPutAway putawyaFunc = whFunctionPutAwayManager.findWhFunctionPutAwayByFunctionId(functionId, ouId);
         if (null == putawyaFunc) {
             log.error("whFunctionPutaway is null error, logId is:[{}]", logId);
@@ -1088,7 +1090,7 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
             } else {// 不需要扫描sku,直接上架
                 pdaManMadePutawayCommand.setPutway(true);
              // 上架,清楚缓存
-                whSkuInventoryManager.manMadePutaway(outCommand, container, locationId, functionId, warehouse, pdaManMadePutawayCommand.getPutawayPatternDetailType(), ouId, pdaManMadePutawayCommand.getUserId(), logId);
+                whSkuInventoryManager.manMadePutaway(outCommand, insideContainer, locationId, functionId, warehouse, pdaManMadePutawayCommand.getPutawayPatternDetailType(), ouId, pdaManMadePutawayCommand.getUserId(), logId);
                 // 清楚缓存
                 pdaManmadePutawayCacheManager.manMadePalletPutawayRemoveAllCache(outCommand, logId);
             }
@@ -1112,7 +1114,7 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
         PdaManMadePutawayCommand resultCommand = new PdaManMadePutawayCommand();
         BeanUtils.copyProperties(pdaManMadePutawayCommand, resultCommand);
         String insideContainerCode = pdaManMadePutawayCommand.getInsideContainerCode();
-        String outerContainerCode = pdaManMadePutawayCommand.getContainerCode();
+        String outerContainerCode = pdaManMadePutawayCommand.getOuterContainerCode();
         Long functionId = pdaManMadePutawayCommand.getFunctionId();
         Long locationId = pdaManMadePutawayCommand.getLocationId();// 库位条码
         Long userId = pdaManMadePutawayCommand.getUserId();
@@ -1198,6 +1200,7 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
                 throw new BusinessException(ErrorCodes.COMMON_ONE_BY_ONE_SCAN_QTY_ERROR);
             }
         }
+//        cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + insideCommand.getId().toString() + skuId.toString());
         whSkuCommand.setId(skuId);
         whSkuCommand.setScanSkuQty(scanQty * cacheSkuQty);// 可能是多条码
         Boolean isCaselevelScanSku = (null == putawyaFunc.getIsCaselevelScanSku() ? false : putawyaFunc.getIsCaselevelScanSku());
@@ -1296,7 +1299,7 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
     public PdaManMadePutawayCommand containerPutwayScanSku(PdaManMadePutawayCommand pdaManMadePutawayCommand,Long ouId,WhSkuCommand skuCmd,Warehouse warehouse){
         log.info("PdaManMadePutwayManagerImpl containerPutwayScanSku start");
         String insideContainerCode = pdaManMadePutawayCommand.getInsideContainerCode();
-        String containerCode = pdaManMadePutawayCommand.getContainerCode();
+        String outerContainerCode = pdaManMadePutawayCommand.getOuterContainerCode();
         Long functionId = pdaManMadePutawayCommand.getFunctionId();
         int putawayPatternDetailType = pdaManMadePutawayCommand.getPutawayPatternDetailType();
         Long locationId = pdaManMadePutawayCommand.getLocationId();    //库位条码
@@ -1308,8 +1311,8 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
         //获取内部容器id
         Long insideContainerId = insideContainerCmd.getId();
         ContainerCommand outCommand = null;
-        if(!StringUtils.isEmpty(containerCode)) {
-            outCommand = containerDao.getContainerByCode(containerCode, ouId);  //根据容器编码查询外部容器
+        if(!StringUtils.isEmpty(outerContainerCode)) {
+            outCommand = containerDao.getContainerByCode(outerContainerCode, ouId);  //根据容器编码查询外部容器
         }
         //整箱上架：判断内部容器是否可以上架
         Integer containerStatus = insideContainerCmd.getStatus();
