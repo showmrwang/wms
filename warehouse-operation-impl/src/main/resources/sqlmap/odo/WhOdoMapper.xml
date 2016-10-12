@@ -209,7 +209,7 @@
 		        	#{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        	#{waveCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{waveCode,javaType=java.lang.String,jdbcType=VARCHAR}
                 )
             ]]>
 
