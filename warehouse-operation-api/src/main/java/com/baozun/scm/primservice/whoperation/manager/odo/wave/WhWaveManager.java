@@ -1,8 +1,14 @@
 package com.baozun.scm.primservice.whoperation.manager.odo.wave;
 
 import java.util.List;
+import java.util.Map;
+
+import lark.common.dao.Page;
+import lark.common.dao.Pagination;
+import lark.common.dao.Sort;
 
 import com.baozun.scm.primservice.whoperation.command.odo.wave.SoftAllocationCommand;
+import com.baozun.scm.primservice.whoperation.command.odo.wave.WaveCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
 
@@ -38,5 +44,15 @@ public interface WhWaveManager extends BaseManager {
      * @param ouId
      */
     public void updateWaveAfterSoftAllocate(Long waveId, Long ouId);
+
+    /**
+     * [业务方法]波次一览
+     * 
+     * @param page
+     * @param sorts
+     * @param params
+     * @return
+     */
+    public Pagination<WaveCommand> findWaveListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params);
 
 }

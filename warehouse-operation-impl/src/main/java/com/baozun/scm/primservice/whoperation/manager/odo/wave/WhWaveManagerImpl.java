@@ -7,6 +7,9 @@ import java.util.Map;
 import java.util.Set;
 
 import lark.common.annotation.MoreDB;
+import lark.common.dao.Page;
+import lark.common.dao.Pagination;
+import lark.common.dao.Sort;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.baozun.scm.primservice.whoperation.command.odo.wave.SoftAllocationCommand;
+import com.baozun.scm.primservice.whoperation.command.odo.wave.WaveCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.UomCommand;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.WaveStatus;
@@ -148,5 +152,10 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         wave.setTotalSkuQty(totalSkuQty);
         wave.setSkuCategoryQty(skuCategoryQty);
         this.whWaveDao.saveOrUpdateByVersion(wave);
+    }
+
+    @Override
+    public Pagination<WaveCommand> findWaveListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params) {
+        return null;
     }
 }
