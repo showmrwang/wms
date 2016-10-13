@@ -24,6 +24,7 @@ import com.baozun.scm.primservice.whoperation.constant.WaveStatus;
 import com.baozun.scm.primservice.whoperation.constant.WhUomType;
 import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveLineDao;
+import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveMasterDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoManager;
@@ -31,6 +32,7 @@ import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine;
+import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveMaster;
 import com.baozun.scm.primservice.whoperation.model.sku.Sku;
 
 @Service("whWaveManager")
@@ -45,6 +47,9 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
 
     @Autowired
     private OdoManager odoManager;
+
+    @Autowired
+    private WhWaveMasterDao whWaveMasterDao;
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
@@ -144,6 +149,13 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         wave.setId(waveId);
         wave.setOuId(ouId);
         wave = this.whWaveDao.findListByParam(wave).get(0);
+
+        // 获取下一个波次阶段
+        WhWaveMaster whWaveMaster = whWaveMasterDao.findByIdExt(wave.getWaveMasterId(), ouId);
+        Long waveTempletId = whWaveMaster.getWaveTemplateId();
+        String phaseCode = this.getWavePhaseCode(wave.getPhaseCode(), waveTempletId, ouId);
+        wave.setPhaseCode(phaseCode);
+
         wave.setTotalOdoQty(totalOdoQty);
         wave.setTotalOdoLineQty(totalOdoLineQty);
         wave.setTotalAmount(totalAmount);

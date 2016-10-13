@@ -776,7 +776,7 @@
 
 	<select id="findOdoMergableIds" resultType="string"
 		parameterType="java.lang.Long">
-		select concat(odo.odoId) as odoId from (
+		select group_concat(odo.odoId) as odoId from (
 		select
 		group_concat(odo.id) as
 		odoId,
