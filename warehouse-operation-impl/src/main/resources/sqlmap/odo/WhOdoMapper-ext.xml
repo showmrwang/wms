@@ -812,6 +812,8 @@
 			test="outboundCartonType!=null and outboundCartonType!='' and outboundCartonType ==1">
 			odo.outbound_carton_type,/**出库箱类型可选*/
 		</if>
+		odo.is_whole_order_outbound,/**是否整单出库*/
+		odo.part_outbound_strategy,/**部分出库策略*/
 
 		/**配送对象*/
 		address.distribution_target_name,
