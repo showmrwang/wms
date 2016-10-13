@@ -559,4 +559,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		waveLine.odo_order_time desc,waveLine.qty, waveLine.odo_id asc
 	</select>
 	
+	<delete id="removeWaveLineWhole" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from t_wh_wave_line line where
+		        line.wave_id = #{waveId} 
+				and line.odo_id = #{odoId}
+				and line.ou_id = #{ouId}
+	    ]]>
+	    </delete> 
+	
+	
 </mapper>
