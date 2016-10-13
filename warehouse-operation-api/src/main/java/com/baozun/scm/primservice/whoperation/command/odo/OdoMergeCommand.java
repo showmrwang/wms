@@ -9,8 +9,8 @@ public class OdoMergeCommand extends BaseCommand {
      */
     private static final long serialVersionUID = -6642649044530173292L;
 
-    /** 原始出库单id */
-    private String odoId;
+    /** 原始出库单ids */
+    private String odoIds;
 
     /** 组织id */
     private Long ouId;
@@ -28,12 +28,12 @@ public class OdoMergeCommand extends BaseCommand {
     private String originalOdoCode;
 
 
-    public String getOdoId() {
-        return odoId;
+    public String getOdoIds() {
+        return odoIds;
     }
 
-    public void setOdoId(String odoId) {
-        this.odoId = odoId;
+    public void setOdoIds(String odoIds) {
+        this.odoIds = odoIds;
     }
 
     public Long getOuId() {

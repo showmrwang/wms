@@ -253,6 +253,7 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
         return response;
     }
 
+
     /**
      * 1,新建新合并订单主档
      * 2,更新原订单状态
@@ -277,11 +278,11 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
         for (OdoMergeCommand odoMergeCommand : odoMergeCommandList) {
             List<OdoLineInfoCommand> whOdoLineInfoCommandList = new ArrayList<OdoLineInfoCommand>();
             count = 0;
-            if (null == odoMergeCommand.getOdoId() || !StringUtils.hasText(odoMergeCommand.getOdoId())) {
+            if (null == odoMergeCommand.getOdoIds() || !StringUtils.hasText(odoMergeCommand.getOdoIds())) {
                 throw new BusinessException("没有合并订单号");
             }
             // 可合并订单主档id列表
-            List<String> odoIds = Arrays.asList(odoMergeCommand.getOdoId().split(","));
+            List<String> odoIds = Arrays.asList(odoMergeCommand.getOdoIds().split(","));
             // 比较可合并订单数量:数量不匹配抛出异常
             Integer size = odoIds.size();
             if (1 == size) {
@@ -341,6 +342,8 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
         response.put("success", successMergeOdoIds);
         return response;
     }
+
+
 
     /**
      * 创建合并订单主档
@@ -665,5 +668,65 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
             }
         }
         return OdoCommandList;
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public WhOdo generalOdoMerge(OdoMergeCommand odoMergeCommand, Long ouId, Long userId) {
+        Integer count = 0;
+        List<OdoLineInfoCommand> whOdoLineInfoCommandList = new ArrayList<OdoLineInfoCommand>();
+        count = 0;
+        if (null == odoMergeCommand.getOdoIds() || !StringUtils.hasText(odoMergeCommand.getOdoIds())) {
+            throw new BusinessException("没有合并订单号");
+        }
+        // 可合并订单主档id列表
+        List<String> odoIds = Arrays.asList(odoMergeCommand.getOdoIds().split(","));
+        // 比较可合并订单数量:数量不匹配抛出异常
+        Integer size = odoIds.size();
+        if (1 == size) {
+            // 只有一个可合并出库订单, 不进行合并且记录到合并失败列表返回
+            return null;
+        }
+
+        if (null != odoMergeCommand.getCount()) {
+            count = odoMergeCommand.getCount().intValue();
+        }
+        if (size != count) {
+            throw new BusinessException("数量不对");
+        }
+        /** 1.生成合并订单主档 start */
+        WhOdo whOdo = this.createNewOdo(odoIds, odoMergeCommand, ouId, userId);
+        if (null == whOdo) {
+            throw new BusinessException("生成合并订单主档失败");
+        }
+        /** end */
+        // 合并订单code
+        String newOdoCode = whOdo.getOdoCode();
+        Long newOdoId = whOdo.getId();
+        for (int i = 0; i < size; i++) {
+            // 一个可合并订单的主档id
+            Long whOdoId = Long.parseLong(odoIds.get(i));
+            /** 2.更新可合并订单主档状态 start */
+            updateOriginalOdo(newOdoCode, whOdoId, ouId, userId);
+            /** end */
+
+            /** 3.新建新合并订单属性表以及配送对象表 start */
+            if (i == 0) {
+                // 在第一次执行新建合并订单属性及配送对象表
+                createNewOdoAddress(newOdoId, whOdoId, ouId);
+                createNewOdoAttr(newOdoId, whOdoId, ouId);
+                createNewTransportMgmt(newOdoId, whOdoId, ouId);
+            }
+            /** end */
+            /** 4,新建新合并订单明细行以及属性对象 5,更新原订单明细行以及属性 start */
+            whOdoLineInfoCommandList = this.createAndUpdateOdoLineObject(whOdoLineInfoCommandList, newOdoId, whOdoId, ouId, userId);
+            /** end */
+        }
+        /** 6,插入新建合并订单明细行及属性 start */
+        if (null != whOdoLineInfoCommandList && !whOdoLineInfoCommandList.isEmpty()) {
+            this.insertOdoLineObject(whOdoLineInfoCommandList);
+        }
+        /** end */
+        return whOdo;
     }
 }
