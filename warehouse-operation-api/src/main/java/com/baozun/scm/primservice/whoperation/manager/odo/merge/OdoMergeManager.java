@@ -42,7 +42,24 @@ public interface OdoMergeManager extends BaseManager {
     List<OdoCommand> findOdoList(String ids, Long ouId, String odoStatus);
 
     /**
-     * [通用方法] 合并订单
+     * [业务方法] 合并订单-传入可合并子订单列表->合并成多个订单 返回map<K, V>, Key是success或fail, Value是出库单ids
+     * 
+     * 1,新建新合并订单主档
+     * 2,更新原订单状态
+     * 3,新建新合并订单属性表以及配送对象表和运输商管理表
+     * 4,新建新合并订单明细行以及属性对象
+     * 5,更新原订单明细行以及属性
+     * 6,插入新建合并订单明细行及属性
+     *
+     * @param odoMergeCommandList
+     * @param ouId
+     * @param userId
+     * @return
+     */
+    Map<String, String> createNewOdoInfo(List<OdoMergeCommand> odoMergeCommandList, Long ouId, Long userId);
+
+    /**
+     * [通用方法] 合并订单-传入可合并子订单->合并成一个订单
      * @param odoMergeCommand 对象由whOdoDao.odoMerge查出
      * @param ouId
      * @param userId
