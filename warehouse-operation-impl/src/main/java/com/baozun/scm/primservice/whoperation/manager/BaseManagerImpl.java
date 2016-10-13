@@ -29,6 +29,7 @@ import com.baozun.scm.primservice.whoperation.command.system.GlobalLogCommand;
 import com.baozun.scm.primservice.whoperation.constant.CacheKeyConstant;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveLineDao;
+import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWavePhaseDao;
 import com.baozun.scm.primservice.whoperation.dao.system.SysDictionaryDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.CustomerDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.StoreDao;
@@ -74,6 +75,8 @@ public abstract class BaseManagerImpl implements BaseManager {
     private StoreDao storeDao;
     @Autowired
     private WhWaveLineDao whWaveLineDao;
+    @Autowired
+    private WhWavePhaseDao whWavePhaseDao;
 
 
     /**
@@ -473,6 +476,25 @@ public abstract class BaseManagerImpl implements BaseManager {
      */
     protected String getLogMsg(String format, Object... argArray) {
         return LogUtil.getLogMsg(format, argArray);
+    }
+
+    /**
+     * 通过当前波次阶段CODE+波次模板ID获取下一个波次阶段CODE
+     * 
+     * @param phaseCode 当前处于波次阶段CODE 为空系统默认获取配置的第一个波次阶段
+     * @param waveTemplateId 波次模板ID
+     * @param ouid 仓库组织ID
+     * @return returnPhaseCode 下一个波次阶段CODE 如果返回为空就是没有下一个波次阶段
+     */
+    protected String getWavePhaseCode(String phaseCode, Long waveTemplateId, Long ouid) {
+        String returnPhaseCode = null;
+        // 波次模板ID为空 抛错
+        if (null == waveTemplateId) {
+            log.error("getWavePhaseCode waveTemplateId is null error logId: " + logId);
+            throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
+        }
+        returnPhaseCode = whWavePhaseDao.getWavePhaseCode(phaseCode, waveTemplateId, ouid);
+        return returnPhaseCode;
     }
 
     protected void removeWaveLineWhole(Long waveId, Long odoId, Long ouId) {
