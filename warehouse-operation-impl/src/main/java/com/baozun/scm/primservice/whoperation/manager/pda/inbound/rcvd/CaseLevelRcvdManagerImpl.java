@@ -402,6 +402,9 @@ public class CaseLevelRcvdManagerImpl extends BaseManagerImpl implements CaseLev
     private void saveOrUpdateWhCartonToDB(List<WhCartonCommand> rcvdCartonList, Long userId, Long ouId, String logId) {
         // 更新/创建 装箱信息WhCarton,是否修改为非caseLevel箱数据
         for (WhCartonCommand rcvdCarton : rcvdCartonList) {
+            if(rcvdCarton.getInsert()){
+                rcvdCarton.setId(null);
+            }
             WhCarton whCarton = new WhCarton();
             BeanUtils.copyProperties(rcvdCarton, whCarton);
             if (null == whCarton.getId()) {

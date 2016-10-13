@@ -234,6 +234,21 @@ public interface CaseLevelManagerProxy extends BaseManager {
     public List<WhCartonCommand> getRcvdCartonBySkuFromCache(Long asnId, Long containerId, Long skuId, Long userId, Long ouId, String logId);
 
     /**
+     * 根据cartonId获取计划收货中该carton已收的所有数据，为了统计已收数量
+     *
+     * @author mingwei.xie
+     * @param asnId
+     * @param containerId
+     * @param skuId
+     * @param cartonId
+     * @param userId
+     * @param ouId
+     * @param logId
+     * @return
+     */
+    public Double getCartonLineRcvdQty(Long asnId, Long containerId, Long skuId, Long cartonId, Long userId, Long ouId, String logId);
+
+    /**
      * 获取商品已收数量
      *
      * @author mingwei.xie

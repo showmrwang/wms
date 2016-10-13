@@ -246,7 +246,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
         this.clearRcvdCache(asnId, containerId, userId, ouId, logId);
         try {
             // 清除该货箱前次收货数据
-            cacheManager.remonKeys(CacheKeyConstant.WMS_CACHE_CL_LAST_RECD_QTY_PERFIX + userId + "-" + asnId + "-" + containerId + "-*");
+            cacheManager.remonKeys(CacheKeyConstant.WMS_CACHE_CL_LAST_RECD_QTY_PREFIX + userId + "-" + asnId + "-" + containerId + "-*");
         } catch (Exception e) {
             throw new BusinessException(ErrorCodes.CASELEVEL_CACHE_ERROR);
         }
@@ -273,7 +273,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
         this.clearRcvdCache(asnId, containerId, userId, ouId, logId);
         try {
             // 清除该货箱前次收货数据
-            cacheManager.remonKeys(CacheKeyConstant.WMS_CACHE_CL_LAST_RECD_QTY_PERFIX + userId + "-" + asnId + "-" + containerId + "-*");
+            cacheManager.remonKeys(CacheKeyConstant.WMS_CACHE_CL_LAST_RECD_QTY_PREFIX + userId + "-" + asnId + "-" + containerId + "-*");
         } catch (Exception e) {
             throw new BusinessException(ErrorCodes.CASELEVEL_CACHE_ERROR);
         }
@@ -324,7 +324,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
                 this.clearRcvdCache(asnId, Long.parseLong(containerId), userId, ouId, logId);
                 try {
                     // 清除该货箱前次收货数据
-                    cacheManager.remonKeys(CacheKeyConstant.WMS_CACHE_CL_LAST_RECD_QTY_PERFIX + userId + "-" + asnId + "-" + containerId + "-*");
+                    cacheManager.remonKeys(CacheKeyConstant.WMS_CACHE_CL_LAST_RECD_QTY_PREFIX + userId + "-" + asnId + "-" + containerId + "-*");
                 } catch (Exception e) {
                     throw new BusinessException(ErrorCodes.CASELEVEL_CACHE_ERROR);
                 }
@@ -729,7 +729,8 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
         if (null == uuid) {
             throw new BusinessException(ErrorCodes.CASELEVEL_UUID_ERROR);
         }
-        String cacheKey = CacheKeyConstant.WMS_CACHE_CL_RECD_CARTON_PREFIX + userId + "-" + whCartonCommand.getAsnId() + "-" + whCartonCommand.getContainerId() + "-" + whCartonCommand.getSkuId() + "-" + uuid;
+        // 加入cartonId，用于获取原装箱记录已收数量，当carton的已收数量大于等于计划量时，判断为该carton收货完成，提示时不再选择该该行记录信息进行提示
+        String cacheKey = CacheKeyConstant.WMS_CACHE_CL_RECD_CARTON_PREFIX + userId + "-" + whCartonCommand.getAsnId() + "-" + whCartonCommand.getContainerId() + "-" + whCartonCommand.getSkuId() + "-" + whCartonCommand.getId() + "-" + uuid;
         WhCartonCommand rcvdWhCarton = null;
         try {
             rcvdWhCarton = cacheManager.getObject(cacheKey);
@@ -774,29 +775,33 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
     @Override
     public List<WhCartonCommand> getRcvdCartonBySkuFromCache(Long asnId, Long containerId, Long skuId, Long userId, Long ouId, String logId) {
         String cacheKeyPattern = CacheKeyConstant.WMS_CACHE_CL_RECD_CARTON_PREFIX + userId + "-" + asnId + "-" + containerId + "-" + skuId + "-*";
-        List<String> cartonCacheKeyList = null;
-        try {
-            cartonCacheKeyList = cacheManager.Keys(cacheKeyPattern);
-        } catch (Exception e) {
-            throw new BusinessException(ErrorCodes.CASELEVEL_CACHE_ERROR);
-        }
-        List<WhCartonCommand> rcvdCartonList = new ArrayList<>();
-        if (null != cartonCacheKeyList) {
-            for (String cartonCacheKey : cartonCacheKeyList) {
+        return this.getRcvdCartonFromCacheByCacheKeyPattern(cacheKeyPattern, CacheKeyConstant.WMS_CACHE_CL_RECD_CARTON_PREFIX);
+    }
 
-                WhCartonCommand rcvdCarton = null;
-                try {
-                    rcvdCarton = cacheManager.getObject(cartonCacheKey.substring(cartonCacheKey.indexOf(CacheKeyConstant.WMS_CACHE_CL_RECD_CARTON_PREFIX)));
-                } catch (Exception e) {
-                    throw new BusinessException(ErrorCodes.CASELEVEL_CACHE_ERROR);
-                }
-                if (null == rcvdCarton) {
-                    throw new BusinessException(ErrorCodes.CASELEVEL_GET_CACHE_ERROR);
-                }
-                rcvdCartonList.add(rcvdCarton);
+    /**
+     * 根据cartonId获取计划收货中该carton已收的所有数据，为了统计已收数量
+     *
+     * @author mingwei.xie
+     * @param asnId
+     * @param containerId
+     * @param skuId
+     * @param cartonId
+     * @param userId
+     * @param ouId
+     * @param logId
+     * @return
+     */
+    @Override
+    public Double getCartonLineRcvdQty(Long asnId, Long containerId, Long skuId, Long cartonId, Long userId, Long ouId, String logId) {
+        String cacheKeyPattern = CacheKeyConstant.WMS_CACHE_CL_RECD_CARTON_PREFIX + userId + "-" + asnId + "-" + containerId + "-" + skuId + "-" + cartonId + "-*";
+        List<WhCartonCommand> asnLineRcvdCartonList = this.getRcvdCartonFromCacheByCacheKeyPattern(cacheKeyPattern, CacheKeyConstant.WMS_CACHE_CL_RECD_CARTON_PREFIX);
+        BigDecimal asnLineRcvdQty = new BigDecimal(0);
+        if(null != asnLineRcvdCartonList){
+            for(WhCartonCommand rcvdCarton : asnLineRcvdCartonList){
+                asnLineRcvdQty = asnLineRcvdQty.add(new BigDecimal(rcvdCarton.getSkuQty().toString()));
             }
         }
-        return rcvdCartonList;
+        return asnLineRcvdQty.doubleValue();
     }
 
     /**
@@ -919,7 +924,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
     public void reRcvd(Long asnId, Long containerId, Long userId, Long ouId, String logId) {
         // 清除上次收货数据
         try {
-            cacheManager.remonKeys(CacheKeyConstant.WMS_CACHE_CL_LAST_RECD_QTY_PERFIX + userId + "-" + asnId + "-" + containerId + "-*");
+            cacheManager.remonKeys(CacheKeyConstant.WMS_CACHE_CL_LAST_RECD_QTY_PREFIX + userId + "-" + asnId + "-" + containerId + "-*");
         } catch (Exception e) {
             throw new BusinessException(ErrorCodes.CASELEVEL_CACHE_ERROR);
         }
@@ -928,7 +933,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
         if (null != skuRcvdQtyMap) {
             for (Long skuId : skuRcvdQtyMap.keySet()) {
                 // 创建上次收货数缓存key
-                String lastRcvdCacheKey = CacheKeyConstant.WMS_CACHE_CL_LAST_RECD_QTY_PERFIX + userId + "-" + asnId + "-" + containerId + "-" + skuId;
+                String lastRcvdCacheKey = CacheKeyConstant.WMS_CACHE_CL_LAST_RECD_QTY_PREFIX + userId + "-" + asnId + "-" + containerId + "-" + skuId;
                 // 保存上次商品收货数缓存
                 try {
                     cacheManager.setObject(lastRcvdCacheKey, skuRcvdQtyMap.get(skuId), CacheKeyConstant.CACHE_ONE_DAY);
@@ -952,7 +957,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
      */
     @Override
     public Map<Long, Double> getLastRcvdSkuQty(Long asnId, Long containerId, Long userId, Long ouId, String logId) {
-        String cacheKeyPattern = CacheKeyConstant.WMS_CACHE_CL_LAST_RECD_QTY_PERFIX + userId + "-" + asnId + "-" + containerId + "-*";
+        String cacheKeyPattern = CacheKeyConstant.WMS_CACHE_CL_LAST_RECD_QTY_PREFIX + userId + "-" + asnId + "-" + containerId + "-*";
         List<String> lastRcvdSkuQtyCacheKeyList = null;
         try {
             lastRcvdSkuQtyCacheKeyList = cacheManager.Keys(cacheKeyPattern);
@@ -965,7 +970,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
             for (String cacheKey : lastRcvdSkuQtyCacheKeyList) {
                 Double skuQty = null;
                 try {
-                    skuQty = cacheManager.getObject(cacheKey.substring(cacheKey.indexOf(CacheKeyConstant.WMS_CACHE_CL_LAST_RECD_QTY_PERFIX)));
+                    skuQty = cacheManager.getObject(cacheKey.substring(cacheKey.indexOf(CacheKeyConstant.WMS_CACHE_CL_LAST_RECD_QTY_PREFIX)));
                 } catch (Exception e) {
                     throw new BusinessException(ErrorCodes.CASELEVEL_CACHE_ERROR);
                 }
@@ -988,7 +993,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
      */
     @Override
     public Double getLastRcvdSkuQtyBySkuId(Long asnId, Long containerId, Long skuId, Long userId, Long ouId, String logId) {
-        String cacheKey = CacheKeyConstant.WMS_CACHE_CL_LAST_RECD_QTY_PERFIX + userId + "-" + asnId + "-" + containerId + "-" + skuId;
+        String cacheKey = CacheKeyConstant.WMS_CACHE_CL_LAST_RECD_QTY_PREFIX + userId + "-" + asnId + "-" + containerId + "-" + skuId;
         Double skuQty = null;
         try {
             skuQty = cacheManager.getObject(cacheKey);
@@ -1202,7 +1207,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
         // ASN收货日志对应的的SN/残次信息日志列表
         List<WhAsnRcvdLogCommand> whAsnRcvdLogCommandList = new ArrayList<>();
 
-        //已更新的原装箱信息ID列表
+        // 已更新的原装箱信息ID列表
         Set<Long> originUpdateCartonIdList = new HashSet<>();
         for (WhCartonCommand rcvdCartonCache : rcvdCartonList) {
             // 存入数据库之前数据校验
@@ -1216,8 +1221,8 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
             // 创建ASN收货日志
             WhAsnRcvdLogCommand whAsnRcvdLogCommand = this.createWhAsnRcvdLog(rcvdCartonCache, userId, ouId, logId);
             whAsnRcvdLogCommandList.add(whAsnRcvdLogCommand);
-            if(null != rcvdCartonCache.getId()){
-                //记录哪些原装箱记录已更新，为了记录ASN收货日志
+            if (!rcvdCartonCache.getInsert()) {
+                // 记录哪些原装箱记录已更新，为了记录ASN收货日志
                 originUpdateCartonIdList.add(rcvdCartonCache.getId());
             }
 
@@ -1238,8 +1243,8 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
 
         // ASN收货日志，在全都是新增的情况下，添加原计划收货数记录
         List<WhCartonCommand> originCartonList = this.getWhCartonListByContainer(whCartonCommand.getAsnId(), whCartonCommand.getContainerId(), userId, ouId, logId);
-        for(WhCartonCommand originCarton : originCartonList){
-            if(!originUpdateCartonIdList.contains(originCarton.getId())){
+        for (WhCartonCommand originCarton : originCartonList) {
+            if (!originUpdateCartonIdList.contains(originCarton.getId())) {
                 originCarton.setSkuQty(0d);
                 // 创建ASN收货日志
                 WhAsnRcvdLogCommand whAsnRcvdLogCommand = this.createWhAsnRcvdLog(originCarton, userId, ouId, logId);
@@ -1297,7 +1302,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
             throw new BusinessException(ErrorCodes.CASELEVEL_RELEASE_CONTAINER_ERROR);
         }
         // 清除该货箱前次收货数据
-        cacheManager.remonKeys(CacheKeyConstant.WMS_CACHE_CL_LAST_RECD_QTY_PERFIX + userId + "-" + whCartonCommand.getAsnId() + "-" + whCartonCommand.getContainerId() + "-*");
+        cacheManager.remonKeys(CacheKeyConstant.WMS_CACHE_CL_LAST_RECD_QTY_PREFIX + userId + "-" + whCartonCommand.getAsnId() + "-" + whCartonCommand.getContainerId() + "-*");
 
         boolean isAsnRcvdFinished = caseLevelRcvdManager.checkIsAsnRcvdFinished(whCartonCommand.getAsnId(), ouId, logId);
         if (isAsnRcvdFinished) {
@@ -1746,6 +1751,10 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
 
     private List<WhCartonCommand> getRcvdCartonFromCache(Long asnId, Long containerId, Long userId, Long ouId, String logId) {
         String cacheKeyPattern = CacheKeyConstant.WMS_CACHE_CL_RECD_CARTON_PREFIX + userId + "-" + asnId + "-" + containerId + "-*";
+        return getRcvdCartonFromCacheByCacheKeyPattern(cacheKeyPattern, CacheKeyConstant.WMS_CACHE_CL_RECD_CARTON_PREFIX);
+    }
+
+    private List<WhCartonCommand> getRcvdCartonFromCacheByCacheKeyPattern(String cacheKeyPattern, String cacheKeyPrefix) {
         List<String> cartonCacheKeyList = null;
         try {
             cartonCacheKeyList = cacheManager.Keys(cacheKeyPattern);
@@ -1753,17 +1762,19 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
             throw new BusinessException(ErrorCodes.CASELEVEL_CACHE_ERROR);
         }
         List<WhCartonCommand> rcvdCartonList = new ArrayList<>();
-        for (String cartonCacheKey : cartonCacheKeyList) {
-            WhCartonCommand rcvdCarton = null;
-            try {
-                rcvdCarton = cacheManager.getObject(cartonCacheKey.substring(cartonCacheKey.indexOf(CacheKeyConstant.WMS_CACHE_CL_RECD_CARTON_PREFIX)));
-            } catch (Exception e) {
-                throw new BusinessException(ErrorCodes.CASELEVEL_CACHE_ERROR);
+        if (null != cartonCacheKeyList) {
+            for (String cartonCacheKey : cartonCacheKeyList) {
+                WhCartonCommand rcvdCarton = null;
+                try {
+                    rcvdCarton = cacheManager.getObject(cartonCacheKey.substring(cartonCacheKey.indexOf(cacheKeyPrefix)));
+                } catch (Exception e) {
+                    throw new BusinessException(ErrorCodes.CASELEVEL_CACHE_ERROR);
+                }
+                if (null == rcvdCarton) {
+                    throw new BusinessException(ErrorCodes.CASELEVEL_GET_CACHE_ERROR);
+                }
+                rcvdCartonList.add(rcvdCarton);
             }
-            if (null == rcvdCarton) {
-                throw new BusinessException(ErrorCodes.CASELEVEL_GET_CACHE_ERROR);
-            }
-            rcvdCartonList.add(rcvdCarton);
         }
         return rcvdCartonList;
     }

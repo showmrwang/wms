@@ -86,16 +86,16 @@ public final class CacheKeyConstant {
 
     /** caseLevel收货人缓存前缀 规则：前缀 + userId + asnId + containerId；间隔符："-" */
     public static final String WMS_CACHE_CL_OPT_USER_PREFIX = "WMS-CACHE-CL-OPT-USER-";
-    /** caseLevel本次扫描已收SN/残次品信息缓存前缀 规则：前缀 + userId + asnId + containerId + UUID；间隔符："-" */
+    /** caseLevel本次扫描已收SN/残次品信息缓存前缀 规则：前缀 + userId + asnId + containerId + skuId + UUID；间隔符："-" */
     public static final String WMS_CACHE_CL_SCAN_RECD_SN_DEFECT_INFO_PREFIX = "WMS-CACHE-CL-SCAN-RECD-SN-DEFECT-INFO-PREFIX-";
-    /** caseLevel本次收货已收carton缓存前缀 规则：前缀 + userId + asnId + containerId + UUID */
+    /** caseLevel本次收货已收carton缓存前缀 规则：前缀 + userId + asnId + containerId + skuId + cartonId + UUID */
     public static final String WMS_CACHE_CL_RECD_CARTON_PREFIX = "WMS-CACHE-CL-RECD-CARTON-";
     /** caseLevel收货装箱信息表缓存前缀 规则：前缀 + userId + asnId + containerId；分隔符："- */
     public static final String WMS_CACHE_CL_ORIGIN_CARTON_PREFIX = "WMS-CACHE-CL-ORIGIN-CARTON-";
     /** caseLevel货箱SN缓存前缀 规则：前缀 + userId + asnId + containerId；分隔符："-" */
     public static final String WMS_CACHE_CL_ORIGIN_SN_PREFIX = "WMS-CACHE-CL-ORIGIN-SN-";
     /** caseLevel前次收货数据前缀 规则：前缀 + userId + asnId + containerId + skuId；间隔符："-" */
-    public static final String WMS_CACHE_CL_LAST_RECD_QTY_PERFIX = "WMS-CACHE-CL-LAST-RECD-QTY-";
+    public static final String WMS_CACHE_CL_LAST_RECD_QTY_PREFIX = "WMS-CACHE-CL-LAST-RECD-QTY-";
 
     // 过期时间
     public static final int CACHE_ONE_SECOND = 1;
