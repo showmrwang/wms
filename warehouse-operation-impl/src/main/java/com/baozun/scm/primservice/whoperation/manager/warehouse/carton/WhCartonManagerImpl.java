@@ -199,7 +199,6 @@ public class WhCartonManagerImpl extends BaseManagerImpl implements WhCartonMana
         // 验证本次拆箱数量是否超过可拆箱数量 每箱数量是否相同等数量信息
         checkAddCartonListQty(cartonList, usableDevanningQty.getUsableDevanningQty(), whCartonCommand.getLogId());
 
-        int binQtySum = 0;// 总箱数
         // 插入拆箱信息
         for (WhCartonCommand cc : cartonList) {
             // 获取2级容器类型
@@ -210,7 +209,8 @@ public class WhCartonManagerImpl extends BaseManagerImpl implements WhCartonMana
             }
             // 计算一共多少箱数
             int binQty = new BigDecimal(cc.getBcdevanningQty()).divide(new BigDecimal(cc.getQuantity())).intValue();
-            binQtySum = binQtySum + binQty;// 计算总箱数
+            int binQtySum = binQty;// 总箱数
+            // binQtySum = binQtySum + binQty;// 计算总箱数
             for (int i = 0; i < binQty; i++) {
                 // 通过HUB接口获取容器编码
                 String code = getContainerCode(c2c, whCartonCommand.getLogId());
