@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWavePhaseDao">
+	<resultMap id="WhWavePhaseResult" type="com.baozun.scm.primservice.whoperation.model.odo.wave.WhWavePhase">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whWavePhaseColumns">
+	    <![CDATA[
+	        	id as id,
+	        	phase_order as phaseOrder,
+	        	phase_code as phaseCode,
+	        	wave_template_id as waveTemplateId,
+	        	ou_id as ouId,
+	        	create_time as createTime,
+	        	last_modify_time as lastModifyTime,
+	        	created_id as createdId,
+	        	modified_id as modifiedId,
+	        	lifecycle as lifecycle
+	    ]]>
+	</sql>
+	
+		<!-- 如果有自增字段 -->
+		
+			<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+			<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.odo.wave.WhWavePhase" 
+				
+			 flushCache="true">
+		    <![CDATA[
+		        INSERT INTO
+		        t_wh_wave_phase (
+		        id,
+		        	phase_order ,
+		        	phase_code ,
+		        	wave_template_id ,
+		        	ou_id ,
+		        	create_time ,
+		        	last_modify_time ,
+		        	created_id ,
+		        	modified_id ,
+		        	lifecycle 
+		        ) VALUES (
+		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{phaseOrder,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{phaseCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{waveTemplateId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
+		        )
+		    ]]>
+
+		</insert>
+		
+		
+		<update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.odo.wave.WhWavePhase">
+	    <![CDATA[
+	        UPDATE t_wh_wave_phase SET
+		        phase_order = #{phaseOrder,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        phase_code = #{phaseCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        wave_template_id = #{waveTemplateId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+		</update>
+	   <delete id="delete" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from t_wh_wave_phase where
+		        id = #{id} 
+	    ]]>
+	    </delete> 
+	    
+	     <delete id="deleteByIds" parameterType="list">
+	    
+	        delete from t_wh_wave_phase 
+	        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>	
+	  
+	    </delete>  
+	         
+	    <select id="findById" parameterType="java.lang.Long" resultMap="WhWavePhaseResult" flushCache="false">
+			select <include refid="whWavePhaseColumns" />
+		    <![CDATA[
+			    from t_wh_wave_phase 
+		        where 
+		        id = #{id} 
+		    ]]>
+		</select>	
+		<select id="getByIds" parameterType="list"  resultMap="WhWavePhaseResult" flushCache="false">
+			select <include refid="whWavePhaseColumns" />
+			    from t_wh_wave_phase 
+		        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>					
+		</select>	
+	<sql id="whWavePhaseDynamicWhere">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+				<if test="phaseOrder!=null">
+					and phase_order = #{phaseOrder}
+				</if>
+	       
+	       
+		       <if test="phaseCode!=null and phaseCode!=''">
+					and phase_code = #{phaseCode}
+				</if>
+	       
+				<if test="waveTemplateId!=null">
+					and wave_template_id = #{waveTemplateId}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+	       
+				<if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="createdId!=null">
+					and created_id = #{createdId}
+				</if>
+	       
+				<if test="modifiedId!=null">
+					and modified_id = #{modifiedId}
+				</if>
+	       
+				<if test="lifecycle!=null">
+					and lifecycle = #{lifecycle}
+				</if>
+		</where>
+	</sql>
+	
+
+	<select id="getCount" resultType="long">
+        select count(*) from t_wh_wave_phase 
+    </select>
+    <select id="findListCountByQueryMap" resultType="long">
+        select count(*) from t_wh_wave_phase 
+		<include refid="whWavePhaseDynamicWhere"/>    
+    </select>
+    
+    <select id="findListCountByParam" resultType="long">
+        select count(*) from t_wh_wave_phase 
+		<include refid="whWavePhaseDynamicWhere"/>    
+    </select>
+    
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPage" resultMap="WhWavePhaseResult">
+    	select <include refid="whWavePhaseColumns" />
+	    from t_wh_wave_phase 
+		<include refid="whWavePhaseDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByQueryMap" resultMap="WhWavePhaseResult">
+    	select <include refid="whWavePhaseColumns" />
+	    from t_wh_wave_phase 
+		<include refid="whWavePhaseDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByParam" resultMap="WhWavePhaseResult">
+    	select <include refid="whWavePhaseColumns" />
+	    from t_wh_wave_phase 
+		<include refid="whWavePhaseDynamicWhere"/>
+		
+    </select>
+
+	
+</mapper>
