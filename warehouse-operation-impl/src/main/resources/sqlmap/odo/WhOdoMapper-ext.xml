@@ -854,7 +854,7 @@
 	<select id="odoMerge" resultMap="OdoMergeCommand">
 		select
 		group_concat(odo.id) as
-		odoId,
+		odoIds,
 		count(1) as count,
 		sum(odo.qty) as
 		quantity,
