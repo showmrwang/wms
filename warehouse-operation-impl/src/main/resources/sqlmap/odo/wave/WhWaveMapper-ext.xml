@@ -347,17 +347,117 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			waveline.skuId
 	</select>
 	
-	 <select id="findListByQueryMapWithPageExt" resultMap="WhWaveResult">
-    	select <include refid="whWaveColumns" />
-	    from t_wh_wave wave
-	    left join oper_user user1 on user1.id=odo.created_id
-		<include refid="whWaveDynamicWhere"/>
+	 <select id="findListByQueryMapWithPageExt" resultMap="WhWaveCommand" parameterType="com.baozun.scm.primservice.whoperation.command.odo.wave.WaveCommand">
+    	SELECT
+			wave.code as code,
+			wave.status as status,
+			user1.user_name as createName,
+			wave.create_time as createTime,
+			waveMaster.name as masterName,
+			wave.start_time as startTimeStr,
+			wave.finish_time as finishTimeStr,
+			wave.total_odo_qty as totalOdoQty,
+			wave.total_odo_line_qty as totalOdoLineQty,
+			wave.total_amount as totalAmount,
+			wave.total_volume as totalVolume,
+			wave.total_weight as totalWeight,
+			wave.exec_odo_qty as execOdoQty,
+			wave.exec_odo_line_qty as execOdoLineQty,
+			wave.outbound_carton_qty as outboundCartonQty,
+			wave.sku_category_qty as skuCategoryQty,
+			wave.total_sku_qty as totalSkuQty
+		
+		from t_wh_wave wave
+		inner join t_wh_wave_master waveMaster on waveMaster.id=wave.wave_master_id
+		left join oper_user user1 on user1.id=wave.created_id
+		<where>
+			<if test="ouId!=null">
+				 and wave.ou_id =#{ouId} 
+			</if>
+			<if test="searchWaveCode!=null and searchWaveCode!=''">
+				 and wave.code like #{searchWaveCode} 
+			</if>
+			<if test="searchWaveMasterName!=null and searchWaveMasterName!=''">
+				and waveMaster.name like #{searchWaveMasterName} 
+			</if>
+			<if test="searchWaveMaseterCode!=null and searchWaveMaseterCode!=''">
+				and waveMaster.code like #{searchWaveMaseterCode} 
+			</if>
+			<if test="searchWaveStatus!=null">
+				and wave.status in
+				<foreach collection="searchWaveStatus" item="s" open="("
+					separator="," close=")">
+					#{s}
+				</foreach>
+			</if>
+			<if test="searchWavePhase!=null">
+				and wave.phase_code in
+				<foreach collection="searchWavePhase" item="c" open="("
+					separator="," close=")">
+					#{c}
+				</foreach>
+			</if>
+			<if test="searchCreateName!=null and searchCreateName!=''">
+				and user1.user_name like #{searchCreateName} 
+			</if>
+			<if test="searchCreateTimeStart!=null and searchCreateTimeStart!='' ">
+				and
+				DATE_FORMAT(wave.create_time,'%Y-%m-%d')&lt;=#{searchCreateTimeStart}
+			</if>
+			<if test="searchCreateTimeEnd!=null and searchCreateTimeEnd!=''">
+				and
+				DATE_FORMAT(wave.create_time,'%Y-%m-%d')&lt;=#{searchCreateTimeEnd}
+			</if>
+		</where>
 		
     </select>
     
-      <select id="findListCountByQueryMapExt" resultType="long">
-        select count(*) from t_wh_wave 
-		<include refid="whWaveDynamicWhere"/>    
+      <select id="findListCountByQueryMapExt" resultType="long" parameterType="com.baozun.scm.primservice.whoperation.command.odo.wave.WaveCommand">
+       SELECT
+			count(*)
+		
+		from t_wh_wave wave
+		inner join t_wh_wave_master waveMaster on waveMaster.id=wave.wave_master_id
+		left join oper_user user1 on user1.id=wave.created_id
+		<where>
+			<if test="ouId!=null">
+				 and wave.ou_id =#{ouId} 
+			</if>
+			<if test="searchWaveCode!=null and searchWaveCode!=''">
+				 and wave.code like #{searchWaveCode} 
+			</if>
+			<if test="searchWaveMasterName!=null and searchWaveMasterName!=''">
+				and waveMaster.name like #{searchWaveMasterName} 
+			</if>
+			<if test="searchWaveMaseterCode!=null and searchWaveMaseterCode!=''">
+				and waveMaster.code like #{searchWaveMaseterCode} 
+			</if>
+			<if test="searchWaveStatus!=null">
+				and wave.status in
+				<foreach collection="searchWaveStatus" item="s" open="("
+					separator="," close=")">
+					#{s}
+				</foreach>
+			</if>
+			<if test="searchWavePhase!=null">
+				and wave.phase_code in
+				<foreach collection="searchWavePhase" item="c" open="("
+					separator="," close=")">
+					#{c}
+				</foreach>
+			</if>
+			<if test="searchCreateName!=null and searchCreateName!=''">
+				and user1.user_name like #{searchCreateName} 
+			</if>
+			<if test="searchCreateTimeStart!=null and searchCreateTimeStart!='' ">
+				and
+				DATE_FORMAT(wave.create_time,'%Y-%m-%d')&lt;=#{searchCreateTimeStart}
+			</if>
+			<if test="searchCreateTimeEnd!=null and searchCreateTimeEnd!=''">
+				and
+				DATE_FORMAT(wave.create_time,'%Y-%m-%d')&lt;=#{searchCreateTimeEnd}
+			</if>
+		</where>    
     </select>
 	
 </mapper>

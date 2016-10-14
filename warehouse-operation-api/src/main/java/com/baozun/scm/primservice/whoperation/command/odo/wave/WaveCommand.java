@@ -76,7 +76,44 @@ public class WaveCommand extends BaseCommand {
     private String searchCreateTimeStart;
     private String searchCreateTimeEnd;
 
+    // -----------------波次查询结果------------------
+    private String createName;
+    private String finishTimeStr;
+    private String startTimeStr;
+    private String statusName;
 
+
+    public String getCreateName() {
+        return createName;
+    }
+
+    public void setCreateName(String createName) {
+        this.createName = createName;
+    }
+
+    public String getFinishTimeStr() {
+        return finishTimeStr;
+    }
+
+    public void setFinishTimeStr(String finishTimeStr) {
+        this.finishTimeStr = finishTimeStr;
+    }
+
+    public String getStartTimeStr() {
+        return startTimeStr;
+    }
+
+    public void setStartTimeStr(String startTimeStr) {
+        this.startTimeStr = startTimeStr;
+    }
+
+    public String getStatusName() {
+        return statusName;
+    }
+
+    public void setStatusName(String statusName) {
+        this.statusName = statusName;
+    }
     public String getCode() {
         return code;
     }
