@@ -207,10 +207,8 @@ public class WhCartonManagerImpl extends BaseManagerImpl implements WhCartonMana
                 log.warn("addDevanningList Container2ndCategory is null CategoryId() " + cc.getCategoryId() + " error logid: " + whCartonCommand.getLogId());
                 throw new BusinessException(ErrorCodes.CONTAINER2NDCATEGORY_NULL_ERROR);
             }
-            // 计算一共多少箱数
+            // 计算本次拆了多少箱数
             int binQty = new BigDecimal(cc.getBcdevanningQty()).divide(new BigDecimal(cc.getQuantity())).intValue();
-            int binQtySum = binQty;// 总箱数
-            // binQtySum = binQtySum + binQty;// 计算总箱数
             for (int i = 0; i < binQty; i++) {
                 // 通过HUB接口获取容器编码
                 String code = getContainerCode(c2c, whCartonCommand.getLogId());
@@ -272,7 +270,7 @@ public class WhCartonManagerImpl extends BaseManagerImpl implements WhCartonMana
             }
             // 修改对应po poline asn asnline计划箱数
             WhAsn asn = whAsnDao.findWhAsnById(whCartonCommand.getAsnId(), whCartonCommand.getOuId());
-            asn.setCtnPlanned(asn.getCtnPlanned() + binQtySum);// 计划箱数
+            asn.setCtnPlanned(asn.getCtnPlanned() + binQty);// 计划箱数
             asn.setModifiedId(whCartonCommand.getCreatedId());
             int asnCount = whAsnDao.saveOrUpdateByVersion(asn);
             if (asnCount == 0) {
@@ -281,7 +279,7 @@ public class WhCartonManagerImpl extends BaseManagerImpl implements WhCartonMana
             }
 
             WhPo whPo = whPoDao.findWhPoById(asn.getPoId(), asn.getOuId());
-            whPo.setCtnPlanned(whPo.getCtnPlanned() + binQtySum);// 计划箱数
+            whPo.setCtnPlanned(whPo.getCtnPlanned() + binQty);// 计划箱数
             whPo.setModifiedId(whCartonCommand.getCreatedId());
             int poCount = whPoDao.saveOrUpdateByVersion(whPo);
             if (poCount == 0) {
@@ -290,7 +288,7 @@ public class WhCartonManagerImpl extends BaseManagerImpl implements WhCartonMana
             }
 
             WhAsnLine whAsnLine = whAsnLineDao.findWhAsnLineById(whCartonCommand.getAsnLineId(), asn.getOuId());
-            whAsnLine.setCtnPlanned(whAsnLine.getCtnPlanned() + binQtySum);
+            whAsnLine.setCtnPlanned(whAsnLine.getCtnPlanned() + binQty);
             whAsnLine.setModifiedId(whCartonCommand.getCreatedId());
             int whAsnLineCount = whAsnLineDao.saveOrUpdateByVersion(whAsnLine);
             if (whAsnLineCount == 0) {
@@ -299,7 +297,7 @@ public class WhCartonManagerImpl extends BaseManagerImpl implements WhCartonMana
             }
 
             WhPoLine whPoLine = whPoLineDao.findWhPoLineById(whAsnLine.getPoLineId(), whCartonCommand.getOuId());
-            whPoLine.setCtnPlanned(whPoLine.getCtnPlanned() + binQtySum);
+            whPoLine.setCtnPlanned(whPoLine.getCtnPlanned() + binQty);
             whPoLine.setModifiedId(whCartonCommand.getCreatedId());
             int whPoLineCount = whPoLineDao.saveOrUpdateByVersion(whPoLine);
             if (whPoLineCount == 0) {
