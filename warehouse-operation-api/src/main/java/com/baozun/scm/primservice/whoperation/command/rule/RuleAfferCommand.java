@@ -55,6 +55,11 @@ public class RuleAfferCommand extends BaseCommand {
     /** 出库单明细ID */
     private List<Long> odoLineId;
 
+    /** 补货规则货品ID */
+    private Long replenishmentRuleSkuId;
+    /** 补货规则库位ID */
+    private Long replenishmentRuleLocationId;
+
 
     public String getRuleType() {
         return ruleType;
@@ -167,4 +172,19 @@ public class RuleAfferCommand extends BaseCommand {
     }
 
 
+    public Long getReplenishmentRuleSkuId() {
+        return replenishmentRuleSkuId;
+    }
+
+    public void setReplenishmentRuleSkuId(Long replenishmentRuleSkuId) {
+        this.replenishmentRuleSkuId = replenishmentRuleSkuId;
+    }
+
+    public Long getReplenishmentRuleLocationId() {
+        return replenishmentRuleLocationId;
+    }
+
+    public void setReplenishmentRuleLocationId(Long replenishmentRuleLocationId) {
+        this.replenishmentRuleLocationId = replenishmentRuleLocationId;
+    }
 }

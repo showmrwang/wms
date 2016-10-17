@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.ReplenishmentStrategyDao">
+    <resultMap id="ReplenishmentStrategyResult" type="com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentStrategy">
+    </resultMap>
+    <resultMap id="ReplenishmentStrategyPaginationResult" type="lark.common.dao.Pagination">
+        <collection property="items" javaType="ArrayList" resultMap="ReplenishmentStrategyResult"/>
+    </resultMap>
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="replenishmentStrategyColumns">
+        <![CDATA[
+                id as id,
+                replenishment_rule_id as replenishmentRuleId,
+                area_id as areaId,
+                strategy_code as strategyCode,
+                allocate_unit_codes as allocateUnitCodes,
+                replenishment_code as replenishmentCode,
+                priority as priority,
+                ou_id as ouId
+        ]]>
+    </sql>
+    <sql id="replenishmentStrategyConditionWhereExt">
+        <where>
+            <if test="likeEqualsMap != null">
+                <foreach collection="likeEqualsMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} like CONCAT('%',#{value},'%')
+                </foreach>
+            </if>
+            <if test="equalsMap != null">
+                <foreach collection="equalsMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} = #{value}
+                </foreach>
+            </if>
+            <if test="notEqualsMap != null">
+                <foreach collection="notEqualsMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} != #{value}
+                </foreach>
+            </if>
+            <if test="greateMap != null">
+                <foreach collection="greateMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} &gt; #{value}
+                </foreach>
+            </if>
+            <if test="greateEqualsMap != null">
+                <foreach collection="greateEqualsMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} &gt;= #{value}
+                </foreach>
+            </if>
+            <if test="lessMap != null">
+                <foreach collection="lessMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} &lt; #{value}
+                </foreach>
+            </if>
+            <if test="lessEqualsMap != null">
+                <foreach collection="lessEqualsMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} &lt;= #{value}
+                </foreach>
+            </if>
+            <if test="nullMap != null">
+                <foreach collection="nullMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} is null
+                </foreach>
+            </if>
+            <if test="notNullMap != null">
+                <foreach collection="notNullMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} is not null
+                </foreach>
+            </if>
+            <if test="inMap != null">
+                <foreach collection="inMap" index="key" item="value" separator="and" open=" and (" close=")">
+                    <foreach collection="value" item="itemin" index="index" separator="or">
+                        ${key} = #{itemin}
+                    </foreach>
+                </foreach>
+            </if>
+            <if test="notInMap != null">
+                <foreach collection="notInMap" index="key" item="value" separator="and" open=" and (" close=")">
+                    <foreach collection="value" item="itemin" index="index" separator="and">
+                        ${key} != #{itemin}
+                    </foreach>
+                </foreach>
+            </if>
+        </where>
+        <if test="sortBy != null">
+            <foreach collection="sortBy" item="item" separator="," open=" order by ">
+                ${item.field} ${item.type}
+            </foreach>
+        </if>
+    </sql>
+
+    <!-- 如果有自增字段 -->
+
+    <!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+    <insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentStrategy"
+
+            flushCache="true">
+        <![CDATA[
+                INSERT INTO
+                t_wh_replenishment_strategy (
+                id,
+                    replenishment_rule_id ,
+                    area_id ,
+                    strategy_code ,
+                    allocate_unit_codes ,
+                    replenishment_code ,
+                    priority ,
+                    ou_id 
+                ) VALUES (
+                #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{replenishmentRuleId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{areaId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{strategyCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{allocateUnitCodes,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{replenishmentCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{priority,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                    #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+                )
+            ]]>
+
+    </insert>
+
+
+    <update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentStrategy">
+        <![CDATA[
+            UPDATE t_wh_replenishment_strategy SET
+                replenishment_rule_id = #{replenishmentRuleId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                area_id = #{areaId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                strategy_code = #{strategyCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                allocate_unit_codes = #{allocateUnitCodes,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                replenishment_code = #{replenishmentCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                priority = #{priority,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+            WHERE 
+                id = #{id} 
+        ]]>
+    </update>
+    <update id="batchUpdate">
+        UPDATE t_wh_replenishment_strategy SET
+        <foreach collection="batchUpdateMap" index="key" item="value" separator=",">
+            ${key} = #{value}
+        </foreach>
+        <include refid="replenishmentStrategyConditionWhereExt"/>
+    </update>
+
+    <delete id="delete" parameterType="java.lang.Long">
+        <![CDATA[
+            delete from t_wh_replenishment_strategy where
+                id = #{id} 
+        ]]>
+    </delete>
+
+    <delete id="deleteByIds" parameterType="list">
+
+        delete from t_wh_replenishment_strategy
+        where id in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+
+    </delete>
+    <update id="batchDelete">
+        delete from t_wh_replenishment_strategy
+        <include refid="replenishmentStrategyConditionWhereExt"/>
+    </update>
+
+    <select id="findById" parameterType="java.lang.Long" resultMap="ReplenishmentStrategyResult" flushCache="false">
+        select
+        <include refid="replenishmentStrategyColumns"/>
+        <![CDATA[
+                from t_wh_replenishment_strategy 
+                where 
+                id = #{id} 
+            ]]>
+    </select>
+    <select id="getByIds" parameterType="list" resultMap="ReplenishmentStrategyResult" flushCache="false">
+        select
+        <include refid="replenishmentStrategyColumns"/>
+        from t_wh_replenishment_strategy
+        where id in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+    <sql id="replenishmentStrategyDynamicWhere">
+        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+
+            <if test="id!=null">
+                and id = #{id}
+            </if>
+
+            <if test="replenishmentRuleId!=null">
+                and replenishment_rule_id = #{replenishmentRuleId}
+            </if>
+
+            <if test="areaId!=null">
+                and area_id = #{areaId}
+            </if>
+
+
+            <if test="strategyCode!=null and strategyCode!=''">
+                and strategy_code = #{strategyCode}
+            </if>
+
+
+            <if test="allocateUnitCodes!=null and allocateUnitCodes!=''">
+                and allocate_unit_codes = #{allocateUnitCodes}
+            </if>
+
+
+            <if test="replenishmentCode!=null and replenishmentCode!=''">
+                and replenishment_code = #{replenishmentCode}
+            </if>
+
+            <if test="priority!=null">
+                and priority = #{priority}
+            </if>
+
+            <if test="ouId!=null">
+                and ou_id = #{ouId}
+            </if>
+        </where>
+    </sql>
+
+
+    <select id="getCount" resultType="long">
+        select count(*) from t_wh_replenishment_strategy
+    </select>
+    <select id="findListCountByQueryMap" resultType="long">
+        select count(*) from t_wh_replenishment_strategy
+        <include refid="replenishmentStrategyDynamicWhere"/>
+    </select>
+
+    <select id="findListCountByParam" resultType="long">
+        select count(*) from t_wh_replenishment_strategy
+        <include refid="replenishmentStrategyDynamicWhere"/>
+    </select>
+
+    <!--
+        分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+        因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPage" resultMap="ReplenishmentStrategyResult">
+        select
+        <include refid="replenishmentStrategyColumns"/>
+        from t_wh_replenishment_strategy
+        <include refid="replenishmentStrategyDynamicWhere"/>
+
+    </select>
+
+    <select id="findListByQueryMap" resultMap="ReplenishmentStrategyResult">
+        select
+        <include refid="replenishmentStrategyColumns"/>
+        from t_wh_replenishment_strategy
+        <include refid="replenishmentStrategyDynamicWhere"/>
+
+    </select>
+
+    <select id="findListByParam" resultMap="ReplenishmentStrategyResult">
+        select
+        <include refid="replenishmentStrategyColumns"/>
+        from t_wh_replenishment_strategy
+        <include refid="replenishmentStrategyDynamicWhere"/>
+
+    </select>
+
+    <select id="query" resultMap="ReplenishmentStrategyResult">
+        select
+        <include refid="replenishmentStrategyColumns"/>
+        from t_wh_replenishment_strategy
+        <include refid="replenishmentStrategyConditionWhereExt"/>
+    </select>
+
+    <select id="queryCount" resultType="long">
+        select count(*) from t_wh_replenishment_strategy
+        <include refid="replenishmentStrategyConditionWhereExt"/>
+    </select>
+
+
+</mapper>

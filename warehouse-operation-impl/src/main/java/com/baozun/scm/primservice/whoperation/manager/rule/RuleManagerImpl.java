@@ -19,6 +19,7 @@ import com.baozun.scm.primservice.whoperation.command.rule.RuleExportCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.PlatformRecommendRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.RecommendPlatformCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.RecommendRuleConditionCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.ReplenishmentRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ShelveRecommendRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhInBoundRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
@@ -28,6 +29,7 @@ import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.PlatformRecommendRuleDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.RecommendPlatformDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.RecommendRuleConditionDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.ReplenishmentRuleDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ShelveRecommendRuleDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhInBoundRuleDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
@@ -60,6 +62,9 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
     @Autowired
     private WhSkuInventorySnDao whSkuInventorySnDao;
 
+    @Autowired
+    private ReplenishmentRuleDao replenishmentRuleDao;
+
     /***
      * 根据规则传入参数返回对应规则输出参数
      */
@@ -77,30 +82,34 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
         // 判断规则TYPE是否符合要求
-        if (!ruleAffer.getRuleType().equals(Constants.PLATFORM_RECOMMEND_RULE) && !ruleAffer.getRuleType().equals(Constants.INBOUND_RULE) && !ruleAffer.getRuleType().equals(Constants.SHELVE_RECOMMEND_RULE)
-                && !ruleAffer.getRuleType().equals(Constants.SHELVE_RECOMMEND_RULE_ALL)) {
+        if (!Constants.PLATFORM_RECOMMEND_RULE.equals(ruleAffer.getRuleType()) && !Constants.INBOUND_RULE.equals(ruleAffer.getRuleType()) && !Constants.SHELVE_RECOMMEND_RULE.equals(ruleAffer.getRuleType())
+                && !Constants.SHELVE_RECOMMEND_RULE_ALL.equals(ruleAffer.getRuleType()) && !Constants.ALLOCATE_RULE.equals(ruleAffer.getRuleType()) && !Constants.REPLENISHMENT_RULE.equals(ruleAffer.getRuleType())) {
             log.warn("ruleExport ruleAffer.getRuleType() is error ruleAffer.getRuleType() = " + ruleAffer.getRuleType() + " logid: " + ruleAffer.getLogId());
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
         // 月台规则
-        if (ruleAffer.getRuleType().equals(Constants.PLATFORM_RECOMMEND_RULE)) {
+        if (Constants.PLATFORM_RECOMMEND_RULE.equals(ruleAffer.getRuleType())) {
             export = exportPlatformRecommendRule(ruleAffer);
         }
         // 入库分拣
-        if (ruleAffer.getRuleType().equals(Constants.INBOUND_RULE)) {
+        if (Constants.INBOUND_RULE.equals(ruleAffer.getRuleType())) {
             export = exportInboundRule(ruleAffer);
         }
         // 上架 整托盘 整箱
-        if (ruleAffer.getRuleType().equals(Constants.SHELVE_RECOMMEND_RULE_ALL)) {
+        if (Constants.SHELVE_RECOMMEND_RULE_ALL.equals(ruleAffer.getRuleType())) {
             export = exportShelveRuleAll(ruleAffer);
         }
         // 上架 拆箱
-        if (ruleAffer.getRuleType().equals(Constants.SHELVE_RECOMMEND_RULE)) {
+        if (Constants.SHELVE_RECOMMEND_RULE.equals(ruleAffer.getRuleType())) {
             export = exportShelveRule(ruleAffer);
         }
         // 分配规则
-        if (ruleAffer.getRuleType().equals(Constants.ALLOCATE_RULE)) {
+        if (Constants.ALLOCATE_RULE.equals(ruleAffer.getRuleType())) {
             export = allocateRule(ruleAffer);
+        }
+        // 补货规则
+        if (Constants.REPLENISHMENT_RULE.equals(ruleAffer.getRuleType())) {
+            export = exportReplenishmentRule(ruleAffer);
         }
         log.info(this.getClass().getSimpleName() + ".ruleExport method end! logid: " + ruleAffer.getLogId());
         return export;
@@ -310,6 +319,38 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
     private RuleExportCommand allocateRule(RuleAfferCommand ruleAffer) {
         RuleExportCommand export = new RuleExportCommand();
         return export;
+    }
+
+    private RuleExportCommand exportReplenishmentRule(RuleAfferCommand ruleAffer) {
+        if (null == ruleAffer.getReplenishmentRuleSkuId() || null == ruleAffer.getReplenishmentRuleLocationId()) {
+            log.error("ruleExport exportReplenishmentRule error, param skuId or locationId is null, skuId is:[{}], locationId is:[{}]", ruleAffer.getReplenishmentRuleSkuId(), ruleAffer.getReplenishmentRuleLocationId());
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+        }
+        // 商品ID
+        Long skuId = ruleAffer.getReplenishmentRuleSkuId();
+        // 库位ID
+        Long locationId = ruleAffer.getReplenishmentRuleLocationId();
+        // 组织ID
+        Long ouId = ruleAffer.getOuid();
+        // 查询所有可用的补货规则,按照优先级排序
+        List<ReplenishmentRuleCommand> ruleCommandList = replenishmentRuleDao.findRuleByOuIdOrderByPriorityAsc(ruleAffer.getOuid());
+        List<ReplenishmentRuleCommand> returnList = new ArrayList<>();
+        if (null != ruleCommandList && !ruleCommandList.isEmpty()) {
+            for (ReplenishmentRuleCommand ruleCommand : ruleCommandList) {
+                // 匹配商品的规则
+                List<Long> matchSkuIdList = replenishmentRuleDao.executeSkuRuleSql(ruleCommand.getSkuRuleSql(), skuId, ouId);
+                // 匹配库位的规则
+                List<Long> matchLocationIdList = replenishmentRuleDao.executeLocationRuleSql(ruleCommand.getLocationRuleSql(), locationId, ouId);
+                if (null != matchSkuIdList && !matchSkuIdList.isEmpty() && null != matchLocationIdList && !matchLocationIdList.isEmpty()) {
+                    // 商品和库位的规则都匹配上了则符合条件
+                    returnList.add(ruleCommand);
+                }
+            }
+        }
+
+        RuleExportCommand ruleExportCommand = new RuleExportCommand();
+        ruleExportCommand.setReplenishmentRuleCommandList(returnList);
+        return ruleExportCommand;
     }
 
     /**

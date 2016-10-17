@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.ReplenishmentStrategyDao">
+    <resultMap id="ReplenishmentStrategyResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentStrategy">
+    </resultMap>
+
+    <resultMap id="ReplenishmentStrategyCommand" type="com.baozun.scm.primservice.whoperation.command.warehouse.ReplenishmentStrategyCommand">
+    </resultMap>
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="replenishmentStrategyColumnsExt">
+        <![CDATA[
+                id as id,
+                replenishment_rule_id as replenishmentRuleId,
+                area_id as areaId,
+                strategy_code as strategyCode,
+                allocate_unit_codes as allocateUnitCodes,
+                replenishment_code as replenishmentCode,
+                priority as priority,
+                ou_id as ouId
+        ]]>
+    </sql>
+
+    <sql id="replenishmentStrategyDynamicWhereExt">
+        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+
+            <if test="id!=null">
+                and id = #{id}
+            </if>
+
+            <if test="replenishmentRuleId!=null">
+                and replenishment_rule_id = #{replenishmentRuleId}
+            </if>
+
+            <if test="areaId!=null">
+                and area_id = #{areaId}
+            </if>
+
+
+            <if test="strategyCode!=null and strategyCode!=''">
+                and strategy_code = #{strategyCode}
+            </if>
+
+
+            <if test="allocateUnitCodes!=null and allocateUnitCodes!=''">
+                and allocate_unit_codes = #{allocateUnitCodes}
+            </if>
+
+
+            <if test="replenishmentCode!=null and replenishmentCode!=''">
+                and replenishment_code = #{replenishmentCode}
+            </if>
+
+            <if test="priority!=null">
+                and priority = #{priority}
+            </if>
+
+            <if test="ouId!=null">
+                and ou_id = #{ouId}
+            </if>
+        </where>
+    </sql>
+
+    <select id="findCommandByRuleId" resultMap="ReplenishmentStrategyCommand">
+        select
+        <include refid="replenishmentStrategyColumnsExt"/>
+        from t_wh_replenishment_strategy
+        where
+        replenishment_rule_id = #{replenishmentRuleId}
+        and ou_id = #{ouId}
+    </select>
+
+
+    <select id="findListCountByRuleId" resultType="long">
+        select count(*) from t_wh_replenishment_strategy
+        where
+        replenishment_rule_id = #{replenishmentRuleId}
+        and ou_id = #{ouId}
+    </select>
+
+    <delete id="deleteByRuleId">
+        delete from t_wh_replenishment_strategy
+        where
+        replenishment_rule_id = #{replenishmentRuleId}
+        and ou_id = #{ouId}
+    </delete>
+</mapper>

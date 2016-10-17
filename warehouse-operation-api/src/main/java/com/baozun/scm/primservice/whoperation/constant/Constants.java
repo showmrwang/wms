@@ -176,6 +176,21 @@ public final class Constants {
     /** 分配规则 */
     public static final String ALLOCATE_RULE = "ALLOCATE_RULE";
 
+    /** 分配策略 */
+    public static final String ALLOCATE_STRATEGY = "ALLOCATE_STRATEGY";
+    /** 分配单位 */
+    public static final String PRODUCT_UNIT = "PRODUCT_UNIT";
+    /** 补货策略 */
+    public static final String REPLENISH_STRATEGY = "REPLENISH_STRATEGY";
+    /** 分配区域 */
+    public static final String AREA_TYPE_ALLOCATE_AREA = "allocatearea";
+
+    /** 补货规则 */
+    public static final String REPLENISHMENT_RULE = "REPLENISHMENT_RULE";
+    /** 补货规则 货品规则类型 */
+    public static final String RULE_TYPE_REPLENISHMENT_SKU = "REPLENISHMENT_SKU";
+    /** 补货规则 库位规则类型 */
+    public static final String RULE_TYPE_REPLENISHMENT_LOCATION = "REPLENISHMENT_LOCATION";
 
     // 库存状态
     public static final Long INVENTORY_STATUS_GOOD = 3L;// 良品

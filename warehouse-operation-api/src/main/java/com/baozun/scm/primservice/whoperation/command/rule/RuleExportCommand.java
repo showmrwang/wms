@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.RecommendPlatformCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.ReplenishmentRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ShelveRecommendRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhInBoundRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
@@ -46,6 +47,9 @@ public class RuleExportCommand extends BaseCommand {
 
     /** 出库单明细对应分配规则 */
     private Map<List<Long>, Long> allocateRuleOdoLineId;
+
+    /** 补货规则 */
+    private List<ReplenishmentRuleCommand> replenishmentRuleCommandList;
 
     public Boolean getUsableness() {
         return usableness;
@@ -119,5 +123,11 @@ public class RuleExportCommand extends BaseCommand {
         this.allocateRuleOdoLineId = allocateRuleOdoLineId;
     }
 
+    public List<ReplenishmentRuleCommand> getReplenishmentRuleCommandList() {
+        return replenishmentRuleCommandList;
+    }
 
+    public void setReplenishmentRuleCommandList(List<ReplenishmentRuleCommand> replenishmentRuleCommandList) {
+        this.replenishmentRuleCommandList = replenishmentRuleCommandList;
+    }
 }
