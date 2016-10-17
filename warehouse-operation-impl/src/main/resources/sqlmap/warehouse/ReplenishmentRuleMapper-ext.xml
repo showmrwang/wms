@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.ReplenishmentRuleDao">
+    <resultMap id="ReplenishmentRuleResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentRule">
+    </resultMap>
+
+    <resultMap id="ReplenishmentRuleCommand" type="com.baozun.scm.primservice.whoperation.command.warehouse.ReplenishmentRuleCommand">
+    </resultMap>
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="replenishmentRuleColumnsExt">
+        <![CDATA[
+                id as id,
+                replenishment_rule_name as replenishmentRuleName,
+                replenishment_rule_code as replenishmentRuleCode,
+                location_rule as locationRule,
+                location_rule_sql as locationRuleSql,
+                sku_rule as skuRule,
+                sku_rule_sql as skuRuleSql,
+                order_replenish as orderReplenish,
+                real_time_replenish as realTimeReplenish,
+                wave_replenish as waveReplenish,
+                ou_id as ouId,
+                priority as priority,
+                description as description,
+                create_time as createTime,
+                created_id as createdId,
+                last_modify_time as lastModifyTime,
+                modified_id as modifiedId,
+                lifecycle as lifecycle
+        ]]>
+    </sql>
+
+    <sql id="replenishmentRuleDynamicWhereExt">
+        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+
+            <if test="id!=null">
+                and id = #{id}
+            </if>
+
+            <if test="replenishmentRuleName!=null and replenishmentRuleName!=''">
+                and replenishment_rule_name = #{replenishmentRuleName}
+            </if>
+
+            <if test="replenishmentRuleCode!=null and replenishmentRuleCode!=''">
+                and replenishment_rule_code = #{replenishmentRuleCode}
+            </if>
+
+            <if test="locationRule!=null and locationRule!=''">
+                and location_rule = #{locationRule}
+            </if>
+
+            <if test="locationRuleSql!=null and locationRuleSql!=''">
+                and location_rule_sql = #{locationRuleSql}
+            </if>
+
+            <if test="skuRule!=null and skuRule!=''">
+                and sku_rule = #{skuRule}
+            </if>
+
+            <if test="skuRuleSql!=null and skuRuleSql!=''">
+                and sku_rule_sql = #{skuRuleSql}
+            </if>
+
+            <if test="orderReplenish!=null">
+                and order_replenish = #{orderReplenish}
+            </if>
+
+            <if test="realTimeReplenish!=null">
+                and real_time_replenish = #{realTimeReplenish}
+            </if>
+
+            <if test="waveReplenish!=null">
+                and wave_replenish = #{waveReplenish}
+            </if>
+
+            <if test="ouId!=null">
+                and ou_id = #{ouId}
+            </if>
+
+            <if test="priority!=null">
+                and priority = #{priority}
+            </if>
+
+            <if test="description!=null and description!=''">
+                and description = #{description}
+            </if>
+
+            <if test="createTime!=null">
+                and create_time = #{createTime}
+            </if>
+
+            <if test="createdId!=null">
+                and created_id = #{createdId}
+            </if>
+
+            <if test="lastModifyTime!=null">
+                and last_modify_time = #{lastModifyTime}
+            </if>
+
+            <if test="modifiedId!=null">
+                and modified_id = #{modifiedId}
+            </if>
+
+            <if test="lifecycle!=null">
+                and lifecycle = #{lifecycle}
+            </if>
+        </where>
+    </sql>
+
+    <sql id="replenishmentRuleDynamicLikeWhereExt">
+        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+
+            <if test="id!=null">
+                and id = #{id}
+            </if>
+
+            <if test="replenishmentRuleName!=null and replenishmentRuleName!=''">
+                and replenishment_rule_name like #{replenishmentRuleName}
+            </if>
+
+            <if test="replenishmentRuleNameByCriteriasData!=null and replenishmentRuleNameByCriteriasData!=''">
+                and replenishment_rule_name like #{replenishmentRuleNameByCriteriasData}
+            </if>
+
+            <if test="replenishmentRuleCode!=null and replenishmentRuleCode!=''">
+                and replenishment_rule_code like #{replenishmentRuleCode}
+            </if>
+
+            <if test="replenishmentRuleCodeByCriteriasData!=null and replenishmentRuleCodeByCriteriasData!=''">
+                and replenishment_rule_code like #{replenishmentRuleCodeByCriteriasData}
+            </if>
+
+            <if test="locationRule!=null and locationRule!=''">
+                and location_rule = #{locationRule}
+            </if>
+
+            <if test="locationRuleSql!=null and locationRuleSql!=''">
+                and location_rule_sql = #{locationRuleSql}
+            </if>
+
+            <if test="skuRule!=null and skuRule!=''">
+                and sku_rule = #{skuRule}
+            </if>
+
+            <if test="skuRuleSql!=null and skuRuleSql!=''">
+                and sku_rule_sql = #{skuRuleSql}
+            </if>
+
+            <if test="orderReplenish!=null">
+                and order_replenish = #{orderReplenish}
+            </if>
+
+            <if test="realTimeReplenish!=null">
+                and real_time_replenish = #{realTimeReplenish}
+            </if>
+
+            <if test="waveReplenish!=null">
+                and wave_replenish = #{waveReplenish}
+            </if>
+
+            <if test="ouId!=null">
+                and ou_id = #{ouId}
+            </if>
+
+            <if test="priority!=null">
+                and priority = #{priority}
+            </if>
+
+            <if test="description!=null and description!=''">
+                and description = #{description}
+            </if>
+
+            <if test="descriptionByCriteriasData!=null and descriptionByCriteriasData!=''">
+                and description like #{description}
+            </if>
+
+            <if test="createTime!=null">
+                and create_time = #{createTime}
+            </if>
+
+            <if test="createdId!=null">
+                and created_id = #{createdId}
+            </if>
+
+            <if test="lastModifyTime!=null">
+                and last_modify_time = #{lastModifyTime}
+            </if>
+
+            <if test="modifiedId!=null">
+                and modified_id = #{modifiedId}
+            </if>
+
+            <if test="lifecycle!=null">
+                and lifecycle = #{lifecycle}
+            </if>
+        </where>
+    </sql>
+
+    <select id="findCountByQueryMapWithPageExt" resultType="long">
+        select count(1)
+        from t_wh_replenishment_rule
+        <include refid="replenishmentRuleDynamicLikeWhereExt"/>
+    </select>
+
+    <select id="findListByQueryMapWithPageExt" resultMap="ReplenishmentRuleCommand">
+        select
+        <include refid="replenishmentRuleColumnsExt"/>
+        from t_wh_replenishment_rule
+        <include refid="replenishmentRuleDynamicLikeWhereExt"/>
+    </select>
+
+    <select id="findByIdExt" resultMap="ReplenishmentRuleResultExt">
+        select
+        <include refid="replenishmentRuleColumnsExt"/>
+        from t_wh_replenishment_rule
+        where
+        id = #{id}
+        and ou_id = #{ouId}
+    </select>
+
+    <select id="findCommandById" resultMap="ReplenishmentRuleCommand">
+        select
+        <include refid="replenishmentRuleColumnsExt"/>
+        from t_wh_replenishment_rule
+        where
+        id = #{id}
+        and ou_id = #{ouId}
+    </select>
+
+    <select id="checkUnique" resultType="int">
+        select count(1) from t_wh_replenishment_rule
+        <where>
+            <if test="id!=null">
+                and id != #{id}
+            </if>
+            <if test="(replenishmentRuleName!=null and replenishmentRuleName!='')
+                    or (replenishmentRuleCode!=null and replenishmentRuleCode!='')
+                    or (priority!=null and priority!='')">
+                and (
+                <trim prefix="" prefixOverrides="or">
+                    <if test="replenishmentRuleName!=null and replenishmentRuleName!=''">
+                        or replenishment_rule_name = #{replenishmentRuleName}
+                    </if>
+                    <if test="replenishmentRuleCode!=null and replenishmentRuleCode!=''">
+                        or replenishment_rule_code = #{replenishmentRuleCode}
+                    </if>
+                    <if test="priority!=null and priority!=''">
+                        or priority = #{priority}
+                    </if>
+                </trim>
+                )
+            </if>
+            and ou_id = #{ouId}
+        </where>
+    </select>
+
+    <select id="executeSkuRuleSql" resultType="Long">
+        ${skuRuleSql}
+    </select>
+
+    <select id="executeLocationRuleSql" resultType="Long">
+        ${locationRuleSql}
+    </select>
+
+    <select id="findRuleByOuIdOrderByPriorityAsc" resultMap="ReplenishmentRuleCommand">
+        select
+        <include refid="replenishmentRuleColumnsExt"/>
+        from t_wh_replenishment_rule
+        where
+        ou_id = #{ouId}
+        and lifecycle = 1
+        order by priority asc
+    </select>
+
+    <update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentRule">
+        <![CDATA[
+            UPDATE t_wh_replenishment_rule SET
+                replenishment_rule_name = #{replenishmentRuleName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                replenishment_rule_code = #{replenishmentRuleCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                location_rule = #{locationRule,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                location_rule_sql = #{locationRuleSql,javaType=java.lang.String,jdbcType=LONGVARCHAR} ,
+                sku_rule = #{skuRule,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                sku_rule_sql = #{skuRuleSql,javaType=java.lang.String,jdbcType=LONGVARCHAR} ,
+                order_replenish = #{orderReplenish,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                real_time_replenish = #{realTimeReplenish,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                wave_replenish = #{waveReplenish,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                priority = #{priority,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                description = #{description,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                last_modify_time = now() ,
+                modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER}
+            WHERE
+                id = #{id}
+                and ou_id = #{ouId}
+                and last_modify_time =  #{lastModifyTime}
+        ]]>
+    </update>
+</mapper>
