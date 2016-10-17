@@ -1,0 +1,419 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryTobefilledDao">
+	<resultMap id="WhSkuInventoryTobefilledResult" type="com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryTobefilled">
+	</resultMap>
+	<resultMap id="WhSkuInventoryTobefilledPaginationResult" type="lark.common.dao.Pagination">
+    	<collection property="items" javaType="ArrayList" resultMap="WhSkuInventoryTobefilledResult"/>
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whSkuInventoryTobefilledColumns">
+	    <![CDATA[
+	        	id as id,
+	        	sku_id as skuId,
+	        	location_id as locationId,
+	        	outer_container_id as outerContainerId,
+	        	inside_container_id as insideContainerId,
+	        	customer_id as customerId,
+	        	store_id as storeId,
+	        	occupation_code as occupationCode,
+	        	occupation_line_id as occupationLineId,
+	        	replenishment_code as replenishmentCode,
+	        	qty as qty,
+	        	inv_status as invStatus,
+	        	inv_type as invType,
+	        	batch_number as batchNumber,
+	        	mfg_date as mfgDate,
+	        	exp_date as expDate,
+	        	country_of_origin as countryOfOrigin,
+	        	inv_attr1 as invAttr1,
+	        	inv_attr2 as invAttr2,
+	        	inv_attr3 as invAttr3,
+	        	inv_attr4 as invAttr4,
+	        	inv_attr5 as invAttr5,
+	        	uuid as uuid,
+	        	ou_id as ouId,
+	        	last_modify_time as lastModifyTime
+	    ]]>
+	</sql>
+	<sql id="whSkuInventoryTobefilledConditionWhereExt">
+		<where>
+			<if test="likeEqualsMap != null">
+				<foreach collection="likeEqualsMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} like CONCAT('%',#{value},'%') 
+				</foreach> 
+			</if> 
+			<if test="equalsMap != null"> 
+				<foreach collection="equalsMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} = #{value} 
+				</foreach> 
+			</if> 
+			<if test="notEqualsMap != null"> 
+				<foreach collection="notEqualsMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} != #{value} 
+				</foreach> 
+			</if> 
+			<if test="greateMap != null"> 
+				<foreach collection="greateMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} &gt; #{value} 
+				</foreach> 
+			</if> 
+			<if test="greateEqualsMap != null"> 
+				<foreach collection="greateEqualsMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} &gt;= #{value} 
+				</foreach> 
+			</if> 
+			<if test="lessMap != null"> 
+				<foreach collection="lessMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} &lt; #{value} 
+				</foreach> 
+			</if> 
+			<if test="lessEqualsMap != null"> 
+				<foreach collection="lessEqualsMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} &lt;= #{value} 
+				</foreach> 
+			</if> 
+			<if test="nullMap != null"> 
+				<foreach collection="nullMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} is null 
+				</foreach> 
+			</if> 
+			<if test="notNullMap != null"> 
+				<foreach collection="notNullMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} is not null 
+				</foreach> 
+			</if> 
+			<if test="inMap != null"> 
+				<foreach collection="inMap" index="key"  item="value" separator="and" open=" and (" close=")"> 
+					<foreach collection="value" item="itemin" index="index" separator="or"> 
+						${key} = #{itemin} 
+					</foreach> 
+				</foreach> 
+			</if> 
+			<if test="notInMap != null"> 
+				<foreach collection="notInMap" index="key"  item="value" separator="and" open=" and (" close=")"> 
+					<foreach collection="value" item="itemin" index="index" separator="and"> 
+						${key} != #{itemin} 
+					</foreach> 
+				</foreach> 
+			</if> 
+		</where>
+		<if test="sortBy != null"> 
+			<foreach collection="sortBy" item="item" separator=","  open=" order by "> 
+				${item.field} ${item.type}
+			</foreach> 
+		</if>
+	</sql>
+	
+		<!-- 如果有自增字段 -->
+	
+			<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+			<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryTobefilled" 
+				useGeneratedKeys="true" keyProperty="id" 
+			 flushCache="true">
+		    <![CDATA[
+		        INSERT INTO
+		        t_wh_sku_inventory_tobefilled (
+		       		id,
+		        	sku_id ,
+		        	location_id ,
+		        	outer_container_id ,
+		        	inside_container_id ,
+		        	customer_id ,
+		        	store_id ,
+		        	occupation_code ,
+		        	occupation_line_id ,
+		        	replenishment_code ,
+		        	qty ,
+		        	inv_status ,
+		        	inv_type ,
+		        	batch_number ,
+		        	mfg_date ,
+		        	exp_date ,
+		        	country_of_origin ,
+		        	inv_attr1 ,
+		        	inv_attr2 ,
+		        	inv_attr3 ,
+		        	inv_attr4 ,
+		        	inv_attr5 ,
+		        	uuid ,
+		        	ou_id ,
+		        	last_modify_time 
+		        ) VALUES (
+		        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{locationId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{outerContainerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{insideContainerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{customerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{storeId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{occupationCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{occupationLineId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{replenishmentCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{qty,javaType=Double,jdbcType=DECIMAL} ,
+		        	#{invStatus,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{invType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{batchNumber,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{mfgDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{expDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{countryOfOrigin,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invAttr1,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invAttr2,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invAttr3,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invAttr4,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invAttr5,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{uuid,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} 
+		        )
+		    ]]>
+	
+			</insert>
+		
+		<update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryTobefilled">
+	    <![CDATA[
+	        UPDATE t_wh_sku_inventory_tobefilled SET
+		        sku_id = #{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        location_id = #{locationId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        outer_container_id = #{outerContainerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        inside_container_id = #{insideContainerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        customer_id = #{customerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        store_id = #{storeId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        occupation_code = #{occupationCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        occupation_line_id = #{occupationLineId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        replenishment_code = #{replenishmentCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        qty = #{qty,javaType=Double,jdbcType=DECIMAL} ,
+		        inv_status = #{invStatus,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        inv_type = #{invType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        batch_number = #{batchNumber,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        mfg_date = #{mfgDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        exp_date = #{expDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        country_of_origin = #{countryOfOrigin,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        inv_attr1 = #{invAttr1,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        inv_attr2 = #{invAttr2,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        inv_attr3 = #{invAttr3,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        inv_attr4 = #{invAttr4,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        inv_attr5 = #{invAttr5,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        uuid = #{uuid,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} 
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+		</update>
+		<update id="batchUpdate">
+	        UPDATE t_wh_sku_inventory_tobefilled SET
+	        	<foreach collection="batchUpdateMap" index="key"  item="value" separator=",">
+	        		${key} = #{value}
+	        	</foreach>
+	        	<include refid="whSkuInventoryTobefilledConditionWhereExt"/>
+		</update>
+		
+	   <delete id="delete" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from t_wh_sku_inventory_tobefilled where
+		        id = #{id} 
+	    ]]>
+	    </delete> 
+	    
+	     <delete id="deleteByIds" parameterType="list">
+	    
+	        delete from t_wh_sku_inventory_tobefilled 
+	        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>	
+	  
+	    </delete>  
+	    <update id="batchDelete">
+	        delete from t_wh_sku_inventory_tobefilled <include refid="whSkuInventoryTobefilledConditionWhereExt"/>
+		</update>
+	         
+	    <select id="findById" parameterType="java.lang.Long" resultMap="WhSkuInventoryTobefilledResult" flushCache="false">
+			select <include refid="whSkuInventoryTobefilledColumns" />
+		    <![CDATA[
+			    from t_wh_sku_inventory_tobefilled 
+		        where 
+		        id = #{id} 
+		    ]]>
+		</select>	
+		<select id="getByIds" parameterType="list"  resultMap="WhSkuInventoryTobefilledResult" flushCache="false">
+			select <include refid="whSkuInventoryTobefilledColumns" />
+			    from t_wh_sku_inventory_tobefilled 
+		        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>					
+		</select>	
+	<sql id="whSkuInventoryTobefilledDynamicWhere">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+				<if test="skuId!=null">
+					and sku_id = #{skuId}
+				</if>
+	       
+				<if test="locationId!=null">
+					and location_id = #{locationId}
+				</if>
+	       
+				<if test="outerContainerId!=null">
+					and outer_container_id = #{outerContainerId}
+				</if>
+	       
+				<if test="insideContainerId!=null">
+					and inside_container_id = #{insideContainerId}
+				</if>
+	       
+				<if test="customerId!=null">
+					and customer_id = #{customerId}
+				</if>
+	       
+				<if test="storeId!=null">
+					and store_id = #{storeId}
+				</if>
+	       
+	       
+		       <if test="occupationCode!=null and occupationCode!=''">
+					and occupation_code = #{occupationCode}
+				</if>
+	       
+				<if test="occupationLineId!=null">
+					and occupation_line_id = #{occupationLineId}
+				</if>
+	       
+	       
+		       <if test="replenishmentCode!=null and replenishmentCode!=''">
+					and replenishment_code = #{replenishmentCode}
+				</if>
+	       
+				<if test="qty!=null">
+					and qty = #{qty}
+				</if>
+	       
+				<if test="invStatus!=null">
+					and inv_status = #{invStatus}
+				</if>
+	       
+	       
+		       <if test="invType!=null and invType!=''">
+					and inv_type = #{invType}
+				</if>
+	       
+	       
+		       <if test="batchNumber!=null and batchNumber!=''">
+					and batch_number = #{batchNumber}
+				</if>
+	       
+				<if test="mfgDate!=null">
+					and mfg_date = #{mfgDate}
+				</if>
+	       
+				<if test="expDate!=null">
+					and exp_date = #{expDate}
+				</if>
+	       
+	       
+		       <if test="countryOfOrigin!=null and countryOfOrigin!=''">
+					and country_of_origin = #{countryOfOrigin}
+				</if>
+	       
+	       
+		       <if test="invAttr1!=null and invAttr1!=''">
+					and inv_attr1 = #{invAttr1}
+				</if>
+	       
+	       
+		       <if test="invAttr2!=null and invAttr2!=''">
+					and inv_attr2 = #{invAttr2}
+				</if>
+	       
+	       
+		       <if test="invAttr3!=null and invAttr3!=''">
+					and inv_attr3 = #{invAttr3}
+				</if>
+	       
+	       
+		       <if test="invAttr4!=null and invAttr4!=''">
+					and inv_attr4 = #{invAttr4}
+				</if>
+	       
+	       
+		       <if test="invAttr5!=null and invAttr5!=''">
+					and inv_attr5 = #{invAttr5}
+				</if>
+	       
+	       
+		       <if test="uuid!=null and uuid!=''">
+					and uuid = #{uuid}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+		</where>
+	</sql>
+	
+
+	<select id="getCount" resultType="long">
+        select count(*) from t_wh_sku_inventory_tobefilled 
+    </select>
+    <select id="findListCountByQueryMap" resultType="long">
+        select count(*) from t_wh_sku_inventory_tobefilled 
+		<include refid="whSkuInventoryTobefilledDynamicWhere"/>    
+    </select>
+    
+    <select id="findListCountByParam" resultType="long">
+        select count(*) from t_wh_sku_inventory_tobefilled 
+		<include refid="whSkuInventoryTobefilledDynamicWhere"/>    
+    </select>
+    
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPage" resultMap="WhSkuInventoryTobefilledResult">
+    	select <include refid="whSkuInventoryTobefilledColumns" />
+	    from t_wh_sku_inventory_tobefilled 
+		<include refid="whSkuInventoryTobefilledDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByQueryMap" resultMap="WhSkuInventoryTobefilledResult">
+    	select <include refid="whSkuInventoryTobefilledColumns" />
+	    from t_wh_sku_inventory_tobefilled 
+		<include refid="whSkuInventoryTobefilledDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByParam" resultMap="WhSkuInventoryTobefilledResult">
+    	select <include refid="whSkuInventoryTobefilledColumns" />
+	    from t_wh_sku_inventory_tobefilled 
+		<include refid="whSkuInventoryTobefilledDynamicWhere"/>
+		
+    </select>
+    
+    <select id="query" resultMap="WhSkuInventoryTobefilledResult">
+		select <include refid="whSkuInventoryTobefilledColumns" />
+	    from t_wh_sku_inventory_tobefilled  
+		<include refid="whSkuInventoryTobefilledConditionWhereExt"/>
+    </select>
+    
+    <select id="queryCount" resultType="long">
+		select count(*) from t_wh_sku_inventory_tobefilled  
+		<include refid="whSkuInventoryTobefilledConditionWhereExt"/>
+    </select>
+
+	
+</mapper>
