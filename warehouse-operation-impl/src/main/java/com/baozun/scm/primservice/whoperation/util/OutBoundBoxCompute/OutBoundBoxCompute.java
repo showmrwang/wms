@@ -18,7 +18,7 @@ public class OutBoundBoxCompute {
     public static final Logger log = LoggerFactory.getLogger(OutBoundBoxCompute.class);
 
     /** 出库箱体积 */
-    private static double tempVolume;
+    private static double tempVolume = 0.00;
 
     /***
      * 通过波次明细对应商品数量/体积+出库箱体积计算多少商品能放入对应出库箱 放入出库箱的商品从传入的List<WaveLine>波次明细中扣除相应数量
@@ -27,7 +27,7 @@ public class OutBoundBoxCompute {
      * @param boxTotalVolume 出库箱体积
      * @return
      */
-    public static Map<Double, List<WaveLineCommand>> obbCompute(List<WaveLineCommand> waveLineList, Double boxTotalVolume) {
+    public static Double obbCompute(List<WaveLineCommand> waveLineList, Double boxTotalVolume) {
         log.info("OutBoundBoxCompute.compute method begin!");
         if (null == waveLineList) {
             log.warn("OutBoundBoxCompute.compute waveLineList is null");
@@ -41,7 +41,6 @@ public class OutBoundBoxCompute {
             log.warn("OutBoundBoxCompute.compute aveLineList.size() == 0");
             return null;
         }
-        Map<Double, List<WaveLineCommand>> returnMap = new HashMap<Double, List<WaveLineCommand>>();
         List<OutBoundBox> bList = new ArrayList<OutBoundBox>();
         // 封装计算数据
         for (WaveLineCommand w : waveLineList) {
@@ -60,10 +59,9 @@ public class OutBoundBoxCompute {
         // 计算多少商品能放入对应出库箱
         Map<Long, Integer> solveResult = solve(bags, boxTotalVolume);
         // 调整波次明细对应数量
-        List<WaveLineCommand> wlList = revisionWaveLineQty(waveLineList, solveResult);
-        returnMap.put(tempVolume, wlList);
+        revisionWaveLineQty(waveLineList, solveResult);
         log.info("OutBoundBoxCompute.compute method end!");
-        return returnMap;
+        return tempVolume;
     }
 
     /***
@@ -71,21 +69,21 @@ public class OutBoundBoxCompute {
      * 
      * @param waveLineList
      */
-    private static List<WaveLineCommand> revisionWaveLineQty(List<WaveLineCommand> waveLineList, Map<Long, Integer> solveResult) {
-        for (WaveLineCommand wave : waveLineList) {
+    private static void revisionWaveLineQty(List<WaveLineCommand> waveLineList, Map<Long, Integer> solveResult) {
+        for (int i = 0; i < waveLineList.size(); i++) {
             // 判断放入出库箱商品是否存在
-            if (solveResult.containsKey(wave.getId())) {
-                int qty = wave.getQty().intValue() - solveResult.get(wave.getId());
+            if (solveResult.containsKey(waveLineList.get(i).getId())) {
+                int qty = waveLineList.get(i).getQty().intValue() - solveResult.get(waveLineList.get(i).getId());
                 if (qty == 0) {
                     // 如果全部放入出库箱 删除对应波次明细数据
-                    waveLineList.remove(wave);
+                    waveLineList.remove(i);
+                    i--;
                 } else {
                     // 否则扣除对应波次明细数量
-                    wave.setQty(Double.valueOf(qty));
+                    waveLineList.get(i).setQty(Double.valueOf(qty));
                 }
             }
         }
-        return waveLineList;
     }
 
     /***
@@ -105,16 +103,15 @@ public class OutBoundBoxCompute {
      * @return
      */
     private static Map<Long, Integer> solve(OutBoundBox[] boxs, Double boxTotalVolume) {
-        // 出库箱对应体积
-        tempVolume = boxTotalVolume;
         Map<Long, Integer> returnMap = new HashMap<Long, Integer>();
         DecimalFormat df = new DecimalFormat("######0.00");
         for (int i = 0; i < boxs.length; i++) {
             // 判断当前商品是否可以放入出库箱中，若不能查找下一个商品
-            double volume = Double.valueOf(df.format(tempVolume -= boxs[i].getVolume()));
-            if (volume < 0.00) continue;
+            if (boxTotalVolume - boxs[i].getVolume() < 0.00) continue;
             // 出库箱体积-本次放入商品体积
-            tempVolume = volume;
+            boxTotalVolume = Double.valueOf(df.format(boxTotalVolume -= boxs[i].getVolume()));
+            // 累加放入出库箱商品的体积
+            tempVolume = Double.valueOf(df.format(tempVolume += boxs[i].getVolume()));
             Long key = boxs[i].getWaveLineId();
             // 判断是否有对应波次明细商品已放入过此出库箱
             if (returnMap.containsKey(key)) {
