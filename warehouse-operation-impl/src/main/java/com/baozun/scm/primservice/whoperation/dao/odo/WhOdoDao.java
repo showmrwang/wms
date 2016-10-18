@@ -86,6 +86,14 @@ public interface WhOdoDao extends BaseDao<WhOdo, Long> {
     List<OdoCommand> findOdoListByIdOuId(@Param("ids") String idString, @Param("ouId") Long ouId, @Param("odoStatus") String odoStatus);
 
     /**
+     * [通用方法] 查找已合并订单
+     * @param idString
+     * @param ouId
+     * @return
+     */
+    List<WhOdo> findMergeOdoListByIdOuId(@Param("ids") String idString, @Param("ouId") Long ouId);
+
+    /**
      * [业务方法]删除出库单
      * 
      * @param id
@@ -116,5 +124,7 @@ public interface WhOdoDao extends BaseDao<WhOdo, Long> {
     OdoWaveGroupResultCommand findOdoSummaryForWave(OdoWaveGroupSearchCommand command);
 
     List<WhOdo> findListForWave(OdoSearchCommand search);
+
+    List<WhOdo> findByIdsAndOuId(List<String> odoIds, Long ouId, Integer option);
 
 }

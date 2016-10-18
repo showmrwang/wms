@@ -96,4 +96,9 @@ public interface WhOdoLineDao extends BaseDao<WhOdoLine, Long> {
 
     int deleteByIdOuId(@Param("id") Long id, @Param("ouId") Long ouId);
 
+    /**
+     * [业务方法] 合并订单-通过合并后出库单code和原始出库单明细行 行号查找原始出库单明细行信息
+     */
+    WhOdoLine findByOdoCodeAndLineNum(@Param("lineNum") Integer lineNum, @Param("originalOdoCode") String originalOdoCode, @Param("ouId") Long ouId);
+
 }
