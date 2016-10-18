@@ -26,8 +26,8 @@ public class OdoMergeManagerProxyImpl implements OdoMergeManagerProxy {
     }
 
     @Override
-    public Map<String, String> doOdoMerge(List<String> odoIds, List<String> options, Long ouId, Long userId) {
-        Map<String, String> response = this.odoMergeManager.doOdoMerge(odoIds, options, ouId, userId);
+    public Map<String, String> odoMerge(List<String> odoIds, List<String> options, Long ouId, Long userId) {
+        Map<String, String> response = this.odoMergeManager.odoMerge(odoIds, options, ouId, userId);
         return response;
     }
 
