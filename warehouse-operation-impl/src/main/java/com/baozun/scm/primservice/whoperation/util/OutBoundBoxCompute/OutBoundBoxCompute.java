@@ -111,9 +111,10 @@ public class OutBoundBoxCompute {
         DecimalFormat df = new DecimalFormat("######0.00");
         for (int i = 0; i < boxs.length; i++) {
             // 判断当前商品是否可以放入出库箱中，若不能查找下一个商品
-            if (tempVolume - boxs[i].getVolume() < 0.00) continue;
+            double volume = Double.valueOf(df.format(tempVolume -= boxs[i].getVolume()));
+            if (volume < 0.00) continue;
             // 出库箱体积-本次放入商品体积
-            tempVolume = Double.valueOf(df.format(tempVolume -= boxs[i].getVolume()));
+            tempVolume = volume;
             Long key = boxs[i].getWaveLineId();
             // 判断是否有对应波次明细商品已放入过此出库箱
             if (returnMap.containsKey(key)) {
