@@ -364,4 +364,6 @@ public final class Constants {
     public static final String INV_ATTR3 = "9";   //库存属性3
     public static final String INV_ATTR4 = "10";   //库存属性4
     public static final String INV_ATTR5 = "11";   //库存属性5
+    
+    public static final Integer SN_DEFECR_COUNT  = 1;
 }
