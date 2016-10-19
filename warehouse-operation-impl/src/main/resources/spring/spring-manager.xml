@@ -47,8 +47,6 @@
                     <value>com.baozun.scm.primservice.whoperation.model.warehouse.CheckInQueue</value>
                     <value>com.baozun.scm.primservice.whoperation.model.warehouse.WhAsnRcvdLog</value>
                     <value>com.baozun.scm.primservice.whoperation.model.warehouse.WhAsnRcvdSnLog</value>
-                    <value>com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory</value>
-                    <value>com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventorySn</value>
                     <value>com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryLog</value>
                     <value>com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventorySnLog</value>
                     <value>com.baozun.scm.primservice.whoperation.model.odo.WhOdo</value>
