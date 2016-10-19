@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import lark.orm.util.ReflectionUtils;
-
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -18,13 +16,17 @@ import org.springframework.core.Ordered;
 
 import com.baozun.scm.baseservice.sac.manager.PkManager;
 
+import lark.orm.util.ReflectionUtils;
+
 
 @Aspect
 public class SeqAndCodeAspect implements Ordered, InitializingBean {
 
+    @SuppressWarnings("unused")
     @Autowired(required = false)
     private SqlSessionTemplate sqlSessionTemplate;
 
+    @SuppressWarnings("unused")
     @Autowired
     private SqlSessionFactory sqlSessionFactory;
 
@@ -98,10 +100,12 @@ public class SeqAndCodeAspect implements Ordered, InitializingBean {
             if (pjp.getArgs().length == 1) {
 
                 Object model = pjp.getArgs()[0];
+                
+                Long id = null;
 
                 if (modelMap.get(processClass(model.getClass())) != null) {
 
-                    Long id = (Long) ReflectionUtils.invokeGetterMethod(model, "id");
+                    id = (Long) ReflectionUtils.invokeGetterMethod(model, "id");
 
                     if (id == null) {
                         
@@ -117,6 +121,18 @@ public class SeqAndCodeAspect implements Ordered, InitializingBean {
                         // 最后果将数据写到对象中
                         ReflectionUtils.invokeSetterMethod(model, "id", id);
                     }
+                } else if (modelMapppingMap.get(processClass(model.getClass())) != null) {
+                    String classPath = processClass(model.getClass());
+                    // 实体标识
+                    String pkMark = modelMapppingMap.get(classPath);
+                    // 如果没有配置实体标识，则使用classpath做为实体标识
+                    if (pkMark == null) pkMark = classPath;
+                    // 此处需要调用主键服务
+                    id = pkManager.generatePk("wms", pkMark);
+
+
+                    // 最后果将数据写到对象中
+                    ReflectionUtils.invokeSetterMethod(model, "id", id);
                 }
 
             }
