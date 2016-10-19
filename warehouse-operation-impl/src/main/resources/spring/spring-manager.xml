@@ -42,7 +42,6 @@
 					<value>com.baozun.scm.primservice.whoperation.model.poasn.BiPo</value>
 					<value>com.baozun.scm.primservice.whoperation.model.poasn.BiPoLine</value>
 					<value>com.baozun.scm.primservice.whoperation.model.poasn.BiPoSn</value>
-					<value>com.baozun.scm.primservice.whoperation.model.system.GlobalLog</value>
 					<value>com.baozun.scm.primservice.whoperation.model.warehouse.ContainerAssist</value>
                     <value>com.baozun.scm.primservice.whoperation.model.warehouse.CheckInQueue</value>
                     <value>com.baozun.scm.primservice.whoperation.model.warehouse.WhAsnRcvdLog</value>
