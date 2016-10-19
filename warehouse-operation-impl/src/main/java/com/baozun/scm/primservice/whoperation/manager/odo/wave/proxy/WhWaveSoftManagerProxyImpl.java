@@ -5,7 +5,6 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.redis.manager.CacheManager;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.SoftAllocationCommand;
@@ -24,7 +23,6 @@ import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine;
 
 @Service("whWaveSoftManagerProxy")
-
 public class WhWaveSoftManagerProxyImpl implements WhWaveSoftManagerProxy {
 
     @Autowired
