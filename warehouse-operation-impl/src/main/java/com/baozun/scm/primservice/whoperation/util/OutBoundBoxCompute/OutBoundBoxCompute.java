@@ -25,9 +25,10 @@ public class OutBoundBoxCompute {
      * 
      * @param waveLine 对应波次明细信息
      * @param boxTotalVolume 出库箱体积
+     * @param outBoundBoxType 出库箱类型ID
      * @return 累计放入出库箱商品总体积
      */
-    public static Double obbCompute(List<WaveLineCommand> waveLineList, Double boxTotalVolume) {
+    public static Double obbCompute(List<WaveLineCommand> waveLineList, Double boxTotalVolume, Long outBoundBoxType, Long containerId) {
         log.info("OutBoundBoxCompute.compute method begin!");
         if (null == waveLineList) {
             log.warn("OutBoundBoxCompute.compute waveLineList is null");
