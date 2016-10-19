@@ -689,7 +689,9 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
 
         // 将合并订单明细行关联到合并订单主档
         whOdoLine.setOdoId(newOdoId);
-        whOdoLineInfoCommand.setWhOdoLine(odoLine);
+        WhOdoLine line = new WhOdoLine();
+        BeanUtils.copyProperties(whOdoLine, line);
+        whOdoLineInfoCommand.setWhOdoLine(line);
 
         return whOdoLineInfoCommand;
 
@@ -830,7 +832,7 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<OdoCommand> findOdoList(String ids, Long ouId, String odoStatus) {
-        if (!StringUtils.hasText(ids)) {
+        if (!StringUtils.hasText(ids) || "undefined".equalsIgnoreCase(ids)) {
             return null;
         }
         String idString = "(" + ids + ")";
