@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.WhOdoOutBoundBoxDao">
+	<resultMap id="WhOdoOutBoundBoxResultExt" type="com.baozun.scm.primservice.whoperation.model.WhOdoOutBoundBox">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whOdoOutBoundBoxColumnsExt">
+	    <![CDATA[
+	        	id as id,
+	        	odo_id as odoId,
+	        	odo_line_id as odoLineId,
+	        	outbounxbox_type_id as outbounxboxTypeId,
+	        	outbounxbox_type_code as outbounxboxTypeCode,
+	        	container_id as containerId,
+	        	outer_container_id as outerContainerId,
+	        	qty as qty,
+	        	ou_id as ouId,
+	        	create_time as createTime,
+	        	last_modify_time as lastModifyTime,
+	        	operator_id as operatorId
+	    ]]>
+	</sql>
+	
+	<sql id="whOdoOutBoundBoxDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+				<if test="odoId!=null">
+					and odo_id = #{odoId}
+				</if>
+	       
+				<if test="odoLineId!=null">
+					and odo_line_id = #{odoLineId}
+				</if>
+	       
+				<if test="outbounxboxTypeId!=null">
+					and outbounxbox_type_id = #{outbounxboxTypeId}
+				</if>
+	       
+	       
+		       <if test="outbounxboxTypeCode!=null and outbounxboxTypeCode!=''">
+					and outbounxbox_type_code = #{outbounxboxTypeCode}
+				</if>
+	       
+				<if test="containerId!=null">
+					and container_id = #{containerId}
+				</if>
+	       
+				<if test="outerContainerId!=null">
+					and outer_container_id = #{outerContainerId}
+				</if>
+	       
+				<if test="qty!=null">
+					and qty = #{qty}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+	       
+				<if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="operatorId!=null">
+					and operator_id = #{operatorId}
+				</if>
+		</where>
+	</sql>
+	
+
+		<update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.WhOdoOutBoundBox">
+		    <![CDATA[
+		        UPDATE t_wh_odo_outboundbox SET
+			       			 odo_id = #{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			       			 odo_line_id = #{odoLineId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			       			 outbounxbox_type_id = #{outbounxboxTypeId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			       			 outbounxbox_type_code = #{outbounxboxTypeCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			       			 container_id = #{containerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			       			 outer_container_id = #{outerContainerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			       			 qty = #{qty,java.lang.Double,jdbcType=DECIMAL} ,
+			       			 ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			       			 create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+			       		 	  last_modify_time = now() ,	
+			       			 operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        WHERE 
+			        id = #{id} 
+			        and last_modify_time	=  #{lastModifyTime}    
+		    ]]>
+		</update>
+	
+</mapper>
