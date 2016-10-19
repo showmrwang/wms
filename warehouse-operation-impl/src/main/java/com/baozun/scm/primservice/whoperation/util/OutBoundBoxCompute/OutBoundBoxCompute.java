@@ -25,7 +25,7 @@ public class OutBoundBoxCompute {
      * 
      * @param waveLine 对应波次明细信息
      * @param boxTotalVolume 出库箱体积
-     * @return
+     * @return 累计放入出库箱商品总体积
      */
     public static Double obbCompute(List<WaveLineCommand> waveLineList, Double boxTotalVolume) {
         log.info("OutBoundBoxCompute.compute method begin!");
@@ -65,7 +65,7 @@ public class OutBoundBoxCompute {
     }
 
     /***
-     * 调整波次明细对应数量 放入出库箱商品数量扣减
+     * 调整波次明细对应数量 放入出库箱商品数量扣减 如果波次明细商品已经全部放入出库箱 删除对应波次明细
      * 
      * @param waveLineList
      */
