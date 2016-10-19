@@ -61,7 +61,7 @@
 			
 			<!-- 如果有配置，表示这个实体使用配制的实体标识查询主键   key表示实体的package, value 表示获取主键的实体标识-->
 			<property name="modelMapppingMap">
-			<map>
+			<map> 
 				<entry key="com.baozun.scm.primservice.whoperation.model.system.GlobalLog" value="com.baozun.scm.primservice.whinfo.model.system.GlobalLog">	</entry>
 				<entry key="com.baozun.scm.primservice.whoperation.model.warehouse.carton.WhCarton" value="com.baozun.scm.primservice.whinfo.model.warehouse.carton.WhCarton">	</entry>
 				<entry key="com.baozun.scm.primservice.whoperation.model.warehouse.Container" value="com.baozun.scm.primservice.whinfo.model.warehouse.Container">	</entry>
