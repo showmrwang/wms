@@ -21,7 +21,7 @@ public interface OdoMergeManagerProxy extends BaseManager {
      */
     Pagination<OdoResultCommand> findOdoListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params);
 
-    Map<String, String> doOdoMerge(List<String> odoIds, List<String> options, Long ouId, Long userId);
+    Map<String, String> odoMerge(List<String> odoIds, List<String> options, Long ouId, Long userId);
 
     List<OdoCommand> findOdoList(String ids, Long ouId, String odoStatus);
 }

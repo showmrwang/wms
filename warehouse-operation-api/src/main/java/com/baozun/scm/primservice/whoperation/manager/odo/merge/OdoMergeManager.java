@@ -31,7 +31,7 @@ public interface OdoMergeManager extends BaseManager {
      * @param userId
      * @return
      */
-    Map<String, String> doOdoMerge(List<String> odoIds, List<String> options, Long ouId, Long userId);
+    Map<String, String> odoMerge(List<String> odoIds, List<String> options, Long ouId, Long userId);
 
     /**
      * [业务方法] 合并订单-返回合并成功列表
@@ -56,7 +56,7 @@ public interface OdoMergeManager extends BaseManager {
      * @param userId
      * @return
      */
-    Map<String, String> createNewOdoInfo(List<OdoMergeCommand> odoMergeCommandList, Long ouId, Long userId);
+    Map<String, String> startOdoMerge(List<OdoMergeCommand> odoMergeCommandList, Long ouId, Long userId);
 
     /**
      * [通用方法] 合并订单-传入可合并子订单->合并成一个订单
@@ -65,5 +65,6 @@ public interface OdoMergeManager extends BaseManager {
      * @param userId
      * @return
      */
-    WhOdo generalOdoMerge(OdoMergeCommand odoMergeCommand, Long ouId, Long userId);
+    WhOdo generalOdoMerge(String odoIdString, Long ouId, Long userId);
+
 }

@@ -12,6 +12,8 @@ public class OdoLineCommand extends BaseCommand {
     private Long odoId;
     /** 行号 */
     private Integer linenum;
+    /** 原始出库单明细行号 */
+    private Integer originalLinenum;
     /** 店铺ID 或者* */
     private Long storeId;
     /** 外部单据行号 */
@@ -613,5 +615,11 @@ public class OdoLineCommand extends BaseCommand {
         this.isAssignSuccess = isAssignSuccess;
     }
 
+    public Integer getOriginalLinenum() {
+        return originalLinenum;
+    }
 
+    public void setOriginalLinenum(Integer originalLinenum) {
+        this.originalLinenum = originalLinenum;
+    }
 }
