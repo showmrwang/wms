@@ -1,5 +1,6 @@
 package com.baozun.scm.primservice.whoperation.manager.odo.wave;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -19,21 +20,28 @@ import org.springframework.util.StringUtils;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.SoftAllocationCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.WaveCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.UomCommand;
+import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
+import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
 import com.baozun.scm.primservice.whoperation.constant.WaveStatus;
 import com.baozun.scm.primservice.whoperation.constant.WhUomType;
+import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
+import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveLineDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveMasterDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.UomDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoManager;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveMaster;
 import com.baozun.scm.primservice.whoperation.model.sku.Sku;
+import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
 
 @Service("whWaveManager")
 @Transactional
@@ -43,13 +51,22 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
     private WhWaveDao whWaveDao;
 
     @Autowired
-    private WhWaveLineDao whWaveLineDao;
+    private UomDao uomDao;
 
     @Autowired
     private OdoManager odoManager;
 
     @Autowired
     private WhWaveMasterDao whWaveMasterDao;
+
+    @Autowired
+    private WhOdoDao whOdoDao;
+
+    @Autowired
+    private WhOdoLineDao whOdoLineDao;
+
+    @Autowired
+    private WhWaveLineDao whWaveLineDao;
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
@@ -97,7 +114,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         Set<Long> odoSet = new HashSet<Long>();
         Set<Long> odoLineSet = new HashSet<Long>();
         Map<String, Double> weightUomConversionRate = new HashMap<String, Double>();
-        List<UomCommand> weightUomCmds = this.odoManager.findUomByGroupCode(WhUomType.WEIGHT_UOM, BaseModel.LIFECYCLE_NORMAL);
+        List<UomCommand> weightUomCmds = this.uomDao.findUomByGroupCode(WhUomType.WEIGHT_UOM, BaseModel.LIFECYCLE_NORMAL);
         for (UomCommand lenUom : weightUomCmds) {
             String uomCode = "";
             Double uomRate = 0.0;
@@ -109,7 +126,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         }
 
         Map<String, Double> lenUomConversionRate = new HashMap<String, Double>();
-        List<UomCommand> volumnUomCmds = this.odoManager.findUomByGroupCode(WhUomType.VOLUME_UOM, BaseModel.LIFECYCLE_NORMAL);
+        List<UomCommand> volumnUomCmds = this.uomDao.findUomByGroupCode(WhUomType.VOLUME_UOM, BaseModel.LIFECYCLE_NORMAL);
         for (UomCommand lenUom : volumnUomCmds) {
             String uomCode = "";
             Double uomRate = 0.0;
@@ -167,7 +184,66 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
     }
 
     @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public Pagination<WaveCommand> findWaveListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params) {
-        return this.whWaveDao.findListByQueryMapWithPageExt(page, sorts, params);
+        Pagination<WaveCommand> pages = this.whWaveDao.findListByQueryMapWithPageExt(page, sorts, params);
+        if (pages != null && pages.getItems() != null && pages.getItems().size() > 0) {
+
+            Set<String> dic1 = new HashSet<String>();// 波次状态
+            Set<String> dic2 = new HashSet<String>();// 波次阶段
+
+            List<WaveCommand> list = pages.getItems();
+            for (WaveCommand wave : list) {
+                if (wave.getStatus() != null) {
+                    dic1.add(wave.getStatus() + "");
+                }
+                if (StringUtils.hasText(wave.getPhaseCode())) {
+                    dic2.add(wave.getPhaseCode());
+                }
+            }
+            Map<String, List<String>> map = new HashMap<String, List<String>>();
+            if (dic1.size() > 0) {
+
+                map.put(Constants.WAVE_STATUS, new ArrayList<String>(dic1));
+            }
+            if (dic2.size() > 0) {
+                map.put(Constants.WH_WAVE_PHASE, new ArrayList<String>(dic2));
+            }
+
+            Map<String, SysDictionary> dicMap = this.findSysDictionaryByRedis(map);
+            for (WaveCommand wave : list) {
+                if (wave.getStatus() != null) {
+                    SysDictionary sys = dicMap.get(Constants.WAVE_STATUS + "_" + wave.getStatus());
+                    wave.setStatusName(sys == null ? (wave.getStatus() + "") : sys.getDicLabel());
+                }
+                if (StringUtils.hasText(wave.getPhaseCode())) {
+                    SysDictionary sys = dicMap.get(Constants.WAVE_STATUS + "_" + wave.getPhaseCode());
+                    wave.setStatusName(sys == null ? wave.getPhaseCode() : sys.getDicLabel());
+                }
+            }
+
+        }
+        return pages;
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void deleteWave(WhWave wave, List<WhWaveLine> waveLineList, List<WhOdo> odoList, List<WhOdoLine> odoLineList, Long userId) {
+        Long ouId = wave.getOuId();
+        for (WhWaveLine waveLine : waveLineList) {
+            this.whWaveLineDao.deleteByIdOuId(waveLine.getId(), ouId);
+        }
+        this.whWaveDao.deleteByIdOuId(wave.getId(), ouId);
+        for (WhOdo odo : odoList) {
+            odo.setWaveCode(null);
+            // #TODO适用于整单出库逻辑
+            odo.setOdoStatus(OdoStatus.ODO_NEW);
+            this.whOdoDao.saveOrUpdateByVersion(odo);
+        }
+        for (WhOdoLine line : odoLineList) {
+            line.setWaveCode(null);
+            line.setOdoLineStatus(OdoStatus.ODOLINE_NEW);
+            this.whOdoLineDao.saveOrUpdateByVersion(line);
+        }
     }
 }

@@ -232,4 +232,11 @@ public interface OdoManagerProxy extends BaseManager {
      * @return
      */
     Pagination<WaveCommand> findWaveListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params);
+
+    /**
+     * 删除波次
+     * 
+     * @param waveCommand
+     */
+    void deleteWave(WaveCommand waveCommand);
 }

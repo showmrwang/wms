@@ -96,4 +96,12 @@ public interface WhOdoLineDao extends BaseDao<WhOdoLine, Long> {
 
     int deleteByIdOuId(@Param("id") Long id, @Param("ouId") Long ouId);
 
+    /**
+     * [通用方法]查找出库单明细
+     * 
+     * @param line
+     * @return
+     */
+    List<WhOdoLine> findListByParamExt(WhOdoLine line);
+
 }

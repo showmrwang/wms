@@ -50,7 +50,8 @@
 	        	created_id as createdId,
 	        	last_modify_time as lastModifyTime,
 	        	modified_id as modifiedId,
-	        	wave_code as waveCode
+	        	wave_code as waveCode,
+	        	counter_code as counterCode
         ]]>
     </sql>
     <sql id="whOdoConditionWhereExt">
@@ -172,7 +173,8 @@
 		        	created_id ,
 		        	last_modify_time ,
 		        	modified_id ,
-		        	wave_code
+		        	wave_code,
+		        	counter_code
                 ) VALUES (
                    #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{odoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -209,7 +211,8 @@
 		        	#{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        	#{waveCode,javaType=java.lang.String,jdbcType=VARCHAR}
+		        	#{waveCode,javaType=java.lang.String,jdbcType=VARCHAR},
+		        	#{counterCode,javaType=java.lang.String,jdbcType=TEXT}
                 )
             ]]>
 
@@ -252,6 +255,7 @@
 		        last_modify_time = now() ,
 		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        wave_code=#{waveCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        counter_code=#{counterCode,javaType=java.lang.String,jdbcType=TEXT} 
             WHERE 
                 id = #{id} 
                 and ou_id = #{ouId}

@@ -117,4 +117,12 @@ public interface WhOdoDao extends BaseDao<WhOdo, Long> {
 
     List<WhOdo> findListForWave(OdoSearchCommand search);
 
+    /**
+     * [通用方法]查找出库单列表
+     * 
+     * @param odo
+     * @return
+     */
+    List<WhOdo> findListByParamExt(WhOdo odo);
+
 }

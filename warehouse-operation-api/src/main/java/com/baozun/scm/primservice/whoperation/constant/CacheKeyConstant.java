@@ -109,4 +109,42 @@ public final class CacheKeyConstant {
 
     /** 波次分配前缀 规则: 前缀+waveId; 间隔符:"$" */
     public static final String CACHE_ALLOCATE_SOFT = "%CACHE-ALLOCATE_SOFT$";
+
+    // --------------------------------------------------------------------------------------------------------------------------------------
+    /** 波次分配规则 出库单计数器 */
+    public static final String KEY_PREFIX = "%";
+    public static final String WAVE_ODO_SPLIT = "|";
+    public static final String WAVE_ODO_SKU_SPLIT = "$";
+    
+    //出库单设置
+    /** 出库单缓存 ：前缀$CODE|ODOID */
+    public static final String OU_ODO_PREFIX = "%OU_ODO%";
+
+    /** 秒杀出库单：前缀$CODE|ODOID */
+    public static final String SECKILL_ODO_PREFIX = "%SECKILL_ODO%";
+
+    /** 秒杀出库单计数器：前缀$CODE|ODOID */
+    public static final String SECKILL_PREFIX = "%SECKILL%";
+
+    /** 主副品 */
+    public static final String TWOSKUSUIT_ODO_PREFIX = "%TWOSKUSUIT_ODO%";
+    /** 主副品计数器 */
+    public static final String TWOSKUSUIT_PREFIX = "%TWOSKUSUIT_ODO%";
+
+    /** 套装 */
+    public static final String SUITS_ODO_PREFIX = "%SUITS_ODO%";
+    /** 套装计数器 */
+    public static final String SUITS_PREFIX = "%TWOSKUSUIT%";
+    
+    /** 主副品扣减集合 */
+    public static final String TWOSKUSUIT_DIV_ODO_PREFIX = "%TWOSKUSUIT_DIV_ODO%";
+    /** 套装扣减集合 */
+    public static final String SUITS_DIV_ODO_PREFIX = "%SUITS_DIV_ODO%";
+
+    /**仓库缓存：前缀+ouId*/
+    public static final String CACHE_WAREHOSUE = "%WAREHOUSE%";
+    
+    /** 波次主档缓存：前缀+waveMasterId */
+    public static final String CACHE_WAVE_MASTER = "%WAVE_MASTER%";
+
 }

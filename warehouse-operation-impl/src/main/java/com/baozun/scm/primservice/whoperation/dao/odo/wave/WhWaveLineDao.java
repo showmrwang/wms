@@ -75,4 +75,12 @@ public interface WhWaveLineDao extends BaseDao<WhWaveLine, Long> {
      * @return
      */
     List<SoftAllocationCommand> findWaveLineCommandByWaveIdAndStatus(@Param("waveId") Long waveId, @Param("ouId") Long ouId, @Param("waveStatus") Integer waveStatus, @Param("lifecycle") Integer lifecycle);
+
+    /**
+     * [通用方法]删除波次明细
+     * 
+     * @param id
+     * @param ouId
+     */
+    void deleteByIdOuId(Long id, Long ouId);
 }

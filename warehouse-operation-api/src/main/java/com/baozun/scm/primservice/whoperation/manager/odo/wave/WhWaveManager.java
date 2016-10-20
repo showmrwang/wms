@@ -10,7 +10,10 @@ import lark.common.dao.Sort;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.SoftAllocationCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.WaveCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
+import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine;
 
 public interface WhWaveManager extends BaseManager {
 
@@ -54,5 +57,16 @@ public interface WhWaveManager extends BaseManager {
      * @return
      */
     public Pagination<WaveCommand> findWaveListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params);
+
+    /**
+     * [业务方法]删除波次
+     * 
+     * @param wave
+     * @param waveLineList
+     * @param odoList
+     * @param odoLineList
+     * @param userId
+     */
+    public void deleteWave(WhWave wave, List<WhWaveLine> waveLineList, List<WhOdo> odoList, List<WhOdoLine> odoLineList, Long userId);
 
 }

@@ -553,6 +553,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
      * @param whWaveLineIds
      * @param ouId
      */
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     private void removeOdoLine(List<Long> odoLineIds, Long ouId) {
         if (null != odoLineIds && !odoLineIds.isEmpty()) {
             for (Long odoLineId : odoLineIds) {
@@ -572,6 +573,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
      * @param odoId
      * @param ouId
      */
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     private void removeOdo(Long odoId, Long ouId) {
         WhOdoLine whOdoLine = new WhOdoLine();
         whOdoLine.setOdoId(odoId);
@@ -588,5 +590,14 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
             throw new BusinessException("剔除逻辑-更新出库单头-失败");
         }
 
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<WhOdo> findOdoListByWaveCode(String code, Long ouId) {
+        WhOdo odo = new WhOdo();
+        odo.setWaveCode(code);
+        odo.setOuId(ouId);
+        return this.whOdoDao.findListByParamExt(odo);
     }
 }

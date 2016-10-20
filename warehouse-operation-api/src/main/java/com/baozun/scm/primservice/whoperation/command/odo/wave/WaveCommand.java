@@ -11,6 +11,8 @@ public class WaveCommand extends BaseCommand {
      */
     private static final long serialVersionUID = -8139029469287478053L;
     // columns START
+    /** ID */
+    private Long id;
     /** 波次主档编码 */
     private String code;
     /** 波次状态，系统常量 */
@@ -66,6 +68,8 @@ public class WaveCommand extends BaseCommand {
     /** 是否运行波次 0：否 1：是 */
     private Boolean isRunWave;
 
+    private Long userId;
+
     // --------------------波次一览查询条件----------------------------
     private String searchWaveCode;
     private String searchWaveMasterName;
@@ -78,10 +82,34 @@ public class WaveCommand extends BaseCommand {
 
     // -----------------波次查询结果------------------
     private String createName;
-    private String finishTimeStr;
-    private String startTimeStr;
     private String statusName;
+    private String masterName;
+    private String phaseName;
 
+
+    public String getPhaseName() {
+        return phaseName;
+    }
+
+    public void setPhaseName(String phaseName) {
+        this.phaseName = phaseName;
+    }
+
+    public String getMasterName() {
+        return masterName;
+    }
+
+    public void setMasterName(String masterName) {
+        this.masterName = masterName;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getCreateName() {
         return createName;
@@ -89,22 +117,6 @@ public class WaveCommand extends BaseCommand {
 
     public void setCreateName(String createName) {
         this.createName = createName;
-    }
-
-    public String getFinishTimeStr() {
-        return finishTimeStr;
-    }
-
-    public void setFinishTimeStr(String finishTimeStr) {
-        this.finishTimeStr = finishTimeStr;
-    }
-
-    public String getStartTimeStr() {
-        return startTimeStr;
-    }
-
-    public void setStartTimeStr(String startTimeStr) {
-        this.startTimeStr = startTimeStr;
     }
 
     public String getStatusName() {
@@ -339,6 +351,14 @@ public class WaveCommand extends BaseCommand {
 
     public void setSearchCreateTimeEnd(String searchCreateTimeEnd) {
         this.searchCreateTimeEnd = searchCreateTimeEnd;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
     
 }

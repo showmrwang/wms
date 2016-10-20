@@ -49,13 +49,16 @@ import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoLineManager
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoTransportMgmtManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoVasManager;
+import com.baozun.scm.primservice.whoperation.manager.odo.wave.WhWaveLineManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.wave.WhWaveManager;
+import com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy.DistributionModeArithmeticManagerProxy;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.InventoryStatusManager;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAddress;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLineAttrSn;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoVas;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
@@ -87,6 +90,10 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
     private InventoryStatusManager inventoryStatusManager;
     @Autowired
     private WhWaveManager waveManager;
+    @Autowired
+    private WhWaveLineManager waveLineManager;
+    @Autowired
+    private DistributionModeArithmeticManagerProxy distributionModeArithmeticManagerProxy;
 
     @Override
     public Pagination<OdoResultCommand> findOdoListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params) {
@@ -103,16 +110,32 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
             // 原始数据集合
             OdoCommand odoCommand = odoGroup.getOdo();
             OdoTransportMgmtCommand transportMgmtCommand = odoGroup.getTransPortMgmt();
-
+            
             /**
-             * 第一步：封装ODO
+             * 第一步：封装ODO和ODOLine
+             */
+            List<WhOdoLine> odoLineList=new ArrayList<WhOdoLine>();
+            /**
+             * 第二步：封装ODO
              */
             WhOdo odo = this.copyOdoProperties(odoCommand);
+            odo.setOdoStatus(OdoStatus.ODO_TOBECREATED);
             /**
-             * 第二步：封装出库单运输商表
+             * 第三步：封装出库单运输商表
              */
             WhOdoTransportMgmt transportMgmt = this.copyTransportMgmtProperties(transportMgmtCommand);
-            this.createOdo(odo, transportMgmt, null, ouId, userId);
+            /**
+             * 第四步：封装配送对象
+             */
+            WhOdoAddress address=new WhOdoAddress();
+            /**
+             * 第五步：封装增值服务
+             */
+            List<WhOdoVas> odoVasList=new ArrayList<WhOdoVas>();
+            /**
+             * 第六步：SN  TODO
+             */
+            this.createOdo(odo, odoLineList,transportMgmt,address,odoVasList, null, ouId, userId);
             returnOdoId = odo.getId();
         } catch (BusinessException e) {
             msg.setResponseStatus(ResponseMsg.STATUS_ERROR);
@@ -129,13 +152,18 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
         return msg;
     }
 
-    private void createOdo(WhOdo odo, WhOdoTransportMgmt transportMgmt, List<WhOdoLine> odoLineList, Long ouId, Long userId) {
+    private void createOdo(WhOdo odo, List<WhOdoLine> odoLineList, WhOdoTransportMgmt transportMgmt, WhOdoAddress odoAddress, List<WhOdoVas> odoVasList, List<WhOdoLineAttrSn> lineSnList, Long ouId, Long userId) {
         try {
-
             // 默认属性
-            odo.setCurrentQty(Constants.DEFAULT_DOUBLE);
-            odo.setActualQty(Constants.DEFAULT_DOUBLE);
-            odo.setCancelQty(Constants.DEFAULT_DOUBLE);
+            if (odo.getCurrentQty() == null) {
+                odo.setCurrentQty(Constants.DEFAULT_DOUBLE);
+            }
+            if (odo.getActualQty() == null) {
+                odo.setActualQty(Constants.DEFAULT_DOUBLE);
+            }
+            if (odo.getCancelQty() == null) {
+                odo.setCancelQty(Constants.DEFAULT_DOUBLE);
+            }
             if (null == odo.getIsWholeOrderOutbound()) {
                 odo.setIsWholeOrderOutbound(true);
             }
@@ -170,8 +198,9 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
             if (null == odo.getIsAllowMerge()) {
             	odo.setIsAllowMerge(true);
             }
-            // TODO yimin.lu
-            odo.setOdoStatus(OdoStatus.ODO_TOBECREATED);
+            if (StringUtils.isEmpty(odo.getOdoStatus())) {
+                odo.setOdoStatus(OdoStatus.ODO_NEW);
+            }
             odo.setOuId(ouId);
             // 设置单号和外部对接编码
             String odoCode = codeManager.generateCode(Constants.WMS, Constants.WHODO_MODEL_URL, Constants.WMS_ODO_INNER, "ODO", null);
@@ -180,6 +209,16 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
                 String extCode = codeManager.generateCode(Constants.WMS, Constants.WHODO_MODEL_URL, Constants.WMS_ODO_EXT, null, null);
                 odo.setExtCode(extCode);
             }
+            // 设置计数器编码
+            Set<Long> skuIdSet=new HashSet<Long>();
+            for(WhOdoLine line:odoLineList){
+                skuIdSet.add(line.getSkuId());
+            }
+            String counterCode = this.distributionModeArithmeticManagerProxy.getCounterCodeForOdo(ouId, odo.getSkuNumberOfPackages(), odo.getQty(), skuIdSet);
+            odo.setCounterCode(counterCode);
+
+            // 匹配配货模式
+
             transportMgmt.setOuId(ouId);
             this.odoManager.createOdo(odo, transportMgmt);
         } catch (BusinessException e) {
@@ -1016,6 +1055,22 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
     @Override
     public Pagination<WaveCommand> findWaveListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params) {
         return this.waveManager.findWaveListByQueryMapWithPageExt(page, sorts, params);
+    }
+
+    @Override
+    public void deleteWave(WaveCommand waveCommand) {
+        Long ouId=waveCommand.getOuId();
+        Long userId=waveCommand.getUserId();
+        Long waveId=waveCommand.getId();
+        //查询波次
+        WhWave wave=this.waveManager.getWaveByIdAndOuId(waveId,ouId);
+        List<WhWaveLine> waveLineList=this.waveLineManager.findWaveLineListByWaveId(waveId,ouId);
+        //查询波次关联的出库单
+        List<WhOdo> odoList = this.odoManager.findOdoListByWaveCode(wave.getCode(), ouId);
+        List<WhOdoLine> odoLineList = this.odoLineManager.findOdoLineListByWaveCode(wave.getCode(), ouId);
+
+        this.waveManager.deleteWave(wave, waveLineList, odoList, odoLineList, userId);
+
     }
 
 }

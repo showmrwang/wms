@@ -364,4 +364,8 @@ public final class Constants {
     public static final String INV_ATTR3 = "9";   //库存属性3
     public static final String INV_ATTR4 = "10";   //库存属性4
     public static final String INV_ATTR5 = "11";   //库存属性5
+
+
+    public static final String WAVE_STATUS = "WAVE_STATUS";// 波次状态
+    public static final String WH_WAVE_PHASE = "WH_WAVE_PHASE";// 波次阶段
 }

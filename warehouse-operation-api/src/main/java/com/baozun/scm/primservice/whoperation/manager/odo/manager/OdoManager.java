@@ -183,4 +183,13 @@ public interface OdoManager extends BaseManager {
      */
     void removeOdoAndLineWhole(Long waveId, Long odoId, List<Long> odoLineIds, Long ouId);
 
+    /**
+     * [通用方法]根据waveCode,ouId查找所有的出库单
+     * 
+     * @param code
+     * @param ouId
+     * @return
+     */
+    List<WhOdo> findOdoListByWaveCode(String code, Long ouId);
+
 }

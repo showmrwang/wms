@@ -678,4 +678,12 @@
                 id = #{id} and ou_id=#{ouId}
         ]]>
 	</delete>
+	
+	<select id="findListByParamExt" resultMap="WhOdoLineResult">
+		select
+		<include refid="whOdoLineColumns" />
+		from t_wh_odo_line
+		<include refid="whOdoLineDynamicWhereExt" />
+
+	</select>
 </mapper>

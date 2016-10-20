@@ -97,8 +97,17 @@ public class WhOdo extends BaseModel {
     private java.lang.Boolean isAllowMerge;
     /** 波次号 */
     private String waveCode;
+    /** 计数器编码 */
+    private String counterCode;
 
 
+    public String getCounterCode() {
+        return counterCode;
+    }
+
+    public void setCounterCode(String counterCode) {
+        this.counterCode = counterCode;
+    }
 
     public String getWaveCode() {
         return waveCode;
