@@ -685,7 +685,7 @@ public class ErrorCodes {
     public static final int PDA_CONTAINER_SKUATT_NOTSAME_LOCATION_SKUATT = 70031;
     /** 容器总重量已经超过库位承重，请更换库位进行上架 */
     public static final int PDA_MAN_MADE_PUTAWAY_LOCATION_UNBEAR_WEIGHT = 70032;
-    /** 库位容器内SKU商品关键属性参数不相同，不能整托、整箱上架 */
+    /** 库位,容器内SKU商品关键属性参数不相同，不能整托、整箱上架 */
     public static final int PDA_MAN_MADE_PUTAWAY_ATTR_MGMT_NOT_EQUAL = 70033;
     /** 库位已有种类数+容器内SKU种类数已超过库位最大混放种类数，不能整托、整箱上架 */
     public static final int PDA_MAN_MADE_PUTAWAY_SKU_VARIETY_OVER_MAX = 70034;
@@ -695,7 +695,15 @@ public class ErrorCodes {
     /** 未找到外部容器对应的内部容器id */
     public static final int CONTAINER_NOT_FOUND_INSIDE_CONTAINER_ID = 70036;
     /** 库位为静态库位，没有绑定对应的sku商品，不能上架 */
-    public static final int PDA_MAN_MADE_PUTAWAY_STATICLOCATION_NOT_SKU = 70026;
+    public static final int PDA_MAN_MADE_PUTAWAY_STATICLOCATION_NOT_SKU = 70037;
+    /** 库位不允许混放 上架sku商品和库位上的商品不同,不能上架到对应库位*/
+    public static final int PDA_LOC_NO_MAX_SKUATT_NO_SAME = 70038;
+    /** 扫描sn或者残次信息数量大于输入数值*/
+    public static final int SCAN_SKU_SN_QTY_ERROR = 70039;
+    /**没有找到对应的SKU库存属性相同的记录*/
+    public static final int  NO_FOUND_SKU_SAME_INV_ATTR = 70040;
+    /**扫描的跟踪容器不在库位上*/
+    public static final int  TRACK_CONTAINER_NO_LOCATION = 70041;
     
     
     

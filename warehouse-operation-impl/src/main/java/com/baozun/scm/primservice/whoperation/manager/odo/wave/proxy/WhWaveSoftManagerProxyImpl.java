@@ -1,12 +1,10 @@
 package com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.redis.manager.CacheManager;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.SoftAllocationCommand;
@@ -25,7 +23,6 @@ import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine;
 
 @Service("whWaveSoftManagerProxy")
-@Transactional
 public class WhWaveSoftManagerProxyImpl implements WhWaveSoftManagerProxy {
 
     @Autowired
@@ -54,17 +51,18 @@ public class WhWaveSoftManagerProxyImpl implements WhWaveSoftManagerProxy {
             throw new BusinessException("波次头不可用或者波次状态不为新建");
         }
         // 2.设置波次运行状态信息
-        // TODO
-        whWave.setStatus(WaveStatus.WAVE_EXECUTING);
-        whWave.setIsWeakAllocated(true);
-        whWave.setCreateTime(new Date());
+        whWaveManager.updateWaveForSoftStart(whWave);
+        // this.updateWaveForSoftStart(whWave);
 
         // 3.查询波次明细及排序
-        // List<WhWaveLine> whWaveLineList = this.getWaveLineByWaveIdAndOuId(waveId, ouId);
-        List<WhWaveLine> whWaveLineList = this.getWaveLineByWaveIdAndOuIdForSoft(waveId, ouId);
+        List<WhWaveLine> whWaveLineList = whWaveLineManager.getSoftAllocationWhWaveLine(waveId, ouId);
+        // List<WhWaveLine> whWaveLineList = this.getWaveLineByWaveIdAndOuIdForSoft(waveId, ouId);
         return whWaveLineList;
+    }
 
-
+    @SuppressWarnings("unused")
+    private void updateWaveForSoftStart(WhWave whWave) {
+        whWaveManager.updateWaveForSoftStart(whWave);
     }
 
     @Override
@@ -102,11 +100,14 @@ public class WhWaveSoftManagerProxyImpl implements WhWaveSoftManagerProxy {
 
     @Override
     public SoftAllocationResponseCommand occupiedOperation(Long waveId, Long skuId, Long qty, Long waveLineId, Long ouId) {
+        if (null == waveId || null == skuId || null == qty || null == waveLineId || null == ouId) {
+            if (null == waveId || null == ouId) {
+                throw new BusinessException("软分配 : 没有参数");
+            }
+        }
         // 1.判断商品是否在空库存列表中
-        // if (emptyQtyList.contains(skuId)) {
-        // throw new BusinessException("空库存");
-        // }
         boolean res = this.cacheFindEmpty(waveId, skuId);
+        SoftAllocationResponseCommand command = new SoftAllocationResponseCommand();
         if (res) {
             // 库存不为0
             // 2.计算每个波次明细行是否可以占用库存
@@ -146,7 +147,7 @@ public class WhWaveSoftManagerProxyImpl implements WhWaveSoftManagerProxy {
      */
     private Boolean cacheFindEmpty(Long waveId, Long skuId) {
         Set<String> skuIdSet = cacheManager.findSetAll(CacheKeyConstant.CACHE_ALLOCATE_SOFT + waveId);
-        if (skuIdSet.isEmpty() || 0 == skuIdSet.size() || !skuIdSet.contains(skuId.toString())) {
+        if (null == skuIdSet || skuIdSet.isEmpty() || 0 == skuIdSet.size() || !skuIdSet.contains(skuId.toString())) {
             return true;
         }
         return false;

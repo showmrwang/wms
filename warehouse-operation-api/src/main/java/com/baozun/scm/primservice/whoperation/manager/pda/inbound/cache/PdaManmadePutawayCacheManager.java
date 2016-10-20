@@ -45,7 +45,7 @@ public interface PdaManmadePutawayCacheManager extends BaseManager {
     * @param ouId
     * @return
     */
-   public List<WhSkuInventory> manMadePutwayCacheSkuInventory(Long containerId,Long ouId,int putawayPatternDetailType );
+   public List<WhSkuInventory> manMadePutwayCacheSkuInventory(Long containerId,Long ouId,Boolean isOuterSkuInventory);
    
    
    /***
@@ -92,5 +92,31 @@ public interface PdaManmadePutawayCacheManager extends BaseManager {
     * @param logId
     */
    public void manMadeContainerPutawayRemoveAllCache(ContainerCommand containerCmd, ContainerCommand insideContainerCmd, Boolean isAfterPutawayTipContainer, String logId);
+   
+   
+   /***
+    * pda拆箱上架提示商品、容器判断
+    * @param ocCmd
+    * @param icCmd
+    * @param insideContainerIds
+    * @param insideContainerSkuAttrIdsQty
+    * @param insideContainerSkuAttrIdsSnDefect
+    * @param insideContainerLocSkuAttrIds
+    * @param locationId
+    * @param skuCmd
+    * @param logId
+    * @return
+    */
+   public CheckScanSkuResultCommand manMadeSplitContainerPutawayTipSkuOrContainer(ContainerCommand ocCmd, ContainerCommand icCmd, Set<Long> insideContainerIds, Map<Long, Set<Long>> insideContainerSkuIds,
+                                                                                  Map<Long, Map<Long, Long>> insideContainerSkuIdsQty, WhSkuCommand skuCmd, Integer scanPattern, String logId);
+   
+   /***
+    * 拆箱上架清除缓存
+    * @param outerContainerCmd
+    * @param insideContainerCmd
+    * @param isAfterPutawayTipContainer
+    * @param logId
+    */
+   public void manMadeSplitContainerPutawayRemoveAllCache(ContainerCommand outerContainerCmd, ContainerCommand insideContainerCmd, Boolean isAfterPutawayTipContainer, String logId,Long scanSkuId);
 
 }

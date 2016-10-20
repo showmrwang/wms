@@ -368,4 +368,6 @@ public final class Constants {
 
     public static final String WAVE_STATUS = "WAVE_STATUS";// 波次状态
     public static final String WH_WAVE_PHASE = "WH_WAVE_PHASE";// 波次阶段
+    
+    public static final Integer SN_DEFECR_COUNT  = 1;
 }

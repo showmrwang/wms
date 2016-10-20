@@ -14,6 +14,8 @@
 
 package com.baozun.scm.primservice.whoperation.command.pda.putaway;
 
+import java.util.Date;
+
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
 
 /**
@@ -37,6 +39,7 @@ public class PdaManMadePutawayCommand extends BaseCommand {
     private Long userId;
     /** 容器号 */
     private String containerCode;
+    private String trackContainerCode;  //跟踪容器号
     /** 容器ID */
     private Long containerId;
     /** 是否外部容器库存 ,true时，外部容器库存,false时内部容器库存*/
@@ -57,74 +60,83 @@ public class PdaManMadePutawayCommand extends BaseCommand {
     private Integer scanPattern;
     /** 上架类型 */
     private Integer putawayPatternDetailType;
+    
+    private Boolean isTrackVessel = false;   //是否跟踪容器号,默认不跟踪容器号
     /**是否上架*/
     private Boolean putway = false;
     /**托盘内是否还有没扫描到容器*/
     private Boolean isNeedScanContainer = false;
     
-    private Boolean isNeedScanSku;  //是否需要扫描sku
+    private Boolean isNeedScanSku =false;  //是否需要扫描sku
     
     private String tipContainerCode;
     
-    private Boolean isTipContainerCode;  //是否提示容器号 
+    private Boolean isTipContainerCode = false;  //是否提示容器号 
     
     private Boolean isAfterPutawayTipContianer;
     
     private Boolean isInboundLocationBarcode;    //上架是否启用校验码false：否 true：是 
     /** 是否需要提示扫商品属性 */
-    private boolean isNeedTipSkuDetail;
-    /** 提示商品数量 */
-    private int tipSkuQty;
+    private boolean isNeedSkuDetail;   //默认false,相同sku不存在不同库存属性数据,true时,相同su存在不同的库存属性
     /** 是否需要提示商品的库存类型 */
-    private boolean isNeedTipSkuInvType;
+    private boolean isNeedScanSkuInvType = false;
     /** 提示商品库存类型 */
-    private String tipSkuInvType = "";
+    private String skuInvType = "";
     /** 是否需要提示商品的库存状态 */
-    private boolean isNeedTipSkuInvStatus;
+    private boolean isNeedScanSkuInvStatus = false;
     /** 提示商品库存状态 */
-    private String tipSkuInvStatus = "";
+    private String skuInvStatus = "";
+    /**是否需要扫描批次号*/
+    private boolean isNeedScanBatchNumber = false;
+    /**批次号*/
+    private String batchNumber;
+    /**是否需要扫描原产地*/
+    private boolean isNeedScanOrigin = false;   //是否需要扫描原产地
+   /**sku原产地*/
+    private String skuOrigin;
     /** 是否需要提示商品的生产日期 */
-    private boolean isNeedTipSkuMfgDate;
+    private boolean isNeedScanSkuMfgDate = false;
     /** 提示商品生产日期 */
-    private String tipSkuMfgDate = "";
+    private Date skuMfgDate;
     /** 是否需要提示商品过期日期 */
-    private boolean isNeedTipSkuExpDate;
+    private boolean isNeedScanSkuExpDate = false;
     /** 提示商品过期日期 */
-    private String tipSkuExpDate = "";
+    private Date skuExpDate;
     /** 是否需要提示商品库存属性1 */
-    private boolean isNeedTipSkuInvAttr1;
+    private boolean isNeedScanSkuInvAttr1 = false;
     /** 提示商品库存属性1 */
-    private String tipSkuInvAttr1 = "";
+    private String skuInvAttr1 = "";
     /** 是否需要提示商品库存属性2 */
-    private boolean isNeedTipSkuInvAttr2;
+    private boolean isNeedScanSkuInvAttr2 = false;
     /** 提示商品库存属性2 */
-    private String tipSkuInvAttr2 = "";
+    private String skuInvAttr2 = "";
     /** 是否需要提示商品库存属性3 */
-    private boolean isNeedTipSkuInvAttr3;
+    private boolean isNeedScanSkuInvAttr3 = false;
     /** 提示商品库存属性3 */
-    private String tipSkuInvAttr3;
+    private String skuInvAttr3;
     /** 是否需要提示商品库存属性4 */
-    private boolean isNeedTipSkuInvAttr4;
+    private boolean isNeedScanSkuInvAttr4 = false;
     /** 提示商品库存属性4 */
-    private String tipSkuInvAttr4 = "";
+    private String skuInvAttr4 = "";
     /** 是否需要提示商品库存属性5 */
-    private boolean isNeedTipSkuInvAttr5;
+    private boolean isNeedScanSkuInvAttr5 = false;
     /** 提示商品库存属性5 */
-    private String tipSkuInvAttr5 = "";
-    /** 是否需要提示商品sn */
-    private boolean isNeedTipSkuSn;
-    /** 提示商品sn */
-    private String tipSkuSn = "";
-    /** 是否需要提示商品残次条码 */
-    private boolean isNeedTipSkuDefect;
-    /** 提示商品条码 */
-    private String tipSkuDefect = "";
-    /** 是否需要扫描Sn残次信息 */
+    private String skuInvAttr5 = "";
+    /** 是否需要扫描Sn */
     private boolean isNeedScanSkuSn;
-    /** 上架以后是否需要提示下一个库位 */
-    private boolean isAfterPutawayTipLoc;
+    /**是否需要扫残次信息*/
+    private boolean isNeedScanSkuDefect;
     /**sku条码*/
     private String skuBarCode; 
+    
+    private Double scanSkuQty;
+    
+    private boolean isScanSkuSnDefect = false;  //是否需要扫描商品的sn/残次信息
+    
+    private String skuSnCode;   //sn/残次信息
+    
+    private String skuDefectCode;   //sku残次信息
+    
 
     public Boolean getIsOuterContainer() {
         return isOuterContainer;
@@ -287,180 +299,188 @@ public class PdaManMadePutawayCommand extends BaseCommand {
         this.outerContainerCode = outerContainerCode;
     }
 
-    public boolean isNeedTipSkuInvType() {
-        return isNeedTipSkuInvType;
+    public boolean isNeedSkuDetail() {
+        return isNeedSkuDetail;
     }
 
-    public void setNeedTipSkuInvType(boolean isNeedTipSkuInvType) {
-        this.isNeedTipSkuInvType = isNeedTipSkuInvType;
+    public void setNeedSkuDetail(boolean isNeedSkuDetail) {
+        this.isNeedSkuDetail = isNeedSkuDetail;
     }
 
-    public String getTipSkuInvType() {
-        return tipSkuInvType;
+    public boolean isNeedScanSkuInvType() {
+        return isNeedScanSkuInvType;
     }
 
-    public void setTipSkuInvType(String tipSkuInvType) {
-        this.tipSkuInvType = tipSkuInvType;
+    public void setNeedScanSkuInvType(boolean isNeedScanSkuInvType) {
+        this.isNeedScanSkuInvType = isNeedScanSkuInvType;
     }
 
-    public boolean isNeedTipSkuInvStatus() {
-        return isNeedTipSkuInvStatus;
+    public String getSkuInvType() {
+        return skuInvType;
     }
 
-    public void setNeedTipSkuInvStatus(boolean isNeedTipSkuInvStatus) {
-        this.isNeedTipSkuInvStatus = isNeedTipSkuInvStatus;
+    public void setSkuInvType(String skuInvType) {
+        this.skuInvType = skuInvType;
     }
 
-    public String getTipSkuInvStatus() {
-        return tipSkuInvStatus;
+    public boolean isNeedScanSkuInvStatus() {
+        return isNeedScanSkuInvStatus;
     }
 
-    public void setTipSkuInvStatus(String tipSkuInvStatus) {
-        this.tipSkuInvStatus = tipSkuInvStatus;
+    public void setNeedScanSkuInvStatus(boolean isNeedScanSkuInvStatus) {
+        this.isNeedScanSkuInvStatus = isNeedScanSkuInvStatus;
     }
 
-    public boolean isNeedTipSkuMfgDate() {
-        return isNeedTipSkuMfgDate;
+    public String getSkuInvStatus() {
+        return skuInvStatus;
     }
 
-    public void setNeedTipSkuMfgDate(boolean isNeedTipSkuMfgDate) {
-        this.isNeedTipSkuMfgDate = isNeedTipSkuMfgDate;
+    public void setSkuInvStatus(String skuInvStatus) {
+        this.skuInvStatus = skuInvStatus;
     }
 
-    public String getTipSkuMfgDate() {
-        return tipSkuMfgDate;
+    public boolean isNeedScanBatchNumber() {
+        return isNeedScanBatchNumber;
     }
 
-    public void setTipSkuMfgDate(String tipSkuMfgDate) {
-        this.tipSkuMfgDate = tipSkuMfgDate;
+    public void setNeedScanBatchNumber(boolean isNeedScanBatchNumber) {
+        this.isNeedScanBatchNumber = isNeedScanBatchNumber;
     }
 
-    public boolean isNeedTipSkuExpDate() {
-        return isNeedTipSkuExpDate;
+    public String getBatchNumber() {
+        return batchNumber;
     }
 
-    public void setNeedTipSkuExpDate(boolean isNeedTipSkuExpDate) {
-        this.isNeedTipSkuExpDate = isNeedTipSkuExpDate;
+    public void setBatchNumber(String batchNumber) {
+        this.batchNumber = batchNumber;
     }
 
-    public String getTipSkuExpDate() {
-        return tipSkuExpDate;
+    public boolean isNeedScanOrigin() {
+        return isNeedScanOrigin;
     }
 
-    public void setTipSkuExpDate(String tipSkuExpDate) {
-        this.tipSkuExpDate = tipSkuExpDate;
+    public void setNeedScanOrigin(boolean isNeedScanOrigin) {
+        this.isNeedScanOrigin = isNeedScanOrigin;
     }
 
-    public boolean isNeedTipSkuInvAttr1() {
-        return isNeedTipSkuInvAttr1;
+    public String getSkuOrigin() {
+        return skuOrigin;
     }
 
-    public void setNeedTipSkuInvAttr1(boolean isNeedTipSkuInvAttr1) {
-        this.isNeedTipSkuInvAttr1 = isNeedTipSkuInvAttr1;
+    public void setSkuOrigin(String skuOrigin) {
+        this.skuOrigin = skuOrigin;
     }
 
-    public String getTipSkuInvAttr1() {
-        return tipSkuInvAttr1;
+    public boolean isNeedScanSkuMfgDate() {
+        return isNeedScanSkuMfgDate;
     }
 
-    public void setTipSkuInvAttr1(String tipSkuInvAttr1) {
-        this.tipSkuInvAttr1 = tipSkuInvAttr1;
+    public void setNeedScanSkuMfgDate(boolean isNeedScanSkuMfgDate) {
+        this.isNeedScanSkuMfgDate = isNeedScanSkuMfgDate;
     }
 
-    public boolean isNeedTipSkuInvAttr2() {
-        return isNeedTipSkuInvAttr2;
+    public Date getSkuMfgDate() {
+        return skuMfgDate;
     }
 
-    public void setNeedTipSkuInvAttr2(boolean isNeedTipSkuInvAttr2) {
-        this.isNeedTipSkuInvAttr2 = isNeedTipSkuInvAttr2;
+    public void setSkuMfgDate(Date skuMfgDate) {
+        this.skuMfgDate = skuMfgDate;
     }
 
-    public String getTipSkuInvAttr2() {
-        return tipSkuInvAttr2;
+    public Date getSkuExpDate() {
+        return skuExpDate;
     }
 
-    public void setTipSkuInvAttr2(String tipSkuInvAttr2) {
-        this.tipSkuInvAttr2 = tipSkuInvAttr2;
+    public void setSkuExpDate(Date skuExpDate) {
+        this.skuExpDate = skuExpDate;
     }
 
-    public boolean isNeedTipSkuInvAttr3() {
-        return isNeedTipSkuInvAttr3;
+    public boolean isNeedScanSkuExpDate() {
+        return isNeedScanSkuExpDate;
     }
 
-    public void setNeedTipSkuInvAttr3(boolean isNeedTipSkuInvAttr3) {
-        this.isNeedTipSkuInvAttr3 = isNeedTipSkuInvAttr3;
+    public void setNeedScanSkuExpDate(boolean isNeedScanSkuExpDate) {
+        this.isNeedScanSkuExpDate = isNeedScanSkuExpDate;
     }
 
-    public String getTipSkuInvAttr3() {
-        return tipSkuInvAttr3;
+    public boolean isNeedScanSkuInvAttr1() {
+        return isNeedScanSkuInvAttr1;
     }
 
-    public void setTipSkuInvAttr3(String tipSkuInvAttr3) {
-        this.tipSkuInvAttr3 = tipSkuInvAttr3;
+    public void setNeedScanSkuInvAttr1(boolean isNeedScanSkuInvAttr1) {
+        this.isNeedScanSkuInvAttr1 = isNeedScanSkuInvAttr1;
     }
 
-    public boolean isNeedTipSkuInvAttr4() {
-        return isNeedTipSkuInvAttr4;
+    public String getSkuInvAttr1() {
+        return skuInvAttr1;
     }
 
-    public void setNeedTipSkuInvAttr4(boolean isNeedTipSkuInvAttr4) {
-        this.isNeedTipSkuInvAttr4 = isNeedTipSkuInvAttr4;
+    public void setSkuInvAttr1(String skuInvAttr1) {
+        this.skuInvAttr1 = skuInvAttr1;
     }
 
-    public String getTipSkuInvAttr4() {
-        return tipSkuInvAttr4;
+    public boolean isNeedScanSkuInvAttr2() {
+        return isNeedScanSkuInvAttr2;
     }
 
-    public void setTipSkuInvAttr4(String tipSkuInvAttr4) {
-        this.tipSkuInvAttr4 = tipSkuInvAttr4;
+    public void setNeedScanSkuInvAttr2(boolean isNeedScanSkuInvAttr2) {
+        this.isNeedScanSkuInvAttr2 = isNeedScanSkuInvAttr2;
     }
 
-    public boolean isNeedTipSkuInvAttr5() {
-        return isNeedTipSkuInvAttr5;
+    public String getSkuInvAttr2() {
+        return skuInvAttr2;
     }
 
-    public void setNeedTipSkuInvAttr5(boolean isNeedTipSkuInvAttr5) {
-        this.isNeedTipSkuInvAttr5 = isNeedTipSkuInvAttr5;
+    public void setSkuInvAttr2(String skuInvAttr2) {
+        this.skuInvAttr2 = skuInvAttr2;
     }
 
-    public String getTipSkuInvAttr5() {
-        return tipSkuInvAttr5;
+    public boolean isNeedScanSkuInvAttr3() {
+        return isNeedScanSkuInvAttr3;
     }
 
-    public void setTipSkuInvAttr5(String tipSkuInvAttr5) {
-        this.tipSkuInvAttr5 = tipSkuInvAttr5;
+    public void setNeedScanSkuInvAttr3(boolean isNeedScanSkuInvAttr3) {
+        this.isNeedScanSkuInvAttr3 = isNeedScanSkuInvAttr3;
     }
 
-    public boolean isNeedTipSkuSn() {
-        return isNeedTipSkuSn;
+    public String getSkuInvAttr3() {
+        return skuInvAttr3;
     }
 
-    public void setNeedTipSkuSn(boolean isNeedTipSkuSn) {
-        this.isNeedTipSkuSn = isNeedTipSkuSn;
+    public void setSkuInvAttr3(String skuInvAttr3) {
+        this.skuInvAttr3 = skuInvAttr3;
     }
 
-    public String getTipSkuSn() {
-        return tipSkuSn;
+    public boolean isNeedScanSkuInvAttr4() {
+        return isNeedScanSkuInvAttr4;
     }
 
-    public void setTipSkuSn(String tipSkuSn) {
-        this.tipSkuSn = tipSkuSn;
+    public void setNeedScanSkuInvAttr4(boolean isNeedScanSkuInvAttr4) {
+        this.isNeedScanSkuInvAttr4 = isNeedScanSkuInvAttr4;
     }
 
-    public boolean isNeedTipSkuDefect() {
-        return isNeedTipSkuDefect;
+    public String getSkuInvAttr4() {
+        return skuInvAttr4;
     }
 
-    public void setNeedTipSkuDefect(boolean isNeedTipSkuDefect) {
-        this.isNeedTipSkuDefect = isNeedTipSkuDefect;
+    public void setSkuInvAttr4(String skuInvAttr4) {
+        this.skuInvAttr4 = skuInvAttr4;
     }
 
-    public String getTipSkuDefect() {
-        return tipSkuDefect;
+    public boolean isNeedScanSkuInvAttr5() {
+        return isNeedScanSkuInvAttr5;
     }
 
-    public void setTipSkuDefect(String tipSkuDefect) {
-        this.tipSkuDefect = tipSkuDefect;
+    public void setNeedScanSkuInvAttr5(boolean isNeedScanSkuInvAttr5) {
+        this.isNeedScanSkuInvAttr5 = isNeedScanSkuInvAttr5;
+    }
+
+    public String getSkuInvAttr5() {
+        return skuInvAttr5;
+    }
+
+    public void setSkuInvAttr5(String skuInvAttr5) {
+        this.skuInvAttr5 = skuInvAttr5;
     }
 
     public boolean isNeedScanSkuSn() {
@@ -471,28 +491,12 @@ public class PdaManMadePutawayCommand extends BaseCommand {
         this.isNeedScanSkuSn = isNeedScanSkuSn;
     }
 
-    public boolean isAfterPutawayTipLoc() {
-        return isAfterPutawayTipLoc;
+    public boolean isNeedScanSkuDefect() {
+        return isNeedScanSkuDefect;
     }
 
-    public void setAfterPutawayTipLoc(boolean isAfterPutawayTipLoc) {
-        this.isAfterPutawayTipLoc = isAfterPutawayTipLoc;
-    }
-
-    public int getTipSkuQty() {
-        return tipSkuQty;
-    }
-
-    public void setTipSkuQty(int tipSkuQty) {
-        this.tipSkuQty = tipSkuQty;
-    }
-
-    public boolean isNeedTipSkuDetail() {
-        return isNeedTipSkuDetail;
-    }
-
-    public void setNeedTipSkuDetail(boolean isNeedTipSkuDetail) {
-        this.isNeedTipSkuDetail = isNeedTipSkuDetail;
+    public void setNeedScanSkuDefect(boolean isNeedScanSkuDefect) {
+        this.isNeedScanSkuDefect = isNeedScanSkuDefect;
     }
 
     public String getSkuBarCode() {
@@ -502,8 +506,57 @@ public class PdaManMadePutawayCommand extends BaseCommand {
     public void setSkuBarCode(String skuBarCode) {
         this.skuBarCode = skuBarCode;
     }
-    
-    
+
+    public Double getScanSkuQty() {
+        return scanSkuQty;
+    }
+
+    public void setScanSkuQty(Double scanSkuQty) {
+        this.scanSkuQty = scanSkuQty;
+    }
+
+    public boolean isScanSkuSnDefect() {
+        return isScanSkuSnDefect;
+    }
+
+    public void setScanSkuSnDefect(boolean isScanSkuSnDefect) {
+        this.isScanSkuSnDefect = isScanSkuSnDefect;
+    }
+
+    public String getSkuSnCode() {
+        return skuSnCode;
+    }
+
+    public void setSkuSnCode(String skuSnCode) {
+        this.skuSnCode = skuSnCode;
+    }
+
+    public String getSkuDefectCode() {
+        return skuDefectCode;
+    }
+
+    public void setSkuDefectCode(String skuDefectCode) {
+        this.skuDefectCode = skuDefectCode;
+    }
+
+    public Boolean getIsTrackVessel() {
+        return isTrackVessel;
+    }
+
+    public void setIsTrackVessel(Boolean isTrackVessel) {
+        this.isTrackVessel = isTrackVessel;
+    }
+
+    public String getTrackContainerCode() {
+        return trackContainerCode;
+    }
+
+    public void setTrackContainerCode(String trackContainerCode) {
+        this.trackContainerCode = trackContainerCode;
+    }
+
+   
+
     
     
 }

@@ -38,7 +38,18 @@ public interface WhSkuInventoryManager extends BaseManager {
      * @param lrrList
      * @param putawayPatternDetailType
      */
+    @Deprecated
     void binding(List<WhSkuInventoryCommand> invList, Warehouse warehouse, List<LocationRecommendResultCommand> lrrList, Integer putawayPatternDetailType, Long ouId, Long userId, String logId);
+    
+    /**
+     * 库位绑定（分配容器库存及生成待移入库位库存）
+     * @author lichuan
+     * @param invList
+     * @param warehouse
+     * @param lrrList
+     * @param putawayPatternDetailType
+     */
+    void execBinding(List<WhSkuInventoryCommand> invList, Warehouse warehouse, List<LocationRecommendResultCommand> lrrList, Integer putawayPatternDetailType, Long ouId, Long userId, String logId);
     
     
     /**
@@ -52,7 +63,21 @@ public interface WhSkuInventoryManager extends BaseManager {
      * @param userId
      * @param logId
      */
+    @Deprecated
     void putaway(ContainerCommand containerCmd, ContainerCommand insideContainerCmd, String locationCode, Long funcId, Warehouse warehouse, Integer putawayPatternDetailType, Long ouId, Long userId, String logId);
+    
+    /**
+     * 执行上架（已分配容器库存出库及待移入库位库存入库）
+     * @author lichuan
+     * @param invList
+     * @param warehouse
+     * @param lrrList
+     * @param putawayPatternDetailType
+     * @param ouId
+     * @param userId
+     * @param logId
+     */
+    void execPutaway(ContainerCommand containerCmd, ContainerCommand insideContainerCmd, String locationCode, Long funcId, Warehouse warehouse, Integer putawayPatternDetailType, Long ouId, Long userId, String logId);
 
     /**
      * 执行上架（已分配容器库存出库及待移入库位库存入库）

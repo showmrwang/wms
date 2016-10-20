@@ -1015,7 +1015,13 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
             log.info("sys guide container putaway cache containerStatistic start, contianerId is:[{}], ouId is:[{}], logId is:[{}]", containerId, ouId, logId);
         }
         // 查询对应所有内部容器信息
-        List<ContainerCommand> icList = whSkuInventoryDao.findAllInsideContainerByOuterContainerId(ouId, containerId);
+        List<ContainerCommand> icList = null;
+        int counts = whSkuInventoryDao.findLocToBeFilledInventoryCountsByOuterContainerId(ouId, containerId);
+        if(0 < counts){
+            icList = whSkuInventoryDao.findTobefilledAllInsideContainerByOuterContainerId(ouId, containerId);
+        }else{
+            icList = whSkuInventoryDao.findAllInsideContainerByOuterContainerId(ouId, containerId);
+        }
         ContainerStatisticResultCommand csrCmd = inventoryStatisticManager.sysGuidePutawayContainerStatistic(icList, WhPutawayPatternDetailType.CONTAINER_PUTAWAY, ouId, logId);
         cacheManager.setMapObject(CacheConstants.CONTAINER_STATISTIC, containerId.toString(), csrCmd, CacheConstants.CACHE_ONE_DAY);
         if (log.isInfoEnabled()) {
@@ -2026,7 +2032,13 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
             log.info("sys guide splitContainer putaway cache containerStatistic start, contianerId is:[{}], ouId is:[{}], logId is:[{}]", containerId, ouId, logId);
         }
         // 查询对应所有内部容器信息
-        List<ContainerCommand> icList = whSkuInventoryDao.findAllInsideContainerByOuterContainerId(ouId, containerId);
+        List<ContainerCommand> icList = null;
+        int counts = whSkuInventoryDao.findLocToBeFilledInventoryCountsByOuterContainerId(ouId, containerId);
+        if(0 < counts){
+            icList = whSkuInventoryDao.findTobefilledAllInsideContainerByOuterContainerId(ouId, containerId);
+        }else{
+            icList = whSkuInventoryDao.findAllInsideContainerByOuterContainerId(ouId, containerId);
+        }
         ContainerStatisticResultCommand csrCmd = inventoryStatisticManager.sysGuidePutawayContainerStatistic(icList, WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY, ouId, logId);
         cacheManager.setMapObject(CacheConstants.CONTAINER_STATISTIC, containerId.toString(), csrCmd, CacheConstants.CACHE_ONE_DAY);
         if (log.isInfoEnabled()) {

@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryTobefilledDao">
+	<resultMap id="WhSkuInventoryTobefilledResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryTobefilled">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whSkuInventoryTobefilledColumnsExt">
+	    <![CDATA[
+	        	id as id,
+	        	sku_id as skuId,
+	        	location_id as locationId,
+	        	outer_container_id as outerContainerId,
+	        	inside_container_id as insideContainerId,
+	        	customer_id as customerId,
+	        	store_id as storeId,
+	        	occupation_code as occupationCode,
+	        	occupation_line_id as occupationLineId,
+	        	replenishment_code as replenishmentCode,
+	        	qty as qty,
+	        	inv_status as invStatus,
+	        	inv_type as invType,
+	        	batch_number as batchNumber,
+	        	mfg_date as mfgDate,
+	        	exp_date as expDate,
+	        	country_of_origin as countryOfOrigin,
+	        	inv_attr1 as invAttr1,
+	        	inv_attr2 as invAttr2,
+	        	inv_attr3 as invAttr3,
+	        	inv_attr4 as invAttr4,
+	        	inv_attr5 as invAttr5,
+	        	uuid as uuid,
+	        	ou_id as ouId,
+	        	last_modify_time as lastModifyTime
+	    ]]>
+	</sql>
+	
+	<sql id="whSkuInventoryTobefilledDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+				<if test="skuId!=null">
+					and sku_id = #{skuId}
+				</if>
+	       
+				<if test="locationId!=null">
+					and location_id = #{locationId}
+				</if>
+	       
+				<if test="outerContainerId!=null">
+					and outer_container_id = #{outerContainerId}
+				</if>
+	       
+				<if test="insideContainerId!=null">
+					and inside_container_id = #{insideContainerId}
+				</if>
+	       
+				<if test="customerId!=null">
+					and customer_id = #{customerId}
+				</if>
+	       
+				<if test="storeId!=null">
+					and store_id = #{storeId}
+				</if>
+	       
+	       
+		       <if test="occupationCode!=null and occupationCode!=''">
+					and occupation_code = #{occupationCode}
+				</if>
+	       
+				<if test="occupationLineId!=null">
+					and occupation_line_id = #{occupationLineId}
+				</if>
+	       
+	       
+		       <if test="replenishmentCode!=null and replenishmentCode!=''">
+					and replenishment_code = #{replenishmentCode}
+				</if>
+	       
+				<if test="qty!=null">
+					and qty = #{qty}
+				</if>
+	       
+				<if test="invStatus!=null">
+					and inv_status = #{invStatus}
+				</if>
+	       
+	       
+		       <if test="invType!=null and invType!=''">
+					and inv_type = #{invType}
+				</if>
+	       
+	       
+		       <if test="batchNumber!=null and batchNumber!=''">
+					and batch_number = #{batchNumber}
+				</if>
+	       
+				<if test="mfgDate!=null">
+					and mfg_date = #{mfgDate}
+				</if>
+	       
+				<if test="expDate!=null">
+					and exp_date = #{expDate}
+				</if>
+	       
+	       
+		       <if test="countryOfOrigin!=null and countryOfOrigin!=''">
+					and country_of_origin = #{countryOfOrigin}
+				</if>
+	       
+	       
+		       <if test="invAttr1!=null and invAttr1!=''">
+					and inv_attr1 = #{invAttr1}
+				</if>
+	       
+	       
+		       <if test="invAttr2!=null and invAttr2!=''">
+					and inv_attr2 = #{invAttr2}
+				</if>
+	       
+	       
+		       <if test="invAttr3!=null and invAttr3!=''">
+					and inv_attr3 = #{invAttr3}
+				</if>
+	       
+	       
+		       <if test="invAttr4!=null and invAttr4!=''">
+					and inv_attr4 = #{invAttr4}
+				</if>
+	       
+	       
+		       <if test="invAttr5!=null and invAttr5!=''">
+					and inv_attr5 = #{invAttr5}
+				</if>
+	       
+	       
+		       <if test="uuid!=null and uuid!=''">
+					and uuid = #{uuid}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+		</where>
+	</sql>
+	
+</mapper>

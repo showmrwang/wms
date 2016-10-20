@@ -1,6 +1,7 @@
 package com.baozun.scm.primservice.whoperation.manager.odo.wave;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -71,6 +72,9 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public WhWave getWaveByIdAndOuId(Long waveId, Long ouId) {
+        if (null == waveId || null == ouId) {
+            throw new BusinessException("软分配 : 没有参数");
+        }
         WhWave whWave = new WhWave();
         whWave.setId(waveId);
         whWave.setOuId(ouId);
@@ -85,6 +89,9 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<SoftAllocationCommand> getSkuInvTotalQty(Long waveId, Long ouId) {
+        if (null == waveId || null == ouId) {
+            throw new BusinessException("软分配 : 没有参数");
+        }
         List<SoftAllocationCommand> commandList = this.whWaveDao.getSkuInvTotalQty(waveId, ouId);
         return commandList;
     }
@@ -92,6 +99,9 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<SoftAllocationCommand> getSkuInvOccupiedQty(Long waveId, Long ouId) {
+        if (null == waveId || null == ouId) {
+            throw new BusinessException("软分配 : 没有参数");
+        }
         List<SoftAllocationCommand> commandList = this.whWaveDao.getSkuInvOccupiedQty(waveId, ouId);
         return commandList;
     }
@@ -244,6 +254,19 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
             line.setWaveCode(null);
             line.setOdoLineStatus(OdoStatus.ODOLINE_NEW);
             this.whOdoLineDao.saveOrUpdateByVersion(line);
+        }
+        return this.whWaveDao.findListByQueryMapWithPageExt(page, sorts, params);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void updateWaveForSoftStart(WhWave whWave) {
+        whWave.setStatus(WaveStatus.WAVE_EXECUTING);
+        whWave.setIsWeakAllocated(true);
+        whWave.setStartTime(new Date());
+        int cnt = this.whWaveDao.saveOrUpdateByVersion(whWave);
+        if (0 >= cnt) {
+            throw new BusinessException("软分配开始阶段-更新波次信息失败");
         }
     }
 }

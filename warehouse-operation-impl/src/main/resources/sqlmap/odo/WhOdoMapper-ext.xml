@@ -825,15 +825,15 @@
 
 		<if
 			test="deliverGoodsTime!=null and deliverGoodsTime!='' and deliverGoodsTime ==1">
-			tr.deliver_goods_time,/**配送时间 可选*/
+			DATE_FORMAT(tr.deliver_goods_time,'%Y-%m-%d'),/**配送时间 可选*/
 		</if>
 
 		tr.courier_service_type/**运输服务类型*/
-		having count(1) > 0
+		having count(1) > 1
 		) odo
 	</select>
 
-	<select id="odoMerge" resultMap="OdoMergeCommand">
+	<select id="odoMerge1" resultMap="OdoMergeCommand">
 		select
 		group_concat(odo.id) as
 		odoIds,
@@ -905,7 +905,81 @@
 
 		<if
 			test="deliverGoodsTime!=null and deliverGoodsTime!='' and deliverGoodsTime ==1">
-			tr.deliver_goods_time,/**配送时间 可选*/
+			DATE_FORMAT(tr.deliver_goods_time,'%Y-%m-%d'),/**配送时间 可选*/
+		</if>
+
+		tr.courier_service_type/**运输服务类型*/
+		having count(1) > 1
+	</select>
+
+	<select id="odoMerge" resultMap="OdoMergeCommand">
+		select
+		group_concat(odo.id) as
+		odoIds,
+		count(1) as count
+		FROM t_wh_odo
+		odo,t_wh_odo_address
+		address,t_wh_odo_transport_mgmt tr
+		where
+		odo.id =
+		address.odo_id
+		and
+		odo.id = tr.odo_id
+		and odo.odo_status = 1
+		/**出库单状态必须为新建*/
+		and
+		odo.is_allow_merge = 1 /**是否允许合并*/
+		and odo.ou_id =
+		#{ouId}
+		and odo.id in
+		${odoIdString}
+		GROUP BY
+		odo.customer_id,
+		odo.order_type,/**电商平台类型*/
+		<if test="store!=null and store!='' and store ==1">
+			odo.store_id,/**店铺可选条件*/
+		</if>
+		<if
+			test="epistaticSystemsOrderType!=null and epistaticSystemsOrderType!='' and epistaticSystemsOrderType ==1">
+			odo.epistatic_systems_order_type,/**上位系统单据类型 可选*/
+		</if>
+
+		<if
+			test="outboundCartonType!=null and outboundCartonType!='' and outboundCartonType ==1">
+			odo.outbound_carton_type,/**出库箱类型*/
+		</if>
+		odo.is_whole_order_outbound,/**是否整单出库*/
+		odo.part_outbound_strategy,/**部分出库策略*/
+		
+		/**配送对象*/
+		address.distribution_target_name,
+		address.distribution_target_country,
+		address.distribution_target_province,
+		address.distribution_target_city,
+		address.distribution_target_district,
+		address.distribution_target_villages_towns,
+		address.distribution_target_email,
+		address.distribution_target_mobile_phone,
+		address.distribution_target_telephone,
+		address.distribution_target_zip,
+		/**收货对象*/
+		address.consignee_target_name,
+		address.consignee_target_country,
+		address.consignee_target_province,
+		address.consignee_target_city,
+		address.consignee_target_district,
+		address.consignee_target_villages_towns,
+		address.consignee_target_email,
+		address.consignee_target_mobile_phone,
+		address.consignee_target_telephone,
+		address.consignee_target_zip,
+		tr.transport_service_provider,/**运输服务商*/
+		tr.outbound_target,/**出库目标对象*/
+		tr.mode_of_transport,/**运输方式*/
+
+		<if
+			test="deliverGoodsTime!=null and deliverGoodsTime!='' and deliverGoodsTime ==1">
+			DATE_FORMAT(tr.deliver_goods_time,'%Y-%m-%d'),/**配送时间 可选*/
 		</if>
 
 		tr.courier_service_type/**运输服务类型*/
@@ -915,7 +989,7 @@
 	<select id="findOdoListByIdOuId" resultMap="OdoCommand"
 		flushCache="false">
 		select
-		<include refid="whOdoMergeListExt" />
+		<include refid="whOdoColumnsExt" />
 		from t_wh_odo
 		<where>
 			<if test="ids!=null and ids!=''">
@@ -1373,6 +1447,42 @@
 		left join oper_user
 		user2 on user2.id=odo.modified_id
 		where  odo.id = #{id} and odo.ou_id=#{ouId}
+	</select>
+	
+	<select id="findOdoForMerge" resultMap="WhOdoResult"
+		flushCache="false">
+		select
+		<include refid="whOdoColumns" />
+		from t_wh_odo
+		<where>
+			<if test="ids!=null and ids!=''">
+				and id in #{ids}
+			</if>
+
+			<if test="ouId!=null">
+				and ou_id = ${ouId}
+			</if>
+
+			<if test="option!=null and option!=''">
+				and odo_status = ${odoStatus}
+			</if>
+		</where>
+	</select>
+
+	<select id="findMergeOdoListByIdOuId" resultMap="WhOdoResult"
+		flushCache="false">
+		select
+		<include refid="whOdoColumns" />
+		from t_wh_odo
+		where
+			original_odo_code is not null and original_odo_code != ''
+			<if test="ids!=null and ids!=''">
+				and id in ${ids}
+			</if>
+
+			<if test="ouId!=null">
+				and ou_id = #{ouId}
+			</if>
 		
 	</select>
 	
@@ -1383,4 +1493,5 @@
         <include refid="whOdoDynamicWhereExt"/>
 
     </select>
+	
 </mapper>

@@ -1,6 +1,7 @@
 package com.baozun.scm.primservice.whoperation.util;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class StringUtil implements Serializable {
 
@@ -21,6 +22,17 @@ public class StringUtil implements Serializable {
             flag = Boolean.TRUE;
         }
         return flag;
+    }
+
+    /**
+     * list转换为String
+     * 
+     * @param list
+     * @param separator
+     * @return
+     */
+    public static String listToString(List<?> list, char separator) {
+        return "(" + org.apache.commons.lang.StringUtils.join(list.toArray(), separator) + ")";
     }
 
 }

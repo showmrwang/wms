@@ -71,5 +71,18 @@ public interface PdaManMadePutawayManager extends BaseManager{
     * @return
     */
   public PdaManMadePutawayCommand splitPdaScanLocation(PdaManMadePutawayCommand pdaManMadePutawayCommand,String invAttrMgmtHouse,Warehouse warehouse);
+  
+  /***
+   * 拆箱上架扫描SN/残次信息
+   * @param pdaManMadePutawayCommand
+   * @return
+   */
+  public PdaManMadePutawayCommand splitPdanScanSkuSn(PdaManMadePutawayCommand pdaManMadePutawayCommand,Warehouse warehouse);
+  
+  /***
+   * 拆箱上架:校验sku库存属性
+   * @param pdaManMadePutawayCommand
+   */
+  public PdaManMadePutawayCommand verifySkuInventoryAttr(PdaManMadePutawayCommand pdaManMadePutawayCommand);
 
 }

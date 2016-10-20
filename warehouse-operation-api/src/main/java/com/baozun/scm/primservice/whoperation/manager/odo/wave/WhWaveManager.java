@@ -69,4 +69,10 @@ public interface WhWaveManager extends BaseManager {
      */
     public void deleteWave(WhWave wave, List<WhWaveLine> waveLineList, List<WhOdo> odoList, List<WhOdoLine> odoLineList, Long userId);
 
+    /**
+     * [业务方法] 软分配-软分配开始阶段更新波次状态
+     * @param whWave
+     */
+    public void updateWaveForSoftStart(WhWave whWave);
+
 }

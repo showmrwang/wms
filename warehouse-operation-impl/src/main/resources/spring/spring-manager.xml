@@ -42,14 +42,8 @@
 					<value>com.baozun.scm.primservice.whoperation.model.poasn.BiPo</value>
 					<value>com.baozun.scm.primservice.whoperation.model.poasn.BiPoLine</value>
 					<value>com.baozun.scm.primservice.whoperation.model.poasn.BiPoSn</value>
-					<value>com.baozun.scm.primservice.whoperation.model.system.GlobalLog</value>
-					<value>com.baozun.scm.primservice.whoperation.model.warehouse.carton.WhCarton</value>
-					<value>com.baozun.scm.primservice.whoperation.model.warehouse.Container</value>
 					<value>com.baozun.scm.primservice.whoperation.model.warehouse.ContainerAssist</value>
-					<value>com.baozun.scm.primservice.whoperation.model.warehouse.AsnReserve</value>
                     <value>com.baozun.scm.primservice.whoperation.model.warehouse.CheckInQueue</value>
-                    <value>com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory</value>
-                    <value>com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventorySn</value>
                     <value>com.baozun.scm.primservice.whoperation.model.warehouse.WhAsnRcvdLog</value>
                     <value>com.baozun.scm.primservice.whoperation.model.warehouse.WhAsnRcvdSnLog</value>
                     <value>com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryLog</value>
@@ -59,20 +53,20 @@
                     <value>com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine</value>
                     <value>com.baozun.scm.primservice.whoperation.model.odo.WhOdoAddress</value>
                     <value>com.baozun.scm.primservice.whoperation.model.odo.WhOdoVas</value>
-                    <value>com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave</value>
-                    <value>com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine</value>
 				</list>
 			</property>
 			
 			<!-- 如果有配置，表示这个实体使用配制的实体标识查询主键   key表示实体的package, value 表示获取主键的实体标识-->
 			<property name="modelMapppingMap">
-			<map>
+			<map> 
 				<entry key="com.baozun.scm.primservice.whoperation.model.system.GlobalLog" value="com.baozun.scm.primservice.whinfo.model.system.GlobalLog">	</entry>
 				<entry key="com.baozun.scm.primservice.whoperation.model.warehouse.carton.WhCarton" value="com.baozun.scm.primservice.whinfo.model.warehouse.carton.WhCarton">	</entry>
 				<entry key="com.baozun.scm.primservice.whoperation.model.warehouse.Container" value="com.baozun.scm.primservice.whinfo.model.warehouse.Container">	</entry>
 				<entry key="com.baozun.scm.primservice.whoperation.model.warehouse.AsnReserve" value="com.baozun.scm.primservice.whinfo.model.warehouse.AsnReserve"> </entry>
 				<entry key="com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory" value="com.baozun.scm.primservice.whinfo.model.warehouse.inventory.WhSkuInventory"> </entry>
 				<entry key="com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventorySn" value="com.baozun.scm.primservice.whinfo.model.warehouse.inventory.WhSkuInventorySn"> </entry>
+				<entry key="com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryTobefilled" value="com.baozun.scm.primservice.whinfo.model.warehouse.inventory.WhSkuInventoryTobefilled"> </entry>
+				<entry key="com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryAllocated" value="com.baozun.scm.primservice.whinfo.model.warehouse.inventory.WhSkuInventoryAllocated"> </entry>
 				<entry key="com.baozun.scm.primservice.whoperation.model.warehouse.WhAsnRcvdLog" value="com.baozun.scm.primservice.whinfo.model.warehouse.WhAsnRcvdLog"> </entry>
 				<entry key="com.baozun.scm.primservice.whoperation.model.warehouse.WhAsnRcvdSnLog" value="com.baozun.scm.primservice.whinfo.model.warehouse.WhAsnRcvdSnLog"> </entry>
 				<entry key="com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave" value="com.baozun.scm.primservice.whinfo.model.odo.wave.WhWave"> </entry>
