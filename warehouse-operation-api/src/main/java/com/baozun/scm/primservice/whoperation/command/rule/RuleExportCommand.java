@@ -7,6 +7,7 @@ import com.baozun.scm.primservice.whoperation.command.BaseCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.RecommendPlatformCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ReplenishmentRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ShelveRecommendRuleCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhDistributionPatternRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhInBoundRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 
@@ -50,6 +51,9 @@ public class RuleExportCommand extends BaseCommand {
 
     /** 补货规则 */
     private List<ReplenishmentRuleCommand> replenishmentRuleCommandList;
+    
+    /** 配货模式规则 */
+    private List<WhDistributionPatternRuleCommand> whDistributionPatternRuleCommand;
 
     public Boolean getUsableness() {
         return usableness;
@@ -129,5 +133,13 @@ public class RuleExportCommand extends BaseCommand {
 
     public void setReplenishmentRuleCommandList(List<ReplenishmentRuleCommand> replenishmentRuleCommandList) {
         this.replenishmentRuleCommandList = replenishmentRuleCommandList;
+    }
+
+    public List<WhDistributionPatternRuleCommand> getWhDistributionPatternRuleCommand() {
+        return whDistributionPatternRuleCommand;
+    }
+
+    public void setWhDistributionPatternRuleCommand(List<WhDistributionPatternRuleCommand> whDistributionPatternRuleCommand) {
+        this.whDistributionPatternRuleCommand = whDistributionPatternRuleCommand;
     }
 }

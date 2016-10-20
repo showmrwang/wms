@@ -83,7 +83,8 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
         }
         // 判断规则TYPE是否符合要求
         if (!Constants.PLATFORM_RECOMMEND_RULE.equals(ruleAffer.getRuleType()) && !Constants.INBOUND_RULE.equals(ruleAffer.getRuleType()) && !Constants.SHELVE_RECOMMEND_RULE.equals(ruleAffer.getRuleType())
-                && !Constants.SHELVE_RECOMMEND_RULE_ALL.equals(ruleAffer.getRuleType()) && !Constants.ALLOCATE_RULE.equals(ruleAffer.getRuleType()) && !Constants.REPLENISHMENT_RULE.equals(ruleAffer.getRuleType())) {
+                && !Constants.SHELVE_RECOMMEND_RULE_ALL.equals(ruleAffer.getRuleType()) && !Constants.ALLOCATE_RULE.equals(ruleAffer.getRuleType()) && !Constants.REPLENISHMENT_RULE.equals(ruleAffer.getRuleType())
+                && !Constants.DISTRIBUTION_PATTERN.equals(ruleAffer.getRuleType())) {
             log.warn("ruleExport ruleAffer.getRuleType() is error ruleAffer.getRuleType() = " + ruleAffer.getRuleType() + " logid: " + ruleAffer.getLogId());
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
@@ -110,6 +111,10 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
         // 补货规则
         if (Constants.REPLENISHMENT_RULE.equals(ruleAffer.getRuleType())) {
             export = exportReplenishmentRule(ruleAffer);
+        }
+        // 配货模式规则
+        if (Constants.DISTRIBUTION_PATTERN.equals(ruleAffer.getRuleType())) {
+            export = distributionPattern(ruleAffer);
         }
         log.info(this.getClass().getSimpleName() + ".ruleExport method end! logid: " + ruleAffer.getLogId());
         return export;
@@ -350,6 +355,26 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
 
         RuleExportCommand ruleExportCommand = new RuleExportCommand();
         ruleExportCommand.setReplenishmentRuleCommandList(returnList);
+        return ruleExportCommand;
+    }
+    
+    /**
+     * 配货模式规则
+     * 
+     * @param ruleAffer odoLineId 出库单明细ID
+     * @return allocateRuleOdoLineId 出库单明细对应分配规则ID
+     */
+    private RuleExportCommand distributionPattern(RuleAfferCommand ruleAffer) {
+        
+        // 波次ID
+        Long waveId = ruleAffer.getWaveId();
+        // 组织ID
+        Long ouId = ruleAffer.getOuid();
+        
+        
+        RuleExportCommand ruleExportCommand = new RuleExportCommand();
+        
+        
         return ruleExportCommand;
     }
 

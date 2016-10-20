@@ -370,4 +370,7 @@ public final class Constants {
     public static final String WH_WAVE_PHASE = "WH_WAVE_PHASE";// 波次阶段
     
     public static final Integer SN_DEFECR_COUNT  = 1;
+    
+    /**配货模式规则*/
+    public static final String DISTRIBUTION_PATTERN="DISTRIBUTION_PATTERN";
 }
