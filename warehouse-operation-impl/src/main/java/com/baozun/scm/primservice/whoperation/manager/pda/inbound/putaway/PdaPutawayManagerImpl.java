@@ -389,12 +389,14 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         // 0.判断是外部容器还是内部容器
         int count1 = whSkuInventoryDao.findRcvdInventoryCountsByOuterContainerId(ouId, containerId);
         int count2 = whSkuInventoryDao.findRcvdInventoryCountsByInsideContainerId(ouId, containerId);
-        if (0 < count2) {
+        int count3 = whSkuInventoryDao.findLocToBeFilledInventoryCountsByOuterContainerId(ouId, containerId);
+        int count4 = whSkuInventoryDao.findLocToBeFilledInventoryCountsByInsideContainerId(ouId, containerId);
+        if (0 < count2 || 0 < count4) {
             // 整托上架只能扫外部容器号
             log.error("sys guide pallet putaway scan container is insideContainer error, containerCode is:[{}], logId is:[{}]", containerCode, logId);
             throw new BusinessException(ErrorCodes.CONTAINER_IS_INSIDE_ERROR_UNABLE_PUTAWAY, new Object[] {containerCode});
         }
-        if (0 < count1) {
+        if (0 < count1 || 0 < count3) {
             srCmd.setContainerType(WhContainerType.OUTER_CONTAINER);// 外部容器
             srCmd.setHasOuterContainer(true);// 有外部容器
         } else {
@@ -413,6 +415,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
             insertGlobalLog(GLOBAL_LOG_UPDATE, container, ouId, userId, null, null);
         }
         // 2.判断是否已经缓存所有库存信息
+        // pdaPutawayCacheManager.sysGuidePalletPutawayRemoveAllCache(containerCmd, logId);
         List<WhSkuInventoryCommand> cacheInvs = cacheManager.getMapObject(CacheConstants.CONTAINER_INVENTORY, containerId.toString());
         List<WhSkuInventoryCommand> invList = null;
         if (null == cacheInvs || 0 == cacheInvs.size()) {
@@ -1146,9 +1149,15 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
 //            }
 //
 //        }
-        whSkuInventoryManager.binding(invList, warehouse, lrrList, WhPutawayPatternDetailType.PALLET_PUTAWAY, ouId, userId, logId);
-        // 弹出排队队列
-        pdaPutawayCacheManager.sysGuidePutawayLocRecommendPopQueue(containerId, logId);
+        try {
+            whSkuInventoryManager.execBinding(invList, warehouse, lrrList, WhPutawayPatternDetailType.PALLET_PUTAWAY, ouId, userId, logId); 
+            // 弹出排队队列
+            pdaPutawayCacheManager.sysGuidePutawayLocRecommendPopQueue(containerId, logId);
+        } catch (Exception e) {
+            // 绑定库位或弹出队列出错，清理库存统计信息缓存
+            // TODO
+            throw e;
+        }
         // 12.提示库位
         srCmd.setRecommendLocation(true);// 已推荐库位
         srCmd.setTipLocationCode(lrrLocCode);// 提示库位编码
@@ -1182,10 +1191,13 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         if (null == insideContainerCmd) {
             int count1 = whSkuInventoryDao.findRcvdInventoryCountsByOuterContainerId(ouId, containerId);
             int count2 = whSkuInventoryDao.findRcvdInventoryCountsByInsideContainerId(ouId, containerId);
-            if (0 < count2) {
+            int count3 = whSkuInventoryDao.findLocToBeFilledInventoryCountsByOuterContainerId(ouId, containerId);
+            int count4 = whSkuInventoryDao.findLocToBeFilledInventoryCountsByInsideContainerId(ouId, containerId);
+            if (0 < count2 || 0 < count4) {
                 // 整箱上架判断是是否有外部容器号
                 int ocCount = whSkuInventoryDao.findRcvdInventoryCountsByInsideContainerId1(ouId, containerId);
-                if (0 < ocCount) {
+                int ocLocCount = whSkuInventoryDao.findLocTobefilledInventoryCountsByInsideContainerId1(ouId, containerId);
+                if (0 < ocCount || 0 < ocLocCount) {
                     log.error("sys guide container putaway scan container has outer container, should scan outer container first, containerCode is:[{}], logId is:[{}]", containerCode, logId);
                     throw new BusinessException(ErrorCodes.CONTAINER_HAS_OUTER_CONTAINER_SCAN_OUTER_FIRST, new Object[] {containerCode});
                 } else {
@@ -1196,7 +1208,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                     insideContainerCmd = containerCmd;
                 }
             }
-            if (0 < count1) {
+            if (0 < count1 || 0 < count3) {
                 srCmd.setContainerType(WhContainerType.OUTER_CONTAINER);// 外部容器
                 srCmd.setHasOuterContainer(true);// 有外部容器，需要循环提示容器
                 ContainerStatisticResultCommand cacheCsr = cacheManager.getMapObject(CacheConstants.CONTAINER_STATISTIC, containerId.toString());
@@ -1920,9 +1932,15 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
 //            }
 //
 //        }
-        whSkuInventoryManager.binding(invList, warehouse, lrrList, WhPutawayPatternDetailType.CONTAINER_PUTAWAY, ouId, userId, logId);
-        // 弹出排队队列
-        pdaPutawayCacheManager.sysGuidePutawayLocRecommendPopQueue(insideContainerId, logId);
+        try {
+            whSkuInventoryManager.execBinding(invList, warehouse, lrrList, WhPutawayPatternDetailType.CONTAINER_PUTAWAY, ouId, userId, logId);
+            // 弹出排队队列
+            pdaPutawayCacheManager.sysGuidePutawayLocRecommendPopQueue(insideContainerId, logId);
+        } catch (Exception e) {
+            // 绑定库位或弹出队列出错，清理库存统计信息缓存
+            // TODO
+            throw e;
+        }
         // 10.提示库位
         srCmd.setRecommendLocation(true);// 已推荐库位
         srCmd.setTipLocationCode(lrrLocCode);// 提示库位编码
@@ -1956,10 +1974,13 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         if (null == insideContainerCmd) {
             int count1 = whSkuInventoryDao.findRcvdInventoryCountsByOuterContainerId(ouId, containerId);
             int count2 = whSkuInventoryDao.findRcvdInventoryCountsByInsideContainerId(ouId, containerId);
-            if (0 < count2) {
+            int count3 = whSkuInventoryDao.findLocToBeFilledInventoryCountsByOuterContainerId(ouId, containerId);
+            int count4 = whSkuInventoryDao.findLocToBeFilledInventoryCountsByInsideContainerId(ouId, containerId);
+            if (0 < count2 || 0 < count4) {
                 // 整箱上架判断是是否有外部容器号
                 int ocCount = whSkuInventoryDao.findRcvdInventoryCountsByInsideContainerId1(ouId, containerId);
-                if (0 < ocCount) {
+                int ocLocCount = whSkuInventoryDao.findLocTobefilledInventoryCountsByInsideContainerId1(ouId, containerId);
+                if (0 < ocCount || 0 < ocLocCount) {
                     log.error("sys guide container putaway scan container has outer container, should scan outer container first, containerCode is:[{}], logId is:[{}]", containerCode, logId);
                     throw new BusinessException(ErrorCodes.CONTAINER_HAS_OUTER_CONTAINER_SCAN_OUTER_FIRST, new Object[] {containerCode});
                 } else {
@@ -1970,7 +1991,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                     insideContainerCmd = containerCmd;
                 }
             }
-            if (0 < count1) {
+            if (0 < count1 || 0 < count3) {
                 srCmd.setContainerType(WhContainerType.OUTER_CONTAINER);// 外部容器
                 srCmd.setHasOuterContainer(true);// 有外部容器，需要循环提示容器
                 ContainerStatisticResultCommand cacheCsr = cacheManager.getMapObject(CacheConstants.CONTAINER_STATISTIC, containerId.toString());
@@ -2819,10 +2840,16 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
 //
 //            }
 //        }
-        // 库位绑定（一待入一待出）
-        whSkuInventoryManager.binding(invList, warehouse, lrrList, WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY, ouId, userId, logId);
-        // 弹出排队队列
-        pdaPutawayCacheManager.sysGuidePutawayLocRecommendPopQueue(insideContainerId, logId);
+        try {
+            // 库位绑定（一待入一待出）
+            whSkuInventoryManager.execBinding(invList, warehouse, lrrList, WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY, ouId, userId, logId);
+            // 弹出排队队列
+            pdaPutawayCacheManager.sysGuidePutawayLocRecommendPopQueue(insideContainerId, logId);
+        } catch (Exception e) {
+            // 绑定库位或弹出队列出错，清理库存统计信息缓存
+            // TODO
+            throw e;
+        }
         // 11.提示库位
         srCmd.setRecommendLocation(true);// 已推荐库位
         Long locId = pdaPutawayCacheManager.sysGuideSplitContainerPutawayTipLocation0(insideContainerCmd, locationIds, logId);
@@ -4471,7 +4498,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
 //                }
 //            }
 //        }
-        whSkuInventoryManager.putaway(containerCmd, null, locationCode, funcId, warehouse, WhPutawayPatternDetailType.PALLET_PUTAWAY, ouId, userId, logId);
+        whSkuInventoryManager.execPutaway(containerCmd, null, locationCode, funcId, warehouse, WhPutawayPatternDetailType.PALLET_PUTAWAY, ouId, userId, logId);
         // 2.清除redis缓存
         pdaPutawayCacheManager.sysGuidePalletPutawayRemoveAllCache(containerCmd, logId);
     }
@@ -4766,7 +4793,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
 //                insertGlobalLog(GLOBAL_LOG_UPDATE, insideContainer, ouId, userId, null, null);
 //            }
 //        }
-        whSkuInventoryManager.putaway(containerCmd, insideContainerCmd, locationCode, funcId, warehouse, WhPutawayPatternDetailType.CONTAINER_PUTAWAY, ouId, userId, logId);
+        whSkuInventoryManager.execPutaway(containerCmd, insideContainerCmd, locationCode, funcId, warehouse, WhPutawayPatternDetailType.CONTAINER_PUTAWAY, ouId, userId, logId);
         // 3.清除redis缓存
         pdaPutawayCacheManager.sysGuideContainerPutawayRemoveAllCache(containerCmd, insideContainerCmd, isAfterPutawayTipContainer, logId);
     }
@@ -5050,7 +5077,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
 //                insertGlobalLog(GLOBAL_LOG_UPDATE, insideContainer, ouId, userId, null, null);
 //            }
 //        }
-        whSkuInventoryManager.putaway(containerCmd, insideContainerCmd, locationCode, funcId, warehouse, WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY, ouId, userId, logId);
+        whSkuInventoryManager.execPutaway(containerCmd, insideContainerCmd, locationCode, funcId, warehouse, WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY, ouId, userId, logId);
         // 3.清除redis缓存
         pdaPutawayCacheManager.sysGuideSplitContainerPutawayRemoveAllCache(containerCmd, insideContainerCmd, isAfterPutawayTipContainer, isAfterPutawayTipLoc, loc.getId(), logId);
     }
