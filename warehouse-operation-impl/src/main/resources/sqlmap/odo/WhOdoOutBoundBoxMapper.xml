@@ -100,7 +100,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		<!-- 如果有自增字段 -->
 		
 			<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
-			<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.WhOdoOutBoundBox" 
+			<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.odo.WhOdoOutBoundBox" 
 				
 			 flushCache="true">
 		    <![CDATA[
@@ -137,7 +137,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</insert>
 		
 		
-		<update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.WhOdoOutBoundBox">
+		<update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.odo.WhOdoOutBoundBox">
 	    <![CDATA[
 	        UPDATE t_wh_odo_outboundbox SET
 		        odo_id = #{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
