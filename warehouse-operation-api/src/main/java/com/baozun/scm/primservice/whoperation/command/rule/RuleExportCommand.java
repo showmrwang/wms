@@ -53,7 +53,7 @@ public class RuleExportCommand extends BaseCommand {
     private List<ReplenishmentRuleCommand> replenishmentRuleCommandList;
     
     /** 配货模式规则 */
-    private List<WhDistributionPatternRuleCommand> whDistributionPatternRuleCommand;
+    private List<WhDistributionPatternRuleCommand> whDistributionPatternRuleCommandList;
 
     public Boolean getUsableness() {
         return usableness;
@@ -135,11 +135,11 @@ public class RuleExportCommand extends BaseCommand {
         this.replenishmentRuleCommandList = replenishmentRuleCommandList;
     }
 
-    public List<WhDistributionPatternRuleCommand> getWhDistributionPatternRuleCommand() {
-        return whDistributionPatternRuleCommand;
+    public List<WhDistributionPatternRuleCommand> getWhDistributionPatternRuleCommandList() {
+        return whDistributionPatternRuleCommandList;
     }
 
-    public void setWhDistributionPatternRuleCommand(List<WhDistributionPatternRuleCommand> whDistributionPatternRuleCommand) {
-        this.whDistributionPatternRuleCommand = whDistributionPatternRuleCommand;
+    public void setWhDistributionPatternRuleCommandList(List<WhDistributionPatternRuleCommand> whDistributionPatternRuleCommandList) {
+        this.whDistributionPatternRuleCommandList = whDistributionPatternRuleCommandList;
     }
 }
