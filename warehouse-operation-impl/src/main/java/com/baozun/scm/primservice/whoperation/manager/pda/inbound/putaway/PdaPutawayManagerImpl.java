@@ -2033,7 +2033,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                 }
                 return srCmd;
             }
-            if (0 >= count2 && 0 >= count1) {
+            if ((0 >= count2 && 0 >= count1) && (0 >= count3 && 0 >= count4)) {
                 // 无收货库存
                 log.error("sys guide container putaway scan container not found rcvdInvs error, containerCode is:[{}], logId is:[{}]", containerCode, logId);
                 throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_RCVD_INV_ERROR, new Object[] {containerCode});
@@ -4098,7 +4098,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         }
 
         // 1.判断当前商品是否扫完、是否提示下一个库位、容器或上架
-        Set<Long> insideContainerIds = csrCmd.getInsideContainerIds();
+        Set<Long> insideContainerIds = isCmd.getInsideContainerIds();
         Map<Long, Set<Long>> insideContainerSkuIds = isCmd.getInsideContainerSkuIds();
         Map<Long, Map<Long, Long>> insideContainerSkuIdsQty = isCmd.getInsideContainerSkuIdsQty();
         Map<Long, Map<String, Long>> insideContainerSkuAttrIdsQty = isCmd.getInsideContainerSkuAttrIdsQty();

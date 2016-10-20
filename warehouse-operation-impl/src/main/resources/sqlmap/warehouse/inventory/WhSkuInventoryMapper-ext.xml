@@ -862,7 +862,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        		sn.sys_uuid as snSysUuid
 					from 
 					t_wh_asn asn,	
-					t_wh_sku_inventory inv
+					t_wh_sku_inventory_tobefilled inv
 					left join t_wh_container c on c.id = inv.outer_container_id
 					left join t_wh_sku_inventory_sn sn on inv.uuid = sn.uuid
 					where 
@@ -1323,7 +1323,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					inv.inv_attr4 as invAttr4,
 					inv.inv_attr5 as invAttr5,
 					inv.uuid as invUuid,
-					inv.is_locked as isLocked,
 					inv.ou_id as invOuId,
 	        		inv.last_modify_time as lastModifyTime,
 	        		sn.id as snId,
