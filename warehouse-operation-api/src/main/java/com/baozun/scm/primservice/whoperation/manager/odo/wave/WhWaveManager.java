@@ -55,4 +55,10 @@ public interface WhWaveManager extends BaseManager {
      */
     public Pagination<WaveCommand> findWaveListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params);
 
+    /**
+     * [业务方法] 软分配-软分配开始阶段更新波次状态
+     * @param whWave
+     */
+    public void updateWaveForSoftStart(WhWave whWave);
+
 }

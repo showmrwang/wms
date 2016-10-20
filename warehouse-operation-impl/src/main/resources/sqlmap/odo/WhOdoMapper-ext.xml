@@ -843,7 +843,7 @@
 
 		<if
 			test="deliverGoodsTime!=null and deliverGoodsTime!='' and deliverGoodsTime ==1">
-			tr.deliver_goods_time,/**配送时间 可选*/
+			DATE_FORMAT(tr.deliver_goods_time,'%Y-%m-%d'),/**配送时间 可选*/
 		</if>
 
 		tr.courier_service_type/**运输服务类型*/
@@ -923,7 +923,7 @@
 
 		<if
 			test="deliverGoodsTime!=null and deliverGoodsTime!='' and deliverGoodsTime ==1">
-			tr.deliver_goods_time,/**配送时间 可选*/
+			DATE_FORMAT(tr.deliver_goods_time,'%Y-%m-%d'),/**配送时间 可选*/
 		</if>
 
 		tr.courier_service_type/**运输服务类型*/
@@ -997,7 +997,7 @@
 
 		<if
 			test="deliverGoodsTime!=null and deliverGoodsTime!='' and deliverGoodsTime ==1">
-			tr.deliver_goods_time,/**配送时间 可选*/
+			DATE_FORMAT(tr.deliver_goods_time,'%Y-%m-%d'),/**配送时间 可选*/
 		</if>
 
 		tr.courier_service_type/**运输服务类型*/

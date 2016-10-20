@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.baozun.scm.primservice.whoperation.command.wave.WaveLineCommand;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoOutBoundBox;
 
 public class OutBoundBoxCompute {
 
@@ -21,13 +22,16 @@ public class OutBoundBoxCompute {
     private static double tempVolume = 0.00;
 
     /***
-     * 通过波次明细对应商品数量/体积+出库箱体积计算多少商品能放入对应出库箱 放入出库箱的商品从传入的List<WaveLine>波次明细中扣除相应数量
+     * 通过波次明细对应商品数量/体积+出库箱体积计算多少商品能放入对应出库箱 放入出库箱的商品从传入的List<WaveLine>波次明细中扣除相应数量 出库单绑定出库箱/容器数据累加
      * 
-     * @param waveLine 对应波次明细信息
+     * @param waveLineList 对应波次明细信息
+     * @param Map<String=出库单ID-出库单明细ID-出库箱类型ID/容器ID, WhOdoOutBoundBox> oobbMap 出库单绑定出库箱/容器信息
      * @param boxTotalVolume 出库箱体积
+     * @param outBoundBoxType 出库箱类型ID
+     * @param containerId 容器ID
      * @return 累计放入出库箱商品总体积
      */
-    public static Double obbCompute(List<WaveLineCommand> waveLineList, Double boxTotalVolume) {
+    public static Double obbCompute(List<WaveLineCommand> waveLineList, Map<String, WhOdoOutBoundBox> oobbMap, Double boxTotalVolume, Long outBoundBoxType, Long containerId) {
         log.info("OutBoundBoxCompute.compute method begin!");
         if (null == waveLineList) {
             log.warn("OutBoundBoxCompute.compute waveLineList is null");
@@ -59,7 +63,7 @@ public class OutBoundBoxCompute {
         // 计算多少商品能放入对应出库箱
         Map<Long, Integer> solveResult = solve(bags, boxTotalVolume);
         // 调整波次明细对应数量
-        revisionWaveLineQty(waveLineList, solveResult);
+        revisionWaveLineQty(waveLineList, oobbMap, solveResult, outBoundBoxType, containerId);
         log.info("OutBoundBoxCompute.compute method end!");
         return tempVolume;
     }
@@ -69,10 +73,44 @@ public class OutBoundBoxCompute {
      * 
      * @param waveLineList
      */
-    private static void revisionWaveLineQty(List<WaveLineCommand> waveLineList, Map<Long, Integer> solveResult) {
+    private static void revisionWaveLineQty(List<WaveLineCommand> waveLineList, Map<String, WhOdoOutBoundBox> oobbMap, Map<Long, Integer> solveResult, Long outBoundBoxType, Long containerId) {
         for (int i = 0; i < waveLineList.size(); i++) {
             // 判断放入出库箱商品是否存在
             if (solveResult.containsKey(waveLineList.get(i).getId())) {
+                // 出库单绑定出库箱/容器信息累加
+                WhOdoOutBoundBox oobb = new WhOdoOutBoundBox();
+                String oobbKey = waveLineList.get(i).getOdoId() + "-" + waveLineList.get(i).getOdoLineId();
+                if (null == outBoundBoxType) {
+                    // 容器
+                    if (oobbMap.containsKey(oobbKey + "-" + containerId)) {
+                        // 如果有对应的信息 数量累加
+                        oobb = oobbMap.get(oobbKey + "-" + containerId);
+                        oobb.setQty(oobb.getQty() + solveResult.get(waveLineList.get(i).getId()));
+                        oobbMap.put(oobbKey + "-" + containerId, oobb);
+                    } else {
+                        // 否则新增信息
+                        oobb.setOdoId(waveLineList.get(i).getOdoId());
+                        oobb.setOdoLineId(waveLineList.get(i).getOdoLineId());
+                        oobb.setOuterContainerId(containerId);
+                        oobb.setQty(solveResult.get(waveLineList.get(i).getId()).doubleValue());
+                        oobbMap.put(oobbKey + "-" + containerId, oobb);
+                    }
+                } else {
+                    // 出库箱类型
+                    if (oobbMap.containsKey(oobbKey + "-" + outBoundBoxType)) {
+                        // 如果有对应的信息 数量累加
+                        oobb = oobbMap.get(oobbKey + "-" + outBoundBoxType);
+                        oobb.setQty(oobb.getQty() + solveResult.get(waveLineList.get(i).getId()));
+                        oobbMap.put(oobbKey + "-" + outBoundBoxType, oobb);
+                    } else {
+                        // 否则新增信息
+                        oobb.setOdoId(waveLineList.get(i).getOdoId());
+                        oobb.setOdoLineId(waveLineList.get(i).getOdoLineId());
+                        oobb.setOutbounxboxTypeId(outBoundBoxType);
+                        oobb.setQty(solveResult.get(waveLineList.get(i).getId()).doubleValue());
+                        oobbMap.put(oobbKey + "-" + outBoundBoxType, oobb);
+                    }
+                }
                 int qty = waveLineList.get(i).getQty().intValue() - solveResult.get(waveLineList.get(i).getId());
                 if (qty == 0) {
                     // 如果全部放入出库箱 删除对应波次明细数据
