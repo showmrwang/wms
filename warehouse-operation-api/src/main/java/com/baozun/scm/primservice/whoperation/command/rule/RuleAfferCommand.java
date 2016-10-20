@@ -59,6 +59,9 @@ public class RuleAfferCommand extends BaseCommand {
     private Long replenishmentRuleSkuId;
     /** 补货规则库位ID */
     private Long replenishmentRuleLocationId;
+    
+    /** 波次Id */
+    private Long waveId;
 
 
     public String getRuleType() {
@@ -187,4 +190,13 @@ public class RuleAfferCommand extends BaseCommand {
     public void setReplenishmentRuleLocationId(Long replenishmentRuleLocationId) {
         this.replenishmentRuleLocationId = replenishmentRuleLocationId;
     }
+
+    public Long getWaveId() {
+        return waveId;
+    }
+
+    public void setWaveId(Long waveId) {
+        this.waveId = waveId;
+    }
+    
 }

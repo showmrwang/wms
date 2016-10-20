@@ -366,4 +366,7 @@ public final class Constants {
     public static final String INV_ATTR5 = "11";   //库存属性5
     
     public static final Integer SN_DEFECR_COUNT  = 1;
+    
+    /**配货模式规则*/
+    public static final String DISTRIBUTION_PATTERN="DISTRIBUTION_PATTERN";
 }
