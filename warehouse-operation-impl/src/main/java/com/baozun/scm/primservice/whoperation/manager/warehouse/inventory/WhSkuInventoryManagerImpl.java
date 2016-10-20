@@ -41,7 +41,6 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
 import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
-import com.baozun.scm.primservice.whoperation.constant.CacheKeyConstant;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
 import com.baozun.scm.primservice.whoperation.constant.WhPutawayPatternDetailType;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
@@ -2314,7 +2313,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 // 拆箱上架需要判断所有内部容器全部都已上架才能释放外部容器
                 ManMadeContainerStatisticCommand manMadeContainer = new ManMadeContainerStatisticCommand();
                 if (null != containerCmd) {
-                    manMadeContainer = cacheManager.getMapObject(CacheKeyConstant.MANMADE_PUTWAY_CACHE_CONTAINER, containerId.toString());
+                    manMadeContainer = cacheManager.getMapObject(CacheConstants.CONTAINER_INVENTORY_STATISTIC, containerId.toString());
                     Set<Long> cacheInsideContainerIds = manMadeContainer.getInsideContainerIds();
                     // 先判断内部容器是否全部已提示，只有全部提示了才能修改外部容器状态，否则外部容器一定是上架中
                     TipContainerCacheCommand cacheContainerCmd = cacheManager.getObject(CacheConstants.SCAN_CONTAINER_QUEUE + containerId.toString());
@@ -2538,7 +2537,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     // 整箱上架需要判断所有内部容器全部都已上架即可释放外部容器
                     ManMadeContainerStatisticCommand manMadeContainer = new ManMadeContainerStatisticCommand();
                     if (null != containerCmd) {
-                        manMadeContainer = cacheManager.getMapObject(CacheKeyConstant.MANMADE_PUTWAY_CACHE_CONTAINER, containerId.toString());
+                        manMadeContainer = cacheManager.getMapObject(CacheConstants.CONTAINER_INVENTORY_STATISTIC, containerId.toString());
                         Set<Long> cacheInsideContainerIds = manMadeContainer.getInsideContainerIds(); // 整箱上架:存在托盘,所有内部容器id集合
                         // 先判断内部容器是否全部已提示，只有全部提示了才能修改外部容器状态，否则外部容器一定是上架中
                         TipContainerCacheCommand cacheContainerCmd = cacheManager.getObject(CacheConstants.SCAN_CONTAINER_QUEUE + containerId.toString());
