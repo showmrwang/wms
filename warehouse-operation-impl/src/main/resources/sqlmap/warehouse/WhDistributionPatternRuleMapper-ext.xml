@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.WhDistributionPatternRuleDao">
+	<resultMap id="whDistributionPatternRuleResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.WhDistributionPatternRule">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whDistributionPatternRuleColumnsExt">
+	    <![CDATA[
+	        	id as id,
+	        	distribution_pattern_name as distributionPatternName,
+	        	distribution_pattern_code as distributionPatternCode,
+	        	rule as rule,
+	        	rule_sql as ruleSql,
+	        	ou_id as ouId,
+	        	picking_mode as pickingMode,
+	        	priority as priority,
+	        	is_need_outbound_carton as isNeedOutboundCarton,
+	        	description as description,
+	        	create_time as createTime,
+	        	last_modify_time as lastModifyTime,
+	        	created_id as createdId,
+	        	modified_id as modifiedId,
+	        	lifecycle as lifecycle
+	    ]]>
+	</sql>
+	
+	<sql id="whDistributionPatternRuleDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+	       
+		       <if test="distributionPatternName!=null and distributionPatternName!=''">
+					and distribution_pattern_name = #{distributionPatternName}
+				</if>
+	       
+	       
+		       <if test="distributionPatternCode!=null and distributionPatternCode!=''">
+					and distribution_pattern_code = #{distributionPatternCode}
+				</if>
+	       
+	       
+		       <if test="rule!=null and rule!=''">
+					and rule = #{rule}
+				</if>
+	       
+	       
+		       <if test="ruleSql!=null and ruleSql!=''">
+					and rule_sql = #{ruleSql}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+	       
+				<if test="pickingMode!=null">
+					and picking_mode = #{pickingMode}
+				</if>
+	       
+				<if test="priority!=null">
+					and priority = #{priority}
+				</if>
+	       
+				<if test="isNeedOutboundCarton!=null">
+					and is_need_outbound_carton = #{isNeedOutboundCarton}
+				</if>
+	       
+	       
+		       <if test="description!=null and description!=''">
+					and description = #{description}
+				</if>
+	       
+				<if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="createdId!=null">
+					and created_id = #{createdId}
+				</if>
+	       
+				<if test="modifiedId!=null">
+					and modified_id = #{modifiedId}
+				</if>
+	       
+				<if test="lifecycle!=null">
+					and lifecycle = #{lifecycle}
+				</if>
+		</where>
+	</sql>
+	
+	<update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhDistributionPatternRule">
+	    <![CDATA[
+	        UPDATE t_wh_distribution_pattern_rule SET
+		        distribution_pattern_name = #{distributionPatternName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        distribution_pattern_code = #{distributionPatternCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        rule = #{rule,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        rule_sql = #{ruleSql,javaType=java.lang.String,jdbcType=LONGVARCHAR} ,
+		        picking_mode = #{pickingMode,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        priority = #{priority,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        is_need_outbound_carton = #{isNeedOutboundCarton,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        description = #{description,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
+	        WHERE 
+		        id = #{id} 
+		        and ou_id = #{ouId}
+		        and last_modify_time	<=  #{lastModifyTime}    
+	    ]]>
+	</update>
+	
+	<resultMap id="WhDistributionPatternRuleCommandResultExt" type="com.baozun.scm.primservice.whoperation.command.warehouse.WhDistributionPatternRuleCommand">
+	</resultMap>
+	
+	<sql id="WhDistributionPatternRuleCommandColumnsExt">
+	    <![CDATA[
+	        	id as id,
+	        	distribution_pattern_name as distributionPatternName,
+	        	distribution_pattern_code as distributionPatternCode,
+	        	rule as rule,
+	        	rule_sql as ruleSql,
+	        	ou_id as ouId,
+	        	picking_mode as pickingMode,
+	        	priority as priority,
+	        	is_need_outbound_carton as isNeedOutboundCarton,
+	        	description as description,
+	        	create_time as createTime,
+	        	last_modify_time as lastModifyTime,
+	        	created_id as createdId,
+	        	modified_id as modifiedId,
+	        	lifecycle as lifecycle
+	    ]]>
+	</sql>
+	
+	<sql id="whDistributionPatternRuleCommandDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+	       
+		       <if test="distributionPatternName!=null and distributionPatternName!=''">
+					and distribution_pattern_name = #{distributionPatternName}
+				</if>
+	       
+	       
+		       <if test="distributionPatternCode!=null and distributionPatternCode!=''">
+					and distribution_pattern_code = #{distributionPatternCode}
+				</if>
+	       
+	       
+		       <if test="rule!=null and rule!=''">
+					and rule = #{rule}
+				</if>
+	       
+	       
+		       <if test="ruleSql!=null and ruleSql!=''">
+					and rule_sql = #{ruleSql}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+	       
+				<if test="pickingMode!=null">
+					and picking_mode = #{pickingMode}
+				</if>
+	       
+				<if test="priority!=null">
+					and priority = #{priority}
+				</if>
+	       
+				<if test="isNeedOutboundCarton!=null">
+					and is_need_outbound_carton = #{isNeedOutboundCarton}
+				</if>
+	       
+	       
+		       <if test="description!=null and description!=''">
+					and description = #{description}
+				</if>
+	       
+				<if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="createdId!=null">
+					and created_id = #{createdId}
+				</if>
+	       
+				<if test="modifiedId!=null">
+					and modified_id = #{modifiedId}
+				</if>
+	       
+				<if test="lifecycle!=null">
+					and lifecycle = #{lifecycle}
+				</if>
+		</where>
+	</sql>
+	
+	<select id="findListCountByQueryMapExt" resultType="long">
+        select count(*) from t_wh_distribution_pattern_rule 
+        <include refid="whDistributionPatternRuleCommandDynamicWhereExt"/>
+    </select>
+	
+	<select id="findListByQueryMapWithPageExt" resultMap="WhDistributionPatternRuleCommandResultExt">
+    	select <include refid="WhDistributionPatternRuleCommandColumnsExt" />
+		    from t_wh_distribution_pattern_rule 
+		<include refid="whDistributionPatternRuleCommandDynamicWhereExt"/>
+    </select>
+    
+    <select id="findDistributionPatternRuleCommandById" resultMap="WhDistributionPatternRuleCommandResultExt">
+		select <include refid="WhDistributionPatternRuleCommandColumnsExt" />
+		    from t_wh_distribution_pattern_rule
+		where
+            id = #{id}
+            and ou_id = #{ouId}
+    </select>
+    
+    <select id="findByIdExt" resultMap="whDistributionPatternRuleResultExt">
+        select
+        <include refid="whDistributionPatternRuleColumnsExt"/>
+        <![CDATA[
+            from t_wh_distribution_pattern_rule 
+        where 
+            id = #{id} 
+            and ou_id = #{ouId} 
+        ]]>
+    </select>
+    
+	<delete id="deleteById" parameterType="java.lang.Long">
+        <![CDATA[
+            delete 
+            	from t_wh_distribution_pattern_rule 
+           where 
+            	id = #{id} 
+            	and ou_id = #{ouId} 
+        ]]>
+     </delete>
+	
+	<select id="testRuleSql" resultType="long" >
+         ${ruleSql}
+    </select>
+    
+    <select id="checkUnique" resultType="long">
+        select count(*) from t_wh_distribution_pattern_rule as dpr
+        <where>
+            <if test="id!=null">
+                and dpr.id != #{id}
+            </if>
+            <if test="(distributionPatternCode!=null and distributionPatternCode!='')
+                    or (distributionPatternName!=null and distributionPatternName!='')
+                    or (priority!=null and priority!='')">
+                and (
+                <trim prefix="" prefixOverrides="or">
+                    <if test="distributionPatternCode!=null and distributionPatternCode!=''">
+                        or dpr.distribution_pattern_code = #{distributionPatternCode}
+                    </if>
+                    <if test="distributionPatternName!=null and distributionPatternName!=''">
+                        or dpr.distribution_pattern_name = #{distributionPatternName}
+                    </if>
+                    <if test="priority!=null and priority!=''">
+                        or dpr.priority = #{priority}
+                    </if>
+                </trim>
+                )
+            </if>
+                and dpr.ou_id = #{ouId}
+        </where>
+    </select>
+    
+    <select id="findRuleByOuIdOrderByPriorityAsc" resultMap="WhDistributionPatternRuleCommandResultExt">
+        select
+        <include refid="whDistributionPatternRuleColumnsExt"/>
+        from t_wh_distribution_pattern_rule
+        where
+        ou_id = #{ouId}
+        and lifecycle = 1
+        order by priority asc
+    </select>
+	
+</mapper>

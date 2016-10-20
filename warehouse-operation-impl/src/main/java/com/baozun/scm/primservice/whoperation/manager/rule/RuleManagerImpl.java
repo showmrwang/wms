@@ -21,6 +21,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.RecommendPlatfor
 import com.baozun.scm.primservice.whoperation.command.warehouse.RecommendRuleConditionCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ReplenishmentRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ShelveRecommendRuleCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhDistributionPatternRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhInBoundRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
@@ -31,6 +32,7 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.RecommendPlatformDao
 import com.baozun.scm.primservice.whoperation.dao.warehouse.RecommendRuleConditionDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ReplenishmentRuleDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ShelveRecommendRuleDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhDistributionPatternRuleDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhInBoundRuleDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventorySnDao;
@@ -64,6 +66,8 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
 
     @Autowired
     private ReplenishmentRuleDao replenishmentRuleDao;
+    @Autowired
+    private WhDistributionPatternRuleDao whDistributionPatternRuleDao;
 
     /***
      * 根据规则传入参数返回对应规则输出参数
@@ -365,16 +369,27 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
      * @return allocateRuleOdoLineId 出库单明细对应分配规则ID
      */
     private RuleExportCommand distributionPattern(RuleAfferCommand ruleAffer) {
-        
         // 波次ID
         Long waveId = ruleAffer.getWaveId();
         // 组织ID
         Long ouId = ruleAffer.getOuid();
         
+        // 查询所有可用的配货模式规则,按照优先级排序
+        List<WhDistributionPatternRuleCommand> ruleCommandList = whDistributionPatternRuleDao.findRuleByOuIdOrderByPriorityAsc(ruleAffer.getOuid());
+        List<WhDistributionPatternRuleCommand> returnList = new ArrayList<>();
         
+        if (null != ruleCommandList && !ruleCommandList.isEmpty()) {
+            for (WhDistributionPatternRuleCommand ruleCommand : ruleCommandList) {
+                // 匹配配货模式规则
+                List<Long> odoIdList = whDistributionPatternRuleDao.testRuleSql(ruleCommand.getRuleSql(), waveId, ouId);
+                if (null != odoIdList && !odoIdList.isEmpty()) {
+                    // 商品和库位的规则都匹配上了则符合条件
+                    returnList.add(ruleCommand);
+                }
+            }
+        }
         RuleExportCommand ruleExportCommand = new RuleExportCommand();
-        
-        
+        ruleExportCommand.setWhDistributionPatternRuleCommandList(returnList);
         return ruleExportCommand;
     }
 
