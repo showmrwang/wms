@@ -146,7 +146,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        outbounxbox_type_code = #{outbounxboxTypeCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        container_id = #{containerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        outer_container_id = #{outerContainerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        qty = #{qty,java.lang.Double,jdbcType=DECIMAL} ,
+		        qty = #{qty,javaType=java.lang.Double,jdbcType=DECIMAL} ,
 		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
