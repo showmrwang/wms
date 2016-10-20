@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.baozun.scm.primservice.whoperation.command.wave.WaveLineCommand;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoOutBoundBox;
 
 public class OutBoundBoxCompute {
 
@@ -21,14 +22,15 @@ public class OutBoundBoxCompute {
     private static double tempVolume = 0.00;
 
     /***
-     * 通过波次明细对应商品数量/体积+出库箱体积计算多少商品能放入对应出库箱 放入出库箱的商品从传入的List<WaveLine>波次明细中扣除相应数量
+     * 通过波次明细对应商品数量/体积+出库箱体积计算多少商品能放入对应出库箱 放入出库箱的商品从传入的List<WaveLine>波次明细中扣除相应数量 出库单绑定出库箱/容器数据累加
      * 
-     * @param waveLine 对应波次明细信息
+     * @param waveLineList 对应波次明细信息
+     * @param Map<String=出库单ID-出库单明细ID-出库箱类型ID/容器ID, WhOdoOutBoundBox> oobbMap 出库单绑定出库箱/容器信息
      * @param boxTotalVolume 出库箱体积
      * @param outBoundBoxType 出库箱类型ID
      * @return 累计放入出库箱商品总体积
      */
-    public static Double obbCompute(List<WaveLineCommand> waveLineList, Double boxTotalVolume, Long outBoundBoxType, Long containerId) {
+    public static Double obbCompute(List<WaveLineCommand> waveLineList, Map<String, WhOdoOutBoundBox> oobbMap, Double boxTotalVolume, Long outBoundBoxType, Long containerId) {
         log.info("OutBoundBoxCompute.compute method begin!");
         if (null == waveLineList) {
             log.warn("OutBoundBoxCompute.compute waveLineList is null");
@@ -60,7 +62,7 @@ public class OutBoundBoxCompute {
         // 计算多少商品能放入对应出库箱
         Map<Long, Integer> solveResult = solve(bags, boxTotalVolume);
         // 调整波次明细对应数量
-        revisionWaveLineQty(waveLineList, solveResult);
+        revisionWaveLineQty(waveLineList, oobbMap, solveResult);
         log.info("OutBoundBoxCompute.compute method end!");
         return tempVolume;
     }
@@ -70,7 +72,7 @@ public class OutBoundBoxCompute {
      * 
      * @param waveLineList
      */
-    private static void revisionWaveLineQty(List<WaveLineCommand> waveLineList, Map<Long, Integer> solveResult) {
+    private static void revisionWaveLineQty(List<WaveLineCommand> waveLineList, Map<String, WhOdoOutBoundBox> oobbMap, Map<Long, Integer> solveResult) {
         for (int i = 0; i < waveLineList.size(); i++) {
             // 判断放入出库箱商品是否存在
             if (solveResult.containsKey(waveLineList.get(i).getId())) {

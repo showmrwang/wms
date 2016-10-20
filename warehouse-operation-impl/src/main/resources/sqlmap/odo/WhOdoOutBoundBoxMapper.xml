@@ -4,8 +4,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
 
 
-<mapper namespace="com.baozun.scm.primservice.whoperation.dao.WhOdoOutBoundBoxDao">
-	<resultMap id="WhOdoOutBoundBoxResult" type="com.baozun.scm.primservice.whoperation.model.WhOdoOutBoundBox">
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.odo.WhOdoOutBoundBoxDao">
+	<resultMap id="WhOdoOutBoundBoxResult" type="com.baozun.scm.primservice.whoperation.model.odo.WhOdoOutBoundBox">
 	</resultMap>
 	<resultMap id="WhOdoOutBoundBoxPaginationResult" type="lark.common.dao.Pagination">
     	<collection property="items" javaType="ArrayList" resultMap="WhOdoOutBoundBoxResult"/>

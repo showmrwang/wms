@@ -4,8 +4,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
 
 
-<mapper namespace="com.baozun.scm.primservice.whoperation.dao.WhOdoOutBoundBoxDao">
-	<resultMap id="WhOdoOutBoundBoxResultExt" type="com.baozun.scm.primservice.whoperation.model.WhOdoOutBoundBox">
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.odo.WhOdoOutBoundBoxDao">
+	<resultMap id="WhOdoOutBoundBoxResultExt" type="com.baozun.scm.primservice.whoperation.model.odo.WhOdoOutBoundBox">
 	</resultMap>
 	
 	<!-- 用于select查询公用抽取的列 -->
@@ -82,7 +82,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	</sql>
 	
 
-		<update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.WhOdoOutBoundBox">
+		<update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.odo.WhOdoOutBoundBox">
 		    <![CDATA[
 		        UPDATE t_wh_odo_outboundbox SET
 			       			 odo_id = #{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
