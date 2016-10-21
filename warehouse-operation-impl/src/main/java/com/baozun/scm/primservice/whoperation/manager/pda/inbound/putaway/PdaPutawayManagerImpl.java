@@ -4099,6 +4099,9 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
 
         // 1.判断当前商品是否扫完、是否提示下一个库位、容器或上架
         Set<Long> insideContainerIds = isCmd.getInsideContainerIds();
+        if (null != ocCmd) {
+            insideContainerIds = csrCmd.getInsideContainerIds();
+        }
         Map<Long, Set<Long>> insideContainerSkuIds = isCmd.getInsideContainerSkuIds();
         Map<Long, Map<Long, Long>> insideContainerSkuIdsQty = isCmd.getInsideContainerSkuIdsQty();
         Map<Long, Map<String, Long>> insideContainerSkuAttrIdsQty = isCmd.getInsideContainerSkuAttrIdsQty();
