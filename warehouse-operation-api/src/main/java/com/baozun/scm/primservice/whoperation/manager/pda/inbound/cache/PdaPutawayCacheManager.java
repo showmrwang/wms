@@ -49,6 +49,15 @@ public interface PdaPutawayCacheManager extends BaseManager {
      * @param logId
      */
     void sysGuidePutawayLocRecommendPopQueue(Long containerId, String logId);
+    
+    /**
+     * pda系统指导上架清除库存统计信息
+     * @author lichuan
+     * @param containerCmd
+     * @param ouId
+     * @param logId
+     */
+    void sysGuidePutawayRemoveInventoryStatistic(ContainerCommand containerCmd, Long ouId, String logId);
 
     /**
      * pda整托上架缓存库存信息
