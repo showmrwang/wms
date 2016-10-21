@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.OutboundBoxSortDao">
+    <resultMap id="OutboundBoxSortResult" type="com.baozun.scm.primservice.whoperation.model.warehouse.OutboundBoxSort">
+    </resultMap>
+    <resultMap id="OutboundBoxSortPaginationResult" type="lark.common.dao.Pagination">
+        <collection property="items" javaType="ArrayList" resultMap="OutboundBoxSortResult"/>
+    </resultMap>
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="outboundBoxSortColumns">
+        <![CDATA[
+                id as id,
+                outboundbox_rule_id as outboundboxRuleId,
+                rule_condition_id as ruleConditionId,
+                sortord as sortord,
+                sort as sort,
+                ou_id as ouId
+        ]]>
+    </sql>
+    <sql id="outboundBoxSortConditionWhereExt">
+        <where>
+            <if test="likeEqualsMap != null">
+                <foreach collection="likeEqualsMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} like CONCAT('%',#{value},'%')
+                </foreach>
+            </if>
+            <if test="equalsMap != null">
+                <foreach collection="equalsMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} = #{value}
+                </foreach>
+            </if>
+            <if test="notEqualsMap != null">
+                <foreach collection="notEqualsMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} != #{value}
+                </foreach>
+            </if>
+            <if test="greateMap != null">
+                <foreach collection="greateMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} &gt; #{value}
+                </foreach>
+            </if>
+            <if test="greateEqualsMap != null">
+                <foreach collection="greateEqualsMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} &gt;= #{value}
+                </foreach>
+            </if>
+            <if test="lessMap != null">
+                <foreach collection="lessMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} &lt; #{value}
+                </foreach>
+            </if>
+            <if test="lessEqualsMap != null">
+                <foreach collection="lessEqualsMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} &lt;= #{value}
+                </foreach>
+            </if>
+            <if test="nullMap != null">
+                <foreach collection="nullMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} is null
+                </foreach>
+            </if>
+            <if test="notNullMap != null">
+                <foreach collection="notNullMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} is not null
+                </foreach>
+            </if>
+            <if test="inMap != null">
+                <foreach collection="inMap" index="key" item="value" separator="and" open=" and (" close=")">
+                    <foreach collection="value" item="itemin" index="index" separator="or">
+                        ${key} = #{itemin}
+                    </foreach>
+                </foreach>
+            </if>
+            <if test="notInMap != null">
+                <foreach collection="notInMap" index="key" item="value" separator="and" open=" and (" close=")">
+                    <foreach collection="value" item="itemin" index="index" separator="and">
+                        ${key} != #{itemin}
+                    </foreach>
+                </foreach>
+            </if>
+        </where>
+        <if test="sortBy != null">
+            <foreach collection="sortBy" item="item" separator="," open=" order by ">
+                ${item.field} ${item.type}
+            </foreach>
+        </if>
+    </sql>
+
+    <!-- 如果有自增字段 -->
+
+    <!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+    <insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.OutboundBoxSort"
+
+            flushCache="true">
+        <![CDATA[
+                INSERT INTO
+                t_wh_outboundbox_sort (
+                id,
+                    outboundbox_rule_id ,
+                    rule_condition_id ,
+                    sortord ,
+                    sort ,
+                    ou_id 
+                ) VALUES (
+                #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{outboundboxRuleId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{ruleConditionId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{sortord,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{sort,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                    #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+                )
+            ]]>
+
+    </insert>
+
+    <update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.OutboundBoxSort">
+        <![CDATA[
+            UPDATE t_wh_outboundbox_sort SET
+                outboundbox_rule_id = #{outboundboxRuleId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                rule_condition_id = #{ruleConditionId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                sortord = #{sortord,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                sort = #{sort,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+            WHERE 
+                id = #{id} 
+        ]]>
+    </update>
+    <update id="batchUpdate">
+        UPDATE t_wh_outboundbox_sort SET
+        <foreach collection="batchUpdateMap" index="key" item="value" separator=",">
+            ${key} = #{value}
+        </foreach>
+        <include refid="outboundBoxSortConditionWhereExt"/>
+    </update>
+
+    <delete id="delete" parameterType="java.lang.Long">
+        <![CDATA[
+            delete from t_wh_outboundbox_sort where
+                id = #{id} 
+        ]]>
+    </delete>
+
+    <delete id="deleteByIds" parameterType="list">
+
+        delete from t_wh_outboundbox_sort
+        where id in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+
+    </delete>
+    <update id="batchDelete">
+        delete from t_wh_outboundbox_sort
+        <include refid="outboundBoxSortConditionWhereExt"/>
+    </update>
+
+    <select id="findById" parameterType="java.lang.Long" resultMap="OutboundBoxSortResult" flushCache="false">
+        select
+        <include refid="outboundBoxSortColumns"/>
+        <![CDATA[
+                from t_wh_outboundbox_sort 
+                where 
+                id = #{id} 
+            ]]>
+    </select>
+    <select id="getByIds" parameterType="list" resultMap="OutboundBoxSortResult" flushCache="false">
+        select
+        <include refid="outboundBoxSortColumns"/>
+        from t_wh_outboundbox_sort
+        where id in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+    <sql id="outboundBoxSortDynamicWhere">
+        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+
+            <if test="id!=null">
+                and id = #{id}
+            </if>
+
+            <if test="outboundboxRuleId!=null">
+                and outboundbox_rule_id = #{outboundboxRuleId}
+            </if>
+
+            <if test="ruleConditionId!=null">
+                and rule_condition_id = #{ruleConditionId}
+            </if>
+
+            <if test="sortord!=null and sortord!=''">
+                and sortord = #{sortord}
+            </if>
+
+            <if test="sort!=null">
+                and sort = #{sort}
+            </if>
+
+            <if test="ouId!=null">
+                and ou_id = #{ouId}
+            </if>
+        </where>
+    </sql>
+
+    <select id="getCount" resultType="long">
+        select count(*) from t_wh_outboundbox_sort
+    </select>
+    <select id="findListCountByQueryMap" resultType="long">
+        select count(*) from t_wh_outboundbox_sort
+        <include refid="outboundBoxSortDynamicWhere"/>
+    </select>
+
+    <select id="findListCountByParam" resultType="long">
+        select count(*) from t_wh_outboundbox_sort
+        <include refid="outboundBoxSortDynamicWhere"/>
+    </select>
+
+    <!--
+        分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+        因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPage" resultMap="OutboundBoxSortResult">
+        select
+        <include refid="outboundBoxSortColumns"/>
+        from t_wh_outboundbox_sort
+        <include refid="outboundBoxSortDynamicWhere"/>
+
+    </select>
+
+    <select id="findListByQueryMap" resultMap="OutboundBoxSortResult">
+        select
+        <include refid="outboundBoxSortColumns"/>
+        from t_wh_outboundbox_sort
+        <include refid="outboundBoxSortDynamicWhere"/>
+
+    </select>
+
+    <select id="findListByParam" resultMap="OutboundBoxSortResult">
+        select
+        <include refid="outboundBoxSortColumns"/>
+        from t_wh_outboundbox_sort
+        <include refid="outboundBoxSortDynamicWhere"/>
+
+    </select>
+
+    <select id="query" resultMap="OutboundBoxSortResult">
+        select
+        <include refid="outboundBoxSortColumns"/>
+        from t_wh_outboundbox_sort
+        <include refid="outboundBoxSortConditionWhereExt"/>
+    </select>
+
+    <select id="queryCount" resultType="long">
+        select count(*) from t_wh_outboundbox_sort
+        <include refid="outboundBoxSortConditionWhereExt"/>
+    </select>
+
+</mapper>
