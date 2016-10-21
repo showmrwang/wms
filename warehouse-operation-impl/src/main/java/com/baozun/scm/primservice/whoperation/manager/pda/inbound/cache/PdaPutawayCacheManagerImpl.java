@@ -2647,11 +2647,11 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
             boolean isSnLine = false;
             if ((null != isTipSkuSn && true == isTipSkuSn) || (null != isTipSkuDefect && true == isTipSkuDefect)) {
                 skuAttrId = SkuCategoryProvider.concatSkuAttrId(skuCmd.getId(), skuCmd.getInvType(), skuCmd.getInvStatus(), skuCmd.getInvMfgDate(), skuCmd.getInvExpDate(), skuCmd.getInvAttr1(), skuCmd.getInvAttr2(), skuCmd.getInvAttr3(),
-                        skuCmd.getInvAttr3(), skuCmd.getInvAttr4(), skuCmd.getInvAttr5(), skuCmd.getSkuSn(), skuCmd.getSkuDefect());
+                        skuCmd.getInvAttr4(), skuCmd.getInvAttr5(), skuCmd.getSkuSn(), skuCmd.getSkuDefect());
                 isSnLine = true;
             } else {
                 skuAttrId = SkuCategoryProvider.concatSkuAttrId(skuCmd.getId(), skuCmd.getInvType(), skuCmd.getInvStatus(), skuCmd.getInvMfgDate(), skuCmd.getInvExpDate(), skuCmd.getInvAttr1(), skuCmd.getInvAttr2(), skuCmd.getInvAttr3(),
-                        skuCmd.getInvAttr3(), skuCmd.getInvAttr4(), skuCmd.getInvAttr5());
+                        skuCmd.getInvAttr4(), skuCmd.getInvAttr5());
                 isSnLine = false;
             }
             TipScanSkuCacheCommand tipSkuCmd = cacheManager.getObject(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString());
@@ -2715,7 +2715,7 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                 }
             }
             // 4.提示下一个商品
-            Set<String> skuAttrIds = locSkuAttrIds.get(locationId.toString());
+            Set<String> skuAttrIds = locSkuAttrIds.get(locationId);
             boolean isAllCache = isCacheAllExists2(skuAttrIds, tipSkuAttrIds);
             if (false == isAllCache) {
                 // 提示下个商品
