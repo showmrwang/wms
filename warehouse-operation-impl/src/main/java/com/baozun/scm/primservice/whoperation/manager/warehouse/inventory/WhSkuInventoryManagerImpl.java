@@ -369,6 +369,19 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     insertGlobalLog(GLOBAL_LOG_INSERT, inv, ouId, userId, null, null);
                     // 可能要拆分库存，推荐逻辑明细行数量(目前整行处理)
                     // 待出容器库存（分配容器库存）
+                    Double oldQty = 0.0;
+                    if (true == warehouse.getIsTabbInvTotal()) {
+                        try {
+                            oldQty = whSkuInventoryLogManager.sumSkuInvOnHandQty(invCmd.getUuid(), ouId);
+                        } catch (Exception e) {
+                            log.error("sum sku inv onHand qty error, logId is:[{}]", logId);
+                            throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
+                        }
+                    } else {
+                        oldQty = 0.0;
+                    }
+                    // 记录出库库存日志(这个实现的有问题)
+                    insertSkuInventoryLog(invCmd.getId(), -invCmd.getOnHandQty(), oldQty, warehouse.getIsTabbInvTotal(), ouId, userId);
                     WhSkuInventory invDelete = new WhSkuInventory();
                     BeanUtils.copyProperties(invCmd, invDelete);
                     whSkuInventoryDao.delete(invDelete.getId());
@@ -451,11 +464,37 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     }
                     // 判断是否需要拆库存
                     if (totalQty == invCmd.getOnHandQty().intValue()) {
+                        Double oldQty = 0.0;
+                        if (true == warehouse.getIsTabbInvTotal()) {
+                            try {
+                                oldQty = whSkuInventoryLogManager.sumSkuInvOnHandQty(invCmd.getUuid(), ouId);
+                            } catch (Exception e) {
+                                log.error("sum sku inv onHand qty error, logId is:[{}]", logId);
+                                throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
+                            }
+                        } else {
+                            oldQty = 0.0;
+                        }
+                        // 记录出库库存日志(这个实现的有问题)
+                        insertSkuInventoryLog(invCmd.getId(), -invCmd.getOnHandQty(), oldQty, warehouse.getIsTabbInvTotal(), ouId, userId);
                         WhSkuInventory invDelete = new WhSkuInventory();
                         BeanUtils.copyProperties(invCmd, invDelete);
                         whSkuInventoryDao.delete(invDelete.getId());
                         insertGlobalLog(GLOBAL_LOG_DELETE, invDelete, ouId, userId, null, null);
                     } else {
+                        Double oldQty = 0.0;
+                        if (true == warehouse.getIsTabbInvTotal()) {
+                            try {
+                                oldQty = whSkuInventoryLogManager.sumSkuInvOnHandQty(invCmd.getUuid(), ouId);
+                            } catch (Exception e) {
+                                log.error("sum sku inv onHand qty error, logId is:[{}]", logId);
+                                throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
+                            }
+                        } else {
+                            oldQty = 0.0;
+                        }
+                        // 记录出库库存日志(这个实现的有问题)
+                        insertSkuInventoryLog(invCmd.getId(), -(new Double(totalQty)), oldQty, warehouse.getIsTabbInvTotal(), ouId, userId);
                         WhSkuInventory invDelete = new WhSkuInventory();
                         BeanUtils.copyProperties(invCmd, invDelete);
                         whSkuInventoryDao.delete(invDelete.getId());
@@ -497,6 +536,19 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     whSkuInventoryTobefilledDao.insert(inv);
                     insertGlobalLog(GLOBAL_LOG_INSERT, inv, ouId, userId, null, null);
                     // 待出容器库存（分配容器库存）
+                    Double oldSkuInvOnHandQty = 0.0;
+                    if (true == warehouse.getIsTabbInvTotal()) {
+                        try {
+                            oldSkuInvOnHandQty = whSkuInventoryLogManager.sumSkuInvOnHandQty(invCmd.getUuid(), ouId);
+                        } catch (Exception e) {
+                            log.error("sum sku inv onHand qty error, logId is:[{}]", logId);
+                            throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
+                        }
+                    } else {
+                        oldSkuInvOnHandQty = 0.0;
+                    }
+                    // 记录出库库存日志(这个实现的有问题)
+                    insertSkuInventoryLog(invCmd.getId(), -invCmd.getOnHandQty(), oldSkuInvOnHandQty, warehouse.getIsTabbInvTotal(), ouId, userId);
                     WhSkuInventory invDelete = new WhSkuInventory();
                     BeanUtils.copyProperties(invCmd, invDelete);
                     whSkuInventoryDao.delete(invDelete.getId());
@@ -531,6 +583,19 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         insertGlobalLog(GLOBAL_LOG_INSERT, sn, ouId, userId, null, null);
                     }
                     // 待出容器库存（分配容器库存）
+                    Double oldSkuInvOnHandQty = 0.0;
+                    if (true == warehouse.getIsTabbInvTotal()) {
+                        try {
+                            oldSkuInvOnHandQty = whSkuInventoryLogManager.sumSkuInvOnHandQty(invCmd.getUuid(), ouId);
+                        } catch (Exception e) {
+                            log.error("sum sku inv onHand qty error, logId is:[{}]", logId);
+                            throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
+                        }
+                    } else {
+                        oldSkuInvOnHandQty = 0.0;
+                    }
+                    // 记录出库库存日志(这个实现的有问题)
+                    insertSkuInventoryLog(invCmd.getId(), -invCmd.getOnHandQty(), oldSkuInvOnHandQty, warehouse.getIsTabbInvTotal(), ouId, userId);
                     WhSkuInventory invDelete = new WhSkuInventory();
                     BeanUtils.copyProperties(invCmd, invDelete);
                     whSkuInventoryDao.delete(invDelete.getId());
@@ -1511,7 +1576,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     WhSkuInventory inv = new WhSkuInventory();
                     BeanUtils.copyProperties(invCmd, inv);
                     inv.setId(null);
-                    inv.setOnHandQty(inv.getToBeFilledQty());// 在库库存
+                    inv.setOnHandQty(invCmd.getToBeFilledQty());// 在库库存
                     inv.setFrozenQty(0.0);
                     if (!StringUtils.isEmpty(containerCode)) {
                         if (0 != containerId.compareTo(inv.getOuterContainerId())) {
@@ -1639,20 +1704,6 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     }
                     // 记录SN日志(这个实现的有问题)
                     insertSkuInventorySnLog(inv.getUuid(), ouId);
-                    // 删除待移入库存
-                    Double oldSkuInvOnHandQty = 0.0;
-                    if (true == warehouse.getIsTabbInvTotal()) {
-                        try {
-                            oldSkuInvOnHandQty = whSkuInventoryLogManager.sumSkuInvOnHandQty(invCmd.getUuid(), ouId);
-                        } catch (Exception e) {
-                            log.error("sum sku inv onHand qty error, logId is:[{}]", logId);
-                            throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
-                        }
-                    } else {
-                        oldSkuInvOnHandQty = 0.0;
-                    }
-                    // 记录出库库存日志(这个实现的有问题)
-                    insertSkuInventoryLog(invCmd.getId(), -invCmd.getToBeFilledQty(), oldSkuInvOnHandQty, warehouse.getIsTabbInvTotal(), ouId, userId);
                     WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
                     BeanUtils.copyProperties(invCmd, cInv);
                     whSkuInventoryTobefilledDao.delete(cInv.getId());
