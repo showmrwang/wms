@@ -82,6 +82,12 @@ public class WaveCommand extends BaseCommand {
     private String startTimeStr;
     private String statusName;
 
+    // -----------------波次模板结果------------------
+    private String needOutboundCartonType;
+    private String needEpistaticSystemsOrderType;
+    private String needStore;
+    private String needDeliverGoodsTime;
+
 
     public String getCreateName() {
         return createName;
@@ -114,165 +120,219 @@ public class WaveCommand extends BaseCommand {
     public void setStatusName(String statusName) {
         this.statusName = statusName;
     }
+
     public String getCode() {
         return code;
     }
+
     public void setCode(String code) {
         this.code = code;
     }
+
     public Integer getStatus() {
         return status;
     }
+
     public void setStatus(Integer status) {
         this.status = status;
     }
+
     public Long getOuId() {
         return ouId;
     }
+
     public void setOuId(Long ouId) {
         this.ouId = ouId;
     }
+
     public Long getWaveMasterId() {
         return waveMasterId;
     }
+
     public void setWaveMasterId(Long waveMasterId) {
         this.waveMasterId = waveMasterId;
     }
+
     public String getPhaseCode() {
         return phaseCode;
     }
+
     public void setPhaseCode(String phaseCode) {
         this.phaseCode = phaseCode;
     }
+
     public Boolean getIsWeakAllocated() {
         return isWeakAllocated;
     }
+
     public void setIsWeakAllocated(Boolean isWeakAllocated) {
         this.isWeakAllocated = isWeakAllocated;
     }
+
     public Integer getAllocatePhase() {
         return allocatePhase;
     }
+
     public void setAllocatePhase(Integer allocatePhase) {
         this.allocatePhase = allocatePhase;
     }
+
     public Date getStartTime() {
         return startTime;
     }
+
     public void setStartTime(Date startTime) {
         this.startTime = startTime;
     }
+
     public Date getFinishTime() {
         return finishTime;
     }
+
     public void setFinishTime(Date finishTime) {
         this.finishTime = finishTime;
     }
+
     public Integer getTotalOdoQty() {
         return totalOdoQty;
     }
+
     public void setTotalOdoQty(Integer totalOdoQty) {
         this.totalOdoQty = totalOdoQty;
     }
+
     public Integer getTotalOdoLineQty() {
         return totalOdoLineQty;
     }
+
     public void setTotalOdoLineQty(Integer totalOdoLineQty) {
         this.totalOdoLineQty = totalOdoLineQty;
     }
+
     public Double getTotalAmount() {
         return totalAmount;
     }
+
     public void setTotalAmount(Double totalAmount) {
         this.totalAmount = totalAmount;
     }
+
     public Double getTotalVolume() {
         return totalVolume;
     }
+
     public void setTotalVolume(Double totalVolume) {
         this.totalVolume = totalVolume;
     }
+
     public Double getTotalWeight() {
         return totalWeight;
     }
+
     public void setTotalWeight(Double totalWeight) {
         this.totalWeight = totalWeight;
     }
+
     public Double getTotalSkuQty() {
         return totalSkuQty;
     }
+
     public void setTotalSkuQty(Double totalSkuQty) {
         this.totalSkuQty = totalSkuQty;
     }
+
     public Integer getSkuCategoryQty() {
         return skuCategoryQty;
     }
+
     public void setSkuCategoryQty(Integer skuCategoryQty) {
         this.skuCategoryQty = skuCategoryQty;
     }
+
     public Integer getExecOdoQty() {
         return execOdoQty;
     }
+
     public void setExecOdoQty(Integer execOdoQty) {
         this.execOdoQty = execOdoQty;
     }
+
     public Integer getExecOdoLineQty() {
         return execOdoLineQty;
     }
+
     public void setExecOdoLineQty(Integer execOdoLineQty) {
         this.execOdoLineQty = execOdoLineQty;
     }
+
     public Integer getOutboundCartonQty() {
         return outboundCartonQty;
     }
+
     public void setOutboundCartonQty(Integer outboundCartonQty) {
         this.outboundCartonQty = outboundCartonQty;
     }
+
     public Boolean getIsError() {
         return isError;
     }
+
     public void setIsError(Boolean isError) {
         this.isError = isError;
     }
+
     public Integer getErrorCount() {
         return errorCount;
     }
+
     public void setErrorCount(Integer errorCount) {
         this.errorCount = errorCount;
     }
+
     public Date getCreateTime() {
         return createTime;
     }
+
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
     }
+
     public Date getLastModifyTime() {
         return lastModifyTime;
     }
+
     public void setLastModifyTime(Date lastModifyTime) {
         this.lastModifyTime = lastModifyTime;
     }
+
     public Long getCreatedId() {
         return createdId;
     }
+
     public void setCreatedId(Long createdId) {
         this.createdId = createdId;
     }
+
     public Long getModifiedId() {
         return modifiedId;
     }
+
     public void setModifiedId(Long modifiedId) {
         this.modifiedId = modifiedId;
     }
+
     public Integer getLifecycle() {
         return lifecycle;
     }
+
     public void setLifecycle(Integer lifecycle) {
         this.lifecycle = lifecycle;
     }
+
     public Boolean getIsRunWave() {
         return isRunWave;
     }
+
     public void setIsRunWave(Boolean isRunWave) {
         this.isRunWave = isRunWave;
     }
@@ -340,5 +400,36 @@ public class WaveCommand extends BaseCommand {
     public void setSearchCreateTimeEnd(String searchCreateTimeEnd) {
         this.searchCreateTimeEnd = searchCreateTimeEnd;
     }
-    
+
+    public String getNeedOutboundCartonType() {
+        return needOutboundCartonType;
+    }
+
+    public void setNeedOutboundCartonType(String needOutboundCartonType) {
+        this.needOutboundCartonType = needOutboundCartonType;
+    }
+
+    public String getNeedEpistaticSystemsOrderType() {
+        return needEpistaticSystemsOrderType;
+    }
+
+    public void setNeedEpistaticSystemsOrderType(String needEpistaticSystemsOrderType) {
+        this.needEpistaticSystemsOrderType = needEpistaticSystemsOrderType;
+    }
+
+    public String getNeedStore() {
+        return needStore;
+    }
+
+    public void setNeedStore(String needStore) {
+        this.needStore = needStore;
+    }
+
+    public String getNeedDeliverGoodsTime() {
+        return needDeliverGoodsTime;
+    }
+
+    public void setNeedDeliverGoodsTime(String needDeliverGoodsTime) {
+        this.needDeliverGoodsTime = needDeliverGoodsTime;
+    }
 }
