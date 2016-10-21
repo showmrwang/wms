@@ -34,7 +34,7 @@ public class OdoCommand extends BaseCommand {
     /** 订单平台类型 */
     private String orderType;
     /** 下单时间 */
-    private java.util.Date orderTime;
+    private Date orderTime;
     /** 出库单状态 */
     private String odoStatus;
     /** 计划数量 */
@@ -64,11 +64,11 @@ public class OdoCommand extends BaseCommand {
     /** 仓库组织ID */
     private Long ouId;
     /** 创建时间 */
-    private java.util.Date createTime;
+    private Date createTime;
     /** 创建人ID */
     private Long createdId;
     /** 最后修改时间 */
-    private java.util.Date lastModifyTime;
+    private Date lastModifyTime;
     /** 操作人ID */
     private Long modifiedId;
     /** id */
@@ -243,11 +243,11 @@ public class OdoCommand extends BaseCommand {
         this.orderType = orderType;
     }
 
-    public java.util.Date getOrderTime() {
+    public Date getOrderTime() {
         return orderTime;
     }
 
-    public void setOrderTime(java.util.Date orderTime) {
+    public void setOrderTime(Date orderTime) {
         this.orderTime = orderTime;
     }
 
@@ -364,11 +364,11 @@ public class OdoCommand extends BaseCommand {
         this.ouId = ouId;
     }
 
-    public java.util.Date getCreateTime() {
+    public Date getCreateTime() {
         return createTime;
     }
 
-    public void setCreateTime(java.util.Date createTime) {
+    public void setCreateTime(Date createTime) {
         this.createTime = createTime;
     }
 
@@ -380,11 +380,11 @@ public class OdoCommand extends BaseCommand {
         this.createdId = createdId;
     }
 
-    public java.util.Date getLastModifyTime() {
+    public Date getLastModifyTime() {
         return lastModifyTime;
     }
 
-    public void setLastModifyTime(java.util.Date lastModifyTime) {
+    public void setLastModifyTime(Date lastModifyTime) {
         this.lastModifyTime = lastModifyTime;
     }
 

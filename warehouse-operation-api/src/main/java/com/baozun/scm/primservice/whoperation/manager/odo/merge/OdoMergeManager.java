@@ -12,6 +12,7 @@ import com.baozun.scm.primservice.whoperation.command.odo.OdoMergeCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoResultCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
+import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
 
 public interface OdoMergeManager extends BaseManager {
     /**
@@ -60,11 +61,19 @@ public interface OdoMergeManager extends BaseManager {
 
     /**
      * [通用方法] 合并订单-传入可合并子订单->合并成一个订单
+     * @param waveId
      * @param odoMergeCommand 对象由whOdoDao.odoMerge查出
      * @param ouId
      * @param userId
      * @return
      */
     WhOdo generalOdoMerge(String odoIdString, Long ouId, Long userId);
+
+    /**
+     * [业务方法] 波次合并出库单-合并出库单
+     * @param odoIds
+     * @param ouId
+     */
+    void waveOdoMerge(WhWave wave, String odoIds, Long ouId, Long userId);
 
 }

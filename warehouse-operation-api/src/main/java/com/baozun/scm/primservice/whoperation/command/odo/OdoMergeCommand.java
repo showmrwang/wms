@@ -75,4 +75,5 @@ public class OdoMergeCommand extends BaseCommand {
     public void setQuantity(Double quantity) {
         this.quantity = quantity;
     }
+
 }

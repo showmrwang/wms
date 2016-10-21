@@ -82,6 +82,43 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	waveLine.lifecycle as lifecycle
 	    ]]>
 	</sql>
+	
+	<sql id="whWaveColumnsExt2">
+	    <![CDATA[
+	        	wave.id as id,
+	        	wave.code as code,
+	        	wave.status as status,
+	        	wave.ou_id as ouId,
+	        	wave.wave_master_id as waveMasterId,
+	        	wave.phase_code as phaseCode,
+	        	wave.is_weak_allocated as isWeakAllocated,
+	        	wave.allocate_phase as allocatePhase,
+	        	wave.start_time as startTime,
+	        	wave.finish_time as finishTime,
+	        	wave.total_odo_qty as totalOdoQty,
+	        	wave.total_odo_line_qty as totalOdoLineQty,
+	        	wave.total_amount as totalAmount,
+	        	wave.total_volume as totalVolume,
+	        	wave.total_weight as totalWeight,
+	        	wave.total_sku_qty as totalSkuQty,
+	        	wave.sku_category_qty as skuCategoryQty,
+	        	wave.exec_odo_qty as execOdoQty,
+	        	wave.exec_odo_line_qty as execOdoLineQty,
+	        	wave.outbound_carton_qty as outboundCartonQty,
+	        	wave.is_error as isError,
+	        	wave.error_count as errorCount,
+	        	wave.create_time as createTime,
+	        	wave.last_modify_time as lastModifyTime,
+	        	wave.created_id as createdId,
+	        	wave.modified_id as modifiedId,
+	        	wave.lifecycle as lifecycle,
+	        	wave.is_run_wave as isRunWave,
+	        	template.is_outbound_carton_type_merge as needOutboundCartonType,
+	    		template.is_order_type_merge as needEpistaticSystemsOrderType,
+	    		template.is_store_merge as needStore,
+	    		template.is_deliver_goods_time_merge as needDeliverGoodsTime
+	    ]]>
+	</sql>
 
 	<sql id="whWaveDynamicWhereExt">
 		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
@@ -459,5 +496,21 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			</if>
 		</where>    
     </select>
-	
+    
+	<select id="findWaveIdsByParam" resultType="long">
+    	select id
+	    from t_wh_wave 
+		<include refid="whWaveDynamicWhere"/>
+    </select>
+    
+    <select id="findWaveByIdAndOuId" resultMap="WhWaveCommand">
+    	select 
+    		<include refid="whWaveColumnsExt2" />
+	    from t_wh_wave wave 
+		    left join t_wh_wave_master master on wave.wave_master_id = master.id
+		    left join t_wh_wave_template template on master.wave_template_id = template.id
+	    where 
+			wave.id = #{id} and wave.ou_id = #{ouId}
+    </select>
+    
 </mapper>

@@ -77,11 +77,55 @@ public interface WhOdoDao extends BaseDao<WhOdo, Long> {
 
     int existsSkuInOdo(@Param("odoId") Long odoId, @Param("skuId") Long skuId, @Param("ouId") Long ouId);
 
+    /**
+     * [业务方法] 合并出库单-查找可以合并的出库单号
+     * @param ouId
+     * @param outboundCartonType
+     * @param epistaticSystemsOrderType
+     * @param store
+     * @param deliverGoodsTime
+     * @return
+     */
     String findOdoMergableIds(@Param("ouId") Long ouId, @Param("outboundCartonType") String outboundCartonType, @Param("epistaticSystemsOrderType") String epistaticSystemsOrderType, @Param("store") String store,
             @Param("deliverGoodsTime") String deliverGoodsTime);
 
+    /**
+     * [业务方法] 波次中合并出库单-查找可以合并的出库单号
+     * @param ouId
+     * @param outboundCartonType
+     * @param epistaticSystemsOrderType
+     * @param store
+     * @param deliverGoodsTime
+     * @return
+     */
+    String findWaveOdoMergableIds(@Param("waveCode") String waveCode, @Param("ouId") Long ouId, @Param("outboundCartonType") String outboundCartonType, @Param("epistaticSystemsOrderType") String epistaticSystemsOrderType, @Param("store") String store,
+            @Param("deliverGoodsTime") String deliverGoodsTime);
+
+    /**
+     * [业务方法] 合并订单-合并出库单
+     * @param odoIdString
+     * @param ouId
+     * @param outboundCartonType
+     * @param epistaticSystemsOrderType
+     * @param store
+     * @param deliverGoodsTime
+     * @return
+     */
     List<OdoMergeCommand> odoMerge(@Param("odoIdString") String odoIdString, @Param("ouId") Long ouId, @Param("outboundCartonType") String outboundCartonType, @Param("epistaticSystemsOrderType") String epistaticSystemsOrderType,
             @Param("store") String store, @Param("deliverGoodsTime") String deliverGoodsTime);
+
+    /**
+     * [业务方法] 合并订单-合并出库单
+     * @param odoIdString
+     * @param ouId
+     * @param outboundCartonType
+     * @param epistaticSystemsOrderType
+     * @param store
+     * @param deliverGoodsTime
+     * @return
+     */
+    List<OdoMergeCommand> waveOdoMerge(@Param("waveCode") String waveCode, @Param("odoIdString") String odoIdString, @Param("ouId") Long ouId, @Param("outboundCartonType") String outboundCartonType,
+            @Param("epistaticSystemsOrderType") String epistaticSystemsOrderType, @Param("store") String store, @Param("deliverGoodsTime") String deliverGoodsTime);
 
     List<OdoCommand> findOdoListByIdOuId(@Param("ids") String idString, @Param("ouId") Long ouId, @Param("odoStatus") String odoStatus);
 
@@ -126,5 +170,13 @@ public interface WhOdoDao extends BaseDao<WhOdo, Long> {
     List<WhOdo> findListForWave(OdoSearchCommand search);
 
     List<WhOdo> findByIdsAndOuId(List<String> odoIds, Long ouId, Integer option);
+
+    /**
+     * [通用方法] 根据出库单编码和组织获取出库单
+     * @param odoCode
+     * @param ouId
+     * @return
+     */
+    WhOdo findOdoByCodeAndOuId(@Param("odoCode") String odoCode, @Param("ouId") Long ouId);
 
 }

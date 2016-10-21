@@ -376,20 +376,18 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
         
         // 查询所有可用的配货模式规则,按照优先级排序
         List<WhDistributionPatternRuleCommand> ruleCommandList = whDistributionPatternRuleDao.findRuleByOuIdOrderByPriorityAsc(ruleAffer.getOuid());
-        List<WhDistributionPatternRuleCommand> returnList = new ArrayList<>();
         
         if (null != ruleCommandList && !ruleCommandList.isEmpty()) {
             for (WhDistributionPatternRuleCommand ruleCommand : ruleCommandList) {
-                // 匹配配货模式规则
+                // 匹配配货模式规则的出库单
                 List<Long> odoIdList = whDistributionPatternRuleDao.testRuleSql(ruleCommand.getRuleSql(), waveId, ouId);
                 if (null != odoIdList && !odoIdList.isEmpty()) {
-                    // 商品和库位的规则都匹配上了则符合条件
-                    returnList.add(ruleCommand);
+                    ruleCommand.setOdoIdList(odoIdList);;
                 }
             }
         }
         RuleExportCommand ruleExportCommand = new RuleExportCommand();
-        ruleExportCommand.setWhDistributionPatternRuleCommandList(returnList);
+        ruleExportCommand.setWhDistributionPatternRuleCommandList(ruleCommandList);
         return ruleExportCommand;
     }
 
