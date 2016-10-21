@@ -30,9 +30,11 @@ public class WhOdoOutBoundBoxCommand extends BaseCommand {
      * 
      */
     private static final long serialVersionUID = 554959901328869211L;
-    
+
     /** 主键ID */
     private Long id;
+    /** 波次ID */
+    private Long waveId;
     /** 出库单ID */
     private Long odoId;
     /** 出库单明细ID */
@@ -55,6 +57,8 @@ public class WhOdoOutBoundBoxCommand extends BaseCommand {
     private Date lastModifyTime;
     /** 操作人ID */
     private Long operatorId;
+    /** 系统生成编码 用于区分相同小车/容器 不同工作 */
+    private String uuid;
 
     public Long getId() {
         return this.id;
@@ -150,6 +154,22 @@ public class WhOdoOutBoundBoxCommand extends BaseCommand {
 
     public void setOperatorId(Long value) {
         this.operatorId = value;
+    }
+
+    public Long getWaveId() {
+        return waveId;
+    }
+
+    public void setWaveId(Long waveId) {
+        this.waveId = waveId;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
 }
