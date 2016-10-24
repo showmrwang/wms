@@ -1594,10 +1594,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         log.error("binding location is more than one error, logId is:[{}]", logId);
                         throw new BusinessException(ErrorCodes.CONTAINER_PUTAWAY_BINDING_MORE_THAN_ONE_LOC);
                     }
-                    if (false == isTV) {
-                        inv.setOuterContainerId(null);
-                        inv.setInsideContainerId(null);
-                    }
+                    // 拆箱上架默认不跟踪容器号
+                    inv.setOuterContainerId(null);
+                    inv.setInsideContainerId(null);
                     if (false == isBM) {
                         inv.setBatchNumber(null);
                     }
@@ -2003,20 +2002,6 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     }
                     // 记录SN日志(这个实现的有问题)
                     insertSkuInventorySnLog(inv.getUuid(), ouId);
-                    // 删除待移入库存
-                    Double oldSkuInvOnHandQty = 0.0;
-                    if (true == warehouse.getIsTabbInvTotal()) {
-                        try {
-                            oldSkuInvOnHandQty = whSkuInventoryLogManager.sumSkuInvOnHandQty(invCmd.getUuid(), ouId);
-                        } catch (Exception e) {
-                            log.error("sum sku inv onHand qty error, logId is:[{}]", logId);
-                            throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
-                        }
-                    } else {
-                        oldSkuInvOnHandQty = 0.0;
-                    }
-                    // 记录出库库存日志(这个实现的有问题)
-                    insertSkuInventoryLog(invCmd.getId(), -invCmd.getToBeFilledQty(), oldSkuInvOnHandQty, warehouse.getIsTabbInvTotal(), ouId, userId);
                     WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
                     BeanUtils.copyProperties(invCmd, cInv);
                     whSkuInventoryTobefilledDao.delete(cInv.getId());
