@@ -657,12 +657,10 @@ public class ErrorCodes {
     public static final int LOCATION_SKU_IS_NOT_EXISTS = 70017;
     /***内部容器不在托盘内*/
     public static final int INSIDECONTAINER_NOT_EXISTS_OUTCONTAINER = 70020;
-    
-    // 70001-80000 tangming
+   
 
 
 
-    // 80001-90000 shenlijun
     /** 托盘内sku商品种类数量异常 */
     public static final int PDA_MAN_MADE_PUTAWAY_SKU_AMOUNT_ERROR = 70021;
     /** 容器内有商品不允许混放，不能整托/整箱上架 */
@@ -706,10 +704,13 @@ public class ErrorCodes {
     public static final int  NO_FOUND_SKU_SAME_INV_ATTR = 70040;
     /**扫描的跟踪容器不在库位上*/
     public static final int  TRACK_CONTAINER_NO_LOCATION = 70041;
+    /**没有待上架库存*/
+    public static final int  NO_SHEVLES_PUTWAY_INVENTORY = 70042;
     
     
     
     
+    // 70001-80000 tangming
     
     // 80001-90000 shenlijun
 }
