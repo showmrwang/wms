@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.OutboundBoxRuleCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.OutboundBoxRuleSplitRequireCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.RecommendPlatformCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ReplenishmentRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ShelveRecommendRuleCommand;
@@ -54,6 +56,11 @@ public class RuleExportCommand extends BaseCommand {
     
     /** 配货模式规则 */
     private List<WhDistributionPatternRuleCommand> whDistributionPatternRuleCommandList;
+
+    /** 出库箱装箱规则 出库单对应规则映射 */
+    private Map<Long, OutboundBoxRuleCommand> odoOutboundBoxRuleMap;
+    /** 出库箱装箱规则拆分条件列表，已按照指定的排序规则排序 */
+    private List<OutboundBoxRuleSplitRequireCommand> outboundBoxRuleSplitRequireCommandList;
 
     public Boolean getUsableness() {
         return usableness;
@@ -141,5 +148,21 @@ public class RuleExportCommand extends BaseCommand {
 
     public void setWhDistributionPatternRuleCommandList(List<WhDistributionPatternRuleCommand> whDistributionPatternRuleCommandList) {
         this.whDistributionPatternRuleCommandList = whDistributionPatternRuleCommandList;
+    }
+
+    public Map<Long, OutboundBoxRuleCommand> getOdoOutboundBoxRuleMap() {
+        return odoOutboundBoxRuleMap;
+    }
+
+    public void setOdoOutboundBoxRuleMap(Map<Long, OutboundBoxRuleCommand> odoOutboundBoxRuleMap) {
+        this.odoOutboundBoxRuleMap = odoOutboundBoxRuleMap;
+    }
+
+    public List<OutboundBoxRuleSplitRequireCommand> getOutboundBoxRuleSplitRequireCommandList() {
+        return outboundBoxRuleSplitRequireCommandList;
+    }
+
+    public void setOutboundBoxRuleSplitRequireCommandList(List<OutboundBoxRuleSplitRequireCommand> outboundBoxRuleSplitRequireCommandList) {
+        this.outboundBoxRuleSplitRequireCommandList = outboundBoxRuleSplitRequireCommandList;
     }
 }

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.OutboundBoxSortDao">
+    <resultMap id="OutboundBoxSortResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.OutboundBoxSort">
+    </resultMap>
+
+    <resultMap id="OutboundBoxSortCommand" type="com.baozun.scm.primservice.whoperation.command.warehouse.OutboundBoxSortCommand">
+    </resultMap>
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="outboundBoxSortColumnsExt">
+        <![CDATA[
+                id as id,
+                outboundbox_rule_id as outboundboxRuleId,
+                rule_condition_id as ruleConditionId,
+                sortord as sortord,
+                sort as sort,
+                ou_id as ouId
+        ]]>
+    </sql>
+
+    <sql id="outboundBoxSortDynamicWhereExt">
+        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+
+            <if test="id!=null">
+                and id = #{id}
+            </if>
+
+            <if test="outboundboxRuleId!=null">
+                and outboundbox_rule_id = #{outboundboxRuleId}
+            </if>
+
+            <if test="ruleConditionId!=null">
+                and rule_condition_id = #{ruleConditionId}
+            </if>
+
+            <if test="sortord!=null and sortord!=''">
+                and sortord = #{sortord}
+            </if>
+
+            <if test="sort!=null">
+                and sort = #{sort}
+            </if>
+
+            <if test="ouId!=null">
+                and ou_id = #{ouId}
+            </if>
+        </where>
+    </sql>
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="outboundBoxSortCommandColumnsExt">
+        <![CDATA[
+                outboundboxSort.id as id,
+                outboundboxSort.outboundbox_rule_id as outboundboxRuleId,
+                outboundboxSort.rule_condition_id as ruleConditionId,
+                outboundboxSort.sortord as sortord,
+                outboundboxSort.sort as sort,
+                outboundboxSort.ou_id as ouId,
+                ruleCondition.column_name as ruleConditionName
+        ]]>
+    </sql>
+
+    <select id="findCommandByRuleId" resultMap="OutboundBoxSortCommand">
+        select
+        <include refid="outboundBoxSortCommandColumnsExt"/>
+        from t_wh_outboundbox_sort as outboundboxSort
+        left join t_wh_recommend_rule_condition as ruleCondition
+            on outboundboxSort.rule_condition_id = ruleCondition.id
+            and ruleCondition.rule_type = 'OUTBOUND_BOX_TACTICS'
+        where
+            outboundboxSort.outboundbox_rule_id = #{outboundBoxRuleId}
+            and outboundboxSort.ou_id = #{ouId}
+    </select>
+
+
+    <select id="findListCountByRuleId" resultType="long">
+        select count(1)
+        from t_wh_outboundbox_sort
+        where
+            outboundbox_rule_id = #{outboundBoxRuleId}
+            and ou_id = #{ouId}
+    </select>
+
+    <delete id="deleteByRuleId">
+        delete from t_wh_outboundbox_sort
+        where
+            outboundbox_rule_id = #{outboundBoxRuleId}
+            and ou_id = #{ouId}
+    </delete>
+
+</mapper>

@@ -270,6 +270,8 @@ public class ErrorCodes {
     public static final int COMMON_ONE_BY_ONE_SCAN_QTY_ERROR = 5032;
     /** 商品多条码数量无法完成核对 */
     public static final int COMMON_MULTI_BARCODE_QTY_NOT_SUITABLE = 5033;
+    /** 库位绑定异常！ */
+    public static final int COMMON_LOCATION_BINDING_ERROR = 5034;
     // 5001-10000 common end
 
     // 10001-20000 luyimin

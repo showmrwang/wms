@@ -30,6 +30,8 @@ public class WhOdoOutBoundBox extends BaseModel {
      */
     private static final long serialVersionUID = -8239815726779979217L;
 
+    /** 波次ID */
+    private Long waveId;
     /** 出库单ID */
     private Long odoId;
     /** 出库单明细ID */
@@ -140,5 +142,15 @@ public class WhOdoOutBoundBox extends BaseModel {
     public void setOperatorId(Long value) {
         this.operatorId = value;
     }
+
+    public Long getWaveId() {
+        return waveId;
+    }
+
+    public void setWaveId(Long waveId) {
+        this.waveId = waveId;
+    }
+
+
 
 }

@@ -419,19 +419,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         List<WhSkuInventoryCommand> cacheInvs = cacheManager.getMapObject(CacheConstants.CONTAINER_INVENTORY, containerId.toString());
         List<WhSkuInventoryCommand> invList = null;
         if (null == cacheInvs || 0 == cacheInvs.size()) {
-            // // 缓存所有库存
-            // List<String> ocCodelist = new ArrayList<String>();
-            // ocCodelist.add(containerCode);
-            // // 查询所有对应容器号的库存信息
-            // invList = whSkuInventoryDao.findWhSkuInventoryByOuterContainerCode(ouId, ocCodelist);
-            // if (null == invList || 0 == invList.size()) {
-            // log.error("sys guide pallet putaway container:[{}] rcvd inventory not found error!,
-            // logId is:[{}]", containerCode, logId);
-            // throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_RCVD_INV_ERROR, new
-            // Object[] {containerCode});
-            // }
-            // cacheManager.setMapObject(CacheConstants.CONTAINER_INVENTORY, containerId.toString(),
-            // invList, CacheConstants.CACHE_ONE_MONTH);
+            // 缓存所有库存
             invList = pdaPutawayCacheManager.sysGuidePalletPutawayCacheInventory(containerCmd, ouId, logId);
         } else {
             invList = cacheInvs;
@@ -1155,8 +1143,8 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
             pdaPutawayCacheManager.sysGuidePutawayLocRecommendPopQueue(containerId, logId);
         } catch (Exception e) {
             // 绑定库位或弹出队列出错，清理库存统计信息缓存
-            // TODO
-            throw e;
+            pdaPutawayCacheManager.sysGuidePutawayRemoveInventoryStatistic(containerCmd, ouId, logId);
+            throw new BusinessException(ErrorCodes.COMMON_LOCATION_BINDING_ERROR);
         }
         // 12.提示库位
         srCmd.setRecommendLocation(true);// 已推荐库位
@@ -1250,7 +1238,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                 }
                 return srCmd;
             }
-            if (0 >= count2 && 0 >= count1) {
+            if (0 >= count2 && 0 >= count1 && 0 >= count4 && 0 >= count3) {
                 // 无收货库存
                 log.error("sys guide container putaway scan container not found rcvdInvs error, containerCode is:[{}], logId is:[{}]", containerCode, logId);
                 throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_RCVD_INV_ERROR, new Object[] {containerCode});
@@ -1938,8 +1926,8 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
             pdaPutawayCacheManager.sysGuidePutawayLocRecommendPopQueue(insideContainerId, logId);
         } catch (Exception e) {
             // 绑定库位或弹出队列出错，清理库存统计信息缓存
-            // TODO
-            throw e;
+            pdaPutawayCacheManager.sysGuidePutawayRemoveInventoryStatistic(insideContainerCmd, ouId, logId);
+            throw new BusinessException(ErrorCodes.COMMON_LOCATION_BINDING_ERROR);
         }
         // 10.提示库位
         srCmd.setRecommendLocation(true);// 已推荐库位
@@ -2847,8 +2835,8 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
             pdaPutawayCacheManager.sysGuidePutawayLocRecommendPopQueue(insideContainerId, logId);
         } catch (Exception e) {
             // 绑定库位或弹出队列出错，清理库存统计信息缓存
-            // TODO
-            throw e;
+            pdaPutawayCacheManager.sysGuidePutawayRemoveInventoryStatistic(insideContainerCmd, ouId, logId);
+            throw new BusinessException(ErrorCodes.COMMON_LOCATION_BINDING_ERROR);
         }
         // 11.提示库位
         srCmd.setRecommendLocation(true);// 已推荐库位

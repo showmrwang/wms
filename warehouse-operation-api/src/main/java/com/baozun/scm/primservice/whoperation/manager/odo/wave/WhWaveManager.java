@@ -7,6 +7,7 @@ import lark.common.dao.Page;
 import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 
+import com.baozun.scm.primservice.whoperation.command.odo.OdoMergeCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.SoftAllocationCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.WaveCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
@@ -74,5 +75,30 @@ public interface WhWaveManager extends BaseManager {
      * @param whWave
      */
     public void updateWaveForSoftStart(WhWave whWave);
+
+    /**
+     * [通用方法] 根据波次阶段查找波次列表
+     * @param phaseCode
+     * @param ouId
+     */
+    List<Long> findWaveByPhase(String phaseCode, Long ouId);
+
+    /**
+     * [业务方法] 波次合并出库单-查找可以合并出库单id
+     * @param waveId
+     * @param ouId
+     * @return
+     */
+    List<OdoMergeCommand> findWaveMergeOdo(Long waveId, Long ouId);
+
+    /**
+     * [通用方法] 更新波次阶段
+     * @param waveId
+     * @param phaseCode
+     * @param ouId
+     */
+    void changeWavePhaseCode(Long waveId, String phaseCode, Long ouId);
+
+
 
 }

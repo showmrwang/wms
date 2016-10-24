@@ -43,6 +43,7 @@ import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAttr;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLineAttr;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt;
+import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
 import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
@@ -403,7 +404,7 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
             // 没有合并订单, 进入新建合并订单主档逻辑
             whOdo = createNewMergeOdo(odoId, ouId, userId);
         }
-        String oroginalOdoCode = "";
+        String originalOdoCode = "";
         /* 数量设置 */
         List<OdoCommand> newOdoList = whOdoDao.findOdoListByIdOuId(idString, ouId, null);
         Double qty = 0.0;
@@ -411,11 +412,14 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
         for (OdoCommand newOdo : newOdoList) {
             qty += newOdo.getQty();
             amt += newOdo.getAmt();
-            oroginalOdoCode += (null == newOdo.getOriginalOdoCode()) ? newOdo.getOdoCode() + "," : newOdo.getOriginalOdoCode() + ",";
+            originalOdoCode += (null == newOdo.getOriginalOdoCode()) ? newOdo.getOdoCode() + "," : newOdo.getOriginalOdoCode() + ",";
         }
         whOdo.setQty(qty);
         whOdo.setAmt(amt);
-        whOdo.setOriginalOdoCode(oroginalOdoCode);
+        if (!StringUtil.isEmpty(originalOdoCode)) {
+            originalOdoCode.substring(0, originalOdoCode.length() - 1);
+        }
+        whOdo.setOriginalOdoCode(originalOdoCode);
         if (null != whOdo.getId()) {
             // 待合并订单是合并订单 更新操作
             whOdoDao.saveOrUpdateByVersion(whOdo);
@@ -861,6 +865,27 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
             }
         }
         return OdoCommandList;
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void waveOdoMerge(WhWave wave, String odoIds, Long ouId, Long userId) {
+        WhOdo whOdo = this.generalOdoMerge(odoIds, ouId, userId);
+        String originalOdoCode = whOdo.getOriginalOdoCode();
+        String[] odoCodeList = originalOdoCode.split(",");
+        for (String odoCode : odoCodeList) {
+            WhOdo odo = this.whOdoDao.findOdoByCodeAndOuId(odoCode, ouId);
+            if (null != odo) {
+                odo.setWaveCode(null);
+                odo.setModifiedId(userId);
+                this.whOdoDao.saveOrUpdateByVersion(odo);
+                // 波次明细剔除
+            }
+        }
+        whOdo.setWaveCode(wave.getCode());
+        this.whOdoDao.saveOrUpdateByVersion(whOdo);
+        // 新建的出库单明细 绑定
+
     }
 
 }

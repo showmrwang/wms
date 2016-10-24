@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import com.baozun.scm.primservice.whoperation.command.odo.OdoMergeCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.SoftAllocationCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.WaveCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.UomCommand;
@@ -28,6 +29,7 @@ import com.baozun.scm.primservice.whoperation.constant.WaveStatus;
 import com.baozun.scm.primservice.whoperation.constant.WhUomType;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineDao;
+import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveLineDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveMasterDao;
@@ -59,6 +61,9 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
 
     @Autowired
     private WhWaveMasterDao whWaveMasterDao;
+
+    @Autowired
+    private WhOdoDao whOdoDao;
 
     @Autowired
     private WhOdoDao whOdoDao;
@@ -109,7 +114,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void updateWaveAfterSoftAllocate(Long waveId, Long ouId) {
-        WhWave whWave = this.whWaveDao.calculateQuantity(waveId, ouId);
+        // WhWave whWave = this.whWaveDao.calculateQuantity(waveId, ouId);
 
         List<SoftAllocationCommand> commandList = this.whWaveLineDao.findWaveLineCommandByWaveIdAndStatus(waveId, ouId, WaveStatus.WAVE_EXECUTING, BaseModel.LIFECYCLE_NORMAL);
 
@@ -186,8 +191,10 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         wave.setTotalOdoQty(totalOdoQty);
         wave.setTotalOdoLineQty(totalOdoLineQty);
         wave.setTotalAmount(totalAmount);
-        wave.setTotalVolume(whWave.getTotalVolume());
-        wave.setTotalWeight(whWave.getTotalWeight());
+        // wave.setTotalVolume(whWave.getTotalVolume());
+        // wave.setTotalWeight(whWave.getTotalWeight());
+        wave.setTotalVolume(totalVolume);
+        wave.setTotalWeight(totalWeight);
         wave.setTotalSkuQty(totalSkuQty);
         wave.setSkuCategoryQty(skuCategoryQty);
         this.whWaveDao.saveOrUpdateByVersion(wave);
@@ -269,4 +276,51 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
             throw new BusinessException("软分配开始阶段-更新波次信息失败");
         }
     }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<Long> findWaveByPhase(String phaseCode, Long ouId) {
+        WhWave whWave = new WhWave();
+        whWave.setOuId(ouId);
+        whWave.setPhaseCode(phaseCode);
+        List<Long> waveIds = this.whWaveDao.findWaveIdsByParam(whWave);
+        return waveIds;
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<OdoMergeCommand> findWaveMergeOdo(Long waveId, Long ouId) {
+        WaveCommand command = this.whWaveDao.findWaveByIdAndOuId(waveId, ouId);
+        String waveCode = command.getCode();
+        String outboundCartonType = command.getNeedOutboundCartonType();
+        String epistaticSystemsOrderType = command.getNeedEpistaticSystemsOrderType();
+        String store = command.getNeedStore();
+        String deliverGoodsTime = command.getNeedDeliverGoodsTime();
+        // 所有可以合并的单子
+        String odoIds = this.whOdoDao.findWaveOdoMergableIds(waveCode, ouId, outboundCartonType, epistaticSystemsOrderType, store, deliverGoodsTime);
+        List<OdoMergeCommand> list = this.whOdoDao.odoMerge(odoIds, ouId, outboundCartonType, epistaticSystemsOrderType, store, deliverGoodsTime);
+        return list;
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void changeWavePhaseCode(Long waveId, String phaseCode, Long ouId) {
+        WhWave wave = new WhWave();
+        wave.setId(waveId);
+        wave.setOuId(ouId);
+        wave = this.whWaveDao.findListByParam(wave).get(0);
+
+        // 获取下一个波次阶段
+        WhWaveMaster whWaveMaster = whWaveMasterDao.findByIdExt(wave.getWaveMasterId(), ouId);
+        Long waveTempletId = whWaveMaster.getWaveTemplateId();
+        String currPhaseCode = wave.getPhaseCode();
+        if (!currPhaseCode.equalsIgnoreCase(phaseCode)) {
+            throw new BusinessException("阶段不一致");
+        }
+        String phase = this.getWavePhaseCode(wave.getPhaseCode(), waveTempletId, ouId);
+        wave.setPhaseCode(phase);
+        this.whWaveDao.saveOrUpdateByVersion(wave);
+    }
+
+
 }

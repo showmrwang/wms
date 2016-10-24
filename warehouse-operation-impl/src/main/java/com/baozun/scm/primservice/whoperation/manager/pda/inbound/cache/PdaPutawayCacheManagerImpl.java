@@ -251,6 +251,26 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
         }
         return invList;
     }
+    
+    /**
+     * pda系统指导上架清除库存统计信息
+     * 
+     * @author lichuan
+     * @param containerCmd
+     * @param ouId
+     * @param logId
+     */
+    @Override
+    public void sysGuidePutawayRemoveInventoryStatistic(ContainerCommand containerCmd, Long ouId, String logId) {
+        Long containerId = containerCmd.getId();
+        if (log.isInfoEnabled()) {
+            log.info("sys guide putaway remove inventoryStatistic start, contianerId is:[{}], ouId is:[{}], logId is:[{}]", containerId, ouId, logId);
+        }
+        cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY_STATISTIC, containerId.toString());
+        if (log.isInfoEnabled()) {
+            log.info("sys guide putaway remove inventoryStatistic end, contianerId is:[{}], ouId is:[{}], logId is:[{}]", containerId, ouId, logId);
+        }
+    }
 
     /**
      * @author lichuan
