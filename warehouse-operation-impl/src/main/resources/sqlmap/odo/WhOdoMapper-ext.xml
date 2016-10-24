@@ -727,7 +727,7 @@
 			        last_modify_time = now() ,
 			        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        wave_code = #{waveCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        counter_code = #{counterCode,javaType=java.lang.String,jdbcType=TEXT} 
+			        counter_code = #{counterCode,javaType=java.lang.String,jdbcType=LONGVARCHAR} 
            
         ]]>
 		<where>

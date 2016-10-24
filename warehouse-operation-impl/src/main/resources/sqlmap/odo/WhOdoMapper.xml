@@ -212,7 +212,7 @@
 		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{waveCode,javaType=java.lang.String,jdbcType=VARCHAR},
-		        	#{counterCode,javaType=java.lang.String,jdbcType=TEXT}
+		        	#{counterCode,javaType=java.lang.String,jdbcType=LONGVARCHAR}
                 )
             ]]>
 
@@ -255,7 +255,7 @@
 		        last_modify_time = now() ,
 		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        wave_code=#{waveCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        counter_code=#{counterCode,javaType=java.lang.String,jdbcType=TEXT} 
+		        counter_code=#{counterCode,javaType=java.lang.String,jdbcType=LONGVARCHAR} 
             WHERE 
                 id = #{id} 
                 and ou_id = #{ouId}
