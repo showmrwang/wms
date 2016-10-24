@@ -41,6 +41,16 @@ public class OutInvBoxTypeCommand extends BaseCommand {
     private Double volumne;
     /** 承重 */
     private Double weight;
+    /** 外部长 */
+    private Double lengthExt;
+    /** 外部宽 */
+    private Double widthExt;
+    /** 外部高 */
+    private Double highExt;
+    /** 出库箱体积 */
+    private Double volumneExt;
+    /** 出库箱重量 */
+    private Double weightExt;
     /** 创建时间 */
     private java.util.Date createTime;
     /** 最终修改时间 */
@@ -60,6 +70,13 @@ public class OutInvBoxTypeCommand extends BaseCommand {
     private String volumeUom;
     // 重量单位
     private String weightUom;
+
+    // 长度单位
+    private String lengthUomExt;
+    // 体积单位
+    private String volumeUomExt;
+    // 重量单位
+    private String weightUomExt;
 
     /** 出库箱对应店铺或客户 */
     private List<WhOutInventoryboxRelationship> WhOutInventoryboxRelationshipList;
@@ -152,6 +169,46 @@ public class OutInvBoxTypeCommand extends BaseCommand {
         this.weight = weight;
     }
 
+    public Double getLengthExt() {
+        return lengthExt;
+    }
+
+    public void setLengthExt(Double lengthExt) {
+        this.lengthExt = lengthExt;
+    }
+
+    public Double getWidthExt() {
+        return widthExt;
+    }
+
+    public void setWidthExt(Double widthExt) {
+        this.widthExt = widthExt;
+    }
+
+    public Double getHighExt() {
+        return highExt;
+    }
+
+    public void setHighExt(Double highExt) {
+        this.highExt = highExt;
+    }
+
+    public Double getVolumneExt() {
+        return volumneExt;
+    }
+
+    public void setVolumneExt(Double volumneExt) {
+        this.volumneExt = volumneExt;
+    }
+
+    public Double getWeightExt() {
+        return weightExt;
+    }
+
+    public void setWeightExt(Double weightExt) {
+        this.weightExt = weightExt;
+    }
+
     public java.util.Date getCreateTime() {
         return createTime;
     }
@@ -230,6 +287,30 @@ public class OutInvBoxTypeCommand extends BaseCommand {
 
     public void setWeightUom(String weightUom) {
         this.weightUom = weightUom;
+    }
+
+    public String getLengthUomExt() {
+        return lengthUomExt;
+    }
+
+    public void setLengthUomExt(String lengthUomExt) {
+        this.lengthUomExt = lengthUomExt;
+    }
+
+    public String getVolumeUomExt() {
+        return volumeUomExt;
+    }
+
+    public void setVolumeUomExt(String volumeUomExt) {
+        this.volumeUomExt = volumeUomExt;
+    }
+
+    public String getWeightUomExt() {
+        return weightUomExt;
+    }
+
+    public void setWeightUomExt(String weightUomExt) {
+        this.weightUomExt = weightUomExt;
     }
 
     public List<WhOutInventoryboxRelationship> getWhOutInventoryboxRelationshipList() {
