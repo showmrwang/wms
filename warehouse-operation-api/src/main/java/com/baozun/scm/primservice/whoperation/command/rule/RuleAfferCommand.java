@@ -3,6 +3,7 @@ package com.baozun.scm.primservice.whoperation.command.rule;
 import java.util.List;
 
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.OutboundBoxRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhInBoundRuleCommand;
 
 /**
@@ -62,6 +63,13 @@ public class RuleAfferCommand extends BaseCommand {
     
     /** 波次Id */
     private Long waveId;
+
+    /** 出库箱装箱规则出库单ID */
+    private List<Long> outboundBoxRuleOdoIdList;
+    /** 出库箱装箱规则， 执行拆分条件使用 */
+    private OutboundBoxRuleCommand outboundBoxRuleCommand;
+    /** 出库箱装箱规则拆分策略出库单ID */
+    private Long outboundBoxSortOdoId;
 
 
     public String getRuleType() {
@@ -198,5 +206,28 @@ public class RuleAfferCommand extends BaseCommand {
     public void setWaveId(Long waveId) {
         this.waveId = waveId;
     }
-    
+
+    public List<Long> getOutboundBoxRuleOdoIdList() {
+        return outboundBoxRuleOdoIdList;
+    }
+
+    public void setOutboundBoxRuleOdoIdList(List<Long> outboundBoxRuleOdoIdList) {
+        this.outboundBoxRuleOdoIdList = outboundBoxRuleOdoIdList;
+    }
+
+    public OutboundBoxRuleCommand getOutboundBoxRuleCommand() {
+        return outboundBoxRuleCommand;
+    }
+
+    public void setOutboundBoxRuleCommand(OutboundBoxRuleCommand outboundBoxRuleCommand) {
+        this.outboundBoxRuleCommand = outboundBoxRuleCommand;
+    }
+
+    public Long getOutboundBoxSortOdoId() {
+        return outboundBoxSortOdoId;
+    }
+
+    public void setOutboundBoxSortOdoId(Long outboundBoxSortOdoId) {
+        this.outboundBoxSortOdoId = outboundBoxSortOdoId;
+    }
 }
