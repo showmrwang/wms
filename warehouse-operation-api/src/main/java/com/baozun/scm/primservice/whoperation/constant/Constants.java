@@ -192,6 +192,11 @@ public final class Constants {
     /** 补货规则 库位规则类型 */
     public static final String RULE_TYPE_REPLENISHMENT_LOCATION = "REPLENISHMENT_LOCATION";
 
+    /** 出库箱规则 */
+    public static final String RULE_TYPE_OUTBOUND_BOX = "OUTBOUND_BOX";
+    /** 装箱排序\拆分 */
+    public static final String RULE_TYPE_OUTBOUND_BOX_TACTICS = "OUTBOUND_BOX_TACTICS";
+
     // 库存状态
     public static final Long INVENTORY_STATUS_GOOD = 3L;// 良品
     public static final Long INVENTORY_STATUS_DEFEATSALE = 4L; // 残次可销售
@@ -266,6 +271,9 @@ public final class Constants {
 
     /** 上架规则sql占位符 */
     public static final String SHELVE_RULE_PLACEHOLDER = "${insideContainerIdListStr}";
+
+    /** 出库箱装箱规则sql占位符 */
+    public static final String OUTBOUNDBOX_RULE_PLACEHOLDER = "${odoIdListStr}";
 
     /** 库存 占用单据来源 ASN */
     public static final String SKU_INVENTORY_OCCUPATION_SOURCE_ASN = "ASN";

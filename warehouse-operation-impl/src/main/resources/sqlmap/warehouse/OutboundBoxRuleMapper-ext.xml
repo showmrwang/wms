@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.OutboundBoxRuleDao">
+    <resultMap id="OutboundBoxRuleResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.OutboundBoxRule">
+    </resultMap>
+
+    <resultMap id="OutboundBoxRuleCommand" type="com.baozun.scm.primservice.whoperation.command.warehouse.OutboundBoxRuleCommand">
+    </resultMap>
+
+    <resultMap id="OutboundBoxRuleSplitRequireCommand" type="com.baozun.scm.primservice.whoperation.command.warehouse.OutboundBoxRuleSplitRequireCommand">
+    </resultMap>
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="outboundboxRuleColumnsExt">
+        <![CDATA[
+                id as id,
+                outboundbox_rule_name as outboundboxRuleName,
+                outboundbox_rule_code as outboundboxRuleCode,
+                outboundbox_rule as outboundboxRule,
+                outboundbox_rule_sql as outboundboxRuleSql,
+                sort_sql as sortSql,
+                split_require as splitRequire,
+                ou_id as ouId,
+                priority as priority,
+                description as description,
+                create_time as createTime,
+                created_id as createdId,
+                last_modify_time as lastModifyTime,
+                modified_id as modifiedId,
+                lifecycle as lifecycle
+        ]]>
+    </sql>
+
+    <sql id="outboundboxRuleDynamicWhereExt">
+        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+
+            <if test="id!=null">
+                and id = #{id}
+            </if>
+
+            <if test="outboundboxRuleName!=null and outboundboxRuleName!=''">
+                and outboundbox_rule_name = #{outboundboxRuleName}
+            </if>
+
+            <if test="outboundboxRuleCode!=null and outboundboxRuleCode!=''">
+                and outboundbox_rule_code = #{outboundboxRuleCode}
+            </if>
+
+            <if test="outboundboxRule!=null and outboundboxRule!=''">
+                and outboundbox_rule = #{outboundboxRule}
+            </if>
+
+            <if test="outboundboxRuleSql!=null and outboundboxRuleSql!=''">
+                and outboundbox_rule_sql = #{outboundboxRuleSql}
+            </if>
+
+            <if test="sortSql!=null and sortSql!=''">
+                and sort_sql = #{sortSql}
+            </if>
+
+            <if test="splitRequire!=null and splitRequire!=''">
+                and split_require = #{splitRequire}
+            </if>
+
+            <if test="ouId!=null">
+                and ou_id = #{ouId}
+            </if>
+
+            <if test="priority!=null">
+                and priority = #{priority}
+            </if>
+
+            <if test="description!=null and description!=''">
+                and description = #{description}
+            </if>
+
+            <if test="createTime!=null">
+                and create_time = #{createTime}
+            </if>
+
+            <if test="createdId!=null">
+                and created_id = #{createdId}
+            </if>
+
+            <if test="lastModifyTime!=null">
+                and last_modify_time = #{lastModifyTime}
+            </if>
+
+            <if test="modifiedId!=null">
+                and modified_id = #{modifiedId}
+            </if>
+
+            <if test="lifecycle!=null">
+                and lifecycle = #{lifecycle}
+            </if>
+        </where>
+    </sql>
+
+    <sql id="outboundboxRuleDynamicLikeWhereExt">
+        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+
+            <if test="id!=null">
+                and id = #{id}
+            </if>
+
+            <if test="outboundboxRuleName!=null and outboundboxRuleName!=''">
+                and outboundbox_rule_name like #{outboundboxRuleName}
+            </if>
+
+            <if test="ruleNameByCriteriasData!=null and ruleNameByCriteriasData!=''">
+                and outboundbox_rule_name like #{ruleNameByCriteriasData}
+            </if>
+
+            <if test="outboundboxRuleCode!=null and outboundboxRuleCode!=''">
+                and outboundbox_rule_code like #{outboundboxRuleCode}
+            </if>
+
+            <if test="ruleCodeByCriteriasData!=null and ruleCodeByCriteriasData!=''">
+                and outboundbox_rule_code like #{ruleCodeByCriteriasData}
+            </if>
+
+            <if test="outboundboxRule!=null and outboundboxRule!=''">
+                and outboundbox_rule = #{outboundboxRule}
+            </if>
+
+            <if test="outboundboxRuleSql!=null and outboundboxRuleSql!=''">
+                and outboundbox_rule_sql = #{outboundboxRuleSql}
+            </if>
+
+            <if test="sortSql!=null and sortSql!=''">
+                and sort_sql = #{sortSql}
+            </if>
+
+            <if test="splitRequire!=null and splitRequire!=''">
+                and split_require = #{splitRequire}
+            </if>
+
+            <if test="ouId!=null">
+                and ou_id = #{ouId}
+            </if>
+
+            <if test="priority!=null">
+                and priority = #{priority}
+            </if>
+
+            <if test="description!=null and description!=''">
+                and description like #{description}
+            </if>
+
+            <if test="descriptionByCriteriasData!=null and descriptionByCriteriasData!=''">
+                and description like #{description}
+            </if>
+
+            <if test="createTime!=null">
+                and create_time = #{createTime}
+            </if>
+
+            <if test="createdId!=null">
+                and created_id = #{createdId}
+            </if>
+
+            <if test="lastModifyTime!=null">
+                and last_modify_time = #{lastModifyTime}
+            </if>
+
+            <if test="modifiedId!=null">
+                and modified_id = #{modifiedId}
+            </if>
+
+            <if test="lifecycle!=null">
+                and lifecycle = #{lifecycle}
+            </if>
+        </where>
+    </sql>
+
+    <select id="findCountByQueryMapWithPageExt" resultType="long">
+        select count(1)
+        from t_wh_outboundbox_rule
+        <include refid="outboundboxRuleDynamicLikeWhereExt"/>
+    </select>
+
+    <select id="findListByQueryMapWithPageExt" resultMap="OutboundBoxRuleCommand">
+        select
+        <include refid="outboundboxRuleColumnsExt"/>
+        from t_wh_outboundbox_rule
+        <include refid="outboundboxRuleDynamicLikeWhereExt"/>
+    </select>
+
+    <select id="findByIdExt" resultMap="OutboundBoxRuleResultExt">
+        select
+        <include refid="outboundboxRuleColumnsExt"/>
+        from t_wh_outboundbox_rule
+        where
+        id = #{id}
+        and ou_id = #{ouId}
+    </select>
+
+    <select id="findCommandById" resultMap="OutboundBoxRuleCommand">
+        select
+        <include refid="outboundboxRuleColumnsExt"/>
+        from t_wh_outboundbox_rule
+        where
+        id = #{id}
+        and ou_id = #{ouId}
+    </select>
+
+    <select id="checkUnique" resultType="int">
+        select count(1) from t_wh_outboundbox_rule
+        <where>
+            <if test="id!=null">
+                and id != #{id}
+            </if>
+            <if test="(outboundboxRuleName!=null and outboundboxRuleName!='')
+                    or (outboundboxRuleCode!=null and outboundboxRuleCode!='')
+                    or (priority!=null and priority!='')">
+                and (
+                <trim prefix="" prefixOverrides="or">
+                    <if test="outboundboxRuleName!=null and outboundboxRuleName!=''">
+                        or outboundbox_rule_name = #{outboundboxRuleName}
+                    </if>
+                    <if test="outboundboxRuleCode!=null and outboundboxRuleCode!=''">
+                        or outboundbox_rule_code = #{outboundboxRuleCode}
+                    </if>
+                    <if test="priority!=null and priority!=''">
+                        or priority = #{priority}
+                    </if>
+                </trim>
+                )
+            </if>
+            and ou_id = #{ouId}
+        </where>
+    </select>
+
+    <select id="executeRuleSql" resultType="Long">
+        ${outboundboxRuleSql}
+    </select>
+
+    <select id="executeOutboundBoxTacticsSql" resultMap="OutboundBoxRuleSplitRequireCommand">
+        ${outboundBoxTacticsSql}
+    </select>
+
+    <select id="findRuleByOuIdOrderByPriorityAsc" resultMap="OutboundBoxRuleCommand">
+        select
+        <include refid="outboundboxRuleColumnsExt"/>
+        from t_wh_outboundbox_rule
+        where
+        ou_id = #{ouId}
+        and lifecycle = 1
+        order by priority asc
+    </select>
+
+    <update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.OutboundBoxRule">
+        <![CDATA[
+            UPDATE t_wh_outboundbox_rule SET
+                outboundbox_rule_name = #{outboundboxRuleName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                outboundbox_rule_code = #{outboundboxRuleCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                outboundbox_rule = #{outboundboxRule,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                outboundbox_rule_sql = #{outboundboxRuleSql,javaType=java.lang.String,jdbcType=LONGVARCHAR} ,
+                sort_sql = #{sortSql,javaType=java.lang.String,jdbcType=LONGVARCHAR} ,
+                split_require = #{splitRequire,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                priority = #{priority,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                description = #{description,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                last_modify_time = now() ,
+                modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER}
+            WHERE
+                id = #{id}
+                and ou_id = #{ouId}
+                and last_modify_time =  #{lastModifyTime}
+        ]]>
+    </update>
+
+
+</mapper>
