@@ -10,6 +10,7 @@ import lark.common.dao.Sort;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoMergeCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.SoftAllocationCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.WaveCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhDistributionPatternRuleCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
@@ -100,5 +101,23 @@ public interface WhWaveManager extends BaseManager {
     void changeWavePhaseCode(Long waveId, String phaseCode, Long ouId);
 
 
+
+    /**
+     * 查询波次可用的配货模式
+     * 
+     * @param ouId
+     * @return
+     */
+    List<WhDistributionPatternRuleCommand> findRuleByOuIdOrderByPriorityAsc(Long ouId);
+
+    /**
+     * 查询波次中适用于某种配货模式的出库单集合
+     * 
+     * @param waveId
+     * @param ouId
+     * @param ruleSql
+     * @return
+     */
+    List<Long> findOdoListInWaveWhenDistributionPattern(Long waveId, Long ouId, String ruleSql);
 
 }

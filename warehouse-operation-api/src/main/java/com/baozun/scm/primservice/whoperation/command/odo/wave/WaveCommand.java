@@ -93,8 +93,6 @@ public class WaveCommand extends BaseCommand {
     private String needDeliverGoodsTime;
 
 
-    public String getCreateName() {
-        return createName;
     public String getPhaseName() {
         return phaseName;
     }

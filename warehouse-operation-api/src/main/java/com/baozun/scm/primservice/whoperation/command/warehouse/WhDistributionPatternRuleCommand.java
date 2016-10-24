@@ -32,6 +32,8 @@ public class WhDistributionPatternRuleCommand extends BaseCommand {
      */
     private static final long serialVersionUID = -4406680822319973102L;
     
+    /** id */
+    private Long id;
 	/** 配货模式名称 */
 	private String distributionPatternName;
 	/** 配货模式编码 */
@@ -71,6 +73,13 @@ public class WhDistributionPatternRuleCommand extends BaseCommand {
     private List<Long> odoIdList;
     
     
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
     public String getDistributionPatternName() {
         return distributionPatternName;
     }

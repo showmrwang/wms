@@ -22,6 +22,7 @@ import com.baozun.scm.primservice.whoperation.command.odo.OdoMergeCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.SoftAllocationCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.WaveCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.UomCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhDistributionPatternRuleCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
@@ -29,11 +30,11 @@ import com.baozun.scm.primservice.whoperation.constant.WaveStatus;
 import com.baozun.scm.primservice.whoperation.constant.WhUomType;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineDao;
-import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveLineDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveMasterDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.UomDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhDistributionPatternRuleDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoManager;
@@ -66,13 +67,13 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
     private WhOdoDao whOdoDao;
 
     @Autowired
-    private WhOdoDao whOdoDao;
-
-    @Autowired
     private WhOdoLineDao whOdoLineDao;
 
     @Autowired
     private WhWaveLineDao whWaveLineDao;
+
+    @Autowired
+    private WhDistributionPatternRuleDao whDistributionPatternRuleDao;
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
@@ -262,7 +263,6 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
             line.setOdoLineStatus(OdoStatus.ODOLINE_NEW);
             this.whOdoLineDao.saveOrUpdateByVersion(line);
         }
-        return this.whWaveDao.findListByQueryMapWithPageExt(page, sorts, params);
     }
 
     @Override
@@ -275,6 +275,18 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         if (0 >= cnt) {
             throw new BusinessException("软分配开始阶段-更新波次信息失败");
         }
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<WhDistributionPatternRuleCommand> findRuleByOuIdOrderByPriorityAsc(Long ouId) {
+        return this.whDistributionPatternRuleDao.findRuleByOuIdOrderByPriorityAsc(ouId);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<Long> findOdoListInWaveWhenDistributionPattern(Long waveId, Long ouId, String ruleSql) {
+        return this.whDistributionPatternRuleDao.testRuleSql(ruleSql, ouId, waveId);
     }
 
     @Override

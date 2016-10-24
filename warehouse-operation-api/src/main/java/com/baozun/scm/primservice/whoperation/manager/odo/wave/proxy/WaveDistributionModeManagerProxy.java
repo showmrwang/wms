@@ -10,6 +10,7 @@ public interface WaveDistributionModeManagerProxy extends BaseManager {
      * @param waveId
      * @param waveMasterId
      * @param ouId
+     * @param userId
      */
-    public void setWaveDistributionMode(Long waveId, Long waveMasterId, Long ouId);
+    public void setWaveDistributionMode(Long waveId, Long waveMasterId, Long ouId, Long userId);
 }
