@@ -2009,4 +2009,18 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					and ou_id = #{ouId}
     </select>
     
+    <!-- -->
+	<select id="findWhSkuInventoryCountsByContainerId" resultMap="WhSkuInventoryResultExt">
+		select <include refid="whSkuInventoryColumnsInvExt"/>
+		from t_wh_sku_inventory inv,t_wh_asn asn where inv.occupation_code is not null 
+		and inv.ou_id=#{ouId}
+	    and inv.occupation_code=asn.asn_code and (asn.status=5 or asn.status=10) and inv.location_id is not null
+	    <if test="outerContainerId!=null and outerContainerId!=''">
+					 and inv.outer_container_id = #{outerContainerId}
+	   </if>
+	   <if test="insideContainerId!=null and insideContainerId!=''">
+					 and inv.inside_container_id=#{insideContainerId}
+	   </if>
+	</select>
+    
 </mapper>
