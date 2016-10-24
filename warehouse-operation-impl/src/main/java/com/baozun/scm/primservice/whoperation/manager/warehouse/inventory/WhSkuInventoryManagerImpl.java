@@ -1919,7 +1919,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     inv.setInboundTime(new Date());
                     inv.setLastModifyTime(new Date());
                     whSkuInventoryDao.insert(inv);
-                    insertGlobalLog(GLOBAL_LOG_UPDATE, inv, ouId, userId, null, null);
+                    insertGlobalLog(GLOBAL_LOG_INSERT, inv, ouId, userId, null, null);
                     // 记录入库库存日志(这个实现的有问题)
                     insertSkuInventoryLog(inv.getId(), inv.getOnHandQty(), oldQty, warehouse.getIsTabbInvTotal(), ouId, userId);
                     // 删除待移入库存
