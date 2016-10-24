@@ -54,8 +54,6 @@ public class WhOdoOutBoundBox extends BaseModel {
     private Date lastModifyTime;
     /** 操作人ID */
     private Long operatorId;
-    /** 系统生成编码 用于区分相同小车/容器 不同工作 */
-    private String uuid;
 
     public Long getOdoId() {
         return this.odoId;
@@ -151,14 +149,6 @@ public class WhOdoOutBoundBox extends BaseModel {
 
     public void setWaveId(Long waveId) {
         this.waveId = waveId;
-    }
-
-    public String getUuid() {
-        return uuid;
-    }
-
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
     }
 
 
