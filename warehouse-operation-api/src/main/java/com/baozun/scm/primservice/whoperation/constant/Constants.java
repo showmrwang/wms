@@ -381,4 +381,7 @@ public final class Constants {
     
     /**配货模式规则*/
     public static final String DISTRIBUTION_PATTERN="DISTRIBUTION_PATTERN";
+
+    /** 体积单位升在Uom表中的编码 */
+    public static final String LENGTH_TO_VOLUME_UOM_CODE = "LENGTH_TO_VOLUME_CODE";
 }
