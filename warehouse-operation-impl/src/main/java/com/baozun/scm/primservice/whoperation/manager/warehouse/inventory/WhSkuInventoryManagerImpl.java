@@ -2015,7 +2015,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 }
             }
             // 3.上架库存校验
-            // TODO
+            // TODO 
 
             // 4.上架成功后需要释放容器
             // 修改内部容器状态(整托、整箱上架均修改内部容器状态为已上架且占用中)
