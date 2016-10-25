@@ -46,6 +46,8 @@ public class WhOdoOutBoundBox extends BaseModel {
     private Long outerContainerId;
     /** 数量 */
     private Double qty;
+    /** 批次 */
+    private String boxBatch;
     /** 仓库组织ID */
     private Long ouId;
     /** 创建时间 */
@@ -149,6 +151,14 @@ public class WhOdoOutBoundBox extends BaseModel {
 
     public void setWaveId(Long waveId) {
         this.waveId = waveId;
+    }
+
+    public String getBoxBatch() {
+        return boxBatch;
+    }
+
+    public void setBoxBatch(String boxBatch) {
+        this.boxBatch = boxBatch;
     }
 
 
