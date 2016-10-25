@@ -161,35 +161,37 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                     cartonCommand.setAsnLineId(asnline.getId());
                     cartonCommand.setIsCaselevel(Constants.BOOLEAN_TRUE);
                     List<WhCartonCommand> cartonList = this.generalRcvdManager.findWhCartonByParamExt(cartonCommand);
-                    if (cartonList == null || Constants.DEFAULT_INTEGER == cartonList.size()) {
-                        cacheManager.setMapObject(CacheKeyConstant.CACHE_ASNLINE_PREFIX + occupationId, asnline.getId().toString(), asnline, 24 * 60 * 60);
-                        int count = asnline.getQtyPlanned().intValue() - asnline.getQtyRcvd().intValue();// 未收货数量
-                        int overchargeCount = (int) (asnline.getQtyPlanned().intValue() * Double.valueOf(cacheRate) / 100);// 可超收数量
-                        cacheManager.setMapObject(CacheKeyConstant.CACHE_ASNLINE_OVERCHARGE_PREFIX + occupationId, asnline.getId().toString(), overchargeCount, 24 * 60 * 60);
-                        // 缓存ASN-商品数量
-                        long asnLineSku = cacheManager.incr(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + cacheAsn.getId() + CacheKeyConstant.CACHE_KEY_SPLIT + asnline.getId() + CacheKeyConstant.CACHE_KEY_SPLIT + asnline.getSkuId());
-                        log.info(this.getClass().getSimpleName() + "initAsnCacheForGeneralReceiving PARAM asnlineSKU:{}", asnLineSku);
-                        cacheManager.decrBy(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + cacheAsn.getId() + CacheKeyConstant.CACHE_KEY_SPLIT + asnline.getId() + CacheKeyConstant.CACHE_KEY_SPLIT + asnline.getSkuId(), (int) asnLineSku);
-                        cacheManager.incrBy(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + cacheAsn.getId() + CacheKeyConstant.CACHE_KEY_SPLIT + asnline.getId() + CacheKeyConstant.CACHE_KEY_SPLIT + asnline.getSkuId(), count);
-                        if (skuMap.containsKey(asnline.getSkuId())) {
-                            skuMap.put(asnline.getSkuId(), skuMap.get(asnline.getSkuId()) + count);
-                        } else {
-                            skuMap.put(asnline.getSkuId(), count);
+                    int quantity = Constants.DEFAULT_INTEGER;
+                    for (WhCartonCommand c : cartonList) {
+                        quantity += c.getQuantity();
+                    }
+                    cacheManager.setMapObject(CacheKeyConstant.CACHE_ASNLINE_PREFIX + occupationId, asnline.getId().toString(), asnline, 24 * 60 * 60);
+                    int count = asnline.getQtyPlanned().intValue() - asnline.getQtyRcvd().intValue();// 未收货数量
+                    int overchargeCount = (int) ((asnline.getQtyPlanned().intValue() - quantity) * Double.valueOf(cacheRate) / 100);// 可超收数量
+                    cacheManager.setMapObject(CacheKeyConstant.CACHE_ASNLINE_OVERCHARGE_PREFIX + occupationId, asnline.getId().toString(), overchargeCount, 24 * 60 * 60);
+                    // 缓存ASN-商品数量
+                    long asnLineSku = cacheManager.incr(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + cacheAsn.getId() + CacheKeyConstant.CACHE_KEY_SPLIT + asnline.getId() + CacheKeyConstant.CACHE_KEY_SPLIT + asnline.getSkuId());
+                    log.info(this.getClass().getSimpleName() + "initAsnCacheForGeneralReceiving PARAM asnlineSKU:{}", asnLineSku);
+                    cacheManager.decrBy(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + cacheAsn.getId() + CacheKeyConstant.CACHE_KEY_SPLIT + asnline.getId() + CacheKeyConstant.CACHE_KEY_SPLIT + asnline.getSkuId(), (int) asnLineSku);
+                    cacheManager.incrBy(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + cacheAsn.getId() + CacheKeyConstant.CACHE_KEY_SPLIT + asnline.getId() + CacheKeyConstant.CACHE_KEY_SPLIT + asnline.getSkuId(), count);
+                    if (skuMap.containsKey(asnline.getSkuId())) {
+                        skuMap.put(asnline.getSkuId(), skuMap.get(asnline.getSkuId()) + count);
+                    } else {
+                        skuMap.put(asnline.getSkuId(), count);
+                    }
+                    // 缓存Asn的SN号
+                    // @mender yimin.lu 2016/9/8
+                    WhAsnSn sn = new WhAsnSn();
+                    sn.setAsnLineId(asnline.getId());
+                    sn.setSkuId(asnline.getSkuId());
+                    sn.setOuId(ouId);
+                    List<WhAsnSn> snList = this.asnSnManager.findListByParamToShard(sn);
+                    if (snList != null && snList.size() > 0) {
+                        String[] snArray = new String[snList.size()];
+                        for (int i = 0; i < snList.size(); i++) {
+                            snArray[i] = snList.get(i).getSn();
                         }
-                        // 缓存Asn的SN号
-                        // @mender yimin.lu 2016/9/8
-                        WhAsnSn sn = new WhAsnSn();
-                        sn.setAsnLineId(asnline.getId());
-                        sn.setSkuId(asnline.getSkuId());
-                        sn.setOuId(ouId);
-                        List<WhAsnSn> snList = this.asnSnManager.findListByParamToShard(sn);
-                        if (snList != null && snList.size() > 0) {
-                            String[] snArray = new String[snList.size()];
-                            for (int i = 0; i < snList.size(); i++) {
-                                snArray[i] = snList.get(i).getSn();
-                            }
-                            this.cacheManager.addSet(CacheKeyConstant.CACHE_ASNLINE_SN + asnline.getId(), snArray);
-                        }
+                        this.cacheManager.addSet(CacheKeyConstant.CACHE_ASNLINE_SN + asnline.getId(), snArray);
                     }
                 }
                 // Asn商品缓存列表
