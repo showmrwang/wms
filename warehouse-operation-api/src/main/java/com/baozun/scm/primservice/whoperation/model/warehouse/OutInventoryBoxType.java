@@ -52,7 +52,7 @@ public class OutInventoryBoxType extends BaseModel {
     /** 高 */
     private Double high;
     /** 体积 */
-    private Double volumne;
+    private Double volume;
     /** 承重 */
     private Double weight;
     /** 外部长 */
@@ -62,7 +62,7 @@ public class OutInventoryBoxType extends BaseModel {
     /** 外部高 */
     private Double highExt;
     /** 出库箱体积 */
-    private Double volumneExt;
+    private Double volumeExt;
     /** 出库箱重量 */
     private Double weightExt;
     /** 创建时间 */
@@ -147,12 +147,12 @@ public class OutInventoryBoxType extends BaseModel {
         this.high = high;
     }
 
-    public Double getVolumne() {
-        return volumne;
+    public Double getVolume() {
+        return volume;
     }
 
-    public void setVolumne(Double volumne) {
-        this.volumne = volumne;
+    public void setVolume(Double volume) {
+        this.volume = volume;
     }
 
     public Double getWeight() {
@@ -187,12 +187,12 @@ public class OutInventoryBoxType extends BaseModel {
         this.highExt = highExt;
     }
 
-    public Double getVolumneExt() {
-        return volumneExt;
+    public Double getVolumeExt() {
+        return volumeExt;
     }
 
-    public void setVolumneExt(Double volumneExt) {
-        this.volumneExt = volumneExt;
+    public void setVolumeExt(Double volumeExt) {
+        this.volumeExt = volumeExt;
     }
 
     public Double getWeightExt() {

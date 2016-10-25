@@ -23,12 +23,12 @@
                 length as length,
                 width as width,
                 high as high,
-                volumne as volumne,
+                volume as volume,
                 weight as weight,
                 length_ext as lengthExt,
                 width_ext as widthExt,
                 high_ext as highExt,
-                volumne_ext as volumneExt,
+                volume_ext as volumeExt,
                 weight_ext as weightExt,
                 create_time as createTime,
                 last_modify_time as lastModifyTime,
@@ -50,12 +50,12 @@
                 inventory.length as length,
                 inventory.width as width,
                 inventory.high as high,
-                inventory.volumne as volumne,
+                inventory.volume as volume,
                 inventory.weight as weight,
                 inventory.length_ext as lengthExt,
                 inventory.width_ext as widthExt,
                 inventory.high_ext as highExt,
-                inventory.volumne_ext as volumneExt,
+                inventory.volume_ext as volumeExt,
                 inventory.weight_ext as weightExt,
                 inventory.create_time as createTime,
                 inventory.last_modify_time as lastModifyTime,
@@ -124,8 +124,8 @@
                 and inventory.high = #{high}
             </if>
 
-            <if test="volumne!=null">
-                and inventory.volumne = #{volumne}
+            <if test="volume!=null">
+                and inventory.volume = #{volume}
             </if>
 
             <if test="weight!=null">
@@ -144,8 +144,8 @@
                 and inventory.high_ext = #{highExt}
             </if>
 
-            <if test="volumneExt!=null">
-                and inventory.volumne_ext = #{volumneExt}
+            <if test="volumeExt!=null">
+                and inventory.volume_ext = #{volumeExt}
             </if>
 
             <if test="weightExt!=null">
@@ -205,12 +205,12 @@
                 length = #{length,javaType=java.lang.Double,jdbcType=DOUBLE} ,
                 width = #{width,javaType=java.lang.Double,jdbcType=DOUBLE} ,
                 high = #{high,javaType=java.lang.Double,jdbcType=DOUBLE} ,
-                volumne = #{volumne,javaType=java.lang.Double,jdbcType=DOUBLE} ,
+                volume = #{volume,javaType=java.lang.Double,jdbcType=DOUBLE} ,
                 weight = #{weight,javaType=java.lang.Double,jdbcType=DOUBLE} ,
                 length_ext = #{lengthExt,javaType=java.lang.Double,jdbcType=DOUBLE} ,
                 width_ext = #{widthExt,javaType=java.lang.Double,jdbcType=DOUBLE} ,
                 high_ext = #{highExt,javaType=java.lang.Double,jdbcType=DOUBLE} ,
-                volumne_ext = #{volumneExt,javaType=java.lang.Double,jdbcType=DOUBLE} ,
+                volume_ext = #{volumeExt,javaType=java.lang.Double,jdbcType=DOUBLE} ,
                 weight_ext = #{weightExt,javaType=java.lang.Double,jdbcType=DOUBLE} ,
                 create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
                 last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
