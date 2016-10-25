@@ -161,9 +161,9 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
         Double length = container2.getLength();
         Double height = container2.getHigh();
         Double width = container2.getWidth();
-        String lenUom = container2.getLengthUom();
+        //String lenUom = container2.getLengthUom();
         Double weight = container2.getWeight();
-        String weightUom = container2.getWeightUom();
+        //String weightUom = container2.getWeightUom();
         List<WhSkuInventoryCommand> invList = null;
         WhFunctionPutAway putawayFunc = whFunctionPutAwayManager.findWhFunctionPutAwayByFunctionId(funcId, ouId, logId);;
         if (WhPutawayPatternDetailType.PALLET_PUTAWAY == putawayPatternDetail) {

@@ -23,6 +23,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	high as high,
 	        	volume as volume,
 	        	weight as weight,
+                length_grid_num as lengthGridNum,
+                width_grid_num as widthGridNum,
+                high_grid_num as highGridNum,
+                total_grid_num as totalGridNum,
+                grid_length as gridLength,
+                grid_width as gridWidth,
+                grid_high as gridHigh,
+                grid_volume as gridVolume,
+                picking_mode as pickingMode,
 	        	ou_id as ouId,
 	        	create_time as createTime,
 	        	last_modify_time as lastModifyTime,
@@ -50,6 +59,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	high ,
 		        	volume ,
 		        	weight ,
+                    length_grid_num ,
+                    width_grid_num ,
+                    high_grid_num ,
+                    total_grid_num ,
+                    grid_length ,
+                    grid_width ,
+                    grid_high ,
+                    grid_volume ,
+                    picking_mode ,
 		        	ou_id ,
 		        	create_time ,
 		        	last_modify_time ,
@@ -68,6 +86,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{high,javaType=java.lang.Double,jdbcType=DECIMAL} ,
 		        	#{volume,javaType=java.lang.Double,jdbcType=DECIMAL} ,
 		        	#{weight,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+                    #{lengthGridNum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                    #{widthGridNum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                    #{highGridNum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                    #{totalGridNum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                    #{gridLength,javaType=Double,jdbcType=DECIMAL} ,
+                    #{gridWidth,javaType=Double,jdbcType=DECIMAL} ,
+                    #{gridHigh,javaType=Double,jdbcType=DECIMAL} ,
+                    #{gridVolume,javaType=Double,jdbcType=DECIMAL} ,
+                    #{pickingMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
@@ -93,6 +120,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        high = #{high,javaType=java.lang.Double,jdbcType=DECIMAL} ,
 		        volume = #{volume,javaType=java.lang.Double,jdbcType=DECIMAL} ,
 		        weight = #{weight,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+                length_grid_num = #{lengthGridNum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                width_grid_num = #{widthGridNum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                high_grid_num = #{highGridNum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                total_grid_num = #{totalGridNum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                grid_length = #{gridLength,javaType=Double,jdbcType=DECIMAL} ,
+                grid_width = #{gridWidth,javaType=Double,jdbcType=DECIMAL} ,
+                grid_high = #{gridHigh,javaType=Double,jdbcType=DECIMAL} ,
+                grid_volume = #{gridVolume,javaType=Double,jdbcType=DECIMAL} ,
+                picking_mode = #{pickingMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
@@ -193,6 +229,42 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				<if test="weight!=null">
 					and weight = #{weight}
 				</if>
+
+            <if test="lengthGridNum!=null">
+                and length_grid_num = #{lengthGridNum}
+            </if>
+
+            <if test="widthGridNum!=null">
+                and width_grid_num = #{widthGridNum}
+            </if>
+
+            <if test="highGridNum!=null">
+                and high_grid_num = #{highGridNum}
+            </if>
+
+            <if test="totalGridNum!=null">
+                and total_grid_num = #{totalGridNum}
+            </if>
+
+            <if test="gridLength!=null">
+                and grid_length = #{gridLength}
+            </if>
+
+            <if test="gridWidth!=null">
+                and grid_width = #{gridWidth}
+            </if>
+
+            <if test="gridHigh!=null">
+                and grid_high = #{gridHigh}
+            </if>
+
+            <if test="gridVolume!=null">
+                and grid_volume = #{gridVolume}
+            </if>
+
+            <if test="pickingMode!=null and pickingMode!=''">
+                and picking_mode = #{pickingMode}
+            </if>
 	       
 	       
 	       
