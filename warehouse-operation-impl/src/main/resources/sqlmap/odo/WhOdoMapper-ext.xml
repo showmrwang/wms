@@ -59,9 +59,149 @@
 	        	created_id as createdId,
 	        	last_modify_time as lastModifyTime,
 	        	modified_id as modifiedId,
-	        	wave_code as waveCode
+	        	wave_code as waveCode,
+	        	counter_code as counterCode
         ]]>
 	</sql>
+
+<sql id="whOdoDynamicWhereExt">
+        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+	       
+		       <if test="odoCode!=null and odoCode!=''">
+					and odo_code = #{odoCode}
+				</if>
+	       
+	       
+		       <if test="extCode!=null and extCode!=''">
+					and ext_code = #{extCode}
+				</if>
+	       
+	       
+		       <if test="ecOrderCode!=null and ecOrderCode!=''">
+					and ec_order_code = #{ecOrderCode}
+				</if>
+	       
+				<if test="customerId!=null">
+					and customer_id = #{customerId}
+				</if>
+	       
+				<if test="storeId!=null">
+					and store_id = #{storeId}
+				</if>
+	       
+	       
+		       <if test="odoType!=null and odoType!=''">
+					and odo_type = #{odoType}
+				</if>
+	       
+	       
+		       <if test="groupOdoCode!=null and groupOdoCode!=''">
+					and group_odo_code = #{groupOdoCode}
+				</if>
+	       
+	       
+		       <if test="originalOdoCode!=null and originalOdoCode!=''">
+					and original_odo_code = #{originalOdoCode}
+				</if>
+	       
+				<if test="priorityLevel!=null">
+					and priority_level = #{priorityLevel}
+				</if>
+	       
+				<if test="isWholeOrderOutbound!=null">
+					and is_whole_order_outbound = #{isWholeOrderOutbound}
+				</if>
+	       
+	       
+		       <if test="crossDockingSymbol!=null and crossDockingSymbol!=''">
+					and cross_docking_symbol = #{crossDockingSymbol}
+				</if>
+	       
+	       
+		       <if test="orderType!=null and orderType!=''">
+					and order_type = #{orderType}
+				</if>
+	       
+				<if test="orderTime!=null">
+					and order_time = #{orderTime}
+				</if>
+	       
+	       
+		       <if test="odoStatus!=null and odoStatus!=''">
+					and odo_status = #{odoStatus}
+				</if>
+	       
+	       
+		       <if test="distributeMode!=null and distributeMode!=''">
+					and distribute_mode = #{distributeMode}
+				</if>
+	       
+	       
+		       <if test="epistaticSystemsOrderType!=null and epistaticSystemsOrderType!=''">
+					and epistatic_systems_order_type = #{epistaticSystemsOrderType}
+				</if>
+	       
+				<if test="outboundCartonType!=null">
+					and outbound_carton_type = #{outboundCartonType}
+				</if>
+	       
+				<if test="includeHazardousCargo!=null">
+					and include_hazardous_cargo = #{includeHazardousCargo}
+				</if>
+	       
+				<if test="includeFragileCargo!=null">
+					and include_fragile_cargo = #{includeFragileCargo}
+				</if>
+	       
+				<if test="isAssignSuccess!=null">
+					and is_assign_success = #{isAssignSuccess}
+				</if>
+	       
+	       
+		       <if test="assignFailReason!=null and assignFailReason!=''">
+					and assign_fail_reason = #{assignFailReason}
+				</if>
+	       
+				<if test="isAllowMerge!=null">
+					and is_allow_merge = #{isAllowMerge}
+				</if>
+	       
+				<if test="isLocked!=null">
+					and is_locked = #{isLocked}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+	       
+				<if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="createdId!=null">
+					and created_id = #{createdId}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="modifiedId!=null">
+					and modified_id = #{modifiedId}
+				</if>
+	       
+		       <if test="waveCode!=null and waveCode!=''">
+					and wave_code = #{waveCode}
+				</if>
+		</where>
+    </sql>
+
 
 	<sql id="whOdoMergeListExt">
         <![CDATA[
@@ -71,165 +211,6 @@
 	        	store_id as storeId,
 	        	original_odo_code as originalOdoCode
         ]]>
-	</sql>
-
-	<sql id="whOdoDynamicWhereExt">
-		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
-		<where>
-
-			<if test="id!=null">
-				and id = #{id}
-			</if>
-
-
-			<if test="odoCode!=null and odoCode!=''">
-				and odo_code = #{odoCode}
-			</if>
-
-
-			<if test="extCode!=null and extCode!=''">
-				and ext_code = #{extCode}
-			</if>
-
-
-			<if test="ecOrderCode!=null and ecOrderCode!=''">
-				and ec_order_code = #{ecOrderCode}
-			</if>
-
-			<if test="customerId!=null">
-				and customer_id = #{customerId}
-			</if>
-
-			<if test="storeId!=null">
-				and store_id = #{storeId}
-			</if>
-
-
-			<if test="odoType!=null and odoType!=''">
-				and odo_type = #{odoType}
-			</if>
-
-
-			<if test="groupOdoCode!=null and groupOdoCode!=''">
-				and group_odo_code = #{groupOdoCode}
-			</if>
-
-
-			<if test="originalOdoCode!=null and originalOdoCode!=''">
-				and original_odo_code = #{originalOdoCode}
-			</if>
-
-			<if test="priorityLevel!=null">
-				and priority_level = #{priorityLevel}
-			</if>
-
-			<if test="isWholeOrderOutbound!=null">
-				and is_whole_order_outbound = #{isWholeOrderOutbound}
-			</if>
-
-
-			<if test="crossDockingSymbol!=null and crossDockingSymbol!=''">
-				and cross_docking_symbol = #{crossDockingSymbol}
-			</if>
-
-
-			<if test="orderType!=null and orderType!=''">
-				and order_type = #{orderType}
-			</if>
-
-			<if test="orderTime!=null">
-				and order_time = #{orderTime}
-			</if>
-
-
-			<if test="odoStatus!=null and odoStatus!=''">
-				and odo_status = #{odoStatus}
-			</if>
-
-			<if test="qty!=null">
-				and qty = #{qty}
-			</if>
-
-			<if test="currentQty!=null">
-				and current_qty = #{currentQty}
-			</if>
-
-			<if test="actualQty!=null">
-				and actual_qty = #{actualQty}
-			</if>
-
-			<if test="cancelQty!=null">
-				and cancel_qty = #{cancelQty}
-			</if>
-
-			<if test="skuNumberOfPackages!=null">
-				and sku_number_of_packages = #{skuNumberOfPackages}
-			</if>
-
-			<if test="amt!=null">
-				and amt = #{amt}
-			</if>
-
-
-			<if test="distributeMode!=null and distributeMode!=''">
-				and distribute_mode = #{distributeMode}
-			</if>
-
-
-			<if
-				test="epistaticSystemsOrderType!=null and epistaticSystemsOrderType!=''">
-				and epistatic_systems_order_type = #{epistaticSystemsOrderType}
-			</if>
-
-			<if test="outboundCartonType!=null">
-				and outbound_carton_type = #{outboundCartonType}
-			</if>
-
-			<if test="includeHazardousCargo!=null">
-				and include_hazardous_cargo = #{includeHazardousCargo}
-			</if>
-
-			<if test="includeFragileCargo!=null">
-				and include_fragile_cargo = #{includeFragileCargo}
-			</if>
-
-			<if test="isAssignSuccess!=null">
-				and is_assign_success = #{isAssignSuccess}
-			</if>
-
-
-			<if test="assignFailReason!=null and assignFailReason!=''">
-				and assign_fail_reason = #{assignFailReason}
-			</if>
-
-			<if test="isAllowMerge!=null">
-				and is_allow_merge = #{isAllowMerge}
-			</if>
-
-			<if test="isLocked!=null">
-				and is_locked = #{isLocked}
-			</if>
-
-			<if test="ouId!=null">
-				and ou_id = #{ouId}
-			</if>
-
-			<if test="createTime!=null">
-				and create_time = #{createTime}
-			</if>
-
-			<if test="createdId!=null">
-				and created_id = #{createdId}
-			</if>
-
-			<if test="lastModifyTime!=null">
-				and last_modify_time = #{lastModifyTime}
-			</if>
-
-			<if test="modifiedId!=null">
-				and modified_id = #{modifiedId}
-			</if>
-		</where>
 	</sql>
 
 	<sql id="whOdoDynamicWherePageExt">
@@ -745,7 +726,8 @@
 			        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        last_modify_time = now() ,
 			        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-			        wave_code = #{waveCode,javaType=java.lang.String,jdbcType=VARCHAR} 
+			        wave_code = #{waveCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        counter_code = #{counterCode,javaType=java.lang.String,jdbcType=LONGVARCHAR} 
            
         ]]>
 		<where>
@@ -1503,5 +1485,13 @@
 			</if>
 		
 	</select>
+	
+	<select id="findListByParamExt" resultMap="WhOdoResult">
+        select
+        <include refid="whOdoColumns"/>
+        from t_wh_odo
+        <include refid="whOdoDynamicWhereExt"/>
+
+    </select>
 	
 </mapper>

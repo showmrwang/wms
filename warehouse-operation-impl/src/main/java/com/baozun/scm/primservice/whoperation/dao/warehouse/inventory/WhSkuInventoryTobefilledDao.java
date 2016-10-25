@@ -19,8 +19,6 @@
 import java.util.List;
 import java.util.Map;
 
-import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryTobefilled;
-
 import lark.common.annotation.CommonQuery;
 import lark.common.annotation.QueryPage;
 import lark.common.dao.Page;
@@ -28,6 +26,10 @@ import lark.common.dao.Pagination;
 import lark.common.dao.QueryCondition;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
+
+import org.apache.ibatis.annotations.Param;
+
+import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryTobefilled;
 
 public interface WhSkuInventoryTobefilledDao extends BaseDao<WhSkuInventoryTobefilled,Long>{
 
@@ -44,5 +46,21 @@ public interface WhSkuInventoryTobefilledDao extends BaseDao<WhSkuInventoryTobef
 	
 	@CommonQuery
 	int saveOrUpdate(WhSkuInventoryTobefilled o);
+	
+	   /**
+     * 删除待上架库存
+     * @param id
+     * @param ouId
+     */
+    public void deleteByExt(@Param("id") Long id,@Param("ouId") Long ouId);
+    
+    /**
+     * 
+     * @param outerContainerId
+     * @param insideContainerId
+     * @param ouId
+     * @return
+     */
+    public List<WhSkuInventoryTobefilled> findWhSkuInventoryTobefilled(@Param("outerContainerId") Long outerContainerId,@Param("insideContainerId") Long insideContainerId,@Param("ouId") Long ouId);
 	
 }

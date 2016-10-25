@@ -372,9 +372,16 @@ public final class Constants {
     public static final String INV_ATTR3 = "9";   //库存属性3
     public static final String INV_ATTR4 = "10";   //库存属性4
     public static final String INV_ATTR5 = "11";   //库存属性5
+
+
+    public static final String WAVE_STATUS = "WAVE_STATUS";// 波次状态
+    public static final String WH_WAVE_PHASE = "WH_WAVE_PHASE";// 波次阶段
     
     public static final Integer SN_DEFECR_COUNT  = 1;
     
     /**配货模式规则*/
     public static final String DISTRIBUTION_PATTERN="DISTRIBUTION_PATTERN";
+
+    /** 体积单位升在Uom表中的编码 */
+    public static final String LENGTH_TO_VOLUME_UOM_CODE = "LENGTH_TO_VOLUME_CODE";
 }

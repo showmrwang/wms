@@ -340,7 +340,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					
  </select>
  
-  <select id="findWhCartonByParamExt" resultMap="WhCartonResultExt">
+  <select id="findWhCartonByParamExt" resultMap="WhCartonCommandExt">
     	select <include refid="whCartonColumns" />
 	    from t_wh_carton 
 		<include refid="whCartonDynamicWhere"/>

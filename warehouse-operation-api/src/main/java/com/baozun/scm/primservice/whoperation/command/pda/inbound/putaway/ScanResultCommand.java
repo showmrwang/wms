@@ -133,6 +133,10 @@ public class ScanResultCommand extends BaseCommand {
     private boolean isScanSku;
     /**sku条码*/
     private String skuBarCode;
+    
+    private String tipLocBarCode;  //提示库位条码
+    
+    private String locationCode;
 
     public int getPutawayPatternType() {
         return putawayPatternType;
@@ -564,6 +568,22 @@ public class ScanResultCommand extends BaseCommand {
 
     public void setSkuBarCode(String skuBarCode) {
         this.skuBarCode = skuBarCode;
+    }
+
+    public String getTipLocBarCode() {
+        return tipLocBarCode;
+    }
+
+    public void setTipLocBarCode(String tipLocBarCode) {
+        this.tipLocBarCode = tipLocBarCode;
+    }
+
+    public String getLocationCode() {
+        return locationCode;
+    }
+
+    public void setLocationCode(String locationCode) {
+        this.locationCode = locationCode;
     }
 
     

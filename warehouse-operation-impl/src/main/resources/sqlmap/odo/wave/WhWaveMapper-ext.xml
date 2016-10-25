@@ -386,13 +386,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	
 	 <select id="findListByQueryMapWithPageExt" resultMap="WhWaveCommand" parameterType="com.baozun.scm.primservice.whoperation.command.odo.wave.WaveCommand">
     	SELECT
+    		wave.id as id,
 			wave.code as code,
 			wave.status as status,
 			user1.user_name as createName,
 			wave.create_time as createTime,
 			waveMaster.name as masterName,
-			wave.start_time as startTimeStr,
-			wave.finish_time as finishTimeStr,
+			wave.start_time as startTime,
+			wave.finish_time as finishTime,
+			wave.phase_code as phaseCode,
 			wave.total_odo_qty as totalOdoQty,
 			wave.total_odo_line_qty as totalOdoLineQty,
 			wave.total_amount as totalAmount,
@@ -488,7 +490,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			</if>
 			<if test="searchCreateTimeStart!=null and searchCreateTimeStart!='' ">
 				and
-				DATE_FORMAT(wave.create_time,'%Y-%m-%d')&lt;=#{searchCreateTimeStart}
+				DATE_FORMAT(wave.create_time,'%Y-%m-%d')&gt;=#{searchCreateTimeStart}
 			</if>
 			<if test="searchCreateTimeEnd!=null and searchCreateTimeEnd!=''">
 				and
@@ -496,6 +498,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			</if>
 		</where>    
     </select>
+	<delete id="deleteByIdOuId" parameterType="map">
+	    <![CDATA[
+	        delete from t_wh_wave where
+		        id = #{id} and ou_id=#{ouId}
+	    ]]>
+	    </delete> 
     
 	<select id="findWaveIdsByParam" resultType="long">
     	select id

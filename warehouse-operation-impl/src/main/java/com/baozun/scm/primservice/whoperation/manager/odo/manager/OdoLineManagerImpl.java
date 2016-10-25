@@ -74,4 +74,13 @@ public class OdoLineManagerImpl extends BaseManagerImpl implements OdoLineManage
         }
         return true;
     }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<WhOdoLine> findOdoLineListByWaveCode(String code, Long ouId) {
+        WhOdoLine line = new WhOdoLine();
+        line.setWaveCode(code);
+        line.setOuId(ouId);
+        return this.whOdoLineDao.findListByParamExt(line);
+    }
 }

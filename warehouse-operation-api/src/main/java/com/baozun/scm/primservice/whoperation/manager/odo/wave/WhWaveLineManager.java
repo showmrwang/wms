@@ -35,4 +35,13 @@ public interface WhWaveLineManager extends BaseManager {
      * @return
      */
     WhWaveLine getWaveLineByIdAndOuId(Long waveLineId, Long ouId);
+
+    /**
+     * [通用方法]根据波次查询波次明细
+     * 
+     * @param waveId
+     * @param ouId
+     * @return
+     */
+    List<WhWaveLine> findWaveLineListByWaveId(Long waveId, Long ouId);
 }

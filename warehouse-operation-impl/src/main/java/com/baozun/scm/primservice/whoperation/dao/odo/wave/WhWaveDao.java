@@ -58,6 +58,14 @@ public interface WhWaveDao extends BaseDao<WhWave, Long> {
 
     WhWave calculateQuantity(@Param("waveId") Long waveId, @Param("ouId") Long ouId);
 
+    /**
+     * [通用方法]删除波次
+     * 
+     * @param id
+     * @param ouId
+     */
+    void deleteByIdOuId(@Param("id") Long id, @Param("ouId") Long ouId);
+
     List<Long> findWaveIdsByParam(WhWave o);
 
     WaveCommand findWaveByIdAndOuId(@Param("waveId") Long waveId, @Param("ouId") Long ouId);

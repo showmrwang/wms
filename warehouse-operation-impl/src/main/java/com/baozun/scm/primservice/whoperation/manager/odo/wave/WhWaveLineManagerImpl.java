@@ -66,4 +66,14 @@ public class WhWaveLineManagerImpl extends BaseManagerImpl implements WhWaveLine
         return whWaveLineList.get(0);
     }
 
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<WhWaveLine> findWaveLineListByWaveId(Long waveId, Long ouId) {
+        WhWaveLine whWaveLine = new WhWaveLine();
+        whWaveLine.setWaveId(waveId);
+        whWaveLine.setOuId(ouId);
+        List<WhWaveLine> whWaveLineList = this.whWaveLineDao.findListByParam(whWaveLine);
+        return whWaveLineList;
+    }
+
 }

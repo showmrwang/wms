@@ -71,9 +71,65 @@ public class WhWaveMaster extends BaseModel {
     /**最小出库单数量*/
     private java.lang.Integer  minOdoQty;
 
+    /** 配货模式计算 */
+    private Boolean isCalcSeckill;
+    private Integer seckillOdoQtys;
+    private Boolean isCalcTwoSkuSuit;
+    private Integer twoSkuSuitOdoQtys;
+    private Boolean isCalcSuits;
+    private Integer suitsOdoQtys;
+
     // columns END
 
     public WhWaveMaster() {}
+
+    public Boolean getIsCalcSeckill() {
+        return isCalcSeckill;
+    }
+
+    public void setIsCalcSeckill(Boolean isCalcSeckill) {
+        this.isCalcSeckill = isCalcSeckill;
+    }
+
+    public Integer getSeckillOdoQtys() {
+        return seckillOdoQtys;
+    }
+
+    public void setSeckillOdoQtys(Integer seckillOdoQtys) {
+        this.seckillOdoQtys = seckillOdoQtys;
+    }
+
+    public Boolean getIsCalcTwoSkuSuit() {
+        return isCalcTwoSkuSuit;
+    }
+
+    public void setIsCalcTwoSkuSuit(Boolean isCalcTwoSkuSuit) {
+        this.isCalcTwoSkuSuit = isCalcTwoSkuSuit;
+    }
+
+    public Integer getTwoSkuSuitOdoQtys() {
+        return twoSkuSuitOdoQtys;
+    }
+
+    public void setTwoSkuSuitOdoQtys(Integer twoSkuSuitOdoQtys) {
+        this.twoSkuSuitOdoQtys = twoSkuSuitOdoQtys;
+    }
+
+    public Boolean getIsCalcSuits() {
+        return isCalcSuits;
+    }
+
+    public void setIsCalcSuits(Boolean isCalcSuits) {
+        this.isCalcSuits = isCalcSuits;
+    }
+
+    public Integer getSuitsOdoQtys() {
+        return suitsOdoQtys;
+    }
+
+    public void setSuitsOdoQtys(Integer suitsOdoQtys) {
+        this.suitsOdoQtys = suitsOdoQtys;
+    }
 
     public WhWaveMaster(java.lang.Long id) {
         this.id = id;

@@ -572,5 +572,18 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
     
     public List<WhSkuInventoryCommand> findWhSkuInvCmdByLocation(@Param("ouId") Long ouId, @Param("locationId") Long locationId);
     
+    
+    /**
+     * 根据外部容器库存查询待上架库存信息
+     * 
+     * @param pdaManMadePutawayCommand
+     * @param
+     * @param
+     * @return
+     */
+    List<WhSkuInventory> findWhSkuInventoryCountsByContainerId(@Param("outerContainerId")Long outerContainerId,@Param("ouId") Long ouId,@Param("insideContainerId") Long insideContainerId);
+    
+    
+    
 
 }

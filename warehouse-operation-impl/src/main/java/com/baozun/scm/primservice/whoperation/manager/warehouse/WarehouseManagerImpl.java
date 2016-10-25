@@ -17,7 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.baozun.redis.manager.CacheManager;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WarehouseCommand;
+import com.baozun.scm.primservice.whoperation.constant.CacheKeyConstant;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.dao.auth.OperationUnitDao;
@@ -39,6 +41,8 @@ public class WarehouseManagerImpl extends BaseManagerImpl implements WarehouseMa
     private WarehouseDao warehouseDao;
     @Autowired
     private OperationUnitDao operationUnitDao;
+    @Autowired
+    private CacheManager cacheManager;
 
     /**
      * 验证仓库名称/编码是否存在
@@ -93,7 +97,12 @@ public class WarehouseManagerImpl extends BaseManagerImpl implements WarehouseMa
     @Override
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public Warehouse findWarehouseById(Long id) {
-        return warehouseDao.findWarehouseById(id);
+        Warehouse wh = this.cacheManager.getObject(CacheKeyConstant.CACHE_WAREHOSUE);
+        if (wh == null) {
+            wh = warehouseDao.findWarehouseById(id);
+            this.cacheManager.setObject(CacheKeyConstant.CACHE_WAREHOSUE + id, wh);
+        }
+        return wh;
     }
     
     @Override

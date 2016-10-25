@@ -179,4 +179,12 @@ public interface WhOdoDao extends BaseDao<WhOdo, Long> {
      */
     WhOdo findOdoByCodeAndOuId(@Param("odoCode") String odoCode, @Param("ouId") Long ouId);
 
+    /**
+     * [通用方法]查找出库单列表
+     * 
+     * @param odo
+     * @return
+     */
+    List<WhOdo> findListByParamExt(WhOdo odo);
+
 }
