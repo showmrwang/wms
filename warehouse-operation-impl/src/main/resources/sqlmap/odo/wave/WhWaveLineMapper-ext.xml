@@ -567,6 +567,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				and line.ou_id = #{ouId}
 	    ]]>
 	    </delete> 
+	    
+	<select id="findHighestPriorityByOdoIds" resultMap="WhWaveLineResult">
+    	select <include refid="whWaveLineColumns" />
+	    from t_wh_wave_line 
+		where wave_id = #{waveId}
+		and odo_id in (#{odoIds})
+		and ou_id = #{ouId}
+		order by odo_priority_level desc limit 1
+		
+    </select>
 	
 	
 </mapper>

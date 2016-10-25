@@ -35,6 +35,7 @@ import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineAttrDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoTransportMgmtDao;
+import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveLineDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
@@ -44,6 +45,7 @@ import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLineAttr;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
+import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine;
 import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
@@ -65,6 +67,8 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
     private WhOdoAddressDao whOdoAddressDao;
     @Autowired
     private WhOdoTransportMgmtDao whOdoTransportMgmtDao;
+    @Autowired
+    private WhWaveLineDao whWaveLineDao;
 
     @Autowired
     private CodeManager codeManager;
@@ -127,6 +131,9 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
             Set<String> dic10 = new HashSet<String>();
             Set<String> dic11 = new HashSet<String>();
             Set<String> dic12 = new HashSet<String>();
+            Set<Long> customerIdSet = new HashSet<Long>();
+            Set<Long> storeIdSet = new HashSet<Long>();
+            Set<Long> userIdSet = new HashSet<Long>();
             if (list != null && list.size() > 0) {
                 for (OdoResultCommand command : list) {
                     if (StringUtils.hasText(command.getIsWholeOrderOutbound())) {
@@ -172,6 +179,18 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
 
                         dic12.add(command.getIncludeHazardousCargo());
                     }
+                    if (StringUtils.hasText(command.getCustomerId())) {
+                        customerIdSet.add(Long.parseLong(command.getCustomerId()));
+                    }
+                    if (StringUtils.hasText(command.getStoreId())) {
+                        storeIdSet.add(Long.parseLong(command.getStoreId()));
+                    }
+                    if (StringUtils.hasText(command.getCreateId())) {
+                        userIdSet.add(Long.parseLong(command.getCreateId()));
+                    }
+                    if (StringUtils.hasText(command.getModifiedId())) {
+                        userIdSet.add(Long.parseLong(command.getModifiedId()));
+                    }
                 }
                 Map<String, List<String>> map = new HashMap<String, List<String>>();
                 map.put(Constants.IS_WHOLE_ORDER_OUTBOUND, new ArrayList<String>(dic1));
@@ -187,6 +206,8 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
                 map.put(Constants.INCLUDE_HAZARDOUS_CARGO, new ArrayList<String>(dic12));
 
                 Map<String, SysDictionary> dicMap = this.findSysDictionaryByRedis(map);
+                Map<Long, Customer> customerMap = this.findCustomerByRedis(new ArrayList<Long>(customerIdSet));
+                Map<Long, Store> storeMap = this.findStoreByRedis(new ArrayList<Long>(storeIdSet));
                 for (OdoResultCommand command : list) {
                     if (StringUtils.hasText(command.getIsWholeOrderOutbound())) {
                         SysDictionary sys = dicMap.get(Constants.IS_WHOLE_ORDER_OUTBOUND + "_" + command.getIsWholeOrderOutbound());
@@ -232,6 +253,14 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
                     if (StringUtils.hasText(command.getIncludeHazardousCargo())) {
                         SysDictionary sys = dicMap.get(Constants.INCLUDE_HAZARDOUS_CARGO + "_" + command.getIncludeHazardousCargo());
                         command.setIncludeHazardousCargoName(sys == null ? command.getIncludeHazardousCargo() : sys.getDicLabel());
+                    }
+                    if (StringUtils.hasText(command.getCustomerId())) {
+                        Customer customer = customerMap.get(Long.parseLong(command.getCustomerId()));
+                        command.setCustomerName(customer == null ? command.getCustomerId() : customer.getCustomerName());
+                    }
+                    if (StringUtils.hasText(command.getStoreId())) {
+                        Store store = storeMap.get(Long.parseLong(command.getStoreId()));
+                        command.setStoreName(store == null ? command.getStoreId() : store.getStoreName());
                     }
                 }
                 pages.setItems(list);
@@ -867,25 +896,122 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
         return OdoCommandList;
     }
 
+
+    // -----------------------------------------波次中合并订单逻辑---------------------------------------
+    /**
+     * 波次中合并订单逻辑
+     * 1.合并波次中订单
+     * 2.每个原始出库单取消绑定波次编码
+     * 3.每个原始出库单明细行取消绑定波次编码
+     * 4.波次中剔除已经合并的出库单明细行
+     * 5.新合并的订单绑定到波次
+     * 6.新合并的订单明细行绑定到波次
+     * 7.波次新增波次明细行
+     */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void waveOdoMerge(WhWave wave, String odoIds, Long ouId, Long userId) {
+        /** 合并波次中订单 start*/
         WhOdo whOdo = this.generalOdoMerge(odoIds, ouId, userId);
+        WhWaveLine line = this.whWaveLineDao.findHighestPriorityByOdoIds(wave.getId(), odoIds, ouId);
+        /** end*/
+        /** 子订单操作 start*/
         String originalOdoCode = whOdo.getOriginalOdoCode();
         String[] odoCodeList = originalOdoCode.split(",");
         for (String odoCode : odoCodeList) {
-            WhOdo odo = this.whOdoDao.findOdoByCodeAndOuId(odoCode, ouId);
+            WhOdo odo = unbindOdo(odoCode, ouId, userId);
             if (null != odo) {
-                odo.setWaveCode(null);
-                odo.setModifiedId(userId);
-                this.whOdoDao.saveOrUpdateByVersion(odo);
-                // 波次明细剔除
+                unbindOdoLine(odo.getId(), ouId, userId);
             }
+            updateWaveLine(wave.getId(), odo.getOdoCode(), whOdo.getId(), ouId, userId, line);
         }
+        /** end*/
+        /** 新订单操作*/
         whOdo.setWaveCode(wave.getCode());
         this.whOdoDao.saveOrUpdateByVersion(whOdo);
+        bindOdoLine(wave.getId(), wave.getCode(), whOdo.getId(), ouId, userId);
+        /** end*/
         // 新建的出库单明细 绑定
 
     }
 
+    /**
+     * [业务方法] 波次中合并订单-解绑原始出库单
+     * @param odoCode
+     * @param ouId
+     * @param userId
+     */
+    private WhOdo unbindOdo(String odoCode, Long ouId, Long userId) {
+        WhOdo odo = this.whOdoDao.findOdoByCodeAndOuId(odoCode, ouId);
+        if (null != odo) {
+            odo.setWaveCode(null);
+            odo.setModifiedId(userId);
+            this.whOdoDao.saveOrUpdateByVersion(odo);
+        }
+        return odo;
+    }
+
+    /**
+     * [业务方法] 波次中合并订单-解绑原始出库单明细行
+     * @param odoId
+     * @param ouId
+     * @param userId
+     */
+    private void unbindOdoLine(Long odoId, Long ouId, Long userId) {
+        List<WhOdoLine> odoLineList = this.whOdoLineDao.findOdoLineListByOdoIdOuId(odoId, ouId);
+        if (null != odoLineList && !odoLineList.isEmpty()) {
+            for (WhOdoLine odoLine : odoLineList) {
+                odoLine.setWaveCode(null);
+                odoLine.setModifiedId(userId);
+                this.whOdoLineDao.saveOrUpdateByVersion(odoLine);
+            }
+        }
+    }
+
+    /**
+     * [业务方法] 波次中合并出库单-更新波次明细行
+     * @param waveId
+     * @param odoCode
+     * @param odoId
+     * @param ouId
+     * @param userId
+     */
+    private void updateWaveLine(Long waveId, String odoCode, Long odoId, Long ouId, Long userId, WhWaveLine line) {
+        List<WhOdoLine> odoLineList = this.whOdoLineDao.findOdoLineListByOdoIdOuId(odoId, ouId);
+        if (null != odoLineList && !odoLineList.isEmpty()) {
+            for (WhOdoLine odoLine : odoLineList) {
+                WhWaveLine whWaveLine = this.whWaveLineDao.findWaveLineByOdoLineIdAndWaveId(waveId, odoLine.getId(), ouId);
+                whWaveLine.setOdoId(odoId);
+                whWaveLine.setOdoCode(odoCode);
+                whWaveLine.setLinenum(odoLine.getLinenum());
+                whWaveLine.setOdoPriorityLevel(line.getOdoPriorityLevel());
+                whWaveLine.setModifiedId(userId);
+                whWaveLine.setOdoPlanDeliverGoodsTime(line.getOdoPlanDeliverGoodsTime());
+                whWaveLine.setOdoOrderTime(line.getOdoOrderTime());
+                this.whWaveLineDao.saveOrUpdateByVersion(whWaveLine);
+            }
+        }
+    }
+
+    /**
+     * [业务方法] 波次中合并订单-绑定合并后的订单明细行
+     * @param waveId
+     * @param waveCode
+     * @param odoId
+     * @param ouId
+     * @param userId
+     */
+    private void bindOdoLine(Long waveId, String waveCode, Long odoId, Long ouId, Long userId) {
+        List<WhOdoLine> odoLineList = this.whOdoLineDao.findOdoLineListByOdoIdOuId(odoId, ouId);
+        if (null != odoLineList && !odoLineList.isEmpty()) {
+            for (WhOdoLine odoLine : odoLineList) {
+                /**出库单明细行绑定到波次 start*/
+                if (null == odoLine.getWaveCode()) {
+                    odoLine.setWaveCode(waveCode);
+                    this.whOdoLineDao.saveOrUpdateByVersion(odoLine);
+                }
+                /** end*/
+            }
+        }
+    }
 }

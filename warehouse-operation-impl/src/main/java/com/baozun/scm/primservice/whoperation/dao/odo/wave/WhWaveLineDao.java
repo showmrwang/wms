@@ -83,4 +83,21 @@ public interface WhWaveLineDao extends BaseDao<WhWaveLine, Long> {
      * @param ouId
      */
     void deleteByIdOuId(Long id, Long ouId);
+
+    /**
+     * [业务方法] 波次中合并订单-根据波次id和出库单明细行查找波次明细行
+     * @param waveId
+     * @param odoLineId
+     * @param ouId
+     */
+    WhWaveLine findWaveLineByOdoLineIdAndWaveId(@Param("waveId") Long waveId, @Param("odoLineId") Long odoLineId, @Param("ouId") Long ouId);
+
+    /**
+     * [业务方法] 波次中合并订单-查找优先级
+     * @param waveId
+     * @param odoIds
+     * @param ouId
+     * @return
+     */
+    WhWaveLine findHighestPriorityByOdoIds(@Param("waveId") Long waveId, @Param("odoIds") String odoIds, @Param("ouId") Long ouId);
 }
