@@ -631,15 +631,15 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
      */
     private boolean isNoContainerMultiSku(List<WhSkuInventory> whSkuInventoryList) {
         log.info("PdaManMadePutwayManagerImpl isNoContainerMultiSku is start");
-        Boolean result = false; // 默认托盘或者货箱存在多个sku
-        Long tempCount = whSkuInventoryList.get(0).getId();
+        Boolean result = true; // 默认托盘或者货箱不存在多个sku
+        Long tempCount = whSkuInventoryList.get(0).getSkuId();
         for (int i = 1; i < whSkuInventoryList.size(); i++) {
             WhSkuInventory skuInventory = whSkuInventoryList.get(i);
-            Long skuId = skuInventory.getId();
+            Long skuId = skuInventory.getSkuId();
             if (skuId.equals(tempCount)) {
                 tempCount = skuId;
             } else {
-                result = true;
+                result = false;
                 break;
             }
         }
