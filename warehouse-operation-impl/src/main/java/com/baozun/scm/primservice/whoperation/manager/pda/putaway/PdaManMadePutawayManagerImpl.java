@@ -190,6 +190,25 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
                     manMandeCommand.setPutawayPatternDetailType(WhPutawayPatternDetailType.PALLET_PUTAWAY);
                     // 判断托盘是否存在多个sku商品
                     List<WhSkuInventory> list = whSkuInventoryDao.findContainerInventoryCountsByOuterContainerId(containerId,ouId);
+                    //整托上架修改托盘上的内部容器状态为占用中
+                    for(WhSkuInventory skuInv:list){
+                        Long insideId = skuInv.getInsideContainerId();
+                        Container insideContainer = containerDao.findByIdExt(insideId, ouId);
+                        if(null == insideContainer) {
+                            // 容器信息不存在
+                            log.error("pdaScanContainer container is null logid: " + logId);
+                            throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+                        }
+                        if (ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY == insideContainer.getStatus()) {
+                            Container c = new Container();
+                            BeanUtils.copyProperties(insideContainer, c);
+                            c.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
+                            c.setStatus(ContainerStatus.CONTAINER_STATUS_PUTAWAY);
+                            containerDao.saveOrUpdateByVersion(c);
+                            insertGlobalLog(GLOBAL_LOG_UPDATE,c, ouId, pdaManMadePutawayCommand.getUserId(), null,null);
+                        }
+                    }
+                    
                     Boolean result = this.isSkuRepat(list);
                     if (!result) {
                         return manMandeCommand;
@@ -304,16 +323,6 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
                 log.error("pdaScanContainer container status error =" + container.getStatus() + " logid: " + logId);
                 throw new BusinessException(ErrorCodes.COMMON_CONTAINER__NOT_PUTWAY, new Object[] {container.getStatus()});
         }
-//        String containerCode = container.getCode();
-//        // 验证容器是否存在库存记录
-//        List<String> containerList = new ArrayList<String>();
-//        containerList.add(containerCode);
-//        List<WhSkuInventoryCommand> invList = whSkuInventoryDao.findWhSkuInventoryByContainerCode(ouId, containerList);
-//        if (invList.size() == 0) {
-//            // 容器没有对应的库存信息
-//            log.error("pdaScanContainer WhSkuInventory is null logid: " + logId);
-//            throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_RCVD_INV_ERROR);
-//        }
         log.info("PdaManMadePutawayManagerImpl containerCacheStatistic is end");
     }
 
