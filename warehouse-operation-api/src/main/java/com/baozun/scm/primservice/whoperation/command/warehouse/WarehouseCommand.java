@@ -111,6 +111,8 @@ public class WarehouseCommand extends BaseCommand {
     /** 在库存日志是否记录交易前后库存总数 */
     private Boolean isTabbInvTotal = false;
 
+    /**播种墙对应单据数*/
+    private Integer seedinfOdoQty;
 
     
     
@@ -577,6 +579,14 @@ public class WarehouseCommand extends BaseCommand {
 
     public void setSkuMixNumber(Integer skuMixNumber) {
         this.skuMixNumber = skuMixNumber;
+    }
+
+    public Integer getSeedinfOdoQty() {
+        return seedinfOdoQty;
+    }
+
+    public void setSeedinfOdoQty(Integer seedinfOdoQty) {
+        this.seedinfOdoQty = seedinfOdoQty;
     }
 
 

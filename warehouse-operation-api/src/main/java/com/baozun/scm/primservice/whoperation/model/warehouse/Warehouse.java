@@ -148,6 +148,8 @@ public class Warehouse extends BaseModel {
     private Integer twoSkuSuitOdoQtys;
     private Boolean isCalcSuits;
     private Integer suitsOdoQtys;
+    /**播种墙对应单据数*/
+    private Integer seedinfOdoQty;
 
 
 
@@ -613,6 +615,14 @@ public class Warehouse extends BaseModel {
 
     public void setSkuMixNumber(Integer skuMixNumber) {
         this.skuMixNumber = skuMixNumber;
+    }
+
+    public Integer getSeedinfOdoQty() {
+        return seedinfOdoQty;
+    }
+
+    public void setSeedinfOdoQty(Integer seedinfOdoQty) {
+        this.seedinfOdoQty = seedinfOdoQty;
     }
 
 

@@ -68,7 +68,22 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	
 	        	is_generate_inventory_task as isGenerateInventoryTask,
 	        	
-	        	lifecycle as lifecycle
+	        	lifecycle as lifecycle,
+	        	email as email,
+		        villages_towns_id as villagesTownsId,
+		        district_id as districtId,
+
+		        is_inbound_location_barcode as isInboundLocationBarcode,
+		        is_replenishment_location_barcode as isReplenishmentLocationBarcode,
+
+		        is_calc_suits as isCalcSuits,
+		        suits_odo_qtys as suitsOdoQtys,
+		        suits_max_sku_categorys as suitsMaxSkuCategorys,
+		        is_calc_seckill as isCalcSeckill,
+		        seckill_odo_qtys as seckillOdoQtys,
+		        is_calc_two_sku_suit as isCalcTwoSkuSuit,
+		        two_sku_suit_odo_qtys as twoSkuSuitOdoQtys,
+		        seeding_odo_qty as seedinfOdoQty
 	    ]]>
 	</sql>
 
@@ -229,6 +244,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<if test="lifecycle!=null">
 				and lifecycle = #{lifecycle}
 			</if>
+			<if test="seedinfOdoQty != null">
+			    and seeding_odo_qty = #{seedinfOdoQty}
+			</if>
 		</where>
 	</sql>
 
@@ -341,6 +359,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	w.is_generate_inventory_task as isGenerateInventoryTask,
 
 				w.lifecycle as lifecycle,
+				w.seeding_odo_qty as seedinfOdoQty,
 	        	ou.parent_ou_id as parentOuId,
 	        	ou.id as ouId
 	    ]]>
@@ -450,7 +469,22 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        
 			        is_generate_inventory_task = #{isGenerateInventoryTask,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        
-			        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
+			        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER},
+			         email = #{email,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        villages_towns_id = #{villagesTownsId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        district_id = #{districtId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+
+			        is_inbound_location_barcode = #{isInboundLocationBarcode,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		            is_replenishment_location_barcode = #{isReplenishmentLocationBarcode,javaType=java.lang.Boolean,jdbcType=BIT} ,
+
+		            is_calc_suits = #{isCalcSuits,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        suits_odo_qtys = #{suitsOdoQtys,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        suits_max_sku_categorys = #{suitsMaxSkuCategorys,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        is_calc_seckill = #{isCalcSeckill,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        seckill_odo_qtys = #{seckillOdoQtys,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        is_calc_two_sku_suit = #{isCalcTwoSkuSuit,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        two_sku_suit_odo_qtys = #{twoSkuSuitOdoQtys,javaType=java.lang.Integer,jdbcType=INTEGER},
+			        seeding_odo_qty = #{seedinfOdoQty,javaType=java.lang.Integer,jdbcType=INTEGER} 
 		        WHERE 
 			        id = #{id} 
 			        and last_modify_time	=  #{lastModifyTime}    
