@@ -650,7 +650,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                     rcvdCacheCommand.setLineId(lineId);
                     rcvdCacheCommand.setSkuBatchCount(divCount);
                     if (cacheSn != null && cacheSn.size() > 0) {
-                        if (Constants.SERIAL_NUMBER_TYPE_ALL.equals(cacheSn.get(0)) || Constants.SERIAL_NUMBER_TYPE_IN.equals(cacheSn.get(0))) {
+                        if (Constants.SERIAL_NUMBER_TYPE_ALL.equals(cacheSn.get(0).getSerialNumberType()) || Constants.SERIAL_NUMBER_TYPE_IN.equals(cacheSn.get(0).getSerialNumberType())) {
                             List<RcvdSnCacheCommand> subSn = cacheSn.subList(0, divCount);
                             // 序列化问题
                             List<RcvdSnCacheCommand> subCacheSn = new ArrayList<RcvdSnCacheCommand>();
@@ -1045,7 +1045,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
         List<String> matchLineList = this.matchLineList(skuUrlOperator, command, lineIdListString);// 匹配行明细
         if (null == matchLineList || matchLineList.size() == 0) {
             if (!functionRcvd.getIsInvattrDiscrepancyAllowrcvd()) {
-                throw new BusinessException(ErrorCodes.RCVD_DISCREPANCY_ERROR);
+                 throw new BusinessException(ErrorCodes.RCVD_DISCREPANCY_ERROR);
             }
             return lineIdListString;
         }
@@ -1140,7 +1140,8 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                         }
                         if (skuMgmt.getMinValidDate() != null) {
                             if (skuMgmt.getMinValidDate() > vd) {
-                                throw new BusinessException(ErrorCodes.RCVD_SKU_VALIDDATE_MIN_ERROR);
+                                // throw new
+                                // BusinessException(ErrorCodes.RCVD_SKU_VALIDDATE_MIN_ERROR);
                             }
                         }
 
@@ -1159,8 +1160,9 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                             // throw new BusinessException(ErrorCodes.RCVD_CONTAINER_LIMIT_ERROR);
                         }
                     }
-                    if ((StringUtils.isEmpty(lineMfgDateStr) || lineMfgDateStr.equals(mfgDateStr)) && (StringUtils.isEmpty(lineExpDateStr) || lineExpDateStr.equals(expDateStr))) {}
-                    lineList.add(lineId);
+                    if ((StringUtils.isEmpty(lineMfgDateStr) || lineMfgDateStr.equals(mfgDateStr)) && (StringUtils.isEmpty(lineExpDateStr) || lineExpDateStr.equals(expDateStr))) {
+                        lineList.add(lineId);
+                    }
                     break;
                 case RcvdWorkFlow.GENERAL_RECEIVING_ISBATCHNO:
                     if (functionRcvd.getIsLimitUniqueBatch() && flag) {
@@ -1333,14 +1335,8 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
             SkuMgmt skuMgmt = sku.getSkuMgmt();
             rcvdSn.setSerialNumberType(skuMgmt.getSerialNumberType());
         }
-        if (Constants.SERIAL_NUMBER_TYPE_IN.equals(rcvdSn.getSerialNumberType()) || Constants.SERIAL_NUMBER_TYPE_ALL.equals(rcvdSn.getSerialNumberType())) {
-            for (int i = 0; i < snCount; i++) {
-                cacheSn.add(rcvdSn);
-            }
-        } else {
-            rcvdSn.setDefectCount(snCount);
-            cacheSn.add(rcvdSn);
-        }
+        rcvdSn.setDefectCount(snCount);
+        cacheSn.add(rcvdSn);
         this.cacheManager.setObject(CacheKeyConstant.CACHE_RCVD_SN_PREFIX + command.getUserId(), cacheSn, 60 * 60);
         this.cacheContainerSkuAttr(command);
     }
@@ -1630,7 +1626,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
         // 下面这个IF-ELSE逻辑：
         // 如果没有缓存数据，则初始化缓存
         // 如果有的话，则刷新缓存
-        // this.cacheManager.remove(CacheKeyConstant.CACHE_ASN_PREFIX + occupationId);
+        this.cacheManager.remove(CacheKeyConstant.CACHE_ASN_PREFIX + occupationId);
         // try {
         // Thread.sleep(1000);
         // } catch (InterruptedException e) {
@@ -1831,7 +1827,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                 skuId = entry.getKey();
                 quantity = entry.getValue();
             }
-            
+
         }
         if (null == skuId) {
             throw new BusinessException(ErrorCodes.SKU_CACHE_ERROR);
