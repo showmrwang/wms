@@ -320,6 +320,13 @@ public class PdaContainerRcvdManagerProxyImpl extends BaseManagerImpl implements
     @Override
     public WhSkuInventoryCommand dispatchAttrCheck(RcvdContainerAttrCommand rca) {
         Integer currUrl = rca.getCurrUrl();
+        // String functionUrl = rca.getFunctionUrl();
+        // String isInvattrDiscrepancyAllowrcvd = functionUrl.split("-")[6];
+        // if ("true".equalsIgnoreCase(isInvattrDiscrepancyAllowrcvd)) {
+        // rca.setIsInvattrDiscrepancyAllowrcvd(true);
+        // } else {
+        // rca.setIsInvattrDiscrepancyAllowrcvd(false);
+        // }
         WhSkuInventoryCommand command = new WhSkuInventoryCommand();
         if (null != rca.getInvStatus() && !StringUtils.isEmpty(rca.getInvStatus())) {
             command.setInvStatus(Long.parseLong(rca.getInvStatus()));
@@ -386,7 +393,12 @@ public class PdaContainerRcvdManagerProxyImpl extends BaseManagerImpl implements
         WhSkuInventoryCommand wsic = compileCommand(command);
         wsic.setSkuUrlOperator(rca.getCurrUrl());
         wsic.setSkuUrl(rca.getSkuUrl());
-        String lineIdListStr = pdaRcvdManagerProxy.getMatchLineListStr(wsic);
+        String lineIdListStr = rca.getLineIdListString();
+        if (!StringUtils.hasText(lineIdListStr)) {
+            lineIdListStr = pdaRcvdManagerProxy.getMatchLineListStr(wsic);
+            wsic.setLineIdListString(lineIdListStr);
+        }
+        lineIdListStr = pdaRcvdManagerProxy.getMatchLineListStr(wsic);
         command.setLineIdListString(lineIdListStr);
         // 取消获取明细行 end
         // 把匹配到的明细行放到对象
@@ -404,10 +416,17 @@ public class PdaContainerRcvdManagerProxyImpl extends BaseManagerImpl implements
     public WhSkuInventoryCommand checkValidDate(WhSkuInventoryCommand command) {
         String mfgDate = command.getMfgDateStr();
         String expDate = command.getExpDateStr();
-        Boolean res = this.generalRcvdManager.skuDateCheck(command.getSkuId(), command.getOuId(), mfgDate, expDate);
-        if (!res) {
-            throw new BusinessException("输入的日期不能收货");
-        }
+        // Boolean res = this.generalRcvdManager.skuDateCheck(command.getSkuId(), command.getOuId(),
+        // mfgDate, expDate);
+        // if (!res) {
+        // throw new BusinessException("输入的日期不能收货");
+        // }
+        // if (!command.getIsInvattrDiscrepancyAllowrcvd()) {
+        // boolean flag = discrepancyNoAllowrcvd(command);
+        // if (!flag) {
+        // throw new BusinessException("缓存错误");
+        // }
+        // }
         return command;
     }
 

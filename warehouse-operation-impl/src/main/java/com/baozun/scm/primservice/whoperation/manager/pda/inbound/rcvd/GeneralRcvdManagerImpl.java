@@ -608,7 +608,8 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
         List<SkuCommand> skuList = this.skuDao.findListByParamShared(skuCommand);
         if (null != skuList && !skuList.isEmpty()) {
             skuList.get(0).setQuantity(1L);
-            return skuList.get(0);
+            // return skuList.get(0);
+            skuCommand = skuList.get(0);
         } else {
             skuCommand.setBarCode(null);
             skuCommand.setBatchBarcode(skuCode);
@@ -616,8 +617,20 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
             if (null == skuBarcodeList || skuBarcodeList.isEmpty()) {
                 throw new BusinessException("结果为空");
             }
-            return skuBarcodeList.get(0);
+            // return skuBarcodeList.get(0);
+            skuCommand = skuBarcodeList.get(0);
         }
+        String unit = skuCommand.getGoodShelfLifeUnit();
+        if (null != unit) {
+            int day = skuCommand.getValidDate();
+            if (Constants.TIME_UOM_YEAR.equals(unit)) {
+                day = day * 365;
+            } else if (Constants.TIME_UOM_MONTH.equals(unit)) {
+                day = day * 30;
+            }
+            skuCommand.setValidDate(day);
+        }
+        return skuCommand;
     }
 
     @Override
