@@ -1045,7 +1045,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
         List<String> matchLineList = this.matchLineList(skuUrlOperator, command, lineIdListString);// 匹配行明细
         if (null == matchLineList || matchLineList.size() == 0) {
             if (!functionRcvd.getIsInvattrDiscrepancyAllowrcvd()) {
-                 throw new BusinessException(ErrorCodes.RCVD_DISCREPANCY_ERROR);
+                throw new BusinessException(ErrorCodes.RCVD_DISCREPANCY_ERROR);
             }
             return lineIdListString;
         }
@@ -1140,8 +1140,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                         }
                         if (skuMgmt.getMinValidDate() != null) {
                             if (skuMgmt.getMinValidDate() > vd) {
-                                // throw new
-                                // BusinessException(ErrorCodes.RCVD_SKU_VALIDDATE_MIN_ERROR);
+                                throw new BusinessException(ErrorCodes.RCVD_SKU_VALIDDATE_MIN_ERROR);
                             }
                         }
 
