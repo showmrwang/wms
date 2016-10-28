@@ -1484,8 +1484,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			       			 store_id = #{storeId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			       			 occupation_code = #{occupationCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			       			 on_hand_qty = #{onHandQty,javaType=java.lang.Double,jdbcType=DECIMAL} ,
-			       			 allocated_qty = #{allocatedQty,javaType=java.lang.Double,jdbcType=DECIMAL} ,
-			       			 to_be_filled_qty = #{toBeFilledQty,javaType=java.lang.Double,jdbcType=DECIMAL} ,
 			       			 frozen_qty = #{frozenQty,javaType=java.lang.Double,jdbcType=DECIMAL} ,
 			       			 inv_status = #{invStatus,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			       			 inv_type = #{invType,javaType=java.lang.String,jdbcType=VARCHAR} ,
