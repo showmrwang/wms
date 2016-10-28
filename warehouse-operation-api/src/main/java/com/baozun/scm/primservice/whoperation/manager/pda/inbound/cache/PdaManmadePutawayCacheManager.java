@@ -21,6 +21,13 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInv
 public interface PdaManmadePutawayCacheManager extends BaseManager {
 
     
+    /***
+     * 整箱上架缓存内部容器
+     * @param insideContainerCmd
+     * @param outerContainerId
+     * @param logId
+     */
+    public void containerPutawayCacheInsideContainer(ContainerCommand insideContainerCmd, Long outerContainerId, String logId,String outerContainerCode);
     /**
      * 提示货箱容器号
      * 
@@ -28,7 +35,7 @@ public interface PdaManmadePutawayCacheManager extends BaseManager {
      * @param logId
      * @return
      */
-    public Long outContainerInvPutawayTipContainer(ContainerCommand containerCmd, Set<Long> insideContainerIds, String logId);
+    public Long containerPutawayTipContainer(ContainerCommand containerCmd, Set<Long> insideContainerIds, String logId);
     /**
      * 缓存容器内部的信息
      * 

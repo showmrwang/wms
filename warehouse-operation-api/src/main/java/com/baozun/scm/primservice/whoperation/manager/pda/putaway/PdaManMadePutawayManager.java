@@ -84,5 +84,14 @@ public interface PdaManMadePutawayManager extends BaseManager{
    * @param pdaManMadePutawayCommand
    */
   public PdaManMadePutawayCommand verifySkuInventoryAttr(PdaManMadePutawayCommand pdaManMadePutawayCommand);
+  
+  
+  /**
+   * 计算商品多条码
+   * @param skuBarCode
+   * @param skuQty
+   * @return
+   */
+  public Double  manMadeCalculateBarCode(String skuBarCode,Double skuQty,Long ouId);
 
 }

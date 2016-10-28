@@ -158,6 +158,9 @@ public class WhLocationInvVolumeWieghtManagerImpl extends BaseManagerImpl implem
                         Double freezeQty = invCmd.getFrozenQty();
                         Double toBeFillQty = invCmd.getToBeFilledQty();
                         Double sVolume = cubeCal.calculateStuffVolume(skuLength, skuWidth, skuHeight);
+                        if(null == toBeFillQty) {
+                            toBeFillQty = 0.0;
+                        }
                         cubeCal.addStuffVolume(sVolume * (onHandQty + freezeQty + toBeFillQty));
                     }
                 }
@@ -177,6 +180,9 @@ public class WhLocationInvVolumeWieghtManagerImpl extends BaseManagerImpl implem
                 throw new BusinessException(ErrorCodes.SKU_WEIGHT_IS_NULL_ERROR, new Object[] {skuCmd.getBarCode()});
             }
             Double sWeight = weightCal.calculateStuffWeight(skuWeight);
+            if(null == toBeFillQty) {
+                toBeFillQty = 0.0;
+            }
             weightCal.addStuffWeight(sWeight * (onHandQty + freezeQty + toBeFillQty));
             outerContainerIds.add(outerContainerId);
             insideContainerIds.add(insideContainerId);

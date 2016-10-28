@@ -26,7 +26,6 @@ import com.baozun.scm.primservice.whoperation.command.pda.putaway.PdaManMadePuta
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuLocationCommand;
-import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
 import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
@@ -172,6 +171,8 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
                 //进入扫sku页面
                 pdaManMadePutawayCommand.setIsNeedScanSku(true);
             }
+            pdaManMadePutawayCommand.setIsTipContainerCode(false);   //设置不提示货箱号
+            //缓存扫描的货箱
             log.info("PdaManMadePutawayManagerImpl pdaScanContainer is end");
             return pdaManMadePutawayCommand;
         } else {
@@ -184,6 +185,7 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
                 WhFunctionPutAway whFunctionPutAway = whFunctionPutAwayManager.findWhFunctionPutAwayByFunctionId(functionId, ouId);
                 pdaManMadePutawayCommand.setScanPattern(whFunctionPutAway.getScanPattern());  //扫描方式
                 if (!whFunctionPutAway.getIsEntireTrayPutaway()) { // 不是整托上架,提示内部容器号,扫内部容器
+                    manMandeCommand.setOuterContainerCode(container.getCode());   //由外部托盘,不是整托上架时，设置外部容器号
                     pdaManMadePutawayCommand.setIsTipContainerCode(true);
                     return manMandeCommand;
                 } else {// 整托上架
@@ -229,6 +231,16 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
                     manMandeCommand.setPutawayPatternDetailType(WhPutawayPatternDetailType.CONTAINER_PUTAWAY);
                     // 判断托盘是否存在多个sku商品
                     List<WhSkuInventory> list = whSkuInventoryDao.findContainerInventoryCountsByInsideContainerId(containerId,ouId);
+                    Long outerContainerId = list.get(0).getOuterContainerId();
+                    Container outerContainer = containerDao.findByIdExt(outerContainerId, ouId);
+                    if (null == outerContainer) {
+                            // 容器信息不存在
+                            log.error("pdaScanContainer container is null logid: " + logId);
+                            throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+                    }
+                    String outerContainerCode = outerContainer.getCode();
+                    manMandeCommand.setOuterContainerCode(outerContainerCode);
+                    pdaManmadePutawayCacheManager.containerPutawayCacheInsideContainer(container, outerContainerId, logId, outerContainerCode);
                     Boolean result = this.isSkuRepat(list);
                     if (!result) {
                         return manMandeCommand;
@@ -247,6 +259,7 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
             }
             // 缓存容器内要上架的sku信息
             pdaManmadePutawayCacheManager.manMadePutwayCacheSkuInventory(containerId, ouId, manMandeCommand.getIsOuterContainer());
+            //缓存扫描的货箱
             log.info("PdaManMadePutawayManagerImpl pdaScanContainer is end");
 
             return manMandeCommand;
@@ -338,24 +351,27 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
             // 内部容器库存
             pdaManMadePutawayCommand.setIsOuterContainer(false);
             pdaManMadePutawayCommand.setInsideContainerCode(containerCode);
+            //判断该内部容器是否有外部容器
+            List<WhSkuInventory> whSkuInvList = whSkuInventoryDao.findContainerInventoryCountsByInsideContainerId(containerId,ouId);
+            Long outerContainerId = whSkuInvList.get(0).getOuterContainerId();
+            Container outerContainer = containerDao.findByIdExt(outerContainerId, ouId);
+            if (null == outerContainer) {
+                    // 容器信息不存在
+                    log.error("pdaScanContainer container is null logid: " + logId);
+                    throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+            }
+            String outerContainerCode = outerContainer.getCode();
+            pdaManmadePutawayCacheManager.containerPutawayCacheInsideContainer(container, outerContainerId, logId, outerContainerCode);
         }
-        if (0 < outerContainerCount) {
-            pdaManMadePutawayCommand.setOuterContainerCode(containerCode);  //当前扫的是外部容器
-            List<WhSkuInventoryCommand> skuInvList = whSkuInventoryDao.getSkuInvListByOutContainerID(ouId,containerId);
-            WhSkuInventoryCommand skuInvCmd = skuInvList.get(0);
-            if(null == skuInvCmd.getInsideContainerId()) { //内部容器库存
-                // 内部容器库存
-                pdaManMadePutawayCommand.setIsOuterContainer(false);
-                pdaManMadePutawayCommand.setInsideContainerCode(containerCode);
-            }else{
+        if (0 < outerContainerCount) {  //外部容器库存
                  // 外部容器库存
                 pdaManMadePutawayCommand.setIsOuterContainer(true);
                 pdaManMadePutawayCommand.setInsideContainerCode(null);
                 // 若不是整托上架，跳转到扫描货箱容器页面，页面提示扫描货箱容器号
-                if(WhPutawayPatternDetailType.CONTAINER_PUTAWAY == putawayPatternDetailType) {
+                if(WhPutawayPatternDetailType.PALLET_PUTAWAY != putawayPatternDetailType) {
                     ManMadeContainerStatisticCommand command = pdaManmadePutawayCacheManager.manMadePutawayCacheContainer(pdaManMadePutawayCommand, containerId);
                     Set<Long> insideContainerIds = command.getInsideContainerIds();
-                    Long tipContainerId = pdaManmadePutawayCacheManager.outContainerInvPutawayTipContainer(container, insideContainerIds, logId);
+                    Long tipContainerId = pdaManmadePutawayCacheManager.containerPutawayTipContainer(container, insideContainerIds, logId);
                     Container tipContainer = containerDao.findByIdExt(tipContainerId, ouId);
                     if (null == tipContainer) {
                         log.error("container is null error, logId is:[{}]", logId);
@@ -364,9 +380,9 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
                     String tipContainerCode = tipContainer.getCode();
                     pdaManMadePutawayCommand.setTipContainerCode(tipContainerCode); // 提示货箱号
                     pdaManMadePutawayCommand.setIsTipContainerCode(true);
+               }else{
+                   pdaManMadePutawayCommand.setIsTipContainerCode(false);   //不需要提示货箱号
                }
-                pdaManMadePutawayCommand.setIsTipContainerCode(false);   //不需要提示货箱号
-            }
         }
         if(0 >= insideContainerCount && 0 >= outerContainerCount){
             // 无收货库存
@@ -836,7 +852,24 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
             putwayWeight = putwayWeight + insideContainersWeight.get(insideContainerId);
             // 库位已有商品重量加要上架货物的重量
             Double sum = livwWeight + putwayWeight;
-            if (locWeight > sum) {
+            if (locWeight < sum) {
+                throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_LOCATION_UNBEAR_WEIGHT); // 容器总重量已经超过库位的承重,请更换库位进行上架
+            }
+        }
+        // 整箱上架
+        if (WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY == putawayPatternDetailType) {
+            Double putwayWeight = 0.0;
+            for(WhSkuInventory skuInv:whSkuInventoryList) {
+                Long skuId = skuInv.getSkuId();
+                WhSkuCommand whSkuCommand = whSkuDao.findWhSkuByIdExt(skuId, ouId);
+                if(null == whSkuCommand) {
+                    throw new BusinessException(ErrorCodes.SKU_NOT_FOUND); // 商品不存在
+                }
+                putwayWeight = putwayWeight+ whSkuCommand.getWeight();
+            }
+            // 库位已有商品重量加要上架货物的重量
+            Double sum = livwWeight + putwayWeight;
+            if (locWeight < sum) {
                 throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_LOCATION_UNBEAR_WEIGHT); // 容器总重量已经超过库位的承重,请更换库位进行上架
             }
         }
@@ -2355,5 +2388,27 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
        
        return result;
    }
-   
+   /**
+    * 计算商品多条码
+    * @param skuBarCode
+    * @param skuQty
+    * @return
+    */
+   public Double  manMadeCalculateBarCode(String skuBarCode,Double skuQty,Long ouId){
+       log.info("PdaManMadePutawayManagerImpl manMadeCalculateBarCode is start");
+       Double result = null;
+       WhSkuCommand skuCmd = whSkuDao.findWhSkuByBarcodeExt(skuBarCode, ouId); // 根据商品条码，查询商品信息
+       if (null == skuCmd) {
+           throw new BusinessException(ErrorCodes.SKU_NOT_FOUND); // 查看扫描的商品在商品表中是否存在
+       }
+       Long skuId = skuCmd.getId();  //商品id
+       Map<Long, Integer> cacheSkuIdsQty = skuRedisManager.findSkuByBarCode(skuBarCode, logId);
+        Integer skuBarQty = cacheSkuIdsQty.get(skuId);
+        if(null == skuBarQty) {
+            skuBarQty = 1;
+        }
+        result = skuQty*Double.valueOf(skuBarQty.toString());
+       log.info("PdaManMadePutawayManagerImpl manMadeCalculateBarCode is end");
+       return result;
+   }
 }

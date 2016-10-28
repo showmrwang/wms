@@ -74,7 +74,44 @@ public  class PdaManmadePutawayCacheManagerImpl extends BaseManagerImpl implemen
     private WhSkuDao whSkuDao;
 
     
-    
+    /***
+     * 整箱上架缓存内部容器
+     * @param insideContainerCmd
+     * @param outerContainerId
+     * @param logId
+     */
+    public void containerPutawayCacheInsideContainer(ContainerCommand insideContainerCmd, Long outerContainerId, String logId,String outerContainerCode){
+        log.info("pdaManmadePutawayCacheManager containerPutawayCacheInsideContainer is start");
+        Long insideContainerId = insideContainerCmd.getId();
+        TipContainerCacheCommand tipContainerCmd = cacheManager.getObject(CacheConstants.SCAN_CONTAINER_QUEUE + outerContainerId.toString());
+        if(null == tipContainerCmd) {
+            TipContainerCacheCommand tipCmd = new TipContainerCacheCommand();
+            tipCmd.setPutawayPatternDetailType(WhPutawayPatternDetailType.CONTAINER_PUTAWAY);
+            tipCmd.setOuterContainerId(outerContainerId);
+            tipCmd.setOuterContainerCode(outerContainerCode);
+            ArrayDeque<Long> icIds = new ArrayDeque<Long>();
+            icIds.addFirst(insideContainerId);
+            tipCmd.setTipInsideContainerIds(icIds);
+            cacheManager.setObject(CacheConstants.SCAN_CONTAINER_QUEUE + outerContainerId.toString(), tipCmd, CacheConstants.CACHE_ONE_DAY);
+        }else{
+            ArrayDeque<Long> tipInsideContainerIds = tipContainerCmd.getTipInsideContainerIds();
+            if (null != tipInsideContainerIds && !tipInsideContainerIds.isEmpty()) {
+                tipInsideContainerIds.addFirst(insideContainerId);
+                cacheManager.setObject(CacheConstants.SCAN_CONTAINER_QUEUE + outerContainerId.toString(), tipContainerCmd, CacheConstants.CACHE_ONE_DAY);
+            } else {
+                cacheManager.remove(CacheConstants.SCAN_CONTAINER_QUEUE + outerContainerId.toString());
+                TipContainerCacheCommand tipCmd = new TipContainerCacheCommand();
+                tipCmd.setPutawayPatternDetailType(WhPutawayPatternDetailType.CONTAINER_PUTAWAY);
+                tipCmd.setOuterContainerId(outerContainerId);
+                tipCmd.setOuterContainerCode(outerContainerCode);
+                ArrayDeque<Long> icIds = new ArrayDeque<Long>();
+                icIds.addFirst(insideContainerId);
+                tipCmd.setTipInsideContainerIds(icIds);
+                cacheManager.setObject(CacheConstants.SCAN_CONTAINER_QUEUE + outerContainerId.toString(), tipCmd, CacheConstants.CACHE_ONE_DAY);
+            }
+        }
+        log.info("pdaManmadePutawayCacheManager containerPutawayCacheInsideContainer is start");
+    }
     
     /**
      * 外部容器库存:提示货箱容器号
@@ -85,45 +122,53 @@ public  class PdaManmadePutawayCacheManagerImpl extends BaseManagerImpl implemen
      * @return
      */
     @Override
-    public Long outContainerInvPutawayTipContainer(ContainerCommand containerCmd, Set<Long> insideContainerIds, String logId) {
+    public Long containerPutawayTipContainer(ContainerCommand containerCmd, Set<Long> insideContainerIds, String logId) {
         // TODO Auto-generated method stub
-        log.info("pdaManmadePutawayCacheManager outContainerInvPutawayTipContainer is start");
+        log.info("pdaManmadePutawayCacheManager containerPutawayTipContainer is start");
         Long containerId = containerCmd.getId();
         Long tipContainerId = null;
-        TipContainerCacheCommand cacheContainerCmd = cacheManager.getObject(CacheConstants.SCAN_CONTAINER_QUEUE + containerId.toString());
-        ArrayDeque<Long> cacheContainerIds = null;
-        if (null != cacheContainerCmd) {
-            cacheContainerIds = cacheContainerCmd.getTipInsideContainerIds();
-        }
-        if (null != cacheContainerIds && !cacheContainerIds.isEmpty()) {
-            // 随机取一个容器
+        TipContainerCacheCommand tipContainerCmd = cacheManager.getObject(CacheConstants.SCAN_CONTAINER_QUEUE + containerId.toString());
+        if (null == tipContainerCmd) {
+            TipContainerCacheCommand tipCmd = new TipContainerCacheCommand();
+            tipCmd.setPutawayPatternDetailType(WhPutawayPatternDetailType.CONTAINER_PUTAWAY);
+            tipCmd.setOuterContainerId(containerId);
+            tipCmd.setOuterContainerCode(containerCmd.getCode());
+            ArrayDeque<Long> icIds = new ArrayDeque<Long>();
             for (Long ic : insideContainerIds) {
                 Long icId = ic;
                 if (null != icId) {
-                    boolean isExists = false;
-                    Iterator<Long> iter = cacheContainerIds.iterator();
-                    while (iter.hasNext()) {
-                        Long value = iter.next();
-                        if (null == value) value = -1L;
-                        if (0 == value.compareTo(icId)) {
-                            isExists = true;
-                            break;
-                        }
-                    }
-                    if (false == isExists) {
+                    tipContainerId = icId;
+                    icIds.addFirst(icId);
+                    tipCmd.setTipInsideContainerIds(icIds);
+                    cacheManager.setObject(CacheConstants.SCAN_CONTAINER_QUEUE + containerId.toString(), tipCmd, CacheConstants.CACHE_ONE_DAY);
+                    break;
+                }
+            }
+        } else {
+            ArrayDeque<Long> tipInsideContainerIds = tipContainerCmd.getTipInsideContainerIds();
+            if (null != tipInsideContainerIds && !tipInsideContainerIds.isEmpty()) {
+                Long insideContainerId = tipInsideContainerIds.peekFirst();
+                tipContainerId = insideContainerId;
+            } else {
+                cacheManager.remove(CacheConstants.SCAN_CONTAINER_QUEUE + containerId.toString());
+                TipContainerCacheCommand tipCmd = new TipContainerCacheCommand();
+                tipCmd.setPutawayPatternDetailType(WhPutawayPatternDetailType.CONTAINER_PUTAWAY);
+                tipCmd.setOuterContainerId(containerId);
+                tipCmd.setOuterContainerCode(containerCmd.getCode());
+                ArrayDeque<Long> icIds = new ArrayDeque<Long>();
+                for (Long ic : insideContainerIds) {
+                    Long icId = ic;
+                    if (null != icId) {
                         tipContainerId = icId;
-                        cacheContainerIds.addFirst(tipContainerId);
-                        cacheContainerCmd.setTipInsideContainerIds(cacheContainerIds);
-                        cacheManager.setObject(CacheConstants.SCAN_CONTAINER_QUEUE + containerId.toString(), cacheContainerCmd, CacheConstants.CACHE_ONE_DAY);
+                        icIds.addFirst(icId);
+                        tipCmd.setTipInsideContainerIds(icIds);
+                        cacheManager.setObject(CacheConstants.SCAN_CONTAINER_QUEUE + containerId.toString(), tipCmd, CacheConstants.CACHE_ONE_DAY);
                         break;
                     }
                 }
             }
-        } else {
-            log.error("tip container is exception, logId is:[{}]", logId);
-            throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
         }
-        log.info("pdaManmadePutawayCacheManager outContainerInvPutawayTipContainer is end");
+        log.info("pdaManmadePutawayCacheManager containerPutawayTipContainer is end");
         return tipContainerId;
     }
     
