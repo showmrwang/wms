@@ -650,6 +650,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                     rcvdCacheCommand.setLineId(lineId);
                     rcvdCacheCommand.setSkuBatchCount(divCount);
                     if (cacheSn != null && cacheSn.size() > 0) {
+                        // @modify gianni getSerialNumberType()
                         if (Constants.SERIAL_NUMBER_TYPE_ALL.equals(cacheSn.get(0).getSerialNumberType()) || Constants.SERIAL_NUMBER_TYPE_IN.equals(cacheSn.get(0).getSerialNumberType())) {
                             List<RcvdSnCacheCommand> subSn = cacheSn.subList(0, divCount);
                             // 序列化问题
