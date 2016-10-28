@@ -545,7 +545,7 @@
 		transType.tp_id=transprovider.id and
 		transType.code=transmgmt.courier_service_type
 		left join
-		t_wh_out_inventory_box_type boxType on
+		t_wh_outboundbox_type boxType on
 		boxType.id=odo.outbound_carton_type and odo.ou_id=boxType.ou_id
 		left
 		join oper_user user1 on user1.id=odo.created_id
@@ -680,7 +680,7 @@
 		transType.tp_id=transprovider.id and
 		transType.code=transmgmt.courier_service_type
 		left join
-		t_wh_out_inventory_box_type boxType on
+		t_wh_outboundbox_type boxType on
 		boxType.id=odo.outbound_carton_type and odo.ou_id=boxType.ou_id
 		left
 		join oper_user user1 on user1.id=odo.created_id
@@ -1207,7 +1207,7 @@
 		transType.tp_id=transprovider.id and
 		transType.code=transmgmt.courier_service_type
 		left join
-		t_wh_out_inventory_box_type boxType on
+		t_wh_outboundbox_type boxType on
 		boxType.id=odo.outbound_carton_type and odo.ou_id=boxType.ou_id
 		left
 		join oper_user user1 on user1.id=odo.created_id
@@ -1277,7 +1277,7 @@
 		transType.tp_id=transprovider.id and
 		transType.code=transmgmt.courier_service_type
 		left join
-		t_wh_out_inventory_box_type boxType on
+		t_wh_outboundbox_type boxType on
 		boxType.id=odo.outbound_carton_type and odo.ou_id=boxType.ou_id
 		left
 		join oper_user user1 on user1.id=odo.created_id
@@ -1442,7 +1442,7 @@
 		transType.tp_id=transprovider.id and
 		transType.code=transmgmt.courier_service_type
 		left join
-		t_wh_out_inventory_box_type boxType on
+		t_wh_outboundbox_type boxType on
 		boxType.id=odo.outbound_carton_type and odo.ou_id=boxType.ou_id
 		left
 		join oper_user user1 on user1.id=odo.created_id
