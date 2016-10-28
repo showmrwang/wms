@@ -30,11 +30,33 @@ public interface DistributionModeArithmeticManagerProxy extends BaseManager {
     public void addToWhDistributionModeArithmeticPool(String code, Long odoId);
 
     /**
+     * 是否存在订单池中
+     * 
+     * @param code
+     * @param odoId
+     * @return
+     */
+    public boolean isExistsInOrderPool(String code, Long odoId);
+
+    /**
      * 仓库匹配模式计算：计数器减；不移除出库单
      * 
      * @param code
      */
-    public void DivFromWhDistributionModeArithmeticPool(String code, Long odoId);
+    public void DivFromOrderPool(String code, Long odoId);
+    
+    /**
+     * 从订单池中移除
+     * @param code
+     */
+    public void removeFromOrderPool(String code, Long odoId);
+
+    /**
+     * 从订单池中移除
+     * 
+     * @param code
+     */
+    public void changeFromOrderPool(String oldCode, String newCode, Long odoId);
 
 
     /**

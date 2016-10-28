@@ -109,4 +109,14 @@ public interface WhOdoLineDao extends BaseDao<WhOdoLine, Long> {
      */
     WhOdoLine findByOdoCodeAndLineNum(@Param("lineNum") Integer lineNum, @Param("originalOdoCode") String originalOdoCode, @Param("ouId") Long ouId);
 
+    /**
+     * [通用方法]根据ODOID查找某种状态的出库单
+     * 
+     * @param odoId
+     * @param ouId
+     * @param statusList
+     * @return
+     */
+    List<WhOdoLine> findOdoLineListByOdoIdStatus(@Param("odoId") Long odoId, @Param("ouId") Long ouId, @Param("statusList") String[] statusList);
+
 }

@@ -83,4 +83,11 @@ public class OdoLineManagerImpl extends BaseManagerImpl implements OdoLineManage
         line.setOuId(ouId);
         return this.whOdoLineDao.findListByParamExt(line);
     }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<WhOdoLine> findOdoLineListByOdoIdStatus(Long odoId, Long ouId, String[] statusList) {
+        
+        return this.whOdoLineDao.findOdoLineListByOdoIdStatus(odoId, ouId, statusList);
+    }
 }

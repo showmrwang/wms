@@ -60,7 +60,8 @@
 	        	last_modify_time as lastModifyTime,
 	        	modified_id as modifiedId,
 	        	wave_code as waveCode,
-	        	counter_code as counterCode
+	        	counter_code as counterCode,
+	        	distribution_code as distributionCode
         ]]>
 	</sql>
 
@@ -727,7 +728,8 @@
 			        last_modify_time = now() ,
 			        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        wave_code = #{waveCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        counter_code = #{counterCode,javaType=java.lang.String,jdbcType=LONGVARCHAR} 
+			        counter_code = #{counterCode,javaType=java.lang.String,jdbcType=LONGVARCHAR},
+			        distribution_code = #{distributionCode,javaType=java.lang.String,jdbcType=VARCHAR}  
            
         ]]>
 		<where>
@@ -753,7 +755,7 @@
 		where odoline.odo_id=#{odoId} and
 		odoline.ou_id=#{ouId}
 		and odoline.sku_id=#{skuId}
-
+		and odoline.odo_line_status in ('1')
 	</select>
 
 	<select id="findOdoMergableIds" resultType="string"

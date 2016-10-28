@@ -79,4 +79,14 @@ public interface OdoLineManager extends BaseManager {
      */
     List<WhOdoLine> findOdoLineListByWaveCode(String code, Long ouId);
 
+    /**
+     * [通用方法]根据ODOID查找某种状态的明细
+     * 
+     * @param odoId
+     * @param ouId
+     * @param strings
+     * @return
+     */
+    List<WhOdoLine> findOdoLineListByOdoIdStatus(Long odoId, Long ouId, String[] strings);
+
 }

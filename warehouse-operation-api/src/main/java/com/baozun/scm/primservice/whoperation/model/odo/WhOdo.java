@@ -99,7 +99,16 @@ public class WhOdo extends BaseModel {
     private String waveCode;
     /** 计数器编码 */
     private String counterCode;
+    /** 配货模式码 */
+    private String distributionCode;
 
+    public String getDistributionCode() {
+        return distributionCode;
+    }
+
+    public void setDistributionCode(String distributionCode) {
+        this.distributionCode = distributionCode;
+    }
 
     public String getCounterCode() {
         return counterCode;

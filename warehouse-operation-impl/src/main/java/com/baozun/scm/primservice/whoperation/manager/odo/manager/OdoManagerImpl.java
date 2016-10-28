@@ -271,24 +271,19 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void saveUnit(WhOdoLine line, WhOdo odo) {
+    public void saveUnit(WhOdoLine line, List<WhOdoVas> insertVasList) {
         try {
 
             this.whOdoLineDao.insert(line);
+            if (insertVasList != null && insertVasList.size() > 0) {
+                for (WhOdoVas vas : insertVasList) {
+                    vas.setOdoLineId(line.getId());
+                    this.whOdoVasDao.insert(vas);
+                }
+            }
         } catch (Exception ex) {
             log.error("" + ex);
             throw new BusinessException(ErrorCodes.INSERT_DATA_ERROR);
-        }
-        try {
-            int updateCount = this.whOdoDao.saveOrUpdateByVersion(odo);
-            if (updateCount <= 0) {
-                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-            }
-        } catch (BusinessException e) {
-            throw e;
-        } catch (Exception ex) {
-            log.error("" + ex);
-            throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
         }
     }
 
@@ -600,4 +595,17 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
         odo.setOuId(ouId);
         return this.whOdoDao.findListByParamExt(odo);
     }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void finishCreateOdo(WhOdo odo, List<WhOdoLine> lineList) {
+        this.whOdoDao.saveOrUpdateByVersion(odo);
+        if (lineList != null && lineList.size() > 0) {
+            for (WhOdoLine line : lineList) {
+                this.whOdoLineDao.saveOrUpdateByVersion(line);
+            }
+        }
+
+    }
+
 }

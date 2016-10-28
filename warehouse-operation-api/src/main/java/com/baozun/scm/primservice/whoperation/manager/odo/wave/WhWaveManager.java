@@ -120,4 +120,16 @@ public interface WhWaveManager extends BaseManager {
      */
     List<Long> findOdoListInWaveWhenDistributionPattern(Long waveId, Long ouId, String ruleSql);
 
+    /**
+     * [业务方法]
+     * 
+     * @param odoList
+     * @param offWaveLineList
+     * @param offOdoLineList
+     * @param wave
+     * @param ouId
+     * @param userId
+     */
+    void matchWaveDisTributionMode(List<WhOdo> odoList, List<WhWaveLine> offWaveLineList, List<WhOdoLine> offOdoLineList, WhWave wave, Long ouId, Long userId);
+
 }

@@ -334,5 +334,27 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         this.whWaveDao.saveOrUpdateByVersion(wave);
     }
 
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void matchWaveDisTributionMode(List<WhOdo> odoList, List<WhWaveLine> offWaveLineList, List<WhOdoLine> offOdoLineList, WhWave wave, Long ouId, Long userId) {
+        for (WhWaveLine line : offWaveLineList) {
+            this.whWaveLineDao.deleteByIdOuId(line.getId(), ouId);
+        }
+        for (WhOdoLine line : offOdoLineList) {
+            if (userId != null) {
+                line.setModifiedId(userId);
+            }
+            this.whOdoLineDao.saveOrUpdateByVersion(line);
+        }
+        for (WhOdo odo : odoList) {
+            if (userId != null) {
+                odo.setModifiedId(userId);
+            }
+            this.whOdoDao.saveOrUpdateByVersion(odo);
+        }
+        this.whWaveDao.saveOrUpdateByVersion(wave);
+
+    }
+
 
 }

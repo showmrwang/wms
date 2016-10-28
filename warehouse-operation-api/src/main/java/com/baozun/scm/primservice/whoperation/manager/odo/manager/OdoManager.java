@@ -18,6 +18,7 @@ import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAddress;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoVas;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveMaster;
@@ -66,9 +67,9 @@ public interface OdoManager extends BaseManager {
      * [业务方法]创建明细
      * 
      * @param line
-     * @param odo
+     * @param insertVasList
      */
-    void saveUnit(WhOdoLine line, WhOdo odo);
+    void saveUnit(WhOdoLine line, List<WhOdoVas> insertVasList);
 
     /**
      * [业务方法]配置地址信息
@@ -191,5 +192,7 @@ public interface OdoManager extends BaseManager {
      * @return
      */
     List<WhOdo> findOdoListByWaveCode(String code, Long ouId);
+
+    void finishCreateOdo(WhOdo odo, List<WhOdoLine> lineList);
 
 }

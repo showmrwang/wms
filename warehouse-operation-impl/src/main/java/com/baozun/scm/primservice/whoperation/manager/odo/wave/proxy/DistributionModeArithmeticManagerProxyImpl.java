@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,12 +37,26 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
         if (ouId == null || skuNumberOfPackages == null || qty == null || skuIdSet == null || skuIdSet.size() == 0) {
             return "";
         }
-        String counterCode = ouId + CacheKeyConstant.WAVE_ODO_SKU_SPLIT + skuNumberOfPackages + CacheKeyConstant.WAVE_ODO_SPLIT + qty + CacheKeyConstant.WAVE_ODO_SPLIT + CacheKeyConstant.WAVE_ODO_SKU_SPLIT;
-        Iterator<Long> it = skuIdSet.iterator();
+        TreeSet<Long> skuIdSortSet = sortSet(skuIdSet);
+        String counterCode = ouId + CacheKeyConstant.WAVE_ODO_SPLIT + skuNumberOfPackages + CacheKeyConstant.WAVE_ODO_SPLIT + qty.intValue() + CacheKeyConstant.WAVE_ODO_SPLIT + CacheKeyConstant.WAVE_ODO_SKU_SPLIT;
+        Iterator<Long> it = skuIdSortSet.iterator();
         while (it.hasNext()) {
             counterCode += it.next() + CacheKeyConstant.WAVE_ODO_SKU_SPLIT;
         }
         return counterCode;
+    }
+
+    /**
+     * 对Set元素进行排序
+     * 
+     * @param skuIdSet
+     */
+    private TreeSet<Long> sortSet(Set<Long> skuIdSet) {
+        TreeSet<Long> result = new TreeSet<Long>();
+        for (Long skuId : skuIdSet) {
+            result.add(skuId);
+        }
+        return result;
     }
 
     /**
@@ -51,7 +66,7 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
         if (StringUtils.isEmpty(code)) {
             throw new BusinessException("计数器编码为空");
         }
-        String[] codeArray = code.split(CacheKeyConstant.WAVE_ODO_SPLIT);
+        String[] codeArray = code.split("\\" + CacheKeyConstant.WAVE_ODO_SPLIT);
         Integer skuType = Integer.parseInt(codeArray[1]);
         Integer skuQty = Integer.parseInt(codeArray[2]);
         // 种类数和商品数一致时候，①添加到缓存池②进行匹配模式计算
@@ -65,7 +80,7 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
 
     @Override
     public void DistributionModeArithmetic(String code, Long odoId) {
-        String[] codeArray = code.split(CacheKeyConstant.WAVE_ODO_SPLIT);
+        String[] codeArray = code.split("\\" + CacheKeyConstant.WAVE_ODO_SPLIT);
         Long ouId = Long.parseLong(codeArray[0]);
         // 仓库缓存
         Warehouse wh = this.warehouseManager.findWarehouseById(ouId);
@@ -102,7 +117,7 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
         if (seckill == seckillOdoQtys) {
             List<String> keyList = this.cacheManager.Keys(CacheKeyConstant.OU_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + "*");
             for (String key : keyList) {
-                String[] keyArray = key.split(CacheKeyConstant.WAVE_ODO_SPLIT);
+                String[] keyArray = key.split("\\" + CacheKeyConstant.WAVE_ODO_SPLIT);
                 String idStr = this.cacheManager.getValue(CacheKeyConstant.OU_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + keyArray[1]);
                 this.cacheManager.setValue(CacheKeyConstant.SECKILL_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + idStr, idStr);
                 this.cacheManager.remove(key);
@@ -128,7 +143,7 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
      */
     private void calcTwoSkuSuit(String code, int twoSkuSuitOdoQtys,int suitsOdoQtys,Long odoId) {
         // 仓库主副品配货模式计算的逻辑
-        String[] codeArray = code.split(CacheKeyConstant.WAVE_ODO_SPLIT);
+        String[] codeArray = code.split("\\" + CacheKeyConstant.WAVE_ODO_SPLIT);
         String twoSkuSuitPrefix=codeArray[0]+CacheKeyConstant.WAVE_ODO_SPLIT+codeArray[1]+CacheKeyConstant.WAVE_ODO_SPLIT+codeArray[2];
         String[] skuIdArray = codeArray[3].substring(1, codeArray[3].length() - 1).split(CacheKeyConstant.WAVE_ODO_SKU_SPLIT);
 
@@ -152,7 +167,7 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
             if (suits == suitsOdoQtys) {
                 List<String> keyList = this.cacheManager.Keys(CacheKeyConstant.OU_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + "*");
                 for (String key : keyList) {
-                    String[] keyArray = key.split(CacheKeyConstant.WAVE_ODO_SPLIT);
+                    String[] keyArray = key.split("\\" + CacheKeyConstant.WAVE_ODO_SPLIT);
                     String idStr = this.cacheManager.getValue(CacheKeyConstant.OU_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + keyArray[1]);
                     this.cacheManager.setValue(CacheKeyConstant.SUITS_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + idStr, idStr);
                     // 移除
@@ -180,7 +195,7 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
         if (suits == suitsOdoQtys) {
             List<String> keyList = this.cacheManager.Keys(CacheKeyConstant.OU_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + "*");
             for (String key : keyList) {
-                String[] keyArray = key.split(CacheKeyConstant.WAVE_ODO_SPLIT);
+                String[] keyArray = key.split("\\" + CacheKeyConstant.WAVE_ODO_SPLIT);
                 String idStr = this.cacheManager.getValue(CacheKeyConstant.OU_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + keyArray[1]);
                 this.cacheManager.setValue(CacheKeyConstant.SUITS_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + idStr, idStr);
                 // 移除
@@ -232,8 +247,8 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
     }
 
     @Override
-    public void DivFromWhDistributionModeArithmeticPool(String code, Long odoId) {
-        String[] codeArray = code.split(CacheKeyConstant.WAVE_ODO_SPLIT);
+    public void DivFromOrderPool(String code, Long odoId) {
+        String[] codeArray = code.split("\\" + CacheKeyConstant.WAVE_ODO_SPLIT);
         Integer skuType = Integer.parseInt(codeArray[1]);
         Integer skuQty = Integer.parseInt(codeArray[2]);
         // 种类数和商品数一致时候，①计数器-
@@ -282,7 +297,7 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
 
     @Override
     public void AddToWave(String code, Long odoId) {
-        String[] codeArray = code.split(CacheKeyConstant.WAVE_ODO_SPLIT);
+        String[] codeArray = code.split("\\" + CacheKeyConstant.WAVE_ODO_SPLIT);
         Integer skuType = Integer.parseInt(codeArray[1]);
         Integer skuQty = Integer.parseInt(codeArray[2]);
         // 种类数和商品数一致时候，①计数器-
@@ -330,6 +345,27 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
                     break;
             }
         }
+    }
+
+    @Override
+    public boolean isExistsInOrderPool(String code, Long odoId) {
+        String key = code + CacheKeyConstant.WAVE_ODO_SPLIT + odoId;
+        String value = this.cacheManager.getValue(key);
+        if (StringUtils.isEmpty(value)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public void removeFromOrderPool(String code, Long odoId) {
+
+    }
+
+    @Override
+    public void changeFromOrderPool(String oldCode, String newCode, Long odoId) {
+        // TODO Auto-generated method stub
+
     }
 
 }

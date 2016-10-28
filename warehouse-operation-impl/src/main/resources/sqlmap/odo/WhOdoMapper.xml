@@ -51,7 +51,8 @@
 	        	last_modify_time as lastModifyTime,
 	        	modified_id as modifiedId,
 	        	wave_code as waveCode,
-	        	counter_code as counterCode
+	        	counter_code as counterCode,
+	        	distribution_code as distributionCode
         ]]>
     </sql>
     <sql id="whOdoConditionWhereExt">
@@ -174,7 +175,8 @@
 		        	last_modify_time ,
 		        	modified_id ,
 		        	wave_code,
-		        	counter_code
+		        	counter_code,
+		        	distribution_code
                 ) VALUES (
                    #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{odoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -212,7 +214,8 @@
 		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{waveCode,javaType=java.lang.String,jdbcType=VARCHAR},
-		        	#{counterCode,javaType=java.lang.String,jdbcType=LONGVARCHAR}
+		        	#{counterCode,javaType=java.lang.String,jdbcType=LONGVARCHAR},
+		        	#{distributionCode,javaType=java.lang.String,jdbcType=VARCHAR} 
                 )
             ]]>
 
@@ -255,7 +258,8 @@
 		        last_modify_time = now() ,
 		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        wave_code=#{waveCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        counter_code=#{counterCode,javaType=java.lang.String,jdbcType=LONGVARCHAR} 
+		        counter_code=#{counterCode,javaType=java.lang.String,jdbcType=LONGVARCHAR} ,
+		        distribution_code=#{distributionCode,javaType=java.lang.String,jdbcType=VARCHAR}
             WHERE 
                 id = #{id} 
                 and ou_id = #{ouId}

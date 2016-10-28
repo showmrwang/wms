@@ -135,13 +135,13 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
             }
         }
         // 秒杀的额外计算逻辑：
-        Set<Long> secKillSet = new HashSet<Long>();
+        Map<Long, String> secKillSet = new HashMap<Long, String>();
         Iterator<Entry<String, Set<Long>>> secKillIt = secKillOdoMap.entrySet().iterator();
         while (secKillIt.hasNext()) {
             Entry<String, Set<Long>> entry = secKillIt.next();
             for (Long seckillOdoId : entry.getValue()) {
                 if (entry.getValue().size() >= master.getSeckillOdoQtys()) {
-                    secKillSet.add(seckillOdoId);
+                    secKillSet.put(seckillOdoId, entry.getKey());
                 } else {
                     noModeOdoList.add(seckillOdoId);
                 }
@@ -149,25 +149,25 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
         }
 
         // 套装额外计算逻辑：
-        Set<Long> suitsSet = new HashSet<Long>();
+        Map<Long, String> suitsSet = new HashMap<Long, String>();
         Iterator<Entry<String, Set<Long>>> suitsIt = suitsOdoMap.entrySet().iterator();
         while (suitsIt.hasNext()) {
             Entry<String, Set<Long>> entry = suitsIt.next();
             for (Long suitsOdoId : entry.getValue()) {
                 if (entry.getValue().size() >= master.getSuitsOdoQtys()) {
-                    suitsSet.add(suitsOdoId);
+                    suitsSet.put(suitsOdoId, entry.getKey());
                 } else {
                     noModeOdoList.add(suitsOdoId);
                 }
             }
         }
         // 主副品：
-        Set<Long> twoSuitsSet = new HashSet<Long>();
+        Map<Long, String> twoSuitsSet = new HashMap<Long, String>();
         Iterator<Entry<String, Set<Long>>> twoSuitsIt = suitsOdoMap.entrySet().iterator();
         while (twoSuitsIt.hasNext()) {
             Entry<String, Set<Long>> entry = twoSuitsIt.next();
             for (Long twoSuitOdoId : entry.getValue()) {
-                twoSuitsSet.add(twoSuitOdoId);
+                twoSuitsSet.put(twoSuitOdoId, entry.getKey());
             }
         }
         /**
@@ -206,12 +206,15 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
         List<WhWaveLine> offWaveLineList = new ArrayList<WhWaveLine>();
         for (WhOdo odo : odoList) {
             Long odoId = odo.getId();
-            if (secKillSet.contains(odoId)) {
+            if (secKillSet.containsKey(odoId)) {
                 odo.setDistributeMode(DistributionMode.DISTRIBUTION_SECKILL);
-            } else if (twoSuitsSet.contains(odoId)) {
+                odo.setDistributionCode(secKillSet.get(odoId));
+            } else if (twoSuitsSet.containsKey(odoId)) {
                 odo.setDistributeMode(DistributionMode.DISTRIBUTION_TWOSKUSUIT);
-            } else if (suitsSet.contains(odoId)) {
+                odo.setDistributionCode(twoSuitsSet.get(odoId));
+            } else if (suitsSet.containsKey(odoId)) {
                 odo.setDistributeMode(DistributionMode.DISTRIBUTION_SUITS);
+                odo.setDistributionCode(suitsSet.get(odoId));
             } else if (diyOdoMap.containsKey(odoId)) {
                 odo.setDistributeMode(diyOdoMap.get(odoId));
             } else {
@@ -231,9 +234,9 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
 
         }
         // 封装波次头
-        packageWave(wave, waveLineMap, ouId, offOdoLineList, noModeOdoList.size());
+        packageWave(wave, waveLineMap, master, ouId, offOdoLineList, noModeOdoList.size());
         // 保存
-        // this.whWaveManager.matchWaveDisTributionMode(odoList,offWaveLineList,)
+        this.whWaveManager.matchWaveDisTributionMode(odoList, offWaveLineList, offOdoLineList, wave, ouId, userId);
 
     }
     
@@ -355,7 +358,7 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
     }
 
 
-    private void packageWave(WhWave wave, Map<Long, WhWaveLine> waveLineMap, Long ouId, List<WhOdoLine> offOdoLineList, int divOdoSize) {
+    private void packageWave(WhWave wave, Map<Long, WhWaveLine> waveLineMap, WhWaveMaster master,Long ouId, List<WhOdoLine> offOdoLineList, int divOdoSize) {
         int odoCount = wave.getTotalOdoQty() - divOdoSize;// 波次出库单总单数
         int odolineCount = waveLineMap.size();// 波次明细数
 
@@ -428,7 +431,7 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
          */
         // a 生成波次编码，校验唯一性；补偿措施
         // #TODO 校验波次号
-        wave.setPhaseCode("CREATE_OUTBOUND_CARTON");
+        wave.setPhaseCode(this.getWavePhaseCode(wave.getPhaseCode(), master.getWaveTemplateId(), ouId));
         wave.setTotalOdoQty(odoCount);
         wave.setTotalOdoLineQty(odolineCount);
         wave.setTotalAmount(totalAmt);

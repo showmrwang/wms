@@ -754,4 +754,22 @@
 			and line.ou_id = #{ouId}
 	</select>
 	
+	
+	 <select id="findOdoLineListByOdoIdStatus" parameterType="map" resultMap="WhOdoLineResult" flushCache="false">
+        select
+        <include refid="whOdoLineColumns"/>
+        <![CDATA[
+                from t_wh_odo_line 
+                where 
+                odo_id = #{odoId} and ou_id =#{ouId}
+            ]]>
+            <if test="statusList!=null">
+				and odo.odo_status in
+				<foreach collection="statusList" item="s" open="(" separator=","
+					close=")">
+					#{s}
+				</foreach>
+			</if>
+    </select>
+	
 </mapper>
