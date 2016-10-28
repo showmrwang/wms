@@ -454,15 +454,7 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
             for (WhSkuInventorySnCommand snCommand : saveSnList) {
                 WhSkuInventorySn sn = new WhSkuInventorySn();
                 BeanUtils.copyProperties(snCommand, sn);
-                boolean flag = false;
-                if (null != snCommand.getSerialNumberType() && Constants.SERIAL_NUMBER_TYPE_ALL == snCommand.getSerialNumberType()) {
-                    flag = true;
-                } else {
-                    sn.setSn(null);
-                }
-                if (null != snCommand.getDefectTypeId() || flag) {
-                    this.whSkuInventorySnDao.insert(sn);
-                }
+                this.whSkuInventorySnDao.insert(sn);
                 // 插入SN日志
                 WhSkuInventorySnLog snLog = new WhSkuInventorySnLog();
                 snLog.setDefectReasons(snCommand.getDefectReasonsName());
