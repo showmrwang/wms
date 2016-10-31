@@ -17,17 +17,17 @@ public class RcvdSnCacheCommand implements Serializable {
     private Long defectReasonsId;
     /** 残次来源 */
     private String defectSource;
+    /** 残次条码 */
+    private String defectWareBarCode;
     /** 序列号管理类型 */
     private String serialNumberType;
-    /** 残次品数量:在不管理序列号的时候有值 */
-    private Integer defectCount;
 
-    public Integer getDefectCount() {
-        return defectCount;
+    public String getDefectWareBarCode() {
+        return defectWareBarCode;
     }
 
-    public void setDefectCount(Integer defectCount) {
-        this.defectCount = defectCount;
+    public void setDefectWareBarCode(String defectWareBarCode) {
+        this.defectWareBarCode = defectWareBarCode;
     }
 
     public String getDefectSource() {

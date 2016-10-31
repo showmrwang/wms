@@ -249,10 +249,10 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
             WhOdoTransportMgmt transportMgmt = new WhOdoTransportMgmt();
             BeanUtils.copyProperties(transportMgmtCommand, transportMgmt);
             if (StringUtils.hasText(transportMgmtCommand.getDeliverGoodsTimeStr())) {
-                transportMgmt.setDeliverGoodsTime(DateUtils.parseDate(transportMgmtCommand.getDeliverGoodsTimeStr(), Constants.DATE_PATTERN_YMDHM));
+                transportMgmt.setDeliverGoodsTime(DateUtils.parseDate(transportMgmtCommand.getDeliverGoodsTimeStr(), Constants.DATE_PATTERN_YMD));
             }
             if (StringUtils.hasText(transportMgmtCommand.getPlanDeliverGoodsTimeStr())) {
-                transportMgmt.setPlanDeliverGoodsTime(DateUtils.parseDate(transportMgmtCommand.getPlanDeliverGoodsTimeStr(), Constants.DATE_PATTERN_YMDHM));
+                transportMgmt.setPlanDeliverGoodsTime(DateUtils.parseDate(transportMgmtCommand.getPlanDeliverGoodsTimeStr(), Constants.DATE_PATTERN_YMD));
             }
             return transportMgmt;
         } catch (Exception e) {
