@@ -19,8 +19,8 @@
                 typeVo.last_modify_time as lastModifyTime,
                 typeVo.created_id as createdId,
                 typeVo.modified_id as modifiedId,
-                vo.code as code,
-                vo.name as name,
+                pc.code as code,
+                pc.name as name,
                 typeVo.volume  as volume
         ]]>
     </sql>
@@ -86,7 +86,7 @@
         select
         <include refid="outInvBoxTypeVolumeColumnsExt"/>
         from t_wh_outboundbox_product_volume typeVo
-        left join t_wh_product_volume vo on typeVo.prv_id = vo.id
+        left join t_wh_product_category pc on typeVo.prv_id = pc.id
         where typeVo.out_id = #{outId} and typeVo.ou_id = #{ouId}
     </select>
 
