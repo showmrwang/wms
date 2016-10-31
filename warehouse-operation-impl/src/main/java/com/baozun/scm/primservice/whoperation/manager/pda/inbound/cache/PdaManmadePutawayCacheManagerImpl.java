@@ -1368,30 +1368,23 @@ public  class PdaManmadePutawayCacheManagerImpl extends BaseManagerImpl implemen
         if (null != outerContainerCmd) {
             Long ocId = outerContainerCmd.getId();
             Long icId = insideContainerCmd.getId();
-            if (false == isAfterPutawayTipContainer) {  //内部容器是否提示完毕
-                       ManMadeContainerStatisticCommand isCmd = cacheManager.getMapObject(CacheConstants.CONTAINER_INVENTORY_STATISTIC, icId.toString());
-                       if (null != isCmd) {
+            ManMadeContainerStatisticCommand isCmd = cacheManager.getMapObject(CacheConstants.CONTAINER_INVENTORY_STATISTIC, ocId.toString());
+            if (null != isCmd) {
                             Map<Long, Set<Long>> insideContainerSkuIds = isCmd.getInsideContainerIdSkuIds();
                             Set<Long> skuIds = insideContainerSkuIds.get(icId);
                             for (Long skuId : skuIds) {
-                                // 清除逐件扫描的队列
+                                // 清楚扫描商品数量
                                 cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + skuId.toString());
                         }
+                            //清楚扫描商品队列
                         cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icId.toString());
-                        cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY_STATISTIC, icId.toString());
-                        cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY, icId.toString());
-                }
-                // 1.再清除所有提示容器队列
-                cacheManager.remove(CacheConstants.SCAN_CONTAINER_QUEUE + ocId.toString());
-                // 2.清除所有内部容器统计信息
-                cacheManager.removeMapValue(CacheConstants.CONTAINER_STATISTIC, ocId.toString());
-
-            } else {
-                // 0.清除所有库存统计信息
-                cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY_STATISTIC, icId.toString());
-                // 1.清除所有库存缓存信息
-                cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY, icId.toString());
             }
+                // 1.再清除所有提示容器队列
+           cacheManager.remove(CacheConstants.SCAN_CONTAINER_QUEUE + ocId.toString());
+              // 2.清除所有库存统计信息
+           cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY_STATISTIC, ocId.toString());
+              // 3.清除所有库存缓存信息
+           cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY, ocId.toString());
         } else {
             Long icId = insideContainerCmd.getId();
             // 0.清除所有商品队列
@@ -1868,35 +1861,23 @@ public  class PdaManmadePutawayCacheManagerImpl extends BaseManagerImpl implemen
         if (null != outerContainerCmd) {
             Long ocId = outerContainerCmd.getId();
             Long icId = insideContainerCmd.getId();
-            if (false == isAfterPutawayTipContainer) {  //内部容器是否提示完毕
-                         //一个容器内的sku全部上架
-                           ManMadeContainerStatisticCommand isCmd = cacheManager.getMapObject(CacheConstants.CONTAINER_INVENTORY_STATISTIC, icId.toString());
-                           if (null != isCmd) {
-                                Map<Long, Set<Long>> insideContainerSkuIds = isCmd.getInsideContainerIdSkuIds();
-                                Set<Long> skuIds = insideContainerSkuIds.get(icId);
-                                for (Long skuId : skuIds) {
-                                    // 清除逐件扫描的队列
-                                    cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + skuId.toString());
-                                    cacheManager.remove(CacheConstants.PDA_MAN_MANDE_SCAN_SKU_SN + icId.toString() + scanSkuId.toString());
-                                    cacheManager.remove(CacheConstants.PDA_MAN_MANDE_SCAN_SKU_DEFECT + icId.toString() + scanSkuId.toString());
-                                   
-                            }
-                            cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icId.toString());
-                            cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY_STATISTIC, icId.toString());
-                            cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY, icId.toString());
-                      
-                }
-                // 1.再清除所有提示容器队列
-                cacheManager.remove(CacheConstants.SCAN_CONTAINER_QUEUE + ocId.toString());
-                // 2.清除所有内部容器统计信息
-                cacheManager.removeMapValue(CacheConstants.CONTAINER_STATISTIC, ocId.toString());
-
-            } else {
-                // 0.清除所有库存统计信息
-                cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY_STATISTIC, icId.toString());
-                // 1.清除所有库存缓存信息
-                cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY, icId.toString());
+            ManMadeContainerStatisticCommand isCmd = cacheManager.getMapObject(CacheConstants.CONTAINER_INVENTORY_STATISTIC, ocId.toString());
+            if (null != isCmd) {
+                            Map<Long, Set<Long>> insideContainerSkuIds = isCmd.getInsideContainerIdSkuIds();
+                            Set<Long> skuIds = insideContainerSkuIds.get(icId);
+                            for (Long skuId : skuIds) {
+                                // 清楚扫描商品数量
+                                cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + skuId.toString());
+                        }
+                            //清楚扫描商品队列
+                        cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icId.toString());
             }
+                // 1.再清除所有提示容器队列
+           cacheManager.remove(CacheConstants.SCAN_CONTAINER_QUEUE + ocId.toString());
+              // 2.清除所有库存统计信息
+           cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY_STATISTIC, ocId.toString());
+              // 3.清除所有库存缓存信息
+           cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY, ocId.toString());
         } else {
             Long icId = insideContainerCmd.getId();
             // 0.清除所有商品队列

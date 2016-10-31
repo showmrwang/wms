@@ -230,17 +230,20 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
                 if (whFunctionPutAway.getIsEntireBinPutaway()) { // 整箱上架
                     manMandeCommand.setPutawayPatternDetailType(WhPutawayPatternDetailType.CONTAINER_PUTAWAY);
                     // 判断托盘是否存在多个sku商品
+                    String outerContainerCode = null;
                     List<WhSkuInventory> list = whSkuInventoryDao.findContainerInventoryCountsByInsideContainerId(containerId,ouId);
-                    Long outerContainerId = list.get(0).getOuterContainerId();
-                    Container outerContainer = containerDao.findByIdExt(outerContainerId, ouId);
-                    if (null == outerContainer) {
-                            // 容器信息不存在
-                            log.error("pdaScanContainer container is null logid: " + logId);
-                            throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+                    Long cId = list.get(0).getOuterContainerId();
+                    if(null != cId) {  //整箱上架没有外部容器
+                        Container outerContainer = containerDao.findByIdExt(cId, ouId);
+                        if (null == outerContainer) {
+                                // 容器信息不存在
+                                log.error("pdaScanContainer container is null logid: " + logId);
+                                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+                        }
+                       outerContainerCode = outerContainer.getCode();
+                       pdaManmadePutawayCacheManager.containerPutawayCacheInsideContainer(container, cId, logId, outerContainerCode);
                     }
-                    String outerContainerCode = outerContainer.getCode();
                     manMandeCommand.setOuterContainerCode(outerContainerCode);
-                    pdaManmadePutawayCacheManager.containerPutawayCacheInsideContainer(container, outerContainerId, logId, outerContainerCode);
                     Boolean result = this.isSkuRepat(list);
                     if (!result) {
                         return manMandeCommand;
@@ -319,7 +322,7 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
      * @return
      */
     private void manMandeScanContainer(Long ouId, ContainerCommand container, String logId,Long userId) {
-        log.info("PdaManMadePutawayManagerImpl containerCacheStatistic is start");
+        log.info("PdaManMadePutawayManagerImpl manMandeScanContainer is start");
         if (null == container) {
             // 容器信息不存在
             log.error("pdaScanContainer container is null logid: " + logId);
@@ -336,7 +339,7 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
                 log.error("pdaScanContainer container status error =" + container.getStatus() + " logid: " + logId);
                 throw new BusinessException(ErrorCodes.COMMON_CONTAINER__NOT_PUTWAY, new Object[] {container.getStatus()});
         }
-        log.info("PdaManMadePutawayManagerImpl containerCacheStatistic is end");
+        log.info("PdaManMadePutawayManagerImpl manMandeScanContainer is end");
     }
 
     private PdaManMadePutawayCommand judgeInventory(PdaManMadePutawayCommand pdaManMadePutawayCommand, ContainerCommand container) {
@@ -351,22 +354,26 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
             // 内部容器库存
             pdaManMadePutawayCommand.setIsOuterContainer(false);
             pdaManMadePutawayCommand.setInsideContainerCode(containerCode);
-            //判断该内部容器是否有外部容器
+            String outerContainerCode = null;
             List<WhSkuInventory> whSkuInvList = whSkuInventoryDao.findContainerInventoryCountsByInsideContainerId(containerId,ouId);
-            Long outerContainerId = whSkuInvList.get(0).getOuterContainerId();
-            Container outerContainer = containerDao.findByIdExt(outerContainerId, ouId);
-            if (null == outerContainer) {
-                    // 容器信息不存在
-                    log.error("pdaScanContainer container is null logid: " + logId);
-                    throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+            Long cId = whSkuInvList.get(0).getOuterContainerId();
+            if(null != cId) {  //整箱上架没有外部容器
+                Container outerContainer = containerDao.findByIdExt(cId, ouId);
+                if (null == outerContainer) {
+                        // 容器信息不存在
+                        log.error("pdaScanContainer container is null logid: " + logId);
+                        throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+                }
+               outerContainerCode = outerContainer.getCode();
+               pdaManmadePutawayCacheManager.containerPutawayCacheInsideContainer(container, cId, logId, outerContainerCode);
             }
-            String outerContainerCode = outerContainer.getCode();
-            pdaManmadePutawayCacheManager.containerPutawayCacheInsideContainer(container, outerContainerId, logId, outerContainerCode);
+           
         }
         if (0 < outerContainerCount) {  //外部容器库存
                  // 外部容器库存
                 pdaManMadePutawayCommand.setIsOuterContainer(true);
                 pdaManMadePutawayCommand.setInsideContainerCode(null);
+                pdaManMadePutawayCommand.setOuterContainerCode(containerCode);  //外部容器号
                 // 若不是整托上架，跳转到扫描货箱容器页面，页面提示扫描货箱容器号
                 if(WhPutawayPatternDetailType.PALLET_PUTAWAY != putawayPatternDetailType) {
                     ManMadeContainerStatisticCommand command = pdaManmadePutawayCacheManager.manMadePutawayCacheContainer(pdaManMadePutawayCommand, containerId);
