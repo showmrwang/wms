@@ -119,12 +119,11 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
             /**
              * 第一步：封装ODO和ODOLine
              */
-            List<WhOdoLine> odoLineList=new ArrayList<WhOdoLine>();
+            List<WhOdoLine> odoLineList = null;
             /**
              * 第二步：封装ODO
              */
             WhOdo odo = this.copyOdoProperties(odoCommand);
-            odo.setOdoStatus(OdoStatus.ODO_TOBECREATED);
             /**
              * 第三步：封装出库单运输商表
              */
@@ -132,15 +131,19 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
             /**
              * 第四步：封装配送对象
              */
-            WhOdoAddress address=new WhOdoAddress();
+            WhOdoAddress address = null;
             /**
              * 第五步：封装增值服务
              */
-            List<WhOdoVas> odoVasList=new ArrayList<WhOdoVas>();
+            List<WhOdoVas> odoVasList = null;
             /**
-             * 第六步：SN  TODO
+             * 第六步：封装SN
              */
-            this.createOdo(odo, odoLineList,transportMgmt,address,odoVasList, null, ouId, userId);
+            List<WhOdoLineAttrSn> lineSnList = null;
+            /**
+             * 第六步：SN TODO
+             */
+            this.createOdo(odo, odoLineList, transportMgmt, address, odoVasList, lineSnList, ouId, userId);
             returnOdoId = odo.getId();
         } catch (BusinessException e) {
             msg.setResponseStatus(ResponseMsg.STATUS_ERROR);
@@ -214,18 +217,21 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
                 String extCode = codeManager.generateCode(Constants.WMS, Constants.WHODO_MODEL_URL, Constants.WMS_ODO_EXT, null, null);
                 odo.setExtCode(extCode);
             }
-            // 设置计数器编码
-            Set<Long> skuIdSet=new HashSet<Long>();
-            for(WhOdoLine line:odoLineList){
-                skuIdSet.add(line.getSkuId());
+            // 如果单据为新建状态，则设置技术器编码，并放入到配货模式池中
+            if (OdoStatus.ODO_NEW.equals(odo.getOdoStatus())) {
+                // 设置计数器编码
+                Set<Long> skuIdSet = new HashSet<Long>();
+                for (WhOdoLine line : odoLineList) {
+                    skuIdSet.add(line.getSkuId());
+                }
+                String counterCode = this.distributionModeArithmeticManagerProxy.getCounterCodeForOdo(ouId, odo.getSkuNumberOfPackages(), odo.getQty(), skuIdSet);
+                odo.setCounterCode(counterCode);
             }
-            String counterCode = this.distributionModeArithmeticManagerProxy.getCounterCodeForOdo(ouId, odo.getSkuNumberOfPackages(), odo.getQty(), skuIdSet);
-            odo.setCounterCode(counterCode);
 
             // 匹配配货模式
 
             transportMgmt.setOuId(ouId);
-            this.odoManager.createOdo(odo, transportMgmt);
+            this.odoManager.createOdo(odo, odoLineList, transportMgmt, odoAddress, odoVasList, lineSnList, ouId, userId);
         } catch (BusinessException e) {
             throw e;
         } catch (Exception ex) {
@@ -263,6 +269,7 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
             WhOdo odo = new WhOdo();
             // 复制属性
             BeanUtils.copyProperties(odoCommand, odo);
+            odo.setOdoStatus(OdoStatus.ODO_TOBECREATED);
             // 返回
             return odo;
         } catch (Exception e) {
@@ -1076,6 +1083,8 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
             waveLineList.add(waveLine);
         }
         this.odoManager.createOdoWave(wave, waveLineList, odoMap, odolineList, userId, logId);
+        // 添加到波次中时候，计数器需要-1；
+
         return waveCode;
     }
 

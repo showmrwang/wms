@@ -48,6 +48,7 @@ import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAddress;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLineAttrSn;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoVas;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
@@ -246,8 +247,23 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void createOdo(WhOdo odo, WhOdoTransportMgmt transportMgmt) {
+    public void createOdo(WhOdo odo, List<WhOdoLine> odoLineList, WhOdoTransportMgmt transportMgmt, WhOdoAddress odoAddress, List<WhOdoVas> odoVasList, List<WhOdoLineAttrSn> lineSnList, Long ouId, Long userId) {
         try {
+            if(odoLineList!=null&&odoLineList.size()>0){
+                for(WhOdoLine line:odoLineList){
+                    this.whOdoLineDao.insert(line);
+                }
+            }
+            if(odoAddress!=null){
+                this.whOdoAddressDao.insert(odoAddress);
+            }
+            if(odoVasList!=null&&odoVasList.size()>0){
+                for(WhOdoVas vas:odoVasList){
+                    
+                    this.whOdoVasDao.insert(vas);
+                }
+            }
+            if (lineSnList != null && lineSnList.size() > 0) {}
             this.whOdoDao.insert(odo);
             transportMgmt.setOdoId(odo.getId());
             this.whOdoTransportMgmtDao.insert(transportMgmt);

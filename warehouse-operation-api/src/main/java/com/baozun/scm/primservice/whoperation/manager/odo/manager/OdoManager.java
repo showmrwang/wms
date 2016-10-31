@@ -17,6 +17,7 @@ import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAddress;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLineAttrSn;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoVas;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
@@ -31,9 +32,15 @@ public interface OdoManager extends BaseManager {
      * [业务方法]创建出库单TODO
      * 
      * @param odo
+     * @param odoLineList
      * @param transportMgmt
+     * @param userId
+     * @param ouId
+     * @param lineSnList
+     * @param odoVasList
+     * @param odoAddress
      */
-    void createOdo(WhOdo odo, WhOdoTransportMgmt transportMgmt);
+    void createOdo(WhOdo odo, List<WhOdoLine> odoLineList, WhOdoTransportMgmt transportMgmt, WhOdoAddress odoAddress, List<WhOdoVas> odoVasList, List<WhOdoLineAttrSn> lineSnList, Long ouId, Long userId);
 
     /**
      * [通用方法]根据ID,OUID查找ODO
