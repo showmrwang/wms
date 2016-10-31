@@ -622,13 +622,15 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
         }
         String unit = skuCommand.getGoodShelfLifeUnit();
         if (null != unit) {
-            int day = skuCommand.getValidDate();
-            if (Constants.TIME_UOM_YEAR.equals(unit)) {
-                day = day * 365;
-            } else if (Constants.TIME_UOM_MONTH.equals(unit)) {
-                day = day * 30;
+            Integer day = skuCommand.getValidDate();
+            if (null != day) {
+                if (Constants.TIME_UOM_YEAR.equals(unit)) {
+                    day = day * 365;
+                } else if (Constants.TIME_UOM_MONTH.equals(unit)) {
+                    day = day * 30;
+                }
+                skuCommand.setValidDate(day);
             }
-            skuCommand.setValidDate(day);
         }
         return skuCommand;
     }
