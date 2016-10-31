@@ -43,7 +43,7 @@
             flushCache="true">
         <![CDATA[
                 INSERT INTO
-                t_wh_out_inventory_box_type (
+                t_wh_outboundbox_type (
                 id,
                     sku_id ,
                     ou_id ,
@@ -95,7 +95,7 @@
 
     <update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.OutInventoryBoxType">
         <![CDATA[
-            UPDATE t_wh_out_inventory_box_type SET
+            UPDATE t_wh_outboundbox_type SET
                 sku_id = #{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
                 ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
                 code = #{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -122,14 +122,14 @@
     </update>
     <delete id="delete" parameterType="java.lang.Long">
         <![CDATA[
-            delete from t_wh_out_inventory_box_type where
+            delete from t_wh_outboundbox_type where
                 id = #{id} 
         ]]>
     </delete>
 
     <delete id="deleteByIds" parameterType="list">
 
-        delete from t_wh_out_inventory_box_type
+        delete from t_wh_outboundbox_type
         where id in
         <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
             #{item}
@@ -141,7 +141,7 @@
         select
         <include refid="outInventoryBoxTypeColumns"/>
         <![CDATA[
-                from t_wh_out_inventory_box_type 
+                from t_wh_outboundbox_type 
                 where 
                 id = #{id} 
             ]]>
@@ -149,7 +149,7 @@
     <select id="getByIds" parameterType="list" resultMap="OutInventoryBoxTypeResult" flushCache="false">
         select
         <include refid="outInventoryBoxTypeColumns"/>
-        from t_wh_out_inventory_box_type
+        from t_wh_outboundbox_type
         where id in
         <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
             #{item}
@@ -252,15 +252,15 @@
 
 
     <select id="getCount" resultType="long">
-        select count(*) from t_wh_out_inventory_box_type
+        select count(*) from t_wh_outboundbox_type
     </select>
     <select id="findListCountByQueryMap" resultType="long">
-        select count(*) from t_wh_out_inventory_box_type
+        select count(*) from t_wh_outboundbox_type
         <include refid="outInventoryBoxTypeDynamicWhere"/>
     </select>
 
     <select id="findListCountByParam" resultType="long">
-        select count(*) from t_wh_out_inventory_box_type
+        select count(*) from t_wh_outboundbox_type
         <include refid="outInventoryBoxTypeDynamicWhere"/>
     </select>
 
@@ -271,7 +271,7 @@
     <select id="findListByQueryMapWithPage" resultMap="OutInventoryBoxTypeResult">
         select
         <include refid="outInventoryBoxTypeColumns"/>
-        from t_wh_out_inventory_box_type
+        from t_wh_outboundbox_type
         <include refid="outInventoryBoxTypeDynamicWhere"/>
 
     </select>
@@ -279,7 +279,7 @@
     <select id="findListByQueryMap" resultMap="OutInventoryBoxTypeResult">
         select
         <include refid="outInventoryBoxTypeColumns"/>
-        from t_wh_out_inventory_box_type
+        from t_wh_outboundbox_type
         <include refid="outInventoryBoxTypeDynamicWhere"/>
 
     </select>
@@ -287,7 +287,7 @@
     <select id="findListByParam" resultMap="OutInventoryBoxTypeResult">
         select
         <include refid="outInventoryBoxTypeColumns"/>
-        from t_wh_out_inventory_box_type
+        from t_wh_outboundbox_type
         <include refid="outInventoryBoxTypeDynamicWhere"/>
 
     </select>

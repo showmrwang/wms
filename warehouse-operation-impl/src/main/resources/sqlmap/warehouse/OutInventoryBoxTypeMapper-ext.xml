@@ -174,7 +174,7 @@
     <select id="findOutInventoryBoxType" resultMap="OutCommandResultExt">
         select
         <include refid="outInventoryBoxTypeColumnsCommand"/>
-        from t_wh_out_inventory_box_type inventory
+        from t_wh_outboundbox_type inventory
         left join t_wh_sku sku on inventory.sku_id = sku.id
         where inventory.id=#{id} and inventory.ou_id = #{ouId}
     </select>
@@ -182,21 +182,21 @@
     <select id="findListByQueryMapWithPageExt" resultMap="OutCommandResultExt">
         select
         <include refid="outInventoryBoxTypeColumnsCommand"/>
-        from t_wh_out_inventory_box_type inventory
+        from t_wh_outboundbox_type inventory
         left join t_wh_sku sku on inventory.sku_id = sku.id
         <include refid="outInventoryBoxTypeDynamicWhereExt"/>
     </select>
     <!-- 计数 -->
     <select id="findListCountByQueryMapExt" resultType="Long">
         select count(*)
-        from t_wh_out_inventory_box_type inventory
+        from t_wh_outboundbox_type inventory
         left join t_wh_sku sku on inventory.sku_id = sku.id
         <include refid="outInventoryBoxTypeDynamicWhereExt"/>
     </select>
 
     <update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.OutInventoryBoxType">
            <![CDATA[
-            UPDATE t_wh_out_inventory_box_type SET
+            UPDATE t_wh_outboundbox_type SET
                 sku_id = #{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
                 code = #{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
                 name = #{name,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -224,13 +224,13 @@
     <select id="findByIdExt" resultType="com.baozun.scm.primservice.whoperation.model.warehouse.OutInventoryBoxType">
         select
         <include refid="outInventoryBoxTypeColumnsExt"/>
-        from t_wh_out_inventory_box_type
+        from t_wh_outboundbox_type
         WHERE
         id = #{id} and ou_id = #{ouId}
     </select>
 
     <select id="checkUnique" resultType="Long" parameterType="com.baozun.scm.primservice.whoperation.command.warehouse.OutInvBoxTypeCommand">
-        select count(*) from t_wh_out_inventory_box_type
+        select count(*) from t_wh_outboundbox_type
         <where>
             <if test="id!=null">
                 and id != #{id}
