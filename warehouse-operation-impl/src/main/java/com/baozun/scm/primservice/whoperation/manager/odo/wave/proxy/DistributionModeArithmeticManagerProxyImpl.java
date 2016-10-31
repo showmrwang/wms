@@ -117,17 +117,17 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
         if (seckill == seckillOdoQtys) {
             List<String> keyList = this.cacheManager.Keys(CacheKeyConstant.OU_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + "*");
             for (String key : keyList) {
-                String[] keyArray = key.split("\\" + CacheKeyConstant.WAVE_ODO_SPLIT);
+                String[] keyArray = key.substring(key.indexOf("%")).split("\\" + CacheKeyConstant.WAVE_ODO_SPLIT);
                 String idStr = this.cacheManager.getValue(CacheKeyConstant.OU_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + keyArray[1]);
                 this.cacheManager.setValue(CacheKeyConstant.SECKILL_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + idStr, idStr);
-                this.cacheManager.remove(key);
+                this.cacheManager.setValue(key.substring(key.indexOf("%")), "2");
             }
             this.cacheManager.setValue(CacheKeyConstant.SECKILL_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + odoId, odoId + "");
 
         } else if (seckill > seckillOdoQtys) {
             this.cacheManager.setValue(CacheKeyConstant.SECKILL_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + odoId, odoId + "");
         } else {
-            this.cacheManager.setValue(CacheKeyConstant.OU_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + odoId, odoId + "");
+            this.cacheManager.setValue(CacheKeyConstant.OU_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + odoId, "1");
         }
 
 
@@ -167,11 +167,11 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
             if (suits == suitsOdoQtys) {
                 List<String> keyList = this.cacheManager.Keys(CacheKeyConstant.OU_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + "*");
                 for (String key : keyList) {
-                    String[] keyArray = key.split("\\" + CacheKeyConstant.WAVE_ODO_SPLIT);
+                    String[] keyArray = key.substring(key.indexOf("%")).split("\\" + CacheKeyConstant.WAVE_ODO_SPLIT);
                     String idStr = this.cacheManager.getValue(CacheKeyConstant.OU_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + keyArray[1]);
                     this.cacheManager.setValue(CacheKeyConstant.SUITS_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + idStr, idStr);
                     // 移除
-                    this.cacheManager.remove(key);
+                    // this.cacheManager.remove(key);
                 }
                 this.cacheManager.setValue(CacheKeyConstant.SUITS_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + odoId, odoId + "");
             } else if (suits > suitsOdoQtys) {
@@ -195,11 +195,11 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
         if (suits == suitsOdoQtys) {
             List<String> keyList = this.cacheManager.Keys(CacheKeyConstant.OU_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + "*");
             for (String key : keyList) {
-                String[] keyArray = key.split("\\" + CacheKeyConstant.WAVE_ODO_SPLIT);
+                String[] keyArray = key.substring(key.indexOf("%")).split("\\" + CacheKeyConstant.WAVE_ODO_SPLIT);
                 String idStr = this.cacheManager.getValue(CacheKeyConstant.OU_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + keyArray[1]);
                 this.cacheManager.setValue(CacheKeyConstant.SUITS_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + idStr, idStr);
                 // 移除
-                this.cacheManager.remove(key);
+                // this.cacheManager.remove(key);
             }
             this.cacheManager.setValue(CacheKeyConstant.SUITS_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + odoId, odoId + "");
         } else if (suits > suitsOdoQtys) {
@@ -227,7 +227,7 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
         for (String key : keyList) {
 
             String[] keyArray = key.split("%");
-            String[] keyCodeOdoId = keyArray[2].split("|");
+            String[] keyCodeOdoId = keyArray[2].split("\\|");
             String keyOdoId = keyCodeOdoId[4];
             this.cacheManager.setValue(CacheKeyConstant.TWOSKUSUIT_ODO_PREFIX + twoSkuSuitPrefix + CacheKeyConstant.WAVE_ODO_SPLIT + incrSkuId + CacheKeyConstant.WAVE_ODO_SPLIT + keyOdoId, keyOdoId);
              //扣减集合
@@ -238,8 +238,7 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
             this.cacheManager.setValue(CacheKeyConstant.TWOSKUSUIT_DIV_ODO_PREFIX + twoSkuSuitPrefix+CacheKeyConstant.WAVE_ODO_SPLIT +keyDecrSkuId+CacheKeyConstant.WAVE_ODO_SPLIT+keyOdoId,keyOdoId);
             this.cacheManager.setValue(CacheKeyConstant.SUITS_DIV_ODO_PREFIX + twoSkuSuitPrefix + CacheKeyConstant.WAVE_ODO_SPLIT + keyDecrSkuId + CacheKeyConstant.WAVE_ODO_SPLIT + keyOdoId, keyOdoId);
 
-            // 移除掉对应
-            this.cacheManager.remove(key);
+
 
         }
         this.cacheManager.setValue(CacheKeyConstant.TWOSKUSUIT_ODO_PREFIX + twoSkuSuitPrefix + CacheKeyConstant.WAVE_ODO_SPLIT + incrSkuId + CacheKeyConstant.WAVE_ODO_SPLIT + odoId, odoId + "");
