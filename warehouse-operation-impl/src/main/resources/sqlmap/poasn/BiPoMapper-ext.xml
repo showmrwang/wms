@@ -538,7 +538,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			from t_bi_po bipo
 			left join t_bi_customer customer on customer.ID=bipo.customer_id
 			left join t_bi_store store on store.id=bipo.store_id
-			left join t_wh_logistics_provider provider on provider.id=bipo.logistics_provider_id
+			left join t_ma_transport_provider provider on provider.id=bipo.logistics_provider_id
 			left join t_wh_supplier supplier on supplier.id=bipo.supplier_id
 			left join sys_dictionary potypedic on potypedic.group_value='PO_TYPE' and potypedic.dic_value=bipo.po_type
 			left join sys_dictionary postatusdic on postatusdic.group_value = 'BIPO_STATUS' and  postatusdic.dic_value = bipo.status
@@ -552,7 +552,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			from t_bi_po bipo
 			left join t_bi_customer customer on customer.ID=bipo.customer_id
 			left join t_bi_store store on store.id=bipo.store_id
-			left join t_wh_logistics_provider provider on provider.id=bipo.logistics_provider_id
+			left join t_ma_transport_provider provider on provider.id=bipo.logistics_provider_id
 			left join t_wh_supplier supplier on supplier.id=bipo.supplier_id
 			left join sys_dictionary potypedic on potypedic.group_value='PO_TYPE' and potypedic.dic_value=bipo.po_type
 			left join sys_dictionary postatusdic on postatusdic.group_value = 'BIPO_STATUS' and  postatusdic.dic_value = bipo.status
