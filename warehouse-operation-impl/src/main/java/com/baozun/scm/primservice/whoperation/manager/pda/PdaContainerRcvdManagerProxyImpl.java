@@ -223,17 +223,7 @@ public class PdaContainerRcvdManagerProxyImpl extends BaseManagerImpl implements
     */
     @Override
     public ContainerCommand checkContainer(WhSkuInventoryCommand command) {
-        /* sku支持的容器类型以'/'划分 从页面传到后台 */
-        // String[] types = containerTypes.split("/");
-        // List<String> typeList = new ArrayList<String>();
-        // for (String type : types) {
-        // typeList.add(type);
-        // }
-
         ContainerCommand containerCommand = this.generalRcvdManager.findContainer(command.getSkuId(), command.getInsideContainerCode(), command.getOuId(), command.getContainerType());
-        // 初始化容器缓存
-        // this.pdaRcvdManagerProxy.initSkuAttrFromInventoryForCacheContainer(command, 119L);
-
         return containerCommand;
     }
 

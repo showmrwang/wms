@@ -221,6 +221,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    where 
 		        s.sku_id = #{skuId} 
 		        and s.ou_id = #{ouId}
+		        and s.lifecycle = 1
     </select>
 
 </mapper>
