@@ -1821,7 +1821,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
             // @mender yimin.lu 2016/11/1 容器状态会缓存到容器缓存中去，回滚时候从缓存中取出
             Container container = this.generalRcvdManager.findContainerByIdToShard(containerId, ouId);
             String containercache = this.cacheManager.getValue(CacheKeyConstant.CACHE_RCVD_CONTAINER_USER_PREFIX + containerId);
-            String[] containercacheArray = containercache.split("$");
+            String[] containercacheArray = containercache.split("\\$");
             // long invCount =
             // this.generalRcvdManager.findContainerListCountByInsideContainerIdFromSkuInventory(containerId,
             // ouId);
