@@ -1391,7 +1391,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
         for (int i = 0; i < snCount; i++) {// 此处For循环主要针对非SN的残次品，如果是SN商品，snCount=1
             RcvdSnCacheCommand newSn = new RcvdSnCacheCommand();
             newSn.setDefectReasonsId(rcvdSn.getDefectReasonsId());
-            rcvdSn.setDefectSource(command.getSnSource());
+            newSn.setDefectSource(command.getSnSource());
             newSn.setDefectTypeId(rcvdSn.getDefectTypeId());
             // 残次条码 调用条码生成器
             if (null != rcvdSn.getDefectTypeId()) {
@@ -1405,10 +1405,10 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                 if (null != sku && null != sku.getSkuMgmt()) {
 
                     SkuMgmt skuMgmt = sku.getSkuMgmt();
-                    rcvdSn.setSerialNumberType(skuMgmt.getSerialNumberType());
+                    newSn.setSerialNumberType(skuMgmt.getSerialNumberType());
                 }
             }
-            cacheSn.add(rcvdSn);
+            cacheSn.add(newSn);
         }
 
         this.cacheManager.setObject(CacheKeyConstant.CACHE_RCVD_SN_PREFIX + command.getUserId(), cacheSn, 60 * 60);
