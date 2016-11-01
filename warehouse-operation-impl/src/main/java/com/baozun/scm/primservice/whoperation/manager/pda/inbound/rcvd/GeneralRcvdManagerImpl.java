@@ -570,34 +570,36 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
         return skuStandardPackingDao.findSkuStandardPackingBySkuBarCode(skuBarCode, ouId, BaseModel.LIFECYCLE_NORMAL);
     }
 
-    @Override
-    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public Long findContainerId(Long skuId, String code, Long ouId, Integer lc, Long containerTypeId) {
-        /* 获取符合条件的更新个数 */
-        // int cnt = containerDao.updateContainerStatusByCode(code, ouId, lifecycle, typeList);
-        ContainerCommand containerCommand = new ContainerCommand();
-        containerCommand.setCode(code);
-        containerCommand.setOuId(ouId);
-        // containerCommand.setTwoLevelType(containerTypeId);
-        // containerCommand.setTwoLevelType(14100000L);
-        // 返回一个command list
-        List<ContainerCommand> list = containerDao.getContainerByCodeAndType(containerCommand);
-
-        if (null == list || list.isEmpty() || null == list.get(0)) {
-            throw new BusinessException("没有匹配的容器");
-        }
-        if (1 < (list.size())) {
-            throw new BusinessException("查找到多个容器");
-        }
-        ContainerCommand command = list.get(0);
-        Integer lifecycle = command.getLifecycle();
-        if (ContainerStatus.CONTAINER_LIFECYCLE_USABLE == lifecycle/* && 1 == command.getIsUsed() */) {
-            // 实际上是返回容器id
-            return command.getId();
-        } else {
-            throw new BusinessException("找到的容器不符合");
-        }
-    }
+    // @Override
+    // @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    // public Long findContainerId(Long skuId, String code, Long ouId, Integer lc, Long
+    // containerTypeId) {
+    // /* 获取符合条件的更新个数 */
+    // // int cnt = containerDao.updateContainerStatusByCode(code, ouId, lifecycle, typeList);
+    // ContainerCommand containerCommand = new ContainerCommand();
+    // containerCommand.setCode(code);
+    // containerCommand.setOuId(ouId);
+    // // containerCommand.setTwoLevelType(containerTypeId);
+    // // containerCommand.setTwoLevelType(14100000L);
+    // // 返回一个command list
+    // List<ContainerCommand> list = containerDao.getContainerByCodeAndType(containerCommand);
+    //
+    // if (null == list || list.isEmpty() || null == list.get(0)) {
+    // throw new BusinessException("没有匹配的容器");
+    // }
+    // if (1 < (list.size())) {
+    // throw new BusinessException("查找到多个容器");
+    // }
+    // ContainerCommand command = list.get(0);
+    // Integer lifecycle = command.getLifecycle();
+    // if (ContainerStatus.CONTAINER_LIFECYCLE_USABLE == lifecycle/* && 1 == command.getIsUsed() */)
+    // {
+    // // 实际上是返回容器id
+    // return command.getId();
+    // } else {
+    // throw new BusinessException("找到的容器不符合");
+    // }
+    // }
 
     @Override
     public SkuCommand findSkuBySkuCodeOuId(String skuCode, Long ouId, Long customerId) {
@@ -737,15 +739,13 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public ContainerCommand findContainer(Long skuId, String code, Long ouId, Long containerTypeId) {
         /* 获取符合条件的更新个数 */
-        // int cnt = containerDao.updateContainerStatusByCode(code, ouId, lifecycle, typeList);
         ContainerCommand containerCommand = new ContainerCommand();
         containerCommand.setCode(code);
         containerCommand.setOuId(ouId);
         containerCommand.setTwoLevelType(containerTypeId);
         containerCommand.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_USABLE);
         containerCommand.setStatus(ContainerStatus.CONTAINER_STATUS_USABLE);
-        // TODO 这里是指定了容器类型
-        // containerCommand.setTwoLevelType(14100014L);
+        containerCommand.setSkuId(skuId);
         // 返回一个command list
         List<ContainerCommand> list = containerDao.getContainerByCodeAndType(containerCommand);
 
