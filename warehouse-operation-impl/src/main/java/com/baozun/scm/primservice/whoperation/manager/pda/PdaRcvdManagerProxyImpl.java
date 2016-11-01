@@ -1482,6 +1482,9 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
             saveContainer.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
             Container container = this.generalRcvdManager.insertByCode(saveContainer, command.getUserId(), ouId);
             command.setInsideContainerId(container.getId());
+            containerCommand = new ContainerCommand();
+            containerCommand.setStatus(ContainerStatus.CONTAINER_STATUS_USABLE);
+            containerCommand.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_USABLE);
             flag = true;
 
         } else {
@@ -1513,8 +1516,12 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                     }
                     flag = true;
                 } else if (ContainerStatus.CONTAINER_STATUS_RCVD == containerCommand.getStatus()) {
-                    String containerUserId = this.cacheManager.getValue(CacheKeyConstant.CACHE_RCVD_CONTAINER_USER_PREFIX + insideContainerId);
-                    if (command.getUserId().toString().equals(containerUserId)) {
+                    String containercache = this.cacheManager.getValue(CacheKeyConstant.CACHE_RCVD_CONTAINER_USER_PREFIX + insideContainerId);
+                    if (StringUtils.isEmpty(containercache)) {
+                        throw new BusinessException(ErrorCodes.RCVD_CONTAINER_OCCUPATIED_ERROR);
+                    }
+                    String[] contanercacheArray = containercache.split("$");
+                    if (command.getUserId().toString().equals(contanercacheArray[0])) {
 
                     } else {
                         throw new BusinessException(ErrorCodes.RCVD_CONTAINER_OCCUPATIED_ERROR);
@@ -1527,7 +1534,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
         }
         if (flag) {
             // 初始化容器缓存
-            this.cacheManager.setValue(CacheKeyConstant.CACHE_RCVD_CONTAINER_USER_PREFIX + command.getInsideContainerId(), command.getUserId().toString(), 60 * 60);
+            this.cacheManager.setValue(CacheKeyConstant.CACHE_RCVD_CONTAINER_USER_PREFIX + command.getInsideContainerId(), command.getUserId() + "$" + containerCommand.getLifecycle() + "$" + containerCommand.getStatus());
             if (null != command.getOuterContainerId()) {
                 // 1.托盘容器缓存
                 this.cacheManager.pushToListHead(CacheKeyConstant.CACHE_RCVD_PALLET_PREFIX + command.getOuterContainerId(), command.getInsideContainerId().toString());
@@ -1561,6 +1568,9 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
             saveContainer.setStatus(ContainerStatus.CONTAINER_STATUS_RCVD);
             saveContainer.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
             Container c = this.generalRcvdManager.insertByCode(saveContainer, userId, ouId);
+            palletCommand = new ContainerCommand();
+            palletCommand.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_USABLE);
+            palletCommand.setStatus(ContainerStatus.CONTAINER_STATUS_USABLE);
             outerContainerId = c.getId();
             // 否则，进行更新托盘
         } else {
@@ -1593,8 +1603,14 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                     }
                     // 占用中，需要校验：同一个收货容器只能一个人操作
                 } else if (ContainerStatus.CONTAINER_STATUS_RCVD == palletCommand.getStatus()) {
-                    String containerUser = this.cacheManager.getValue(CacheKeyConstant.CACHE_RCVD_CONTAINER_USER_PREFIX + outerContainerId);
-                    if (!userId.toString().equals(containerUser)) {
+                    String containercache = this.cacheManager.getValue(CacheKeyConstant.CACHE_RCVD_CONTAINER_USER_PREFIX + outerContainerId);
+                    if (StringUtils.isEmpty(containercache)) {
+                        throw new BusinessException(ErrorCodes.RCVD_CONTAINER_OCCUPATIED_ERROR);
+                    }
+                    String[] contanercacheArray = containercache.split("$");
+                    if (command.getUserId().toString().equals(contanercacheArray[0])) {
+
+                    } else {
                         throw new BusinessException(ErrorCodes.RCVD_CONTAINER_OCCUPATIED_ERROR);
                     }
 
@@ -1605,7 +1621,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
             }
         }
         // 缓存托盘
-        this.cacheManager.setValue(CacheKeyConstant.CACHE_RCVD_CONTAINER_USER_PREFIX + outerContainerId, userId.toString(), 60 * 60);
+        this.cacheManager.setValue(CacheKeyConstant.CACHE_RCVD_CONTAINER_USER_PREFIX + outerContainerId, userId + "$" + palletCommand.getLifecycle() + "$" + palletCommand.getStatus());
     }
 
 
@@ -1802,15 +1818,15 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
     @Override
     public void revokeContainer(Long containerId, Long ouId, Long userId) {
         try {
+            // @mender yimin.lu 2016/11/1 容器状态会缓存到容器缓存中去，回滚时候从缓存中取出
             Container container = this.generalRcvdManager.findContainerByIdToShard(containerId, ouId);
-            long invCount = this.generalRcvdManager.findContainerListCountByInsideContainerIdFromSkuInventory(containerId, ouId);
-            if (invCount == 0) {
-                container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_USABLE);
-                container.setStatus(ContainerStatus.CONTAINER_STATUS_USABLE);
-            } else {
-                container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
-                container.setStatus(ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY);
-            }
+            String containercache = this.cacheManager.getValue(CacheKeyConstant.CACHE_RCVD_CONTAINER_USER_PREFIX + containerId);
+            String[] containercacheArray = containercache.split("$");
+            // long invCount =
+            // this.generalRcvdManager.findContainerListCountByInsideContainerIdFromSkuInventory(containerId,
+            // ouId);
+            container.setLifecycle(Integer.parseInt(containercacheArray[1]));
+            container.setStatus(Integer.parseInt(containercacheArray[2]));
             container.setOperatorId(userId);
             int updateCount = this.generalRcvdManager.updateContainerByVersion(container);
             if (updateCount < 1) {

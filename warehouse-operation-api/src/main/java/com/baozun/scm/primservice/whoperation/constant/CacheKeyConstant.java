@@ -48,6 +48,7 @@ public final class CacheKeyConstant {
     public static final String CACHE_RCVD_CONTAINER = "%CACHE-RCVD-CONTAINER$";
 
     /** 容器商品占用缓存 */
+    /** @mender yimin.lu 2016/11/1 调整缓存的对象为 userId+容器lifecycle+容器Status 以$分隔 */
     public static final String CACHE_RCVD_CONTAINER_USER_PREFIX = "%CACHE-RCVD-CONTAINER-USER$";
 
     /** 容器商品属性缓存前缀 规则：前缀+containerId */
