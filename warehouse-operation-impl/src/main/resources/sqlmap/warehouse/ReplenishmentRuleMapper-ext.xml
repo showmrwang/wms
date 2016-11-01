@@ -268,13 +268,24 @@
         ${locationRuleSql}
     </select>
 
-    <select id="findRuleByOuIdOrderByPriorityAsc" resultMap="ReplenishmentRuleCommand">
+    <select id="findRuleByReplenishTypeOuIdOrderByPriorityAsc" resultMap="ReplenishmentRuleCommand">
         select
         <include refid="replenishmentRuleColumnsExt"/>
         from t_wh_replenishment_rule
         where
         ou_id = #{ouId}
         and lifecycle = 1
+        <if test="orderReplenish!=null">
+            and order_replenish = #{orderReplenish}
+        </if>
+
+        <if test="realTimeReplenish!=null">
+            and real_time_replenish = #{realTimeReplenish}
+        </if>
+
+        <if test="waveReplenish!=null">
+            and wave_replenish = #{waveReplenish}
+        </if>
         order by priority asc
     </select>
 

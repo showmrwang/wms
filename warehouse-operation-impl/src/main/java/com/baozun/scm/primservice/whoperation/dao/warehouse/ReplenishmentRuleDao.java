@@ -100,7 +100,7 @@ public interface ReplenishmentRuleDao extends BaseDao<ReplenishmentRule, Long> {
      * @param skuRuleSql
      * @return
      */
-    List<Long> executeSkuRuleSql(@Param("skuRuleSql") String skuRuleSql, @Param("skuId") Long skuId, @Param("ouId") Long ouId);
+    List<Long> executeSkuRuleSql(@Param("skuRuleSql") String skuRuleSql, @Param("ouId") Long ouId);
 
     /**
      * 检查规则是否可用
@@ -110,7 +110,7 @@ public interface ReplenishmentRuleDao extends BaseDao<ReplenishmentRule, Long> {
      * @param locationRuleSql
      * @return
      */
-    List<Long> executeLocationRuleSql(@Param("locationRuleSql") String locationRuleSql, @Param("locationId") Long locationId, @Param("ouId") Long ouId);
+    List<Long> executeLocationRuleSql(@Param("locationRuleSql") String locationRuleSql, @Param("ouId") Long ouId);
 
     /**
      * 获取所有可用的补货规则，并按照优先级从高到低排序
@@ -119,5 +119,5 @@ public interface ReplenishmentRuleDao extends BaseDao<ReplenishmentRule, Long> {
      * @param ouId
      * @return
      */
-    List<ReplenishmentRuleCommand> findRuleByOuIdOrderByPriorityAsc(Long ouId);
+    List<ReplenishmentRuleCommand> findRuleByReplenishTypeOuIdOrderByPriorityAsc(@Param("orderReplenish") Boolean orderReplenish, @Param("realTimeReplenish") Boolean realTimeReplenish, @Param("waveReplenish") Boolean waveReplenish, @Param("ouId") Long ouId);
 }

@@ -52,7 +52,9 @@ public class RuleExportCommand extends BaseCommand {
     private Map<List<Long>, Long> allocateRuleOdoLineId;
 
     /** 补货规则 */
-    private List<ReplenishmentRuleCommand> replenishmentRuleCommandList;
+    private Map<Long, List<ReplenishmentRuleCommand>> replenishmentRuleSkuMatchListMap;
+    /** 补货规则匹配上的库位列表 */
+    private List<Long> replenishmentRuleLocationMatchList;
     
     /** 配货模式规则 */
     private List<WhDistributionPatternRuleCommand> whDistributionPatternRuleCommandList;
@@ -134,12 +136,20 @@ public class RuleExportCommand extends BaseCommand {
         this.allocateRuleOdoLineId = allocateRuleOdoLineId;
     }
 
-    public List<ReplenishmentRuleCommand> getReplenishmentRuleCommandList() {
-        return replenishmentRuleCommandList;
+    public Map<Long, List<ReplenishmentRuleCommand>> getReplenishmentRuleSkuMatchListMap() {
+        return replenishmentRuleSkuMatchListMap;
     }
 
-    public void setReplenishmentRuleCommandList(List<ReplenishmentRuleCommand> replenishmentRuleCommandList) {
-        this.replenishmentRuleCommandList = replenishmentRuleCommandList;
+    public void setReplenishmentRuleSkuMatchListMap(Map<Long, List<ReplenishmentRuleCommand>> replenishmentRuleSkuMatchListMap) {
+        this.replenishmentRuleSkuMatchListMap = replenishmentRuleSkuMatchListMap;
+    }
+
+    public List<Long> getReplenishmentRuleLocationMatchList() {
+        return replenishmentRuleLocationMatchList;
+    }
+
+    public void setReplenishmentRuleLocationMatchList(List<Long> replenishmentRuleLocationMatchList) {
+        this.replenishmentRuleLocationMatchList = replenishmentRuleLocationMatchList;
     }
 
     public List<WhDistributionPatternRuleCommand> getWhDistributionPatternRuleCommandList() {

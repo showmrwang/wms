@@ -112,9 +112,13 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
                 // 分配规则
                 export = allocateRule(ruleAffer);
                 break;
-            case Constants.REPLENISHMENT_RULE:
-                // 补货规则
-                export = exportReplenishmentRule(ruleAffer);
+            case Constants.RULE_TYPE_REPLENISHMENT_SKU:
+                // 补货规则 商品
+                export = exportReplenishmentRuleForSku(ruleAffer);
+                break;
+            case Constants.RULE_TYPE_REPLENISHMENT_LOCATION:
+                // 补货规则 库位
+                export = exportReplenishmentRuleForLocation(ruleAffer);
                 break;
             case Constants.DISTRIBUTION_PATTERN:
                 // 配货模式规则
@@ -130,6 +134,39 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
         }
         log.info(this.getClass().getSimpleName() + ".ruleExport method end! logid: " + ruleAffer.getLogId());
         return export;
+    }
+
+    /**
+     * 根据容器ID和库存ID验证该属性的sku是否可以放入容器
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public RuleExportCommand ruleExportContainerCode(RuleAfferCommand ruleAffer) {
+        RuleExportCommand export = new RuleExportCommand();
+        export.setExportContainerCode(null);
+        Long sortingResult = whInBoundRuleDao.executeSortingRuleSql(ruleAffer.getInvId(), ruleAffer.getContainerId(), ruleAffer.getWhInBoundRuleCommand().getSortingSql(), ruleAffer.getOuid());
+        if (null == sortingResult) {
+            export.setIsSkuMatchContainer(false);
+        } else {
+            export.setIsSkuMatchContainer(true);
+        }
+        return export;
+    }
+
+    /**
+     * 根据出库单ID获取排序后的出库单明细的拆分条件
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public RuleExportCommand ruleExportOutboundBoxSplitRequire(RuleAfferCommand ruleAffer) {
+        OutboundBoxRuleCommand outboundBoxRuleCommand = ruleAffer.getOutboundBoxRuleCommand();
+        Long odoId = ruleAffer.getOutboundBoxSortOdoId();
+        Long ouId = ruleAffer.getOuid();
+
+        List<OutboundBoxRuleSplitRequireCommand> outboundBoxRuleSplitRequireCommandList = outboundBoxRuleDao.executeOutboundBoxTacticsSql(outboundBoxRuleCommand.getSortSql(), odoId, ouId);
+        RuleExportCommand exportCommand = new RuleExportCommand();
+        exportCommand.setOutboundBoxRuleSplitRequireCommandList(outboundBoxRuleSplitRequireCommandList);
+        return exportCommand;
     }
 
     /**
@@ -220,31 +257,23 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
         RuleExportCommand export = new RuleExportCommand();
         // 查询所有可用上架规则 并且排序
         List<ShelveRecommendRuleCommand> shelveRuleList = shelveRecommendRuleDao.findShelveRecommendRuleByOuid(ruleAffer.getOuid());
-        // 存放规则对应哪些库存记录
-        Map<ShelveRecommendRuleCommand, List<String>> ruleInvSnMap = new HashMap<ShelveRecommendRuleCommand, List<String>>();
+        // 存放库存记录对应哪些规则
+        Map<String, List<ShelveRecommendRuleCommand>> invSnRuleMap = new HashMap<String, List<ShelveRecommendRuleCommand>>();
         for (ShelveRecommendRuleCommand shelveRule : shelveRuleList) {
             // 查询上架规则对应库存信息ID LIST
             List<String> invIdSnIdStrList = shelveRecommendRuleDao.executeRuleSql(shelveRule.getRuleSql().replace(Constants.SHELVE_RULE_PLACEHOLDER, insideContainerIdListStr), ruleAffer.getOuid());
             if (invIdSnIdStrList.size() > 0) {
-                ruleInvSnMap.put(shelveRule, invIdSnIdStrList);
-            }
-        }
-        // 存放库存记录对应哪些规则
-        Map<String, List<ShelveRecommendRuleCommand>> invSnRuleMap = new HashMap<String, List<ShelveRecommendRuleCommand>>();
-        // 把map Map<ShelveRecommendRuleCommand, List<Long>>封装成map Map<Long,
-        // List<ShelveRecommendRuleCommand>>
-        for (ShelveRecommendRuleCommand shelveRule : ruleInvSnMap.keySet()) {
-            List<String> invIdSnIdStrList = ruleInvSnMap.get(shelveRule);// 规则对应库存记录LIST
-            for (String invIdSnIdStr : invIdSnIdStrList) {
-                List<ShelveRecommendRuleCommand> shelveRuList = invSnRuleMap.get(invIdSnIdStr);// 库存记录对应的规则List
-                if (null == shelveRuList) {
-                    // 没值new新对象
-                    shelveRuList = new ArrayList<ShelveRecommendRuleCommand>();
+                for (String invIdSnIdStr : invIdSnIdStrList) {
+                    List<ShelveRecommendRuleCommand> shelveRuList = invSnRuleMap.get(invIdSnIdStr);// 库存记录对应的规则List
+                    if (null == shelveRuList) {
+                        // 没值new新对象
+                        shelveRuList = new ArrayList<ShelveRecommendRuleCommand>();
+                    }
+                    // 放入list
+                    shelveRuList.add(shelveRule);
+                    // 放入Map
+                    invSnRuleMap.put(invIdSnIdStr, shelveRuList);
                 }
-                // 放入list
-                shelveRuList.add(shelveRule);
-                // 放入Map
-                invSnRuleMap.put(invIdSnIdStr, shelveRuList);
             }
         }
         // 查询所有对应容器号的库存信息
@@ -338,35 +367,77 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
         return export;
     }
 
-    private RuleExportCommand exportReplenishmentRule(RuleAfferCommand ruleAffer) {
-        if (null == ruleAffer.getReplenishmentRuleSkuId() || null == ruleAffer.getReplenishmentRuleLocationId()) {
-            log.error("ruleExport exportReplenishmentRule error, param skuId or locationId is null, skuId is:[{}], locationId is:[{}]", ruleAffer.getReplenishmentRuleSkuId(), ruleAffer.getReplenishmentRuleLocationId());
+    /***
+     * 补货规则匹配商品
+     *
+     * @author mingwei.xie
+     * @param ruleAffer
+     * @return
+     */
+    private RuleExportCommand exportReplenishmentRuleForSku(RuleAfferCommand ruleAffer) {
+        if (null == ruleAffer.getReplenishmentRuleSkuIdList() || ruleAffer.getReplenishmentRuleSkuIdList().isEmpty()
+                || (null == ruleAffer.getReplenishmentRuleOrderReplenish() && null == ruleAffer.getReplenishmentRuleRealTimeReplenish() && null == ruleAffer.getReplenishmentRuleWaveReplenish())) {
+            log.error("ruleExport exportReplenishmentRuleForSku error, param skuId or replenishment type is null, ruleAffer is:[{}]", ruleAffer);
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
         // 商品ID
-        Long skuId = ruleAffer.getReplenishmentRuleSkuId();
-        // 库位ID
-        Long locationId = ruleAffer.getReplenishmentRuleLocationId();
+        List<Long> skuIdList = ruleAffer.getReplenishmentRuleSkuIdList();
         // 组织ID
         Long ouId = ruleAffer.getOuid();
-        // 查询所有可用的补货规则,按照优先级排序
-        List<ReplenishmentRuleCommand> ruleCommandList = replenishmentRuleDao.findRuleByOuIdOrderByPriorityAsc(ruleAffer.getOuid());
-        List<ReplenishmentRuleCommand> returnList = new ArrayList<>();
+        // 查询所有可用的补货规则,按照优先级排序,
+        List<ReplenishmentRuleCommand> ruleCommandList =
+                replenishmentRuleDao.findRuleByReplenishTypeOuIdOrderByPriorityAsc(ruleAffer.getReplenishmentRuleOrderReplenish(), ruleAffer.getReplenishmentRuleRealTimeReplenish(), ruleAffer.getReplenishmentRuleWaveReplenish(), ruleAffer.getOuid());
+        //存放商品匹配了哪些规则
+        Map<Long, List<ReplenishmentRuleCommand>> skuReplenishmentRuleMap = new HashMap<>();
         if (null != ruleCommandList && !ruleCommandList.isEmpty()) {
             for (ReplenishmentRuleCommand ruleCommand : ruleCommandList) {
-                // 匹配商品的规则
-                List<Long> matchSkuIdList = replenishmentRuleDao.executeSkuRuleSql(ruleCommand.getSkuRuleSql(), skuId, ouId);
-                // 匹配库位的规则
-                List<Long> matchLocationIdList = replenishmentRuleDao.executeLocationRuleSql(ruleCommand.getLocationRuleSql(), locationId, ouId);
-                if (null != matchSkuIdList && !matchSkuIdList.isEmpty() && null != matchLocationIdList && !matchLocationIdList.isEmpty()) {
-                    // 商品和库位的规则都匹配上了则符合条件
-                    returnList.add(ruleCommand);
+                //转换成逗号分隔的字符串
+                String skuIdListStr = StringUtil.listToStringWithoutBrackets(skuIdList, ',');
+                // 匹配规则的商品
+                List<Long> matchSkuIdList = replenishmentRuleDao.executeSkuRuleSql(ruleCommand.getSkuRuleSql().replace(Constants.REOLENISHMENT_RULE_SKUID_LIST_PLACEHOLDER, skuIdListStr), ouId);
+                if (null != matchSkuIdList && !matchSkuIdList.isEmpty()) {
+                    for(Long skuId : matchSkuIdList){
+                        List<ReplenishmentRuleCommand> skuMatchRuleList = skuReplenishmentRuleMap.get(skuId);
+                        if(null == skuMatchRuleList){
+                            skuMatchRuleList = new ArrayList<>();
+                        }
+                        skuMatchRuleList.add(ruleCommand);
+                        //记录每个商品匹配了哪些规则，且规则按照优先级排序
+                        skuReplenishmentRuleMap.put(skuId, skuMatchRuleList);
+                    }
                 }
             }
         }
 
         RuleExportCommand ruleExportCommand = new RuleExportCommand();
-        ruleExportCommand.setReplenishmentRuleCommandList(returnList);
+        ruleExportCommand.setReplenishmentRuleSkuMatchListMap(skuReplenishmentRuleMap);
+        return ruleExportCommand;
+    }
+
+    /**
+     * 补货规则匹配库位
+     *
+     * @author mingwei.xie
+     * @param ruleAffer
+     * @return
+     */
+    private RuleExportCommand exportReplenishmentRuleForLocation(RuleAfferCommand ruleAffer) {
+        if (null == ruleAffer.getReplenishmentRuleLocationIdList() || ruleAffer.getReplenishmentRuleLocationIdList().isEmpty() || null == ruleAffer.getReplenishmentRuleCommand()) {
+            log.error("ruleExport exportReplenishmentRule error, param skuId or replenishmentRule is null, ruleAffer is:[{}]", ruleAffer);
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+        }
+
+        List<Long> locationIdList = ruleAffer.getReplenishmentRuleLocationIdList();
+        // 组织ID
+        Long ouId = ruleAffer.getOuid();
+        ReplenishmentRuleCommand replenishmentRuleCommand = ruleAffer.getReplenishmentRuleCommand();
+        //转换成逗号分隔的字符串
+        String locationIdListStr = StringUtil.listToStringWithoutBrackets(locationIdList, ',');
+        // 匹配库位的规则
+        List<Long> matchLocationIdList = replenishmentRuleDao.executeLocationRuleSql(replenishmentRuleCommand.getLocationRuleSql().replace(Constants.REOLENISHMENT_RULE_LOCATIONID_LIST_PLACEHOLDER, locationIdListStr), ouId);
+
+        RuleExportCommand ruleExportCommand = new RuleExportCommand();
+        ruleExportCommand.setReplenishmentRuleLocationMatchList(matchLocationIdList);
         return ruleExportCommand;
     }
 
@@ -459,44 +530,6 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
             }
         }
         return stringBuilder.toString();
-    }
-
-    /**
-     * 根据容器ID和库存ID验证该属性的sku是否可以放入容器
-     */
-    @Override
-    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public RuleExportCommand ruleExportContainerCode(RuleAfferCommand ruleAffer) {
-        if (null == ruleAffer.getInvId() || null == ruleAffer.getContainerId() || null == ruleAffer.getWhInBoundRuleCommand() || null == ruleAffer.getWhInBoundRuleCommand().getSortingSql() || null == ruleAffer.getOuid()) {
-            // 判断原始库存ID是否为空
-            log.warn("RuleManagerImpl ruleExportContainerCode param is null, param ruleAffer is:{}, logId is:{} ", ruleAffer, ruleAffer.getLogId());
-            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
-        }
-        RuleExportCommand export = new RuleExportCommand();
-        export.setExportContainerCode(null);
-        Long sortingResult = whInBoundRuleDao.executeSortingRuleSql(ruleAffer.getInvId(), ruleAffer.getContainerId(), ruleAffer.getWhInBoundRuleCommand().getSortingSql(), ruleAffer.getOuid());
-        if (null == sortingResult) {
-            export.setIsSkuMatchContainer(false);
-        } else {
-            export.setIsSkuMatchContainer(true);
-        }
-        return export;
-    }
-
-    /**
-     * 根据出库单ID获取排序后的出库单明细的拆分条件
-     */
-    @Override
-    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public RuleExportCommand ruleExportOutboundBoxSplitRequire(RuleAfferCommand ruleAffer) {
-        OutboundBoxRuleCommand outboundBoxRuleCommand = ruleAffer.getOutboundBoxRuleCommand();
-        Long odoId = ruleAffer.getOutboundBoxSortOdoId();
-        Long ouId = ruleAffer.getOuid();
-
-        List<OutboundBoxRuleSplitRequireCommand> outboundBoxRuleSplitRequireCommandList = outboundBoxRuleDao.executeOutboundBoxTacticsSql(outboundBoxRuleCommand.getSortSql(), odoId, ouId);
-        RuleExportCommand exportCommand = new RuleExportCommand();
-        exportCommand.setOutboundBoxRuleSplitRequireCommandList(outboundBoxRuleSplitRequireCommandList);
-        return exportCommand;
     }
 
     /***

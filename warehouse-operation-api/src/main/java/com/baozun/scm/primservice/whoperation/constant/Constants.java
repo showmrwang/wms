@@ -185,8 +185,6 @@ public final class Constants {
     /** 分配区域 */
     public static final String AREA_TYPE_ALLOCATE_AREA = "allocatearea";
 
-    /** 补货规则 */
-    public static final String REPLENISHMENT_RULE = "REPLENISHMENT_RULE";
     /** 补货规则 货品规则类型 */
     public static final String RULE_TYPE_REPLENISHMENT_SKU = "REPLENISHMENT_SKU";
     /** 补货规则 库位规则类型 */
@@ -271,6 +269,11 @@ public final class Constants {
 
     /** 上架规则sql占位符 */
     public static final String SHELVE_RULE_PLACEHOLDER = "${insideContainerIdListStr}";
+
+    /** 补货规则商品规则skuId占位符 */
+    public static final String REOLENISHMENT_RULE_SKUID_LIST_PLACEHOLDER = "${skuIdListStr}";
+    /** 补货规则库位规则locationId占位符 */
+    public static final String REOLENISHMENT_RULE_LOCATIONID_LIST_PLACEHOLDER = "${locationIdListStr}";
 
     /** 出库箱装箱规则sql占位符 */
     public static final String OUTBOUNDBOX_RULE_PLACEHOLDER = "${odoIdListStr}";
