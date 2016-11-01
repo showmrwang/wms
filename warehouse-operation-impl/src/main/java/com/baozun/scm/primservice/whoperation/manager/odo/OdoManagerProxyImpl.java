@@ -1084,6 +1084,11 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
         }
         this.odoManager.createOdoWave(wave, waveLineList, odoMap, odolineList, userId, logId);
         // 添加到波次中时候，计数器需要-1；
+        Iterator<Entry<Long, WhOdo>> odoIt = odoMap.entrySet().iterator();
+        while (odoIt.hasNext()) {
+            Entry<Long, WhOdo> entry = odoIt.next();
+            this.distributionModeArithmeticManagerProxy.AddToWave(waveCode, entry.getKey());
+        }
 
         return waveCode;
     }

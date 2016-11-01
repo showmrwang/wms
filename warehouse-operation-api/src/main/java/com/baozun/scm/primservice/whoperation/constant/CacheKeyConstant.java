@@ -15,6 +15,9 @@ public final class CacheKeyConstant {
     /** 通用收货ASN缓存 prefix+asnId */
     public static final String CACHE_ASN_PREFIX = "%CACHE-ASN$";
 
+    /** 通用收货PO缓存 prefix+poId */
+    public static final String CACHE_PO_PREFIX = "%CACHE-PO$";
+
     /** 通用收货ASNLINE缓存 规则:前缀+ASNID */
     public static final String CACHE_ASNLINE_PREFIX = "%CACHE-ASNLINE$";
 
