@@ -130,7 +130,7 @@ public interface GeneralRcvdManager extends BaseManager {
     // Long findContainerId(Long skuId, String code, Long ouId, Integer lifecycle, Long
     // containerTypeId);
 
-    ContainerCommand findContainer(Long skuId, String code, Long ouId, Long containerTypeId);
+    ContainerCommand findContainer(Long skuId, String code, Long ouId, Long containerTypeId, Long userId);
 
     /**
      * @author yimin.lu

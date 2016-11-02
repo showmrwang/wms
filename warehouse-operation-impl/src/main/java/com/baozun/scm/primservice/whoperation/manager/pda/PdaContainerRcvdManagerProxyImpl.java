@@ -223,7 +223,7 @@ public class PdaContainerRcvdManagerProxyImpl extends BaseManagerImpl implements
     */
     @Override
     public ContainerCommand checkContainer(WhSkuInventoryCommand command) {
-        ContainerCommand containerCommand = this.generalRcvdManager.findContainer(command.getSkuId(), command.getInsideContainerCode(), command.getOuId(), command.getContainerType());
+        ContainerCommand containerCommand = this.generalRcvdManager.findContainer(command.getSkuId(), command.getInsideContainerCode(), command.getOuId(), command.getContainerType(), command.getUserId());
         return containerCommand;
     }
 

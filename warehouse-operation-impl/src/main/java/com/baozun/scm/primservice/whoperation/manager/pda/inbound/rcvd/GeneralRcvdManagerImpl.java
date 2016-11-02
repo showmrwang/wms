@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.baozun.redis.manager.CacheManager;
 import com.baozun.scm.baseservice.sac.manager.CodeManager;
 import com.baozun.scm.baseservice.sac.manager.PkManager;
 import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdCacheCommand;
@@ -31,6 +32,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhAsnRcvdLogCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.carton.WhCartonCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
+import com.baozun.scm.primservice.whoperation.constant.CacheKeyConstant;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
@@ -144,6 +146,8 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
     private ContainerAssistDao containerAssistDao;
     @Autowired
     private WhSkuInventorySnLogDao whSkuInventorySnLogDao;
+    @Autowired
+    private CacheManager cacheManager;
 
     @Override
     @Deprecated
@@ -737,7 +741,7 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public ContainerCommand findContainer(Long skuId, String code, Long ouId, Long containerTypeId) {
+    public ContainerCommand findContainer(Long skuId, String code, Long ouId, Long containerTypeId, Long userId) {
         /* 获取符合条件的更新个数 */
         ContainerCommand containerCommand = new ContainerCommand();
         containerCommand.setCode(code);
@@ -764,6 +768,7 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
             container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
             container.setStatus(ContainerStatus.CONTAINER_STATUS_RCVD);
             this.containerDao.update(container);
+            this.cacheManager.setValue(CacheKeyConstant.CACHE_RCVD_CONTAINER_USER_PREFIX + command.getId(), userId + "$" + command.getLifecycle() + "$" + command.getStatus());
             return command;
         } else {
             throw new BusinessException("找到的容器不符合");
