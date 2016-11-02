@@ -86,22 +86,22 @@ public class RcvdWorkFlow extends BaseCommand {
             if (null == attr.getInvAttr2()) {
                 list[RcvdWorkFlow.GENERAL_RECEIVING_INVATTR2] = '0';
             } else {
-                list[RcvdWorkFlow.GENERAL_RECEIVING_INVATTR2] = attr.getInvAttr1() ? '1' : '0';
+                list[RcvdWorkFlow.GENERAL_RECEIVING_INVATTR2] = attr.getInvAttr2() ? '1' : '0';
             }
             if (null == attr.getInvAttr3()) {
                 list[RcvdWorkFlow.GENERAL_RECEIVING_INVATTR3] = '0';
             } else {
-                list[RcvdWorkFlow.GENERAL_RECEIVING_INVATTR3] = attr.getInvAttr1() ? '1' : '0';
+                list[RcvdWorkFlow.GENERAL_RECEIVING_INVATTR3] = attr.getInvAttr3() ? '1' : '0';
             }
             if (null == attr.getInvAttr4()) {
                 list[RcvdWorkFlow.GENERAL_RECEIVING_INVATTR4] = '0';
             } else {
-                list[RcvdWorkFlow.GENERAL_RECEIVING_INVATTR4] = attr.getInvAttr1() ? '1' : '0';
+                list[RcvdWorkFlow.GENERAL_RECEIVING_INVATTR4] = attr.getInvAttr4() ? '1' : '0';
             }
             if (null == attr.getInvAttr5()) {
                 list[RcvdWorkFlow.GENERAL_RECEIVING_INVATTR5] = '0';
             } else {
-                list[RcvdWorkFlow.GENERAL_RECEIVING_INVATTR5] = attr.getInvAttr1() ? '1' : '0';
+                list[RcvdWorkFlow.GENERAL_RECEIVING_INVATTR5] = attr.getInvAttr5() ? '1' : '0';
             }
         } else {
             list[RcvdWorkFlow.GENERAL_RECEIVING_INVATTR1] = '0';
