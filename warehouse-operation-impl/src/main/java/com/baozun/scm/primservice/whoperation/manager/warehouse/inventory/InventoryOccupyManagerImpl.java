@@ -152,13 +152,14 @@ public class InventoryOccupyManagerImpl extends BaseInventoryManagerImpl impleme
 		for (int i = 0; i < list.size(); i++) {
 			WhSkuInventoryCommand inv = list.get(i);
 			Double oldQty = whSkuInventoryLogDao.sumSkuInvOnHandQty(inv.getUuid(), wh.getId());
-			if (count.compareTo(inv.getOnHandQty()) == -1) {
+			if (-1 == count.compareTo(inv.getOnHandQty())) {
 				boolean b = occupyInv(qty, oldQty, occupyCode, "ODO", odoLineId, inv.getId(), wh);
 				if(!b){
                     throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
                 }
 				insertShareInventory(inv, inv.getOnHandQty() - count, logId);
 				inv.setOnHandQty(inv.getOnHandQty() - count);
+				occupyNum = occupyNum + count;
 				count = 0.0;
 			} else {
 				boolean b = occupyInv(inv.getOnHandQty(), oldQty, occupyCode, "ODO", odoLineId, inv.getId(), wh);
