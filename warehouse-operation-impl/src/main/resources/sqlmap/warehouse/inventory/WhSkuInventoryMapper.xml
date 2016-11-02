@@ -130,7 +130,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	customer_id ,
 		        	store_id ,
 		        	occupation_code ,
-		        	occupation_line_id as occupationLineId,
+		        	occupation_line_id,
 		        	on_hand_qty ,
 		        	frozen_qty ,
 		        	inv_status ,
