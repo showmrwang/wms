@@ -1206,6 +1206,8 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
         List<WhSkuInventorySn> toSaveSkuInventorySnList = new ArrayList<>();
         // ASN收货日志对应的的SN/残次信息日志列表
         List<WhAsnRcvdLogCommand> whAsnRcvdLogCommandList = new ArrayList<>();
+        // 待保存的carton，包括包括缓存中的和数据库中未匹配上的原始单据，原始单据需更新已收数量为0
+        List<WhCartonCommand> toSaveCartonList = new ArrayList<>();
 
         // 已更新的原装箱信息ID列表
         Set<Long> originUpdateCartonIdList = new HashSet<>();
@@ -1246,6 +1248,13 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
         for (WhCartonCommand originCarton : originCartonList) {
             if (!originUpdateCartonIdList.contains(originCarton.getId())) {
                 originCarton.setSkuQty(0d);
+                // 没有修改的原carton数据修改已收数据为0
+                originCarton.setQtyRcvd(0d);
+                originCarton.setModifiedId(userId);
+                originCarton.setInsert(false);
+                //加入待保存的carton列表
+                toSaveCartonList.add(originCarton);
+
                 // 创建ASN收货日志
                 WhAsnRcvdLogCommand whAsnRcvdLogCommand = this.createWhAsnRcvdLog(originCarton, userId, ouId, logId);
                 whAsnRcvdLogCommandList.add(whAsnRcvdLogCommand);
@@ -1283,10 +1292,12 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
         Warehouse warehouse = caseLevelRcvdManager.getWarehouseById(ouId);
         // 在库存日志是否记录交易前后库存总数
         Boolean isTabbInvTotal = warehouse.getIsTabbInvTotal();
+        // 所有需更新的carton数据
+        toSaveCartonList.addAll(rcvdCartonList);
 
         try {
             // 在一个事务中保存所有数据到数据库
-            caseLevelRcvdManager.caseLevelReceivingCompleted(rcvdCartonList, toSaveSkuInventoryList, toSaveSkuInventorySnList, whAsnRcvdLogCommandList, toUpdateAsnLineList, toUpdateWhAsn, toUpdatePoLineList, toUpdateWhPoList, toUpdateContainer,
+            caseLevelRcvdManager.caseLevelReceivingCompleted(toSaveCartonList, toSaveSkuInventoryList, toSaveSkuInventorySnList, whAsnRcvdLogCommandList, toUpdateAsnLineList, toUpdateWhAsn, toUpdatePoLineList, toUpdateWhPoList, toUpdateContainer,
                     toSaveContainerAssist, isTabbInvTotal, userId, ouId, logId);
         } catch (BusinessException be) {
             throw be;

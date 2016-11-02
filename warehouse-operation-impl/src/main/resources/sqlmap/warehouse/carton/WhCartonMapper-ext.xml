@@ -377,7 +377,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         where carton.asn_id = #{asnId}
         and carton.ou_id = #{ouId}
         and carton.is_caselevel = 1
-        and ( (container.lifecycle = 1 and container.status = 1) or container.lifecycle = 3 and container.status = 2) )
+        and ( (container.lifecycle = 1 and container.status = 1) or (container.lifecycle = 3 and container.status = 2) )
     </select>
 
 
