@@ -240,14 +240,17 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
      * @return
      */
     private String initAsnOverchargeRate(Double overChargeRatePo, Double overChargeRateAsn, Long storeId, Long ouId) {
+        Map<Long, Store> storeMap = this.findStoreByRedis(Arrays.asList(new Long[] {storeId}));
+        Warehouse wh = this.warehouseManager.findWarehouseById(ouId);
+        Store store = storeMap.get(storeId);
         if (null == overChargeRatePo) {
-            String storePo = this.cacheManager.getMapValue(CacheKeyConstant.CACHE_STORE_PO_OVERCHARGE, storeId.toString());
-            if (StringUtils.hasText(storePo)) {
-                overChargeRatePo = Double.parseDouble(storePo);
+            Integer storePo = store.getIsPoOvercharge() ? store.getPoOverchargeProportion() : null;
+            if (storePo != null) {
+                overChargeRatePo = (Double) storePo.doubleValue();
             } else {
-                String whPo = this.cacheManager.getMapValue(CacheKeyConstant.CACHE_WAREHOUSE_PO_OVERCHARGE, ouId.toString());
-                if (StringUtils.hasText(whPo)) {
-                    overChargeRatePo = Double.parseDouble(whPo);
+                Integer whPo = wh.getIsPoOvercharge() ? wh.getPoOverchargeProportion() : null;
+                if (whPo != null) {
+                    overChargeRatePo = whPo.doubleValue();
                 }
             }
         }
@@ -255,13 +258,13 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
             overChargeRatePo = Constants.DEFAULT_DOUBLE;
         }
         if (null == overChargeRateAsn) {
-            String storeAsn = this.cacheManager.getMapValue(CacheKeyConstant.CACHE_STORE_ASN_OVERCHARGE, storeId.toString());
-            if (StringUtils.hasText(storeAsn)) {
-                overChargeRateAsn = Double.parseDouble(storeAsn);
+            Integer storeAsn = store.getIsAsnOvercharge() ? store.getAsnOverchargeProportion() : null;
+            if (storeAsn != null) {
+                overChargeRateAsn = storeAsn.doubleValue();
             } else {
-                String whAsn = this.cacheManager.getMapValue(CacheKeyConstant.CACHE_WAREHOUSE_ASN_OVERCHARGE, ouId.toString());
-                if (StringUtils.hasText(whAsn)) {
-                    overChargeRateAsn = Double.parseDouble(whAsn);
+                Integer whAsn = wh.getIsAsnOvercharge() ? wh.getAsnOverchargeProportion() : null;
+                if (whAsn != null) {
+                    overChargeRateAsn = whAsn.doubleValue();
                 }
             }
         }

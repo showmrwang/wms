@@ -97,7 +97,7 @@ public class WarehouseManagerImpl extends BaseManagerImpl implements WarehouseMa
     @Override
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public Warehouse findWarehouseById(Long id) {
-        Warehouse wh = this.cacheManager.getObject(CacheKeyConstant.CACHE_WAREHOSUE);
+        Warehouse wh = this.cacheManager.getObject(CacheKeyConstant.CACHE_WAREHOSUE + id);
         if (wh == null) {
             wh = warehouseDao.findWarehouseById(id);
             this.cacheManager.setObject(CacheKeyConstant.CACHE_WAREHOSUE + id, wh);
