@@ -83,8 +83,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		<where>
 			wave_template_id = #{whWaveTemplateId} 
 			<if test="phaseCode!=null and phaseCode!=''">
-				and phase_code &lt;&gt; #{phaseCode}
+				and phase_order > (select phase_order from t_wh_wave_phase where wave_template_id = #{whWaveTemplateId} and phase_code = #{phaseCode}) 
 			</if>
+				and ou_id = #{ouId}
 				and lifecycle = 1 
 		</where>
 		order by phase_order asc limit 0,1

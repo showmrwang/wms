@@ -746,4 +746,15 @@
 			and line.ou_id = #{ouId}
 	</select>
 	
+	<update id="updateOdoLineByAllocateFail" parameterType="map">
+		update 
+			t_wh_odo_line l
+		set 
+			l.is_assign_success = 0,
+			l.assign_fail_reason = #{reason},
+			l.wave_code = null
+		where 
+			l.odo_id = #{odoId}
+			and l.ou_id = #{ouId}
+	</update>
 </mapper>

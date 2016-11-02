@@ -18,6 +18,8 @@ package com.baozun.scm.primservice.whoperation.dao.system;
 
 import java.util.Map;
 
+import org.apache.ibatis.annotations.Param;
+
 import lark.common.annotation.CommonQuery;
 import lark.common.annotation.QueryPage;
 import lark.common.dao.Page;
@@ -39,4 +41,5 @@ public interface SysThreadDeployDao extends BaseDao<SysThreadDeploy, Long>{
 	@CommonQuery
 	int saveOrUpdateByVersion(SysThreadDeploy o);
 	
+	SysThreadDeploy getSysThreadDeployByCode(@Param("code") String code, @Param("ouId") Long ouId);
 }

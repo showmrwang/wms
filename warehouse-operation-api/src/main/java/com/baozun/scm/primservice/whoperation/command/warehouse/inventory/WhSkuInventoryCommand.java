@@ -223,6 +223,8 @@ public class WhSkuInventoryCommand extends BaseCommand {
     private Integer qtyRest;
 
     private Integer qtyRestContainer;
+    
+    private Double sumOnHandQty;
 
     public Boolean getIsPalletRcvdFinished() {
         return isPalletRcvdFinished;
@@ -879,5 +881,13 @@ public class WhSkuInventoryCommand extends BaseCommand {
     public void setQtyRestContainer(Integer qtyRestContainer) {
         this.qtyRestContainer = qtyRestContainer;
     }
+
+	public Double getSumOnHandQty() {
+		return sumOnHandQty;
+	}
+
+	public void setSumOnHandQty(Double sumOnHandQty) {
+		this.sumOnHandQty = sumOnHandQty;
+	}
 
 }

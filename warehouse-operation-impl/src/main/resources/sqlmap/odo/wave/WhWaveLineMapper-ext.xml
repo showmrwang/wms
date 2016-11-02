@@ -182,7 +182,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	create_time as createTime,
 	        	created_id as createdId,
 	        	last_modify_time as lastModifyTime,
-	        	modified_id as modifiedId
+	        	modified_id as modifiedId,
+	        	is_pallet_container,
+	        	pallet_container_qty, 
+	        	is_static_location_allocate,
+	        	static_location_ids,
+	        	area_id
 	    ]]>
 	</sql>
 	
@@ -414,7 +419,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-			        allocateQty = #{allocateQty,javaType=Double,jdbcType=DECIMAL} ,
+			        allocate_qty = #{allocateQty,javaType=Double,jdbcType=DECIMAL} ,
+			        is_pallet_container = #{isPalletContainer,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        pallet_container_qty = #{palletContainerQty,javaType=Double,jdbcType=DECIMAL} ,
+			        is_static_location_allocate = #{isStaticLocationAllocate,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        static_location_ids = #{staticLocationIds,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        area_id = #{areaId,javaType=java.lang.Long,jdbcType=BIGINT} 
 		        WHERE 
 			        id = #{id} 
 			        and ou_id = #{ouId} 
@@ -559,14 +569,77 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		waveLine.odo_order_time desc,waveLine.qty, waveLine.odo_id asc
 	</select>
 	
-	<delete id="removeWaveLineWhole" parameterType="java.lang.Long">
+	<delete id="removeWaveLineWhole" parameterType="map">
 	    <![CDATA[
-	        delete from t_wh_wave_line line where
-		        line.wave_id = #{waveId} 
-				and line.odo_id = #{odoId}
-				and line.ou_id = #{ouId}
+	        delete from t_wh_wave_line where
+		        wave_id = #{waveId} 
+				and odo_id = #{odoId}
+				and ou_id = #{ouId}
 	    ]]>
-	    </delete> 
+	</delete> 
+	    
+	<update id="modifyRuleIntoWhWaveLine" parameterType="map">
+		update t_wh_wave_line l set l.allocate_rule_id = #{ruleId} 
+		<where>
+			and l.odo_line_id in 
+			<foreach collection="whWaveLine" item="id" open="(" separator="," close=")">
+				#{id}
+			</foreach> 
+			and ou_id = #{ouId}
+		</where>
+	</update>
 	
+	<select id="getOdoLinesByWaveIdList" parameterType="map" resultType="long">
+		select 
+			l.odo_line_id 
+		from 
+			t_wh_wave_line l 
+		where l.wave_id in 
+		<foreach collection="waveIdList" item="id" open="(" separator="," close=")">
+			#{id} 
+		</foreach> 
+		AND l.ou_id = #{ouId}
+	</select>
 	
+	<select id="getWhWaveLinesByWaveIdList" parameterType="map" resultMap="WhWaveLineResultExt">
+		select 
+			<include refid="whWaveLineColumns" />
+		from 
+			t_wh_wave_line l 
+		where 
+			l.wave_id in 
+			<foreach collection="waveIdList" item="id" open="(" separator="," close=")">
+				#{id} 
+			</foreach> 
+			AND l.ou_id = #{ouId}
+	</select>
+	
+	<select id="findWhWaveLineById" parameterType="map" resultMap="WhWaveLineResultExt">
+		select 
+			<include refid="whWaveLineColumns" />
+	    from 
+	    	t_wh_wave_line 
+	    where 
+	        id = #{id} 
+        <if test="ouId != null">
+        	and ou_id = #{ouId}
+        </if>
+	</select>
+	
+	<select id="findNotEnoughAllocationQty" parameterType="map" resultMap="WhWaveLineResultExt">
+		select 
+			<include refid="whWaveLineColumns" /> 
+		from 
+			t_wh_wave_line l 
+		where 
+			l.allocate_qty &lt; l.qty 
+			and l.wave_id = #{waveId}
+			and ou_id = #{ouId}
+	</select>
+	
+	<select id="findOdoIdByWaveId" resultType="long">
+		select distinct odo_id from t_wh_wave_line l
+		where l.wave_id = #{waveId}
+		and l.ou_id = #{ouId}
+	</select>
 </mapper>

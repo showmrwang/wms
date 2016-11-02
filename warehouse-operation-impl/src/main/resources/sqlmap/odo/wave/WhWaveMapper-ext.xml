@@ -513,4 +513,24 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			wave.id = #{id} and wave.ou_id = #{ouId}
     </select>
     
+    <select id="getNeedAllocationRuleWhWave" parameterType="map" resultType="long">
+		SELECT w.id 
+		FROM t_wh_wave w 
+		WHERE w.phase_code = 'ALLOCATED' 
+		AND w.allocate_phase = #{allocatePhase}
+		AND w.ou_id = #{ouId}
+	</select>
+	
+	<update id="updateWhWaveAllocatePhase" parameterType="map">
+		update 
+			t_wh_wave w 
+		set 
+			w.allocate_phase = #{allocatePhase} 
+		where 
+			w.ou_id = #{ouId} 
+			and w.id in
+			<foreach collection="waveIdList" item="id" open="(" separator="," close=")">
+				#{id}
+			</foreach> 
+	</update>
 </mapper>

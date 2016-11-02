@@ -589,4 +589,10 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
         }
 
     }
+
+    @Override
+	public List<OdoCommand> getNoRuleOdoIdList(List<Long> waveIdList, Long ouId) {
+		List<OdoCommand> datas = whOdoDao.getNoRuleOdoIdList(waveIdList, ouId);
+		return datas;
+	}
 }

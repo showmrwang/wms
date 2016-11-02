@@ -182,5 +182,10 @@ public interface OdoManager extends BaseManager {
      * @param ouId
      */
     void removeOdoAndLineWhole(Long waveId, Long odoId, List<Long> odoLineIds, Long ouId);
+    
+    /**
+	 * [业务方法] 硬分配-根据提供波次ID查找当中有波次明细未分配规则的出库单ID
+	 */
+	List<OdoCommand> getNoRuleOdoIdList(List<Long> waveIdList, Long id);
 
 }

@@ -1,6 +1,8 @@
 package com.baozun.scm.primservice.whoperation.manager.odo.wave;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine;
@@ -8,7 +10,7 @@ import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine;
 public interface WhWaveLineManager extends BaseManager {
 
     /**
-     * 得到所有硬阶段需要分配规则或硬分配的波次名次行集合
+     * [业务方法] 得到所有硬阶段需要分配规则或硬分配的波次名次行集合
      * @return
      */
     List<WhWaveLine> getHardAllocationWhWaveLine(Integer allocatePhase, Long ouId);
@@ -35,4 +37,37 @@ public interface WhWaveLineManager extends BaseManager {
      * @return
      */
     WhWaveLine getWaveLineByIdAndOuId(Long waveLineId, Long ouId);
+    
+    /**
+	 * [业务方法] 硬分配-添加规则Id到一批波次明细行
+	 */
+	void modifyRuleIntoWhWaveLine(List<Long> whWaveLine, Long ruleId, Long ouId);
+	
+	/**
+	 * [业务方法] 硬分配-根据波次ID获得所有出库单明细ID
+	 */
+	List<Long> getOdoLinesByWaveIdList(List<Long> waveIdList, Long ouId);
+	
+	/**
+	 * [业务方法] 硬分配-在一个波次明细中剔除整单并记录原因
+	 */
+	void deleteWaveLinesByOdoId(Long odoId, Long waveId, Long ouId, String reason);
+	
+	/**
+	 * [业务方法] 硬分配-根据波次ID获得所有出库单明细ID
+	 */
+	List<WhWaveLine> getWhWaveLinesByWaveIdList(List<Long> waveIdList, Long ouId);
+	
+	/**
+	 * [业务方法] 硬分配-分配库存成功后回填分配数量和分配容器数量
+	 * @param line
+	 * @param containerQty
+	 * @param ouId 
+	 * @param staticLocationIds 
+	 * @param isStaticLocation 
+	 */
+	void updateWaveLineByAllocateQty(Long invId, Double allocateQty, Double containerQty, Boolean isStaticLocation, Set<String> staticLocationIds, Long areaId, Long ouId);
+
+	Map<Long, Map<Long, Map<Long, Map<Long, Map<Boolean, List<WhWaveLine>>>>>> getNeedInventoryMap(List<Long> waveIdList, Long ouId);
+
 }

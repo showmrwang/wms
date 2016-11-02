@@ -1504,4 +1504,27 @@
 		
 	</select>
 	
+	<select id="getNoRuleOdoIdList" parameterType="map" resultMap="OdoCommand">
+		select l.odo_id as id,l.wave_id,m.is_whole_order_outbound 
+		from t_wh_wave w,t_wh_wave_line l,t_wh_wave_master m
+		where w.id = l.wave_id and w.wave_master_id = m.id and l.allocate_rule_id is null 
+		and l.wave_id in 
+		<foreach collection="waveIdList" item="id" open="(" separator="," close=")">
+			#{id}
+		</foreach> 
+		and w.ou_id = #{ouId}
+		group by l.odo_id,l.wave_id,m.is_whole_order_outbound
+	</select>
+	
+	<update id="updateOdoByAllocateFail" parameterType="map">
+		update 
+			t_wh_odo o
+		set 
+			o.is_assign_success = 0,
+			o.assign_fail_reason = #{reason},
+			o.wave_code = null
+		where 
+			o.id = #{odoId}
+			and o.ou_id = #{ouId}
+	</update>
 </mapper>

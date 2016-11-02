@@ -16,6 +16,8 @@ package com.baozun.scm.primservice.whoperation.manager.warehouse.inventory;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -40,19 +42,28 @@ import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.TipCon
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
+import com.baozun.scm.primservice.whoperation.command.wave.WhWaveLineCommand;
 import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
+import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
 import com.baozun.scm.primservice.whoperation.constant.WhPutawayPatternDetailType;
+import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhLocationDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhSkuDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventorySnDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryTobefilledDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseInventoryManagerImpl;
+import com.baozun.scm.primservice.whoperation.manager.odo.wave.WhWaveLineManager;
 import com.baozun.scm.primservice.whoperation.manager.pda.inbound.cache.PdaPutawayCacheManager;
 import com.baozun.scm.primservice.whoperation.manager.pda.inbound.putaway.SkuCategoryProvider;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.WarehouseManager;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
+import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine;
+import com.baozun.scm.primservice.whoperation.model.warehouse.AllocateStrategy;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Location;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
@@ -85,7 +96,16 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     private CacheManager cacheManager;
     @Autowired
     private PdaPutawayCacheManager pdaPutawayCacheManager;
-
+    @Autowired
+    private InventoryOccupyManager inventoryOccupyManager;
+    @Autowired
+    private WarehouseManager warehouseManager;
+    @Autowired
+    private WhSkuDao skuDao;
+    @Autowired
+    private WhWaveLineManager whWaveLineManager;
+    @Autowired
+    private WhOdoDao whOdoDao;
     /**
      * 库位绑定（分配容器库存及生成待移入库位库存）
      * 
@@ -2643,4 +2663,365 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             }
         }
     }
+    
+	@Override
+	public void allocationInventoryByLine(WhWaveLineCommand whWaveLineCommand, List<AllocateStrategy> rules, Double qty, Warehouse wh, String logId) {
+		if (log.isInfoEnabled()) {
+			log.info("allocationInventoryByLine start,waveLineId:{},qty:{},logId:{}", whWaveLineCommand.getId(), qty, logId);
+		}
+		Double actualQty = 0.0;		// 实际占用数量
+		Double containerQty = 0.0;	// 容器占用数量
+		Double occupyQty = qty;		// 需要占用数量
+		String occupyCode = whWaveLineCommand.getOdoCode(); // 占用编码
+		Long odoLineId = whWaveLineCommand.getOdoLineId();	// 占用odoLineId
+		// 记录静态库位可超分配的库位id
+		Boolean isStaticLocation = false;
+		Set<String> staticLocationIds = new HashSet<String>();
+		Long areaId = null;
+		for (AllocateStrategy as : rules) {
+			if (Constants.ALLOCATE_STRATEGY_STATICLOCATIONCANASSIGNMENT.equals(as.getStrategyCode())) {
+				isStaticLocation = true;
+				areaId = as.getAreaId();
+			} else {
+				isStaticLocation = false;
+			}
+			List<String> allocateUnitCodes = Arrays.asList(as.getAllocateUnitCodes().split(","));
+			whWaveLineCommand.setAreaId(as.getAreaId());
+			// 策略分配单位中包含托盘出
+			if (allocateUnitCodes.contains(Constants.ALLOCATE_UNIT_PALLET)) {
+				whWaveLineCommand.setAllocateUnitCodes(Constants.ALLOCATE_UNIT_PALLET);
+				List<WhSkuInventoryCommand> uuids = findInventorysByAllocateStrategy(as.getStrategyCode(), whWaveLineCommand, occupyQty);
+				Double num = inventoryOccupyManager.occupyInvUuidsByPalletContainer(uuids, null, occupyQty, occupyCode, odoLineId, wh, Constants.ALLOCATE_UNIT_PALLET, isStaticLocation, staticLocationIds);
+				occupyQty -= num;
+				actualQty += num;
+				containerQty += num;
+			}
+			// 策略分配单位中包含货箱出
+			if (allocateUnitCodes.contains(Constants.ALLOCATE_UNIT_CONTAINER)) {
+				whWaveLineCommand.setAllocateUnitCodes(Constants.ALLOCATE_UNIT_CONTAINER);
+				List<WhSkuInventoryCommand> uuids = findInventorysByAllocateStrategy(as.getStrategyCode(), whWaveLineCommand, occupyQty);
+				Double num = inventoryOccupyManager.occupyInvUuidsByPalletContainer(uuids, null, occupyQty, occupyCode, odoLineId, wh, Constants.ALLOCATE_UNIT_CONTAINER, isStaticLocation, staticLocationIds);
+				occupyQty -= num;
+				actualQty += num;
+				containerQty += num;
+			}
+			// 按件查出库存并占用
+			whWaveLineCommand.setAllocateUnitCodes(Constants.ALLOCATE_UNIT_PIECE);
+			List<WhSkuInventoryCommand> skuInvs = findInventorysByAllocateStrategy(as.getStrategyCode(), whWaveLineCommand, occupyQty);
+			Double num = inventoryOccupyManager.hardAllocateOccupy(skuInvs, occupyQty, occupyCode, odoLineId, wh);
+			occupyQty -= num;
+			actualQty += num;
+			if (occupyQty.compareTo(new Double(0.0)) == 0) {
+				break;
+			}
+		}
+		// 数量全部占完回写波次明细分配数量
+		whWaveLineManager.updateWaveLineByAllocateQty(whWaveLineCommand.getId(), actualQty, containerQty, isStaticLocation, staticLocationIds, areaId, wh.getId());
+		if (log.isInfoEnabled()) {
+			log.info("allocationInventoryByLine end,waveLineId:{},actualQty:{},logId:{}", whWaveLineCommand.getId(), actualQty, logId);
+		}
+	}
+	
+	@Override
+	public void allocationInventoryByLineList(List<WhWaveLine> notHaveInvAttrLines, List<AllocateStrategy> rules, Warehouse wh, String logId) {
+		if (log.isInfoEnabled()) {
+			log.info("allocationInventoryByLineList start,ouId:{},logId:{}", wh.getId(), logId);
+		}
+		if (notHaveInvAttrLines == null || notHaveInvAttrLines.isEmpty()) {
+			return;
+		}
+		List<WhSkuInventoryCommand> allSkuInvs = new ArrayList<WhSkuInventoryCommand>();
+		// 记录静态库位可超分配的库位id
+		Boolean isStaticLocation = false;
+		Set<String> staticLocationIds = new HashSet<String>();
+		Long areaId = null;
+		for (AllocateStrategy as : rules) {
+			List<String> allocateUnitCodes = Arrays.asList(as.getAllocateUnitCodes().split(","));	// 分配单位
+			if (Constants.ALLOCATE_STRATEGY_STATICLOCATIONCANASSIGNMENT.equals(as.getStrategyCode())) {
+				isStaticLocation = true;
+				areaId = as.getAreaId();
+			} else {
+				isStaticLocation = false;
+			}
+			WhWaveLineCommand whWaveLineCommand = new WhWaveLineCommand();
+			for (int j = 0; j < notHaveInvAttrLines.size(); j++) {
+				WhWaveLine line = notHaveInvAttrLines.get(j);
+				BeanUtils.copyProperties(line, whWaveLineCommand);
+				Double occupyQty = 0.0;					// 实际占用数量
+				Double qty = line.getQty();				// 需要占用数量
+				String occupyCode = line.getOdoCode();	// 占用编码
+				Long odoLineId = line.getOdoLineId();	// 占用odoLineId
+				Double containerQty = 0.0;
+				// 查出此策略下的所有件库存
+				if (allSkuInvs == null || allSkuInvs.isEmpty()) {
+					whWaveLineCommand.setAreaId(as.getAreaId());
+					whWaveLineCommand.setAllocateUnitCodes(Constants.ALLOCATE_UNIT_PIECE);
+					allSkuInvs = findInventorysByAllocateStrategy(as.getStrategyCode(), whWaveLineCommand, qty);
+					if (allSkuInvs == null || allSkuInvs.isEmpty()) {
+						break;
+					}
+				}
+				// 策略分配单位中包含托盘出
+				if (allocateUnitCodes.contains(Constants.ALLOCATE_UNIT_PALLET)) {
+					whWaveLineCommand.setAllocateUnitCodes(Constants.ALLOCATE_UNIT_PALLET);
+					// 查询出是托盘容器的库存份
+					List<WhSkuInventoryCommand> uuids = findInventorysByAllocateStrategy(as.getStrategyCode(), whWaveLineCommand, qty);
+					// 占用库存并把策略下的所有件库存集合(allSkuInvs)扣减
+					Double num = inventoryOccupyManager.occupyInvUuidsByPalletContainer(uuids, allSkuInvs, qty, occupyCode, odoLineId, wh, Constants.ALLOCATE_UNIT_PALLET, isStaticLocation, staticLocationIds);
+					qty -= num;
+					occupyQty += num;
+					containerQty += num;
+				}
+				// 策略分配单位中包含货箱出
+				if (allocateUnitCodes.contains(Constants.ALLOCATE_UNIT_CONTAINER)) {
+					whWaveLineCommand.setAllocateUnitCodes(Constants.ALLOCATE_UNIT_CONTAINER);
+					// 查询出是货箱容器的库存份
+					List<WhSkuInventoryCommand> uuids = findInventorysByAllocateStrategy(as.getStrategyCode(), whWaveLineCommand, qty);
+					// 占用库存并把策略下的所有件库存集合(allSkuInvs)扣减
+					Double num = inventoryOccupyManager.occupyInvUuidsByPalletContainer(uuids, allSkuInvs, qty, occupyCode, odoLineId, wh, Constants.ALLOCATE_UNIT_CONTAINER, isStaticLocation, staticLocationIds);
+					qty -= num;
+					occupyQty += num;
+					containerQty += num;
+				}
+				Double num = 0.0;
+				// 分配策略为数量最佳匹配
+				if (Constants.ALLOCATE_STRATEGY_QUANTITYBESTMATCH.equals(as.getStrategyCode())) {
+					List<WhSkuInventoryCommand> uuids = findInventoryUuidByBestMatchAndPiece(whWaveLineCommand, qty);
+					num = inventoryOccupyManager.occupyInvUuids(uuids, allSkuInvs, qty, occupyCode, odoLineId, wh, Constants.ALLOCATE_UNIT_CONTAINER, isStaticLocation, staticLocationIds);
+					occupyQty += num;
+				} else {
+					// 按件占用
+					num = inventoryOccupyManager.hardAllocateListOccupy(allSkuInvs, qty, occupyCode, odoLineId, wh, isStaticLocation, staticLocationIds);
+					occupyQty += num;
+				}
+				if (qty.compareTo(num) == 1) {
+					line.setQty(qty - num);
+				} else if (qty.compareTo(num) == 0) {
+					notHaveInvAttrLines.remove(j--);
+				}
+				whWaveLineManager.updateWaveLineByAllocateQty(line.getId(), occupyQty, containerQty, isStaticLocation, staticLocationIds, areaId, wh.getId());
+				if (allSkuInvs == null || allSkuInvs.isEmpty()) {
+					break;
+				}
+			}
+			if (notHaveInvAttrLines.isEmpty()) {
+				break;
+			}
+		}
+		if (log.isInfoEnabled()) {
+			log.info("allocationInventoryByLineList end,ouId:{},logId:{}", wh.getId(), logId);
+		}
+	}
+
+	private List<WhSkuInventoryCommand> findInventorysByAllocateStrategy(String strategyCode, WhWaveLineCommand whWaveLineCommand, Double qty) {
+		List<WhSkuInventoryCommand> list = new ArrayList<WhSkuInventoryCommand>();
+		// 先入先出
+		if (Constants.ALLOCATE_STRATEGY_FIRSTINFIRSTOUT.equals(strategyCode)) {
+			list = findInventoryUuidByInBoundTime(whWaveLineCommand, true);
+		}
+		// 先入后出
+		else if (Constants.ALLOCATE_STRATEGY_FIRSTINLASTOUT.equals(strategyCode)) {
+			list = findInventoryUuidByInBoundTime(whWaveLineCommand, false);
+		}
+		// 先到期先出
+		else if (Constants.ALLOCATE_STRATEGY_FIRSTEXPIRATIONFIRSTOUT.equals(strategyCode)) {
+			list = findInventoryUuidByExpTime(whWaveLineCommand, true);
+		}
+		// 后到期先出
+		else if (Constants.ALLOCATE_STRATEGY_FIRSTEXPIRATIONLASTOUT.equals(strategyCode)) {
+			list = findInventoryUuidByExpTime(whWaveLineCommand, false);
+		}
+		// 数量最佳匹配
+		else if (Constants.ALLOCATE_STRATEGY_QUANTITYBESTMATCH.equals(strategyCode)) {
+			list = findInventoryUuidByBestMatch(whWaveLineCommand, qty);
+		}
+		// 最大存储空间
+		else if (Constants.ALLOCATE_STRATEGY_MAXIMUMSTORAGESPACE.equals(strategyCode)) {
+			list = findInventoryUuidByAmount(whWaveLineCommand, true);
+		}
+		// 最小拣货次数
+		else if (Constants.ALLOCATE_STRATEGY_MINIMUMORDERPICKINGTIMES.equals(strategyCode)) {
+			list = findInventoryUuidByAmount(whWaveLineCommand, false);
+		}
+		// 静态库位可超分配
+		else if (Constants.ALLOCATE_STRATEGY_STATICLOCATIONCANASSIGNMENT.equals(strategyCode)) {
+			list = findInventoryUuidByStaticLocation(whWaveLineCommand, true);
+		}
+		// 静态库位不可超分配
+		else if (Constants.ALLOCATE_STRATEGY_STATICLOCATIONNOTCANASSIGNMENT.equals(strategyCode)) {
+			list = findInventoryUuidByStaticLocation(whWaveLineCommand, true);
+		}
+		// 混SKU库位
+		else if (Constants.ALLOCATE_STRATEGY_MIXEDSKUSLOCATION.equals(strategyCode)) {
+			list = findInventoryUuidByMixedLocation(whWaveLineCommand, true);
+		}
+		// 空库位
+		else if (Constants.ALLOCATE_STRATEGY_EMPTYLOCATION.equals(strategyCode)) {
+			
+		}
+		return list;
+	}
+	
+	public List<WhSkuInventoryCommand> findInventoryUuidByInBoundTime(WhWaveLineCommand whWaveLineCommand, boolean flag) {
+		List<WhSkuInventoryCommand> skuInvs = null;
+		// 入库时间顺序 true:升序 false:降序
+		whWaveLineCommand.setPriority(new Boolean(flag));
+		if (Constants.ALLOCATE_UNIT_PALLET.equals(whWaveLineCommand.getAllocateUnitCodes())
+				|| Constants.ALLOCATE_UNIT_CONTAINER.equals(whWaveLineCommand.getAllocateUnitCodes())) {
+			skuInvs = whSkuInventoryDao.findInventoryUuidByInBoundTime(whWaveLineCommand);
+		} else if (Constants.ALLOCATE_UNIT_PIECE.equals(whWaveLineCommand.getAllocateUnitCodes())) {
+			skuInvs = whSkuInventoryDao.findInventoryByInBoundTime(whWaveLineCommand);
+		}
+		return skuInvs;
+	}
+    
+	public List<WhSkuInventoryCommand> findInventoryUuidByExpTime(WhWaveLineCommand whWaveLineCommand, boolean flag) {
+		Long skuId = whWaveLineCommand.getSkuId();
+		Long ouId = whWaveLineCommand.getOuId();
+    	Boolean isExpirationSku = skuDao.checkIsExpirationSku(skuId, ouId);
+    	if (isExpirationSku == null || !isExpirationSku) {
+			return null;
+		}
+    	List<WhSkuInventoryCommand> skuInvs = null;
+		// 入库时间顺序 true:升序 false:降序
+		whWaveLineCommand.setPriority(new Boolean(flag));
+		if (Constants.ALLOCATE_UNIT_PALLET.equals(whWaveLineCommand.getAllocateUnitCodes())
+				|| Constants.ALLOCATE_UNIT_CONTAINER.equals(whWaveLineCommand.getAllocateUnitCodes())) {
+			skuInvs = whSkuInventoryDao.findInventoryUuidByExpTime(whWaveLineCommand);
+		} else if (Constants.ALLOCATE_UNIT_PIECE.equals(whWaveLineCommand.getAllocateUnitCodes())) {
+			skuInvs = whSkuInventoryDao.findInventoryByExpTime(whWaveLineCommand);
+		}
+		return skuInvs;
+	}
+    
+	public List<WhSkuInventoryCommand> findInventoryUuidByBestMatch(WhWaveLineCommand whWaveLineCommand, Double qty) {
+		List<WhSkuInventoryCommand> skuInvs = null;
+		whWaveLineCommand.setPriority(Boolean.TRUE);
+		if (Constants.ALLOCATE_UNIT_PALLET.equals(whWaveLineCommand.getAllocateUnitCodes())
+				|| Constants.ALLOCATE_UNIT_CONTAINER.equals(whWaveLineCommand.getAllocateUnitCodes())) {
+			skuInvs = whSkuInventoryDao.findInventoryUuidByAmount(whWaveLineCommand);
+			// 数量最佳计算
+			return bestMatchSkuInvs(skuInvs, qty);
+		} else if (Constants.ALLOCATE_UNIT_PIECE.equals(whWaveLineCommand.getAllocateUnitCodes())) {
+			skuInvs = whSkuInventoryDao.findInventoryByAmount(whWaveLineCommand);
+		}
+		return skuInvs;
+	}
+
+	public List<WhSkuInventoryCommand> findInventoryUuidByAmount(WhWaveLineCommand whWaveLineCommand, boolean flag) {
+		List<WhSkuInventoryCommand> skuInvs = null;
+		// 入库时间顺序 true:升序 false:降序
+		whWaveLineCommand.setPriority(new Boolean(flag));
+		if (Constants.ALLOCATE_UNIT_PALLET.equals(whWaveLineCommand.getAllocateUnitCodes())
+				|| Constants.ALLOCATE_UNIT_CONTAINER.equals(whWaveLineCommand.getAllocateUnitCodes())) {
+			skuInvs = whSkuInventoryDao.findInventoryUuidByAmount(whWaveLineCommand);
+		} else if (Constants.ALLOCATE_UNIT_PIECE.equals(whWaveLineCommand.getAllocateUnitCodes())) {
+			skuInvs = whSkuInventoryDao.findInventoryByAmount(whWaveLineCommand);
+		}
+		return skuInvs;
+	}
+
+	public List<WhSkuInventoryCommand> findInventoryUuidByStaticLocation(WhWaveLineCommand whWaveLineCommand, boolean flag) {
+		List<WhSkuInventoryCommand> skuInvs = null;
+		// 顺序 true:升序 false:降序
+		whWaveLineCommand.setPriority(new Boolean(flag));
+		whWaveLineCommand.setIsStatic(Boolean.TRUE);
+		whWaveLineCommand.setIsMixStacking(null);
+		if (Constants.ALLOCATE_UNIT_PALLET.equals(whWaveLineCommand.getAllocateUnitCodes())
+				|| Constants.ALLOCATE_UNIT_CONTAINER.equals(whWaveLineCommand.getAllocateUnitCodes())) {
+			skuInvs = whSkuInventoryDao.findInventoryUuidByAmount(whWaveLineCommand);
+		} else if (Constants.ALLOCATE_UNIT_PIECE.equals(whWaveLineCommand.getAllocateUnitCodes())) {
+			skuInvs = whSkuInventoryDao.findInventoryByAmount(whWaveLineCommand);
+		}
+		return skuInvs;
+	}
+	
+	public List<WhSkuInventoryCommand> findInventoryUuidByMixedLocation(WhWaveLineCommand whWaveLineCommand, boolean flag) {
+		List<WhSkuInventoryCommand> skuInvs = null;
+		// 顺序 true:升序 false:降序
+		whWaveLineCommand.setPriority(new Boolean(flag));
+		whWaveLineCommand.setIsStatic(null);
+		whWaveLineCommand.setIsMixStacking(Boolean.TRUE);
+		if (Constants.ALLOCATE_UNIT_PALLET.equals(whWaveLineCommand.getAllocateUnitCodes())
+				|| Constants.ALLOCATE_UNIT_CONTAINER.equals(whWaveLineCommand.getAllocateUnitCodes())) {
+			skuInvs = whSkuInventoryDao.findInventoryUuidByAmount(whWaveLineCommand);
+		} else if (Constants.ALLOCATE_UNIT_PIECE.equals(whWaveLineCommand.getAllocateUnitCodes())) {
+			skuInvs = whSkuInventoryDao.findInventoryByAmount(whWaveLineCommand);
+		}
+		return skuInvs;
+	}
+	
+	public List<WhSkuInventoryCommand> findInventoryUuidByBestMatchAndPiece(WhWaveLineCommand whWaveLineCommand, Double qty) {
+		whWaveLineCommand.setPriority(Boolean.TRUE);
+		List<WhSkuInventoryCommand> skuInvs = whSkuInventoryDao.findInventoryUuid(whWaveLineCommand);
+		List<WhSkuInventoryCommand> bestMatchList = bestMatchSkuInvs(skuInvs, qty);
+		return bestMatchList;
+	}
+	
+	/**
+	 * 数量最佳匹配,返回最佳匹配的库存集合
+	 */
+	private List<WhSkuInventoryCommand> bestMatchSkuInvs(List<WhSkuInventoryCommand> skuInvs, Double qty) {
+		List<WhSkuInventoryCommand> invBestList = new ArrayList<WhSkuInventoryCommand>();
+		Double num = 0.0;
+		for (int i = 0; i < skuInvs.size(); i++) {
+			WhSkuInventoryCommand skuInv = skuInvs.get(i);
+			if (skuInv.getSumOnHandQty().compareTo(qty) == 0) {
+				invBestList.add(skuInv);
+				return invBestList;
+			}
+			num += skuInv.getSumOnHandQty();
+		}
+		if (num.compareTo(qty) == -1) {
+			return skuInvs;
+		}
+		num = 0.0;
+		for (int i = 0; i < skuInvs.size(); i++) {
+			WhSkuInventoryCommand skuInv = skuInvs.get(i);
+			if (skuInv.getSumOnHandQty().compareTo(qty) == -1) {
+				invBestList.add(0, skuInv);
+				num += skuInv.getSumOnHandQty();
+				if (num.compareTo(qty) == 0) {
+					return invBestList;
+				} else if (num.compareTo(qty) == 1) {
+					break;
+				}
+			} else if (skuInv.getSumOnHandQty().compareTo(qty) == 1) {
+				break;
+			}
+		}
+		invBestList.clear();
+		for (int i = skuInvs.size() - 1; i >= 0; i--) {
+			invBestList.add(skuInvs.get(i));
+		}
+		return invBestList;
+	}
+
+	@Override
+	public void releaseInventoryByOdoId(Long odoId, Warehouse wh) {
+		Long ouId = wh.getId();
+		WhOdo odo = whOdoDao.findByIdOuId(odoId, ouId);
+		String occupyCode = odo.getOdoCode();
+		List<WhSkuInventory> occupyInventory = whSkuInventoryDao.findOccupyInventory(occupyCode, ouId);
+		// 还原库存日志
+		for (WhSkuInventory skuInv : occupyInventory) {
+			Long invId = skuInv.getId();
+			Double qty = skuInv.getOnHandQty();
+			Double oldQty = 0.0;
+            if (true == wh.getIsTabbInvTotal()) {
+                try {
+                    oldQty = whSkuInventoryLogManager.sumSkuInvOnHandQty(skuInv.getUuid(), ouId);
+                } catch (Exception e) {
+                    log.error("sum sku inv onHand qty error, logId is:[{}]", logId);
+                    throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
+                }
+            } else {
+                oldQty = 0.0;
+            }
+			insertSkuInventoryLog(invId, qty, oldQty, wh.getIsTabbInvTotal(), ouId, 1L);
+		}
+		// 清除库存占用编码
+		whSkuInventoryDao.releaseInventoryOccupyCode(occupyCode, ouId);
+	}
+	
 }

@@ -12,6 +12,8 @@ import lark.common.dao.Page;
 import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,42 +23,58 @@ import com.baozun.scm.primservice.whoperation.command.odo.OdoMergeCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.SoftAllocationCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.WaveCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.UomCommand;
+import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.WaveStatus;
 import com.baozun.scm.primservice.whoperation.constant.WhUomType;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
+import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveLineDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveMasterDao;
+import com.baozun.scm.primservice.whoperation.dao.system.SysDictionaryDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.AllocateStrategyDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
+import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveMaster;
 import com.baozun.scm.primservice.whoperation.model.sku.Sku;
+import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 
 @Service("whWaveManager")
 @Transactional
 public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager {
-
+	
+	private static final Logger log = LoggerFactory.getLogger(WhWaveManagerImpl.class);
+	
     @Autowired
     private WhWaveDao whWaveDao;
-
     @Autowired
     private WhWaveLineDao whWaveLineDao;
-
     @Autowired
     private OdoManager odoManager;
-
     @Autowired
     private WhWaveMasterDao whWaveMasterDao;
-
     @Autowired
     private WhOdoDao whOdoDao;
-
+    @Autowired
+    private AllocateStrategyDao allocateStrategyDao;
+    @Autowired
+    private WhWaveLineManager whWaveLineManager;
+    @Autowired
+    private SysDictionaryDao sysDictionaryDao;
+    @Autowired
+    private WhSkuInventoryManager whSkuInventoryManager;
+    @Autowired
+    private WhOdoLineDao whOdoLineDao;
+    
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public WhWave getWaveByIdAndOuId(Long waveId, Long ouId) {
@@ -245,5 +263,126 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         this.whWaveDao.saveOrUpdateByVersion(wave);
     }
 
+    @Override
+	@MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+	public List<Long> getNeedAllocationRuleWhWave(Integer allocatePhase, Long ouId, String logId) {
+		List<Long> datas = whWaveDao.getNeedAllocationRuleWhWave(allocatePhase, ouId);
+		if (log.isInfoEnabled()) {
+			log.info("getHardAllocateWhWaveList,ouId:{},waveList:{},logId:{}", ouId, StringUtils.collectionToCommaDelimitedString(datas), logId);
+		}
+		return datas;
+	}
 
+	@Override
+	@MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+	public int updateWhWaveAllocatePhase(List<Long> waveIdList, Integer allocatePhase, Long ouId) {
+		int num = whWaveDao.updateWhWaveAllocatePhase(waveIdList, allocatePhase, ouId);
+		if (num < 0) {
+			throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+		}
+		return num;
+	}
+
+	@Override
+	@MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+	public void checkWaveHardAllocateEnough(Long waveId, Warehouse wh) {
+		Long ouId = wh.getId();
+		List<WhWaveLine> lines = whWaveLineDao.findNotEnoughAllocationQty(waveId, ouId);
+		// 获取下一个波次阶段编码
+		WhWave wave = new WhWave();
+		wave.setId(waveId);
+		wave.setOuId(ouId);
+		wave.setAllocatePhase(null);
+		wave = this.whWaveDao.findListByParam(wave).get(0);
+		WhWaveMaster whWaveMaster = whWaveMasterDao.findByIdExt(wave.getWaveMasterId(), ouId);
+		Long waveTempletId = whWaveMaster.getWaveTemplateId();
+		String phaseCode = this.getWavePhaseCode(wave.getPhaseCode(), waveTempletId, ouId);
+		if (lines == null || lines.isEmpty()) {
+	        // 如果是补货阶段,则跳过
+	        if ("REPLENISHED".equals(phaseCode)) {
+	        	phaseCode = this.getWavePhaseCode(phaseCode, waveTempletId, ouId);
+			}
+	        wave.setPhaseCode(phaseCode);
+	        int num = whWaveDao.saveOrUpdateByVersion(wave);
+	        if (num != 1) {
+	        	throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+			}
+		} else {
+			Map<Long, List<String>> ruleMap = new HashMap<Long, List<String>>();
+			Set<Long> allOdoIds = new HashSet<Long>();
+			Set<Long> odoIds = new HashSet<Long>();
+			// 判断分配策略是否包含静态库位可超分配或者空库位
+			for (WhWaveLine whWaveLine : lines) {
+				Long ruleId = whWaveLine.getAllocateRuleId();
+				List<String> strategyCodes = ruleMap.get(ruleId);
+				if (strategyCodes == null) {
+					strategyCodes = allocateStrategyDao.findAllocateStrategyCodeByRuleId(ruleId, ouId);
+					ruleMap.put(ruleId, strategyCodes);
+				}
+				if (!strategyCodes.contains(Constants.ALLOCATE_STRATEGY_STATICLOCATIONCANASSIGNMENT)
+						&& !strategyCodes.contains(Constants.ALLOCATE_STRATEGY_EMPTYLOCATION)) {
+					odoIds.add(whWaveLine.getOdoId());
+				}
+				allOdoIds.add(whWaveLine.getOdoId());
+			}
+			
+			// 如果是补货阶段,则进入补货阶段
+	        if ("REPLENISHED".equals(phaseCode)) {
+	        	if (odoIds.isEmpty()) {
+	        		wave.setPhaseCode(phaseCode);
+	        		int num = whWaveDao.saveOrUpdateByVersion(wave);
+	    	        if (num != 1) {
+	    	        	throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+	    			}
+				} else {
+					// 剔除规则中没有静态库位可超分配或空库位的工作单
+					SysDictionary dictionary = sysDictionaryDao.getGroupbyGroupValueAndDicValue(Constants.HARD_ALLOCATION_REASON, Constants.NOT_STATIC_EMPTY_LOCATION);
+					for (Long odoId : odoIds) {
+						whWaveLineManager.deleteWaveLinesByOdoId(odoId, waveId, ouId, dictionary.getDicLabel());
+						// 释放库存
+						whSkuInventoryManager.releaseInventoryByOdoId(odoId, wh);
+					}
+					wave.setPhaseCode(phaseCode);
+					int num = whWaveDao.saveOrUpdateByVersion(wave);
+			        if (num != 1) {
+			        	throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+					}
+				}
+	        } else {
+	        	// 剔除库存数量没有分配完全所有工作单
+	        	SysDictionary dictionary = sysDictionaryDao.getGroupbyGroupValueAndDicValue(Constants.HARD_ALLOCATION_REASON, Constants.NOT_STATIC_EMPTY_LOCATION);
+				for (Long odoId : allOdoIds) {
+					whWaveLineManager.deleteWaveLinesByOdoId(odoId, waveId, ouId, dictionary.getDicLabel());
+					// 释放库存
+					whSkuInventoryManager.releaseInventoryByOdoId(odoId, wh);
+				}
+				wave.setPhaseCode(phaseCode);
+				int num = whWaveDao.saveOrUpdateByVersion(wave);
+		        if (num != 1) {
+		        	throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+				}
+	        }
+		}
+		// 回写odoLine的分配数量
+		WhWaveLine waveLine = new WhWaveLine();
+		waveLine.setWaveId(waveId);
+		List<WhWaveLine> waveLines = whWaveLineDao.findListByParam(waveLine);
+		for (WhWaveLine line : waveLines) {
+			WhOdoLine odoLine = whOdoLineDao.findOdoLineById(line.getOdoLineId(), ouId);
+			odoLine.setAssignQty(line.getAllocateQty());
+			odoLine.setIsAssignSuccess(true);
+			whOdoLineDao.saveOrUpdate(odoLine);
+		}
+	}
+
+	@Override
+	public void releaseInventoryByWaveId(Long waveId, Warehouse wh) {
+		Long ouId = wh.getId();
+		List<Long> odoIds = whWaveLineDao.findOdoIdByWaveId(waveId, ouId);
+		for (Long odoId : odoIds) {
+			// 释放库存
+			whSkuInventoryManager.releaseInventoryByOdoId(odoId, wh);
+		}
+	}
+	
 }

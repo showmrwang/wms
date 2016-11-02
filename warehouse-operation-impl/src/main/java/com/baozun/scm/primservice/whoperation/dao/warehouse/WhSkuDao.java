@@ -76,4 +76,12 @@ public interface WhSkuDao extends BaseDao<WhSku, Long> {
      */
     SkuRedisCommand findSkuAllInfoByParamExt(@Param("id") Long id, @Param("ouId") Long ouId);
 
+    /**
+     * 判断商品是否为保质期商品
+     * @param skuId
+     * @param ouId
+     * @return
+     */
+	Boolean checkIsExpirationSku(@Param("skuId") Long skuId, @Param("ouId") Long ouId);
+
 }

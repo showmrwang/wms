@@ -106,7 +106,17 @@ public class WhWaveLine extends BaseModel {
     private Date lastModifyTime;
     /** 操作人ID */
     private Long modifiedId;
-
+    /** 是否占用整托/整箱 */
+    private Boolean isPalletContainer;
+    /** 整托整箱占用数量 */
+    private Double palletContainerQty;
+    /** 是否静态库位可超分配 */
+    private Boolean isStaticLocationAllocate;
+    /** 被占用的静态库位ID */
+    private String staticLocationIds;
+    /** 分配区域ID */
+    private Long areaId;
+    
     public Double getAllocateQty() {
         return allocateQty;
     }
@@ -434,5 +444,45 @@ public class WhWaveLine extends BaseModel {
     public void setModifiedId(Long value) {
         this.modifiedId = value;
     }
+
+	public Boolean getIsPalletContainer() {
+		return isPalletContainer;
+	}
+
+	public void setIsPalletContainer(Boolean isPalletContainer) {
+		this.isPalletContainer = isPalletContainer;
+	}
+
+	public Double getPalletContainerQty() {
+		return palletContainerQty;
+	}
+
+	public void setPalletContainerQty(Double palletContainerQty) {
+		this.palletContainerQty = palletContainerQty;
+	}
+
+	public Boolean getIsStaticLocationAllocate() {
+		return isStaticLocationAllocate;
+	}
+
+	public void setIsStaticLocationAllocate(Boolean isStaticLocationAllocate) {
+		this.isStaticLocationAllocate = isStaticLocationAllocate;
+	}
+
+	public String getStaticLocationIds() {
+		return staticLocationIds;
+	}
+
+	public void setStaticLocationIds(String staticLocationIds) {
+		this.staticLocationIds = staticLocationIds;
+	}
+
+	public Long getAreaId() {
+		return areaId;
+	}
+
+	public void setAreaId(Long areaId) {
+		this.areaId = areaId;
+	}
 
 }

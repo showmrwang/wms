@@ -175,6 +175,7 @@ public final class Constants {
     
     /** 分配规则 */
     public static final String ALLOCATE_RULE = "ALLOCATE_RULE";
+    public static final String ALLOCATE = "ALLOCATE";
 
     /** 分配策略 */
     public static final String ALLOCATE_STRATEGY = "ALLOCATE_STRATEGY";
@@ -369,4 +370,31 @@ public final class Constants {
     
     /**配货模式规则*/
     public static final String DISTRIBUTION_PATTERN="DISTRIBUTION_PATTERN";
+    
+    /** 硬分配阶段 0：分配规则 */
+    public static final Integer HARD_PHASE_RULE = 0;
+    /** 硬分配阶段 1：硬分配 */
+    public static final Integer HARD_PHASE_ALLOCATION = 1;
+    /** 硬分配阶段 分配失败原因分组 */
+    public static final String HARD_ALLOCATION_REASON = "HARD_ALLOCATION_REASON";
+    /** 硬分配阶段 分配规则失败 */
+    public static final String RULE_ALLOCATION_FAILURE = "RULE_ALLOCATION_FAILURE";
+    /** 硬分配阶段 没有空库位和静态库位超分配 */
+    public static final String NOT_STATIC_EMPTY_LOCATION = "NOT_STATIC_EMPTY_LOCATION";
+    
+    public static final String ALLOCATE_STRATEGY_FIRSTINFIRSTOUT = "1"; 	// 先入先出
+    public static final String ALLOCATE_STRATEGY_FIRSTINLASTOUT = "2";	// 先入后出
+    public static final String ALLOCATE_STRATEGY_FIRSTEXPIRATIONFIRSTOUT = "3"; // 先到期先出
+    public static final String ALLOCATE_STRATEGY_FIRSTEXPIRATIONLASTOUT = "4"; // 后到期先出
+    public static final String ALLOCATE_STRATEGY_QUANTITYBESTMATCH = "5";	// 数量最佳匹配
+    public static final String ALLOCATE_STRATEGY_MAXIMUMSTORAGESPACE = "6"; // 最大存储空间
+    public static final String ALLOCATE_STRATEGY_MINIMUMORDERPICKINGTIMES = "7";	// 最小拣货次数
+    public static final String ALLOCATE_STRATEGY_STATICLOCATIONCANASSIGNMENT = "8";	// 静态库位可超分配
+    public static final String ALLOCATE_STRATEGY_STATICLOCATIONNOTCANASSIGNMENT = "9";	// 静态库位不可超分配
+    public static final String ALLOCATE_STRATEGY_MIXEDSKUSLOCATION = "10";	// 混SKU库位
+    public static final String ALLOCATE_STRATEGY_EMPTYLOCATION = "11";	// 空库位
+    
+    public static final String ALLOCATE_UNIT_PALLET = "PALLET";			// 托盘
+    public static final String ALLOCATE_UNIT_CONTAINER = "CONTAINER";	// 货箱
+    public static final String ALLOCATE_UNIT_PIECE = "PIECE";			// 件
 }

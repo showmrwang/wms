@@ -46,6 +46,8 @@ public class WhSkuInventory extends BaseModel {
     private Long storeId;
     /** 占用单据号 */
     private String occupationCode;
+    /** 占用单据明细行ID */
+    private Long occupationLineId;
     /** 在库可用库存 */
     private Double onHandQty;
     /** 已分配库存 */
@@ -88,7 +90,7 @@ public class WhSkuInventory extends BaseModel {
     private Date inboundTime;
     /** 最后操作时间 */
     private Date lastModifyTime;
-
+    
     public Long getSkuId() {
         return skuId;
     }
@@ -344,4 +346,12 @@ public class WhSkuInventory extends BaseModel {
         result = 31 * result + (getInvAttr5() != null ? getInvAttr5().hashCode() : 0);
         return result;
     }
+
+	public Long getOccupationLineId() {
+		return occupationLineId;
+	}
+
+	public void setOccupationLineId(Long occupationLineId) {
+		this.occupationLineId = occupationLineId;
+	}
 }

@@ -52,7 +52,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	create_time as createTime,
 	        	created_id as createdId,
 	        	last_modify_time as lastModifyTime,
-	        	modified_id as modifiedId
+	        	modified_id as modifiedId, 
+	        	is_pallet_container as isPalletContainer,
+	        	pallet_container_qty as palleContainerQty, 
+	        	is_static_location_allocate as isStaticLocationAllocate,
+	        	static_location_ids as staticLocationIds,
+	        	area_id as areaId
 	    ]]>
 	</sql>
 	
@@ -106,7 +111,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	created_id ,
 		        	last_modify_time ,
 		        	modified_id ,
-		        	allocate_qty
+		        	allocate_qty, 
+		        	is_pallet_container,
+		        	pallet_container_qty, 
+		        	is_static_location_allocate,
+		        	static_location_ids,
+		        	area_id
 		        ) VALUES (
 		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{waveId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -149,7 +159,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        	#{allocateQty,javaType=Double,jdbcType=DECIMAL} 
+		        	#{allocateQty,javaType=Double,jdbcType=DECIMAL} ,
+		        	#{isPalletContainer,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	#{palletContainerQty,javaType=Double,jdbcType=DECIMAL} ,
+		        	#{isStaticLocationAllocate,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	#{staticLocationIds,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{areaId,javaType=java.lang.Long,jdbcType=BIGINT} 
 		        )
 		    ]]>
 
@@ -198,7 +213,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        allocate_qty = #{allocateQty,javaType=Double,jdbcType=DECIMAL} 
+		        allocate_qty = #{allocateQty,javaType=Double,jdbcType=DECIMAL} ,
+		        is_pallet_container = #{isPalletContainer,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        pallet_container_qty = #{palletContainerQty,javaType=Double,jdbcType=DECIMAL} ,
+		        is_static_location_allocate = #{isStaticLocationAllocate,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        static_location_ids = #{staticLocationIds,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        area_id = #{areaId,javaType=java.lang.Long,jdbcType=BIGINT} 
 	        WHERE 
 		        id = #{id} 
 		        and ou_id = #{ouId}
@@ -419,6 +439,26 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				<if test="modifiedId!=null">
 					and modified_id = #{modifiedId}
 				</if>
+				
+		        <if test="isPalletContainer!=null">
+		        	and is_pallet_container = #{isPalletContainer}
+		        </if>
+		        
+		        <if test="palletContainerQty!=null">
+		        	and pallet_container_qty = #{palletContainerQty}
+		        </if>
+		        
+		        <if test="isStaticLocationAllocate!=null">
+		        	and is_static_location_allocate = #{isStaticLocationAllocate}
+		        </if>
+		        
+		        <if test="staticLocationIds!=null and staticLocationIds!=''">
+		        	and static_location_ids = #{staticLocationIds}
+		        </if>
+		        
+		        <if test="areaId!=null">
+		        	and area_id = #{areaId}
+		        </if>
 		</where>
 	</sql>
 	

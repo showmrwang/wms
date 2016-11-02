@@ -12,6 +12,7 @@ import com.baozun.scm.primservice.whoperation.command.odo.wave.SoftAllocationCom
 import com.baozun.scm.primservice.whoperation.command.odo.wave.WaveCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 
 public interface WhWaveManager extends BaseManager {
 
@@ -85,6 +86,21 @@ public interface WhWaveManager extends BaseManager {
      */
     void changeWavePhaseCode(Long waveId, String phaseCode, Long ouId);
 
+    /**
+	 * [业务方法] 硬分配-查找所有需要匹配规则的波次
+	 */
+	public List<Long> getNeedAllocationRuleWhWave(Integer allocatePhase, Long ouId, String logId);
+	
+	/**
+	 * [业务方法] 硬分配-更新波次阶段为硬分配的阶段未硬分配
+	 */
+	int updateWhWaveAllocatePhase(List<Long> waveIdList, Integer allocatePhase, Long ouId);
 
+	void checkWaveHardAllocateEnough(Long waveId, Warehouse wh);
+	
+	/**
+	 * [业务方法] 硬分配-异常释放这一波次库存
+	 */
+	void releaseInventoryByWaveId(Long waveId, Warehouse wh);
 
 }

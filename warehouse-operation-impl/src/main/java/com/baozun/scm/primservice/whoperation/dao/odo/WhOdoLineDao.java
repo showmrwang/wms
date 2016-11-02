@@ -101,4 +101,6 @@ public interface WhOdoLineDao extends BaseDao<WhOdoLine, Long> {
      */
     WhOdoLine findByOdoCodeAndLineNum(@Param("lineNum") Integer lineNum, @Param("originalOdoCode") String originalOdoCode, @Param("ouId") Long ouId);
 
+	int updateOdoLineByAllocateFail(@Param("odoId") Long odoId, @Param("reason") String reason, @Param("ouId") Long ouId);
+
 }

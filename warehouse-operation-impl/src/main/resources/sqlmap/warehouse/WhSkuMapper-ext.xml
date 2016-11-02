@@ -374,5 +374,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	
 	<!-- 添加四个表的关联查询 end-->
 	
-
+	<select id="checkIsExpirationSku" parameterType="map" resultType="boolean">
+		SELECT 
+			m.is_valid 
+		from 
+			t_wh_sku_mgmt m 
+		where 
+			m.sku_id = #{skuId} 
+			and m.ou_id = #{ouId} 
+	</select>
+	
 </mapper>

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.AllocateStrategyDao">
+	<resultMap id="AllocateStrategyResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.AllocateStrategy">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="allocateStrategyColumnsExt">
+	    <![CDATA[
+	        	id as id,
+	        	allocate_rule_id as allocateRuleId,
+	        	area_id as areaId,
+	        	strategy_code as strategyCode,
+	        	allocate_unit_codes as allocateUnitCodes,
+	        	priority as priority,
+	        	ou_id as ouId
+	    ]]>
+	</sql>
+	
+	<sql id="allocateStrategyDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+				<if test="allocateRuleId!=null">
+					and allocate_rule_id = #{allocateRuleId}
+				</if>
+	       
+				<if test="areaId!=null">
+					and area_id = #{areaId}
+				</if>
+	       
+				<if test="strategyCode!=null">
+					and strategy_code = #{strategyCode}
+				</if>
+	       
+	       
+		       <if test="allocateUnitCodes!=null and allocateUnitCodes!=''">
+					and allocate_unit_codes = #{allocateUnitCodes}
+				</if>
+	       
+				<if test="priority!=null">
+					and priority = #{priority}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+	       
+		</where>
+	</sql>
+	
+
+		<update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.AllocateStrategy">
+		    <![CDATA[
+		        UPDATE t_wh_allocate_strategy SET
+			        allocate_rule_id = #{allocateRuleId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        area_id = #{areaId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        strategy_code = #{strategyCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        allocate_unit_codes = #{allocateUnitCodes,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        priority = #{priority,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT}
+		        WHERE 
+			        id = #{id} 
+			        
+		    ]]>
+		</update>
+		
+		<delete id="deleteExt" parameterType="java.lang.Long">
+		    <![CDATA[
+		        delete from t_wh_allocate_strategy where
+			        allocate_rule_id = #{allocateRuleId} 
+			        and ou_id = #{ouId}
+		    ]]>
+		</delete>
+	
+	<select id="findAllocateStrategyListByRuleId" parameterType="map" resultMap="AllocateStrategyResultExt">
+		select 
+			<include refid="allocateStrategyColumnsExt"/>
+		from 
+			t_wh_allocate_strategy
+		where 
+			allocate_rule_id = #{allocateRuleId}
+			and ou_id = #{ouId}
+		order by 
+			priority
+	</select>
+	
+	<select id="findAllocateStrategyCodeByRuleId" parameterType="map" resultType="string">
+		select 
+			strategy_code
+		from 
+			t_wh_allocate_strategy
+		where 
+			allocate_rule_id = #{allocateRuleId}
+			and ou_id = #{ouId}
+		order by 
+			priority
+	</select>
+</mapper>

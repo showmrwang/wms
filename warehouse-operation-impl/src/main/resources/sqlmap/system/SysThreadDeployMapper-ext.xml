@@ -91,4 +91,13 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    ]]>
 		</update>
 	
+	<select id="getSysThreadDeployByCode" parameterType="map" resultMap="SysThreadDeployResultExt">
+		select 
+			<include refid="sysThreadDeployColumnsExt"/>
+		from 
+			sys_thread_deploy
+		where 
+			thread_code = #{code} 
+			and ou_id = #{ouId}
+	</select>
 </mapper>

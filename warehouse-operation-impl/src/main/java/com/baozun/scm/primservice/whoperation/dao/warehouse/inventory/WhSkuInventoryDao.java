@@ -32,6 +32,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand
 import com.baozun.scm.primservice.whoperation.command.warehouse.LocationCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
+import com.baozun.scm.primservice.whoperation.command.wave.WhWaveLineCommand;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 
 public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
@@ -316,6 +317,15 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @return
      */
     WhSkuInventory findWhSkuInventoryByUuid(@Param("ouid") Long ouid, @Param("uuid") String uuid);
+    
+    /**
+     * 通过UUIDLIST+OUID查询对应库存信息
+     * 
+     * @param ouid
+     * @param uuid
+     * @return
+     */
+    List<WhSkuInventoryCommand> findWhSkuInventoryByUuidList(@Param("ouId") Long ouid, @Param("uuidList") List<String> uuidList);
 
     /**
      * 通过id+ouid删除对应库存记录
@@ -572,5 +582,50 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
     
     public List<WhSkuInventoryCommand> findWhSkuInvCmdByLocation(@Param("ouId") Long ouId, @Param("locationId") Long locationId);
     
+    /**
+     * 按入库时间顺序查找库存
+     * @param whWaveLineCommand
+     * @return
+     */
+	List<WhSkuInventoryCommand> findInventoryByInBoundTime(WhWaveLineCommand whWaveLineCommand);
+	
+	/**
+     * 按商品保质期时间顺序查找库存
+     * @param whWaveLineCommand
+     * @return
+     */
+	List<WhSkuInventoryCommand> findInventoryByExpTime(WhWaveLineCommand whWaveLineCommand);
+	
+	/**
+	 * 按照数量多少查找库存
+	 * @param whWaveLineCommand
+	 * @return
+	 */
+	List<WhSkuInventoryCommand> findInventoryByAmount(WhWaveLineCommand whWaveLineCommand);
+	
+	/**
+	 * 按照Uuid和其他条件查找库存
+	 * @param invCommand
+	 * @return
+	 */
+	List<WhSkuInventoryCommand> findInventoryByUuidAndCondition(WhSkuInventoryCommand invCommand);
+
+	List<WhSkuInventoryCommand> findInventoryUuidByInBoundTime(WhWaveLineCommand whWaveLineCommand);
+
+	List<WhSkuInventoryCommand> findInventoryUuidByExpTime(WhWaveLineCommand whWaveLineCommand);
+
+	List<WhSkuInventoryCommand> findInventoryUuidByAmount(WhWaveLineCommand whWaveLineCommand);
+
+	List<WhSkuInventoryCommand> findInventoryUuid(WhWaveLineCommand whWaveLineCommand);
+	
+	/**
+	 * 根据占用码找占用的库存
+	 */
+	List<WhSkuInventory> findOccupyInventory(@Param("occupyCode") String occupyCode, @Param("ouId") Long ouId);
+	
+	/**
+	 * 释放库存
+	 */
+	int releaseInventoryOccupyCode(@Param("occupyCode") String occupyCode, @Param("ouId") Long ouId);
 
 }

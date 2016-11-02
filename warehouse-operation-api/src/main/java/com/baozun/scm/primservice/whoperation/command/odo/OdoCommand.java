@@ -85,7 +85,8 @@ public class OdoCommand extends BaseCommand {
     private String orderTimeStr;
     private String storeName;
     private String customerName;
-
+    private Long waveId;
+    
     // 分组字段
     private String groupCode;
 
@@ -411,5 +412,13 @@ public class OdoCommand extends BaseCommand {
     public void setCustomerName(String customerName) {
         this.customerName = customerName;
     }
+
+	public Long getWaveId() {
+		return waveId;
+	}
+
+	public void setWaveId(Long waveId) {
+		this.waveId = waveId;
+	}
 
 }

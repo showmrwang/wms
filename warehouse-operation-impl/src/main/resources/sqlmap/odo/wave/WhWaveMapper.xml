@@ -37,7 +37,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	last_modify_time as lastModifyTime,
 	        	created_id as createdId,
 	        	modified_id as modifiedId,
-	        	lifecycle as lifecycle，
+	        	lifecycle as lifecycle,
 	        	is_run_wave as isRunWave
 	    ]]>
 	</sql>

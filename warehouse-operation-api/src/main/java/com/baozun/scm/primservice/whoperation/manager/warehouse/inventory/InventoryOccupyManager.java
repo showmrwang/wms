@@ -17,9 +17,11 @@
 package com.baozun.scm.primservice.whoperation.manager.warehouse.inventory;
 
 import java.util.List;
+import java.util.Set;
 
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 
 /**
  * @author lichuan
@@ -33,5 +35,24 @@ public interface InventoryOccupyManager extends BaseManager {
      * @param invCmds
      */
     void simpleOccupy(List<WhSkuInventoryCommand> invCmds, String occupyCode, String logId);
+    
+    /**
+     * 硬分配占用库存
+     * @param skuInvs
+     * @param qty
+     * @param occupyCode
+     * @param odoLineId
+     * @param wh
+     * @param isPalletContainer 
+     * @return
+     * @throws Exception 
+     */
+	Double hardAllocateOccupy(List<WhSkuInventoryCommand> skuInvs, Double qty, String occupyCode, Long odoLineId, Warehouse wh);
+
+	Double hardAllocateListOccupy(List<WhSkuInventoryCommand> list, Double qty, String occupyCode, Long odoLineId, Warehouse wh, Boolean isStaticLocation, Set<String> staticLocationIds);
+
+	Double occupyInvUuidsByPalletContainer(List<WhSkuInventoryCommand> uuids, List<WhSkuInventoryCommand> allSkuInvs, Double qty, String occupyCode, Long odoLineId, Warehouse wh, String unitCodes, Boolean isStaticLocation, Set<String> staticLocationIds);
+
+	Double occupyInvUuids(List<WhSkuInventoryCommand> uuids, List<WhSkuInventoryCommand> allSkuInvs, Double qty, String occupyCode, Long odoLineId, Warehouse wh, String allocateUnitContainer, Boolean isStaticLocation, Set<String> staticLocationIds);
 
 }

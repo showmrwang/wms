@@ -206,6 +206,7 @@ public class WarehouseManagerImpl extends BaseManagerImpl implements WarehouseMa
      * 通过code查询对应仓库信息
      */
     @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public Warehouse findWarehouseByCode(String code) {
         return warehouseDao.findWarehouseByCode(code);
     }

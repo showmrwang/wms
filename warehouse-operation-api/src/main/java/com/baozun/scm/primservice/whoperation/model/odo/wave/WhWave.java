@@ -84,7 +84,6 @@ public class WhWave extends BaseModel {
     private Integer lifecycle;
     /** 是否运行波次 0：否 1：是 */
     private Boolean isRunWave;
-
     // columns END
 
     public String getCode() {

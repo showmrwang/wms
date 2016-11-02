@@ -75,4 +75,41 @@ public interface WhWaveLineDao extends BaseDao<WhWaveLine, Long> {
      * @return
      */
     List<SoftAllocationCommand> findWaveLineCommandByWaveIdAndStatus(@Param("waveId") Long waveId, @Param("ouId") Long ouId, @Param("waveStatus") Integer waveStatus, @Param("lifecycle") Integer lifecycle);
+    
+    /**
+     * [业务方法] 硬分配-添加规则Id到一批波次明细行
+     * @param whWaveLine
+     * @param ruleId
+     * @param ouId
+     * @return
+     */
+    int modifyRuleIntoWhWaveLine(@Param("whWaveLine") List<Long> whWaveLine, @Param("ruleId") Long ruleId, @Param("ouId") Long ouId);
+    
+    /**
+	 * [业务方法] 硬分配-得到所有硬阶段阶段需要分配规则的出库单明细Id
+	 */
+	List<Long> getOdoLinesByWaveIdList(@Param("waveIdList") List<Long> waveIdList, @Param("ouId") Long ouId);
+	
+	/**
+	 * [业务方法] 硬分配-得到所有硬阶段阶段需要分配库存的波次明细Id
+	 */
+	List<WhWaveLine> getWhWaveLinesByWaveIdList(@Param("waveIdList") List<Long> waveIdList, @Param("ouId") Long ouId);
+	
+	/**
+	 * [通用方法] 硬分配-根据id得到波次明细
+	 * @param id
+	 * @param ouId
+	 * @return
+	 */
+	WhWaveLine findWhWaveLineById(@Param("id") Long id, @Param("ouId") Long ouId);
+	
+	/**
+	 * [业务方法] 硬分配-得到波次明细没有分配好足够的库存的明细行
+	 */
+	List<WhWaveLine> findNotEnoughAllocationQty(@Param("waveId") Long waveIdList, @Param("ouId") Long ouId);
+	
+	/**
+	 * [通用方法] 硬分配-根据waveid得到此波次包含的出库单id集合
+	 */
+	List<Long> findOdoIdByWaveId(@Param("waveId") Long waveId, @Param("ouId") Long ouId);
 }

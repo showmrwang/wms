@@ -60,7 +60,15 @@
     <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.pda.putaway.PdaManMadePutawayManager"  ref="pdaManMadePutawayManager" />
 	<!-- 软分配 -->
     <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy.WhWaveSoftManagerProxy"  ref="whWaveSoftManagerProxy" />
-
+	<!-- 硬分配 -->
+	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoManager" ref="odoManager" />
+	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.odo.wave.WhWaveManager" ref="whWaveManager" />
+	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.odo.wave.WhWaveLineManager" ref="whWaveLineManager" />
+	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.WarehouseManager" ref="warehouseManager" />
+	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.system.SysDictionaryManager" ref="sysDictionaryManager" />
+	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.system.SysThreadDeployManager" ref="sysThreadDeployManager" />
+	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.AllocateStrategyManager" ref="allocateStrategyManager" />
+	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager" ref="whSkuInventoryManager" />
     
     <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.pda.PdaContainerRcvdManagerProxy"  ref="pdaContainerRcvdManagerProxy" />
 	
