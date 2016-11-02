@@ -79,13 +79,13 @@ public class WhWaveLineManagerImpl extends BaseManagerImpl implements WhWaveLine
 	@Override
 	@MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
 	public void modifyRuleIntoWhWaveLine(List<Long> whWaveLine, Long ruleId, Long ouId) {
-		if (whWaveLine == null || whWaveLine.isEmpty()) {
+		if (null == whWaveLine || whWaveLine.isEmpty()) {
 			if (log.isErrorEnabled()) {
 				log.error("modifyRuleIntoWhWaveLine error:whWaveLine is empty");
 			}
 			throw new BusinessException(ErrorCodes.PARAMS_ERROR);
 		}
-		if (ouId == null) {
+		if (null == ouId) {
 			if (log.isErrorEnabled()) {
 				log.error("modifyRuleIntoWhWaveLine error:ouId is empty");
 			}
@@ -136,11 +136,11 @@ public class WhWaveLineManagerImpl extends BaseManagerImpl implements WhWaveLine
 	public void updateWaveLineByAllocateQty(Long invId, Double allocateQty, Double containerQty, Boolean isStaticLocation, Set<String> staticLocationIds, Long areaId, Long ouId) {
 		WhWaveLine whWaveLine = whWaveLineDao.findWhWaveLineById(invId, ouId);
 		whWaveLine.setAllocateQty(allocateQty);
-		if (new Double(0.0).compareTo(containerQty) == -1) {
+		if (-1 == new Double(0.0).compareTo(containerQty)) {
 			whWaveLine.setIsPalletContainer(Boolean.TRUE);
 			whWaveLine.setPalletContainerQty(new Double(containerQty));
 		}
-		if (isStaticLocation != null && isStaticLocation) {
+		if (null != isStaticLocation && isStaticLocation) {
 			whWaveLine.setIsStaticLocationAllocate(isStaticLocation);
 			whWaveLine.setStaticLocationIds(StringUtils.collectionToCommaDelimitedString(staticLocationIds));
 			whWaveLine.setAreaId(areaId);
@@ -152,7 +152,7 @@ public class WhWaveLineManagerImpl extends BaseManagerImpl implements WhWaveLine
 	@MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
 	public Map<Long, Map<Long, Map<Long, Map<Long, Map<Boolean, List<WhWaveLine>>>>>> getNeedInventoryMap(List<Long> waveIdList, Long ouId) {
 		List<WhWaveLine> whWaveLines = whWaveLineDao.getWhWaveLinesByWaveIdList(waveIdList, ouId);
-		if (whWaveLines != null && !whWaveLines.isEmpty()) {
+		if (null != whWaveLines && !whWaveLines.isEmpty()) {
 			Map<Long, Map<Long, Map<Long, Map<Long, Map<Boolean, List<WhWaveLine>>>>>> map = new HashMap<Long, Map<Long, Map<Long, Map<Long, Map<Boolean, List<WhWaveLine>>>>>>();
 			for (WhWaveLine line : whWaveLines) {
 				Long skuId = line.getSkuId();
@@ -222,7 +222,7 @@ public class WhWaveLineManagerImpl extends BaseManagerImpl implements WhWaveLine
 	
 	private void addInfoToWaveLineList(Map<Boolean, List<WhWaveLine>> waveLineMap, WhWaveLine line, Boolean flag) {
 		List<WhWaveLine> lines = waveLineMap.get(flag);
-		if (lines != null && !lines.isEmpty()) {
+		if (null != lines && !lines.isEmpty()) {
 			lines.add(line);
 		} else {
 			lines = new ArrayList<WhWaveLine>();

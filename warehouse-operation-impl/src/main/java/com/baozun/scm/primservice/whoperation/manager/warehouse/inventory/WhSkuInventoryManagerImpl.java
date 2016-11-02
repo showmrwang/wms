@@ -2701,7 +2701,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 			Double num = inventoryOccupyManager.hardAllocateOccupy(skuInvs, occupyQty, occupyCode, odoLineId, wh);
 			occupyQty -= num;
 			actualQty += num;
-			if (occupyQty.compareTo(new Double(0.0)) == 0) {
+			if (0 == occupyQty.compareTo(new Double(0.0))) {
 				break;
 			}
 		}
@@ -2717,7 +2717,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 		if (log.isInfoEnabled()) {
 			log.info("allocationInventoryByLineList start,ouId:{},logId:{}", wh.getId(), logId);
 		}
-		if (notHaveInvAttrLines == null || notHaveInvAttrLines.isEmpty()) {
+		if (null == notHaveInvAttrLines || notHaveInvAttrLines.isEmpty()) {
 			return;
 		}
 		List<WhSkuInventoryCommand> allSkuInvs = new ArrayList<WhSkuInventoryCommand>();
@@ -2743,11 +2743,11 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 				Long odoLineId = line.getOdoLineId();	// 占用odoLineId
 				Double containerQty = 0.0;
 				// 查出此策略下的所有件库存
-				if (allSkuInvs == null || allSkuInvs.isEmpty()) {
+				if (null == allSkuInvs || allSkuInvs.isEmpty()) {
 					whWaveLineCommand.setAreaId(as.getAreaId());
 					whWaveLineCommand.setAllocateUnitCodes(Constants.ALLOCATE_UNIT_PIECE);
 					allSkuInvs = findInventorysByAllocateStrategy(as.getStrategyCode(), whWaveLineCommand, qty);
-					if (allSkuInvs == null || allSkuInvs.isEmpty()) {
+					if (null == allSkuInvs || allSkuInvs.isEmpty()) {
 						break;
 					}
 				}
@@ -2784,13 +2784,13 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 					num = inventoryOccupyManager.hardAllocateListOccupy(allSkuInvs, qty, occupyCode, odoLineId, wh, isStaticLocation, staticLocationIds);
 					occupyQty += num;
 				}
-				if (qty.compareTo(num) == 1) {
+				if (1 == qty.compareTo(num)) {
 					line.setQty(qty - num);
-				} else if (qty.compareTo(num) == 0) {
+				} else if (0 == qty.compareTo(num)) {
 					notHaveInvAttrLines.remove(j--);
 				}
 				whWaveLineManager.updateWaveLineByAllocateQty(line.getId(), occupyQty, containerQty, isStaticLocation, staticLocationIds, areaId, wh.getId());
-				if (allSkuInvs == null || allSkuInvs.isEmpty()) {
+				if (null == allSkuInvs || allSkuInvs.isEmpty()) {
 					break;
 				}
 			}
@@ -2962,21 +2962,21 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 			}
 			num += skuInv.getSumOnHandQty();
 		}
-		if (num.compareTo(qty) == -1) {
+		if (-1 == num.compareTo(qty)) {
 			return skuInvs;
 		}
 		num = 0.0;
 		for (int i = 0; i < skuInvs.size(); i++) {
 			WhSkuInventoryCommand skuInv = skuInvs.get(i);
-			if (skuInv.getSumOnHandQty().compareTo(qty) == -1) {
+			if (-1 == skuInv.getSumOnHandQty().compareTo(qty)) {
 				invBestList.add(0, skuInv);
 				num += skuInv.getSumOnHandQty();
-				if (num.compareTo(qty) == 0) {
+				if (0 == num.compareTo(qty)) {
 					return invBestList;
-				} else if (num.compareTo(qty) == 1) {
+				} else if (1 == num.compareTo(qty)) {
 					break;
 				}
-			} else if (skuInv.getSumOnHandQty().compareTo(qty) == 1) {
+			} else if (1 == skuInv.getSumOnHandQty().compareTo(qty)) {
 				break;
 			}
 		}

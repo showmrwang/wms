@@ -378,7 +378,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
 		WhWaveMaster whWaveMaster = whWaveMasterDao.findByIdExt(wave.getWaveMasterId(), ouId);
 		Long waveTempletId = whWaveMaster.getWaveTemplateId();
 		String phaseCode = this.getWavePhaseCode(wave.getPhaseCode(), waveTempletId, ouId);
-		if (lines == null || lines.isEmpty()) {
+		if (null == lines || lines.isEmpty()) {
 	        // 如果是补货阶段,则跳过
 	        if ("REPLENISHED".equals(phaseCode)) {
 	        	phaseCode = this.getWavePhaseCode(phaseCode, waveTempletId, ouId);
@@ -396,7 +396,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
 			for (WhWaveLine whWaveLine : lines) {
 				Long ruleId = whWaveLine.getAllocateRuleId();
 				List<String> strategyCodes = ruleMap.get(ruleId);
-				if (strategyCodes == null) {
+				if (null == strategyCodes) {
 					strategyCodes = allocateStrategyDao.findAllocateStrategyCodeByRuleId(ruleId, ouId);
 					ruleMap.put(ruleId, strategyCodes);
 				}
@@ -412,7 +412,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
 	        	if (odoIds.isEmpty()) {
 	        		wave.setPhaseCode(phaseCode);
 	        		int num = whWaveDao.saveOrUpdateByVersion(wave);
-	    	        if (num != 1) {
+	    	        if (1 != num) {
 	    	        	throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
 	    			}
 				} else {
@@ -425,7 +425,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
 					}
 					wave.setPhaseCode(phaseCode);
 					int num = whWaveDao.saveOrUpdateByVersion(wave);
-			        if (num != 1) {
+			        if (1 != num) {
 			        	throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
 					}
 				}
@@ -439,7 +439,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
 				}
 				wave.setPhaseCode(phaseCode);
 				int num = whWaveDao.saveOrUpdateByVersion(wave);
-		        if (num != 1) {
+		        if (1 != num) {
 		        	throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
 				}
 	        }

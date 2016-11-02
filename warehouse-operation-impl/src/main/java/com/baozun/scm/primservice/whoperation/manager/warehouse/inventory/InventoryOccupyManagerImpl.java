@@ -92,14 +92,14 @@ public class InventoryOccupyManagerImpl extends BaseInventoryManagerImpl impleme
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public Double hardAllocateOccupy(List<WhSkuInventoryCommand> skuInvs, Double qty, String occupyCode, Long odoLineId, Warehouse wh) {
-		if (skuInvs == null || skuInvs.isEmpty()) {
+		if (null == skuInvs || skuInvs.isEmpty()) {
 			return 0.0;
 		}
 		Double occupyNum = 0.0;	// 实际占用数量
 		Double count = qty;		// 传入的计划占用量
 		for (WhSkuInventoryCommand inv : skuInvs) {
 			Double oldQty = whSkuInventoryLogDao.sumSkuInvOnHandQty(inv.getUuid(), wh.getId());
-			if (count.compareTo(inv.getOnHandQty()) == -1) {
+			if (-1 == count.compareTo(inv.getOnHandQty())) {
 				boolean b = occupyInv(count, oldQty, occupyCode, "ODO", odoLineId, inv.getId(), wh);
 				if(!b){
                     throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
@@ -127,7 +127,7 @@ public class InventoryOccupyManagerImpl extends BaseInventoryManagerImpl impleme
     		skuInv.setOccupationCodeSource(occupySource);
     		skuInv.setOccupationLineId(odoLineId);
     		int num = inventoryDao.saveOrUpdateByVersion(skuInv);
-    		if (num == 1) {
+    		if (1 == num) {
     			flag = true;
     			insertSkuInventoryLog(invId, -qty, oldQty, wh.getIsTabbInvTotal(), wh.getId(), 1L);
     			break;
@@ -144,7 +144,7 @@ public class InventoryOccupyManagerImpl extends BaseInventoryManagerImpl impleme
 
 	@Override
 	public Double hardAllocateListOccupy(List<WhSkuInventoryCommand> list, Double qty, String occupyCode, Long odoLineId, Warehouse wh, Boolean isStaticLocation, Set<String> staticLocationIds) {
-		if (list == null || list.isEmpty()) {
+		if (null == list || list.isEmpty()) {
 			return 0.0;
 		}
 		Double occupyNum = 0.0;	// 实际占用数量
@@ -170,10 +170,10 @@ public class InventoryOccupyManagerImpl extends BaseInventoryManagerImpl impleme
 				// inv.setOnHandQty(inv.getOnHandQty() - count);
 				list.remove(i--);
 			}
-			if (isStaticLocation != null && isStaticLocation) {
+			if (null != isStaticLocation && isStaticLocation) {
 				staticLocationIds.add(inv.getLocationId().toString());
 			}
-			if (count == 0.0) {
+			if (0 == new Double(0.0).compareTo(count)) {
 				break;
 			}
 		}
@@ -182,13 +182,13 @@ public class InventoryOccupyManagerImpl extends BaseInventoryManagerImpl impleme
 
 	@Override
 	public Double occupyInvUuidsByPalletContainer(List<WhSkuInventoryCommand> uuids, List<WhSkuInventoryCommand> allSkuInvs, Double qty, String occupyCode, Long odoLineId, Warehouse wh, String unitCodes, Boolean isStaticLocation, Set<String> staticLocationIds) {
-		if (uuids == null || uuids.isEmpty()) {
+		if (null == uuids || uuids.isEmpty()) {
 			return 0.0;
 		}
 		Double actualQty = 0.0;
 		for (WhSkuInventoryCommand invCmd : uuids) {
 			Double onHandQty = invCmd.getSumOnHandQty();
-			if (qty.compareTo(onHandQty) != -1) {
+			if (-1 != qty.compareTo(onHandQty)) {
 				List<WhSkuInventoryCommand> invs = null;
 				if (Constants.ALLOCATE_UNIT_PALLET.equals(unitCodes)) {
 					List<String> uuidList = Arrays.asList(invCmd.getUuid().split(","));
@@ -206,7 +206,7 @@ public class InventoryOccupyManagerImpl extends BaseInventoryManagerImpl impleme
 	                    throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
 	                }
 					// 在所有库存sku列表中扣除
-					if (allSkuInvs != null) {
+					if (null != allSkuInvs) {
 						for (int i = 0; i < allSkuInvs.size(); i++) {
 							WhSkuInventoryCommand skuInv = allSkuInvs.get(i);
 							if (skuInv.getId().equals(inv.getId())) {
@@ -215,7 +215,7 @@ public class InventoryOccupyManagerImpl extends BaseInventoryManagerImpl impleme
 							}
 						}
 					}
-					if (isStaticLocation != null && isStaticLocation) {
+					if (null != isStaticLocation && isStaticLocation) {
 						staticLocationIds.add(inv.getLocationId().toString());
 					}
 					occupyNum += inv.getOnHandQty();
@@ -229,7 +229,7 @@ public class InventoryOccupyManagerImpl extends BaseInventoryManagerImpl impleme
 
 	@Override
 	public Double occupyInvUuids(List<WhSkuInventoryCommand> uuids, List<WhSkuInventoryCommand> allSkuInvs, Double qty, String occupyCode, Long odoLineId, Warehouse wh, String allocateUnitContainer, Boolean isStaticLocation, Set<String> staticLocationIds) {
-		if (uuids == null || uuids.isEmpty()) {
+		if (null == uuids || uuids.isEmpty()) {
 			return 0.0;
 		}
 		Double actualQty = 0.0;
@@ -240,7 +240,7 @@ public class InventoryOccupyManagerImpl extends BaseInventoryManagerImpl impleme
 			for (WhSkuInventoryCommand inv : invs) {
 				Double oldQty = whSkuInventoryLogDao.sumSkuInvOnHandQty(inv.getUuid(), wh.getId());
 				
-				if (count.compareTo(inv.getOnHandQty()) == -1) {
+				if (-1 == count.compareTo(inv.getOnHandQty())) {
 					boolean b = occupyInv(qty, oldQty, occupyCode, "ODO", odoLineId, inv.getId(), wh);
 					if(!b){
 	                    throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
@@ -249,7 +249,7 @@ public class InventoryOccupyManagerImpl extends BaseInventoryManagerImpl impleme
 					count = 0.0;
 					actualQty = qty;
 					// 在所有库存sku列表中扣除
-					if (allSkuInvs != null) {
+					if (null != allSkuInvs) {
 						for (int i = 0; i < allSkuInvs.size(); i++) {
 							WhSkuInventoryCommand skuInv = allSkuInvs.get(i);
 							if (skuInv.getId().equals(inv.getId())) {
@@ -266,7 +266,7 @@ public class InventoryOccupyManagerImpl extends BaseInventoryManagerImpl impleme
 					count -= inv.getOnHandQty();
 					actualQty += inv.getOnHandQty();
 					// 在所有库存sku列表中扣除
-					if (allSkuInvs != null) {
+					if (null != allSkuInvs) {
 						for (int i = 0; i < allSkuInvs.size(); i++) {
 							WhSkuInventoryCommand skuInv = allSkuInvs.get(i);
 							if (skuInv.getId().equals(inv.getId())) {
@@ -276,11 +276,11 @@ public class InventoryOccupyManagerImpl extends BaseInventoryManagerImpl impleme
 						}
 					}
 				}
-				if (isStaticLocation != null && isStaticLocation) {
+				if (null != isStaticLocation && isStaticLocation) {
 					staticLocationIds.add(inv.getLocationId().toString());
 				}
 			}
-			if (count == 0.0) {
+			if (0 == new Double(0.0).compareTo(count)) {
 				break;
 			}
 		}
