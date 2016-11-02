@@ -10,9 +10,13 @@ import lark.common.dao.Sort;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoMergeCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.SoftAllocationCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.WaveCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhDistributionPatternRuleCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
+import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine;
 
 public interface WhWaveManager extends BaseManager {
 
@@ -56,6 +60,17 @@ public interface WhWaveManager extends BaseManager {
      * @return
      */
     public Pagination<WaveCommand> findWaveListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params);
+
+    /**
+     * [业务方法]删除波次
+     * 
+     * @param wave
+     * @param waveLineList
+     * @param odoList
+     * @param odoLineList
+     * @param userId
+     */
+    public void deleteWave(WhWave wave, List<WhWaveLine> waveLineList, List<WhOdo> odoList, List<WhOdoLine> odoLineList, Long userId);
 
     /**
      * [业务方法] 软分配-软分配开始阶段更新波次状态
@@ -102,5 +117,35 @@ public interface WhWaveManager extends BaseManager {
 	 * [业务方法] 硬分配-异常释放这一波次库存
 	 */
 	void releaseInventoryByWaveId(Long waveId, Warehouse wh);
+
+    /**
+     * 查询波次可用的配货模式
+     * 
+     * @param ouId
+     * @return
+     */
+    List<WhDistributionPatternRuleCommand> findRuleByOuIdOrderByPriorityAsc(Long ouId);
+
+    /**
+     * 查询波次中适用于某种配货模式的出库单集合
+     * 
+     * @param waveId
+     * @param ouId
+     * @param ruleSql
+     * @return
+     */
+    List<Long> findOdoListInWaveWhenDistributionPattern(Long waveId, Long ouId, String ruleSql);
+
+    /**
+     * [业务方法]
+     * 
+     * @param odoList
+     * @param offWaveLineList
+     * @param offOdoLineList
+     * @param wave
+     * @param ouId
+     * @param userId
+     */
+    void matchWaveDisTributionMode(List<WhOdo> odoList, List<WhWaveLine> offWaveLineList, List<WhOdoLine> offOdoLineList, WhWave wave, Long ouId, Long userId);
 
 }

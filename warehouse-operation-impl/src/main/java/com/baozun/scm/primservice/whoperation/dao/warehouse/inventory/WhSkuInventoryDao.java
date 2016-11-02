@@ -627,5 +627,16 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
 	 * 释放库存
 	 */
 	int releaseInventoryOccupyCode(@Param("occupyCode") String occupyCode, @Param("ouId") Long ouId);
-
+    
+    /**
+     * 根据外部容器库存查询待上架库存信息
+     * 
+     * @param pdaManMadePutawayCommand
+     * @param
+     * @param
+     * @return
+     */
+    List<WhSkuInventory> findWhSkuInventoryCountsByContainerId(@Param("outerContainerId")Long outerContainerId,@Param("ouId") Long ouId,@Param("insideContainerId") Long insideContainerId);
+    
+    
 }

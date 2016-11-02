@@ -1,5 +1,7 @@
 package com.baozun.scm.primservice.whoperation.command.odo;
 
+import java.util.List;
+
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
 
 public class OdoLineCommand extends BaseCommand {
@@ -133,6 +135,16 @@ public class OdoLineCommand extends BaseCommand {
     /** 库存状态 */
     private String invStatusName;
 
+    /***/
+    private List<WhOdoVasCommand> odoVasList;
+
+    public List<WhOdoVasCommand> getOdoVasList() {
+        return odoVasList;
+    }
+
+    public void setOdoVasList(List<WhOdoVasCommand> odoVasList) {
+        this.odoVasList = odoVasList;
+    }
 
     public String getInvStatusName() {
         return invStatusName;

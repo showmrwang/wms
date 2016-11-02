@@ -21,6 +21,7 @@ public class OdoStatus implements Serializable {
 
     /** ODO_LINE */
     public static final String ODOLINE_NEW = "1";// 新建
+    public static final String ODOLINE_TOBECREATED = "99";// 待创建
     public static final String ODOLINE_OUTSTOCK = "2";// 部分出库
     public static final String ODOLINE_MERGE = "5";// 已合并
     public static final String ODOLINE_WAVE = "8";// 波次中

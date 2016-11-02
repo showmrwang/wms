@@ -97,10 +97,28 @@ public interface WhOdoLineDao extends BaseDao<WhOdoLine, Long> {
     int deleteByIdOuId(@Param("id") Long id, @Param("ouId") Long ouId);
 
     /**
+     * [通用方法]查找出库单明细
+     * 
+     * @param line
+     * @return
+     */
+    List<WhOdoLine> findListByParamExt(WhOdoLine line);
+
+    /**
      * [业务方法] 合并订单-通过合并后出库单code和原始出库单明细行 行号查找原始出库单明细行信息
      */
     WhOdoLine findByOdoCodeAndLineNum(@Param("lineNum") Integer lineNum, @Param("originalOdoCode") String originalOdoCode, @Param("ouId") Long ouId);
 
 	int updateOdoLineByAllocateFail(@Param("odoId") Long odoId, @Param("reason") String reason, @Param("ouId") Long ouId);
+
+    /**
+     * [通用方法]根据ODOID查找某种状态的出库单
+     * 
+     * @param odoId
+     * @param ouId
+     * @param statusList
+     * @return
+     */
+    List<WhOdoLine> findOdoLineListByOdoIdStatus(@Param("odoId") Long odoId, @Param("ouId") Long ouId, @Param("statusList") String[] statusList);
 
 }

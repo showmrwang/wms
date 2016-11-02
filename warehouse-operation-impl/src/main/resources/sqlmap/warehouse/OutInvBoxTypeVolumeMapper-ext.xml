@@ -19,8 +19,8 @@
                 typeVo.last_modify_time as lastModifyTime,
                 typeVo.created_id as createdId,
                 typeVo.modified_id as modifiedId,
-                vo.code as code,
-                vo.name as name,
+                pc.code as code,
+                pc.name as name,
                 typeVo.volume  as volume
         ]]>
     </sql>
@@ -85,14 +85,14 @@
     <select id="getOutBoxTypeVolumeByTypeId" resultType="com.baozun.scm.primservice.whoperation.command.warehouse.OutInvBoxTypeVoCommand">
         select
         <include refid="outInvBoxTypeVolumeColumnsExt"/>
-        from t_wh_out_inv_box_type_volume typeVo
-        left join t_wh_product_volume vo on typeVo.prv_id = vo.id
+        from t_wh_outboundbox_product_volume typeVo
+        left join t_wh_product_category pc on typeVo.prv_id = pc.id
         where typeVo.out_id = #{outId} and typeVo.ou_id = #{ouId}
     </select>
 
     <update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.OutInvBoxTypeVolume">
         <![CDATA[
-            UPDATE t_wh_out_inv_box_type_volume SET
+            UPDATE t_wh_outboundbox_product_volume SET
                 out_id = #{outId,javaType=java.lang.Long,jdbcType=BIGINT} ,
                 prv_id = #{prvId,javaType=java.lang.Long,jdbcType=BIGINT} ,
                 volume = #{volume,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -107,7 +107,7 @@
 
     <delete id="deleteExt">
         delete
-        from t_wh_out_inv_box_type_volume
+        from t_wh_outboundbox_product_volume
         where ou_Id = #{ouId} and id in
         <foreach collection="list" item="ids" open="("
                  separator="," close=")">
@@ -118,14 +118,14 @@
     <select id="findByIdExt" resultType="com.baozun.scm.primservice.whoperation.model.warehouse.OutInvBoxTypeVolume">
         select
         <include refid="outInvBoxTypeVolumeColumn"/>
-        from t_wh_out_inv_box_type_volume
+        from t_wh_outboundbox_product_volume
         where id = #{id} and ou_id = #{ouId}
     </select>
 
 
     <select id="checkUnique" resultType="Long" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.OutInvBoxTypeVolume">
         select count(*)
-        from t_wh_out_inv_box_type_volume
+        from t_wh_outboundbox_product_volume
         <where>
             <if test="id!=null">
                 and id != #{id}

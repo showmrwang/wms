@@ -29,9 +29,11 @@ public class OutBoundBoxCompute {
      * @param boxTotalVolume 出库箱体积
      * @param outBoundBoxType 出库箱类型ID
      * @param containerId 容器ID
+     * @param outbounxboxTypeCode 出库箱编码 编码生成器生成
+     * @param boxBatch 批次
      * @return 累计放入出库箱商品总体积
      */
-    public static Double obbCompute(List<WaveLineCommand> waveLineList, Map<String, WhOdoOutBoundBox> oobbMap, Double boxTotalVolume, Long outBoundBoxType, Long containerId) {
+    public static Double obbCompute(List<WaveLineCommand> waveLineList, Map<String, WhOdoOutBoundBox> oobbMap, Double boxTotalVolume, Long outBoundBoxType, Long containerId, String outbounxboxTypeCode, String boxBatch) {
         log.info("OutBoundBoxCompute.compute method begin!");
         if (null == waveLineList) {
             log.warn("OutBoundBoxCompute.compute waveLineList is null");
@@ -63,7 +65,7 @@ public class OutBoundBoxCompute {
         // 计算多少商品能放入对应出库箱
         Map<Long, Integer> solveResult = solve(bags, boxTotalVolume);
         // 调整波次明细对应数量
-        revisionWaveLineQty(waveLineList, oobbMap, solveResult, outBoundBoxType, containerId);
+        revisionWaveLineQty(waveLineList, oobbMap, solveResult, outBoundBoxType, containerId, outbounxboxTypeCode, boxBatch);
         log.info("OutBoundBoxCompute.compute method end!");
         return tempVolume;
     }
@@ -73,7 +75,7 @@ public class OutBoundBoxCompute {
      * 
      * @param waveLineList
      */
-    private static void revisionWaveLineQty(List<WaveLineCommand> waveLineList, Map<String, WhOdoOutBoundBox> oobbMap, Map<Long, Integer> solveResult, Long outBoundBoxType, Long containerId) {
+    private static void revisionWaveLineQty(List<WaveLineCommand> waveLineList, Map<String, WhOdoOutBoundBox> oobbMap, Map<Long, Integer> solveResult, Long outBoundBoxType, Long containerId, String outbounxboxTypeCode, String boxBatch) {
         for (int i = 0; i < waveLineList.size(); i++) {
             // 判断放入出库箱商品是否存在
             if (solveResult.containsKey(waveLineList.get(i).getId())) {
@@ -91,7 +93,8 @@ public class OutBoundBoxCompute {
                         // 否则新增信息
                         oobb.setOdoId(waveLineList.get(i).getOdoId());
                         oobb.setOdoLineId(waveLineList.get(i).getOdoLineId());
-                        oobb.setOuterContainerId(containerId);
+                        oobb.setContainerId(containerId);
+                        oobb.setBoxBatch(boxBatch);
                         oobb.setQty(solveResult.get(waveLineList.get(i).getId()).doubleValue());
                         oobbMap.put(oobbKey + "-" + containerId, oobb);
                     }
@@ -107,6 +110,8 @@ public class OutBoundBoxCompute {
                         oobb.setOdoId(waveLineList.get(i).getOdoId());
                         oobb.setOdoLineId(waveLineList.get(i).getOdoLineId());
                         oobb.setOutbounxboxTypeId(outBoundBoxType);
+                        oobb.setBoxBatch(boxBatch);
+                        oobb.setOutbounxboxTypeCode(outbounxboxTypeCode);
                         oobb.setQty(solveResult.get(waveLineList.get(i).getId()).doubleValue());
                         oobbMap.put(oobbKey + "-" + outBoundBoxType, oobb);
                     }

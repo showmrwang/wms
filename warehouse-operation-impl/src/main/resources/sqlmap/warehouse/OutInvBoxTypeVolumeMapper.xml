@@ -31,7 +31,7 @@
             flushCache="true">
             <![CDATA[
                 INSERT INTO
-                t_wh_out_inv_box_type_volume (
+                t_wh_outboundbox_product_volume (
                 id,
                     out_id ,
                     ou_id ,
@@ -59,7 +59,7 @@
 
     <update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.OutInvBoxTypeVolume">
         <![CDATA[
-            UPDATE t_wh_out_inv_box_type_volume SET
+            UPDATE t_wh_outboundbox_product_volume SET
                 out_id = #{outId,javaType=java.lang.Long,jdbcType=BIGINT} ,
                 ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
                 prv_id = #{prvId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -74,14 +74,14 @@
         </update>
     <delete id="delete" parameterType="java.lang.Long">
         <![CDATA[
-            delete from t_wh_out_inv_box_type_volume where
+            delete from t_wh_outboundbox_product_volume where
                 id = #{id}
         ]]>
         </delete>
 
     <delete id="deleteByIds" parameterType="list">
 
-        delete from t_wh_out_inv_box_type_volume
+        delete from t_wh_outboundbox_product_volume
         where id in
         <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
             #{item}
@@ -93,7 +93,7 @@
         select
         <include refid="outInvBoxTypeVolumeColumns"/>
         <![CDATA[
-                from t_wh_out_inv_box_type_volume 
+                from t_wh_outboundbox_product_volume 
                 where 
                 id = #{id} 
             ]]>
@@ -101,7 +101,7 @@
     <select id="getByIds" parameterType="list" resultMap="OutInvBoxTypeVolumeResult" flushCache="false">
         select
         <include refid="outInvBoxTypeVolumeColumns"/>
-        from t_wh_out_inv_box_type_volume
+        from t_wh_outboundbox_product_volume
         where id in
         <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
             #{item}
@@ -151,15 +151,15 @@
 
 
     <select id="getCount" resultType="long">
-        select count(*) from t_wh_out_inv_box_type_volume 
+        select count(*) from t_wh_outboundbox_product_volume 
     </select>
     <select id="findListCountByQueryMap" resultType="long">
-        select count(*) from t_wh_out_inv_box_type_volume
+        select count(*) from t_wh_outboundbox_product_volume
         <include refid="outInvBoxTypeVolumeDynamicWhere"/>
     </select>
 
     <select id="findListCountByParam" resultType="long">
-        select count(*) from t_wh_out_inv_box_type_volume
+        select count(*) from t_wh_outboundbox_product_volume
         <include refid="outInvBoxTypeVolumeDynamicWhere"/>
     </select>
 
@@ -170,7 +170,7 @@
     <select id="findListByQueryMapWithPage" resultMap="OutInvBoxTypeVolumeResult">
         select
         <include refid="outInvBoxTypeVolumeColumns"/>
-        from t_wh_out_inv_box_type_volume
+        from t_wh_outboundbox_product_volume
         <include refid="outInvBoxTypeVolumeDynamicWhere"/>
 
     </select>
@@ -178,7 +178,7 @@
     <select id="findListByQueryMap" resultMap="OutInvBoxTypeVolumeResult">
         select
         <include refid="outInvBoxTypeVolumeColumns"/>
-        from t_wh_out_inv_box_type_volume
+        from t_wh_outboundbox_product_volume
         <include refid="outInvBoxTypeVolumeDynamicWhere"/>
 
     </select>
@@ -186,7 +186,7 @@
     <select id="findListByParam" resultMap="OutInvBoxTypeVolumeResult">
         select
         <include refid="outInvBoxTypeVolumeColumns"/>
-        from t_wh_out_inv_box_type_volume
+        from t_wh_outboundbox_product_volume
         <include refid="outInvBoxTypeVolumeDynamicWhere"/>
 
     </select>

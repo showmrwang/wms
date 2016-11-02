@@ -78,6 +78,9 @@ public class ContainerCommand extends BaseCommand {
     /** 容器装箱数 */
     private Long qty;
 
+    /** 容器内sku id*/
+    private Long skuId;
+
 
     public Integer getStatus() {
         return status;
@@ -238,6 +241,14 @@ public class ContainerCommand extends BaseCommand {
 
     public void setQty(Long qty) {
         this.qty = qty;
+    }
+
+    public Long getSkuId() {
+        return skuId;
+    }
+
+    public void setSkuId(Long skuId) {
+        this.skuId = skuId;
     }
 
 }

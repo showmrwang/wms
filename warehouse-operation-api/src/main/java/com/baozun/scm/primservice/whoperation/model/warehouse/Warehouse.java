@@ -140,6 +140,67 @@ public class Warehouse extends BaseModel {
     /** 拣货出现差异是否生成盘点任务 */
     private Boolean isGenerateInventoryTask;
     
+
+    /** 配货模式计算 */
+    private Boolean isCalcSeckill;
+    private Integer seckillOdoQtys;
+    private Boolean isCalcTwoSkuSuit;
+    private Integer twoSkuSuitOdoQtys;
+    private Boolean isCalcSuits;
+    private Integer suitsOdoQtys;
+    /**播种墙对应单据数*/
+    private Integer seedinfOdoQty;
+
+
+
+    public Boolean getIsCalcSeckill() {
+        return isCalcSeckill;
+    }
+
+    public void setIsCalcSeckill(Boolean isCalcSeckill) {
+        this.isCalcSeckill = isCalcSeckill;
+    }
+
+    public Integer getSeckillOdoQtys() {
+        return seckillOdoQtys;
+    }
+
+    public void setSeckillOdoQtys(Integer seckillOdoQtys) {
+        this.seckillOdoQtys = seckillOdoQtys;
+    }
+
+    public Boolean getIsCalcTwoSkuSuit() {
+        return isCalcTwoSkuSuit;
+    }
+
+    public void setIsCalcTwoSkuSuit(Boolean isCalcTwoSkuSuit) {
+        this.isCalcTwoSkuSuit = isCalcTwoSkuSuit;
+    }
+
+    public Integer getTwoSkuSuitOdoQtys() {
+        return twoSkuSuitOdoQtys;
+    }
+
+    public void setTwoSkuSuitOdoQtys(Integer twoSkuSuitOdoQtys) {
+        this.twoSkuSuitOdoQtys = twoSkuSuitOdoQtys;
+    }
+
+    public Boolean getIsCalcSuits() {
+        return isCalcSuits;
+    }
+
+    public void setIsCalcSuits(Boolean isCalcSuits) {
+        this.isCalcSuits = isCalcSuits;
+    }
+
+    public Integer getSuitsOdoQtys() {
+        return suitsOdoQtys;
+    }
+
+    public void setSuitsOdoQtys(Integer suitsOdoQtys) {
+        this.suitsOdoQtys = suitsOdoQtys;
+    }
+
     public Boolean getIsGenerateInventoryTask() {
         return isGenerateInventoryTask;
     }
@@ -554,6 +615,14 @@ public class Warehouse extends BaseModel {
 
     public void setSkuMixNumber(Integer skuMixNumber) {
         this.skuMixNumber = skuMixNumber;
+    }
+
+    public Integer getSeedinfOdoQty() {
+        return seedinfOdoQty;
+    }
+
+    public void setSeedinfOdoQty(Integer seedinfOdoQty) {
+        this.seedinfOdoQty = seedinfOdoQty;
     }
 
 

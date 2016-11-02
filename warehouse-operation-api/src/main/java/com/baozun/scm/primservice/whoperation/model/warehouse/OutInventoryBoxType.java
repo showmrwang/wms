@@ -14,6 +14,8 @@
  */
 package com.baozun.scm.primservice.whoperation.model.warehouse;
 
+import java.util.Date;
+
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 
 /**
@@ -25,11 +27,11 @@ import com.baozun.scm.primservice.whoperation.model.BaseModel;
 public class OutInventoryBoxType extends BaseModel {
 
 
+    private static final long serialVersionUID = 8431021328606850616L;
 
     /**
-     * 
+     *
      */
-    private static final long serialVersionUID = 1L;
     // columns START
     /** sku主键 */
     private Long skuId;
@@ -50,75 +52,77 @@ public class OutInventoryBoxType extends BaseModel {
     /** 高 */
     private Double high;
     /** 体积 */
-    private Double volumne;
+    private Double volume;
     /** 承重 */
     private Double weight;
+    /** 外部长 */
+    private Double lengthExt;
+    /** 外部宽 */
+    private Double widthExt;
+    /** 外部高 */
+    private Double highExt;
+    /** 出库箱体积 */
+    private Double volumeExt;
+    /** 出库箱重量 */
+    private Double weightExt;
     /** 创建时间 */
-    private java.util.Date createTime;
+    private Date createTime;
     /** 最终修改时间 */
-    private java.util.Date lastModifyTime;
+    private Date lastModifyTime;
     /** 创建人ID */
     private Long createdId;
     /** 修改人ID */
     private Long modifiedId;
 
-    // columns END
-
-    public OutInventoryBoxType() {}
-
-    public OutInventoryBoxType(Long id) {
-        this.id = id;
-    }
-
-    public void setSkuId(Long value) {
-        this.skuId = value;
-    }
 
     public Long getSkuId() {
-        return this.skuId;
+        return skuId;
     }
 
-    public void setOuId(Long value) {
-        this.ouId = value;
+    public void setSkuId(Long skuId) {
+        this.skuId = skuId;
     }
 
     public Long getOuId() {
-        return this.ouId;
+        return ouId;
     }
 
-    public void setCode(String value) {
-        this.code = value;
+    public void setOuId(Long ouId) {
+        this.ouId = ouId;
     }
 
     public String getCode() {
-        return this.code;
+        return code;
     }
 
-    public void setName(String value) {
-        this.name = value;
+    public void setCode(String code) {
+        this.code = code;
     }
 
     public String getName() {
-        return this.name;
+        return name;
     }
 
-    public void setDescription(String value) {
-        this.description = value;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getDescription() {
-        return this.description;
+        return description;
     }
 
-    public void setLifecycle(Integer value) {
-        this.lifecycle = value;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public Integer getLifecycle() {
-        return this.lifecycle;
+        return lifecycle;
     }
 
-    
+    public void setLifecycle(Integer lifecycle) {
+        this.lifecycle = lifecycle;
+    }
+
     public Double getLength() {
         return length;
     }
@@ -143,54 +147,91 @@ public class OutInventoryBoxType extends BaseModel {
         this.high = high;
     }
 
-    public Double getVolumne() {
-        return volumne;
+    public Double getVolume() {
+        return volume;
     }
 
-    public void setVolumne(Double volumne) {
-        this.volumne = volumne;
-    }
-
-    public void setWeight(Double weight) {
-        this.weight = weight;
-    }
-
-    public void setCreateTime(java.util.Date value) {
-        this.createTime = value;
-    }
-
-    public java.util.Date getCreateTime() {
-        return this.createTime;
-    }
-
-    public void setLastModifyTime(java.util.Date value) {
-        this.lastModifyTime = value;
-    }
-
-    public java.util.Date getLastModifyTime() {
-        return this.lastModifyTime;
-    }
-
-    public void setCreatedId(Long value) {
-        this.createdId = value;
-    }
-
-    public Long getCreatedId() {
-        return this.createdId;
-    }
-
-    public void setModifiedId(Long value) {
-        this.modifiedId = value;
-    }
-
-    public Long getModifiedId() {
-        return this.modifiedId;
+    public void setVolume(Double volume) {
+        this.volume = volume;
     }
 
     public Double getWeight() {
         return weight;
     }
 
-    
-    
+    public void setWeight(Double weight) {
+        this.weight = weight;
+    }
+
+    public Double getLengthExt() {
+        return lengthExt;
+    }
+
+    public void setLengthExt(Double lengthExt) {
+        this.lengthExt = lengthExt;
+    }
+
+    public Double getWidthExt() {
+        return widthExt;
+    }
+
+    public void setWidthExt(Double widthExt) {
+        this.widthExt = widthExt;
+    }
+
+    public Double getHighExt() {
+        return highExt;
+    }
+
+    public void setHighExt(Double highExt) {
+        this.highExt = highExt;
+    }
+
+    public Double getVolumeExt() {
+        return volumeExt;
+    }
+
+    public void setVolumeExt(Double volumeExt) {
+        this.volumeExt = volumeExt;
+    }
+
+    public Double getWeightExt() {
+        return weightExt;
+    }
+
+    public void setWeightExt(Double weightExt) {
+        this.weightExt = weightExt;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Date getLastModifyTime() {
+        return lastModifyTime;
+    }
+
+    public void setLastModifyTime(Date lastModifyTime) {
+        this.lastModifyTime = lastModifyTime;
+    }
+
+    public Long getCreatedId() {
+        return createdId;
+    }
+
+    public void setCreatedId(Long createdId) {
+        this.createdId = createdId;
+    }
+
+    public Long getModifiedId() {
+        return modifiedId;
+    }
+
+    public void setModifiedId(Long modifiedId) {
+        this.modifiedId = modifiedId;
+    }
 }

@@ -22,6 +22,12 @@
                 width as width,
                 high as high,
                 weight as weight,
+                volume as volume,
+                length_ext as lengthExt,
+                width_ext as widthExt,
+                high_ext as highExt,
+                volume_ext as volumeExt,
+                weight_ext as weightExt,
                 create_time as createTime,
                 last_modify_time as lastModifyTime,
                 created_id as createdId,
@@ -37,7 +43,7 @@
             flushCache="true">
         <![CDATA[
                 INSERT INTO
-                t_wh_out_inventory_box_type (
+                t_wh_outboundbox_type (
                 id,
                     sku_id ,
                     ou_id ,
@@ -48,8 +54,13 @@
                     length ,
                     width ,
                     high ,
-                    volumne ,
+                    volume ,
                     weight ,
+                    length_ext,
+                    width_ext,
+                    high_ext,
+                    volume_ext,
+                    weight_ext,
                     create_time ,
                     last_modify_time ,
                     created_id ,
@@ -65,8 +76,13 @@
                     #{length,javaType=java.lang.Double,jdbcType=DOUBLE} ,
                     #{width,javaType=java.lang.Double,jdbcType=DOUBLE} ,
                     #{high,javaType=java.lang.Double,jdbcType=DOUBLE} ,
-                    #{volumne,javaType=java.lang.Double,jdbcType=DOUBLE} ,
+                    #{volume,javaType=java.lang.Double,jdbcType=DOUBLE} ,
                     #{weight,javaType=java.lang.Double,jdbcType=DOUBLE} ,
+                    #{lengthExt,javaType=java.lang.Double,jdbcType=DOUBLE} ,
+                    #{widthExt,javaType=java.lang.Double,jdbcType=DOUBLE} ,
+                    #{highExt,javaType=java.lang.Double,jdbcType=DOUBLE} ,
+                    #{volumeExt,javaType=java.lang.Double,jdbcType=DOUBLE} ,
+                    #{weightExt,javaType=java.lang.Double,jdbcType=DOUBLE} ,
                     #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
                     #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
                     #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -79,7 +95,7 @@
 
     <update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.OutInventoryBoxType">
         <![CDATA[
-            UPDATE t_wh_out_inventory_box_type SET
+            UPDATE t_wh_outboundbox_type SET
                 sku_id = #{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
                 ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
                 code = #{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -89,8 +105,13 @@
                 length = #{length,javaType=java.lang.Double,jdbcType=DOUBLE} ,
                 width = #{width,javaType=java.lang.Double,jdbcType=DOUBLE} ,
                 high = #{high,javaType=java.lang.Double,jdbcType=DOUBLE} ,
-                volumne = #{volumne,javaType=java.lang.Double,jdbcType=DOUBLE} ,
+                volume = #{volume,javaType=java.lang.Double,jdbcType=DOUBLE} ,
                 weight = #{weight,javaType=java.lang.Double,jdbcType=DOUBLE} ,
+                length_ext = #{lengthExt,javaType=java.lang.Double,jdbcType=DOUBLE} ,
+                width_ext = #{widthExt,javaType=java.lang.Double,jdbcType=DOUBLE} ,
+                high_ext = #{highExt,javaType=java.lang.Double,jdbcType=DOUBLE} ,
+                volume_ext = #{volumeExt,javaType=java.lang.Double,jdbcType=DOUBLE} ,
+                weight_ext = #{weightExt,javaType=java.lang.Double,jdbcType=DOUBLE} ,
                 create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
                 last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
                 created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -101,14 +122,14 @@
     </update>
     <delete id="delete" parameterType="java.lang.Long">
         <![CDATA[
-            delete from t_wh_out_inventory_box_type where
+            delete from t_wh_outboundbox_type where
                 id = #{id} 
         ]]>
     </delete>
 
     <delete id="deleteByIds" parameterType="list">
 
-        delete from t_wh_out_inventory_box_type
+        delete from t_wh_outboundbox_type
         where id in
         <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
             #{item}
@@ -120,7 +141,7 @@
         select
         <include refid="outInventoryBoxTypeColumns"/>
         <![CDATA[
-                from t_wh_out_inventory_box_type 
+                from t_wh_outboundbox_type 
                 where 
                 id = #{id} 
             ]]>
@@ -128,7 +149,7 @@
     <select id="getByIds" parameterType="list" resultMap="OutInventoryBoxTypeResult" flushCache="false">
         select
         <include refid="outInventoryBoxTypeColumns"/>
-        from t_wh_out_inventory_box_type
+        from t_wh_outboundbox_type
         where id in
         <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
             #{item}
@@ -182,13 +203,33 @@
             </if>
 
 
-            <if test="volumne!=null">
-                and volumne = #{volumne}
+            <if test="volume!=null">
+                and volume = #{volume}
             </if>
 
 
             <if test="weight!=null">
                 and weight = #{weight}
+            </if>
+
+            <if test="lengthExt!=null">
+                and length_ext = #{lengthExt}
+            </if>
+
+            <if test="widthExt!=null">
+                and width_ext = #{widthExt}
+            </if>
+
+            <if test="highExt!=null">
+                and high_ext = #{highExt}
+            </if>
+
+            <if test="volumeExt!=null">
+                and volume_ext = #{volumeExt}
+            </if>
+
+            <if test="weightExt!=null">
+                and weight_ext = #{weightExt}
             </if>
 
             <if test="createTime!=null">
@@ -211,15 +252,15 @@
 
 
     <select id="getCount" resultType="long">
-        select count(*) from t_wh_out_inventory_box_type
+        select count(*) from t_wh_outboundbox_type
     </select>
     <select id="findListCountByQueryMap" resultType="long">
-        select count(*) from t_wh_out_inventory_box_type
+        select count(*) from t_wh_outboundbox_type
         <include refid="outInventoryBoxTypeDynamicWhere"/>
     </select>
 
     <select id="findListCountByParam" resultType="long">
-        select count(*) from t_wh_out_inventory_box_type
+        select count(*) from t_wh_outboundbox_type
         <include refid="outInventoryBoxTypeDynamicWhere"/>
     </select>
 
@@ -230,7 +271,7 @@
     <select id="findListByQueryMapWithPage" resultMap="OutInventoryBoxTypeResult">
         select
         <include refid="outInventoryBoxTypeColumns"/>
-        from t_wh_out_inventory_box_type
+        from t_wh_outboundbox_type
         <include refid="outInventoryBoxTypeDynamicWhere"/>
 
     </select>
@@ -238,7 +279,7 @@
     <select id="findListByQueryMap" resultMap="OutInventoryBoxTypeResult">
         select
         <include refid="outInventoryBoxTypeColumns"/>
-        from t_wh_out_inventory_box_type
+        from t_wh_outboundbox_type
         <include refid="outInventoryBoxTypeDynamicWhere"/>
 
     </select>
@@ -246,7 +287,7 @@
     <select id="findListByParam" resultMap="OutInventoryBoxTypeResult">
         select
         <include refid="outInventoryBoxTypeColumns"/>
-        from t_wh_out_inventory_box_type
+        from t_wh_outboundbox_type
         <include refid="outInventoryBoxTypeDynamicWhere"/>
 
     </select>

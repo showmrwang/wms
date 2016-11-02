@@ -70,4 +70,12 @@ public interface WhWaveLineManager extends BaseManager {
 
 	Map<Long, Map<Long, Map<Long, Map<Long, Map<Boolean, List<WhWaveLine>>>>>> getNeedInventoryMap(List<Long> waveIdList, Long ouId);
 
+    /**
+     * [通用方法]根据波次查询波次明细
+     * 
+     * @param waveId
+     * @param ouId
+     * @return
+     */
+    List<WhWaveLine> findWaveLineListByWaveId(Long waveId, Long ouId);
 }

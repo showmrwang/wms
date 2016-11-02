@@ -186,12 +186,15 @@ public final class Constants {
     /** 分配区域 */
     public static final String AREA_TYPE_ALLOCATE_AREA = "allocatearea";
 
-    /** 补货规则 */
-    public static final String REPLENISHMENT_RULE = "REPLENISHMENT_RULE";
     /** 补货规则 货品规则类型 */
     public static final String RULE_TYPE_REPLENISHMENT_SKU = "REPLENISHMENT_SKU";
     /** 补货规则 库位规则类型 */
     public static final String RULE_TYPE_REPLENISHMENT_LOCATION = "REPLENISHMENT_LOCATION";
+
+    /** 出库箱规则 */
+    public static final String RULE_TYPE_OUTBOUND_BOX = "OUTBOUND_BOX";
+    /** 装箱排序\拆分 */
+    public static final String RULE_TYPE_OUTBOUND_BOX_TACTICS = "OUTBOUND_BOX_TACTICS";
 
     // 库存状态
     public static final Long INVENTORY_STATUS_GOOD = 3L;// 良品
@@ -267,6 +270,14 @@ public final class Constants {
 
     /** 上架规则sql占位符 */
     public static final String SHELVE_RULE_PLACEHOLDER = "${insideContainerIdListStr}";
+
+    /** 补货规则商品规则skuId占位符 */
+    public static final String REOLENISHMENT_RULE_SKUID_LIST_PLACEHOLDER = "${skuIdListStr}";
+    /** 补货规则库位规则locationId占位符 */
+    public static final String REOLENISHMENT_RULE_LOCATIONID_LIST_PLACEHOLDER = "${locationIdListStr}";
+
+    /** 出库箱装箱规则sql占位符 */
+    public static final String OUTBOUNDBOX_RULE_PLACEHOLDER = "${odoIdListStr}";
 
     /** 库存 占用单据来源 ASN */
     public static final String SKU_INVENTORY_OCCUPATION_SOURCE_ASN = "ASN";
@@ -365,6 +376,10 @@ public final class Constants {
     public static final String INV_ATTR3 = "9";   //库存属性3
     public static final String INV_ATTR4 = "10";   //库存属性4
     public static final String INV_ATTR5 = "11";   //库存属性5
+
+
+    public static final String WAVE_STATUS = "WAVE_STATUS";// 波次状态
+    public static final String WH_WAVE_PHASE = "WH_WAVE_PHASE";// 波次阶段
     
     public static final Integer SN_DEFECR_COUNT  = 1;
     
@@ -397,4 +412,7 @@ public final class Constants {
     public static final String ALLOCATE_UNIT_PALLET = "PALLET";			// 托盘
     public static final String ALLOCATE_UNIT_CONTAINER = "CONTAINER";	// 货箱
     public static final String ALLOCATE_UNIT_PIECE = "PIECE";			// 件
+
+    /** 体积单位升在Uom表中的编码 */
+    public static final String LENGTH_TO_VOLUME_UOM_CODE = "LENGTH_TO_VOLUME_CODE";
 }

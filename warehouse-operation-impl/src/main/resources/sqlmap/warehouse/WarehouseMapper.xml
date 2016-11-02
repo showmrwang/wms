@@ -68,7 +68,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				
 				is_generate_inventory_task as isGenerateInventoryTask,
 
-	        	lifecycle as lifecycle
+	        	lifecycle as lifecycle,
+	        	seeding_odo_qty as seedinfOdoQty
 	    ]]>
 	</sql>
 	<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
@@ -132,7 +133,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	
 	        	is_generate_inventory_task,
 	        	
-	        	lifecycle 
+	        	lifecycle,
+	        	is_calc_suits,
+		        suits_odo_qtys,
+		        suits_max_sku_categorys,
+		        is_calc_seckill,
+		        seckill_odo_qtys,
+		        is_calc_two_sku_suit,
+		        two_sku_suit_odo_qtys,
+		        seeding_odo_qty  
 	        ) VALUES (
 	        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -190,7 +199,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	
 	        	#{isGenerateInventoryTask,javaType=java.lang.Boolean,jdbcType=BIT} ,
 	        	
-	        	#{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
+	        	#{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER},
+	        	#{isCalcSuits,javaType=java.lang.Boolean,jdbcType=BIT}, 
+	        	#{suitsOdoQtys,javaType=java.lang.Integer,jdbcType=INTEGER}, 
+	        	#{suitsMaxSkuCategorys,javaType=java.lang.Integer,jdbcType=INTEGER},
+	        	#{isCalcSeckill,javaType=java.lang.Boolean,jdbcType=BIT}, 
+	        	#{seckillOdoQtys,javaType=java.lang.Integer,jdbcType=INTEGER},
+	        	#{isCalcTwoSkuSuit,javaType=java.lang.Boolean,jdbcType=BIT}, 
+	        	#{twoSkuSuitOdoQtys,javaType=java.lang.Integer,jdbcType=INTEGER},
+	        	#{seedinfOdoQty,javaType=java.lang.Integer,jdbcType=INTEGER} 
 	       
 	        )
 	    ]]>
@@ -256,7 +273,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	
 		        	is_generate_inventory_task = #{isGenerateInventoryTask,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        
-			        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
+			        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER},
+			        seeding_odo_qty = #{seedinfOdoQty,javaType=java.lang.Integer,jdbcType=INTEGER} 
 	        WHERE 
 		        id = #{id} 
 	    ]]>
@@ -455,6 +473,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			
 			<if test="lifecycle!=null">
 				and lifecycle = #{lifecycle}
+			</if>
+			<if test="seedinfOdoQty != null">
+			    and seeding_odo_qty = #{seedinfOdoQty}
 			</if>
 		</where>
 	</sql>

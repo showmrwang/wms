@@ -70,4 +70,23 @@ public interface OdoLineManager extends BaseManager {
     @Deprecated
     Boolean updateOdoLineStatus(Long odoLineId, Long ouId, String status);
 
+    /**
+     * [通用方法]根据波次查询出库单明细
+     * 
+     * @param code
+     * @param ouId
+     * @return
+     */
+    List<WhOdoLine> findOdoLineListByWaveCode(String code, Long ouId);
+
+    /**
+     * [通用方法]根据ODOID查找某种状态的明细
+     * 
+     * @param odoId
+     * @param ouId
+     * @param strings
+     * @return
+     */
+    List<WhOdoLine> findOdoLineListByOdoIdStatus(Long odoId, Long ouId, String[] strings);
+
 }

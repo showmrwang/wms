@@ -8,6 +8,7 @@ import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 
 import com.baozun.scm.primservice.whoperation.command.odo.OdoAddressCommand;
+import com.baozun.scm.primservice.whoperation.command.odo.OdoCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoGroupCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoLineCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoResultCommand;
@@ -232,4 +233,18 @@ public interface OdoManagerProxy extends BaseManager {
      * @return
      */
     Pagination<WaveCommand> findWaveListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params);
+
+    /**
+     * 删除波次
+     * 
+     * @param waveCommand
+     */
+    void deleteWave(WaveCommand waveCommand);
+
+    /**
+     * 创建出库单完成
+     * 
+     * @param odoCommand
+     */
+    void finishCreateOdo(OdoCommand odoCommand);
 }

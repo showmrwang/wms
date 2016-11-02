@@ -17,7 +17,9 @@ import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAddress;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLineAttrSn;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoVas;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveMaster;
@@ -30,9 +32,15 @@ public interface OdoManager extends BaseManager {
      * [业务方法]创建出库单TODO
      * 
      * @param odo
+     * @param odoLineList
      * @param transportMgmt
+     * @param userId
+     * @param ouId
+     * @param lineSnList
+     * @param odoVasList
+     * @param odoAddress
      */
-    void createOdo(WhOdo odo, WhOdoTransportMgmt transportMgmt);
+    void createOdo(WhOdo odo, List<WhOdoLine> odoLineList, WhOdoTransportMgmt transportMgmt, WhOdoAddress odoAddress, List<WhOdoVas> odoVasList, List<WhOdoLineAttrSn> lineSnList, Long ouId, Long userId);
 
     /**
      * [通用方法]根据ID,OUID查找ODO
@@ -66,9 +74,9 @@ public interface OdoManager extends BaseManager {
      * [业务方法]创建明细
      * 
      * @param line
-     * @param odo
+     * @param insertVasList
      */
-    void saveUnit(WhOdoLine line, WhOdo odo);
+    void saveUnit(WhOdoLine line, List<WhOdoVas> insertVasList);
 
     /**
      * [业务方法]配置地址信息
@@ -187,5 +195,16 @@ public interface OdoManager extends BaseManager {
 	 * [业务方法] 硬分配-根据提供波次ID查找当中有波次明细未分配规则的出库单ID
 	 */
 	List<OdoCommand> getNoRuleOdoIdList(List<Long> waveIdList, Long id);
+
+    /**
+     * [通用方法]根据waveCode,ouId查找所有的出库单
+     * 
+     * @param code
+     * @param ouId
+     * @return
+     */
+    List<WhOdo> findOdoListByWaveCode(String code, Long ouId);
+
+    void finishCreateOdo(WhOdo odo, List<WhOdoLine> lineList);
 
 }

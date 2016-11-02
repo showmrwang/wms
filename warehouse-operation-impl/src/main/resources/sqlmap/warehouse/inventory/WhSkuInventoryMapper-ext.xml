@@ -950,8 +950,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					inv.store_id as storeId,
 					inv.occupation_code as invOccupationCode,
 					inv.on_hand_qty as onHandQty,
-					inv.allocated_qty as allocatedQty,
-					inv.to_be_filled_qty as toBeFilledQty,
 					inv.frozen_qty as frozenQty,
 					inv.inv_status as invStatus,
 					inv.inv_type as invType,
@@ -1487,8 +1485,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			       			 occupation_code = #{occupationCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			       			 occupation_line_id = #{occupationLineId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			       			 on_hand_qty = #{onHandQty,javaType=java.lang.Double,jdbcType=DECIMAL} ,
-			       			 allocated_qty = #{allocatedQty,javaType=java.lang.Double,jdbcType=DECIMAL} ,
-			       			 to_be_filled_qty = #{toBeFilledQty,javaType=java.lang.Double,jdbcType=DECIMAL} ,
 			       			 frozen_qty = #{frozenQty,javaType=java.lang.Double,jdbcType=DECIMAL} ,
 			       			 inv_status = #{invStatus,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			       			 inv_type = #{invType,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -1773,9 +1769,38 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     </select>
 	
 	<select id="findWhSkuInventoryByLocIdAndOuId" resultMap="WhSkuInventoryCommandResultExt" flushCache="false">
-			select <include refid="whSkuInventoryColumnsExt" />
+			select 
+			      	inv.id as id,
+			        inv.sku_id as skuId,
+			        inv.location_id as locationId,
+			        inv.outer_container_id as outerContainerId,
+			        inv.inside_container_id as insideContainerId,
+			        inv.customer_id as customerId,
+			        inv.store_id as storeId,
+			        inv.occupation_code as occupationCode,
+			        inv.on_hand_qty as onHandQty,
+	                tobefilled.qty as toBeFilledQty,
+			        inv.frozen_qty as frozenQty,
+			        inv.inv_status as invStatus,
+			        inv.inv_type as invType,
+			        inv.batch_number as batchNumber,
+			        inv.mfg_date as mfgDate,
+			        inv.exp_date as expDate,
+			        inv.country_of_origin as countryOfOrigin,
+			        inv.inv_attr1 as invAttr1,
+			        inv.inv_attr2 as invAttr2,
+			        inv.inv_attr3 as invAttr3,
+			        inv.inv_attr4 as invAttr4,
+			        inv.inv_attr5 as invAttr5,
+			        inv.uuid as uuid,
+			        inv.is_locked as isLocked,
+			        inv.ou_id as ouId,
+			        inv.occupation_code_source as occupationCodeSource,
+			        inv.inbound_time as inboundTime,
+	               	inv.last_modify_time as lastModifyTime
 		    <![CDATA[
 			    from t_wh_sku_inventory inv
+			    left join t_wh_sku_inventory_tobefilled tobefilled on inv.location_id = tobefilled.location_id 
 		        where 
 		        inv.location_id =#{locid}
 		        and inv.ou_id = #{ouid}
@@ -2550,4 +2575,19 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			inv.occupation_code = #{occupyCode} 
 			and inv.ou_id = #{ouId}
 	</update>
+
+    <!-- -->
+	<select id="findWhSkuInventoryCountsByContainerId" resultMap="WhSkuInventoryResultExt">
+		select <include refid="whSkuInventoryColumnsInvExt"/>
+		from t_wh_sku_inventory inv,t_wh_asn asn where inv.occupation_code is not null 
+		and inv.ou_id=#{ouId}
+	    and inv.occupation_code=asn.asn_code and (asn.status=5 or asn.status=10) and inv.location_id is not null
+	    <if test="outerContainerId!=null and outerContainerId!=''">
+					 and inv.outer_container_id = #{outerContainerId}
+	   </if>
+	   <if test="insideContainerId!=null and insideContainerId!=''">
+					 and inv.inside_container_id=#{insideContainerId}
+	   </if>
+	</select>
+    
 </mapper>

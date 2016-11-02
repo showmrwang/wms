@@ -48,6 +48,7 @@ import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAddress;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLineAttrSn;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoVas;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
@@ -246,8 +247,23 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void createOdo(WhOdo odo, WhOdoTransportMgmt transportMgmt) {
+    public void createOdo(WhOdo odo, List<WhOdoLine> odoLineList, WhOdoTransportMgmt transportMgmt, WhOdoAddress odoAddress, List<WhOdoVas> odoVasList, List<WhOdoLineAttrSn> lineSnList, Long ouId, Long userId) {
         try {
+            if(odoLineList!=null&&odoLineList.size()>0){
+                for(WhOdoLine line:odoLineList){
+                    this.whOdoLineDao.insert(line);
+                }
+            }
+            if(odoAddress!=null){
+                this.whOdoAddressDao.insert(odoAddress);
+            }
+            if(odoVasList!=null&&odoVasList.size()>0){
+                for(WhOdoVas vas:odoVasList){
+                    
+                    this.whOdoVasDao.insert(vas);
+                }
+            }
+            if (lineSnList != null && lineSnList.size() > 0) {}
             this.whOdoDao.insert(odo);
             transportMgmt.setOdoId(odo.getId());
             this.whOdoTransportMgmtDao.insert(transportMgmt);
@@ -271,24 +287,19 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void saveUnit(WhOdoLine line, WhOdo odo) {
+    public void saveUnit(WhOdoLine line, List<WhOdoVas> insertVasList) {
         try {
 
             this.whOdoLineDao.insert(line);
+            if (insertVasList != null && insertVasList.size() > 0) {
+                for (WhOdoVas vas : insertVasList) {
+                    vas.setOdoLineId(line.getId());
+                    this.whOdoVasDao.insert(vas);
+                }
+            }
         } catch (Exception ex) {
             log.error("" + ex);
             throw new BusinessException(ErrorCodes.INSERT_DATA_ERROR);
-        }
-        try {
-            int updateCount = this.whOdoDao.saveOrUpdateByVersion(odo);
-            if (updateCount <= 0) {
-                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-            }
-        } catch (BusinessException e) {
-            throw e;
-        } catch (Exception ex) {
-            log.error("" + ex);
-            throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
         }
     }
 
@@ -553,6 +564,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
      * @param whWaveLineIds
      * @param ouId
      */
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     private void removeOdoLine(List<Long> odoLineIds, Long ouId) {
         if (null != odoLineIds && !odoLineIds.isEmpty()) {
             for (Long odoLineId : odoLineIds) {
@@ -572,6 +584,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
      * @param odoId
      * @param ouId
      */
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     private void removeOdo(Long odoId, Long ouId) {
         WhOdoLine whOdoLine = new WhOdoLine();
         whOdoLine.setOdoId(odoId);
@@ -595,4 +608,25 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
 		List<OdoCommand> datas = whOdoDao.getNoRuleOdoIdList(waveIdList, ouId);
 		return datas;
 	}
+    
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<WhOdo> findOdoListByWaveCode(String code, Long ouId) {
+        WhOdo odo = new WhOdo();
+        odo.setWaveCode(code);
+        odo.setOuId(ouId);
+        return this.whOdoDao.findListByParamExt(odo);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void finishCreateOdo(WhOdo odo, List<WhOdoLine> lineList) {
+        this.whOdoDao.saveOrUpdateByVersion(odo);
+        if (lineList != null && lineList.size() > 0) {
+            for (WhOdoLine line : lineList) {
+                this.whOdoLineDao.saveOrUpdateByVersion(line);
+            }
+        }
+
+    }
+
 }

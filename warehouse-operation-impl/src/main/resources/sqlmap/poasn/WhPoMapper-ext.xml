@@ -511,7 +511,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    left join t_bi_customer c on po.customer_id = c.id
 			left join t_bi_store s on po.store_id = s.id 
 			left join sys_dictionary sys on sys.dic_value = po.status and sys.group_value = 'POSTATUS'
-			left join t_wh_logistics_provider provider on provider.id=po.logistics_provider_id
+			left join t_ma_transport_provider provider on provider.id=po.logistics_provider_id
 			left join t_wh_supplier supplier on supplier.id=po.supplier_id
 			left join sys_dictionary potypedic on potypedic.group_value='PO_TYPE' and potypedic.dic_value=po.po_type 
 		    <where>

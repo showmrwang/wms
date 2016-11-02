@@ -185,4 +185,13 @@ public interface WhOdoDao extends BaseDao<WhOdo, Long> {
 	List<OdoCommand> getNoRuleOdoIdList(@Param("waveIdList") List<Long> waveIdList, @Param("ouId") Long ouId);
 
 	int updateOdoByAllocateFail(@Param("odoId") Long odoId, @Param("reason") String reason, @Param("ouId") Long ouId);
+
+    /**
+     * [通用方法]查找出库单列表
+     * 
+     * @param odo
+     * @return
+     */
+    List<WhOdo> findListByParamExt(WhOdo odo);
+
 }

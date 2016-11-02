@@ -3,6 +3,8 @@ package com.baozun.scm.primservice.whoperation.command.rule;
 import java.util.List;
 
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.OutboundBoxRuleCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.ReplenishmentRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhInBoundRuleCommand;
 
 /**
@@ -56,12 +58,27 @@ public class RuleAfferCommand extends BaseCommand {
     private List<Long> odoLineId;
 
     /** 补货规则货品ID */
-    private Long replenishmentRuleSkuId;
+    private List<Long> replenishmentRuleSkuIdList;
     /** 补货规则库位ID */
-    private Long replenishmentRuleLocationId;
-    
+    private List<Long> replenishmentRuleLocationIdList;
+    /** 补货规则 */
+    private ReplenishmentRuleCommand replenishmentRuleCommand;
+    /** 补货规则 订单需求补货 */
+    private Boolean replenishmentRuleOrderReplenish;
+    /** 补货规则 货品库位容量补货 */
+    private Boolean replenishmentRuleRealTimeReplenish;
+    /** 补货规则 波次补货 */
+    private Boolean replenishmentRuleWaveReplenish;
+
     /** 波次Id */
     private Long waveId;
+
+    /** 出库箱装箱规则出库单ID */
+    private List<Long> outboundBoxRuleOdoIdList;
+    /** 出库箱装箱规则， 执行拆分条件使用 */
+    private OutboundBoxRuleCommand outboundBoxRuleCommand;
+    /** 出库箱装箱规则拆分策略出库单ID */
+    private Long outboundBoxSortOdoId;
 
 
     public String getRuleType() {
@@ -175,20 +192,52 @@ public class RuleAfferCommand extends BaseCommand {
     }
 
 
-    public Long getReplenishmentRuleSkuId() {
-        return replenishmentRuleSkuId;
+    public List<Long> getReplenishmentRuleSkuIdList() {
+        return replenishmentRuleSkuIdList;
     }
 
-    public void setReplenishmentRuleSkuId(Long replenishmentRuleSkuId) {
-        this.replenishmentRuleSkuId = replenishmentRuleSkuId;
+    public void setReplenishmentRuleSkuIdList(List<Long> replenishmentRuleSkuIdList) {
+        this.replenishmentRuleSkuIdList = replenishmentRuleSkuIdList;
     }
 
-    public Long getReplenishmentRuleLocationId() {
-        return replenishmentRuleLocationId;
+    public List<Long> getReplenishmentRuleLocationIdList() {
+        return replenishmentRuleLocationIdList;
     }
 
-    public void setReplenishmentRuleLocationId(Long replenishmentRuleLocationId) {
-        this.replenishmentRuleLocationId = replenishmentRuleLocationId;
+    public void setReplenishmentRuleLocationIdList(List<Long> replenishmentRuleLocationIdList) {
+        this.replenishmentRuleLocationIdList = replenishmentRuleLocationIdList;
+    }
+
+    public ReplenishmentRuleCommand getReplenishmentRuleCommand() {
+        return replenishmentRuleCommand;
+    }
+
+    public void setReplenishmentRuleCommand(ReplenishmentRuleCommand replenishmentRuleCommand) {
+        this.replenishmentRuleCommand = replenishmentRuleCommand;
+    }
+
+    public Boolean getReplenishmentRuleOrderReplenish() {
+        return replenishmentRuleOrderReplenish;
+    }
+
+    public void setReplenishmentRuleOrderReplenish(Boolean replenishmentRuleOrderReplenish) {
+        this.replenishmentRuleOrderReplenish = replenishmentRuleOrderReplenish;
+    }
+
+    public Boolean getReplenishmentRuleRealTimeReplenish() {
+        return replenishmentRuleRealTimeReplenish;
+    }
+
+    public void setReplenishmentRuleRealTimeReplenish(Boolean replenishmentRuleRealTimeReplenish) {
+        this.replenishmentRuleRealTimeReplenish = replenishmentRuleRealTimeReplenish;
+    }
+
+    public Boolean getReplenishmentRuleWaveReplenish() {
+        return replenishmentRuleWaveReplenish;
+    }
+
+    public void setReplenishmentRuleWaveReplenish(Boolean replenishmentRuleWaveReplenish) {
+        this.replenishmentRuleWaveReplenish = replenishmentRuleWaveReplenish;
     }
 
     public Long getWaveId() {
@@ -198,5 +247,28 @@ public class RuleAfferCommand extends BaseCommand {
     public void setWaveId(Long waveId) {
         this.waveId = waveId;
     }
-    
+
+    public List<Long> getOutboundBoxRuleOdoIdList() {
+        return outboundBoxRuleOdoIdList;
+    }
+
+    public void setOutboundBoxRuleOdoIdList(List<Long> outboundBoxRuleOdoIdList) {
+        this.outboundBoxRuleOdoIdList = outboundBoxRuleOdoIdList;
+    }
+
+    public OutboundBoxRuleCommand getOutboundBoxRuleCommand() {
+        return outboundBoxRuleCommand;
+    }
+
+    public void setOutboundBoxRuleCommand(OutboundBoxRuleCommand outboundBoxRuleCommand) {
+        this.outboundBoxRuleCommand = outboundBoxRuleCommand;
+    }
+
+    public Long getOutboundBoxSortOdoId() {
+        return outboundBoxSortOdoId;
+    }
+
+    public void setOutboundBoxSortOdoId(Long outboundBoxSortOdoId) {
+        this.outboundBoxSortOdoId = outboundBoxSortOdoId;
+    }
 }

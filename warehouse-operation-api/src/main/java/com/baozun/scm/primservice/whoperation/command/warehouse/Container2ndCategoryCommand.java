@@ -5,95 +5,81 @@ import java.util.Date;
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
 
 public class Container2ndCategoryCommand extends BaseCommand {
-    
+
 
     /**
      * 
      */
     private static final long serialVersionUID = -8615840384131603857L;
-    
+
     private Long id;
-    /*
-     * 类别编码
-     */
+    /** 类别编码 */
     private String categoryCode;
-    /*
-     * 类别名称
-     */
+    /** 类别名称 */
     private String categoryName;
-    /*
-     * 对应一级类型ID
-     */
+    /** 对应一级类型ID */
     private String oneLevelType;
-    /*
-     * 编码生成器CODE
-     */
+    /** 编码生成器CODE */
     private String codeGenerator;
-    /*
-     * 长
-     */
+    /** 长 */
     private Double length;
-    /*
-     * 宽
-     */
+    /** 宽 */
     private Double width;
-    /*
-     * 高
-     */
+    /** 高 */
     private Double high;
-
-    /*
-     * 长度单位
-     */
-    private String lengthUom;
-    /*
-     * 体积
-     */
+    /** 体积 */
     private Double volume;
-
-    /*
-     * 体积单位
-     */
-    private String volumeUom;
-    /*
-     * 重量
-     */
+    /** 重量 */
     private Double weight;
-    /*
-     * 重量单位
-     */
-    private String weightUom;
-    /*
-     * 前缀
-     */
+    /** 长边货格数量 */
+    private Integer lengthGridNum;
+    /** 宽边货格数量 */
+    private Integer widthGridNum;
+    /** 高边货格数量 */
+    private Integer highGridNum;
+    /** 总货格数量 */
+    private Integer totalGridNum;
+    /** 货格长度 */
+    private Double gridLength;
+    /** 货格宽度 */
+    private Double gridWidth;
+    /** 货格高度 */
+    private Double gridHigh;
+    /** 货格体积 */
+    private Double gridVolume;
+    /** 拣货模式 */
+    private String pickingMode;
+    /** 前缀 */
     private String prefix;
-    /*
-     * 后缀
-     */
+    /** 后缀 */
     private String suffix;
-    /*
-     * 所属组织ID
-     */
+    /** 所属组织ID */
     private Long ouId;
-    /*
-     * 创建时间
-     */
-    private Date createTime;
-    /*
-     * 最后修改时间
-     */
-    private Date lastModifyTime;
-    /*
-     * 操作人ID
-     */
+    /** 创建时间 */
+    private java.util.Date createTime;
+    /** 最后修改时间 */
+    private java.util.Date lastModifyTime;
+    /** 操作人ID */
     private Long operatorId;
-    /*
-     * 1.可用;2.已删除;0.禁用
-     */
+    /** 1.可用;2.已删除;0.禁用 */
     private Integer lifecycle;
 
     private String oneLevelTypeName;
-    
+
+    /** 长度单位 */
+    private String lengthUom;
+    /** 体积单位 */
+    private String volumeUom;
+    /** 重量单位 */
+    private String weightUom;
+
+    /** 货格长度单位 */
+    private String gridLengthUom;
+    /** 货格体积单位 */
+    private String gridVolumeUom;
+    /** 货格重量单位 */
+    private String gridWeightUom;
+
     public Long getId() {
         return id;
     }
@@ -118,7 +104,6 @@ public class Container2ndCategoryCommand extends BaseCommand {
         this.categoryName = categoryName;
     }
 
-   
     public String getOneLevelType() {
         return oneLevelType;
     }
@@ -159,28 +144,12 @@ public class Container2ndCategoryCommand extends BaseCommand {
         this.high = high;
     }
 
-    public String getLengthUom() {
-        return lengthUom;
-    }
-
-    public void setLengthUom(String lengthUom) {
-        this.lengthUom = lengthUom;
-    }
-
     public Double getVolume() {
         return volume;
     }
 
     public void setVolume(Double volume) {
         this.volume = volume;
-    }
-
-    public String getVolumeUom() {
-        return volumeUom;
-    }
-
-    public void setVolumeUom(String volumeUom) {
-        this.volumeUom = volumeUom;
     }
 
     public Double getWeight() {
@@ -191,12 +160,76 @@ public class Container2ndCategoryCommand extends BaseCommand {
         this.weight = weight;
     }
 
-    public String getWeightUom() {
-        return weightUom;
+    public Integer getLengthGridNum() {
+        return lengthGridNum;
     }
 
-    public void setWeightUom(String weightUom) {
-        this.weightUom = weightUom;
+    public void setLengthGridNum(Integer lengthGridNum) {
+        this.lengthGridNum = lengthGridNum;
+    }
+
+    public Integer getWidthGridNum() {
+        return widthGridNum;
+    }
+
+    public void setWidthGridNum(Integer widthGridNum) {
+        this.widthGridNum = widthGridNum;
+    }
+
+    public Integer getHighGridNum() {
+        return highGridNum;
+    }
+
+    public void setHighGridNum(Integer highGridNum) {
+        this.highGridNum = highGridNum;
+    }
+
+    public Integer getTotalGridNum() {
+        return totalGridNum;
+    }
+
+    public void setTotalGridNum(Integer totalGridNum) {
+        this.totalGridNum = totalGridNum;
+    }
+
+    public Double getGridLength() {
+        return gridLength;
+    }
+
+    public void setGridLength(Double gridLength) {
+        this.gridLength = gridLength;
+    }
+
+    public Double getGridWidth() {
+        return gridWidth;
+    }
+
+    public void setGridWidth(Double gridWidth) {
+        this.gridWidth = gridWidth;
+    }
+
+    public Double getGridHigh() {
+        return gridHigh;
+    }
+
+    public void setGridHigh(Double gridHigh) {
+        this.gridHigh = gridHigh;
+    }
+
+    public Double getGridVolume() {
+        return gridVolume;
+    }
+
+    public void setGridVolume(Double gridVolume) {
+        this.gridVolume = gridVolume;
+    }
+
+    public String getPickingMode() {
+        return pickingMode;
+    }
+
+    public void setPickingMode(String pickingMode) {
+        this.pickingMode = pickingMode;
     }
 
     public String getPrefix() {
@@ -263,4 +296,51 @@ public class Container2ndCategoryCommand extends BaseCommand {
         this.oneLevelTypeName = oneLevelTypeName;
     }
 
+    public String getLengthUom() {
+        return lengthUom;
+    }
+
+    public void setLengthUom(String lengthUom) {
+        this.lengthUom = lengthUom;
+    }
+
+    public String getVolumeUom() {
+        return volumeUom;
+    }
+
+    public void setVolumeUom(String volumeUom) {
+        this.volumeUom = volumeUom;
+    }
+
+    public String getWeightUom() {
+        return weightUom;
+    }
+
+    public void setWeightUom(String weightUom) {
+        this.weightUom = weightUom;
+    }
+
+    public String getGridLengthUom() {
+        return gridLengthUom;
+    }
+
+    public void setGridLengthUom(String gridLengthUom) {
+        this.gridLengthUom = gridLengthUom;
+    }
+
+    public String getGridVolumeUom() {
+        return gridVolumeUom;
+    }
+
+    public void setGridVolumeUom(String gridVolumeUom) {
+        this.gridVolumeUom = gridVolumeUom;
+    }
+
+    public String getGridWeightUom() {
+        return gridWeightUom;
+    }
+
+    public void setGridWeightUom(String gridWeightUom) {
+        this.gridWeightUom = gridWeightUom;
+    }
 }

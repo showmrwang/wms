@@ -32,7 +32,7 @@ public interface PdaSysSuggestPutwayManager extends BaseManager{
      * @param srCmd
      * @return
      */
-    public ScanResultCommand  palletIsUserSuggestLocation(String locationCode,String containerCode,Long userId,Long ouId,Integer putawayPatternDetailType,Long functionId,Warehouse warehouse);
+    public ScanResultCommand  palletIsUserSuggestLocation(String locationCode,String containerCode,Long userId,Long ouId,Integer putawayPatternDetailType,Long functionId,Warehouse warehouse,String locBarCode);
     
     /***
      * 整箱上架使用推荐库位上架
@@ -45,7 +45,7 @@ public interface PdaSysSuggestPutwayManager extends BaseManager{
      * @param srCmd
      * @return
      */
-    public ScanResultCommand  contianerUserSuggestLocation(String locationCode, Long functionId, String outerContainerCode, String insideContainerCode,Long userId, Long ouId,Integer putawayPatternDetailType,Warehouse warehouse);
+    public ScanResultCommand  contianerUserSuggestLocation(String locationCode, Long functionId, String outerContainerCode, String insideContainerCode,Long userId, Long ouId,Integer putawayPatternDetailType,Warehouse warehouse,String locBarCode);
     
     
     /***
@@ -57,7 +57,7 @@ public interface PdaSysSuggestPutwayManager extends BaseManager{
      * @param srCmd
      * @return
      */
-    public ScanResultCommand  splitUserSuggestLocation(String outContainerCode,String locationCode,String containerCode,Long userId,Long ouId);
+    public ScanResultCommand  splitUserSuggestLocation(String outContainerCode,String locationCode,String containerCode,Long userId,Long ouId,String locBarCode);
     
     
     
@@ -98,5 +98,42 @@ public interface PdaSysSuggestPutwayManager extends BaseManager{
     public ScanResultCommand splitPutwayScanSku(String outerContainerCode,String insideContainerCode,WhSkuCommand skuCmd, String locationCode, Long funcId, Long ouId, Long userId, String logId,Integer putawayPatternDetailType,Warehouse warehouse);
     
 
+    /***
+     * 整托:人工上架分支
+     * @param outerContainerCode
+     * @param insideContainerCode
+     * @param funcId
+     * @param ouId
+     * @param userId
+     * @param putawayPatternDetailType
+     * @return
+     */
+    public ScanResultCommand pallentManPutwayFlow(String invAttrMgmtHouse,String locationCode,String locBarCode,String outerContainerCode,String insideContainerCode,Long funcId,Long ouId,Long userId,Integer putawayPatternDetailType,Warehouse warehouse);
+    
+    
+    /***
+     * 整箱:人工上架分支
+     * @param outerContainerCode
+     * @param insideContainerCode
+     * @param funcId
+     * @param ouId
+     * @param userId
+     * @param putawayPatternDetailType
+     * @return
+     */
+    public ScanResultCommand containerManPutwayFlow(String invAttrMgmtHouse,String locationCode,String locBarCode,String outerContainerCode,String insideContainerCode,Long funcId,Long ouId,Long userId,Integer putawayPatternDetailType,Warehouse warehouse);
+    
+    
+    /***
+     * 拆箱:人工上架分支
+     * @param outerContainerCode
+     * @param insideContainerCode
+     * @param funcId
+     * @param ouId
+     * @param userId
+     * @param putawayPatternDetailType
+     * @return
+     */
+    public ScanResultCommand splitContaienrManPutwayFlow(String invAttrMgmtHouse,String locationCode,String locBarCode,String outerContainerCode,String insideContainerCode,Long funcId,Long ouId,Long userId,Integer putawayPatternDetailType,Warehouse warehouse);
     
 }

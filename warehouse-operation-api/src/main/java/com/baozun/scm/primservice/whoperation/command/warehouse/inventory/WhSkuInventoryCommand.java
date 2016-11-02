@@ -190,6 +190,8 @@ public class WhSkuInventoryCommand extends BaseCommand {
 
     /** 匹配的规则 */
     private List<ShelveRecommendRuleCommand> shelveRecommendRuleCommandList;
+    /** 是否允许差异收货 */
+    private Boolean isInvattrDiscrepancyAllowrcvd;
 
 
 
@@ -889,5 +891,13 @@ public class WhSkuInventoryCommand extends BaseCommand {
 	public void setSumOnHandQty(Double sumOnHandQty) {
 		this.sumOnHandQty = sumOnHandQty;
 	}
+
+    public Boolean getIsInvattrDiscrepancyAllowrcvd() {
+        return isInvattrDiscrepancyAllowrcvd;
+    }
+
+    public void setIsInvattrDiscrepancyAllowrcvd(Boolean isInvattrDiscrepancyAllowrcvd) {
+        this.isInvattrDiscrepancyAllowrcvd = isInvattrDiscrepancyAllowrcvd;
+    }
 
 }

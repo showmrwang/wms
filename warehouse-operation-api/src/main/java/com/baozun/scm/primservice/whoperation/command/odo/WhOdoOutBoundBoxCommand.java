@@ -30,9 +30,11 @@ public class WhOdoOutBoundBoxCommand extends BaseCommand {
      * 
      */
     private static final long serialVersionUID = 554959901328869211L;
-    
+
     /** 主键ID */
     private Long id;
+    /** 波次ID */
+    private Long waveId;
     /** 出库单ID */
     private Long odoId;
     /** 出库单明细ID */
@@ -47,6 +49,8 @@ public class WhOdoOutBoundBoxCommand extends BaseCommand {
     private Long outerContainerId;
     /** 数量 */
     private Double qty;
+    /** 批次 */
+    private String boxBatch;
     /** 仓库组织ID */
     private Long ouId;
     /** 创建时间 */
@@ -150,6 +154,22 @@ public class WhOdoOutBoundBoxCommand extends BaseCommand {
 
     public void setOperatorId(Long value) {
         this.operatorId = value;
+    }
+
+    public Long getWaveId() {
+        return waveId;
+    }
+
+    public void setWaveId(Long waveId) {
+        this.waveId = waveId;
+    }
+
+    public String getBoxBatch() {
+        return boxBatch;
+    }
+
+    public void setBoxBatch(String boxBatch) {
+        this.boxBatch = boxBatch;
     }
 
 }

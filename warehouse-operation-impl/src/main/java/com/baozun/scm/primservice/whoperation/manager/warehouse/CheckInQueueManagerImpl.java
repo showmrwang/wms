@@ -32,6 +32,9 @@ import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnDao;
+import com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnLineDao;
+import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoDao;
+import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoLineDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.AsnReserveDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.CheckInQueueDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.PlatformDao;
@@ -41,6 +44,9 @@ import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.AsnReserve;
 import com.baozun.scm.primservice.whoperation.model.warehouse.CheckInQueue;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Platform;
@@ -65,6 +71,15 @@ public class CheckInQueueManagerImpl extends BaseManagerImpl implements CheckInQ
 
     @Autowired
     StoreDao storeDao;
+
+    @Autowired
+    WhAsnLineDao whAsnLineDao;
+
+    @Autowired
+    WhPoDao whPoDao;
+
+    @Autowired
+    WhPoLineDao whPoLineDao;
 
     /**
      * 根据asn预约信息查找等待队列信息
@@ -192,15 +207,17 @@ public class CheckInQueueManagerImpl extends BaseManagerImpl implements CheckInQ
 
         CheckInQueue originCheckInQueue = checkInQueueDao.findCheckInQueueByAsnId(originWhAsn.getId(), originWhAsn.getOuId());
 
-        // 修改实际到货时间
-        // ASN状态分配了月台才是签入
-        // originWhAsn.setStatus(PoAsnStatus.ASN_CHECKIN);
-        originWhAsn.setModifiedId(userId);
         if (null == originCheckInQueue) {
+            // 修改实际到货时间
+            // ASN状态分配了月台才是签入
+            // originWhAsn.setStatus(PoAsnStatus.ASN_CHECKIN);
+            originWhAsn.setModifiedId(userId);
             originWhAsn.setDeliveryTime(new Date());
+            // 保存更新asn信息
+            originWhAsn = this.updateWhAsn(asnId, ouId, userId, logId, originWhAsn);
+            //更新PO实际到货时间
+            this.updateWhPo(asnId, ouId, userId, logId);
         }
-        // 保存更新asn信息
-        originWhAsn = this.updateWhAsn(asnId, ouId, userId, logId, originWhAsn);
 
         // 新增的asn签入队列信息
         CheckInQueueCommand newCheckInQueueCommand = new CheckInQueueCommand();
@@ -368,6 +385,7 @@ public class CheckInQueueManagerImpl extends BaseManagerImpl implements CheckInQ
         // 修改ASN状态和实际到货时间，不在签入队列的应该是即时签入的，否则签入时间在加入队列时已更新
         if (!isInCheckInQueue) {
             originWhAsn.setDeliveryTime(new Date());
+            this.updateWhPo(asnId, ouId, userId, logId);
         }
         originWhAsn.setStatus(PoAsnStatus.ASN_CHECKIN);
         originWhAsn.setModifiedId(userId);
@@ -719,6 +737,45 @@ public class CheckInQueueManagerImpl extends BaseManagerImpl implements CheckInQ
             log.info("CheckInQueueManagerImpl.updateWhAsn end, originWhAsn is:[{}], logId is:[{}]", originWhAsn, logId);
         }
         return originWhAsn;
+    }
+
+
+    /**
+     * 更新PO实际到货时间
+     *
+     * @author mingwei.xie
+     * @param asnId
+     * @param ouId
+     * @param userId
+     * @param logId
+     */
+    private void updateWhPo(Long asnId, Long ouId, Long userId, String logId) {
+        List<WhAsnLine> whAsnLineList = whAsnLineDao.findWhAsnLineByAsnIdOuId(asnId, ouId);
+        if(null == whAsnLineList || whAsnLineList.isEmpty() || null == whAsnLineList.get(0).getPoLineId()){
+            log.error("CheckInQueueManagerImpl.updateWhPo -> whAsnLineDao.findWhAsnLineByAsnIdOuId error, asnId is:[{}], ouId is:[{}], logId is:[{}]", asnId, ouId, logId);
+            throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
+        }
+        WhPoLine whPoLine = whPoLineDao.findWhPoLineById(whAsnLineList.get(0).getPoLineId(), ouId);
+        if(null == whPoLine || null == whPoLine.getPoId()){
+            log.error("CheckInQueueManagerImpl.updateWhPo -> whPoLineDao.findWhPoLineById error, poLineId is:[{}], ouId is:[{}], logId is:[{}]", whAsnLineList.get(0).getPoLineId(), ouId, logId);
+            throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
+        }
+        WhPo originWhPo = whPoDao.findWhPoById(whPoLine.getPoId(), ouId);
+        if(null == originWhPo){
+            log.error("CheckInQueueManagerImpl.updateWhPo -> whPoLineDao.findWhPoById error, poLineId is:[{}], ouId is:[{}], logId is:[{}]", whAsnLineList.get(0).getPoLineId(), ouId, logId);
+            throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
+        }
+        if(null == originWhPo.getDeliveryTime()) {
+            originWhPo.setModifiedId(userId);
+            originWhPo.setDeliveryTime(new Date());
+            int updateCount = whPoDao.saveOrUpdateByVersion(originWhPo);
+            if (1 != updateCount) {
+                log.error("CheckInQueueManagerImpl.updateWhPo -> whPoDao.saveOrUpdateByVersion error, originWhPo is :[{}], logId is:[{}]", originWhPo, logId);
+                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            }
+            // 插入系统日志
+            insertGlobalLog(Constants.GLOBAL_LOG_UPDATE, originWhPo, ouId, userId, null, null);
+        }
     }
 
     /**

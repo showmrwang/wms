@@ -77,6 +77,8 @@ public class SkuCommand extends BaseCommand {
 
     private Boolean isFoldable;
 
+    private String goodShelfLifeUnit;
+
     /** barcode 对应数量*/
     private Long quantity;
     /** barcode表中barcode字段*/
@@ -370,6 +372,14 @@ public class SkuCommand extends BaseCommand {
 
     public void setBatchBarcode(String batchBarcode) {
         this.batchBarcode = batchBarcode;
+    }
+
+    public String getGoodShelfLifeUnit() {
+        return goodShelfLifeUnit;
+    }
+
+    public void setGoodShelfLifeUnit(String goodShelfLifeUnit) {
+        this.goodShelfLifeUnit = goodShelfLifeUnit;
     }
 
 }

@@ -9,5 +9,9 @@ public interface RuleManager extends BaseManager {
     RuleExportCommand ruleExport(RuleAfferCommand ruleAffer);
 
     RuleExportCommand ruleExportContainerCode(RuleAfferCommand ruleAffer);
-    
+
+    /**
+     * 根据出库单ID获取排序后的出库单明细的拆分条件
+     */
+    public RuleExportCommand ruleExportOutboundBoxSplitRequire(RuleAfferCommand ruleAffer);
 }

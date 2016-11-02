@@ -3,6 +3,9 @@ package com.baozun.scm.primservice.whoperation.command.odo;
 import java.util.List;
 
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAddress;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt;
 
 public class OdoGroupCommand extends BaseCommand {
     /**
@@ -13,6 +16,12 @@ public class OdoGroupCommand extends BaseCommand {
     private OdoCommand odo;
     /***/
     private OdoTransportMgmtCommand transPortMgmt;
+    /** 明细 */
+    private List<WhOdoLine> odoLineList;
+    /** 运输商 */
+    private WhOdoTransportMgmt transportMgmt;
+    /** 配送对象 */
+    private WhOdoAddress WhOdoAddress;
     /***/
     private List<WhOdoVasCommand> odoVasList;
     /***/
@@ -23,6 +32,22 @@ public class OdoGroupCommand extends BaseCommand {
     private Long odoId;
     /***/
     private Long odoLineId;
+
+    public List<WhOdoLine> getOdoLineList() {
+        return odoLineList;
+    }
+
+    public void setOdoLineList(List<WhOdoLine> odoLineList) {
+        this.odoLineList = odoLineList;
+    }
+
+    public WhOdoTransportMgmt getTransportMgmt() {
+        return transportMgmt;
+    }
+
+    public void setTransportMgmt(WhOdoTransportMgmt transportMgmt) {
+        this.transportMgmt = transportMgmt;
+    }
 
     public Long getOdoLineId() {
         return odoLineId;
@@ -78,6 +103,14 @@ public class OdoGroupCommand extends BaseCommand {
 
     public void setOdoVasList(List<WhOdoVasCommand> odoVasList) {
         this.odoVasList = odoVasList;
+    }
+
+    public WhOdoAddress getWhOdoAddress() {
+        return WhOdoAddress;
+    }
+
+    public void setWhOdoAddress(WhOdoAddress whOdoAddress) {
+        WhOdoAddress = whOdoAddress;
     }
 
 

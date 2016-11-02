@@ -495,6 +495,7 @@
         ,
         customer.customer_name as customerName,
         mgmt.serial_number_type as serialNumberType,
+        mgmt.good_shelf_life_unit as goodShelfLifeUnit,
         mgmt.valid_date as validDate
         from t_wh_sku sku
         left join t_bi_customer customer on sku.customer_id = customer.id
@@ -510,6 +511,7 @@
         customer.customer_name as customerName,
         mgmt.serial_number_type as serialNumberType,
         mgmt.valid_date as validDate,
+        mgmt.good_shelf_life_unit as goodShelfLifeUnit,
         barcode.quantity as quantity
         from t_wh_sku sku
         left join t_bi_customer customer on sku.customer_id = customer.id

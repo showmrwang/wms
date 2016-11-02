@@ -36,6 +36,7 @@ import com.baozun.scm.primservice.whoperation.command.odo.wave.OdoWaveGroupResul
 import com.baozun.scm.primservice.whoperation.command.odo.wave.OdoWaveGroupSearchCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.OdoWaveGroupSearchCondition;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.WaveCommand;
+import com.baozun.scm.primservice.whoperation.command.sku.SkuRedisCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.UomCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
@@ -49,19 +50,24 @@ import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoLineManager
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoTransportMgmtManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoVasManager;
+import com.baozun.scm.primservice.whoperation.manager.odo.wave.WhWaveLineManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.wave.WhWaveManager;
+import com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy.DistributionModeArithmeticManagerProxy;
+import com.baozun.scm.primservice.whoperation.manager.redis.SkuRedisManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.InventoryStatusManager;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAddress;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLineAttrSn;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoVas;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveMaster;
 import com.baozun.scm.primservice.whoperation.model.sku.Sku;
+import com.baozun.scm.primservice.whoperation.model.sku.SkuMgmt;
 import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
 import com.baozun.scm.primservice.whoperation.model.warehouse.InventoryStatus;
@@ -87,6 +93,12 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
     private InventoryStatusManager inventoryStatusManager;
     @Autowired
     private WhWaveManager waveManager;
+    @Autowired
+    private WhWaveLineManager waveLineManager;
+    @Autowired
+    private DistributionModeArithmeticManagerProxy distributionModeArithmeticManagerProxy;
+    @Autowired
+    private SkuRedisManager skuRedisManager;
 
     @Override
     public Pagination<OdoResultCommand> findOdoListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params) {
@@ -103,16 +115,35 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
             // 原始数据集合
             OdoCommand odoCommand = odoGroup.getOdo();
             OdoTransportMgmtCommand transportMgmtCommand = odoGroup.getTransPortMgmt();
-
+            
             /**
-             * 第一步：封装ODO
+             * 第一步：封装ODO和ODOLine
+             */
+            List<WhOdoLine> odoLineList = null;
+            /**
+             * 第二步：封装ODO
              */
             WhOdo odo = this.copyOdoProperties(odoCommand);
             /**
-             * 第二步：封装出库单运输商表
+             * 第三步：封装出库单运输商表
              */
             WhOdoTransportMgmt transportMgmt = this.copyTransportMgmtProperties(transportMgmtCommand);
-            this.createOdo(odo, transportMgmt, null, ouId, userId);
+            /**
+             * 第四步：封装配送对象
+             */
+            WhOdoAddress address = null;
+            /**
+             * 第五步：封装增值服务
+             */
+            List<WhOdoVas> odoVasList = null;
+            /**
+             * 第六步：封装SN
+             */
+            List<WhOdoLineAttrSn> lineSnList = null;
+            /**
+             * 第六步：SN TODO
+             */
+            this.createOdo(odo, odoLineList, transportMgmt, address, odoVasList, lineSnList, ouId, userId);
             returnOdoId = odo.getId();
         } catch (BusinessException e) {
             msg.setResponseStatus(ResponseMsg.STATUS_ERROR);
@@ -129,13 +160,18 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
         return msg;
     }
 
-    private void createOdo(WhOdo odo, WhOdoTransportMgmt transportMgmt, List<WhOdoLine> odoLineList, Long ouId, Long userId) {
+    private void createOdo(WhOdo odo, List<WhOdoLine> odoLineList, WhOdoTransportMgmt transportMgmt, WhOdoAddress odoAddress, List<WhOdoVas> odoVasList, List<WhOdoLineAttrSn> lineSnList, Long ouId, Long userId) {
         try {
-
             // 默认属性
-            odo.setCurrentQty(Constants.DEFAULT_DOUBLE);
-            odo.setActualQty(Constants.DEFAULT_DOUBLE);
-            odo.setCancelQty(Constants.DEFAULT_DOUBLE);
+            if (odo.getCurrentQty() == null) {
+                odo.setCurrentQty(Constants.DEFAULT_DOUBLE);
+            }
+            if (odo.getActualQty() == null) {
+                odo.setActualQty(Constants.DEFAULT_DOUBLE);
+            }
+            if (odo.getCancelQty() == null) {
+                odo.setCancelQty(Constants.DEFAULT_DOUBLE);
+            }
             if (null == odo.getIsWholeOrderOutbound()) {
                 odo.setIsWholeOrderOutbound(true);
             }
@@ -170,8 +206,9 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
             if (null == odo.getIsAllowMerge()) {
             	odo.setIsAllowMerge(true);
             }
-            // TODO yimin.lu
-            odo.setOdoStatus(OdoStatus.ODO_TOBECREATED);
+            if (StringUtils.isEmpty(odo.getOdoStatus())) {
+                odo.setOdoStatus(OdoStatus.ODO_NEW);
+            }
             odo.setOuId(ouId);
             // 设置单号和外部对接编码
             String odoCode = codeManager.generateCode(Constants.WMS, Constants.WHODO_MODEL_URL, Constants.WMS_ODO_INNER, "ODO", null);
@@ -180,8 +217,21 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
                 String extCode = codeManager.generateCode(Constants.WMS, Constants.WHODO_MODEL_URL, Constants.WMS_ODO_EXT, null, null);
                 odo.setExtCode(extCode);
             }
+            // 如果单据为新建状态，则设置技术器编码，并放入到配货模式池中
+            if (OdoStatus.ODO_NEW.equals(odo.getOdoStatus())) {
+                // 设置计数器编码
+                Set<Long> skuIdSet = new HashSet<Long>();
+                for (WhOdoLine line : odoLineList) {
+                    skuIdSet.add(line.getSkuId());
+                }
+                String counterCode = this.distributionModeArithmeticManagerProxy.getCounterCodeForOdo(ouId, odo.getSkuNumberOfPackages(), odo.getQty(), skuIdSet);
+                odo.setCounterCode(counterCode);
+            }
+
+            // 匹配配货模式
+
             transportMgmt.setOuId(ouId);
-            this.odoManager.createOdo(odo, transportMgmt);
+            this.odoManager.createOdo(odo, odoLineList, transportMgmt, odoAddress, odoVasList, lineSnList, ouId, userId);
         } catch (BusinessException e) {
             throw e;
         } catch (Exception ex) {
@@ -199,10 +249,10 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
             WhOdoTransportMgmt transportMgmt = new WhOdoTransportMgmt();
             BeanUtils.copyProperties(transportMgmtCommand, transportMgmt);
             if (StringUtils.hasText(transportMgmtCommand.getDeliverGoodsTimeStr())) {
-                transportMgmt.setDeliverGoodsTime(DateUtils.parseDate(transportMgmtCommand.getDeliverGoodsTimeStr(), Constants.DATE_PATTERN_YMDHM));
+                transportMgmt.setDeliverGoodsTime(DateUtils.parseDate(transportMgmtCommand.getDeliverGoodsTimeStr(), Constants.DATE_PATTERN_YMD));
             }
             if (StringUtils.hasText(transportMgmtCommand.getPlanDeliverGoodsTimeStr())) {
-                transportMgmt.setPlanDeliverGoodsTime(DateUtils.parseDate(transportMgmtCommand.getPlanDeliverGoodsTimeStr(), Constants.DATE_PATTERN_YMDHM));
+                transportMgmt.setPlanDeliverGoodsTime(DateUtils.parseDate(transportMgmtCommand.getPlanDeliverGoodsTimeStr(), Constants.DATE_PATTERN_YMD));
             }
             return transportMgmt;
         } catch (Exception e) {
@@ -219,6 +269,7 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
             WhOdo odo = new WhOdo();
             // 复制属性
             BeanUtils.copyProperties(odoCommand, odo);
+            odo.setOdoStatus(OdoStatus.ODO_TOBECREATED);
             // 返回
             return odo;
         } catch (Exception e) {
@@ -247,7 +298,6 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
         Long ouId = lineCommand.getOuId();
         Long userId = lineCommand.getUserId();
         WhOdoLine line = new WhOdoLine();
-        WhOdo odo = this.odoManager.findOdoByIdOuId(lineCommand.getOdoId(), ouId);
         if (lineCommand.getLinenum() != null) {
             line.setLinenum(lineCommand.getLinenum());
         }
@@ -265,7 +315,7 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
         line.setPlanQty(lineCommand.getQty());
         line.setLinePrice(lineCommand.getLinePrice());
         line.setLineAmt(lineCommand.getLineAmt());
-        line.setOdoLineStatus(OdoStatus.ODOLINE_NEW);
+        line.setOdoLineStatus(OdoStatus.ODO_TOBECREATED);
         line.setIsCheck(lineCommand.getIsCheck());
         line.setFullLineOutbound(lineCommand.getFullLineOutbound());
         line.setPartOutboundStrategy(lineCommand.getPartOutboundStrategy());
@@ -320,21 +370,26 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
         line.setCreatedId(userId);
         line.setLastModifyTime(new Date());
         line.setModifiedId(userId);
-        // Odo修改
-        if (lineCommand.getIsFragileCargo()) {
-            odo.setIncludeFragileCargo(true);
+
+        /**
+         *  保存明细的增值服务：
+         */
+        List<WhOdoVasCommand> odoVasList = lineCommand.getOdoVasList();
+        List<WhOdoVas> insertVasList = new ArrayList<WhOdoVas>();
+        if (odoVasList != null && odoVasList.size() > 0) {
+            if (odoVasList != null && odoVasList.size() > 0) {
+                for (WhOdoVasCommand vc : odoVasList) {
+                    WhOdoVas ov = new WhOdoVas();
+                    BeanUtils.copyProperties(vc, ov);
+                    ov.setOdoId(lineCommand.getOdoId());
+                    ov.setOuId(ouId);
+                    insertVasList.add(ov);
+                }
+            }
         }
-        if (lineCommand.getIsHazardousCargo()) {
-            odo.setIncludeHazardousCargo(true);
-        }
-        odo.setQty(odo.getQty() + line.getQty());
-        odo.setAmt(odo.getAmt() + line.getLineAmt());
-        int skuCount = this.odoManager.existsSkuInOdo(lineCommand.getOdoId(), lineCommand.getSkuId(), ouId);
-        if (skuCount <= 0) {
-            odo.setSkuNumberOfPackages(odo.getSkuNumberOfPackages() + 1);
-        }
-        odo.setModifiedId(userId);
-        this.odoManager.saveUnit(line, odo);
+
+
+        this.odoManager.saveUnit(line, insertVasList);
     }
 
     @Override
@@ -375,13 +430,16 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
              * this.odoTransportMgmtManager.findTransportMgmtByOdoIdOuId(odoId, ouId); if
              * (transportMgmt == null) { throw new BusinessException(ErrorCodes.NO_ODO_FOUND); }
              */
+            boolean isAddToCachePool = false;
 
             /** 以下逻辑判断ODO状态 */
             long lineCount = this.odoLineManager.findOdoLineListCountByOdoId(odoId, ouId);
-            if (lineCount > 0) {
+            if (lineCount > 0) { 
                 if (OdoStatus.ODO_TOBECREATED.equals(odo.getOdoStatus())) {
                     odo.setOdoStatus(OdoStatus.ODO_NEW);
                     odo.setModifiedId(userId);
+                    // 出库单变成新增的节点，需要将数据插入到订单池
+                    isAddToCachePool = true;
                 }
             }
             // transportMgmt.setOutboundTargetType(odoAddressCommand.getOutboundTargetType());
@@ -414,6 +472,12 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
             odoAddress.setDistributionTargetZip(odoAddressCommand.getDistributionTargetZip());
 
             this.odoManager.saveAddressUnit(odoAddress, odo);
+            if (isAddToCachePool) {
+                boolean isExists = this.distributionModeArithmeticManagerProxy.isExistsInOrderPool(odo.getCounterCode(), odoId);
+                if (!isExists) {
+                    this.distributionModeArithmeticManagerProxy.addToWhDistributionModeArithmeticPool(odo.getCounterCode(), odoId);
+                }
+            }
         } catch (BusinessException ex) {
             throw ex;
         } catch (Exception e) {
@@ -443,6 +507,7 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
              * this.odoTransportMgmtManager.findTransportMgmtByOdoIdOuId(odoId, ouId); if
              * (transportMgmt == null) { throw new BusinessException(ErrorCodes.NO_ODO_FOUND); }
              */
+            boolean isAddToCachePool = false;
 
             /** 以下逻辑判断ODO状态 */
             long lineCount = this.odoLineManager.findOdoLineListCountByOdoId(odoId, ouId);
@@ -450,6 +515,8 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
                 if (OdoStatus.ODO_TOBECREATED.equals(odo.getOdoStatus())) {
                     odo.setOdoStatus(OdoStatus.ODO_NEW);
                     odo.setModifiedId(userId);
+                    // 出库单变成新增的节点，需要将数据插入到订单池
+                    isAddToCachePool = true;
                 }
             }
             // transportMgmt.setOutboundTargetType(odoAddressCommand.getOutboundTargetType());
@@ -482,6 +549,12 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
             odoAddress.setConsigneeTargetZip(odoAddressCommand.getConsigneeTargetZip());
 
             this.odoManager.saveAddressUnit(odoAddress, odo);
+            if (isAddToCachePool) {
+                boolean isExists = this.distributionModeArithmeticManagerProxy.isExistsInOrderPool(odo.getCounterCode(), odoId);
+                if (!isExists) {
+                    this.distributionModeArithmeticManagerProxy.addToWhDistributionModeArithmeticPool(odo.getCounterCode(), odoId);
+                }
+            }
         } catch (BusinessException ex) {
             throw ex;
         } catch (Exception e) {
@@ -1010,12 +1083,98 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
             waveLineList.add(waveLine);
         }
         this.odoManager.createOdoWave(wave, waveLineList, odoMap, odolineList, userId, logId);
+        // 添加到波次中时候，计数器需要-1；
+        Iterator<Entry<Long, WhOdo>> odoIt = odoMap.entrySet().iterator();
+        while (odoIt.hasNext()) {
+            Entry<Long, WhOdo> entry = odoIt.next();
+            this.distributionModeArithmeticManagerProxy.AddToWave(waveCode, entry.getKey());
+        }
+
         return waveCode;
     }
 
     @Override
     public Pagination<WaveCommand> findWaveListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params) {
         return this.waveManager.findWaveListByQueryMapWithPageExt(page, sorts, params);
+    }
+
+    @Override
+    public void deleteWave(WaveCommand waveCommand) {
+        Long ouId=waveCommand.getOuId();
+        Long userId=waveCommand.getUserId();
+        Long waveId=waveCommand.getId();
+        //查询波次
+        WhWave wave=this.waveManager.getWaveByIdAndOuId(waveId,ouId);
+        List<WhWaveLine> waveLineList=this.waveLineManager.findWaveLineListByWaveId(waveId,ouId);
+        //查询波次关联的出库单
+        List<WhOdo> odoList = this.odoManager.findOdoListByWaveCode(wave.getCode(), ouId);
+        List<WhOdoLine> odoLineList = this.odoLineManager.findOdoLineListByWaveCode(wave.getCode(), ouId);
+
+        this.waveManager.deleteWave(wave, waveLineList, odoList, odoLineList, userId);
+
+    }
+
+    @Override
+    public void finishCreateOdo(OdoCommand odoCommand) {
+        Long odoId = odoCommand.getId();
+        Long ouId = odoCommand.getOuId();
+        Long userId=odoCommand.getUserId();
+        String logId = odoCommand.getLogId();
+        List<WhOdoLine> lineList = this.odoLineManager.findOdoLineListByOdoId(odoId, ouId);
+        if (lineList != null && lineList.size() > 0) {
+            WhOdo odo = this.odoManager.findOdoByIdOuId(odoId, ouId);
+            // 出库单统计数目
+            double qty = odo.getQty();
+            int skuNumberOfPackages = odo.getSkuNumberOfPackages();
+            double amt = odo.getAmt();
+            boolean isHazardous = odo.getIncludeHazardousCargo();
+            boolean isFragile = odo.getIncludeFragileCargo();
+            Set<Long> skuIdSet = new HashSet<Long>();
+            for (WhOdoLine line : lineList) {
+                if (OdoStatus.ODOLINE_TOBECREATED.equals(line.getOdoLineStatus())) {
+                    int flag = this.odoManager.existsSkuInOdo(odoId, line.getSkuId(), ouId);
+                    if (flag == 0) {
+                        skuNumberOfPackages += 1;
+                    }
+                    SkuRedisCommand skuMaster = skuRedisManager.findSkuMasterBySkuId(line.getSkuId(), ouId, logId);
+                    SkuMgmt skuMgmt = skuMaster.getSkuMgmt();
+                    if (!isHazardous && skuMgmt.getIsHazardousCargo()) {
+                        isHazardous = true;
+                    }
+                    if (!isFragile && skuMgmt.getIsFragileCargo()) {
+                        isFragile = true;
+                    }
+                    amt += line.getLineAmt();
+                    qty += line.getQty();
+                    line.setOdoLineStatus(OdoStatus.ODOLINE_NEW);
+                    line.setModifiedId(userId);
+                }
+                skuIdSet.add(line.getSkuId());
+            }
+            odo.setQty(qty);
+            odo.setAmt(amt);
+            odo.setSkuNumberOfPackages(skuNumberOfPackages);
+            odo.setIncludeFragileCargo(isFragile);
+            odo.setIncludeHazardousCargo(isHazardous);
+            if (OdoStatus.ODO_TOBECREATED.equals(odo.getOdoStatus())) {
+                odo.setOdoStatus(OdoStatus.ODO_NEW);
+            }
+            // #TODO 现在出库单暂时不支持编辑
+            String counterCode = this.distributionModeArithmeticManagerProxy.getCounterCodeForOdo(ouId, skuNumberOfPackages, qty, skuIdSet);
+            odo.setCounterCode(counterCode);
+            odo.setModifiedId(userId);
+            boolean flag = false;
+            try {
+                this.odoManager.finishCreateOdo(odo, lineList);
+                flag = true;
+            } catch (Exception e) {
+                throw e;
+            }
+            if (flag) {
+                this.distributionModeArithmeticManagerProxy.addToWhDistributionModeArithmeticPool(counterCode, odoId);
+            }
+        }
+
     }
 
 }

@@ -37,4 +37,15 @@ public class StringUtil implements Serializable {
         return "(" + org.apache.commons.lang.StringUtils.join(list.toArray(), separator) + ")";
     }
 
+    /**
+     * list转换为String
+     *
+     * @param list
+     * @param separator
+     * @return
+     */
+    public static String listToStringWithoutBrackets(List<Long> list, char separator) {
+        return org.apache.commons.lang.StringUtils.join(list.toArray(), separator);
+    }
+
 }

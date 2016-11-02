@@ -51,6 +51,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	s.high as high,
 	        	s.volume as volume,
 	        	s.weight as weight,
+                s.length_grid_num as lengthGridNum,
+                s.width_grid_num as widthGridNum,
+                s.high_grid_num as highGridNum,
+                s.total_grid_num as totalGridNum,
+                s.grid_length as gridLength,
+                s.grid_width as gridWidth,
+                s.grid_high as gridHigh,
+                s.grid_volume as gridVolume,
+                s.picking_mode as pickingMode,
 	        	s.ou_id as ouId,
 	        	s.create_time as createTime,
 	        	s.last_modify_time as lastModifyTime,
@@ -123,6 +132,42 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				<if test="weight!=null">
 					and s.weight = #{weight}
 				</if>
+
+            <if test="lengthGridNum!=null">
+                and s.length_grid_num = #{lengthGridNum}
+            </if>
+
+            <if test="widthGridNum!=null">
+                and s.width_grid_num = #{widthGridNum}
+            </if>
+
+            <if test="highGridNum!=null">
+                and s.high_grid_num = #{highGridNum}
+            </if>
+
+            <if test="totalGridNum!=null">
+                and s.total_grid_num = #{totalGridNum}
+            </if>
+
+            <if test="gridLength!=null">
+                and s.grid_length = #{gridLength}
+            </if>
+
+            <if test="gridWidth!=null">
+                and s.grid_width = #{gridWidth}
+            </if>
+
+            <if test="gridHigh!=null">
+                and s.grid_high = #{gridHigh}
+            </if>
+
+            <if test="gridVolume!=null">
+                and s.grid_volume = #{gridVolume}
+            </if>
+
+            <if test="pickingMode!=null and pickingMode!=''">
+                and s.picking_mode = #{pickingMode}
+            </if>
 	       
 	       
 	       
@@ -164,6 +209,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        high = #{high,javaType=java.lang.Double,jdbcType=DECIMAL} ,
 			        volume = #{volume,javaType=java.lang.Double,jdbcType=DECIMAL} ,
 			        weight = #{weight,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+                    length_grid_num = #{lengthGridNum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                    width_grid_num = #{widthGridNum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                    high_grid_num = #{highGridNum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                    total_grid_num = #{totalGridNum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                    grid_length = #{gridLength,javaType=Double,jdbcType=DECIMAL} ,
+                    grid_width = #{gridWidth,javaType=Double,jdbcType=DECIMAL} ,
+                    grid_high = #{gridHigh,javaType=Double,jdbcType=DECIMAL} ,
+                    grid_volume = #{gridVolume,javaType=Double,jdbcType=DECIMAL} ,
+                    picking_mode = #{pickingMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        last_modify_time = now(),
 			        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -246,6 +300,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        high = #{high,javaType=java.lang.Double,jdbcType=DECIMAL} ,
 		        volume = #{volume,javaType=java.lang.Double,jdbcType=DECIMAL} ,
 		        weight = #{weight,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+                length_grid_num = #{lengthGridNum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                width_grid_num = #{widthGridNum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                high_grid_num = #{highGridNum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                total_grid_num = #{totalGridNum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                grid_length = #{gridLength,javaType=Double,jdbcType=DECIMAL} ,
+                grid_width = #{gridWidth,javaType=Double,jdbcType=DECIMAL} ,
+                grid_high = #{gridHigh,javaType=Double,jdbcType=DECIMAL} ,
+                grid_volume = #{gridVolume,javaType=Double,jdbcType=DECIMAL} ,
+                picking_mode = #{pickingMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        last_modify_time =  #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
