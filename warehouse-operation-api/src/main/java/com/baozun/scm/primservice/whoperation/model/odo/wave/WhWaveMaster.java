@@ -78,6 +78,15 @@ public class WhWaveMaster extends BaseModel {
     private Integer twoSkuSuitOdoQtys;
     private Boolean isCalcSuits;
     private Integer suitsOdoQtys;
+    private Integer rcvdWorkPriority;   //收货工作优先级
+    private Integer putawayWorkPriority;  //上架工作优先级
+    private Integer pickingWorkPriority; //拣货工作优先级
+    private Integer replenishmentWorkPriority;  //补货工作优先级
+    private Integer stockCountWorkPriority;  //盘点工作优先级
+    private Integer inWarehouseMoveWorkPriority;   //库内移动工作优先级
+    private Integer inWarehouseProcessWorkPriority;  //库内加工工作优先级
+    private Boolean isAutoReleaseWork;  //是否自动释放工作    默认值：1
+    private Integer pickingExtPriority;  //有补货的拣货优先级（库位上同时又拣货和补货时）
 
     // columns END
 
@@ -287,6 +296,78 @@ public class WhWaveMaster extends BaseModel {
 
     public void setMinOdoQty(java.lang.Integer minOdoQty) {
         this.minOdoQty = minOdoQty;
+    }
+
+    public Integer getRcvdWorkPriority() {
+        return rcvdWorkPriority;
+    }
+
+    public void setRcvdWorkPriority(Integer rcvdWorkPriority) {
+        this.rcvdWorkPriority = rcvdWorkPriority;
+    }
+
+    public Integer getPutawayWorkPriority() {
+        return putawayWorkPriority;
+    }
+
+    public void setPutawayWorkPriority(Integer putawayWorkPriority) {
+        this.putawayWorkPriority = putawayWorkPriority;
+    }
+
+    public Integer getPickingWorkPriority() {
+        return pickingWorkPriority;
+    }
+
+    public void setPickingWorkPriority(Integer pickingWorkPriority) {
+        this.pickingWorkPriority = pickingWorkPriority;
+    }
+
+    public Integer getReplenishmentWorkPriority() {
+        return replenishmentWorkPriority;
+    }
+
+    public void setReplenishmentWorkPriority(Integer replenishmentWorkPriority) {
+        this.replenishmentWorkPriority = replenishmentWorkPriority;
+    }
+
+    public Integer getStockCountWorkPriority() {
+        return stockCountWorkPriority;
+    }
+
+    public void setStockCountWorkPriority(Integer stockCountWorkPriority) {
+        this.stockCountWorkPriority = stockCountWorkPriority;
+    }
+
+    public Integer getInWarehouseMoveWorkPriority() {
+        return inWarehouseMoveWorkPriority;
+    }
+
+    public void setInWarehouseMoveWorkPriority(Integer inWarehouseMoveWorkPriority) {
+        this.inWarehouseMoveWorkPriority = inWarehouseMoveWorkPriority;
+    }
+
+    public Integer getInWarehouseProcessWorkPriority() {
+        return inWarehouseProcessWorkPriority;
+    }
+
+    public void setInWarehouseProcessWorkPriority(Integer inWarehouseProcessWorkPriority) {
+        this.inWarehouseProcessWorkPriority = inWarehouseProcessWorkPriority;
+    }
+
+    public Boolean getIsAutoReleaseWork() {
+        return isAutoReleaseWork;
+    }
+
+    public void setIsAutoReleaseWork(Boolean isAutoReleaseWork) {
+        this.isAutoReleaseWork = isAutoReleaseWork;
+    }
+
+    public Integer getPickingExtPriority() {
+        return pickingExtPriority;
+    }
+
+    public void setPickingExtPriority(Integer pickingExtPriority) {
+        this.pickingExtPriority = pickingExtPriority;
     }
     
     
