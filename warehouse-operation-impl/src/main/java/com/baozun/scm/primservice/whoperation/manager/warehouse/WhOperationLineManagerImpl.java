@@ -7,10 +7,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 
-@Service("whWorkManager")
+@Service("whOperationLineManager")
 @Transactional
-public class WhWorkManagerImpl extends BaseManagerImpl implements WhWorkManager {
+public class WhOperationLineManagerImpl extends BaseManagerImpl implements WhOperationLineManager {
     
-    public static final Logger log = LoggerFactory.getLogger(WhWorkManagerImpl.class);
+    public static final Logger log = LoggerFactory.getLogger(WhOperationLineManagerImpl.class);
+    
     
 }

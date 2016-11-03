@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.WhOperationDao">
+	<resultMap id="WhOperationResult" type="com.baozun.scm.primservice.whoperation.model.warehouse.WhOperation">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whOperationColumns">
+	    <![CDATA[
+	        	id as id,
+	        	code as code,
+	        	work_id as workId,
+	        	ou_id as ouId,
+	        	work_type as workType,
+	        	work_category as workCategory,
+	        	work_priority as workPriority,
+	        	batch as batch,
+	        	start_time as startTime,
+	        	finish_time as finishTime,
+	        	wave_id as waveId,
+	        	wave_code as waveCode,
+	        	order_code as orderCode,
+	        	location_code as locationCode,
+	        	outer_container_code as outerContainerCode,
+	        	container_code as containerCode,
+	        	create_time as createTime,
+	        	last_modify_time as lastModifyTime,
+	        	created_id as createdId,
+	        	modified_id as modifiedId,
+	        	operator_id as operatorId,
+	        	lifecycle as lifecycle
+	    ]]>
+	</sql>
+	
+		<!-- 如果有自增字段 -->
+		
+			<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+			<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhOperation" 
+				
+			 flushCache="true">
+		    <![CDATA[
+		        INSERT INTO
+		        t_wh_operation (
+		        id,
+		        	code ,
+		        	work_id ,
+		        	ou_id ,
+		        	work_type ,
+		        	work_category ,
+		        	work_priority ,
+		        	batch ,
+		        	start_time ,
+		        	finish_time ,
+		        	wave_id ,
+		        	wave_code ,
+		        	order_code ,
+		        	location_code ,
+		        	outer_container_code ,
+		        	container_code ,
+		        	create_time ,
+		        	last_modify_time ,
+		        	created_id ,
+		        	modified_id ,
+		        	operator_id ,
+		        	lifecycle 
+		        ) VALUES (
+		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{workId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{workType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{workCategory,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{workPriority,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{batch,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{startTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{finishTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{waveId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{waveCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{orderCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{locationCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{outerContainerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{containerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
+		        )
+		    ]]>
+
+		</insert>
+		
+		
+		<update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhOperation">
+	    <![CDATA[
+	        UPDATE t_wh_operation SET
+		        code = #{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        work_id = #{workId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        work_type = #{workType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        work_category = #{workCategory,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        work_priority = #{workPriority,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        batch = #{batch,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        start_time = #{startTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        finish_time = #{finishTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        wave_id = #{waveId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        wave_code = #{waveCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        order_code = #{orderCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        location_code = #{locationCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        outer_container_code = #{outerContainerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        container_code = #{containerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+		</update>
+	   <delete id="delete" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from t_wh_operation where
+		        id = #{id} 
+	    ]]>
+	    </delete> 
+	    
+	     <delete id="deleteByIds" parameterType="list">
+	    
+	        delete from t_wh_operation 
+	        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>	
+	  
+	    </delete>  
+	         
+	    <select id="findById" parameterType="java.lang.Long" resultMap="WhOperationResult" flushCache="false">
+			select <include refid="whOperationColumns" />
+		    <![CDATA[
+			    from t_wh_operation 
+		        where 
+		        id = #{id} 
+		    ]]>
+		</select>	
+		<select id="getByIds" parameterType="list"  resultMap="WhOperationResult" flushCache="false">
+			select <include refid="whOperationColumns" />
+			    from t_wh_operation 
+		        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>					
+		</select>	
+	<sql id="whOperationDynamicWhere">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+	       
+		       <if test="code!=null and code!=''">
+					and code = #{code}
+				</if>
+	       
+				<if test="workId!=null">
+					and work_id = #{workId}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+	       
+	       
+		       <if test="workType!=null and workType!=''">
+					and work_type = #{workType}
+				</if>
+	       
+	       
+		       <if test="workCategory!=null and workCategory!=''">
+					and work_category = #{workCategory}
+				</if>
+	       
+				<if test="workPriority!=null">
+					and work_priority = #{workPriority}
+				</if>
+	       
+	       
+		       <if test="batch!=null and batch!=''">
+					and batch = #{batch}
+				</if>
+	       
+				<if test="startTime!=null">
+					and start_time = #{startTime}
+				</if>
+	       
+				<if test="finishTime!=null">
+					and finish_time = #{finishTime}
+				</if>
+	       
+				<if test="waveId!=null">
+					and wave_id = #{waveId}
+				</if>
+	       
+	       
+		       <if test="waveCode!=null and waveCode!=''">
+					and wave_code = #{waveCode}
+				</if>
+	       
+	       
+		       <if test="orderCode!=null and orderCode!=''">
+					and order_code = #{orderCode}
+				</if>
+	       
+	       
+		       <if test="locationCode!=null and locationCode!=''">
+					and location_code = #{locationCode}
+				</if>
+	       
+	       
+		       <if test="outerContainerCode!=null and outerContainerCode!=''">
+					and outer_container_code = #{outerContainerCode}
+				</if>
+	       
+	       
+		       <if test="containerCode!=null and containerCode!=''">
+					and container_code = #{containerCode}
+				</if>
+	       
+				<if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="createdId!=null">
+					and created_id = #{createdId}
+				</if>
+	       
+				<if test="modifiedId!=null">
+					and modified_id = #{modifiedId}
+				</if>
+	       
+				<if test="operatorId!=null">
+					and operator_id = #{operatorId}
+				</if>
+	       
+				<if test="lifecycle!=null">
+					and lifecycle = #{lifecycle}
+				</if>
+		</where>
+	</sql>
+	
+
+	<select id="getCount" resultType="long">
+        select count(*) from t_wh_operation 
+    </select>
+    <select id="findListCountByQueryMap" resultType="long">
+        select count(*) from t_wh_operation 
+		<include refid="whOperationDynamicWhere"/>    
+    </select>
+    
+    <select id="findListCountByParam" resultType="long">
+        select count(*) from t_wh_operation 
+		<include refid="whOperationDynamicWhere"/>    
+    </select>
+    
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPage" resultMap="WhOperationResult">
+    	select <include refid="whOperationColumns" />
+	    from t_wh_operation 
+		<include refid="whOperationDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByQueryMap" resultMap="WhOperationResult">
+    	select <include refid="whOperationColumns" />
+	    from t_wh_operation 
+		<include refid="whOperationDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByParam" resultMap="WhOperationResult">
+    	select <include refid="whOperationColumns" />
+	    from t_wh_operation 
+		<include refid="whOperationDynamicWhere"/>
+		
+    </select>
+
+	
+</mapper>

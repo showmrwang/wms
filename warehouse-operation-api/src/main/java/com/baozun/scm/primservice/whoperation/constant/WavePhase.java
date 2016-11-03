@@ -14,4 +14,5 @@ public class WavePhase implements Serializable {
     public static final String DISTRIBUTION = "DISTRIBUTION_PATTERN_CALC"; // 配货模式计算
     public static final String CREATE_OUTBOUND_CARTON = "CREATE_OUTBOUND_CARTON"; // 创建出库箱/容器
     public static final String CREATE_TASK = "CREATE_TASK"; // 创建任务
+    public static final String CREATE_WORK = "CREATE_WORK"; // 创建工作
 }

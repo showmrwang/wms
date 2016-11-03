@@ -69,7 +69,12 @@
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.system.SysThreadDeployManager" ref="sysThreadDeployManager" />
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.AllocateStrategyManager" ref="allocateStrategyManager" />
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager" ref="whSkuInventoryManager" />
-    
+	<!-- 创捡货工作 -->
+	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.WhWorkManager" ref="whWorkManager" />
+	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.WhWorkLineManager" ref="whWorkLineManager" />
+	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.WhOperationManager" ref="whOperationManager" />
+	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.WhOperationLineManager" ref="whOperationLineManager" />
+	
     <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.pda.PdaContainerRcvdManagerProxy"  ref="pdaContainerRcvdManagerProxy" />
 	
     <!--生成远程服务代理，可以和本地bean一样使用demoService-->

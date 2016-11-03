@@ -17,17 +17,8 @@
 package com.baozun.scm.primservice.whoperation.manager.warehouse;
 
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
-import com.baozun.scm.primservice.whoperation.model.warehouse.WhWork;
 
 
 public interface WhWorkManager extends BaseManager{
-    /**
-     * 新建/修改工作头
-     *
-     * @author qiming.liu
-     * @param WhWork
-     * @return
-     */
-    void saveOrUpdate(WhWork whWork);
 
 }

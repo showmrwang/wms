@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.WhWorkDao">
+	<resultMap id="WhWorkResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.WhWork">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whWorkColumnsExt">
+	    <![CDATA[
+	        	id as id,
+	        	code as code,
+	        	status as status,
+	        	ou_id as ouId,
+	        	work_type as workType,
+	        	work_category as workCategory,
+	        	is_locked as isLocked,
+	        	work_priority as workPriority,
+	        	batch as batch,
+	        	start_time as startTime,
+	        	finish_time as finishTime,
+	        	wave_id as waveId,
+	        	wave_code as waveCode,
+	        	order_code as orderCode,
+	        	location_code as locationCode,
+	        	outer_container_code as outerContainerCode,
+	        	container_code as containerCode,
+	        	create_time as createTime,
+	        	last_modify_time as lastModifyTime,
+	        	created_id as createdId,
+	        	modified_id as modifiedId,
+	        	operator_id as operatorId,
+	        	lifecycle as lifecycle
+	    ]]>
+	</sql>
+	
+	<sql id="whWorkDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+	       
+		       <if test="code!=null and code!=''">
+					and code = #{code}
+				</if>
+	       
+				<if test="status!=null">
+					and status = #{status}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+	       
+	       
+		       <if test="workType!=null and workType!=''">
+					and work_type = #{workType}
+				</if>
+	       
+	       
+		       <if test="workCategory!=null and workCategory!=''">
+					and work_category = #{workCategory}
+				</if>
+	       
+				<if test="isLocked!=null">
+					and is_locked = #{isLocked}
+				</if>
+	       
+				<if test="workPriority!=null">
+					and work_priority = #{workPriority}
+				</if>
+	       
+	       
+		       <if test="batch!=null and batch!=''">
+					and batch = #{batch}
+				</if>
+	       
+				<if test="startTime!=null">
+					and start_time = #{startTime}
+				</if>
+	       
+				<if test="finishTime!=null">
+					and finish_time = #{finishTime}
+				</if>
+	       
+				<if test="waveId!=null">
+					and wave_id = #{waveId}
+				</if>
+	       
+	       
+		       <if test="waveCode!=null and waveCode!=''">
+					and wave_code = #{waveCode}
+				</if>
+	       
+	       
+		       <if test="orderCode!=null and orderCode!=''">
+					and order_code = #{orderCode}
+				</if>
+	       
+	       
+		       <if test="locationCode!=null and locationCode!=''">
+					and location_code = #{locationCode}
+				</if>
+	       
+	       
+		       <if test="outerContainerCode!=null and outerContainerCode!=''">
+					and outer_container_code = #{outerContainerCode}
+				</if>
+	       
+	       
+		       <if test="containerCode!=null and containerCode!=''">
+					and container_code = #{containerCode}
+				</if>
+	       
+				<if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="createdId!=null">
+					and created_id = #{createdId}
+				</if>
+	       
+				<if test="modifiedId!=null">
+					and modified_id = #{modifiedId}
+				</if>
+	       
+				<if test="operatorId!=null">
+					and operator_id = #{operatorId}
+				</if>
+	       
+				<if test="lifecycle!=null">
+					and lifecycle = #{lifecycle}
+				</if>
+		</where>
+	</sql>
+	
+
+		<update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhWork">
+		    <![CDATA[
+		        UPDATE t_wh_work SET
+			        code = #{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        status = #{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        work_type = #{workType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        work_category = #{workCategory,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        is_locked = #{isLocked,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        work_priority = #{workPriority,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        batch = #{batch,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        start_time = #{startTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+			        finish_time = #{finishTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+			        wave_id = #{waveId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        wave_code = #{waveCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        order_code = #{orderCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        location_code = #{locationCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        outer_container_code = #{outerContainerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        container_code = #{containerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+			        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+			        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
+		        WHERE 
+			        id = #{id} 
+			        
+			        and last_modify_time	<=  #{lastModifyTime}    
+		    ]]>
+		</update>
+	
+</mapper>
