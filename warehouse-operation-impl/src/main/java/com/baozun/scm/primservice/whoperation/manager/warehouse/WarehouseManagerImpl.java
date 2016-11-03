@@ -97,19 +97,16 @@ public class WarehouseManagerImpl extends BaseManagerImpl implements WarehouseMa
     @Override
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public Warehouse findWarehouseById(Long id) {
-        Warehouse wh = this.cacheManager.getObject(CacheKeyConstant.CACHE_WAREHOSUE + id);
-        if (wh == null) {
-            wh = warehouseDao.findWarehouseById(id);
-            this.cacheManager.setObject(CacheKeyConstant.CACHE_WAREHOSUE + id, wh);
-        }
+        Warehouse wh = getWhToRedis(id);
         return wh;
     }
-    
+
     @Override
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
-    @Transactional(propagation=Propagation.REQUIRES_NEW)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Warehouse findWarehouseByIdExt(Long id) {
-        return warehouseDao.findWarehouseById(id);
+        Warehouse wh = getWhToRedis(id);
+        return wh;
     }
 
 
@@ -225,10 +222,10 @@ public class WarehouseManagerImpl extends BaseManagerImpl implements WarehouseMa
         if (log.isInfoEnabled()) {
             log.info("WarehouseManagerImpl findListByLifecycle start");
         }
-        if(log.isDebugEnabled()){
+        if (log.isDebugEnabled()) {
             log.debug("findListByLifecycle param [lifecycle:{}]", lifecycle);
         }
-        if(null == lifecycle){
+        if (null == lifecycle) {
             log.error("WarehouseManagerImpl findListByLifecycle failed, param lifecycle is null");
             throw new BusinessException(ErrorCodes.PARAM_IS_NULL);
         }

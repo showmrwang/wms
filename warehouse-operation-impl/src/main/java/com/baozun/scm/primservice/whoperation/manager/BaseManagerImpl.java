@@ -33,6 +33,7 @@ import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWavePhaseDao;
 import com.baozun.scm.primservice.whoperation.dao.system.SysDictionaryDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.CustomerDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.StoreDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WarehouseDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.system.GlobalLogManager;
@@ -42,6 +43,7 @@ import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryLog;
 import com.baozun.scm.primservice.whoperation.util.LogUtil;
 import com.baozun.scm.primservice.whoperation.util.ParamsUtil;
@@ -77,6 +79,8 @@ public abstract class BaseManagerImpl implements BaseManager {
     private WhWaveLineDao whWaveLineDao;
     @Autowired
     private WhWavePhaseDao whWavePhaseDao;
+    @Autowired
+    private WarehouseDao warehouseDao;
 
 
     /**
@@ -497,6 +501,37 @@ public abstract class BaseManagerImpl implements BaseManager {
         returnPhaseCode = whWavePhaseDao.getWavePhaseCode(phaseCode, waveTemplateId, ouid);
         return returnPhaseCode;
     }
+
+    /**
+     * 读取仓库基础信息 redis
+     * 
+     * @return
+     */
+    protected Warehouse getWhToRedis(Long id) {
+        // 仓库KEY前缀
+        String redisKey = CacheKeyConstant.CACHE_WAREHOSUE;
+        Warehouse wh = null;
+        try {
+            // 读取仓库基础信息 redis
+            wh = cacheManager.getObject(redisKey + id);
+        } catch (Exception e) {
+            // redis出错只记录log
+            log.error("getWhToRedis cacheManager.setObject(" + redisKey + id + ") error");
+        }
+        if (null == wh) {
+            // 如果redis没有对应数据 查询数据库
+            wh = warehouseDao.findWarehouseById(id);
+            try {
+                // 放入redis缓存
+                cacheManager.setObject(redisKey + id, wh);
+            } catch (Exception e) {
+                // redis出错只记录log
+                log.error("getWhToRedis cacheManager.setObject(" + redisKey + id + ") error");
+            }
+        }
+        return wh;
+    }
+
 
     protected void removeWaveLineWhole(Long waveId, Long odoId, Long ouId) {
         whWaveLineDao.removeWaveLineWhole(waveId, odoId, ouId);
