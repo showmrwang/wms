@@ -49,8 +49,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	dimension7 as dimension7,
 	        	dimension8 as dimension8,
 	        	is_static as isStatic,
-	        	upBound as upBound,
-	        	downBound as downBound,
+	        	up_bound as upBound,
+	        	down_bound as downBound,
 	        	length as length,
 	        	width as width,
 	        	high as high,
@@ -105,8 +105,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	dimension7,
 	        	dimension8,
 	        	is_static,
-	        	upBound,
-		        downBound,
+	        	up_bound,
+		        down_bound,
 		        length,
 		        width,
 		        high,
@@ -209,8 +209,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	dimension7=#{dimension7,javaType=java.lang.String,jdbcType=VARCHAR},
 	        	dimension8=#{dimension8,javaType=java.lang.String,jdbcType=VARCHAR},
 	        	isStatic=#{isStatic,javaType=java.lang.Boolean,jdbcType=BIT},
-	        	upBound = #{upBound,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        downBound = #{downBound,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	up_bound = #{upBound,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        down_bound = #{downBound,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        length = #{length,javaType=java.lang.Double,jdbcType=DOUBLE} ,
 		        width = #{width,javaType=java.lang.Double,jdbcType=DOUBLE} ,
 		        high = #{high,javaType=java.lang.Double,jdbcType=DOUBLE} ,
@@ -380,12 +380,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					and is_static = #{isStatic}
 				</if>
 			       <if test="upBound!=null and upBound!=''">
-					and upBound = #{upBound}
+					and up_bound = #{upBound}
 				</if>
 	       
 	       
 		       <if test="downBound!=null and downBound!=''">
-					and downBound = #{downBound}
+					and down_bound = #{downBound}
 				</if>
 	       
 				<if test="length!=null">
