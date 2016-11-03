@@ -2733,6 +2733,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 			} else {
 				isStaticLocation = false;
 			}
+			if (Constants.ALLOCATE_STRATEGY_EMPTYLOCATION.equals(as.getStrategyCode())) {
+				areaId = as.getAreaId();
+			}
 			WhWaveLineCommand whWaveLineCommand = new WhWaveLineCommand();
 			for (int j = 0; j < notHaveInvAttrLines.size(); j++) {
 				WhWaveLine line = notHaveInvAttrLines.get(j);

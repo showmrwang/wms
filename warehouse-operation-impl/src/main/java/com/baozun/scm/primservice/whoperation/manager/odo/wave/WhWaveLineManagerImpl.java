@@ -119,12 +119,12 @@ public class WhWaveLineManagerImpl extends BaseManagerImpl implements WhWaveLine
 	public void deleteWaveLinesByOdoId(Long odoId, Long waveId, Long ouId, String reason) {
 		// 1.修改出库单明细waveCode为空
 		int num = whOdoLineDao.updateOdoLineByAllocateFail(odoId, reason, ouId);
-		if (num == -1) {
+		if (-1 == num) {
 			throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
 		}
 		// 2.修改出库单waveCode为空
 		num = whOdoDao.updateOdoByAllocateFail(odoId, reason, ouId);
-		if (num == -1) {
+		if (-1 == num) {
 			throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
 		}
 		// 3.从波次明细中剔除出库单
@@ -135,16 +135,18 @@ public class WhWaveLineManagerImpl extends BaseManagerImpl implements WhWaveLine
 	@MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
 	public void updateWaveLineByAllocateQty(Long invId, Double allocateQty, Double containerQty, Boolean isStaticLocation, Set<String> staticLocationIds, Long areaId, Long ouId) {
 		WhWaveLine whWaveLine = whWaveLineDao.findWhWaveLineById(invId, ouId);
-		whWaveLine.setAllocateQty(allocateQty);
+		Double oldAllocateQty = null == whWaveLine.getAllocateQty() ? 0.0 : whWaveLine.getAllocateQty();
+		whWaveLine.setAllocateQty(allocateQty + oldAllocateQty);
 		if (-1 == new Double(0.0).compareTo(containerQty)) {
 			whWaveLine.setIsPalletContainer(Boolean.TRUE);
-			whWaveLine.setPalletContainerQty(new Double(containerQty));
+			Double oldPalletContainerQty = null == whWaveLine.getPalletContainerQty() ? 0.0 : whWaveLine.getPalletContainerQty();
+			whWaveLine.setPalletContainerQty(containerQty + oldPalletContainerQty);
 		}
 		if (null != isStaticLocation && isStaticLocation) {
 			whWaveLine.setIsStaticLocationAllocate(isStaticLocation);
 			whWaveLine.setStaticLocationIds(StringUtils.collectionToCommaDelimitedString(staticLocationIds));
-			whWaveLine.setAreaId(areaId);
 		}
+		whWaveLine.setAreaId(areaId);
 		whWaveLineDao.saveOrUpdateByVersion(whWaveLine);
 	}
 
