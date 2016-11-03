@@ -183,11 +183,13 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	created_id as createdId,
 	        	last_modify_time as lastModifyTime,
 	        	modified_id as modifiedId,
-	        	is_pallet_container,
-	        	pallet_container_qty, 
-	        	is_static_location_allocate,
-	        	static_location_ids,
-	        	area_id
+	        	is_pallet_container as isPalletContainer,
+	        	pallet_container_qty as palletContainerQty, 
+	        	is_static_location_allocate as isStaticLocationAllocate,
+	        	static_location_ids as staticLocationIds,
+	        	area_id as areaId,
+	        	tray_ids as trayIds,
+				packing_case_ids as packingCaseIds
 	    ]]>
 	</sql>
 	
@@ -373,6 +375,34 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				<if test="modifiedId!=null">
 					and modified_id = #{modifiedId}
 				</if>
+				
+				<if test="isPalletContainer!=null">
+		        	and is_pallet_container = #{isPalletContainer}
+		        </if>
+		        
+		        <if test="palletContainerQty!=null">
+		        	and pallet_container_qty = #{palletContainerQty}
+		        </if>
+		        
+		        <if test="isStaticLocationAllocate!=null">
+		        	and is_static_location_allocate = #{isStaticLocationAllocate}
+		        </if>
+		        
+		        <if test="staticLocationIds!=null and staticLocationIds!=''">
+		        	and static_location_ids = #{staticLocationIds}
+		        </if>
+		        
+		        <if test="areaId!=null">
+		        	and area_id = #{areaId}
+		        </if>
+		        
+		        <if test="trayIds!=null and trayIds!=''">
+		        	and tray_ids = #{trayIds}
+		        </if>
+		        
+		        <if test="packingCaseIds!=null and packingCaseIds!=''">
+		        	and packing_case_ids = #{packingCaseIds}
+		        </if>
 		</where>
 	</sql>
 	
@@ -424,7 +454,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        pallet_container_qty = #{palletContainerQty,javaType=Double,jdbcType=DECIMAL} ,
 			        is_static_location_allocate = #{isStaticLocationAllocate,javaType=java.lang.Boolean,jdbcType=BIT} ,
 			        static_location_ids = #{staticLocationIds,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        area_id = #{areaId,javaType=java.lang.Long,jdbcType=BIGINT} 
+			        area_id = #{areaId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        tray_ids = #{trayIds,javaType=java.lang.String,jdbcType=VARCHAR} ,
+					packing_case_ids = #{packingCaseIds,javaType=java.lang.String,jdbcType=VARCHAR} 
 		        WHERE 
 			        id = #{id} 
 			        and ou_id = #{ouId} 

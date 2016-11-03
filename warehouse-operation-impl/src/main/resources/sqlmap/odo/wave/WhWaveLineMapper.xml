@@ -57,7 +57,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	pallet_container_qty as palleContainerQty, 
 	        	is_static_location_allocate as isStaticLocationAllocate,
 	        	static_location_ids as staticLocationIds,
-	        	area_id as areaId
+	        	area_id as areaId,
+				tray_ids as trayIds,
+				packing_case_ids as packingCaseIds
 	    ]]>
 	</sql>
 	
@@ -116,7 +118,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	pallet_container_qty, 
 		        	is_static_location_allocate,
 		        	static_location_ids,
-		        	area_id
+		        	area_id,
+		        	tray_ids,
+					packing_case_ids
 		        ) VALUES (
 		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{waveId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -164,7 +168,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{palletContainerQty,javaType=Double,jdbcType=DECIMAL} ,
 		        	#{isStaticLocationAllocate,javaType=java.lang.Boolean,jdbcType=BIT} ,
 		        	#{staticLocationIds,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        	#{areaId,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        	#{areaId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{trayIds,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{packingCaseIds,javaType=java.lang.String,jdbcType=VARCHAR} 
 		        )
 		    ]]>
 
@@ -218,7 +224,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        pallet_container_qty = #{palletContainerQty,javaType=Double,jdbcType=DECIMAL} ,
 		        is_static_location_allocate = #{isStaticLocationAllocate,javaType=java.lang.Boolean,jdbcType=BIT} ,
 		        static_location_ids = #{staticLocationIds,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        area_id = #{areaId,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        area_id = #{areaId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        tray_ids = #{trayIds,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        packing_case_ids = #{packingCaseIds,javaType=java.lang.String,jdbcType=VARCHAR} 
 	        WHERE 
 		        id = #{id} 
 		        and ou_id = #{ouId}
@@ -458,6 +466,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        
 		        <if test="areaId!=null">
 		        	and area_id = #{areaId}
+		        </if>
+		        
+		        <if test="trayIds!=null and trayIds!=''">
+		        	and tray_ids = #{trayIds}
+		        </if>
+		        
+		        <if test="packingCaseIds!=null and packingCaseIds!=''">
+		        	and packing_case_ids = #{packingCaseIds}
 		        </if>
 		</where>
 	</sql>

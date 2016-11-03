@@ -116,6 +116,10 @@ public class WhWaveLine extends BaseModel {
     private String staticLocationIds;
     /** 分配区域ID */
     private Long areaId;
+    /** 整托占用IDS */
+    private String trayIds;
+    /** 整箱占用IDS */
+    private String packingCaseIds;
     
     public Double getAllocateQty() {
         return allocateQty;
@@ -483,6 +487,22 @@ public class WhWaveLine extends BaseModel {
 
 	public void setAreaId(Long areaId) {
 		this.areaId = areaId;
+	}
+
+	public String getTrayIds() {
+		return trayIds;
+	}
+
+	public void setTrayIds(String trayIds) {
+		this.trayIds = trayIds;
+	}
+
+	public String getPackingCaseIds() {
+		return packingCaseIds;
+	}
+
+	public void setPackingCaseIds(String packingCaseIds) {
+		this.packingCaseIds = packingCaseIds;
 	}
 
 }

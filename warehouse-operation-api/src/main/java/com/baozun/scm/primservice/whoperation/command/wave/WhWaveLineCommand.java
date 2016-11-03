@@ -98,6 +98,10 @@ public class WhWaveLineCommand extends BaseCommand {
     private Boolean isStaticLocationAllocate;
     /** 被占用的静态库位ID */
     private String staticLocationIds;
+    /** 整托占用IDS */
+    private String trayIds;
+    /** 整箱占用IDS */
+    private String packingCaseIds;
     
     // 用户自定义
     /** id */
@@ -418,6 +422,18 @@ public class WhWaveLineCommand extends BaseCommand {
 	}
 	public void setStaticLocationIds(String staticLocationIds) {
 		this.staticLocationIds = staticLocationIds;
+	}
+	public String getTrayIds() {
+		return trayIds;
+	}
+	public void setTrayIds(String trayIds) {
+		this.trayIds = trayIds;
+	}
+	public String getPackingCaseIds() {
+		return packingCaseIds;
+	}
+	public void setPackingCaseIds(String packingCaseIds) {
+		this.packingCaseIds = packingCaseIds;
 	}
 
 }
