@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.redis.manager.CacheManager;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WarehouseCommand;
-import com.baozun.scm.primservice.whoperation.constant.CacheKeyConstant;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.dao.auth.OperationUnitDao;
