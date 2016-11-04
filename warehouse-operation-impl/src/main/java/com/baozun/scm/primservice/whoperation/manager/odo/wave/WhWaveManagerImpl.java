@@ -28,6 +28,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.WhDistributionPa
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
+import com.baozun.scm.primservice.whoperation.constant.WavePhase;
 import com.baozun.scm.primservice.whoperation.constant.WaveStatus;
 import com.baozun.scm.primservice.whoperation.constant.WhUomType;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
@@ -380,7 +381,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
 		String phaseCode = this.getWavePhaseCode(wave.getPhaseCode(), waveTempletId, ouId);
 		if (null == lines || lines.isEmpty()) {
 	        // 如果是补货阶段,则跳过
-	        if ("REPLENISHED".equals(phaseCode)) {
+	        if (WavePhase.REPLENISHED.equals(phaseCode)) {
 	        	phaseCode = this.getWavePhaseCode(phaseCode, waveTempletId, ouId);
 			}
 	        wave.setPhaseCode(phaseCode);
@@ -406,9 +407,8 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
 				}
 				allOdoIds.add(whWaveLine.getOdoId());
 			}
-			
 			// 如果是补货阶段,则进入补货阶段
-	        if ("REPLENISHED".equals(phaseCode)) {
+	        if (WavePhase.REPLENISHED.equals(phaseCode)) {
 	        	if (odoIds.isEmpty()) {
 	        		wave.setPhaseCode(phaseCode);
 	        		int num = whWaveDao.saveOrUpdateByVersion(wave);

@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.ReplenishmentTaskDao">
+	<resultMap id="ReplenishmentTaskResult" type="com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentTask">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="replenishmentTaskColumns">
+	    <![CDATA[
+	        	id as id,
+	        	replenishment_code as replenishmentCode,
+	        	wave_id as waveId,
+	        	location_id as locationId,
+	        	status as status,
+	        	ou_id as ouId,
+	        	create_time as createTime,
+	        	last_modify_time as lastModifyTime,
+	        	operator_id as operatorId
+	    ]]>
+	</sql>
+	
+		<!-- 如果有自增字段 -->
+		
+			<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+			<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentTask" 
+				
+			 flushCache="true">
+		    <![CDATA[
+		        INSERT INTO
+		        t_wh_replenishment_task (
+		        id,
+		        	replenishment_code ,
+		        	wave_id ,
+		        	location_id ,
+		        	status ,
+		        	ou_id ,
+		        	create_time ,
+		        	last_modify_time ,
+		        	operator_id 
+		        ) VALUES (
+		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{replenishmentCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{waveId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{locationId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        )
+		    ]]>
+
+		</insert>
+		
+		
+		<update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentTask">
+	    <![CDATA[
+	        UPDATE t_wh_replenishment_task SET
+		        replenishment_code = #{replenishmentCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        wave_id = #{waveId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        location_id = #{locationId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        status = #{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} 
+	        WHERE 
+		        id = #{id} 
+		        and ou_id = #{ouId}
+	    ]]>
+		</update>
+	   <delete id="delete" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from t_wh_replenishment_task where
+		        id = #{id} 
+	    ]]>
+	    </delete> 
+	    
+	     <delete id="deleteByIds" parameterType="list">
+	    
+	        delete from t_wh_replenishment_task 
+	        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>	
+	  
+	    </delete>  
+	         
+	    <select id="findById" parameterType="java.lang.Long" resultMap="ReplenishmentTaskResult" flushCache="false">
+			select <include refid="replenishmentTaskColumns" />
+		    <![CDATA[
+			    from t_wh_replenishment_task 
+		        where 
+		        id = #{id} 
+		    ]]>
+		</select>	
+		<select id="getByIds" parameterType="list"  resultMap="ReplenishmentTaskResult" flushCache="false">
+			select <include refid="replenishmentTaskColumns" />
+			    from t_wh_replenishment_task 
+		        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>					
+		</select>	
+	<sql id="replenishmentTaskDynamicWhere">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+	       
+		       <if test="replenishmentCode!=null and replenishmentCode!=''">
+					and replenishment_code = #{replenishmentCode}
+				</if>
+	       
+				<if test="waveId!=null">
+					and wave_id = #{waveId}
+				</if>
+	       
+				<if test="locationId!=null">
+					and location_id = #{locationId}
+				</if>
+	       
+				<if test="status!=null">
+					and status = #{status}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+	       
+				<if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="operatorId!=null">
+					and operator_id = #{operatorId}
+				</if>
+		</where>
+	</sql>
+	
+
+	<select id="getCount" resultType="long">
+        select count(*) from t_wh_replenishment_task 
+    </select>
+    <select id="findListCountByQueryMap" resultType="long">
+        select count(*) from t_wh_replenishment_task 
+		<include refid="replenishmentTaskDynamicWhere"/>    
+    </select>
+    
+    <select id="findListCountByParam" resultType="long">
+        select count(*) from t_wh_replenishment_task 
+		<include refid="replenishmentTaskDynamicWhere"/>    
+    </select>
+    
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPage" resultMap="ReplenishmentTaskResult">
+    	select <include refid="replenishmentTaskColumns" />
+	    from t_wh_replenishment_task 
+		<include refid="replenishmentTaskDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByQueryMap" resultMap="ReplenishmentTaskResult">
+    	select <include refid="replenishmentTaskColumns" />
+	    from t_wh_replenishment_task 
+		<include refid="replenishmentTaskDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByParam" resultMap="ReplenishmentTaskResult">
+    	select <include refid="replenishmentTaskColumns" />
+	    from t_wh_replenishment_task 
+		<include refid="replenishmentTaskDynamicWhere"/>
+		
+    </select>
+
+    <select id="getByReplenishmentCode" resultMap="ReplenishmentTaskResult" parameterType="java.lang.String">
+	    select <include refid="replenishmentTaskColumns"/>
+	    <![CDATA[
+	        from t_wh_replenishment_task where replenishment_code = #{replenishmentCode}
+	    ]]>
+    </select>
+    
+	
+</mapper>
