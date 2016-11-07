@@ -82,12 +82,44 @@ public class OdoWaveGroupSearchCommand extends BaseCommand {
 
     private Boolean isOdoStatus;
 
+    private Long groupCustomerId;
+
+    private Long groupStoreId;
+
+    private String groupOdoStatus;
+
+    private Boolean lineFlag;
+
     // ------------------用于创建出库单字段
     private List<OdoWaveGroupSearchCondition> conditionList;
 
     private List<Long> odoIdList;
 
     private Long waveMasterId;
+
+    public Long getGroupCustomerId() {
+        return groupCustomerId;
+    }
+
+    public void setGroupCustomerId(Long groupCustomerId) {
+        this.groupCustomerId = groupCustomerId;
+    }
+
+    public Long getGroupStoreId() {
+        return groupStoreId;
+    }
+
+    public void setGroupStoreId(Long groupStoreId) {
+        this.groupStoreId = groupStoreId;
+    }
+
+    public String getGroupOdoStatus() {
+        return groupOdoStatus;
+    }
+
+    public void setGroupOdoStatus(String groupOdoStatus) {
+        this.groupOdoStatus = groupOdoStatus;
+    }
 
     public Long getWaveMasterId() {
         return waveMasterId;
@@ -632,5 +664,14 @@ public class OdoWaveGroupSearchCommand extends BaseCommand {
     public void setOdoIdList(List<Long> odoIdList) {
         this.odoIdList = odoIdList;
     }
+
+    public Boolean getLineFlag() {
+        return lineFlag;
+    }
+
+    public void setLineFlag(Boolean lineFlag) {
+        this.lineFlag = lineFlag;
+    }
+
 
 }

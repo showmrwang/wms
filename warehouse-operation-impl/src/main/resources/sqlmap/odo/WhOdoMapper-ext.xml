@@ -1313,8 +1313,10 @@
 			count(distinct odo.store_id) as storeCount,
 			count(distinct odo.odo_type) as odoTypeCount
 		from t_wh_odo_line odoLine
-		inner join t_wh_odo odo on odoLine.odo_id=odo.id
-		where odoLine.ou_id=#{ouId} and odo.odo_status in('1','5')
+			inner join t_wh_odo odo on odoLine.odo_id=odo.id
+			left join t_wh_odo_address address on address.odo_id=odo.id
+			left join t_wh_odo_transport_mgmt transmgmt on transmgmt.odo_id=odo.id
+			<include refid="whOdoDynamicWherePageExt" />
     </select>
     
     <select id="findCommandByIdOuId" resultMap="OdoCommand"
