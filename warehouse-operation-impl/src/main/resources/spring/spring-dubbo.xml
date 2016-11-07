@@ -75,6 +75,9 @@
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.WhOperationManager" ref="whOperationManager" />
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.WhOperationLineManager" ref="whOperationLineManager" />
 	
+	<!-- 业务规则配置 -->
+   	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.WhDistributionPatternRuleManager"  ref="whDistributionPatternRuleManager" />
+	
     <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.pda.PdaContainerRcvdManagerProxy"  ref="pdaContainerRcvdManagerProxy" />
 	
     <!--生成远程服务代理，可以和本地bean一样使用demoService-->

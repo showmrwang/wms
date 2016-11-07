@@ -297,5 +297,13 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         and lifecycle = 1
         order by priority asc
     </select>
-	
+    
+    <select id="findRuleByCode" resultMap="WhDistributionPatternRuleCommandResultExt">
+		select <include refid="WhDistributionPatternRuleCommandColumnsExt" />
+		    from t_wh_distribution_pattern_rule
+		where
+            distribution_pattern_code = #{distributionPatternCode}
+            and ou_id = #{ouId}
+    </select>
+    
 </mapper>

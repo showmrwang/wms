@@ -105,6 +105,15 @@ public interface WhDistributionPatternRuleDao extends BaseDao<WhDistributionPatt
      * @return
      */
     List<WhDistributionPatternRuleCommand> findRuleByOuIdOrderByPriorityAsc(@Param("ouId") Long ouId);
-
+    
+    /**
+     * 根据code查找配货模式规则
+     *
+     * @author qiming.liu
+     * @param distributionPatternCode
+     * @param ouId
+     * @return
+     */
+    WhDistributionPatternRuleCommand findRuleByCode(@Param("distributionPatternCode") String distributionPatternCode, @Param("ouId") Long ouId);
 	
 }
