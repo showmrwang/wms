@@ -386,16 +386,18 @@ public final class Constants {
     /**配货模式规则*/
     public static final String DISTRIBUTION_PATTERN="DISTRIBUTION_PATTERN";
     
+    /** 波次阶段 分配失败原因分组 */
+    public static final String WAVE_FAIL_REASON = "WAVE_FAIL_REASON";
     /** 硬分配阶段 0：分配规则 */
     public static final Integer HARD_PHASE_RULE = 0;
     /** 硬分配阶段 1：硬分配 */
     public static final Integer HARD_PHASE_ALLOCATION = 1;
-    /** 硬分配阶段 分配失败原因分组 */
-    public static final String HARD_ALLOCATION_REASON = "HARD_ALLOCATION_REASON";
     /** 硬分配阶段 分配规则失败 */
     public static final String RULE_ALLOCATION_FAILURE = "RULE_ALLOCATION_FAILURE";
     /** 硬分配阶段 没有空库位和静态库位超分配 */
     public static final String NOT_STATIC_EMPTY_LOCATION = "NOT_STATIC_EMPTY_LOCATION";
+    /** 补货阶段 商品未匹配到补货规则 */
+    public static final String REPLENISHED_SKU_NO_RULE = "REPLENISHED_SKU_NO_RULE";
     
     public static final String ALLOCATE_STRATEGY_FIRSTINFIRSTOUT = "1"; 	// 先入先出
     public static final String ALLOCATE_STRATEGY_FIRSTINLASTOUT = "2";	// 先入后出
