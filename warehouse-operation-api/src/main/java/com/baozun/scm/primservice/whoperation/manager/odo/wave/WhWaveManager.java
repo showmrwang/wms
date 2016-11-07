@@ -110,7 +110,12 @@ public interface WhWaveManager extends BaseManager {
 	 * [业务方法] 硬分配-更新波次阶段为硬分配的阶段未硬分配
 	 */
 	int updateWhWaveAllocatePhase(List<Long> waveIdList, Integer allocatePhase, Long ouId);
-
+	
+	/**
+	 * [业务方法] 硬分配-检查一个波次中分配数量是否足够
+	 * @param waveId
+	 * @param wh
+	 */
 	void checkWaveHardAllocateEnough(Long waveId, Warehouse wh);
 	
 	/**
@@ -147,5 +152,21 @@ public interface WhWaveManager extends BaseManager {
      * @param userId
      */
     void matchWaveDisTributionMode(List<WhOdo> odoList, List<WhWaveLine> offWaveLineList, List<WhOdoLine> offOdoLineList, WhWave wave, Long ouId, Long userId);
+    
+    /**
+     * [通用方法] 根据WavePhaseCode波次编码查找波次ID集合
+     * @param phaseCode
+     * @param ouId
+     * @return
+     */
+    List<Long> findWaveIdsByWavePhaseCode(String phaseCode, Long ouId);
+    
+    /**
+     * [业务方法] 在一个波次中查找包含skuIds的OdoId
+     * @param skuIds
+     * @param ouId
+     * @return
+     */
+	List<Long> findOdoContainsSkuId(Long waveId, List<Long> skuIds, Long ouId);
 
 }

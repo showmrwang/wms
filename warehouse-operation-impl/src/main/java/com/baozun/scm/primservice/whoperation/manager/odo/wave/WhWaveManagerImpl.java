@@ -417,7 +417,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
 	    			}
 				} else {
 					// 剔除规则中没有静态库位可超分配或空库位的工作单
-					SysDictionary dictionary = sysDictionaryDao.getGroupbyGroupValueAndDicValue(Constants.HARD_ALLOCATION_REASON, Constants.NOT_STATIC_EMPTY_LOCATION);
+					SysDictionary dictionary = sysDictionaryDao.getGroupbyGroupValueAndDicValue(Constants.WAVE_FAIL_REASON, Constants.NOT_STATIC_EMPTY_LOCATION);
 					for (Long odoId : odoIds) {
 						whWaveLineManager.deleteWaveLinesByOdoId(odoId, waveId, ouId, dictionary.getDicLabel());
 						// 释放库存
@@ -431,7 +431,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
 				}
 	        } else {
 	        	// 剔除库存数量没有分配完全所有工作单
-	        	SysDictionary dictionary = sysDictionaryDao.getGroupbyGroupValueAndDicValue(Constants.HARD_ALLOCATION_REASON, Constants.NOT_STATIC_EMPTY_LOCATION);
+	        	SysDictionary dictionary = sysDictionaryDao.getGroupbyGroupValueAndDicValue(Constants.WAVE_FAIL_REASON, Constants.NOT_STATIC_EMPTY_LOCATION);
 				for (Long odoId : allOdoIds) {
 					whWaveLineManager.deleteWaveLinesByOdoId(odoId, waveId, ouId, dictionary.getDicLabel());
 					// 释放库存
@@ -486,6 +486,20 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
 			// 释放库存
 			whSkuInventoryManager.releaseInventoryByOdoId(odoId, wh);
 		}
+	}
+
+	@Override
+	public List<Long> findWaveIdsByWavePhaseCode(String phaseCode, Long ouId) {
+		WhWave wave = new WhWave();
+		wave.setPhaseCode(phaseCode);
+		wave.setOuId(ouId);
+		wave.setAllocatePhase(null);
+		return whWaveDao.findWaveIdsByParam(wave);
+	}
+
+	@Override
+	public List<Long> findOdoContainsSkuId(Long waveId, List<Long> skuIds, Long ouId) {
+		return whWaveDao.findOdoContainsSkuId(waveId, skuIds, ouId);
 	}
 	
 }

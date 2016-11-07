@@ -541,4 +541,20 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				#{id}
 			</foreach> 
 	</update>
+	
+	<select id="findOdoContainsSkuId" resultType="long">
+		select 
+			line.odo_id 
+		from 
+			t_wh_wave wave,t_wh_wave_line line
+		where  
+			wave.id = line.wave_id
+			and line.sku_id in 
+			<foreach collection="skuIds" item="skuId" open="(" separator="," close=")">
+				#{skuId}
+			</foreach>
+			and wave.id = #{waveId}
+			and wave.ou_id = #{ouId}
+		group by line.odo_id;
+	</select>
 </mapper>

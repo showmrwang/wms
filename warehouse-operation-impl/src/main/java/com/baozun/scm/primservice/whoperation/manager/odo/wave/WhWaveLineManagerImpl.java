@@ -243,4 +243,9 @@ public class WhWaveLineManagerImpl extends BaseManagerImpl implements WhWaveLine
         return whWaveLineList;
     }
 
+	@Override
+	public List<Long> findSkuIdByNotEnoughAllocationQty(Long waveId, Long ouId) {
+		return whWaveLineDao.findSkuIdByNotEnoughAllocationQty(waveId, ouId);
+	}
+
 }
