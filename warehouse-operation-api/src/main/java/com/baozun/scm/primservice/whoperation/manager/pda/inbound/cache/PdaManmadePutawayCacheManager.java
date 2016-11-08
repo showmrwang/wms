@@ -1,14 +1,19 @@
 package com.baozun.scm.primservice.whoperation.manager.pda.inbound.cache;
 
+import java.util.ArrayDeque;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.CheckScanSkuResultCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.ManMadeContainerStatisticCommand;
+import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.TipContainerCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.putaway.PdaManMadePutawayCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
+import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
+import com.baozun.scm.primservice.whoperation.exception.BusinessException;
+import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 
@@ -126,4 +131,6 @@ public interface PdaManmadePutawayCacheManager extends BaseManager {
     */
    public void manMadeSplitContainerPutawayRemoveAllCache(ContainerCommand outerContainerCmd, ContainerCommand insideContainerCmd, Boolean isAfterPutawayTipContainer, String logId,Long scanSkuId);
 
+   
+   public CheckScanSkuResultCommand  manMadeContainerCacheContainer(ContainerCommand ocCmd, ContainerCommand icCmd, Set<Long> insideContainerIds,String logId);
 }

@@ -56,4 +56,16 @@ public final class CacheConstants {
     
     /**人工上架:扫SKU残次信息*/
     public static final String PDA_MAN_MANDE_SCAN_SKU_DEFECT = "PDA_MAN_MANDE_SCAN_SKU_DEFECT";
+    /** 人工上架:容器库存缓存 */
+    public static final String PDA_MAN_MANDE_CONTAINER_INVENTORY = "PDA_MAN_MANDE_CONTAINER_INVENTORY";
+    /** 人工上架:容器库存统计缓存 */
+    public static final String PDA_MAN_MANDE_CONTAINER_INVENTORY_STATISTIC = "PDA_MAN_MANDE_CONTAINER_INVENTORY_STATISTIC";
+    /** 人工上架:已扫描的容器队列 */
+    public static final String PDA_MAN_MANDE_SCAN_CONTAINER_QUEUE = "PDA_MAN_MANDE_SCAN_CONTAINER_QUEUE_";
+    /** 人工上架:已扫描的Sku队列 */
+    public static final String PDA_MAN_MANDE_SCAN_SKU_QUEUE = "PDA_MAN_MANDE_SCAN_SKU_QUEUE_";
+    /** 人工上架:容器缓存 */
+    public static final String PDA_MAN_MANDE_CONTAINER = "PDA_MAN_MANDE_CONTAINER";
+    /** 人工上架:容器统计缓存 */
+    public static final String PDA_MAN_MANDE_CONTAINER_STATISTIC = "PDA_MAN_MANDE_CONTAINER_STATISTIC";
 }
