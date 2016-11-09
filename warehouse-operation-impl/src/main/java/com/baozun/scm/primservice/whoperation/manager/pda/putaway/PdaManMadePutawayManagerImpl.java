@@ -1173,14 +1173,7 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
             throw new BusinessException(ErrorCodes.INSIDECONTAINER_NOT_EXISTS_OUTCONTAINER);
         }
         // 缓存扫描的内部容器
-        TipContainerCacheCommand tipCmd = new TipContainerCacheCommand();
-        tipCmd.setPutawayPatternDetailType(WhPutawayPatternDetailType.PALLET_PUTAWAY);  //整托上架
-        tipCmd.setOuterContainerId(outerContainerId);
-        tipCmd.setOuterContainerCode(pdaManMadePutawayCommand.getOuterContainerCode());
-        ArrayDeque<Long> icIds = new ArrayDeque<Long>();
-        icIds.addFirst(insideContainerId);
-        tipCmd.setTipInsideContainerIds(icIds);
-        cacheManager.setObject(CacheConstants.PDA_MAN_MANDE_SCAN_CONTAINER_QUEUE + outerContainerId.toString(), tipCmd, CacheConstants.CACHE_ONE_DAY);
+        pdaManmadePutawayCacheManager.containerPutawayCacheInsideContainer(insideContainer, outerContainerId, insideContainerCode, outerContainerCode);
         WhFunctionPutAway putawyaFunc = whFunctionPutAwayManager.findWhFunctionPutAwayByFunctionId(functionId, ouId);
         if (null == putawyaFunc) {
             log.error("whFunctionPutaway is null error, logId is:[{}]", logId);

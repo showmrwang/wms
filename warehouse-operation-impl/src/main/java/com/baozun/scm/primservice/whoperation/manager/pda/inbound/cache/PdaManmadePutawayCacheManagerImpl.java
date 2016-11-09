@@ -1452,7 +1452,6 @@ public class PdaManmadePutawayCacheManagerImpl extends BaseManagerImpl implement
                     Long icSkuQty = icSkuAndQty.get(skuId);
                     if (WhScanPatternType.ONE_BY_ONE_SCAN == scanPattern) {
                         TipScanSkuCacheCommand tipScanSkuCmd = cacheManager.getObject(CacheConstants.PDA_MAN_MANDE_SCAN_SKU_QUEUE + icId.toString());
-//                        TipScanSkuCacheCommand temp = cacheManager.getObject(CacheConstants.PDA_MAN_MANDE_SCAN_SKU_QUEUE + icId.toString());
                         ArrayDeque<Long> oneByOneScanSkuIds = null;   //已经扫描的sku队列
                         if (null != tipScanSkuCmd) {
                             oneByOneScanSkuIds = tipScanSkuCmd.getOneByOneScanSkuIds();
