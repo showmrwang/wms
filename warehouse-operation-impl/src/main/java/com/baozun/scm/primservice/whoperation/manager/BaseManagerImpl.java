@@ -416,7 +416,6 @@ public abstract class BaseManagerImpl implements BaseManager {
                 SysDictionary sys = null;
                 // 获取对应Redis数据
                 try {
-                    cacheManager.remonKeys(CacheKeyConstant.WMS_CACHE_SYS_DICTIONARY + "*");
                     sys = cacheManager.getObject("%" + s.split("%")[1]);
                 } catch (Exception e) {
                     // redis出错只记录log
