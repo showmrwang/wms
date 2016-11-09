@@ -129,7 +129,7 @@ public interface PdaManmadePutawayCacheManager extends BaseManager {
     * @param isAfterPutawayTipContainer
     * @param logId
     */
-   public void manMadeSplitContainerPutawayRemoveAllCache(ContainerCommand outerContainerCmd, ContainerCommand insideContainerCmd, Boolean isAfterPutawayTipContainer, String logId,Long scanSkuId);
+   public void manMadeSplitContainerPutawayRemoveAllCache(ContainerCommand outerContainerCmd, ContainerCommand insideContainerCmd, Boolean isAfterScanSku,Boolean isAfterPutawayTipContainer, String logId,Long scanSkuId);
 
    
    public CheckScanSkuResultCommand  manMadeContainerCacheContainer(ContainerCommand ocCmd, ContainerCommand icCmd, Set<Long> insideContainerIds,String logId);

@@ -59,7 +59,9 @@ public class PdaManMadePutawayCommand extends BaseCommand {
     /** 上架类型 */
     private Integer putawayPatternDetailType;
     
-    private Boolean isTrackVessel = true;   //是否跟踪容器号，默认跟踪容器号
+    private Boolean isTrackVessel = false;   //是否跟踪容器号，默认跟踪容器号
+    
+    private Boolean isScanTrackContainer;   //是否扫描跟踪容器
     /**是否上架*/
     private Boolean putway = false;
     /**托盘内是否还有没扫描到容器*/
@@ -138,6 +140,8 @@ public class PdaManMadePutawayCommand extends BaseCommand {
     private String skuSnCode;   //sn/残次信息
     
     private String skuDefectCode;   //sku残次信息
+    
+    private Long skuId;
     
 
     public Boolean getIsOuterContainer() {
@@ -573,9 +577,21 @@ public class PdaManMadePutawayCommand extends BaseCommand {
         this.isAfterPutawaySku = isAfterPutawaySku;
     }
 
-   
+    public Boolean getIsScanTrackContainer() {
+        return isScanTrackContainer;
+    }
 
-    
+    public void setIsScanTrackContainer(Boolean isScanTrackContainer) {
+        this.isScanTrackContainer = isScanTrackContainer;
+    }
+
+    public Long getSkuId() {
+        return skuId;
+    }
+
+    public void setSkuId(Long skuId) {
+        this.skuId = skuId;
+    }
     
 }
 

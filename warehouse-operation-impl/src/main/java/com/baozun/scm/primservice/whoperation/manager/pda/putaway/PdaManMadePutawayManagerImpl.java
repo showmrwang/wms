@@ -868,10 +868,10 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
     private void IsLocationBearWeight(Long containerId, List<WhSkuInventory> locationSkuList, List<WhSkuInventory> whSkuInventoryList, PdaManMadePutawayCommand command) {
         log.info("PdaManMadePutwayManagerImpl IsLocationBearWeight start");
         Long locationId = command.getLocationId();
-        String insideContainerCode = command.getInsideContainerCode();
+//        String insideContainerCode = command.getInsideContainerCode();
         Long ouId = command.getOuId();
-        ContainerCommand insideCmd = containerDao.getContainerByCode(insideContainerCode, ouId);
-        Long insideContainerId = insideCmd.getId();  //整箱上架时，扫描的内部容器id
+//        ContainerCommand insideCmd = containerDao.getContainerByCode(insideContainerCode, ouId);
+//        Long insideContainerId = insideCmd.getId();  //整箱上架时，扫描的内部容器id
         int putawayPatternDetailType = command.getPutawayPatternDetailType();
         ManMadeContainerStatisticCommand madeContainer = pdaManmadePutawayCacheManager.manMadePutawayCacheContainer(command,containerId);
         if (null == madeContainer) {
@@ -907,6 +907,9 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
         }
         // 整箱上架
         if (WhPutawayPatternDetailType.CONTAINER_PUTAWAY == putawayPatternDetailType) {
+            String insideContainerCode = command.getInsideContainerCode();
+            ContainerCommand insideCmd = containerDao.getContainerByCode(insideContainerCode, ouId);
+            Long insideContainerId = insideCmd.getId();  //整箱上架时，扫描的内部容器id
             Double putwayWeight = madeContainer.getInsideContainerWeight();
             Map<Long, Double> insideContainersWeight = madeContainer.getInsideContainersWeight();
             // 计算要上架商品的重量
@@ -917,7 +920,7 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
                 throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_LOCATION_UNBEAR_WEIGHT); // 容器总重量已经超过库位的承重,请更换库位进行上架
             }
         }
-        // 整箱上架
+        // 拆箱上架
         if (WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY == putawayPatternDetailType) {
             Double putwayWeight = 0.0;
             for(WhSkuInventory skuInv:whSkuInventoryList) {
@@ -1260,16 +1263,16 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
             log.error("sku is null error, logId is:[{}]", logId);
             throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
         }
-        WhSkuCommand whSkuCommand = whSkuDao.findWhSkuByBarcodeExt(barCode, ouId); // 根据商品条码，查询商品信息
-        if (null == whSkuCommand) {
-            throw new BusinessException(ErrorCodes.SKU_NOT_FOUND); // 查看扫描的商品在商品表中是否存在
-        } else {
-            BeanUtils.copyProperties(whSkuCommand, skuCmd);
-            whSkuCommand.setScanSkuQty(scanQty);
-        }
-        if (Constants.LIFECYCLE_START != whSkuCommand.getLifecycle()) {
-            throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_SKULIFRCYCLE_ERROR); // 查看扫描的商品在商品表中是否存在
-        }
+//        WhSkuCommand whSkuCommand = whSkuDao.findWhSkuByBarcodeExt(barCode, ouId); // 根据商品条码，查询商品信息
+//        if (null == whSkuCommand) {
+//            throw new BusinessException(ErrorCodes.SKU_NOT_FOUND); // 查看扫描的商品在商品表中是否存在
+//        } else {
+//            BeanUtils.copyProperties(whSkuCommand, skuCmd);
+//            whSkuCommand.setScanSkuQty(scanQty);
+//        }
+//        if (Constants.LIFECYCLE_START != whSkuCommand.getLifecycle()) {
+//            throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_SKULIFRCYCLE_ERROR); // 查看扫描的商品在商品表中是否存在
+//        }
         ManMadeContainerStatisticCommand mcsCmd = pdaManmadePutawayCacheManager.manMadePutawayCacheContainer(pdaManMadePutawayCommand, outerContianerId);
         // 1.获取功能配置
         WhFunctionPutAway putawyaFunc = whFunctionPutAwayManager.findWhFunctionPutAwayByFunctionId(functionId, ouId, logId);
@@ -1323,13 +1326,13 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
                 throw new BusinessException(ErrorCodes.COMMON_ONE_BY_ONE_SCAN_QTY_ERROR);
             }
         }
-        whSkuCommand.setId(skuId);
-        whSkuCommand.setScanSkuQty(scanQty * cacheSkuQty);// 可能是多条码
+        skuCmd.setId(skuId);
+        skuCmd.setScanSkuQty(scanQty * cacheSkuQty);// 可能是多条码
         Boolean isCaselevelScanSku = (null == putawyaFunc.getIsCaselevelScanSku() ? false : putawyaFunc.getIsCaselevelScanSku());
         Boolean isNotcaselevelScanSku = (null == putawyaFunc.getIsNotcaselevelScanSku() ? false : putawyaFunc.getIsNotcaselevelScanSku());
         if (true == isCaselevelScanSku && true == isNotcaselevelScanSku) {
             // 全部货箱扫描
-            CheckScanSkuResultCommand cssrCmd = pdaManmadePutawayCacheManager.manMadePalletPutawayCacheSkuOrTipContainer(outCommand, insideCommand, insideContainerIds, insideContainerIdSkuIds, insideContainerSkuIdsQty, whSkuCommand, scanPattern, logId);
+            CheckScanSkuResultCommand cssrCmd = pdaManmadePutawayCacheManager.manMadePalletPutawayCacheSkuOrTipContainer(outCommand, insideCommand, insideContainerIds, insideContainerIdSkuIds, insideContainerSkuIdsQty, skuCmd, scanPattern, logId);
             if (cssrCmd.isNeedScanSku()) {
                 resultCommand.setIsNeedScanSku(true); // 商品没有扫描完毕
                 resultCommand.setTipContainerCode(insideContainerCode);
@@ -1358,7 +1361,7 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
                 pdaManmadePutawayCacheManager.manMadePalletPutawayRemoveAllCache(outCommand, logId);
             } else {
                 CheckScanSkuResultCommand cssrCmd =
-                        pdaManmadePutawayCacheManager.manMadePalletPutawayCacheSkuOrTipContainer(outCommand, insideCommand, insideContainerIds, insideContainerIdSkuIds, insideContainerSkuIdsQty, whSkuCommand, scanPattern, logId);
+                        pdaManmadePutawayCacheManager.manMadePalletPutawayCacheSkuOrTipContainer(outCommand, insideCommand, insideContainerIds, insideContainerIdSkuIds, insideContainerSkuIdsQty, skuCmd, scanPattern, logId);
                 if (cssrCmd.isNeedScanSku()) {
                     resultCommand.setIsNeedScanSku(true); // 商品没有扫描完毕
                     resultCommand.setTipContainerCode(insideContainerCode);
@@ -1389,7 +1392,7 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
                 pdaManmadePutawayCacheManager.manMadePalletPutawayRemoveAllCache(outCommand, logId);
             } else {
                 CheckScanSkuResultCommand cssrCmd =
-                        pdaManmadePutawayCacheManager.manMadePalletPutawayCacheSkuOrTipContainer(outCommand, insideCommand, insideContainerIds, insideContainerIdSkuIds, insideContainerSkuIdsQty, whSkuCommand, scanPattern, logId);
+                        pdaManmadePutawayCacheManager.manMadePalletPutawayCacheSkuOrTipContainer(outCommand, insideCommand, insideContainerIds, insideContainerIdSkuIds, insideContainerSkuIdsQty, skuCmd, scanPattern, logId);
                 if (cssrCmd.isNeedScanSku()) {
                     resultCommand.setIsNeedScanSku(true); // 商品没有扫描完毕
                 } else if (cssrCmd.isNeedTipContainer()) {
@@ -1456,10 +1459,10 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
             log.error("sku is null error, logId is:[{}]", logId);
             throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
         }
-        WhSkuCommand whSkuCommand =  whSkuDao.findWhSkuByBarcodeExt(barCode, ouId);
-        if(null == whSkuCommand){
-            throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);    //查看扫描的商品在商品表中是否存在
-        }
+//        WhSkuCommand whSkuCommand =  whSkuDao.findWhSkuByBarcodeExt(barCode, ouId);
+//        if(null == whSkuCommand){
+//            throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);    //查看扫描的商品在商品表中是否存在
+//        }
         ManMadeContainerStatisticCommand madecsCmd = cacheManager.getMapObject(CacheConstants.PDA_MAN_MANDE_CONTAINER_INVENTORY_STATISTIC, containerId.toString());
         if (null == madecsCmd) {
             madecsCmd = pdaManmadePutawayCacheManager.manMadePutawayCacheContainer(pdaManMadePutawayCommand, containerId);
@@ -1662,17 +1665,17 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
             log.error("sku is null error, logId is:[{}]", logId);
             throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
         }
-        WhSkuCommand whSkuCommand =  whSkuDao.findWhSkuByBarcodeExt(skuBarCode, ouId);
-        if(null == whSkuCommand){
-            throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);    //查看扫描的商品在商品表中是否存在
-        }
-        //判断sku商品的状态是否可用
-        if(Constants.LIFECYCLE_START != whSkuCommand.getLifecycle()) {
-            throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_SKULIFRCYCLE_ERROR);    //查看扫描的商品在商品表中是否存在
-        }
-        ManMadeContainerStatisticCommand madecsCmd = cacheManager.getMapObject(CacheConstants.PDA_MAN_MANDE_CONTAINER_INVENTORY_STATISTIC, insideContainerCmd.getId().toString());
+//        WhSkuCommand whSkuCommand =  whSkuDao.findWhSkuByBarcodeExt(skuBarCode, ouId);
+//        if(null == whSkuCommand){
+//            throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);    //查看扫描的商品在商品表中是否存在
+//        }
+//        //判断sku商品的状态是否可用
+//        if(Constants.LIFECYCLE_START != whSkuCommand.getLifecycle()) {
+//            throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_SKULIFRCYCLE_ERROR);    //查看扫描的商品在商品表中是否存在
+//        }
+        ManMadeContainerStatisticCommand madecsCmd = cacheManager.getMapObject(CacheConstants.PDA_MAN_MANDE_CONTAINER_INVENTORY_STATISTIC, containerId.toString());
         if (null == madecsCmd) {
-            madecsCmd = pdaManmadePutawayCacheManager.manMadePutawayCacheContainer(pdaManMadePutawayCommand, insideContainerId);
+            madecsCmd = pdaManmadePutawayCacheManager.manMadePutawayCacheContainer(pdaManMadePutawayCommand, containerId);
         }
         Map<Long, Set<Long>> insideContainerSkuIds = madecsCmd.getInsideContainerIdSkuIds();
         Map<Long, Map<Long, Long>> insideContainerSkuIdsQty = madecsCmd.getInsideContainerSkuIdsQty();
@@ -1695,6 +1698,7 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
                 break;
             }
         }
+        skuCmd.setId(skuId);
         if(false == isSkuExists){
             log.error("scan sku is not found in current inside contianer error, ocId is:[{}], icId is:[{}], scanSkuId is:[{}], logId is:[{}]", insideContainerCmd.getId(), insideContainerCmd.getId(), skuId, logId);
             throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_SCAN_SKU_ERROR, new Object[] {insideContainerCmd.getCode()});
@@ -1719,7 +1723,7 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
         // 从缓存中取出容器内的商品(取出的商品全部是库存属性不同的商品)
         List<WhSkuInventory> list = pdaManmadePutawayCacheManager.manMadePutwayCacheSkuInventory(containerId, ouId, pdaManMadePutawayCommand.getIsOuterContainer());
         for(WhSkuInventory skuInv:list){
-            if(skuInv.getSkuId().equals(whSkuCommand.getId())) {
+            if(skuInv.getSkuId().equals(skuCmd.getId())) {
                     whskuList.add(skuInv);
             }
         }
@@ -1730,6 +1734,7 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
         }else{//相同的sku,不存在不同的库存属性,进入扫库位页面
             pdaManMadePutawayCommand.setNeedSkuDetail(false);
         }
+        pdaManMadePutawayCommand.setSkuId(skuId);
         log.info("PdaManMadePutwayManagerImpl spiltContainerPutwayScanSku end");
         return pdaManMadePutawayCommand;
     }
@@ -1836,9 +1841,9 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
            throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_LOCATION_LIFECYCLE_ERROR);
        }
        //是否跟踪容器号
-       if(location.getIsTrackVessel() && pdaManMadePutawayCommand.getIsTrackVessel()) {  //跟踪容器号
+       if(location.getIsTrackVessel() && !pdaManMadePutawayCommand.getIsTrackVessel()) {  //跟踪容器号
            //在库位号输入框下面提示扫描容器号
-           pdaManMadePutawayCommand.setIsTrackVessel(false); 
+           pdaManMadePutawayCommand.setIsTrackVessel(true); 
            if(warehouse.getIsInboundLocationBarcode()) {
                pdaManMadePutawayCommand.setLocationCode(location.getBarCode());  //
            }else{
@@ -1847,7 +1852,7 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
            return pdaManMadePutawayCommand;
        }
        Long locationId = location.getId();
-       if(pdaManMadePutawayCommand.getIsTrackVessel()) {   //如果操作员，扫描跟踪容器号，则处理跟踪容器号的流程,否则直接跳过
+       if(pdaManMadePutawayCommand.getIsScanTrackContainer()) {   //如果操作员，扫描跟踪容器号，则处理跟踪容器号的流程,否则直接跳过
            String trackContainerCode = pdaManMadePutawayCommand.getTrackContainerCode();   //跟踪容器号
            //判断跟踪容器号是否存在
            ContainerCommand trackContainer = containerDao.getContainerByCode(trackContainerCode, ouId);
@@ -1882,17 +1887,17 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
            log.error("sku is null error, logId is:[{}]", logId);
            throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
        }
-       WhSkuCommand skuCmd =  whSkuDao.findWhSkuByBarcodeExt(skuBarCode, ouId);
-       if(null == skuCmd){
-           throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);    //查看扫描的商品在商品表中是否存在
-       }
+//       WhSkuCommand skuCmd =  whSkuDao.findWhSkuByBarcodeExt(skuBarCode, ouId);
+//       if(null == skuCmd){
+//           throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);    //查看扫描的商品在商品表中是否存在
+//       }
        //判断sku商品的状态是否可用
-       if(Constants.LIFECYCLE_START != skuCmd.getLifecycle()) {
-           throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_SKULIFRCYCLE_ERROR);    //查看扫描的商品在商品表中是否存在
-       }
-       ManMadeContainerStatisticCommand madecsCmd = cacheManager.getMapObject(CacheConstants.PDA_MAN_MANDE_CONTAINER_INVENTORY_STATISTIC, insideCommand.getId().toString());
+//       if(Constants.LIFECYCLE_START != skuCmd.getLifecycle()) {
+//           throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_SKULIFRCYCLE_ERROR);    //查看扫描的商品在商品表中是否存在
+//       }
+       ManMadeContainerStatisticCommand madecsCmd = cacheManager.getMapObject(CacheConstants.PDA_MAN_MANDE_CONTAINER_INVENTORY_STATISTIC, containerId.toString());
        if (null == madecsCmd) {
-           madecsCmd = pdaManmadePutawayCacheManager.manMadePutawayCacheContainer(pdaManMadePutawayCommand, insideContainerId);
+           madecsCmd = pdaManmadePutawayCacheManager.manMadePutawayCacheContainer(pdaManMadePutawayCommand, containerId);
        }
        Map<Long, Set<Long>> insideContainerSkuIds = madecsCmd.getInsideContainerIdSkuIds();
        Map<Long, Map<Long, Long>> insideContainerSkuIdsQty = madecsCmd.getInsideContainerSkuIdsQty();
@@ -1932,7 +1937,9 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
                throw new BusinessException(ErrorCodes.COMMON_ONE_BY_ONE_SCAN_QTY_ERROR);
            }
        }
+       WhSkuCommand skuCmd = new  WhSkuCommand();
        skuCmd.setId(skuId);
+       skuCmd.setBarCode(skuBarCode);
        skuCmd.setScanSkuQty(scanQty*cacheSkuQty);//可能是多条码
        pdaManMadePutawayCommand.setLocationId(location.getId());
        boolean mixStacking = location.getIsMixStacking(); // 库位是否混放
@@ -2033,6 +2040,8 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
                throw new BusinessException(ErrorCodes.PDA_LOC_NO_MAX_SKUATT_NO_SAME);
            }
        }
+       // 累加容器，容器内sku商品、库位上已有容器，商品重量， 判断是否<=库位承重 *
+       this.IsLocationBearWeight(contianerId, locSkuList, whskuList, command);
        // 直接上架
       CheckScanSkuResultCommand csRcmd = pdaManmadePutawayCacheManager.manMadeSplitContainerPutawayTipSkuOrContainer(outerCommand, insideCommand, insideContainerIds, insideContainerSkuIds, insideContainerSkuIdsQty, skuCmd, scanPattern, logId);
       if(csRcmd.isNeedScanSku()) {  //容器内还有商品没有扫描完毕继续扫描
@@ -2040,24 +2049,22 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
                //直接上架
                whSkuInventoryManager.manMadePutaway(command.isNeedSkuDetail(),scanSkuQty,invSkuCmd,outerCommand, insideCommand, locationId, functionId, warehouse, command.getPutawayPatternDetailType(), ouId,command.getUserId(), logId);
                //清楚缓存
-               pdaManmadePutawayCacheManager.manMadeSplitContainerPutawayRemoveAllCache(outerCommand, insideCommand,false,logId,skuCmd.getId());
+               pdaManmadePutawayCacheManager.manMadeSplitContainerPutawayRemoveAllCache(outerCommand, insideCommand,false,false,logId,skuCmd.getId());
       }
       if(csRcmd.isNeedTipContainer()){  
                command.setIsNeedScanContainer(true);
                //直接上架
                whSkuInventoryManager.manMadePutaway(command.isNeedSkuDetail(),scanSkuQty,invSkuCmd,outerCommand, insideCommand, locationId, functionId, warehouse, command.getPutawayPatternDetailType(), ouId,command.getUserId(), logId);
                //清楚缓存
-               pdaManmadePutawayCacheManager.manMadeSplitContainerPutawayRemoveAllCache(outerCommand, insideCommand,false,logId,skuCmd.getId());
+               pdaManmadePutawayCacheManager.manMadeSplitContainerPutawayRemoveAllCache(outerCommand, insideCommand,true,false,logId,skuCmd.getId());
       }
       if(csRcmd.isPutaway()) {
                command.setPutway(true);
                //直接上架
                whSkuInventoryManager.manMadePutaway(command.isNeedSkuDetail(),scanSkuQty,invSkuCmd,outerCommand, insideCommand, locationId, functionId, warehouse, command.getPutawayPatternDetailType(), ouId,command.getUserId(), logId);
                //清楚缓存
-               pdaManmadePutawayCacheManager.manMadeSplitContainerPutawayRemoveAllCache(outerCommand, insideCommand,true,logId,skuCmd.getId());
+               pdaManmadePutawayCacheManager.manMadeSplitContainerPutawayRemoveAllCache(outerCommand, insideCommand,false,true,logId,skuCmd.getId());
        }
-       // 累加容器，容器内sku商品、库位上已有容器，商品重量， 判断是否<=库位承重 *
-       this.IsLocationBearWeight(contianerId, locSkuList, whskuList, command);
    }
    
    /**
@@ -2140,19 +2147,22 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
            CheckScanSkuResultCommand csRcmd = pdaManmadePutawayCacheManager.manMadeSplitContainerPutawayTipSkuOrContainer(outerCommand, insideCommand, insideContainerIds, insideContainerSkuIds, insideContainerSkuIdsQty, skuCmd, scanPattern, logId);
            if(csRcmd.isNeedScanSku()) {  //容器内还有商品没有扫描完毕继续扫描
                command.setIsAfterPutawaySku(true);
+               whSkuInventoryManager.manMadePutaway(command.isNeedSkuDetail(),scanSkuQty,invSkuCmd,outerCommand, insideCommand, locationId, functionId, warehouse, command.getPutawayPatternDetailType(), ouId,command.getUserId(), logId);
+               //清楚缓存
+               pdaManmadePutawayCacheManager.manMadeSplitContainerPutawayRemoveAllCache(outerCommand, insideCommand,false,false,logId,skuCmd.getId());
            }
            if(csRcmd.isNeedTipContainer()){  //
                command.setIsNeedScanContainer(true);
                whSkuInventoryManager.manMadePutaway(command.isNeedSkuDetail(),scanSkuQty,invSkuCmd,outerCommand, insideCommand, locationId, functionId, warehouse, command.getPutawayPatternDetailType(), ouId,command.getUserId(), logId);
                //清楚缓存
-               pdaManmadePutawayCacheManager.manMadeSplitContainerPutawayRemoveAllCache(outerCommand, insideCommand,false,logId,skuCmd.getId());
+               pdaManmadePutawayCacheManager.manMadeSplitContainerPutawayRemoveAllCache(outerCommand, insideCommand,true,false,logId,skuCmd.getId());
            }
            if(csRcmd.isPutaway()) {
                command.setPutway(true);
                //直接上架
                whSkuInventoryManager.manMadePutaway(command.isNeedSkuDetail(),scanSkuQty,invSkuCmd,outerCommand, insideCommand, locationId, functionId, warehouse, command.getPutawayPatternDetailType(), ouId,command.getUserId(), logId);
                //清楚缓存
-               pdaManmadePutawayCacheManager.manMadeSplitContainerPutawayRemoveAllCache(outerCommand, insideCommand,true,logId,skuCmd.getId());
+               pdaManmadePutawayCacheManager.manMadeSplitContainerPutawayRemoveAllCache(outerCommand, insideCommand,false,true,logId,skuCmd.getId());
            }
        }else{
            command.setScanSkuSnDefect(true);  //需要扫描商品的sn/残次信息
@@ -2264,17 +2274,17 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
            log.error("sku is null error, logId is:[{}]", logId);
            throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
        }
-       WhSkuCommand skuCmd =  whSkuDao.findWhSkuByBarcodeExt(skuBarCode, ouId);
-       if(null == skuCmd){
-           throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);    //查看扫描的商品在商品表中是否存在
-       }
-       //判断sku商品的状态是否可用
-       if(Constants.LIFECYCLE_START != skuCmd.getLifecycle()) {
-           throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_SKULIFRCYCLE_ERROR);    //查看扫描的商品在商品表中是否存在
-       }
-       ManMadeContainerStatisticCommand madecsCmd = cacheManager.getMapObject(CacheConstants.PDA_MAN_MANDE_CONTAINER_INVENTORY_STATISTIC, insideCommand.getId().toString());
+//       WhSkuCommand skuCmd =  whSkuDao.findWhSkuByBarcodeExt(skuBarCode, ouId);
+//       if(null == skuCmd){
+//           throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);    //查看扫描的商品在商品表中是否存在
+//       }
+//       //判断sku商品的状态是否可用
+//       if(Constants.LIFECYCLE_START != skuCmd.getLifecycle()) {
+//           throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_SKULIFRCYCLE_ERROR);    //查看扫描的商品在商品表中是否存在
+//       }
+       ManMadeContainerStatisticCommand madecsCmd = cacheManager.getMapObject(CacheConstants.PDA_MAN_MANDE_CONTAINER_INVENTORY_STATISTIC, containerId.toString());
        if (null == madecsCmd) {
-           madecsCmd = pdaManmadePutawayCacheManager.manMadePutawayCacheContainer(mPaCmd, insideContainerId);
+           madecsCmd = pdaManmadePutawayCacheManager.manMadePutawayCacheContainer(mPaCmd, containerId);
        }
        Map<Long, Set<Long>> insideContainerSkuIds = madecsCmd.getInsideContainerIdSkuIds();
        Map<Long, Map<Long, Long>> insideContainerSkuIdsQty = madecsCmd.getInsideContainerSkuIdsQty();
@@ -2315,6 +2325,7 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
                throw new BusinessException(ErrorCodes.COMMON_ONE_BY_ONE_SCAN_QTY_ERROR);
            }
        }
+       WhSkuCommand skuCmd = new WhSkuCommand();
        skuCmd.setId(skuId);
        skuCmd.setScanSkuQty(scanQty*cacheSkuQty);//可能是多条码
        List<WhSkuInventory> whskuInvList = new ArrayList<WhSkuInventory>();
@@ -2394,21 +2405,21 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
            //直接上架
            whSkuInventoryManager.manMadePutaway(mPaCmd.isNeedSkuDetail(),skuCmd.getScanSkuQty(),invSkuCmd,outCommand, insideCommand, locationId, functionId, warehouse, mPaCmd.getPutawayPatternDetailType(), ouId,mPaCmd.getUserId(), logId);
            //清楚缓存
-           pdaManmadePutawayCacheManager.manMadeSplitContainerPutawayRemoveAllCache(outCommand, insideCommand,false,logId,skuId);
+           pdaManmadePutawayCacheManager.manMadeSplitContainerPutawayRemoveAllCache(outCommand, insideCommand,false,false,logId,skuId);
        }
        if(csRcmd.isNeedTipContainer()){  //
            mPaCmd.setIsNeedScanContainer(true);
            //直接上架
            whSkuInventoryManager.manMadePutaway(mPaCmd.isNeedSkuDetail(),skuCmd.getScanSkuQty(),invSkuCmd,outCommand, insideCommand, locationId, functionId, warehouse, mPaCmd.getPutawayPatternDetailType(), ouId,mPaCmd.getUserId(), logId);
            //清楚缓存
-           pdaManmadePutawayCacheManager.manMadeSplitContainerPutawayRemoveAllCache(outCommand, insideCommand,false,logId,skuId);
+           pdaManmadePutawayCacheManager.manMadeSplitContainerPutawayRemoveAllCache(outCommand, insideCommand,true,false,logId,skuId);
        }
        if(csRcmd.isPutaway()) {  //所有的已经扫描完毕
            mPaCmd.setPutway(true);
            //直接上架
            whSkuInventoryManager.manMadePutaway(mPaCmd.isNeedSkuDetail(),skuCmd.getScanSkuQty(),invSkuCmd, outCommand, insideCommand, locationId, functionId, warehouse, mPaCmd.getPutawayPatternDetailType(), ouId,mPaCmd.getUserId(), logId);
            //清楚缓存
-           pdaManmadePutawayCacheManager.manMadeSplitContainerPutawayRemoveAllCache(outCommand, insideCommand,true,logId,skuId);
+           pdaManmadePutawayCacheManager.manMadeSplitContainerPutawayRemoveAllCache(outCommand, insideCommand,false,true,logId,skuId);
        }
        return mPaCmd;
    }
@@ -2475,6 +2486,7 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
        Boolean sign = true;  //默认扫描的sku属性和要上架的sku属性相同
        String outerContainerCode = command.getOuterContainerCode();
        String insideContainerCode = command.getInsideContainerCode();
+       Long skuId = command.getSkuId();
        Long ouId = command.getOuId();
        ContainerCommand insideCommand = null;
        Long containerId = null;
@@ -2495,16 +2507,16 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
        }else{
            containerId = insideContainerId;
        }
-       String skuBarCode = command.getSkuBarCode();
-       WhSkuCommand skuCmd = whSkuDao.findWhSkuByBarcodeExt(skuBarCode, ouId); // 根据商品条码，查询商品信息
-       if (null == skuCmd) {
-           throw new BusinessException(ErrorCodes.SKU_NOT_FOUND); // 查看扫描的商品在商品表中是否存在
-       }
+//       String skuBarCode = command.getSkuBarCode();
+//       WhSkuCommand skuCmd = whSkuDao.findWhSkuByBarcodeExt(skuBarCode, ouId); // 根据商品条码，查询商品信息
+//       if (null == skuCmd) {
+//           throw new BusinessException(ErrorCodes.SKU_NOT_FOUND); // 查看扫描的商品在商品表中是否存在
+//       }
        List<WhSkuInventory> whskuList = new ArrayList<WhSkuInventory> ();
        // 从缓存中取出容器内的商品(取出的商品全部是库存属性不同的商品)
        List<WhSkuInventory> list = pdaManmadePutawayCacheManager.manMadePutwayCacheSkuInventory(containerId, ouId, command.getIsOuterContainer());
        for(WhSkuInventory skuInv:list){
-           if(skuInv.getSkuId() == skuCmd.getId()) {
+           if(skuInv.getSkuId() == skuId) {
                    whskuList.add(skuInv);
            }
        }
@@ -2560,19 +2572,43 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
     * @param skuQty
     * @return
     */
-   public Double  manMadeCalculateBarCode(String skuBarCode,Double skuQty,Long ouId){
+   public Double  manMadeCalculateBarCode(String skuBarCode,Double skuQty,Long ouId,PdaManMadePutawayCommand manMadePutawayCommand){
        log.info("PdaManMadePutawayManagerImpl manMadeCalculateBarCode is start");
        Double result = null;
-       WhSkuCommand skuCmd = whSkuDao.findWhSkuByBarcodeExt(skuBarCode, ouId); // 根据商品条码，查询商品信息
-       if (null == skuCmd) {
-           throw new BusinessException(ErrorCodes.SKU_NOT_FOUND); // 查看扫描的商品在商品表中是否存在
+       String outerContainerCode = manMadePutawayCommand.getOuterContainerCode();
+       String insideContainerCode = manMadePutawayCommand.getInsideContainerCode();
+       ContainerCommand insideCmd = containerDao.getContainerByCode(insideContainerCode, ouId);
+       Long containerId = null;
+       if(!StringUtils.isEmpty(outerContainerCode)) {
+           ContainerCommand outerCmd = containerDao.getContainerByCode(outerContainerCode, ouId);
+           containerId = outerCmd.getId();
+       }else{
+           containerId = insideCmd.getId();
        }
-       Long skuId = skuCmd.getId();  //商品id
-       Map<Long, Integer> cacheSkuIdsQty = skuRedisManager.findSkuByBarCode(skuBarCode, logId);
-        Integer skuBarQty = cacheSkuIdsQty.get(skuId);
-        if(null == skuBarQty) {
-            skuBarQty = 1;
+        ManMadeContainerStatisticCommand madecsCmd = cacheManager.getMapObject(CacheConstants.PDA_MAN_MANDE_CONTAINER_INVENTORY_STATISTIC, containerId.toString());
+        if (null == madecsCmd) {
+            madecsCmd = pdaManmadePutawayCacheManager.manMadePutawayCacheContainer(manMadePutawayCommand, containerId);
         }
+        Map<Long, Set<Long>> insideContainerSkuIds = madecsCmd.getInsideContainerIdSkuIds();
+        // 商品校验
+        Long skuId = null;
+        Map<Long, Integer> cacheSkuIdsQty = skuRedisManager.findSkuByBarCode(skuBarCode, logId);   //获取对应的商品数量,key值是sku id
+        Set<Long> icSkuIds = insideContainerSkuIds.get(insideCmd.getId());   //当前容器内所有sku id集合
+        boolean isSkuExists = false;
+        for(Long cacheId : cacheSkuIdsQty.keySet()){
+            if(icSkuIds.contains(cacheId)){
+                isSkuExists = true;
+            }
+            if(true == isSkuExists){
+                skuId = cacheId;
+                break;
+            }
+        }
+        if(false == isSkuExists){
+            log.error("scan sku is not found in current inside contianer error, ocId is:[{}], icId is:[{}], scanSkuId is:[{}], logId is:[{}]", insideCmd.getId(), insideCmd.getId(), skuId, logId);
+            throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_SCAN_SKU_ERROR, new Object[] {insideCmd.getCode()});
+        }
+        Integer skuBarQty = cacheSkuIdsQty.get(skuId);
         result = skuQty*Double.valueOf(skuBarQty.toString());
        log.info("PdaManMadePutawayManagerImpl manMadeCalculateBarCode is end");
        return result;
