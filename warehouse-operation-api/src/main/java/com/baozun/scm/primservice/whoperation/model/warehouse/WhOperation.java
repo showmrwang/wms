@@ -16,10 +16,6 @@
  */
 package com.baozun.scm.primservice.whoperation.model.warehouse;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
-
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 
 /**
@@ -247,114 +243,5 @@ public class WhOperation extends BaseModel {
     public void setLifecycle(java.lang.Integer lifecycle) {
         this.lifecycle = lifecycle;
     }
-	
-    @Override
-	public String toString() {
-		return new ToStringBuilder(this)
-		.append("Id",getId())		
-		.append("Code",getCode())		
-		.append("WorkId",getWorkId())		
-		.append("OuId",getOuId())		
-		.append("WorkType",getWorkType())		
-		.append("WorkCategory",getWorkCategory())		
-		.append("WorkPriority",getWorkPriority())		
-		.append("Batch",getBatch())		
-		.append("StartTime",getStartTime())		
-		.append("FinishTime",getFinishTime())		
-		.append("WaveId",getWaveId())		
-		.append("WaveCode",getWaveCode())		
-		.append("OrderCode",getOrderCode())		
-		.append("LocationCode",getLocationCode())		
-		.append("OuterContainerCode",getOuterContainerCode())		
-		.append("ContainerCode",getContainerCode())		
-		.append("CreateTime",getCreateTime())		
-		.append("LastModifyTime",getLastModifyTime())		
-		.append("CreatedId",getCreatedId())		
-		.append("ModifiedId",getModifiedId())		
-		.append("OperatorId",getOperatorId())		
-		.append("Lifecycle",getLifecycle())		
-			.toString();
-	}
-    
-    @Override
-	public int hashCode() {
-		return new HashCodeBuilder()
-		.append(getId())
-		.append(getCode())
-		.append(getWorkId())
-		.append(getOuId())
-		.append(getWorkType())
-		.append(getWorkCategory())
-		.append(getWorkPriority())
-		.append(getBatch())
-		.append(getStartTime())
-		.append(getFinishTime())
-		.append(getWaveId())
-		.append(getWaveCode())
-		.append(getOrderCode())
-		.append(getLocationCode())
-		.append(getOuterContainerCode())
-		.append(getContainerCode())
-		.append(getCreateTime())
-		.append(getLastModifyTime())
-		.append(getCreatedId())
-		.append(getModifiedId())
-		.append(getOperatorId())
-		.append(getLifecycle())
-			.toHashCode();
-	}
-    
-    @Override
-	public boolean equals(Object obj) {
-		if(obj instanceof WhOperation == false) return false;
-		if(this == obj) return true;
-		WhOperation other = (WhOperation)obj;
-		return new EqualsBuilder()
-		.append(getId(),other.getId())
-
-		.append(getCode(),other.getCode())
-
-		.append(getWorkId(),other.getWorkId())
-
-		.append(getOuId(),other.getOuId())
-
-		.append(getWorkType(),other.getWorkType())
-
-		.append(getWorkCategory(),other.getWorkCategory())
-
-		.append(getWorkPriority(),other.getWorkPriority())
-
-		.append(getBatch(),other.getBatch())
-
-		.append(getStartTime(),other.getStartTime())
-
-		.append(getFinishTime(),other.getFinishTime())
-
-		.append(getWaveId(),other.getWaveId())
-
-		.append(getWaveCode(),other.getWaveCode())
-
-		.append(getOrderCode(),other.getOrderCode())
-
-		.append(getLocationCode(),other.getLocationCode())
-
-		.append(getOuterContainerCode(),other.getOuterContainerCode())
-
-		.append(getContainerCode(),other.getContainerCode())
-
-		.append(getCreateTime(),other.getCreateTime())
-
-		.append(getLastModifyTime(),other.getLastModifyTime())
-
-		.append(getCreatedId(),other.getCreatedId())
-
-		.append(getModifiedId(),other.getModifiedId())
-
-		.append(getOperatorId(),other.getOperatorId())
-
-		.append(getLifecycle(),other.getLifecycle())
-
-			.isEquals();
-	}
 }
 
