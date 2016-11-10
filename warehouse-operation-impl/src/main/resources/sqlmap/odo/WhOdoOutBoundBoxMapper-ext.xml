@@ -112,6 +112,9 @@
             ]]>
     </update>
     
+    <resultMap id="whOdoOutBoundBoxCommandResultExt" type="com.baozun.scm.primservice.whoperation.command.odo.WhOdoOutBoundBoxCommand">
+    </resultMap>
+    
     <select id="findPickingWorkWhOdoOutBoundBox" resultMap="WhOdoOutBoundBoxResultExt">
 		select 
 			distinct wave.id as waveId, 
