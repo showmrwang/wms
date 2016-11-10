@@ -192,7 +192,7 @@
 		</where>
 	</select>
 	
-	<select id="findOutboundboxType" resultMap="Long">
+	<select id="findOutboundboxType" resultType="long">
 		select
 			sku_id
 		from
