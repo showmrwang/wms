@@ -796,8 +796,8 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
         String cacheKeyPattern = CacheKeyConstant.WMS_CACHE_CL_RECD_CARTON_PREFIX + userId + "-" + asnId + "-" + containerId + "-" + skuId + "-" + cartonId + "-*";
         List<WhCartonCommand> asnLineRcvdCartonList = this.getRcvdCartonFromCacheByCacheKeyPattern(cacheKeyPattern, CacheKeyConstant.WMS_CACHE_CL_RECD_CARTON_PREFIX);
         BigDecimal asnLineRcvdQty = new BigDecimal(0);
-        if(null != asnLineRcvdCartonList){
-            for(WhCartonCommand rcvdCarton : asnLineRcvdCartonList){
+        if (null != asnLineRcvdCartonList) {
+            for (WhCartonCommand rcvdCarton : asnLineRcvdCartonList) {
                 asnLineRcvdQty = asnLineRcvdQty.add(new BigDecimal(rcvdCarton.getSkuQty().toString()));
             }
         }
@@ -1252,7 +1252,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
                 originCarton.setQtyRcvd(0d);
                 originCarton.setModifiedId(userId);
                 originCarton.setInsert(false);
-                //加入待保存的carton列表
+                // 加入待保存的carton列表
                 toSaveCartonList.add(originCarton);
 
                 // 创建ASN收货日志
@@ -1668,24 +1668,65 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
         whAsnRcvdLogCommand.setBatchNo(whCartonCommand.getBatchNo());
         whAsnRcvdLogCommand.setCountryOfOrigin(whCartonCommand.getCountryOfOrigin());
         InventoryStatus inventoryStatus = this.getInventoryStatusById(whCartonCommand.getInvStatus());
-        whAsnRcvdLogCommand.setInvStatus(inventoryStatus.getName());
+        if (null == inventoryStatus) {
+            log.warn("CaseLevelManagerProxyImpl createWhAsnRcvdLog, carton inventoryStatus is null, whCartonCommand is :[{}], logId is:[{}]", whCartonCommand, logId);
+            whAsnRcvdLogCommand.setInvStatus(whCartonCommand.getInvStatus().toString());
+        } else {
+            whAsnRcvdLogCommand.setInvStatus(inventoryStatus.getName());
+        }
         if (!StringUtil.isEmpty(whCartonCommand.getInvType())) {
-            whAsnRcvdLogCommand.setInvType(this.getSysDictionary(Constants.INVENTORY_TYPE, whCartonCommand.getInvType()).getDicLabel());
+            SysDictionary invTypeSys = this.getSysDictionary(Constants.INVENTORY_TYPE, whCartonCommand.getInvType());
+            if (null == invTypeSys) {
+                log.warn("CaseLevelManagerProxyImpl createWhAsnRcvdLog, carton invTypeSys is null, whCartonCommand is :[{}], logId is:[{}]", whCartonCommand, logId);
+                whAsnRcvdLogCommand.setInvType(whCartonCommand.getInvType());
+            } else {
+                whAsnRcvdLogCommand.setInvType(invTypeSys.getDicLabel());
+            }
         }
         if (!StringUtil.isEmpty(whCartonCommand.getInvAttr1())) {
-            whAsnRcvdLogCommand.setInvAttr1(this.getSysDictionary(Constants.INVENTORY_ATTR_1, whCartonCommand.getInvAttr1()).getDicLabel());
+            SysDictionary invAttr1Sys = this.getSysDictionary(Constants.INVENTORY_ATTR_1, whCartonCommand.getInvAttr1());
+            if (null == invAttr1Sys) {
+                log.warn("CaseLevelManagerProxyImpl createWhAsnRcvdLog, carton invAttr1Sys is null, whCartonCommand is :[{}], logId is:[{}]", whCartonCommand, logId);
+                whAsnRcvdLogCommand.setInvAttr1(whCartonCommand.getInvAttr1());
+            } else {
+                whAsnRcvdLogCommand.setInvAttr1(invAttr1Sys.getDicLabel());
+            }
         }
         if (!StringUtil.isEmpty(whCartonCommand.getInvAttr2())) {
-            whAsnRcvdLogCommand.setInvAttr2(this.getSysDictionary(Constants.INVENTORY_ATTR_2, whCartonCommand.getInvAttr2()).getDicLabel());
+            SysDictionary invAttr2Sys = this.getSysDictionary(Constants.INVENTORY_ATTR_2, whCartonCommand.getInvAttr2());
+            if (null == invAttr2Sys) {
+                log.warn("CaseLevelManagerProxyImpl createWhAsnRcvdLog, carton invAttr2Sys is null, whCartonCommand is :[{}], logId is:[{}]", whCartonCommand, logId);
+                whAsnRcvdLogCommand.setInvAttr2(whCartonCommand.getInvAttr2());
+            } else {
+                whAsnRcvdLogCommand.setInvAttr2(invAttr2Sys.getDicLabel());
+            }
         }
         if (!StringUtil.isEmpty(whCartonCommand.getInvAttr3())) {
-            whAsnRcvdLogCommand.setInvAttr3(this.getSysDictionary(Constants.INVENTORY_ATTR_3, whCartonCommand.getInvAttr3()).getDicLabel());
+            SysDictionary invAttr3Sys = this.getSysDictionary(Constants.INVENTORY_ATTR_3, whCartonCommand.getInvAttr3());
+            if (null == invAttr3Sys) {
+                log.warn("CaseLevelManagerProxyImpl createWhAsnRcvdLog, carton invAttr3Sys is null, whCartonCommand is :[{}], logId is:[{}]", whCartonCommand, logId);
+                whAsnRcvdLogCommand.setInvAttr3(whCartonCommand.getInvAttr3());
+            } else {
+                whAsnRcvdLogCommand.setInvAttr3(invAttr3Sys.getDicLabel());
+            }
         }
         if (!StringUtil.isEmpty(whCartonCommand.getInvAttr4())) {
-            whAsnRcvdLogCommand.setInvAttr4(this.getSysDictionary(Constants.INVENTORY_ATTR_4, whCartonCommand.getInvAttr4()).getDicLabel());
+            SysDictionary invAttr4Sys = this.getSysDictionary(Constants.INVENTORY_ATTR_4, whCartonCommand.getInvAttr4());
+            if (null == invAttr4Sys) {
+                log.warn("CaseLevelManagerProxyImpl createWhAsnRcvdLog, carton invAttr4Sys is null, whCartonCommand is :[{}], logId is:[{}]", whCartonCommand, logId);
+                whAsnRcvdLogCommand.setInvAttr4(whCartonCommand.getInvAttr4());
+            } else {
+                whAsnRcvdLogCommand.setInvAttr4(invAttr4Sys.getDicLabel());
+            }
         }
         if (!StringUtil.isEmpty(whCartonCommand.getInvAttr5())) {
-            whAsnRcvdLogCommand.setInvAttr5(this.getSysDictionary(Constants.INVENTORY_ATTR_5, whCartonCommand.getInvAttr5()).getDicLabel());
+            SysDictionary invAttr5Sys = this.getSysDictionary(Constants.INVENTORY_ATTR_5, whCartonCommand.getInvAttr5());
+            if (null == invAttr5Sys) {
+                log.warn("CaseLevelManagerProxyImpl createWhAsnRcvdLog, carton invAttr5Sys is null, whCartonCommand is :[{}], logId is:[{}]", whCartonCommand, logId);
+                whAsnRcvdLogCommand.setInvAttr5(whCartonCommand.getInvAttr5());
+            } else {
+                whAsnRcvdLogCommand.setInvAttr5(invAttr5Sys.getDicLabel());
+            }
         }
         whAsnRcvdLogCommand.setOuId(ouId);
         whAsnRcvdLogCommand.setCreateTime(new Date());

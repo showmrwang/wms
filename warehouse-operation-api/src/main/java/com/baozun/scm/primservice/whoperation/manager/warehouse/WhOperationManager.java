@@ -16,10 +16,25 @@
  */
 package com.baozun.scm.primservice.whoperation.manager.warehouse;
 
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 
 
 public interface WhOperationManager extends BaseManager{
-
+    
+    /**
+     * [通用方法] 创建作业头信息
+     * @param WhOperationCommand
+     * @return
+     */
+    Boolean saveOrUpdate(WhOperationCommand whOperationCommand);
+    
+    /**
+     * [通用方法] 根据作业号查询作业头信息
+     * @param operationCode
+     * @param ouId
+     * @return
+     */
+    WhOperationCommand findOperationByCode(String operationCode, Long ouId);
 
 }

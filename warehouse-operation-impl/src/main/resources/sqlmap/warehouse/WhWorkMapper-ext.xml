@@ -7,6 +7,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.WhWorkDao">
 	<resultMap id="WhWorkResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.WhWork">
 	</resultMap>
+	<resultMap id="WhWorkCommandResultExt" type="com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkCommand">
+	</resultMap>
 	
 	<!-- 用于select查询公用抽取的列 -->
 	<sql id="whWorkColumnsExt">
@@ -143,7 +145,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				</if>
 		</where>
 	</sql>
-	
 
 		<update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhWork">
 		    <![CDATA[
@@ -176,5 +177,18 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        and last_modify_time	<=  #{lastModifyTime}    
 		    ]]>
 		</update>
+		
+	<select id="findWorkByWorkCode" resultMap="WhWorkCommandResultExt">
+    	select 
+    		<include refid="whWorkColumnsExt" />
+	    from 
+	    	t_wh_work
+		<where> 
+				code = #{code}
+			<if test="ouId!=null">
+				and ou_id = #{ouId}
+			</if>
+		</where>
+    </select>
 	
 </mapper>

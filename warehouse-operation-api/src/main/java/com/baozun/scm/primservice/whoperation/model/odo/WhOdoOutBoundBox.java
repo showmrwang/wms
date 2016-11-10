@@ -48,6 +48,8 @@ public class WhOdoOutBoundBox extends BaseModel {
     private Double qty;
     /** 批次 */
     private String boxBatch;
+    /** 整托整箱：1整托 2整箱 */
+    private Integer wholeCase;
     /** 仓库组织ID */
     private Long ouId;
     /** 创建时间 */
@@ -56,6 +58,14 @@ public class WhOdoOutBoundBox extends BaseModel {
     private Date lastModifyTime;
     /** 操作人ID */
     private Long operatorId;
+    
+    //新增加字段
+    
+    /** 货格编码数 */
+    private int containerLatticeNo;
+    /** 是否已创建工作 */
+    private int isCreateWork;
+    
 
     public Long getOdoId() {
         return this.odoId;
@@ -113,6 +123,14 @@ public class WhOdoOutBoundBox extends BaseModel {
         this.qty = qty;
     }
 
+    public Integer getWholeCase() {
+        return wholeCase;
+    }
+
+    public void setWholeCase(Integer wholeCase) {
+        this.wholeCase = wholeCase;
+    }
+
     public Long getOuId() {
         return this.ouId;
     }
@@ -161,6 +179,19 @@ public class WhOdoOutBoundBox extends BaseModel {
         this.boxBatch = boxBatch;
     }
 
+    public int getContainerLatticeNo() {
+        return containerLatticeNo;
+    }
 
+    public void setContainerLatticeNo(int containerLatticeNo) {
+        this.containerLatticeNo = containerLatticeNo;
+    }
 
+    public int getIsCreateWork() {
+        return isCreateWork;
+    }
+
+    public void setIsCreateWork(int isCreateWork) {
+        this.isCreateWork = isCreateWork;
+    }
 }

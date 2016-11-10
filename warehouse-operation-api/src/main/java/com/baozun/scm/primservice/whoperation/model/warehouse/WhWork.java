@@ -16,10 +16,6 @@
  */
 package com.baozun.scm.primservice.whoperation.model.warehouse;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
-
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 
 
@@ -46,6 +42,10 @@ public class WhWork extends BaseModel {
 	private java.lang.String workCategory;
 	/** 是否锁定 默认值：1 */
 	private java.lang.Boolean isLocked;
+	/** 是否已迁出 */
+    private java.lang.Boolean isAssignOut;
+    /** 当前工作明细设计到的所有库区编码信息列表 */
+    private java.lang.String workArea;
 	/** 工作优先级 */
 	private java.lang.Integer workPriority;
 	/** 小批次 */
@@ -213,118 +213,17 @@ public class WhWork extends BaseModel {
     public void setLifecycle(java.lang.Integer lifecycle) {
         this.lifecycle = lifecycle;
     }
-	
-    @Override
-	public String toString() {
-		return new ToStringBuilder(this)
-		.append("Id",getId())		
-		.append("Code",getCode())		
-		.append("Status",getStatus())		
-		.append("OuId",getOuId())		
-		.append("WorkType",getWorkType())		
-		.append("WorkCategory",getWorkCategory())		
-		.append("IsLocked",getIsLocked())		
-		.append("WorkPriority",getWorkPriority())		
-		.append("Batch",getBatch())		
-		.append("StartTime",getStartTime())		
-		.append("FinishTime",getFinishTime())		
-		.append("WaveId",getWaveId())		
-		.append("WaveCode",getWaveCode())		
-		.append("OrderCode",getOrderCode())		
-		.append("LocationCode",getLocationCode())		
-		.append("OuterContainerCode",getOuterContainerCode())		
-		.append("ContainerCode",getContainerCode())		
-		.append("CreateTime",getCreateTime())		
-		.append("LastModifyTime",getLastModifyTime())		
-		.append("CreatedId",getCreatedId())		
-		.append("ModifiedId",getModifiedId())		
-		.append("OperatorId",getOperatorId())		
-		.append("Lifecycle",getLifecycle())		
-			.toString();
-	}
-   
-    @Override
-	public int hashCode() {
-		return new HashCodeBuilder()
-		.append(getId())
-		.append(getCode())
-		.append(getStatus())
-		.append(getOuId())
-		.append(getWorkType())
-		.append(getWorkCategory())
-		.append(getIsLocked())
-		.append(getWorkPriority())
-		.append(getBatch())
-		.append(getStartTime())
-		.append(getFinishTime())
-		.append(getWaveId())
-		.append(getWaveCode())
-		.append(getOrderCode())
-		.append(getLocationCode())
-		.append(getOuterContainerCode())
-		.append(getContainerCode())
-		.append(getCreateTime())
-		.append(getLastModifyTime())
-		.append(getCreatedId())
-		.append(getModifiedId())
-		.append(getOperatorId())
-		.append(getLifecycle())
-			.toHashCode();
-	}
-    
-    @Override
-	public boolean equals(Object obj) {
-		if(obj instanceof WhWork == false) return false;
-		if(this == obj) return true;
-		WhWork other = (WhWork)obj;
-		return new EqualsBuilder()
-		.append(getId(),other.getId())
-
-		.append(getCode(),other.getCode())
-
-		.append(getStatus(),other.getStatus())
-
-		.append(getOuId(),other.getOuId())
-
-		.append(getWorkType(),other.getWorkType())
-
-		.append(getWorkCategory(),other.getWorkCategory())
-
-		.append(getIsLocked(),other.getIsLocked())
-
-		.append(getWorkPriority(),other.getWorkPriority())
-
-		.append(getBatch(),other.getBatch())
-
-		.append(getStartTime(),other.getStartTime())
-
-		.append(getFinishTime(),other.getFinishTime())
-
-		.append(getWaveId(),other.getWaveId())
-
-		.append(getWaveCode(),other.getWaveCode())
-
-		.append(getOrderCode(),other.getOrderCode())
-
-		.append(getLocationCode(),other.getLocationCode())
-
-		.append(getOuterContainerCode(),other.getOuterContainerCode())
-
-		.append(getContainerCode(),other.getContainerCode())
-
-		.append(getCreateTime(),other.getCreateTime())
-
-		.append(getLastModifyTime(),other.getLastModifyTime())
-
-		.append(getCreatedId(),other.getCreatedId())
-
-		.append(getModifiedId(),other.getModifiedId())
-
-		.append(getOperatorId(),other.getOperatorId())
-
-		.append(getLifecycle(),other.getLifecycle())
-
-			.isEquals();
-	}
+    public java.lang.Boolean getIsAssignOut() {
+        return isAssignOut;
+    }
+    public void setIsAssignOut(java.lang.Boolean isAssignOut) {
+        this.isAssignOut = isAssignOut;
+    }
+    public java.lang.String getWorkArea() {
+        return workArea;
+    }
+    public void setWorkArea(java.lang.String workArea) {
+        this.workArea = workArea;
+    }
 }
 

@@ -125,7 +125,9 @@ public class Warehouse extends BaseModel {
     /** 在库存日志是否记录交易前后库存总数 */
     private Boolean isTabbInvTotal = false;
 
-
+    
+    /** 上架是否启用校验码0：否 1：是 */
+    private Boolean isInboundLocationBarcode = false;
     
     /** 长度默认单位类型 */
     private Long defaultLengthUomType;
@@ -625,5 +627,12 @@ public class Warehouse extends BaseModel {
         this.seedinfOdoQty = seedinfOdoQty;
     }
 
+    public Boolean getIsInboundLocationBarcode() {
+        return isInboundLocationBarcode;
+    }
+
+    public void setIsInboundLocationBarcode(Boolean isInboundLocationBarcode) {
+        this.isInboundLocationBarcode = isInboundLocationBarcode;
+    }
 
 }

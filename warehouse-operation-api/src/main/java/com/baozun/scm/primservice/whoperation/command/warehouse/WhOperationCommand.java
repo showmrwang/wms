@@ -14,7 +14,7 @@
  * THIS SOFTWARE OR ITS DERIVATIVES.
  *
  */
-package com.baozun.scm.primservice.whoperation.model.warehouse;
+package com.baozun.scm.primservice.whoperation.command.warehouse;
 
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 
@@ -25,12 +25,13 @@ import com.baozun.scm.primservice.whoperation.model.BaseModel;
  * @author larkark
  *
  */
-public class WhOperation extends BaseModel {
+public class WhOperationCommand extends BaseModel {
 	
     private static final long serialVersionUID = -8165493664871702794L;
     
 	//columns START
-    
+    /** 主键ID */
+    private java.lang.Long id;
     /** 作业号 */
 	private java.lang.String code;
 	/** 工作ID */
@@ -242,6 +243,14 @@ public class WhOperation extends BaseModel {
 
     public void setLifecycle(java.lang.Integer lifecycle) {
         this.lifecycle = lifecycle;
+    }
+
+    public java.lang.Long getId() {
+        return id;
+    }
+
+    public void setId(java.lang.Long id) {
+        this.id = id;
     }
 }
 

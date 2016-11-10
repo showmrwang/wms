@@ -97,5 +97,13 @@
             </if>
         </where>
     </sql>
-
+   <select id="findByCode" parameterType="map" resultMap="TransportProviderResult" flushCache="false">
+        select
+        <include refid="transportProviderColumns"/>
+        <![CDATA[
+                from t_ma_transport_provider 
+                where 
+                code = #{code}
+            ]]>
+    </select>
 </mapper>

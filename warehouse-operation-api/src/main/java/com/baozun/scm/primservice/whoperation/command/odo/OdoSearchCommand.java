@@ -76,12 +76,74 @@ public class OdoSearchCommand extends BaseCommand {
     private Long groupCustomerId;
     private Long groupStoreId;
     private String groupOdoStatus;
+    /** 出库单类型 */
+    private String groupOdoType;
+    /** 配货模式 */
+    private String groupDistributeMode;
+    /** 运输服务商 */
+    private String groupTransportServiceProvider;
+    /** 上位单据类型 */
+    private String groupEpostaticSystemsOrderType;
+
+
+    private Boolean isDistributeMode;
+
+    private Boolean isEpistaticSystemsOrderType;
+
 
     // 限制行
     private Integer lineNum;
     // 是否行检索
     private Boolean lineFlag;
 
+
+    public Boolean getIsDistributeMode() {
+        return isDistributeMode;
+    }
+
+    public void setIsDistributeMode(Boolean isDistributeMode) {
+        this.isDistributeMode = isDistributeMode;
+    }
+
+    public Boolean getIsEpistaticSystemsOrderType() {
+        return isEpistaticSystemsOrderType;
+    }
+
+    public void setIsEpistaticSystemsOrderType(Boolean isEpistaticSystemsOrderType) {
+        this.isEpistaticSystemsOrderType = isEpistaticSystemsOrderType;
+    }
+
+    public String getGroupOdoType() {
+        return groupOdoType;
+    }
+
+    public void setGroupOdoType(String groupOdoType) {
+        this.groupOdoType = groupOdoType;
+    }
+
+    public String getGroupDistributeMode() {
+        return groupDistributeMode;
+    }
+
+    public void setGroupDistributeMode(String groupDistributeMode) {
+        this.groupDistributeMode = groupDistributeMode;
+    }
+
+    public String getGroupTransportServiceProvider() {
+        return groupTransportServiceProvider;
+    }
+
+    public void setGroupTransportServiceProvider(String groupTransportServiceProvider) {
+        this.groupTransportServiceProvider = groupTransportServiceProvider;
+    }
+
+    public String getGroupEpostaticSystemsOrderType() {
+        return groupEpostaticSystemsOrderType;
+    }
+
+    public void setGroupEpostaticSystemsOrderType(String groupEpostaticSystemsOrderType) {
+        this.groupEpostaticSystemsOrderType = groupEpostaticSystemsOrderType;
+    }
 
     public Boolean getLineFlag() {
         return lineFlag;

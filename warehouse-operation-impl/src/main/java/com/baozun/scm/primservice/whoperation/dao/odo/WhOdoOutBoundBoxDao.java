@@ -25,6 +25,9 @@ import lark.common.dao.QueryCondition;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
 
+import org.apache.ibatis.annotations.Param;
+
+import com.baozun.scm.primservice.whoperation.command.odo.WhOdoOutBoundBoxCommand;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoOutBoundBox;
 
 public interface WhOdoOutBoundBoxDao extends BaseDao<WhOdoOutBoundBox, Long> {
@@ -45,5 +48,45 @@ public interface WhOdoOutBoundBoxDao extends BaseDao<WhOdoOutBoundBox, Long> {
 
     @CommonQuery
     int saveOrUpdateByVersion(WhOdoOutBoundBox o);
+    
+    /**
+     * [业务方法] 波次中创拣货工作-获取波次中的所有小批次
+     * @param waveId
+     * @param ouId
+     * @return
+     */
+    List<WhOdoOutBoundBox> findPickingWorkWhOdoOutBoundBox(@Param("waveId") Long waveId, @Param("ouId") Long ouId);
+    
+    /**
+     * [业务方法] 波次中创拣货工作-获取波次中的所有小批次
+     * @param waveId
+     * @param ouId
+     * @return
+     */
+    List<WhOdoOutBoundBox> getOdoOutBoundBoxForGroup(WhOdoOutBoundBox whOdoOutBoundBox);
+    
+    /**
+     * [业务方法] 波次中创拣货工作-根据批次分组查询所有出库箱/容器信息
+     * @param waveId
+     * @param ouId
+     * @return
+     */
+    List<WhOdoOutBoundBoxCommand> getOdoOutBoundBoxListByGroup(WhOdoOutBoundBox whOdoOutBoundBox);
+    
+    /**
+     * [业务方法] 波次中创拣货工作-查询对应的耗材
+     * @param outbounxboxTypeId
+     * @param outbounxboxTypeCode
+     * @return
+     */
+    Long findOutboundboxType(@Param("outbounxboxTypeId") Long outbounxboxTypeId, @Param("outbounxboxTypeCode") String outbounxboxTypeCode, @Param("ouId") Long ouId);
+    
+    /**
+     * [业务方法] 波次中创拣货工作-根据id查询数据
+     * @param id
+     * @param ouId
+     * @return
+     */
+    WhOdoOutBoundBoxCommand findWhOdoOutBoundBoxCommandById(@Param("id") Long id, @Param("ouId") Long ouId);
 
 }

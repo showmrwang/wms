@@ -16,10 +16,28 @@
  */
 package com.baozun.scm.primservice.whoperation.manager.warehouse;
 
+import java.util.List;
+
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkLineCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 
 
 public interface WhWorkLineManager extends BaseManager{
-
+    
+    /**
+     * [通用方法] 创建工作明细信息
+     * @param whWorkLineCommand
+     * @return
+     */
+    Boolean saveOrUpdate(WhWorkLineCommand whWorkLineCommand);
+    
+    /**
+     * [通用方法] 获取工作明细信息列表
+     * @param workId
+     * @param ouId
+     * @return
+     */
+    List<WhWorkLineCommand> findWorkLineByWorkId(Long workId, Long ouId);
+    
 
 }

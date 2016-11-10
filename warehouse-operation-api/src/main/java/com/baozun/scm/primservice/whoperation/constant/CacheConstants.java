@@ -52,8 +52,20 @@ public final class CacheConstants {
     public static final String LOCATION_RECOMMEND = "LOCATION_RECOMMEND";
     
     /**人工上架:扫sn*/
-    public static final String PDA_MAN_MANDE_SCAN_SKU_SN = "PDA_MAN_MANDE_SCAN_SKU_SN";
+    public static final String PDA_MAN_MANDE_SCAN_SKU_SN = "MAN_MANDE_SCAN_SKU_SN";
     
     /**人工上架:扫SKU残次信息*/
-    public static final String PDA_MAN_MANDE_SCAN_SKU_DEFECT = "PDA_MAN_MANDE_SCAN_SKU_DEFECT";
+    public static final String PDA_MAN_MANDE_SCAN_SKU_DEFECT = "MAN_MANDE_SCAN_SKU_DEFECT";
+    /** 人工上架:容器库存缓存 */
+    public static final String PDA_MAN_MANDE_CONTAINER_INVENTORY = "MAN_MANDE_CONTAINER_INVENTORY";
+    /** 人工上架:容器库存统计缓存 */
+    public static final String PDA_MAN_MANDE_CONTAINER_INVENTORY_STATISTIC = "MAN_MANDE_CONTAINER_INVENTORY_STATISTIC";
+    /** 人工上架:已扫描的容器队列 */
+    public static final String PDA_MAN_MANDE_SCAN_CONTAINER_QUEUE = "MAN_MANDE_SCAN_CONTAINER_QUEUE_";
+    /** 人工上架:已扫描的Sku队列 */
+    public static final String PDA_MAN_MANDE_SCAN_SKU_QUEUE = "MAN_MANDE_SCAN_SKU_QUEUE_";
+    /** 人工上架:容器缓存 */
+    public static final String PDA_MAN_MANDE_CONTAINER = "MAN_MANDE_CONTAINER";
+    /** 人工上架:容器统计缓存 */
+    public static final String PDA_MAN_MANDE_CONTAINER_STATISTIC = "MAN_MANDE_CONTAINER_STATISTIC";
 }

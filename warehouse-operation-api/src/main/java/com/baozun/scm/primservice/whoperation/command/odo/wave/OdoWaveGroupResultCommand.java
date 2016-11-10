@@ -20,18 +20,97 @@ public class OdoWaveGroupResultCommand extends BaseCommand {
     /** 出库单状态 */
     private String odoStatus;
     private String odoStatusName;
+    /** 出库单类型 */
+    private String odoType;
+    private String odoTypeName;
+    /** 配货模式 */
+    private String distributeMode;
+    private String distributeModeName;
+    /** 运输服务商 */
+    private String transportServiceProvider;
+    private String transportServiceProviderName;
+    /** 上位单据类型 */
+    private String epostaticSystemsOrderType;
+    private String epostaticSystemsOrderTypeName;
     /** 订单数 */
     private Long odoCount;
     /** 明细行总数数 */
     private Long lineCount;
     /** 总件数 */
-    private Long qty;
+    private Double qty;
     /** 商品种类数 */
     private Long skuTypeCount;
     /** 店铺数量 */
     private Long storeCount;
     /** 出库单类型数 */
     private Long odoTypeCount;
+    /** 总金额 */
+    private Double amt;
+    /** 业务模式数 */
+    private Long distributionModeCount;
+    public String getOdoType() {
+        return odoType;
+    }
+
+    public void setOdoType(String odoType) {
+        this.odoType = odoType;
+    }
+
+    public String getOdoTypeName() {
+        return odoTypeName;
+    }
+
+    public void setOdoTypeName(String odoTypeName) {
+        this.odoTypeName = odoTypeName;
+    }
+
+    public String getDistributeMode() {
+        return distributeMode;
+    }
+
+    public void setDistributeMode(String distributeMode) {
+        this.distributeMode = distributeMode;
+    }
+
+    public String getDistributeModeName() {
+        return distributeModeName;
+    }
+
+    public void setDistributeModeName(String distributeModeName) {
+        this.distributeModeName = distributeModeName;
+    }
+
+    public String getTransportServiceProvider() {
+        return transportServiceProvider;
+    }
+
+    public void setTransportServiceProvider(String transportServiceProvider) {
+        this.transportServiceProvider = transportServiceProvider;
+    }
+
+    public String getTransportServiceProviderName() {
+        return transportServiceProviderName;
+    }
+
+    public void setTransportServiceProviderName(String transportServiceProviderName) {
+        this.transportServiceProviderName = transportServiceProviderName;
+    }
+
+    public String getEpostaticSystemsOrderType() {
+        return epostaticSystemsOrderType;
+    }
+
+    public void setEpostaticSystemsOrderType(String epostaticSystemsOrderType) {
+        this.epostaticSystemsOrderType = epostaticSystemsOrderType;
+    }
+
+    public String getEpostaticSystemsOrderTypeName() {
+        return epostaticSystemsOrderTypeName;
+    }
+
+    public void setEpostaticSystemsOrderTypeName(String epostaticSystemsOrderTypeName) {
+        this.epostaticSystemsOrderTypeName = epostaticSystemsOrderTypeName;
+    }
 
     public Long getLineCount() {
         return lineCount;
@@ -41,11 +120,11 @@ public class OdoWaveGroupResultCommand extends BaseCommand {
         this.lineCount = lineCount;
     }
 
-    public Long getQty() {
+    public Double getQty() {
         return qty;
     }
 
-    public void setQty(Long qty) {
+    public void setQty(Double qty) {
         this.qty = qty;
     }
 
@@ -136,6 +215,22 @@ public class OdoWaveGroupResultCommand extends BaseCommand {
 
     public void setGroupName(String groupName) {
         this.groupName = groupName;
+    }
+
+    public Double getAmt() {
+        return amt;
+    }
+
+    public void setAmt(Double amt) {
+        this.amt = amt;
+    }
+
+    public Long getDistributionModeCount() {
+        return distributionModeCount;
+    }
+
+    public void setDistributionModeCount(Long distributionModeCount) {
+        this.distributionModeCount = distributionModeCount;
     }
 
 

@@ -92,6 +92,6 @@ public interface PdaManMadePutawayManager extends BaseManager{
    * @param skuQty
    * @return
    */
-  public Double  manMadeCalculateBarCode(String skuBarCode,Double skuQty,Long ouId);
+  public Double  manMadeCalculateBarCode(String skuBarCode,Double skuQty,Long ouId,PdaManMadePutawayCommand manMadePutawayCommand);
 
 }

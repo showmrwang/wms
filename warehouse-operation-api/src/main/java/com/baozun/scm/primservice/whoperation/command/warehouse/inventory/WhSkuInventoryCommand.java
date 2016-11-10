@@ -128,7 +128,8 @@ public class WhSkuInventoryCommand extends BaseCommand {
     private Double expectQty;
     /** 效期 */
     private Integer validDate;
-
+    /** 混放属性 */
+    private String mixAttr;
 
     // pda-general-receiving
     private Long occupationId;
@@ -194,6 +195,14 @@ public class WhSkuInventoryCommand extends BaseCommand {
     private Boolean isInvattrDiscrepancyAllowrcvd;
 
 
+
+    public String getMixAttr() {
+        return mixAttr;
+    }
+
+    public void setMixAttr(String mixAttr) {
+        this.mixAttr = mixAttr;
+    }
 
     public Integer getQuantity() {
         return quantity;

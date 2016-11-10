@@ -12,38 +12,34 @@
  * DERIVATIVES.
  *
  */
-package com.baozun.scm.primservice.whoperation.dao.warehouse.ma;
+package com.baozun.scm.primservice.whoperation.dao.warehouse;
 
-import java.util.List;
 import java.util.Map;
+
+import org.apache.ibatis.annotations.Param;
 
 import lark.common.annotation.CommonQuery;
 import lark.common.annotation.QueryPage;
 import lark.common.dao.Page;
 import lark.common.dao.Pagination;
-import lark.common.dao.QueryCondition;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
 
-import org.apache.ibatis.annotations.Param;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhSkuLocation;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WorkType;
 
-import com.baozun.scm.primservice.whoperation.model.warehouse.ma.TransportProvider;
 
-public interface TransportProviderDao extends BaseDao<TransportProvider, Long> {
+
+public interface WorkTypeDao extends BaseDao<WorkType, Long> {
 
     @QueryPage("findListCountByQueryMap")
-    Pagination<TransportProvider> findListByQueryMapWithPage(Page page, Sort[] sorts, Map<String, Object> params);
-
-    @QueryPage("queryCount")
-    Pagination<TransportProvider> query(Page page, Sort[] sorts, QueryCondition cond);
-
-    List<TransportProvider> query(QueryCondition cond);
-
-    Long queryCount(QueryCondition cond);
+    Pagination<WorkType> findListByQueryMapWithPage(Page page,Sort[] sorts,Map<String, Object> params);
 
     @CommonQuery
-    int saveOrUpdate(TransportProvider o);
+    int saveOrUpdate(WorkType o);
 
-    TransportProvider findByCode(@Param("code") String transCode);
-
+    @CommonQuery
+    int saveOrUpdateByVersion(WorkType o);
+    
+    WorkType findWorkTypeByworkCategory(@Param("workCategory") String workCategory, @Param("ouId") Long ouId);
 }

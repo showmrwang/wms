@@ -45,6 +45,7 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.UomDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
+import com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy.DistributionModeArithmeticManagerProxy;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAddress;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
@@ -83,6 +84,8 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     private WhWaveDao whWaveDao;
     @Autowired
     private WhWaveLineDao whWaveLineDao;
+    @Autowired
+    private DistributionModeArithmeticManagerProxy distributionModeArithmeticManagerProxy;
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public Pagination<OdoResultCommand> findListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params) {
@@ -391,62 +394,9 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public Pagination<OdoWaveGroupResultCommand> findOdoListForWaveByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params) {
+        return this.whOdoDao.findOdoListForWaveByQueryMapWithPageExt(page, sorts, params);
 
-        Pagination<OdoWaveGroupResultCommand> pages = this.whOdoDao.findOdoListForWaveByQueryMapWithPageExt(page, sorts, params);
-        try {
 
-            if (pages != null) {
-                Set<String> dic1 = new HashSet<String>();
-                Set<Long> customerIdSet = new HashSet<Long>();
-                Set<Long> storeIdSet = new HashSet<Long>();
-                List<OdoWaveGroupResultCommand> list = pages.getItems();
-                if (list != null && list.size() > 0) {
-                    for (OdoWaveGroupResultCommand command : list) {
-                        if (StringUtils.hasText(command.getOdoStatus())) {
-                            dic1.add(command.getOdoStatus());
-                        }
-                        if (command.getCustomerId() != null) {
-                            customerIdSet.add(command.getCustomerId());
-                        }
-                        if (command.getStoreId() != null) {
-                            storeIdSet.add(command.getStoreId());
-                        }
-                    }
-                    Map<String, List<String>> map = new HashMap<String, List<String>>();
-                    if (dic1.size() > 0) {
-                        map.put(Constants.ODO_STATUS, new ArrayList<String>(dic1));
-                    }
-                    Map<String, SysDictionary> dicMap = map.size() > 0 ? this.findSysDictionaryByRedis(map) : null;
-
-                    Map<Long, Customer> customerMap = customerIdSet.size() > 0 ? this.findCustomerByRedis(new ArrayList<Long>(customerIdSet)) : null;
-                    Map<Long, Store> storeMap = storeIdSet.size() > 0 ? this.findStoreByRedis(new ArrayList<Long>(storeIdSet)) : null;
-                    for (OdoWaveGroupResultCommand command : list) {
-                        String groupName = "";
-                        if (command.getCustomerId() != null) {
-                            Customer customer = customerMap.get(command.getCustomerId());
-                            command.setCustomerName(customer == null ? command.getCustomerId().toString() : customer.getCustomerName());
-                            groupName += "$" + command.getCustomerName();
-                        }
-                        if (command.getStoreId() != null) {
-                            Store store = storeMap.get(command.getStoreId());
-                            command.setStoreName(store == null ? command.getStoreId().toString() : store.getStoreName());
-                            groupName += "$" + command.getStoreName();
-                        }
-                        if (StringUtils.hasText(command.getOdoStatus())) {
-                            SysDictionary sys = dicMap.get(Constants.ODO_STATUS + "_" + command.getOdoStatus());
-                            command.setOdoStatusName(sys.getDicLabel());
-                            groupName += "$" + command.getOdoStatusName();
-                        }
-                        command.setGroupName(groupName);
-                    }
-                    pages.setItems(list);
-                }
-            }
-        } catch (Exception ex) {
-            log.error(ex + "");
-            throw new BusinessException(ErrorCodes.PACKAGING_ERROR);
-        }
-        return pages;
     }
 
     @Override
@@ -516,6 +466,13 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
             line.setOdoLineStatus(OdoStatus.ODOLINE_WAVE);
             this.whOdoLineDao.saveOrUpdateByVersion(line);
         }
+
+        // 添加到波次中时候，计数器需要-1；
+        while (odoIt.hasNext()) {
+            Entry<Long, WhOdo> entry = odoIt.next();
+            this.distributionModeArithmeticManagerProxy.AddToWave(wave.getCode(), entry.getKey());
+        }
+
     }
 
     @Override

@@ -274,4 +274,20 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    ]]>
 		</update>
 	
+	<resultMap id="WhWorkLineCommandResultExt" type="com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkLineCommand">
+	</resultMap>
+	
+	<select id="findWorkLineByWorkId" resultMap="WhWorkLineCommandResultExt">
+    	select 
+    		<include refid="whWorkLineColumnsExt" />
+	    from 
+	    	t_wh_work_line
+		<where> 
+				ou_id = #{ouId}
+			<if test="workId!=null">
+				work_id = #{workId}
+			</if>
+		</where>
+    </select>
+	
 </mapper>

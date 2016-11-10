@@ -145,7 +145,7 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
         // 仓库主副品配货模式计算的逻辑
         String[] codeArray = code.split("\\" + CacheKeyConstant.WAVE_ODO_SPLIT);
         String twoSkuSuitPrefix=codeArray[0]+CacheKeyConstant.WAVE_ODO_SPLIT+codeArray[1]+CacheKeyConstant.WAVE_ODO_SPLIT+codeArray[2];
-        String[] skuIdArray = codeArray[3].substring(1, codeArray[3].length() - 1).split(CacheKeyConstant.WAVE_ODO_SKU_SPLIT);
+        String[] skuIdArray = codeArray[3].substring(1, codeArray[3].length() - 1).split("" + CacheKeyConstant.WAVE_ODO_SKU_SPLIT);
 
         String skuIdA = skuIdArray[0];
         String skuIdB = skuIdArray[1];
@@ -171,7 +171,7 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
                     String idStr = this.cacheManager.getValue(CacheKeyConstant.OU_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + keyArray[1]);
                     this.cacheManager.setValue(CacheKeyConstant.SUITS_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + idStr, idStr);
                     // 移除
-                    // this.cacheManager.remove(key);
+                    this.cacheManager.remove(key);
                 }
                 this.cacheManager.setValue(CacheKeyConstant.SUITS_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + odoId, odoId + "");
             } else if (suits > suitsOdoQtys) {
@@ -199,7 +199,7 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
                 String idStr = this.cacheManager.getValue(CacheKeyConstant.OU_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + keyArray[1]);
                 this.cacheManager.setValue(CacheKeyConstant.SUITS_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + idStr, idStr);
                 // 移除
-                // this.cacheManager.remove(key);
+                this.cacheManager.remove(key);
             }
             this.cacheManager.setValue(CacheKeyConstant.SUITS_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + odoId, odoId + "");
         } else if (suits > suitsOdoQtys) {
@@ -246,39 +246,70 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
     }
 
     @Override
-    public void DivFromOrderPool(String code, Long odoId) {
+    public void divFromOrderPool(String code, Long odoId) {
         String[] codeArray = code.split("\\" + CacheKeyConstant.WAVE_ODO_SPLIT);
         Integer skuType = Integer.parseInt(codeArray[1]);
         Integer skuQty = Integer.parseInt(codeArray[2]);
         // 种类数和商品数一致时候，①计数器-
         if (skuType.intValue() == skuQty.intValue()) {
+            boolean isExists = this.isExistsInOrderPool(code, odoId);
+            if (isExists) {
+                this.cacheManager.remove(CacheKeyConstant.OU_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + odoId);
+            }
             switch (skuType.intValue()) {
                 case 1:
-                    this.cacheManager.incr(CacheKeyConstant.SECKILL_PREFIX + code);
-                    this.cacheManager.remove(CacheKeyConstant.SECKILL_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + odoId);
+                    this.cacheManager.decr(CacheKeyConstant.SECKILL_PREFIX + code);
+                    if (!isExists) {
+                        this.cacheManager.remove(CacheKeyConstant.SECKILL_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + odoId);
+                    }
                     break;
                 case 2:
                     String twoSkuSuitPrefix = codeArray[0] + CacheKeyConstant.WAVE_ODO_SPLIT + codeArray[1] + CacheKeyConstant.WAVE_ODO_SPLIT + codeArray[2];
-                    String[] skuIdArray = codeArray[3].substring(1, codeArray[3].length() - 1).split(CacheKeyConstant.WAVE_ODO_SKU_SPLIT);
+                    String[] skuIdArray = codeArray[3].substring(1, codeArray[3].length() - 1).split("\\" + CacheKeyConstant.WAVE_ODO_SKU_SPLIT);
 
                     String skuIdA = skuIdArray[0];
                     String skuIdB = skuIdArray[1];
 
-                    String result1 = this.cacheManager.getValue(CacheKeyConstant.TWOSKUSUIT_DIV_ODO_PREFIX + twoSkuSuitPrefix + CacheKeyConstant.WAVE_ODO_SPLIT + skuIdA + CacheKeyConstant.WAVE_ODO_SPLIT + odoId);
-                    if (StringUtils.isEmpty(result1)) {
+                    if (isExists) {
                         this.cacheManager.decr(CacheKeyConstant.TWOSKUSUIT_PREFIX + twoSkuSuitPrefix + CacheKeyConstant.WAVE_ODO_SPLIT + skuIdA);
-                    }
-                    String result2 = this.cacheManager.getValue(CacheKeyConstant.TWOSKUSUIT_DIV_ODO_PREFIX + twoSkuSuitPrefix + CacheKeyConstant.WAVE_ODO_SPLIT + skuIdB + CacheKeyConstant.WAVE_ODO_SPLIT + odoId);
-                    if (StringUtils.isEmpty(result2)) {
                         this.cacheManager.decr(CacheKeyConstant.TWOSKUSUIT_PREFIX + twoSkuSuitPrefix + CacheKeyConstant.WAVE_ODO_SPLIT + skuIdB);
-                    }
-                    String result3 = this.cacheManager.getValue(CacheKeyConstant.SUITS_DIV_ODO_PREFIX + code);
-                    if (StringUtils.isEmpty(result3)) {
                         this.cacheManager.decr(CacheKeyConstant.SUITS_PREFIX + code);
+                    } else {
+                        String result1 = this.cacheManager.getValue(CacheKeyConstant.TWOSKUSUIT_DIV_ODO_PREFIX + twoSkuSuitPrefix + CacheKeyConstant.WAVE_ODO_SPLIT + skuIdA + CacheKeyConstant.WAVE_ODO_SPLIT + odoId);
+                        if (StringUtils.isEmpty(result1)) {
+                            this.cacheManager.decr(CacheKeyConstant.TWOSKUSUIT_PREFIX + twoSkuSuitPrefix + CacheKeyConstant.WAVE_ODO_SPLIT + skuIdA);
+                            this.cacheManager.remove(CacheKeyConstant.TWOSKUSUIT_ODO_PREFIX + twoSkuSuitPrefix + CacheKeyConstant.WAVE_ODO_SPLIT + skuIdA + CacheKeyConstant.WAVE_ODO_SPLIT + odoId);
+                            // 还原扣减集合
+                            this.cacheManager.remove(CacheKeyConstant.TWOSKUSUIT_DIV_ODO_PREFIX + twoSkuSuitPrefix + CacheKeyConstant.WAVE_ODO_SPLIT + skuIdB + CacheKeyConstant.WAVE_ODO_SPLIT + odoId);
+                            this.cacheManager.remove(CacheKeyConstant.SUITS_DIV_ODO_PREFIX + code);
+                        } else {
+
+                            String result2 = this.cacheManager.getValue(CacheKeyConstant.TWOSKUSUIT_DIV_ODO_PREFIX + twoSkuSuitPrefix + CacheKeyConstant.WAVE_ODO_SPLIT + skuIdB + CacheKeyConstant.WAVE_ODO_SPLIT + odoId);
+                            if (StringUtils.isEmpty(result2)) {
+                                this.cacheManager.decr(CacheKeyConstant.TWOSKUSUIT_PREFIX + twoSkuSuitPrefix + CacheKeyConstant.WAVE_ODO_SPLIT + skuIdB);
+                                this.cacheManager.remove(CacheKeyConstant.TWOSKUSUIT_ODO_PREFIX + twoSkuSuitPrefix + CacheKeyConstant.WAVE_ODO_SPLIT + skuIdB + CacheKeyConstant.WAVE_ODO_SPLIT + odoId);
+                                // 还原扣减集合
+                                this.cacheManager.remove(CacheKeyConstant.TWOSKUSUIT_DIV_ODO_PREFIX + twoSkuSuitPrefix + CacheKeyConstant.WAVE_ODO_SPLIT + skuIdA + CacheKeyConstant.WAVE_ODO_SPLIT + odoId);
+                                this.cacheManager.remove(CacheKeyConstant.SUITS_DIV_ODO_PREFIX + code);
+                            } else {
+
+                                String result3 = this.cacheManager.getValue(CacheKeyConstant.SUITS_DIV_ODO_PREFIX + code);
+                                if (StringUtils.isEmpty(result3)) {
+                                    this.cacheManager.decr(CacheKeyConstant.SUITS_PREFIX + code);
+                                    this.cacheManager.remove(CacheKeyConstant.SUITS_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + odoId);
+                                    // 还原扣减集合
+                                    this.cacheManager.remove(CacheKeyConstant.TWOSKUSUIT_DIV_ODO_PREFIX + twoSkuSuitPrefix + CacheKeyConstant.WAVE_ODO_SPLIT + skuIdA + CacheKeyConstant.WAVE_ODO_SPLIT + odoId);
+                                    this.cacheManager.remove(CacheKeyConstant.TWOSKUSUIT_DIV_ODO_PREFIX + twoSkuSuitPrefix + CacheKeyConstant.WAVE_ODO_SPLIT + skuIdB + CacheKeyConstant.WAVE_ODO_SPLIT + odoId);
+                                }
+                            }
+                        }
                     }
+
+
                     break;
                 default:
                     this.cacheManager.decr(CacheKeyConstant.SUITS_PREFIX + code);
+                    this.cacheManager.remove(CacheKeyConstant.SUITS_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + odoId);
                     break;
             }
         }
@@ -307,7 +338,7 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
                     break;
                 case 2:
                     String twoSkuSuitPrefix = codeArray[0] + CacheKeyConstant.WAVE_ODO_SPLIT + codeArray[1] + CacheKeyConstant.WAVE_ODO_SPLIT + codeArray[2];
-                    String[] skuIdArray = codeArray[3].substring(1, codeArray[3].length() - 1).split(CacheKeyConstant.WAVE_ODO_SKU_SPLIT);
+                    String[] skuIdArray = codeArray[3].substring(1, codeArray[3].length() - 1).split("\\" + CacheKeyConstant.WAVE_ODO_SKU_SPLIT);
 
                     String skuIdA = skuIdArray[0];
                     String skuIdB = skuIdArray[1];
@@ -363,6 +394,12 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
 
     @Override
     public void changeFromOrderPool(String oldCode, String newCode, Long odoId) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void mergeOdo(String code, Long odoId) {
         // TODO Auto-generated method stub
 
     }

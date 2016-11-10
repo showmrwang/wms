@@ -706,6 +706,8 @@ public class ErrorCodes {
     public static final int  TRACK_CONTAINER_NO_LOCATION = 70041;
     /**没有待上架库存*/
     public static final int  NO_SHEVLES_PUTWAY_INVENTORY = 70042;
+    /**商品库存信息不存在*/
+    public static final int  NO_SKU_INVENTORY = 70043;
     
     
     

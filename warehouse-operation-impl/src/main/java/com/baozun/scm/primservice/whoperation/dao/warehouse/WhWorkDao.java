@@ -25,6 +25,9 @@ import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
 
+import org.apache.ibatis.annotations.Param;
+
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkCommand;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhWork;
 
 
@@ -40,5 +43,14 @@ public interface WhWorkDao extends BaseDao<WhWork,Long>{
 	
 	@CommonQuery
 	int saveOrUpdateByVersion(WhWork o);
+	
+	 /**
+     * 根据code和ouId查找工作头信息
+     * @author qiming.liu
+     * @param code
+     * @param ouId
+     * @return
+     */
+	WhWorkCommand findWorkByWorkCode(@Param("code") String code, @Param("ouId") Long ouId);
 	
 }
