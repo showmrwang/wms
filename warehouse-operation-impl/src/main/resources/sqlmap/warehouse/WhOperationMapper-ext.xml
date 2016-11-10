@@ -170,5 +170,23 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        and last_modify_time	<=  #{lastModifyTime}    
 		    ]]>
 		</update>
+		
+	<resultMap id="whOperationCommandResultExt" type="com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationCommand">
+	</resultMap>
+	
+	<select id="findOperationByCode" resultMap="whOperationCommandResultExt">
+    	select 
+    		<include refid="whOperationColumnsExt" />
+	    from 
+	    	t_wh_operation
+		<where> 
+				ou_id = #{ouId}
+			<if test="operationCode!=null">
+				code = #{operationCode}
+			</if>
+		</where>
+    </select>
+		
+		
 	
 </mapper>

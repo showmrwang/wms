@@ -61,6 +61,13 @@ public class WhOdoOutBoundBoxCommand extends BaseCommand {
     private Date lastModifyTime;
     /** 操作人ID */
     private Long operatorId;
+    
+    //新增加字段
+    
+    /** 货格编码数 */
+    private int containerLatticeNo;
+    /** 是否已创建工作 */
+    private int isCreateWork;
 
     public Long getId() {
         return this.id;
@@ -182,4 +189,19 @@ public class WhOdoOutBoundBoxCommand extends BaseCommand {
         this.boxBatch = boxBatch;
     }
 
+    public int getContainerLatticeNo() {
+        return containerLatticeNo;
+    }
+
+    public void setContainerLatticeNo(int containerLatticeNo) {
+        this.containerLatticeNo = containerLatticeNo;
+    }
+
+    public int getIsCreateWork() {
+        return isCreateWork;
+    }
+
+    public void setIsCreateWork(int isCreateWork) {
+        this.isCreateWork = isCreateWork;
+    }
 }

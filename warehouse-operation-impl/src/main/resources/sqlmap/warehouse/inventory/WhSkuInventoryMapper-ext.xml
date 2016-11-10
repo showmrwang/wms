@@ -125,6 +125,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		       <if test="occupationCode!=null and occupationCode!=''">
 					and occupation_code = #{occupationCode}
 				</if>
+				
+				<if test="occupationLineId!=null and occupationLineId!=''">
+					and occupation_line_id = #{occupationLineId}
+				</if>
 	       
 				<if test="onHandQty!=null">
 					and on_hand_qty = #{onHandQty}
@@ -2588,6 +2592,13 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	   <if test="insideContainerId!=null and insideContainerId!=''">
 					 and inv.inside_container_id=#{insideContainerId}
 	   </if>
+	</select>
+	
+	<select id="getSkuInvListByPramas" resultMap="WhSkuInventoryResultExt">
+		select  <include refid="whSkuInventoryColumnsExt" />
+		from
+		t_wh_sku_inventory
+        <include refid="whSkuInventoryDynamicWhereExt"/>
 	</select>
     
 </mapper>

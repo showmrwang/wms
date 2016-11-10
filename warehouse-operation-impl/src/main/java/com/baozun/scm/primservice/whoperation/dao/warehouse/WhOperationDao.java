@@ -25,6 +25,9 @@ import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
 
+import org.apache.ibatis.annotations.Param;
+
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationCommand;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperation;
 
 
@@ -40,5 +43,14 @@ public interface WhOperationDao extends BaseDao<WhOperation,Long>{
 	
 	@CommonQuery
 	int saveOrUpdateByVersion(WhOperation o);
+	
+	/**
+     * 获取作业头信息
+     * @author qiming.liu
+     * @param operationCode
+     * @param ouId
+     * @return
+     */
+	WhOperationCommand findOperationByCode(@Param("operationCode") String operationCode, @Param("ouId") Long ouId);
 	
 }

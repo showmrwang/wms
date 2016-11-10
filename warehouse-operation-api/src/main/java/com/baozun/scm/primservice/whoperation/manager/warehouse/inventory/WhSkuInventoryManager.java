@@ -26,6 +26,7 @@ import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.AllocateStrategy;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
+import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 
 /**
  * @author lichuan
@@ -99,5 +100,13 @@ public interface WhSkuInventoryManager extends BaseManager {
 	void allocationInventoryByLineList(List<WhWaveLine> notHaveInvAttrLines, List<AllocateStrategy> rules, Warehouse wh, String logId);
 
 	void releaseInventoryByOdoId(Long odoId, Warehouse wh);
+	
+	/**
+     * 根据参数查询出库存信息
+     * @author qiming.liu
+     * @param whSkuInventory
+     * @return
+     */
+    List<WhSkuInventory> findWhSkuInventoryListByPramas(WhSkuInventory whSkuInventory);
 
 }

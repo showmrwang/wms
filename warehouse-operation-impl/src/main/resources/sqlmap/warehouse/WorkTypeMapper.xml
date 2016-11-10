@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.WorkTypeDao">
+	<resultMap id="WorkTypeResult" type="com.baozun.scm.primservice.whoperation.model.warehouse.WorkType">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="workTypeColumns">
+	    <![CDATA[
+	        	id as id,
+	        	code as code,
+	        	name as name,
+	        	work_category as workCategory,
+	        	ou_id as ouId,
+	        	lifecycle as lifecycle,
+	        	create_time as createTime,
+	        	last_modify_time as lastModifyTime,
+	        	modify_id as modifyId,
+	        	priority as priority
+	    ]]>
+	</sql>
+	
+		<!-- 如果有自增字段 -->
+		
+			<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+			<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WorkType" 
+				
+			 flushCache="true">
+		    <![CDATA[
+		        INSERT INTO
+		        t_wh_work_type (
+		        id,
+		        	code ,
+		        	name ,
+		        	work_category ,
+		        	ou_id ,
+		        	lifecycle ,
+		        	create_time ,
+		        	last_modify_time ,
+		        	modify_id,
+		        	priority 
+		        ) VALUES (
+		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{name,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{workCategory,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{modifyId,javaType=java.lang.Long,jdbcType=BIGINT},
+		        	#{priority,javaType=java.lang.Integer,jdbcType=INTEGER} 
+		        )
+		    ]]>
+
+		</insert>
+		
+		
+		<update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WorkType">
+	    <![CDATA[
+	        UPDATE t_wh_work_type SET
+		        code = #{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        name = #{name,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        work_category = #{workCategory,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        last_modify_time = now() ,
+		         priority = #{priority,javaType=java.lang.Integer,jdbcType=INTEGER},
+		        modify_id = #{modifyId,javaType=java.lang.Long,jdbcType=BIGINT} 
+	        WHERE 
+		        id = #{id} 
+		        and ou_id = #{ouId}
+		        and last_modify_time = #{lastModifyTime}
+	    ]]>
+		</update>
+	   <delete id="delete" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from t_wh_work_type where
+		        id = #{id} 
+	    ]]>
+	    </delete> 
+	    
+	     <delete id="deleteByIds" parameterType="list">
+	    
+	        delete from t_wh_work_type 
+	        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>	
+	  
+	    </delete>  
+	         
+	    <select id="findById" parameterType="java.lang.Long" resultMap="WorkTypeResult" flushCache="false">
+			select <include refid="workTypeColumns" />
+		    <![CDATA[
+			    from t_wh_work_type 
+		        where 
+		        id = #{id} 
+		    ]]>
+		</select>	
+		<select id="getByIds" parameterType="list"  resultMap="WorkTypeResult" flushCache="false">
+			select <include refid="workTypeColumns" />
+			    from t_wh_work_type 
+		        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>	
+and ou_id = #{ouId}				
+		</select>	
+	<sql id="workTypeDynamicWhere">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+	       
+		       <if test="code!=null and code!=''">
+					and code = #{code}
+				</if>
+	       
+	       
+		       <if test="name!=null and name!=''">
+					and name = #{name}
+				</if>
+	       
+				<if test="workCategory!=null">
+					and work_category = #{workCategory}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+	       
+				<if test="lifecycle!=null">
+					and lifecycle = #{lifecycle}
+				</if>
+	       
+				<if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="modifyId!=null">
+					and modify_id = #{modifyId}
+				</if>
+				<if test="priority!= null">
+				    and priority=#{priority}
+				</if>
+		</where>
+	</sql>
+	
+
+	<select id="getCount" resultType="long">
+        select count(*) from t_wh_work_type 
+    </select>
+    <select id="findListCountByQueryMap" resultType="long">
+        select count(*) from t_wh_work_type 
+		<include refid="workTypeDynamicWhere"/>    
+    </select>
+    
+    <select id="findListCountByParam" resultType="long">
+        select count(*) from t_wh_work_type 
+		<include refid="workTypeDynamicWhere"/>    
+    </select>
+    
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPage" resultMap="WorkTypeResult">
+    	select <include refid="workTypeColumns" />
+	    from t_wh_work_type 
+		<include refid="workTypeDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByQueryMap" resultMap="WorkTypeResult">
+    	select <include refid="workTypeColumns" />
+	    from t_wh_work_type 
+		<include refid="workTypeDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByParam" resultMap="WorkTypeResult">
+    	select <include refid="workTypeColumns" />
+	    from t_wh_work_type 
+		<include refid="workTypeDynamicWhere"/>
+		
+    </select>
+
+	
+</mapper>

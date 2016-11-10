@@ -16,6 +16,7 @@
  */
 package com.baozun.scm.primservice.whoperation.dao.warehouse;
 
+import java.util.List;
 import java.util.Map;
 
 import lark.common.annotation.CommonQuery;
@@ -25,6 +26,9 @@ import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
 
+import org.apache.ibatis.annotations.Param;
+
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkLineCommand;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhWorkLine;
 
 
@@ -40,5 +44,7 @@ public interface WhWorkLineDao extends BaseDao<WhWorkLine,Long>{
 	
 	@CommonQuery
 	int saveOrUpdateByVersion(WhWorkLine o);
+	
+	List<WhWorkLineCommand> findWorkLineByWorkId(@Param("workId") Long workId, @Param("ouId") Long ouId);
 	
 }

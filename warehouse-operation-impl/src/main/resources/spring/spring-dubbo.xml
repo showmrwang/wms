@@ -74,6 +74,7 @@
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.WhWorkLineManager" ref="whWorkLineManager" />
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.WhOperationManager" ref="whOperationManager" />
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.WhOperationLineManager" ref="whOperationLineManager" />
+	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoOutBoundBoxMapper" ref="odoOutBoundBoxMapper" />
 	
 	<!-- 业务规则配置 -->
    	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.WhDistributionPatternRuleManager"  ref="whDistributionPatternRuleManager" />

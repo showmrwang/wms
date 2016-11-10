@@ -336,6 +336,15 @@ public final class Constants {
 
     /** 调编码生成器波次实体标识 */
     public static final String WHWAVE_MODEL_URL = "com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave";
+    
+    /** 调编码生成器工作头实体标识 */
+    public static final String WHWORK_MODEL_URL = "com.baozun.scm.primservice.whoperation.model.warehouse.WhWork";
+    
+    /** 调编码生成器工作明细实体标识 */
+    public static final String WHWORKLINE_MODEL_URL = "com.baozun.scm.primservice.whoperation.model.warehouse.WhWorkLine";
+    
+    /** 调编码生成器作业头实体标识 */
+    public static final String WHOPERATION_MODEL_URL = "com.baozun.scm.primservice.whoperation.model.warehouse.WhOperation";
 
     /** 调编码生成器 出库单WMS内部单号分组 */
     public static final String WMS_ODO_INNER = "WMS_ODO_INNER";

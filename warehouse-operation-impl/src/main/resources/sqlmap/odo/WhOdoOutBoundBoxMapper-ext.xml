@@ -111,5 +111,111 @@
                     and last_modify_time    =  #{lastModifyTime}
             ]]>
     </update>
+    
+    <select id="findPickingWorkWhOdoOutBoundBox" resultMap="WhOdoOutBoundBoxResultExt">
+		select 
+			distinct wave.id as waveId, 
+			outboundbox.box_batch as boxBatch 
+		from 
+			t_wh_wave wave, 
+			t_wh_wave_template waveTemplate, 
+			t_wh_wave_phase wavePhase, 
+			t_wh_wave_master waveMaster, 
+			t_wh_odo_outboundbox outboundbox 
+		where 
+			outboundbox.wave_id = wave.id 
+			and outboundbox.is_create_work != 1 
+			and wave.wave_master_id = waveMaster.id 
+			and waveTemplate.id = waveMaster.wave_template_id 
+			and wavePhase.wave_template_id = waveTemplate.id 
+			and wave.id = #{waveId} 
+			and wave.ou_id = #{ouId} 
+	</select>
+	
+	<select id="getOdoOutBoundBoxForGroup" resultMap="WhOdoOutBoundBoxResultExt">
+		select
+			<include refid="whOdoOutBoundBoxColumnsExt"/>
+		from
+			t_wh_odo_outboundbox
+		where
+			ou_id = #{ouId}
+			and box_batch = #{boxBatch}
+			and outer_container_id is not null
+		group by
+			outer_container_id
+		union all
+		select
+			<include refid="whOdoOutBoundBoxColumnsExt"/>
+		from
+			t_wh_odo_outboundbox
+		where
+			ou_id = #{ouId}
+			and box_batch = #{boxBatch}
+			and outer_container_id is null
+			and outbounxbox_type_code is not null
+		group by
+			outbounxbox_type_code
+		union all
+		select
+			<include refid="whOdoOutBoundBoxColumnsExt"/>
+		from
+			t_wh_odo_outboundbox
+		where
+			ou_id = #{ouId}
+			and box_batch = #{boxBatch}
+			and outer_container_id is null
+			and outbounxbox_type_code is null
+		group by
+			container_id
+	</select>
+	
+	<select id="getOdoOutBoundBoxListByGroup" resultMap="whOdoOutBoundBoxCommandResultExt">
+		select
+			<include refid="whOdoOutBoundBoxColumnsExt"/>
+		from
+			t_wh_odo_outboundbox
+		<where>
+			ou_id = #{ouId}
+			and box_batch = #{boxBatch}
+			<if test="outerContainerId!=null">
+				and outer_container_id = #{outerContainerId}
+			</if>
+			<if test="outerContainerId==null and outbounxboxTypeId!=null">
+				and outbounxbox_type_id = #{outbounxboxTypeId}
+			</if>
+			<if test="outerContainerId==null and containerId!=null">
+				and container_id = #{containerId}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findOutboundboxType" resultMap="Long">
+		select
+			sku_id
+		from
+			t_wh_outboundbox_type
+		<where>
+			ou_id = #{ouId}
+			<if test="outbounxboxTypeId!=null">
+				and id = #{outbounxboxTypeId}
+			</if>
+			<if test="outbounxboxTypeCode!=null">
+				and code = #{outbounxboxTypeCode}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findWhOdoOutBoundBoxCommandById" resultMap="whOdoOutBoundBoxCommandResultExt">
+		select
+			<include refid="whOdoOutBoundBoxColumnsExt"/>
+		from
+			t_wh_odo_outboundbox
+		<where>
+			ou_id = #{ouId}
+			<if test="id!=null">
+				and id = #{id}
+			</if>
+		</where>
+	</select>
 
 </mapper>
