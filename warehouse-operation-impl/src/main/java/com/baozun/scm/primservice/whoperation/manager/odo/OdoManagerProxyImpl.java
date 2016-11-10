@@ -2,6 +2,7 @@ package com.baozun.scm.primservice.whoperation.manager.odo;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -32,6 +33,7 @@ import com.baozun.scm.primservice.whoperation.command.odo.OdoResultCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoSearchCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoTransportMgmtCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.WhOdoVasCommand;
+import com.baozun.scm.primservice.whoperation.command.odo.wave.OdoGroupSearchCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.OdoWaveGroupResultCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.OdoWaveGroupSearchCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.OdoWaveGroupSearchCondition;
@@ -72,6 +74,7 @@ import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
 import com.baozun.scm.primservice.whoperation.model.warehouse.InventoryStatus;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
+import com.baozun.scm.primservice.whoperation.model.warehouse.ma.TransportProvider;
 
 @Service("odoManagerProxy")
 public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerProxy {
@@ -720,7 +723,119 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
 
     @Override
     public Pagination<OdoWaveGroupResultCommand> findOdoSummaryListForWaveByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params) {
-        return this.odoManager.findOdoListForWaveByQueryMapWithPageExt(page, sorts, params);
+        Pagination<OdoWaveGroupResultCommand> pages = this.odoManager.findOdoListForWaveByQueryMapWithPageExt(page, sorts, params);
+        try {
+
+            if (pages != null) {
+                Set<String> dic1 = new HashSet<String>();// 出库单状态
+                Set<String> dic2 = new HashSet<String>();// 出库单类型
+                Set<String> dic3 = new HashSet<String>();// 配货模式
+                Set<String> dic4 = new HashSet<String>();// 上位单据类型
+                Set<String> transCodeSet = new HashSet<String>();// 运输服务商
+                Set<Long> customerIdSet = new HashSet<Long>();
+                Set<Long> storeIdSet = new HashSet<Long>();
+                List<OdoWaveGroupResultCommand> list = pages.getItems();
+                if (list != null && list.size() > 0) {
+                    for (OdoWaveGroupResultCommand command : list) {
+                        if (StringUtils.hasText(command.getOdoStatus())) {
+                            dic1.add(command.getOdoStatus());
+                        }
+                        if (StringUtils.hasText(command.getOdoType())) {
+                            dic2.add(command.getOdoType());
+                        }
+                        if (StringUtils.hasText(command.getDistributeMode())) {
+                            dic3.add(command.getDistributeMode());
+                        }
+                        if (StringUtils.hasText(command.getEpostaticSystemsOrderType())) {
+                            dic4.add(command.getEpostaticSystemsOrderType());
+                        }
+                        if (StringUtils.hasText(command.getTransportServiceProvider())) {
+                            transCodeSet.add(command.getTransportServiceProvider());
+                        }
+                        if (command.getCustomerId() != null) {
+                            customerIdSet.add(command.getCustomerId());
+                        }
+                        if (command.getStoreId() != null) {
+                            storeIdSet.add(command.getStoreId());
+                        }
+                    }
+                    Map<String, List<String>> map = new HashMap<String, List<String>>();
+                    if (dic1.size() > 0) {
+                        map.put(Constants.ODO_STATUS, new ArrayList<String>(dic1));
+                    }
+                    if (dic2.size() > 0) {
+                        map.put(Constants.ODO_TYPE, new ArrayList<String>(dic2));
+                    }
+                    if (dic3.size() > 0) {
+                        map.put(Constants.DISTRIBUTE_MODE, new ArrayList<String>(dic3));
+                    }
+                    if (dic4.size() > 0) {
+                        map.put(Constants.ODO_PRE_TYPE, new ArrayList<String>(dic4));
+                    }
+                    Map<String, TransportProvider> transMap = new HashMap<String, TransportProvider>();
+                    if (transCodeSet.size() > 0) {
+                        for (String transCode : transCodeSet) {
+                            TransportProvider tp = this.odoTransportMgmtManager.findByCode(transCode);
+                            transMap.put(transCode, tp);
+                        }
+
+                    }
+
+                    Map<String, SysDictionary> dicMap = map.size() > 0 ? this.findSysDictionaryByRedis(map) : null;
+
+                    Map<Long, Customer> customerMap = customerIdSet.size() > 0 ? this.findCustomerByRedis(new ArrayList<Long>(customerIdSet)) : null;
+                    Map<Long, Store> storeMap = storeIdSet.size() > 0 ? this.findStoreByRedis(new ArrayList<Long>(storeIdSet)) : null;
+                    for (OdoWaveGroupResultCommand command : list) {
+                        String groupName = "";
+                        if (command.getCustomerId() != null) {
+                            Customer customer = customerMap.get(command.getCustomerId());
+                            command.setCustomerName(customer == null ? command.getCustomerId().toString() : customer.getCustomerName());
+                            groupName += "$" + command.getCustomerName();
+                        }
+                        if (command.getStoreId() != null) {
+                            Store store = storeMap.get(command.getStoreId());
+                            command.setStoreName(store == null ? command.getStoreId().toString() : store.getStoreName());
+                            groupName += "$" + command.getStoreName();
+                        }
+                        if (StringUtils.hasText(command.getOdoStatus())) {
+                            SysDictionary sys = dicMap.get(Constants.ODO_STATUS + "_" + command.getOdoStatus());
+                            command.setOdoStatusName(sys.getDicLabel());
+                            groupName += "$" + command.getOdoStatusName();
+                        }
+                        if (StringUtils.hasText(command.getOdoType())) {
+                            SysDictionary sys = dicMap.get(Constants.ODO_TYPE + "_" + command.getOdoType());
+                            command.setOdoTypeName(sys.getDicLabel());
+                            groupName += "$" + command.getOdoTypeName();
+                        }
+                        if (StringUtils.hasText(command.getDistributeMode())) {
+                            SysDictionary sys = dicMap.get(Constants.DISTRIBUTE_MODE + "_" + command.getDistributeMode());
+                            command.setDistributeModeName(sys.getDicLabel());
+                            groupName += "$" + command.getDistributeModeName();
+                        }
+                        if (StringUtils.hasText(command.getTransportServiceProvider())) {
+                            if (transMap != null) {
+                                if (transMap.containsKey(command.getTransportServiceProvider())) {
+                                    TransportProvider tp = transMap.get(command.getTransportServiceProvider());
+                                    command.setTransportServiceProviderName(tp.getName());
+                                    groupName += "$" + command.getTransportServiceProviderName();
+                                }
+                            }
+                        }
+                        if (StringUtils.hasText(command.getEpostaticSystemsOrderType())) {
+                            SysDictionary sys = dicMap.get(Constants.ODO_PRE_TYPE + "_" + command.getEpostaticSystemsOrderType());
+                            command.setEpostaticSystemsOrderTypeName(sys.getDicLabel());
+                            groupName += "$" + command.getEpostaticSystemsOrderTypeName();
+                        }
+                        command.setGroupName(groupName);
+                    }
+                    pages.setItems(list);
+                }
+            }
+        } catch (Exception ex) {
+            log.error(ex + "");
+            throw new BusinessException(ErrorCodes.PACKAGING_ERROR);
+        }
+        return pages;
     }
 
     @Override
@@ -828,7 +943,7 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
     }
 
     @Override
-    public String createOdoWave(OdoWaveGroupSearchCommand command) {
+    public String createOdoWave(OdoGroupSearchCommand command) {
         /**
          * 校验阶段
          */
@@ -854,7 +969,99 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
                 search.setGroupCustomerId(gsc.getCustomerId());
                 search.setGroupOdoStatus(gsc.getOdoStatus());
                 search.setGroupStoreId(gsc.getStoreId());
+                search.setGroupOdoType(gsc.getOdoType());
+                search.setGroupDistributeMode(gsc.getDistributeMode());
+                search.setGroupEpostaticSystemsOrderType(gsc.getEpostaticSystemsOrderType());
+                search.setGroupTransportServiceProvider(gsc.getTransportServiceProvider());
+                search.setIsEpistaticSystemsOrderType(gsc.getIsEpistaticSystemsOrderType());
+                search.setIsDistributeMode(gsc.getIsDistributeMode());
                 search.setLineFlag(true);
+                if (StringUtils.hasText(command.getOdoStatus())) {
+                    search.setOdoStatus(Arrays.asList(command.getOdoStatus().split(",")));
+                }
+                if (StringUtils.hasText(command.getEpostaticSystemsOrderType())) {
+                    search.setEpostaticSystemsOrderType(Arrays.asList(command.getEpostaticSystemsOrderType().split(",")));
+                }
+                if (StringUtils.hasText(command.getCustomerId())) {
+                    search.setCustomerId(Arrays.asList(command.getCustomerId().split(",")));
+                }
+                if (StringUtils.hasText(command.getOutboundTargetType())) {
+                    search.setOutboundTargetType(Arrays.asList(command.getOutboundTargetType().split(",")));
+                }
+                if (StringUtils.hasText(command.getOdoType())) {
+                    search.setOdoType(Arrays.asList(command.getOdoType().split(",")));
+                }
+                if (StringUtils.hasText(command.getStoreId())) {
+                    search.setStoreId(Arrays.asList(command.getStoreId().split(",")));
+                }
+                if (StringUtils.hasText(command.getModeOfTransport())) {
+                    search.setModeOfTransport(Arrays.asList(command.getModeOfTransport().split(",")));
+                }
+                if (StringUtils.hasText(command.getTransportServiceProvider())) {
+                    String[] arr = command.getTransportServiceProvider().split(",");
+                    Long[] longArr = new Long[arr.length];
+                    for (int i = 0; i < arr.length; i++) {
+                        longArr[i] = Long.parseLong(arr[i]);
+                    }
+                    search.setTransportServiceProvider(Arrays.asList(longArr));
+                }
+                if (StringUtils.hasText(command.getTransportServiceProviderType())) {
+                    search.setTransportServiceProviderType(Arrays.asList(command.getTransportServiceProviderType().split(",")));
+                }
+                if (StringUtils.hasText(command.getDistributeMode())) {
+                    search.setDistributeMode(Arrays.asList(command.getDistributeMode().split(",")));
+                }
+                if (StringUtils.hasText(command.getOutBoundCartonType())) {
+                    search.setOutBoundCartonType(Arrays.asList(command.getOutBoundCartonType().split(",")));
+                }
+                if (StringUtils.hasText(command.getLineOutboundCartonType())) {
+                    search.setLineOutboundCartonType(Arrays.asList(command.getLineOutboundCartonType().split(",")));
+                }
+                if (StringUtils.hasText(command.getInvType())) {
+                    search.setInvType(Arrays.asList(command.getInvType().split(",")));
+                }
+                if (StringUtils.hasText(command.getInvStatus())) {
+                    search.setInvStatus(Arrays.asList(command.getInvStatus().split(",")));
+                }
+                if (StringUtils.hasText(command.getInvAttr1())) {
+                    search.setInvAttr1(Arrays.asList(command.getInvAttr1().split(",")));
+                }
+                if (StringUtils.hasText(command.getInvAttr2())) {
+                    search.setInvAttr2(Arrays.asList(command.getInvAttr2().split(",")));
+                }
+                if (StringUtils.hasText(command.getInvAttr3())) {
+                    search.setInvAttr3(Arrays.asList(command.getInvAttr3().split(",")));
+                }
+                if (StringUtils.hasText(command.getInvAttr4())) {
+                    search.setInvAttr4(Arrays.asList(command.getInvAttr4().split(",")));
+                }
+                if (StringUtils.hasText(command.getInvAttr5())) {
+                    search.setInvAttr5(Arrays.asList(command.getInvAttr5().split(",")));
+                }
+                if (StringUtils.hasText(command.getWhVasType())) {
+                    search.setWhVasType(Arrays.asList(command.getWhVasType().split(",")));
+                }
+                if (StringUtils.hasText(command.getOrderType())) {
+                    search.setOrderType(Arrays.asList(command.getOrderType().split(",")));
+                }
+                if (StringUtils.hasText(command.getDeliverGoodsTimeMode())) {
+                    search.setDeliverGoodsTimeMode(Arrays.asList(command.getDeliverGoodsTimeMode().split(",")));
+                }
+                if (StringUtils.hasText(command.getOdoLineStatus())) {
+                    search.setOdoLineStatus(Arrays.asList(command.getOdoLineStatus().split(",")));
+                }
+                if (StringUtils.hasText(command.getLineOutboundCartonType())) {
+                    search.setLineOutboundCartonType(Arrays.asList(command.getLineOutboundCartonType().split(",")));
+                }
+                // 如果不选分组 默认按照客户分组
+                // 如果没有选出库单状态，则默认为：新建和部分出库
+                if (search.getOdoStatus() == null || search.getOdoStatus().size() == 0) {
+                    search.setOdoStatus(Arrays.asList(new String[] {OdoStatus.ODO_NEW, OdoStatus.ODO_OUTSTOCK}));
+                }
+                // 如果没有选出库单明细状态，则默认为新建和部分出库
+                if (search.getOdoLineStatus() == null || search.getOdoLineStatus().size() == 0) {
+                    search.setOdoLineStatus(Arrays.asList(new String[] {OdoStatus.ODOLINE_NEW, OdoStatus.ODOLINE_OUTSTOCK}));
+                }
                 List<WhOdo> liOdoList = this.odoManager.findOdoListForWave(search);
                 if(liOdoList!=null&&liOdoList.size()>0){
                     for (WhOdo odo : liOdoList) {
@@ -1048,6 +1255,7 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
             waveLine.setOdoPriorityLevel(odo.getPriorityLevel());
             waveLine.setOdoPlanDeliverGoodsTime(trans.getPlanDeliverGoodsTime());
             waveLine.setOdoOrderTime(odo.getOrderTime());
+            waveLine.setIsStaticLocationAllocate(false);
             waveLine.setLinenum(line.getLinenum());
             waveLine.setStoreId(odo.getStoreId());
             waveLine.setExtLinenum(line.getExtLinenum());
@@ -1083,12 +1291,6 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
             waveLineList.add(waveLine);
         }
         this.odoManager.createOdoWave(wave, waveLineList, odoMap, odolineList, userId, logId);
-        // 添加到波次中时候，计数器需要-1；
-        Iterator<Entry<Long, WhOdo>> odoIt = odoMap.entrySet().iterator();
-        while (odoIt.hasNext()) {
-            Entry<Long, WhOdo> entry = odoIt.next();
-            this.distributionModeArithmeticManagerProxy.AddToWave(waveCode, entry.getKey());
-        }
 
         return waveCode;
     }

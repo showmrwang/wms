@@ -39,11 +39,11 @@ public interface DistributionModeArithmeticManagerProxy extends BaseManager {
     public boolean isExistsInOrderPool(String code, Long odoId);
 
     /**
-     * 仓库匹配模式计算：计数器减；不移除出库单
+     * 仓库匹配模式计算;
      * 
      * @param code
      */
-    public void DivFromOrderPool(String code, Long odoId);
+    public void divFromOrderPool(String code, Long odoId);
     
     /**
      * 从订单池中移除
@@ -80,4 +80,8 @@ public interface DistributionModeArithmeticManagerProxy extends BaseManager {
      */
     public void AddToWave(String code, Long odoId);
 
+    /**
+     * 出库单合并
+     */
+    public void mergeOdo(String code, Long odoId);
 }

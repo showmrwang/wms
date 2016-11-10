@@ -25,6 +25,8 @@ import lark.common.dao.QueryCondition;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.baozun.scm.primservice.whoperation.model.warehouse.ma.TransportProvider;
 
 public interface TransportProviderDao extends BaseDao<TransportProvider, Long> {
@@ -41,5 +43,7 @@ public interface TransportProviderDao extends BaseDao<TransportProvider, Long> {
 
     @CommonQuery
     int saveOrUpdate(TransportProvider o);
+
+    TransportProvider findByCode(@Param("code") String transCode);
 
 }

@@ -14,6 +14,7 @@ import com.baozun.scm.primservice.whoperation.command.odo.OdoLineCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoResultCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoSearchCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.WhOdoVasCommand;
+import com.baozun.scm.primservice.whoperation.command.odo.wave.OdoGroupSearchCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.OdoWaveGroupResultCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.OdoWaveGroupSearchCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.WaveCommand;
@@ -222,7 +223,7 @@ public interface OdoManagerProxy extends BaseManager {
      * @param command
      * @return 返回波次号
      */
-    String createOdoWave(OdoWaveGroupSearchCommand command);
+    String createOdoWave(OdoGroupSearchCommand command);
 
     /**
      * [业务方法]波次一览
