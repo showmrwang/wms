@@ -48,6 +48,8 @@ public class WhOdoOutBoundBox extends BaseModel {
     private Double qty;
     /** 批次 */
     private String boxBatch;
+    /** 整托整箱：1整托 2整箱 */
+    private Integer wholeCase;
     /** 仓库组织ID */
     private Long ouId;
     /** 创建时间 */
@@ -111,6 +113,14 @@ public class WhOdoOutBoundBox extends BaseModel {
 
     public void setQty(Double qty) {
         this.qty = qty;
+    }
+
+    public Integer getWholeCase() {
+        return wholeCase;
+    }
+
+    public void setWholeCase(Integer wholeCase) {
+        this.wholeCase = wholeCase;
     }
 
     public Long getOuId() {
