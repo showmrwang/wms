@@ -33,6 +33,9 @@ public final class Constants {
 
     /** 调编码生成器 asn单实体标识 */
     public static final String WHASN_MODEL_URL = "com.baozun.scm.primservice.whoperation.model.poasn.WhAsn";
+    
+    /** 调编码生成器 补货单实体标识 */
+    public static final String BH_MODEL_URL = "com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentTask";
 
     /** 调编码生成器 容器实体标识 */
     public static final String CONTAINER_MODEL_URL = "com.baozun.scm.primservice.whinfo.model.warehouse.Container";
@@ -424,6 +427,10 @@ public final class Constants {
     public static final String ALLOCATE_UNIT_CONTAINER = "CONTAINER";	// 货箱
     public static final String ALLOCATE_UNIT_PIECE = "PIECE";			// 件
 
+    public static final String REPLENISHMENT_UP = "1";		// 向上补货
+    public static final String REPLENISHMENT_DOWN = "2";	// 向下补货
+    public static final String REPLENISHMENT_ONDEMAND = "3";// 严格按照需求量
+    
     /** 体积单位升在Uom表中的编码 */
     public static final String LENGTH_TO_VOLUME_UOM_CODE = "LENGTH_TO_VOLUME_CODE";
 }
