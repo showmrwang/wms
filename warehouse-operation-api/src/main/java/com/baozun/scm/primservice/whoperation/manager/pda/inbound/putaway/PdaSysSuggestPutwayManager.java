@@ -136,4 +136,10 @@ public interface PdaSysSuggestPutwayManager extends BaseManager{
      */
     public ScanResultCommand splitContaienrManPutwayFlow(String invAttrMgmtHouse,String locationCode,String locBarCode,String outerContainerCode,String insideContainerCode,Long funcId,Long ouId,Long userId,Integer putawayPatternDetailType,Warehouse warehouse);
     
+    /***
+     * 整托上架:扫描内部容器
+     * @param insideContainerCode
+     */
+    public void sysSuggestScanInsideContainer(String insideContainerCode,Long ouId);
+    
 }
