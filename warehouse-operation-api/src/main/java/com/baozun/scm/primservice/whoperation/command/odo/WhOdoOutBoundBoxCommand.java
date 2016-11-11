@@ -30,7 +30,9 @@ public class WhOdoOutBoundBoxCommand extends BaseCommand {
      * 
      */
     private static final long serialVersionUID = 554959901328869211L;
-
+    
+    //columns START
+    
     /** 主键ID */
     private Long id;
     /** 波次ID */
@@ -47,6 +49,8 @@ public class WhOdoOutBoundBoxCommand extends BaseCommand {
     private Long containerId;
     /** 外部容器ID 小车此类容器 */
     private Long outerContainerId;
+    /** 货格编码数 */
+    private int containerLatticeNo;
     /** 数量 */
     private Double qty;
     /** 批次 */
@@ -55,6 +59,8 @@ public class WhOdoOutBoundBoxCommand extends BaseCommand {
     private Integer wholeCase;
     /** 仓库组织ID */
     private Long ouId;
+    /** 是否已创建工作 */
+    private int isCreateWork;
     /** 创建时间 */
     private Date createTime;
     /** 修改时间 */
@@ -62,146 +68,109 @@ public class WhOdoOutBoundBoxCommand extends BaseCommand {
     /** 操作人ID */
     private Long operatorId;
     
-    //新增加字段
+    //columns END
     
-    /** 货格编码数 */
-    private int containerLatticeNo;
-    /** 是否已创建工作 */
-    private int isCreateWork;
-
     public Long getId() {
-        return this.id;
+        return id;
     }
-
-    public void setId(Long value) {
-        this.id = value;
+    public void setId(Long id) {
+        this.id = id;
     }
-
-    public Long getOdoId() {
-        return this.odoId;
-    }
-
-    public void setOdoId(Long value) {
-        this.odoId = value;
-    }
-
-    public Long getOdoLineId() {
-        return this.odoLineId;
-    }
-
-    public void setOdoLineId(Long value) {
-        this.odoLineId = value;
-    }
-
-    public Long getOutbounxboxTypeId() {
-        return this.outbounxboxTypeId;
-    }
-
-    public void setOutbounxboxTypeId(Long value) {
-        this.outbounxboxTypeId = value;
-    }
-
-    public String getOutbounxboxTypeCode() {
-        return this.outbounxboxTypeCode;
-    }
-
-    public void setOutbounxboxTypeCode(String value) {
-        this.outbounxboxTypeCode = value;
-    }
-
-    public Long getContainerId() {
-        return this.containerId;
-    }
-
-    public void setContainerId(Long value) {
-        this.containerId = value;
-    }
-
-    public Long getOuterContainerId() {
-        return this.outerContainerId;
-    }
-
-    public void setOuterContainerId(Long value) {
-        this.outerContainerId = value;
-    }
-
-    public Double getQty() {
-        return qty;
-    }
-
-    public void setQty(Double qty) {
-        this.qty = qty;
-    }
-
-    public Integer getWholeCase() {
-        return wholeCase;
-    }
-
-    public void setWholeCase(Integer wholeCase) {
-        this.wholeCase = wholeCase;
-    }
-
-    public Long getOuId() {
-        return this.ouId;
-    }
-
-    public void setOuId(Long value) {
-        this.ouId = value;
-    }
-
-    public Date getCreateTime() {
-        return this.createTime;
-    }
-
-    public void setCreateTime(Date value) {
-        this.createTime = value;
-    }
-
-    public Date getLastModifyTime() {
-        return this.lastModifyTime;
-    }
-
-    public void setLastModifyTime(Date value) {
-        this.lastModifyTime = value;
-    }
-
-    public Long getOperatorId() {
-        return this.operatorId;
-    }
-
-    public void setOperatorId(Long value) {
-        this.operatorId = value;
-    }
-
     public Long getWaveId() {
         return waveId;
     }
-
     public void setWaveId(Long waveId) {
         this.waveId = waveId;
     }
-
-    public String getBoxBatch() {
-        return boxBatch;
+    public Long getOdoId() {
+        return odoId;
     }
-
-    public void setBoxBatch(String boxBatch) {
-        this.boxBatch = boxBatch;
+    public void setOdoId(Long odoId) {
+        this.odoId = odoId;
     }
-
+    public Long getOdoLineId() {
+        return odoLineId;
+    }
+    public void setOdoLineId(Long odoLineId) {
+        this.odoLineId = odoLineId;
+    }
+    public Long getOutbounxboxTypeId() {
+        return outbounxboxTypeId;
+    }
+    public void setOutbounxboxTypeId(Long outbounxboxTypeId) {
+        this.outbounxboxTypeId = outbounxboxTypeId;
+    }
+    public String getOutbounxboxTypeCode() {
+        return outbounxboxTypeCode;
+    }
+    public void setOutbounxboxTypeCode(String outbounxboxTypeCode) {
+        this.outbounxboxTypeCode = outbounxboxTypeCode;
+    }
+    public Long getContainerId() {
+        return containerId;
+    }
+    public void setContainerId(Long containerId) {
+        this.containerId = containerId;
+    }
+    public Long getOuterContainerId() {
+        return outerContainerId;
+    }
+    public void setOuterContainerId(Long outerContainerId) {
+        this.outerContainerId = outerContainerId;
+    }
     public int getContainerLatticeNo() {
         return containerLatticeNo;
     }
-
     public void setContainerLatticeNo(int containerLatticeNo) {
         this.containerLatticeNo = containerLatticeNo;
     }
-
+    public Double getQty() {
+        return qty;
+    }
+    public void setQty(Double qty) {
+        this.qty = qty;
+    }
+    public String getBoxBatch() {
+        return boxBatch;
+    }
+    public void setBoxBatch(String boxBatch) {
+        this.boxBatch = boxBatch;
+    }
+    public Integer getWholeCase() {
+        return wholeCase;
+    }
+    public void setWholeCase(Integer wholeCase) {
+        this.wholeCase = wholeCase;
+    }
+    public Long getOuId() {
+        return ouId;
+    }
+    public void setOuId(Long ouId) {
+        this.ouId = ouId;
+    }
     public int getIsCreateWork() {
         return isCreateWork;
     }
-
     public void setIsCreateWork(int isCreateWork) {
         this.isCreateWork = isCreateWork;
     }
+    public Date getCreateTime() {
+        return createTime;
+    }
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+    public Date getLastModifyTime() {
+        return lastModifyTime;
+    }
+    public void setLastModifyTime(Date lastModifyTime) {
+        this.lastModifyTime = lastModifyTime;
+    }
+    public Long getOperatorId() {
+        return operatorId;
+    }
+    public void setOperatorId(Long operatorId) {
+        this.operatorId = operatorId;
+    }
+    
 }

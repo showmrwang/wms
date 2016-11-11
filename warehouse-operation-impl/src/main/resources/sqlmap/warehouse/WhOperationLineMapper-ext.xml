@@ -45,6 +45,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	to_location_id as toLocationId,
 	        	to_outer_container_id as toOuterContainerId,
 	        	to_inside_container_id as toInsideContainerId,
+	        	is_whole_case as isWholeCase,
 	        	odo_id as odoId,
 	        	odo_line_id as odoLineId,
 	        	create_time as createTime,
@@ -201,7 +202,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				<if test="toInsideContainerId!=null">
 					and to_inside_container_id = #{toInsideContainerId}
 				</if>
-	       
+	       		
+	       		<if test="isWholeCase!=null">
+					and is_whole_case = #{isWholeCase}
+				</if>
+	       		
 				<if test="odoId!=null">
 					and odo_id = #{odoId}
 				</if>
@@ -261,6 +266,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        to_location_id = #{toLocationId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        to_outer_container_id = #{toOuterContainerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        to_inside_container_id = #{toInsideContainerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        is_whole_case = #{isWholeCase,javaType=java.lang.Boolean,jdbcType=BIT} ,
 			        odo_id = #{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        odo_line_id = #{odoLineId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
