@@ -175,7 +175,7 @@ public final class Constants {
     public static final String CHECK_IN_TYPE_NORMAL_CHECKIN = "normalCheckIn";
     /** 分配月台签入类型 */
     public static final String CHECK_IN_TYPE_MANUAL_CHECKIN = "manualCheckIn";
-    
+
     /** 分配规则 */
     public static final String ALLOCATE_RULE = "ALLOCATE_RULE";
     public static final String ALLOCATE = "ALLOCATE";
@@ -328,7 +328,7 @@ public final class Constants {
     public static final String INCLUDE_FRAGILE_CARGO = "INCLUDE_FRAGILE_CARGO";
 
     public static final String INCLUDE_HAZARDOUS_CARGO = "INCLUDE_HAZARDOUS_CARGO";
-    
+
     public static final String ASNLINESTATUS = "ASNLINESTATUS";
 
     // 出库单默认优先级
@@ -358,11 +358,11 @@ public final class Constants {
     /** 出库单增值服务类型 */
     public static final String ODO_VAS_TYPE_WH = "WH";
     public static final String ODO_VAS_TYPE_EXPRESS = "EXPRESS";
-    
+
     /** TABLE_FIELD 类型 */
     public static final String TABLE_FIELD_TYPE_WH_ASN = "WH_ASN";
 
-    //caseLevel收货属性扫描序列
+    // caseLevel收货属性扫描序列
     public static final String CASELEVEL_SCAN_SIGN_START = "start";// 开始
     public static final String CASELEVEL_SCAN_SIGN_END = "end";// 结束
     public static final String CASELEVEL_SCAN_SIGN_ISVALID = "isValid";// 是否管理效期
