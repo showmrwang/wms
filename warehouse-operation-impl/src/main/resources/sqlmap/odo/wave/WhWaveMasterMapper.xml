@@ -30,14 +30,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	created_id as createdId,
 	        	modified_id as modifiedId,
 	        	lifecycle as lifecycle,
-	        	 rcvd_work_priority as rcvdWorkPriority,
-		        putaway_work_priority as putawayWorkPriority,
 		        picking_work_priority as pickingWorkPriority,
 		        picking_ext_priority as pickingExtPriority,
 		        replenishment_work_priority as replenishmentWorkPriority,
-		        stock_count_work_priority as stockCountWorkPriority,
-		        in_warehouse_move_work_priority as inWarehouseMoveWorkPriority,
-		        in_warehouse_process_work_priority as inWarehouseProcessWorkPriority,
 		        is_auto_release_work as isAutoReleaseWork
 	    ]]>
 	</sql>
@@ -71,13 +66,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	modified_id ,
 		        	lifecycle,
 		        	min_odo_qty,
-		        	rcvd_work_priority,
-		        	putaway_work_priority,
 		        	picking_work_priority,
 		        	replenishment_work_priority,
-		        	stock_count_work_priority,
-		        	in_warehouse_move_work_priority,
-		        	in_warehouse_process_work_priority,
 		        	is_auto_release_work,
 		        	picking_ext_priority 
 		        ) VALUES (
@@ -101,13 +91,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER},
 		        	#{minOdoQty,javaType=java.lang.Integer,jdbcType=INTEGER},
-		        	#{rcvdWorkPriority,javaType=java.lang.Integer,jdbcType=INTEGER},
-		            #{putawayWorkPriority,javaType=java.lang.Integer,jdbcType=INTEGER},
 		            #{pickingWorkPriority,javaType=java.lang.Integer,jdbcType=INTEGER},
 		            #{replenishmentWorkPriority,javaType=java.lang.Integer,jdbcType=INTEGER},
-		            #{stockCountWorkPriority,javaType=java.lang.Integer,jdbcType=INTEGER},
-		            #{inWarehouseMoveWorkPriority,javaType=java.lang.Integer,jdbcType=INTEGER},
-		            #{inWarehouseProcessWorkPriority,javaType=java.lang.Integer,jdbcType=INTEGER},
 		            #{isAutoReleaseWork,javaType=java.lang.Boolean,jdbcType=BIT},
 		            #{pickingExtPriority,javaType=java.lang.Integer,jdbcType=INTEGER} 
 		        )
@@ -138,13 +123,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER},
 		        min_odo_qty = #{minOdoQty,javaType=java.lang.Integer,jdbcType=INTEGER},
-		        rcvd_work_priority = #{rcvdWorkPriority,javaType=java.lang.Integer,jdbcType=INTEGER},
-		        putaway_work_priority = #{putawayWorkPriority,javaType=java.lang.Integer,jdbcType=INTEGER},
 		        picking_work_priority = #{pickingWorkPriority,javaType=java.lang.Integer,jdbcType=INTEGER},
 		        replenishment_work_priority = #{replenishmentWorkPriority,javaType=java.lang.Integer,jdbcType=INTEGER},
-		        stock_count_work_priority = #{stockCountWorkPriority,javaType=java.lang.Integer,jdbcType=INTEGER},
-		        in_warehouse_move_work_priority = #{inWarehouseMoveWorkPriority,javaType=java.lang.Integer,jdbcType=INTEGER},
-		        in_warehouse_process_work_priority = #{inWarehouseProcessWorkPriority,javaType=java.lang.Integer,jdbcType=INTEGER},
 		        is_auto_release_work = #{isAutoReleaseWork,javaType=java.lang.Boolean,jdbcType=BIT},
 		        picking_ext_priority = #{pickingExtPriority,javaType=java.lang.Integer,jdbcType=INTEGER}  
 	        WHERE 
@@ -268,26 +248,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				  <if test=" minOdoQty!=null">
 					and min_odo_qty = #{ minOdoQty}
 				</if>
-				<if test="rcvdWorkPriority!=null">
-					and rcvd_work_priority = #{rcvdWorkPriority}
-				</if>
-				<if test="putawayWorkPriority!=null">
-					and putaway_work_priority = #{putawayWorkPriority}
-				</if>
 				<if test="pickingWorkPriority!=null">
 					and picking_work_priority = #{pickingWorkPriority}
 				</if>
 				<if test="replenishmentWorkPriority!=null">
 					and replenishment_work_priority = #{replenishmentWorkPriority}
-				</if>
-				<if test="stockCountWorkPriority!=null">
-					and stock_count_work_priority = #{stockCountWorkPriority}
-				</if>
-				<if test="inWarehouseMoveWorkPriority!=null">
-					and in_warehouse_move_work_priority = #{inWarehouseMoveWorkPriority}
-				</if>
-				<if test="inWarehouseProcessWorkPriority!=null">
-					and  in_warehouse_process_work_priority = #{inWarehouseProcessWorkPriority}
 				</if>
 				<if test="isAutoReleaseWork!=null">
 					and is_auto_release_work = #{isAutoReleaseWork}
