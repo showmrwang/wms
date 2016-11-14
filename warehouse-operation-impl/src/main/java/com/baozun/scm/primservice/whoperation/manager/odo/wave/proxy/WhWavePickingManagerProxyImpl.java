@@ -145,7 +145,7 @@ public class WhWavePickingManagerProxyImpl implements WhWavePickingManagerProxy 
                 //2.1.4 更新工作头信息
                 this.updateWhWork(workCode, whOdoOutBoundBoxGroup);
                 //2.1.5 创建作业头
-                String operationCode = this.saveWhOperation(workCode, whOdoOutBoundBox.getOuId());
+                String operationCode = this.saveWhOperation(workCode, whOdoOutBoundBoxGroup);
                 //2.1.6 创建作业明细
                 int whOperationLineCount = this.saveWhOperationLine(workCode, operationCode, whOdoOutBoundBox.getOuId());
                 //2.1.10 作业明细校验
@@ -578,13 +578,14 @@ public class WhWavePickingManagerProxyImpl implements WhWavePickingManagerProxy 
 
     /**
      * 创建作业头
+     * @param workCode
      * @param WhOdoOutBoundBox
      * @return
      */
     @Override
-    public String saveWhOperation(String workCode, Long ouId) {
+    public String saveWhOperation(String workCode, WhOdoOutBoundBox whOdoOutBoundBox) {
       //获取工作头信息        
-      WhWorkCommand whWorkCommand = this.whWorkDao.findWorkByWorkCode(workCode, ouId);
+      WhWorkCommand whWorkCommand = this.whWorkDao.findWorkByWorkCode(workCode, whOdoOutBoundBox.getOuId());
         
       //调编码生成器工作明细实体标识
       String operationCode = codeManager.generateCode(Constants.WMS, Constants.WHOPERATION_MODEL_URL, "", "OPERATION", null);
@@ -619,6 +620,14 @@ public class WhWavePickingManagerProxyImpl implements WhWavePickingManagerProxy 
       WhOperationCommand.setOuterContainerCode(whWorkCommand.getOuterContainerCode());
       //容器
       WhOperationCommand.setContainerCode(whWorkCommand.getContainerCode());
+      //是否整托整箱
+      if(null != whOdoOutBoundBox.getWholeCase()){
+          //是否整托整箱
+          WhOperationCommand.setIsWholeCase(true);  
+      }else{
+          //是否整托整箱
+          WhOperationCommand.setIsWholeCase(false);  
+      }
       //创建时间 
       WhOperationCommand.setCreateTime(whWorkCommand.getCreateTime());
       //最后操作时间
@@ -723,8 +732,6 @@ public class WhWavePickingManagerProxyImpl implements WhWavePickingManagerProxy 
             WhOperationLineCommand.setToOuterContainerId(whWorkLineCommand.getToOuterContainerId());
             //目标库位内部容器
             WhOperationLineCommand.setToInsideContainerId(whWorkLineCommand.getToInsideContainerId());
-            //是否整托整箱
-            WhOperationLineCommand.setIsWholeCase(whWorkLineCommand.getIsWholeCase());
             //出库单ID
             WhOperationLineCommand.setOdoId(whWorkLineCommand.getOdoId());
             //出库单明细ID

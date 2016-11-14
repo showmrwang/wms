@@ -93,8 +93,7 @@ public class WhOperationLineCommand extends BaseModel {
 	private java.lang.Long toOuterContainerId;
 	/** 目标库位内部容器 */
 	private java.lang.Long toInsideContainerId;
-	/** 是否整托整箱 */
-    private java.lang.Boolean isWholeCase;
+	
 	/** 出库单ID */
 	private java.lang.Long odoId;
 	/** 出库单明细ID */
@@ -329,12 +328,6 @@ public class WhOperationLineCommand extends BaseModel {
     }
     public void setQty(java.lang.Double qty) {
         this.qty = qty;
-    }
-    public java.lang.Boolean getIsWholeCase() {
-        return isWholeCase;
-    }
-    public void setIsWholeCase(java.lang.Boolean isWholeCase) {
-        this.isWholeCase = isWholeCase;
     }
     
 }
