@@ -1544,7 +1544,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                 if (ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY == containerCommand.getStatus()) {
                     List<Long> skuIdList = this.generalRcvdManager.findSkuIdListFromInventory(containerCommand.getId(), ouId);
                     if(skuIdList==null||skuIdList.size()==0){
-                        throw new BusinessException("容器状态异常！");
+                        throw new BusinessException(ErrorCodes.RCVD_CONTAINER_STATUS_ERROR);
                     }
 
                     // 容器是否混放
@@ -1555,7 +1555,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                     SkuRedisCommand sku = this.skuRedisManager.findSkuMasterBySkuId(skuId, ouId, logId);
                     SkuMgmt mgmt=sku.getSkuMgmt();
                     if(mgmt==null){
-                        throw new BusinessException("容器数据异常！");
+                        throw new BusinessException(ErrorCodes.RCVD_SKU_DATA_ERROR);
                     }
                     // 混放属性
                     cacheContainer.setIsMixAttr(true);
@@ -1974,7 +1974,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
         // @mender yimin.lu 2016/11/7 校验容器是否允许混放，如果容器允许混放，还需要校验混放属性是否一致
         SkuMgmt mgmt = sku.getSkuMgmt();
         if (null == mgmt) {
-            throw new BusinessException("商品数据异常！");
+            throw new BusinessException(ErrorCodes.RCVD_SKU_DATA_ERROR);
         }
         command.setMixAttr(mgmt.getMixAttr());
         // @mender yimin.lu 缓存商品辅助表信息，不需要再进行效期的计算
@@ -1994,7 +1994,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
         // 校验容器是否允许放入此商品
         RcvdContainerCacheCommand cacheContainer = this.cacheManager.getObject(CacheKeyConstant.CACHE_RCVD_CONTAINER_USER_PREFIX + insideContainerId);
         if (cacheContainer == null) {
-            throw new BusinessException("校验容器时，容器缓存异常！");
+            throw new BusinessException(ErrorCodes.RCVD_CONTAINER_CACHE_ERROR);
         }
         Set<Long> skuIdSet = cacheContainer.getSkuIdSet();
         boolean isCacheSkuAttrFlag = (skuIdSet.contains(skuId) && ContainerStatus.CONTAINER_STATUS_PUTAWAY == cacheContainer.getStatus()) ? true : false;
@@ -2005,17 +2005,17 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                     if ((StringUtils.isEmpty(mgmt.getMixAttr()) && StringUtils.isEmpty(cacheContainer.getMixAttr())) || (StringUtils.hasText(mgmt.getMixAttr()) && mgmt.getMixAttr().equals(cacheContainer.getMixAttr()))) {
 
                     } else {
-                        throw new BusinessException("商品混放属性不一致，商品不允许混放");
+                        throw new BusinessException(ErrorCodes.RCVD_SKU_MIXING_ATTR_ERROR);
                     }
                 }
             } else {
                 if (skuIdSet.size() > 1) {
-                    throw new BusinessException("容器不允许混放！");
+                    throw new BusinessException(ErrorCodes.RCVD_CONTAINER_MIXING_ERROR);
                 }
             }
         } else {
             if (skuIdSet.size() > 1) {
-                throw new BusinessException("容器不允许混放！");
+                throw new BusinessException(ErrorCodes.RCVD_CONTAINER_MIXING_ERROR);
             }
         }
         cacheContainer.setSkuIdSet(skuIdSet);
@@ -2032,7 +2032,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                 // 需要开启查询数据库事务；并且，当SKUID不为空的时候，仅返回一条
                 List<RcvdContainerCacheCommand> rcvdContainerCacheCommandList = this.generalRcvdManager.getUniqueSkuAttrFromWhSkuInventory(command.getInsideContainerId(), command.getSkuId(), ouId);
                 if (rcvdContainerCacheCommandList == null || rcvdContainerCacheCommandList.size() == 0) {
-                    throw new BusinessException("容器商品数据异常！");
+                    throw new BusinessException(ErrorCodes.RCVD_CONTAINER_HAS_SKU_DATA_ERROR);
                 }
                 rcvdContainerCacheCommand = rcvdContainerCacheCommandList.get(0);
                 if (rcvd.getIsLimitUniqueBatch()) {
