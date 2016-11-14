@@ -374,6 +374,18 @@ public class ErrorCodes {
     public static final int RCVD_SN_DUP_ERROR = 10047;
     /** 输入的商品序列号不存在 */
     public static final int RCVD_SN_NO_EXISTS_ERROR = 10048;
+    /** 容器状态异常 */
+    public static final int RCVD_CONTAINER_STATUS_ERROR = 10049;
+    /** 扫描商品数据异常 */
+    public static final int RCVD_SKU_DATA_ERROR = 10050;
+    /** 校验容器时，容器缓存异常 */
+    public static final int RCVD_CONTAINER_CACHE_ERROR = 10051;
+    /** 商品混放属性不一致，商品不允许混放 */
+    public static final int RCVD_SKU_MIXING_ATTR_ERROR = 10052;
+    /** 容器不允许混放！ */
+    public static final int RCVD_CONTAINER_MIXING_ERROR = 10053;
+    /** 已有库存的容器商品数据异常！ */
+    public static final int RCVD_CONTAINER_HAS_SKU_DATA_ERROR = 10054;
     // 10001-20000 luyimin
 
 

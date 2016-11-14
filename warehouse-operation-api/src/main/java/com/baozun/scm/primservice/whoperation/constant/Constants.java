@@ -331,6 +331,8 @@ public final class Constants {
 
     public static final String ASNLINESTATUS = "ASNLINESTATUS";
 
+    public static final String IS_NOT = "IS_NOT";
+
     // 出库单默认优先级
     public static final Integer ODO_DEFAULT_PRIORITYLEVLE = 50;
 
