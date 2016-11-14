@@ -30,7 +30,6 @@ import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
 import com.baozun.scm.primservice.whoperation.constant.CacheKeyConstant;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
 import com.baozun.scm.primservice.whoperation.constant.WhPutawayPatternDetailType;
-import com.baozun.scm.primservice.whoperation.constant.WhScanPatternType;
 import com.baozun.scm.primservice.whoperation.constant.WhUomType;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.Container2ndCategoryDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
@@ -438,9 +437,9 @@ public class PdaManmadePutawayCacheManagerImpl extends BaseManagerImpl implement
                        skuIds.add(skuId);
                    }
                }
-              if(skuIds.size() == 0) {
-                      throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_INSIDE_CONTAINER_ID, new Object[] {containerId}); 
-              }
+//              if(skuIds.size() == 0) {
+//                      throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_INSIDE_CONTAINER_ID, new Object[] {containerId}); 
+//              }
               insideContainerIdSkuIds.put(containerId , skuIds);
               
             //计算托盘和货箱重量

@@ -2038,7 +2038,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					where 
 					location_id = #{locationId} 
 					and ou_id = #{ouId}
-					and (inside_container_id != null or (outer_container_id != null and inside_container_id == null))
+					and (inside_container_id is not null or (outer_container_id is not null and inside_container_id is null))
     </select>
       <select id="findWhSkuInvCmdByLocation" resultMap="WhSkuInventoryCommandResultExt">
 				select  <include refid="whSkuInventoryColumnsExt" />
@@ -2608,5 +2608,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		t_wh_sku_inventory
         <include refid="whSkuInventoryDynamicWhereExt"/>
 	</select>
+	
+	    <select id="findWhSkuInvCmdByLocationContainerIdIsNull" resultMap="WhSkuInventoryCommandResultExt">
+				select  <include refid="whSkuInventoryColumnsExt" />
+					from 
+					t_wh_sku_inventory 
+					where 
+					location_id = #{locationId} 
+					and ou_id = #{ouId} and outer_container_id is null and inside_container_id is null
+    </select>
     
 </mapper>
