@@ -1,12 +1,25 @@
 package com.baozun.scm.primservice.whoperation.command.pda.rcvd;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 public class RcvdContainerCacheCommand implements Serializable {
     /**
      * 
      */
     private static final long serialVersionUID = -4818032720551231454L;
+
+    /** 是否有混放属性 */
+    private Boolean isMixAttr = false;
+    /** 混放属性 */
+    private String mixAttr;
+    /** 容器状态 */
+    private Integer status;
+    /** lifecycle */
+    private Integer lifecycle;
+    /** 商品ID集合 */
+    private Set<Long> skuIdSet = new HashSet<Long>();
 
     /** 内部容器ID 托盘 货箱 */
     private Long insideContainerId;
@@ -38,6 +51,39 @@ public class RcvdContainerCacheCommand implements Serializable {
     private Long userId;
     /** OUID */
     private Long ouId;
+
+    public Set<Long> getSkuIdSet() {
+        return skuIdSet;
+    }
+
+    public void setSkuIdSet(Set<Long> skuIdSet) {
+        this.skuIdSet = skuIdSet;
+    }
+
+    public Boolean getIsMixAttr() {
+        return isMixAttr;
+    }
+
+    public void setIsMixAttr(Boolean isMixAttr) {
+        this.isMixAttr = isMixAttr;
+    }
+
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    public Integer getLifecycle() {
+        return lifecycle;
+    }
+
+    public void setLifecycle(Integer lifecycle) {
+        this.lifecycle = lifecycle;
+    }
 
     public Long getOuId() {
         return ouId;
@@ -156,6 +202,14 @@ public class RcvdContainerCacheCommand implements Serializable {
 
     public void setExpDate(String expDate) {
         this.expDate = expDate;
+    }
+
+    public String getMixAttr() {
+        return mixAttr;
+    }
+
+    public void setMixAttr(String mixAttr) {
+        this.mixAttr = mixAttr;
     }
 
 

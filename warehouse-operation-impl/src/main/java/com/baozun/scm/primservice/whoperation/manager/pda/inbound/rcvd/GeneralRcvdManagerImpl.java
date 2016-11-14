@@ -78,6 +78,7 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container2ndCategory;
 import com.baozun.scm.primservice.whoperation.model.warehouse.StoreDefectReasons;
 import com.baozun.scm.primservice.whoperation.model.warehouse.StoreDefectType;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhAsnRcvdLog;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhAsnRcvdSnLog;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionRcvd;
@@ -451,7 +452,7 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void saveScanedSkuWhenGeneralRcvdForPda(List<WhSkuInventorySnCommand> saveSnList, List<WhSkuInventory> saveInvList, List<WhAsnRcvdLogCommand> saveInvLogList, List<WhAsnLine> saveAsnLineList, WhAsn asn, List<WhPoLine> savePoLineList, WhPo po,
-            Container container, List<WhCarton> saveWhCartonList) {
+            Container container, List<WhCarton> saveWhCartonList, Warehouse wh) {
         try {
             Long userId = po.getModifiedId();
             // 保存残次信息
@@ -481,13 +482,13 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
                 WhSkuInventory skuInv = this.whSkuInventoryDao.findWhSkuInventoryByUuid(inv.getOuId(), inv.getUuid());
                 if (null == skuInv) {
                     this.whSkuInventoryDao.insert(inv);
-                    this.insertSkuInventoryLog(inv.getId(), inv.getOnHandQty(), Constants.DEFAULT_DOUBLE, true, inv.getOuId(), userId);
+                    this.insertSkuInventoryLog(inv.getId(), inv.getOnHandQty(), Constants.DEFAULT_DOUBLE, wh.getIsTabbInvTotal(), inv.getOuId(), userId);
                 } else {
                     Double oldQty = skuInv.getOnHandQty();
                     skuInv.setOnHandQty(skuInv.getOnHandQty() + inv.getOnHandQty());
                     this.whSkuInventoryDao.saveOrUpdateByVersion(skuInv);
                     // 插入库存日志
-                    this.insertSkuInventoryLog(skuInv.getId(), skuInv.getOnHandQty(), oldQty, true, skuInv.getOuId(), userId);
+                    this.insertSkuInventoryLog(skuInv.getId(), skuInv.getOnHandQty(), oldQty, wh.getIsTabbInvTotal(), skuInv.getOuId(), userId);
                 }
             }
             // 保存收货日志
@@ -909,5 +910,11 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
     public SkuStandardPackingCommand getContainerQty(Long skuId, Long ouId, Long containerType) {
         SkuStandardPackingCommand command = this.skuStandardPackingDao.findSkuStandardPackingBySkuIdAndContainerType(skuId, containerType, ouId);
         return command;
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<Long> findSkuIdListFromInventory(Long insideContainerId, Long ouId) {
+        return this.whSkuInventoryDao.findSkuIdListFromInventory(insideContainerId, ouId);
     }
 }

@@ -18,9 +18,11 @@ public interface PdaRcvdManagerProxy extends BaseManager {
     /**
      * 通用收货：将扫描的商品数据从缓存中推送到数据库中
      * 
+     * @param ouId
+     * 
      * @param commmand
      */
-    void saveScanedSkuWhenGeneralRcvdForPda(Long userId);
+    void saveScanedSkuWhenGeneralRcvdForPda(Long userId, Long ouId);
 
     /**
      * 将扫描的临时数据推送到缓存中

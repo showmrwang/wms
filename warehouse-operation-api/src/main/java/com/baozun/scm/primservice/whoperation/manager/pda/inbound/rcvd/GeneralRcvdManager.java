@@ -21,6 +21,7 @@ import com.baozun.scm.primservice.whoperation.model.sku.SkuMgmt;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
 import com.baozun.scm.primservice.whoperation.model.warehouse.StoreDefectReasons;
 import com.baozun.scm.primservice.whoperation.model.warehouse.StoreDefectType;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionRcvd;
 import com.baozun.scm.primservice.whoperation.model.warehouse.carton.WhCarton;
 import com.baozun.scm.primservice.whoperation.model.warehouse.conf.basis.WarehouseDefectReasons;
@@ -47,6 +48,7 @@ public interface GeneralRcvdManager extends BaseManager {
      * @param insideContainerId
      * @return
      */
+    @Deprecated
     long findContainerListCountByInsideContainerIdFromSkuInventory(Long insideContainerId, Long ouId);
 
     /**
@@ -57,6 +59,15 @@ public interface GeneralRcvdManager extends BaseManager {
      * @return
      */
     List<RcvdContainerCacheCommand> getUniqueSkuAttrFromWhSkuInventory(Long insideContainerId, Long skuId, Long ouId);
+    
+    /**
+     * 查找容器中有哪些商品
+     * 
+     * @param insideContainerId
+     * @param ouId
+     * @return
+     */
+    List<Long> findSkuIdListFromInventory(Long insideContainerId, Long ouId);
 
     /**
      * 查找商品信息
@@ -101,9 +112,10 @@ public interface GeneralRcvdManager extends BaseManager {
      * @param savePoLineList
      * @param po
      * @param saveWhCartonList
+     * @param wh
      */
     void saveScanedSkuWhenGeneralRcvdForPda(List<WhSkuInventorySnCommand> saveSnList, List<WhSkuInventory> saveInvList, List<WhAsnRcvdLogCommand> saveInvLogList, List<WhAsnLine> saveAsnLineList, WhAsn asn, List<WhPoLine> savePoLineList, WhPo po,
-            Container container, List<WhCarton> saveWhCartonList);
+            Container container, List<WhCarton> saveWhCartonList, Warehouse wh);
 
     /**
      * version更新容器
