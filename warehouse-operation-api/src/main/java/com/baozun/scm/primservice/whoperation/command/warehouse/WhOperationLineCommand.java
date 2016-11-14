@@ -45,10 +45,6 @@ public class WhOperationLineCommand extends BaseModel {
 	private java.lang.Long skuId;
 	/** 计划量 */
 	private java.lang.Double qty;
-	/** 执行量/完成量 */
-	private java.lang.Double completeQty;
-	/** 取消量 */
-	private java.lang.Double cancelQty;
 	/** 库存状态 */
 	private java.lang.Long invStatus;
 	/** 库存类型 */
@@ -333,18 +329,6 @@ public class WhOperationLineCommand extends BaseModel {
     }
     public void setQty(java.lang.Double qty) {
         this.qty = qty;
-    }
-    public java.lang.Double getCompleteQty() {
-        return completeQty;
-    }
-    public void setCompleteQty(java.lang.Double completeQty) {
-        this.completeQty = completeQty;
-    }
-    public java.lang.Double getCancelQty() {
-        return cancelQty;
-    }
-    public void setCancelQty(java.lang.Double cancelQty) {
-        this.cancelQty = cancelQty;
     }
     public java.lang.Boolean getIsWholeCase() {
         return isWholeCase;

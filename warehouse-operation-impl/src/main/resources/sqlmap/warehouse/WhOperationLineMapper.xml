@@ -19,8 +19,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	finish_time as finishTime,
 	        	sku_id as skuId,
 	        	qty as qty,
-	        	complete_qty as completeQty,
-	        	cancel_qty as cancelQty,
 	        	inv_status as invStatus,
 	        	inv_type as invType,
 	        	batch_number as batchNumber,
@@ -71,8 +69,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	finish_time ,
 		        	sku_id ,
 		        	qty ,
-		        	complete_qty ,
-		        	cancel_qty ,
 		        	inv_status ,
 		        	inv_type ,
 		        	batch_number ,
@@ -112,8 +108,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{finishTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        	#{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{qty,javaType=java.lang.Double,jdbcType=DECIMAL} ,
-		        	#{completeQty,javaType=java.lang.Double,jdbcType=DECIMAL} ,
-		        	#{cancelQty,javaType=java.lang.Double,jdbcType=DECIMAL} ,
 		        	#{invStatus,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{invType,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{batchNumber,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -160,8 +154,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        finish_time = #{finishTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        sku_id = #{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        qty = #{qty,javaType=java.lang.Double,jdbcType=DECIMAL} ,
-		        complete_qty = #{completeQty,javaType=java.lang.Double,jdbcType=DECIMAL} ,
-		        cancel_qty = #{cancelQty,javaType=java.lang.Double,jdbcType=DECIMAL} ,
 		        inv_status = #{invStatus,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        inv_type = #{invType,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        batch_number = #{batchNumber,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -261,14 +253,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	       
 				<if test="qty!=null">
 					and qty = #{qty}
-				</if>
-	       
-				<if test="completeQty!=null">
-					and complete_qty = #{completeQty}
-				</if>
-	       
-				<if test="cancelQty!=null">
-					and cancel_qty = #{cancelQty}
 				</if>
 	       
 				<if test="invStatus!=null">
