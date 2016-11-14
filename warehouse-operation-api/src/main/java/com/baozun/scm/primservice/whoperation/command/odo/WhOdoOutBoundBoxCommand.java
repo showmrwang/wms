@@ -60,7 +60,7 @@ public class WhOdoOutBoundBoxCommand extends BaseCommand {
     /** 仓库组织ID */
     private Long ouId;
     /** 是否已创建工作 */
-    private int isCreateWork;
+    private Boolean isCreateWork;
     /** 创建时间 */
     private Date createTime;
     /** 修改时间 */
@@ -148,10 +148,10 @@ public class WhOdoOutBoundBoxCommand extends BaseCommand {
     public void setOuId(Long ouId) {
         this.ouId = ouId;
     }
-    public int getIsCreateWork() {
+    public Boolean getIsCreateWork() {
         return isCreateWork;
     }
-    public void setIsCreateWork(int isCreateWork) {
+    public void setIsCreateWork(Boolean isCreateWork) {
         this.isCreateWork = isCreateWork;
     }
     public Date getCreateTime() {

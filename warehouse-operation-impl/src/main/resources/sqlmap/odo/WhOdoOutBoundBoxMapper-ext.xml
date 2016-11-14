@@ -118,7 +118,7 @@
                     container_id = #{containerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
                     outer_container_id = #{outerContainerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
                     container_lattice_no = #{containerLatticeNo,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-                    qty = #{qty,javaType=Long,jdbcType=DECIMAL} ,
+                    qty = #{qty,javaType=Double,jdbcType=DECIMAL} ,
                     box_batch = #{boxBatch,javaType=java.lang.String,jdbcType=VARCHAR} ,
                     whole_case = #{wholeCase,javaType=java.lang.Integer,jdbcType=INTEGER} ,
                     is_create_work = #{isCreateWork,javaType=java.lang.Boolean,jdbcType=BIT} ,
