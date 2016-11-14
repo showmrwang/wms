@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkCommand;
@@ -26,6 +27,7 @@ public class WhWorkManagerImpl extends BaseManagerImpl implements WhWorkManager 
     
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    @Transactional(propagation = Propagation.SUPPORTS)
     public Boolean saveOrUpdate(WhWorkCommand whWorkCommand) {
         WhWork whWork = new WhWork();
         //复制数据        

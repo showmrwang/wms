@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.baseservice.sac.manager.CodeManager;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoCommand;
@@ -88,8 +89,6 @@ public class WhWavePickingManagerProxyImpl implements WhWavePickingManagerProxy 
     @Autowired
     private WhLocationDao whLocationDao;
     
-    
-    
 
     /**
      * 查询出小批次列表
@@ -105,7 +104,7 @@ public class WhWavePickingManagerProxyImpl implements WhWavePickingManagerProxy 
         if (null == whWave) {
             throw new BusinessException("没有波次头信息");
         }
-        if (BaseModel.LIFECYCLE_NORMAL != whWave.getLifecycle() || WaveStatus.WAVE_EXECUTING != whWave.getStatus() || WavePhase.CREATE_WORK != whWave.getPhaseCode()) {
+        if (BaseModel.LIFECYCLE_NORMAL != whWave.getLifecycle() || WaveStatus.WAVE_EXECUTING != whWave.getStatus() || !WavePhase.CREATE_WORK.equals(whWave.getPhaseCode())) {
             throw new BusinessException("波次头不可用或波次状态不为运行中或波次阶段不为创建工作");
         }
         // 2.查询波次中的所有小批次
@@ -173,8 +172,8 @@ public class WhWavePickingManagerProxyImpl implements WhWavePickingManagerProxy 
         //仓库组织ID        
         whWorkCommand.setOuId(whOdoOutBoundBox.getOuId());
         //工作类型编码
-        whWorkCommand.setWorkType(workType.getCode());
-        //工作类别编码
+        whWorkCommand.setWorkType(null == workType ? null : workType.getCode());
+        //工作类别编码 
         whWorkCommand.setWorkCategory("PICKING");
         //是否锁定 默认值：1
         whWorkCommand.setIsLocked(true);
@@ -201,7 +200,7 @@ public class WhWavePickingManagerProxyImpl implements WhWavePickingManagerProxy 
         //托盘--更新时获取数据
         whWorkCommand.setOuterContainerCode(null);
         //容器
-        whWorkCommand.setContainerCode(container.getCode());
+        whWorkCommand.setContainerCode(null == container ? null : container.getCode());
         //创建时间
         whWorkCommand.setCreateTime(new Date());
         //最后操作时间
@@ -232,6 +231,7 @@ public class WhWavePickingManagerProxyImpl implements WhWavePickingManagerProxy 
         WhSkuInventory whSkuInventory = new WhSkuInventory();
         whSkuInventory.setOccupationCode(whOdo.getOdoCode());
         whSkuInventory.setOccupationLineId(whOdoOutBoundBoxCommand.getOdoLineId());
+        whSkuInventory.setIsLocked(null);
         List<WhSkuInventory> SkuInventoryList =  whSkuInventoryManager.findWhSkuInventoryListByPramas(whSkuInventory);
         return SkuInventoryList;
     }
@@ -328,6 +328,13 @@ public class WhWavePickingManagerProxyImpl implements WhWavePickingManagerProxy 
             whWorkLineCommand.setToOuterContainerId(null);
             //目标库位内部容器 --捡货模式没有
             whWorkLineCommand.setToInsideContainerId(null);
+            if(null != whOdoOutBoundBoxCommand.getWholeCase()){
+                //是否整托整箱
+                whWorkLineCommand.setIsWholeCase(true);  
+            }else{
+                //是否整托整箱
+                whWorkLineCommand.setIsWholeCase(false);  
+            }
             //出库单ID 
             whWorkLineCommand.setOdoId(whOdoOutBoundBoxCommand.getOdoId());
             //出库单明细ID 
@@ -389,11 +396,13 @@ public class WhWavePickingManagerProxyImpl implements WhWavePickingManagerProxy 
             }
             
             LocationCommand locationCommand = whLocationDao.findLocationCommandByParam(whWorkLineCommand.getFromLocationId(), whWorkLineCommand.getOuId());
-            Area area = areaDao.findByIdExt(locationCommand.getWorkAreaId(),locationCommand.getOuId());
-            if(workArea == ""){
-                workArea = area.getAreaCode();
-            }else{
-                workArea = workArea +","+area.getAreaCode();
+            if(null != locationCommand){
+                Area area = areaDao.findByIdExt(locationCommand.getWorkAreaId(),locationCommand.getOuId());
+                if(workArea == ""){
+                    workArea = area.getAreaCode();
+                }else{
+                    workArea = workArea +","+area.getAreaCode();
+                }
             }
             //索引自增            
             count++;
@@ -402,30 +411,38 @@ public class WhWavePickingManagerProxyImpl implements WhWavePickingManagerProxy 
         if(isFromLocationId == true){
             //获取库位表数据                              
             LocationCommand locationCommand = whLocationDao.findLocationCommandByParam(whWorkLineCommandList.get(0).getFromLocationId(), whWorkLineCommandList.get(0).getOuId());
-            //设置库位      
-            whWorkCommand.setLocationCode(locationCommand.getCode());
+            if(null != locationCommand){
+              //设置库位      
+              whWorkCommand.setLocationCode(locationCommand.getCode());
+            }
         }
         //判断工作明细是否只有唯一外部容器
         if(isUseOuterContainerId == true){
             //根据容器ID获取容器CODE      
             Container containerOut = new Container();
             containerOut = containerDao.findByIdExt(whWorkLineCommandList.get(0).getUseOuterContainerId(),odoOutBoundBox.getOuId());
-            //设置外部容器
-            whWorkCommand.setOuterContainerCode(containerOut.getCode());
+            if(null != containerOut){
+                //设置外部容器
+                whWorkCommand.setOuterContainerCode(containerOut.getCode());
+            }
         }
         //判断据工作明细是否只有唯一内部容器
         if(isUseContainerId == true){
             //根据容器ID获取容器CODE      
             Container containerIn = new Container();
             containerIn = containerDao.findByIdExt(whWorkLineCommandList.get(0).getUseContainerId(),odoOutBoundBox.getOuId());
-            //设置内部容器
-            whWorkCommand.setContainerCode(containerIn.getCode());
+            if(null != containerIn){
+                //设置内部容器
+                whWorkCommand.setContainerCode(containerIn.getCode());
+            }
         }
         //判断据工作明细是否只有唯一出库单
         if(isOdoId == true){
             OdoCommand odoCommand = odoManager.findOdoCommandByIdOuId(whWorkLineCommandList.get(0).getOdoId(), odoOutBoundBox.getOuId());
-            //设置订单号
-            whWorkCommand.setOrderCode(odoCommand.getEcOrderCode());
+            if(null != odoCommand){
+                //设置订单号
+                whWorkCommand.setOrderCode(odoCommand.getEcOrderCode());
+            }
         }
         
         //当前工作明细设计到的所有库区编码信息列表
@@ -582,6 +599,8 @@ public class WhWavePickingManagerProxyImpl implements WhWavePickingManagerProxy 
             WhOperationLineCommand.setToOuterContainerId(whWorkLineCommand.getToOuterContainerId());
             //目标库位内部容器
             WhOperationLineCommand.setToInsideContainerId(whWorkLineCommand.getToInsideContainerId());
+            //是否整托整箱
+            WhOperationLineCommand.setIsWholeCase(whWorkLineCommand.getIsWholeCase());
             //出库单ID
             WhOperationLineCommand.setOdoId(whWorkLineCommand.getOdoId());
             //出库单明细ID
@@ -607,7 +626,7 @@ public class WhWavePickingManagerProxyImpl implements WhWavePickingManagerProxy 
     @Override
     public void updateWhOdoOutBoundBoxCommand(WhOdoOutBoundBoxCommand whOdoOutBoundBoxCommand) {
         WhOdoOutBoundBoxCommand odoOutBoundBoxCommand = odoOutBoundBoxMapper.findWhOdoOutBoundBoxCommandById(whOdoOutBoundBoxCommand.getId(),whOdoOutBoundBoxCommand.getOuId());
-        odoOutBoundBoxCommand.setIsCreateWork(1);
+        odoOutBoundBoxCommand.setIsCreateWork(true);
         odoOutBoundBoxMapper.saveOrUpdate(odoOutBoundBoxCommand);
     }
 }

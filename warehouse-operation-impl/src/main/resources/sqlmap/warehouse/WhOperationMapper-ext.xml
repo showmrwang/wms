@@ -182,7 +182,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		<where> 
 				ou_id = #{ouId}
 			<if test="operationCode!=null">
-				code = #{operationCode}
+				and code = #{operationCode}
 			</if>
 		</where>
     </select>

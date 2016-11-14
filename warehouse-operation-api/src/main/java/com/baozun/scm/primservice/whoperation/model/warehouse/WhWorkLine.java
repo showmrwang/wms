@@ -46,11 +46,11 @@ public class WhWorkLine extends BaseModel {
 	/** 商品ID */
 	private java.lang.Long skuId;
 	/** 计划量 */
-	private java.lang.Long qty;
+	private java.lang.Double qty;
 	/** 执行量/完成量 */
-	private java.lang.Long completeQty;
+	private java.lang.Double completeQty;
 	/** 取消量 */
-	private java.lang.Long cancelQty;
+	private java.lang.Double cancelQty;
 	/** 库存状态 */
 	private java.lang.Long invStatus;
 	/** 库存类型 */
@@ -149,24 +149,6 @@ public class WhWorkLine extends BaseModel {
     }
     public void setSkuId(java.lang.Long skuId) {
         this.skuId = skuId;
-    }
-    public java.lang.Long getQty() {
-        return qty;
-    }
-    public void setQty(java.lang.Long qty) {
-        this.qty = qty;
-    }
-    public java.lang.Long getCompleteQty() {
-        return completeQty;
-    }
-    public void setCompleteQty(java.lang.Long completeQty) {
-        this.completeQty = completeQty;
-    }
-    public java.lang.Long getCancelQty() {
-        return cancelQty;
-    }
-    public void setCancelQty(java.lang.Long cancelQty) {
-        this.cancelQty = cancelQty;
     }
     public java.lang.Long getInvStatus() {
         return invStatus;
@@ -348,6 +330,23 @@ public class WhWorkLine extends BaseModel {
     public void setOperatorId(java.lang.Long operatorId) {
         this.operatorId = operatorId;
     }
-	
+    public java.lang.Double getQty() {
+        return qty;
+    }
+    public void setQty(java.lang.Double qty) {
+        this.qty = qty;
+    }
+    public java.lang.Double getCompleteQty() {
+        return completeQty;
+    }
+    public void setCompleteQty(java.lang.Double completeQty) {
+        this.completeQty = completeQty;
+    }
+    public java.lang.Double getCancelQty() {
+        return cancelQty;
+    }
+    public void setCancelQty(java.lang.Double cancelQty) {
+        this.cancelQty = cancelQty;
+    }
 }
 
