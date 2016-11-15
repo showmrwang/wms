@@ -446,7 +446,7 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
         whOdo.setQty(qty);
         whOdo.setAmt(amt);
         if (!StringUtil.isEmpty(originalOdoCode)) {
-            originalOdoCode.substring(0, originalOdoCode.length() - 1);
+            originalOdoCode = originalOdoCode.substring(0, originalOdoCode.length() - 1);
         }
         whOdo.setOriginalOdoCode(originalOdoCode);
         if (null != whOdo.getId()) {
