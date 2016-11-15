@@ -208,9 +208,6 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                             command.setDistributeModeName(sys == null ? command.getDistributeMode() : sys.getDicLabel());
                         }
                         if (StringUtils.hasText(command.getOdoStatus())) {
-                            if (OdoStatus.ODO_TOBECREATED.equals(command.getOdoStatus())) {
-                                command.setOdoStatusName("未创建完成");
-                            }
                             SysDictionary sys = dicMap.get(Constants.ODO_STATUS + "_" + command.getOdoStatus());
                             command.setOdoStatusName(sys == null ? command.getOdoStatus() : sys.getDicLabel());
 

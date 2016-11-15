@@ -320,6 +320,7 @@ public final class Constants {
     public static final String DISTRIBUTE_MODE = "DISTRIBUTE_MODE";
 
     public static final String ODO_STATUS = "ODO_STATUS";
+    public static final String ODO_LINE_STATUS = "ODO_LINE_STATUS";
 
     public static final String ODO_AIM_TYPE = "ODO_AIM_TYPE";
 

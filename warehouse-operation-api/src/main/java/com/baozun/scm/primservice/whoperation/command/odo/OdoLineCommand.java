@@ -134,6 +134,8 @@ public class OdoLineCommand extends BaseCommand {
     private String ids;
     /** 库存状态 */
     private String invStatusName;
+    /** 明细状态 */
+    private String odoLineStatusName;
 
     /***/
     private List<WhOdoVasCommand> odoVasList;
@@ -634,4 +636,13 @@ public class OdoLineCommand extends BaseCommand {
     public void setOriginalLinenum(Integer originalLinenum) {
         this.originalLinenum = originalLinenum;
     }
+
+    public String getOdoLineStatusName() {
+        return odoLineStatusName;
+    }
+
+    public void setOdoLineStatusName(String odoLineStatusName) {
+        this.odoLineStatusName = odoLineStatusName;
+    }
+
 }
