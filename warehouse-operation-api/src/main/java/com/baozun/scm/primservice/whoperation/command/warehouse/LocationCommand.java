@@ -6,14 +6,14 @@ import java.util.List;
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
 
 
-public class LocationCommand extends BaseCommand{
+public class LocationCommand extends BaseCommand {
     /**
      * 
      */
     private static final long serialVersionUID = 8716540162202662736L;
-    /*库位id*/
+    /* 库位id */
     private Long id;
-    /*库位编码*/
+    /* 库位编码 */
     private String code;
     /* 库位条码 */
     private String barCode;
@@ -55,26 +55,26 @@ public class LocationCommand extends BaseCommand{
     private Long operatorId;
     /* 1.可用;2.已删除;0.禁用 */
     private Integer lifecycle;
-    /*对应模板NAME*/
+    /* 对应模板NAME */
     private String templetName;
-    /*所属物理仓*/
+    /* 所属物理仓 */
     private String ouName;
-    /*上架区域*/
+    /* 上架区域 */
     private String shelfArea;
-    /*分配区域*/
+    /* 分配区域 */
     private String allocateArea;
-    /*工作区域*/
+    /* 工作区域 */
     private String workArea;
-    /*库存状态*/
+    /* 库存状态 */
     private String status;
-    /*上架顺序*/
+    /* 上架顺序 */
     private String shelfSort;
-    /*拣货顺序*/
-    
+    /* 拣货顺序 */
+
     private String pickSort;
-    
+
     private String replenishmentBarcode;
-    
+
     private String temporaryCode;
     private String latestSkuCode;
     private String uuid;
@@ -82,14 +82,14 @@ public class LocationCommand extends BaseCommand{
     private Long templetId;
     /* 维度 */
     List<LocationTempletRulesCommand> rules;
-    
+
     private Boolean isModifiedallocateArea;
     private Boolean isModifiedWorkArea;
     private Boolean isModifiedShelfArea;
-    
+
     private Long outerContainerId;
     private String occupationCode;
-    
+
     /* 维度 */
     private String dimension1;
     private String dimension2;
@@ -109,14 +109,14 @@ public class LocationCommand extends BaseCommand{
     private Boolean isStatic;
     /** 是否占用库存 */
     private Boolean isOccupiedInventory;
-    
-    /*上限*/
+
+    /* 上限 */
     private String upBound;
-    /*下限*/
+    /* 下限 */
     private String downBound;
-    
+
     private Long asnId;
-    
+
     /** 长度 */
     private java.lang.Double length;
     /** 宽 */
@@ -128,20 +128,20 @@ public class LocationCommand extends BaseCommand{
     /** 重量 */
     private java.lang.Double weight;
     /** 库位尺寸类型 */
-    private java.lang.Integer sizeType;
+    private java.lang.String sizeType;
     /** 托盘数 */
     private java.lang.Integer trayCount;
     /** 最大混放sku属性数 */
     private java.lang.Long maxChaosSku;
     /** 体积利用率 */
     private java.lang.Double volumeRate;
-    
+
     /** 长度单位 */
     private String lengthUom;
-    
+
     /** 体积单位 */
     private String volumeUom;
-    
+
     /** 重量单位 */
     private String weightUom;
 
@@ -448,9 +448,9 @@ public class LocationCommand extends BaseCommand{
     public void setUuid(String uuid) {
         this.uuid = uuid;
     }
-    
-    
-    
+
+
+
     public Long getTempletId() {
         return templetId;
     }
@@ -563,21 +563,21 @@ public class LocationCommand extends BaseCommand{
         this.availableMixCount = availableMixCount;
     }
 
-	public String getUpBound() {
-		return upBound;
-	}
+    public String getUpBound() {
+        return upBound;
+    }
 
-	public void setUpBound(String upBound) {
-		this.upBound = upBound;
-	}
+    public void setUpBound(String upBound) {
+        this.upBound = upBound;
+    }
 
-	public String getDownBound() {
-		return downBound;
-	}
+    public String getDownBound() {
+        return downBound;
+    }
 
-	public void setDownBound(String downBound) {
-		this.downBound = downBound;
-	}
+    public void setDownBound(String downBound) {
+        this.downBound = downBound;
+    }
 
     public Long getOuterContainerId() {
         return outerContainerId;
@@ -683,11 +683,11 @@ public class LocationCommand extends BaseCommand{
         this.maxChaosSku = maxChaosSku;
     }
 
-    public java.lang.Integer getSizeType() {
+    public java.lang.String getSizeType() {
         return sizeType;
     }
 
-    public void setSizeType(java.lang.Integer sizeType) {
+    public void setSizeType(java.lang.String sizeType) {
         this.sizeType = sizeType;
     }
 
@@ -698,6 +698,6 @@ public class LocationCommand extends BaseCommand{
     public void setVolumeRate(java.lang.Double volumeRate) {
         this.volumeRate = volumeRate;
     }
-    
-    
+
+
 }
