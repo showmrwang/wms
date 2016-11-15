@@ -769,7 +769,14 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
             container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
             container.setStatus(ContainerStatus.CONTAINER_STATUS_RCVD);
             this.containerDao.update(container);
-            this.cacheManager.setValue(CacheKeyConstant.CACHE_RCVD_CONTAINER_USER_PREFIX + command.getId(), userId + "$" + command.getLifecycle() + "$" + command.getStatus());
+            RcvdContainerCacheCommand cacheContainer = new RcvdContainerCacheCommand();
+            cacheContainer.setUserId(userId);
+            cacheContainer.setLifecycle(command.getLifecycle());
+            cacheContainer.setStatus(command.getStatus());
+            this.cacheManager.setObject(CacheKeyConstant.CACHE_RCVD_CONTAINER_USER_PREFIX + command.getId(), cacheContainer);
+            // RcvdContainerCacheCommand cacheContainer =
+            // this.cacheManager.getObject(CacheKeyConstant.CACHE_RCVD_CONTAINER_USER_PREFIX +
+            // containerId);
             return command;
         } else {
             throw new BusinessException("找到的容器不符合");

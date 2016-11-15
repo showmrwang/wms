@@ -958,20 +958,20 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
      * @return
      */
     private void initSkuAttrFromInventoryForCacheContainer(WhSkuInventoryCommand command, Long ouId) {
-        //商品
+        // 商品
         SkuRedisCommand sku = this.skuRedisManager.findSkuMasterBySkuId(command.getSkuId(), ouId, command.getLogId());
-        //功能菜单参数
+        // 功能菜单参数
         WhFunctionRcvd functionRcvd = command.getRcvd();
-        //容器缓存
+        // 容器缓存
         RcvdContainerCacheCommand rcvdContainerCacheCommand = this.cacheManager.getMapObject(CacheKeyConstant.CACHE_RCVD_CONTAINER_PREFIX + command.getInsideContainerId(), command.getSkuId().toString());
-        
-        
-        
-        Object containerCache=this.cacheManager.getObject(CacheKeyConstant.CACHE_RCVD_CONTAINER_PREFIX + command.getInsideContainerId());
+
+
+
+        Object containerCache = this.cacheManager.getObject(CacheKeyConstant.CACHE_RCVD_CONTAINER_PREFIX + command.getInsideContainerId());
         this.cacheManager.getAllMap(CacheKeyConstant.CACHE_RCVD_CONTAINER_PREFIX + command.getInsideContainerId());
-        
-        
-        
+
+
+
         // RcvdContainerCacheCommand rcvdContainerCacheCommand = null;
         // 2.容器缓存
         long invContainerCount = this.generalRcvdManager.findContainerListCountByInsideContainerIdFromSkuInventory(command.getInsideContainerId(), ouId);
@@ -1213,7 +1213,8 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                         }
                         if (skuMgmt.getMinValidDate() != null) {
                             if (skuMgmt.getMinValidDate() > vd) {
-                                throw new BusinessException(ErrorCodes.RCVD_SKU_VALIDDATE_MIN_ERROR);
+                                // throw new
+                                // BusinessException(ErrorCodes.RCVD_SKU_VALIDDATE_MIN_ERROR);
                             }
                         }
                     }
@@ -1472,7 +1473,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
      */
     @Override
     public void checkContainer(WhSkuInventoryCommand command, Long ouId) {
-        Long userId=command.getUserId();
+        Long userId = command.getUserId();
         /***/
         // 逻辑：
         // 1.校验容器；不存在则新建
@@ -1543,7 +1544,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
 
                 if (ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY == containerCommand.getStatus()) {
                     List<Long> skuIdList = this.generalRcvdManager.findSkuIdListFromInventory(containerCommand.getId(), ouId);
-                    if(skuIdList==null||skuIdList.size()==0){
+                    if (skuIdList == null || skuIdList.size() == 0) {
                         throw new BusinessException(ErrorCodes.RCVD_CONTAINER_STATUS_ERROR);
                     }
 
@@ -1551,10 +1552,10 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                     RcvdContainerCacheCommand cacheContainer = new RcvdContainerCacheCommand();
                     Set<Long> skuIdSet = new HashSet<Long>();
                     skuIdSet.addAll(skuIdList);
-                    Long skuId=skuIdList.get(0);
+                    Long skuId = skuIdList.get(0);
                     SkuRedisCommand sku = this.skuRedisManager.findSkuMasterBySkuId(skuId, ouId, logId);
-                    SkuMgmt mgmt=sku.getSkuMgmt();
-                    if(mgmt==null){
+                    SkuMgmt mgmt = sku.getSkuMgmt();
+                    if (mgmt == null) {
                         throw new BusinessException(ErrorCodes.RCVD_SKU_DATA_ERROR);
                     }
                     // 混放属性
@@ -2001,7 +2002,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
         skuIdSet.add(skuId);
         if (mgmt.getIsMixAllowed()) {
             if (rcvd.getIsMixingSku()) {
-                if(cacheContainer.getIsMixAttr()){
+                if (cacheContainer.getIsMixAttr()) {
                     if ((StringUtils.isEmpty(mgmt.getMixAttr()) && StringUtils.isEmpty(cacheContainer.getMixAttr())) || (StringUtils.hasText(mgmt.getMixAttr()) && mgmt.getMixAttr().equals(cacheContainer.getMixAttr()))) {
 
                     } else {
