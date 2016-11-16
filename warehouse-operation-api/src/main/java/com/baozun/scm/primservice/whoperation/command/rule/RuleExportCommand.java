@@ -5,7 +5,6 @@ import java.util.Map;
 
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.OutboundBoxRuleCommand;
-import com.baozun.scm.primservice.whoperation.command.warehouse.OutboundBoxRuleSplitRequireCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.RecommendPlatformCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ReplenishmentRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ShelveRecommendRuleCommand;
@@ -55,14 +54,14 @@ public class RuleExportCommand extends BaseCommand {
     private Map<Long, List<ReplenishmentRuleCommand>> replenishmentRuleSkuMatchListMap;
     /** 补货规则匹配上的库位列表 */
     private List<Long> replenishmentRuleLocationMatchList;
-    
+
     /** 配货模式规则 */
     private List<WhDistributionPatternRuleCommand> whDistributionPatternRuleCommandList;
 
     /** 出库箱装箱规则 出库单对应规则映射 */
     private Map<Long, OutboundBoxRuleCommand> odoOutboundBoxRuleMap;
     /** 出库箱装箱规则拆分条件列表，已按照指定的排序规则排序 */
-    private List<OutboundBoxRuleSplitRequireCommand> outboundBoxRuleSplitRequireCommandList;
+    private List<String> odoLineIdGroupList;
 
     public Boolean getUsableness() {
         return usableness;
@@ -168,11 +167,11 @@ public class RuleExportCommand extends BaseCommand {
         this.odoOutboundBoxRuleMap = odoOutboundBoxRuleMap;
     }
 
-    public List<OutboundBoxRuleSplitRequireCommand> getOutboundBoxRuleSplitRequireCommandList() {
-        return outboundBoxRuleSplitRequireCommandList;
+    public List<String> getOdoLineIdGroupList() {
+        return odoLineIdGroupList;
     }
 
-    public void setOutboundBoxRuleSplitRequireCommandList(List<OutboundBoxRuleSplitRequireCommand> outboundBoxRuleSplitRequireCommandList) {
-        this.outboundBoxRuleSplitRequireCommandList = outboundBoxRuleSplitRequireCommandList;
+    public void setOdoLineIdGroupList(List<String> odoLineIdGroupList) {
+        this.odoLineIdGroupList = odoLineIdGroupList;
     }
 }

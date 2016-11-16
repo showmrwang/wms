@@ -112,7 +112,7 @@ public interface OutboundBoxRuleDao extends BaseDao<OutboundBoxRule, Long> {
      * @param outboundBoxTacticsSql
      * @return
      */
-    List<OutboundBoxRuleSplitRequireCommand> executeOutboundBoxTacticsSql(@Param("outboundBoxTacticsSql") String outboundBoxTacticsSql, @Param("odoId") Long odoId, @Param("ouId") Long ouId);
+    List<String> executeOutboundBoxTacticsSql(@Param("outboundBoxTacticsSql") String outboundBoxTacticsSql, @Param("odoId") Long odoId, @Param("ouId") Long ouId);
 
     /**
      * 获取所有可用的出库箱装箱规则，并按照优先级从高到低排序
