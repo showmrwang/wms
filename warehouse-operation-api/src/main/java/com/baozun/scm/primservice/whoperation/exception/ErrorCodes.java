@@ -386,6 +386,8 @@ public class ErrorCodes {
     public static final int RCVD_CONTAINER_MIXING_ERROR = 10053;
     /** 已有库存的容器商品数据异常！ */
     public static final int RCVD_CONTAINER_HAS_SKU_DATA_ERROR = 10054;
+    /** 编码服务调用异常 */
+    public static final int CODE_MANAGER_ERROR = 10055;
     // 10001-20000 luyimin
 
 
