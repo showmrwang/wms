@@ -399,7 +399,7 @@
 				sku on sku.id=odoline.sku_id
 				where odoline.odo_id=odo.id
 				<if test="skuCode!=null and skuCode!=''">
-					and sku.code like #{skuCode}
+					and ( sku.code like #{skuCode} or sku.ext_code like #{skuCode} )
 				</if>
 				<if test="skuName!=null and skuName!=''">
 					and odoline.sku_name like #{skuName}
