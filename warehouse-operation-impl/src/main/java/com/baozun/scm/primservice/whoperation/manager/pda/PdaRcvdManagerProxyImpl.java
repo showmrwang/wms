@@ -937,14 +937,17 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
             throw new BusinessException(ErrorCodes.SKU_OVERCHARGE_ERROR);
         }
         // @mender yimin.lu 2016/6/22添加逻辑：当功能菜单上指定了库存状态和类型之后
+        WhFunctionRcvd rcvd = command.getRcvd();
         // 1.库存状态
-        if (command.getSkuUrl().charAt(RcvdWorkFlow.GENERAL_RECEIVING_ISINVSTATUS) == '1' && command.getInvStatus() != null) {
+        if (command.getSkuUrl().charAt(RcvdWorkFlow.GENERAL_RECEIVING_ISINVSTATUS) == '1' && rcvd.getInvStatus() != null) {
+            command.setInvStatus(rcvd.getInvStatus());
             lineIdListStr = this.getMatchedLineIdStrForSkuAttr(RcvdWorkFlow.GENERAL_RECEIVING_ISINVSTATUS, command, lineIdListStr);
         }
         // 2.库存类型
         // 如果库存类型为管控的属性的时候
-        if (command.getSkuUrl().charAt(RcvdWorkFlow.GENERAL_RECEIVING_ISINVTYPE) == '1' && StringUtils.hasText(command.getInvType())) {
-            lineIdListStr = this.getMatchedLineIdStrForSkuAttr(RcvdWorkFlow.GENERAL_RECEIVING_ISINVSTATUS, command, lineIdListStr);
+        if (command.getSkuUrl().charAt(RcvdWorkFlow.GENERAL_RECEIVING_ISINVTYPE) == '1' && StringUtils.hasText(rcvd.getInvType())) {
+            command.setInvType(rcvd.getInvType());
+            lineIdListStr = this.getMatchedLineIdStrForSkuAttr(RcvdWorkFlow.GENERAL_RECEIVING_ISINVTYPE, command, lineIdListStr);
         }
         return lineIdListStr;
     }
@@ -1236,42 +1239,33 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                 boolean isScan = false;
                 boolean isExists = false;
                 String sn = command.getSn().getSn();
+                long count = Constants.DEFAULT_LONG;
                 for (String lineId : lineIdArray) {
-                    long count = this.cacheManager.findSetCount(CacheKeyConstant.CACHE_ASNLINE_SN + lineId);
-                    if (count == 0) {
-                        List<RcvdSnCacheCommand> cacheSn = this.cacheManager.getObject(CacheKeyConstant.CACHE_RCVD_SN_PREFIX + command.getUserId());
-                        if (cacheSn != null && cacheSn.size() > 0) {
-                            for (int i = 0; i < cacheSn.size(); i++) {
-                                if (sn.equals(cacheSn.get(i).getSn())) {
-                                    isScan = true;
-                                    break;
-                                }
-                            }
-
-                        } else {
+                    long lineCount = this.cacheManager.findSetCount(CacheKeyConstant.CACHE_ASNLINE_SN + lineId);
+                    if (lineCount > 0) {
+                        if (this.cacheManager.existsInSet(CacheKeyConstant.CACHE_ASNLINE_SN + lineId, sn)) {
                             isExists = true;
                         }
-                    } else {
-                        if (this.cacheManager.existsInSet(CacheKeyConstant.CACHE_ASNLINE_SN + lineId, sn)) {
-                            List<RcvdSnCacheCommand> cacheSn = this.cacheManager.getObject(CacheKeyConstant.CACHE_RCVD_SN_PREFIX + command.getUserId());
-                            if (cacheSn != null && cacheSn.size() > 0) {
-                                for (int i = 0; i < cacheSn.size(); i++) {
-                                    if (sn.equals(cacheSn.get(i).getSn())) {
-                                        isScan = true;
-                                        break;
-                                    }
-                                }
-                            } else {
-                                isExists = true;
-                            }
+                    }
+                    count += lineCount;
+                }
+                // 校验SN是否存在
+                if (count > 0 && isExists) {
+                    throw new BusinessException(ErrorCodes.RCVD_SN_NO_EXISTS_ERROR);
+                }
+                // 校验SN是否被扫描过
+                List<RcvdSnCacheCommand> cacheSn = this.cacheManager.getObject(CacheKeyConstant.CACHE_RCVD_SN_PREFIX + command.getUserId());
+                if (cacheSn != null && cacheSn.size() > 0) {
+                    for (int i = 0; i < cacheSn.size(); i++) {
+                        if (sn.equals(cacheSn.get(i).getSn())) {
+                            isScan = true;
+                            break;
                         }
                     }
-                    if (isScan) {
-                        throw new BusinessException(ErrorCodes.RCVD_SN_DUP_ERROR);
-                    }
+
                 }
-                if (!isExists) {
-                    throw new BusinessException(ErrorCodes.RCVD_SN_NO_EXISTS_ERROR);
+                if (isScan) {
+                    throw new BusinessException(ErrorCodes.RCVD_SN_DUP_ERROR);
                 }
                 break;
 
