@@ -2470,22 +2470,14 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     @Override
     public void manMadePutaway(Boolean isOuterContainer,Boolean isNeedSkuDetail,Double scanSkuQty,WhSkuInventoryCommand invSkuCmd,ContainerCommand containerCmd, ContainerCommand insideContainerCmd, Long locationId, Long funcId, Warehouse warehouse, Integer putawayPatternDetailType, Long ouId, Long userId, String logId) {
         Long containerId = null;
-        Long outerContainerId = null;
         String containerCode = null;
         Long insideContainerId = null;
-        String insideContainerCode = null;
         if (null != containerCmd) {
-            outerContainerId  = containerCmd.getId();
-            if(isOuterContainer) { //外部容器库存
                 containerId = containerCmd.getId();
-            }else{
-                containerId = insideContainerCmd.getId();
-            }
             containerCode = containerCmd.getCode();
         }
         if (null != insideContainerCmd) {
             insideContainerId = insideContainerCmd.getId();
-            insideContainerCode = insideContainerCmd.getCode();
         }
         if (WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY == putawayPatternDetailType) {
             // 拆箱上架
@@ -2598,7 +2590,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         }
                     }
                     //只扫货箱不扫托盘的情况
-                    int outerCount = whSkuInventoryDao.findRcvdInventoryCountsByOuterContainerId(ouId, outerContainerId);
+                    int outerCount = whSkuInventoryDao.findRcvdInventoryCountsByOuterContainerId(ouId, containerId);
                     if(0 == outerCount) {   //修改外部容器状态
                             Container container = new Container();
                             BeanUtils.copyProperties(containerCmd, container);
@@ -2841,7 +2833,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             }
                         }
                         //只扫货箱不扫托盘的情况
-                        int outerCount = whSkuInventoryDao.findRcvdInventoryCountsByOuterContainerId(ouId, outerContainerId);
+                        int outerCount = whSkuInventoryDao.findRcvdInventoryCountsByOuterContainerId(ouId, containerId);
                         if(0 == outerCount) {   //修改外部容器状态
                                 Container container = new Container();
                                 BeanUtils.copyProperties(containerCmd, container);
