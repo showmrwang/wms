@@ -1804,9 +1804,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                 command.setInvType(line.getInvType());
             }
             if (RcvdWorkFlow.GENERAL_RECEIVING_INVATTR1 == nextOpt) {
-                if (null == line.getInvAttr1()) {
-                    command.setInvAttr1(line.getInvAttr1());
-                }
+                command.setInvAttr1(line.getInvAttr1());
             }
             if (RcvdWorkFlow.GENERAL_RECEIVING_INVATTR2 == nextOpt) {
                 command.setInvAttr2(line.getInvAttr2());
