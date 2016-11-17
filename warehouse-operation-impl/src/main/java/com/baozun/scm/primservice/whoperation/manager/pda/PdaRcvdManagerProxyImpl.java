@@ -761,11 +761,8 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                 RcvdCacheCommand rcvdCacheCommand = this.initRcvdCacheCommand(command);
                 Long lineId = Long.parseLong(lineStr);
                 int divCount = batchCount;
-                long lessCount = cacheManager.decrBy(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + occupationId + CacheKeyConstant.CACHE_KEY_SPLIT + lineId + CacheKeyConstant.CACHE_KEY_SPLIT + skuId, divCount);
+                int lessCount = Integer.parseInt(cacheManager.getValue(CacheKeyConstant.CACHE_ASNLINE_SKU_PREFIX + occupationId + CacheKeyConstant.CACHE_KEY_SPLIT + lineId + CacheKeyConstant.CACHE_KEY_SPLIT + skuId));
                 Integer overchargeCount = cacheManager.getMapObject(CacheKeyConstant.CACHE_ASNLINE_OVERCHARGE_PREFIX + occupationId, lineId.toString());
-                if (lessCount + overchargeCount < 0) {
-                    throw new BusinessException(ErrorCodes.SKU_OVERCHARGE_ERROR);
-                }
                 if (lessCount + overchargeCount < 0) {
                     throw new BusinessException(ErrorCodes.SKU_OVERCHARGE_ERROR);
                 }
@@ -1859,7 +1856,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
         // 下面这个IF-ELSE逻辑：
         // 如果没有缓存数据，则初始化缓存
         // 如果有的话，则刷新缓存
-        this.cacheManager.remove(CacheKeyConstant.CACHE_ASN_PREFIX + occupationId);
+        // this.cacheManager.remove(CacheKeyConstant.CACHE_ASN_PREFIX + occupationId);
         // try {
         // Thread.sleep(1000);
         // } catch (InterruptedException e) {

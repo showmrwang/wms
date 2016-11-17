@@ -488,7 +488,7 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
                     skuInv.setOnHandQty(skuInv.getOnHandQty() + inv.getOnHandQty());
                     this.whSkuInventoryDao.saveOrUpdateByVersion(skuInv);
                     // 插入库存日志
-                    this.insertSkuInventoryLog(skuInv.getId(), skuInv.getOnHandQty(), oldQty, wh.getIsTabbInvTotal(), skuInv.getOuId(), userId);
+                    this.insertSkuInventoryLog(skuInv.getId(), skuInv.getOnHandQty() - oldQty, oldQty, wh.getIsTabbInvTotal(), skuInv.getOuId(), userId);
                 }
             }
             // 保存收货日志
