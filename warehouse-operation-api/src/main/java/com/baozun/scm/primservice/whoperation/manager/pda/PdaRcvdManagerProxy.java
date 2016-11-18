@@ -175,5 +175,12 @@ public interface PdaRcvdManagerProxy extends BaseManager {
      */
     String getCacheKeyPrefixWhenRcvd(String cacheKey);
 
+    /**
+     * 非SN的残次品
+     * 
+     * @param command
+     */
+    void cacheScanedDefeatSkuNoSnWhenGeneralRcvd(WhSkuInventoryCommand command);
+
 
 }

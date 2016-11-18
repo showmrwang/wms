@@ -2304,4 +2304,43 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
     public String getCacheKeyPrefixWhenRcvd(String cacheKey) {
         return null;
     }
+
+    @Override
+    public void cacheScanedDefeatSkuNoSnWhenGeneralRcvd(WhSkuInventoryCommand command) {
+        Integer ctnCount = command.getSkuBatchCount() * command.getQuantity();// 批量收货数量
+        List<RcvdSnCacheCommand> cacheSn = this.cacheManager.getObject(CacheKeyConstant.CACHE_RCVD_SN_PREFIX + command.getUserId());
+        if (null == cacheSn) {
+            cacheSn = new ArrayList<RcvdSnCacheCommand>();
+        }
+        RcvdSnCacheCommand rcvdSn = command.getSn();
+        // @mender yimin.lu 2016/10/31扫描残次原因时候，需要生成残次条码
+        // @mender yimin.lu 2016/10/28
+        // @mender yimin.lu 2016/9/8
+        for (int i = 0; i < command.getSnCount(); i++) {// 此处For循环主要针对非SN的残次品，如果是SN商品，snCount=1
+            RcvdSnCacheCommand newSn = new RcvdSnCacheCommand();
+            newSn.setDefectReasonsId(rcvdSn.getDefectReasonsId());
+            newSn.setDefectSource(command.getSnSource());
+            newSn.setDefectTypeId(rcvdSn.getDefectTypeId());
+            // 残次条码 调用条码生成器
+            if (null != rcvdSn.getDefectTypeId()) {
+                String barCode = this.codeManager.generateCode(Constants.WMS, Constants.INVENTORY_DEFECT_WARE_BARCODE, null, null, null);
+                newSn.setDefectWareBarCode(barCode);
+            }
+            // 设置序列号及序列号管理类型
+            if (StringUtils.hasText(rcvdSn.getSn())) {
+                newSn.setSn(rcvdSn.getSn());
+                SkuRedisCommand sku = this.skuRedisManager.findSkuMasterBySkuId(command.getSkuId(), command.getOuId(), command.getLogId());
+                if (null != sku && null != sku.getSkuMgmt()) {
+
+                    SkuMgmt skuMgmt = sku.getSkuMgmt();
+                    newSn.setSerialNumberType(skuMgmt.getSerialNumberType());
+                }
+            }
+            cacheSn.add(newSn);
+        }
+
+        this.cacheManager.setObject(CacheKeyConstant.CACHE_RCVD_SN_PREFIX + command.getUserId(), cacheSn, 60 * 60);
+        this.cacheContainerSkuAttr(command);
+
+    }
 }
