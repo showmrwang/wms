@@ -180,42 +180,11 @@ public class PdaContainerRcvdManagerProxyImpl extends BaseManagerImpl implements
         Long customerId = asn.getCustomerId();
         SkuCommand sku = this.generalRcvdManager.findSkuBySkuCodeOuId(skuCode, ouId, customerId);
         if (null == sku) {
+            // TODO gianni
             throw new BusinessException("没有找到sku");
         }
-        // String asnSkuCount = cacheManager.getValue(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + asnId
-        // + "_" + sku.getId());
-        // if (StringUtils.isEmpty(asnSkuCount)) {
-        // throw new BusinessException(ErrorCodes.SKU_CACHE_ERROR);
-        // }
-        // List<SkuStandardPackingCommand> sspList =
-        // this.generalRcvdManager.checkSkuStandardPacking(sku.getBarCode(), ouId, null);
-        //
-        // for (SkuStandardPackingCommand ssp : sspList) {
-        // /* 把每个sku需要的箱数放在skustandardpacking中 */
-        // if (0 != ssp.getQuantity()) {
-        // Double res = Math.ceil(Double.parseDouble(asnSkuCount) / ssp.getQuantity());
-        // ssp.setCount(res.longValue());
-        // }
-        // // ssp.setAsnSkuCount(Long.parseLong(asnSkuCount));
-        // }
         return sku;
 
-        /* 扫描的sku在asn中 */
-
-
-        // String lineIdListStr = "";
-        // try {
-        // lineIdListStr = this.pdaRcvdManagerProxy.getMatchLineListStr(command);
-        // } catch (BusinessException e) {
-        // throw e;
-        // }
-        // /* 可能匹配的asnline ids */
-        // command.setLineIdListString(lineIdListStr.substring(0, lineIdListStr.length() - 1));
-
-        // boolean flag = this.asnLineManager.checkAsnSku(occupationCode, skuCode, ouId);
-        // cacheManager.getValue(CacheKeyConstant.CACHE_ASN_SKU_PREFIX + asnId + "_" +
-        // command.getSkuId());
-        // return flag;
     }
 
     /**
