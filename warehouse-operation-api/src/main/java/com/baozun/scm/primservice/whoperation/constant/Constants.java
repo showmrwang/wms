@@ -33,7 +33,7 @@ public final class Constants {
 
     /** 调编码生成器 asn单实体标识 */
     public static final String WHASN_MODEL_URL = "com.baozun.scm.primservice.whoperation.model.poasn.WhAsn";
-    
+
     /** 调编码生成器 补货单实体标识 */
     public static final String BH_MODEL_URL = "com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentTask";
 
@@ -342,13 +342,13 @@ public final class Constants {
 
     /** 调编码生成器波次实体标识 */
     public static final String WHWAVE_MODEL_URL = "com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave";
-    
+
     /** 调编码生成器工作头实体标识 */
     public static final String WHWORK_MODEL_URL = "com.baozun.scm.primservice.whoperation.model.warehouse.WhWork";
-    
+
     /** 调编码生成器工作明细实体标识 */
     public static final String WHWORKLINE_MODEL_URL = "com.baozun.scm.primservice.whoperation.model.warehouse.WhWorkLine";
-    
+
     /** 调编码生成器作业头实体标识 */
     public static final String WHOPERATION_MODEL_URL = "com.baozun.scm.primservice.whoperation.model.warehouse.WhOperation";
 
@@ -379,28 +379,28 @@ public final class Constants {
     public static final String CASELEVEL_SCAN_SIGN_ISINVTYPE = "isInvType"; // 是否管理库存类型
     public static final String CASELEVEL_SCAN_SIGN_ISINVSTATUS = "isInvStatus"; // 是否管理库存状态
     public static final String CASELEVEL_SCAN_SIGN_ISDEFEAT = "isDefeat";// 残次品类型及残次原因
-    
-    public static final String INV_ATTR_TYPE = "1";   //库存类型
-    public static final String INV_ATTR_STATUS = "2";   //库存状态
-    public static final String INV_ATTR_BATCH = "3";   //批次号
-    public static final String INV_ATTR_MFG_DATE = "4";   //生产日期
-    public static final String INV_ATTR_EXP_DATE = "5";   //失效日期
-    public static final String INV_ATTR_ORIGIN = "6";   //原产地
-    public static final String INV_ATTR1 = "7";   //库存属性1
-    public static final String INV_ATTR2 = "8";   //库存属性2
-    public static final String INV_ATTR3 = "9";   //库存属性3
-    public static final String INV_ATTR4 = "10";   //库存属性4
-    public static final String INV_ATTR5 = "11";   //库存属性5
+
+    public static final String INV_ATTR_TYPE = "1"; // 库存类型
+    public static final String INV_ATTR_STATUS = "2"; // 库存状态
+    public static final String INV_ATTR_BATCH = "3"; // 批次号
+    public static final String INV_ATTR_MFG_DATE = "4"; // 生产日期
+    public static final String INV_ATTR_EXP_DATE = "5"; // 失效日期
+    public static final String INV_ATTR_ORIGIN = "6"; // 原产地
+    public static final String INV_ATTR1 = "7"; // 库存属性1
+    public static final String INV_ATTR2 = "8"; // 库存属性2
+    public static final String INV_ATTR3 = "9"; // 库存属性3
+    public static final String INV_ATTR4 = "10"; // 库存属性4
+    public static final String INV_ATTR5 = "11"; // 库存属性5
 
 
     public static final String WAVE_STATUS = "WAVE_STATUS";// 波次状态
     public static final String WH_WAVE_PHASE = "WH_WAVE_PHASE";// 波次阶段
-    
-    public static final Integer SN_DEFECR_COUNT  = 1;
-    
+
+    public static final Integer SN_DEFECR_COUNT = 1;
+
     /**配货模式规则*/
-    public static final String DISTRIBUTION_PATTERN="DISTRIBUTION_PATTERN";
-    
+    public static final String DISTRIBUTION_PATTERN = "DISTRIBUTION_PATTERN";
+
     /** 波次阶段 分配失败原因分组 */
     public static final String WAVE_FAIL_REASON = "WAVE_FAIL_REASON";
     /** 硬分配阶段 0：分配规则 */
@@ -413,27 +413,30 @@ public final class Constants {
     public static final String NOT_STATIC_EMPTY_LOCATION = "NOT_STATIC_EMPTY_LOCATION";
     /** 补货阶段 商品未匹配到补货规则 */
     public static final String REPLENISHED_SKU_NO_RULE = "REPLENISHED_SKU_NO_RULE";
-    
-    public static final String ALLOCATE_STRATEGY_FIRSTINFIRSTOUT = "1"; 	// 先入先出
-    public static final String ALLOCATE_STRATEGY_FIRSTINLASTOUT = "2";	// 先入后出
+
+    public static final String ALLOCATE_STRATEGY_FIRSTINFIRSTOUT = "1"; // 先入先出
+    public static final String ALLOCATE_STRATEGY_FIRSTINLASTOUT = "2"; // 先入后出
     public static final String ALLOCATE_STRATEGY_FIRSTEXPIRATIONFIRSTOUT = "3"; // 先到期先出
     public static final String ALLOCATE_STRATEGY_FIRSTEXPIRATIONLASTOUT = "4"; // 后到期先出
-    public static final String ALLOCATE_STRATEGY_QUANTITYBESTMATCH = "5";	// 数量最佳匹配
+    public static final String ALLOCATE_STRATEGY_QUANTITYBESTMATCH = "5"; // 数量最佳匹配
     public static final String ALLOCATE_STRATEGY_MAXIMUMSTORAGESPACE = "6"; // 最大存储空间
-    public static final String ALLOCATE_STRATEGY_MINIMUMORDERPICKINGTIMES = "7";	// 最小拣货次数
-    public static final String ALLOCATE_STRATEGY_STATICLOCATIONCANASSIGNMENT = "8";	// 静态库位可超分配
-    public static final String ALLOCATE_STRATEGY_STATICLOCATIONNOTCANASSIGNMENT = "9";	// 静态库位不可超分配
-    public static final String ALLOCATE_STRATEGY_MIXEDSKUSLOCATION = "10";	// 混SKU库位
-    public static final String ALLOCATE_STRATEGY_EMPTYLOCATION = "11";	// 空库位
-    
-    public static final String ALLOCATE_UNIT_PALLET = "PALLET";			// 托盘
-    public static final String ALLOCATE_UNIT_CONTAINER = "CONTAINER";	// 货箱
-    public static final String ALLOCATE_UNIT_PIECE = "PIECE";			// 件
+    public static final String ALLOCATE_STRATEGY_MINIMUMORDERPICKINGTIMES = "7"; // 最小拣货次数
+    public static final String ALLOCATE_STRATEGY_STATICLOCATIONCANASSIGNMENT = "8"; // 静态库位可超分配
+    public static final String ALLOCATE_STRATEGY_STATICLOCATIONNOTCANASSIGNMENT = "9"; // 静态库位不可超分配
+    public static final String ALLOCATE_STRATEGY_MIXEDSKUSLOCATION = "10"; // 混SKU库位
+    public static final String ALLOCATE_STRATEGY_EMPTYLOCATION = "11"; // 空库位
 
-    public static final String REPLENISHMENT_UP = "1";		// 向上补货
-    public static final String REPLENISHMENT_DOWN = "2";	// 向下补货
+    public static final String ALLOCATE_UNIT_PALLET = "PALLET"; // 托盘
+    public static final String ALLOCATE_UNIT_CONTAINER = "CONTAINER"; // 货箱
+    public static final String ALLOCATE_UNIT_PIECE = "PIECE"; // 件
+
+    public static final String REPLENISHMENT_UP = "1"; // 向上补货
+    public static final String REPLENISHMENT_DOWN = "2"; // 向下补货
     public static final String REPLENISHMENT_ONDEMAND = "3";// 严格按照需求量
-    
+
     /** 体积单位升在Uom表中的编码 */
     public static final String LENGTH_TO_VOLUME_UOM_CODE = "LENGTH_TO_VOLUME_CODE";
+
+    /** 软分配阶段*/
+    public static final String WEAK_ALLOCATED = "WEAK_ALLOCATED";
 }
