@@ -3,6 +3,7 @@ package com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.baozun.scm.primservice.whoperation.command.odo.OdoMergeCommand;
 import com.baozun.scm.primservice.whoperation.constant.WavePhase;
@@ -10,6 +11,7 @@ import com.baozun.scm.primservice.whoperation.manager.odo.merge.OdoMergeManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.wave.WhWaveManager;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
 
+@Service("waveOdoMergeManagerProxy")
 public class WaveOdoMergeManagerProxyImpl implements WaveOdoMergeManagerProxy {
 
     @Autowired
