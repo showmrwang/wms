@@ -557,4 +557,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			and wave.ou_id = #{ouId}
 		group by line.odo_id;
 	</select>
+	
+	<select id="getWhWaveListByPhaseCode" parameterType="map" resultType="long">
+		SELECT w.id 
+		FROM t_wh_wave w 
+		WHERE w.phase_code = #{phaseCode} 
+		AND w.ou_id = #{ouId}
+	</select>
 </mapper>

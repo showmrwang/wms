@@ -15,8 +15,8 @@ import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
-import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 
 public interface WhWaveManager extends BaseManager {
 
@@ -102,26 +102,26 @@ public interface WhWaveManager extends BaseManager {
     void changeWavePhaseCode(Long waveId, String phaseCode, Long ouId);
 
     /**
-	 * [业务方法] 硬分配-查找所有需要匹配规则的波次
-	 */
-	public List<Long> getNeedAllocationRuleWhWave(Integer allocatePhase, Long ouId, String logId);
-	
-	/**
-	 * [业务方法] 硬分配-更新波次阶段为硬分配的阶段未硬分配
-	 */
-	int updateWhWaveAllocatePhase(List<Long> waveIdList, Integer allocatePhase, Long ouId);
-	
-	/**
-	 * [业务方法] 硬分配-检查一个波次中分配数量是否足够
-	 * @param waveId
-	 * @param wh
-	 */
-	void checkWaveHardAllocateEnough(Long waveId, Warehouse wh);
-	
-	/**
-	 * [业务方法] 硬分配-异常释放这一波次库存
-	 */
-	void releaseInventoryByWaveId(Long waveId, Warehouse wh);
+     * [业务方法] 硬分配-查找所有需要匹配规则的波次
+     */
+    public List<Long> getNeedAllocationRuleWhWave(Integer allocatePhase, Long ouId, String logId);
+
+    /**
+     * [业务方法] 硬分配-更新波次阶段为硬分配的阶段未硬分配
+     */
+    int updateWhWaveAllocatePhase(List<Long> waveIdList, Integer allocatePhase, Long ouId);
+
+    /**
+     * [业务方法] 硬分配-检查一个波次中分配数量是否足够
+     * @param waveId
+     * @param wh
+     */
+    void checkWaveHardAllocateEnough(Long waveId, Warehouse wh);
+
+    /**
+     * [业务方法] 硬分配-异常释放这一波次库存
+     */
+    void releaseInventoryByWaveId(Long waveId, Warehouse wh);
 
     /**
      * 查询波次可用的配货模式
@@ -152,7 +152,7 @@ public interface WhWaveManager extends BaseManager {
      * @param userId
      */
     void matchWaveDisTributionMode(List<WhOdo> odoList, List<WhWaveLine> offWaveLineList, List<WhOdoLine> offOdoLineList, WhWave wave, Long ouId, Long userId);
-    
+
     /**
      * [通用方法] 根据WavePhaseCode波次编码查找波次ID集合
      * @param phaseCode
@@ -160,13 +160,18 @@ public interface WhWaveManager extends BaseManager {
      * @return
      */
     List<Long> findWaveIdsByWavePhaseCode(String phaseCode, Long ouId);
-    
+
     /**
      * [业务方法] 在一个波次中查找包含skuIds的OdoId
      * @param skuIds
      * @param ouId
      * @return
      */
-	List<Long> findOdoContainsSkuId(Long waveId, List<Long> skuIds, Long ouId);
+    List<Long> findOdoContainsSkuId(Long waveId, List<Long> skuIds, Long ouId);
+
+    /**
+     * [业务方法] 软分配-查找可以进行软分配波次
+     */
+    public List<Long> getNeedSoftAllocationWhWave(Long ouId);
 
 }
