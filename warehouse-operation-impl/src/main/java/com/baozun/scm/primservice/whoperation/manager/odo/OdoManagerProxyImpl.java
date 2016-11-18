@@ -1256,6 +1256,7 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
             throw new BusinessException(ErrorCodes.CODE_MANAGER_ERROR);
         }
         wave.setCode(waveCode);
+        wave.setPhaseCode(this.getWavePhaseCode(null, waveMasterId, ouId));
         wave.setStatus(WaveStatus.WAVE_NEW);
         wave.setOuId(ouId);
         wave.setWaveMasterId(waveMasterId);

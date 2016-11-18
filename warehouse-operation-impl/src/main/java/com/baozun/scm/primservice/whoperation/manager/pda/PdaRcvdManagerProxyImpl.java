@@ -2240,15 +2240,13 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
     }
 
     @Override
-    public void removeInsideContainerCacheWhenScanSkuNoRcvd(Long inside, Long outside, Long ouId, Long userId, String logId) {
-        // 释放容器
-        this.revokeContainer(inside, ouId, userId);
-        // 清除容器-用户缓存
-        this.cacheManager.remove(CacheKeyConstant.CACHE_RCVD_CONTAINER_USER_PREFIX + inside);
-        // 清除托盘-货箱缓存
-        if (outside != null) {
-            this.cacheManager.popListHead(CacheKeyConstant.CACHE_RCVD_PALLET_PREFIX + outside);
+    public void removeInsideContainerCacheWhenScanSkuNoRcvd(Long inside, Long skuId, Long ouId, Long userId, String logId) {
+        RcvdContainerCacheCommand cacheContainer = this.cacheManager.getObject(CacheKeyConstant.CACHE_RCVD_CONTAINER_USER_PREFIX + inside);
+        cacheContainer.getSkuIdSet().remove(skuId);
+        if (cacheContainer.getSkuIdSet().size() == 0) {
+            cacheContainer.setIsMixAttr(false);
         }
+        this.cacheManager.setObject(CacheKeyConstant.CACHE_RCVD_CONTAINER_USER_PREFIX + inside, cacheContainer);
     }
 
     @Override

@@ -1,7 +1,6 @@
 package com.baozun.scm.primservice.whoperation.manager.odo.manager;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -447,27 +446,40 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void createOdoWave(WhWave wave, List<WhWaveLine> waveLineList, Map<Long, WhOdo> odoMap, List<WhOdoLine> odolineList, Long userId, String logId) {
-        this.whWaveDao.insert(wave);
-        for (WhWaveLine waveLine : waveLineList) {
-            waveLine.setWaveId(wave.getId());
-            this.whWaveLineDao.insert(waveLine);
+        try {
+
+            this.whWaveDao.insert(wave);
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCodes.INSERT_DATA_ERROR);
+        }
+        try {
+            for (WhWaveLine waveLine : waveLineList) {
+                waveLine.setWaveId(wave.getId());
+                this.whWaveLineDao.insert(waveLine);
+            }
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCodes.INSERT_DATA_ERROR);
         }
         Iterator<Entry<Long, WhOdo>> odoIt = odoMap.entrySet().iterator();
         while (odoIt.hasNext()) {
             Entry<Long, WhOdo> entry = odoIt.next();
             WhOdo odo = entry.getValue();
-            odo.setLastModifyTime(new Date());
             odo.setModifiedId(userId);
             odo.setWaveCode(wave.getCode());
             odo.setOdoStatus(OdoStatus.ODO_WAVE);
-            this.whOdoDao.saveOrUpdateByVersion(odo);
+            int count = this.whOdoDao.saveOrUpdateByVersion(odo);
+            if (count <= 0) {
+                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            }
         }
         for (WhOdoLine line : odolineList) {
-            line.setLastModifyTime(new Date());
             line.setModifiedId(userId);
             line.setWaveCode(wave.getCode());
             line.setOdoLineStatus(OdoStatus.ODOLINE_WAVE);
-            this.whOdoLineDao.saveOrUpdateByVersion(line);
+            int count = this.whOdoLineDao.saveOrUpdateByVersion(line);
+            if (count <= 0) {
+                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            }
         }
 
         // 添加到波次中时候，计数器需要-1；

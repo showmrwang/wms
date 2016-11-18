@@ -149,12 +149,12 @@ public interface PdaRcvdManagerProxy extends BaseManager {
      * 当没有扫描商品的时候，取消货箱缓存
      * 
      * @param inside
-     * @param outside
+     * @param skuId
      * @param ouId
      * @param userId
      * @param logId
      */
-    void removeInsideContainerCacheWhenScanSkuNoRcvd(Long inside, Long outside, Long ouId, Long userId, String logId);
+    void removeInsideContainerCacheWhenScanSkuNoRcvd(Long inside, Long skuId, Long ouId, Long userId, String logId);
 
     /**
      * 已扫描商品的时候，取消货箱缓存
