@@ -1787,6 +1787,7 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
                 throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL); // 容器不存在
             }
             outerContainerId = outCommand.getId();
+            containerId = outCommand.getId();
         } else {
             containerId = insideContainerId;
         }
@@ -2012,6 +2013,7 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
             for (WhSkuInventory skuInv : list) {
                 if (skuInv.getSkuId().equals(skuCmd.getId())) {
                     whskuList.add(skuInv);
+                    break;
                 }
             }
         }
@@ -2182,12 +2184,69 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
      */
     private Long skuAttrCount(List<WhSkuInventory> locationSkuList) {
         Integer attrCount = 0; // 库存属性数
-        if (null != locationSkuList && locationSkuList.size() != 0) {
-            attrCount = locationSkuList.size();
+        List<String>  typeList = new ArrayList<String>();   //存放混放的sku属性值
+        for(int i=0;i<locationSkuList.size();i++){
+            WhSkuInventory skuInv = locationSkuList.get(i);
+            for(int j=i+1;j<locationSkuList.size();j++) {
+                WhSkuInventory whSkuInv = locationSkuList.get(j);
+                if(!compareSkuAttr(skuInv.getInvStatus(),whSkuInv.getInvStatus(), typeList,Constants.INV_ATTR_STATUS ) ) {  //库存状态
+                    attrCount++;
+                }
+                if(!compareSkuAttr(skuInv.getExpDate(),whSkuInv.getExpDate(), typeList,Constants.INV_ATTR_EXP_DATE ) ) {  //
+                    attrCount++;
+                }
+                if(!compareSkuAttr(skuInv.getMfgDate(),whSkuInv.getMfgDate(), typeList,Constants.INV_ATTR_MFG_DATE) ) {  //
+                    attrCount++;
+                }
+                if(!compareSkuAttr(skuInv.getInvType(),whSkuInv.getInvType(), typeList,Constants.INV_ATTR_TYPE  ) ) {  //
+                    attrCount++;
+                }
+                if(!compareSkuAttr(skuInv.getBatchNumber(),whSkuInv.getBatchNumber(), typeList,Constants.INV_ATTR_BATCH ) ) {  //
+                    attrCount++;
+                }
+                if(!compareSkuAttr(skuInv.getCountryOfOrigin(),whSkuInv.getCountryOfOrigin(), typeList,Constants.INV_ATTR_ORIGIN ) ) {  //
+                    attrCount++;
+                }
+                if(!compareSkuAttr(skuInv.getInvAttr1(),whSkuInv.getInvAttr1(), typeList,Constants.INV_ATTR1 ) ) {  //
+                    attrCount++;
+                }
+                if(!compareSkuAttr(skuInv.getInvAttr2(),whSkuInv.getInvAttr2(), typeList,Constants.INV_ATTR2 ) ) {  //
+                    attrCount++;
+                }
+                if(!compareSkuAttr(skuInv.getInvAttr3(),whSkuInv.getInvAttr3(), typeList,Constants.INV_ATTR3 ) ) {  //
+                    attrCount++;
+                }
+                if(!compareSkuAttr(skuInv.getInvAttr4(),whSkuInv.getInvAttr4(), typeList,Constants.INV_ATTR4 ) ) {  //
+                    attrCount++;
+                }
+                if(!compareSkuAttr(skuInv.getInvAttr5(),whSkuInv.getInvAttr5(), typeList,Constants.INV_ATTR5 )) {  //
+                    attrCount++;
+                }
+            }
         }
         return Long.valueOf(attrCount.toString());
     }
 
+    private Boolean compareSkuAttr(Object skuAttr,Object tempSkuAttr,List<String> typeList,String type){
+        Boolean result = true;// 默认库存属性相等
+        if(!typeList.contains(type)) {
+            if(!StringUtils.isEmpty(skuAttr) && StringUtils.isEmpty(tempSkuAttr)) {
+                  result = false;
+                  typeList.add(type);
+            }
+            if(StringUtils.isEmpty(skuAttr) && !StringUtils.isEmpty(tempSkuAttr)) {
+                  result = false;
+                  typeList.add(type);
+            }
+           if(!typeList.contains(type) && !StringUtils.isEmpty(skuAttr) && !StringUtils.isEmpty(tempSkuAttr)){
+              if(!skuAttr.equals(tempSkuAttr)) {
+                  result = false;
+                  typeList.add(type);
+              }
+            }
+        }
+        return result;
+    }
 
     /***
      * 拆箱上架扫描SN/残次信息
