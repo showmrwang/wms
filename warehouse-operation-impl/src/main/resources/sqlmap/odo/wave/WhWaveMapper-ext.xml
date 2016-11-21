@@ -518,7 +518,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    left join t_wh_wave_master master on wave.wave_master_id = master.id
 		    left join t_wh_wave_template template on master.wave_template_id = template.id
 	    where 
-			wave.id = #{id} and wave.ou_id = #{ouId}
+			wave.id = #{waveId} and wave.ou_id = #{ouId}
     </select>
     
     <select id="getNeedAllocationRuleWhWave" parameterType="map" resultType="long">

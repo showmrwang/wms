@@ -83,6 +83,6 @@ public interface WhWaveDao extends BaseDao<WhWave, Long> {
      * @return
      */
     List<Long> getWhWaveListByPhaseCode(@Param("phaseCode") String phaseCode, @Param("ouId") Long ouId);
-    
+
     List<Long> getNeedPickingWorkWhWave(@Param("status") Integer status, @Param("phaseCode") String phaseCode, @Param("ouId") Long ouId);
 }
