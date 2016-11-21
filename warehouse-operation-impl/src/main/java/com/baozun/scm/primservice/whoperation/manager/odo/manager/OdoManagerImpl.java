@@ -450,6 +450,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
             wave.setPhaseCode(this.getWavePhaseCode(null, wave.getWaveMasterId(), wave.getOuId()));
             this.whWaveDao.insert(wave);
         } catch (Exception e) {
+            log.error(e + "");;
             throw new BusinessException(ErrorCodes.INSERT_DATA_ERROR);
         }
         try {
@@ -458,6 +459,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                 this.whWaveLineDao.insert(waveLine);
             }
         } catch (Exception e) {
+            log.error(e + "");;
             throw new BusinessException(ErrorCodes.INSERT_DATA_ERROR);
         }
         Iterator<Entry<Long, WhOdo>> odoIt = odoMap.entrySet().iterator();
