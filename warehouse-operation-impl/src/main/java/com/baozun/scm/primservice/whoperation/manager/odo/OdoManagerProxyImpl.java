@@ -756,8 +756,8 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
                         if (StringUtils.hasText(command.getDistributeMode())) {
                             dic3.add(command.getDistributeMode());
                         }
-                        if (StringUtils.hasText(command.getEpostaticSystemsOrderType())) {
-                            dic4.add(command.getEpostaticSystemsOrderType());
+                        if (StringUtils.hasText(command.getEpistaticSystemsOrderType())) {
+                            dic4.add(command.getEpistaticSystemsOrderType());
                         }
                         if (StringUtils.hasText(command.getTransportServiceProvider())) {
                             transCodeSet.add(command.getTransportServiceProvider());
@@ -831,10 +831,10 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
                                 }
                             }
                         }
-                        if (StringUtils.hasText(command.getEpostaticSystemsOrderType())) {
-                            SysDictionary sys = dicMap.get(Constants.ODO_PRE_TYPE + "_" + command.getEpostaticSystemsOrderType());
-                            command.setEpostaticSystemsOrderTypeName(sys.getDicLabel());
-                            groupName += "$" + command.getEpostaticSystemsOrderTypeName();
+                        if (StringUtils.hasText(command.getEpistaticSystemsOrderType())) {
+                            SysDictionary sys = dicMap.get(Constants.ODO_PRE_TYPE + "_" + command.getEpistaticSystemsOrderType());
+                            command.setEpistaticSystemsOrderTypeName(sys.getDicLabel());
+                            groupName += "$" + command.getEpistaticSystemsOrderTypeName();
                         }
                         command.setGroupName(groupName);
                     }
@@ -981,7 +981,7 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
                 search.setGroupStoreId(gsc.getStoreId());
                 search.setGroupOdoType(gsc.getOdoType());
                 search.setGroupDistributeMode(gsc.getDistributeMode());
-                search.setGroupEpostaticSystemsOrderType(gsc.getEpostaticSystemsOrderType());
+                search.setGroupEpistaticSystemsOrderType(gsc.getEpostaticSystemsOrderType());
                 search.setGroupTransportServiceProvider(gsc.getTransportServiceProvider());
                 search.setIsEpistaticSystemsOrderType(gsc.getIsEpistaticSystemsOrderType());
                 search.setIsDistributeMode(gsc.getIsDistributeMode());
@@ -990,7 +990,7 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
                     search.setOdoStatus(Arrays.asList(command.getOdoStatus().split(",")));
                 }
                 if (StringUtils.hasText(command.getEpostaticSystemsOrderType())) {
-                    search.setEpostaticSystemsOrderType(Arrays.asList(command.getEpostaticSystemsOrderType().split(",")));
+                    search.setEpistaticSystemsOrderType(Arrays.asList(command.getEpostaticSystemsOrderType().split(",")));
                 }
                 if (StringUtils.hasText(command.getCustomerId())) {
                     search.setCustomerId(Arrays.asList(command.getCustomerId().split(",")));
@@ -1009,11 +1009,7 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
                 }
                 if (StringUtils.hasText(command.getTransportServiceProvider())) {
                     String[] arr = command.getTransportServiceProvider().split(",");
-                    Long[] longArr = new Long[arr.length];
-                    for (int i = 0; i < arr.length; i++) {
-                        longArr[i] = Long.parseLong(arr[i]);
-                    }
-                    search.setTransportServiceProvider(Arrays.asList(longArr));
+                    search.setTransportServiceProvider(Arrays.asList(arr));
                 }
                 if (StringUtils.hasText(command.getTransportServiceProviderType())) {
                     search.setTransportServiceProviderType(Arrays.asList(command.getTransportServiceProviderType().split(",")));
@@ -1256,7 +1252,6 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
             throw new BusinessException(ErrorCodes.CODE_MANAGER_ERROR);
         }
         wave.setCode(waveCode);
-        wave.setPhaseCode(this.getWavePhaseCode(null, waveMasterId, ouId));
         wave.setStatus(WaveStatus.WAVE_NEW);
         wave.setOuId(ouId);
         wave.setWaveMasterId(waveMasterId);

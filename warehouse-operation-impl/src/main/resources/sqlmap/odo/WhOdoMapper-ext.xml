@@ -234,8 +234,8 @@
 			<if test="groupTransportServiceProvider!=null and groupTransportServiceProvider!=''">
 				and transmgmt.transport_service_provider=#{groupTransportServiceProvider}
 			</if>
-			<if test="groupEpostaticSystemsOrderType!=null and groupEpostaticSystemsOrderType!=''">
-				and odo.epistatic_systems_order_type=#{groupEpostaticSystemsOrderType}
+			<if test="groupEpistaticSystemsOrderType!=null and groupEpistaticSystemsOrderType!=''">
+				and odo.epistatic_systems_order_type=#{groupEpistaticSystemsOrderType}
 			</if>
 			<if test="odoCode!=null and odoCode!=''">
 				and odo.odo_code like #{odoCode}
@@ -250,9 +250,9 @@
 					#{s}
 				</foreach>
 			</if>
-			<if test="epostaticSystemsOrderType!=null">
+			<if test="epistaticSystemsOrderType!=null">
 				and odo.epistatic_systems_order_type in
-				<foreach collection="epostaticSystemsOrderType" item="s"
+				<foreach collection="epistaticSystemsOrderType" item="s"
 					open="(" separator="," close=")">
 					#{s}
 				</foreach>
@@ -1047,7 +1047,7 @@
 				transmgmt.transport_service_provider as transportServiceProvider,
 			</if>
 			<if test="isEpistaticSystemsOrderType!=null">
-				odo.epistatic_systems_order_type as epostaticSystemsOrderType,
+				odo.epistatic_systems_order_type as epistaticSystemsOrderType,
 			</if>
 			count(distinct odo.id) as odoCount,
 			count(1) as lineCount,
@@ -1291,10 +1291,10 @@
 				and transmgmt.transport_service_provider=#{groupTransportServiceProvider}
 			</if>
 			<if test="isEpistaticSystemsOrderType!=null">
-				<if test="groupEpostaticSystemsOrderType!=null and groupEpostaticSystemsOrderType!=''">
-					and odo.epistatic_systems_order_type=#{groupEpostaticSystemsOrderType}
+				<if test="groupEpistaticSystemsOrderType!=null and groupEpistaticSystemsOrderType!=''">
+					and odo.epistatic_systems_order_type=#{groupEpistaticSystemsOrderType}
 				</if>
-				<if test="groupEpostaticSystemsOrderType==null || groupEpostaticSystemsOrderType==''">
+				<if test="groupEpistaticSystemsOrderType==null || groupEpistaticSystemsOrderType==''">
 					and odo.epistatic_systems_order_type is null
 				</if>
 			</if>
@@ -1311,9 +1311,9 @@
 					#{s}
 				</foreach>
 			</if>
-			<if test="epostaticSystemsOrderType!=null">
+			<if test="epistaticSystemsOrderType!=null">
 				and odo.epistatic_systems_order_type in
-				<foreach collection="epostaticSystemsOrderType" item="s"
+				<foreach collection="epistaticSystemsOrderType" item="s"
 					open="(" separator="," close=")">
 					#{s}
 				</foreach>
