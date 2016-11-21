@@ -445,9 +445,9 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void createOdoWave(WhWave wave, List<WhWaveLine> waveLineList, Map<Long, WhOdo> odoMap, List<WhOdoLine> odolineList, Long userId, String logId) {
+    public void createOdoWave(WhWave wave, Long waveTemplateId, List<WhWaveLine> waveLineList, Map<Long, WhOdo> odoMap, List<WhOdoLine> odolineList, Long userId, String logId) {
         try {
-            wave.setPhaseCode(this.getWavePhaseCode(null, wave.getWaveMasterId(), wave.getOuId()));
+            wave.setPhaseCode(this.getWavePhaseCode(null, waveTemplateId, wave.getOuId()));
             this.whWaveDao.insert(wave);
         } catch (Exception e) {
             log.error(e + "");;

@@ -1204,7 +1204,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                     }
                     if (skuMgmt.getMinValidDate() != null) {
                         if (skuMgmt.getMinValidDate() > vd) {
-                            // throw new BusinessException(ErrorCodes.RCVD_SKU_VALIDDATE_MIN_ERROR);
+                            throw new BusinessException(ErrorCodes.RCVD_SKU_VALIDDATE_MIN_ERROR);
                         }
                     }
                 }

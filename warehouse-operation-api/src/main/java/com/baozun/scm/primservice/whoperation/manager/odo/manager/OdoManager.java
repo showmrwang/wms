@@ -164,13 +164,14 @@ public interface OdoManager extends BaseManager {
      * [通用方法]
      * 
      * @param wave
+     * @param WaveTemplateId
      * @param waveLineList
      * @param odoMap
      * @param odolineList
      * @param userId
      * @param logId
      */
-    void createOdoWave(WhWave wave, List<WhWaveLine> waveLineList, Map<Long, WhOdo> odoMap, List<WhOdoLine> odolineList, Long userId, String logId);
+    void createOdoWave(WhWave wave, Long waveTemplateId, List<WhWaveLine> waveLineList, Map<Long, WhOdo> odoMap, List<WhOdoLine> odolineList, Long userId, String logId);
 
     /**
      * [通用方法] 修改出库单头和出库单明细状态

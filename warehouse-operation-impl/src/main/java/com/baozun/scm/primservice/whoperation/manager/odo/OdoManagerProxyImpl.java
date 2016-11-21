@@ -1317,7 +1317,7 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
             waveLine.setModifiedId(userId);
             waveLineList.add(waveLine);
         }
-        this.odoManager.createOdoWave(wave, waveLineList, odoMap, odolineList, userId, logId);
+        this.odoManager.createOdoWave(wave, master.getWaveTemplateId(), waveLineList, odoMap, odolineList, userId, logId);
 
         return waveCode;
     }
