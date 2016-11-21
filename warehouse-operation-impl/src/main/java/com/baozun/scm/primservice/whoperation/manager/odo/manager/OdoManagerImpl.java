@@ -136,9 +136,9 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                             dic8.add(command.getOdoStatus());
 
                         }
-                        if (StringUtils.hasText(command.getOutboundCartonType())) {
+                        if (StringUtils.hasText(command.getOutboundTargetType())) {
 
-                            dic9.add(command.getOutboundCartonType());
+                            dic9.add(command.getOutboundTargetType());
                         }
                         if (StringUtils.hasText(command.getDeliverGoodsTimeMode())) {
 
@@ -211,9 +211,9 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                             command.setOdoStatusName(sys == null ? command.getOdoStatus() : sys.getDicLabel());
 
                         }
-                        if (StringUtils.hasText(command.getOutboundCartonType())) {
-                            SysDictionary sys = dicMap.get(Constants.ODO_AIM_TYPE + "_" + command.getOutboundCartonType());
-                            command.setOutboundCartonTypeName(sys == null ? command.getOutboundCartonType() : sys.getDicLabel());
+                        if (StringUtils.hasText(command.getOutboundTargetType())) {
+                            SysDictionary sys = dicMap.get(Constants.ODO_AIM_TYPE + "_" + command.getOutboundTargetType());
+                            command.setOutboundTargetTypeName(sys == null ? command.getOutboundTargetType() : sys.getDicLabel());
                         }
                         if (StringUtils.hasText(command.getDeliverGoodsTimeMode())) {
                             SysDictionary sys = dicMap.get(Constants.ODO_DELIVER_GOODS_TIME_MODE + "_" + command.getDeliverGoodsTimeMode());
@@ -447,7 +447,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void createOdoWave(WhWave wave, List<WhWaveLine> waveLineList, Map<Long, WhOdo> odoMap, List<WhOdoLine> odolineList, Long userId, String logId) {
         try {
-
+            wave.setPhaseCode(this.getWavePhaseCode(null, wave.getWaveMasterId(), wave.getOuId()));
             this.whWaveDao.insert(wave);
         } catch (Exception e) {
             throw new BusinessException(ErrorCodes.INSERT_DATA_ERROR);
