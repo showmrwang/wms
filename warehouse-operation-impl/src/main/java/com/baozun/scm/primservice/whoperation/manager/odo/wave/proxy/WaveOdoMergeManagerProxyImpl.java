@@ -41,7 +41,7 @@ public class WaveOdoMergeManagerProxyImpl implements WaveOdoMergeManagerProxy {
     public void waveOdoMerge(Long waveId, String odoIds, Long ouId) {
 
         WhWave wave = whWaveManager.getWaveByIdAndOuId(waveId, ouId);
-        odoMergeManager.waveOdoMerge(wave, odoIds, ouId, null);
+        odoMergeManager.waveOdoMerge(wave, odoIds, ouId, 2076L);
 
     }
 }

@@ -320,8 +320,11 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         String store = command.getNeedStore();
         String deliverGoodsTime = command.getNeedDeliverGoodsTime();
         // 所有可以合并的单子
-        String odoIds = this.whOdoDao.findWaveOdoMergableIds(waveCode, ouId, outboundCartonType, epistaticSystemsOrderType, store, deliverGoodsTime);
-        List<OdoMergeCommand> list = this.whOdoDao.odoMerge(odoIds, ouId, outboundCartonType, epistaticSystemsOrderType, store, deliverGoodsTime);
+        String odoIds = "(" + this.whOdoDao.findWaveOdoMergableIds(waveCode, ouId, outboundCartonType, epistaticSystemsOrderType, store, deliverGoodsTime) + ")";
+        List<OdoMergeCommand> list = new ArrayList<OdoMergeCommand>();
+        if (StringUtils.hasText(odoIds)) {
+            list = this.whOdoDao.odoMerge(OdoStatus.ODO_WAVE, odoIds, ouId, outboundCartonType, epistaticSystemsOrderType, store, deliverGoodsTime);
+        }
         return list;
     }
 

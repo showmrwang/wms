@@ -862,7 +862,7 @@
 		address.odo_id
 		and
 		odo.id = tr.odo_id
-		and odo.odo_status = 1
+		and odo.odo_status = 8
 		and odo.wave_code = #{waveCode}
 		/**出库单状态必须为新建*/
 		and
@@ -1017,7 +1017,7 @@
 		address.odo_id
 		and
 		odo.id = tr.odo_id
-		and odo.odo_status = 1
+		and odo.odo_status = #{odoStatus}
 		/**出库单状态必须为新建*/
 		and
 		odo.is_allow_merge = 1 /**是否允许合并*/
