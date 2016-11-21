@@ -173,5 +173,11 @@ public interface WhWaveManager extends BaseManager {
      * [业务方法] 软分配-查找可以进行软分配波次
      */
     public List<Long> getNeedSoftAllocationWhWave(Long ouId);
+    
+    /**
+     * [业务方法] 创捡货工作和作业-查找所有需要匹配规则的波次
+     */
+    public List<Long> getNeedPickingWorkWhWave(Long ouId);
+    
 
 }

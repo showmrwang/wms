@@ -564,4 +564,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		WHERE w.phase_code = #{phaseCode} 
 		AND w.ou_id = #{ouId}
 	</select>
+	
+	<select id="getNeedPickingWorkWhWave" parameterType="map" resultType="long">
+		select  
+			w.id 
+		from 
+			t_wh_wave w 
+		where 
+			w.status = #{status}
+			and w.phase_code = #{phaseCode} 
+		    and w.ou_id = #{ouId}
+	</select>
 </mapper>

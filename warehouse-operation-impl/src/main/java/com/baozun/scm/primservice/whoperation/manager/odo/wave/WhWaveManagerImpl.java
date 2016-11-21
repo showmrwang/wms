@@ -507,4 +507,10 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         return WaveIds;
     }
 
+    @Override
+    public List<Long> getNeedPickingWorkWhWave(Long ouId) {
+        List<Long> WaveIds = whWaveDao.getNeedPickingWorkWhWave(WaveStatus.WAVE_EXECUTING, WavePhase.CREATE_WORK, ouId);
+        return WaveIds;
+    }
+
 }
