@@ -989,8 +989,8 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
                 if (StringUtils.hasText(command.getOdoStatus())) {
                     search.setOdoStatus(Arrays.asList(command.getOdoStatus().split(",")));
                 }
-                if (StringUtils.hasText(command.getEpostaticSystemsOrderType())) {
-                    search.setEpistaticSystemsOrderType(Arrays.asList(command.getEpostaticSystemsOrderType().split(",")));
+                if (StringUtils.hasText(command.getEpistaticSystemsOrderType())) {
+                    search.setEpistaticSystemsOrderType(Arrays.asList(command.getEpistaticSystemsOrderType().split(",")));
                 }
                 if (StringUtils.hasText(command.getCustomerId())) {
                     search.setCustomerId(Arrays.asList(command.getCustomerId().split(",")));

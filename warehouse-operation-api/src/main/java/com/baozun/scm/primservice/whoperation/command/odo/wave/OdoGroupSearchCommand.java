@@ -14,7 +14,7 @@ public class OdoGroupSearchCommand extends BaseCommand {
     private String odoCode;
     private String extCode;
     private String odoStatus;
-    private String epostaticSystemsOrderType;
+    private String epistaticSystemsOrderType;
     private String customerId;
     private String outboundTargetType;
     private String odoType;
@@ -84,7 +84,7 @@ public class OdoGroupSearchCommand extends BaseCommand {
     /** 运输服务商 */
     private String groupTransportServiceProvider;
     /** 上位单据类型 */
-    private String groupEpostaticSystemsOrderType;
+    private String groupEpistaticSystemsOrderType;
 
     private Boolean isDistributeMode;
 
@@ -172,13 +172,14 @@ public class OdoGroupSearchCommand extends BaseCommand {
         this.groupTransportServiceProvider = groupTransportServiceProvider;
     }
 
-    public String getGroupEpostaticSystemsOrderType() {
-        return groupEpostaticSystemsOrderType;
+    public String getGroupEpistaticSystemsOrderType() {
+        return groupEpistaticSystemsOrderType;
     }
 
-    public void setGroupEpostaticSystemsOrderType(String groupEpostaticSystemsOrderType) {
-        this.groupEpostaticSystemsOrderType = groupEpostaticSystemsOrderType;
+    public void setGroupEpistaticSystemsOrderType(String groupEpistaticSystemsOrderType) {
+        this.groupEpistaticSystemsOrderType = groupEpistaticSystemsOrderType;
     }
+
     public void setOdoCode(String odoCode) {
         this.odoCode = odoCode;
     }
@@ -194,12 +195,15 @@ public class OdoGroupSearchCommand extends BaseCommand {
     public void setOdoStatus(String odoStatus) {
         this.odoStatus = odoStatus;
     }
-    public String getEpostaticSystemsOrderType() {
-        return epostaticSystemsOrderType;
+
+    public String getEpistaticSystemsOrderType() {
+        return epistaticSystemsOrderType;
     }
-    public void setEpostaticSystemsOrderType(String epostaticSystemsOrderType) {
-        this.epostaticSystemsOrderType = epostaticSystemsOrderType;
+
+    public void setEpistaticSystemsOrderType(String epistaticSystemsOrderType) {
+        this.epistaticSystemsOrderType = epistaticSystemsOrderType;
     }
+
     public String getCustomerId() {
         return customerId;
     }
