@@ -76,7 +76,6 @@
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.ReplenishmentTaskManager" ref="replenishmentTaskManager" />
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.rule.RuleManager" ref="ruleManager" />
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy.ReplenishedManagerProxy" ref="replenishedManagerProxy" />
-	
 	<!-- 创捡货工作 -->
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.WhWorkManager" ref="whWorkManager" />
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.WhWorkLineManager" ref="whWorkLineManager" />
@@ -85,6 +84,8 @@
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoOutBoundBoxMapper" ref="odoOutBoundBoxMapper" />
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.WorkTypeManager" ref="workTypeManager" />
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy.WhWavePickingManagerProxy" ref="whWavePickingManagerProxy" />
+	<!-- Pda捡货 -->
+	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.pda.work.PdaPickingWorkManager" ref="pdaPickingWorkManager" />
 	
 	<!-- 业务规则配置 -->
    	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.WhDistributionPatternRuleManager"  ref="whDistributionPatternRuleManager" />
