@@ -445,4 +445,12 @@ public final class Constants {
 
     /** 软分配阶段*/
     public static final String WEAK_ALLOCATED = "WEAK_ALLOCATED";
+    /**使用外部容器(小车)无出库箱拣货流程*/
+    public static final Integer PICKING_WAY_ONE = 1;
+    /**使用外部容器(小车)有出库箱拣货流程*/
+    public static final Integer PICKING_WAY_TWO= 2;
+    /**使用出库箱拣货流程*/
+    public static final Integer PICKING_WAY_THREE = 3;
+    /**使用周转箱拣货流程*/
+    public static final Integer PICKING_WAY_FOUR = 4;
 }
