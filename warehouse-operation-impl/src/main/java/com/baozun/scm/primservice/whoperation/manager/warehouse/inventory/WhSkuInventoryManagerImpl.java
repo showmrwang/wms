@@ -2980,6 +2980,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 				skuCommand.setSkuId(line.getSkuId());
 				skuCommand.setStoreId(line.getStoreId());
 				skuCommand.setInvStatus(line.getInvStatus());
+				skuCommand.setOuId(wh.getId());
 				Double occupyQty = 0.0;					// 实际占用数量
 				Double qty = line.getQty();				// 需要占用数量
 				String occupyCode = line.getOdoCode();	// 占用编码
@@ -3374,6 +3375,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     				skuCommand.setStoreId(line.getStoreId());
     				skuCommand.setInvStatus(line.getInvStatus());
     				skuCommand.setAreaId(rsc.getAreaId());
+    				skuCommand.setOuId(ouId);
     				// 策略分配单位中包含托盘出
     				if (allocateUnitCodes.contains(Constants.ALLOCATE_UNIT_PALLET)) {
     					skuCommand.setAllocateUnitCodes(Constants.ALLOCATE_UNIT_PALLET);
