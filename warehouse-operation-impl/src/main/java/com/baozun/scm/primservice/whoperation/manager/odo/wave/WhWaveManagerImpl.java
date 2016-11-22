@@ -341,8 +341,10 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         WhWaveMaster whWaveMaster = whWaveMasterDao.findByIdExt(wave.getWaveMasterId(), ouId);
         Long waveTempletId = whWaveMaster.getWaveTemplateId();
         String phase = this.getWavePhaseCode(wave.getPhaseCode(), waveTempletId, ouId);
-        wave.setPhaseCode(phase);
-        this.whWaveDao.saveOrUpdateByVersion(wave);
+        if (StringUtils.isEmpty(phase)) {
+        	wave.setPhaseCode(phase);
+        	this.whWaveDao.saveOrUpdateByVersion(wave);
+		}
     }
 
     @Override

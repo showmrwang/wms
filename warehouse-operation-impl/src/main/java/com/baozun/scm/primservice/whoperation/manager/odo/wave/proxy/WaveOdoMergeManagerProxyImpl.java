@@ -34,7 +34,7 @@ public class WaveOdoMergeManagerProxyImpl implements WaveOdoMergeManagerProxy {
 
     @Override
     public void changeWavePhaseCode(Long waveId, Long ouId) {
-        whWaveManager.changeWavePhaseCode(waveId, WavePhase.MERGE_ODO, ouId);
+        whWaveManager.changeWavePhaseCode(waveId, ouId);
     }
 
     @Override
