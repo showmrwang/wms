@@ -1256,7 +1256,6 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
         wave.setOuId(ouId);
         wave.setWaveMasterId(waveMasterId);
         wave.setTotalOdoQty(odoCount);
-        wave.setPhaseCode(this.getWavePhaseCode(null, waveMasterId, ouId));
         wave.setTotalOdoLineQty(odolineCount);
         wave.setTotalAmount(totalAmt);
         wave.setTotalVolume(totalVolume);
