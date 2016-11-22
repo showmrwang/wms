@@ -62,6 +62,8 @@ public class WhOperationCommand extends BaseModel {
 	private java.lang.String outerContainerCode;
 	/** 容器 */
 	private java.lang.String containerCode;
+	/** 是否整托整箱 */
+    private java.lang.Boolean isWholeCase;
 	/** 创建时间 */
 	private java.util.Date createTime;
 	/** 最后操作时间 */
@@ -252,5 +254,14 @@ public class WhOperationCommand extends BaseModel {
     public void setId(java.lang.Long id) {
         this.id = id;
     }
+
+    public java.lang.Boolean getIsWholeCase() {
+        return isWholeCase;
+    }
+
+    public void setIsWholeCase(java.lang.Boolean isWholeCase) {
+        this.isWholeCase = isWholeCase;
+    }
+    
 }
 

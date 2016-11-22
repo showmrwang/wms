@@ -10,8 +10,6 @@
     <resultMap id="OutboundBoxRuleCommand" type="com.baozun.scm.primservice.whoperation.command.warehouse.OutboundBoxRuleCommand">
     </resultMap>
 
-    <resultMap id="OutboundBoxRuleSplitRequireCommand" type="com.baozun.scm.primservice.whoperation.command.warehouse.OutboundBoxRuleSplitRequireCommand">
-    </resultMap>
 
     <!-- 用于select查询公用抽取的列 -->
     <sql id="outboundboxRuleColumnsExt">
@@ -240,7 +238,7 @@
         ${outboundboxRuleSql}
     </select>
 
-    <select id="executeOutboundBoxTacticsSql" resultMap="OutboundBoxRuleSplitRequireCommand">
+    <select id="executeOutboundBoxTacticsSql" resultType="string">
         ${outboundBoxTacticsSql}
     </select>
 

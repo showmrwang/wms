@@ -15,6 +15,15 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInv
  */
 public interface WhWavePickingManagerProxy extends BaseManager {
 
+    
+    /**
+     * [业务方法] 创建拣货工作和作业
+     * @param WhOdoOutBoundBox
+     * @param userId
+     * @return
+     */
+    public void createJobs(List<WhOdoOutBoundBox> whOdoOutBoundBoxList, Long ouId, Long userId);
+    
     /**
      * [业务方法] 创建拣货工作-返回小批次列表给上层服务
      * @param waveId
@@ -75,10 +84,11 @@ public interface WhWavePickingManagerProxy extends BaseManager {
     
     /**
      * [业务方法] 创建拣货工作-创建作业头
-     * @param WhOdoOutBoundBox
+     * @param workCode
+     * @param whOdoOutBoundBox
      * @return
      */
-    public String saveWhOperation(String workCode, Long ouId);
+    public String saveWhOperation(String workCode, WhOdoOutBoundBox whOdoOutBoundBox);
     
     /**
      * [业务方法] 创建拣货工作-创建作业明细

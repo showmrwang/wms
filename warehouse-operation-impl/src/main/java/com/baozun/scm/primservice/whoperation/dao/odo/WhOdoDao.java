@@ -111,8 +111,8 @@ public interface WhOdoDao extends BaseDao<WhOdo, Long> {
      * @param deliverGoodsTime
      * @return
      */
-    List<OdoMergeCommand> odoMerge(@Param("odoIdString") String odoIdString, @Param("ouId") Long ouId, @Param("outboundCartonType") String outboundCartonType, @Param("epistaticSystemsOrderType") String epistaticSystemsOrderType,
-            @Param("store") String store, @Param("deliverGoodsTime") String deliverGoodsTime);
+    List<OdoMergeCommand> odoMerge(@Param("odoStatus") String odoStatus, @Param("odoIdString") String odoIdString, @Param("ouId") Long ouId, @Param("outboundCartonType") String outboundCartonType,
+            @Param("epistaticSystemsOrderType") String epistaticSystemsOrderType, @Param("store") String store, @Param("deliverGoodsTime") String deliverGoodsTime);
 
     /**
      * [业务方法] 合并订单-合并出库单
@@ -178,13 +178,13 @@ public interface WhOdoDao extends BaseDao<WhOdo, Long> {
      * @return
      */
     WhOdo findOdoByCodeAndOuId(@Param("odoCode") String odoCode, @Param("ouId") Long ouId);
-    
-    /**
-	 * 根据提供波次ID查找当中有波次明细未分配规则的出库单ID
-	 */
-	List<OdoCommand> getNoRuleOdoIdList(@Param("waveIdList") List<Long> waveIdList, @Param("ouId") Long ouId);
 
-	int updateOdoByAllocateFail(@Param("odoId") Long odoId, @Param("reason") String reason, @Param("ouId") Long ouId);
+    /**
+     * 根据提供波次ID查找当中有波次明细未分配规则的出库单ID
+     */
+    List<OdoCommand> getNoRuleOdoIdList(@Param("waveIdList") List<Long> waveIdList, @Param("ouId") Long ouId);
+
+    int updateOdoByAllocateFail(@Param("odoId") Long odoId, @Param("reason") String reason, @Param("ouId") Long ouId);
 
     /**
      * [通用方法]查找出库单列表

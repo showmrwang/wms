@@ -1,13 +1,17 @@
 package com.baozun.scm.primservice.whoperation.manager.warehouse;
 
+import lark.common.annotation.MoreDB;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationLineCommand;
+import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOperationLineDao;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationLine;
@@ -22,6 +26,8 @@ public class WhOperationLineManagerImpl extends BaseManagerImpl implements WhOpe
     private WhOperationLineDao whOperationLineDao;
 
     @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    @Transactional(propagation = Propagation.SUPPORTS)
     public Boolean saveOrUpdate(WhOperationLineCommand whOperationLineCommand) {
         WhOperationLine whOperationLine = new WhOperationLine();
         //复制数据        

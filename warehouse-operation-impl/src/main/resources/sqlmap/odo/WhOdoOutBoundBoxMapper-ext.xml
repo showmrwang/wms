@@ -12,15 +12,19 @@
     <sql id="whOdoOutBoundBoxColumnsExt">
         <![CDATA[
                 id as id,
+                wave_id as waveId,
                 odo_id as odoId,
                 odo_line_id as odoLineId,
                 outbounxbox_type_id as outbounxboxTypeId,
                 outbounxbox_type_code as outbounxboxTypeCode,
                 container_id as containerId,
                 outer_container_id as outerContainerId,
+                container_lattice_no as containerLatticeNo,
                 qty as qty,
+                box_batch as boxBatch,
                 whole_case as wholeCase,
                 ou_id as ouId,
+                is_create_work as isCreateWork,
                 create_time as createTime,
                 last_modify_time as lastModifyTime,
                 operator_id as operatorId
@@ -33,6 +37,10 @@
 
             <if test="id!=null">
                 and id = #{id}
+            </if>
+            
+            <if test="waveId!=null">
+                and wave_id = #{waveId}
             </if>
 
             <if test="odoId!=null">
@@ -60,16 +68,28 @@
                 and outer_container_id = #{outerContainerId}
             </if>
 
+			<if test="containerLatticeNo!=null">
+                and container_lattice_no = #{containerLatticeNo}
+            </if>
+
             <if test="qty!=null">
                 and qty = #{qty}
+            </if>
+            
+            <if test="boxBatch!=null">
+                and box_batch = #{boxBatch}
+            </if>
+            
+            <if test="wholeCase!=null">
+                and whole_case = #{wholeCase}
             </if>
 
             <if test="ouId!=null">
                 and ou_id = #{ouId}
             </if>
 
-            <if test="wholeCase!=null">
-                and whole_case = #{wholeCase}
+            <if test="isCreateWork!=null">
+                and is_create_work = #{isCreateWork}
             </if>
 
             <if test="createTime!=null">
@@ -98,7 +118,7 @@
                     container_id = #{containerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
                     outer_container_id = #{outerContainerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
                     container_lattice_no = #{containerLatticeNo,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-                    qty = #{qty,javaType=Long,jdbcType=DECIMAL} ,
+                    qty = #{qty,javaType=Double,jdbcType=DECIMAL} ,
                     box_batch = #{boxBatch,javaType=java.lang.String,jdbcType=VARCHAR} ,
                     whole_case = #{wholeCase,javaType=java.lang.Integer,jdbcType=INTEGER} ,
                     is_create_work = #{isCreateWork,javaType=java.lang.Boolean,jdbcType=BIT} ,
@@ -143,6 +163,18 @@
 		where
 			ou_id = #{ouId}
 			and box_batch = #{boxBatch}
+			and whole_case is not null
+		group by
+			whole_case
+		union all
+		select
+			<include refid="whOdoOutBoundBoxColumnsExt"/>
+		from
+			t_wh_odo_outboundbox
+		where
+			ou_id = #{ouId}
+			and box_batch = #{boxBatch}
+			and whole_case is null
 			and outer_container_id is not null
 		group by
 			outer_container_id
@@ -154,8 +186,10 @@
 		where
 			ou_id = #{ouId}
 			and box_batch = #{boxBatch}
+			and whole_case is null
 			and outer_container_id is null
 			and outbounxbox_type_code is not null
+			and container_id is null
 		group by
 			outbounxbox_type_code
 		union all
@@ -166,8 +200,10 @@
 		where
 			ou_id = #{ouId}
 			and box_batch = #{boxBatch}
+			and whole_case is null
 			and outer_container_id is null
 			and outbounxbox_type_code is null
+			and container_id is not null
 		group by
 			container_id
 	</select>
@@ -180,13 +216,16 @@
 		<where>
 			ou_id = #{ouId}
 			and box_batch = #{boxBatch}
-			<if test="outerContainerId!=null">
+			<if test="wholeCase!=null">
+				and whole_case = #{wholeCase}
+			</if>
+			<if test="outerContainerId!=null and wholeCase==null">
 				and outer_container_id = #{outerContainerId}
 			</if>
-			<if test="outerContainerId==null and outbounxboxTypeId!=null">
+			<if test="outerContainerId==null and wholeCase==null and outbounxboxTypeId!=null and containerId==null">
 				and outbounxbox_type_id = #{outbounxboxTypeId}
 			</if>
-			<if test="outerContainerId==null and containerId!=null">
+			<if test="outerContainerId==null and wholeCase==null and outbounxboxTypeId==null and containerId!=null">
 				and container_id = #{containerId}
 			</if>
 		</where>

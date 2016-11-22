@@ -95,7 +95,7 @@ public interface WhSkuInventoryManager extends BaseManager {
      * @param userId
      * @param logId
      */
-   public void manMadePutaway(Boolean isNeedSkuDetail,Double scanSkuQty,WhSkuInventoryCommand invCmd,ContainerCommand containerCmd, ContainerCommand insideContainerCmd, Long locationId, Long funcId, Warehouse warehouse, Integer putawayPatternDetailType, Long ouId, Long userId, String logId);
+   public void manMadePutaway(Boolean isOuterContainer,Boolean isNeedSkuDetail,Double scanSkuQty,WhSkuInventoryCommand invCmd,ContainerCommand containerCmd, ContainerCommand insideContainerCmd, Long locationId, Long funcId, Warehouse warehouse, Integer putawayPatternDetailType, Long ouId, Long userId, String logId);
 
 	void allocationInventoryByLine(WhWaveLineCommand whWaveLineCommand, List<AllocateStrategy> rules, Double qty, Warehouse wh, String logId);
 

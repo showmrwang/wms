@@ -45,6 +45,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	to_location_id as toLocationId,
 	        	to_outer_container_id as toOuterContainerId,
 	        	to_inside_container_id as toInsideContainerId,
+	        	is_whole_case as isWholeCase,
 	        	odo_id as odoId,
 	        	odo_line_id as odoLineId,
 	        	create_time as createTime,
@@ -56,13 +57,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<sql id="whWorkLineDynamicWhereExt">
 		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
 		<where>
-	       
+		
 				<if test="id!=null">
 					and id = #{id}
 				</if>
 	       
-	       
-		       <if test="lineCode!=null and lineCode!=''">
+		       	<if test="lineCode!=null and lineCode!=''">
 					and line_code = #{lineCode}
 				</if>
 	       
@@ -203,7 +203,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					and to_inside_container_id = #{toInsideContainerId}
 				</if>
 	       
-				<if test="odoId!=null">
+	       		<if test="isWholeCase!=null">
+					and is_whole_case = #{isWholeCase}
+				</if>
+	       	
+	       		<if test="odoId!=null">
 					and odo_id = #{odoId}
 				</if>
 	       
@@ -235,9 +239,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        start_time = #{startTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        finish_time = #{finishTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        sku_id = #{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-			        qty = #{qty,javaType=Long,jdbcType=DECIMAL} ,
-			        complete_qty = #{completeQty,javaType=Long,jdbcType=DECIMAL} ,
-			        cancel_qty = #{cancelQty,javaType=Long,jdbcType=DECIMAL} ,
+			        qty = #{qty,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+			        complete_qty = #{completeQty,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+			        cancel_qty = #{cancelQty,javaType=java.lang.Double,jdbcType=DECIMAL} ,
 			        inv_status = #{invStatus,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        inv_type = #{invType,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        batch_number = #{batchNumber,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -262,6 +266,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        to_location_id = #{toLocationId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        to_outer_container_id = #{toOuterContainerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        to_inside_container_id = #{toInsideContainerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        is_whole_case = #{isWholeCase,javaType=java.lang.Boolean,jdbcType=BIT} ,
 			        odo_id = #{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        odo_line_id = #{odoLineId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,

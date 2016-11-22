@@ -18,9 +18,11 @@ public interface PdaRcvdManagerProxy extends BaseManager {
     /**
      * 通用收货：将扫描的商品数据从缓存中推送到数据库中
      * 
+     * @param ouId
+     * 
      * @param commmand
      */
-    void saveScanedSkuWhenGeneralRcvdForPda(Long userId);
+    void saveScanedSkuWhenGeneralRcvdForPda(Long userId, Long ouId);
 
     /**
      * 将扫描的临时数据推送到缓存中
@@ -147,12 +149,12 @@ public interface PdaRcvdManagerProxy extends BaseManager {
      * 当没有扫描商品的时候，取消货箱缓存
      * 
      * @param inside
-     * @param outside
+     * @param skuId
      * @param ouId
      * @param userId
      * @param logId
      */
-    void removeInsideContainerCacheWhenScanSkuNoRcvd(Long inside, Long outside, Long ouId, Long userId, String logId);
+    void removeInsideContainerCacheWhenScanSkuNoRcvd(Long inside, Long skuId, Long ouId, Long userId, String logId);
 
     /**
      * 已扫描商品的时候，取消货箱缓存
@@ -172,6 +174,13 @@ public interface PdaRcvdManagerProxy extends BaseManager {
      * @return
      */
     String getCacheKeyPrefixWhenRcvd(String cacheKey);
+
+    /**
+     * 非SN的残次品
+     * 
+     * @param command
+     */
+    void cacheScanedDefeatSkuNoSnWhenGeneralRcvd(WhSkuInventoryCommand command);
 
 
 }

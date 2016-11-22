@@ -43,11 +43,11 @@ public class WhOperationLine extends BaseModel {
 	/** 商品ID */
 	private java.lang.Long skuId;
 	/** 计划量 */
-	private Long qty;
+	private java.lang.Double qty;
 	/** 执行量/完成量 */
-	private Long completeQty;
+	private java.lang.Double completeQty;
 	/** 取消量 */
-	private Long cancelQty;
+	private java.lang.Double cancelQty;
 	/** 库存状态 */
 	private java.lang.Long invStatus;
 	/** 库存类型 */
@@ -145,22 +145,22 @@ public class WhOperationLine extends BaseModel {
     public void setSkuId(java.lang.Long skuId) {
         this.skuId = skuId;
     }
-    public Long getQty() {
+    public java.lang.Double getQty() {
         return qty;
     }
-    public void setQty(Long qty) {
+    public void setQty(java.lang.Double qty) {
         this.qty = qty;
     }
-    public Long getCompleteQty() {
+    public java.lang.Double getCompleteQty() {
         return completeQty;
     }
-    public void setCompleteQty(Long completeQty) {
+    public void setCompleteQty(java.lang.Double completeQty) {
         this.completeQty = completeQty;
     }
-    public Long getCancelQty() {
+    public java.lang.Double getCancelQty() {
         return cancelQty;
     }
-    public void setCancelQty(Long cancelQty) {
+    public void setCancelQty(java.lang.Double cancelQty) {
         this.cancelQty = cancelQty;
     }
     public java.lang.Long getInvStatus() {
@@ -337,5 +337,6 @@ public class WhOperationLine extends BaseModel {
     public void setOperatorId(java.lang.Long operatorId) {
         this.operatorId = operatorId;
     }
+    
 }
 

@@ -31,4 +31,5 @@ public interface WhDistributionPatternRuleManager extends BaseManager {
      */
     WhDistributionPatternRuleCommand findRuleByCode(String distributionPatternCode, Long ouId);
 
+
 }

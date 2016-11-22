@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationCommand;
@@ -26,6 +27,7 @@ public class WhOperationManagerImpl extends BaseManagerImpl implements WhOperati
     
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    @Transactional(propagation = Propagation.SUPPORTS)
     public Boolean saveOrUpdate(WhOperationCommand whOperationCommand) {
         WhOperation whOperation = new WhOperation();
         //复制数据        

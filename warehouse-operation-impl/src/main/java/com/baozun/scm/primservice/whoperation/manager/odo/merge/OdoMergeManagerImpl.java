@@ -275,7 +275,7 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
         Map<String, String> response = new HashMap<String, String>();
         String odoIdString = StringUtil.listToString(odoIds, ',');
         List<String> optionList = convertOptions(options);
-        List<OdoMergeCommand> list = this.whOdoDao.odoMerge(odoIdString, ouId, optionList.get(0), optionList.get(1), optionList.get(2), optionList.get(3));
+        List<OdoMergeCommand> list = this.whOdoDao.odoMerge(OdoStatus.ODO_NEW, odoIdString, ouId, optionList.get(0), optionList.get(1), optionList.get(2), optionList.get(3));
         if (!list.isEmpty() && list.size() > 0) {
             /* 合并订单 */
             response = this.startOdoMerge(list, ouId, userId);
@@ -446,7 +446,7 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
         whOdo.setQty(qty);
         whOdo.setAmt(amt);
         if (!StringUtil.isEmpty(originalOdoCode)) {
-            originalOdoCode.substring(0, originalOdoCode.length() - 1);
+            originalOdoCode = originalOdoCode.substring(0, originalOdoCode.length() - 1);
         }
         whOdo.setOriginalOdoCode(originalOdoCode);
         if (null != whOdo.getId()) {

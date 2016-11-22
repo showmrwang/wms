@@ -1,7 +1,6 @@
 package com.baozun.scm.primservice.whoperation.manager.odo.manager;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -104,7 +103,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                 Set<String> dic9 = new HashSet<String>();
                 Set<String> dic10 = new HashSet<String>();
                 Set<String> dic11 = new HashSet<String>();
-                Set<String> dic12 = new HashSet<String>();
+                // Set<String> dic12 = new HashSet<String>();
                 Set<Long> customerIdSet = new HashSet<Long>();
                 Set<Long> storeIdSet = new HashSet<Long>();
                 Set<Long> userIdSet = new HashSet<Long>();
@@ -137,9 +136,9 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                             dic8.add(command.getOdoStatus());
 
                         }
-                        if (StringUtils.hasText(command.getOutboundCartonType())) {
+                        if (StringUtils.hasText(command.getOutboundTargetType())) {
 
-                            dic9.add(command.getOutboundCartonType());
+                            dic9.add(command.getOutboundTargetType());
                         }
                         if (StringUtils.hasText(command.getDeliverGoodsTimeMode())) {
 
@@ -151,7 +150,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                         }
                         if (StringUtils.hasText(command.getIncludeHazardousCargo())) {
 
-                            dic12.add(command.getIncludeHazardousCargo());
+                            dic11.add(command.getIncludeHazardousCargo());
                         }
                         if (StringUtils.hasText(command.getCustomerId())) {
                             customerIdSet.add(Long.parseLong(command.getCustomerId()));
@@ -177,8 +176,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                     map.put(Constants.ODO_STATUS, new ArrayList<String>(dic8));
                     map.put(Constants.ODO_AIM_TYPE, new ArrayList<String>(dic9));
                     map.put(Constants.ODO_DELIVER_GOODS_TIME_MODE, new ArrayList<String>(dic10));
-                    map.put(Constants.INCLUDE_FRAGILE_CARGO, new ArrayList<String>(dic11));
-                    map.put(Constants.INCLUDE_HAZARDOUS_CARGO, new ArrayList<String>(dic12));
+                    map.put(Constants.IS_NOT, new ArrayList<String>(dic11));
 
                     Map<String, SysDictionary> dicMap = this.findSysDictionaryByRedis(map);
                     Map<Long, Customer> customerMap = this.findCustomerByRedis(new ArrayList<Long>(customerIdSet));
@@ -213,25 +211,29 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                             command.setOdoStatusName(sys == null ? command.getOdoStatus() : sys.getDicLabel());
 
                         }
-                        if (StringUtils.hasText(command.getOutboundCartonType())) {
-                            SysDictionary sys = dicMap.get(Constants.ODO_AIM_TYPE + "_" + command.getOutboundCartonType());
-                            command.setOutboundCartonTypeName(sys == null ? command.getOutboundCartonType() : sys.getDicLabel());
+                        if (StringUtils.hasText(command.getOutboundTargetType())) {
+                            SysDictionary sys = dicMap.get(Constants.ODO_AIM_TYPE + "_" + command.getOutboundTargetType());
+                            command.setOutboundTargetTypeName(sys == null ? command.getOutboundTargetType() : sys.getDicLabel());
                         }
                         if (StringUtils.hasText(command.getDeliverGoodsTimeMode())) {
                             SysDictionary sys = dicMap.get(Constants.ODO_DELIVER_GOODS_TIME_MODE + "_" + command.getDeliverGoodsTimeMode());
                             command.setDeliverGoodsTimeModeName(sys == null ? command.getDeliverGoodsTimeMode() : sys.getDicLabel());
                         }
                         if (StringUtils.hasText(command.getIncludeFragileCargo())) {
-                            SysDictionary sys = dicMap.get(Constants.INCLUDE_FRAGILE_CARGO + "_" + command.getIncludeFragileCargo());
+                            SysDictionary sys = dicMap.get(Constants.IS_NOT + "_" + command.getIncludeFragileCargo());
                             command.setIncludeFragileCargoName(sys == null ? command.getIncludeFragileCargo() : sys.getDicLabel());
                         }
                         if (StringUtils.hasText(command.getIncludeHazardousCargo())) {
-                            SysDictionary sys = dicMap.get(Constants.INCLUDE_HAZARDOUS_CARGO + "_" + command.getIncludeHazardousCargo());
+                            SysDictionary sys = dicMap.get(Constants.IS_NOT + "_" + command.getIncludeHazardousCargo());
                             command.setIncludeHazardousCargoName(sys == null ? command.getIncludeHazardousCargo() : sys.getDicLabel());
                         }
                         if (StringUtils.hasText(command.getCustomerId())) {
                             Customer customer = customerMap.get(Long.parseLong(command.getCustomerId()));
                             command.setCustomerName(customer == null ? command.getCustomerId() : customer.getCustomerName());
+                        }
+                        if (StringUtils.hasText(command.getIsLocked())) {
+                            SysDictionary sys = dicMap.get(Constants.IS_NOT + "_" + command.getIsLocked());
+                            command.setIsLocked(sys == null ? command.getIsLocked() : sys.getDicLabel());
                         }
                         if (StringUtils.hasText(command.getStoreId())) {
                             Store store = storeMap.get(Long.parseLong(command.getStoreId()));
@@ -443,28 +445,43 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void createOdoWave(WhWave wave, List<WhWaveLine> waveLineList, Map<Long, WhOdo> odoMap, List<WhOdoLine> odolineList, Long userId, String logId) {
-        this.whWaveDao.insert(wave);
-        for (WhWaveLine waveLine : waveLineList) {
-            waveLine.setWaveId(wave.getId());
-            this.whWaveLineDao.insert(waveLine);
+    public void createOdoWave(WhWave wave, Long waveTemplateId, List<WhWaveLine> waveLineList, Map<Long, WhOdo> odoMap, List<WhOdoLine> odolineList, Long userId, String logId) {
+        try {
+            wave.setPhaseCode(this.getWavePhaseCode(null, waveTemplateId, wave.getOuId()));
+            this.whWaveDao.insert(wave);
+        } catch (Exception e) {
+            log.error(e + "");;
+            throw new BusinessException(ErrorCodes.INSERT_DATA_ERROR);
+        }
+        try {
+            for (WhWaveLine waveLine : waveLineList) {
+                waveLine.setWaveId(wave.getId());
+                this.whWaveLineDao.insert(waveLine);
+            }
+        } catch (Exception e) {
+            log.error(e + "");;
+            throw new BusinessException(ErrorCodes.INSERT_DATA_ERROR);
         }
         Iterator<Entry<Long, WhOdo>> odoIt = odoMap.entrySet().iterator();
         while (odoIt.hasNext()) {
             Entry<Long, WhOdo> entry = odoIt.next();
             WhOdo odo = entry.getValue();
-            odo.setLastModifyTime(new Date());
             odo.setModifiedId(userId);
             odo.setWaveCode(wave.getCode());
             odo.setOdoStatus(OdoStatus.ODO_WAVE);
-            this.whOdoDao.saveOrUpdateByVersion(odo);
+            int count = this.whOdoDao.saveOrUpdateByVersion(odo);
+            if (count <= 0) {
+                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            }
         }
         for (WhOdoLine line : odolineList) {
-            line.setLastModifyTime(new Date());
             line.setModifiedId(userId);
             line.setWaveCode(wave.getCode());
             line.setOdoLineStatus(OdoStatus.ODOLINE_WAVE);
-            this.whOdoLineDao.saveOrUpdateByVersion(line);
+            int count = this.whOdoLineDao.saveOrUpdateByVersion(line);
+            if (count <= 0) {
+                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            }
         }
 
         // 添加到波次中时候，计数器需要-1；

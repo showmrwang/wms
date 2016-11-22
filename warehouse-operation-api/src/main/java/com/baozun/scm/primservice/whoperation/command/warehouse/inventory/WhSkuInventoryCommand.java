@@ -212,15 +212,17 @@ public class WhSkuInventoryCommand extends BaseCommand {
         this.quantity = quantity;
     }
 
+    /**容器类型*/
     private Long containerType;
 
     /** 当前容器序号 */
     private String curOrder;
 
+    /**asn 商品数量*/
     private Long asnSkuCount;
-
+    /** 序列号类型*/
     private String serialNumberType;
-
+    /** 序列号*/
     private String serialNumber;
     /** 当前url标记 */
     private Integer currUrl;
@@ -228,13 +230,13 @@ public class WhSkuInventoryCommand extends BaseCommand {
     // private Boolean isBatchScan;
     /** 扫描模式 */
     private Integer scanPattern;
-
+    /** 是否向用户提示属性*/
     private String isInvattrAsnPointoutUser;
-
+    /** 当前商品sn待扫数量*/
     private Integer qtyRest;
-
+    /** 容器待扫数量*/
     private Integer qtyRestContainer;
-    
+
     private Double sumOnHandQty;
     
     /** 分配区域id */
@@ -252,6 +254,11 @@ public class WhSkuInventoryCommand extends BaseCommand {
     /** 最大失效日期 */
     private Date maxExpDate;
     
+    /** 商品条码*/
+    private String skuBarcode;
+    /** 容器序号*/
+    private String containerQty;
+
     public Boolean getIsPalletRcvdFinished() {
         return isPalletRcvdFinished;
     }
@@ -908,13 +915,13 @@ public class WhSkuInventoryCommand extends BaseCommand {
         this.qtyRestContainer = qtyRestContainer;
     }
 
-	public Double getSumOnHandQty() {
-		return sumOnHandQty;
-	}
+    public Double getSumOnHandQty() {
+        return sumOnHandQty;
+    }
 
-	public void setSumOnHandQty(Double sumOnHandQty) {
-		this.sumOnHandQty = sumOnHandQty;
-	}
+    public void setSumOnHandQty(Double sumOnHandQty) {
+        this.sumOnHandQty = sumOnHandQty;
+    }
 
     public Boolean getIsInvattrDiscrepancyAllowrcvd() {
         return isInvattrDiscrepancyAllowrcvd;
@@ -979,5 +986,21 @@ public class WhSkuInventoryCommand extends BaseCommand {
 	public void setMaxExpDate(Date maxExpDate) {
 		this.maxExpDate = maxExpDate;
 	}
+
+    public String getSkuBarcode() {
+        return skuBarcode;
+    }
+
+    public void setSkuBarcode(String skuBarcode) {
+        this.skuBarcode = skuBarcode;
+    }
+
+    public String getContainerQty() {
+        return containerQty;
+    }
+
+    public void setContainerQty(String containerQty) {
+        this.containerQty = containerQty;
+    }
 
 }

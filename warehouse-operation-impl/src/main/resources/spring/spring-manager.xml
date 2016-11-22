@@ -54,6 +54,10 @@
                     <value>com.baozun.scm.primservice.whoperation.model.odo.WhOdoAddress</value>
                     <value>com.baozun.scm.primservice.whoperation.model.odo.WhOdoVas</value>
                     <value>com.baozun.scm.primservice.whinfo.model.warehouse.WhDistributionPatternRule</value>
+                    <value>com.baozun.scm.primservice.whoperation.model.warehouse.WhWork</value>
+                    <value>com.baozun.scm.primservice.whoperation.model.warehouse.WhWorkLine</value>
+                    <value>com.baozun.scm.primservice.whoperation.model.warehouse.WhOperation</value>
+                    <value>com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationLine</value>
 				</list>
 			</property>
 			

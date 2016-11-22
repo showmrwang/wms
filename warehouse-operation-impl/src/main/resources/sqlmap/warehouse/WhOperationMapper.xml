@@ -27,6 +27,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	location_code as locationCode,
 	        	outer_container_code as outerContainerCode,
 	        	container_code as containerCode,
+	        	is_whole_case as isWholeCase,
 	        	create_time as createTime,
 	        	last_modify_time as lastModifyTime,
 	        	created_id as createdId,
@@ -61,6 +62,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	location_code ,
 		        	outer_container_code ,
 		        	container_code ,
+		        	is_whole_case ,
 		        	create_time ,
 		        	last_modify_time ,
 		        	created_id ,
@@ -84,6 +86,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{locationCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{outerContainerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{containerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{isWholeCase,javaType=java.lang.Boolean,jdbcType=BIT} ,
 		        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        	#{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -114,6 +117,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        location_code = #{locationCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        outer_container_code = #{outerContainerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        container_code = #{containerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        is_whole_case = #{isWholeCase,javaType=java.lang.Boolean,jdbcType=BIT} ,
 		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -230,6 +234,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	       
 		       <if test="containerCode!=null and containerCode!=''">
 					and container_code = #{containerCode}
+				</if>
+				
+				 <if test="isWholeCase!=null and isWholeCase!=''">
+					and is_whole_case = #{isWholeCase}
 				</if>
 	       
 				<if test="createTime!=null">

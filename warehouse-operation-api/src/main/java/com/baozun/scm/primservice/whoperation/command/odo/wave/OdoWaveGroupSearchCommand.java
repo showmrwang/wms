@@ -15,7 +15,7 @@ public class OdoWaveGroupSearchCommand extends BaseCommand {
     private String odoCode;
     private String extCode;
     private List<String> odoStatus;
-    private List<String> epostaticSystemsOrderType;
+    private List<String> epistaticSystemsOrderType;
     private List<String> customerId;
     private List<String> outboundTargetType;
     private List<String> odoType;
@@ -101,7 +101,7 @@ public class OdoWaveGroupSearchCommand extends BaseCommand {
 
     private String groupTransportServiceProvider;
 
-    private String groupEpostaticSystemsOrderType;
+    private String groupEpistaticSystemsOrderType;
 
     private Boolean lineFlag;
 
@@ -208,12 +208,12 @@ public class OdoWaveGroupSearchCommand extends BaseCommand {
         this.odoStatus = odoStatus;
     }
 
-    public List<String> getEpostaticSystemsOrderType() {
-        return epostaticSystemsOrderType;
+    public List<String> getEpistaticSystemsOrderType() {
+        return epistaticSystemsOrderType;
     }
 
-    public void setEpostaticSystemsOrderType(List<String> epostaticSystemsOrderType) {
-        this.epostaticSystemsOrderType = epostaticSystemsOrderType;
+    public void setEpistaticSystemsOrderType(List<String> epistaticSystemsOrderType) {
+        this.epistaticSystemsOrderType = epistaticSystemsOrderType;
     }
 
     public List<String> getCustomerId() {
@@ -744,13 +744,14 @@ public class OdoWaveGroupSearchCommand extends BaseCommand {
         this.groupTransportServiceProvider = groupTransportServiceProvider;
     }
 
-    public String getGroupEpostaticSystemsOrderType() {
-        return groupEpostaticSystemsOrderType;
+    public String getGroupEpistaticSystemsOrderType() {
+        return groupEpistaticSystemsOrderType;
     }
 
-    public void setGroupEpostaticSystemsOrderType(String groupEpostaticSystemsOrderType) {
-        this.groupEpostaticSystemsOrderType = groupEpostaticSystemsOrderType;
+    public void setGroupEpistaticSystemsOrderType(String groupEpistaticSystemsOrderType) {
+        this.groupEpistaticSystemsOrderType = groupEpistaticSystemsOrderType;
     }
+
 
 
 

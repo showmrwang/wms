@@ -581,6 +581,14 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
     
     public List<WhSkuInventoryCommand> findWhSkuInvCmdByLocation(@Param("ouId") Long ouId, @Param("locationId") Long locationId);
     
+    /***
+     * 根据库位id查询内部容器Id，外部容器id都为空的库存记录
+     * @param ouId
+     * @param locationId
+     * @return
+     */
+    public List<WhSkuInventoryCommand> findWhSkuInvCmdByLocationContainerIdIsNull(@Param("ouId") Long ouId, @Param("locationId") Long locationId);
+    
     /**
      * 按入库时间顺序查找库存
      * @param whWaveLineCommand
@@ -636,6 +644,15 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @return
      */
     List<WhSkuInventory> findWhSkuInventoryCountsByContainerId(@Param("outerContainerId")Long outerContainerId,@Param("ouId") Long ouId,@Param("insideContainerId") Long insideContainerId);
+
+    /**
+     * 查找容器中放了哪些商品
+     * 
+     * @param insideContainerId
+     * @param ouId
+     * @return
+     */
+    List<Long> findSkuIdListFromInventory(@Param("insideContainerId") Long insideContainerId, @Param("ouId") Long ouId);
     
     /**
      * 根据参数查询出库存信息

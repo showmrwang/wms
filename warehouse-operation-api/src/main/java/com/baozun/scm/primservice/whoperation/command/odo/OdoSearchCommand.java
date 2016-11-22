@@ -13,14 +13,14 @@ public class OdoSearchCommand extends BaseCommand {
     private String odoCode;
     private String extCode;
     private List<String> odoStatus;
-    private List<String> epostaticSystemsOrderType;
+    private List<String> epistaticSystemsOrderType;
     private List<String> customerId;
     private List<String> outboundTargetType;
     private List<String> odoType;
     private List<String> storeId;
     private String outboundTarget;
     private List<String> modeOfTransport;
-    private List<Long> transportServiceProvider;
+    private List<String> transportServiceProvider;
     private List<String> transportServiceProviderType;
     private List<String> distributeMode;
     private List<String> outBoundCartonType;
@@ -83,7 +83,7 @@ public class OdoSearchCommand extends BaseCommand {
     /** 运输服务商 */
     private String groupTransportServiceProvider;
     /** 上位单据类型 */
-    private String groupEpostaticSystemsOrderType;
+    private String groupEpistaticSystemsOrderType;
 
 
     private Boolean isDistributeMode;
@@ -137,12 +137,12 @@ public class OdoSearchCommand extends BaseCommand {
         this.groupTransportServiceProvider = groupTransportServiceProvider;
     }
 
-    public String getGroupEpostaticSystemsOrderType() {
-        return groupEpostaticSystemsOrderType;
+    public String getGroupEpistaticSystemsOrderType() {
+        return groupEpistaticSystemsOrderType;
     }
 
-    public void setGroupEpostaticSystemsOrderType(String groupEpostaticSystemsOrderType) {
-        this.groupEpostaticSystemsOrderType = groupEpostaticSystemsOrderType;
+    public void setGroupEpistaticSystemsOrderType(String groupEpistaticSystemsOrderType) {
+        this.groupEpistaticSystemsOrderType = groupEpistaticSystemsOrderType;
     }
 
     public Boolean getLineFlag() {
@@ -217,12 +217,13 @@ public class OdoSearchCommand extends BaseCommand {
         this.odoStatus = odoStatus;
     }
 
-    public List<String> getEpostaticSystemsOrderType() {
-        return epostaticSystemsOrderType;
+
+    public List<String> getEpistaticSystemsOrderType() {
+        return epistaticSystemsOrderType;
     }
 
-    public void setEpostaticSystemsOrderType(List<String> epostaticSystemsOrderType) {
-        this.epostaticSystemsOrderType = epostaticSystemsOrderType;
+    public void setEpistaticSystemsOrderType(List<String> epistaticSystemsOrderType) {
+        this.epistaticSystemsOrderType = epistaticSystemsOrderType;
     }
 
     public List<String> getCustomerId() {
@@ -617,11 +618,11 @@ public class OdoSearchCommand extends BaseCommand {
         this.isWholeOrderOutbound = isWholeOrderOutbound;
     }
 
-    public List<Long> getTransportServiceProvider() {
+    public List<String> getTransportServiceProvider() {
         return transportServiceProvider;
     }
 
-    public void setTransportServiceProvider(List<Long> transportServiceProvider) {
+    public void setTransportServiceProvider(List<String> transportServiceProvider) {
         this.transportServiceProvider = transportServiceProvider;
     }
 

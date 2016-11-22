@@ -17,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.baozun.scm.primservice.whoperation.command.rule.RuleAfferCommand;
 import com.baozun.scm.primservice.whoperation.command.rule.RuleExportCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.OutboundBoxRuleCommand;
-import com.baozun.scm.primservice.whoperation.command.warehouse.OutboundBoxRuleSplitRequireCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.PlatformRecommendRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.RecommendPlatformCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.RecommendRuleConditionCommand;
@@ -163,9 +162,9 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
         Long odoId = ruleAffer.getOutboundBoxSortOdoId();
         Long ouId = ruleAffer.getOuid();
 
-        List<OutboundBoxRuleSplitRequireCommand> outboundBoxRuleSplitRequireCommandList = outboundBoxRuleDao.executeOutboundBoxTacticsSql(outboundBoxRuleCommand.getSortSql(), odoId, ouId);
+        List<String> odoLineIdGroupList = outboundBoxRuleDao.executeOutboundBoxTacticsSql(outboundBoxRuleCommand.getSortSql(), odoId, ouId);
         RuleExportCommand exportCommand = new RuleExportCommand();
-        exportCommand.setOutboundBoxRuleSplitRequireCommandList(outboundBoxRuleSplitRequireCommandList);
+        exportCommand.setOdoLineIdGroupList(odoLineIdGroupList);
         return exportCommand;
     }
 
@@ -387,22 +386,22 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
         // 查询所有可用的补货规则,按照优先级排序,
         List<ReplenishmentRuleCommand> ruleCommandList =
                 replenishmentRuleDao.findRuleByReplenishTypeOuIdOrderByPriorityAsc(ruleAffer.getReplenishmentRuleOrderReplenish(), ruleAffer.getReplenishmentRuleRealTimeReplenish(), ruleAffer.getReplenishmentRuleWaveReplenish(), ruleAffer.getOuid());
-        //存放商品匹配了哪些规则
+        // 存放商品匹配了哪些规则
         Map<Long, List<ReplenishmentRuleCommand>> skuReplenishmentRuleMap = new HashMap<>();
         if (null != ruleCommandList && !ruleCommandList.isEmpty()) {
             for (ReplenishmentRuleCommand ruleCommand : ruleCommandList) {
-                //转换成逗号分隔的字符串
+                // 转换成逗号分隔的字符串
                 String skuIdListStr = StringUtil.listToStringWithoutBrackets(skuIdList, ',');
                 // 匹配规则的商品
                 List<Long> matchSkuIdList = replenishmentRuleDao.executeSkuRuleSql(ruleCommand.getSkuRuleSql().replace(Constants.REOLENISHMENT_RULE_SKUID_LIST_PLACEHOLDER, skuIdListStr), ouId);
                 if (null != matchSkuIdList && !matchSkuIdList.isEmpty()) {
-                    for(Long skuId : matchSkuIdList){
+                    for (Long skuId : matchSkuIdList) {
                         List<ReplenishmentRuleCommand> skuMatchRuleList = skuReplenishmentRuleMap.get(skuId);
-                        if(null == skuMatchRuleList){
+                        if (null == skuMatchRuleList) {
                             skuMatchRuleList = new ArrayList<>();
                         }
                         skuMatchRuleList.add(ruleCommand);
-                        //记录每个商品匹配了哪些规则，且规则按照优先级排序
+                        // 记录每个商品匹配了哪些规则，且规则按照优先级排序
                         skuReplenishmentRuleMap.put(skuId, skuMatchRuleList);
                     }
                 }
@@ -431,7 +430,7 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
         // 组织ID
         Long ouId = ruleAffer.getOuid();
         ReplenishmentRuleCommand replenishmentRuleCommand = ruleAffer.getReplenishmentRuleCommand();
-        //转换成逗号分隔的字符串
+        // 转换成逗号分隔的字符串
         String locationIdListStr = StringUtil.listToStringWithoutBrackets(locationIdList, ',');
         // 匹配库位的规则
         List<Long> matchLocationIdList = replenishmentRuleDao.executeLocationRuleSql(replenishmentRuleCommand.getLocationRuleSql().replace(Constants.REOLENISHMENT_RULE_LOCATIONID_LIST_PLACEHOLDER, locationIdListStr), ouId);

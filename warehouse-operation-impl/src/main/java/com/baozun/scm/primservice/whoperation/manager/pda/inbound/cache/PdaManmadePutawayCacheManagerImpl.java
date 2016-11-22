@@ -30,7 +30,6 @@ import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
 import com.baozun.scm.primservice.whoperation.constant.CacheKeyConstant;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
 import com.baozun.scm.primservice.whoperation.constant.WhPutawayPatternDetailType;
-import com.baozun.scm.primservice.whoperation.constant.WhScanPatternType;
 import com.baozun.scm.primservice.whoperation.constant.WhUomType;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.Container2ndCategoryDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
@@ -156,12 +155,12 @@ public class PdaManmadePutawayCacheManagerImpl extends BaseManagerImpl implement
             List<WhSkuInventoryCommand> list = null;
             if(manMadePutawayCommand.getIsOuterContainer()) {   //外部容器库存
                 containerList.add(manMadePutawayCommand.getOuterContainerCode());   
-                list = whSkuInventoryDao.findWhSkuInventoryByOuterContainerCode(manMadePutawayCommand.getOuId(), containerList);  //整托
+                list = whSkuInventoryDao.findWhSkuInventoryByOuterContainerCode(manMadePutawayCommand.getOuId(), containerList);  
             }else{
                 containerList.add(manMadePutawayCommand.getInsideContainerCode());   //内部容器库存
-                list = whSkuInventoryDao.findWhSkuInventoryByInsideContainerCode(manMadePutawayCommand.getOuId(), containerList);  //整箱
+                list = whSkuInventoryDao.findWhSkuInventoryByInsideContainerCode(manMadePutawayCommand.getOuId(), containerList);  
                 if(null == list || list.size() == 0) {
-                    list = whSkuInventoryDao.findWhSkuInventoryByOuterContainerCode(manMadePutawayCommand.getOuId(), containerList);  //整箱
+                    list = whSkuInventoryDao.findWhSkuInventoryByOuterContainerCode(manMadePutawayCommand.getOuId(), containerList);  
                 }
             }
             if (null == list || 0 == list.size()) {
@@ -438,9 +437,9 @@ public class PdaManmadePutawayCacheManagerImpl extends BaseManagerImpl implement
                        skuIds.add(skuId);
                    }
                }
-              if(skuIds.size() == 0) {
-                      throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_INSIDE_CONTAINER_ID, new Object[] {containerId}); 
-              }
+//              if(skuIds.size() == 0) {
+//                      throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_INSIDE_CONTAINER_ID, new Object[] {containerId}); 
+//              }
               insideContainerIdSkuIds.put(containerId , skuIds);
               
             //计算托盘和货箱重量
@@ -1825,13 +1824,12 @@ public class PdaManmadePutawayCacheManagerImpl extends BaseManagerImpl implement
      * @param isAfterPutawayTipContainer
      * @param logId
      */
-    public void manMadeSplitContainerPutawayRemoveAllCache(ContainerCommand outerContainerCmd, ContainerCommand insideContainerCmd,Boolean isAfterScanSku, Boolean isAfterPutawayTipContainer, String logId,Long scanSkuId){
+    public void manMadeSplitContainerPutawayRemoveAllCache(Long containerId,ContainerCommand outerContainerCmd, ContainerCommand insideContainerCmd,Boolean isAfterPutawayTipContainer, String logId,Long scanSkuId){
         if (null != outerContainerCmd) {
             Long ocId = outerContainerCmd.getId();
             Long icId = insideContainerCmd.getId();
-            if(true == isAfterScanSku) {   //一个货箱内的sku扫描完毕
-                ManMadeContainerStatisticCommand isCmd = cacheManager.getMapObject(CacheConstants.PDA_MAN_MANDE_CONTAINER_INVENTORY_STATISTIC, ocId.toString());
-                if (null != isCmd) {
+            ManMadeContainerStatisticCommand isCmd = cacheManager.getMapObject(CacheConstants.PDA_MAN_MANDE_CONTAINER_INVENTORY_STATISTIC, containerId.toString());
+            if (null != isCmd) {
                                 Map<Long, Set<Long>> insideContainerSkuIds = isCmd.getInsideContainerIdSkuIds();
                                 Set<Long> skuIds = insideContainerSkuIds.get(icId);
                                 for (Long skuId : skuIds) {
@@ -1840,7 +1838,6 @@ public class PdaManmadePutawayCacheManagerImpl extends BaseManagerImpl implement
                             }
                                 //清楚扫描商品队列
                             cacheManager.remove(CacheConstants.PDA_MAN_MANDE_SCAN_SKU_QUEUE + icId.toString());
-                }
             }
             if(isAfterPutawayTipContainer == true) {    //一个托盘内的所有货箱扫描完毕
                 // 1.再清除所有提示容器队列

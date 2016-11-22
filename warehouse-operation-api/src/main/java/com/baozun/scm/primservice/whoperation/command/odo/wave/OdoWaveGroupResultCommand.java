@@ -30,8 +30,8 @@ public class OdoWaveGroupResultCommand extends BaseCommand {
     private String transportServiceProvider;
     private String transportServiceProviderName;
     /** 上位单据类型 */
-    private String epostaticSystemsOrderType;
-    private String epostaticSystemsOrderTypeName;
+    private String epistaticSystemsOrderType;
+    private String epistaticSystemsOrderTypeName;
     /** 订单数 */
     private Long odoCount;
     /** 明细行总数数 */
@@ -96,20 +96,20 @@ public class OdoWaveGroupResultCommand extends BaseCommand {
         this.transportServiceProviderName = transportServiceProviderName;
     }
 
-    public String getEpostaticSystemsOrderType() {
-        return epostaticSystemsOrderType;
+    public String getEpistaticSystemsOrderType() {
+        return epistaticSystemsOrderType;
     }
 
-    public void setEpostaticSystemsOrderType(String epostaticSystemsOrderType) {
-        this.epostaticSystemsOrderType = epostaticSystemsOrderType;
+    public void setEpistaticSystemsOrderType(String epistaticSystemsOrderType) {
+        this.epistaticSystemsOrderType = epistaticSystemsOrderType;
     }
 
-    public String getEpostaticSystemsOrderTypeName() {
-        return epostaticSystemsOrderTypeName;
+    public String getEpistaticSystemsOrderTypeName() {
+        return epistaticSystemsOrderTypeName;
     }
 
-    public void setEpostaticSystemsOrderTypeName(String epostaticSystemsOrderTypeName) {
-        this.epostaticSystemsOrderTypeName = epostaticSystemsOrderTypeName;
+    public void setEpistaticSystemsOrderTypeName(String epistaticSystemsOrderTypeName) {
+        this.epistaticSystemsOrderTypeName = epistaticSystemsOrderTypeName;
     }
 
     public Long getLineCount() {
