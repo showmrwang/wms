@@ -142,13 +142,14 @@ public class InventoryOccupyManagerImpl extends BaseInventoryManagerImpl impleme
     	return flag;
     }
     
-    private boolean subtractInv(Long invId, Double qty, Warehouse wh) {
+    private boolean subtractInv(Long invId, Double qty, Double oldQty, Warehouse wh) {
     	boolean flag = false;
     	for (int i = 0; i < 5; i++) {
 	    	WhSkuInventory skuInv = inventoryDao.findWhSkuInventoryById(invId, wh.getId());
 			skuInv.setOnHandQty(skuInv.getOnHandQty() - qty);
 			int num = inventoryDao.saveOrUpdateByVersion(skuInv);
 			if (1 == num) {
+				insertSkuInventoryLog(invId, -qty, oldQty, wh.getIsTabbInvTotal(), wh.getId(), 1L);
 				flag = true;
 				break;
 			} else {
@@ -173,11 +174,12 @@ public class InventoryOccupyManagerImpl extends BaseInventoryManagerImpl impleme
 			WhSkuInventoryCommand inv = list.get(i);
 			Double oldQty = whSkuInventoryLogDao.sumSkuInvOnHandQty(inv.getUuid(), wh.getId());
 			if (-1 == count.compareTo(inv.getOnHandQty())) {
-				boolean b = subtractInv(inv.getId(), qty, wh);
+				// 扣减原来的库存的数量
+				boolean b = subtractInv(inv.getId(), qty, oldQty, wh);
 				if(!b){
                     throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
                 }
-				insertSkuInventoryLog(inv.getId(), -qty, oldQty, wh.getIsTabbInvTotal(), wh.getId(), 1L);
+				// 插入被占用的库存信息
 				insertOccupyInventory(inv, count, occupyCode, odoLineId, occupySource, logId);
 				inv.setOnHandQty(inv.getOnHandQty() - count);
 				occupyNum = occupyNum + count;
@@ -263,11 +265,10 @@ public class InventoryOccupyManagerImpl extends BaseInventoryManagerImpl impleme
 				Double oldQty = whSkuInventoryLogDao.sumSkuInvOnHandQty(inv.getUuid(), wh.getId());
 				
 				if (-1 == count.compareTo(inv.getOnHandQty())) {
-					boolean b = subtractInv(inv.getId(), qty, wh);
+					boolean b = subtractInv(inv.getId(), qty, oldQty, wh);
 					if(!b){
 	                    throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
 	                }
-					insertSkuInventoryLog(inv.getId(), -qty, oldQty, wh.getIsTabbInvTotal(), wh.getId(), 1L);
 					insertOccupyInventory(inv, count, occupyCode, odoLineId, occupySource, logId);
 					count = 0.0;
 					actualQty = qty;
