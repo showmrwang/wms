@@ -688,4 +688,27 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		and l.ou_id = #{ouId}
 	</select>
 	
+	<select id="findSkuIdByNotEnoughAllocationQty" resultType="long">
+		select 
+			l.sku_id
+		from 
+			t_wh_wave_line l 
+		where 
+			l.allocate_qty &lt; l.qty 
+			and l.wave_id = #{waveId}
+			and ou_id = #{ouId}
+		group by 
+			l.sku_id
+	</select>
+
+	<select id="findWaveLineByOdoLineIdAndWaveId" resultMap="WhWaveLineResultExt">
+		select 
+			<include refid="whWaveLineColumns" />
+		from 
+			t_wh_wave_line
+		where 
+			wave_id = #{waveId} and odo_line_id = #{odoLineId} and ou_id = #{ouId}
+	</select>
+	
+	
 </mapper>

@@ -1989,5 +1989,15 @@
         <include refid="whOdoDynamicWhereExt"/>
 
     </select>
+
+	<select id="findOdoByCodeAndOuId" resultMap="WhOdoResult">
+        select
+        <include refid="whOdoColumns"/>
+        from t_wh_odo 
+        where odo_code = #{odoCode} and ou_id = #{ouId}
+
+    </select>
+    
+    
 	
 </mapper>

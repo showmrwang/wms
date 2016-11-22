@@ -65,7 +65,7 @@ public interface OdoMergeManager extends BaseManager {
      * @param odoMergeCommand 对象由whOdoDao.odoMerge查出
      * @param ouId
      * @param userId
-     * @return
+     * @return 新生成的订单
      */
     WhOdo generalOdoMerge(String odoIdString, Long ouId, Long userId);
 

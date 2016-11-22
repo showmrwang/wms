@@ -35,6 +35,7 @@ import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineAttrDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoTransportMgmtDao;
+import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveLineDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
@@ -69,6 +70,8 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
     private WhOdoTransportMgmtDao whOdoTransportMgmtDao;
     @Autowired
     private WhWaveLineDao whWaveLineDao;
+    @Autowired
+    private WhWaveDao whWaveDao;
 
     @Autowired
     private CodeManager codeManager;
@@ -916,14 +919,17 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
         WhWaveLine line = this.whWaveLineDao.findHighestPriorityByOdoIds(wave.getId(), odoIds, ouId);
         /** end*/
         /** 子订单操作 start*/
-        String originalOdoCode = whOdo.getOriginalOdoCode();
+
+        String originalOdoCode = whOdo.getOriginalOdoCode(); // 子订单
         String[] odoCodeList = originalOdoCode.split(",");
         for (String odoCode : odoCodeList) {
+            // 解绑原出库单
             WhOdo odo = unbindOdo(odoCode, ouId, userId);
             if (null != odo) {
+                // 解绑原出库单明细行
                 unbindOdoLine(odo.getId(), ouId, userId);
             }
-            updateWaveLine(wave.getId(), odo.getOdoCode(), whOdo.getId(), ouId, userId, line);
+            updateWaveLine(wave.getId(), odo.getId(), whOdo.getId(), whOdo.getOdoCode(), ouId, userId, line);
         }
         /** end*/
         /** 新订单操作*/
@@ -940,6 +946,7 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
      * @param odoCode
      * @param ouId
      * @param userId
+     * @return 返回波次中原出库单
      */
     private WhOdo unbindOdo(String odoCode, Long ouId, Long userId) {
         WhOdo odo = this.whOdoDao.findOdoByCodeAndOuId(odoCode, ouId);
@@ -970,14 +977,16 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
 
     /**
      * [业务方法] 波次中合并出库单-更新波次明细行
-     * @param waveId
-     * @param odoCode
-     * @param odoId
-     * @param ouId
+     * @param waveId 波次id
+     * @param originalOdoId 原出库单id
+     * @param odoId 新出库单id
+     * @param odoCode 新出库单编码
+     * @param ouId 组织id
      * @param userId
      */
-    private void updateWaveLine(Long waveId, String odoCode, Long odoId, Long ouId, Long userId, WhWaveLine line) {
-        List<WhOdoLine> odoLineList = this.whOdoLineDao.findOdoLineListByOdoIdOuId(odoId, ouId);
+    private void updateWaveLine(Long waveId, Long originalOdoId, Long odoId, String odoCode, Long ouId, Long userId, WhWaveLine line) {
+        // 返回原订单的所有明细
+        List<WhOdoLine> odoLineList = this.whOdoLineDao.findOdoLineListByOdoIdOuId(originalOdoId, ouId);
         if (null != odoLineList && !odoLineList.isEmpty()) {
             for (WhOdoLine odoLine : odoLineList) {
                 WhWaveLine whWaveLine = this.whWaveLineDao.findWaveLineByOdoLineIdAndWaveId(waveId, odoLine.getId(), ouId);
@@ -1006,12 +1015,13 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
         if (null != odoLineList && !odoLineList.isEmpty()) {
             for (WhOdoLine odoLine : odoLineList) {
                 /**出库单明细行绑定到波次 start*/
-                if (null == odoLine.getWaveCode()) {
-                    odoLine.setWaveCode(waveCode);
-                    this.whOdoLineDao.saveOrUpdateByVersion(odoLine);
-                }
+                // if (null != odoLine.getWaveCode()) {
+                odoLine.setWaveCode(waveCode);
+                this.whOdoLineDao.saveOrUpdateByVersion(odoLine);
+                // }
                 /** end*/
             }
         }
     }
+
 }
