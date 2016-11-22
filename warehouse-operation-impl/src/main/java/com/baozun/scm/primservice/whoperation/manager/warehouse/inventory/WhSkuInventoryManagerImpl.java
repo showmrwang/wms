@@ -2895,6 +2895,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 		skuCommand.setInvAttr5(whWaveLineCommand.getInvAttr5());
 	    skuCommand.setMaxExpDate(whWaveLineCommand.getMaxExpDate());
 	    skuCommand.setMinExpDate(whWaveLineCommand.getMinExpDate());
+	    skuCommand.setOuId(wh.getId());
 		for (AllocateStrategy as : rules) {
 			if (Constants.ALLOCATE_STRATEGY_STATICLOCATIONCANASSIGNMENT.equals(as.getStrategyCode())) {
 				isStaticLocation = true;

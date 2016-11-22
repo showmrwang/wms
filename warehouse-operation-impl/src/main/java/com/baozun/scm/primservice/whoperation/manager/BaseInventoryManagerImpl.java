@@ -14,6 +14,7 @@
  */
 package com.baozun.scm.primservice.whoperation.manager;
 
+import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -95,11 +96,53 @@ public abstract class BaseInventoryManagerImpl extends BaseManagerImpl implement
         inv.setIsLocked(invCmd.getIsLocked());
         inv.setOuId(invCmd.getOuId());
         inv.setOccupationCodeSource(invCmd.getOccupationCodeSource());
+        inv.setInboundTime(invCmd.getInboundTime());
+        inv.setLastModifyTime(new Date());
         inventoryDao.insert(inv);
         if(log.isInfoEnabled()){
             log.info("baseInventoryManager.insertShareInventory end, logId is:[{}]", logId);
         }
     }
+    
+    public void insertOccupyInventory(WhSkuInventoryCommand invCmd, Double qty, String occupyCode, Long odoLineId, String occupySource, String logId) {
+    	if(log.isInfoEnabled()){
+            log.info("baseInventoryManager.insertOccupyInventory start, logId is:[{}]", logId);
+        }
+        WhSkuInventory inv = new WhSkuInventory();
+        inv.setSkuId(invCmd.getSkuId());
+        inv.setLocationId(invCmd.getLocationId());
+        inv.setOuterContainerId(invCmd.getOuterContainerId());
+        inv.setInsideContainerId(invCmd.getInsideContainerId());
+        inv.setCustomerId(invCmd.getCustomerId());
+        inv.setStoreId(invCmd.getStoreId());
+        inv.setOccupationCode(occupyCode);
+        inv.setOccupationLineId(odoLineId);
+        inv.setOnHandQty(qty);
+        inv.setAllocatedQty(invCmd.getAllocatedQty());
+        inv.setToBeFilledQty(invCmd.getToBeFilledQty());
+        inv.setFrozenQty(invCmd.getFrozenQty());
+        inv.setInvStatus(invCmd.getInvStatus());
+        inv.setInvType(invCmd.getInvType());
+        inv.setBatchNumber(invCmd.getBatchNumber());
+        inv.setMfgDate(invCmd.getMfgDate());
+        inv.setExpDate(invCmd.getExpDate());
+        inv.setCountryOfOrigin(invCmd.getCountryOfOrigin());
+        inv.setInvAttr1(invCmd.getInvAttr1());
+        inv.setInvAttr2(invCmd.getInvAttr2());
+        inv.setInvAttr3(invCmd.getInvAttr3());
+        inv.setInvAttr4(invCmd.getInvAttr4());
+        inv.setInvAttr5(invCmd.getInvAttr5());
+        inv.setUuid(invCmd.getUuid());
+        inv.setIsLocked(invCmd.getIsLocked());
+        inv.setOuId(invCmd.getOuId());
+        inv.setOccupationCodeSource(occupySource);
+        inv.setInboundTime(invCmd.getInboundTime());
+        inv.setLastModifyTime(new Date());
+        inventoryDao.insert(inv);
+        if(log.isInfoEnabled()){
+            log.info("baseInventoryManager.insertOccupyInventory end, logId is:[{}]", logId);
+        }
+	}
     
     /**
      * 删除库存记录日志
