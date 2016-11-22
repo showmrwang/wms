@@ -19,6 +19,7 @@ import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.WaveStatus;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineDao;
+import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveLineDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
@@ -38,6 +39,8 @@ public class WhWaveLineManagerImpl extends BaseManagerImpl implements WhWaveLine
     private WhOdoLineDao whOdoLineDao;
     @Autowired
     private WhOdoDao whOdoDao;
+    @Autowired
+    private WhWaveDao whWaveDao;
     
     /**
      * 得到所有硬阶段的波次名次行集合
@@ -129,6 +132,14 @@ public class WhWaveLineManagerImpl extends BaseManagerImpl implements WhWaveLine
 		}
 		// 3.从波次明细中剔除出库单
 		whWaveLineDao.removeWaveLineWhole(waveId, odoId, ouId);
+		WhWaveLine line = new WhWaveLine();
+		line.setWaveId(waveId);
+		line.setOuId(ouId);
+		long lineCount = whWaveLineDao.findListCountByParam(line);
+		if (lineCount == 0) {
+			whWaveDao.deleteByIdOuId(waveId, ouId);
+			log.info("波次(id:{})下没有明细数据,删除这一波次", waveId);
+		}
 	}
 
 	@Override
@@ -215,7 +226,8 @@ public class WhWaveLineManagerImpl extends BaseManagerImpl implements WhWaveLine
 	
 	private void addInfoToWaveLineMap(Map<Boolean, List<WhWaveLine>> waveLineMap, WhWaveLine line) {
 		if (StringUtils.hasText(line.getInvAttr1()) || StringUtils.hasText(line.getInvAttr2()) || StringUtils.hasText(line.getInvAttr3()) || StringUtils.hasText(line.getInvAttr4()) 
-				|| StringUtils.hasText(line.getInvAttr5())) {
+				|| StringUtils.hasText(line.getInvAttr5()) || StringUtils.hasText(line.getInvType()) || StringUtils.hasText(line.getBatchNumber()) || StringUtils.hasText(line.getCountryOfOrigin())
+				|| null != line.getMfgDate() || null != line.getExpDate() || null != line.getMaxExpDate() || null != line.getMinExpDate()) {
 			addInfoToWaveLineList(waveLineMap, line, Boolean.TRUE);
 		} else {
 			addInfoToWaveLineList(waveLineMap, line, Boolean.FALSE);
@@ -244,8 +256,8 @@ public class WhWaveLineManagerImpl extends BaseManagerImpl implements WhWaveLine
     }
 
 	@Override
-	public List<Long> findSkuIdByNotEnoughAllocationQty(Long waveId, Long ouId) {
-		return whWaveLineDao.findSkuIdByNotEnoughAllocationQty(waveId, ouId);
+	public List<WhWaveLine> findWaveLineByNotEnoughAllocationQty(Long waveId, Long ouId) {
+		return whWaveLineDao.findNotEnoughAllocationQty(waveId, ouId);
 	}
 
 }

@@ -32,7 +32,6 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand
 import com.baozun.scm.primservice.whoperation.command.warehouse.LocationCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
-import com.baozun.scm.primservice.whoperation.command.wave.WhWaveLineCommand;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 
 public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
@@ -587,21 +586,21 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @param whWaveLineCommand
      * @return
      */
-	List<WhSkuInventoryCommand> findInventoryByInBoundTime(WhWaveLineCommand whWaveLineCommand);
+	List<WhSkuInventoryCommand> findInventoryByInBoundTime(WhSkuInventoryCommand invCommand);
 	
 	/**
      * 按商品保质期时间顺序查找库存
      * @param whWaveLineCommand
      * @return
      */
-	List<WhSkuInventoryCommand> findInventoryByExpTime(WhWaveLineCommand whWaveLineCommand);
+	List<WhSkuInventoryCommand> findInventoryByExpTime(WhSkuInventoryCommand invCommand);
 	
 	/**
 	 * 按照数量多少查找库存
 	 * @param whWaveLineCommand
 	 * @return
 	 */
-	List<WhSkuInventoryCommand> findInventoryByAmount(WhWaveLineCommand whWaveLineCommand);
+	List<WhSkuInventoryCommand> findInventoryByAmount(WhSkuInventoryCommand invCommand);
 	
 	/**
 	 * 按照Uuid和其他条件查找库存
@@ -610,13 +609,13 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
 	 */
 	List<WhSkuInventoryCommand> findInventoryByUuidAndCondition(WhSkuInventoryCommand invCommand);
 
-	List<WhSkuInventoryCommand> findInventoryUuidByInBoundTime(WhWaveLineCommand whWaveLineCommand);
+	List<WhSkuInventoryCommand> findInventoryUuidByInBoundTime(WhSkuInventoryCommand invCommand);
 
-	List<WhSkuInventoryCommand> findInventoryUuidByExpTime(WhWaveLineCommand whWaveLineCommand);
+	List<WhSkuInventoryCommand> findInventoryUuidByExpTime(WhSkuInventoryCommand invCommand);
 
-	List<WhSkuInventoryCommand> findInventoryUuidByAmount(WhWaveLineCommand whWaveLineCommand);
+	List<WhSkuInventoryCommand> findInventoryUuidByAmount(WhSkuInventoryCommand invCommand);
 
-	List<WhSkuInventoryCommand> findInventoryUuid(WhWaveLineCommand whWaveLineCommand);
+	List<WhSkuInventoryCommand> findInventoryUuid(WhSkuInventoryCommand invCommand);
 	
 	/**
 	 * 根据占用码找占用的库存

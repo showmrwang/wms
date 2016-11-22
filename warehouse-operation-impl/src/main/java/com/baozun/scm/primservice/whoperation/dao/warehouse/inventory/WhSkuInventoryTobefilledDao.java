@@ -62,5 +62,14 @@ public interface WhSkuInventoryTobefilledDao extends BaseDao<WhSkuInventoryTobef
      * @return
      */
     public List<WhSkuInventoryTobefilled> findWhSkuInventoryTobefilled(@Param("outerContainerId") Long outerContainerId,@Param("insideContainerId") Long insideContainerId,@Param("ouId") Long ouId);
+    
+    /**
+     * 查找待移入补货批次中超出的sku
+     * @param skuId
+     * @param bhCode
+     * @param ouId
+     * @return
+     */
+	List<WhSkuInventoryTobefilled> findNotOccupyListBySkuIdAndBhCode(@Param("skuId") Long skuId, @Param("bhCode") String bhCode, @Param("ouId") Long ouId);
 	
 }

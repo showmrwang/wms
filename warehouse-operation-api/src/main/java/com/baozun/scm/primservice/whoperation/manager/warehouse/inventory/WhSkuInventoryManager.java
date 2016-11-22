@@ -17,9 +17,11 @@
 package com.baozun.scm.primservice.whoperation.manager.warehouse.inventory;
 
 import java.util.List;
+import java.util.Map;
 
 import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.LocationRecommendResultCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.ReplenishmentRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.command.wave.WhWaveLineCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
@@ -108,5 +110,16 @@ public interface WhSkuInventoryManager extends BaseManager {
      * @return
      */
     List<WhSkuInventory> findWhSkuInventoryListByPramas(WhSkuInventory whSkuInventory);
+    
+	void replenishmentToLines(List<WhWaveLine> lines, String bhCode, Map<String, ReplenishmentRuleCommand> ruleMap, Map<String, String> map, Warehouse wh);
+	
+	/**
+	 * 根据策略和明细找到库存
+	 * @param strategyCode
+	 * @param whWaveLineCommand
+	 * @param qty
+	 * @return
+	 */
+	List<WhSkuInventoryCommand> findInventorysByAllocateStrategy(String strategyCode, WhSkuInventoryCommand invCommand, Double qty);
 
 }

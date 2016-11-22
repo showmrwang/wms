@@ -19,6 +19,8 @@
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryAllocated;
 
 import lark.common.annotation.CommonQuery;
@@ -44,5 +46,7 @@ public interface WhSkuInventoryAllocatedDao extends BaseDao<WhSkuInventoryAlloca
 	
 	@CommonQuery
 	int saveOrUpdate(WhSkuInventoryAllocated o);
+
+	List<WhSkuInventoryAllocated> findNotOccupyListBySkuIdAndBhCode(@Param("skuId") Long skuId, @Param("bhCode") String bhCode, @Param("ouId") Long ouId);
 	
 }

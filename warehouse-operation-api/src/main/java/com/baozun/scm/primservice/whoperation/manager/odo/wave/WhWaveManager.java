@@ -99,7 +99,7 @@ public interface WhWaveManager extends BaseManager {
      * @param phaseCode
      * @param ouId
      */
-    void changeWavePhaseCode(Long waveId, String phaseCode, Long ouId);
+    void changeWavePhaseCode(Long waveId, Long ouId);
 
     /**
 	 * [业务方法] 硬分配-查找所有需要匹配规则的波次
@@ -161,12 +161,9 @@ public interface WhWaveManager extends BaseManager {
      */
     List<Long> findWaveIdsByWavePhaseCode(String phaseCode, Long ouId);
     
-    /**
-     * [业务方法] 在一个波次中查找包含skuIds的OdoId
-     * @param skuIds
-     * @param ouId
-     * @return
-     */
-	List<Long> findOdoContainsSkuId(Long waveId, List<Long> skuIds, Long ouId);
-
+	/**
+	 * [业务方法] 整出库单剔除并释放库存
+	 */
+	void deleteWaveLinesAndReleaseInventoryByOdoId(Long waveId, Long odoId, String reason, Warehouse wh);
+	
 }

@@ -156,4 +156,18 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
 	</sql>
 	
+	<select id="findNotOccupyListBySkuIdAndBhCode" resultMap="WhSkuInventoryAllocatedResultExt">
+		select 
+			<include refid="whSkuInventoryAllocatedColumnsExt"/> 
+		from 
+			t_wh_sku_inventory_allocated t 
+		where 
+			t.occupation_code is null 
+			and t.occupation_line_id is null 
+			and t.sku_id = #{skuId}
+			and t.replenishment_code = #{bhCode}
+			and t.ou_id = #{ouId}
+		order by 
+			t.qty
+	</select>
 </mapper>

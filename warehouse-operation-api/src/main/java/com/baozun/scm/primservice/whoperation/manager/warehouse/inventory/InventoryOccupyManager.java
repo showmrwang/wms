@@ -47,12 +47,12 @@ public interface InventoryOccupyManager extends BaseManager {
      * @return
      * @throws Exception 
      */
-	Double hardAllocateOccupy(List<WhSkuInventoryCommand> skuInvs, Double qty, String occupyCode, Long odoLineId, Warehouse wh);
+	Double hardAllocateOccupy(List<WhSkuInventoryCommand> skuInvs, Double qty, String occupyCode, Long odoLineId, String occupySource, Warehouse wh);
 
-	Double hardAllocateListOccupy(List<WhSkuInventoryCommand> list, Double qty, String occupyCode, Long odoLineId, Warehouse wh, Boolean isStaticLocation, Set<String> staticLocationIds);
+	Double hardAllocateListOccupy(List<WhSkuInventoryCommand> list, Double qty, String occupyCode, Long odoLineId, String occupySource, Warehouse wh, Boolean isStaticLocation, Set<String> staticLocationIds);
 
-	Double occupyInvUuidsByPalletContainer(List<WhSkuInventoryCommand> uuids, List<WhSkuInventoryCommand> allSkuInvs, Double qty, String occupyCode, Long odoLineId, Warehouse wh, String unitCodes, Boolean isStaticLocation, Set<String> staticLocationIds);
+	Double occupyInvUuidsByPalletContainer(List<WhSkuInventoryCommand> uuids, Double qty, String occupyCode, Long odoLineId, String occupySource, Warehouse wh, String unitCodes, List<WhSkuInventoryCommand> allSkuInvs, Boolean isStaticLocation, Set<String> staticLocationIds);
 
-	Double occupyInvUuids(List<WhSkuInventoryCommand> uuids, List<WhSkuInventoryCommand> allSkuInvs, Double qty, String occupyCode, Long odoLineId, Warehouse wh, String allocateUnitContainer, Boolean isStaticLocation, Set<String> staticLocationIds);
+	Double occupyInvUuids(List<WhSkuInventoryCommand> uuids, Double qty, String occupyCode, Long odoLineId, String occupySource, Warehouse wh, String allocateUnitContainer, List<WhSkuInventoryCommand> allSkuInvs, Boolean isStaticLocation, Set<String> staticLocationIds);
 
 }

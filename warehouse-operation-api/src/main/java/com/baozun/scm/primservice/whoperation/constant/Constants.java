@@ -284,6 +284,7 @@ public final class Constants {
 
     /** 库存 占用单据来源 ASN */
     public static final String SKU_INVENTORY_OCCUPATION_SOURCE_ASN = "ASN";
+    public static final String SKU_INVENTORY_OCCUPATION_SOURCE_ODO = "ODO";
 
     // 序列号管理类型
     public static final String SERIAL_NUMBER_TYPE_IN = "1";// 入库管
@@ -410,6 +411,10 @@ public final class Constants {
     public static final String NOT_STATIC_EMPTY_LOCATION = "NOT_STATIC_EMPTY_LOCATION";
     /** 补货阶段 商品未匹配到补货规则 */
     public static final String REPLENISHED_SKU_NO_RULE = "REPLENISHED_SKU_NO_RULE";
+    /** 补货阶段 未匹配到目标库位 */
+    public static final String REPLENISHED_NO_TARGET_LOCATION = "REPLENISHED_NO_TARGET_LOCATION";
+    /** 补货阶段 补货不足失败 */
+    public static final String REPLENISHED_FAIL = "REPLENISHED_FAIL";
     
     public static final String ALLOCATE_STRATEGY_FIRSTINFIRSTOUT = "1"; 	// 先入先出
     public static final String ALLOCATE_STRATEGY_FIRSTINLASTOUT = "2";	// 先入后出

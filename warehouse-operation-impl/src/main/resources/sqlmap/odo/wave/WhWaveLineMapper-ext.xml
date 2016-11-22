@@ -678,6 +678,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			l.allocate_qty &lt; l.qty 
 			and l.wave_id = #{waveId}
 			and ou_id = #{ouId}
+		order by 
+			l.is_static_location_allocate desc,l.sku_id
 	</select>
 	
 	<select id="findOdoIdByWaveId" resultType="long">
@@ -686,16 +688,4 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		and l.ou_id = #{ouId}
 	</select>
 	
-	<select id="findSkuIdByNotEnoughAllocationQty" resultType="long">
-		select 
-			l.sku_id
-		from 
-			t_wh_wave_line l 
-		where 
-			l.allocate_qty &lt; l.qty 
-			and l.wave_id = #{waveId}
-			and ou_id = #{ouId}
-		group by 
-			l.sku_id
-	</select>
 </mapper>

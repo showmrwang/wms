@@ -80,10 +80,10 @@ public interface WhWaveLineManager extends BaseManager {
     List<WhWaveLine> findWaveLineListByWaveId(Long waveId, Long ouId);
     
     /**
-     * [业务方法] 补货-查询波次内需要补货的商品ID集合
+     * [业务方法] 补货-查询波次内需要补货的波次明细集合
      * @param waveId
      * @param ouId
      * @return
      */
-	List<Long> findSkuIdByNotEnoughAllocationQty(Long waveId, Long ouId);
+	List<WhWaveLine> findWaveLineByNotEnoughAllocationQty(Long waveId, Long ouId);
 }

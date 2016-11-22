@@ -66,7 +66,11 @@ public class ReplenishmentRuleCommand extends BaseCommand {
     private List<Long> locationIdList;
     /** 规则测试结果 */
     private Boolean testResult;
-
+    
+    // 自定义
+    /** 匹配目标库位 */
+    private Long locationId;
+    
     public Integer getLifecycle() {
         return lifecycle;
     }
@@ -242,4 +246,12 @@ public class ReplenishmentRuleCommand extends BaseCommand {
     public void setTestResult(Boolean testResult) {
         this.testResult = testResult;
     }
+
+	public Long getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(Long locationId) {
+		this.locationId = locationId;
+	}
 }

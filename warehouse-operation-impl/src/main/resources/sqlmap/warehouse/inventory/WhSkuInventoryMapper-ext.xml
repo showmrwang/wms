@@ -2041,7 +2041,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					and ou_id = #{ouId}
     </select>
     
-    <select id="findInventoryByInBoundTime" parameterType="com.baozun.scm.primservice.whoperation.command.wave.WhWaveLineCommand" resultMap="WhSkuInventoryCommandResultExt">
+    <select id="findInventoryByInBoundTime" parameterType="com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand" resultMap="WhSkuInventoryCommandResultExt">
 		select 
 			<include refid="whSkuInventoryColumnsInvExt" /> 
 			from t_wh_sku_inventory inv,(
@@ -2109,7 +2109,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					inv.inbound_time asc,sumOnHandQty,loc.pick_sort,loc.code
 				</if>
 				<if test="priority != null and priority == false">
-					inv.inbound_time desc,sumOnHandQty,loc.pick_sort,,loc.code
+					inv.inbound_time desc,sumOnHandQty,loc.pick_sort,loc.code
 				</if>
 			) t
 		) inv2 
@@ -2119,7 +2119,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		order by rowNo,inv.on_hand_qty
 	</select>
 	
-	<select id="findInventoryByExpTime" parameterType="com.baozun.scm.primservice.whoperation.command.wave.WhWaveLineCommand" resultMap="WhSkuInventoryCommandResultExt">
+	<select id="findInventoryByExpTime" parameterType="com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand" resultMap="WhSkuInventoryCommandResultExt">
 		select 
 			<include refid="whSkuInventoryColumnsInvExt" /> 
 			from t_wh_sku_inventory inv,(
@@ -2200,7 +2200,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		order by rowNo,inv.on_hand_qty
 	</select>
 	
-	<select id="findInventoryByAmount" parameterType="com.baozun.scm.primservice.whoperation.command.wave.WhWaveLineCommand" resultMap="WhSkuInventoryCommandResultExt">
+	<select id="findInventoryByAmount" parameterType="com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand" resultMap="WhSkuInventoryCommandResultExt">
 		select 
 			<include refid="whSkuInventoryColumnsInvExt" /> 
 			from t_wh_sku_inventory inv,(
@@ -2314,7 +2314,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    order by on_hand_qty 
     </select>
 	
-	<select id="findInventoryUuidByInBoundTime" parameterType="com.baozun.scm.primservice.whoperation.command.wave.WhWaveLineCommand" resultMap="WhSkuInventoryCommandResultExt">
+	<select id="findInventoryUuidByInBoundTime" parameterType="com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand" resultMap="WhSkuInventoryCommandResultExt">
 		select 
 			<if test="allocateUnitCodes != null and allocateUnitCodes == 'PALLET'">
 				inv.outer_container_id as outerContainerId, 
@@ -2348,10 +2348,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			and loc.allocate_area_id = #{areaId}
 			and inv.sku_id = #{skuId}
 			<if test="allocateUnitCodes != null and allocateUnitCodes == 'PALLET'">
-				and inv.inside_container_id is not null
+				and inv.outer_container_id is not null 
 			</if>
 			<if test="allocateUnitCodes != null and allocateUnitCodes == 'CONTAINER'">
-				and inv.outer_container_id is not null
+				and inv.inside_container_id is not null
 			</if>
 			<if test="storeId != null">
 				and inv.store_id = #{storeId}
@@ -2361,6 +2361,33 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			</if>
 			<if test="invType != null and invType !=''">
 				and inv.inv_type = #{invType}
+			</if>
+			<if test="batchNumber != null and batchNumber !=''">
+				and inv.batch_number = #{batchNumber}
+			</if>
+	        <if test="countryOfOrigin!=null and countryOfOrigin!=''">
+				and inv.country_of_origin = #{countryOfOrigin}
+			</if>
+	        <if test="invAttr1!=null and invAttr1!=''">
+				and inv.inv_attr1 = #{invAttr1}
+			</if>
+	        <if test="invAttr2!=null and invAttr2!=''">
+				and inv.inv_attr2 = #{invAttr2}
+			</if>
+	        <if test="invAttr3!=null and invAttr3!=''">
+				and inv.inv_attr3 = #{invAttr3}
+			</if>
+	        <if test="invAttr4!=null and invAttr4!=''">
+				and inv.inv_attr4 = #{invAttr4}
+			</if>
+	        <if test="invAttr5!=null and invAttr5!=''">
+				and inv.inv_attr5 = #{invAttr5}
+			</if>
+			<if test="mfgDate != null">
+				and inv.mfg_date = #{mfgDate}
+			</if>
+			<if test="expDate != null">
+				and inv.exp_date = #{expDate}
 			</if>
 		<if test="allocateUnitCodes != null and allocateUnitCodes == 'PALLET'">
 			group by outer_container_id
@@ -2377,7 +2404,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</if>
 	</select>
 	
-	<select id="findInventoryUuidByExpTime" parameterType="com.baozun.scm.primservice.whoperation.command.wave.WhWaveLineCommand" resultMap="WhSkuInventoryCommandResultExt">
+	<select id="findInventoryUuidByExpTime" parameterType="com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand" resultMap="WhSkuInventoryCommandResultExt">
 		select 
 			<if test="allocateUnitCodes != null and allocateUnitCodes == 'PALLET'">
 				inv.outer_container_id as outerContainerId, 
@@ -2411,10 +2438,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			and loc.allocate_area_id = #{areaId}
 			and inv.sku_id = #{skuId}
 			<if test="allocateUnitCodes != null and allocateUnitCodes == 'PALLET'">
-				and inv.inside_container_id is not null
+				and inv.outer_container_id is not null
 			</if>
 			<if test="allocateUnitCodes != null and allocateUnitCodes == 'CONTAINER'">
-				and inv.outer_container_id is not null
+				and inv.inside_container_id is not null
 			</if>
 			<if test="storeId != null">
 				and inv.store_id = #{storeId}
@@ -2424,6 +2451,27 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			</if>
 			<if test="invType != null and invType !=''">
 				and inv.inv_type = #{invType}
+			</if>
+			<if test="batchNumber != null and batchNumber !=''">
+				and inv.batch_number = #{batchNumber}
+			</if>
+	        <if test="countryOfOrigin!=null and countryOfOrigin!=''">
+				and inv.country_of_origin = #{countryOfOrigin}
+			</if>
+	        <if test="invAttr1!=null and invAttr1!=''">
+				and inv.inv_attr1 = #{invAttr1}
+			</if>
+	        <if test="invAttr2!=null and invAttr2!=''">
+				and inv.inv_attr2 = #{invAttr2}
+			</if>
+	        <if test="invAttr3!=null and invAttr3!=''">
+				and inv.inv_attr3 = #{invAttr3}
+			</if>
+	        <if test="invAttr4!=null and invAttr4!=''">
+				and inv.inv_attr4 = #{invAttr4}
+			</if>
+	        <if test="invAttr5!=null and invAttr5!=''">
+				and inv.inv_attr5 = #{invAttr5}
 			</if>
 			<if test="mfgDate != null">
 				and inv.mfg_date = #{mfgDate}
@@ -2449,7 +2497,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</if>
 	</select>
 	
-	<select id="findInventoryUuidByAmount" parameterType="com.baozun.scm.primservice.whoperation.command.wave.WhWaveLineCommand" resultMap="WhSkuInventoryCommandResultExt">
+	<select id="findInventoryUuidByAmount" parameterType="com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand" resultMap="WhSkuInventoryCommandResultExt">
 		select 
 			<if test="allocateUnitCodes != null and allocateUnitCodes == 'PALLET'">
 				inv.outer_container_id as outerContainerId, 
@@ -2481,10 +2529,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			and loc.allocate_area_id = #{areaId}
 			and inv.sku_id = #{skuId}
 			<if test="allocateUnitCodes != null and allocateUnitCodes == 'PALLET'">
-				and inv.inside_container_id is not null
+				and inv.outer_container_id is not null
 			</if>
 			<if test="allocateUnitCodes != null and allocateUnitCodes == 'CONTAINER'">
-				and inv.outer_container_id is not null
+				and inv.inside_container_id is not null
 			</if>
 			<if test="storeId != null">
 				and inv.store_id = #{storeId}
@@ -2494,6 +2542,33 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			</if>
 			<if test="invType != null and invType !=''">
 				and inv.inv_type = #{invType}
+			</if>
+			<if test="batchNumber != null and batchNumber !=''">
+				and inv.batch_number = #{batchNumber}
+			</if>
+	        <if test="countryOfOrigin!=null and countryOfOrigin!=''">
+				and inv.country_of_origin = #{countryOfOrigin}
+			</if>
+	        <if test="invAttr1!=null and invAttr1!=''">
+				and inv.inv_attr1 = #{invAttr1}
+			</if>
+	        <if test="invAttr2!=null and invAttr2!=''">
+				and inv.inv_attr2 = #{invAttr2}
+			</if>
+	        <if test="invAttr3!=null and invAttr3!=''">
+				and inv.inv_attr3 = #{invAttr3}
+			</if>
+	        <if test="invAttr4!=null and invAttr4!=''">
+				and inv.inv_attr4 = #{invAttr4}
+			</if>
+	        <if test="invAttr5!=null and invAttr5!=''">
+				and inv.inv_attr5 = #{invAttr5}
+			</if>
+			<if test="mfgDate != null">
+				and inv.mfg_date = #{mfgDate}
+			</if>
+			<if test="expDate != null">
+				and inv.exp_date = #{expDate}
 			</if>
 			<if test="isStatic != null and isStatic == true">
 				and loc.is_static = 1
@@ -2516,7 +2591,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</if>
 	</select>
 	
-	<select id="findInventoryUuid" parameterType="com.baozun.scm.primservice.whoperation.command.wave.WhWaveLineCommand" resultMap="WhSkuInventoryCommandResultExt">
+	<select id="findInventoryUuid" parameterType="com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand" resultMap="WhSkuInventoryCommandResultExt">
 		select 
 			sum(inv.on_hand_qty) as sumOnHandQty, 
 			inv.uuid as uuid
@@ -2547,6 +2622,33 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			</if>
 			<if test="invType != null and invType !=''">
 				and inv.inv_type = #{invType}
+			</if>
+			<if test="batchNumber != null and batchNumber !=''">
+				and inv.batch_number = #{batchNumber}
+			</if>
+	        <if test="countryOfOrigin!=null and countryOfOrigin!=''">
+				and inv.country_of_origin = #{countryOfOrigin}
+			</if>
+	        <if test="invAttr1!=null and invAttr1!=''">
+				and inv.inv_attr1 = #{invAttr1}
+			</if>
+	        <if test="invAttr2!=null and invAttr2!=''">
+				and inv.inv_attr2 = #{invAttr2}
+			</if>
+	        <if test="invAttr3!=null and invAttr3!=''">
+				and inv.inv_attr3 = #{invAttr3}
+			</if>
+	        <if test="invAttr4!=null and invAttr4!=''">
+				and inv.inv_attr4 = #{invAttr4}
+			</if>
+	        <if test="invAttr5!=null and invAttr5!=''">
+				and inv.inv_attr5 = #{invAttr5}
+			</if>
+			<if test="mfgDate != null">
+				and inv.mfg_date = #{mfgDate}
+			</if>
+			<if test="expDate != null">
+				and inv.exp_date = #{expDate}
 			</if>
 			group by uuid
 		order by 

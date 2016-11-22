@@ -236,7 +236,22 @@ public class WhSkuInventoryCommand extends BaseCommand {
     private Integer qtyRestContainer;
     
     private Double sumOnHandQty;
-
+    
+    /** 分配区域id */
+    private Long areaId;
+    /** 分配单位 托盘 货箱 */
+    private String allocateUnitCodes;
+    /** 占用顺序  true:先入先出 false:先入后出 */
+    private Boolean priority;
+    /** 是否静态库位占用 */
+    private Boolean isStatic;
+    /** 是否混合库位占用 */
+    private Boolean isMixStacking;
+    /** 最小失效日期 */
+    private Date minExpDate;
+    /** 最大失效日期 */
+    private Date maxExpDate;
+    
     public Boolean getIsPalletRcvdFinished() {
         return isPalletRcvdFinished;
     }
@@ -908,5 +923,61 @@ public class WhSkuInventoryCommand extends BaseCommand {
     public void setIsInvattrDiscrepancyAllowrcvd(Boolean isInvattrDiscrepancyAllowrcvd) {
         this.isInvattrDiscrepancyAllowrcvd = isInvattrDiscrepancyAllowrcvd;
     }
+
+	public Long getAreaId() {
+		return areaId;
+	}
+
+	public void setAreaId(Long areaId) {
+		this.areaId = areaId;
+	}
+
+	public String getAllocateUnitCodes() {
+		return allocateUnitCodes;
+	}
+
+	public void setAllocateUnitCodes(String allocateUnitCodes) {
+		this.allocateUnitCodes = allocateUnitCodes;
+	}
+
+	public Boolean getPriority() {
+		return priority;
+	}
+
+	public void setPriority(Boolean priority) {
+		this.priority = priority;
+	}
+
+	public Boolean getIsStatic() {
+		return isStatic;
+	}
+
+	public void setIsStatic(Boolean isStatic) {
+		this.isStatic = isStatic;
+	}
+
+	public Boolean getIsMixStacking() {
+		return isMixStacking;
+	}
+
+	public void setIsMixStacking(Boolean isMixStacking) {
+		this.isMixStacking = isMixStacking;
+	}
+
+	public Date getMinExpDate() {
+		return minExpDate;
+	}
+
+	public void setMinExpDate(Date minExpDate) {
+		this.minExpDate = minExpDate;
+	}
+
+	public Date getMaxExpDate() {
+		return maxExpDate;
+	}
+
+	public void setMaxExpDate(Date maxExpDate) {
+		this.maxExpDate = maxExpDate;
+	}
 
 }
