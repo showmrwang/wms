@@ -40,6 +40,7 @@ public class ReplenishedManagerProxyImpl extends BaseManagerImpl implements Repl
 		wave.setPhaseCode(phaseCode);
 		wave.setOuId(ouId);
 		wave.setAllocatePhase(null);
+		wave.setIsRunWave(true);
 		return whWaveDao.findWaveIdsByParam(wave);
 	}
 

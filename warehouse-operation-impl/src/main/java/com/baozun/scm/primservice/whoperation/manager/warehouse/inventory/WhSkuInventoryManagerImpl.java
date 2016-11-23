@@ -3017,7 +3017,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 					}
 				}
 				// 策略分配单位中包含托盘出
-				if (allocateUnitCodes.contains(Constants.ALLOCATE_UNIT_PALLET)) {
+				if (allocateUnitCodes.contains(Constants.ALLOCATE_UNIT_PALLET) && -1 == new Double(0.0).compareTo(qty)) {
 					skuCommand.setAllocateUnitCodes(Constants.ALLOCATE_UNIT_PALLET);
 					// 查询出是托盘容器的库存份
 					List<WhSkuInventoryCommand> uuids = findInventorysByAllocateStrategy(as.getStrategyCode(), skuCommand, qty);
@@ -3028,7 +3028,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 					containerQty += num;
 				}
 				// 策略分配单位中包含货箱出
-				if (allocateUnitCodes.contains(Constants.ALLOCATE_UNIT_CONTAINER)) {
+				if (allocateUnitCodes.contains(Constants.ALLOCATE_UNIT_CONTAINER) && -1 == new Double(0.0).compareTo(qty)) {
 					skuCommand.setAllocateUnitCodes(Constants.ALLOCATE_UNIT_CONTAINER);
 					// 查询出是货箱容器的库存份
 					List<WhSkuInventoryCommand> uuids = findInventorysByAllocateStrategy(as.getStrategyCode(), skuCommand, qty);
@@ -3040,14 +3040,16 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 				}
 				Double num = 0.0;
 				// 分配策略为数量最佳匹配
-				if (Constants.ALLOCATE_STRATEGY_QUANTITYBESTMATCH.equals(as.getStrategyCode())) {
-					List<WhSkuInventoryCommand> uuids = findInventoryUuidByBestMatchAndPiece(skuCommand, qty);
-					num = inventoryOccupyManager.occupyInvUuids(uuids, qty, occupyCode, odoLineId, Constants.SKU_INVENTORY_OCCUPATION_SOURCE_ODO, wh, Constants.ALLOCATE_UNIT_CONTAINER, allSkuInvs, isStaticLocation, staticLocationIds);
-					occupyQty += num;
-				} else {
-					// 按件占用
-					num = inventoryOccupyManager.hardAllocateListOccupy(allSkuInvs, qty, occupyCode, odoLineId, Constants.SKU_INVENTORY_OCCUPATION_SOURCE_ODO, wh, isStaticLocation, staticLocationIds);
-					occupyQty += num;
+				if (-1 == new Double(0.0).compareTo(qty)) {
+					if (Constants.ALLOCATE_STRATEGY_QUANTITYBESTMATCH.equals(as.getStrategyCode())) {
+						List<WhSkuInventoryCommand> uuids = findInventoryUuidByBestMatchAndPiece(skuCommand, qty);
+						num = inventoryOccupyManager.occupyInvUuids(uuids, qty, occupyCode, odoLineId, Constants.SKU_INVENTORY_OCCUPATION_SOURCE_ODO, wh, Constants.ALLOCATE_UNIT_CONTAINER, allSkuInvs, isStaticLocation, staticLocationIds);
+						occupyQty += num;
+					} else {
+						// 按件占用
+						num = inventoryOccupyManager.hardAllocateListOccupy(allSkuInvs, qty, occupyCode, odoLineId, Constants.SKU_INVENTORY_OCCUPATION_SOURCE_ODO, wh, isStaticLocation, staticLocationIds);
+						occupyQty += num;
+					}
 				}
 				if (1 == qty.compareTo(num)) {
 					line.setQty(qty - num);

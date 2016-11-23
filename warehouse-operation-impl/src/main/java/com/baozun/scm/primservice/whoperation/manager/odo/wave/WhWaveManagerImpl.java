@@ -361,9 +361,6 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public int updateWhWaveAllocatePhase(List<Long> waveIdList, Integer allocatePhase, Long ouId) {
         int num = whWaveDao.updateWhWaveAllocatePhase(waveIdList, allocatePhase, ouId);
-        if (num < 0) {
-            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-        }
         return num;
     }
 

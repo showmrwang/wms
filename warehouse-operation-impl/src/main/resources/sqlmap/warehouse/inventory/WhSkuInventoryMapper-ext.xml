@@ -2204,7 +2204,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		) inv2 
 		where 
 			inv.uuid = inv2.uuid 
-			and inv.exp_date = inv2.expDate
+			and IFNULL(inv.exp_date,0) = IFNULL(inv2.expDate,0)
 		order by rowNo,inv.on_hand_qty
 	</select>
 	

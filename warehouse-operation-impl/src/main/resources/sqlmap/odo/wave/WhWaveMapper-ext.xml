@@ -535,6 +535,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		WHERE w.phase_code = 'ALLOCATED' 
 		AND w.allocate_phase = #{allocatePhase}
 		AND w.ou_id = #{ouId}
+		AND w.is_run_wave = 1
 	</select>
 	
 	<update id="updateWhWaveAllocatePhase" parameterType="map">
