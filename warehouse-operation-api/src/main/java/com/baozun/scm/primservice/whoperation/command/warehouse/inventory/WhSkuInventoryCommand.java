@@ -18,6 +18,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
+import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdContainerCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdSnCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ShelveRecommendRuleCommand;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionRcvd;
@@ -169,7 +170,10 @@ public class WhSkuInventoryCommand extends BaseCommand {
     private Integer snCount;
     /** 残次累计数量 */
     private Integer snAddUpCount;
-
+    /** 通用收货：容器-商品缓存对象 @mender yimin.lu 2016/11/23 */
+    private RcvdContainerCacheCommand rcvdUserContainerCache;
+    /** 通用收货：容器-用户缓存对象 @mender yimin.lu 2016/11/23 */
+    private RcvdContainerCacheCommand rcvdSkuContainerCache;
     /** 效期天数 */
     @Deprecated
     private Integer dayOfValidDate;
@@ -1002,5 +1006,22 @@ public class WhSkuInventoryCommand extends BaseCommand {
     public void setContainerQty(String containerQty) {
         this.containerQty = containerQty;
     }
+
+    public RcvdContainerCacheCommand getRcvdUserContainerCache() {
+        return rcvdUserContainerCache;
+    }
+
+    public void setRcvdUserContainerCache(RcvdContainerCacheCommand rcvdUserContainerCache) {
+        this.rcvdUserContainerCache = rcvdUserContainerCache;
+    }
+
+    public RcvdContainerCacheCommand getRcvdSkuContainerCache() {
+        return rcvdSkuContainerCache;
+    }
+
+    public void setRcvdSkuContainerCache(RcvdContainerCacheCommand rcvdSkuContainerCache) {
+        this.rcvdSkuContainerCache = rcvdSkuContainerCache;
+    }
+
 
 }

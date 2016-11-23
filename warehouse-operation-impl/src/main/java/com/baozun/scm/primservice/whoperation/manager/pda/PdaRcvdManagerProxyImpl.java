@@ -165,11 +165,13 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                     cartonCommand.setIsCaselevel(Constants.BOOLEAN_TRUE);
                     List<WhCartonCommand> cartonList = this.generalRcvdManager.findWhCartonByParamExt(cartonCommand);
                     int quantity = Constants.DEFAULT_INTEGER;
+                    int qtyRcvd = Constants.DEFAULT_INTEGER;
                     for (WhCartonCommand c : cartonList) {
                         quantity += c.getQuantity();
+                        qtyRcvd += c.getQtyRcvd();
                     }
                     cacheManager.setMapObject(CacheKeyConstant.CACHE_ASNLINE_PREFIX + occupationId, asnline.getId().toString(), asnline, 24 * 60 * 60);
-                    int count = asnline.getQtyPlanned().intValue() - asnline.getQtyRcvd().intValue();// 未收货数量
+                    int count = (asnline.getQtyPlanned().intValue() - quantity) - (asnline.getQtyRcvd().intValue() - qtyRcvd);// 未收货数量
                     int overchargeCount = (int) ((asnline.getQtyPlanned().intValue() - quantity) * Double.valueOf(cacheRate) / 100);// 可超收数量
                     cacheManager.setMapObject(CacheKeyConstant.CACHE_ASNLINE_OVERCHARGE_PREFIX + occupationId, asnline.getId().toString(), overchargeCount, 24 * 60 * 60);
                     // 缓存ASN-商品数量
@@ -1840,6 +1842,13 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
             }
             if (RcvdWorkFlow.GENERAL_RECEIVING_ISSERIALNUMBER == nextOpt) {}// 序列号不用提示
         }
+        // @mender yimin.lu 初始化容器缓存
+        if (command.getRcvdSkuContainerCache() != null) {
+            this.cacheManager.setObject(CacheKeyConstant.CACHE_RCVD_CONTAINER_PREFIX + command.getInsideContainerId() + "$" + command.getSkuId(), command.getRcvdSkuContainerCache());
+        }
+        if (command.getRcvdUserContainerCache() != null) {
+            this.cacheManager.setObject(CacheKeyConstant.CACHE_RCVD_CONTAINER_USER_PREFIX + command.getInsideContainerId(), command.getRcvdUserContainerCache());
+        }
         return command;
     }
 
@@ -2108,8 +2117,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
         cacheContainer.setSkuIdSet(skuIdSet);
         cacheContainer.setIsMixAttr(true);
         cacheContainer.setMixAttr(mgmt.getMixAttr());
-        this.cacheManager.setObject(CacheKeyConstant.CACHE_RCVD_CONTAINER_USER_PREFIX + insideContainerId, cacheContainer);
-
+        command.setRcvdUserContainerCache(cacheContainer);
 
         // @mender yimin.lu 2016/11/14
         // 如果容器需要初始化容器限定属性缓存
@@ -2223,7 +2231,11 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                 }
                 rcvdContainerCacheCommand.setUserId(command.getUserId());
                 rcvdContainerCacheCommand.setOuId(ouId);
-                this.cacheManager.setObject(CacheKeyConstant.CACHE_RCVD_CONTAINER_PREFIX + insideContainerId + "$" + skuId, rcvdContainerCacheCommand);
+
+                command.setRcvdSkuContainerCache(rcvdContainerCacheCommand);
+                // @mender yimin.lu 2016/11/23 放到流程最后进行
+                // this.cacheManager.setObject(CacheKeyConstant.CACHE_RCVD_CONTAINER_PREFIX +
+                // insideContainerId + "$" + skuId, rcvdContainerCacheCommand);
             }
 
         }
@@ -2256,12 +2268,14 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
     @Override
     public void removeInsideContainerCacheWhenScanSkuNoRcvd(Long inside, Long skuId, Long ouId, Long userId, String logId) {
         RcvdContainerCacheCommand cacheContainer = this.cacheManager.getObject(CacheKeyConstant.CACHE_RCVD_CONTAINER_USER_PREFIX + inside);
-        cacheContainer.getSkuIdSet().remove(skuId);
-        if (cacheContainer.getSkuIdSet().size() == 0) {
-            cacheContainer.setIsMixAttr(false);
-            cacheContainer.setMixAttr("");
+        if (skuId != null) {
+            cacheContainer.getSkuIdSet().remove(skuId);
+            if (cacheContainer.getSkuIdSet().size() == 0) {
+                cacheContainer.setIsMixAttr(false);
+                cacheContainer.setMixAttr("");
+            }
+            this.cacheManager.setObject(CacheKeyConstant.CACHE_RCVD_CONTAINER_USER_PREFIX + inside, cacheContainer);
         }
-        this.cacheManager.setObject(CacheKeyConstant.CACHE_RCVD_CONTAINER_USER_PREFIX + inside, cacheContainer);
     }
 
     @Override

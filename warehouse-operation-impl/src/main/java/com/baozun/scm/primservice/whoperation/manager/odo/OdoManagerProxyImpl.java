@@ -402,7 +402,7 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
         if(odoLineList!=null&&odoLineList.size()>0){
             //库存状态
             List<InventoryStatus> invStatusList=this.inventoryStatusManager.findAllInventoryStatus();
-            Map<Long,String> invStatusMap=new HashMap<Long,String>();
+            Map<Long, String> invStatusMap = new HashMap<Long, String>();
             // 出库单明细状态
             Set<String> dic1 = new HashSet<String>();
             for(InventoryStatus s:invStatusList){
@@ -416,7 +416,7 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
             map.put(Constants.ODO_LINE_STATUS, new ArrayList<String>(dic1));
             Map<String, SysDictionary> dicMap = this.findSysDictionaryByRedis(map);
             for (OdoLineCommand odoline : odoLineList) {
-                SysDictionary sys = dicMap.get(Constants.TRANSPORT_MODE + "_" + odoline.getOdoLineStatusName());
+                SysDictionary sys = dicMap.get(Constants.ODO_LINE_STATUS + "_" + odoline.getOdoLineStatus());
                 odoline.setOdoLineStatusName(sys == null ? odoline.getOdoLineStatus() : sys.getDicLabel());
             }
         }

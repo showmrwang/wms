@@ -28,21 +28,21 @@ import lark.orm.dao.supports.BaseDao;
 import org.apache.ibatis.annotations.Param;
 
 import com.baozun.scm.primservice.whoperation.command.warehouse.OutInvBoxTypeCommand;
-import com.baozun.scm.primservice.whoperation.model.warehouse.OutInventoryBoxType;
+import com.baozun.scm.primservice.whoperation.model.warehouse.OutBoundBoxType;
 
 
 
 
-public interface OutInventoryBoxTypeDao extends BaseDao<OutInventoryBoxType,Long>{
+public interface OutBoundBoxTypeDao extends BaseDao<OutBoundBoxType,Long>{
 
 
 	@QueryPage("findListCountByQueryMapExt")
 	Pagination<OutInvBoxTypeCommand> findListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params);
 	
 	@CommonQuery
-	int saveOrUpdate(OutInventoryBoxType o);
+	int saveOrUpdate(OutBoundBoxType o);
 	@CommonQuery
-	public int saveOrUpdateByVersion(OutInventoryBoxType o);
+	public int saveOrUpdateByVersion(OutBoundBoxType o);
 	
 	
 	  /**
@@ -61,7 +61,7 @@ public interface OutInventoryBoxTypeDao extends BaseDao<OutInventoryBoxType,Long
      * @param userId
      * @param ouId
      */
-    public OutInventoryBoxType findByIdExt(@Param("id") Long id, @Param("ouId") Long ouId);
+    public OutBoundBoxType findByIdExt(@Param("id") Long id, @Param("ouId") Long ouId);
     
     
     /**

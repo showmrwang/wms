@@ -24,7 +24,7 @@ import com.baozun.scm.primservice.whoperation.model.BaseModel;
  * @author larkark
  *
  */
-public class OutInventoryBoxType extends BaseModel {
+public class OutBoundBoxType extends BaseModel {
 
 
     private static final long serialVersionUID = 8431021328606850616L;
