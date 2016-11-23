@@ -303,15 +303,12 @@
 				</foreach>
 			</if>
 			<if test="transportServiceProviderType!=null">
-				and exists(select 1 from t_wh_odo_vas odovas where
-				odovas.odo_id=odo.id and odovas.ou_id=odo.ou_id and
-				odovas.express_vas_type in
+				and transmgmt.courier_service_type in
 				<foreach collection="transportServiceProviderType" item="s"
 					open="(" separator="," close=")">
 					#{s}
 				</foreach>
-				)
-
+				
 			</if>
 			<if test="distributeMode!=null">
 				and odo.distribute_mode in
@@ -592,7 +589,7 @@
 		transmgmt.mode_of_transport as modeOfTransport,
 
 		odo.epistatic_systems_order_type as epistaticSystemsOrderType,
-
+		odo.order_type as orderType,
 		odo.odo_type as odoType,
 
 		odo.distribute_mode as distributeMode,
@@ -1442,14 +1439,11 @@
 				</foreach>
 			</if>
 			<if test="transportServiceProviderType!=null">
-				and exists(select 1 from t_wh_odo_vas odovas where
-				odovas.odo_id=odo.id and odovas.ou_id=odo.ou_id and
-				odovas.express_vas_type in
+				and transmgmt.courier_service_type in
 				<foreach collection="transportServiceProviderType" item="s"
 					open="(" separator="," close=")">
 					#{s}
 				</foreach>
-				)
 
 			</if>
 			<if test="distributeMode!=null">
