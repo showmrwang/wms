@@ -614,6 +614,13 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
             // 2.筛选PO明细数据集合
             asn.setQtyRcvd(asn.getQtyRcvd() + asnCount);
             asn.setModifiedId(userId);
+            if (asn.getDeliveryTime() == null) {
+                asn.setDeliveryTime(new Date());
+            }
+            if (asn.getStartTime() == null) {
+                asn.setStartTime(new Date());
+            }
+            asn.setStopTime(new Date());
             Iterator<Entry<Long, Double>> poIt = polineMap.entrySet().iterator();
             Long poId = null;
             // 更新PO明细数据集合
@@ -639,6 +646,13 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
             }
             po.setModifiedId(userId);
             po.setQtyRcvd(po.getQtyRcvd() + asnCount);
+            if (null == po.getDeliveryTime()) {
+                po.setDeliveryTime(new Date());
+            }
+            if (null == po.getStartTime()) {
+                po.setStartTime(new Date());
+            }
+            po.setStopTime(new Date());
             // 更新容器
             Container container = null;
             container = this.generalRcvdManager.findContainerByIdToShard(insideContainerId, ouId);
@@ -2245,6 +2259,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
         cacheContainer.getSkuIdSet().remove(skuId);
         if (cacheContainer.getSkuIdSet().size() == 0) {
             cacheContainer.setIsMixAttr(false);
+            cacheContainer.setMixAttr("");
         }
         this.cacheManager.setObject(CacheKeyConstant.CACHE_RCVD_CONTAINER_USER_PREFIX + inside, cacheContainer);
     }

@@ -306,6 +306,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         WhWave whWave = new WhWave();
         whWave.setOuId(ouId);
         whWave.setPhaseCode(phaseCode);
+        whWave.setIsRunWave(true);
         List<Long> waveIds = this.whWaveDao.findWaveIdsByParam(whWave);
         return waveIds;
     }
@@ -331,20 +332,26 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void changeWavePhaseCode(Long waveId, Long ouId) {
-        WhWave wave = whWaveDao.findWaveExtByIdAndOuId(waveId, ouId);
+        WhWave wave = new WhWave();
+        wave.setId(waveId);
+        wave.setOuId(ouId);
+        wave.setIsRunWave(true);
+        wave.setAllocatePhase(null);
+        wave = this.whWaveDao.findListByParam(wave).get(0);
         if (null != wave) {
-        	// 获取下一个波次阶段
-        	WhWaveMaster whWaveMaster = whWaveMasterDao.findByIdExt(wave.getWaveMasterId(), ouId);
-        	Long waveTempletId = whWaveMaster.getWaveTemplateId();
-        	String phase = this.getWavePhaseCode(wave.getPhaseCode(), waveTempletId, ouId);
-        	if (StringUtils.isEmpty(phase)) {
-        		wave.setPhaseCode(phase);
-        		int num = this.whWaveDao.saveOrUpdateByVersion(wave);
-        		if (1 != num) {
-        			throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-				}
-        	}
-		}
+            // 获取下一个波次阶段
+            WhWaveMaster whWaveMaster = whWaveMasterDao.findByIdExt(wave.getWaveMasterId(), ouId);
+            Long waveTempletId = whWaveMaster.getWaveTemplateId();
+            String phase = this.getWavePhaseCode(wave.getPhaseCode(), waveTempletId, ouId);
+            if (!StringUtils.isEmpty(phase)) {
+                wave.setPhaseCode(phase);
+                wave.setStatus(WaveStatus.WAVE_EXECUTING);
+                int num = this.whWaveDao.saveOrUpdateByVersion(wave);
+                if (1 != num) {
+                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                }
+            }
+        }
     }
 
     @Override
@@ -470,31 +477,31 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
 
     }
 
-	@Override
-	public void releaseInventoryByWaveId(Long waveId, Warehouse wh) {
-		Long ouId = wh.getId();
-		List<Long> odoIds = whWaveLineDao.findOdoIdByWaveId(waveId, ouId);
-		for (Long odoId : odoIds) {
-			// 释放库存
-			whSkuInventoryManager.releaseInventoryByOdoId(odoId, wh);
-		}
-	}
+    @Override
+    public void releaseInventoryByWaveId(Long waveId, Warehouse wh) {
+        Long ouId = wh.getId();
+        List<Long> odoIds = whWaveLineDao.findOdoIdByWaveId(waveId, ouId);
+        for (Long odoId : odoIds) {
+            // 释放库存
+            whSkuInventoryManager.releaseInventoryByOdoId(odoId, wh);
+        }
+    }
 
-	@Override
-	public List<Long> findWaveIdsByWavePhaseCode(String phaseCode, Long ouId) {
-		WhWave wave = new WhWave();
-		wave.setPhaseCode(phaseCode);
-		wave.setOuId(ouId);
-		wave.setAllocatePhase(null);
-		return whWaveDao.findWaveIdsByParam(wave);
-	}
+    @Override
+    public List<Long> findWaveIdsByWavePhaseCode(String phaseCode, Long ouId) {
+        WhWave wave = new WhWave();
+        wave.setPhaseCode(phaseCode);
+        wave.setOuId(ouId);
+        wave.setAllocatePhase(null);
+        return whWaveDao.findWaveIdsByParam(wave);
+    }
 
-	@Override
-	public void deleteWaveLinesAndReleaseInventoryByOdoId(Long waveId, Long odoId, String reason, Warehouse wh) {
-		whWaveLineManager.deleteWaveLinesByOdoId(odoId, waveId, wh.getId(), reason);
-		whSkuInventoryManager.releaseInventoryByOdoId(odoId, wh);
-	}
-	
+    @Override
+    public void deleteWaveLinesAndReleaseInventoryByOdoId(Long waveId, Long odoId, String reason, Warehouse wh) {
+        whWaveLineManager.deleteWaveLinesByOdoId(odoId, waveId, wh.getId(), reason);
+        whSkuInventoryManager.releaseInventoryByOdoId(odoId, wh);
+    }
+
     @Override
     public List<Long> findOdoContainsSkuId(Long waveId, List<Long> skuIds, Long ouId) {
         return whWaveDao.findOdoContainsSkuId(waveId, skuIds, ouId);
@@ -512,9 +519,9 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         return WaveIds;
     }
 
-	@Override
-	public String getNextParseCode(Long waveId, Long ouId) {
-		WhWave wave = new WhWave();
+    @Override
+    public String getNextParseCode(Long waveId, Long ouId) {
+        WhWave wave = new WhWave();
         wave.setId(waveId);
         wave.setOuId(ouId);
         wave.setAllocatePhase(null);
@@ -522,7 +529,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         WhWaveMaster whWaveMaster = whWaveMasterDao.findByIdExt(wave.getWaveMasterId(), ouId);
         Long waveTempletId = whWaveMaster.getWaveTemplateId();
         String phaseCode = this.getWavePhaseCode(wave.getPhaseCode(), waveTempletId, ouId);
-		return phaseCode;
-	}
+        return phaseCode;
+    }
 
 }

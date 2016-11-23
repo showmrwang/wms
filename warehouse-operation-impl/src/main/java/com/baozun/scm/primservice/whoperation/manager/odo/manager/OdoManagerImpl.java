@@ -103,7 +103,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                 Set<String> dic9 = new HashSet<String>();
                 Set<String> dic10 = new HashSet<String>();
                 Set<String> dic11 = new HashSet<String>();
-                // Set<String> dic12 = new HashSet<String>();
+                Set<String> dic12 = new HashSet<String>();
                 Set<Long> customerIdSet = new HashSet<Long>();
                 Set<Long> storeIdSet = new HashSet<Long>();
                 Set<Long> userIdSet = new HashSet<Long>();
@@ -164,7 +164,9 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                         if (StringUtils.hasText(command.getModifiedId())) {
                             userIdSet.add(Long.parseLong(command.getModifiedId()));
                         }
-
+                        if (StringUtils.hasText(command.getOrderType())) {
+                            dic12.add(command.getOrderType());
+                        }
                     }
                     Map<String, List<String>> map = new HashMap<String, List<String>>();
                     map.put(Constants.IS_WHOLE_ORDER_OUTBOUND, new ArrayList<String>(dic1));
@@ -177,6 +179,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                     map.put(Constants.ODO_AIM_TYPE, new ArrayList<String>(dic9));
                     map.put(Constants.ODO_DELIVER_GOODS_TIME_MODE, new ArrayList<String>(dic10));
                     map.put(Constants.IS_NOT, new ArrayList<String>(dic11));
+                    map.put(Constants.ODO_ORDER_TYPE, new ArrayList<String>(dic12));
 
                     Map<String, SysDictionary> dicMap = this.findSysDictionaryByRedis(map);
                     Map<Long, Customer> customerMap = this.findCustomerByRedis(new ArrayList<Long>(customerIdSet));
@@ -234,6 +237,10 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                         if (StringUtils.hasText(command.getIsLocked())) {
                             SysDictionary sys = dicMap.get(Constants.IS_NOT + "_" + command.getIsLocked());
                             command.setIsLocked(sys == null ? command.getIsLocked() : sys.getDicLabel());
+                        }
+                        if (StringUtils.hasText(command.getOrderType())) {
+                            SysDictionary sys = dicMap.get(Constants.ODO_ORDER_TYPE + "_" + command.getOrderType());
+                            command.setOrderTypeName(sys == null ? command.getOrderType() : sys.getDicLabel());
                         }
                         if (StringUtils.hasText(command.getStoreId())) {
                             Store store = storeMap.get(Long.parseLong(command.getStoreId()));

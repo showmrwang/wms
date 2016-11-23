@@ -490,7 +490,11 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
         whOdo.setId(null);
         whOdo.setOdoCode(codeManager.generateCode(Constants.WMS, Constants.WHODO_MODEL_URL, Constants.WMS_ODO_INNER, "ODO", null));
         whOdo.setExtCode(codeManager.generateCode(Constants.WMS, Constants.WHODO_MODEL_URL, Constants.WMS_ODO_EXT, null, null));
-        whOdo.setOdoStatus(OdoStatus.ODO_NEW);
+        if (null != whOdo.getOdoStatus() && OdoStatus.ODO_WAVE.equals(whOdo.getOdoStatus())) {
+            whOdo.setOdoStatus(OdoStatus.ODO_WAVE);
+        } else {
+            whOdo.setOdoStatus(OdoStatus.ODO_NEW);
+        }
         whOdo.setCreateTime(new Date());
         whOdo.setLastModifyTime(new Date());
         whOdo.setCreatedId(userId);
@@ -833,7 +837,11 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
     private WhOdoLine createNewOdoLine(WhOdoLine whOdoLine, String whOdoCode, Long newOdoId, Long userId) {
         // 原来子订单更新:
         // 状态:新建; 添加合并后出库单单号;
-        whOdoLine.setOdoLineStatus(OdoStatus.ODOLINE_NEW);
+        if (null != whOdoLine.getOdoLineStatus() && OdoStatus.ODOLINE_WAVE.equals(whOdoLine.getOdoLineStatus())) {
+            whOdoLine.setOdoLineStatus(OdoStatus.ODOLINE_WAVE);
+        } else {
+            whOdoLine.setOdoLineStatus(OdoStatus.ODOLINE_NEW);
+        }
         whOdoLine.setOdoId(newOdoId);
         whOdoLine.setOriginalOdoCode(whOdoCode);
         whOdoLine.setOriginalLinenum(whOdoLine.getLinenum());
