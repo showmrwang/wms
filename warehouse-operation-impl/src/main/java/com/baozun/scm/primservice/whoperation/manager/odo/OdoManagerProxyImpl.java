@@ -416,7 +416,7 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
             map.put(Constants.ODO_LINE_STATUS, new ArrayList<String>(dic1));
             Map<String, SysDictionary> dicMap = this.findSysDictionaryByRedis(map);
             for (OdoLineCommand odoline : odoLineList) {
-                SysDictionary sys = dicMap.get(Constants.TRANSPORT_MODE + "_" + odoline.getOdoLineStatusName());
+                SysDictionary sys = dicMap.get(Constants.ODO_LINE_STATUS + "_" + odoline.getOdoLineStatus());
                 odoline.setOdoLineStatusName(sys == null ? odoline.getOdoLineStatus() : sys.getDicLabel());
             }
         }
