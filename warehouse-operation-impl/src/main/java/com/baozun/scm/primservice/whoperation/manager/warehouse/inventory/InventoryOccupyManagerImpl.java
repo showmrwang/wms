@@ -100,14 +100,14 @@ public class InventoryOccupyManagerImpl extends BaseInventoryManagerImpl impleme
 		for (WhSkuInventoryCommand inv : skuInvs) {
 			Double oldQty = whSkuInventoryLogDao.sumSkuInvOnHandQty(inv.getUuid(), wh.getId());
 			if (-1 == count.compareTo(inv.getOnHandQty())) {
-				boolean b = occupyInv(count, oldQty, occupyCode, occupySource, odoLineId, inv.getId(), wh);
+				boolean b = occupyInv(inv.getId(), count, oldQty, occupyCode, occupySource, odoLineId, wh);
 				if(!b){
                     throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
                 }
 				insertShareInventory(inv, inv.getOnHandQty() - count, logId);
 				return qty;
 			} else {
-				boolean b = occupyInv(inv.getOnHandQty(), oldQty, occupyCode, occupySource, odoLineId, inv.getId(), wh);
+				boolean b = occupyInv(inv.getId(), inv.getOnHandQty(), oldQty, occupyCode, occupySource, odoLineId, wh);
 				if(!b){
                     throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
                 }
@@ -118,7 +118,7 @@ public class InventoryOccupyManagerImpl extends BaseInventoryManagerImpl impleme
 		return occupyNum;
 	}
     
-    private boolean occupyInv(Double qty, Double oldQty, String occupyCode, String occupySource, Long odoLineId, Long invId, Warehouse wh) {
+    private boolean occupyInv(Long invId, Double qty, Double oldQty, String occupyCode, String occupySource, Long odoLineId, Warehouse wh) {
     	boolean flag = false;
     	for (int i = 0; i < 5; i++) {
     		WhSkuInventory skuInv = inventoryDao.findWhSkuInventoryById(invId, wh.getId());
@@ -142,14 +142,14 @@ public class InventoryOccupyManagerImpl extends BaseInventoryManagerImpl impleme
     	return flag;
     }
     
-    private boolean subtractInv(Long invId, Double qty, Double oldQty, Warehouse wh) {
+    private boolean subtractInv(Long invId, Double qty, Double oldQty, String occupyCode, String occupySource, Warehouse wh) {
     	boolean flag = false;
     	for (int i = 0; i < 5; i++) {
 	    	WhSkuInventory skuInv = inventoryDao.findWhSkuInventoryById(invId, wh.getId());
 			skuInv.setOnHandQty(skuInv.getOnHandQty() - qty);
 			int num = inventoryDao.saveOrUpdateByVersion(skuInv);
 			if (1 == num) {
-				insertSkuInventoryLog(invId, -qty, oldQty, wh.getIsTabbInvTotal(), wh.getId(), 1L);
+				insertSkuInventoryLog(invId, occupyCode, occupySource, -qty, oldQty, wh.getIsTabbInvTotal(), wh.getId(), 1L);
 				flag = true;
 				break;
 			} else {
@@ -175,7 +175,7 @@ public class InventoryOccupyManagerImpl extends BaseInventoryManagerImpl impleme
 			Double oldQty = whSkuInventoryLogDao.sumSkuInvOnHandQty(inv.getUuid(), wh.getId());
 			if (-1 == count.compareTo(inv.getOnHandQty())) {
 				// 扣减原来的库存的数量
-				boolean b = subtractInv(inv.getId(), qty, oldQty, wh);
+				boolean b = subtractInv(inv.getId(), count, oldQty, occupyCode, occupySource, wh);
 				if(!b){
                     throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
                 }
@@ -185,7 +185,7 @@ public class InventoryOccupyManagerImpl extends BaseInventoryManagerImpl impleme
 				occupyNum = occupyNum + count;
 				count = 0.0;
 			} else {
-				boolean b = occupyInv(inv.getOnHandQty(), oldQty, occupyCode, occupySource, odoLineId, inv.getId(), wh);
+				boolean b = occupyInv(inv.getId(), inv.getOnHandQty(), oldQty, occupyCode, occupySource, odoLineId, wh);
 				if(!b){
                     throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
                 }
@@ -205,7 +205,7 @@ public class InventoryOccupyManagerImpl extends BaseInventoryManagerImpl impleme
 	}
 
 	@Override
-	public Double occupyInvUuidsByPalletContainer(List<WhSkuInventoryCommand> uuids, Double qty, String occupyCode, Long odoLineId, String occupySource, Warehouse wh, String unitCodes, List<WhSkuInventoryCommand> allSkuInvs, Boolean isStaticLocation, Set<String> staticLocationIds) {
+	public Double occupyInvUuidsByPalletContainer(List<WhSkuInventoryCommand> uuids, Double qty, String occupyCode, Long odoLineId, String occupySource, Warehouse wh, String unitCodes, List<WhSkuInventoryCommand> allSkuInvs, Boolean isStaticLocation, Set<String> staticLocationIds, Set<String> trayIds, Set<String> packingCaseIds) {
 		if (null == uuids || uuids.isEmpty()) {
 			return 0.0;
 		}
@@ -214,7 +214,7 @@ public class InventoryOccupyManagerImpl extends BaseInventoryManagerImpl impleme
 			Double onHandQty = invCmd.getSumOnHandQty();
 			if (-1 != qty.compareTo(onHandQty)) {
 				List<WhSkuInventoryCommand> invs = null;
-				if (Constants.ALLOCATE_UNIT_PALLET.equals(unitCodes)) {
+				if (Constants.ALLOCATE_UNIT_TP.equals(unitCodes)) {
 					List<String> uuidList = Arrays.asList(invCmd.getUuid().split(","));
 					invs = inventoryDao.findWhSkuInventoryByUuidList(wh.getId(), uuidList);
 				} else {
@@ -225,7 +225,7 @@ public class InventoryOccupyManagerImpl extends BaseInventoryManagerImpl impleme
 				Double occupyNum = 0.0;
 				for (WhSkuInventoryCommand inv : invs) {
 					Double oldQty = whSkuInventoryLogDao.sumSkuInvOnHandQty(inv.getUuid(), wh.getId());
-					boolean b = occupyInv(inv.getOnHandQty(), oldQty, occupyCode, occupySource, odoLineId, inv.getId(), wh);
+					boolean b = occupyInv(inv.getId(), inv.getOnHandQty(), oldQty, occupyCode, occupySource, odoLineId, wh);
 					if(!b){
 	                    throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
 	                }
@@ -241,6 +241,11 @@ public class InventoryOccupyManagerImpl extends BaseInventoryManagerImpl impleme
 					}
 					if (null != isStaticLocation && isStaticLocation && null != staticLocationIds) {
 						staticLocationIds.add(inv.getLocationId().toString());
+					}
+					if (Constants.ALLOCATE_UNIT_TP.equals(unitCodes) && null != trayIds) {
+						trayIds.add(inv.getOuterContainerId().toString());
+					} else if (Constants.ALLOCATE_UNIT_HX.equals(unitCodes) && null != packingCaseIds) {
+						packingCaseIds.add(inv.getInsideContainerId().toString());
 					}
 					occupyNum += inv.getOnHandQty();
 				}
@@ -265,7 +270,7 @@ public class InventoryOccupyManagerImpl extends BaseInventoryManagerImpl impleme
 				Double oldQty = whSkuInventoryLogDao.sumSkuInvOnHandQty(inv.getUuid(), wh.getId());
 				
 				if (-1 == count.compareTo(inv.getOnHandQty())) {
-					boolean b = subtractInv(inv.getId(), qty, oldQty, wh);
+					boolean b = subtractInv(inv.getId(), count, oldQty, occupyCode, occupySource, wh);
 					if(!b){
 	                    throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
 	                }
@@ -283,7 +288,7 @@ public class InventoryOccupyManagerImpl extends BaseInventoryManagerImpl impleme
 						}
 					}
 				} else {
-					boolean b = occupyInv(inv.getOnHandQty(), oldQty, occupyCode, occupySource, odoLineId, inv.getId(), wh);
+					boolean b = occupyInv(inv.getId(), inv.getOnHandQty(), oldQty, occupyCode, occupySource, odoLineId, wh);
 					if(!b){
 	                    throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
 	                }

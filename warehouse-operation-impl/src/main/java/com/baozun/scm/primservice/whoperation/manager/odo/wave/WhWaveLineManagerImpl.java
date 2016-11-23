@@ -144,7 +144,7 @@ public class WhWaveLineManagerImpl extends BaseManagerImpl implements WhWaveLine
 
 	@Override
 	@MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-	public void updateWaveLineByAllocateQty(Long invId, Double allocateQty, Double containerQty, Boolean isStaticLocation, Set<String> staticLocationIds, Long areaId, Long ouId) {
+	public void updateWaveLineByAllocateQty(Long invId, Double allocateQty, Double containerQty, Boolean isStaticLocation, Set<String> staticLocationIds, Set<String> trayIds, Set<String> packingCaseIds, Long areaId, Long ouId) {
 		WhWaveLine whWaveLine = whWaveLineDao.findWhWaveLineById(invId, ouId);
 		Double oldAllocateQty = null == whWaveLine.getAllocateQty() ? 0.0 : whWaveLine.getAllocateQty();
 		whWaveLine.setAllocateQty(allocateQty + oldAllocateQty);
@@ -156,6 +156,12 @@ public class WhWaveLineManagerImpl extends BaseManagerImpl implements WhWaveLine
 		if (null != isStaticLocation && isStaticLocation) {
 			whWaveLine.setIsStaticLocationAllocate(isStaticLocation);
 			whWaveLine.setStaticLocationIds(StringUtils.collectionToCommaDelimitedString(staticLocationIds));
+		}
+		if (!trayIds.isEmpty()) {
+			whWaveLine.setTrayIds(StringUtils.collectionToCommaDelimitedString(trayIds));
+		}
+		if (!packingCaseIds.isEmpty()) {
+			whWaveLine.setTrayIds(StringUtils.collectionToCommaDelimitedString(packingCaseIds));
 		}
 		whWaveLine.setAreaId(areaId);
 		whWaveLineDao.saveOrUpdateByVersion(whWaveLine);

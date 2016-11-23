@@ -337,7 +337,8 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         wave.setOuId(ouId);
         wave.setIsRunWave(true);
         wave.setAllocatePhase(null);
-        wave = this.whWaveDao.findListByParam(wave).get(0);
+        List<WhWave> list = this.whWaveDao.findListByParam(wave);
+        wave = (null == list || list.isEmpty()) ? null : list.get(0);
         if (null != wave) {
             // 获取下一个波次阶段
             WhWaveMaster whWaveMaster = whWaveMasterDao.findByIdExt(wave.getWaveMasterId(), ouId);

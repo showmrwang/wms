@@ -432,8 +432,8 @@ public final class Constants {
     public static final String ALLOCATE_STRATEGY_MIXEDSKUSLOCATION = "10"; // 混SKU库位
     public static final String ALLOCATE_STRATEGY_EMPTYLOCATION = "11"; // 空库位
 
-    public static final String ALLOCATE_UNIT_PALLET = "PALLET"; // 托盘
-    public static final String ALLOCATE_UNIT_CONTAINER = "CONTAINER"; // 货箱
+    public static final String ALLOCATE_UNIT_TP = "TP"; // 托盘
+    public static final String ALLOCATE_UNIT_HX = "HX"; // 货箱
     public static final String ALLOCATE_UNIT_PIECE = "PIECE"; // 件
 
     public static final String REPLENISHMENT_UP = "1"; // 向上补货

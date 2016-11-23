@@ -132,7 +132,11 @@ public abstract class BaseManagerImpl implements BaseManager {
      * @param userid 操作人ID
      */
     protected void insertSkuInventoryLog(Long skuInvId, Double qty, Double oldQty, Boolean isTabbInvTotal, Long ouid, Long userid) {
-        if (null == skuInvId) {
+    	insertSkuInventoryLog(skuInvId, null, null, qty, oldQty, isTabbInvTotal, ouid, userid);
+    }
+    
+    protected void insertSkuInventoryLog(Long skuInvId, String occupyCode, String occupySource, Double qty, Double oldQty, Boolean isTabbInvTotal, Long ouid, Long userid) {
+    	if (null == skuInvId) {
             throw new BusinessException(ErrorCodes.PARAM_IS_NULL, new Object[] {"skuInvId"});
         }
         // 通过库存ID封装库存日志对象
@@ -144,6 +148,10 @@ public abstract class BaseManagerImpl implements BaseManager {
         log.setRevisionQty(qty);
         log.setModifiedId(userid);
         log.setModifyTime(new Date());
+        if (null != occupyCode && null != occupySource) {
+        	log.setOccupationCode(occupyCode);
+        	log.setOccupationCodeSource(occupySource);
+		}
         // 判断是否要计算库存修改前后数量
         if (isTabbInvTotal) {
             if (null == oldQty) {
@@ -156,7 +164,7 @@ public abstract class BaseManagerImpl implements BaseManager {
         }
         whSkuInventoryLogManager.insertSkuInventoryLog(log);
     }
-
+    
     /**
      * 通过groupValue+dicValue查询对应系统参数信息 redis=null 查询数据库
      * 

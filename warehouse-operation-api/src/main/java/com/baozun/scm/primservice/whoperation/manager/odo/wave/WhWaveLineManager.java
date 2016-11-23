@@ -65,8 +65,10 @@ public interface WhWaveLineManager extends BaseManager {
 	 * @param ouId 
 	 * @param staticLocationIds 
 	 * @param isStaticLocation 
+	 * @param packingCaseIds 
+	 * @param trayIds 
 	 */
-	void updateWaveLineByAllocateQty(Long invId, Double allocateQty, Double containerQty, Boolean isStaticLocation, Set<String> staticLocationIds, Long areaId, Long ouId);
+	void updateWaveLineByAllocateQty(Long invId, Double allocateQty, Double containerQty, Boolean isStaticLocation, Set<String> staticLocationIds, Set<String> trayIds, Set<String> packingCaseIds, Long areaId, Long ouId);
 
 	Map<Long, Map<Long, Map<Long, Map<Long, Map<Boolean, List<WhWaveLine>>>>>> getNeedInventoryMap(List<Long> waveIdList, Long ouId);
 

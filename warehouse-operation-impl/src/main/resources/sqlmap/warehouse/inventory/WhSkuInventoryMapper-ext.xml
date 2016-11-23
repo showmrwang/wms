@@ -2324,13 +2324,13 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	
 	<select id="findInventoryUuidByInBoundTime" parameterType="com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand" resultMap="WhSkuInventoryCommandResultExt">
 		select 
-			<if test="allocateUnitCodes != null and allocateUnitCodes == 'PALLET'">
+			<if test="allocateUnitCodes != null and allocateUnitCodes == 'TP'">
 				inv.outer_container_id as outerContainerId, 
 				sum(inv.on_hand_qty) sumOnHandQty, 
 				min(inv.inbound_time) as inboundTime, 
 				GROUP_CONCAT(DISTINCT inv.uuid) uuid
 			</if>
-			<if test="allocateUnitCodes != null and allocateUnitCodes == 'CONTAINER'">
+			<if test="allocateUnitCodes != null and allocateUnitCodes == 'HX'">
 				inv.inside_container_id as insideContainerId,
 				sum(inv.on_hand_qty) sumOnHandQty,
 				inv.inbound_time inboundTime, 
@@ -2355,10 +2355,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			and inv.ou_id = #{ouId}
 			and loc.allocate_area_id = #{areaId}
 			and inv.sku_id = #{skuId}
-			<if test="allocateUnitCodes != null and allocateUnitCodes == 'PALLET'">
+			<if test="allocateUnitCodes != null and allocateUnitCodes == 'TP'">
 				and inv.outer_container_id is not null 
 			</if>
-			<if test="allocateUnitCodes != null and allocateUnitCodes == 'CONTAINER'">
+			<if test="allocateUnitCodes != null and allocateUnitCodes == 'HX'">
 				and inv.inside_container_id is not null
 			</if>
 			<if test="storeId != null">
@@ -2397,10 +2397,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<if test="expDate != null">
 				and inv.exp_date = #{expDate}
 			</if>
-		<if test="allocateUnitCodes != null and allocateUnitCodes == 'PALLET'">
+		<if test="allocateUnitCodes != null and allocateUnitCodes == 'TP'">
 			group by outer_container_id
 		</if>
-		<if test="allocateUnitCodes != null and allocateUnitCodes == 'CONTAINER'">
+		<if test="allocateUnitCodes != null and allocateUnitCodes == 'HX'">
 			group by inside_container_id,inbound_time,uuid
 		</if>
 		order by 
@@ -2414,13 +2414,13 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	
 	<select id="findInventoryUuidByExpTime" parameterType="com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand" resultMap="WhSkuInventoryCommandResultExt">
 		select 
-			<if test="allocateUnitCodes != null and allocateUnitCodes == 'PALLET'">
+			<if test="allocateUnitCodes != null and allocateUnitCodes == 'TP'">
 				inv.outer_container_id as outerContainerId, 
 				sum(inv.on_hand_qty) as sumOnHandQty, 
 				min(inv.exp_date) as expDate,
 				GROUP_CONCAT(DISTINCT inv.uuid) as uuid
 			</if>
-			<if test="allocateUnitCodes != null and allocateUnitCodes == 'CONTAINER'">
+			<if test="allocateUnitCodes != null and allocateUnitCodes == 'HX'">
 				inv.inside_container_id as insideContainerId,
 				sum(inv.on_hand_qty) as sumOnHandQty,
 				inv.exp_date as expDate, 
@@ -2445,10 +2445,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			and inv.ou_id = #{ouId}
 			and loc.allocate_area_id = #{areaId}
 			and inv.sku_id = #{skuId}
-			<if test="allocateUnitCodes != null and allocateUnitCodes == 'PALLET'">
+			<if test="allocateUnitCodes != null and allocateUnitCodes == 'TP'">
 				and inv.outer_container_id is not null
 			</if>
-			<if test="allocateUnitCodes != null and allocateUnitCodes == 'CONTAINER'">
+			<if test="allocateUnitCodes != null and allocateUnitCodes == 'HX'">
 				and inv.inside_container_id is not null
 			</if>
 			<if test="storeId != null">
@@ -2490,10 +2490,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<if test="minExpDate != null and maxExpDate != null">
 				and inv.exp_date between #{minExpDate} and #{maxExpDate} 
 			</if>
-		<if test="allocateUnitCodes != null and allocateUnitCodes == 'PALLET'">
+		<if test="allocateUnitCodes != null and allocateUnitCodes == 'TP'">
 			group by outer_container_id
 		</if>
-		<if test="allocateUnitCodes != null and allocateUnitCodes == 'CONTAINER'">
+		<if test="allocateUnitCodes != null and allocateUnitCodes == 'HX'">
 			group by inside_container_id,exp_date,uuid
 		</if>
 		order by 
@@ -2507,12 +2507,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	
 	<select id="findInventoryUuidByAmount" parameterType="com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand" resultMap="WhSkuInventoryCommandResultExt">
 		select 
-			<if test="allocateUnitCodes != null and allocateUnitCodes == 'PALLET'">
+			<if test="allocateUnitCodes != null and allocateUnitCodes == 'TP'">
 				inv.outer_container_id as outerContainerId, 
 				sum(inv.on_hand_qty) as sumOnHandQty, 
 				GROUP_CONCAT(DISTINCT inv.uuid) as uuid
 			</if>
-			<if test="allocateUnitCodes != null and allocateUnitCodes == 'CONTAINER'">
+			<if test="allocateUnitCodes != null and allocateUnitCodes == 'HX'">
 				inv.inside_container_id as insideContainerId,
 				sum(inv.on_hand_qty) as sumOnHandQty,
 				inv.uuid as uuid
@@ -2536,10 +2536,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			and inv.ou_id = #{ouId}
 			and loc.allocate_area_id = #{areaId}
 			and inv.sku_id = #{skuId}
-			<if test="allocateUnitCodes != null and allocateUnitCodes == 'PALLET'">
+			<if test="allocateUnitCodes != null and allocateUnitCodes == 'TP'">
 				and inv.outer_container_id is not null
 			</if>
-			<if test="allocateUnitCodes != null and allocateUnitCodes == 'CONTAINER'">
+			<if test="allocateUnitCodes != null and allocateUnitCodes == 'HX'">
 				and inv.inside_container_id is not null
 			</if>
 			<if test="storeId != null">
@@ -2584,10 +2584,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<if test="isMixStacking != null and isMixStacking == true">
 				and loc.is_mix_stacking = 1
 			</if>
-		<if test="allocateUnitCodes != null and allocateUnitCodes == 'PALLET'">
+		<if test="allocateUnitCodes != null and allocateUnitCodes == 'TP'">
 			group by outer_container_id
 		</if>
-		<if test="allocateUnitCodes != null and allocateUnitCodes == 'CONTAINER'">
+		<if test="allocateUnitCodes != null and allocateUnitCodes == 'HX'">
 			group by inside_container_id,uuid
 		</if>
 		order by 
