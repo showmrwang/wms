@@ -345,6 +345,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
             String phase = this.getWavePhaseCode(wave.getPhaseCode(), waveTempletId, ouId);
             if (!StringUtils.isEmpty(phase)) {
                 wave.setPhaseCode(phase);
+                wave.setStatus(WaveStatus.WAVE_EXECUTING);
                 int num = this.whWaveDao.saveOrUpdateByVersion(wave);
                 if (1 != num) {
                     throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
