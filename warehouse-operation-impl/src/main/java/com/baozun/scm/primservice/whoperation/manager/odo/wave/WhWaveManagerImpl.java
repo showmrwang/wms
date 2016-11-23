@@ -331,11 +331,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void changeWavePhaseCode(Long waveId, Long ouId) {
-        WhWave wave = new WhWave();
-        wave.setId(waveId);
-        wave.setOuId(ouId);
-        wave.setAllocatePhase(null);
-        wave = this.whWaveDao.findListByParam(wave).get(0);
+        WhWave wave = whWaveDao.findWaveExtByIdAndOuId(waveId, ouId);
         if (null != wave) {
         	// 获取下一个波次阶段
         	WhWaveMaster whWaveMaster = whWaveMasterDao.findByIdExt(wave.getWaveMasterId(), ouId);
