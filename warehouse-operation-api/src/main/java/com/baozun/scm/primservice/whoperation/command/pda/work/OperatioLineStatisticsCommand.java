@@ -2,12 +2,10 @@ package com.baozun.scm.primservice.whoperation.command.pda.work;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
-import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationLineCommand;
 /**
  * 作业明细统计
  * 
@@ -27,19 +25,19 @@ public class OperatioLineStatisticsCommand extends BaseCommand{
     
     //流程相关统计信息 
     /** 是否整托整箱 */
-    private List<WhOperationLineCommand> wholeCaseList;
+    private Boolean isWholeCase;
     /** 所有小车 */
-    private List<WhOperationLineCommand> outerContainerList;
+    private Set<Long> outerContainerList = new HashSet<Long>();
     /** 所有出库箱 */
-    private List<WhOperationLineCommand> outbounxBoxList;
+    private Set<Long> outbounxBoxList = new HashSet<Long>();
     /** 小车货格与出库箱对应关系 */
-    private List<WhOperationLineCommand> childList;
+    private Set<Long> childList = new HashSet<Long>();
     /** 所有周转箱 */
-    private List<WhOperationLineCommand> turnoverBoxList;
+    private Set<Long> turnoverBoxList = new HashSet<Long>();
     /** 所有托盘 */
-    private List<WhOperationLineCommand> palletList;
+    private Set<Long> palletList = new HashSet<Long>();
     /** 所有货箱 */
-    private List<WhOperationLineCommand> containerList;
+    private Set<Long> containerList = new HashSet<Long>();
     
     // 库位商品统计信息 
     /** 所有库位 */
@@ -72,47 +70,47 @@ public class OperatioLineStatisticsCommand extends BaseCommand{
     private Map<Long, Map<Long, Map<Long, Map<Long, Set<Long>>>>> insideSkuAttrIdsContainerLattice;
     
     //columns END
-    
-    public List<WhOperationLineCommand> getWholeCaseList() {
-        return wholeCaseList;
+
+    public Boolean getIsWholeCase() {
+        return isWholeCase;
     }
-    public void setWholeCaseList(List<WhOperationLineCommand> wholeCaseList) {
-        this.wholeCaseList = wholeCaseList;
+    public void setIsWholeCase(Boolean isWholeCase) {
+        this.isWholeCase = isWholeCase;
     }
-    public List<WhOperationLineCommand> getOuterContainerList() {
+    public Set<Long> getOuterContainerList() {
         return outerContainerList;
     }
-    public void setOuterContainerList(List<WhOperationLineCommand> outerContainerList) {
+    public void setOuterContainerList(Set<Long> outerContainerList) {
         this.outerContainerList = outerContainerList;
     }
-    public List<WhOperationLineCommand> getOutbounxBoxList() {
+    public Set<Long> getOutbounxBoxList() {
         return outbounxBoxList;
     }
-    public void setOutbounxBoxList(List<WhOperationLineCommand> outbounxBoxList) {
+    public void setOutbounxBoxList(Set<Long> outbounxBoxList) {
         this.outbounxBoxList = outbounxBoxList;
     }
-    public List<WhOperationLineCommand> getChildList() {
+    public Set<Long> getChildList() {
         return childList;
     }
-    public void setChildList(List<WhOperationLineCommand> childList) {
+    public void setChildList(Set<Long> childList) {
         this.childList = childList;
     }
-    public List<WhOperationLineCommand> getTurnoverBoxList() {
+    public Set<Long> getTurnoverBoxList() {
         return turnoverBoxList;
     }
-    public void setTurnoverBoxList(List<WhOperationLineCommand> turnoverBoxList) {
+    public void setTurnoverBoxList(Set<Long> turnoverBoxList) {
         this.turnoverBoxList = turnoverBoxList;
     }
-    public List<WhOperationLineCommand> getPalletList() {
+    public Set<Long> getPalletList() {
         return palletList;
     }
-    public void setPalletList(List<WhOperationLineCommand> palletList) {
+    public void setPalletList(Set<Long> palletList) {
         this.palletList = palletList;
     }
-    public List<WhOperationLineCommand> getContainerList() {
+    public Set<Long> getContainerList() {
         return containerList;
     }
-    public void setContainerList(List<WhOperationLineCommand> containerList) {
+    public void setContainerList(Set<Long> containerList) {
         this.containerList = containerList;
     }
     public Set<Long> getLocationIdList() {
