@@ -165,11 +165,13 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                     cartonCommand.setIsCaselevel(Constants.BOOLEAN_TRUE);
                     List<WhCartonCommand> cartonList = this.generalRcvdManager.findWhCartonByParamExt(cartonCommand);
                     int quantity = Constants.DEFAULT_INTEGER;
+                    int qtyRcvd = Constants.DEFAULT_INTEGER;
                     for (WhCartonCommand c : cartonList) {
                         quantity += c.getQuantity();
+                        qtyRcvd += c.getQtyRcvd();
                     }
                     cacheManager.setMapObject(CacheKeyConstant.CACHE_ASNLINE_PREFIX + occupationId, asnline.getId().toString(), asnline, 24 * 60 * 60);
-                    int count = asnline.getQtyPlanned().intValue() - asnline.getQtyRcvd().intValue();// 未收货数量
+                    int count = (asnline.getQtyPlanned().intValue() - quantity) - (asnline.getQtyRcvd().intValue() - qtyRcvd);// 未收货数量
                     int overchargeCount = (int) ((asnline.getQtyPlanned().intValue() - quantity) * Double.valueOf(cacheRate) / 100);// 可超收数量
                     cacheManager.setMapObject(CacheKeyConstant.CACHE_ASNLINE_OVERCHARGE_PREFIX + occupationId, asnline.getId().toString(), overchargeCount, 24 * 60 * 60);
                     // 缓存ASN-商品数量

@@ -402,7 +402,7 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
         if(odoLineList!=null&&odoLineList.size()>0){
             //库存状态
             List<InventoryStatus> invStatusList=this.inventoryStatusManager.findAllInventoryStatus();
-            Map<Long,String> invStatusMap=new HashMap<Long,String>();
+            Map<Long, String> invStatusMap = new HashMap<Long, String>();
             // 出库单明细状态
             Set<String> dic1 = new HashSet<String>();
             for(InventoryStatus s:invStatusList){
