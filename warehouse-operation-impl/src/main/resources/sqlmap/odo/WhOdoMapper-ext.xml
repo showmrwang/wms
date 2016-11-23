@@ -325,8 +325,8 @@
 				</foreach>
 			</if>
 			<if test="whVasType!=null">
-				and EXISTS(select 1 from t_wh_odo_vas odovas where odovas.odo_id=odo.id and
-				odovas.wh_vas_type in
+				and EXISTS(select 1 from t_wh_odo_vas odovas inner join t_wh_vas whvas on whvas.id=odovas.wh_vas_type and odovas.vas_type='WH' where odovas.odo_id=odo.id and
+				whvas.type in
 				<foreach collection="whVasType" item="s" open="(" separator=","
 					close=")">
 					#{s}
@@ -1461,8 +1461,8 @@
 				</foreach>
 			</if>
 			<if test="whVasType!=null">
-				and EXISTS(select 1 from t_wh_odo_vas odovas where odovas.odo_id=odo.id and
-				odovas.wh_vas_type in
+				and EXISTS(select 1 from t_wh_odo_vas odovas inner join t_wh_vas whvas on whvas.id=odovas.wh_vas_type and odovas.vas_type='WH' where odovas.odo_id=odo.id and
+				whvas.type in
 				<foreach collection="whVasType" item="s" open="(" separator=","
 					close=")">
 					#{s}
