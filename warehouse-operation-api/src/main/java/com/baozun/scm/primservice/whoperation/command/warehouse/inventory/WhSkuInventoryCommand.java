@@ -18,6 +18,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
+import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdContainerCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdSnCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ShelveRecommendRuleCommand;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionRcvd;
@@ -169,7 +170,8 @@ public class WhSkuInventoryCommand extends BaseCommand {
     private Integer snCount;
     /** 残次累计数量 */
     private Integer snAddUpCount;
-
+    /** 通用收货：容器缓存对象 @mender yimin.lu 2016/11/23 */
+    private RcvdContainerCacheCommand rcvdContainerCache;
     /** 效期天数 */
     @Deprecated
     private Integer dayOfValidDate;
@@ -1001,6 +1003,14 @@ public class WhSkuInventoryCommand extends BaseCommand {
 
     public void setContainerQty(String containerQty) {
         this.containerQty = containerQty;
+    }
+
+    public RcvdContainerCacheCommand getRcvdContainerCache() {
+        return rcvdContainerCache;
+    }
+
+    public void setRcvdContainerCache(RcvdContainerCacheCommand rcvdContainerCache) {
+        this.rcvdContainerCache = rcvdContainerCache;
     }
 
 }
