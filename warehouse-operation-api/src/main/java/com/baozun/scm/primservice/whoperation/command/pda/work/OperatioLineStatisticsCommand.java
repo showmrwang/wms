@@ -21,8 +21,6 @@ public class OperatioLineStatisticsCommand extends BaseCommand{
 
     //columns START
     
-    private Long pickingWay; 
-    
     //流程相关统计信息 
     /** 是否整托整箱 */
     private Boolean isWholeCase;
@@ -71,12 +69,6 @@ public class OperatioLineStatisticsCommand extends BaseCommand{
     
     //columns END
 
-    public Long getPickingWay() {
-        return pickingWay;
-    }
-    public void setPickingWay(Long pickingWay) {
-        this.pickingWay = pickingWay;
-    }
     public Boolean getIsWholeCase() {
         return isWholeCase;
     }

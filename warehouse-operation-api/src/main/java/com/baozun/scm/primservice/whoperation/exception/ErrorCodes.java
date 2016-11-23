@@ -724,7 +724,14 @@ public class ErrorCodes {
     public static final int  NO_SKU_INVENTORY = 70043;
     
     
+    /**推荐小车不能为空*/
+    public static final int  OUT_CONTAINER_IS_NO_NULL = 70044;
     
+    /**推荐出库箱不能为空*/
+    public static final int  OUT_BOUNX_BOX_IS_NO_NULL = 70045;
+    
+    /**推荐周转箱不能为空*/
+    public static final int  TURNOVER_BOX_IS_NO_NULL = 70046;
     
     // 70001-80000 tangming
     

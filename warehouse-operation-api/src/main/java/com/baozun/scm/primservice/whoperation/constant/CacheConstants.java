@@ -68,4 +68,8 @@ public final class CacheConstants {
     public static final String PDA_MAN_MANDE_CONTAINER = "MAN_MANDE_CONTAINER";
     /** 人工上架:容器统计缓存 */
     public static final String PDA_MAN_MANDE_CONTAINER_STATISTIC = "MAN_MANDE_CONTAINER_STATISTIC";
+    
+    //pda拣货
+    /***pda拣货，作业明细统计*/
+    public static final String OPERATIONLINE_STATISTICS = "OPERATIONLINE_STATISTICS";
 }
