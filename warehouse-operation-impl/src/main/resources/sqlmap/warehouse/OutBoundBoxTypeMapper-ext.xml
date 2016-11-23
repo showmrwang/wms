@@ -4,8 +4,8 @@
         "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
 
 
-<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.OutInventoryBoxTypeDao">
-    <resultMap id="OutInventoryBoxTypeResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.OutInventoryBoxType">
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.OutBoundBoxTypeDao">
+    <resultMap id="OutInventoryBoxTypeResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.OutBoundBoxType">
     </resultMap>
 
     <resultMap id="OutCommandResultExt" type="com.baozun.scm.primservice.whoperation.command.warehouse.OutInvBoxTypeCommand">
@@ -194,7 +194,7 @@
         <include refid="outInventoryBoxTypeDynamicWhereExt"/>
     </select>
 
-    <update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.OutInventoryBoxType">
+    <update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.OutBoundBoxType">
            <![CDATA[
             UPDATE t_wh_outboundbox_type SET
                 sku_id = #{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -221,7 +221,7 @@
         ]]>
    </update>
 
-    <select id="findByIdExt" resultType="com.baozun.scm.primservice.whoperation.model.warehouse.OutInventoryBoxType">
+    <select id="findByIdExt" resultType="com.baozun.scm.primservice.whoperation.model.warehouse.OutBoundBoxType">
         select
         <include refid="outInventoryBoxTypeColumnsExt"/>
         from t_wh_outboundbox_type
