@@ -336,14 +336,18 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         wave.setOuId(ouId);
         wave.setAllocatePhase(null);
         wave = this.whWaveDao.findListByParam(wave).get(0);
-
-        // 获取下一个波次阶段
-        WhWaveMaster whWaveMaster = whWaveMasterDao.findByIdExt(wave.getWaveMasterId(), ouId);
-        Long waveTempletId = whWaveMaster.getWaveTemplateId();
-        String phase = this.getWavePhaseCode(wave.getPhaseCode(), waveTempletId, ouId);
-        if (StringUtils.isEmpty(phase)) {
-        	wave.setPhaseCode(phase);
-        	this.whWaveDao.saveOrUpdateByVersion(wave);
+        if (null != wave) {
+        	// 获取下一个波次阶段
+        	WhWaveMaster whWaveMaster = whWaveMasterDao.findByIdExt(wave.getWaveMasterId(), ouId);
+        	Long waveTempletId = whWaveMaster.getWaveTemplateId();
+        	String phase = this.getWavePhaseCode(wave.getPhaseCode(), waveTempletId, ouId);
+        	if (StringUtils.isEmpty(phase)) {
+        		wave.setPhaseCode(phase);
+        		int num = this.whWaveDao.saveOrUpdateByVersion(wave);
+        		if (1 != num) {
+        			throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+				}
+        	}
 		}
     }
 
@@ -424,11 +428,8 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
                         // 释放库存
                         whSkuInventoryManager.releaseInventoryByOdoId(odoId, wh);
                     }
-                    wave.setPhaseCode(phaseCode);
-                    int num = whWaveDao.saveOrUpdateByVersion(wave);
-                    if (1 != num) {
-                        throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-                    }
+                    // 波次进入到下个阶段
+                    changeWavePhaseCode(waveId, ouId);
                 }
             } else {
                 // 剔除库存数量没有分配完全所有工作单
@@ -438,11 +439,8 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
                     // 释放库存
                     whSkuInventoryManager.releaseInventoryByOdoId(odoId, wh);
                 }
-                wave.setPhaseCode(phaseCode);
-                int num = whWaveDao.saveOrUpdateByVersion(wave);
-                if (1 != num) {
-                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-                }
+                // 波次进入到下个阶段
+                changeWavePhaseCode(waveId, ouId);
             }
         }
         // 回写odoLine的分配数量
@@ -520,5 +518,18 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         List<Long> WaveIds = whWaveDao.getNeedPickingWorkWhWave(WaveStatus.WAVE_EXECUTING, WavePhase.CREATE_WORK, ouId);
         return WaveIds;
     }
+
+	@Override
+	public String getNextParseCode(Long waveId, Long ouId) {
+		WhWave wave = new WhWave();
+        wave.setId(waveId);
+        wave.setOuId(ouId);
+        wave.setAllocatePhase(null);
+        wave = this.whWaveDao.findListByParam(wave).get(0);
+        WhWaveMaster whWaveMaster = whWaveMasterDao.findByIdExt(wave.getWaveMasterId(), ouId);
+        Long waveTempletId = whWaveMaster.getWaveTemplateId();
+        String phaseCode = this.getWavePhaseCode(wave.getPhaseCode(), waveTempletId, ouId);
+		return phaseCode;
+	}
 
 }

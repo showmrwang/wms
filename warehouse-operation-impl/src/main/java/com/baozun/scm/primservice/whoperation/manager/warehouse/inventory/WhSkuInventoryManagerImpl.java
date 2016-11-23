@@ -51,6 +51,7 @@ import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
+import com.baozun.scm.primservice.whoperation.constant.WavePhase;
 import com.baozun.scm.primservice.whoperation.constant.WhPutawayPatternDetailType;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
@@ -64,11 +65,14 @@ import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseInventoryManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.odo.wave.WhWaveLineManager;
+import com.baozun.scm.primservice.whoperation.manager.odo.wave.WhWaveManager;
 import com.baozun.scm.primservice.whoperation.manager.pda.inbound.cache.PdaPutawayCacheManager;
 import com.baozun.scm.primservice.whoperation.manager.pda.inbound.putaway.SkuCategoryProvider;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WarehouseManager;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
+import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine;
+import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveMaster;
 import com.baozun.scm.primservice.whoperation.model.warehouse.AllocateStrategy;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Location;
@@ -115,6 +119,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     private WhWaveLineManager whWaveLineManager;
     @Autowired
     private WhOdoDao whOdoDao;
+    @Autowired
+    private WhWaveManager whWaveManager;
     /**
      * 库位绑定（分配容器库存及生成待移入库位库存）
      * 
@@ -2953,6 +2959,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 		Boolean isStaticLocation = false;
 		Set<String> staticLocationIds = new HashSet<String>();
 		Long areaId = null;
+		Map<Long, Boolean> replenishedMap = new HashMap<Long, Boolean>();
 		for (AllocateStrategy as : rules) {
 			List<String> allocateUnitCodes = Arrays.asList(as.getAllocateUnitCodes().split(","));	// 分配单位
 			if (Constants.ALLOCATE_STRATEGY_STATICLOCATIONCANASSIGNMENT.equals(as.getStrategyCode())) {
@@ -2976,6 +2983,21 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 					Boolean isExpirationSku = skuDao.checkIsExpirationSku(line.getSkuId(), line.getOuId());
 					if (isExpirationSku == null || !isExpirationSku) {
 						break;
+					}
+				}
+				// 静态库位超分配判断是否有补货阶段, 没有补货阶段跳过
+				if (Constants.ALLOCATE_STRATEGY_STATICLOCATIONCANASSIGNMENT.equals(as.getStrategyCode())) {
+					Boolean flag = replenishedMap.get(line.getWaveId());
+					if (null == flag) {
+						String phaseCode = whWaveManager.getNextParseCode(line.getWaveId(), line.getOuId());
+						if (!WavePhase.REPLENISHED.equals(phaseCode)) {
+							replenishedMap.put(line.getWaveId(), false);
+							continue;
+						} else {
+							replenishedMap.put(line.getWaveId(), true);
+						}
+					} else if (!flag) {
+						continue;
 					}
 				}
 				skuCommand.setSkuId(line.getSkuId());

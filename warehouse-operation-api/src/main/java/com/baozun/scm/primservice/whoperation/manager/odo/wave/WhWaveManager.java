@@ -184,4 +184,12 @@ public interface WhWaveManager extends BaseManager {
      */
     public List<Long> getNeedPickingWorkWhWave(Long ouId);
     
+    /**
+     * [通用方法] 获取波次下一阶段的code
+     * @param waveId
+     * @param ouId
+     * @return
+     */
+    public String getNextParseCode(Long waveId, Long ouId);
+    
 }
