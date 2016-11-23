@@ -1843,8 +1843,11 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
             if (RcvdWorkFlow.GENERAL_RECEIVING_ISSERIALNUMBER == nextOpt) {}// 序列号不用提示
         }
         // @mender yimin.lu 初始化容器缓存
-        if (command.getRcvdContainerCache() != null) {
-            this.cacheManager.setObject(CacheKeyConstant.CACHE_RCVD_CONTAINER_PREFIX + command.getInsideContainerId() + "$" + command.getSkuId(), command.getRcvdContainerCache());
+        if (command.getRcvdSkuContainerCache() != null) {
+            this.cacheManager.setObject(CacheKeyConstant.CACHE_RCVD_CONTAINER_PREFIX + command.getInsideContainerId() + "$" + command.getSkuId(), command.getRcvdSkuContainerCache());
+        }
+        if (command.getRcvdUserContainerCache() != null) {
+            this.cacheManager.setObject(CacheKeyConstant.CACHE_RCVD_CONTAINER_USER_PREFIX + command.getInsideContainerId(), command.getRcvdUserContainerCache());
         }
         return command;
     }
@@ -2114,8 +2117,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
         cacheContainer.setSkuIdSet(skuIdSet);
         cacheContainer.setIsMixAttr(true);
         cacheContainer.setMixAttr(mgmt.getMixAttr());
-        this.cacheManager.setObject(CacheKeyConstant.CACHE_RCVD_CONTAINER_USER_PREFIX + insideContainerId, cacheContainer);
-
+        command.setRcvdUserContainerCache(cacheContainer);
 
         // @mender yimin.lu 2016/11/14
         // 如果容器需要初始化容器限定属性缓存
@@ -2230,7 +2232,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                 rcvdContainerCacheCommand.setUserId(command.getUserId());
                 rcvdContainerCacheCommand.setOuId(ouId);
 
-                command.setRcvdContainerCache(rcvdContainerCacheCommand);
+                command.setRcvdSkuContainerCache(rcvdContainerCacheCommand);
                 // @mender yimin.lu 2016/11/23 放到流程最后进行
                 // this.cacheManager.setObject(CacheKeyConstant.CACHE_RCVD_CONTAINER_PREFIX +
                 // insideContainerId + "$" + skuId, rcvdContainerCacheCommand);
