@@ -9,7 +9,7 @@ public interface PdaPickingWorkCacheManager extends BaseManager{
      * @param operatorId
      * @return
      */
-    public Long pdaPickingWorkTipOutContainer(Long operatorId);
+    public String pdaPickingWorkTipOutContainer(Long operatorId,Long ouId);
     
     
     /***
@@ -17,12 +17,12 @@ public interface PdaPickingWorkCacheManager extends BaseManager{
      * @param operatorId
      * @return
      */
-    public Long pdaPickingWorkTipoutbounxBox(Long operatorId);
+    public String pdaPickingWorkTipoutboundBox(Long operatorId,Long ouId);
     
     /**
      * 提示周转箱
      * @param operatorId
      * @return
      */
-    public Long pdaPickingWorkTipOutBound(Long operatorId);
+    public String pdaPickingWorkTipTurnoverBox(Long operatorId,Long ouId);
 }

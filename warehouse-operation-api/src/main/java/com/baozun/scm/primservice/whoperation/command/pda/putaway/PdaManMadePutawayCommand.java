@@ -81,76 +81,67 @@ public class PdaManMadePutawayCommand extends BaseCommand {
     
     private Boolean isInboundLocationBarcode;    //上架是否启用校验码false：否 true：是 
     /** 是否需要扫商品属性 */
-    private boolean isNeedSkuDetail;   //默认false,相同sku不存在不同库存属性数据,true时,相同su存在不同的库存属性
+    private Boolean isNeedSkuDetail;   //默认false,相同sku不存在不同库存属性数据,true时,相同su存在不同的库存属性
     /** 是否需要扫商品的库存类型 */
-    private boolean isNeedScanSkuInvType = false;
+    private Boolean isNeedScanSkuInvType = false;
     /** 提示商品库存类型 */
     private String skuInvType = "";
     /** 是否需要扫商品的库存状态 */
-    private boolean isNeedScanSkuInvStatus = false;
+    private Boolean isNeedScanSkuInvStatus = false;
     /** 提示商品库存状态 */
     private String skuInvStatus = "";
     /**是否需要扫描批次号*/
-    private boolean isNeedScanBatchNumber = false;
+    private Boolean isNeedScanBatchNumber = false;
     /**批次号*/
     private String batchNumber;
     /**是否需要扫描原产地*/
-    private boolean isNeedScanOrigin = false;   //是否需要扫描原产地
+    private Boolean isNeedScanOrigin = false;   //是否需要扫描原产地
    /**sku原产地*/
     private String skuOrigin;
     /** 是否需要扫商品的生产日期 */
-    private boolean isNeedScanSkuMfgDate = false;
+    private Boolean isNeedScanSkuMfgDate = false;
     /** 提示商品生产日期 */
     private Date skuMfgDate;
     /** 是否需要扫商品过期日期 */
-    private boolean isNeedScanSkuExpDate = false;
+    private Boolean isNeedScanSkuExpDate = false;
     /** 提示商品过期日期 */
     private Date skuExpDate;
     /** 是否需要扫商品库存属性1 */
-    private boolean isNeedScanSkuInvAttr1 = false;
+    private Boolean isNeedScanSkuInvAttr1 = false;
     /** 提示商品库存属性1 */
     private String skuInvAttr1 = "";
     /** 是否需要扫商品库存属性2 */
-    private boolean isNeedScanSkuInvAttr2 = false;
+    private Boolean isNeedScanSkuInvAttr2 = false;
     /** 提示商品库存属性2 */
     private String skuInvAttr2 = "";
     /** 是否需要扫商品库存属性3 */
-    private boolean isNeedScanSkuInvAttr3 = false;
+    private Boolean isNeedScanSkuInvAttr3 = false;
     /** 提示商品库存属性3 */
     private String skuInvAttr3;
     /** 是否需要扫商品库存属性4 */
-    private boolean isNeedScanSkuInvAttr4 = false;
+    private Boolean isNeedScanSkuInvAttr4 = false;
     /** 提示商品库存属性4 */
     private String skuInvAttr4 = "";
     /** 是否需要扫商品库存属性5 */
-    private boolean isNeedScanSkuInvAttr5 = false;
+    private Boolean isNeedScanSkuInvAttr5 = false;
     /** 提示商品库存属性5 */
     private String skuInvAttr5 = "";
     /** 是否需要扫描Sn */
-    private boolean isNeedScanSkuSn;
+    private Boolean isNeedScanSn;
     /**是否需要扫残次信息*/
-    private boolean isNeedScanSkuDefect;
+    private Boolean isNeedScanDefect;
     /**sku条码*/
     private String skuBarCode; 
     
     private Double scanSkuQty;
     
-    private boolean isScanSkuSnDefect = false;  //是否需要扫描商品的sn/残次信息
+    private Boolean isScanSkuSnDefect = false;  //是否需要扫描商品的sn/残次信息
     
     private String skuSnCode;   //sn/残次信息
     
     private String skuDefectCode;   //sku残次信息
     
     private Long skuId;
-    
-
-    public Boolean getIsOuterContainer() {
-        return isOuterContainer;
-    }
-
-    public void setIsOuterContainer(Boolean isOuterContainer) {
-        this.isOuterContainer = isOuterContainer;
-    }
 
     public Long getOuId() {
         return ouId;
@@ -176,13 +167,21 @@ public class PdaManMadePutawayCommand extends BaseCommand {
         this.containerCode = containerCode;
     }
 
-//    public Long getContainerId() {
-//        return containerId;
-//    }
-//
-//    public void setContainerId(Long containerId) {
-//        this.containerId = containerId;
-//    }
+    public String getTrackContainerCode() {
+        return trackContainerCode;
+    }
+
+    public void setTrackContainerCode(String trackContainerCode) {
+        this.trackContainerCode = trackContainerCode;
+    }
+
+    public Boolean getIsOuterContainer() {
+        return isOuterContainer;
+    }
+
+    public void setIsOuterContainer(Boolean isOuterContainer) {
+        this.isOuterContainer = isOuterContainer;
+    }
 
     public Long getFunctionId() {
         return functionId;
@@ -190,18 +189,6 @@ public class PdaManMadePutawayCommand extends BaseCommand {
 
     public void setFunctionId(Long functionId) {
         this.functionId = functionId;
-    }
-
-    public Integer getScanPattern() {
-        return scanPattern;
-    }
-
-    public void setScanPattern(Integer scanPattern) {
-        this.scanPattern = scanPattern;
-    }
-
-    public void setBarCode(String barCode) {
-        this.barCode = barCode;
     }
 
     public Long getLocationId() {
@@ -216,53 +203,8 @@ public class PdaManMadePutawayCommand extends BaseCommand {
         return barCode;
     }
 
-    public String getInsideContainerCode() {
-        return insideContainerCode;
-    }
-
-    public void setInsideContainerCode(String insideContainerCode) {
-        this.insideContainerCode = insideContainerCode;
-    }
-
-
-    public Boolean getPutway() {
-        return putway;
-    }
-
-    public void setPutway(Boolean putway) {
-        this.putway = putway;
-    }
-
-    public Boolean getIsNeedScanSku() {
-        return isNeedScanSku;
-    }
-
-    public void setIsNeedScanSku(Boolean isNeedScanSku) {
-        this.isNeedScanSku = isNeedScanSku;
-    }
-
-    public Boolean getIsNeedScanContainer() {
-        return isNeedScanContainer;
-    }
-
-    public void setIsNeedScanContainer(Boolean isNeedScanContainer) {
-        this.isNeedScanContainer = isNeedScanContainer;
-    }
-
-    public String getTipContainerCode() {
-        return tipContainerCode;
-    }
-
-    public void setTipContainerCode(String tipContainerCode) {
-        this.tipContainerCode = tipContainerCode;
-    }
-
-    public Boolean getIsInboundLocationBarcode() {
-        return isInboundLocationBarcode;
-    }
-
-    public void setIsInboundLocationBarcode(Boolean isInboundLocationBarcode) {
-        this.isInboundLocationBarcode = isInboundLocationBarcode;
+    public void setBarCode(String barCode) {
+        this.barCode = barCode;
     }
 
     public String getLocationCode() {
@@ -273,12 +215,12 @@ public class PdaManMadePutawayCommand extends BaseCommand {
         this.locationCode = locationCode;
     }
 
-    public Integer getPutawayPatternDetailType() {
-        return putawayPatternDetailType;
+    public String getInsideContainerCode() {
+        return insideContainerCode;
     }
 
-    public void setPutawayPatternDetailType(Integer putawayPatternDetailType) {
-        this.putawayPatternDetailType = putawayPatternDetailType;
+    public void setInsideContainerCode(String insideContainerCode) {
+        this.insideContainerCode = insideContainerCode;
     }
 
     public String getOuterContainerCode() {
@@ -289,19 +231,123 @@ public class PdaManMadePutawayCommand extends BaseCommand {
         this.outerContainerCode = outerContainerCode;
     }
 
-    public boolean isNeedSkuDetail() {
+    public Integer getScanPattern() {
+        return scanPattern;
+    }
+
+    public void setScanPattern(Integer scanPattern) {
+        this.scanPattern = scanPattern;
+    }
+
+    public Integer getPutawayPatternDetailType() {
+        return putawayPatternDetailType;
+    }
+
+    public void setPutawayPatternDetailType(Integer putawayPatternDetailType) {
+        this.putawayPatternDetailType = putawayPatternDetailType;
+    }
+
+    public Boolean getIsTrackVessel() {
+        return isTrackVessel;
+    }
+
+    public void setIsTrackVessel(Boolean isTrackVessel) {
+        this.isTrackVessel = isTrackVessel;
+    }
+
+    public Boolean getIsScanTrackContainer() {
+        return isScanTrackContainer;
+    }
+
+    public void setIsScanTrackContainer(Boolean isScanTrackContainer) {
+        this.isScanTrackContainer = isScanTrackContainer;
+    }
+
+    public Boolean getPutway() {
+        return putway;
+    }
+
+    public void setPutway(Boolean putway) {
+        this.putway = putway;
+    }
+
+    public Boolean getIsNeedScanContainer() {
+        return isNeedScanContainer;
+    }
+
+    public void setIsNeedScanContainer(Boolean isNeedScanContainer) {
+        this.isNeedScanContainer = isNeedScanContainer;
+    }
+
+    public Boolean getIsAfterPutawayContainer() {
+        return isAfterPutawayContainer;
+    }
+
+    public void setIsAfterPutawayContainer(Boolean isAfterPutawayContainer) {
+        this.isAfterPutawayContainer = isAfterPutawayContainer;
+    }
+
+    public Boolean getIsAfterPutawaySku() {
+        return isAfterPutawaySku;
+    }
+
+    public void setIsAfterPutawaySku(Boolean isAfterPutawaySku) {
+        this.isAfterPutawaySku = isAfterPutawaySku;
+    }
+
+    public Boolean getIsNeedScanSku() {
+        return isNeedScanSku;
+    }
+
+    public void setIsNeedScanSku(Boolean isNeedScanSku) {
+        this.isNeedScanSku = isNeedScanSku;
+    }
+
+    public String getTipContainerCode() {
+        return tipContainerCode;
+    }
+
+    public void setTipContainerCode(String tipContainerCode) {
+        this.tipContainerCode = tipContainerCode;
+    }
+
+    public Boolean getIsScanOuterContainer() {
+        return isScanOuterContainer;
+    }
+
+    public void setIsScanOuterContainer(Boolean isScanOuterContainer) {
+        this.isScanOuterContainer = isScanOuterContainer;
+    }
+
+    public Boolean getIsTipInsideContainer() {
+        return isTipInsideContainer;
+    }
+
+    public void setIsTipInsideContainer(Boolean isTipInsideContainer) {
+        this.isTipInsideContainer = isTipInsideContainer;
+    }
+
+    public Boolean getIsInboundLocationBarcode() {
+        return isInboundLocationBarcode;
+    }
+
+    public void setIsInboundLocationBarcode(Boolean isInboundLocationBarcode) {
+        this.isInboundLocationBarcode = isInboundLocationBarcode;
+    }
+
+    public Boolean getIsNeedSkuDetail() {
         return isNeedSkuDetail;
     }
 
-    public void setNeedSkuDetail(boolean isNeedSkuDetail) {
+    public void setIsNeedSkuDetail(Boolean isNeedSkuDetail) {
         this.isNeedSkuDetail = isNeedSkuDetail;
     }
 
-    public boolean isNeedScanSkuInvType() {
+    public Boolean getIsNeedScanSkuInvType() {
         return isNeedScanSkuInvType;
     }
 
-    public void setNeedScanSkuInvType(boolean isNeedScanSkuInvType) {
+    public void setIsNeedScanSkuInvType(Boolean isNeedScanSkuInvType) {
         this.isNeedScanSkuInvType = isNeedScanSkuInvType;
     }
 
@@ -313,11 +359,11 @@ public class PdaManMadePutawayCommand extends BaseCommand {
         this.skuInvType = skuInvType;
     }
 
-    public boolean isNeedScanSkuInvStatus() {
+    public Boolean getIsNeedScanSkuInvStatus() {
         return isNeedScanSkuInvStatus;
     }
 
-    public void setNeedScanSkuInvStatus(boolean isNeedScanSkuInvStatus) {
+    public void setIsNeedScanSkuInvStatus(Boolean isNeedScanSkuInvStatus) {
         this.isNeedScanSkuInvStatus = isNeedScanSkuInvStatus;
     }
 
@@ -329,11 +375,11 @@ public class PdaManMadePutawayCommand extends BaseCommand {
         this.skuInvStatus = skuInvStatus;
     }
 
-    public boolean isNeedScanBatchNumber() {
+    public Boolean getIsNeedScanBatchNumber() {
         return isNeedScanBatchNumber;
     }
 
-    public void setNeedScanBatchNumber(boolean isNeedScanBatchNumber) {
+    public void setIsNeedScanBatchNumber(Boolean isNeedScanBatchNumber) {
         this.isNeedScanBatchNumber = isNeedScanBatchNumber;
     }
 
@@ -345,11 +391,11 @@ public class PdaManMadePutawayCommand extends BaseCommand {
         this.batchNumber = batchNumber;
     }
 
-    public boolean isNeedScanOrigin() {
+    public Boolean getIsNeedScanOrigin() {
         return isNeedScanOrigin;
     }
 
-    public void setNeedScanOrigin(boolean isNeedScanOrigin) {
+    public void setIsNeedScanOrigin(Boolean isNeedScanOrigin) {
         this.isNeedScanOrigin = isNeedScanOrigin;
     }
 
@@ -361,11 +407,11 @@ public class PdaManMadePutawayCommand extends BaseCommand {
         this.skuOrigin = skuOrigin;
     }
 
-    public boolean isNeedScanSkuMfgDate() {
+    public Boolean getIsNeedScanSkuMfgDate() {
         return isNeedScanSkuMfgDate;
     }
 
-    public void setNeedScanSkuMfgDate(boolean isNeedScanSkuMfgDate) {
+    public void setIsNeedScanSkuMfgDate(Boolean isNeedScanSkuMfgDate) {
         this.isNeedScanSkuMfgDate = isNeedScanSkuMfgDate;
     }
 
@@ -377,6 +423,14 @@ public class PdaManMadePutawayCommand extends BaseCommand {
         this.skuMfgDate = skuMfgDate;
     }
 
+    public Boolean getIsNeedScanSkuExpDate() {
+        return isNeedScanSkuExpDate;
+    }
+
+    public void setIsNeedScanSkuExpDate(Boolean isNeedScanSkuExpDate) {
+        this.isNeedScanSkuExpDate = isNeedScanSkuExpDate;
+    }
+
     public Date getSkuExpDate() {
         return skuExpDate;
     }
@@ -385,19 +439,11 @@ public class PdaManMadePutawayCommand extends BaseCommand {
         this.skuExpDate = skuExpDate;
     }
 
-    public boolean isNeedScanSkuExpDate() {
-        return isNeedScanSkuExpDate;
-    }
-
-    public void setNeedScanSkuExpDate(boolean isNeedScanSkuExpDate) {
-        this.isNeedScanSkuExpDate = isNeedScanSkuExpDate;
-    }
-
-    public boolean isNeedScanSkuInvAttr1() {
+    public Boolean getIsNeedScanSkuInvAttr1() {
         return isNeedScanSkuInvAttr1;
     }
 
-    public void setNeedScanSkuInvAttr1(boolean isNeedScanSkuInvAttr1) {
+    public void setIsNeedScanSkuInvAttr1(Boolean isNeedScanSkuInvAttr1) {
         this.isNeedScanSkuInvAttr1 = isNeedScanSkuInvAttr1;
     }
 
@@ -409,11 +455,11 @@ public class PdaManMadePutawayCommand extends BaseCommand {
         this.skuInvAttr1 = skuInvAttr1;
     }
 
-    public boolean isNeedScanSkuInvAttr2() {
+    public Boolean getIsNeedScanSkuInvAttr2() {
         return isNeedScanSkuInvAttr2;
     }
 
-    public void setNeedScanSkuInvAttr2(boolean isNeedScanSkuInvAttr2) {
+    public void setIsNeedScanSkuInvAttr2(Boolean isNeedScanSkuInvAttr2) {
         this.isNeedScanSkuInvAttr2 = isNeedScanSkuInvAttr2;
     }
 
@@ -425,11 +471,11 @@ public class PdaManMadePutawayCommand extends BaseCommand {
         this.skuInvAttr2 = skuInvAttr2;
     }
 
-    public boolean isNeedScanSkuInvAttr3() {
+    public Boolean getIsNeedScanSkuInvAttr3() {
         return isNeedScanSkuInvAttr3;
     }
 
-    public void setNeedScanSkuInvAttr3(boolean isNeedScanSkuInvAttr3) {
+    public void setIsNeedScanSkuInvAttr3(Boolean isNeedScanSkuInvAttr3) {
         this.isNeedScanSkuInvAttr3 = isNeedScanSkuInvAttr3;
     }
 
@@ -441,11 +487,11 @@ public class PdaManMadePutawayCommand extends BaseCommand {
         this.skuInvAttr3 = skuInvAttr3;
     }
 
-    public boolean isNeedScanSkuInvAttr4() {
+    public Boolean getIsNeedScanSkuInvAttr4() {
         return isNeedScanSkuInvAttr4;
     }
 
-    public void setNeedScanSkuInvAttr4(boolean isNeedScanSkuInvAttr4) {
+    public void setIsNeedScanSkuInvAttr4(Boolean isNeedScanSkuInvAttr4) {
         this.isNeedScanSkuInvAttr4 = isNeedScanSkuInvAttr4;
     }
 
@@ -457,11 +503,11 @@ public class PdaManMadePutawayCommand extends BaseCommand {
         this.skuInvAttr4 = skuInvAttr4;
     }
 
-    public boolean isNeedScanSkuInvAttr5() {
+    public Boolean getIsNeedScanSkuInvAttr5() {
         return isNeedScanSkuInvAttr5;
     }
 
-    public void setNeedScanSkuInvAttr5(boolean isNeedScanSkuInvAttr5) {
+    public void setIsNeedScanSkuInvAttr5(Boolean isNeedScanSkuInvAttr5) {
         this.isNeedScanSkuInvAttr5 = isNeedScanSkuInvAttr5;
     }
 
@@ -473,20 +519,20 @@ public class PdaManMadePutawayCommand extends BaseCommand {
         this.skuInvAttr5 = skuInvAttr5;
     }
 
-    public boolean isNeedScanSkuSn() {
-        return isNeedScanSkuSn;
+    public Boolean getIsNeedScanSn() {
+        return isNeedScanSn;
     }
 
-    public void setNeedScanSkuSn(boolean isNeedScanSkuSn) {
-        this.isNeedScanSkuSn = isNeedScanSkuSn;
+    public void setIsNeedScanSn(Boolean isNeedScanSn) {
+        this.isNeedScanSn = isNeedScanSn;
     }
 
-    public boolean isNeedScanSkuDefect() {
-        return isNeedScanSkuDefect;
+    public Boolean getIsNeedScanDefect() {
+        return isNeedScanDefect;
     }
 
-    public void setNeedScanSkuDefect(boolean isNeedScanSkuDefect) {
-        this.isNeedScanSkuDefect = isNeedScanSkuDefect;
+    public void setIsNeedScanDefect(Boolean isNeedScanDefect) {
+        this.isNeedScanDefect = isNeedScanDefect;
     }
 
     public String getSkuBarCode() {
@@ -505,11 +551,11 @@ public class PdaManMadePutawayCommand extends BaseCommand {
         this.scanSkuQty = scanSkuQty;
     }
 
-    public boolean isScanSkuSnDefect() {
+    public Boolean getIsScanSkuSnDefect() {
         return isScanSkuSnDefect;
     }
 
-    public void setScanSkuSnDefect(boolean isScanSkuSnDefect) {
+    public void setIsScanSkuSnDefect(Boolean isScanSkuSnDefect) {
         this.isScanSkuSnDefect = isScanSkuSnDefect;
     }
 
@@ -529,62 +575,6 @@ public class PdaManMadePutawayCommand extends BaseCommand {
         this.skuDefectCode = skuDefectCode;
     }
 
-    public Boolean getIsTrackVessel() {
-        return isTrackVessel;
-    }
-
-    public void setIsTrackVessel(Boolean isTrackVessel) {
-        this.isTrackVessel = isTrackVessel;
-    }
-
-    public String getTrackContainerCode() {
-        return trackContainerCode;
-    }
-
-    public void setTrackContainerCode(String trackContainerCode) {
-        this.trackContainerCode = trackContainerCode;
-    }
-
-    public Boolean getIsScanOuterContainer() {
-        return isScanOuterContainer;
-    }
-
-    public void setIsScanOuterContainer(Boolean isScanOuterContainer) {
-        this.isScanOuterContainer = isScanOuterContainer;
-    }
-
-    public Boolean getIsTipInsideContainer() {
-        return isTipInsideContainer;
-    }
-
-    public void setIsTipInsideContainer(Boolean isTipInsideContainer) {
-        this.isTipInsideContainer = isTipInsideContainer;
-    }
-
-    public Boolean getIsAfterPutawayContainer() {
-        return isAfterPutawayContainer;
-    }
-
-    public void setIsAfterPutawayContainer(Boolean isAfterPutawayContainer) {
-        this.isAfterPutawayContainer = isAfterPutawayContainer;
-    }
-
-    public Boolean getIsAfterPutawaySku() {
-        return isAfterPutawaySku;
-    }
-
-    public void setIsAfterPutawaySku(Boolean isAfterPutawaySku) {
-        this.isAfterPutawaySku = isAfterPutawaySku;
-    }
-
-    public Boolean getIsScanTrackContainer() {
-        return isScanTrackContainer;
-    }
-
-    public void setIsScanTrackContainer(Boolean isScanTrackContainer) {
-        this.isScanTrackContainer = isScanTrackContainer;
-    }
-
     public Long getSkuId() {
         return skuId;
     }
@@ -592,6 +582,12 @@ public class PdaManMadePutawayCommand extends BaseCommand {
     public void setSkuId(Long skuId) {
         this.skuId = skuId;
     }
+    
+
+    
+    
+
+  
     
 }
 

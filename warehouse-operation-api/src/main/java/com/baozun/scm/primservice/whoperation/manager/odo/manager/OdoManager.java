@@ -208,4 +208,6 @@ public interface OdoManager extends BaseManager {
 
     void finishCreateOdo(WhOdo odo, List<WhOdoLine> lineList);
 
+    int updateByVersion(WhOdo odo);
+
 }

@@ -2,60 +2,44 @@ package com.baozun.scm.primservice.whoperation.command.pda.work;
 
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
 
-public class PickingScanResultCommand extends BaseCommand{
+public class PickingScanResultCommand extends BaseCommand {
 
     /**
      * 
      */
     private static final long serialVersionUID = 5696756957904723061L;
-    
+
     /**
      * 提示外部容器号(小车,外部容器)
      */
-    private String tipOuterContainerCode;
-    
-    /** 提示内部容器号(周转箱)*/
-    private String tipInsideContainerCode;
-    /**提示出库箱号*/
+    private String tipOuterContainer;
+    /** 外部容器号(小车,外部容器) */
+    private String outerContainerCode;
+
+    /** 提示出库箱号 */
     private String tipOutBoundCode;
-    
+    /** 出库箱号 */
+    private String outBoundCode;
+    /** 作业id */
     private Long operatorId;
     
-    private Boolean isRemmendContainer = true;   //是否是推荐容器拣货,true是推荐容器拣货,false是整箱整托拣货   , 默认推荐容器拣货
-    
-
-    /**外部容器号(外部容器，小车)*/
-    private String outerContainerCode;
-    
-    /**内部容器号(周转箱，内部容器)*/
+    private Long functionId;
+    /** 提示周转箱 */
+    private String tipTurnoverBoxCode;
+    /** 周转箱 */
+    private String turnoverBoxCode;
+    private Boolean isRemmendContainer = true; // 是否是推荐容器拣货,true是推荐容器拣货,false是整箱整托拣货 , 默认推荐容器拣货
+    /**是否扫描库位*/
+    private Boolean isScanLocation;
+   
+    /** 内部容器号 */
     private String insideContainerCode;
-    
-    /**出库箱号*/
-    private String outBoundCode;
-    /**仓库id*/
+
+  
+    /** 仓库id */
     private Long ouId;
-    
+
     private Integer pickingWay;
-
-    public String getTipOuterContainerCode() {
-        return tipOuterContainerCode;
-    }
-
-
-    public void setTipOuterContainerCode(String tipOuterContainerCode) {
-        this.tipOuterContainerCode = tipOuterContainerCode;
-    }
-
-
-    public String getTipInsideContainerCode() {
-        return tipInsideContainerCode;
-    }
-
-
-    public void setTipInsideContainerCode(String tipInsideContainerCode) {
-        this.tipInsideContainerCode = tipInsideContainerCode;
-    }
-
 
     public String getTipOutBoundCode() {
         return tipOutBoundCode;
@@ -136,7 +120,57 @@ public class PickingScanResultCommand extends BaseCommand{
         this.pickingWay = pickingWay;
     }
 
+
+    public String getTurnoverBoxCode() {
+        return turnoverBoxCode;
+    }
+
+
+    public void setTurnoverBoxCode(String turnoverBoxCode) {
+        this.turnoverBoxCode = turnoverBoxCode;
+    }
+
+
+    public String getTipTurnoverBoxCode() {
+        return tipTurnoverBoxCode;
+    }
+
+
+    public void setTipTurnoverBoxCode(String tipTurnoverBoxCode) {
+        this.tipTurnoverBoxCode = tipTurnoverBoxCode;
+    }
+
+
+    public Long getFunctionId() {
+        return functionId;
+    }
+
+
+    public void setFunctionId(Long functionId) {
+        this.functionId = functionId;
+    }
+
+
+    public String getTipOuterContainer() {
+        return tipOuterContainer;
+    }
+
+
+    public void setTipOuterContainer(String tipOuterContainer) {
+        this.tipOuterContainer = tipOuterContainer;
+    }
+
+
+    public Boolean getIsScanLocation() {
+        return isScanLocation;
+    }
+
+
+    public void setIsScanLocation(Boolean isScanLocation) {
+        this.isScanLocation = isScanLocation;
+    }
+
     
-    
-    
+
+
 }

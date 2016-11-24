@@ -610,4 +610,10 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
 
     }
 
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public int updateByVersion(WhOdo odo) {
+        return this.whOdoDao.saveOrUpdateByVersion(odo);
+    }
+
 }
