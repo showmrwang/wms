@@ -65,6 +65,7 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.InventoryStatus;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
 import com.baozun.scm.primservice.whoperation.model.warehouse.StoreDefectReasons;
 import com.baozun.scm.primservice.whoperation.model.warehouse.StoreDefectType;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Uom;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhAsnRcvdSnLog;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionRcvd;
@@ -502,7 +503,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
 
                         sysDictionaryList.put(Constants.INVENTORY_TYPE, Arrays.asList(cacheInv.getInvType()));
                     }
-                    Map<String, SysDictionary> dicMap = this.findSysDictionaryByRedis(sysDictionaryList);
+                    Map<String, SysDictionary> dicMap = this.generalRcvdManager.findSysDictionaryByRedisExt(sysDictionaryList);
                     if (StringUtils.hasText(cacheInv.getInvType())) {
                         SysDictionary dic = dicMap.get(Constants.INVENTORY_TYPE + "_" + cacheInv.getInvType());
                         asnRcvdLog.setInvType(dic == null ? cacheInv.getInvType() : dic.getDicLabel());
@@ -685,11 +686,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
         }
     }
 
-    /**
-     * 将数据推送到缓存
-     */
-    @Override
-    public void cacheScanedSkuWhenGeneralRcvd(WhSkuInventoryCommand command) {
+    private void cacheScanedSkuWhenGeneralRcvd(WhSkuInventoryCommand command, List<RcvdSnCacheCommand> cacheSn) {
         // 逻辑:
         // 将数据按照格式放到缓存中：RcvdCacheCommand
         /**
@@ -703,7 +700,6 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
         Long occupationId = command.getOccupationId();
         Long skuId = command.getSkuId();
         String userId = command.getUserId().toString();
-        List<RcvdSnCacheCommand> cacheSn = this.cacheManager.getObject(CacheKeyConstant.CACHE_RCVD_SN_PREFIX + command.getUserId());
         // 先占用可用库存
         List<String> lineIdStrList = Arrays.asList(command.getLineIdListString().split(","));
         for (String lineIdStr : lineIdStrList) {
@@ -832,6 +828,15 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
         this.cacheManager.remove(CacheKeyConstant.CACHE_RCVD_SN_PREFIX + command.getUserId());
         // 初始化容器商品库存属性缓存
         this.cacheContainerSkuAttr(command);
+    }
+
+    /**
+     * 将数据推送到缓存
+     */
+    @Override
+    public void cacheScanedSkuWhenGeneralRcvd(WhSkuInventoryCommand command) {
+        List<RcvdSnCacheCommand> cacheSn = this.cacheManager.getObject(CacheKeyConstant.CACHE_RCVD_SN_PREFIX + command.getUserId());
+        this.cacheScanedSkuWhenGeneralRcvd(command, cacheSn);
     }
 
     private RcvdCacheCommand initRcvdCacheCommand(WhSkuInventoryCommand command) {
@@ -1481,7 +1486,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
     }
 
     @Override
-    public void cacheScanedSkuSnWhenGeneralRcvd(WhSkuInventoryCommand command, Integer snCount) {
+    public void cacheScanedSkuSnWhenGeneralRcvd(WhSkuInventoryCommand command, Integer snCount, boolean isCacheSkuSn) {
         // 逻辑：
         // 1.管理序列号的时候，snCount为1；
         // 2.管理序列号时候，需要获得他的序列号管理类型
@@ -1517,8 +1522,13 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
             cacheSn.add(newSn);
         }
 
-        this.cacheManager.setObject(CacheKeyConstant.CACHE_RCVD_SN_PREFIX + command.getUserId(), cacheSn, 60 * 60);
+        if (isCacheSkuSn) {
+            this.cacheScanedSkuWhenGeneralRcvd(command, cacheSn);
+        } else {
+            this.cacheManager.setObject(CacheKeyConstant.CACHE_RCVD_SN_PREFIX + command.getUserId(), cacheSn);
+        }
         this.cacheContainerSkuAttr(command);
+
     }
 
     /**
@@ -2080,9 +2090,11 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
         if (null != mgmt.getValidDate()) {
             int day = mgmt.getValidDate();
             if (Constants.TIME_UOM_YEAR.equals(mgmt.getGoodShelfLifeUnit())) {
-                day = day * 365;
+                Uom uom = this.generalRcvdManager.findUomByCode(Constants.TIME_UOM_YEAR, Constants.TIME_UOM);
+                day = (int) (day * uom.getConversionRate());
             } else if (Constants.TIME_UOM_MONTH.equals(mgmt.getGoodShelfLifeUnit())) {
-                day = day * 30;
+                Uom uom = this.generalRcvdManager.findUomByCode(Constants.TIME_UOM_MONTH, Constants.TIME_UOM);
+                day = (int) (day * uom.getConversionRate());
             }
             // 效期
             command.setDayOfValidDate(day);

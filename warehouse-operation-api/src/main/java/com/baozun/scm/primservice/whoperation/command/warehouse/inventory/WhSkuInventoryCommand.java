@@ -198,8 +198,6 @@ public class WhSkuInventoryCommand extends BaseCommand {
     /** 是否允许差异收货 */
     private Boolean isInvattrDiscrepancyAllowrcvd;
 
-
-
     public String getMixAttr() {
         return mixAttr;
     }

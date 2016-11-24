@@ -52,6 +52,7 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerAssistDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.StoreDefectReasonsDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.StoreDefectTypeDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.UomDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhAsnRcvdLogDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhAsnRcvdSnLogDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhFunctionRcvdDao;
@@ -78,6 +79,7 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container2ndCategory;
 import com.baozun.scm.primservice.whoperation.model.warehouse.StoreDefectReasons;
 import com.baozun.scm.primservice.whoperation.model.warehouse.StoreDefectType;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Uom;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhAsnRcvdLog;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhAsnRcvdSnLog;
@@ -149,6 +151,8 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
     private WhSkuInventorySnLogDao whSkuInventorySnLogDao;
     @Autowired
     private CacheManager cacheManager;
+    @Autowired
+    private UomDao uomDao;
 
     @Override
     @Deprecated
@@ -923,5 +927,17 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<Long> findSkuIdListFromInventory(Long insideContainerId, Long ouId) {
         return this.whSkuInventoryDao.findSkuIdListFromInventory(insideContainerId, ouId);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_GLOBALSOURCE)
+    public Uom findUomByCode(String code, String groupCode) {
+        return this.uomDao.findUomByParam(code, groupCode);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_GLOBALSOURCE)
+    public Map<String, SysDictionary> findSysDictionaryByRedisExt(Map<String, List<String>> sysDictionaryList) {
+        return this.findSysDictionaryByRedis(sysDictionaryList);
     }
 }

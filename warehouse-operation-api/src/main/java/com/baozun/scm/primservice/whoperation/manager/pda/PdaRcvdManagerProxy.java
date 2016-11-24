@@ -51,8 +51,9 @@ public interface PdaRcvdManagerProxy extends BaseManager {
      * 
      * @param command
      * @param snCount
+     * @param isCacheSkuSn
      */
-    void cacheScanedSkuSnWhenGeneralRcvd(WhSkuInventoryCommand command, Integer snCount);
+    void cacheScanedSkuSnWhenGeneralRcvd(WhSkuInventoryCommand command, Integer snCount, boolean isCacheSkuSn);
 
     /**
      * 从库存中初始化缓存；校验容器的可用性
