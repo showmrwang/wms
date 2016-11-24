@@ -29,6 +29,7 @@ import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.wave.WhWaveLineManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.wave.WhWaveManager;
 import com.baozun.scm.primservice.whoperation.manager.rule.RuleManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.WarehouseManager;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
@@ -39,6 +40,8 @@ import com.baozun.scm.primservice.whoperation.model.sku.Sku;
 
 @Service("waveDistributionModeManagerProxy")
 public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implements WaveDistributionModeManagerProxy {
+    @Autowired
+    private WarehouseManager warehouseManager;
     @Autowired
     private CacheManager cacheManager;
     @Autowired
@@ -440,6 +443,167 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
         wave.setTotalSkuQty(totalSkuQty);
         wave.setSkuCategoryQty(skuCategoryQty);
     }
+
+
+    @Override
+    public Map<String, List<Long>> getSecKillOdoList(Long ouId) {
+        List<String> keys = this.cacheManager.Keys(CacheKeyConstant.SECKILL_ODO_PREFIX + ouId + "|*");
+        Map<String,List<Long>> map=new HashMap<String,List<Long>>();
+        if(keys!=null&&keys.size()>0){
+            for(String key:keys){
+                String[] keyArray=key.split("%");
+                String[] codeOdoIdArray = keyArray[2].split("\\|");
+                String code = codeOdoIdArray[0] + "|" + codeOdoIdArray[1] + "|" + codeOdoIdArray[2] + "|" + codeOdoIdArray[3];
+                Long odoId = Long.parseLong(codeOdoIdArray[4]);
+                if (map.containsKey(code)) {
+                    map.get(code).add(odoId);
+                } else {
+                    List<Long> odoIdList = new ArrayList<Long>();
+                    odoIdList.add(odoId);
+                    map.put(code, odoIdList);
+                }
+            }
+        }
+        return map;
+    }
+
+
+    @Override
+    public void initSecKillDistributionMode(String code, Long ouId, List<Long> odoIdList, String distributeMode) {
+        try {
+            String[] codeArray = code.split("\\|");
+            Long skuId = Long.parseLong(codeArray[3]);
+            Sku sku = this.odoManager.findSkuByIdToShard(skuId, ouId);
+            String skuCode = sku.getCode();
+            for (Long odoId : odoIdList) {
+                WhOdo odo = this.odoManager.findOdoByIdOuId(odoId, ouId);
+                odo.setDistributeMode(distributeMode);
+                odo.setDistributionCode(skuCode);
+                int count = this.odoManager.updateByVersion(odo);
+                // 更新失败，则再试一次
+                if (count <= 0) {
+                    odo = this.odoManager.findOdoByIdOuId(odoId, ouId);
+                    count = this.odoManager.updateByVersion(odo);
+                }
+                if (count > 0) {
+                    this.cacheManager.remove(CacheKeyConstant.SECKILL_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + odoId);
+                }
+            }
+        } catch (Exception e) {
+
+        }
+    }
+
+
+    @Override
+    public Map<String, List<Long>> getSuitsOdoList(Long ouId) {
+        List<String> keys = this.cacheManager.Keys(CacheKeyConstant.SUITS_ODO_PREFIX + ouId + "|*");
+        Map<String, List<Long>> map = new HashMap<String, List<Long>>();
+        if (keys != null && keys.size() > 0) {
+            for (String key : keys) {
+                String[] keyArray = key.split("%");
+                String[] codeOdoIdArray = keyArray[2].split("\\|");
+                String code = codeOdoIdArray[0] + "|" + codeOdoIdArray[1] + "|" + codeOdoIdArray[2] + "|" + codeOdoIdArray[3];
+                Long odoId = Long.parseLong(codeOdoIdArray[4]);
+                if (map.containsKey(code)) {
+                    map.get(code).add(odoId);
+                } else {
+                    List<Long> odoIdList = new ArrayList<Long>();
+                    odoIdList.add(odoId);
+                    map.put(code, odoIdList);
+                }
+            }
+        }
+        return map;
+    }
+
+
+    @Override
+    public void initSuitsDistributionMode(String code, Long ouId, List<Long> odoIdList, String distributeMode) {
+        try {
+            String[] codeArray = code.split("\\|");
+            String[] skuIdArray = codeArray[3].substring(1, codeArray[3].length() - 1).split("\\$");
+            String skuCode = "";
+            for (int i = 0; i < skuIdArray.length; i++) {
+                Sku sku = this.odoManager.findSkuByIdToShard(Long.parseLong(skuIdArray[i]), ouId);
+                if (i < skuIdArray.length - 1) {
+
+                    skuCode += sku.getCode() + ",";
+                } else {
+                    skuCode += sku.getCode();
+                }
+            }
+
+            for (Long odoId : odoIdList) {
+                WhOdo odo = this.odoManager.findOdoByIdOuId(odoId, ouId);
+                odo.setDistributeMode(distributeMode);
+                odo.setDistributionCode(skuCode);
+                int count = this.odoManager.updateByVersion(odo);
+                // 更新失败，则再试一次
+                if (count <= 0) {
+                    odo = this.odoManager.findOdoByIdOuId(odoId, ouId);
+                    count = this.odoManager.updateByVersion(odo);
+                }
+                if (count > 0) {
+                    this.cacheManager.remove(CacheKeyConstant.SUITS_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + odoId);
+                }
+            }
+        } catch (Exception e) {
+
+        }
+
+    }
+
+
+    @Override
+    public Map<String, List<Long>> getTwoSuitsOdoList(Long ouId) {
+        List<String> keys = this.cacheManager.Keys(CacheKeyConstant.TWOSKUSUIT_ODO_PREFIX + ouId + "|*");
+        Map<String, List<Long>> map = new HashMap<String, List<Long>>();
+        if (keys != null && keys.size() > 0) {
+            for (String key : keys) {
+                String[] keyArray = key.split("%");
+                String[] codeOdoIdArray = keyArray[2].split("\\|");
+                String code = codeOdoIdArray[0] + "|" + codeOdoIdArray[1] + "|" + codeOdoIdArray[2] + "|" + codeOdoIdArray[3];
+                Long odoId = Long.parseLong(codeOdoIdArray[4]);
+                if (map.containsKey(code)) {
+                    map.get(code).add(odoId);
+                } else {
+                    List<Long> odoIdList = new ArrayList<Long>();
+                    odoIdList.add(odoId);
+                    map.put(code, odoIdList);
+                }
+            }
+        }
+        return map;
+    }
+
+
+    @Override
+    public void initTwoSuitsDistributionMode(String code, Long ouId, List<Long> odoIdList, String distributeMode) {
+        try {
+            String[] codeArray = code.split("\\|");
+            Long skuId = Long.parseLong(codeArray[3]);
+            Sku sku = this.odoManager.findSkuByIdToShard(skuId, ouId);
+            String skuCode = sku.getCode();
+            for (Long odoId : odoIdList) {
+                WhOdo odo = this.odoManager.findOdoByIdOuId(odoId, ouId);
+                odo.setDistributeMode(distributeMode);
+                odo.setDistributionCode(skuCode);
+                int count = this.odoManager.updateByVersion(odo);
+                // 更新失败，则再试一次
+                if (count <= 0) {
+                    odo = this.odoManager.findOdoByIdOuId(odoId, ouId);
+                    count = this.odoManager.updateByVersion(odo);
+                }
+                if (count > 0) {
+                    this.cacheManager.remove(CacheKeyConstant.SUITS_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + odoId);
+                }
+            }
+        } catch (Exception e) {
+
+        }
+    }
+
 
 
 }
