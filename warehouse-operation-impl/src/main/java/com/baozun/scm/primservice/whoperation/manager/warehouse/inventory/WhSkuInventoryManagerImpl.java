@@ -2967,6 +2967,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 		// 记录整箱占用库位ids
 		Set<String> packingCaseIds = new HashSet<String>();
 		Long areaId = null;
+		Long waveLineId = null;
 		Map<Long, Boolean> replenishedMap = new HashMap<Long, Boolean>();
 		for (AllocateStrategy as : rules) {
 			List<String> allocateUnitCodes = Arrays.asList(as.getAllocateUnitCodes().split(","));	// 分配单位
@@ -2982,8 +2983,18 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 			WhSkuInventoryCommand skuCommand = new WhSkuInventoryCommand();
 			for (int j = 0; j < notHaveInvAttrLines.size(); j++) {
 				WhWaveLine line = notHaveInvAttrLines.get(j);
+				waveLineId = line.getId();
 				if (line.getQty().equals(line.getAllocateQty())) {
 					continue;
+				}
+				// 不同的明细行清空上次记录的整托整箱占用库位ids
+				if (!line.getId().equals(waveLineId)) {
+					if (!trayIds.isEmpty()) {
+						trayIds.clear();
+					}
+					if (!packingCaseIds.isEmpty()) {
+						packingCaseIds.clear();
+					}
 				}
 				// 先到期先出,先到期后出验证是否是有效期商品
 				if (Constants.ALLOCATE_STRATEGY_FIRSTEXPIRATIONFIRSTOUT.equals(as.getStrategyCode())
@@ -3008,6 +3019,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 						continue;
 					}
 				}
+				// 封装查询库存条件
 				skuCommand.setSkuId(line.getSkuId());
 				skuCommand.setStoreId(line.getStoreId());
 				skuCommand.setInvStatus(line.getInvStatus());
@@ -3574,7 +3586,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     				}
     			}
     		if (-1 == new Double(0.0).compareTo(occupyQty)) {
-    			log.info("replenishmentToLines is error, replenishment qty is not enough, occupyQty:[{}], waveId:[{}], odoId:[{}], ouId:[{}], logId:[{}]");
+    			log.info("replenishmentToLines is error, replenishment qty is not enough, occupyQty:[{}], waveId:[{}], odoId:[{}], skuId:[{}], ouId:[{}], logId:[{}]", occupyQty, line.getWaveId(), line.getOdoId(), skuId, ouId, logId);
     			throw new BusinessException(0);
     		}
 		}
