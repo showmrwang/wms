@@ -3188,6 +3188,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 			// 数量最佳计算
 			return bestMatchSkuInvs(skuInvs, qty);
 		} else if (Constants.ALLOCATE_UNIT_PIECE.equals(whSkuInventoryCommand.getAllocateUnitCodes())) {
+			whSkuInventoryCommand.setPriority(Boolean.FALSE);
 			skuInvs = whSkuInventoryDao.findInventoryByAmount(whSkuInventoryCommand);
 		}
 		return skuInvs;
@@ -3326,7 +3327,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
 	public void replenishmentToLines(List<WhWaveLine> lines, String bhCode, Map<String, ReplenishmentRuleCommand> ruleMap, Map<String, String> map, Warehouse wh) {
     	Long ouId = wh.getId();
-    	Map<String, String> tempMap = map;
+    	// tempMap用来存储这一组明细优化数据, 当这一组明细全部补货成功之后再回传给map
+    	Map<String, String> tempMap = new HashMap<String, String>();
+    	tempMap.putAll(map);
     	for (WhWaveLine line : lines) {
     		Long skuId = line.getSkuId();
 			Long areaId = line.getAreaId();
@@ -3399,12 +3402,17 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     		FLAG :
     			for (ReplenishmentStrategyCommand rsc : replenishmentStrategyList) {
     				// 匹配补货数据优化条件中得到  从开始补货策略ID开始匹配
-    				if (null != startRepStrategy && Integer.parseInt(rsc.getStrategyCode()) < Integer.parseInt(startRepStrategy)) {
+    				if (StringUtils.hasText(startRepStrategy) && Integer.parseInt(rsc.getStrategyCode()) < Integer.parseInt(startRepStrategy)) {
     					continue;
 					}
     				if (StringUtils.isEmpty(rsc.getAllocateUnitCodes())) {
     					continue;
     				}
+    				// 不支持静态库位超分配和空库位策略
+    				if (Constants.ALLOCATE_STRATEGY_STATICLOCATIONCANASSIGNMENT.equals(rsc.getStrategyCode())
+    						|| Constants.ALLOCATE_STRATEGY_EMPTYLOCATION.equals(rsc.getStrategyCode())) {
+    					continue;
+					}
     				// 先到期先出,先到期后出验证是否是有效期商品
     				if (Constants.ALLOCATE_STRATEGY_FIRSTEXPIRATIONFIRSTOUT.equals(rsc.getStrategyCode())
     						|| Constants.ALLOCATE_STRATEGY_FIRSTEXPIRATIONLASTOUT.equals(rsc.getStrategyCode())) {
@@ -3457,7 +3465,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     												createSkuInventoryAllocatedAndTobefilled(invCommand, occupyCode, bhCode, occupyLineId, targetLocation, wh, occupyQty, GLOBAL_LOG_UPDATE);
     												invCommand.setOnHandQty(invCommand.getOnHandQty() - occupyQty);
     												createSkuInventoryAllocatedAndTobefilled(invCommand, null, bhCode, null, targetLocation, wh, occupyQty, GLOBAL_LOG_DELETE);
-    												moreQty += invCommand.getOnHandQty() - occupyQty;
+    												moreQty += invCommand.getOnHandQty();
     												occupyQty = 0.0;
     											}
     										}
@@ -3526,7 +3534,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     												createSkuInventoryAllocatedAndTobefilled(invCommand, occupyCode, bhCode, occupyLineId, targetLocation, wh, occupyQty, GLOBAL_LOG_UPDATE);
     												invCommand.setOnHandQty(invCommand.getOnHandQty() - occupyQty);
     												createSkuInventoryAllocatedAndTobefilled(invCommand, null, bhCode, null, targetLocation, wh, occupyQty, GLOBAL_LOG_DELETE);
-    												moreQty += invCommand.getOnHandQty() - occupyQty;
+    												moreQty += invCommand.getOnHandQty();
     												occupyQty = 0.0;
     											}
     										}
@@ -3590,7 +3598,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     			throw new BusinessException(0);
     		}
 		}
-    	map = tempMap;
+    	map.clear();
+    	map.putAll(tempMap);
 	}
 
     private void createSkuInventoryAllocatedAndTobefilled(WhSkuInventoryCommand invCommand, String occupyCode, String bhCode, Long occupyLineId, Long locationId, Warehouse wh, Double qty, String type) {

@@ -156,6 +156,39 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
 	</sql>
 	
+	<update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryTobefilled">
+	    <![CDATA[
+	        UPDATE t_wh_sku_inventory_tobefilled SET
+		        sku_id = #{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        location_id = #{locationId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        outer_container_id = #{outerContainerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        inside_container_id = #{insideContainerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        customer_id = #{customerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        store_id = #{storeId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        occupation_code = #{occupationCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        occupation_line_id = #{occupationLineId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        replenishment_code = #{replenishmentCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        qty = #{qty,javaType=Double,jdbcType=DECIMAL} ,
+		        inv_status = #{invStatus,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        inv_type = #{invType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        batch_number = #{batchNumber,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        mfg_date = #{mfgDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        exp_date = #{expDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        country_of_origin = #{countryOfOrigin,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        inv_attr1 = #{invAttr1,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        inv_attr2 = #{invAttr2,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        inv_attr3 = #{invAttr3,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        inv_attr4 = #{invAttr4,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        inv_attr5 = #{invAttr5,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        uuid = #{uuid,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} 
+	        WHERE 
+		        id = #{id} 
+			    and ou_id = #{ouId}
+		        and last_modify_time	=  #{lastModifyTime}
+	    ]]>
+		</update>
+	
 	<select id="findNotOccupyListBySkuIdAndBhCode" resultMap="WhSkuInventoryTobefilledResultExt">
 		select 
 			<include refid="whSkuInventoryTobefilledColumnsExt"/> 
