@@ -2451,7 +2451,6 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         Long containerId = null;
         String containerCode = null;
         Long insideContainerId = null;
-        Long skuId = invSkuCmd.getSkuId();
         if (null != containerCmd) {
                 containerId = containerCmd.getId();
             containerCode = containerCmd.getCode();
@@ -2465,6 +2464,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             boolean isTV = true;// 是否跟踪容器
             boolean isBM = true;// 是否批次管理
             boolean isVM = true;// 是否管理效期
+            Long skuId = invSkuCmd.getSkuId();
             Location loc = locationDao.findByIdExt(locationId, ouId);
             if (null == loc) {
                 log.error("location is null error, locationCode is:[{}], logId is:[{}]", locationId, logId);
