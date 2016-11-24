@@ -30,12 +30,18 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
 
     @Autowired
     private PdaPickingWorkCacheManager  pdaPickingWorkCacheManager;
-    
+    @Autowired
     private ContainerDao containerDao;
     @Autowired
     private OutBoundBoxTypeDao outBoundBoxTypeDao;
     
-    
+    /**
+     * pda拣货推荐容器
+     * @author tangming
+     * @param command
+     * @param pickingWay
+     * @return
+     */
     @Override
     public PickingScanResultCommand  pdaPickingRemmendContainer(PickingScanResultCommand  command) {
         log.info("PdaPickingWorkManagerImpl pdaPickingRemmendContainer is start");
@@ -45,39 +51,38 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         Integer pickingWay = command.getPickingWay();
         pSRcmd.setOperatorId(operatorId);
         if(pickingWay == Constants.PICKING_WAY_ONE) { //使用外部容器(小车) 无出库箱拣货流程
-            Long tipOuterContainerId = pdaPickingWorkCacheManager.pdaPickingWorkTipOutContainer(operatorId);
-            Container c = containerDao.findByIdExt(tipOuterContainerId, ouId);
-            if(null == c) {
-                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
-            }
-            pSRcmd.setTipOuterContainerCode(c.getCode());  //提示小车
+            String tipOuterContainer = pdaPickingWorkCacheManager.pdaPickingWorkTipOutContainer(operatorId,ouId);
+            pSRcmd.setTipOuterContainer(tipOuterContainer);  //提示小车
         }
         if(pickingWay == Constants.PICKING_WAY_TWO) { //使用外部(小车)，有出库箱拣货流程
-            Long tipOuterContainerId = pdaPickingWorkCacheManager.pdaPickingWorkTipOutContainer(operatorId);
-            Container c = containerDao.findByIdExt(tipOuterContainerId, ouId);
-            if(null == c) {
-                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
-            }
-            pSRcmd.setTipOuterContainerCode(c.getCode());  //提示小车
+            String tipOuterContainer = pdaPickingWorkCacheManager.pdaPickingWorkTipOutContainer(operatorId,ouId);
+            pSRcmd.setTipOuterContainer(tipOuterContainer);  //提示小车
         }
         if(pickingWay == Constants.PICKING_WAY_THREE) { //使用出库箱拣货流程
-            Long tipOuterContainerId = pdaPickingWorkCacheManager.pdaPickingWorkTipoutbounxBox(operatorId);
-            Container c = containerDao.findByIdExt(tipOuterContainerId, ouId);
-            if(null == c) {
-                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
-            }
-            pSRcmd.setTipOuterContainerCode(c.getCode());  //提示出库箱
+            String tipOutBoundBox = pdaPickingWorkCacheManager.pdaPickingWorkTipoutboundBox(operatorId,ouId);
+            pSRcmd.setOutBoundCode(tipOutBoundBox);
         }
         if(pickingWay == Constants.PICKING_WAY_FOUR) {  //使用周转箱拣货流程
-            Long tipOutBoundId = pdaPickingWorkCacheManager.pdaPickingWorkTipOutBound(operatorId);
-            OutBoundBoxType o = outBoundBoxTypeDao.findByIdExt(tipOutBoundId, ouId);
-            if(null == o) {
-                throw new BusinessException(ErrorCodes.OUT_BOUNX_BOX_IS_NO_NULL );
-            }
-            pSRcmd.setTipOutBoundCode(o.getCode());  //提示周转箱
+            String turnoverBox = pdaPickingWorkCacheManager.pdaPickingWorkTipTurnoverBox(operatorId,ouId);
+            pSRcmd.setTipTurnoverBoxCode(turnoverBox);
         }
         log.info("PdaPickingWorkManagerImpl pdaPickingRemmendContainer is end");
         return pSRcmd;
+    }
+
+
+    /***
+     * 循环扫描排序后的库位
+     * @author tangming
+     * @param command
+     * @return
+     */
+    @Override
+    public PickingScanResultCommand loopScanLocation(PickingScanResultCommand command) {
+        // TODO Auto-generated method stub
+        log.info("PdaPickingWorkManagerImpl loopScanLocation is start");
+        log.info("PdaPickingWorkManagerImpl loopScanLocation is start");
+        return null;
     }
 
     

@@ -726,12 +726,14 @@ public class ErrorCodes {
     
     /**推荐小车不能为空*/
     public static final int  OUT_CONTAINER_IS_NO_NULL = 70044;
-    
     /**推荐出库箱不能为空*/
     public static final int  OUT_BOUNX_BOX_IS_NO_NULL = 70045;
-    
     /**推荐周转箱不能为空*/
     public static final int  TURNOVER_BOX_IS_NO_NULL = 70046;
+    /**推荐小车状态不可用*/
+    public static final int OUT_CONTAINER_IS_NOT_NORMAL = 70047;
+    /**推荐小车状态不可用*/
+    public static final int OUT_BOUNDBOX_IS_NOT_NORMAL = 70048;
     
     // 70001-80000 tangming
     
