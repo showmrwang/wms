@@ -453,4 +453,19 @@ public final class Constants {
     public static final Integer PICKING_WAY_THREE = 3;
     /**使用周转箱拣货流程*/
     public static final Integer PICKING_WAY_FOUR = 4;
+    /**整托拣货流程*/
+    public static final Integer PICKING_WAY_FIVE  = 5;
+    /**整箱拣货流程*/
+    public static final Integer PICKING_WAY_SIX = 6;
+    
+    /**仅占用托盘内商品*/
+    public static final Integer INV_OCCUPY_MODE_ONE = 1;
+    /**仅占用货箱内商品*/
+    public static final Integer INV_OCCUPY_MODE_TWO = 2;
+    /**仅占用库位上散件商品*/
+    public static final Integer INV_OCCUPY_MODE_THREE = 3;
+    /**混合占用*/
+    public static final Integer INV_OCCUPY_MODE_FOUR = 4;
+    
+    
 }

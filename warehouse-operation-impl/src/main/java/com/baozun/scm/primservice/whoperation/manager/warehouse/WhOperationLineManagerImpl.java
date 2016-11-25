@@ -1,5 +1,7 @@
 package com.baozun.scm.primservice.whoperation.manager.warehouse;
 
+import java.util.List;
+
 import lark.common.annotation.MoreDB;
 
 import org.slf4j.Logger;
@@ -38,6 +40,13 @@ public class WhOperationLineManagerImpl extends BaseManagerImpl implements WhOpe
             whOperationLineDao.insert(whOperationLine);
         }
         return null;
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<WhOperationLineCommand> findOperationLineByOperationId(Long operationId, Long ouId) {
+        List<WhOperationLineCommand> operationLineList = whOperationLineDao.findOperationLineByOperationId(operationId, ouId);
+        return operationLineList;
     }
     
     

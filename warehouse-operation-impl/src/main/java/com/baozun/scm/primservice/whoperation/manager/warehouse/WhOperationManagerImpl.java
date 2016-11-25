@@ -46,5 +46,12 @@ public class WhOperationManagerImpl extends BaseManagerImpl implements WhOperati
         WhOperationCommand whOperationCommand = this.whOperationDao.findOperationByCode(operationCode, ouId);
         return whOperationCommand;
     }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public WhOperationCommand findOperationByWorkId(Long workId, Long ouId) {
+        WhOperationCommand whOperationCommand = this.whOperationDao.findOperationCommandById(workId, ouId);
+        return whOperationCommand;
+    }
     
 }

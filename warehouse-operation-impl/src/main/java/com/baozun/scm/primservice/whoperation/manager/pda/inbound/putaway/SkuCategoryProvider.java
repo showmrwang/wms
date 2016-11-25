@@ -18,6 +18,7 @@ import java.text.SimpleDateFormat;
 
 import org.springframework.util.StringUtils;
 
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 
 /**
@@ -62,6 +63,22 @@ public final class SkuCategoryProvider {
         // ret = skuId + DV + invType + DV + invStatus + DV + batchNumber + DV + mfgDate + DV +
         // expDate + DV + countryOfOrigin + DV + invAttr1 + DV + invAttr2 + DV + invAttr3 + DV +
         // invAttr4 + DV + invAttr5;
+        ret = skuId + DV + invType + DV + invStatus + DV + mfgDate + DV + expDate + DV + invAttr1 + DV + invAttr2 + DV + invAttr3 + DV + invAttr4 + DV + invAttr5;
+        return ret;
+    }
+    
+    public static String getSkuAttrIdByOperationLine(WhOperationLineCommand opeCmd) {
+        String ret = "";
+        Long skuId = opeCmd.getSkuId();
+        String invType = (StringUtils.isEmpty(opeCmd.getInvType()) ? PH : opeCmd.getInvType());
+        String invStatus = (StringUtils.isEmpty(opeCmd.getInvStatus()) ? PH : opeCmd.getInvStatus() + "");
+        String mfgDate = (StringUtils.isEmpty(opeCmd.getMfgDate()) ? PH : new SimpleDateFormat("yyyyMMddHHmmss").format(opeCmd.getMfgDate()));
+        String expDate = (StringUtils.isEmpty(opeCmd.getExpDate()) ? PH : new SimpleDateFormat("yyyyMMddHHmmss").format(opeCmd.getExpDate()));
+        String invAttr1 = (StringUtils.isEmpty(opeCmd.getInvAttr1()) ? PH : opeCmd.getInvAttr1());
+        String invAttr2 = (StringUtils.isEmpty(opeCmd.getInvAttr2()) ? PH : opeCmd.getInvAttr2());
+        String invAttr3 = (StringUtils.isEmpty(opeCmd.getInvAttr3()) ? PH : opeCmd.getInvAttr3());
+        String invAttr4 = (StringUtils.isEmpty(opeCmd.getInvAttr4()) ? PH : opeCmd.getInvAttr4());
+        String invAttr5 = (StringUtils.isEmpty(opeCmd.getInvAttr5()) ? PH : opeCmd.getInvAttr5());
         ret = skuId + DV + invType + DV + invStatus + DV + mfgDate + DV + expDate + DV + invAttr1 + DV + invAttr2 + DV + invAttr3 + DV + invAttr4 + DV + invAttr5;
         return ret;
     }

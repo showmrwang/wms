@@ -18,6 +18,7 @@ package com.baozun.scm.primservice.whoperation.manager.warehouse;
 
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhWork;
 
 
 public interface WhWorkManager extends BaseManager{
@@ -36,5 +37,13 @@ public interface WhWorkManager extends BaseManager{
      * @return
      */
     WhWorkCommand findWorkByWorkCode(String code, Long ouId);
+    
+    /**
+     * [通用方法] 根据id和ouId查找工作头信息
+     * @param id
+     * @param ouId
+     * @return
+     */
+    WhWork findWorkByWorkId(Long id);
 
 }
