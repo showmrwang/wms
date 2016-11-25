@@ -138,16 +138,17 @@ public class WhWaveLineManagerImpl extends BaseManagerImpl implements WhWaveLine
 		long lineCount = whWaveLineDao.findListCountByParam(line);
 		if (lineCount == 0) {
 			whWaveDao.deleteByIdOuId(waveId, ouId);
-			log.info("波次(id:{})下没有明细数据,删除这一波次", waveId);
+			log.info("waveId:{} not have lines,delete", waveId);
 		}
 	}
 
 	@Override
 	@MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-	public void updateWaveLineByAllocateQty(Long invId, Double allocateQty, Double containerQty, Boolean isStaticLocation, Set<String> staticLocationIds, Set<String> trayIds, Set<String> packingCaseIds, Long areaId, Long ouId) {
-		WhWaveLine whWaveLine = whWaveLineDao.findWhWaveLineById(invId, ouId);
+	public void updateWaveLineByAllocateQty(Long id, Double allocateQty, Double containerQty, Boolean isStaticLocation, Set<String> staticLocationIds, Set<String> trayIds, Set<String> packingCaseIds, Long areaId, Long ouId, String logId) {
+		WhWaveLine whWaveLine = whWaveLineDao.findWhWaveLineById(id, ouId);
 		Double oldAllocateQty = null == whWaveLine.getAllocateQty() ? 0.0 : whWaveLine.getAllocateQty();
-		whWaveLine.setAllocateQty(allocateQty + oldAllocateQty);
+		Double newAllocateQty = allocateQty + oldAllocateQty;
+		whWaveLine.setAllocateQty(newAllocateQty);
 		if (-1 == new Double(0.0).compareTo(containerQty)) {
 			whWaveLine.setIsPalletContainer(Boolean.TRUE);
 			Double oldPalletContainerQty = null == whWaveLine.getPalletContainerQty() ? 0.0 : whWaveLine.getPalletContainerQty();
@@ -163,8 +164,11 @@ public class WhWaveLineManagerImpl extends BaseManagerImpl implements WhWaveLine
 		if (!packingCaseIds.isEmpty()) {
 			whWaveLine.setTrayIds(StringUtils.collectionToCommaDelimitedString(packingCaseIds));
 		}
-		whWaveLine.setAreaId(areaId);
+		if (null != areaId) {
+			whWaveLine.setAreaId(areaId);
+		}
 		whWaveLineDao.saveOrUpdateByVersion(whWaveLine);
+		log.info("update whwaveLineId:[{}], allocateQty:[{}], logId:[{}]", id, newAllocateQty, logId);
 	}
 
 	@Override
