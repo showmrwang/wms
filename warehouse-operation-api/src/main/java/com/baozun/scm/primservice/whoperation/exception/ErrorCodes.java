@@ -659,6 +659,8 @@ public class ErrorCodes {
     public static final int CASELEVEL_PO_LINE_UPDATE_ERROR = 60078;
     /** PO更新失败 */
     public static final int CASELEVEL_PO_UPDATE_ERROR = 60079;
+    /** 批量创建残次条码数量错误 */
+    public static final int CASELEVEL_BATCH_NUM_SN_DEFECT_WARE_BARCODE_ERROR = 60080;
 
     // 60001-70000 xiemingwei
 

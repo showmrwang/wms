@@ -645,6 +645,22 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
     }
 
     /**
+     * @author mingwei.xie
+     * @return
+     */
+    @Override
+    public List<String> generateDefectWareBarcodeList(Integer snCount) {
+        if(null == snCount || snCount <= 0){
+            throw new BusinessException(ErrorCodes.CASELEVEL_BATCH_NUM_SN_DEFECT_WARE_BARCODE_ERROR);
+        }
+        List<String> defectWareBarcodeList = this.codeManager.generateCodeList(Constants.WMS, Constants.INVENTORY_DEFECT_WARE_BARCODE, null, null, null, snCount).toArray();
+        if (null == defectWareBarcodeList || defectWareBarcodeList.isEmpty()) {
+            throw new BusinessException(ErrorCodes.CASELEVEL_SN_DEFECT_WARE_BARCODE_ERROR);
+        }
+        return defectWareBarcodeList;
+    }
+
+    /**
      * 扫描的SN号是否存在
      *
      * @author mingwei.xie
