@@ -939,7 +939,7 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
             //如果已经上架的sku和将要上架的sku有关键库存属性相同的则不能上架
             for (WhSkuInventory cSkuInv : whskuList) {
                 for (WhSkuInventory locSkuInv : locationSkuList) {
-                    if (cSkuInv.getSkuId() == locSkuInv.getSkuId()) {
+                    if (cSkuInv.getSkuId().equals(locSkuInv.getSkuId()) ) {
                         if (Constants.INV_ATTR_TYPE.equals(attr)) { // 库存类型
                             if(this.compaterTo(cSkuInv.getInvType(), locSkuInv.getInvType())) {
                                 // 库位,容器内sku商品关键库存属性参数不相同,不能整托/整箱/拆箱上架
@@ -2219,72 +2219,84 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
      * @return
      */
     private Long skuAttrCount(List<WhSkuInventory> locationSkuList) {
-        Integer attrCount = 0; // 库存属性数
-        List<String>  typeList = new ArrayList<String>();   //存放混放的sku属性值
-        for(int i=0;i<locationSkuList.size();i++){
-            WhSkuInventory skuInv = locationSkuList.get(i);
-            for(int j=i+1;j<locationSkuList.size();j++) {
-                WhSkuInventory whSkuInv = locationSkuList.get(j);
-                if(skuInv.getSkuId().equals(whSkuInv.getSkuId())) {
-                    if(!compareSkuAttr(skuInv.getInvStatus(),whSkuInv.getInvStatus(), typeList,Constants.INV_ATTR_STATUS ) ) {  //库存状态
-                        attrCount++;
-                    }
-                    if(!compareSkuAttr(skuInv.getExpDate(),whSkuInv.getExpDate(), typeList,Constants.INV_ATTR_EXP_DATE ) ) {  //
-                        attrCount++;
-                    }
-                    if(!compareSkuAttr(skuInv.getMfgDate(),whSkuInv.getMfgDate(), typeList,Constants.INV_ATTR_MFG_DATE) ) {  //
-                        attrCount++;
-                    }
-                    if(!compareSkuAttr(skuInv.getInvType(),whSkuInv.getInvType(), typeList,Constants.INV_ATTR_TYPE  ) ) {  //
-                        attrCount++;
-                    }
-                    if(!compareSkuAttr(skuInv.getBatchNumber(),whSkuInv.getBatchNumber(), typeList,Constants.INV_ATTR_BATCH ) ) {  //
-                        attrCount++;
-                    }
-                    if(!compareSkuAttr(skuInv.getCountryOfOrigin(),whSkuInv.getCountryOfOrigin(), typeList,Constants.INV_ATTR_ORIGIN ) ) {  //
-                        attrCount++;
-                    }
-                    if(!compareSkuAttr(skuInv.getInvAttr1(),whSkuInv.getInvAttr1(), typeList,Constants.INV_ATTR1 ) ) {  //
-                        attrCount++;
-                    }
-                    if(!compareSkuAttr(skuInv.getInvAttr2(),whSkuInv.getInvAttr2(), typeList,Constants.INV_ATTR2 ) ) {  //
-                        attrCount++;
-                    }
-                    if(!compareSkuAttr(skuInv.getInvAttr3(),whSkuInv.getInvAttr3(), typeList,Constants.INV_ATTR3 ) ) {  //
-                        attrCount++;
-                    }
-                    if(!compareSkuAttr(skuInv.getInvAttr4(),whSkuInv.getInvAttr4(), typeList,Constants.INV_ATTR4 ) ) {  //
-                        attrCount++;
-                    }
-                    if(!compareSkuAttr(skuInv.getInvAttr5(),whSkuInv.getInvAttr5(), typeList,Constants.INV_ATTR5 )) {  //
-                        attrCount++;
-                    }
-                }
+        Long attrCount = 1L; // 库存属性数
+//        List<String>  typeList = new ArrayList<String>();   //存放混放的sku属性值
+        int sizeCount = locationSkuList.size();
+        for(int i=0;i<sizeCount;i++){
+            if(i+1 >= sizeCount) {
+                break;
             }
+            WhSkuInventoryCommand whSkuInvCmd = new WhSkuInventoryCommand();
+            WhSkuInventoryCommand skuInvCmd = new WhSkuInventoryCommand();
+            WhSkuInventory skuInv = locationSkuList.get(i);
+            BeanUtils.copyProperties(skuInv, skuInvCmd);
+            String  skuAttrsId = SkuCategoryProvider.getSkuAttrIdByInv(skuInvCmd);
+            WhSkuInventory whSkuInv = locationSkuList.get(i+1);
+            BeanUtils.copyProperties(whSkuInv, whSkuInvCmd);
+            String  skuAttrs = SkuCategoryProvider.getSkuAttrIdByInv(whSkuInvCmd);
+            if(!skuAttrsId.equals(skuAttrs)) {
+                    attrCount++;
+           }
+//                if(skuInv.getSkuId().equals(whSkuInv.getSkuId())) {
+//                    String  putwaySkuAttrsId = SkuCategoryProvider.getSkuAttrIdByInv(invSkuCmd);
+//                    if(!compareSkuAttr(skuInv.getInvStatus(),whSkuInv.getInvStatus(), typeList,Constants.INV_ATTR_STATUS ) ) {  //库存状态
+//                        attrCount++;
+//                    }
+//                    if(!compareSkuAttr(skuInv.getExpDate(),whSkuInv.getExpDate(), typeList,Constants.INV_ATTR_EXP_DATE ) ) {  //
+//                        attrCount++;
+//                    }
+//                    if(!compareSkuAttr(skuInv.getMfgDate(),whSkuInv.getMfgDate(), typeList,Constants.INV_ATTR_MFG_DATE) ) {  //
+//                        attrCount++;
+//                    }
+//                    if(!compareSkuAttr(skuInv.getInvType(),whSkuInv.getInvType(), typeList,Constants.INV_ATTR_TYPE  ) ) {  //
+//                        attrCount++;
+//                    }
+//                    if(!compareSkuAttr(skuInv.getBatchNumber(),whSkuInv.getBatchNumber(), typeList,Constants.INV_ATTR_BATCH ) ) {  //
+//                        attrCount++;
+//                    }
+//                    if(!compareSkuAttr(skuInv.getCountryOfOrigin(),whSkuInv.getCountryOfOrigin(), typeList,Constants.INV_ATTR_ORIGIN ) ) {  //
+//                        attrCount++;
+//                    }
+//                    if(!compareSkuAttr(skuInv.getInvAttr1(),whSkuInv.getInvAttr1(), typeList,Constants.INV_ATTR1 ) ) {  //
+//                        attrCount++;
+//                    }
+//                    if(!compareSkuAttr(skuInv.getInvAttr2(),whSkuInv.getInvAttr2(), typeList,Constants.INV_ATTR2 ) ) {  //
+//                        attrCount++;
+//                    }
+//                    if(!compareSkuAttr(skuInv.getInvAttr3(),whSkuInv.getInvAttr3(), typeList,Constants.INV_ATTR3 ) ) {  //
+//                        attrCount++;
+//                    }
+//                    if(!compareSkuAttr(skuInv.getInvAttr4(),whSkuInv.getInvAttr4(), typeList,Constants.INV_ATTR4 ) ) {  //
+//                        attrCount++;
+//                    }
+//                    if(!compareSkuAttr(skuInv.getInvAttr5(),whSkuInv.getInvAttr5(), typeList,Constants.INV_ATTR5 )) {  //
+//                        attrCount++;
+//                    }
+//                }
         }
-        return Long.valueOf(attrCount.toString());
+        return attrCount;
     }
 
-    private Boolean compareSkuAttr(Object skuAttr,Object tempSkuAttr,List<String> typeList,String type){
-        Boolean result = true;// 默认库存属性相等
-        if(!typeList.contains(type)) {
-            if(!StringUtils.isEmpty(skuAttr) && StringUtils.isEmpty(tempSkuAttr)) {
-                  result = false;
-                  typeList.add(type);
-            }
-            if(StringUtils.isEmpty(skuAttr) && !StringUtils.isEmpty(tempSkuAttr)) {
-                  result = false;
-                  typeList.add(type);
-            }
-           if(!typeList.contains(type) && !StringUtils.isEmpty(skuAttr) && !StringUtils.isEmpty(tempSkuAttr)){
-              if(!skuAttr.equals(tempSkuAttr)) {
-                  result = false;
-                  typeList.add(type);
-              }
-            }
-        }
-        return result;
-    }
+//    private Boolean compareSkuAttr(Object skuAttr,Object tempSkuAttr,List<String> typeList,String type){
+//        Boolean result = true;// 默认库存属性相等
+//        if(!typeList.contains(type)) {
+//            if(!StringUtils.isEmpty(skuAttr) && StringUtils.isEmpty(tempSkuAttr)) {
+//                  result = false;
+//                  typeList.add(type);
+//            }
+//            if(StringUtils.isEmpty(skuAttr) && !StringUtils.isEmpty(tempSkuAttr)) {
+//                  result = false;
+//                  typeList.add(type);
+//            }
+//           if(!typeList.contains(type) && !StringUtils.isEmpty(skuAttr) && !StringUtils.isEmpty(tempSkuAttr)){
+//              if(!skuAttr.equals(tempSkuAttr)) {
+//                  result = false;
+//                  typeList.add(type);
+//              }
+//            }
+//        }
+//        return result;
+//    }
 
     /***
      * 拆箱上架扫描SN/残次信息
@@ -2443,9 +2455,10 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
         if (WhScanPatternType.NUMBER_ONLY_SCAN == scanPattern) { // 批量扫描
             // 判断sn/残次信息是否存在,是否已经被扫描
             this.isScanSkuSnDefect(scanPattern, ouId, insideContainerId, skuId, mPaCmd.getIsNeedScanDefect(), mPaCmd.getIsNeedScanSn(), mPaCmd.getSkuSnCode(), whskuInv.getUuid(), mPaCmd.getSkuDefectCode());
-            long cacheValue = cacheManager.incrBy(CacheConstants.PDA_MAN_MANDE_SCAN_SKU_QUEUE + insideContainerId.toString() + skuId.toString(), Constants.SN_DEFECR_COUNT);
+            long cacheValue = cacheManager.incrBy(CacheConstants.PDA_MAN_MANDE_SCAN_SKU_SN + insideContainerId.toString() + skuId.toString(), Constants.SN_DEFECR_COUNT);
             if (cacheValue < scanQty.longValue()) { // 还有sn/残次信息需要扫描
                 mPaCmd.setIsScanSkuSnDefect(true); // 需要扫描商品的sku/残次信息
+                return mPaCmd;
             }
             if (cacheValue > scanQty.longValue()) {
                 throw new BusinessException(ErrorCodes.SCAN_SKU_SN_QTY_ERROR, new Object[] {cacheValue + scanQty.longValue()});
