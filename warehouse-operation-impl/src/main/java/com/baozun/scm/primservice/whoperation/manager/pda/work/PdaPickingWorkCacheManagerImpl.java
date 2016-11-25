@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.redis.manager.CacheManager;
 import com.baozun.scm.primservice.whoperation.command.pda.work.OperatioLineStatisticsCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
@@ -91,13 +92,15 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
         if(null == operatorLine) {
             throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
         }
-        Set<Long> outbounxBoxIds = operatorLine.getOutbounxBoxs();
-        if(outbounxBoxIds.size() == 0) {
+//        Set<Long> outbounxBoxIds = operatorLine.getOutbounxBoxs();
+        Set<String> outbounxBoxCodes = operatorLine.getOutbounxBoxs();//需要确认是出库箱code还是出库箱Id
+        if(outbounxBoxCodes.size() == 0) {
             throw new BusinessException(ErrorCodes.OUT_BOUNX_BOX_IS_NO_NULL);   //推荐出库箱不能为空
         }
-        for(Long id:outbounxBoxIds) {
-            if(null != id) {
-                Container container = containerDao.findByIdExt(id, ouId);
+        for(String code:outbounxBoxCodes) {
+            if(null != code) {
+//                Container container = containerDao.findByIdExt(id, ouId);
+                ContainerCommand container = containerDao.getContainerByCode(code, ouId);
                 if(null == container) {
                     throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
                 }
@@ -154,6 +157,19 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
         }
         log.info("PdaPickingWorkCacheManagerImpl pdaPickingWorkTipOutBound is end");
         return turnoverBox;
+    }
+
+    /**
+     * 缓存统计分析结果
+     * 
+     * @author qiming.liu
+     * @param operatorId
+     * @param operatioLineStatisticsCommand
+     * @return
+     */
+    @Override
+    public void operatioLineStatisticsRedis(Long operatorId, OperatioLineStatisticsCommand operatioLineStatisticsCommand) {
+        cacheManager.setObject(operatorId.toString(), operatioLineStatisticsCommand);
     }
 
     

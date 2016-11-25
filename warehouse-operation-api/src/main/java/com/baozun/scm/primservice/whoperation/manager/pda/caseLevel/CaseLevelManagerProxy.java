@@ -181,6 +181,14 @@ public interface CaseLevelManagerProxy extends BaseManager {
     public String generateDefectWareBarcode();
 
     /**
+     *
+     *
+     * @author mingwei.xie
+     * @return
+     */
+    public List<String> generateDefectWareBarcodeList(Integer snCount);
+
+    /**
      * 验证在货箱内是否存在指定SN号的sku
      *
      * @author mingwei.xie

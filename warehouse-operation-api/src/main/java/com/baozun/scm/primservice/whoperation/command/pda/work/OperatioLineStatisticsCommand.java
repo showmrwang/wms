@@ -27,7 +27,7 @@ public class OperatioLineStatisticsCommand extends BaseCommand{
     /** 所有小车 */
     private Set<Long> outerContainers = new HashSet<Long>();
     /** 所有出库箱 */
-    private Set<Long> outbounxBoxs = new HashSet<Long>();
+    private Set<String> outbounxBoxs = new HashSet<String>();
     /** 小车货格与出库箱对应关系 */
     private Set<Long> childLists = new HashSet<Long>();//需要确认
     /** 所有周转箱 */
@@ -39,7 +39,7 @@ public class OperatioLineStatisticsCommand extends BaseCommand{
     
     // 库位商品统计信息 
     /** 所有库位 */
-    private Set<Long> locationIdList = new HashSet<Long>();
+    private Set<Long> locationIds = new HashSet<Long>();
     /** 库位上所有外部容器 */
     private Map<Long, Set<Long>> outerContainerIds = new HashMap<Long, Set<Long>>();
     /** 库位上所有内部容器 */
@@ -81,10 +81,10 @@ public class OperatioLineStatisticsCommand extends BaseCommand{
     public void setOuterContainers(Set<Long> outerContainers) {
         this.outerContainers = outerContainers;
     }
-    public Set<Long> getOutbounxBoxs() {
+    public Set<String> getOutbounxBoxs() {
         return outbounxBoxs;
     }
-    public void setOutbounxBoxs(Set<Long> outbounxBoxs) {
+    public void setOutbounxBoxs(Set<String> outbounxBoxs) {
         this.outbounxBoxs = outbounxBoxs;
     }
     public Set<Long> getChildLists() {
@@ -110,12 +110,6 @@ public class OperatioLineStatisticsCommand extends BaseCommand{
     }
     public void setContainers(Set<Long> containers) {
         this.containers = containers;
-    }
-    public Set<Long> getLocationIdList() {
-        return locationIdList;
-    }
-    public void setLocationIdList(Set<Long> locationIdList) {
-        this.locationIdList = locationIdList;
     }
     public Map<Long, Set<Long>> getOuterContainerIds() {
         return outerContainerIds;
@@ -194,5 +188,11 @@ public class OperatioLineStatisticsCommand extends BaseCommand{
     }
     public void setInsideSkuAttrIdsContainerLattice(Map<Long, Map<String, Set<String>>> insideSkuAttrIdsContainerLattice) {
         this.insideSkuAttrIdsContainerLattice = insideSkuAttrIdsContainerLattice;
+    }
+    public Set<Long> getLocationIds() {
+        return locationIds;
+    }
+    public void setLocationIds(Set<Long> locationIds) {
+        this.locationIds = locationIds;
     }
 }

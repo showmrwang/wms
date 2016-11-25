@@ -16,6 +16,8 @@
  */
 package com.baozun.scm.primservice.whoperation.manager.warehouse;
 
+import java.util.List;
+
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationLineCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 
@@ -24,9 +26,19 @@ public interface WhOperationLineManager extends BaseManager{
     
     /**
      * [通用方法] 创建作业明细信息
+     * 
      * @param WhOperationLineCommand
      * @return
      */
     Boolean saveOrUpdate(WhOperationLineCommand whOperationLineCommand);
+    
+    /**
+     * [通用方法] 根据作业头和ouId查询作业明细信息
+     * 
+     * @param operationId
+     * @param ouId
+     * @return
+     */
+    List<WhOperationLineCommand> findOperationLineByOperationId(Long operationId, Long ouId);
 
 }

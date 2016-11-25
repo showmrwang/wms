@@ -1,6 +1,7 @@
 package com.baozun.scm.primservice.whoperation.manager.pda.inbound.rcvd;
 
 import java.util.List;
+import java.util.Map;
 
 import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdContainerCacheCommand;
@@ -18,9 +19,11 @@ import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 import com.baozun.scm.primservice.whoperation.model.sku.Sku;
 import com.baozun.scm.primservice.whoperation.model.sku.SkuMgmt;
+import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
 import com.baozun.scm.primservice.whoperation.model.warehouse.StoreDefectReasons;
 import com.baozun.scm.primservice.whoperation.model.warehouse.StoreDefectType;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Uom;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionRcvd;
 import com.baozun.scm.primservice.whoperation.model.warehouse.carton.WhCarton;
@@ -240,4 +243,13 @@ public interface GeneralRcvdManager extends BaseManager {
      * @return
      */
     SkuMgmt findSkuMgmtBySkuIdOuId(Long skuId, Long ouId);
+
+    Uom findUomByCode(String code, String groupCode);
+
+    /**
+     * 
+     * @param sysDictionaryList
+     * @return
+     */
+    Map<String, SysDictionary> findSysDictionaryByRedisExt(Map<String, List<String>> sysDictionaryList);
 }

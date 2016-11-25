@@ -47,4 +47,11 @@ public class WhWorkManagerImpl extends BaseManagerImpl implements WhWorkManager 
         return whWorkCommand;
     }
     
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public WhWork findWorkByWorkId(Long id) {
+        WhWork whWork = this.whWorkDao.findById(id);
+        return whWork;
+    }
+    
 }

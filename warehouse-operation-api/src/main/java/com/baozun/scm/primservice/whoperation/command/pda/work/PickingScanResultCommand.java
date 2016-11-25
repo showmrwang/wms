@@ -38,8 +38,10 @@ public class PickingScanResultCommand extends BaseCommand {
   
     /** 仓库id */
     private Long ouId;
-
+    /** 捡货方式    */
     private Integer pickingWay;
+    /** 库存占用模型    */
+    private Integer invOccupyMode;
 
     public String getTipOutBoundCode() {
         return tipOutBoundCode;
@@ -170,7 +172,14 @@ public class PickingScanResultCommand extends BaseCommand {
         this.isScanLocation = isScanLocation;
     }
 
-    
 
+    public Integer getInvOccupyMode() {
+        return invOccupyMode;
+    }
+
+
+    public void setInvOccupyMode(Integer invOccupyMode) {
+        this.invOccupyMode = invOccupyMode;
+    }
 
 }

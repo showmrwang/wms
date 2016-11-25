@@ -190,6 +190,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
         try {
             cacheUserId = cacheManager.getValue(cacheKey);
         } catch (Exception e) {
+            log.error("CaseLevelManagerProxyImpl getContainerOptUserFromCache ->cacheManager.getValue throw exception e:[{}], logId is:[{}]", e, logId);
             throw new BusinessException(ErrorCodes.CASELEVEL_CACHE_ERROR);
         }
         log.debug("CaseLevelManagerProxyImpl getContainerOptUserFromCache param cacheKey:[{}], result userId:[{}]", cacheKey, userId);
@@ -229,11 +230,13 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
                 // 从数据库占用货箱
                 caseLevelRcvdManager.updateContainerStatus(container);
             } catch (Exception e) {
+                log.error("CaseLevelManagerProxyImpl occupiedContainerByOptUser throw exception e:[{}], logId is:[{}]", e, logId);
                 // 数据库修改失败，回滚缓存
                 cacheManager.remove(cacheKey);
                 throw e;
             }
         } catch (Exception e) {
+            log.error("CaseLevelManagerProxyImpl occupiedContainerByOptUser throw exception e:[{}], logId is:[{}]", e, logId);
             throw new BusinessException(ErrorCodes.CASELEVEL_CONTAINER_OCCUPIED_FAILED);
         }
 
@@ -248,6 +251,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
             // 清除该货箱前次收货数据
             cacheManager.remonKeys(CacheKeyConstant.WMS_CACHE_CL_LAST_RECD_QTY_PREFIX + userId + "-" + asnId + "-" + containerId + "-*");
         } catch (Exception e) {
+            log.error("CaseLevelManagerProxyImpl clearRcvdCacheForOccupiedContainer ->cacheManager.remonKeys throw exception e:[{}], logId is:[{}]", e, logId);
             throw new BusinessException(ErrorCodes.CASELEVEL_CACHE_ERROR);
         }
     }
@@ -275,6 +279,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
             // 清除该货箱前次收货数据
             cacheManager.remonKeys(CacheKeyConstant.WMS_CACHE_CL_LAST_RECD_QTY_PREFIX + userId + "-" + asnId + "-" + containerId + "-*");
         } catch (Exception e) {
+            log.error("CaseLevelManagerProxyImpl cancelCurrentContainerRcvd ->cacheManager.remonKeys throw exception e:[{}], logId is:[{}]", e, logId);
             throw new BusinessException(ErrorCodes.CASELEVEL_CACHE_ERROR);
         }
     }
@@ -297,6 +302,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
         try {
             optUserCacheKeyList = cacheManager.Keys(cacheKeyPattern);
         } catch (Exception e) {
+            log.error("CaseLevelManagerProxyImpl clearCacheForForwardGeneralRcvd ->cacheManager.Keys throw exception e:[{}], logId is:[{}]", e, logId);
             throw new BusinessException(ErrorCodes.CASELEVEL_CACHE_ERROR);
         }
         if (null != optUserCacheKeyList) {
@@ -326,6 +332,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
                     // 清除该货箱前次收货数据
                     cacheManager.remonKeys(CacheKeyConstant.WMS_CACHE_CL_LAST_RECD_QTY_PREFIX + userId + "-" + asnId + "-" + containerId + "-*");
                 } catch (Exception e) {
+                    log.error("CaseLevelManagerProxyImpl clearCacheForForwardGeneralRcvd ->cacheManager.remonKeys throw exception e:[{}], logId is:[{}]", e, logId);
                     throw new BusinessException(ErrorCodes.CASELEVEL_CACHE_ERROR);
                 }
             }
@@ -562,12 +569,14 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
         try {
             skuInventorySnListCache = cacheManager.getObject(cacheKey);
         } catch (Exception e) {
+            log.error("CaseLevelManagerProxyImpl saveScanRcvdSnDefectInfoCache ->cacheManager.getObject throw exception e:[{}], logId is:[{}]", e, logId);
             throw new BusinessException(ErrorCodes.CASELEVEL_CACHE_ERROR);
         }
         if (null == skuInventorySnListCache) {
             try {
                 cacheManager.setObject(cacheKey, whSkuInventorySnList, CacheKeyConstant.CACHE_ONE_DAY);
             } catch (Exception e) {
+                log.error("CaseLevelManagerProxyImpl saveScanRcvdSnDefectInfoCache ->cacheManager.setObject throw exception e:[{}], logId is:[{}]", e, logId);
                 throw new BusinessException(ErrorCodes.CASELEVEL_SN_DEFECT_INFO_CACHE_ERROR);
             }
         } else {
@@ -575,6 +584,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
             try {
                 cacheManager.setObject(cacheKey, skuInventorySnListCache, CacheKeyConstant.CACHE_ONE_DAY);
             } catch (Exception e) {
+                log.error("CaseLevelManagerProxyImpl saveScanRcvdSnDefectInfoCache ->cacheManager.setObject throw exception e:[{}], logId is:[{}]", e, logId);
                 throw new BusinessException(ErrorCodes.CASELEVEL_CACHE_ERROR);
             }
         }
@@ -588,6 +598,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
         try {
             skuInventorySnListCache = cacheManager.getObject(cacheKey);
         } catch (Exception e) {
+            log.error("CaseLevelManagerProxyImpl getScanRcvdSnDefectInfoCache ->cacheManager.getObject throw exception e:[{}], logId is:[{}]", e, logId);
             throw new BusinessException(ErrorCodes.CASELEVEL_CACHE_ERROR);
         }
         return skuInventorySnListCache;
@@ -627,6 +638,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
         try {
             cacheManager.remove(rcvdSnDefectInfoCacheKey);
         } catch (Exception e) {
+            log.error("CaseLevelManagerProxyImpl clearScanRcvdSnDefectInfoCache ->cacheManager.remove throw exception e:[{}], logId is:[{}]", e, logId);
             throw new BusinessException(ErrorCodes.CASELEVEL_CACHE_ERROR);
         }
     }
@@ -642,6 +654,22 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
             throw new BusinessException(ErrorCodes.CASELEVEL_SN_DEFECT_WARE_BARCODE_ERROR);
         }
         return defectWareBarcode;
+    }
+
+    /**
+     * @author mingwei.xie
+     * @return
+     */
+    @Override
+    public List<String> generateDefectWareBarcodeList(Integer snCount) {
+        if (null == snCount || snCount <= 0) {
+            throw new BusinessException(ErrorCodes.CASELEVEL_BATCH_NUM_SN_DEFECT_WARE_BARCODE_ERROR);
+        }
+        List<String> defectWareBarcodeList = this.codeManager.generateCodeList(Constants.WMS, Constants.INVENTORY_DEFECT_WARE_BARCODE, null, null, null, snCount).toArray();
+        if (null == defectWareBarcodeList || defectWareBarcodeList.isEmpty()) {
+            throw new BusinessException(ErrorCodes.CASELEVEL_SN_DEFECT_WARE_BARCODE_ERROR);
+        }
+        return defectWareBarcodeList;
     }
 
     /**
@@ -735,6 +763,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
         try {
             rcvdWhCarton = cacheManager.getObject(cacheKey);
         } catch (Exception e) {
+            log.error("CaseLevelManagerProxyImpl saveRcvdCartonCache -> cacheManager.getObject throw exception e:[{}], logId is:[{}]", e, logId);
             throw new BusinessException(ErrorCodes.CASELEVEL_CACHE_ERROR);
         }
         if (null == rcvdWhCarton) {
@@ -746,6 +775,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
                 whCartonCommand.setUuid(uuid);
                 cacheManager.setObject(cacheKey, whCartonCommand, CacheKeyConstant.CACHE_ONE_DAY);
             } catch (Exception e) {
+                log.error("CaseLevelManagerProxyImpl saveRcvdCartonCache ->cacheManager.setObject throw exception e:[{}], logId is:[{}]", e, logId);
                 throw new BusinessException(ErrorCodes.CASELEVEL_SKU_CACHE_ERROR);
             }
         } else {
@@ -764,6 +794,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
             try {
                 cacheManager.setObject(cacheKey, rcvdWhCarton, CacheKeyConstant.CACHE_ONE_DAY);
             } catch (Exception e) {
+                log.error("CaseLevelManagerProxyImpl saveRcvdCartonCache ->cacheManager.setObject throw exception e:[{}], logId is:[{}]", e, logId);
                 throw new BusinessException(ErrorCodes.CASELEVEL_SKU_CACHE_ERROR);
             }
         }
@@ -775,7 +806,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
     @Override
     public List<WhCartonCommand> getRcvdCartonBySkuFromCache(Long asnId, Long containerId, Long skuId, Long userId, Long ouId, String logId) {
         String cacheKeyPattern = CacheKeyConstant.WMS_CACHE_CL_RECD_CARTON_PREFIX + userId + "-" + asnId + "-" + containerId + "-" + skuId + "-*";
-        return this.getRcvdCartonFromCacheByCacheKeyPattern(cacheKeyPattern, CacheKeyConstant.WMS_CACHE_CL_RECD_CARTON_PREFIX);
+        return this.getRcvdCartonFromCacheByCacheKeyPattern(cacheKeyPattern, CacheKeyConstant.WMS_CACHE_CL_RECD_CARTON_PREFIX, logId);
     }
 
     /**
@@ -794,7 +825,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
     @Override
     public Double getCartonLineRcvdQty(Long asnId, Long containerId, Long skuId, Long cartonId, Long userId, Long ouId, String logId) {
         String cacheKeyPattern = CacheKeyConstant.WMS_CACHE_CL_RECD_CARTON_PREFIX + userId + "-" + asnId + "-" + containerId + "-" + skuId + "-" + cartonId + "-*";
-        List<WhCartonCommand> asnLineRcvdCartonList = this.getRcvdCartonFromCacheByCacheKeyPattern(cacheKeyPattern, CacheKeyConstant.WMS_CACHE_CL_RECD_CARTON_PREFIX);
+        List<WhCartonCommand> asnLineRcvdCartonList = this.getRcvdCartonFromCacheByCacheKeyPattern(cacheKeyPattern, CacheKeyConstant.WMS_CACHE_CL_RECD_CARTON_PREFIX, logId);
         BigDecimal asnLineRcvdQty = new BigDecimal(0);
         if (null != asnLineRcvdCartonList) {
             for (WhCartonCommand rcvdCarton : asnLineRcvdCartonList) {
@@ -847,6 +878,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
         try {
             currentRcvdSkuQtyCacheKeyList = cacheManager.Keys(cacheKeyPattern);
         } catch (Exception e) {
+            log.error("CaseLevelManagerProxyImpl getCurrentRcvdSkuQtyMap ->cacheManager.Keys throw exception e:[{}], logId is:[{}]", e, logId);
             throw new BusinessException(ErrorCodes.CASELEVEL_CACHE_ERROR);
         }
         Map<Long, Double> currentRcvdSkuQty = new HashMap<>();
@@ -856,6 +888,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
                 try {
                     rcvdCarton = cacheManager.getObject(cacheKey.substring(cacheKey.indexOf(CacheKeyConstant.WMS_CACHE_CL_RECD_CARTON_PREFIX)));
                 } catch (Exception e) {
+                    log.error("CaseLevelManagerProxyImpl getCurrentRcvdSkuQtyMap ->cacheManager.getObject throw exception e:[{}], logId is:[{}]", e, logId);
                     throw new BusinessException(ErrorCodes.CASELEVEL_CACHE_ERROR);
                 }
 
@@ -892,6 +925,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
         try {
             rcvdWhCarton = cacheManager.getObject(cacheKey);
         } catch (Exception e) {
+            log.error("CaseLevelManagerProxyImpl updateRcvdCartonQtyByUUID ->cacheManager.getObject throw exception e:[{}], logId is:[{}]", e, logId);
             throw new BusinessException(ErrorCodes.CASELEVEL_CACHE_ERROR);
         }
         if (null == rcvdWhCarton) {
@@ -907,6 +941,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
         try {
             cacheManager.setObject(cacheKey, rcvdWhCarton, CacheKeyConstant.CACHE_ONE_DAY);
         } catch (Exception e) {
+            log.error("CaseLevelManagerProxyImpl updateRcvdCartonQtyByUUID -> cacheManager.setObject throw exception e:[{}], logId is:[{}]", e, logId);
             throw new BusinessException(ErrorCodes.CASELEVEL_CACHE_ERROR);
         }
 
@@ -926,6 +961,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
         try {
             cacheManager.remonKeys(CacheKeyConstant.WMS_CACHE_CL_LAST_RECD_QTY_PREFIX + userId + "-" + asnId + "-" + containerId + "-*");
         } catch (Exception e) {
+            log.error("CaseLevelManagerProxyImpl reRcvd -> cacheManager.remonKeys throw exception e:[{}], logId is:[{}]", e, logId);
             throw new BusinessException(ErrorCodes.CASELEVEL_CACHE_ERROR);
         }
 
@@ -938,6 +974,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
                 try {
                     cacheManager.setObject(lastRcvdCacheKey, skuRcvdQtyMap.get(skuId), CacheKeyConstant.CACHE_ONE_DAY);
                 } catch (Exception e) {
+                    log.error("CaseLevelManagerProxyImpl reRcvd -> cacheManager.setObject throw exception e:[{}], logId is:[{}]", e, logId);
                     throw new BusinessException(ErrorCodes.CASELEVEL_CACHE_ERROR);
                 }
             }
@@ -962,6 +999,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
         try {
             lastRcvdSkuQtyCacheKeyList = cacheManager.Keys(cacheKeyPattern);
         } catch (Exception e) {
+            log.error("CaseLevelManagerProxyImpl getLastRcvdSkuQty -> cacheManager.Keys throw exception e:[{}], logId is:[{}]", e, logId);
             throw new BusinessException(ErrorCodes.CASELEVEL_CACHE_ERROR);
         }
         Map<Long, Double> lastRcvdSkuQty = null;
@@ -972,6 +1010,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
                 try {
                     skuQty = cacheManager.getObject(cacheKey.substring(cacheKey.indexOf(CacheKeyConstant.WMS_CACHE_CL_LAST_RECD_QTY_PREFIX)));
                 } catch (Exception e) {
+                    log.error("CaseLevelManagerProxyImpl getLastRcvdSkuQty -> cacheManager.getObject throw exception e:[{}], logId is:[{}]", e, logId);
                     throw new BusinessException(ErrorCodes.CASELEVEL_CACHE_ERROR);
                 }
                 Long skuId = Long.parseLong(cacheKey.substring(cacheKey.lastIndexOf("-") + 1, cacheKey.length()));
@@ -998,6 +1037,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
         try {
             skuQty = cacheManager.getObject(cacheKey);
         } catch (Exception e) {
+            log.error("CaseLevelManagerProxyImpl getLastRcvdSkuQtyBySkuId ->cacheManager.getObject throw exception e:[{}], logId is:[{}]", e, logId);
             throw new BusinessException(ErrorCodes.CASELEVEL_CACHE_ERROR);
         }
         return skuQty;
@@ -1302,6 +1342,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
         } catch (BusinessException be) {
             throw be;
         } catch (Exception e) {
+            log.error("CaseLevelManagerProxyImpl caseLevelReceivingCompleted -> caseLevelRcvdManager.caseLevelReceivingCompleted throw exception e:[{}], logId is:[{}]", e, logId);
             throw new BusinessException(ErrorCodes.CASELEVEL_DATABASE_SAVE_ERROR);
         }
         // 清除所有缓存
@@ -1310,6 +1351,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
             // 释放容器占用缓存
             cacheManager.remove(CacheKeyConstant.WMS_CACHE_CL_OPT_USER_PREFIX + userId + "-" + whCartonCommand.getAsnId() + "-" + whCartonCommand.getContainerId());
         } catch (Exception e) {
+            log.error("CaseLevelManagerProxyImpl caseLevelReceivingCompleted ->cacheManager.remove throw exception e:[{}], logId is:[{}]", e, logId);
             throw new BusinessException(ErrorCodes.CASELEVEL_RELEASE_CONTAINER_ERROR);
         }
         // 清除该货箱前次收货数据
@@ -1320,6 +1362,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
             try {
                 checkInManagerProxy.releasePlatformByRcvdFinish(whCartonCommand.getAsnId(), ouId, userId, logId);
             } catch (Exception e) {
+                log.error("CaseLevelManagerProxyImpl caseLevelReceivingCompleted ->checkInManagerProxy.releasePlatformByRcvdFinish throw exception e:[{}], logId is:[{}]", e, logId);
                 // 释放月台，不需要和收货在一个事务，可以手工释放
                 throw new BusinessException(ErrorCodes.CASELEVEL_RELEASE_PLATFORM_ERROR);
             }
@@ -1765,7 +1808,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
                     whAsnRcvdSnLog.setDefectType(storeDefectType.getName());
                     whAsnRcvdSnLog.setDefectReasons(storeDefectReasons.getName());
                 } catch (Exception e) {
-                    log.error("createWhAsnRcvdSnLog throw exception");
+                    log.error("CaseLevelManagerProxyImpl createWhAsnRcvdSnLog throw exception e:[{}], logId is:[{}]", e, logId);
                     throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
                 }
             } else if (Constants.SKU_SN_DEFECT_SOURCE_WH.equals(skuInventorySn.getDefectSource())) {
@@ -1775,7 +1818,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
                     whAsnRcvdSnLog.setDefectType(warehouseDefectType.getName());
                     whAsnRcvdSnLog.setDefectReasons(warehouseDefectReasons.getName());
                 } catch (Exception e) {
-                    log.error("createWhAsnRcvdSnLog throw exception");
+                    log.error("CaseLevelManagerProxyImpl createWhAsnRcvdSnLog throw exception e:[{}], logId is:[{}]", e, logId);
                     throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
                 }
             }
@@ -1803,14 +1846,15 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
 
     private List<WhCartonCommand> getRcvdCartonFromCache(Long asnId, Long containerId, Long userId, Long ouId, String logId) {
         String cacheKeyPattern = CacheKeyConstant.WMS_CACHE_CL_RECD_CARTON_PREFIX + userId + "-" + asnId + "-" + containerId + "-*";
-        return getRcvdCartonFromCacheByCacheKeyPattern(cacheKeyPattern, CacheKeyConstant.WMS_CACHE_CL_RECD_CARTON_PREFIX);
+        return getRcvdCartonFromCacheByCacheKeyPattern(cacheKeyPattern, CacheKeyConstant.WMS_CACHE_CL_RECD_CARTON_PREFIX, logId);
     }
 
-    private List<WhCartonCommand> getRcvdCartonFromCacheByCacheKeyPattern(String cacheKeyPattern, String cacheKeyPrefix) {
+    private List<WhCartonCommand> getRcvdCartonFromCacheByCacheKeyPattern(String cacheKeyPattern, String cacheKeyPrefix, String logId) {
         List<String> cartonCacheKeyList = null;
         try {
             cartonCacheKeyList = cacheManager.Keys(cacheKeyPattern);
         } catch (Exception e) {
+            log.error("CaseLevelManagerProxyImpl getRcvdCartonFromCacheByCacheKeyPattern -> cacheManager.Keys throw exception e:[{}], logId is:[{}]", e, logId);
             throw new BusinessException(ErrorCodes.CASELEVEL_CACHE_ERROR);
         }
         List<WhCartonCommand> rcvdCartonList = new ArrayList<>();
@@ -1820,6 +1864,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
                 try {
                     rcvdCarton = cacheManager.getObject(cartonCacheKey.substring(cartonCacheKey.indexOf(cacheKeyPrefix)));
                 } catch (Exception e) {
+                    log.error("CaseLevelManagerProxyImpl getRcvdCartonFromCacheByCacheKeyPattern -> cacheManager.getObject throw exception e:[{}], logId is:[{}]", e, logId);
                     throw new BusinessException(ErrorCodes.CASELEVEL_CACHE_ERROR);
                 }
                 if (null == rcvdCarton) {
@@ -1866,6 +1911,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
                 // 从缓存删除货箱操作人
                 cacheManager.remove(cacheKey);
             } catch (Exception e) {
+                log.error("CaseLevelManagerProxyImpl releaseContainerByOptUser -> cacheManager.remove throw exception e:[{}], logId is:[{}]", e, logId);
                 container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
                 container.setStatus(ContainerStatus.CONTAINER_STATUS_RCVD);
                 container.setOperatorId(userId);
@@ -1873,6 +1919,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
                 caseLevelRcvdManager.updateContainerStatus(container);
             }
         } catch (Exception e) {
+            log.error("CaseLevelManagerProxyImpl releaseContainerByOptUser throw exception e:[{}], logId is:[{}]", e, logId);
             throw new BusinessException(ErrorCodes.CASELEVEL_RELEASE_CONTAINER_ERROR);
         }
     }
@@ -1888,6 +1935,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
             // caseLevel货箱SN缓存前缀
             cacheManager.remonKeys(CacheKeyConstant.WMS_CACHE_CL_ORIGIN_SN_PREFIX + userId + "-" + asnId + "-" + containerId + "-*");
         } catch (Exception e) {
+            log.error("CaseLevelManagerProxyImpl clearRcvdCache throw exception e:[{}], logId is:[{}]", e, logId);
             throw new BusinessException(ErrorCodes.CASELEVEL_CACHE_ERROR);
         }
     }
@@ -1944,7 +1992,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
         try {
             whCartonCommandList = cacheManager.getObject(cacheKey);
         } catch (Exception e) {
-            log.error("getWhCartonListBySku cacheManager.getObject error logId is:[{}]", logId);
+            log.error("getWhCartonListBySku cacheManager.getObject error e is:[{}], logId is:[{}]", e, logId);
             throw new BusinessException(ErrorCodes.CASELEVEL_SN_CACHE_ERROR);
         }
         if (null == whCartonCommandList || whCartonCommandList.isEmpty()) {
@@ -1957,7 +2005,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
                     log.warn("cache whCartonCommandList by container, whCartonCommandList is:[{}], logId is:[{}]", whCartonCommandList, logId);
                 }
             } catch (Exception e) {
-                log.error("getWhCartonListBySku cacheManager.setMapObject error logId is:[{}]", logId);
+                log.error("getWhCartonListBySku cacheManager.setMapObject error e is:[{}], logId is:[{}]", e, logId);
                 throw new BusinessException(ErrorCodes.CASELEVEL_SN_CACHE_ERROR);
             }
         }
@@ -1981,7 +2029,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
         try {
             whAsnSnList = cacheManager.getObject(cacheKey);
         } catch (Exception e) {
-            log.error("getWhAsnSnFromCache cacheManager.getObject error logId is:[{}]", logId);
+            log.error("getWhAsnSnFromCache cacheManager.getObject error, e is:[{}], logId is:[{}]", e, logId);
             throw new BusinessException(ErrorCodes.CASELEVEL_SN_CACHE_ERROR);
         }
         if (null == whAsnSnList || whAsnSnList.isEmpty()) {
@@ -2002,12 +2050,13 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
         try {
             cacheManager.setObject(cacheKey, whAsnSnList, CacheKeyConstant.CACHE_ONE_DAY);
         } catch (Exception e) {
-            log.error("getWhAsnSnFromCache cacheManager.setMapObject error logId is:[{}]", logId);
+            log.error("getWhAsnSnFromCache -> cacheManager.setMapObject error, e is:[{}], logId is:[{}]", e, logId);
             throw new BusinessException(ErrorCodes.CASELEVEL_SN_CACHE_ERROR);
         }
         try {
             whAsnSnList = cacheManager.getObject(cacheKey);
         } catch (Exception e) {
+            log.error("getWhAsnSnFromCache -> cacheManager.getObject error, e is:[{}], logId is:[{}]", e, logId);
             throw new BusinessException(ErrorCodes.CASELEVEL_CACHE_ERROR);
         }
         if (null == whAsnSnList || whAsnSnList.isEmpty()) {

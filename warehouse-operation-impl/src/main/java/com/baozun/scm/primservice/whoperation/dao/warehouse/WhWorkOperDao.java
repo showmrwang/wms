@@ -25,43 +25,20 @@ import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
 
-import org.apache.ibatis.annotations.Param;
-
-import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationCommand;
-import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperation;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhWorkOper;
 
 
 
-public interface WhOperationDao extends BaseDao<WhOperation,Long>{
+public interface WhWorkOperDao extends BaseDao<WhWorkOper,Long>{
 
 
 	@QueryPage("findListCountByQueryMap")
-	Pagination<WhOperation> findListByQueryMapWithPage(Page page,Sort[] sorts,Map<String, Object> params);
+	Pagination<WhWorkOper> findListByQueryMapWithPage(Page page,Sort[] sorts,Map<String, Object> params);
 	
 	@CommonQuery
-	int saveOrUpdate(WhOperation o);
+	int saveOrUpdate(WhWorkOper o);
 	
 	@CommonQuery
-	int saveOrUpdateByVersion(WhOperation o);
-	
-	/**
-     * 获取作业头信息
-     * 
-     * @author qiming.liu
-     * @param operationCode
-     * @param ouId
-     * @return
-     */
-	WhOperationCommand findOperationByCode(@Param("operationCode") String operationCode, @Param("ouId") Long ouId);
-	
-	/**
-     * 根据工作Id获取作业头信息
-     * 
-     * @author qiming.liu
-     * @param workId
-     * @param ouId
-     * @return
-     */
-    WhOperationCommand findOperationCommandById(@Param("workId") Long workId, @Param("ouId") Long ouId);
+	int saveOrUpdateByVersion(WhWorkOper o);
 	
 }

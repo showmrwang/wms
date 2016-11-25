@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.WhWorkOperDao">
+	<resultMap id="WhWorkOperResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.WhWorkOper">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whWorkOperColumnsExt">
+	    <![CDATA[
+	        	id as id,
+	        	oper_user_id as operUserId,
+	        	work_id as workId,
+	        	ou_id as ouId,
+	        	operation_id as operationId,
+	        	status as status,
+	        	is_admin_assign as isAdminAssign,
+	        	create_time as createTime,
+	        	last_modify_time as lastModifyTime,
+	        	created_id as createdId,
+	        	modified_id as modifiedId,
+	        	operator_id as operatorId
+	    ]]>
+	</sql>
+	
+	<sql id="whWorkOperDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+				<if test="operUserId!=null">
+					and oper_user_id = #{operUserId}
+				</if>
+	       
+				<if test="workId!=null">
+					and work_id = #{workId}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+	       
+				<if test="operationId!=null">
+					and operation_id = #{operationId}
+				</if>
+	       
+				<if test="status!=null">
+					and status = #{status}
+				</if>
+	       
+				<if test="isAdminAssign!=null">
+					and is_admin_assign = #{isAdminAssign}
+				</if>
+	       
+				<if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="createdId!=null">
+					and created_id = #{createdId}
+				</if>
+	       
+				<if test="modifiedId!=null">
+					and modified_id = #{modifiedId}
+				</if>
+	       
+				<if test="operatorId!=null">
+					and operator_id = #{operatorId}
+				</if>
+		</where>
+	</sql>
+	
+
+		<update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhWorkOper">
+		    <![CDATA[
+		        UPDATE t_wh_work_oper SET
+			        oper_user_id = #{operUserId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        work_id = #{workId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        operation_id = #{operationId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        status = #{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        is_admin_assign = #{isAdminAssign,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+			        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+			        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        WHERE 
+			        id = #{id} 
+			        
+			        and last_modify_time	<=  #{lastModifyTime}    
+		    ]]>
+		</update>
+	
+</mapper>
