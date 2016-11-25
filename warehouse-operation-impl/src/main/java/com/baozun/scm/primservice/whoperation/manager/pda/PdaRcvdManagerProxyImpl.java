@@ -2301,6 +2301,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                 cacheContainer.setMixAttr("");
             }
             this.cacheManager.setObject(CacheKeyConstant.CACHE_RCVD_CONTAINER_USER_PREFIX + inside, cacheContainer);
+            this.cacheManager.remove(CacheKeyConstant.CACHE_RCVD_SN_PREFIX + userId);
         }
     }
 
