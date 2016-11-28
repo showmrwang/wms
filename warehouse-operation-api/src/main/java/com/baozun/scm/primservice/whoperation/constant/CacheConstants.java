@@ -53,6 +53,8 @@ public final class CacheConstants {
     
     /**人工上架:扫sn*/
     public static final String PDA_MAN_MANDE_SCAN_SKU_SN = "MAN_MANDE_SCAN_SKU_SN";
+    /**人工上架:扫sn/残次*/
+    public static final String PDA_MAN_MANDE_SCAN_SKU_SN_DEFECT = "PDA_MAN_MANDE_SCAN_SKU_SN_DEFECT";
     
     /**人工上架:扫SKU残次信息*/
     public static final String PDA_MAN_MANDE_SCAN_SKU_DEFECT = "MAN_MANDE_SCAN_SKU_DEFECT";
@@ -72,4 +74,8 @@ public final class CacheConstants {
     //pda拣货
     /***pda拣货，作业明细统计*/
     public static final String OPERATIONLINE_STATISTICS = "OPERATIONLINE_STATISTICS";
+    
+    
+    /***缓存库位*/
+    public static final String CACHE_LOCATION = "CACHE_LOCATION";
 }
