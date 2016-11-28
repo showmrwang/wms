@@ -2931,9 +2931,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 		Boolean isStaticLocation = false;
 		// 记录静态库位可超分配的库位id
 		Set<String> staticLocationIds = new HashSet<String>();
-		// 记录整托占用库位ids
+		// 记录整托占用容器ids
 		Set<String> trayIds = new HashSet<String>();
-		// 记录整箱占用库位ids
+		// 记录整箱占用容器ids
 		Set<String> packingCaseIds = new HashSet<String>();
 		Long areaId = null;
 		Long waveLineId = null;
