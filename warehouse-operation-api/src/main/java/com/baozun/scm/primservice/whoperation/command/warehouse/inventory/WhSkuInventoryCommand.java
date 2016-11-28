@@ -157,6 +157,8 @@ public class WhSkuInventoryCommand extends BaseCommand {
     /** 通用收货功能匹配明细行 */
     private RcvdSnCacheCommand sn;
     /** 通用收货累计收货数量 */
+    private Integer skuRcvdCount;
+    /** 通用收货本次累计数量 */
     private Integer skuAddUpCount;
     /** 通用收货userId */
     private Long userId;
@@ -1019,6 +1021,14 @@ public class WhSkuInventoryCommand extends BaseCommand {
 
     public void setRcvdSkuContainerCache(RcvdContainerCacheCommand rcvdSkuContainerCache) {
         this.rcvdSkuContainerCache = rcvdSkuContainerCache;
+    }
+
+    public Integer getSkuRcvdCount() {
+        return skuRcvdCount;
+    }
+
+    public void setSkuRcvdCount(Integer skuRcvdCount) {
+        this.skuRcvdCount = skuRcvdCount;
     }
 
 
