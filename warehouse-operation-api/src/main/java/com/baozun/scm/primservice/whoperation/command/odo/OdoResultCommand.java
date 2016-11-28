@@ -84,7 +84,9 @@ public class OdoResultCommand extends BaseCommand {
     private String orderType;
     private String orderTypeName;
     private String qty;
-
+    private String isAssignSuccess;
+    private String assignFailReason;
+	
     public String getQty() {
         return qty;
     }
@@ -692,5 +694,21 @@ public class OdoResultCommand extends BaseCommand {
     public void setCreatedName(String createdName) {
         this.createdName = createdName;
     }
+
+	public String getIsAssignSuccess() {
+		return isAssignSuccess;
+	}
+
+	public void setIsAssignSuccess(String isAssignSuccess) {
+		this.isAssignSuccess = isAssignSuccess;
+	}
+
+	public String getAssignFailReason() {
+		return assignFailReason;
+	}
+
+	public void setAssignFailReason(String assignFailReason) {
+		this.assignFailReason = assignFailReason;
+	}
 
 }

@@ -111,6 +111,8 @@ public class OdoWaveGroupSearchCommand extends BaseCommand {
     private List<Long> odoIdList;
 
     private Long waveMasterId;
+    
+    private Integer isExceptionOrder;
 
     public Long getGroupCustomerId() {
         return groupCustomerId;
@@ -751,6 +753,14 @@ public class OdoWaveGroupSearchCommand extends BaseCommand {
     public void setGroupEpistaticSystemsOrderType(String groupEpistaticSystemsOrderType) {
         this.groupEpistaticSystemsOrderType = groupEpistaticSystemsOrderType;
     }
+
+	public Integer getIsExceptionOrder() {
+		return isExceptionOrder;
+	}
+
+	public void setIsExceptionOrder(Integer isExceptionOrder) {
+		this.isExceptionOrder = isExceptionOrder;
+	}
 
 
 

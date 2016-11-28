@@ -95,6 +95,8 @@ public class OdoSearchCommand extends BaseCommand {
     private Integer lineNum;
     // 是否行检索
     private Boolean lineFlag;
+    // 是否波次运行异常订单
+    private Integer isExceptionOrder;
 
 
     public Boolean getIsDistributeMode() {
@@ -681,5 +683,13 @@ public class OdoSearchCommand extends BaseCommand {
     public void setPageOption(String pageOption) {
         this.pageOption = pageOption;
     }
+
+	public Integer getIsExceptionOrder() {
+		return isExceptionOrder;
+	}
+
+	public void setIsExceptionOrder(Integer isExceptionOrder) {
+		this.isExceptionOrder = isExceptionOrder;
+	}
 
 }

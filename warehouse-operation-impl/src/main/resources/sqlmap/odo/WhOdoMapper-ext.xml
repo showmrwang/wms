@@ -390,6 +390,12 @@
 			<if test="isWholeOrderOutbound!=null">
 				and odo.is_whole_order_outbound=#{isWholeOrderOutbound}
 			</if>
+			<if test="isExceptionOrder!=null and isExceptionOrder == 1">
+				and odo.is_assign_success = 0
+			</if>
+			<if test="isExceptionOrder!=null and isExceptionOrder == 0">
+				and IFNULL(odo.is_assign_success, 1) != 0
+			</if>
 			<if test="lineFlag">
 				and EXISTS(select 1 from t_wh_odo_line odoline
 				inner join t_wh_sku
@@ -672,7 +678,9 @@
 		DATE_FORMAT(odo.last_modify_time,'%Y-%m-%d') as lastModifyTime,
 		odo.modified_id as modifiedId,
 		user2.user_name as modifiedName,
-		odo.is_locked as isLocked
+		odo.is_locked as isLocked,
+		odo.is_assign_success as isAssignSuccess,
+		odo.assign_fail_reason as assignFailReason
 		from t_wh_odo odo
 		left join t_wh_odo_address
 		address on
