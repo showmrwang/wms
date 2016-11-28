@@ -2227,7 +2227,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         } else {
             WhSkuInventory inv = new WhSkuInventory();
             Long whskuInventoryId = invCmd.getId();
-            BeanUtils.copyProperties(invCmd, inv);
+            BeanUtils.copyProperties(whSkuInve, inv);
             // 拆箱上架默认不跟踪容器号
             inv.setOuterContainerId(null);
             inv.setInsideContainerId(null);
@@ -2266,10 +2266,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             // 记录入库库存日志
             insertSkuInventoryLog(inv.getId(), inv.getOnHandQty(), oldQty, warehouse.getIsTabbInvTotal(), ouId, userId);
             //修改在库库存数量
-            Long skuInvId = invCmd.getId();
-            WhSkuInventory whSkuInventory = whSkuInventoryDao.findWhSkuInventoryById(skuInvId, ouId);
+            WhSkuInventory whSkuInventory = whSkuInventoryDao.findWhSkuInventoryById(whskuInventoryId, ouId);
             if(null == whSkuInventory) {
-                log.error("whskuInventoryImpl manPutwayNoLoc whskuInventory id"+skuInvId);
+                log.error("whskuInventoryImpl manPutwayNoLoc whskuInventory id"+whskuInventoryId);
                 throw new BusinessException(ErrorCodes. NO_SKU_INVENTORY);
             }
             Double skuInvOnHandQty = invCmd.getOnHandQty() - scanSkuQty;    //上架后库存
@@ -2321,6 +2320,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             inv.setInboundTime(new Date());
             inv.setIsLocked(false);
             inv.setOnHandQty(scanSkuQty);
+            inv.setId(null);
             try {
                 uuid = SkuInventoryUuid.invUuid(inv);
                 inv.setUuid(uuid);// UUID
@@ -2344,10 +2344,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             // 记录入库库存日志
             insertSkuInventoryLog(inv.getId(), inv.getOnHandQty(), oldQty, warehouse.getIsTabbInvTotal(), ouId, userId);
             //修改在库库存数量
-            Long skuInvId = invCmd.getId();
-            WhSkuInventory whSkuInventory = whSkuInventoryDao.findWhSkuInventoryById(skuInvId, ouId);
+            WhSkuInventory whSkuInventory = whSkuInventoryDao.findWhSkuInventoryById(whskuInventoryId, ouId);
             if(null == whSkuInventory) {
-                log.error("whskuInventoryImpl manPutwayNoLoc whskuInventory id"+skuInvId);
+                log.error("whskuInventoryImpl manPutwayNoLoc whskuInventory id"+whskuInventoryId);
                 throw new BusinessException(ErrorCodes. NO_SKU_INVENTORY);
             }
             // 记录入库库存日志
@@ -2373,6 +2372,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             inv.setInboundTime(new Date());
             inv.setIsLocked(false);
             inv.setOnHandQty(scanSkuQty);
+            inv.setId(null);
             if (false == isBM) {
                 inv.setBatchNumber(null);
             }

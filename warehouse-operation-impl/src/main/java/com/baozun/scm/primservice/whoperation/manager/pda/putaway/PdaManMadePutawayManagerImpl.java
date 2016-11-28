@@ -2,6 +2,7 @@ package com.baozun.scm.primservice.whoperation.manager.pda.putaway;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -616,27 +617,36 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
             maxChaosSku = 0L;
         }
         // 获取整托或者整箱的sku种类数
-        Integer skuMixStacking = 0;
-        Long skuId = whskuList.get(0).getSkuId();
-        for (int i = 1; i < whskuList.size(); i++) {
-            Long tempId = whskuList.get(i).getSkuId();
-            if (skuId != tempId) {
-                skuMixStacking = skuMixStacking + 1;
-            }
+//        Integer skuMixStacking = 0;
+//        Long skuId = whskuList.get(0).getSkuId();
+//        for (int i = 1; i < whskuList.size(); i++) {
+//            Long tempId = whskuList.get(i).getSkuId();
+//            if (skuId != tempId) {
+//                skuMixStacking = skuMixStacking + 1;
+//            }
+//        }
+//        // 获取库位上已上架的sku种类数
+//        Integer locMixStacking = 0;
+//        if (null != locationSkuList && locationSkuList.size() != 0) {
+//            Long skuLocId = locationSkuList.get(0).getSkuId();
+//            for (int i = 1; i < locationSkuList.size(); i++) {
+//                Long tempId = locationSkuList.get(i).getSkuId();
+//                if (skuLocId != tempId) {
+//                    locMixStacking = locMixStacking + 1;
+//                }
+//            }
+//        }
+        Set<Long> skuIds = new HashSet<Long>();
+        for(WhSkuInventory inv:locationSkuList) {  //库位上已经上架的sku种类数
+            skuIds.add(inv.getSkuId());
         }
-        // 获取库位上已上架的sku种类数
-        Integer locMixStacking = 0;
-        if (null != locationSkuList && locationSkuList.size() != 0) {
-            Long skuLocId = locationSkuList.get(0).getSkuId();
-            for (int i = 1; i < locationSkuList.size(); i++) {
-                Long tempId = locationSkuList.get(i).getSkuId();
-                if (skuLocId != tempId) {
-                    locMixStacking = locMixStacking + 1;
-                }
-            }
+        // 获取整托或者整箱的sku种类数
+        for(WhSkuInventory inv:whskuList) {  //库位上已经上架的sku种类数
+            skuIds.add(inv.getSkuId());
         }
+        Integer skuMixStacking =  skuIds.size();
         // 判断库位已有sku种类数+容器内SKU种类数是否<=最大混放SKU种类数 *
-        if (mixStackingNumber < (skuMixStacking + locMixStacking)) {
+        if (mixStackingNumber < skuMixStacking) {
             throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_SKU_VARIETY_OVER_MAX);
         }
         // 验证库位最大混放sku属性数,判断库位已有SKU属性数+容器内SKU属性数是否<=最大混放SKU属性数*
@@ -1967,9 +1977,13 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
                 throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_RCVD_INV_ERROR, new Object[] {insideContainerCode});
             }
             for (WhSkuInventoryCommand skuInv : invList) {
-                BeanUtils.copyProperties(skuInv, invSkuCmd);
+                if(skuInv.getSkuId().equals(invSkuCmd.getSkuId())) {
+                    BeanUtils.copyProperties(skuInv, invSkuCmd);
+                    break;
+                }
             }
         }
+        String putwaySkuAttrId = SkuCategoryProvider.getSkuAttrIdByInv(invSkuCmd);
         // 验证库位是否静态库位
         if (location.getIsStatic()) {
             // 判断库位是否绑定了容器内所有的SKU商品
@@ -1992,7 +2006,7 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
                 // 判断库位是否允许混放
                 if (mixStacking) {
                     // 允许混放
-                    this.splitPdaLocationIsMix(skuCmd.getScanSkuQty(), invSkuCmd, containerId, pdaManMadePutawayCommand, invAttrMgmtHouse, warehouse, skuCmd, insideCommand, outCommand, madecsCmd);
+                    this.splitPdaLocationIsMix(pdaManMadePutawayCommand.getIsNeedSkuDetail(),putwaySkuAttrId,insideContainerId,skuCmd.getScanSkuQty(), invSkuCmd, containerId, pdaManMadePutawayCommand, invAttrMgmtHouse, warehouse, skuCmd, insideCommand, outCommand, madecsCmd);
                 } else {
                     // 不允许混放
                     this.splitPdaLocationNotMix(skuCmd.getScanSkuQty(), invSkuCmd, containerId, warehouse, insideCommand, outCommand, pdaManMadePutawayCommand, skuCmd, madecsCmd);
@@ -2001,7 +2015,7 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
         } else { // 不是静态库位
             if (mixStacking) { // 判断是否允许混放
                 // 允许混放
-                this.splitPdaLocationIsMix(skuCmd.getScanSkuQty(), invSkuCmd, containerId, pdaManMadePutawayCommand, invAttrMgmtHouse, warehouse, skuCmd, insideCommand, outCommand, madecsCmd);
+                this.splitPdaLocationIsMix(pdaManMadePutawayCommand.getIsNeedSkuDetail(),putwaySkuAttrId,insideContainerId,skuCmd.getScanSkuQty(), invSkuCmd, containerId, pdaManMadePutawayCommand, invAttrMgmtHouse, warehouse, skuCmd, insideCommand, outCommand, madecsCmd);
             } else {
                 // 不允许混放
                 this.splitPdaLocationNotMix(skuCmd.getScanSkuQty(), invSkuCmd, containerId, warehouse, insideCommand, outCommand, pdaManMadePutawayCommand, skuCmd, madecsCmd);
@@ -2098,7 +2112,7 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
      * @param command
      * @return
      */
-    private void splitPdaLocationIsMix(Double scanSkuQty, WhSkuInventoryCommand invSkuCmd, Long containerId, PdaManMadePutawayCommand command, String invAttrMgmtHouse, Warehouse warehouse, WhSkuCommand skuCmd, ContainerCommand insideCommand,
+    private void splitPdaLocationIsMix(Boolean isNeedSkuDetail,String putwaySkuAttrId,Long insideContainerId,Double scanSkuQty, WhSkuInventoryCommand invSkuCmd, Long containerId, PdaManMadePutawayCommand command, String invAttrMgmtHouse, Warehouse warehouse, WhSkuCommand skuCmd, ContainerCommand insideCommand,
             ContainerCommand outerCommand, ManMadeContainerStatisticCommand madecsCmd) {
         Long ouId = command.getOuId();
         Long locationId = command.getLocationId();
@@ -2110,12 +2124,26 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
 
 
         List<WhSkuInventory> whskuList = new ArrayList<WhSkuInventory>();
-        // 从缓存中取出容器内的商品(取出的商品全部是库存属性不同的商品)
+        // 从缓存中取出容器内的商品
         List<WhSkuInventory> list = pdaManmadePutawayCacheManager.manMadePutwayCacheSkuInventory(containerId, ouId, command.getIsOuterContainer());
         for (WhSkuInventory skuInv : list) {
-            if (skuInv.getSkuId().equals(skuCmd.getId())) {
-                whskuList.add(skuInv);
+            if (skuInv.getSkuId().equals(skuCmd.getId()) && insideContainerId.equals(skuInv.getInsideContainerId())) {
+                if(isNeedSkuDetail) {
+                    WhSkuInventoryCommand skuInvCmd = new WhSkuInventoryCommand();
+                    BeanUtils.copyProperties(skuInv,skuInvCmd);
+                    if(putwaySkuAttrId.equals(SkuCategoryProvider.getSkuAttrIdByInv(invSkuCmd))) {
+                        whskuList.add(skuInv);
+                    }else{
+                        continue;
+                    }
+                }else{
+                    whskuList.add(skuInv);
+                }
+               
             }
+        }
+        if(whskuList.size() == 0) {
+            throw new BusinessException(ErrorCodes.NO_SKU_INVENTORY, new Object[] {skuCmd.getId()});
         }
         // 查询库位上已有商品
         WhSkuInventory inventory = new WhSkuInventory();
@@ -2127,16 +2155,6 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
         locationSkuList.addAll(whskuList);
         // 库位上已经的sku混放属性数
         Long skuAttrDiff = this.skuAttrCount(locationSkuList);
-//        Long chaosSku = 0L;// 上架sku属性数
-        Integer skuMixStacking = 1; // 拆箱上架sku种类数
-        // 上架sku属性数
-//        Long skuAttrCount = this.skuAttrCount(whskuList);
-//        if (WhScanPatternType.ONE_BY_ONE_SCAN == scanPattern) { // 逐件扫描
-//            chaosSku = skuAttrCount;
-//        }
-//        if (WhScanPatternType.NUMBER_ONLY_SCAN == scanPattern) { // 数量扫描
-//            chaosSku = skuAttrCount * Long.valueOf(scanSkuQty.toString());
-//        }
         // 查询库位
         Location location = whLocationDao.findByIdExt(locationId, ouId);
         if (null == location) {
@@ -2147,19 +2165,30 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
             mixStackingNumber = 0;
         }
         Long maxChaosSku = location.getMaxChaosSku(); // 库位最大混放SKU属性数
-        // 获取库位上已上架的sku种类数
-        Integer locMixStacking = 0;
-        if (null != locationSkuList && locationSkuList.size() != 0) {
-            Long skuLocId = locationSkuList.get(0).getSkuId();
-            for (int i = 1; i < locationSkuList.size(); i++) {
-                Long tempId = locationSkuList.get(i).getSkuId();
-                if (skuLocId != tempId) {
-                    locMixStacking = locMixStacking + 1;
-                }
-            }
+//        // 获取库位上已上架的sku种类数
+//        Integer locMixStacking = 0;
+//        if (null != locationSkuList && locationSkuList.size() != 0) {
+//            Long skuLocId = locationSkuList.get(0).getSkuId();
+//            for (int i = 1; i < locationSkuList.size(); i++) {
+//                Long tempId = locationSkuList.get(i).getSkuId();
+//                if (skuLocId != tempId) {
+//                    locMixStacking = locMixStacking + 1;
+//                }
+//            }
+//        }
+        Integer skuMixStacking = 0; // 拆箱上架sku种类数
+        Set<Long> skuIds = new HashSet<Long>();
+        for(WhSkuInventory inv:locationSkuList) {
+            Long skuId = inv.getSkuId();
+            skuIds.add(skuId);
+        }
+        if(skuIds.contains(skuCmd.getId())) {
+            skuMixStacking = skuIds.size();
+        }else{
+            skuMixStacking = skuIds.size()+1;
         }
         // 判断库位已有sku种类数+容器内SKU种类数是否<=最大混放SKU种类数 *
-        if (mixStackingNumber < (skuMixStacking + locMixStacking)) {
+        if (mixStackingNumber < skuMixStacking) {
             throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_SKU_VARIETY_OVER_MAX);
         }
         // 验证库位最大混放sku属性数,判断库位已有SKU属性数+容器内SKU属性数是否<=最大混放SKU属性数*
@@ -2455,14 +2484,14 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
         if (WhScanPatternType.NUMBER_ONLY_SCAN == scanPattern) { // 批量扫描
             // 判断sn/残次信息是否存在,是否已经被扫描
             this.isScanSkuSnDefect(scanPattern, ouId, insideContainerId, skuId, mPaCmd.getIsNeedScanDefect(), mPaCmd.getIsNeedScanSn(), mPaCmd.getSkuSnCode(), whskuInv.getUuid(), mPaCmd.getSkuDefectCode());
-            long cacheValue = cacheManager.incrBy(CacheConstants.PDA_MAN_MANDE_SCAN_SKU_SN + insideContainerId.toString() + skuId.toString(), Constants.SN_DEFECR_COUNT);
+            long cacheValue = cacheManager.incrBy(CacheConstants.PDA_MAN_MANDE_SCAN_SKU_SN_DEFECT + insideContainerId.toString() + skuId.toString(), Constants.SN_DEFECR_COUNT);
             if (cacheValue < scanQty.longValue()) { // 还有sn/残次信息需要扫描
                 mPaCmd.setIsScanSkuSnDefect(true); // 需要扫描商品的sku/残次信息
                 return mPaCmd;
             }
-            if (cacheValue > scanQty.longValue()) {
-                throw new BusinessException(ErrorCodes.SCAN_SKU_SN_QTY_ERROR, new Object[] {cacheValue + scanQty.longValue()});
-            }
+//            if (cacheValue > scanQty.longValue()) {
+//                throw new BusinessException(ErrorCodes.SCAN_SKU_SN_QTY_ERROR, new Object[] {cacheValue + scanQty.longValue()});
+//            }
 
         }
         List<WhSkuInventorySnCommand> whSkuInventorySnCmdList = whSkuInventorySnDao.findWhSkuInventoryByUuid(ouId,uuid);
