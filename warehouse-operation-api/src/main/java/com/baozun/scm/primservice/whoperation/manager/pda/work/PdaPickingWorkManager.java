@@ -54,5 +54,13 @@ public interface PdaPickingWorkManager extends BaseManager {
      */
     public PickingScanResultCommand pdaPickingWholeCase(PickingScanResultCommand  command);
     
-    
+    /**
+     * 统计分析工作及明细并缓存
+     * 
+     * @author qiming.liu
+     * @param whWork
+     * @param ouId
+     * @return
+     */
+    void findOperatioLineForGroup(WhWork whWork, Long ouId);
 }
