@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.LocationProductVolumeDao">
+    <resultMap id="LocationProductVolumeResult" type="com.baozun.scm.primservice.whoperation.model.warehouse.LocationProductVolume">
+    </resultMap>
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="locationProductVolumeColumns">
+        <![CDATA[
+                id as id,
+                pc_id as pcId,
+                size as size,
+                unit as unit,
+                volume as volume,
+                ou_id as ouId
+        ]]>
+    </sql>
+
+    <!-- 如果有自增字段 -->
+
+    <!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+    <insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.LocationProductVolume"
+
+            flushCache="true">
+        <![CDATA[
+                INSERT INTO
+                t_wh_location_product_volume (
+                id,
+                    pc_id ,
+                    size ,
+                    unit ,
+                    volume ,
+                    ou_id 
+                ) VALUES (
+                #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{pcId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{size,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{unit,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{volume,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+                )
+            ]]>
+
+    </insert>
+
+
+    <update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.LocationProductVolume">
+        <![CDATA[
+            UPDATE t_wh_location_product_volume SET
+                pc_id = #{pcId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                size = #{size,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                unit = #{unit,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                volume = #{volume,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+            WHERE 
+                id = #{id} 
+        ]]>
+    </update>
+    <delete id="delete" parameterType="java.lang.Long">
+        <![CDATA[
+            delete from t_wh_location_product_volume where
+                id = #{id} 
+        ]]>
+    </delete>
+
+    <delete id="deleteByIds" parameterType="list">
+
+        delete from t_wh_location_product_volume
+        where id in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+
+    </delete>
+
+    <select id="findById" parameterType="java.lang.Long" resultMap="LocationProductVolumeResult" flushCache="false">
+        select
+        <include refid="locationProductVolumeColumns"/>
+        <![CDATA[
+                from t_wh_location_product_volume 
+                where 
+                id = #{id} 
+            ]]>
+    </select>
+    <select id="getByIds" parameterType="list" resultMap="LocationProductVolumeResult" flushCache="false">
+        select
+        <include refid="locationProductVolumeColumns"/>
+        from t_wh_location_product_volume
+        where id in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+    <sql id="locationProductVolumeDynamicWhere">
+        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+
+            <if test="id!=null">
+                and id = #{id}
+            </if>
+
+            <if test="pcId!=null">
+                and pc_id = #{pcId}
+            </if>
+
+
+            <if test="size!=null and size!=''">
+                and size = #{size}
+            </if>
+
+
+            <if test="unit!=null and unit!=''">
+                and unit = #{unit}
+            </if>
+
+            <if test="volume!=null">
+                and volume = #{volume}
+            </if>
+
+            <if test="ouId!=null">
+                and ou_id = #{ouId}
+            </if>
+        </where>
+    </sql>
+
+
+    <select id="getCount" resultType="long">
+        select count(*) from t_wh_location_product_volume
+    </select>
+    <select id="findListCountByQueryMap" resultType="long">
+        select count(*) from t_wh_location_product_volume
+        <include refid="locationProductVolumeDynamicWhere"/>
+    </select>
+
+    <select id="findListCountByParam" resultType="long">
+        select count(*) from t_wh_location_product_volume
+        <include refid="locationProductVolumeDynamicWhere"/>
+    </select>
+
+    <!--
+        分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+        因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPage" resultMap="LocationProductVolumeResult">
+        select
+        <include refid="locationProductVolumeColumns"/>
+        from t_wh_location_product_volume
+        <include refid="locationProductVolumeDynamicWhere"/>
+
+    </select>
+
+    <select id="findListByQueryMap" resultMap="LocationProductVolumeResult">
+        select
+        <include refid="locationProductVolumeColumns"/>
+        from t_wh_location_product_volume
+        <include refid="locationProductVolumeDynamicWhere"/>
+
+    </select>
+
+    <select id="findListByParam" resultMap="LocationProductVolumeResult">
+        select
+        <include refid="locationProductVolumeColumns"/>
+        from t_wh_location_product_volume
+        <include refid="locationProductVolumeDynamicWhere"/>
+
+    </select>
+
+
+</mapper>
