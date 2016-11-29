@@ -423,9 +423,9 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
                     }
                 } else {
                     // 剔除规则中没有静态库位可超分配或空库位的工作单
-                    SysDictionary dictionary = sysDictionaryDao.getGroupbyGroupValueAndDicValue(Constants.WAVE_FAIL_REASON, Constants.NOT_STATIC_EMPTY_LOCATION);
+                    // SysDictionary dictionary = sysDictionaryDao.getGroupbyGroupValueAndDicValue(Constants.WAVE_FAIL_REASON, Constants.INVENTORY_SHORTAGE);
                     for (Long odoId : odoIds) {
-                        whWaveLineManager.deleteWaveLinesByOdoId(odoId, waveId, ouId, dictionary.getDicLabel());
+                        whWaveLineManager.deleteWaveLinesByOdoId(odoId, waveId, ouId, Constants.INVENTORY_SHORTAGE);
                         // 释放库存
                         whSkuInventoryManager.releaseInventoryByOdoId(odoId, wh);
                     }
@@ -434,9 +434,9 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
                 }
             } else {
                 // 剔除库存数量没有分配完全所有工作单
-                SysDictionary dictionary = sysDictionaryDao.getGroupbyGroupValueAndDicValue(Constants.WAVE_FAIL_REASON, Constants.NOT_STATIC_EMPTY_LOCATION);
+                // SysDictionary dictionary = sysDictionaryDao.getGroupbyGroupValueAndDicValue(Constants.WAVE_FAIL_REASON, Constants.INVENTORY_SHORTAGE);
                 for (Long odoId : allOdoIds) {
-                    whWaveLineManager.deleteWaveLinesByOdoId(odoId, waveId, ouId, dictionary.getDicLabel());
+                    whWaveLineManager.deleteWaveLinesByOdoId(odoId, waveId, ouId, Constants.INVENTORY_SHORTAGE);
                     // 释放库存
                     whSkuInventoryManager.releaseInventoryByOdoId(odoId, wh);
                 }

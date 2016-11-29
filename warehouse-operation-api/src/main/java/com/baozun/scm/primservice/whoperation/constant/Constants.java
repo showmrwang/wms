@@ -409,16 +409,15 @@ public final class Constants {
     /** 硬分配阶段 1：硬分配 */
     public static final Integer HARD_PHASE_ALLOCATION = 1;
     /** 硬分配阶段 分配规则失败 */
-    public static final String RULE_ALLOCATION_FAILURE = "RULE_ALLOCATION_FAILURE";
-    /** 硬分配阶段 没有空库位和静态库位超分配 */
-    public static final String NOT_STATIC_EMPTY_LOCATION = "NOT_STATIC_EMPTY_LOCATION";
+    public static final String RULE_ALLOCATION_FAILURE = "ERROR004";
+    /** 硬分配阶段 库存不足 没有空库位和静态库位超分配 */
+    public static final String INVENTORY_SHORTAGE = "ERROR005";
     /** 补货阶段 商品未匹配到补货规则 */
-    public static final String REPLENISHED_SKU_NO_RULE = "REPLENISHED_SKU_NO_RULE";
-
+    public static final String REPLENISHED_SKU_NO_RULE = "ERROR001";
     /** 补货阶段 未匹配到目标库位 */
-    public static final String REPLENISHED_NO_TARGET_LOCATION = "REPLENISHED_NO_TARGET_LOCATION";
+    public static final String REPLENISHED_NO_TARGET_LOCATION = "ERROR002";
     /** 补货阶段 补货不足失败 */
-    public static final String REPLENISHED_FAIL = "REPLENISHED_FAIL";
+    public static final String REPLENISHED_FAIL = "ERROR003";
     
     public static final String ALLOCATE_STRATEGY_FIRSTINFIRSTOUT = "1"; 	// 先入先出
     public static final String ALLOCATE_STRATEGY_FIRSTINLASTOUT = "2";	// 先入后出

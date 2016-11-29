@@ -2928,23 +2928,21 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 			return;
 		}
 		List<WhSkuInventoryCommand> allSkuInvs = new ArrayList<WhSkuInventoryCommand>();
-		Boolean isStaticLocation = false;
 		// 记录静态库位可超分配的库位id
 		Set<String> staticLocationIds = new HashSet<String>();
 		// 记录整托占用容器ids
 		Set<String> trayIds = new HashSet<String>();
 		// 记录整箱占用容器ids
 		Set<String> packingCaseIds = new HashSet<String>();
-		Long areaId = null;
 		Long waveLineId = null;
 		Map<Long, Boolean> replenishedMap = new HashMap<Long, Boolean>();
 		for (AllocateStrategy as : rules) {
+			Boolean isStaticLocation = false;
+			Long areaId = null;
 			List<String> allocateUnitCodes = Arrays.asList(as.getAllocateUnitCodes().split(","));	// 分配单位
 			if (Constants.ALLOCATE_STRATEGY_STATICLOCATIONCANASSIGNMENT.equals(as.getStrategyCode())) {
 				isStaticLocation = true;
 				areaId = as.getAreaId();
-			} else {
-				isStaticLocation = false;
 			}
 			if (Constants.ALLOCATE_STRATEGY_EMPTYLOCATION.equals(as.getStrategyCode())) {
 				areaId = as.getAreaId();
@@ -2963,6 +2961,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 					}
 					if (!packingCaseIds.isEmpty()) {
 						packingCaseIds.clear();
+					}
+					if (!staticLocationIds.isEmpty()) {
+						staticLocationIds.clear();
 					}
 				}
 				// 先到期先出,先到期后出验证是否是有效期商品
@@ -2987,6 +2988,11 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 					} else if (!flag) {
 						continue;
 					}
+				}
+				// 空库位 
+				if (Constants.ALLOCATE_STRATEGY_EMPTYLOCATION.equals(as.getStrategyCode())) {
+					whWaveLineManager.updateWaveLineByAllocateQty(line.getId(), 0.0, 0.0, isStaticLocation, staticLocationIds, trayIds, packingCaseIds, areaId, wh.getId(), logId);
+					continue;
 				}
 				// 封装查询库存条件
 				skuCommand.setSkuId(line.getSkuId());
@@ -3045,7 +3051,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 					notHaveInvAttrLines.remove(j--);
 				}
 				whWaveLineManager.updateWaveLineByAllocateQty(line.getId(), occupyQty, containerQty, isStaticLocation, staticLocationIds, trayIds, packingCaseIds, areaId, wh.getId(), logId);
-				if (null == allSkuInvs || allSkuInvs.isEmpty()) {
+				if ((null == allSkuInvs || allSkuInvs.isEmpty()) && !Constants.ALLOCATE_STRATEGY_STATICLOCATIONCANASSIGNMENT.equals(as.getStrategyCode())) {
 					break;
 				}
 			}

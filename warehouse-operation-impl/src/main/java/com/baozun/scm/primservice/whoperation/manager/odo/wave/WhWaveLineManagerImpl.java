@@ -156,13 +156,15 @@ public class WhWaveLineManagerImpl extends BaseManagerImpl implements WhWaveLine
 		}
 		if (null != isStaticLocation && isStaticLocation) {
 			whWaveLine.setIsStaticLocationAllocate(isStaticLocation);
-			whWaveLine.setStaticLocationIds(StringUtils.collectionToCommaDelimitedString(staticLocationIds));
+			if (!staticLocationIds.isEmpty()) {
+				whWaveLine.setStaticLocationIds(StringUtils.collectionToCommaDelimitedString(staticLocationIds));
+			}
 		}
 		if (!trayIds.isEmpty()) {
 			whWaveLine.setTrayIds(StringUtils.collectionToCommaDelimitedString(trayIds));
 		}
 		if (!packingCaseIds.isEmpty()) {
-			whWaveLine.setTrayIds(StringUtils.collectionToCommaDelimitedString(packingCaseIds));
+			whWaveLine.setPackingCaseIds(StringUtils.collectionToCommaDelimitedString(packingCaseIds));
 		}
 		if (null != areaId) {
 			whWaveLine.setAreaId(areaId);
@@ -170,7 +172,7 @@ public class WhWaveLineManagerImpl extends BaseManagerImpl implements WhWaveLine
 		whWaveLineDao.saveOrUpdateByVersion(whWaveLine);
 		log.info("update whwaveLineId:[{}], allocateQty:[{}], logId:[{}]", id, newAllocateQty, logId);
 	}
-
+	
 	@Override
 	@MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
 	public Map<Long, Map<Long, Map<Long, Map<Long, Map<Boolean, List<WhWaveLine>>>>>> getNeedInventoryMap(List<Long> waveIdList, Long ouId) {
