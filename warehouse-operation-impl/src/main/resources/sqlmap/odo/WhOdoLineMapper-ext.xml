@@ -760,6 +760,7 @@
 		set 
 			l.is_assign_success = 0,
 			l.assign_fail_reason = #{reason},
+			l.odo_line_status = 1,
 			l.wave_code = null
 		where 
 			l.odo_id = #{odoId}
