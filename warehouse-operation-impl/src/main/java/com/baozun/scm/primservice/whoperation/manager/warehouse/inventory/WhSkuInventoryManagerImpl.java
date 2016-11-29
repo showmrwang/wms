@@ -2232,7 +2232,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             inv.setOuterContainerId(null);
             inv.setInsideContainerId(null);
             inv.setLocationId(locationId);
-            inv.setOnHandQty(invCmd.getOnHandQty()+scanSkuQty);
+            inv.setOnHandQty(inv.getOnHandQty()+scanSkuQty);
             inv.setInboundTime(new Date());
             inv.setIsLocked(false);
             if (false == isBM) {
