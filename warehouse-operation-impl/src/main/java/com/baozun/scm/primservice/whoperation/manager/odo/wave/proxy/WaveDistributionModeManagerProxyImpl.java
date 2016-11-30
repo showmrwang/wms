@@ -505,6 +505,7 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
                 WhOdo odo = this.odoManager.findOdoByIdOuId(odoId, ouId);
                 odo.setDistributeMode(distributeMode);
                 odo.setDistributionCode(skuCode);
+                odo.setIsAllowMerge(false);
                 int count = this.odoManager.updateByVersion(odo);
                 // 更新失败，则再试一次
                 if (count <= 0) {
@@ -564,6 +565,7 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
                 WhOdo odo = this.odoManager.findOdoByIdOuId(odoId, ouId);
                 odo.setDistributeMode(distributeMode);
                 odo.setDistributionCode(skuCode);
+                odo.setIsAllowMerge(false);
                 int count = this.odoManager.updateByVersion(odo);
                 // 更新失败，则再试一次
                 if (count <= 0) {
@@ -615,6 +617,7 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
                 WhOdo odo = this.odoManager.findOdoByIdOuId(odoId, ouId);
                 odo.setDistributeMode(distributeMode);
                 odo.setDistributionCode(skuCode);
+                odo.setIsAllowMerge(false);
                 int count = this.odoManager.updateByVersion(odo);
                 // 更新失败，则再试一次
                 if (count <= 0) {

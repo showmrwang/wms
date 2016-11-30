@@ -1282,7 +1282,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                     count += lineCount;
                 }
                 // 校验SN是否存在
-                if (count > 0 && isExists) {
+                if (count > 0 && !isExists) {
                     throw new BusinessException(ErrorCodes.RCVD_SN_NO_EXISTS_ERROR);
                 }
                 // 校验SN是否被扫描过

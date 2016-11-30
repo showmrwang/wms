@@ -122,7 +122,7 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
             List<String> keyList = this.cacheManager.Keys(CacheKeyConstant.OU_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + "*");
             for (String key : keyList) {
                 String[] keyArray = key.substring(key.indexOf("%")).split("\\" + CacheKeyConstant.WAVE_ODO_SPLIT);
-                String idStr = this.cacheManager.getValue(CacheKeyConstant.OU_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + keyArray[1]);
+                String idStr = this.cacheManager.getValue(CacheKeyConstant.OU_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + keyArray[4]);
                 this.cacheManager.setValue(CacheKeyConstant.SECKILL_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + idStr, idStr);
                 this.cacheManager.setValue(key.substring(key.indexOf("%")), "2");
             }
@@ -131,7 +131,7 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
         } else if (seckill > seckillOdoQtys) {
             this.cacheManager.setValue(CacheKeyConstant.SECKILL_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + odoId, odoId + "");
         } else {
-            this.cacheManager.setValue(CacheKeyConstant.OU_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + odoId, "1");
+            this.cacheManager.setValue(CacheKeyConstant.OU_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + odoId, odoId + "");
         }
 
 
