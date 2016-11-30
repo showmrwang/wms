@@ -2284,7 +2284,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					<if test="isMixStacking != null and isMixStacking == true">
 						and loc.is_mix_stacking = 1
 					</if>
-				group by inv.inbound_time,inv.uuid
+				group by inv.uuid
 				order by 
 				<if test="priority != null and priority == true">
 					sumOnHandQty,loc.pick_sort,loc.code

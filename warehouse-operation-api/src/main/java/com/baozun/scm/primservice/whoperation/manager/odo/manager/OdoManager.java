@@ -170,6 +170,7 @@ public interface OdoManager extends BaseManager {
      * @param odolineList
      * @param userId
      * @param logId
+     * @return
      */
     void createOdoWave(WhWave wave, Long waveTemplateId, List<WhWaveLine> waveLineList, Map<Long, WhOdo> odoMap, List<WhOdoLine> odolineList, Long userId, String logId);
 

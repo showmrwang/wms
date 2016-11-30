@@ -496,7 +496,6 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
             Entry<Long, WhOdo> entry = odoIt.next();
             this.distributionModeArithmeticManagerProxy.AddToWave(wave.getCode(), entry.getKey());
         }
-
     }
 
     @Override
@@ -601,10 +600,16 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void finishCreateOdo(WhOdo odo, List<WhOdoLine> lineList) {
-        this.whOdoDao.saveOrUpdateByVersion(odo);
+        int updatecount = this.whOdoDao.saveOrUpdateByVersion(odo);
+        if (updatecount <= 0) {
+            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+        }
         if (lineList != null && lineList.size() > 0) {
             for (WhOdoLine line : lineList) {
-                this.whOdoLineDao.saveOrUpdateByVersion(line);
+                int count = this.whOdoLineDao.saveOrUpdateByVersion(line);
+                if (count < 1) {
+                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                }
             }
         }
 

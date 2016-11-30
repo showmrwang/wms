@@ -2924,7 +2924,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 	
 	@Override
 	public void allocationInventoryByLineList(List<WhWaveLine> notHaveInvAttrLines, List<AllocateStrategy> rules, Warehouse wh, String logId) {
-		if (null == notHaveInvAttrLines || notHaveInvAttrLines.isEmpty()) {
+		if (null == rules || rules.isEmpty()) {
+			log.error("AllocateStrategy is null logId:[{}]", logId);
 			return;
 		}
 		List<WhSkuInventoryCommand> allSkuInvs = new ArrayList<WhSkuInventoryCommand>();
@@ -2951,6 +2952,13 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 			for (int j = 0; j < notHaveInvAttrLines.size(); j++) {
 				WhWaveLine line = notHaveInvAttrLines.get(j);
 				waveLineId = line.getId();
+				Long skuId = line.getSkuId();
+				Long storeId = line.getStoreId();
+				Long invStatus = line.getInvStatus();
+				Long ouId = wh.getId();
+				Double qty = line.getQty();				// 需要占用数量
+				String strategyCode = as.getStrategyCode();
+				log.info("Occupy Inventory, skuId:[{}], storeId:[{}], invStutas:[{}], allocateStrategyId:[{}], qty:[{}], ouId:[{}], logId:[{}]", skuId, storeId, invStatus, as.getId(), qty, ouId, logId);
 				if (line.getQty().equals(line.getAllocateQty())) {
 					continue;
 				}
@@ -2967,18 +2975,18 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 					}
 				}
 				// 先到期先出,先到期后出验证是否是有效期商品
-				if (Constants.ALLOCATE_STRATEGY_FIRSTEXPIRATIONFIRSTOUT.equals(as.getStrategyCode())
-						|| Constants.ALLOCATE_STRATEGY_FIRSTEXPIRATIONLASTOUT.equals(as.getStrategyCode())) {
+				if (Constants.ALLOCATE_STRATEGY_FIRSTEXPIRATIONFIRSTOUT.equals(strategyCode)
+						|| Constants.ALLOCATE_STRATEGY_FIRSTEXPIRATIONLASTOUT.equals(strategyCode)) {
 					Boolean isExpirationSku = skuDao.checkIsExpirationSku(line.getSkuId(), line.getOuId());
 					if (isExpirationSku == null || !isExpirationSku) {
 						break;
 					}
 				}
 				// 静态库位超分配判断是否有补货阶段, 没有补货阶段跳过
-				if (Constants.ALLOCATE_STRATEGY_STATICLOCATIONCANASSIGNMENT.equals(as.getStrategyCode())) {
+				if (Constants.ALLOCATE_STRATEGY_STATICLOCATIONCANASSIGNMENT.equals(strategyCode)) {
 					Boolean flag = replenishedMap.get(line.getWaveId());
 					if (null == flag) {
-						String phaseCode = whWaveManager.getNextParseCode(line.getWaveId(), line.getOuId());
+						String phaseCode = whWaveManager.getNextParseCode(line.getWaveId(), ouId);
 						if (!WavePhase.REPLENISHED.equals(phaseCode)) {
 							replenishedMap.put(line.getWaveId(), false);
 							continue;
@@ -2990,17 +2998,16 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 					}
 				}
 				// 空库位 
-				if (Constants.ALLOCATE_STRATEGY_EMPTYLOCATION.equals(as.getStrategyCode())) {
-					whWaveLineManager.updateWaveLineByAllocateQty(line.getId(), 0.0, 0.0, isStaticLocation, staticLocationIds, trayIds, packingCaseIds, areaId, wh.getId(), logId);
+				if (Constants.ALLOCATE_STRATEGY_EMPTYLOCATION.equals(strategyCode)) {
+					whWaveLineManager.updateWaveLineByAllocateQty(waveLineId, 0.0, 0.0, isStaticLocation, staticLocationIds, trayIds, packingCaseIds, areaId, ouId, logId);
 					continue;
 				}
 				// 封装查询库存条件
-				skuCommand.setSkuId(line.getSkuId());
-				skuCommand.setStoreId(line.getStoreId());
-				skuCommand.setInvStatus(line.getInvStatus());
-				skuCommand.setOuId(wh.getId());
+				skuCommand.setSkuId(skuId);
+				skuCommand.setStoreId(storeId);
+				skuCommand.setInvStatus(invStatus);
+				skuCommand.setOuId(ouId);
 				Double occupyQty = 0.0;					// 实际占用数量
-				Double qty = line.getQty();				// 需要占用数量
 				String occupyCode = line.getOdoCode();	// 占用编码
 				Long odoLineId = line.getOdoLineId();	// 占用odoLineId
 				Double containerQty = 0.0;
@@ -3008,13 +3015,13 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 				if (null == allSkuInvs || allSkuInvs.isEmpty()) {
 					skuCommand.setAreaId(as.getAreaId());
 					skuCommand.setAllocateUnitCodes(Constants.ALLOCATE_UNIT_PIECE);
-					allSkuInvs = findInventorysByAllocateStrategy(as.getStrategyCode(), skuCommand, qty);
+					allSkuInvs = findInventorysByAllocateStrategy(strategyCode, skuCommand, qty);
 				}
 				// 策略分配单位中包含托盘出
 				if (allocateUnitCodes.contains(Constants.ALLOCATE_UNIT_TP) && -1 == new Double(0.0).compareTo(qty) && null != allSkuInvs && !allSkuInvs.isEmpty()) {
 					skuCommand.setAllocateUnitCodes(Constants.ALLOCATE_UNIT_TP);
 					// 查询出是托盘容器的库存份
-					List<WhSkuInventoryCommand> uuids = findInventorysByAllocateStrategy(as.getStrategyCode(), skuCommand, qty);
+					List<WhSkuInventoryCommand> uuids = findInventorysByAllocateStrategy(strategyCode, skuCommand, qty);
 					// 占用库存并把策略下的所有件库存集合(allSkuInvs)扣减
 					Double num = inventoryOccupyManager.occupyInvUuidsByPalletContainer(uuids, qty, occupyCode, odoLineId, Constants.SKU_INVENTORY_OCCUPATION_SOURCE_ODO, wh, Constants.ALLOCATE_UNIT_TP, allSkuInvs, isStaticLocation, staticLocationIds, trayIds, packingCaseIds);
 					qty -= num;
@@ -3025,7 +3032,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 				if (allocateUnitCodes.contains(Constants.ALLOCATE_UNIT_HX) && -1 == new Double(0.0).compareTo(qty) && null != allSkuInvs && !allSkuInvs.isEmpty()) {
 					skuCommand.setAllocateUnitCodes(Constants.ALLOCATE_UNIT_HX);
 					// 查询出是货箱容器的库存份
-					List<WhSkuInventoryCommand> uuids = findInventorysByAllocateStrategy(as.getStrategyCode(), skuCommand, qty);
+					List<WhSkuInventoryCommand> uuids = findInventorysByAllocateStrategy(strategyCode, skuCommand, qty);
 					// 占用库存并把策略下的所有件库存集合(allSkuInvs)扣减
 					Double num = inventoryOccupyManager.occupyInvUuidsByPalletContainer(uuids, qty, occupyCode, odoLineId, Constants.SKU_INVENTORY_OCCUPATION_SOURCE_ODO, wh, Constants.ALLOCATE_UNIT_HX, allSkuInvs, isStaticLocation, staticLocationIds, trayIds, packingCaseIds);
 					qty -= num;
@@ -3035,7 +3042,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 				Double num = 0.0;
 				// 分配策略为数量最佳匹配
 				if (-1 == new Double(0.0).compareTo(qty) && null != allSkuInvs && !allSkuInvs.isEmpty()) {
-					if (Constants.ALLOCATE_STRATEGY_QUANTITYBESTMATCH.equals(as.getStrategyCode())) {
+					if (Constants.ALLOCATE_STRATEGY_QUANTITYBESTMATCH.equals(strategyCode)) {
 						List<WhSkuInventoryCommand> uuids = findInventoryUuidByBestMatchAndPiece(skuCommand, qty);
 						num = inventoryOccupyManager.occupyInvUuids(uuids, qty, occupyCode, odoLineId, Constants.SKU_INVENTORY_OCCUPATION_SOURCE_ODO, wh, Constants.ALLOCATE_UNIT_HX, allSkuInvs, isStaticLocation, staticLocationIds);
 						occupyQty += num;
@@ -3050,8 +3057,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 				} else if (0 == qty.compareTo(num)) {
 					notHaveInvAttrLines.remove(j--);
 				}
-				whWaveLineManager.updateWaveLineByAllocateQty(line.getId(), occupyQty, containerQty, isStaticLocation, staticLocationIds, trayIds, packingCaseIds, areaId, wh.getId(), logId);
-				if ((null == allSkuInvs || allSkuInvs.isEmpty()) && !Constants.ALLOCATE_STRATEGY_STATICLOCATIONCANASSIGNMENT.equals(as.getStrategyCode())) {
+				whWaveLineManager.updateWaveLineByAllocateQty(line.getId(), occupyQty, containerQty, isStaticLocation, staticLocationIds, trayIds, packingCaseIds, areaId, ouId, logId);
+				if ((null == allSkuInvs || allSkuInvs.isEmpty()) && !Constants.ALLOCATE_STRATEGY_STATICLOCATIONCANASSIGNMENT.equals(strategyCode)) {
 					break;
 				}
 			}
@@ -3130,12 +3137,6 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 	}
     
 	public List<WhSkuInventoryCommand> findInventoryUuidByExpTime(WhSkuInventoryCommand whSkuInventoryCommand, boolean flag) {
-		Long skuId = whSkuInventoryCommand.getSkuId();
-		Long ouId = whSkuInventoryCommand.getOuId();
-    	Boolean isExpirationSku = skuDao.checkIsExpirationSku(skuId, ouId);
-    	if (isExpirationSku == null || !isExpirationSku) {
-			return null;
-		}
     	List<WhSkuInventoryCommand> skuInvs = null;
 		// 入库时间顺序 true:升序 false:降序
     	whSkuInventoryCommand.setPriority(new Boolean(flag));

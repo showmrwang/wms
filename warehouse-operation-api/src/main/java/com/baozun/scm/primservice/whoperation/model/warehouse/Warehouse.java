@@ -148,12 +148,21 @@ public class Warehouse extends BaseModel {
     private Integer seckillOdoQtys;
     private Boolean isCalcTwoSkuSuit;
     private Integer twoSkuSuitOdoQtys;
+    private Integer suitsMaxSkuCategorys;
     private Boolean isCalcSuits;
     private Integer suitsOdoQtys;
     /**播种墙对应单据数*/
     private Integer seedinfOdoQty;
 
 
+
+    public Integer getSuitsMaxSkuCategorys() {
+        return suitsMaxSkuCategorys;
+    }
+
+    public void setSuitsMaxSkuCategorys(Integer suitsMaxSkuCategorys) {
+        this.suitsMaxSkuCategorys = suitsMaxSkuCategorys;
+    }
 
     public Boolean getIsCalcSeckill() {
         return isCalcSeckill;

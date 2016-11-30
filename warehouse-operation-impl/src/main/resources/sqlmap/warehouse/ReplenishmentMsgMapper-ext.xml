@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.ReplenishmentMsgDao">
+    <resultMap id="whReplenishmentMsgResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentMsg">
+    </resultMap>
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="whReplenishmentMsgColumnsExt">
+        <![CDATA[
+                id as id,
+                location_id as locationId,
+                sku_id as skuId,
+                upper_limit_qty as upperLimitQty,
+                error_code as errorCode,
+                ou_id as ouId,
+                create_time as createTime,
+                last_modify_time as lastModifyTime
+        ]]>
+    </sql>
+
+    <sql id="whReplenishmentMsgDynamicWhereExt">
+        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+
+            <if test="id!=null">
+                and id = #{id}
+            </if>
+
+            <if test="locationId!=null">
+                and location_id = #{locationId}
+            </if>
+
+            <if test="skuId!=null">
+                and sku_id = #{skuId}
+            </if>
+
+            <if test="upperLimitQty!=null">
+                and upper_limit_qty = #{upperLimitQty}
+            </if>
+
+
+            <if test="errorCode!=null and errorCode!=''">
+                and error_code = #{errorCode}
+            </if>
+
+            <if test="ouId!=null">
+                and ou_id = #{ouId}
+            </if>
+
+            <if test="createTime!=null">
+                and create_time = #{createTime}
+            </if>
+
+            <if test="lastModifyTime!=null">
+                and last_modify_time = #{lastModifyTime}
+            </if>
+        </where>
+    </sql>
+
+</mapper>

@@ -577,6 +577,8 @@ public class CheckInQueueManagerImpl extends BaseManagerImpl implements CheckInQ
         originWhAsn.setModifiedId(userId);
         if (!isInCheckInQueue) {
             originWhAsn.setDeliveryTime(new Date());
+            // 更新PO实际到货时间
+            this.updateWhPo(asnId, ouId, userId, logId);
         }
         // 更新whAsn信息
         originWhAsn = this.updateWhAsn(asnId, ouId, userId, logId, originWhAsn);

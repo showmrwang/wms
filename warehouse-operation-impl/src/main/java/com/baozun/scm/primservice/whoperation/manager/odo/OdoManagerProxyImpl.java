@@ -55,6 +55,7 @@ import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoVasManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.wave.WhWaveLineManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.wave.WhWaveManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy.DistributionModeArithmeticManagerProxy;
+import com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy.WaveDistributionModeManagerProxy;
 import com.baozun.scm.primservice.whoperation.manager.redis.SkuRedisManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.InventoryStatusManager;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
@@ -100,6 +101,8 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
     private WhWaveLineManager waveLineManager;
     @Autowired
     private DistributionModeArithmeticManagerProxy distributionModeArithmeticManagerProxy;
+    @Autowired
+    private WaveDistributionModeManagerProxy waveDistributionModeManagerProxy;
     @Autowired
     private SkuRedisManager skuRedisManager;
 
@@ -1318,7 +1321,6 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
             waveLineList.add(waveLine);
         }
         this.odoManager.createOdoWave(wave, master.getWaveTemplateId(), waveLineList, odoMap, odolineList, userId, logId);
-
         return waveCode;
     }
 

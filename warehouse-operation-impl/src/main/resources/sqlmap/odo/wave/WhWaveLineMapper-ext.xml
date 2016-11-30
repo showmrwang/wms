@@ -630,6 +630,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		<foreach collection="waveIdList" item="id" open="(" separator="," close=")">
 			#{id} 
 		</foreach> 
+		AND l.allocate_rule_id is null
 		AND l.ou_id = #{ouId}
 	</select>
 	
