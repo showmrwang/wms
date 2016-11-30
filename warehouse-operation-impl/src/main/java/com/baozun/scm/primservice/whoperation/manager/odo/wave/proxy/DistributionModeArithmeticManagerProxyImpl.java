@@ -87,13 +87,13 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
         Integer skuType = Integer.parseInt(codeArray[1]);
         switch(skuType.intValue()){
             case 1:
-                calcSeckill(code, wh.getSeckillOdoQtys(), odoId);
+                calcSeckill(code, wh, odoId);
                 break;
             case 2:
-                calcTwoSkuSuit(code, wh.getTwoSkuSuitOdoQtys(), wh.getSuitsOdoQtys(), odoId);
+                calcTwoSkuSuit(code, wh, odoId);
                 break;
             default :
-                calcSuits(code, wh.getSuitsOdoQtys(), odoId);
+                calcSuits(code, wh, odoId);
                 break;
         }
 
@@ -106,13 +106,17 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
      * @param seckillOdoQtys
      * @param odoId
      */
-    private void calcSeckill(String code, int seckillOdoQtys, Long odoId) {
+    private void calcSeckill(String code, Warehouse wh, Long odoId) {
         // 仓库秒杀配货模式计算的逻辑：
         // 秒杀计数器+1
         // 如果达到阙值，则进行以下判断
         // 如果第一次达到，则将所有同样CODE【计数器编码】的放入到秒杀出库单中
         // 如果超出则只需要将本出库单加入到秒杀出库单中
         // 同时移除出库单池中的缓存
+        if (!wh.getIsCalcSeckill()) {
+            return;
+        }
+        int seckillOdoQtys = wh.getSeckillOdoQtys();
         long seckill = this.cacheManager.incr(CacheKeyConstant.SECKILL_PREFIX + code);
         if (seckill == seckillOdoQtys) {
             List<String> keyList = this.cacheManager.Keys(CacheKeyConstant.OU_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + "*");
@@ -141,11 +145,16 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
      * @param suitsOdoQtys
      * @param odoId
      */
-    private void calcTwoSkuSuit(String code, int twoSkuSuitOdoQtys,int suitsOdoQtys,Long odoId) {
+    private void calcTwoSkuSuit(String code, Warehouse wh, Long odoId) {
+        if (!wh.getIsCalcSeckill()) {
+            calcSuits(code, wh, odoId);
+        }
+        int twoSkuSuitOdoQtys = wh.getTwoSkuSuitOdoQtys();
+
         // 仓库主副品配货模式计算的逻辑
         String[] codeArray = code.split("\\" + CacheKeyConstant.WAVE_ODO_SPLIT);
         String twoSkuSuitPrefix=codeArray[0]+CacheKeyConstant.WAVE_ODO_SPLIT+codeArray[1]+CacheKeyConstant.WAVE_ODO_SPLIT+codeArray[2];
-        String[] skuIdArray = codeArray[3].substring(1, codeArray[3].length() - 1).split("" + CacheKeyConstant.WAVE_ODO_SKU_SPLIT);
+        String[] skuIdArray = codeArray[3].substring(1, codeArray[3].length() - 1).split("\\" + CacheKeyConstant.WAVE_ODO_SKU_SPLIT);
 
         String skuIdA = skuIdArray[0];
         String skuIdB = skuIdArray[1];
@@ -159,7 +168,16 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
 
         } else if (twoSkuSuitB >= twoSkuSuitOdoQtys) {
             cacheTowSKuSuitOdo(code, odoId, twoSkuSuitPrefix, skuIdB, skuIdA);
-        } else if (suits >= suitsOdoQtys) {
+        } else {
+            if (!wh.getIsCalcSuits()) {
+                this.cacheManager.setValue(CacheKeyConstant.OU_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + odoId, odoId + "");
+                return;
+            }
+            int suitsOdoQtys = wh.getSuitsOdoQtys();
+            if (suits < suitsOdoQtys) {
+                this.cacheManager.setValue(CacheKeyConstant.OU_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + odoId, odoId + "");
+                return;
+            }
             this.cacheManager.decr(CacheKeyConstant.TWOSKUSUIT_PREFIX + twoSkuSuitPrefix + CacheKeyConstant.WAVE_ODO_SPLIT + skuIdA);
             this.cacheManager.decr(CacheKeyConstant.TWOSKUSUIT_PREFIX + twoSkuSuitPrefix + CacheKeyConstant.WAVE_ODO_SPLIT + skuIdB);
             this.cacheManager.setValue(CacheKeyConstant.TWOSKUSUIT_DIV_ODO_PREFIX + twoSkuSuitPrefix + CacheKeyConstant.WAVE_ODO_SPLIT + skuIdA + CacheKeyConstant.WAVE_ODO_SPLIT + odoId, odoId + "");
@@ -167,11 +185,11 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
             if (suits == suitsOdoQtys) {
                 List<String> keyList = this.cacheManager.Keys(CacheKeyConstant.OU_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + "*");
                 for (String key : keyList) {
-                    String[] keyArray = key.substring(key.indexOf("%")).split("\\" + CacheKeyConstant.WAVE_ODO_SPLIT);
-                    String idStr = this.cacheManager.getValue(CacheKeyConstant.OU_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + keyArray[1]);
+                    String[] keyArray = key.split("\\" + CacheKeyConstant.WAVE_ODO_SPLIT);
+                    String idStr = this.cacheManager.getValue(CacheKeyConstant.OU_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + keyArray[4]);
                     this.cacheManager.setValue(CacheKeyConstant.SUITS_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + idStr, idStr);
                     // 移除
-                    this.cacheManager.remove(key);
+                    this.cacheManager.remove(CacheKeyConstant.OU_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + idStr);
                 }
                 this.cacheManager.setValue(CacheKeyConstant.SUITS_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + odoId, odoId + "");
             } else if (suits > suitsOdoQtys) {
@@ -189,23 +207,34 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
      * @param suitsOdoQtys
      * @param odoId
      */
-    private void calcSuits(String code, int suitsOdoQtys, Long odoId) {
+    private void calcSuits(String code, Warehouse wh, Long odoId) {
+        if (!wh.getIsCalcSuits()) {
+            return;
+        }
+
+        String[] codeArray = code.split("\\" + CacheKeyConstant.WAVE_ODO_SPLIT);
+        Integer skuType = Integer.parseInt(codeArray[1]);
+        if (skuType < 2 || skuType > wh.getSuitsMaxSkuCategorys()) {
+            return;
+        }
+
+        long suitsOdoQtys = wh.getSuitsOdoQtys();
         // 计算套装
         long suits = this.cacheManager.incr(CacheKeyConstant.SUITS_PREFIX + code);
         if (suits == suitsOdoQtys) {
             List<String> keyList = this.cacheManager.Keys(CacheKeyConstant.OU_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + "*");
             for (String key : keyList) {
-                String[] keyArray = key.substring(key.indexOf("%")).split("\\" + CacheKeyConstant.WAVE_ODO_SPLIT);
-                String idStr = this.cacheManager.getValue(CacheKeyConstant.OU_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + keyArray[1]);
+                String[] keyArray = key.split("\\" + CacheKeyConstant.WAVE_ODO_SPLIT);
+                String idStr = this.cacheManager.getValue(CacheKeyConstant.OU_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + keyArray[4]);
                 this.cacheManager.setValue(CacheKeyConstant.SUITS_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + idStr, idStr);
                 // 移除
-                this.cacheManager.remove(key);
+                this.cacheManager.remove(CacheKeyConstant.OU_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + idStr);
             }
             this.cacheManager.setValue(CacheKeyConstant.SUITS_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + odoId, odoId + "");
         } else if (suits > suitsOdoQtys) {
             this.cacheManager.setValue(CacheKeyConstant.SUITS_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + odoId, odoId + "");
         } else {
-            this.cacheManager.setValue(CacheKeyConstant.OU_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SKU_SPLIT + CacheKeyConstant.WAVE_ODO_SPLIT + odoId, odoId + "");
+            this.cacheManager.setValue(CacheKeyConstant.OU_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + odoId, odoId + "");
         }
     }
 

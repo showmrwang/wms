@@ -533,4 +533,10 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         return phaseCode;
     }
 
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public WhWaveMaster findWaveMasterbyIdOuId(Long waveMasterId, Long ouId) {
+        return this.whWaveMasterDao.findByIdExt(waveMasterId, ouId);
+    }
+
 }

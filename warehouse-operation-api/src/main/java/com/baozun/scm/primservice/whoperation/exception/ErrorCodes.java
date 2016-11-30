@@ -388,6 +388,8 @@ public class ErrorCodes {
     public static final int RCVD_CONTAINER_HAS_SKU_DATA_ERROR = 10054;
     /** 编码服务调用异常 */
     public static final int CODE_MANAGER_ERROR = 10055;
+    /** 没有收货数据，请确认容器收货完成 */
+    public static final int RCVD_CONTAINER_FINISH_ERROR = 10056;
     // 10001-20000 luyimin
 
 

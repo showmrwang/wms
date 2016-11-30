@@ -11,11 +11,10 @@ public interface WaveDistributionModeManagerProxy extends BaseManager {
      * 波次中设置配货模式
      * 
      * @param waveId
-     * @param waveMasterId
      * @param ouId
      * @param userId
      */
-    public void setWaveDistributionMode(Long waveId, Long waveMasterId, Long ouId, Long userId);
+    public void setWaveDistributionMode(Long waveId, Long ouId, Long userId);
 
     /**
      * 获取秒杀出库单集合

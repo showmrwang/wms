@@ -56,12 +56,21 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
     private OdoLineManager odoLineManager;
 
     @Override
-    public void setWaveDistributionMode(Long waveId, Long waveMasterId, Long ouId,Long userId) {
-
+    public void setWaveDistributionMode(Long waveId, Long ouId, Long userId) {
+        if (userId == null) {
+            userId = 1000001L;
+        }
         // 从缓存中获取波次主档
-        WhWaveMaster master = this.cacheManager.getObject(CacheKeyConstant.CACHE_WAVE_MASTER + waveMasterId);
         WhWave wave = this.whWaveManager.getWaveByIdAndOuId(waveId, ouId);
+        WhWaveMaster master = this.cacheManager.getObject(CacheKeyConstant.CACHE_WAVE_MASTER + wave.getWaveMasterId());
+        if (master == null) {
 
+            master = this.whWaveManager.findWaveMasterbyIdOuId(wave.getWaveMasterId(), ouId);
+        }
+        // #TODO
+        if (master == null) {
+            return;
+        }
         List<WhOdo> odoList = this.odoManager.findOdoListByWaveCode(wave.getCode(), ouId);
 
         // 出库单集合
@@ -96,7 +105,7 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
             Long unitOdoId = entry.getKey();
             String unitCode = entry.getValue();
 
-            String[] unitCodeArray = unitCode.split("|");
+            String[] unitCodeArray = unitCode.split("\\|");
             String unitSkuType = unitCodeArray[1];
             String unitSkuQty = unitCodeArray[2];
 
@@ -105,13 +114,13 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
             if (unitSkuType.equals(unitSkuQty)) {
                 switch (Integer.valueOf(unitSkuType).intValue()) {
                     case 1:
-                        calcSeckill(unitCode, master.getIsCalcSeckill(), unitOdoId, secKillOdoMap, noModeOdoList);
+                        calcSeckill(unitCode, master, unitOdoId, secKillOdoMap, noModeOdoList);
                         break;
                     case 2:
-                        calcTwoSuits(unitCode, unitOdoId, twoSuitsOdoSet, twoSuitsSkuSet, master.getTwoSkuSuitOdoQtys());
+                        calcTwoSuits(unitCode, unitOdoId, twoSuitsOdoSet, twoSuitsSkuSet, master, suitsOdoMap, noModeOdoList);
                         break;
-                    case 3:
-                        calcSuits(unitCode, master.getIsCalcSuits(), unitOdoId, suitsOdoMap, noModeOdoList);
+                    default:
+                        calcSuits(unitCode, master, unitOdoId, suitsOdoMap, noModeOdoList);
                         break;
 
                 }
@@ -131,10 +140,10 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
         // 2.再次计算套装组合
         if (twoSuitsOdoSet.size() > 0) {
             for (String codeId : twoSuitsOdoSet) {
-                String[] codeIdArray = codeId.split("|");
+                String[] codeIdArray = codeId.split("\\|");
                 Long unitOdoId = Long.parseLong(codeIdArray[4]);
                 String code = codeIdArray[0] + "|" + codeIdArray[1] + "|" + codeIdArray[2] + "|" + codeIdArray[3];
-                calcSuits(code, master.getIsCalcSuits(), unitOdoId, suitsOdoMap, noModeOdoList);
+                calcSuits(code, master, unitOdoId, suitsOdoMap, noModeOdoList);
             }
         }
         // 秒杀的额外计算逻辑：
@@ -186,11 +195,16 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
         if (ruleList != null && ruleList.size() > 0) {
             for (int i = 0; i < ruleList.size(); i++) {
                 String ruleCode = ruleList.get(i).getDistributionPatternCode();
-                List<Long> odoIdList = this.whWaveManager.findOdoListInWaveWhenDistributionPattern(waveId, ouId, ruleList.get(i).getRuleSql());// 某条规则对应的出库单集合
+                // List<Long> odoIdList =
+                // this.whWaveManager.findOdoListInWaveWhenDistributionPattern(waveId, ouId,
+                // ruleList.get(i).getRuleSql());// 某条规则对应的出库单集合
+                List<Long> odoIdList = ruleList.get(i).getOdoIdList();
                 if (odoIdList != null && odoIdList.size() > 0) {
                     for (Long ruleOdoId : odoIdList) {
                         diyOdoMap.put(ruleOdoId, ruleCode);
-                        noModeOdoList.remove(ruleOdoId);
+                        if (noModeOdoList.contains(ruleOdoId)) {
+                            noModeOdoList.remove(ruleOdoId);
+                        }
                     }
                 }
 
@@ -229,8 +243,10 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
                     line.setWaveCode(null);
                     offOdoLineList.add(line);
                     // 波次明细：剔除
-                    offWaveLineList.add(waveLineMap.get(line.getId()));
-                    waveLineMap.remove(line.getId());
+                    if (waveLineMap.containsKey(line.getId())) {
+                        offWaveLineList.add(waveLineMap.get(line.getId()));
+                        waveLineMap.remove(line.getId());
+                    }
                 }
 
             }
@@ -255,8 +271,8 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
      * @param secKillOdoMap
      * @param noModeOdoList
      */
-    private void calcSeckill(String code, Boolean isCalcSecKill, Long odoId, Map<String, Set<Long>> secKillOdoMap, Set<Long> noModeOdoList) {
-        if (!isCalcSecKill) {
+    private void calcSeckill(String code, WhWaveMaster master, Long odoId, Map<String, Set<Long>> secKillOdoMap, Set<Long> noModeOdoList) {
+        if (!master.getIsCalcSeckill()) {
             noModeOdoList.add(odoId);
             return;
         }
@@ -279,8 +295,14 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
      * @param suitsOdoMap
      * @param noModeOdoList
      */
-    private void calcSuits(String code, Boolean isCalcSuits, Long odoId, Map<String, Set<Long>> suitsOdoMap, Set<Long> noModeOdoList) {
-        if (!isCalcSuits) {
+    private void calcSuits(String code, WhWaveMaster master, Long odoId, Map<String, Set<Long>> suitsOdoMap, Set<Long> noModeOdoList) {
+        if (!master.getIsCalcSuits()) {
+            noModeOdoList.add(odoId);
+            return;
+        }
+        String[] codeArray = code.split("\\" + CacheKeyConstant.WAVE_ODO_SPLIT);
+        Integer skuType = Integer.parseInt(codeArray[1]);
+        if (skuType < 2 || skuType > master.getMaxSkuCategoryQty()) {
             noModeOdoList.add(odoId);
             return;
         }
@@ -302,32 +324,36 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
      * @param noModeOdoList
      * @param twoSuitsOdoSet
      */
-    private void calcTwoSuits(String code, Long odoId, Set<String> twoSuitsOdoSet, Set<String> twoSuitsSkuSet, Integer twoSkuSuitOdoQtys) {
-        Map<String, Integer> twoSuitsSkuMap = new HashMap<String, Integer>();
-        String[] unitCodeArray = code.split("|");
-
-        String[] unitSkuIdArray = unitCodeArray[3].substring(1, unitCodeArray[3].length() - 1).split("$");
-
-        if (twoSuitsSkuMap.containsKey(unitSkuIdArray[0])) {
-            twoSuitsSkuMap.put(unitSkuIdArray[0], twoSuitsSkuMap.get(unitSkuIdArray[0]) + 1);
-        } else {
-            twoSuitsSkuMap.put(unitSkuIdArray[0], 1);
-        }
-        if (twoSuitsSkuMap.containsKey(unitSkuIdArray[1])) {
-            twoSuitsSkuMap.put(unitSkuIdArray[1], twoSuitsSkuMap.get(unitSkuIdArray[1]) + 1);
-        } else {
-            twoSuitsSkuMap.put(unitSkuIdArray[1], 1);
-        }
-
-        Iterator<Entry<String, Integer>> it = twoSuitsSkuMap.entrySet().iterator();
-        while (it.hasNext()) {
-            Entry<String, Integer> entry = it.next();
-            if (entry.getValue() >= twoSkuSuitOdoQtys) {
-                twoSuitsSkuSet.add(entry.getKey());
+    private void calcTwoSuits(String code, Long odoId, Set<String> twoSuitsOdoSet, Set<String> twoSuitsSkuSet, WhWaveMaster master, Map<String, Set<Long>> suitsOdoMap, Set<Long> noModeOdoList) {
+        if(!master.getIsCalcTwoSkuSuit()){
+            calcSuits(code,master,odoId,suitsOdoMap,noModeOdoList);
+        }else{
+            Map<String, Integer> twoSuitsSkuMap = new HashMap<String, Integer>();
+            String[] unitCodeArray = code.split("\\|");
+            
+            String[] unitSkuIdArray = unitCodeArray[3].substring(1, unitCodeArray[3].length() - 1).split("\\$");
+            
+            if (twoSuitsSkuMap.containsKey(unitSkuIdArray[0])) {
+                twoSuitsSkuMap.put(unitSkuIdArray[0], twoSuitsSkuMap.get(unitSkuIdArray[0]) + 1);
+            } else {
+                twoSuitsSkuMap.put(unitSkuIdArray[0], 1);
             }
+            if (twoSuitsSkuMap.containsKey(unitSkuIdArray[1])) {
+                twoSuitsSkuMap.put(unitSkuIdArray[1], twoSuitsSkuMap.get(unitSkuIdArray[1]) + 1);
+            } else {
+                twoSuitsSkuMap.put(unitSkuIdArray[1], 1);
+            }
+            
+            Iterator<Entry<String, Integer>> it = twoSuitsSkuMap.entrySet().iterator();
+            while (it.hasNext()) {
+                Entry<String, Integer> entry = it.next();
+                if (entry.getValue() >= master.getTwoSkuSuitOdoQtys()) {
+                    twoSuitsSkuSet.add(entry.getKey());
+                }
+            }
+            
+            twoSuitsOdoSet.add(code + "|" + odoId);
         }
-
-        twoSuitsOdoSet.add(code + "|" + odoId);
         
     }
 
@@ -341,7 +367,7 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
         for (String codeId : twoSuitsOdoSet) {
             if (codeId.contains("$" + unitSku + "$")) {
                 i++;
-                String[] codeIdArray = codeId.split("|");
+                String[] codeIdArray = codeId.split("\\|");
                 twoSuitsSet.add(Long.parseLong(codeIdArray[4]));
             }
         }
@@ -472,7 +498,7 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
     public void initSecKillDistributionMode(String code, Long ouId, List<Long> odoIdList, String distributeMode) {
         try {
             String[] codeArray = code.split("\\|");
-            Long skuId = Long.parseLong(codeArray[3]);
+            Long skuId = Long.parseLong(codeArray[3].substring(1, codeArray[3].length() - 1));
             Sku sku = this.odoManager.findSkuByIdToShard(skuId, ouId);
             String skuCode = sku.getCode();
             for (Long odoId : odoIdList) {

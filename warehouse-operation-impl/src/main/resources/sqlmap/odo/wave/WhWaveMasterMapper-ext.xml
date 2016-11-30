@@ -34,7 +34,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        picking_work_priority as pickingWorkPriority,
 		        picking_ext_priority as pickingExtPriority,
 		        replenishment_work_priority as replenishmentWorkPriority,
-		        is_auto_release_work as isAutoReleaseWork
+		        is_auto_release_work as isAutoReleaseWork,
+		        is_calc_seckill as isCalcSeckill,
+		        seckill_odo_qtys as seckillOdoQtys,
+		        is_calc_two_sku_suit as  isCalcTwoSkuSuit,
+		        two_sku_suit_odo_qtys as twoSkuSuitOdoQtys,
+		        is_calc_suits as  isCalcSuits,
+		        suits_odo_qtys as suitsOdoQtys,
+		        suits_max_sku_categorys as suitsMaxSkuCategorys
 	    ]]>
 	</sql>
 	

@@ -502,9 +502,11 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
         if (null != ruleCommandList && !ruleCommandList.isEmpty()) {
             for (WhDistributionPatternRuleCommand ruleCommand : ruleCommandList) {
                 // 匹配配货模式规则的出库单
-                List<Long> odoIdList = whDistributionPatternRuleDao.testRuleSql(ruleCommand.getRuleSql(), waveId, ouId);
-                if (null != odoIdList && !odoIdList.isEmpty()) {
-                    ruleCommand.setOdoIdList(odoIdList);;
+                if (!StringUtil.isEmpty(ruleCommand.getRuleSql())) {
+                    List<Long> odoIdList = whDistributionPatternRuleDao.testRuleSql(ruleCommand.getRuleSql(), ouId, waveId);
+                    if (null != odoIdList && !odoIdList.isEmpty()) {
+                        ruleCommand.setOdoIdList(odoIdList);
+                    }
                 }
             }
         }

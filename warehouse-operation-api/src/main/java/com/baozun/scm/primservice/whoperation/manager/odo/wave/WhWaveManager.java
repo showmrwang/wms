@@ -16,6 +16,7 @@ import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine;
+import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveMaster;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 
 public interface WhWaveManager extends BaseManager {
@@ -191,5 +192,14 @@ public interface WhWaveManager extends BaseManager {
      * @return
      */
     public String getNextParseCode(Long waveId, Long ouId);
+
+    /**
+     * 查找波次主档信息
+     * 
+     * @param waveMasterId
+     * @param ouId
+     * @return
+     */
+    public WhWaveMaster findWaveMasterbyIdOuId(Long waveMasterId, Long ouId);
     
 }
