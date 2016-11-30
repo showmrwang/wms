@@ -37,6 +37,9 @@ public class LocationReplenishmentManagerProxyImpl extends BaseManagerImpl imple
         String logId = "";
 
         Long maxQty = Constants.DEFAULT_LONG;
+        Long upBound = 90l;
+        Long downBound = 10l;
+        Long minQty = (long) Math.floor(location.getVolume() * downBound / 100);
 
         SkuRedisCommand skuRedis = this.skuRedisManager.findSkuMasterBySkuId(skuId, ouId, logId);
         Sku sku = skuRedis.getSku();
@@ -50,7 +53,8 @@ public class LocationReplenishmentManagerProxyImpl extends BaseManagerImpl imple
             }
         }
         if (maxQty == Constants.DEFAULT_LONG) {
-            maxQty = (long) Math.floor(location.getVolume() / sku.getVolume());
+
+            maxQty = (long) Math.floor(location.getVolume() * (upBound / 100) / sku.getVolume());
         }
 
 
