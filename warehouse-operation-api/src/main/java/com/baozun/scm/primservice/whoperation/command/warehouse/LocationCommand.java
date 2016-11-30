@@ -111,9 +111,9 @@ public class LocationCommand extends BaseCommand {
     private Boolean isOccupiedInventory;
 
     /* 上限 */
-    private String upBound;
+    private Integer upBound;
     /* 下限 */
-    private String downBound;
+    private Integer  downBound;
 
     private Long asnId;
 
@@ -563,22 +563,6 @@ public class LocationCommand extends BaseCommand {
         this.availableMixCount = availableMixCount;
     }
 
-    public String getUpBound() {
-        return upBound;
-    }
-
-    public void setUpBound(String upBound) {
-        this.upBound = upBound;
-    }
-
-    public String getDownBound() {
-        return downBound;
-    }
-
-    public void setDownBound(String downBound) {
-        this.downBound = downBound;
-    }
-
     public Long getOuterContainerId() {
         return outerContainerId;
     }
@@ -697,6 +681,22 @@ public class LocationCommand extends BaseCommand {
 
     public void setVolumeRate(java.lang.Double volumeRate) {
         this.volumeRate = volumeRate;
+    }
+
+    public Integer getUpBound() {
+        return upBound;
+    }
+
+    public void setUpBound(Integer upBound) {
+        this.upBound = upBound;
+    }
+
+    public Integer getDownBound() {
+        return downBound;
+    }
+
+    public void setDownBound(Integer downBound) {
+        this.downBound = downBound;
     }
 
 

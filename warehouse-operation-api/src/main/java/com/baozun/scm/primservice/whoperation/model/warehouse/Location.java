@@ -95,9 +95,9 @@ public class Location extends BaseModel {
     /* 是否静态库位 */
     private Boolean isStatic;
     /*上限*/
-    private String upBound;
+    private Integer upBound;
     /*下限*/
-    private String downBound;
+    private Integer downBound;
     
     /** 长度 */
     private java.lang.Double length;
@@ -406,22 +406,6 @@ public class Location extends BaseModel {
         this.dimension8 = dimension8;
     }
 
-	public String getUpBound() {
-		return upBound;
-	}
-
-	public void setUpBound(String upBound) {
-		this.upBound = upBound;
-	}
-
-	public String getDownBound() {
-		return downBound;
-	}
-
-	public void setDownBound(String downBound) {
-		this.downBound = downBound;
-	}
-
     public java.lang.Double getLength() {
         return length;
     }
@@ -492,6 +476,22 @@ public class Location extends BaseModel {
 
     public void setSizeType(java.lang.String sizeType) {
         this.sizeType = sizeType;
+    }
+
+    public Integer getUpBound() {
+        return upBound;
+    }
+
+    public void setUpBound(Integer upBound) {
+        this.upBound = upBound;
+    }
+
+    public Integer getDownBound() {
+        return downBound;
+    }
+
+    public void setDownBound(Integer downBound) {
+        this.downBound = downBound;
     }
 
     
