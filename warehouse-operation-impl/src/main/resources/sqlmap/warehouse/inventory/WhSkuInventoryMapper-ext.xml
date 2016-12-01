@@ -2075,6 +2075,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					and inv.ou_id = #{ouId}
 					and loc.allocate_area_id = #{areaId}
 					and inv.sku_id = #{skuId}
+					<if test="locationId != null">
+						and inv.location_id = #{locationId}
+					</if>
 					<if test="storeId != null">
 						and inv.store_id = #{storeId}
 					</if>
@@ -2157,6 +2160,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					and inv.ou_id = #{ouId}
 					and loc.allocate_area_id = #{areaId}
 					and inv.sku_id = #{skuId}
+					<if test="locationId != null">
+						and inv.location_id = #{locationId}
+					</if>
 					<if test="storeId != null">
 						and inv.store_id = #{storeId}
 					</if>
@@ -2242,6 +2248,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					and inv.ou_id = #{ouId}
 					and loc.allocate_area_id = #{areaId}
 					and inv.sku_id = #{skuId}
+					<if test="locationId != null">
+						and inv.location_id = #{locationId}
+					</if>
 					<if test="storeId != null">
 						and inv.store_id = #{storeId}
 					</if>
@@ -2381,6 +2390,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<if test="allocateUnitCodes != null and allocateUnitCodes == 'HX'">
 				and inv.inside_container_id is not null
 			</if>
+			<if test="locationId != null">
+				and inv.location_id = #{locationId}
+			</if>
 			<if test="storeId != null">
 				and inv.store_id = #{storeId}
 			</if>
@@ -2470,6 +2482,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			</if>
 			<if test="allocateUnitCodes != null and allocateUnitCodes == 'HX'">
 				and inv.inside_container_id is not null
+			</if>
+			<if test="locationId != null">
+				and inv.location_id = #{locationId}
 			</if>
 			<if test="storeId != null">
 				and inv.store_id = #{storeId}
@@ -2562,6 +2577,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<if test="allocateUnitCodes != null and allocateUnitCodes == 'HX'">
 				and inv.inside_container_id is not null
 			</if>
+			<if test="locationId != null">
+				and inv.location_id = #{locationId}
+			</if>
 			<if test="storeId != null">
 				and inv.store_id = #{storeId}
 			</if>
@@ -2642,6 +2660,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			and inv.ou_id = #{ouId}
 			and loc.allocate_area_id = #{areaId}
 			and inv.sku_id = #{skuId}
+			<if test="locationId != null">
+				and inv.location_id = #{locationId}
+			</if>
 			<if test="storeId != null">
 				and inv.store_id = #{storeId}
 			</if>
