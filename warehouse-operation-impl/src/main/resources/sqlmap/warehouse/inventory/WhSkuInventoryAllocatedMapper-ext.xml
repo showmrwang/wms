@@ -35,7 +35,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	inv_attr5 as invAttr5,
 	        	uuid as uuid,
 	        	ou_id as ouId,
-	        	last_modify_time as lastModifyTime
+	        	last_modify_time as lastModifyTime,
+	        	replenishment_rule_id as replenishmentRuleId
 	    ]]>
 	</sql>
 	
@@ -153,6 +154,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				<if test="lastModifyTime!=null">
 					and last_modify_time = #{lastModifyTime}
 				</if>
+				
+				<if test="replenishmentRuleId!=null">
+					and replenishment_rule_id = #{replenishmentRuleId}
+				</if>
 		</where>
 	</sql>
 	
@@ -181,7 +186,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        inv_attr4 = #{invAttr4,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        inv_attr5 = #{invAttr5,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        uuid = #{uuid,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} 
+		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        replenishment_rule_id = #{replenishmentRuleId,javaType=java.lang.Long,jdbcType=BIGINT} 
 	        WHERE 
 		        id = #{id} 
 		        and ou_id = #{ouId}

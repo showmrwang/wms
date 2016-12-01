@@ -77,6 +77,8 @@ public class WhSkuInventoryAllocated extends BaseModel {
 	private Long ouId;
 	/** 最后操作时间 */
 	private Date lastModifyTime;
+	/** 补货阶段使用的规则id */
+	private Long replenishmentRuleId;
 	//columns END
 
 	public WhSkuInventoryAllocated(){
@@ -256,6 +258,14 @@ public class WhSkuInventoryAllocated extends BaseModel {
 	
 	public Date getLastModifyTime() {
 		return this.lastModifyTime;
+	}
+
+	public Long getReplenishmentRuleId() {
+		return replenishmentRuleId;
+	}
+
+	public void setReplenishmentRuleId(Long replenishmentRuleId) {
+		this.replenishmentRuleId = replenishmentRuleId;
 	}
 	
 }
