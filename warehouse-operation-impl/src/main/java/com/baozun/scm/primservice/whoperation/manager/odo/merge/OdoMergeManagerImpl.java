@@ -180,7 +180,7 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
                     }
                     if (StringUtils.hasText(command.getIncludeHazardousCargo())) {
 
-                        dic12.add(command.getIncludeHazardousCargo());
+                        dic11.add(command.getIncludeHazardousCargo());
                     }
                     if (StringUtils.hasText(command.getCustomerId())) {
                         customerIdSet.add(Long.parseLong(command.getCustomerId()));
@@ -194,6 +194,9 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
                     if (StringUtils.hasText(command.getModifiedId())) {
                         userIdSet.add(Long.parseLong(command.getModifiedId()));
                     }
+                    if (StringUtils.hasText(command.getOrderType())) {
+                        dic12.add(command.getOrderType());
+                    }
                 }
                 Map<String, List<String>> map = new HashMap<String, List<String>>();
                 map.put(Constants.IS_WHOLE_ORDER_OUTBOUND, new ArrayList<String>(dic1));
@@ -205,8 +208,8 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
                 map.put(Constants.ODO_STATUS, new ArrayList<String>(dic8));
                 map.put(Constants.ODO_AIM_TYPE, new ArrayList<String>(dic9));
                 map.put(Constants.ODO_DELIVER_GOODS_TIME_MODE, new ArrayList<String>(dic10));
-                map.put(Constants.INCLUDE_FRAGILE_CARGO, new ArrayList<String>(dic11));
-                map.put(Constants.INCLUDE_HAZARDOUS_CARGO, new ArrayList<String>(dic12));
+                map.put(Constants.IS_NOT, new ArrayList<String>(dic11));
+                map.put(Constants.ODO_ORDER_TYPE, new ArrayList<String>(dic12));
 
                 Map<String, SysDictionary> dicMap = this.findSysDictionaryByRedis(map);
                 Map<Long, Customer> customerMap = this.findCustomerByRedis(new ArrayList<Long>(customerIdSet));
@@ -250,16 +253,24 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
                         command.setDeliverGoodsTimeModeName(sys == null ? command.getDeliverGoodsTimeMode() : sys.getDicLabel());
                     }
                     if (StringUtils.hasText(command.getIncludeFragileCargo())) {
-                        SysDictionary sys = dicMap.get(Constants.INCLUDE_FRAGILE_CARGO + "_" + command.getIncludeFragileCargo());
+                        SysDictionary sys = dicMap.get(Constants.IS_NOT + "_" + command.getIncludeFragileCargo());
                         command.setIncludeFragileCargoName(sys == null ? command.getIncludeFragileCargo() : sys.getDicLabel());
                     }
                     if (StringUtils.hasText(command.getIncludeHazardousCargo())) {
-                        SysDictionary sys = dicMap.get(Constants.INCLUDE_HAZARDOUS_CARGO + "_" + command.getIncludeHazardousCargo());
+                        SysDictionary sys = dicMap.get(Constants.IS_NOT + "_" + command.getIncludeHazardousCargo());
                         command.setIncludeHazardousCargoName(sys == null ? command.getIncludeHazardousCargo() : sys.getDicLabel());
                     }
                     if (StringUtils.hasText(command.getCustomerId())) {
                         Customer customer = customerMap.get(Long.parseLong(command.getCustomerId()));
                         command.setCustomerName(customer == null ? command.getCustomerId() : customer.getCustomerName());
+                    }
+                    if (StringUtils.hasText(command.getIsLocked())) {
+                        SysDictionary sys = dicMap.get(Constants.IS_NOT + "_" + command.getIsLocked());
+                        command.setIsLocked(sys == null ? command.getIsLocked() : sys.getDicLabel());
+                    }
+                    if (StringUtils.hasText(command.getOrderType())) {
+                        SysDictionary sys = dicMap.get(Constants.ODO_ORDER_TYPE + "_" + command.getOrderType());
+                        command.setOrderTypeName(sys == null ? command.getOrderType() : sys.getDicLabel());
                     }
                     if (StringUtils.hasText(command.getStoreId())) {
                         Store store = storeMap.get(Long.parseLong(command.getStoreId()));

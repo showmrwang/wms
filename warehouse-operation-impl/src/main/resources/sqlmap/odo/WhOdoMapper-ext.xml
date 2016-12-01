@@ -827,6 +827,7 @@
 		address.distribution_target_mobile_phone,
 		address.distribution_target_telephone,
 		address.distribution_target_zip,
+		address.distribution_target_address,
 		/**收货对象*/
 		address.consignee_target_name,
 		address.consignee_target_country,
@@ -838,6 +839,7 @@
 		address.consignee_target_mobile_phone,
 		address.consignee_target_telephone,
 		address.consignee_target_zip,
+		address.consignee_target_address,
 		tr.transport_service_provider,/**运输服务商*/
 		tr.outbound_target,/**出库目标对象*/
 		tr.mode_of_transport,/**运输方式*/
@@ -905,6 +907,7 @@
 		address.distribution_target_mobile_phone,
 		address.distribution_target_telephone,
 		address.distribution_target_zip,
+		address.distribution_target_address,
 		/**收货对象*/
 		address.consignee_target_name,
 		address.consignee_target_country,
@@ -916,6 +919,7 @@
 		address.consignee_target_mobile_phone,
 		address.consignee_target_telephone,
 		address.consignee_target_zip,
+		address.consignee_target_address,
 		tr.transport_service_provider,/**运输服务商*/
 		tr.outbound_target,/**出库目标对象*/
 		tr.mode_of_transport,/**运输方式*/
@@ -985,6 +989,7 @@
 		address.distribution_target_mobile_phone,
 		address.distribution_target_telephone,
 		address.distribution_target_zip,
+		address.distribution_target_address,
 		/**收货对象*/
 		address.consignee_target_name,
 		address.consignee_target_country,
@@ -996,6 +1001,7 @@
 		address.consignee_target_mobile_phone,
 		address.consignee_target_telephone,
 		address.consignee_target_zip,
+		address.consignee_target_address,
 		tr.transport_service_provider,/**运输服务商*/
 		tr.outbound_target,/**出库目标对象*/
 		tr.mode_of_transport,/**运输方式*/
@@ -1059,6 +1065,7 @@
 		address.distribution_target_mobile_phone,
 		address.distribution_target_telephone,
 		address.distribution_target_zip,
+		address.distribution_target_address,
 		/**收货对象*/
 		address.consignee_target_name,
 		address.consignee_target_country,
@@ -1070,6 +1077,7 @@
 		address.consignee_target_mobile_phone,
 		address.consignee_target_telephone,
 		address.consignee_target_zip,
+		address.consignee_target_address,
 		tr.transport_service_provider,/**运输服务商*/
 		tr.outbound_target,/**出库目标对象*/
 		tr.mode_of_transport,/**运输方式*/
