@@ -25,7 +25,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	last_modify_time as lastModifyTime,
 	        	created_id as createdId,
 	        	modified_id as modifiedId,
-	        	lifecycle as lifecycle
+	        	lifecycle as lifecycle,
+	        	is_sys as isSys
 	    ]]>
 	</sql>
 	
@@ -97,6 +98,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				<if test="lifecycle!=null">
 					and lifecycle = #{lifecycle}
 				</if>
+				
+				<if test="isSys!=null">
+					and is_sys = #{isSys}
+				</if>
 		</where>
 	</sql>
 	
@@ -115,7 +120,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
+		        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        is_sys = #{isSys,javaType=java.lang.Integer,jdbcType=INTEGER} 
 	        WHERE 
 		        id = #{id} 
 		        and ou_id = #{ouId}
@@ -128,21 +134,22 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	
 	<sql id="WhDistributionPatternRuleCommandColumnsExt">
 	    <![CDATA[
-	        	id as id,
-	        	distribution_pattern_name as distributionPatternName,
-	        	distribution_pattern_code as distributionPatternCode,
-	        	rule as rule,
-	        	rule_sql as ruleSql,
-	        	ou_id as ouId,
-	        	picking_mode as pickingMode,
-	        	priority as priority,
-	        	is_need_outbound_carton as isNeedOutboundCarton,
-	        	description as description,
-	        	create_time as createTime,
-	        	last_modify_time as lastModifyTime,
-	        	created_id as createdId,
-	        	modified_id as modifiedId,
-	        	lifecycle as lifecycle
+	        	id as id, 
+	        	distribution_pattern_name as distributionPatternName, 
+	        	distribution_pattern_code as distributionPatternCode, 
+	        	rule as rule, 
+	        	rule_sql as ruleSql, 
+	        	ou_id as ouId, 
+	        	picking_mode as pickingMode, 
+	        	priority as priority, 
+	        	is_need_outbound_carton as isNeedOutboundCarton, 
+	        	description as description, 
+	        	create_time as createTime, 
+	        	last_modify_time as lastModifyTime, 
+	        	created_id as createdId, 
+	        	modified_id as modifiedId, 
+	        	lifecycle as lifecycle, 
+	        	is_sys as isSys
 	    ]]>
 	</sql>
 	
@@ -213,6 +220,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	       
 				<if test="lifecycle!=null">
 					and lifecycle = #{lifecycle}
+				</if>
+				
+				<if test="isSys!=null">
+					and is_sys = #{isSys}
 				</if>
 		</where>
 	</sql>

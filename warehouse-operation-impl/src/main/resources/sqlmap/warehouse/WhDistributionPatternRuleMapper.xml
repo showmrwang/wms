@@ -25,7 +25,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	last_modify_time as lastModifyTime,
 	        	created_id as createdId,
 	        	modified_id as modifiedId,
-	        	lifecycle as lifecycle
+	        	lifecycle as lifecycle,
+	        	is_sys as isSys
 	    ]]>
 	</sql>
 	
@@ -52,7 +53,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	last_modify_time ,
 		        	created_id ,
 		        	modified_id ,
-		        	lifecycle 
+		        	lifecycle,
+		        	is_sys
 		        ) VALUES (
 		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{distributionPatternName,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -68,7 +70,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        	#{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        	#{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
+		        	#{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER}, 
+		        	#{isSys,javaType=java.lang.Integer,jdbcType=INTEGER}   
 		        )
 		    ]]>
 
@@ -80,18 +83,19 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        UPDATE t_wh_distribution_pattern_rule SET
 		        distribution_pattern_name = #{distributionPatternName,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        distribution_pattern_code = #{distributionPatternCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        rule = #{rule,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        rule_sql = #{ruleSql,javaType=java.lang.String,jdbcType=LONGVARCHAR} ,
-		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        picking_mode = #{pickingMode,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-		        priority = #{priority,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-		        is_need_outbound_carton = #{isNeedOutboundCarton,javaType=java.lang.Boolean,jdbcType=BIT} ,
-		        description = #{description,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-		        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
+		        rule = #{rule,javaType=java.lang.String,jdbcType=VARCHAR} , 
+		        rule_sql = #{ruleSql,javaType=java.lang.String,jdbcType=LONGVARCHAR} , 
+		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} , 
+		        picking_mode = #{pickingMode,javaType=java.lang.Integer,jdbcType=INTEGER} , 
+		        priority = #{priority,javaType=java.lang.Integer,jdbcType=INTEGER} , 
+		        is_need_outbound_carton = #{isNeedOutboundCarton,javaType=java.lang.Boolean,jdbcType=BIT} , 
+		        description = #{description,javaType=java.lang.String,jdbcType=VARCHAR} , 
+		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} , 
+		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} , 
+		        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} , 
+		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} , 
+		        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} , 
+		        is_sys = #{isSys,javaType=java.lang.Integer,jdbcType=INTEGER} 
 	        WHERE 
 		        id = #{id} 
 	    ]]>
@@ -194,6 +198,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	       
 				<if test="lifecycle!=null">
 					and lifecycle = #{lifecycle}
+				</if>
+				
+				<if test="isSys!=null">
+					and is_sys = #{isSys}
 				</if>
 		</where>
 	</sql>

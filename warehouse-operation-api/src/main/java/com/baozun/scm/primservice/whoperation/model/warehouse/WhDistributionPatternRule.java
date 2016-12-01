@@ -62,6 +62,8 @@ public class WhDistributionPatternRule extends BaseModel {
 	private Long modifiedId;
 	/** 是否启用 1:启用 0:停用 */
 	private Integer lifecycle;
+	/** 是否系统预定义 0：否 1：是  */
+    private Integer isSys;
 	
 	//columns END
 	
@@ -148,6 +150,12 @@ public class WhDistributionPatternRule extends BaseModel {
     }
     public void setLifecycle(Integer lifecycle) {
         this.lifecycle = lifecycle;
+    }
+    public Integer getIsSys() {
+        return isSys;
+    }
+    public void setIsSys(Integer isSys) {
+        this.isSys = isSys;
     }
 }
 

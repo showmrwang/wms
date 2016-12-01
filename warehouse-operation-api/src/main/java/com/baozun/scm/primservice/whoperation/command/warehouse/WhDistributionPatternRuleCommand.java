@@ -62,6 +62,8 @@ public class WhDistributionPatternRuleCommand extends BaseCommand {
 	private Long modifiedId;
 	/** 是否启用 1:启用 0:停用 */
 	private Integer lifecycle;
+	/** 是否系统预定义 0：否 1：是  */
+    private Integer isSys;
 	
 	//自定义变量
 	
@@ -181,6 +183,12 @@ public class WhDistributionPatternRuleCommand extends BaseCommand {
     }
     public void setOdoIdList(List<Long> odoIdList) {
         this.odoIdList = odoIdList;
+    }
+    public Integer getIsSys() {
+        return isSys;
+    }
+    public void setIsSys(Integer isSys) {
+        this.isSys = isSys;
     }
 }
 
