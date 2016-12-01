@@ -121,10 +121,11 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
         if (seckill == seckillOdoQtys) {
             List<String> keyList = this.cacheManager.Keys(CacheKeyConstant.OU_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + "*");
             for (String key : keyList) {
+
                 String[] keyArray = key.substring(key.indexOf("%")).split("\\" + CacheKeyConstant.WAVE_ODO_SPLIT);
                 String idStr = this.cacheManager.getValue(CacheKeyConstant.OU_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + keyArray[4]);
                 this.cacheManager.setValue(CacheKeyConstant.SECKILL_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + idStr, idStr);
-                this.cacheManager.setValue(key.substring(key.indexOf("%")), "2");
+                this.cacheManager.remove(key.substring(key.indexOf("%")));
             }
             this.cacheManager.setValue(CacheKeyConstant.SECKILL_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + odoId, odoId + "");
 
