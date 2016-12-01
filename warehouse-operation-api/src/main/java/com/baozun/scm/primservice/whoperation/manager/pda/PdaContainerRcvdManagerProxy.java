@@ -23,7 +23,7 @@ public interface PdaContainerRcvdManagerProxy extends BaseManager {
 
     SkuCommand checkAsnSku(Long asnId, String occupationCode, String skuCode, Long ouId);
 
-    ContainerCommand checkContainer(WhSkuInventoryCommand command);
+    ContainerCommand checkContainer(WhSkuInventoryCommand command, Integer quantity);
 
     boolean checkFunc(Long funcId, Long ouId);
 

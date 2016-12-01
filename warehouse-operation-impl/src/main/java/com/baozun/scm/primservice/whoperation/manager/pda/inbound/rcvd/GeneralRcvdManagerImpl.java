@@ -631,18 +631,31 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
             // return skuBarcodeList.get(0);
             skuCommand = skuBarcodeList.get(0);
         }
-        String unit = skuCommand.getGoodShelfLifeUnit();
-        if (null != unit) {
-            Integer day = skuCommand.getValidDate();
-            if (null != day) {
-                if (Constants.TIME_UOM_YEAR.equals(unit)) {
-                    day = day * 365;
-                } else if (Constants.TIME_UOM_MONTH.equals(unit)) {
-                    day = day * 30;
-                }
-                skuCommand.setValidDate(day);
+
+        if (null != skuCommand.getValidDate()) {
+            int day = skuCommand.getValidDate();
+            if (Constants.TIME_UOM_YEAR.equals(skuCommand.getGoodShelfLifeUnit())) {
+                Uom uom = this.findUomByCode(Constants.TIME_UOM_YEAR, Constants.TIME_UOM);
+                day = (int) (day * uom.getConversionRate());
+            } else if (Constants.TIME_UOM_MONTH.equals(skuCommand.getGoodShelfLifeUnit())) {
+                Uom uom = this.findUomByCode(Constants.TIME_UOM_MONTH, Constants.TIME_UOM);
+                day = (int) (day * uom.getConversionRate());
             }
+            // 效期
+            skuCommand.setValidDate(day);
         }
+        // String unit = skuCommand.getGoodShelfLifeUnit();
+        // if (null != unit) {
+        // Integer day = skuCommand.getValidDate();
+        // if (null != day) {
+        // if (Constants.TIME_UOM_YEAR.equals(unit)) {
+        // day = day * 365;
+        // } else if (Constants.TIME_UOM_MONTH.equals(unit)) {
+        // day = day * 30;
+        // }
+        // skuCommand.setValidDate(day);
+        // }
+        // }
         return skuCommand;
     }
 
@@ -746,7 +759,7 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public ContainerCommand findContainer(Long skuId, String code, Long ouId, Long containerTypeId, Long userId) {
+    public ContainerCommand findContainer(Long skuId, String code, Long ouId, Long containerTypeId, Long userId, Integer quantity) {
         /* 获取符合条件的更新个数 */
         ContainerCommand containerCommand = new ContainerCommand();
         containerCommand.setCode(code);
@@ -765,6 +778,9 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
             throw new BusinessException("查找到多个容器");
         }
         ContainerCommand command = list.get(0);
+        if (quantity > command.getQty().intValue()) {
+            throw new BusinessException("容量不足");
+        }
         Integer lifecycle = command.getLifecycle();
         if (ContainerStatus.CONTAINER_LIFECYCLE_USABLE == lifecycle/* && 1 == command.getIsUsed() */) {
             // 实际上是返回容器id

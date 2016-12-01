@@ -62,7 +62,7 @@ public interface GeneralRcvdManager extends BaseManager {
      * @return
      */
     List<RcvdContainerCacheCommand> getUniqueSkuAttrFromWhSkuInventory(Long insideContainerId, Long skuId, Long ouId);
-    
+
     /**
      * 查找容器中有哪些商品
      * 
@@ -145,7 +145,7 @@ public interface GeneralRcvdManager extends BaseManager {
     // Long findContainerId(Long skuId, String code, Long ouId, Integer lifecycle, Long
     // containerTypeId);
 
-    ContainerCommand findContainer(Long skuId, String code, Long ouId, Long containerTypeId, Long userId);
+    ContainerCommand findContainer(Long skuId, String code, Long ouId, Long containerTypeId, Long userId, Integer quantity);
 
     /**
      * @author yimin.lu

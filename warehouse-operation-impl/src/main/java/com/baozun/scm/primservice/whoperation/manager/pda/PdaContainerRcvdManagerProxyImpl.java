@@ -191,8 +191,8 @@ public class PdaContainerRcvdManagerProxyImpl extends BaseManagerImpl implements
     * 返回容器装箱数
     */
     @Override
-    public ContainerCommand checkContainer(WhSkuInventoryCommand command) {
-        ContainerCommand containerCommand = this.generalRcvdManager.findContainer(command.getSkuId(), command.getInsideContainerCode(), command.getOuId(), command.getContainerType(), command.getUserId());
+    public ContainerCommand checkContainer(WhSkuInventoryCommand command, Integer quantity) {
+        ContainerCommand containerCommand = this.generalRcvdManager.findContainer(command.getSkuId(), command.getInsideContainerCode(), command.getOuId(), command.getContainerType(), command.getUserId(), quantity);
         return containerCommand;
     }
 
