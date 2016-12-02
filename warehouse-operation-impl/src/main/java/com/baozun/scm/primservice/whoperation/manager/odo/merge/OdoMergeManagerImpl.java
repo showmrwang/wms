@@ -84,7 +84,9 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
             page.setSize(Integer.parseInt(pageOption));
         }
         String ids = this.findOdoMergableIds(params);
-        params.put("ids", ids);
+        if ("(null)".equalsIgnoreCase(ids)) {
+            return null;
+        }
         Pagination<OdoResultCommand> list = this.findOdoMergableInfo(page, sorts, params);
         Pagination<OdoResultCommand> pages = this.setDicLabel(list);
 
@@ -166,9 +168,9 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
                         dic8.add(command.getOdoStatus());
 
                     }
-                    if (StringUtils.hasText(command.getOutboundCartonType())) {
+                    if (StringUtils.hasText(command.getOutboundTargetType())) {
 
-                        dic9.add(command.getOutboundCartonType());
+                        dic9.add(command.getOutboundTargetType());
                     }
                     if (StringUtils.hasText(command.getDeliverGoodsTimeMode())) {
 
@@ -244,9 +246,9 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
                         command.setOdoStatusName(sys == null ? command.getOdoStatus() : sys.getDicLabel());
 
                     }
-                    if (StringUtils.hasText(command.getOutboundCartonType())) {
-                        SysDictionary sys = dicMap.get(Constants.ODO_AIM_TYPE + "_" + command.getOutboundCartonType());
-                        command.setOutboundCartonTypeName(sys == null ? command.getOutboundCartonType() : sys.getDicLabel());
+                    if (StringUtils.hasText(command.getOutboundTargetType())) {
+                        SysDictionary sys = dicMap.get(Constants.ODO_AIM_TYPE + "_" + command.getOutboundTargetType());
+                        command.setOutboundCartonTypeName(sys == null ? command.getOutboundTargetType() : sys.getDicLabel());
                     }
                     if (StringUtils.hasText(command.getDeliverGoodsTimeMode())) {
                         SysDictionary sys = dicMap.get(Constants.ODO_DELIVER_GOODS_TIME_MODE + "_" + command.getDeliverGoodsTimeMode());

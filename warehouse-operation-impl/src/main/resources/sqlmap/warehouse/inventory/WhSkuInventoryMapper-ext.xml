@@ -2316,31 +2316,31 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		select  
 			<include refid="whSkuInventoryColumnsExt" />
 		from 
-			t_wh_sku_inventory 
+			t_wh_sku_inventory inv
 		where 
-			uuid = #{uuid} 
-			and ou_id = #{ouId}
+			inv.uuid = #{uuid} 
+			and inv.ou_id = #{ouId}
 			<if test="inboundTime != null">
-				and inbound_time = #{inboundTime}
+				and inv.inbound_time = #{inboundTime}
 			</if>
 			<if test="expDate != null">
-				and exp_date = #{expDate}
+				and inv.exp_date = #{expDate}
 			</if>
 			and inv.location_id is not null 
 			and inv.occupation_code is null 
 			and inv.occupation_line_id is null 
 			and inv.on_hand_qty > 0.0 
-		order by on_hand_qty 
+		order by inv.on_hand_qty 
 	</select>
 	
 	<select id="findWhSkuInventoryByUuidList" parameterType="map" resultMap="WhSkuInventoryCommandResultExt">
 		select  
 			<include refid="whSkuInventoryColumnsExt" />
 		from 
-			t_wh_sku_inventory 
+			t_wh_sku_inventory inv
 		where 
-			ou_id = #{ouId}
-			and uuid in 
+			inv.ou_id = #{ouId}
+			and inv.uuid in 
 			<foreach item="item" collection="uuidList" open="(" separator="," close=")">
 	            #{item}
 	        </foreach>
@@ -2348,7 +2348,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			and inv.occupation_code is null 
 			and inv.occupation_line_id is null 
 			and inv.on_hand_qty > 0.0 
-	    order by on_hand_qty 
+	    order by inv.on_hand_qty 
     </select>
 	
 	<select id="findInventoryUuidByInBoundTime" parameterType="com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand" resultMap="WhSkuInventoryCommandResultExt">
