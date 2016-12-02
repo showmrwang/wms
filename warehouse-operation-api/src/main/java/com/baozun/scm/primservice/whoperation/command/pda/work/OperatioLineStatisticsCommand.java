@@ -1,7 +1,9 @@
 package com.baozun.scm.primservice.whoperation.command.pda.work;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -39,7 +41,7 @@ public class OperatioLineStatisticsCommand extends BaseCommand{
     
     // 库位商品统计信息 
     /** 所有库位 */
-    private Set<Long> locationIds = new HashSet<Long>();
+    private List<Long> locationIds = new ArrayList<Long>();
     /** 库位上所有外部容器 */
     private Map<Long, Set<Long>> outerContainerIds = new HashMap<Long, Set<Long>>();
     /** 库位上所有内部容器 */
@@ -171,12 +173,6 @@ public class OperatioLineStatisticsCommand extends BaseCommand{
     public void setInsideSkuAttrIdsSnDefect(Map<Long, Map<String, Set<String>>> insideSkuAttrIdsSnDefect) {
         this.insideSkuAttrIdsSnDefect = insideSkuAttrIdsSnDefect;
     }
-    public Set<Long> getLocationIds() {
-        return locationIds;
-    }
-    public void setLocationIds(Set<Long> locationIds) {
-        this.locationIds = locationIds;
-    }
     public Map<Integer, String> getCarStockToOutgoingBox() {
         return carStockToOutgoingBox;
     }
@@ -194,5 +190,11 @@ public class OperatioLineStatisticsCommand extends BaseCommand{
     }
     public void setSkuAttrIdsContainerLattice(Map<String, Set<String>> skuAttrIdsContainerLattice) {
         this.skuAttrIdsContainerLattice = skuAttrIdsContainerLattice;
+    }
+    public List<Long> getLocationIds() {
+        return locationIds;
+    }
+    public void setLocationIds(List<Long> locationIds) {
+        this.locationIds = locationIds;
     }
 }

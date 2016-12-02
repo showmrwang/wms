@@ -17,6 +17,7 @@ package com.baozun.scm.primservice.whoperation.dao.warehouse;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.ibatis.annotations.Param;
 
@@ -64,6 +65,8 @@ public interface WhLocationDao extends BaseDao<Location, Long> {
     int batchDeleteSelected(@Param("list") List<Long> list, @Param("date") Date date, @Param("ouId") Long ouId);
 
     List<Location> getByIds(@Param("list") List<Long> ids, @Param("ouId") Long ouId);
+    
+    List<Long> sortByIds(@Param("list") Set<Long> ids, @Param("ouId") Long ouId);
 
     Location findByIdExt(@Param("id") Long id, @Param("ouId") Long ouId);
 

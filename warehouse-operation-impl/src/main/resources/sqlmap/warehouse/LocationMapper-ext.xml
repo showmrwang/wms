@@ -985,5 +985,18 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     </select>
 	
 	--> 
+	<select id="sortByIds" resultType="long">
+		select
+			id
+		from 
+			t_wh_location
+		where 
+			ou_id=#{ouId} 
+			and id in
+			<foreach collection="list" item="item" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		order by pick_sort, code
+	</select>
 
 </mapper>

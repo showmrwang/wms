@@ -397,10 +397,10 @@
 		</profile>
 		
 		<profile>
-			<id>sta</id>
+			<id>uat</id>
 			<properties>
-				<env>st</env>
-				<config.path>src/main/resources/config/st</config.path>
+				<env>uat</env>
+				<config.path>src/main/resources/config/uat</config.path>
 			</properties>
 		</profile>
 		
