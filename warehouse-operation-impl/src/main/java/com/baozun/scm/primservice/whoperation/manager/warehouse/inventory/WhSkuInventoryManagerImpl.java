@@ -3295,81 +3295,85 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-	public void replenishmentToLines(List<WhWaveLine> lines, String bhCode, Map<String, ReplenishmentRuleCommand> ruleMap, Map<String, String> map, Warehouse wh) {
+	public void replenishmentToLines(List<WhWaveLine> lines, String bhCode, Map<String, List<ReplenishmentRuleCommand>> ruleMap, Map<String, String> map, Warehouse wh) {
     	Long ouId = wh.getId();
     	// tempMap用来存储这一组明细优化数据, 当这一组明细全部补货成功之后再回传给map
-    	Map<String, String> tempMap = new HashMap<String, String>();
-    	tempMap.putAll(map);
+    	Map<String, String> tempMap = new HashMap<String, String>(map);
     	for (WhWaveLine line : lines) {
     		Long skuId = line.getSkuId();
 			Long areaId = line.getAreaId();
-			Boolean isStatic = (null == line.getIsStaticLocationAllocate()) ? false : line.getIsStaticLocationAllocate();
-			ReplenishmentRuleCommand rule = ruleMap.get(skuId + "_" + areaId + "_" + isStatic);
-			Long targetLocation = rule.getLocationId();
-			List<ReplenishmentStrategyCommand> replenishmentStrategyList = rule.getReplenishmentStrategyCommandList();
-    		Double occupyQty = line.getQty() - line.getAllocateQty();		// 需要占用数量
-    		Double moreQty = 0.0;	// 补货超出数量
+			Double occupyQty = line.getQty() - line.getAllocateQty();		// 需要占用数量
     		String occupyCode = line.getOdoCode();
     		Long occupyLineId = line.getOdoLineId();
-    		// 得到匹配补货数据优化条件
-    		String key = skuId + "_" + rule.getId();
-    		String data = tempMap.get(key);
-    		String startRepStrategy = "1";
-    		Double bhMoreQty = 0.0;
-    		if (null != data) {
-				String[] condition = data.split("_");
-				startRepStrategy = condition[0];
-				bhMoreQty = new Double(condition[1]);
-				if (1 != occupyQty.compareTo(bhMoreQty)) {
-					Double tempQty = occupyQty;
-					List<WhSkuInventoryTobefilled> tobefilledList = whSkuInventoryTobefilledDao.findNotOccupyListBySkuIdAndBhCode(skuId, bhCode, ouId);
-					for (WhSkuInventoryTobefilled tobefilled : tobefilledList) {
-						if (-1 == tempQty.compareTo(tobefilled.getQty())) {
-							tobefilled.setQty(tobefilled.getQty() - tempQty);
-							whSkuInventoryTobefilledDao.saveOrUpdate(tobefilled);
-							WhSkuInventoryTobefilled newTobefilled = new WhSkuInventoryTobefilled();
-							BeanUtils.copyProperties(tobefilled, newTobefilled);
-							newTobefilled.setId(null);
-							newTobefilled.setOccupationCode(occupyCode);
-							newTobefilled.setOccupationLineId(occupyLineId);
-							newTobefilled.setQty(tempQty);
-							whSkuInventoryTobefilledDao.insert(newTobefilled);
-							break;
-						} else {
-							tobefilled.setOccupationCode(occupyCode);
-							tobefilled.setOccupationLineId(occupyLineId);
-							whSkuInventoryTobefilledDao.saveOrUpdate(tobefilled);
-							tempQty -= tobefilled.getQty();
+			Boolean isStatic = (null == line.getIsStaticLocationAllocate()) ? false : line.getIsStaticLocationAllocate();
+			List<ReplenishmentRuleCommand> repRules = ruleMap.get(skuId + "_" + areaId + "_" + isStatic);
+			
+			FLAG : for (ReplenishmentRuleCommand rule : repRules) {
+				Long ruleId = rule.getId();
+				Long targetLocation = rule.getLocationId();
+				List<ReplenishmentStrategyCommand> replenishmentStrategyList = rule.getReplenishmentStrategyCommandList();
+				String key = skuId + "_" + rule.getId();
+				String data = tempMap.get(key);
+				Double moreQty = 0.0;	// 补货超出数量
+	    		// 得到匹配补货数据优化条件
+	    		String startRepStrategy = Constants.ALLOCATE_STRATEGY_FIRSTINFIRSTOUT;
+	    		Double bhMoreQty = 0.0;
+	    		if (null != data) {
+					String[] condition = data.split("_");
+					startRepStrategy = condition[0];
+					bhMoreQty = new Double(condition[1]);
+					if (1 != occupyQty.compareTo(bhMoreQty)) {
+						Double tempQty = occupyQty;
+						List<WhSkuInventoryTobefilled> tobefilledList = whSkuInventoryTobefilledDao.findNotOccupyListBySkuIdAndBhCode(skuId, bhCode, ouId);
+						for (WhSkuInventoryTobefilled tobefilled : tobefilledList) {
+							if (-1 == tempQty.compareTo(tobefilled.getQty())) {
+								tobefilled.setQty(tobefilled.getQty() - tempQty);
+								whSkuInventoryTobefilledDao.saveOrUpdate(tobefilled);
+								WhSkuInventoryTobefilled newTobefilled = new WhSkuInventoryTobefilled();
+								BeanUtils.copyProperties(tobefilled, newTobefilled);
+								newTobefilled.setId(null);
+								newTobefilled.setOccupationCode(occupyCode);
+								newTobefilled.setOccupationLineId(occupyLineId);
+								newTobefilled.setQty(tempQty);
+								whSkuInventoryTobefilledDao.insert(newTobefilled);
+								break;
+							} else {
+								tobefilled.setOccupationCode(occupyCode);
+								tobefilled.setOccupationLineId(occupyLineId);
+								whSkuInventoryTobefilledDao.saveOrUpdate(tobefilled);
+								tempQty -= tobefilled.getQty();
+							}
 						}
-					}
-					tempQty = occupyQty;
-					List<WhSkuInventoryAllocated> allocatedList = whSkuInventoryAllocatedDao.findNotOccupyListBySkuIdAndBhCode(skuId, bhCode, ouId);
-					for (WhSkuInventoryAllocated allocated : allocatedList) {
-						if (-1 == tempQty.compareTo(allocated.getQty())) {
-							allocated.setQty(allocated.getQty() - tempQty);
-							whSkuInventoryAllocatedDao.saveOrUpdate(allocated);
-							WhSkuInventoryAllocated newAllocated = new WhSkuInventoryAllocated();
-							BeanUtils.copyProperties(allocated, newAllocated);
-							newAllocated.setId(null);
-							newAllocated.setOccupationCode(occupyCode);
-							newAllocated.setOccupationLineId(occupyLineId);
-							newAllocated.setQty(tempQty);
-							whSkuInventoryAllocatedDao.insert(newAllocated);
-							break;
-						} else {
-							allocated.setOccupationCode(occupyCode);
-							allocated.setOccupationLineId(occupyLineId);
-							whSkuInventoryAllocatedDao.saveOrUpdate(allocated);
-							tempQty -= allocated.getQty();
+						tempQty = occupyQty;
+						List<WhSkuInventoryAllocated> allocatedList = whSkuInventoryAllocatedDao.findNotOccupyListBySkuIdAndBhCode(skuId, bhCode, ouId);
+						for (WhSkuInventoryAllocated allocated : allocatedList) {
+							if (-1 == tempQty.compareTo(allocated.getQty())) {
+								allocated.setQty(allocated.getQty() - tempQty);
+								whSkuInventoryAllocatedDao.saveOrUpdate(allocated);
+								WhSkuInventoryAllocated newAllocated = new WhSkuInventoryAllocated();
+								BeanUtils.copyProperties(allocated, newAllocated);
+								newAllocated.setId(null);
+								newAllocated.setOccupationCode(occupyCode);
+								newAllocated.setOccupationLineId(occupyLineId);
+								newAllocated.setQty(tempQty);
+								whSkuInventoryAllocatedDao.insert(newAllocated);
+								break;
+							} else {
+								allocated.setOccupationCode(occupyCode);
+								allocated.setOccupationLineId(occupyLineId);
+								whSkuInventoryAllocatedDao.saveOrUpdate(allocated);
+								tempQty -= allocated.getQty();
+							}
 						}
+						bhMoreQty -= occupyQty;
+						occupyQty = 0.0;
+						tempMap.put(key, startRepStrategy + "_" + bhMoreQty);
+						break;
 					}
-					bhMoreQty -= occupyQty;
-					tempMap.put(key, startRepStrategy + "_" + bhMoreQty);
+				}
+	    		if (null == replenishmentStrategyList || replenishmentStrategyList.isEmpty()) {
 					continue;
 				}
-			}
-    		
-    		FLAG :
     			for (ReplenishmentStrategyCommand rsc : replenishmentStrategyList) {
     				// 匹配补货数据优化条件中得到  从开始补货策略ID开始匹配
     				if (StringUtils.hasText(startRepStrategy) && Integer.parseInt(rsc.getStrategyCode()) < Integer.parseInt(startRepStrategy)) {
@@ -3388,7 +3392,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     						|| Constants.ALLOCATE_STRATEGY_FIRSTEXPIRATIONLASTOUT.equals(rsc.getStrategyCode())) {
     					Boolean isExpirationSku = skuDao.checkIsExpirationSku(line.getSkuId(), line.getOuId());
     					if (isExpirationSku == null || !isExpirationSku) {
-    						break;
+    						continue;
     					}
     				}
     				List<String> allocateUnitCodes = Arrays.asList(rsc.getAllocateUnitCodes().split(","));
@@ -3414,7 +3418,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     									List<WhSkuInventoryCommand> invs = whSkuInventoryDao.findWhSkuInventoryByUuidList(ouId, uuidList);
     									for (WhSkuInventoryCommand invCommand : invs) {
     										// 创建已分配库存,待移入库存
-    										createSkuInventoryAllocatedAndTobefilled(invCommand, occupyCode, bhCode, occupyLineId, targetLocation, wh, occupyQty, GLOBAL_LOG_DELETE);
+    										createSkuInventoryAllocatedAndTobefilled(invCommand, occupyCode, bhCode, occupyLineId, targetLocation, wh, occupyQty, ruleId, GLOBAL_LOG_DELETE);
     									}
     									occupyQty -= onHandQty;
     								} else {
@@ -3423,18 +3427,18 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     									for (WhSkuInventoryCommand invCommand : invs) {
     										if (0 == new Double(0.0).compareTo(occupyQty)) {
     											// 创建已分配库存,待移入库存
-    											createSkuInventoryAllocatedAndTobefilled(invCommand, null, bhCode, null, targetLocation, wh, occupyQty, GLOBAL_LOG_DELETE);
+    											createSkuInventoryAllocatedAndTobefilled(invCommand, null, bhCode, null, targetLocation, wh, occupyQty, ruleId, GLOBAL_LOG_DELETE);
     											moreQty += invCommand.getOnHandQty();
     										} else {
     											if (-1 != occupyQty.compareTo(invCommand.getOnHandQty())) {
     												// 创建已分配库存,待移入库存
-    												createSkuInventoryAllocatedAndTobefilled(invCommand, occupyCode, bhCode, occupyLineId, targetLocation, wh, occupyQty, GLOBAL_LOG_DELETE);
+    												createSkuInventoryAllocatedAndTobefilled(invCommand, occupyCode, bhCode, occupyLineId, targetLocation, wh, occupyQty, ruleId, GLOBAL_LOG_DELETE);
     												occupyQty -= invCommand.getOnHandQty();
     											} else {
     												// 创建已分配库存,待移入库存
-    												createSkuInventoryAllocatedAndTobefilled(invCommand, occupyCode, bhCode, occupyLineId, targetLocation, wh, occupyQty, GLOBAL_LOG_UPDATE);
+    												createSkuInventoryAllocatedAndTobefilled(invCommand, occupyCode, bhCode, occupyLineId, targetLocation, wh, occupyQty, ruleId, GLOBAL_LOG_UPDATE);
     												invCommand.setOnHandQty(invCommand.getOnHandQty() - occupyQty);
-    												createSkuInventoryAllocatedAndTobefilled(invCommand, null, bhCode, null, targetLocation, wh, occupyQty, GLOBAL_LOG_DELETE);
+    												createSkuInventoryAllocatedAndTobefilled(invCommand, null, bhCode, null, targetLocation, wh, occupyQty, ruleId, GLOBAL_LOG_DELETE);
     												moreQty += invCommand.getOnHandQty();
     												occupyQty = 0.0;
     											}
@@ -3442,6 +3446,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     									}
     								}
     								if (0 == new Double(0.0).compareTo(occupyQty)) {
+    									startRepStrategy = rsc.getStrategyCode();
     									tempMap.put(key, startRepStrategy + "_" + (bhMoreQty + moreQty));
     									break FLAG;
     								}
@@ -3456,11 +3461,12 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     									List<WhSkuInventoryCommand> invs = whSkuInventoryDao.findWhSkuInventoryByUuidList(ouId, uuidList);
     									for (WhSkuInventoryCommand invCommand : invs) {
     										// 创建已分配库存,待移入库存
-    										createSkuInventoryAllocatedAndTobefilled(invCommand, occupyCode, bhCode, occupyLineId, targetLocation, wh, occupyQty, GLOBAL_LOG_DELETE);
+    										createSkuInventoryAllocatedAndTobefilled(invCommand, occupyCode, bhCode, occupyLineId, targetLocation, wh, occupyQty, ruleId, GLOBAL_LOG_DELETE);
     									}
     									occupyQty -= onHandQty;
     								}
     								if (0 == new Double(0.0).compareTo(occupyQty)) {
+    									startRepStrategy = rsc.getStrategyCode();
     									tempMap.put(key, startRepStrategy + "_" + (bhMoreQty + moreQty));
     									break FLAG;
     								}
@@ -3483,8 +3489,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     									List<WhSkuInventoryCommand> invs = whSkuInventoryDao.findInventoryByUuidAndCondition(invCmd);
     									for (WhSkuInventoryCommand invCommand : invs) {
     										// 创建已分配库存,待移入库存
-    										createSkuInventoryAllocatedAndTobefilled(invCommand, occupyCode, bhCode, occupyLineId, targetLocation, wh, occupyQty, GLOBAL_LOG_DELETE);
-    										moreQty += invCommand.getOnHandQty();
+    										createSkuInventoryAllocatedAndTobefilled(invCommand, occupyCode, bhCode, occupyLineId, targetLocation, wh, occupyQty, ruleId, GLOBAL_LOG_DELETE);
     									}
     									occupyQty -= onHandQty;
     								} else {
@@ -3493,17 +3498,18 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     									for (WhSkuInventoryCommand invCommand : invs) {
     										if (0 == new Double(0.0).compareTo(occupyQty)) {
     											// 创建待移入库存
-    											createSkuInventoryAllocatedAndTobefilled(invCommand, null, bhCode, null, targetLocation, wh, occupyQty, GLOBAL_LOG_DELETE);
+    											createSkuInventoryAllocatedAndTobefilled(invCommand, null, bhCode, null, targetLocation, wh, occupyQty, ruleId, GLOBAL_LOG_DELETE);
+    											moreQty += invCommand.getOnHandQty();
     										} else {
     											if (-1 != occupyQty.compareTo(invCommand.getOnHandQty())) {
     												// 创建已分配库存,待移入库存
-    												createSkuInventoryAllocatedAndTobefilled(invCommand, occupyCode, bhCode, occupyLineId, targetLocation, wh, occupyQty, GLOBAL_LOG_DELETE);
+    												createSkuInventoryAllocatedAndTobefilled(invCommand, occupyCode, bhCode, occupyLineId, targetLocation, wh, occupyQty, ruleId, GLOBAL_LOG_DELETE);
     												occupyQty -= invCommand.getOnHandQty();
     											} else {
     												// 创建已分配库存,待移入库存
-    												createSkuInventoryAllocatedAndTobefilled(invCommand, occupyCode, bhCode, occupyLineId, targetLocation, wh, occupyQty, GLOBAL_LOG_UPDATE);
+    												createSkuInventoryAllocatedAndTobefilled(invCommand, occupyCode, bhCode, occupyLineId, targetLocation, wh, occupyQty, ruleId, GLOBAL_LOG_UPDATE);
     												invCommand.setOnHandQty(invCommand.getOnHandQty() - occupyQty);
-    												createSkuInventoryAllocatedAndTobefilled(invCommand, null, bhCode, null, targetLocation, wh, occupyQty, GLOBAL_LOG_DELETE);
+    												createSkuInventoryAllocatedAndTobefilled(invCommand, null, bhCode, null, targetLocation, wh, occupyQty, ruleId, GLOBAL_LOG_DELETE);
     												moreQty += invCommand.getOnHandQty();
     												occupyQty = 0.0;
     											}
@@ -3511,6 +3517,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     									}
     								}
     								if (0 == new Double(0.0).compareTo(occupyQty)) {
+    									startRepStrategy = rsc.getStrategyCode();
     									tempMap.put(key, startRepStrategy + "_" + (bhMoreQty + moreQty));
     									break FLAG;
     								}
@@ -3526,11 +3533,12 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     									List<WhSkuInventoryCommand> invs = whSkuInventoryDao.findWhSkuInventoryByUuidList(ouId, uuidList);
     									for (WhSkuInventoryCommand invCommand : invs) {
     										// 创建已分配库存,待移入库存
-    										createSkuInventoryAllocatedAndTobefilled(invCommand, occupyCode, bhCode, occupyLineId, targetLocation, wh, occupyQty, GLOBAL_LOG_DELETE);
+    										createSkuInventoryAllocatedAndTobefilled(invCommand, occupyCode, bhCode, occupyLineId, targetLocation, wh, occupyQty, ruleId, GLOBAL_LOG_DELETE);
     									}
     									occupyQty -= onHandQty;
     								}
     								if (0 == new Double(0.0).compareTo(occupyQty)) {
+    									startRepStrategy = rsc.getStrategyCode();
     									tempMap.put(key, startRepStrategy + "_" + (bhMoreQty + moreQty));
     									break FLAG;
     								}
@@ -3552,14 +3560,15 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     									// 占用数量 >= 在库数量
     									if (-1 != occupyQty.compareTo(onHandQty)) {
     										// 创建已分配库存,待移入库存
-    										createSkuInventoryAllocatedAndTobefilled(invCommand, occupyCode, bhCode, occupyLineId, targetLocation, wh, occupyQty, GLOBAL_LOG_DELETE);
+    										createSkuInventoryAllocatedAndTobefilled(invCommand, occupyCode, bhCode, occupyLineId, targetLocation, wh, occupyQty, ruleId, GLOBAL_LOG_DELETE);
     										occupyQty -= onHandQty;
     									} else {
     										// 创建已分配库存,待移入库存
-    										createSkuInventoryAllocatedAndTobefilled(invCommand, occupyCode, bhCode, occupyLineId, targetLocation, wh, occupyQty, GLOBAL_LOG_UPDATE);
+    										createSkuInventoryAllocatedAndTobefilled(invCommand, occupyCode, bhCode, occupyLineId, targetLocation, wh, occupyQty, ruleId, GLOBAL_LOG_UPDATE);
     										occupyQty = 0.0;
     									}
     									if (0 == new Double(0.0).compareTo(occupyQty)) {
+    										startRepStrategy = rsc.getStrategyCode();
     										tempMap.put(key, startRepStrategy + "_" + (bhMoreQty + moreQty));
     										break FLAG;
     									}
@@ -3574,14 +3583,15 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 									// 占用数量 >= 在库数量
 									if (-1 != occupyQty.compareTo(onHandQty)) {
 										// 创建已分配库存,待移入库存
-										createSkuInventoryAllocatedAndTobefilled(invCommand, occupyCode, bhCode, occupyLineId, targetLocation, wh, occupyQty, GLOBAL_LOG_DELETE);
+										createSkuInventoryAllocatedAndTobefilled(invCommand, occupyCode, bhCode, occupyLineId, targetLocation, wh, occupyQty, ruleId, GLOBAL_LOG_DELETE);
 										occupyQty -= onHandQty;
 									} else {
 										// 创建已分配库存,待移入库存
-										createSkuInventoryAllocatedAndTobefilled(invCommand, occupyCode, bhCode, occupyLineId, targetLocation, wh, occupyQty, GLOBAL_LOG_UPDATE);
+										createSkuInventoryAllocatedAndTobefilled(invCommand, occupyCode, bhCode, occupyLineId, targetLocation, wh, occupyQty, ruleId, GLOBAL_LOG_UPDATE);
 										occupyQty = 0.0;
 									}
 									if (0 == new Double(0.0).compareTo(occupyQty)) {
+										startRepStrategy = rsc.getStrategyCode();
 										tempMap.put(key, startRepStrategy + "_" + (bhMoreQty + moreQty));
 										break FLAG;
 									}
@@ -3590,16 +3600,18 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 						}
     				}
     			}
-    		if (-1 == new Double(0.0).compareTo(occupyQty)) {
-    			log.info("replenishmentToLines is error, replenishment qty is not enough, occupyQty:[{}], waveId:[{}], odoId:[{}], skuId:[{}], ouId:[{}], logId:[{}]", occupyQty, line.getWaveId(), line.getOdoId(), skuId, ouId, logId);
-    			throw new BusinessException(0);
-    		}
+			}
+			if (-1 == new Double(0.0).compareTo(occupyQty)) {
+				log.info("replenishmentToLines is error, replenishment qty is not enough, occupyQty:[{}], waveId:[{}], odoId:[{}], skuId:[{}], ouId:[{}], logId:[{}]", occupyQty, line.getWaveId(), line.getOdoId(), skuId, ouId, logId);
+				throw new BusinessException(0);
+			}
 		}
+    		
     	map.clear();
     	map.putAll(tempMap);
 	}
 
-    private void createSkuInventoryAllocatedAndTobefilled(WhSkuInventoryCommand invCommand, String occupyCode, String bhCode, Long occupyLineId, Long locationId, Warehouse wh, Double qty, String type) {
+    private void createSkuInventoryAllocatedAndTobefilled(WhSkuInventoryCommand invCommand, String occupyCode, String bhCode, Long occupyLineId, Long locationId, Warehouse wh, Double qty, Long ruleId, String type) {
     	Long ouId = wh.getId();
     	WhSkuInventoryAllocated allocated = new WhSkuInventoryAllocated();
 		BeanUtils.copyProperties(invCommand, allocated);
@@ -3613,6 +3625,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 			allocated.setQty(invCommand.getOnHandQty());// 待移入
 		}
 		allocated.setLastModifyTime(new Date());
+		allocated.setReplenishmentRuleId(ruleId);
 		whSkuInventoryAllocatedDao.insert(allocated);
 		insertGlobalLog(GLOBAL_LOG_INSERT, allocated, ouId, 2L, null, null);
 		

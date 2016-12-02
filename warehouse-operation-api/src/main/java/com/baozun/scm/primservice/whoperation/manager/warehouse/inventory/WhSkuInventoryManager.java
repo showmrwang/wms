@@ -111,7 +111,7 @@ public interface WhSkuInventoryManager extends BaseManager {
      */
     List<WhSkuInventory> findWhSkuInventoryListByPramas(WhSkuInventory whSkuInventory);
     
-	void replenishmentToLines(List<WhWaveLine> lines, String bhCode, Map<String, ReplenishmentRuleCommand> ruleMap, Map<String, String> map, Warehouse wh);
+	void replenishmentToLines(List<WhWaveLine> lines, String bhCode, Map<String, List<ReplenishmentRuleCommand>> ruleMap, Map<String, String> map, Warehouse wh);
 	
 	/**
 	 * 根据策略和明细找到库存
