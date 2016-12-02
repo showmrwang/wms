@@ -126,12 +126,12 @@ public final class CacheKeyConstant {
     /** 主副品 */
     public static final String TWOSKUSUIT_ODO_PREFIX = "%TWOSKUSUIT_ODO%";
     /** 主副品计数器 */
-    public static final String TWOSKUSUIT_PREFIX = "%TWOSKUSUIT_ODO%";
+    public static final String TWOSKUSUIT_PREFIX = "%TWOSKUSUIT%";
 
     /** 套装 */
     public static final String SUITS_ODO_PREFIX = "%SUITS_ODO%";
     /** 套装计数器 */
-    public static final String SUITS_PREFIX = "%TWOSKUSUIT%";
+    public static final String SUITS_PREFIX = "%SUITS%";
     
     /** 主副品扣减集合 */
     public static final String TWOSKUSUIT_DIV_ODO_PREFIX = "%TWOSKUSUIT_DIV_ODO%";
