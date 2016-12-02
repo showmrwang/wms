@@ -136,9 +136,9 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         // 库位上所有sku（sku不在任何容器内）
         Map<Long, Set<Long>> skuIds = new HashMap<Long, Set<Long>>();
         // 库位上每个sku总件数
-        Map<Long, Long> skuQty = new HashMap<Long, Long>();
+        Map<Long, Map<Long, Long>> skuQty = new HashMap<Long, Map<Long, Long>>();
         // 库位上每个sku对应的唯一sku及件数
-        Map<Long, Map<String, Long>> skuAttrIds = new HashMap<Long, Map<String, Long>>();
+        Map<Long, Map<Long, Map<String, Long>>> skuAttrIds = new HashMap<Long, Map<Long, Map<String, Long>>>();
         // 库位上每个唯一sku对应的所有sn及残次条码
         Map<Long, Map<String, Set<String>>> skuAttrIdsSnDefect = new HashMap<Long, Map<String, Set<String>>>();
         // 库位上每个唯一sku对应的货格（is_whole_case=0&&有小车&&库位上sku不在任何容器内）
@@ -148,9 +148,9 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         // 内部容器对应所有sku
         Map<Long, Set<Long>> insideSkuIds = new HashMap<Long, Set<Long>>();
         // 内部容器每个sku总件数
-        Map<Long, Long> insideSkuQty = new HashMap<Long, Long>();
+        Map<Long, Map<Long, Long>> insideSkuQty = new HashMap<Long, Map<Long, Long>>();
         // 内部容器每个sku对应的唯一sku及件数
-        Map<Long, Map<String, Long>> insideSkuAttrIds = new HashMap<Long, Map<String, Long>>();
+        Map<Long, Map<Long, Map<String, Long>>> insideSkuAttrIds = new HashMap<Long, Map<Long, Map<String, Long>>>();
         // 内部容器每个唯一sku对应的所有sn及残次条码
         Map<Long, Map<String, Set<String>>> insideSkuAttrIdsSnDefect = new HashMap<Long, Map<String, Set<String>>>();
         // 内部容器每个唯一sku对应的货格（is_whole_case=0&&有小车）
@@ -180,6 +180,9 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             // 临时set 
             Set<Long> temporaryL = new HashSet<Long>();
             Set<String> temporaryS = new HashSet<String>();
+            Map<Long, Long> temporaryllMap = new HashMap<Long, Long>();
+            Map<String, Set<String>> temporaryssetMap = new HashMap<String, Set<String>>();
+            Map<Long, Map<String, Long>> temporarylmMap = new HashMap<Long, Map<String, Long>>();
             //获取内部容器唯一sku
             String onlySku = SkuCategoryProvider.getSkuAttrIdByOperationLine(operationLine);
             //获取库位ID            
@@ -214,26 +217,46 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                     temporaryL.clear();
                 }
                 //获取每个sku总件数
-                if(skuQty.get(operationLine.getSkuId()) != null){
-                   Long qty =  skuQty.get(operationLine.getSkuId()) + operationLine.getQty().longValue();
-                   skuQty.put(operationLine.getSkuId(), qty);
+                if(null != skuQty.get(operationLine.getFromLocationId())){
+                    temporaryllMap = skuQty.get(operationLine.getFromLocationId());
+                    if(null != temporaryllMap.get(operationLine.getSkuId())){
+                        Long qty =  temporaryllMap.get(operationLine.getSkuId()) + operationLine.getQty().longValue();
+                        temporaryllMap.put(operationLine.getSkuId(), qty);
+                    }else{
+                        temporaryllMap.put(operationLine.getSkuId(), operationLine.getQty().longValue());
+                    }
+                    skuQty.put(operationLine.getFromLocationId(), temporaryllMap);
+                    temporaryllMap.clear();
                 }else{
-                    skuQty.put(operationLine.getSkuId(), operationLine.getQty().longValue());
+                    temporaryllMap.put(operationLine.getSkuId(), operationLine.getQty().longValue());
+                    skuQty.put(operationLine.getFromLocationId(), temporaryllMap);
+                    temporaryllMap.clear();
                 }
                 //获取每个sku对应的唯一sku及件数
-                if(null != skuAttrIds.get(operationLine.getSkuId())){
-                    Map<String, Long> skuAttrIdsQty = skuAttrIds.get(operationLine.getSkuId());
-                    if (null != skuAttrIdsQty.get(onlySku)) {
-                        skuAttrIdsQty.put(onlySku, skuAttrIdsQty.get(onlySku) + operationLine.getQty().longValue());
-                    } else {
-                        skuAttrIdsQty.put(onlySku, operationLine.getQty().longValue());
-                    }
-                    skuAttrIds.put(operationLine.getSkuId(), skuAttrIdsQty);
-                 }else{
-                     Map<String, Long> skuAttrIdsQty = new HashMap<String, Long>();
-                     skuAttrIdsQty.put(onlySku, operationLine.getQty().longValue());
-                     skuAttrIds.put(operationLine.getSkuId(), skuAttrIdsQty);
-                 }
+                if(null != skuAttrIds.get(operationLine.getFromLocationId())){
+                    temporarylmMap = skuAttrIds.get(operationLine.getFromLocationId());
+                    if(null != temporarylmMap.get(operationLine.getSkuId())){
+                        Map<String, Long> skuAttrIdsQty = temporarylmMap.get(operationLine.getSkuId());
+                        if (null != skuAttrIdsQty.get(onlySku)) {
+                            skuAttrIdsQty.put(onlySku, skuAttrIdsQty.get(onlySku) + operationLine.getQty().longValue());
+                        } else {
+                            skuAttrIdsQty.put(onlySku, operationLine.getQty().longValue());
+                        }
+                        temporarylmMap.put(operationLine.getSkuId(), skuAttrIdsQty);
+                     }else{
+                         Map<String, Long> insideSkuAttrIdsQty = new HashMap<String, Long>();
+                         insideSkuAttrIdsQty.put(onlySku, operationLine.getQty().longValue());
+                         temporarylmMap.put(operationLine.getSkuId(), insideSkuAttrIdsQty);
+                     }
+                    skuAttrIds.put(operationLine.getFromLocationId(), temporarylmMap);
+                    temporarylmMap.clear();
+                }else{
+                    Map<String, Long> skuAttrIdsQty = new HashMap<String, Long>();
+                    skuAttrIdsQty.put(onlySku, operationLine.getQty().longValue());
+                    temporarylmMap.put(operationLine.getSkuId(), skuAttrIdsQty);
+                    skuAttrIds.put(operationLine.getFromLocationId(), temporarylmMap);
+                    temporarylmMap.clear();
+                }
                 // 库位上每个唯一sku对应的所有sn及残次条码---------------------------------------------暂时不做，无法根据作业明细确定t_wh_sku_inventory表信息
                 // 库位上每个唯一sku对应的货格（is_whole_case=0&&有小车&&库位上sku不在任何容器内）
                 if(whOperationCommand.getIsWholeCase() == false && null != operationLine.getFromOuterContainerId()){
@@ -265,26 +288,46 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                     temporaryL.clear();
                 }
                 //内部容器每个sku总件数
-                if(insideSkuQty.get(operationLine.getSkuId()) != null){
-                    Long insQty =  insideSkuQty.get(operationLine.getSkuId()) + operationLine.getQty().longValue();
-                    insideSkuQty.put(operationLine.getSkuId(), insQty);
-                 }else{
-                     insideSkuQty.put(operationLine.getSkuId(), operationLine.getQty().longValue());
-                 }
+                if(null != insideSkuQty.get(operationLine.getFromInsideContainerId())){
+                    temporaryllMap = insideSkuQty.get(operationLine.getFromInsideContainerId());
+                    if(null != temporaryllMap.get(operationLine.getSkuId())){
+                        Long insQty =  temporaryllMap.get(operationLine.getSkuId()) + operationLine.getQty().longValue();
+                        temporaryllMap.put(operationLine.getSkuId(), insQty);
+                     }else{
+                         temporaryllMap.put(operationLine.getSkuId(), operationLine.getQty().longValue());
+                     }
+                    insideSkuQty.put(operationLine.getFromInsideContainerId(), temporaryllMap);
+                    temporaryllMap.clear();
+                }else{
+                    temporaryllMap.put(operationLine.getSkuId(), operationLine.getQty().longValue());
+                    insideSkuQty.put(operationLine.getFromInsideContainerId(), temporaryllMap);
+                    temporaryllMap.clear();
+                }
                 //内部容器每个sku对应的唯一sku及件数
-                if(null != insideSkuAttrIds.get(operationLine.getSkuId())){
-                    Map<String, Long> insideSkuAttrIdsQty = insideSkuAttrIds.get(operationLine.getSkuId());
-                    if (null != insideSkuAttrIdsQty.get(onlySku)) {
-                        insideSkuAttrIdsQty.put(onlySku, insideSkuAttrIdsQty.get(onlySku) + operationLine.getQty().longValue());
-                    } else {
-                        insideSkuAttrIdsQty.put(onlySku, operationLine.getQty().longValue());
-                    }
-                    insideSkuAttrIds.put(operationLine.getSkuId(), insideSkuAttrIdsQty);
-                 }else{
-                     Map<String, Long> insideSkuAttrIdsQty = new HashMap<String, Long>();
-                     insideSkuAttrIdsQty.put(onlySku, operationLine.getQty().longValue());
-                     insideSkuAttrIds.put(operationLine.getSkuId(), insideSkuAttrIdsQty);
-                 }
+                if(null != insideSkuAttrIds.get(operationLine.getFromInsideContainerId())){
+                    temporarylmMap = insideSkuAttrIds.get(operationLine.getFromInsideContainerId());
+                    if(null != temporarylmMap.get(operationLine.getSkuId())){
+                        Map<String, Long> insideSkuAttrIdsQty = temporarylmMap.get(operationLine.getSkuId());
+                        if (null != insideSkuAttrIdsQty.get(onlySku)) {
+                            insideSkuAttrIdsQty.put(onlySku, insideSkuAttrIdsQty.get(onlySku) + operationLine.getQty().longValue());
+                        } else {
+                            insideSkuAttrIdsQty.put(onlySku, operationLine.getQty().longValue());
+                        }
+                        temporarylmMap.put(operationLine.getSkuId(), insideSkuAttrIdsQty);
+                     }else{
+                         Map<String, Long> insideSkuAttrIdsQty = new HashMap<String, Long>();
+                         insideSkuAttrIdsQty.put(onlySku, operationLine.getQty().longValue());
+                         temporarylmMap.put(operationLine.getSkuId(), insideSkuAttrIdsQty);
+                     }
+                    insideSkuAttrIds.put(operationLine.getFromInsideContainerId(), temporarylmMap);
+                    temporarylmMap.clear();
+                }else{
+                    Map<String, Long> insideSkuAttrIdsQty = new HashMap<String, Long>();
+                    insideSkuAttrIdsQty.put(onlySku, operationLine.getQty().longValue());
+                    temporarylmMap.put(operationLine.getSkuId(), insideSkuAttrIdsQty);
+                    insideSkuAttrIds.put(operationLine.getFromInsideContainerId(), temporarylmMap);
+                    temporarylmMap.clear();
+                }
                 //内部容器每个唯一sku对应的所有sn及残次条码---------------------------------------------暂时不做，无法根据作业明细确定t_wh_sku_inventory表信息
                 //内部容器每个唯一sku对应的货格（is_whole_case=0&&有小车）
                 if(whOperationCommand.getIsWholeCase() == false && null != operationLine.getFromOuterContainerId()){
@@ -370,16 +413,16 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         }
        
         //库存占用模型
-        if(outerContainerIds.size() > 0){
+        if(outerContainerIds.size() > 0 && insideContainerIds.size() == 0 && insideSkuIds.size() == 0){
             //仅占用托盘内商品            
             pickingScanResultCommand.setInvOccupyMode(Constants.INV_OCCUPY_MODE_ONE);
-        }else if(outerContainerIds.size() == 0 && insideContainerIds.size() > 0){
+        }else if(outerContainerIds.size() == 0 && insideContainerIds.size() > 0 && insideSkuIds.size() == 0){
             //仅占用货箱内商品
             pickingScanResultCommand.setInvOccupyMode(Constants.INV_OCCUPY_MODE_TWO);
-        }else if(outerContainerIds.size() == 0 && insideContainerIds.size() == 0){
+        }else if(outerContainerIds.size() == 0 && insideContainerIds.size() == 0 && insideSkuIds.size() > 0){
             //仅占用库位上散件商品
             pickingScanResultCommand.setInvOccupyMode(Constants.INV_OCCUPY_MODE_THREE);
-        }else if(pallets.size() >0 || containers.size() > 0 ){//有托盘||有货箱（无外部容器）||散件--散件不知道是啥
+        }else{//有托盘||有货箱（无外部容器）||散件
             //混合占用
             pickingScanResultCommand.setInvOccupyMode(Constants.INV_OCCUPY_MODE_FOUR);
         }
@@ -436,9 +479,22 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         return null;
     }
 
+    /**
+     * pda拣货整托整箱--获取缓存中的统计信息
+     * @author qiming.liu
+     * @param command
+     * @return
+     */
     @Override
     public PickingScanResultCommand pdaPickingWholeCase(PickingScanResultCommand command) {
         // TODO Auto-generated method stub
-        return null;
+        log.info("PdaPickingWorkManagerImpl pdaPickingWholeCase is start");
+        PickingScanResultCommand pickingScanResultCommand = new PickingScanResultCommand();
+        OperatioLineStatisticsCommand operatioLineStatisticsCommand = pdaPickingWorkCacheManager.pdaPickingWorkTipWholeCase(command.getOperatorId(),command.getOuId());
+        if(null != operatioLineStatisticsCommand.getLocationIds()){
+            pickingScanResultCommand.setLocationId(operatioLineStatisticsCommand.getLocationIds().get(0));
+        }
+        log.info("PdaPickingWorkManagerImpl pdaPickingWholeCase is end");
+        return pickingScanResultCommand;
     }
 }

@@ -172,5 +172,19 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
         cacheManager.setObject(operatorId.toString(), operatioLineStatisticsCommand);
     }
 
+    /**
+     * 提示库位
+     * 
+     * @author qiming.liu
+     * @param operatorId
+     * @param ouId
+     * @return
+     */
+    @Override
+    public OperatioLineStatisticsCommand pdaPickingWorkTipWholeCase(Long operatorId, Long ouId) {
+        OperatioLineStatisticsCommand operatorLine = cacheManager.getObject(CacheConstants.OPERATIONLINE_STATISTICS + operatorId.toString());
+        return operatorLine;
+    }
+
     
 }

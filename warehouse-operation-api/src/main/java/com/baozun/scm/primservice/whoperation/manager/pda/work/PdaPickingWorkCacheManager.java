@@ -36,4 +36,11 @@ public interface PdaPickingWorkCacheManager extends BaseManager{
      * @return
      */
     public String pdaPickingWorkTipTurnoverBox(Long operatorId,Long ouId);
+    
+    /**
+     * pda拣货整托整箱
+     * @param operatorId
+     * @return
+     */
+    public OperatioLineStatisticsCommand pdaPickingWorkTipWholeCase(Long operatorId,Long ouId);
 }

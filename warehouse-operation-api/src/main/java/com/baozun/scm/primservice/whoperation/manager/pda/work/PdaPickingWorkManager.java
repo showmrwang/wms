@@ -47,7 +47,7 @@ public interface PdaPickingWorkManager extends BaseManager {
     public PickingScanResultCommand loopScanLocation(PickingScanResultCommand  command);
     
     /**
-     * pda拣货整托整箱
+     * pda拣货整托整箱--获取缓存中的统计信息
      * @author qiming.liu
      * @param command
      * @return

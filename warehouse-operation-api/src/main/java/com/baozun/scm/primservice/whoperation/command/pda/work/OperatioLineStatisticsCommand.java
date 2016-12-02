@@ -49,9 +49,9 @@ public class OperatioLineStatisticsCommand extends BaseCommand{
     /** 库位上所有sku */
     private Map<Long, Set<Long>> skuIds = new HashMap<Long, Set<Long>>();
     /** 库位上每个sku总件数 */
-    private Map<Long, Long> skuQty = new HashMap<Long, Long>();
+    private Map<Long, Map<Long, Long>> skuQty = new HashMap<Long, Map<Long, Long>>();
     /** 库位上每个sku对应的唯一sku及件数 */
-    private Map<Long, Map<String, Long>> skuAttrIds = new HashMap<Long, Map<String, Long>>();
+    private Map<Long, Map<Long, Map<String, Long>>> skuAttrIds = new HashMap<Long, Map<Long, Map<String, Long>>>();
     /** 库位上每个唯一sku对应的所有sn及残次条码 */
     private Map<Long, Map<String, Set<String>>> skuAttrIdsSnDefect = new HashMap<Long, Map<String, Set<String>>>();
     /** 库位上每个唯一sku对应的货格（is_whole_case=0&&有小车&&库位上sku不在任何容器内） */
@@ -61,9 +61,9 @@ public class OperatioLineStatisticsCommand extends BaseCommand{
     /** 内部容器对应所有sku*/
     private Map<Long, Set<Long>> insideSkuIds = new HashMap<Long, Set<Long>>();
     /** 内部容器每个sku总件数 */
-    private Map<Long, Long> insideSkuQty = new HashMap<Long, Long>();
+    private Map<Long, Map<Long, Long>> insideSkuQty = new HashMap<Long, Map<Long, Long>>();
     /** 内部容器每个sku对应的唯一sku及件数 */
-    private Map<Long, Map<String, Long>> insideSkuAttrIds = new HashMap<Long, Map<String, Long>>();
+    private Map<Long, Map<Long, Map<String, Long>>> insideSkuAttrIds = new HashMap<Long, Map<Long, Map<String, Long>>>();
     /** 内部容器每个唯一sku对应的所有sn及残次条码 */
     private Map<Long, Map<String, Set<String>>> insideSkuAttrIdsSnDefect = new HashMap<Long, Map<String, Set<String>>>();
     /** 内部容器每个唯一sku对应的货格（is_whole_case=0&&有小车） */
@@ -125,24 +125,6 @@ public class OperatioLineStatisticsCommand extends BaseCommand{
     public void setSkuIds(Map<Long, Set<Long>> skuIds) {
         this.skuIds = skuIds;
     }
-    public Map<Long, Long> getSkuQty() {
-        return skuQty;
-    }
-    public void setSkuQty(Map<Long, Long> skuQty) {
-        this.skuQty = skuQty;
-    }
-    public Map<Long, Map<String, Long>> getSkuAttrIds() {
-        return skuAttrIds;
-    }
-    public void setSkuAttrIds(Map<Long, Map<String, Long>> skuAttrIds) {
-        this.skuAttrIds = skuAttrIds;
-    }
-    public Map<Long, Map<String, Set<String>>> getSkuAttrIdsSnDefect() {
-        return skuAttrIdsSnDefect;
-    }
-    public void setSkuAttrIdsSnDefect(Map<Long, Map<String, Set<String>>> skuAttrIdsSnDefect) {
-        this.skuAttrIdsSnDefect = skuAttrIdsSnDefect;
-    }
     public Map<Long, Set<Long>> getOuterToInside() {
         return outerToInside;
     }
@@ -155,35 +137,47 @@ public class OperatioLineStatisticsCommand extends BaseCommand{
     public void setInsideSkuIds(Map<Long, Set<Long>> insideSkuIds) {
         this.insideSkuIds = insideSkuIds;
     }
-    public Map<Long, Long> getInsideSkuQty() {
-        return insideSkuQty;
-    }
-    public void setInsideSkuQty(Map<Long, Long> insideSkuQty) {
-        this.insideSkuQty = insideSkuQty;
-    }
-    public Map<Long, Map<String, Long>> getInsideSkuAttrIds() {
-        return insideSkuAttrIds;
-    }
-    public void setInsideSkuAttrIds(Map<Long, Map<String, Long>> insideSkuAttrIds) {
-        this.insideSkuAttrIds = insideSkuAttrIds;
-    }
-    public Map<Long, Map<String, Set<String>>> getInsideSkuAttrIdsSnDefect() {
-        return insideSkuAttrIdsSnDefect;
-    }
-    public void setInsideSkuAttrIdsSnDefect(Map<Long, Map<String, Set<String>>> insideSkuAttrIdsSnDefect) {
-        this.insideSkuAttrIdsSnDefect = insideSkuAttrIdsSnDefect;
-    }
     public Map<Integer, String> getCarStockToOutgoingBox() {
         return carStockToOutgoingBox;
     }
     public void setCarStockToOutgoingBox(Map<Integer, String> carStockToOutgoingBox) {
         this.carStockToOutgoingBox = carStockToOutgoingBox;
     }
-    public Map<String, Set<String>> getInsideSkuAttrIdsContainerLattice() {
-        return insideSkuAttrIdsContainerLattice;
+    public List<Long> getLocationIds() {
+        return locationIds;
     }
-    public void setInsideSkuAttrIdsContainerLattice(Map<String, Set<String>> insideSkuAttrIdsContainerLattice) {
-        this.insideSkuAttrIdsContainerLattice = insideSkuAttrIdsContainerLattice;
+    public void setLocationIds(List<Long> locationIds) {
+        this.locationIds = locationIds;
+    }
+    public Map<Long, Map<Long, Long>> getSkuQty() {
+        return skuQty;
+    }
+    public void setSkuQty(Map<Long, Map<Long, Long>> skuQty) {
+        this.skuQty = skuQty;
+    }
+    public Map<Long, Map<Long, Map<String, Long>>> getSkuAttrIds() {
+        return skuAttrIds;
+    }
+    public void setSkuAttrIds(Map<Long, Map<Long, Map<String, Long>>> skuAttrIds) {
+        this.skuAttrIds = skuAttrIds;
+    }
+    public Map<Long, Map<Long, Long>> getInsideSkuQty() {
+        return insideSkuQty;
+    }
+    public void setInsideSkuQty(Map<Long, Map<Long, Long>> insideSkuQty) {
+        this.insideSkuQty = insideSkuQty;
+    }
+    public Map<Long, Map<Long, Map<String, Long>>> getInsideSkuAttrIds() {
+        return insideSkuAttrIds;
+    }
+    public void setInsideSkuAttrIds(Map<Long, Map<Long, Map<String, Long>>> insideSkuAttrIds) {
+        this.insideSkuAttrIds = insideSkuAttrIds;
+    }
+    public Map<Long, Map<String, Set<String>>> getSkuAttrIdsSnDefect() {
+        return skuAttrIdsSnDefect;
+    }
+    public void setSkuAttrIdsSnDefect(Map<Long, Map<String, Set<String>>> skuAttrIdsSnDefect) {
+        this.skuAttrIdsSnDefect = skuAttrIdsSnDefect;
     }
     public Map<String, Set<String>> getSkuAttrIdsContainerLattice() {
         return skuAttrIdsContainerLattice;
@@ -191,10 +185,16 @@ public class OperatioLineStatisticsCommand extends BaseCommand{
     public void setSkuAttrIdsContainerLattice(Map<String, Set<String>> skuAttrIdsContainerLattice) {
         this.skuAttrIdsContainerLattice = skuAttrIdsContainerLattice;
     }
-    public List<Long> getLocationIds() {
-        return locationIds;
+    public Map<Long, Map<String, Set<String>>> getInsideSkuAttrIdsSnDefect() {
+        return insideSkuAttrIdsSnDefect;
     }
-    public void setLocationIds(List<Long> locationIds) {
-        this.locationIds = locationIds;
+    public void setInsideSkuAttrIdsSnDefect(Map<Long, Map<String, Set<String>>> insideSkuAttrIdsSnDefect) {
+        this.insideSkuAttrIdsSnDefect = insideSkuAttrIdsSnDefect;
+    }
+    public Map<String, Set<String>> getInsideSkuAttrIdsContainerLattice() {
+        return insideSkuAttrIdsContainerLattice;
+    }
+    public void setInsideSkuAttrIdsContainerLattice(Map<String, Set<String>> insideSkuAttrIdsContainerLattice) {
+        this.insideSkuAttrIdsContainerLattice = insideSkuAttrIdsContainerLattice;
     }
 }
