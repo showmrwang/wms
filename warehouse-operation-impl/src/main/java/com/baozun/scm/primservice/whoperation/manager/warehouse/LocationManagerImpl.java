@@ -1,6 +1,7 @@
 package com.baozun.scm.primservice.whoperation.manager.warehouse;
 
 import java.util.List;
+import java.util.Set;
 
 import lark.common.annotation.MoreDB;
 
@@ -36,5 +37,11 @@ public class LocationManagerImpl extends BaseManagerImpl implements LocationMana
         search.setUnit(Constants.ALLOCATE_UNIT_PIECE);
         List<LocationProductVolume> result = this.locationProductVolumeDao.findListByParam(search);
         return (result == null || result.size() == 0) ? null : result.get(0);
+    }
+    
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<Long> sortByIds(Set<Long> ids, Long ouId) {
+        return this.whLocationDao.sortByIds(ids, ouId);
     }
 }
