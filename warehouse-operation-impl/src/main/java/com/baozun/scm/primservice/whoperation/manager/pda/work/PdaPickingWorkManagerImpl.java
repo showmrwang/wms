@@ -574,8 +574,6 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
        List<Long> locationIds = operatorLine.getLocationIds();
         CheckScanResultCommand cSRCmd =  pdaPickingWorkCacheManager.locationTipcache(operatorId, pickingWay, locationIds);
         if(cSRCmd.getIsPicking()) { //拣货完毕
-            command.setIsPicking(true);
-        }else{
             Long locationId = cSRCmd.getTipLocationId();
             Location location = whLocationDao.findByIdExt(locationId, ouId);
             if(null == location) {
@@ -641,30 +639,12 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             if(command.getIsScanOuterContainer()) { //扫描外部容器
                 CheckScanResultCommand cSRCmd = pdaPickingWorkCacheManager.pdaPickingTipOuterContainer(outerContainerIds, operatorId);
                 if(cSRCmd.getIsNeedTipOutContainer()) {//该库位上的所有外部外部容器都扫描完毕
-                    //判断库位上是否有内部容器扫描
-                    //判断库位上是否有sku扫描
-                }else{
                     Long outerContainerId = cSRCmd.getTipOuterContainerId();
                     //判断外部容器
                     Container c = containerDao.findByIdExt(outerContainerId, ouId);
-                    if (null == c) {
-                        // 容器信息不存在
-                        log.error("pdaScanContainer container is null logid: " + logId);
-                        throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
-                    }
-                    // 验证容器Lifecycle是否有效
-                    if (!c.getLifecycle().equals(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED)) {
-                        // 容器Lifecycle无效
-                        log.error("pdaScanContainer container lifecycle error =" + c.getLifecycle() + " logid: " + logId);
-                        throw new BusinessException(ErrorCodes.COMMON_CONTAINER__NOT_PUTWAY);
-                    }
-                    // 验证容器状态是否是待上架
-                    if (!(c.getStatus().equals(ContainerStatus.CONTAINER_STATUS_SHEVLED))) {
-                        log.error("pdaScanContainer container status error =" + c.getStatus() + " logid: " + logId);
-                        throw new BusinessException(ErrorCodes.COMMON_CONTAINER__NOT_PUTWAY, new Object[] {c.getStatus()});
-                    }
+                    this.judeContainerStatus(c);
                     //提示外部容器编码
-                    command.setOuterContainerCode(c.getCode());
+                    command.setTipOuterContainerCode(c.getCode());
                 }
             }
             
@@ -673,10 +653,6 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         return command;
     }
 
-    /**
-     * pda拣货整托整箱--获取缓存中的统计信息
-     * @author qiming.liu
-     * @param command
     /***确认提示托盘
      * @author tangming
      * @param command
@@ -687,37 +663,36 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         Long operatorId = command.getOperatorId();
         String tipOuterContainerCode = command.getTipOuterContainerCode();
         Long ouId = command.getOuId();
-            ContainerCommand outerCmd = containerDao.getContainerByCode(tipOuterContainerCode, ouId);
-            Long outerId = outerCmd.getId();
-            OperatioLineStatisticsCommand operatorLine = cacheManager.getObject(CacheConstants.OPERATIONLINE_STATISTICS + operatorId.toString());
-            if(null == operatorLine) {
+        Long locationId = command.getLocationId();
+        ContainerCommand  outerContainerCmd = null;
+        Long outerId = null;
+        if(!StringUtil.isEmpty(tipOuterContainerCode)) {
+            outerContainerCmd = containerDao.getContainerByCode(tipOuterContainerCode, ouId);
+            if(null == outerContainerCmd) {
+                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+            }
+            outerId = outerContainerCmd.getId();
+        }
+        OperatioLineStatisticsCommand operatorLine = cacheManager.getObject(CacheConstants.OPERATIONLINE_STATISTICS + operatorId.toString());
+        if(null == operatorLine) {
                 throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
-            }
-            Map<Long, Set<Long>> outerToInside = operatorLine.getOuterToInside();  //本托盘上所有对应的内部容器
-            Set<Long> insideContainerIds = outerToInside.get(outerId);
-            CheckScanResultCommand cSRCmd = pdaPickingWorkCacheManager.pdaPickingTipInsideContainer(insideContainerIds, operatorId);
-            if(cSRCmd.getIsNeedTipInsideContainer()) { //托盘上还有货箱没有扫描
-                Long tipInsideContainerId = cSRCmd.getTipiInsideContainerId();
-                Container ic = containerDao.findByIdExt(tipInsideContainerId, ouId);
-                if (null == ic) {
-                    // 容器信息不存在
-                    log.error("pdaScanContainer container is null logid: " + logId);
-                    throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
-                }
-                // 验证容器Lifecycle是否有效
-                if (!ic.getLifecycle().equals(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED)) {
-                    // 容器Lifecycle无效
-                    log.error("pdaScanContainer container lifecycle error =" +ic.getLifecycle() + " logid: " + logId);
-                    throw new BusinessException(ErrorCodes.COMMON_CONTAINER__NOT_PUTWAY);
-                }
-                // 验证容器状态是否是待上架
-                if (!(ic.getStatus().equals(ContainerStatus.CONTAINER_STATUS_SHEVLED))) {
-                    log.error("pdaScanContainer container status error =" + ic.getStatus() + " logid: " + logId);
-                    throw new BusinessException(ErrorCodes.COMMON_CONTAINER__NOT_PUTWAY, new Object[] {ic.getStatus()});
-                }
-                command.setTipInsideContainerCode(ic.getCode());
-                command.setOuterContainerCode(tipOuterContainerCode);
-            }
+        }
+        Map<Long, Set<Long>> outerToInside = operatorLine.getOuterToInside();  //本托盘上所有对应的内部容器
+        Map<Long, Set<Long>> locInsideContainerIds = operatorLine.getInsideContainerIds();   //库位上所有的内部容器
+        Set<Long> insideContainerIds = null;
+        if(null == outerContainerCmd) {
+                insideContainerIds = locInsideContainerIds.get(locationId);
+        }else{
+                insideContainerIds = outerToInside.get(outerId);
+        }
+        CheckScanResultCommand cSRCmd = pdaPickingWorkCacheManager.pdaPickingTipInsideContainer(insideContainerIds, operatorId);
+        if(cSRCmd.getIsNeedTipInsideContainer()) { //托盘上还有货箱没有扫描
+            Long tipInsideContainerId = cSRCmd.getTipiInsideContainerId();
+            Container ic = containerDao.findByIdExt(tipInsideContainerId, ouId);
+            this.judeContainerStatus(ic);
+            command.setTipInsideContainerCode(ic.getCode());
+            command.setOuterContainerCode(tipOuterContainerCode);
+       }
         log.info("PdaPickingWorkManagerImpl confirmTipOuterContainer is end");
         return command;
     }
@@ -1035,6 +1010,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         Long operatorId = command.getOperatorId();
         Long functionId = command.getFunctionId();
         Long locationId = command.getLocationId();   
+        Integer pickingWay = command.getPickingWay();
         Long ouId = command.getOuId();
         Long skuId = command.getSkuId();
         String skuBarCode = command.getSkuBarCode();
@@ -1093,8 +1069,8 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         Map<Long, Set<Long>> operLocInsideContainerIds = operatorLine.getInsideContainerIds();//库位上所有的内部容器(无外部容器情况)
         Set<Long> locInsideContainerIds = operLocInsideContainerIds.get(locationId);
         Map<Long, Set<Long>>  insideContainerSkuIds = operatorLine.getInsideSkuIds();   //库位上内部容器对应的所有sku
-        Map<Long, Set<Long>> existOuterInsideContainerIds = operatorLine.getOuterToInside(); //(库位上有外部容器的内部容器)
-        Set<Long> insideContainerIds = existOuterInsideContainerIds.get(locationId);
+        Map<Long, Set<Long>> outerToInsideIds = operatorLine.getOuterToInside(); //(库位上有外部容器的内部容器)
+        Set<Long> insideContainerIds = outerToInsideIds.get(locationId);
         boolean isSkuExists = false;
         Integer cacheSkuQty = 1;
         Integer icSkuQty = 1;
@@ -1137,10 +1113,85 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             }else{
                 skuIds = insideSkuIds.get(insideContainerId);
             }
-//            CheckScanResultCommand cSRCmd = pdaPickingWorkCacheManager.pdaPickingTipSku(skuIds, operatorId,locationId,ouId, insideContainerId);
+            CheckScanResultCommand cSRCommand = pdaPickingWorkCacheManager.pdaPickingTipSku(skuIds, operatorId,locationId,ouId, insideContainerId);
+            if(cSRCommand.getIsNeedScanSku()){  //此货箱的sku，还没有扫描完毕
+                String skuAttrId = cSRCmd.getTipSkuAttrId();   //提示唯一的sku
+                WhSkuCommand whSkuCmd = whSkuDao.findWhSkuByIdExt(SkuCategoryProvider.getSkuId(skuAttrId), ouId);
+                if(null == whSkuCmd) {
+                    throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
+                }
+                command.setSkuBarCode(whSkuCmd.getBarCode());   // 继续提示sku条码
+            }else{
+                throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+            }
+        }else if(cSRCmd.getIsNeedTipInsideContainer()){  //提示下一个货箱
+            Set<Long> insideIds = null;
+            if(null == outerContainerCmd) {
+                insideIds = locInsideContainerIds;
+            }else{
+                insideIds = outerToInsideIds.get(outerOuterContainerId);
+            }
+            CheckScanResultCommand cSRCommand = pdaPickingWorkCacheManager.pdaPickingTipInsideContainer(insideIds, operatorId);
+            if(cSRCommand.getIsNeedTipInsideContainer()) {
+                Long tipInsideContainerId = cSRCmd.getTipiInsideContainerId();
+                Container ic = containerDao.findByIdExt(tipInsideContainerId, ouId);
+                this.judeContainerStatus(ic);
+                command.setTipInsideContainerCode(ic.getCode());
+            }else{
+                throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+            }
+        }else if(cSRCmd.getIsNeedTipOutContainer()) { // 提示下一个外部容器
+            CheckScanResultCommand cSRCommand =  pdaPickingWorkCacheManager.pdaPickingTipOuterContainer(outerContainerIds, operatorId);
+            if(cSRCommand.getIsNeedTipOutContainer()) {
+                Long outerContainerId = cSRCmd.getTipOuterContainerId();
+                //判断外部容器
+                Container c = containerDao.findByIdExt(outerContainerId, ouId);
+                this.judeContainerStatus(c);
+                //提示外部容器编码
+                command.setTipOuterContainerCode(c.getCode());
+            }else{
+                throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR); 
+            }
+        }else if(cSRCmd.getIsNeedTipLoc()) {  //提示下一个库位
+            CheckScanResultCommand cSRCommand = pdaPickingWorkCacheManager.locationTipcache(operatorId,pickingWay,locationIds);
+            if(cSRCommand.getIsNeedTipLoc()) {
+                Long locId = cSRCmd.getTipLocationId();
+                Location location = whLocationDao.findByIdExt(locId, ouId);
+                if(null == location) {
+                    throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_LOCATION_NULL);
+                }
+                command.setTipLocationBarCode(location.getBarCode());
+                command.setTipLocationCode(location.getCode());
+            }
+        }else if(cSRCmd.getIsPicking()){
+               command.setIsPicking(true);
         }
         log.info("PdaPickingWorkManagerImpl scanSku is end");
         return command;
     }
 
+    /***
+     * 判断容器状态是否正确
+     * @param c
+     */
+    private void judeContainerStatus(Container c){
+        log.info("PdaPickingWorkManagerImpl judeContainerStatus is start");
+        if (null == c) {
+            // 容器信息不存在
+            log.error("pdaScanContainer container is null logid: " + logId);
+            throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+        }
+        // 验证容器Lifecycle是否有效
+        if (!c.getLifecycle().equals(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED)) {
+            // 容器Lifecycle无效
+            log.error("pdaScanContainer container lifecycle error =" + c.getLifecycle() + " logid: " + logId);
+            throw new BusinessException(ErrorCodes.COMMON_CONTAINER__NOT_PUTWAY);
+        }
+        // 验证容器状态是否是待上架
+        if (!(c.getStatus().equals(ContainerStatus.CONTAINER_STATUS_SHEVLED))) {
+            log.error("pdaScanContainer container status error =" + c.getStatus() + " logid: " + logId);
+            throw new BusinessException(ErrorCodes.COMMON_CONTAINER__NOT_PUTWAY, new Object[] {c.getStatus()});
+        }
+        log.info("PdaPickingWorkManagerImpl judeContainerStatus is end");
+    }
 }

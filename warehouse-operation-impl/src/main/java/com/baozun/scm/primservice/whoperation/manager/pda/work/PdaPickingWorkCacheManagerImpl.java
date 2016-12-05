@@ -108,7 +108,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
         return skuInvList;
     }
     /***
-     * 缓存库位信息
+     * 提是库位
      * @param command
      * @return
      */
@@ -322,7 +322,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
               throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
           }else{
               ArrayDeque<Long> tipOuterContainerIds = tipLocationCmd.getTipOuterContainerIds();
-              if(this.isCacheAllExists(outerContainerIds, tipOuterContainerIds)) {//库位上托盘没有扫描结束
+              if(!this.isCacheAllExists(outerContainerIds, tipOuterContainerIds)) {//库位上托盘没有扫描结束
                   for (Long oc : outerContainerIds) {
                       Long ocId = oc;
                       if (null != ocId) {
@@ -342,10 +342,10 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                           break;
                       }
                    }
-                  scanResult.setIsNeedTipOutContainer(false); 
+                  scanResult.setIsNeedTipOutContainer(true); 
                   scanResult.setTipOuterContainerId(tipOuterContainerId);
               }else{
-                  scanResult.setIsNeedTipOutContainer(true); // 所有的外部容器已经扫描完毕
+                  scanResult.setIsNeedTipOutContainer(false); // 所有的外部容器已经扫描完毕
               }
              
               
@@ -371,7 +371,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
               throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
           }else{
               ArrayDeque<Long> tipInsideContainerIds = tipLocationCmd.getTipInsideContainerIds();
-              if(this.isCacheAllExists(insideContainerIds, tipInsideContainerIds)) {
+              if(!this.isCacheAllExists(insideContainerIds, tipInsideContainerIds)) {
                   for(Long icId:insideContainerIds) {
                       if(null == tipInsideContainerIds || tipInsideContainerIds.isEmpty()) {
                           tipInsideContainerIds = new ArrayDeque<Long>();
@@ -388,10 +388,10 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                       cacheManager.setObject(CacheConstants.CACHE_LOCATION + operatorId.toString(), tipLocationCmd, CacheConstants.CACHE_ONE_DAY);
                       break;
                   }
-                  scanResult.setIsNeedTipInsideContainer(false);
+                  scanResult.setIsNeedTipInsideContainer(true);
                   scanResult.setTipiInsideContainerId(tipInsideContainerId);
               }else{  //所有的内部容器全部扫描完毕
-                  scanResult.setIsNeedTipInsideContainer(true);
+                  scanResult.setIsNeedTipInsideContainer(false);
               }
               
           }
