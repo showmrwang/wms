@@ -76,4 +76,12 @@ public interface OdoMergeManager extends BaseManager {
      */
     void waveOdoMerge(WhWave wave, String odoIds, Long ouId, Long userId);
 
+    /**
+     * [业务方法] 合并出库单-取消合并
+     * @param odoId
+     * @param ouId
+     * @param userId
+     */
+    void odoMergeCancel(Long odoId, Long ouId, Long userId);
+
 }

@@ -70,4 +70,12 @@ public interface OutBoundBoxTypeDao extends BaseDao<OutBoundBoxType,Long>{
      * @return
      */
     public Long checkUnique(OutInvBoxTypeCommand o); 
+    
+    /**
+     * 
+     * @param code
+     * @param ouId
+     * @return
+     */
+    public  OutBoundBoxType findByCode(@Param("code") String code,@Param("ouId") Long ouId); 
 }

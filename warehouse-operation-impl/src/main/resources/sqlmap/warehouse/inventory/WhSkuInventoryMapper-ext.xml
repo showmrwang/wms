@@ -2758,7 +2758,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					t_wh_sku_inventory 
 					where 
 					location_id = #{locationId} 
-					and ou_id = #{ouId} and outer_container_id is null and inside_container_id is null
+					and ou_id = #{ouId} and outer_container_id is null and inside_container_id is null and occupation_code is null
     </select>
     
 </mapper>

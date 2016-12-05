@@ -87,6 +87,7 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
         if ("(null)".equalsIgnoreCase(ids)) {
             return null;
         }
+        params.put("ids", ids);
         Pagination<OdoResultCommand> list = this.findOdoMergableInfo(page, sorts, params);
         Pagination<OdoResultCommand> pages = this.setDicLabel(list);
 
@@ -1045,4 +1046,24 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
         }
     }
 
+    /**
+     * [业务方法] 合并出库单-取消合并
+     * @param odoId
+     * @param ouId
+     * @param userId
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void odoMergeCancel(Long odoId, Long ouId, Long userId) {
+        WhOdo odo = this.whOdoDao.findByIdOuId(odoId, ouId);
+        // TODO 更新合并出库单状态为取消
+        // TODO 更新合并出库单明细状态为取消
+        // TODO 更新原始出库单状态为新建
+        // TODO 更新原始出库单明细状态为新建
+        // updateOdo
+        String originalOdoCode = odo.getOriginalOdoCode();
+        if (null != originalOdoCode && StringUtils.hasText(originalOdoCode)) {
+            String[] odoCodes = originalOdoCode.split(",");
+        }
+    }
 }
