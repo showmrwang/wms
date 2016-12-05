@@ -1,5 +1,6 @@
 package com.baozun.scm.primservice.whoperation.manager.pda.work;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -8,29 +9,57 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.ibatis.annotations.Param;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
+import com.baozun.redis.manager.CacheManager;
+import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.ScanResultCommand;
+import com.baozun.scm.primservice.whoperation.command.pda.work.CheckScanResultCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.work.OperatioLineStatisticsCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.work.PickingScanResultCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationLineCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
+import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
+import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
+import com.baozun.scm.primservice.whoperation.constant.WhScanPatternType;
 import com.baozun.scm.primservice.whoperation.constant.WorkStatus;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.OutBoundBoxTypeDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhFunctionPickingDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhLocationDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhSkuDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhWorkOperDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
+import com.baozun.scm.primservice.whoperation.exception.BusinessException;
+import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.pda.inbound.putaway.SkuCategoryProvider;
+import com.baozun.scm.primservice.whoperation.manager.pda.inbound.putaway.TipSkuDetailProvider;
+import com.baozun.scm.primservice.whoperation.manager.redis.SkuRedisManager;
+import com.baozun.scm.primservice.whoperation.manager.system.SysDictionaryManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.InventoryStatusManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.LocationManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhOperationLineManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhOperationManager;
+import com.baozun.scm.primservice.whoperation.model.BaseModel;
+import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
+import com.baozun.scm.primservice.whoperation.model.warehouse.InventoryStatus;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Location;
+import com.baozun.scm.primservice.whoperation.model.warehouse.OutBoundBoxType;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionPicking;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhWork;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhWorkOper;
+import com.baozun.utilities.type.StringUtil;
 
 /**
  * PDA拣货manager
@@ -47,9 +76,9 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
     @Autowired
     private PdaPickingWorkCacheManager  pdaPickingWorkCacheManager;
     @Autowired
-    private ContainerDao containerDao;
+    private CacheManager cacheManager;    
     @Autowired
-    private OutBoundBoxTypeDao outBoundBoxTypeDao;
+    private WhLocationDao whLocationDao;
     @Autowired
     private WhOperationManager whOperationManager;
     @Autowired
@@ -57,10 +86,23 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
     @Autowired
     private WhWorkOperDao whWorkOperDao;
     @Autowired
+    private ContainerDao containerDao;
+    @Autowired
+    private OutBoundBoxTypeDao outBoundBoxTypeDao;
+    @Autowired
+    private WhFunctionPickingDao whFunctionPickingDao;
+    @Autowired
     private WhSkuInventoryDao WhSkuInventoryDao;
     @Autowired
     private LocationManager locationManager;
-    
+    @Autowired
+    private WhSkuDao whSkuDao;
+    @Autowired
+    private SysDictionaryManager sysDictionaryManager;
+    @Autowired
+    private InventoryStatusManager inventoryStatusManager;
+    @Autowired
+    private SkuRedisManager skuRedisManager;
     
 
     /**
@@ -466,19 +508,86 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
     }
 
     /***
-     * 循环扫描排序后的库位
+     * pda推荐容器拣货扫描容器
      * @author tangming
      * @param command
      * @return
      */
-    @Override
-    public PickingScanResultCommand loopScanLocation(PickingScanResultCommand command) {
-        // TODO Auto-generated method stub
-        log.info("PdaPickingWorkManagerImpl loopScanLocation is start");
-        log.info("PdaPickingWorkManagerImpl loopScanLocation is start");
-        return null;
+    public PickingScanResultCommand pdaPickingScanContainer(PickingScanResultCommand  command){
+        log.info("PdaPickingWorkManagerImpl pdaPickingScanContainer is start");
+        Integer pickingWay = command.getPickingWay();
+        Long ouId = command.getOuId();
+        Long functionId = command.getFunctionId();
+        Long operatorId = command.getOperatorId();
+        String containerCode = null;
+        if(pickingWay == Constants.PICKING_WAY_ONE) { //使用外部容器(小车) 无出库箱拣货流程
+           containerCode = command.getOuterContainer();
+        }
+        if(pickingWay == Constants.PICKING_WAY_TWO) { //使用外部(小车)，有出库箱拣货流程
+            containerCode = command.getOuterContainer();
+        }
+        if(pickingWay == Constants.PICKING_WAY_THREE) { //使用出库箱拣货流程
+            containerCode = command.getOutBoundCode();
+        }
+        ContainerCommand outCmd = containerDao.getContainerByCode(containerCode, ouId);
+        if (null == outCmd) {
+            // 容器信息不存在
+            log.error("pdaScanContainer container is null logid: " + logId);
+            throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+        }
+        // 验证容器Lifecycle是否有效
+        if (!outCmd.getLifecycle().equals(ContainerStatus.CONTAINER_LIFECYCLE_USABLE)) {
+            // 容器Lifecycle无效
+            log.error("pdaScanContainer container lifecycle error =" + outCmd.getLifecycle() + " logid: " + logId);
+            throw new BusinessException(ErrorCodes.COMMON_CONTAINER__NOT_PUTWAY);
+        }
+        // 验证容器状态是否是待上架
+        if (!outCmd.getStatus().equals(ContainerStatus.CONTAINER_STATUS_USABLE)) {
+            log.error("pdaScanContainer container status error =" +outCmd.getStatus() + " logid: " + logId);
+            throw new BusinessException(ErrorCodes.COMMON_CONTAINER__NOT_PUTWAY, new Object[] {outCmd.getStatus()});
+        }
+        if(pickingWay == Constants.PICKING_WAY_FOUR) {  //使用周转箱拣货流程
+            String turnoverBoxCode = command.getTurnoverBoxCode();
+            OutBoundBoxType outBoundBox = outBoundBoxTypeDao.findByCode(turnoverBoxCode, ouId);
+            if(null == outBoundBox) {
+                throw new BusinessException(ErrorCodes.OUT_BOUNX_BOX_IS_NO_NULL );
+            }
+            // 验证容器Lifecycle是否有效
+            if (!outBoundBox.getLifecycle().equals(ContainerStatus.CONTAINER_LIFECYCLE_USABLE)) {
+                throw new BusinessException(ErrorCodes.OUT_BOUNX_BOX_IS_STATUS_NO);
+            }
+        }
+        if(pickingWay == Constants.PICKING_WAY_TWO) { //使用外部(小车)，有出库箱拣货流程
+            //出库箱防放置到小车流程(不知道咋回事，先不做)
+        }
+        WhFunctionPicking picking = whFunctionPickingDao.findByFunctionIdExt(ouId, functionId);
+        command.setIsScanLocation(picking.getIsScanLocation());  //是否扫描库位
+        command.setIsScanOuterContainer(picking.getIsScanOuterContainer());   //是否扫描托盘
+        command.setIsScanInsideContainer(picking.getIsScanInsideContainer());    //是否扫描内部容器
+        command.setIsScanSku(picking.getIsScanSku());                 //是否扫描sku
+        command.setIsScanInvAttr(picking.getIsScanInvAttr());           //是否扫描sku属性
+        command.setScanPattern(picking.getScanPattern());  //扫描模式 
+        OperatioLineStatisticsCommand operatorLine = cacheManager.getObject(CacheConstants.OPERATIONLINE_STATISTICS + operatorId.toString());
+        if(null == operatorLine) {
+            throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+        }
+       List<Long> locationIds = operatorLine.getLocationIds();
+        CheckScanResultCommand cSRCmd =  pdaPickingWorkCacheManager.locationTipcache(operatorId, pickingWay, locationIds);
+        if(cSRCmd.getIsPicking()) { //拣货完毕
+            command.setIsPicking(true);
+        }else{
+            Long locationId = cSRCmd.getTipLocationId();
+            Location location = whLocationDao.findByIdExt(locationId, ouId);
+            if(null == location) {
+                throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_LOCATION_NULL);
+            }
+            command.setTipLocationBarCode(location.getBarCode());
+            command.setTipLocationCode(location.getCode());
+        }
+        log.info("PdaPickingWorkManagerImpl pdaPickingScanContainer is end");
+        return command;
     }
-
+    
     /**
      * pda拣货整托整箱--获取缓存中的统计信息
      * @author qiming.liu
@@ -497,4 +606,541 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         log.info("PdaPickingWorkManagerImpl pdaPickingWholeCase is end");
         return pickingScanResultCommand;
     }
+    
+    /**
+     * pda拣货确认提示外部容器托盘
+     * @author tangming
+     * @param command
+     * @param pickingWay
+     * @return
+     */
+    @Override
+    public PickingScanResultCommand tipOuterContainer(PickingScanResultCommand command) {
+        // TODO Auto-generated method stub
+        log.info("PdaPickingWorkManagerImpl scanLocation is start");
+        Long operatorId = command.getLocationId();
+        Long ouId = command.getOuId();
+        String locationCode = command.getLocationCode();
+        String locationBarCode = command.getLocationBarCode();
+        if(!StringUtil.isEmpty(locationBarCode) && StringUtil.isEmpty(locationCode)) {
+            locationCode = locationBarCode;
+        }
+        Location location = whLocationDao.findLocationByCode(locationCode, ouId);
+        if(null == location) {
+            throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_LOCATION_NULL);
+        }
+        Long locationId = location.getId();
+        command.setLocationId(location.getId());
+        OperatioLineStatisticsCommand operatorLine = cacheManager.getObject(CacheConstants.OPERATIONLINE_STATISTICS + operatorId.toString());
+        if(null == operatorLine) {
+            throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+        }
+        Map<Long, Set<Long>>  outerContainerIdsLoc = operatorLine.getOuterContainerIds();
+        if(null != outerContainerIdsLoc && outerContainerIdsLoc.size() != 0) {
+            Set<Long>  outerContainerIds = outerContainerIdsLoc.get(locationId);
+            if(command.getIsScanOuterContainer()) { //扫描外部容器
+                CheckScanResultCommand cSRCmd = pdaPickingWorkCacheManager.pdaPickingTipOuterContainer(outerContainerIds, operatorId);
+                if(cSRCmd.getIsNeedTipOutContainer()) {//该库位上的所有外部外部容器都扫描完毕
+                    //判断库位上是否有内部容器扫描
+                    //判断库位上是否有sku扫描
+                }else{
+                    Long outerContainerId = cSRCmd.getTipOuterContainerId();
+                    //判断外部容器
+                    Container c = containerDao.findByIdExt(outerContainerId, ouId);
+                    if (null == c) {
+                        // 容器信息不存在
+                        log.error("pdaScanContainer container is null logid: " + logId);
+                        throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+                    }
+                    // 验证容器Lifecycle是否有效
+                    if (!c.getLifecycle().equals(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED)) {
+                        // 容器Lifecycle无效
+                        log.error("pdaScanContainer container lifecycle error =" + c.getLifecycle() + " logid: " + logId);
+                        throw new BusinessException(ErrorCodes.COMMON_CONTAINER__NOT_PUTWAY);
+                    }
+                    // 验证容器状态是否是待上架
+                    if (!(c.getStatus().equals(ContainerStatus.CONTAINER_STATUS_SHEVLED))) {
+                        log.error("pdaScanContainer container status error =" + c.getStatus() + " logid: " + logId);
+                        throw new BusinessException(ErrorCodes.COMMON_CONTAINER__NOT_PUTWAY, new Object[] {c.getStatus()});
+                    }
+                    //提示外部容器编码
+                    command.setOuterContainerCode(c.getCode());
+                }
+            }
+            
+        }
+        log.info("PdaPickingWorkManagerImpl scanLocation is end");
+        return command;
+    }
+
+    /**
+     * pda拣货整托整箱--获取缓存中的统计信息
+     * @author qiming.liu
+     * @param command
+    /***确认提示托盘
+     * @author tangming
+     * @param command
+     * @return
+     */
+    public PickingScanResultCommand  tipInsideContainer(PickingScanResultCommand  command){
+        log.info("PdaPickingWorkManagerImpl confirmTipOuterContainer is start");
+        Long operatorId = command.getOperatorId();
+        String tipOuterContainerCode = command.getTipOuterContainerCode();
+        Long ouId = command.getOuId();
+            ContainerCommand outerCmd = containerDao.getContainerByCode(tipOuterContainerCode, ouId);
+            Long outerId = outerCmd.getId();
+            OperatioLineStatisticsCommand operatorLine = cacheManager.getObject(CacheConstants.OPERATIONLINE_STATISTICS + operatorId.toString());
+            if(null == operatorLine) {
+                throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+            }
+            Map<Long, Set<Long>> outerToInside = operatorLine.getOuterToInside();  //本托盘上所有对应的内部容器
+            Set<Long> insideContainerIds = outerToInside.get(outerId);
+            CheckScanResultCommand cSRCmd = pdaPickingWorkCacheManager.pdaPickingTipInsideContainer(insideContainerIds, operatorId);
+            if(cSRCmd.getIsNeedTipInsideContainer()) { //托盘上还有货箱没有扫描
+                Long tipInsideContainerId = cSRCmd.getTipiInsideContainerId();
+                Container ic = containerDao.findByIdExt(tipInsideContainerId, ouId);
+                if (null == ic) {
+                    // 容器信息不存在
+                    log.error("pdaScanContainer container is null logid: " + logId);
+                    throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+                }
+                // 验证容器Lifecycle是否有效
+                if (!ic.getLifecycle().equals(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED)) {
+                    // 容器Lifecycle无效
+                    log.error("pdaScanContainer container lifecycle error =" +ic.getLifecycle() + " logid: " + logId);
+                    throw new BusinessException(ErrorCodes.COMMON_CONTAINER__NOT_PUTWAY);
+                }
+                // 验证容器状态是否是待上架
+                if (!(ic.getStatus().equals(ContainerStatus.CONTAINER_STATUS_SHEVLED))) {
+                    log.error("pdaScanContainer container status error =" + ic.getStatus() + " logid: " + logId);
+                    throw new BusinessException(ErrorCodes.COMMON_CONTAINER__NOT_PUTWAY, new Object[] {ic.getStatus()});
+                }
+                command.setTipInsideContainerCode(ic.getCode());
+                command.setOuterContainerCode(tipOuterContainerCode);
+            }
+        log.info("PdaPickingWorkManagerImpl confirmTipOuterContainer is end");
+        return command;
+    }
+    
+    /***
+     * 提示sku
+     * @author tangminmg
+     * @param command
+     * @return
+     */
+    public PickingScanResultCommand tipSku(PickingScanResultCommand  command){
+        log.info("PdaPickingWorkManagerImpl tipSku is start");
+        Long operatorId = command.getOperatorId();
+        Long ouId = command.getOuId();
+        Long locationId = command.getLocationId();
+        String tipInsideContainerCode = command.getTipInsideContainerCode();   //内部容器
+        ContainerCommand  insideContainerCmd = null;
+        Long insideContainerId = null;
+        if(!StringUtil.isEmpty(tipInsideContainerCode)) {
+            insideContainerCmd = containerDao.getContainerByCode(tipInsideContainerCode, ouId);
+            if(insideContainerCmd == null) {
+                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+            }
+            insideContainerId = insideContainerCmd.getId();
+        }
+        OperatioLineStatisticsCommand operatorLine = cacheManager.getObject(CacheConstants.OPERATIONLINE_STATISTICS + operatorId.toString());
+        if(null == operatorLine) {
+            throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+        }
+        Map<Long, Set<Long>> insideSkuIds = operatorLine.getInsideSkuIds();
+        Map<Long, Set<Long>> locSkuIds = operatorLine.getSkuIds();
+        Set<Long> skuIds = null;
+        if(null == insideContainerId) { //sku直接放在库位上
+            skuIds = locSkuIds.get(locationId);
+        }else{
+            skuIds = insideSkuIds.get(insideContainerId);
+        }
+        CheckScanResultCommand cSRCmd = pdaPickingWorkCacheManager.pdaPickingTipSku(skuIds, operatorId,locationId,ouId, insideContainerId);
+        if(cSRCmd.getIsNeedScanSku()){  //此货箱的sku，还没有扫描完毕
+            String skuAttrId = cSRCmd.getTipSkuAttrId();   //提示唯一的sku
+            Long skuId = SkuCategoryProvider.getSkuId(skuAttrId);
+            WhSkuCommand skuCmd = whSkuDao.findWhSkuByIdExt(skuId, ouId);
+            if(null == skuCmd) {
+                throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
+            }
+            command.setSkuBarCode(skuCmd.getBarCode());
+        }
+        log.info("PdaPickingWorkManagerImpl tipSku is end");
+        
+        return command;
+    }
+    
+    
+    /***
+     * 判断货箱内库存属性是否唯一
+     * @param command
+     * @return
+     */
+    public PickingScanResultCommand judgeSkuAttrIdsIsUnique(PickingScanResultCommand  command){
+        log.info("PdaPickingWorkManagerImpl judgeSkuAttrIdsIsUnique is start");
+        Long operatorId = command.getOperatorId();
+        Long locationId = command.getLocationId();
+        Long ouId = command.getOuId();
+        Long insideContainerId  = null;
+        String insideContainerCode = command.getInsideContainerCode();
+        String skuBarCode = command.getSkuBarCode();   //商品条码
+        WhSkuCommand  skuCmd = whSkuDao.findWhSkuByBarcodeExt(skuBarCode, ouId);
+        if(null == skuCmd) {
+            throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
+        }
+        Long skuId = skuCmd.getId();
+       //提示sku库存属性
+        ArrayDeque<String> skuAttrIds = cacheManager.getObject(CacheConstants.CACHE_LOC_SKU_ATTR + locationId.toString()+skuId.toString());
+        if(null == skuAttrIds) {
+            throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+        }
+        String tipSkuAttrId = skuAttrIds.peekFirst();   //取当前第一个
+        Long sId = SkuCategoryProvider.getSkuId(tipSkuAttrId);
+        if(sId.longValue() != skuId.longValue()) {
+            throw new BusinessException(ErrorCodes.RCVD_CACHE_ERROR);
+        }
+        OperatioLineStatisticsCommand operatorLine = cacheManager.getObject(CacheConstants.OPERATIONLINE_STATISTICS + operatorId.toString());
+        if(null == operatorLine) {
+            throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+        }
+        Map<Long,Map<Long, Map<String, Long>>> locSkuAttrIdsQty = operatorLine.getSkuAttrIds();    //
+        Map<Long, Map<String, Long>>  skuIdSkuAttrIdsQty = locSkuAttrIdsQty.get(locationId);
+        Map<String,Long> skuAttrIdsQty = skuIdSkuAttrIdsQty.get(skuId);
+        if(!StringUtil.isEmpty(insideContainerCode)) {
+            ContainerCommand ic = containerDao.getContainerByCode(insideContainerCode, ouId);
+            if (null == ic) {
+                // 容器信息不存在
+                log.error("pdaScanContainer container is null logid: " + logId);
+                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+            }
+            insideContainerId = ic.getId();
+        }
+        //该库位要拣货的所有库存记录
+        List<WhSkuInventoryCommand> list = pdaPickingWorkCacheManager.cacheLocationInventory(operatorId, locationId, ouId);
+        List<WhSkuInventoryCommand> icList = new ArrayList<WhSkuInventoryCommand>();  //当前扫描的内部容器的库位库存
+        for(WhSkuInventoryCommand skuInvCmd:list) {
+            if(null != insideContainerId) {  //库位上有货箱
+                if(insideContainerId.equals(skuInvCmd.getInsideContainerId())) {
+                    icList.add(skuInvCmd);    
+                }
+            }else{   //库位上没有货箱
+                if(skuId.longValue() == skuInvCmd.getSkuId().longValue()) {
+                    icList.add(skuInvCmd);   
+                }
+            }
+        }
+        //货箱内待拣货sku库位库存库存属性是否唯一
+        Set<String> skuAttrIdsSet = new HashSet<String>();
+        for(WhSkuInventoryCommand invSkuCmd:icList) {
+            String pSkuAttrId = SkuCategoryProvider.getSkuAttrIdByInv(invSkuCmd);
+            skuAttrIdsSet.add(pSkuAttrId);
+        }
+        if(skuAttrIdsSet.size() > 0) {   //货箱内待拣货sku库存属性不唯一
+            command.setIsUniqueSkuAttrInside(false);  // 不唯一
+            this.tipSkuDetailAspect(command, tipSkuAttrId, skuAttrIdsQty, logId);
+        }else{//货箱内待拣货sku库存属性唯一
+            if(command.getIsScanInvAttr()) {
+                this.tipSkuDetailAspect(command, tipSkuAttrId, skuAttrIdsQty, logId);
+            }
+            command.setIsUniqueSkuAttrInside(true);  //唯一
+        }
+        log.info("PdaPickingWorkManagerImpl judgeSkuAttrIdsIsUnique is end");
+        
+        return command;
+        
+    }
+    
+    /***
+     * 如果商品绑定多个库位，则提示库位
+     * @param srCmd
+     * @param tipSkuAttrId
+     * @param locSkuAttrIds
+     * @param skuAttrIdsQty
+     * @param logId
+     */
+    private void tipSkuDetailAspect(PickingScanResultCommand srCmd, String tipSkuAttrId,  Map<String, Long> skuAttrIdsQty, String logId) {
+        String skuAttrId = SkuCategoryProvider.getSkuAttrId(tipSkuAttrId);
+        Long qty = skuAttrIdsQty.get(skuAttrId);
+        if (null == qty) {
+            log.error("sku qty is null error, logId is:[{}]", logId);
+            throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
+        }
+        srCmd.setTipSkuQty(qty);
+        srCmd.setIsNeedScanSkuInvType(TipSkuDetailProvider.isTipSkuInvType(tipSkuAttrId));  //是否需要扫描商品类型
+        if (true == srCmd.getIsNeedScanSkuInvType()) {
+                String skuInvType = TipSkuDetailProvider.getSkuInvType(tipSkuAttrId);
+                List<SysDictionary> invTypeList = sysDictionaryManager.getListByGroup(Constants.INVENTORY_TYPE, BaseModel.LIFECYCLE_NORMAL);
+                boolean isExists = false;
+                for (SysDictionary sd : invTypeList) {
+                    if (sd.getDicValue().equals(skuInvType)) {
+                        srCmd.setSkuInvType(sd.getDicLabel());
+                        isExists = true;
+                        break;
+                    }
+                }
+                if (false == isExists) {
+                    log.error("inv type is not found error, logId is:[{}]", logId);
+                    throw new BusinessException(ErrorCodes.COMMON_INV_TYPE_NOT_FOUND_ERROR);
+                }
+            } else {
+                srCmd.setSkuInvType("");
+            }
+            srCmd.setIsNeedScanSkuInvStatus(TipSkuDetailProvider.isTipSkuInvStatus(tipSkuAttrId));
+            if (true == srCmd.getIsNeedScanSkuInvStatus()) {
+                String skuInvStatus = TipSkuDetailProvider.getSkuInvStatus(tipSkuAttrId);
+                List<InventoryStatus> invStatusList = inventoryStatusManager.findAllInventoryStatus();
+                boolean isExists = false;
+                for (InventoryStatus is : invStatusList) {
+                    if (is.getId().toString().equals(skuInvStatus)) {
+                        srCmd.setSkuInvStatus(is.getName());
+                        isExists = true;
+                        break;
+                    }
+                }
+                if (false == isExists) {
+                    log.error("inv status is not found error, logId is:[{}]", logId);
+                    throw new BusinessException(ErrorCodes.COMMON_INV_STATUS_NOT_FOUND_ERROR);
+                }
+            } else {
+                srCmd.setSkuInvStatus("");
+            }
+            //sku不在任何容器内            
+            srCmd.setIsNeedScanSkuMfgDate(TipSkuDetailProvider.isTipSkuMfgDate(tipSkuAttrId));
+            if (true == srCmd.getIsNeedScanSkuMfgDate()) {
+                String skuMfgDate = TipSkuDetailProvider.getSkuMfgDate(tipSkuAttrId);
+                srCmd.setSkuMfgDate(skuMfgDate);
+            } else {
+                srCmd.setSkuMfgDate("");
+            }
+            srCmd.setIsNeedScanSkuExpDate(TipSkuDetailProvider.isTipSkuExpDate(tipSkuAttrId));
+            if (true == srCmd.getIsNeedScanSkuExpDate()) {
+                String skuExpDate = TipSkuDetailProvider.getSkuExpDate(tipSkuAttrId);
+                srCmd.setSkuExpDate(skuExpDate);
+            } else {
+                srCmd.setSkuExpDate("");
+            }
+            srCmd.setIsNeedScanSkuInvAttr1(TipSkuDetailProvider.isTipSkuInvAttr1(tipSkuAttrId));
+            if (true == srCmd.getIsNeedScanSkuInvAttr1()) {
+                String skuInvAttr1 = TipSkuDetailProvider.getSkuInvAttr1(tipSkuAttrId);
+                List<SysDictionary> list = sysDictionaryManager.getListByGroup(Constants.INVENTORY_ATTR_1, BaseModel.LIFECYCLE_NORMAL);
+                boolean isExists = false;
+                for (SysDictionary sd : list) {
+                    if (sd.getDicValue().equals(skuInvAttr1)) {
+                        srCmd.setSkuInvAttr1(sd.getDicLabel());
+                        isExists = true;
+                        break;
+                    }
+                }
+            } else {
+                srCmd.setSkuInvAttr1("");
+            }
+            srCmd.setIsNeedScanSkuInvAttr2(TipSkuDetailProvider.isTipSkuInvAttr2(tipSkuAttrId));
+            if (true == srCmd.getIsNeedScanSkuInvAttr2()) {
+                String skuInvAttr2 = TipSkuDetailProvider.getSkuInvAttr2(tipSkuAttrId);
+                List<SysDictionary> list = sysDictionaryManager.getListByGroup(Constants.INVENTORY_ATTR_2, BaseModel.LIFECYCLE_NORMAL);
+                boolean isExists = false;
+                for (SysDictionary sd : list) {
+                    if (sd.getDicValue().equals(skuInvAttr2)) {
+                        srCmd.setSkuInvAttr2(sd.getDicLabel());
+                        isExists = true;
+                        break;
+                    }
+                }
+                if (false == isExists) {
+                    log.error("inv attr2 is not found error, logId is:[{}]", logId);
+                    throw new BusinessException(ErrorCodes.COMMON_INV_ATTR_NOT_FOUND_ERROR);
+                }
+            } else {
+                srCmd.setSkuInvAttr2("");
+            }
+            srCmd.setIsNeedScanSkuInvAttr3(TipSkuDetailProvider.isTipSkuInvAttr3(tipSkuAttrId));
+            if (true == srCmd.getIsNeedScanSkuInvAttr3()) {
+                String skuInvAttr3 = TipSkuDetailProvider.getSkuInvAttr3(tipSkuAttrId);
+                List<SysDictionary> list = sysDictionaryManager.getListByGroup(Constants.INVENTORY_ATTR_3, BaseModel.LIFECYCLE_NORMAL);
+                boolean isExists = false;
+                for (SysDictionary sd : list) {
+                    if (sd.getDicValue().equals(skuInvAttr3)) {
+                        srCmd.setSkuInvAttr3(sd.getDicLabel());
+                        isExists = true;
+                        break;
+                    }
+                }
+                if (false == isExists) {
+                    log.error("inv attr3 is not found error, logId is:[{}]", logId);
+                    throw new BusinessException(ErrorCodes.COMMON_INV_ATTR_NOT_FOUND_ERROR);
+                }
+            } else {
+                srCmd.setSkuInvAttr3("");
+            }
+            srCmd.setIsNeedScanSkuInvAttr4(TipSkuDetailProvider.isTipSkuInvAttr4(tipSkuAttrId));
+            if (true == srCmd.getIsNeedScanSkuInvAttr4()) {
+                String skuInvAttr4 = TipSkuDetailProvider.getSkuInvAttr4(tipSkuAttrId);
+                List<SysDictionary> list = sysDictionaryManager.getListByGroup(Constants.INVENTORY_ATTR_4, BaseModel.LIFECYCLE_NORMAL);
+                boolean isExists = false;
+                for (SysDictionary sd : list) {
+                    if (sd.getDicValue().equals(skuInvAttr4)) {
+                        srCmd.setSkuInvAttr4(sd.getDicLabel());
+                        isExists = true;
+                        break;
+                    }
+                }
+                if (false == isExists) {
+                    log.error("inv attr4 is not found error, logId is:[{}]", logId);
+                    throw new BusinessException(ErrorCodes.COMMON_INV_ATTR_NOT_FOUND_ERROR);
+                }
+            } else {
+                srCmd.setSkuInvAttr4("");
+            }
+            srCmd.setIsNeedScanSkuInvAttr5(TipSkuDetailProvider.isTipSkuInvAttr5(tipSkuAttrId));
+            if (true == srCmd.getIsNeedScanSkuInvAttr5()) {
+                String skuInvAttr5 = TipSkuDetailProvider.getSkuInvAttr5(tipSkuAttrId);
+                List<SysDictionary> list = sysDictionaryManager.getListByGroup(Constants.INVENTORY_ATTR_5, BaseModel.LIFECYCLE_NORMAL);
+                boolean isExists = false;
+                for (SysDictionary sd : list) {
+                    if (sd.getDicValue().equals(skuInvAttr5)) {
+                        srCmd.setSkuInvAttr5(sd.getDicLabel());
+                        isExists = true;
+                        break;
+                    }
+                }
+                if (false == isExists) {
+                    log.error("inv attr5 is not found error, logId is:[{}]", logId);
+                    throw new BusinessException(ErrorCodes.COMMON_INV_ATTR_NOT_FOUND_ERROR);
+                }
+            } else {
+                srCmd.setSkuInvAttr5("");
+            }
+            srCmd.setIsNeedScanSkuSn(TipSkuDetailProvider.isTipSkuSn(tipSkuAttrId));
+            if (true == srCmd.getIsNeedScanSkuSn()) {
+                String skuSn = TipSkuDetailProvider.getSkuSn(tipSkuAttrId);
+                srCmd.setSkuSn(skuSn);
+            } else {
+                srCmd.setSkuSn("");
+            }
+            srCmd.setIsNeedScanSkuDefect(TipSkuDetailProvider.isTipSkuDefect(tipSkuAttrId));
+            if (true == srCmd.getIsNeedScanSkuDefect()) {
+                String skuDefect = TipSkuDetailProvider.getSkuDefect(tipSkuAttrId);
+                srCmd.setSkuDefect(skuDefect);
+            } else {
+                srCmd.setSkuDefect("");
+            }
+    }
+    /***pda扫描sku
+     * @author tangminmg
+     * @param command
+     * @return
+     */
+    public PickingScanResultCommand scanSku(PickingScanResultCommand  command,WhSkuCommand skuCmd){
+        log.info("PdaPickingWorkManagerImpl scanSku is start");
+        Long operatorId = command.getOperatorId();
+        Long functionId = command.getFunctionId();
+        Long locationId = command.getLocationId();   
+        Long ouId = command.getOuId();
+        Long skuId = command.getSkuId();
+        String skuBarCode = command.getSkuBarCode();
+        String insideContainerCode = command.getInsideContainerCode();
+        String outerContainerCode = command.getOuterContainerCode(); 
+        Long insideContainerId = null;
+        ContainerCommand insideContainerCmd = null;
+        if(!StringUtil.isEmpty(insideContainerCode)) {
+            insideContainerCmd = containerDao.getContainerByCode(insideContainerCode, ouId);
+            if(null == insideContainerCmd) {
+                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+            }
+            insideContainerId = insideContainerCmd.getId();
+        }
+        ContainerCommand outerContainerCmd = null;
+        Long outerOuterContainerId = null;
+        if(!StringUtil.isEmpty(outerContainerCode)) {
+            outerContainerCmd = containerDao.getContainerByCode(outerContainerCode, ouId);
+            if(null == outerContainerCmd) {
+                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+            }
+            outerOuterContainerId = outerContainerCmd.getId();
+        }
+        Double scanQty = skuCmd.getScanSkuQty(); // 扫描的商品数量
+        if (null == scanQty || scanQty.longValue() < 1) {
+            log.error("scan sku qty is valid, logId is:[{}]", logId);
+            throw new BusinessException(ErrorCodes.SCAN_SKU_QTY_IS_VALID);
+        }
+        if (StringUtils.isEmpty(skuBarCode)) {
+            log.error("sku is null error, logId is:[{}]", logId);
+            throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
+        }
+//        String skuAttrId = SkuCategoryProvider.getSkuAttrIdByInv(skuInvCmd);
+        WhFunctionPicking picking = whFunctionPickingDao.findByFunctionIdExt(ouId, functionId);
+        if (null == picking) {
+            log.error("whFunctionPutaway is null error, logId is:[{}]", logId);
+            throw new BusinessException(ErrorCodes.COMMON_FUNCTION_CONF_IS_NULL_ERROR);
+        }
+        Integer scanPattern = (WhScanPatternType.ONE_BY_ONE_SCAN == picking.getScanPattern()) ? WhScanPatternType.ONE_BY_ONE_SCAN : WhScanPatternType.NUMBER_ONLY_SCAN;
+        Map<Long, Integer> cacheSkuIdsQty = skuRedisManager.findSkuByBarCode(skuBarCode, logId); // 获取对应的商品数量,key值是sku
+        OperatioLineStatisticsCommand operatorLine = cacheManager.getObject(CacheConstants.OPERATIONLINE_STATISTICS + operatorId.toString());
+        if(null == operatorLine) {
+            throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+        }
+        Map<Long, Set<Long>> insideSkuIds  = operatorLine.getInsideSkuIds();  //内部容器内所有的sku
+        Map<Long, Set<Long>> operLocSkuIds = operatorLine.getSkuIds();  //库位上所有sku(sku不在任何容器内)
+        Set<Long> locSkuIds = operLocSkuIds.get(locationId);
+        Map<Long, Set<Long>> locOuterContainerIds = operatorLine.getOuterContainerIds();
+        Set<Long> outerContainerIds = locOuterContainerIds.get(locationId);  //当前库位上所有外部容器集合
+        Set<Long> icSkuIds = insideSkuIds.get(insideContainerId);
+        List<Long> locationIds = operatorLine.getLocationIds();
+        Map<Long, Map<Long, Long>> operLocSkuQty = operatorLine.getSkuQty();
+        Map<Long,Long> locSkuQty = operLocSkuQty.get(operatorId);
+        Map<Long, Map<Long, Long>> insideSkuQty = operatorLine.getInsideSkuQty(); //内部容器每个sku总件数
+        Map<Long,Long> insideContainerSkuIdsQty = insideSkuQty.get(insideContainerId);
+        Map<Long, Set<Long>> operLocInsideContainerIds = operatorLine.getInsideContainerIds();//库位上所有的内部容器(无外部容器情况)
+        Set<Long> locInsideContainerIds = operLocInsideContainerIds.get(locationId);
+        Map<Long, Set<Long>>  insideContainerSkuIds = operatorLine.getInsideSkuIds();   //库位上内部容器对应的所有sku
+        Map<Long, Set<Long>> existOuterInsideContainerIds = operatorLine.getOuterToInside(); //(库位上有外部容器的内部容器)
+        Set<Long> insideContainerIds = existOuterInsideContainerIds.get(locationId);
+        boolean isSkuExists = false;
+        Integer cacheSkuQty = 1;
+        Integer icSkuQty = 1;
+        for (Long cacheId : cacheSkuIdsQty.keySet()) {
+            if (icSkuIds.contains(cacheId)) {
+                isSkuExists = true;
+            }
+            if (true == isSkuExists) {
+                skuId = cacheId;
+                cacheSkuQty = (null == cacheSkuIdsQty.get(cacheId) ? 1 : cacheSkuIdsQty.get(cacheId));
+                icSkuQty = (null == insideContainerSkuIdsQty.get(cacheId) ? 1 : insideContainerSkuIdsQty.get(cacheId).intValue());
+                break;
+            }
+        }
+        if (false == isSkuExists) {
+            log.error("scan sku is not found in current inside contianer error, ocId is:[{}], icId is:[{}], scanSkuId is:[{}], logId is:[{}]",  skuId, logId);
+            throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_SCAN_SKU_ERROR, new Object[] {});
+        }
+        if (cacheSkuQty > 1 && cacheSkuQty <= icSkuQty) {
+            if (0 != (icSkuQty % cacheSkuQty)) {
+                // 取模运算不为零，表示多条码配置的数量无法完成此箱中该商品的数量复合
+                log.error("scan sku may be multi barcode sku, cacheSkuQty is:[{}], icSkuQty is:[{}], logId is:[{}]", cacheSkuQty, icSkuQty, logId);
+                throw new BusinessException(ErrorCodes.COMMON_MULTI_BARCODE_QTY_NOT_SUITABLE);
+            }
+        }
+        if (WhScanPatternType.ONE_BY_ONE_SCAN == scanPattern) {
+            if (0 != new Double("1").compareTo(scanQty)) {
+                log.error("one by one scan qty is not equals 1 error, skuBarcode is:[{}], logId is:[{}]", skuBarCode, logId);
+                throw new BusinessException(ErrorCodes.COMMON_ONE_BY_ONE_SCAN_QTY_ERROR);
+            }
+        }
+        skuCmd.setId(skuId);
+        skuCmd.setScanSkuQty(scanQty * cacheSkuQty);// 可能是多条码
+        CheckScanResultCommand cSRCmd =  pdaPickingWorkCacheManager.pdaPickingyCacheSkuAndCheckContainer(locationIds, locSkuQty, locationId, locSkuIds, outerContainerIds, outerContainerCmd, operatorId, insideContainerSkuIdsQty, insideContainerSkuIds, insideContainerIds, locInsideContainerIds, insideContainerCmd, skuCmd);
+        if(cSRCmd.getIsNeedScanSku()) {
+            command.setIsNeedTipSku(true);
+            Set<Long> skuIds = null;
+            if(null == insideContainerId) { //sku直接放在库位上
+                skuIds = locSkuIds;
+            }else{
+                skuIds = insideSkuIds.get(insideContainerId);
+            }
+//            CheckScanResultCommand cSRCmd = pdaPickingWorkCacheManager.pdaPickingTipSku(skuIds, operatorId,locationId,ouId, insideContainerId);
+        }
+        log.info("PdaPickingWorkManagerImpl scanSku is end");
+        return command;
+    }
+
 }

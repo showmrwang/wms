@@ -78,4 +78,17 @@ public final class CacheConstants {
     
     /***缓存库位*/
     public static final String CACHE_LOCATION = "CACHE_LOCATION";
+    /***缓存库位库存*/
+    public static final String CACHE_LOC_INVENTORY = "CACHE_LOC_INVENTORY";
+    /**缓存库位上的托盘*/
+    public static final String CACAHE_LOC_OUT_CONTAINER="CACHE_LOC_OUT_CONTAINER";
+    /**缓存库位上的货箱*/
+    public static final String CACHE_LOC_INSIDE_CONTAINER="CACHE_LOC_INSIDE_CONTAINER";
+    /**缓存库位上的sku*/
+    public static final String CACHE_LOC_SKU="CACHE_LOC_SKU";
+    /***缓存唯一sku*/
+    public static final String CACHE_LOC_SKU_ATTR = "CACHE_LOC_SKU_ATTR";
+    /** pda拣货:已扫描的Sku队列 */
+    public static final String PDA_PICKING_SCAN_SKU_QUEUE = "PDA_PICKING_SCAN_SKU_QUEUE_";
+    
 }

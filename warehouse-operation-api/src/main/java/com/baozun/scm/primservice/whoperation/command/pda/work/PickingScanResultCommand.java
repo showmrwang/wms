@@ -1,6 +1,5 @@
 package com.baozun.scm.primservice.whoperation.command.pda.work;
 
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -136,6 +135,21 @@ public class PickingScanResultCommand extends BaseCommand {
     private Boolean IsNeedScanSkuSn;  
     /** 提示商品defect*/
     private Boolean IsNeedScanSkuDefect;  
+    
+    private String skuSn;
+    
+    private String skuDefect;
+    /**是否扫描sku库存属性*/
+    private Boolean isNeedSkuDetail;
+    
+    /** 库位上外部容器是否扫描完毕*/
+    private Boolean isNeedTipOutContainer;
+    /**库位上内部容器是否扫描完毕*/
+    private Boolean isNeedTipInsideContainer;
+    /** 是否提示商品 (所有的商品sku是否已经扫描完毕)*/
+    private Boolean isNeedTipSku;
+    /**库位是否扫描完毕*/
+    private Boolean isNeedTipLocation;
 
     /**
      * 出库箱集合(仅限于有小车,有出库箱的情况)
@@ -757,5 +771,78 @@ public class PickingScanResultCommand extends BaseCommand {
         IsNeedScanSkuDefect = isNeedScanSkuDefect;
     }
 
+
+    public String getSkuSn() {
+        return skuSn;
+    }
+
+
+    public void setSkuSn(String skuSn) {
+        this.skuSn = skuSn;
+    }
+
+
+    public String getSkuDefect() {
+        return skuDefect;
+    }
+
+
+    public void setSkuDefect(String skuDefect) {
+        this.skuDefect = skuDefect;
+    }
+
+
+    public Boolean getIsNeedSkuDetail() {
+        return isNeedSkuDetail;
+    }
+
+
+    public void setIsNeedSkuDetail(Boolean isNeedSkuDetail) {
+        this.isNeedSkuDetail = isNeedSkuDetail;
+    }
+
+
+    public Boolean getIsNeedTipOutContainer() {
+        return isNeedTipOutContainer;
+    }
+
+
+    public void setIsNeedTipOutContainer(Boolean isNeedTipOutContainer) {
+        this.isNeedTipOutContainer = isNeedTipOutContainer;
+    }
+
+
+    public Boolean getIsNeedTipInsideContainer() {
+        return isNeedTipInsideContainer;
+    }
+
+
+    public void setIsNeedTipInsideContainer(Boolean isNeedTipInsideContainer) {
+        this.isNeedTipInsideContainer = isNeedTipInsideContainer;
+    }
+
+
+    public Boolean getIsNeedTipSku() {
+        return isNeedTipSku;
+    }
+
+
+    public void setIsNeedTipSku(Boolean isNeedTipSku) {
+        this.isNeedTipSku = isNeedTipSku;
+    }
+
+
+    public Boolean getIsNeedTipLocation() {
+        return isNeedTipLocation;
+    }
+
+
+    public void setIsNeedTipLocation(Boolean isNeedTipLocation) {
+        this.isNeedTipLocation = isNeedTipLocation;
+    }
+
+    
+
+    
 
 }
