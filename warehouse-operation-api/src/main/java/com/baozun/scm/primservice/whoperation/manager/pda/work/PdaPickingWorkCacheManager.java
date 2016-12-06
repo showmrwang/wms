@@ -8,6 +8,7 @@ import com.baozun.scm.primservice.whoperation.command.pda.work.CheckScanResultCo
 import com.baozun.scm.primservice.whoperation.command.pda.work.OperatioLineStatisticsCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.work.PickingScanResultCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
@@ -115,5 +116,13 @@ public interface PdaPickingWorkCacheManager extends BaseManager{
        */
       public CheckScanResultCommand pdaPickingyCacheSkuAndCheckContainer(List<Long> locationIds, Map<Long, Long> locSkuQty,Long locationId,Set<Long> locSkuIds,Set<Long> outerContainerIds,ContainerCommand outerContainerCmd,Long operatorId,Map<Long,Long> insideContainerSkuIdsQty,Map<Long, Set<Long>> insideContainerSkuIds,Set<Long> insideContainerIds,Set<Long> locInsideContainerIds,ContainerCommand insideContainerCmd,WhSkuCommand skuCmd);
     
+      /***
+       * 有小车，而且有出库箱的时候，提示出库箱
+       * @param operatorLineList
+       * @param operationId
+       * @return
+       */
+      public CheckScanResultCommand pdaPickingTipOutBounxBoxCode(List<WhOperationLineCommand> operatorLineList,Long operationId, Map<Integer, String> carStockToOutgoingBox);
+      
     
 }

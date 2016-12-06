@@ -52,6 +52,10 @@ public class CheckScanResultCommand extends BaseCommand {
     private Boolean isNeedTipLoc;
     /**提示库位id*/
     private Long tipLocationId;
+    /**出库箱号*/
+    private String outBounxBoxCode;
+    /**是否需要扫描出库箱*/
+    private Boolean isNeedScanOutBounxBox;
     
     
     public int getPickingWay() {
@@ -138,4 +142,18 @@ public class CheckScanResultCommand extends BaseCommand {
     public void setTipLocationId(Long tipLocationId) {
         this.tipLocationId = tipLocationId;
     }
+    public String getOutBounxBoxCode() {
+        return outBounxBoxCode;
+    }
+    public void setOutBounxBoxCode(String outBounxBoxCode) {
+        this.outBounxBoxCode = outBounxBoxCode;
+    }
+    public Boolean getIsNeedScanOutBounxBox() {
+        return isNeedScanOutBounxBox;
+    }
+    public void setIsNeedScanOutBounxBox(Boolean isNeedScanOutBounxBox) {
+        this.isNeedScanOutBounxBox = isNeedScanOutBounxBox;
+    }
+    
+    
 }

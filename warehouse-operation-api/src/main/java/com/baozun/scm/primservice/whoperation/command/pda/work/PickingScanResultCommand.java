@@ -24,7 +24,7 @@ public class PickingScanResultCommand extends BaseCommand {
     /** 出库箱号 */
     private String outBoundCode;
     /** 作业id */
-    private Long operatorId;
+    private Long operationId;
 
     private Long functionId;
     /** 提示周转箱 */
@@ -150,6 +150,10 @@ public class PickingScanResultCommand extends BaseCommand {
     private Boolean isNeedTipSku;
     /**库位是否扫描完毕*/
     private Boolean isNeedTipLocation;
+    /**出库箱编码*/
+    private String tipOutBounxBoxCode;
+    /**是否需要出库箱编码*/
+    private Boolean isNeedScanOutBounxBox;
 
     /**
      * 出库箱集合(仅限于有小车,有出库箱的情况)
@@ -164,17 +168,6 @@ public class PickingScanResultCommand extends BaseCommand {
     public void setTipOutBoundCode(String tipOutBoundCode) {
         this.tipOutBoundCode = tipOutBoundCode;
     }
-
-
-    public Long getOperatorId() {
-        return operatorId;
-    }
-
-
-    public void setOperatorId(Long operatorId) {
-        this.operatorId = operatorId;
-    }
-
 
     public Boolean getIsRemmendContainer() {
         return isRemmendContainer;
@@ -839,6 +832,35 @@ public class PickingScanResultCommand extends BaseCommand {
 
     public void setIsNeedTipLocation(Boolean isNeedTipLocation) {
         this.isNeedTipLocation = isNeedTipLocation;
+    }
+
+    public Boolean getIsNeedScanOutBounxBox() {
+        return isNeedScanOutBounxBox;
+    }
+
+
+    public void setIsNeedScanOutBounxBox(Boolean isNeedScanOutBounxBox) {
+        this.isNeedScanOutBounxBox = isNeedScanOutBounxBox;
+    }
+
+
+    public String getTipOutBounxBoxCode() {
+        return tipOutBounxBoxCode;
+    }
+
+
+    public void setTipOutBounxBoxCode(String tipOutBounxBoxCode) {
+        this.tipOutBounxBoxCode = tipOutBounxBoxCode;
+    }
+
+
+    public Long getOperationId() {
+        return operationId;
+    }
+
+
+    public void setOperationId(Long operationId) {
+        this.operationId = operationId;
     }
 
     
