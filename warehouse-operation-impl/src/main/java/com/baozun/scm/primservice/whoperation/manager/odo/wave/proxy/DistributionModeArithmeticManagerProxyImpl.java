@@ -254,6 +254,7 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
         this.cacheManager.setValue(CacheKeyConstant.TWOSKUSUIT_DIV_ODO_PREFIX + twoSkuSuitPrefix + CacheKeyConstant.WAVE_ODO_SPLIT + decrSkuId + CacheKeyConstant.WAVE_ODO_SPLIT + odoId, odoId + "");
         this.cacheManager.setValue(CacheKeyConstant.SUITS_DIV_ODO_PREFIX + twoSkuSuitPrefix + CacheKeyConstant.WAVE_ODO_SPLIT + decrSkuId + CacheKeyConstant.WAVE_ODO_SPLIT + odoId, odoId + "");
         List<String> keyList = this.cacheManager.Keys(CacheKeyConstant.OU_ODO_PREFIX + twoSkuSuitPrefix + "*$" + incrSkuId + "$*");
+
         for (String key : keyList) {
 
             String[] keyArray = key.split("%");
@@ -268,6 +269,7 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
             this.cacheManager.setValue(CacheKeyConstant.TWOSKUSUIT_DIV_ODO_PREFIX + twoSkuSuitPrefix+CacheKeyConstant.WAVE_ODO_SPLIT +keyDecrSkuId+CacheKeyConstant.WAVE_ODO_SPLIT+keyOdoId,keyOdoId);
             this.cacheManager.setValue(CacheKeyConstant.SUITS_DIV_ODO_PREFIX + twoSkuSuitPrefix + CacheKeyConstant.WAVE_ODO_SPLIT + keyDecrSkuId + CacheKeyConstant.WAVE_ODO_SPLIT + keyOdoId, keyOdoId);
 
+            this.cacheManager.remove(CacheKeyConstant.OU_ODO_PREFIX + code);
 
 
         }

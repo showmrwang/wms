@@ -621,4 +621,10 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
         return this.whOdoDao.saveOrUpdateByVersion(odo);
     }
 
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<String> findExportExeclList(OdoSearchCommand odoSearchCommand) {
+        return this.whOdoDao.findExportExeclList(odoSearchCommand);
+    }
+
 }

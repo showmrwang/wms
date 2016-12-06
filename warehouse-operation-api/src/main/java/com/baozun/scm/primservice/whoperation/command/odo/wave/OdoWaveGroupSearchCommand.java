@@ -22,7 +22,7 @@ public class OdoWaveGroupSearchCommand extends BaseCommand {
     private List<String> storeId;
     private String outboundTarget;
     private List<String> modeOfTransport;
-    private List<Long> transportServiceProvider;
+    private List<String> transportServiceProvider;
     private List<String> transportServiceProviderType;
     private List<String> distributeMode;
     private List<String> outBoundCartonType;
@@ -266,11 +266,12 @@ public class OdoWaveGroupSearchCommand extends BaseCommand {
         this.modeOfTransport = modeOfTransport;
     }
 
-    public List<Long> getTransportServiceProvider() {
+
+    public List<String> getTransportServiceProvider() {
         return transportServiceProvider;
     }
 
-    public void setTransportServiceProvider(List<Long> transportServiceProvider) {
+    public void setTransportServiceProvider(List<String> transportServiceProvider) {
         this.transportServiceProvider = transportServiceProvider;
     }
 

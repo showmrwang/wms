@@ -61,4 +61,44 @@
         </where>
     </sql>
 
+<delete id="deleteByIdOuId" parameterType="map">
+        <![CDATA[
+            delete from t_wh_replenishment_msg where
+                id = #{id} and ou_id=#{ouId}
+        ]]>
+    </delete>
+    
+<update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentMsg">
+        <![CDATA[
+            UPDATE t_wh_replenishment_msg SET
+                location_id = #{locationId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                sku_id = #{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                upper_limit_qty = #{upperLimitQty,javaType=Long,jdbcType=DECIMAL} ,
+                error_code = #{errorCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} 
+            WHERE 
+                id = #{id} and ou_id=#{ouId} and last_modify_time=#{lastModifyTime}
+        ]]>
+    </update>
+    
+     <select id="findByLocIdAndSkuId" parameterType="map" resultMap="whReplenishmentMsgResult" flushCache="false">
+        select
+        <include refid="whReplenishmentMsgColumns"/>
+        <![CDATA[
+                from t_wh_replenishment_msg 
+                where 
+                location_id = #{locId} and sku_id=#{skuId} and ou_id=#{ouId}
+            ]]>
+    </select>
+    
+     <select id="findByIdExt" parameterType="map" resultMap="whReplenishmentMsgResult" flushCache="false">
+        select
+        <include refid="whReplenishmentMsgColumns"/>
+        <![CDATA[
+                from t_wh_replenishment_msg 
+                where 
+                id = #{id} and ou_id=#{ouId}
+            ]]>
+    </select>
 </mapper>

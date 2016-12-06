@@ -10,12 +10,14 @@ import com.baozun.scm.baseservice.sac.manager.CodeManager;
 import com.baozun.scm.primservice.whoperation.command.rule.RuleAfferCommand;
 import com.baozun.scm.primservice.whoperation.command.rule.RuleExportCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ReplenishmentRuleCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.ReplenishmentStrategyCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveLineDao;
 import com.baozun.scm.primservice.whoperation.dao.system.SysDictionaryDao;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.rule.RuleManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.ReplenishmentRuleManager;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine;
 import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
@@ -33,6 +35,8 @@ public class ReplenishedManagerProxyImpl extends BaseManagerImpl implements Repl
 	private RuleManager ruleManager;
 	@Autowired
 	private CodeManager codeManager;
+    @Autowired
+    private ReplenishmentRuleManager replenishmentRuleManager;
 	
 	@Override
 	public List<Long> findWaveIdsByWavePhaseCode(String phaseCode, Long ouId) {
@@ -75,5 +79,10 @@ public class ReplenishedManagerProxyImpl extends BaseManagerImpl implements Repl
 	public String generateBhCode() {
 		return codeManager.generateCode(Constants.WMS, Constants.BH_MODEL_URL, null, null, null);
 	}
+
+    @Override
+    public List<ReplenishmentStrategyCommand> findReplenishmentStrategyListByRuleId(Long id, Long ouId) {
+        return this.replenishmentRuleManager.getReplenishmentStrategyCommandByRuleId(id, ouId);
+    }
 
 }

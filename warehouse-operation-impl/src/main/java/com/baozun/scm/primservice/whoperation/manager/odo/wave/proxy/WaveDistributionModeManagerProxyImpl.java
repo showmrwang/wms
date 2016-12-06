@@ -613,6 +613,7 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
             Long skuId = Long.parseLong(codeArray[3]);
             Sku sku = this.odoManager.findSkuByIdToShard(skuId, ouId);
             String skuCode = sku.getCode();
+            String twoSkuSuitPrefix = codeArray[0] + CacheKeyConstant.WAVE_ODO_SPLIT + codeArray[1] + CacheKeyConstant.WAVE_ODO_SPLIT + codeArray[2];
             for (Long odoId : odoIdList) {
                 WhOdo odo = this.odoManager.findOdoByIdOuId(odoId, ouId);
                 odo.setDistributeMode(distributeMode);
@@ -625,7 +626,7 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
                     count = this.odoManager.updateByVersion(odo);
                 }
                 if (count > 0) {
-                    this.cacheManager.remove(CacheKeyConstant.SUITS_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + odoId);
+                    this.cacheManager.remove(CacheKeyConstant.TWOSKUSUIT_PREFIX + twoSkuSuitPrefix + CacheKeyConstant.WAVE_ODO_SPLIT + skuId + CacheKeyConstant.WAVE_ODO_SPLIT + odoId);
                 }
             }
         } catch (Exception e) {

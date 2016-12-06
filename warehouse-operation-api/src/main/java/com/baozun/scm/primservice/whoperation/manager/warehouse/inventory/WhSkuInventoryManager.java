@@ -27,6 +27,7 @@ import com.baozun.scm.primservice.whoperation.command.wave.WhWaveLineCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.AllocateStrategy;
+import com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentMsg;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 
@@ -121,5 +122,31 @@ public interface WhSkuInventoryManager extends BaseManager {
 	 * @return
 	 */
 	List<WhSkuInventoryCommand> findInventorysByAllocateStrategy(String strategyCode, WhSkuInventoryCommand invCommand, Double qty);
+
+    /**
+     * 查找库位的库存量【库位库存量=库位在库库存+库位待移入库存】
+     * 
+     * @param id
+     * @return
+     */
+    double findInventoryByLocation(Long locationId, Long ouId);
+
+    /**
+     * 查找库存中库位商品
+     * 
+     * @param locationId
+     * @param ouId
+     * @return
+     */
+    Long findSkuInInventoryByLocation(Long locationId, Long ouId);
+
+    /**
+     * 库位补货逻辑
+     * 
+     * @param msg
+     * @param rule
+     * @param wh
+     */
+    void replenishmentToLocation(ReplenishmentMsg msg, ReplenishmentRuleCommand rule, Warehouse wh);
 
 }
