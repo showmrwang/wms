@@ -651,15 +651,63 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
 
     @Override
     public void breakCounter(Long ouId) {
-        this.cacheManager.remonKeys(CacheKeyConstant.OU_ODO_PREFIX + ouId + "*");
-        this.cacheManager.remonKeys(CacheKeyConstant.SECKILL_ODO_PREFIX + ouId + "*");
-        this.cacheManager.remonKeys(CacheKeyConstant.SECKILL_PREFIX + ouId + "*");
-        this.cacheManager.remonKeys(CacheKeyConstant.TWOSKUSUIT_ODO_PREFIX + ouId + "*");
-        this.cacheManager.remonKeys(CacheKeyConstant.TWOSKUSUIT_PREFIX + ouId + "*");
-        this.cacheManager.remonKeys(CacheKeyConstant.SUITS_ODO_PREFIX + ouId + "*");
-        this.cacheManager.remonKeys(CacheKeyConstant.SUITS_PREFIX + ouId + "*");
-        this.cacheManager.remonKeys(CacheKeyConstant.TWOSKUSUIT_DIV_ODO_PREFIX + ouId + "*");
-        this.cacheManager.remonKeys(CacheKeyConstant.SUITS_DIV_ODO_PREFIX + ouId + "*");
+        boolean flag = false;
+        while (!flag) {
+            flag = this.cacheManager.remonKeys(CacheKeyConstant.OU_ODO_PREFIX + ouId + "*");
+        }
+        flag = false;
+        while (!flag) {
+            flag = this.cacheManager.remonKeys(CacheKeyConstant.SECKILL_ODO_PREFIX + ouId + "*");
+        }
+        flag = false;
+        while (!flag) {
+            List<String> keys = this.cacheManager.Keys(CacheKeyConstant.SECKILL_PREFIX + ouId + "*");
+            for (String key : keys) {
+                String[] keyArray = key.split("%");
+                String code = keyArray[2];
+                long i = this.cacheManager.incr(CacheKeyConstant.SECKILL_PREFIX + code);
+                this.cacheManager.decrBy(CacheKeyConstant.SECKILL_PREFIX + code, (int) i);
+            }
+            flag = this.cacheManager.remonKeys(CacheKeyConstant.SECKILL_PREFIX + ouId + "*");
+        }
+        flag = false;
+        while (!flag) {
+            flag = this.cacheManager.remonKeys(CacheKeyConstant.TWOSKUSUIT_ODO_PREFIX + ouId + "*");
+        }
+        flag = false;
+        while (!flag) {
+            List<String> keys = this.cacheManager.Keys(CacheKeyConstant.TWOSKUSUIT_PREFIX + ouId + "*");
+            for (String key : keys) {
+                String[] keyArray = key.split("%");
+                String code = keyArray[2];
+                long i = this.cacheManager.incr(CacheKeyConstant.TWOSKUSUIT_PREFIX + code);
+                this.cacheManager.decrBy(CacheKeyConstant.TWOSKUSUIT_PREFIX + code, (int) i);
+            }
+            flag = this.cacheManager.remonKeys(CacheKeyConstant.TWOSKUSUIT_PREFIX + ouId + "*");
+        }
+        flag = false;
+        while (!flag) {
+            flag = this.cacheManager.remonKeys(CacheKeyConstant.SUITS_ODO_PREFIX + ouId + "*");
+        }
+        flag = false;
+        while (!flag) {
+            List<String> keys = this.cacheManager.Keys(CacheKeyConstant.SUITS_PREFIX + ouId + "*");
+            for (String key : keys) {
+                String[] keyArray = key.split("%");
+                String code = keyArray[2];
+                long i = this.cacheManager.incr(CacheKeyConstant.SUITS_PREFIX + code);
+                this.cacheManager.decrBy(CacheKeyConstant.SUITS_PREFIX + code, (int) i);
+            }
+            flag = this.cacheManager.remonKeys(CacheKeyConstant.SUITS_PREFIX + ouId + "*");
+        }
+        flag = false;
+        while (!flag) {
+            flag = this.cacheManager.remonKeys(CacheKeyConstant.TWOSKUSUIT_DIV_ODO_PREFIX + ouId + "*");
+        }
+        flag = false;
+        while (!flag) {
+            flag = this.cacheManager.remonKeys(CacheKeyConstant.SUITS_DIV_ODO_PREFIX + ouId + "*");
+        }
     }
 
 
