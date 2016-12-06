@@ -219,4 +219,8 @@ public interface OdoManager extends BaseManager {
      */
     List<String> findExportExeclList(OdoSearchCommand odoSearchCommand);
 
+    List<String> findDistinctCounterCode(Long ouId);
+
+    List<Long> findOdoByCounterCode(String counterCode, Long ouId);
+
 }

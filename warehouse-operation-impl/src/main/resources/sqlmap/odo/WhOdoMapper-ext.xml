@@ -200,6 +200,10 @@
 		       <if test="waveCode!=null and waveCode!=''">
 					and wave_code = #{waveCode}
 				</if>
+				
+				  <if test="counterCode!=null and counterCode!=''">
+					and counter_code = #{counterCode}
+				</if>
 		</where>
     </sql>
 
@@ -2451,5 +2455,31 @@
 			    	 ) t limit 0,#{limit}
     </select>
     
+    
+    <select id="findDistinctCounterCode" resultType="String">
+		select odo.counter_code
+			from t_wh_odo odo
+			where odo.ou_id=#{ouId} and odo.odo_status!=17 
+			and odo.odo_status!=5
+			and odo.counter_code is not null and odo.counter_code !=''
+			and (odo.distribute_mode is null or odo.distribute_mode='')
+			and floor(odo.qty)=odo.sku_number_of_packages
+		group by odo.counter_code
+
+
+	</select>
+	
+    <select id="findOdoByCounterCode" resultType="Long">
+	select odo.id
+		from t_wh_odo odo
+		where odo.odo_status!=17 
+		and odo.odo_status!=5
+		and odo.counter_code is not null and odo.counter_code !=''
+		and (odo.distribute_mode is null or odo.distribute_mode='') 
+		and floor(odo.qty)=odo.sku_number_of_packages
+		and odo.counter_code=#{counterCode} and odo.ou_id=#{ouId}
+
+
+	</select>
 	
 </mapper>

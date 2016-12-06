@@ -54,6 +54,8 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
     private OdoManager odoManager;
     @Autowired
     private OdoLineManager odoLineManager;
+    @Autowired
+    private DistributionModeArithmeticManagerProxy distributionModeArithmeticManagerProxy;
 
     @Override
     public void setWaveDistributionMode(Long waveId, Long ouId, Long userId) {
@@ -632,6 +634,38 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
         } catch (Exception e) {
 
         }
+    }
+
+
+    @Override
+    public List<String> findDistinctCounterCode(Long ouId) {
+        return this.odoManager.findDistinctCounterCode(ouId);
+    }
+
+
+    @Override
+    public List<Long> findOdoByCounterCode(String counterCode, Long ouId) {
+        return this.odoManager.findOdoByCounterCode(counterCode, ouId);
+    }
+
+
+    @Override
+    public void breakCounter(Long ouId) {
+        this.cacheManager.remonKeys(CacheKeyConstant.OU_ODO_PREFIX + ouId + "*");
+        this.cacheManager.remonKeys(CacheKeyConstant.SECKILL_ODO_PREFIX + ouId + "*");
+        this.cacheManager.remonKeys(CacheKeyConstant.SECKILL_PREFIX + ouId + "*");
+        this.cacheManager.remonKeys(CacheKeyConstant.TWOSKUSUIT_ODO_PREFIX + ouId + "*");
+        this.cacheManager.remonKeys(CacheKeyConstant.TWOSKUSUIT_PREFIX + ouId + "*");
+        this.cacheManager.remonKeys(CacheKeyConstant.SUITS_ODO_PREFIX + ouId + "*");
+        this.cacheManager.remonKeys(CacheKeyConstant.SUITS_PREFIX + ouId + "*");
+        this.cacheManager.remonKeys(CacheKeyConstant.TWOSKUSUIT_DIV_ODO_PREFIX + ouId + "*");
+        this.cacheManager.remonKeys(CacheKeyConstant.SUITS_DIV_ODO_PREFIX + ouId + "*");
+    }
+
+
+    @Override
+    public void addToWhDistributionModeArithmeticPool(String counterCode, Long odoId) {
+        this.distributionModeArithmeticManagerProxy.addToWhDistributionModeArithmeticPool(counterCode, odoId);
     }
 
 

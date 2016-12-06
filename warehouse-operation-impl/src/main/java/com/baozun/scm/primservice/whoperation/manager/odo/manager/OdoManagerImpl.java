@@ -627,4 +627,15 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
         return this.whOdoDao.findExportExeclList(odoSearchCommand);
     }
 
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<String> findDistinctCounterCode(Long ouId) {
+        return this.whOdoDao.findDistinctCounterCode(ouId);
+    }
+
+    @Override
+    public List<Long> findOdoByCounterCode(String counterCode, Long ouId) {
+        return this.whOdoDao.findOdoByCounterCode(counterCode, ouId);
+    }
+
 }
