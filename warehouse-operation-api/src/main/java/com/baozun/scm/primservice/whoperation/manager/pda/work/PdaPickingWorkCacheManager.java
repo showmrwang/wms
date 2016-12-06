@@ -6,7 +6,6 @@ import java.util.Set;
 
 import com.baozun.scm.primservice.whoperation.command.pda.work.CheckScanResultCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.work.OperatioLineStatisticsCommand;
-import com.baozun.scm.primservice.whoperation.command.pda.work.PickingScanResultCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
@@ -48,11 +47,14 @@ public interface PdaPickingWorkCacheManager extends BaseManager{
     public String pdaPickingWorkTipTurnoverBox(Long operatorId,Long ouId);
     
     /**
-     * pda拣货整托整箱
+     * 根据作业ID和OUID获取统计分析结果
+     * 
+     * @author qiming.liu
      * @param operatorId
+     * @param ouId
      * @return
      */
-    public OperatioLineStatisticsCommand pdaPickingWorkTipWholeCase(Long operatorId,Long ouId);
+    public OperatioLineStatisticsCommand getOperatioLineStatistics(Long operatorId,Long ouId);
     
    /***
     * 缓存库位信息

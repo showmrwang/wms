@@ -345,7 +345,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
     }
 
     /**
-     * 提示库位
+     * 根据作业ID和OUID获取统计分析结果
      * 
      * @author qiming.liu
      * @param operationId
@@ -353,7 +353,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
      * @return
      */
     @Override
-    public OperatioLineStatisticsCommand pdaPickingWorkTipWholeCase(Long operationId, Long ouId) {
+    public OperatioLineStatisticsCommand getOperatioLineStatistics(Long operationId, Long ouId) {
         OperatioLineStatisticsCommand operatorLine = cacheManager.getObject(CacheConstants.OPERATIONLINE_STATISTICS + operationId.toString());
         return operatorLine;
     }

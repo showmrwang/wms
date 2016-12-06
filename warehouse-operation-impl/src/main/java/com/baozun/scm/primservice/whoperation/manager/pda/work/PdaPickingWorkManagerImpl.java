@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.ibatis.annotations.Param;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.baozun.redis.manager.CacheManager;
-import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.ScanResultCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.work.CheckScanResultCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.work.OperatioLineStatisticsCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.work.PickingScanResultCommand;
@@ -27,6 +25,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationComma
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
 import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
@@ -39,6 +38,7 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.WhLocationDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhSkuDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhWorkOperDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventorySnDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
@@ -103,6 +103,8 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
     private InventoryStatusManager inventoryStatusManager;
     @Autowired
     private SkuRedisManager skuRedisManager;
+    @Autowired
+    private WhSkuInventorySnDao whSkuInventorySnDao;
     
 
     /**
@@ -184,7 +186,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         // 库位上每个唯一sku对应的所有sn及残次条码
         Map<Long, Map<String, Set<String>>> skuAttrIdsSnDefect = new HashMap<Long, Map<String, Set<String>>>();
         // 库位上每个唯一sku对应的货格（is_whole_case=0&&有小车&&库位上sku不在任何容器内）
-        Map<String, Set<String>> skuAttrIdsContainerLattice = new HashMap<String, Set<String>>();
+        Map<Long, Map<String, Set<String>>> skuAttrIdsContainerLattice = new HashMap<Long, Map<String, Set<String>>>();
         // 外部容器对应所有内部容器 
         Map<Long, Set<Long>> outerToInside = new HashMap<Long, Set<Long>>();
         // 内部容器对应所有sku
@@ -196,7 +198,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         // 内部容器每个唯一sku对应的所有sn及残次条码
         Map<Long, Map<String, Set<String>>> insideSkuAttrIdsSnDefect = new HashMap<Long, Map<String, Set<String>>>();
         // 内部容器每个唯一sku对应的货格（is_whole_case=0&&有小车）
-        Map<String, Set<String>> insideSkuAttrIdsContainerLattice = new HashMap<String, Set<String>>();
+        Map<Long, Map<String, Set<String>>> insideSkuAttrIdsContainerLattice = new HashMap<Long, Map<String, Set<String>>>();
         
         //根据工作id获取作业信息        
         WhOperationCommand whOperationCommand = whOperationManager.findOperationByWorkId(whWork.getId(), ouId);
@@ -227,6 +229,8 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             Map<Long, Map<String, Long>> temporarylmMap = new HashMap<Long, Map<String, Long>>();
             //获取内部容器唯一sku
             String onlySku = SkuCategoryProvider.getSkuAttrIdByOperationLine(operationLine);
+            //根据库存UUID查找对应SN/残次信息
+            List<WhSkuInventorySnCommand> skuInventorySnCommands = whSkuInventorySnDao.findWhSkuInventoryByUuid(ouId, operationLine.getUuid());
             //获取库位ID            
             locationIds.add(operationLine.getFromLocationId());
             //获取外部容器 
@@ -299,15 +303,56 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                     skuAttrIds.put(operationLine.getFromLocationId(), temporarylmMap);
                     temporarylmMap.clear();
                 }
-                // 库位上每个唯一sku对应的所有sn及残次条码---------------------------------------------暂时不做，无法根据作业明细确定t_wh_sku_inventory表信息
+                // 库位上每个唯一sku对应的所有sn及残次条码
+                if(null != skuAttrIdsSnDefect.get(operationLine.getFromLocationId())){
+                    temporaryssetMap = skuAttrIdsSnDefect.get(operationLine.getFromLocationId());
+                    if(null != temporaryssetMap.get(onlySku)){
+                        temporaryS = temporaryssetMap.get(onlySku);
+                        for(WhSkuInventorySnCommand skuInventorySnCommand :skuInventorySnCommands){
+                            temporaryS.add(SkuCategoryProvider.concatSkuAttrId(skuInventorySnCommand.getSn(), skuInventorySnCommand.getDefectWareBarcode()));
+                        }
+                        temporaryssetMap.put(onlySku, temporaryS);
+                        temporaryS.clear();
+                    }else{
+                        for(WhSkuInventorySnCommand skuInventorySnCommand :skuInventorySnCommands){
+                            temporaryS.add(SkuCategoryProvider.concatSkuAttrId(skuInventorySnCommand.getSn(), skuInventorySnCommand.getDefectWareBarcode()));
+                        }
+                        temporaryssetMap.put(onlySku, temporaryS);
+                        temporaryS.clear();
+                    }
+                    skuAttrIdsSnDefect.put(operationLine.getFromLocationId(), temporaryssetMap);
+                    temporaryssetMap.clear();
+                }else{
+                    for(WhSkuInventorySnCommand skuInventorySnCommand :skuInventorySnCommands){
+                        temporaryS.add(SkuCategoryProvider.concatSkuAttrId(skuInventorySnCommand.getSn(), skuInventorySnCommand.getDefectWareBarcode()));
+                    }
+                    temporaryssetMap.put(onlySku, temporaryS);
+                    temporaryS.clear();
+                    skuAttrIdsSnDefect.put(operationLine.getFromLocationId(), temporaryssetMap);
+                    temporaryssetMap.clear();
+                }
                 // 库位上每个唯一sku对应的货格（is_whole_case=0&&有小车&&库位上sku不在任何容器内）
                 if(whOperationCommand.getIsWholeCase() == false && null != operationLine.getFromOuterContainerId()){
-                    if(null != skuAttrIdsContainerLattice.get(onlySku)){
-                        skuAttrIdsContainerLattice.get(onlySku).add(operationLine.getUseOutboundboxCode());
+                    if(null != skuAttrIdsContainerLattice.get(operationLine.getFromLocationId())){
+                        temporaryssetMap = skuAttrIdsContainerLattice.get(operationLine.getFromLocationId());
+                        if(null != temporaryssetMap.get(onlySku)){
+                            temporaryS = temporaryssetMap.get(onlySku);
+                            temporaryS.add(operationLine.getUseOutboundboxCode());
+                            temporaryssetMap.put(onlySku, temporaryS);
+                            temporaryS.clear();
+                        }else{
+                            temporaryS.add(operationLine.getUseOutboundboxCode());
+                            temporaryssetMap.put(onlySku, temporaryS);
+                            temporaryS.clear();
+                        }
+                        skuAttrIdsContainerLattice.put(operationLine.getFromLocationId(), temporaryssetMap);
+                        temporaryssetMap.clear();
                     }else{
                         temporaryS.add(operationLine.getUseOutboundboxCode());
-                        skuAttrIdsContainerLattice.put(onlySku, temporaryS);
+                        temporaryssetMap.put(onlySku, temporaryS);
                         temporaryS.clear();
+                        skuAttrIdsSnDefect.put(operationLine.getFromLocationId(), temporaryssetMap);
+                        temporaryssetMap.clear();
                     }
                 }
             }
@@ -370,15 +415,56 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                     insideSkuAttrIds.put(operationLine.getFromInsideContainerId(), temporarylmMap);
                     temporarylmMap.clear();
                 }
-                //内部容器每个唯一sku对应的所有sn及残次条码---------------------------------------------暂时不做，无法根据作业明细确定t_wh_sku_inventory表信息
+                // 内部容器每个唯一sku对应的所有sn及残次条码
+                if(null != insideSkuAttrIdsSnDefect.get(operationLine.getFromInsideContainerId())){
+                    temporaryssetMap = insideSkuAttrIdsSnDefect.get(operationLine.getFromLocationId());
+                    if(null != temporaryssetMap.get(onlySku)){
+                        temporaryS = temporaryssetMap.get(onlySku);
+                        for(WhSkuInventorySnCommand skuInventorySnCommand :skuInventorySnCommands){
+                            temporaryS.add(SkuCategoryProvider.concatSkuAttrId(skuInventorySnCommand.getSn(), skuInventorySnCommand.getDefectWareBarcode()));
+                        }
+                        temporaryssetMap.put(onlySku, temporaryS);
+                        temporaryS.clear();
+                    }else{
+                        for(WhSkuInventorySnCommand skuInventorySnCommand :skuInventorySnCommands){
+                            temporaryS.add(SkuCategoryProvider.concatSkuAttrId(skuInventorySnCommand.getSn(), skuInventorySnCommand.getDefectWareBarcode()));
+                        }
+                        temporaryssetMap.put(onlySku, temporaryS);
+                        temporaryS.clear();
+                    }
+                    insideSkuAttrIdsSnDefect.put(operationLine.getFromInsideContainerId(), temporaryssetMap);
+                    temporaryssetMap.clear();
+                }else{
+                    for(WhSkuInventorySnCommand skuInventorySnCommand :skuInventorySnCommands){
+                        temporaryS.add(SkuCategoryProvider.concatSkuAttrId(skuInventorySnCommand.getSn(), skuInventorySnCommand.getDefectWareBarcode()));
+                    }
+                    temporaryssetMap.put(onlySku, temporaryS);
+                    temporaryS.clear();
+                    insideSkuAttrIdsSnDefect.put(operationLine.getFromInsideContainerId(), temporaryssetMap);
+                    temporaryssetMap.clear();
+                }
                 //内部容器每个唯一sku对应的货格（is_whole_case=0&&有小车）
                 if(whOperationCommand.getIsWholeCase() == false && null != operationLine.getFromOuterContainerId()){
-                    if(null != insideSkuAttrIdsContainerLattice.get(onlySku)){
-                        insideSkuAttrIdsContainerLattice.get(onlySku).add(operationLine.getUseOutboundboxCode());
+                    if(null != skuAttrIdsContainerLattice.get(operationLine.getFromInsideContainerId())){
+                        temporaryssetMap = skuAttrIdsContainerLattice.get(operationLine.getFromInsideContainerId());
+                        if(null != temporaryssetMap.get(onlySku)){
+                            temporaryS = temporaryssetMap.get(onlySku);
+                            temporaryS.add(operationLine.getUseOutboundboxCode());
+                            temporaryssetMap.put(onlySku, temporaryS);
+                            temporaryS.clear();
+                        }else{
+                            temporaryS.add(operationLine.getUseOutboundboxCode());
+                            temporaryssetMap.put(onlySku, temporaryS);
+                            temporaryS.clear();
+                        }
+                        skuAttrIdsContainerLattice.put(operationLine.getFromInsideContainerId(), temporaryssetMap);
+                        temporaryssetMap.clear();
                     }else{
                         temporaryS.add(operationLine.getUseOutboundboxCode());
-                        insideSkuAttrIdsContainerLattice.put(onlySku, temporaryS);
+                        temporaryssetMap.put(onlySku, temporaryS);
                         temporaryS.clear();
+                        skuAttrIdsSnDefect.put(operationLine.getFromInsideContainerId(), temporaryssetMap);
+                        temporaryssetMap.clear();
                     }
                 }
             }
@@ -618,7 +704,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         // TODO Auto-generated method stub
         log.info("PdaPickingWorkManagerImpl pdaPickingWholeCase is start");
         PickingScanResultCommand pickingScanResultCommand = new PickingScanResultCommand();
-        OperatioLineStatisticsCommand operatioLineStatisticsCommand = pdaPickingWorkCacheManager.pdaPickingWorkTipWholeCase(command.getOperationId(),command.getOuId());
+        OperatioLineStatisticsCommand operatioLineStatisticsCommand = pdaPickingWorkCacheManager.getOperatioLineStatistics(command.getOperationId(),command.getOuId());
         if(null != operatioLineStatisticsCommand.getLocationIds()){
             pickingScanResultCommand.setLocationId(operatioLineStatisticsCommand.getLocationIds().get(0));
         }
