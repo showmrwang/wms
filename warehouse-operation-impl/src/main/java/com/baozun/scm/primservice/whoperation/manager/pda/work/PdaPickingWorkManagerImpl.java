@@ -496,8 +496,8 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             pSRcmd.setTipOuterContainer(tipOuterContainer);  //提示小车
         }
         if(pickingWay == Constants.PICKING_WAY_THREE) { //使用出库箱拣货流程
-            String tipOutBoundBox = pdaPickingWorkCacheManager.pdaPickingWorkTipoutboundBox(operationId,ouId);
-            pSRcmd.setOutBoundCode(tipOutBoundBox);
+            String tipOutBounxBoxCode = pdaPickingWorkCacheManager.pdaPickingWorkTipoutboundBox(operationId,ouId);
+            pSRcmd.setOutBounxBoxCode(tipOutBounxBoxCode);
         }
         if(pickingWay == Constants.PICKING_WAY_FOUR) {  //使用周转箱拣货流程
             String turnoverBox = pdaPickingWorkCacheManager.pdaPickingWorkTipTurnoverBox(operationId,ouId);
@@ -531,28 +531,15 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             Map<Integer, String> carStockToOutgoingBox =  operatorLine.getCarStockToOutgoingBox();   //出库箱和货格对应关系
             String outBounxBoxCode = null;   //当前出库箱数
             containerCode = command.getOuterContainer();
+            this.judgeContainer(containerCode, ouId);   //判断出库箱状态
             List<WhOperationLineCommand> operatorLineList =  whOperationLineManager.findOperationLineByOperationId(operationId, ouId);
             CheckScanResultCommand cSRCmd =  pdaPickingWorkCacheManager.pdaPickingTipOutBounxBoxCode(operatorLineList, operationId, carStockToOutgoingBox);
             if(cSRCmd.getIsNeedScanOutBounxBox()) {
-                ContainerCommand cotainerCmd = containerDao.getContainerByCode(outBounxBoxCode, ouId);
-                if (null == cotainerCmd) {
-                    // 容器信息不存在
-                    log.error("pdaScanContainer container is null logid: " + logId);
-                    throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
-                }
-                // 验证容器Lifecycle是否有效
-                if (!cotainerCmd.getLifecycle().equals(ContainerStatus.CONTAINER_LIFECYCLE_USABLE)) {
-                    // 容器Lifecycle无效
-                    log.error("pdaScanContainer container lifecycle error =" + cotainerCmd.getLifecycle() + " logid: " + logId);
-                    throw new BusinessException(ErrorCodes.COMMON_CONTAINER__NOT_PUTWAY);
-                }
-                // 验证容器状态是否是待上架
-                if (!cotainerCmd.getStatus().equals(ContainerStatus.CONTAINER_STATUS_USABLE)) {
-                    log.error("pdaScanContainer container status error =" +cotainerCmd.getStatus() + " logid: " + logId);
-                    throw new BusinessException(ErrorCodes.COMMON_CONTAINER__NOT_PUTWAY, new Object[] {cotainerCmd.getStatus()});
-                }
+                this.judgeContainer(outBounxBoxCode, ouId);   //判断出库箱状态
                 command.setTipOutBounxBoxCode(outBounxBoxCode);  //出库箱id
                 command.setIsNeedScanOutBounxBox(true);
+                command.setUseContainerLatticeNo(cSRCmd.getUseContainerLatticeNo());
+                command.setOuterContainer(containerCode);  //外部容器号(小车，单个出库箱)
                 return command;
             }else{
                 command.setIsNeedScanOutBounxBox(false);
@@ -561,25 +548,9 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
           
         }
         if(pickingWay == Constants.PICKING_WAY_THREE) { //使用出库箱拣货流程
-            containerCode = command.getOutBoundCode();
+            containerCode = command.getOutBounxBoxCode();
         }
-        ContainerCommand outCmd = containerDao.getContainerByCode(containerCode, ouId);
-        if (null == outCmd) {
-            // 容器信息不存在
-            log.error("pdaScanContainer container is null logid: " + logId);
-            throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
-        }
-        // 验证容器Lifecycle是否有效
-        if (!outCmd.getLifecycle().equals(ContainerStatus.CONTAINER_LIFECYCLE_USABLE)) {
-            // 容器Lifecycle无效
-            log.error("pdaScanContainer container lifecycle error =" + outCmd.getLifecycle() + " logid: " + logId);
-            throw new BusinessException(ErrorCodes.COMMON_CONTAINER__NOT_PUTWAY);
-        }
-        // 验证容器状态是否是待上架
-        if (!outCmd.getStatus().equals(ContainerStatus.CONTAINER_STATUS_USABLE)) {
-            log.error("pdaScanContainer container status error =" +outCmd.getStatus() + " logid: " + logId);
-            throw new BusinessException(ErrorCodes.COMMON_CONTAINER__NOT_PUTWAY, new Object[] {outCmd.getStatus()});
-        }
+        this.judgeContainer(containerCode, ouId);
         if(pickingWay == Constants.PICKING_WAY_FOUR) {  //使用周转箱拣货流程
             String turnoverBoxCode = command.getTurnoverBoxCode();
             OutBoundBoxType outBoundBox = outBoundBoxTypeDao.findByCode(turnoverBoxCode, ouId);
@@ -612,6 +583,28 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         }
         log.info("PdaPickingWorkManagerImpl pdaPickingScanContainer is end");
         return command;
+    }
+    
+    private void judgeContainer(String containerCode,Long ouId) {
+        log.info("PdaPickingWorkManagerImpl judgeContainer is start");
+        ContainerCommand outCmd = containerDao.getContainerByCode(containerCode, ouId);
+        if (null == outCmd) {
+            // 容器信息不存在
+            log.error("pdaScanContainer container is null logid: " + logId);
+            throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+        }
+        // 验证容器Lifecycle是否有效
+        if (!outCmd.getLifecycle().equals(ContainerStatus.CONTAINER_LIFECYCLE_USABLE)) {
+            // 容器Lifecycle无效
+            log.error("pdaScanContainer container lifecycle error =" + outCmd.getLifecycle() + " logid: " + logId);
+            throw new BusinessException(ErrorCodes.COMMON_CONTAINER__NOT_PUTWAY);
+        }
+        // 验证容器状态是否是待上架
+        if (!outCmd.getStatus().equals(ContainerStatus.CONTAINER_STATUS_USABLE)) {
+            log.error("pdaScanContainer container status error =" +outCmd.getStatus() + " logid: " + logId);
+            throw new BusinessException(ErrorCodes.COMMON_CONTAINER__NOT_PUTWAY, new Object[] {outCmd.getStatus()});
+        }
+        log.info("PdaPickingWorkManagerImpl judgeContainer is end");
     }
     
     /**

@@ -78,6 +78,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                 cacheManager.setObject(CacheConstants.CACHE_LOCATION + operationId.toString(), tipCmd, CacheConstants.CACHE_ONE_DAY);
                 cSRCmd.setOutBounxBoxCode(outBounxBoxCode);
                 cSRCmd.setIsNeedScanOutBounxBox(true);
+                cSRCmd.setUseContainerLatticeNo(useContainerLatticeNo);  //货格号
             }else{
                 ArrayDeque<String> tipOutBonxBoxIds = tipLocationCmd.getTipOutBonxBoxIds();
                 if(null == tipOutBonxBoxIds){
@@ -86,11 +87,13 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                     tipLocationCmd.setTipOutBonxBoxIds(tipOutBonxBoxIds);
                     cSRCmd.setOutBounxBoxCode(outBounxBoxCode);
                     cSRCmd.setIsNeedScanOutBounxBox(true);
+                    cSRCmd.setUseContainerLatticeNo(useContainerLatticeNo);  //货格号
                 }else{
                      if(!tipOutBonxBoxIds.contains(outBounxBoxCode)) {
                          tipOutBonxBoxIds.addFirst(outBounxBoxCode);
                          cSRCmd.setOutBounxBoxCode(outBounxBoxCode);
                          cSRCmd.setIsNeedScanOutBounxBox(true);
+                         cSRCmd.setUseContainerLatticeNo(useContainerLatticeNo);  //货格号
                      }else{
                          cSRCmd.setIsNeedScanOutBounxBox(false);
                          continue;

@@ -56,6 +56,8 @@ public class CheckScanResultCommand extends BaseCommand {
     private String outBounxBoxCode;
     /**是否需要扫描出库箱*/
     private Boolean isNeedScanOutBounxBox;
+    /**货格号*/
+    private Integer useContainerLatticeNo;
     
     
     public int getPickingWay() {
@@ -154,6 +156,12 @@ public class CheckScanResultCommand extends BaseCommand {
     public void setIsNeedScanOutBounxBox(Boolean isNeedScanOutBounxBox) {
         this.isNeedScanOutBounxBox = isNeedScanOutBounxBox;
     }
-    
+    public Integer getUseContainerLatticeNo() {
+        return useContainerLatticeNo;
+    }
+    public void setUseContainerLatticeNo(Integer useContainerLatticeNo) {
+        this.useContainerLatticeNo = useContainerLatticeNo;
+    }
+
     
 }
