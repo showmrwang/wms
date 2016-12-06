@@ -384,7 +384,7 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
             // 一个可合并订单的主档id
             Long whOdoId = Long.parseLong(odoIds.get(i));
             /** 2.更新可合并订单主档状态 start */
-            updateOriginalOdo(newOdoCode, whOdoId, ouId, userId);
+            updateOriginalOdo(newOdoCode, whOdoId, null, ouId, userId, Constants.ODO_MERGE);
             /** end */
             /** 3.新建新合并订单属性表以及配送对象表 start */
             if (i == 0) {
@@ -520,19 +520,43 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
      * 更新原来订单状态
      * @param newWhOdoCode 新建合并订单主档code
      * @param whOdoId 原来订单主档id
+     * @param whOdo 原来订单whOdo
      * @param ouId 组织id
      * @param userId 操作员id
      * @return
      */
-    private WhOdo updateOriginalOdo(String newWhOdoCode, Long whOdoId, Long ouId, Long userId) {
-        WhOdo odo = this.whOdoDao.findByIdOuId(whOdoId, ouId);
-        if (null == odo) {
-            throw new BusinessException("更新原来订单状态失败1");
+    private WhOdo updateOriginalOdo(String newWhOdoCode, Long whOdoId, WhOdo whOdo, Long ouId, Long userId, Integer option) {
+        WhOdo odo = new WhOdo();
+        if (null == whOdo) {
+            odo = this.whOdoDao.findByIdOuId(whOdoId, ouId);
+            if (null == odo) {
+                throw new BusinessException("找不到出库单");
+            }
+        } else {
+            BeanUtils.copyProperties(whOdo, odo);
         }
-        if (!newWhOdoCode.equalsIgnoreCase(odo.getOdoCode())) {
-            // 待更新状态订单不是合并订单主档
-            odo.setOdoStatus((null == odo.getOriginalOdoCode()) ? OdoStatus.ODO_MERGE : OdoStatus.ODO_CANCEL);
-            odo.setGroupOdoCode(newWhOdoCode);
+        if (null == option) {
+            throw new BusinessException("没有option");
+        }
+        switch (option) {
+            case Constants.ODO_MERGE:
+                if (!newWhOdoCode.equalsIgnoreCase(odo.getOdoCode())) {
+                    // 待更新状态订单不是合并订单主档
+                    // 状态:新建->(非合并订单)已合并/(合并订单)取消;
+                    odo.setOdoStatus((null == odo.getOriginalOdoCode()) ? OdoStatus.ODO_MERGE : OdoStatus.ODO_CANCEL);
+                    odo.setGroupOdoCode(newWhOdoCode);
+                }
+                break;
+            case Constants.ODO_CANCEL:
+                // 状态:新建->取消;
+                odo.setOdoStatus(OdoStatus.ODO_CANCEL);
+                break;
+            case Constants.ODO_NEW:
+                // 状态:已合并->新建;
+                odo.setOdoStatus(OdoStatus.ODO_NEW);
+                odo.setGroupOdoCode(null);
+            default:
+                throw new BusinessException("更新原来订单状态失败2");
         }
         odo.setModifiedId(userId);
         Integer cnt = whOdoDao.saveOrUpdateByVersion(odo);
@@ -635,11 +659,11 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
             for (OdoLineCommand whOdoLine : whOdoLineList) {
                 if (null == whOdoLine.getOriginalOdoCode()) {
                     // 非合并的订单明细行更新
-                    this.updateOdoLine(whOdoLine, userId);
                     WhOdoLine newWhOdoLine = new WhOdoLine();
+                    BeanUtils.copyProperties(whOdoLine, newWhOdoLine);
+                    this.updateOdoLine(newWhOdoLine, userId, Constants.ODO_LINE_MERGE);
                     Long whOdoLineId = whOdoLine.getId();
                     String whOdoCode = whOdoLine.getOdoCode();
-                    BeanUtils.copyProperties(whOdoLine, newWhOdoLine);
                     // 新建合并订单明细行对象:缺少行id
                     newWhOdoLine = this.createNewOdoLine(newWhOdoLine, whOdoCode, newOdoId, userId);
                     whOdoLineInfoCommand.setWhOdoLine(newWhOdoLine);
@@ -703,11 +727,11 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
 
     private OdoLineInfoCommand updateNormalOdoLine(OdoLineCommand whOdoLine, Long newOdoId, Long ouId, Long userId) {
         OdoLineInfoCommand whOdoLineInfoCommand = new OdoLineInfoCommand();
-        this.updateOdoLine(whOdoLine, userId);
         WhOdoLine newWhOdoLine = new WhOdoLine();
+        BeanUtils.copyProperties(whOdoLine, newWhOdoLine);
+        this.updateOdoLine(newWhOdoLine, userId, Constants.ODO_LINE_MERGE);
         Long whOdoLineId = whOdoLine.getId();
         String whOdoCode = whOdoLine.getOdoCode();
-        BeanUtils.copyProperties(whOdoLine, newWhOdoLine);
         // 新建合并订单明细行对象:缺少行id
         newWhOdoLine = this.createNewOdoLine(newWhOdoLine, whOdoCode, newOdoId, userId);
         whOdoLineInfoCommand.setWhOdoLine(newWhOdoLine);
@@ -873,12 +897,27 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
      * @param userId 操作员id
      * @return
      */
-    private WhOdoLine updateOdoLine(OdoLineCommand command, Long userId) {
-        WhOdoLine whOdoLine = new WhOdoLine();
-        BeanUtils.copyProperties(command, whOdoLine);
-        // 原来子订单更新:
-        // 状态:新建->已合并;
-        whOdoLine.setOdoLineStatus(OdoStatus.ODOLINE_MERGE);
+    private WhOdoLine updateOdoLine(WhOdoLine whOdoLine, Long userId, Integer option) {
+        if (null == option) {
+            throw new BusinessException("没有option");
+        }
+        // 子订单状态更新:
+        switch (option) {
+            case Constants.ODO_LINE_MERGE:
+                // 状态:新建->已合并;
+                whOdoLine.setOdoLineStatus(OdoStatus.ODOLINE_MERGE);
+                break;
+            case Constants.ODO_LINE_CANCEL:
+                // 状态:新建->取消;
+                whOdoLine.setOdoLineStatus(OdoStatus.ODOLINE_CANCEL);
+            case Constants.ODO_LINE_NEW:
+                // 状态:已合并->新建;
+                whOdoLine.setOdoLineStatus(OdoStatus.ODO_NEW);
+                break;
+            default:
+                throw new BusinessException("更新合并前订单明细行失败");
+
+        }
         whOdoLine.setModifiedId(userId);
         Integer cnt = whOdoLineDao.saveOrUpdateByVersion(whOdoLine);
         if (0 >= cnt) {
@@ -1054,16 +1093,32 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void odoMergeCancel(Long odoId, Long ouId, Long userId) {
-        WhOdo odo = this.whOdoDao.findByIdOuId(odoId, ouId);
-        // TODO 更新合并出库单状态为取消
-        // TODO 更新合并出库单明细状态为取消
+    public void odoMergeCancel(Long whOdoId, Long ouId, Long userId) {
+        // TODO 更新原来合并出库单状态为取消
+        this.updateOriginalOdo(null, whOdoId, null, ouId, userId, Constants.ODO_CANCEL);
+        // TODO 更新原来合并出库单明细状态为取消
+        List<WhOdoLine> whOdoLineList = this.whOdoLineDao.findOdoLineListByOdoIdOuId(whOdoId, ouId);
+        if (null != whOdoLineList && !whOdoLineList.isEmpty()) {
+            for (WhOdoLine whOdoLine : whOdoLineList) {
+                this.updateOdoLine(whOdoLine, userId, Constants.ODO_LINE_CANCEL);
+            }
+        }
         // TODO 更新原始出库单状态为新建
-        // TODO 更新原始出库单明细状态为新建
-        // updateOdo
-        String originalOdoCode = odo.getOriginalOdoCode();
-        if (null != originalOdoCode && StringUtils.hasText(originalOdoCode)) {
-            String[] odoCodes = originalOdoCode.split(",");
+        WhOdo odo = this.whOdoDao.findByIdOuId(whOdoId, ouId);
+        if (null == odo.getOriginalOdoCode() || StringUtils.hasText(odo.getOriginalOdoCode())) {
+            throw new BusinessException("不是合并订单");
+        }
+        String[] originalOdoCodes = odo.getOriginalOdoCode().split(",");
+        for (String originalOdoCode : originalOdoCodes) {
+            odo = this.whOdoDao.findOdoByCodeAndOuId(originalOdoCode, ouId);
+            this.updateOriginalOdo(null, null, odo, ouId, userId, Constants.ODO_NEW);
+            // TODO 更新原始出库单明细状态为新建
+            List<WhOdoLine> odoLineList = this.whOdoLineDao.findOdoLineListByOdoIdOuId(odo.getId(), ouId);
+            if (null != odoLineList && !odoLineList.isEmpty()) {
+                for (WhOdoLine odoLine : odoLineList) {
+                    this.updateOdoLine(odoLine, userId, Constants.ODO_LINE_NEW);
+                }
+            }
         }
     }
 }

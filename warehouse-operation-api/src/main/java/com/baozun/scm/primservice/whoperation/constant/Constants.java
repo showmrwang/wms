@@ -418,9 +418,9 @@ public final class Constants {
     public static final String REPLENISHED_NO_TARGET_LOCATION = "ERROR002";
     /** 补货阶段 补货不足失败 */
     public static final String REPLENISHED_FAIL = "ERROR003";
-    
-    public static final String ALLOCATE_STRATEGY_FIRSTINFIRSTOUT = "1"; 	// 先入先出
-    public static final String ALLOCATE_STRATEGY_FIRSTINLASTOUT = "2";	// 先入后出
+
+    public static final String ALLOCATE_STRATEGY_FIRSTINFIRSTOUT = "1"; // 先入先出
+    public static final String ALLOCATE_STRATEGY_FIRSTINLASTOUT = "2"; // 先入后出
     public static final String ALLOCATE_STRATEGY_FIRSTEXPIRATIONFIRSTOUT = "3"; // 先到期先出
     public static final String ALLOCATE_STRATEGY_FIRSTEXPIRATIONLASTOUT = "4"; // 后到期先出
     public static final String ALLOCATE_STRATEGY_QUANTITYBESTMATCH = "5"; // 数量最佳匹配
@@ -447,16 +447,16 @@ public final class Constants {
     /**使用外部容器(小车)无出库箱拣货流程*/
     public static final Integer PICKING_WAY_ONE = 1;
     /**使用外部容器(小车)有出库箱拣货流程*/
-    public static final Integer PICKING_WAY_TWO= 2;
+    public static final Integer PICKING_WAY_TWO = 2;
     /**使用出库箱拣货流程*/
     public static final Integer PICKING_WAY_THREE = 3;
     /**使用周转箱拣货流程*/
     public static final Integer PICKING_WAY_FOUR = 4;
     /**整托拣货流程*/
-    public static final Integer PICKING_WAY_FIVE  = 5;
+    public static final Integer PICKING_WAY_FIVE = 5;
     /**整箱拣货流程*/
     public static final Integer PICKING_WAY_SIX = 6;
-    
+
     /**仅占用托盘内商品*/
     public static final Integer INV_OCCUPY_MODE_ONE = 1;
     /**仅占用货箱内商品*/
@@ -465,6 +465,18 @@ public final class Constants {
     public static final Integer INV_OCCUPY_MODE_THREE = 3;
     /**混合占用*/
     public static final Integer INV_OCCUPY_MODE_FOUR = 4;
-    
-    
+    /** 修改出库单状态-合并出库单*/
+    public static final int ODO_MERGE = 1;
+    /** 修改出库单状态-取消合并出库单*/
+    public static final int ODO_CANCEL = 2;
+    /** 修改出库单状态-原始出库单还原为新建*/
+    public static final int ODO_NEW = 3;
+    /** 修改出库单状态-合并出库单明细*/
+    public static final int ODO_LINE_MERGE = 1;
+    /** 修改出库单状态-合并出库单明细-取消*/
+    public static final int ODO_LINE_CANCEL = 2;
+    /** 修改出库单状态-原始出库单明细还原为新建*/
+    public static final int ODO_LINE_NEW = 3;
+
+
 }
