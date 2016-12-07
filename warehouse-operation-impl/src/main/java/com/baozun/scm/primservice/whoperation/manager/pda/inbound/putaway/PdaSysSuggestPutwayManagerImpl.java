@@ -25,7 +25,6 @@ import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.Contai
 import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.InventoryStatisticResultCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.LocationInvVolumeWeightCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.LocationRecommendResultCommand;
-import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.ManMadeContainerStatisticCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.ScanResultCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.TipContainerCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.rule.RuleAfferCommand;
@@ -3427,46 +3426,37 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
         List<WhSkuInventoryCommand> locationSkuList = whSkuInventoryDao.findWhSkuInvCmdByLocation(ouId,locationId);
         // 判断库位上已有的sku商品,容器内所有sku商品对应店铺/仓库配置的关键库存属性参数是否相同,如果不相同,则不能混放
         this.verifyStoreOrWarehouse(ouId, putawayPatternDetailType, invAttrMgmtHouse,whskuList, locationSkuList);
-        //库位已经上架sku商品属性数
-        Long locChaosSku =  this.skuAttrCount(locationSkuList);
-        //容器内sku商品属性数
-        Long skuChaosSku = this.skuAttrCount(whskuList);
+        locationSkuList.addAll(whskuList);
+        // 库位已经上架sku商品和容器内sku不同库存属性数
+        Long skuAttrDiff = this.skuAttrCount(locationSkuList);
         // 查询库位最大混放SKU种类数
         Location location = locationDao.findByIdExt(locationId, ouId);
-        if(null == location) {
+        if (null == location) {
             throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_LOCATION_NULL);
         }
         Integer mixStackingNumber = location.getMixStackingNumber(); // 库位上最大混放种类数
-        if(null == mixStackingNumber) {
+        if (null == mixStackingNumber) {
             mixStackingNumber = 0;
         }
         Long maxChaosSku = location.getMaxChaosSku(); // 库位最大混放SKU属性数
+        if (null == maxChaosSku) {
+            maxChaosSku = 0L;
+        }
+        Set<Long> skuIds = new HashSet<Long>();
+        for(WhSkuInventoryCommand inv:locationSkuList) {  //库位上已经上架的sku种类数
+            skuIds.add(inv.getSkuId());
+        }
         // 获取整托或者整箱的sku种类数
-        Integer skuMixStacking = 0;
-        Long skuId = whskuList.get(0).getSkuId();
-        for (int i = 1; i < whskuList.size(); i++) {
-            Long tempId = whskuList.get(i).getSkuId();
-            if (skuId != tempId) {
-                skuMixStacking = skuMixStacking + 1;
-            }
+        for(WhSkuInventoryCommand inv:whskuList) {  //库位上已经上架的sku种类数
+            skuIds.add(inv.getSkuId());
         }
-        // 获取库位上已上架的sku种类数
-        Integer locMixStacking = 0;
-        if (null != locationSkuList) {
-            Long skuLocId = locationSkuList.get(0).getSkuId();
-            for (int i = 1; i < locationSkuList.size(); i++) {
-                Long tempId = locationSkuList.get(i).getSkuId();
-                if (skuLocId != tempId) {
-                    locMixStacking = locMixStacking + 1;
-                }
-            }
-        }
+        Integer skuMixStacking =  skuIds.size();
         // 判断库位已有sku种类数+容器内SKU种类数是否<=最大混放SKU种类数 *
-        if (mixStackingNumber < (skuMixStacking + locMixStacking)) {
+        if (mixStackingNumber < skuMixStacking) {
             throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_SKU_VARIETY_OVER_MAX);
         }
         // 验证库位最大混放sku属性数,判断库位已有SKU属性数+容器内SKU属性数是否<=最大混放SKU属性数*
-        if (maxChaosSku < (locChaosSku + skuChaosSku)) {
+        if (maxChaosSku < skuAttrDiff) {
             throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_SKU_ATT_OVER_MAX);
         }
         // 累加容器、容器内SKU商品、库位上已有容器、商品的重量，判断是否<=库位承重*
@@ -3484,8 +3474,8 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
      */
     private void IsLocationBearWeight(Long containerId, List<WhSkuInventoryCommand> locationSkuList, List<WhSkuInventoryCommand> whSkuInventoryList, int putawayPatternDetailType, Long locationId, Long ouId) {
         log.info("PdaManMadePutwayManagerImpl IsLocationBearWeight start");
-        ManMadeContainerStatisticCommand madeContainer = cacheManager.getMapObject(CacheConstants.CONTAINER_INVENTORY_STATISTIC, containerId.toString());
-        if (null == madeContainer) {
+        InventoryStatisticResultCommand isCmd = cacheManager.getMapObject(CacheConstants.CONTAINER_INVENTORY_STATISTIC, containerId.toString());
+        if (null == isCmd) {
             throw new BusinessException(ErrorCodes.CASELEVEL_GET_CACHE_ERROR);
         }
         // 查询库位
@@ -3497,15 +3487,15 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
         Double locWeight = location.getWeight(); // 库位总承重
         // 当前库位已经存在的重量
         Map<String, Map<String, Double>> uomMap = new HashMap<String, Map<String, Double>>();
-        uomMap.put(WhUomType.LENGTH_UOM, madeContainer.getLenUomConversionRate());
-        uomMap.put(WhUomType.WEIGHT_UOM, madeContainer.getWeightUomConversionRate());
+        uomMap.put(WhUomType.LENGTH_UOM, isCmd.getLenUomConversionRate());
+        uomMap.put(WhUomType.WEIGHT_UOM, isCmd.getWeightUomConversionRate());
         LocationInvVolumeWeightCommand livw = whLocationInvVolumeWieghtManager.calculateLocationInvVolumeAndWeight(locId, ouId, uomMap, logId);
         Double livwWeight = livw.getWeight();// 库位上已有货物总重量
         // 整托上架
         if (WhPutawayPatternDetailType.PALLET_PUTAWAY == putawayPatternDetailType) {
-            Double putwayWeight = madeContainer.getContainerWeight();
-            Set<Long> insideContainerIds = madeContainer.getInsideContainerIds();
-            Map<Long, Double> insideContainersWeight = madeContainer.getInsideContainersWeight();
+            Double putwayWeight = isCmd.getOuterContainerWeight();
+            Set<Long> insideContainerIds = isCmd.getInsideContainerIds();
+            Map<Long, Double> insideContainersWeight = isCmd.getInsideContainerWeight();
             // 计算要上架商品的重量
             for (Long cId : insideContainerIds) {
                 putwayWeight = putwayWeight + insideContainersWeight.get(cId);
@@ -3518,11 +3508,10 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
         }
         // 整箱上架
         if (WhPutawayPatternDetailType.CONTAINER_PUTAWAY == putawayPatternDetailType) {
-            Double putwayWeight = madeContainer.getInsideContainerWeight();
-            Long insideContainerId = madeContainer.getInsideContainerId();
-            Map<Long, Double> insideContainersWeight = madeContainer.getInsideContainersWeight();
+            Long insideContainerId = isCmd.getInsideContainerId();
+            Map<Long, Double> insideContainersWeight = isCmd.getInsideContainerWeight();
             // 计算要上架商品的重量
-            putwayWeight = putwayWeight + insideContainersWeight.get(insideContainerId);
+            Double putwayWeight =  insideContainersWeight.get(insideContainerId);
             // 库位已有商品重量加要上架货物的重量
             Double sum = livwWeight + putwayWeight;
             if (locWeight > sum) {
@@ -3568,181 +3557,126 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
     private void attMgmt(String[] invAttrMgmt,List<WhSkuInventoryCommand> whskuList, List<WhSkuInventoryCommand> locationSkuList){
         Long result = 0L;
         for (String attr : invAttrMgmt) {
-            if (Constants.INV_ATTR_TYPE.equals(attr)) { // 库存类型
-                result = result + this.isAttMgmtSame(locationSkuList, whskuList);
+            //如果已经上架的sku和将要上架的sku有关键库存属性相同的则不能上架
+            for (WhSkuInventoryCommand cSkuInv : whskuList) {
+                for (WhSkuInventoryCommand locSkuInv : locationSkuList) {
+                    if (cSkuInv.getSkuId().equals(locSkuInv.getSkuId()) ) {
+                        if (Constants.INV_ATTR_TYPE.equals(attr)) { // 库存类型
+                            if(this.compaterTo(cSkuInv.getInvType(), locSkuInv.getInvType())) {
+                                // 库位,容器内sku商品关键库存属性参数不相同,不能整托/整箱/拆箱上架
+                                throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_ATTR_MGMT_NOT_EQUAL);
+                            }
+                        }
+                        if (Constants.INV_ATTR_STATUS.equals(attr)) { // 库存状态
+                            if(this.compaterTo(cSkuInv.getInvStatus(), locSkuInv.getInvStatus())) {
+                                // 库位,容器内sku商品关键库存属性参数不相同,不能整托/整箱/拆箱上架
+                                throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_ATTR_MGMT_NOT_EQUAL);
+                            }
+                        }
+                        if (Constants.INV_ATTR_BATCH.equals(attr)) { // 库存类型
+                            if(this.compaterTo(cSkuInv.getBatchNumber(), locSkuInv.getBatchNumber())) {
+                                // 库位,容器内sku商品关键库存属性参数不相同,不能整托/整箱/拆箱上架
+                                throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_ATTR_MGMT_NOT_EQUAL);
+                            }
+                        }
+                        if (Constants.INV_ATTR_MFG_DATE.equals(attr)) { // 生产日期
+                            if(this.compaterTo(cSkuInv.getMfgDate(), locSkuInv.getMfgDate())) {
+                                // 库位,容器内sku商品关键库存属性参数不相同,不能整托/整箱/拆箱上架
+                                throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_ATTR_MGMT_NOT_EQUAL);
+                            }
+                        }
+                        if (Constants.INV_ATTR_EXP_DATE.equals(attr)) { // 失效日期
+                            if(this.compaterTo(cSkuInv.getExpDate(), locSkuInv.getExpDate())) {
+                                // 库位,容器内sku商品关键库存属性参数不相同,不能整托/整箱/拆箱上架
+                                throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_ATTR_MGMT_NOT_EQUAL);
+                            }
+                        }
+                        if (Constants.INV_ATTR_ORIGIN.equals(attr)) { // 原产地
+                            if(this.compaterTo(cSkuInv.getCountryOfOrigin(), locSkuInv.getCountryOfOrigin())) {
+                                // 库位,容器内sku商品关键库存属性参数不相同,不能整托/整箱/拆箱上架
+                                throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_ATTR_MGMT_NOT_EQUAL);
+                            }
+                        }
+                        if (Constants.INV_ATTR1.equals(attr)) { // 库存属性1
+                            if(this.compaterTo(cSkuInv.getInvAttr1(), locSkuInv.getInvAttr1())) {
+                                // 库位,容器内sku商品关键库存属性参数不相同,不能整托/整箱/拆箱上架
+                                throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_ATTR_MGMT_NOT_EQUAL);
+                            }
+                        }
+                        if (Constants.INV_ATTR2.equals(attr)) { // 库存属性2
+                            if(this.compaterTo(cSkuInv.getInvAttr2(), locSkuInv.getInvAttr2())) {
+                                // 库位,容器内sku商品关键库存属性参数不相同,不能整托/整箱/拆箱上架
+                                throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_ATTR_MGMT_NOT_EQUAL);
+                            }
+                        }
+                        if (Constants.INV_ATTR3.equals(attr)) { // 库存属性3
+                            if(this.compaterTo(cSkuInv.getInvAttr3(), locSkuInv.getInvAttr3())) {
+                                // 库位,容器内sku商品关键库存属性参数不相同,不能整托/整箱/拆箱上架
+                                throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_ATTR_MGMT_NOT_EQUAL);
+                            }
+                        }
+                        if (Constants.INV_ATTR4.equals(attr)) { // 库存属性4
+                            if(this.compaterTo(cSkuInv.getInvAttr4(), locSkuInv.getInvAttr4())) {
+                                // 库位,容器内sku商品关键库存属性参数不相同,不能整托/整箱/拆箱上架
+                                throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_ATTR_MGMT_NOT_EQUAL);
+                            }
+                        }
+                        if (Constants.INV_ATTR5.equals(attr)) { // 库存属性5
+                            if(this.compaterTo(cSkuInv.getInvAttr5(), locSkuInv.getInvAttr5())) {
+                                // 库位,容器内sku商品关键库存属性参数不相同,不能整托/整箱/拆箱上架
+                                throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_ATTR_MGMT_NOT_EQUAL);
+                            }
+                        }                        
+                    }
+                }
             }
-            if (Constants.INV_ATTR_STATUS.equals(attr)) { // 库存状态
-                result = result + this.isAttMgmtSame(locationSkuList, whskuList);
-            }
-            if (Constants.INV_ATTR_BATCH.equals(attr)) { // 库存类型
-                result = result + this.isAttMgmtSame(locationSkuList, whskuList);
-            }
-            if (Constants.INV_ATTR_MFG_DATE.equals(attr)) { // 生产日期
-                result = result + this.isAttMgmtSame(locationSkuList, whskuList);
-            }
-            if (Constants.INV_ATTR_EXP_DATE.equals(attr)) { // 失效日期
-                result = result + this.isAttMgmtSame(locationSkuList, whskuList);
-            }
-            if (Constants.INV_ATTR_ORIGIN.equals(attr)) { // 原产地
-                result = result + this.isAttMgmtSame(locationSkuList, whskuList);
-            }
-            if (Constants.INV_ATTR1.equals(attr)) { // 库存属性1
-                result = result + this.isAttMgmtSame(locationSkuList, whskuList);
-            }
-            if (Constants.INV_ATTR2.equals(attr)) { // 库存属性2
-                result = result + this.isAttMgmtSame(locationSkuList, whskuList);
-            }
-            if (Constants.INV_ATTR3.equals(attr)) { //库存属性3
-                result =  result +this.isAttMgmtSame(locationSkuList, whskuList);
-            }
-            if (Constants.INV_ATTR4.equals(attr)) { // 库存属性4
-                result = result + this.isAttMgmtSame(locationSkuList, whskuList);
-            }
-            if (Constants.INV_ATTR5.equals(attr)) { // 库存属性5
-                result = result + this.isAttMgmtSame(locationSkuList, whskuList);
-            }
+            
         }
-        if(0 != result) {
-            //库位,容器内sku商品关键库存属性参数不相同,不能整托/整箱/拆箱上架
+        if (0L != result) {
+            // 库位,容器内sku商品关键库存属性参数不相同,不能整托/整箱/拆箱上架
             throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_ATTR_MGMT_NOT_EQUAL);
         }
     }
     
     
-    /**
-     * 判断库位上已有SKU商品，容器内所有SKU商品，对应店铺/仓库配置的关键库存属性参数是否相同
-     * 
-     * @param isStoreAtt
-     * @param locationSkuList
-     * @param mapObjectList
-     * @return
-     */
-    private Long isAttMgmtSame(List<WhSkuInventoryCommand> locationSkuList, List<WhSkuInventoryCommand> whskuList) {
-        log.info("PdaManMadePutwayManagerImpl isAttMgmtSame start");
-        Long count = 0L;  //容器内sku和库位上的sku库存属性不同的数量
-        for(WhSkuInventoryCommand cSkuInv:whskuList) {
-            for(WhSkuInventoryCommand locSkuInv:locationSkuList) {
-                if(cSkuInv.getSkuId() == locSkuInv.getSkuId()) {
-                   //库存类型不同
-                    Long invType = this.compaterTo(cSkuInv.getInvType(), locSkuInv.getInvType());
-                    if(invType != 0) {
-                        count = count+ invType;
-                    }
-                    Long invStatus = this.compaterTo(cSkuInv.getInvStatus(), locSkuInv.getInvStatus());
-                    if(invStatus != 0) {
-                        count = count+ invStatus;
-                    }
-                    Long batchNumber = this.compaterTo(cSkuInv.getBatchNumber(), locSkuInv.getBatchNumber());
-                    if(batchNumber != 0) {
-                        count = count+ batchNumber;
-                    }
-                    Long mfgDate = this.compaterTo(cSkuInv.getMfgDate(), locSkuInv.getMfgDate());
-                    if(mfgDate != 0) {
-                        count = count+ mfgDate;
-                    }
-                    Long expDate = this.compaterTo(cSkuInv.getExpDate(), locSkuInv.getExpDate());
-                    if(expDate != 0) {
-                        count = count+ expDate;
-                    }
-                    Long countryOfOrigin = this.compaterTo(cSkuInv.getCountryOfOrigin(), locSkuInv.getCountryOfOrigin());
-                    if(countryOfOrigin != 0) {
-                        count = count+ countryOfOrigin;
-                    }
-                    Long invAttr1 = this.compaterTo(cSkuInv.getInvAttr1(), locSkuInv.getInvAttr1());
-                    if(invAttr1 != 0) {
-                        count = count+ invAttr1;
-                    }
-                    Long invAttr2 = this.compaterTo(cSkuInv.getInvAttr2(), locSkuInv.getInvAttr2());
-                    if(invAttr2 != 0) {
-                        count = count+ invAttr2;
-                    }
-                    Long invAttr3 = this.compaterTo(cSkuInv.getInvAttr3(), locSkuInv.getInvAttr3());
-                    if(invAttr3 != 0) {
-                        count = count+ invAttr3;
-                    }
-                    Long invAttr4 = this.compaterTo(cSkuInv.getInvAttr4(), locSkuInv.getInvAttr4());
-                    if(invAttr4 != 0) {
-                        count = count+ invAttr4;
-                    }
-                    Long invAttr5 = this.compaterTo(cSkuInv.getInvAttr5(), locSkuInv.getInvAttr5());
-                    if(invAttr5 != 0) {
-                        count = count+ invAttr5;
-                    }
-                }
-                
-            }
-        }
-        log.info("PdaManMadePutwayManagerImpl isAttMgmtSame end");
-        return count;
-    }
-    
     /***
      * 比较字符串是否相同
+     * 
      * @param cSkuInv
      * @param locSkuInv
      * @return
      */
-    private Long compaterTo(Object cSkuInvAttr,Object locSkuInvAttr){
-        Long count = 0L;   //店铺,库存配置关键库存属性时,要上架的sku商品和库位上已经上架的sku商品关键库存属性不同的数量
-       if(!StringUtils.isEmpty(cSkuInvAttr)) {   //为空的时候返回true
-            if(!cSkuInvAttr.equals(locSkuInvAttr)) {
-                count++;
+    private Boolean compaterTo(Object cSkuInvAttr, Object locSkuInvAttr) {
+        Boolean result = false;  // 
+        if (!StringUtils.isEmpty(cSkuInvAttr)) { // 为空的时候返回true
+            if (!cSkuInvAttr.equals(locSkuInvAttr)) {  //要上架的sku商品和库位上已经上架的sku商品关键库存属性不同
+                result = true;
             }
-        }else{
-            if(!StringUtils.isEmpty(locSkuInvAttr)) {
-               count++; 
+        } else {
+            if (!StringUtils.isEmpty(locSkuInvAttr)) {
+                result = true;
             }
         }
-        return count;
+        return result;
     }
     
     /***
      * 统计sku属性数
+     * 
      * @param locationSkuList
      * @return
      */
     private Long skuAttrCount(List<WhSkuInventoryCommand> locationSkuList) {
-        Long attrCount = 0L; //库存属性数
-        for(WhSkuInventoryCommand skuInv:locationSkuList) {
-            if(null != skuInv.getInvStatus()) {
-                attrCount++;
-            }
-            if(!StringUtils.isEmpty(skuInv.getInvType())) {
-                attrCount++;
-            }
-            if(!StringUtils.isEmpty(skuInv.getInvType())) {
-                attrCount++;
-            }
-            if(!StringUtils.isEmpty(skuInv.getBatchNumber())) {
-                attrCount++;
-            }
-            if(!StringUtils.isEmpty(skuInv.getMfgDate())) {
-                attrCount++;
-            }
-            if(!StringUtils.isEmpty(skuInv.getExpDate())) {
-                attrCount++;
-            }
-            if(!StringUtils.isEmpty(skuInv.getCountryOfOrigin())) {
-                attrCount++;
-            }
-            if(!StringUtils.isEmpty(skuInv.getInvAttr1())) {
-                attrCount++;
-            }
-            if(!StringUtils.isEmpty(skuInv.getInvAttr2())) {
-                attrCount++;
-            }
-            if(!StringUtils.isEmpty(skuInv.getInvAttr3())) {
-                attrCount++;
-            }
-            if(!StringUtils.isEmpty(skuInv.getInvAttr4())) {
-                attrCount++;
-            }
-            if(!StringUtils.isEmpty(skuInv.getInvAttr5())) {
-                attrCount++;
-            }
-            
+        Integer attrCount = 0; // 库存属性数
+        Set<String> skuAttrsIds = new HashSet<String>();
+        int sizeCount = locationSkuList.size();
+        for(int i=0;i<sizeCount;i++){
+            WhSkuInventoryCommand skuInvCmd = locationSkuList.get(i);
+            String  skuAttrsId = SkuCategoryProvider.getSkuAttrIdByInv(skuInvCmd);
+            skuAttrsIds.add(skuAttrsId);
         }
-        return attrCount;
+        attrCount = skuAttrsIds.size();
+        return Long.valueOf(attrCount);
     }
     
     /***
