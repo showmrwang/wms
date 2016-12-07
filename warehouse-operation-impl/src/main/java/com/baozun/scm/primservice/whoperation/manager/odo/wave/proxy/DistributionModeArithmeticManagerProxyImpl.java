@@ -147,8 +147,9 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
      * @param odoId
      */
     private void calcTwoSkuSuit(String code, Warehouse wh, Long odoId) {
-        if (!wh.getIsCalcSeckill()) {
+        if (!wh.getIsCalcTwoSkuSuit()) {
             calcSuits(code, wh, odoId);
+            return;
         }
         int twoSkuSuitOdoQtys = wh.getTwoSkuSuitOdoQtys();
 
