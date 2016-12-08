@@ -370,7 +370,7 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
         if (skuType.intValue() == skuQty.intValue()) {
             switch (skuType.intValue()) {
                 case 1:
-                    this.cacheManager.incr(CacheKeyConstant.SECKILL_PREFIX + code);
+                    this.cacheManager.decr(CacheKeyConstant.SECKILL_PREFIX + code);
                     break;
                 case 2:
                     String twoSkuSuitPrefix = codeArray[0] + CacheKeyConstant.WAVE_ODO_SPLIT + codeArray[1] + CacheKeyConstant.WAVE_ODO_SPLIT + codeArray[2];
@@ -381,33 +381,40 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
 
                     String result1=this.cacheManager.getValue(CacheKeyConstant.TWOSKUSUIT_DIV_ODO_PREFIX + twoSkuSuitPrefix + CacheKeyConstant.WAVE_ODO_SPLIT + skuIdA + CacheKeyConstant.WAVE_ODO_SPLIT + odoId);
                     String result2 = this.cacheManager.getValue(CacheKeyConstant.TWOSKUSUIT_DIV_ODO_PREFIX + twoSkuSuitPrefix + CacheKeyConstant.WAVE_ODO_SPLIT + skuIdB + CacheKeyConstant.WAVE_ODO_SPLIT + odoId);
-                    String result3 = this.cacheManager.getValue(CacheKeyConstant.SUITS_DIV_ODO_PREFIX + code);
+                    String result3 = this.cacheManager.getValue(CacheKeyConstant.SUITS_DIV_ODO_PREFIX + code+ CacheKeyConstant.WAVE_ODO_SPLIT + odoId);
                     boolean flag = false;
                     if (StringUtils.isEmpty(result2) && StringUtils.isEmpty(result2) && StringUtils.isEmpty(result3)) {
                         flag = true;
                     }
                     if(StringUtils.isEmpty(result1)){
                         this.cacheManager.decr(CacheKeyConstant.TWOSKUSUIT_PREFIX+  twoSkuSuitPrefix + CacheKeyConstant.WAVE_ODO_SPLIT + skuIdA);
-                        if(flag){
+                        if (!flag) {
                             this.cacheManager.remove(CacheKeyConstant.TWOSKUSUIT_ODO_PREFIX + twoSkuSuitPrefix + CacheKeyConstant.WAVE_ODO_SPLIT + skuIdA + CacheKeyConstant.WAVE_ODO_SPLIT + odoId);
                         }
+                    } else {
+                        this.cacheManager.remove(CacheKeyConstant.TWOSKUSUIT_DIV_ODO_PREFIX + twoSkuSuitPrefix + CacheKeyConstant.WAVE_ODO_SPLIT + skuIdA + CacheKeyConstant.WAVE_ODO_SPLIT + odoId);
                     }
                     if (StringUtils.isEmpty(result2)) {
                         this.cacheManager.decr(CacheKeyConstant.TWOSKUSUIT_PREFIX + twoSkuSuitPrefix + CacheKeyConstant.WAVE_ODO_SPLIT + skuIdB);
-                        if (flag) {
+                        if (!flag) {
                             this.cacheManager.remove(CacheKeyConstant.TWOSKUSUIT_ODO_PREFIX + twoSkuSuitPrefix + CacheKeyConstant.WAVE_ODO_SPLIT + skuIdB + CacheKeyConstant.WAVE_ODO_SPLIT + odoId);
                         }
+                    } else {
+                        this.cacheManager.remove(CacheKeyConstant.TWOSKUSUIT_DIV_ODO_PREFIX + twoSkuSuitPrefix + CacheKeyConstant.WAVE_ODO_SPLIT + skuIdB + CacheKeyConstant.WAVE_ODO_SPLIT + odoId);
                     }
                     if (StringUtils.isEmpty(result3)) {
                         this.cacheManager.decr(CacheKeyConstant.SUITS_PREFIX + code);
-                        if (flag) {
+                        if (!flag) {
                             this.cacheManager.remove(CacheKeyConstant.SUITS_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + odoId);
                         }
+                    }else{
+                        this.cacheManager.remove(CacheKeyConstant.SUITS_DIV_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + odoId);
                     }
                     break;
                 default:
                     this.cacheManager.decr(CacheKeyConstant.SUITS_PREFIX + code);
                     this.cacheManager.remove(CacheKeyConstant.SUITS_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + odoId);
+                    this.cacheManager.remove(CacheKeyConstant.SUITS_DIV_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + odoId);
                     break;
             }
         }
