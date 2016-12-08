@@ -30,7 +30,6 @@ import com.baozun.scm.baseservice.sac.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
-import com.baozun.scm.primservice.whoperation.dao.warehouse.WarehouseDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryLogDao;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
@@ -50,8 +49,6 @@ public class InventoryOccupyManagerImpl extends BaseInventoryManagerImpl impleme
     protected static final Logger log = LoggerFactory.getLogger(InventoryOccupyManagerImpl.class);
     @Autowired
     private WhSkuInventoryDao inventoryDao;
-    @Autowired
-    private WarehouseDao warehouseDao;
     @Autowired
     private WhSkuInventoryLogDao whSkuInventoryLogDao;
     /**
@@ -197,7 +194,7 @@ public class InventoryOccupyManagerImpl extends BaseInventoryManagerImpl impleme
 			if (null != isStaticLocation && isStaticLocation && null != staticLocationIds) {
 				staticLocationIds.add(inv.getLocationId().toString());
 			}
-			if (0 == new Double(0.0).compareTo(count)) {
+			if (0 == Constants.DEFAULT_DOUBLE.compareTo(count)) {
 				break;
 			}
 		}
@@ -309,7 +306,7 @@ public class InventoryOccupyManagerImpl extends BaseInventoryManagerImpl impleme
 					staticLocationIds.add(inv.getLocationId().toString());
 				}
 			}
-			if (0 == new Double(0.0).compareTo(count)) {
+			if (0 == Constants.DEFAULT_DOUBLE.compareTo(count)) {
 				break;
 			}
 		}
