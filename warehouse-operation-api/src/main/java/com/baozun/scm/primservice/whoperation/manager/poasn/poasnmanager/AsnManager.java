@@ -237,4 +237,13 @@ public interface AsnManager extends BaseManager {
      */
     List<WhAsnCommand> findAsnListByStatus(int status, Long ouId,  List<Long> customerList,List<Long> storeList);
 
+    /**
+     * 审核关闭ASN单据
+     * 
+     * @param id
+     * @param ouId
+     * @param userId
+     */
+    void closeAsn(Long id, Long ouId, Long userId);
+
 }

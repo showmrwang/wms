@@ -272,15 +272,10 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
     @Override
     public void auditPo(WhPoCommand poCommand) {
         log.info("auditPo start =======================");
+        Long ouId = poCommand.getOuId();
+        Long userId = poCommand.getUserId();
         // po单状态校验:不为取消或关闭的可以继续审核流程
-        WhPo whpo = null;
-        if (null == poCommand.getOuId()) {
-            // 查询基本库内信息
-            whpo = poManager.findWhPoByIdToInfo(poCommand.getId(), poCommand.getOuId());
-        } else {
-            // 查询拆库内信息
-            whpo = poManager.findWhPoByIdToShard(poCommand.getId(), poCommand.getOuId());
-        }
+        WhPo whpo = poManager.findWhPoByIdToShard(poCommand.getId(), ouId);
         if (null == whpo) {
             throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
         }
@@ -288,7 +283,7 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
             throw new BusinessException(ErrorCodes.PO_AUDIT_STATUS_ERROR);
         }
         // ASN校验：po单下Asn不存在可以审核成功;或者存在asn，但是asn状态为取消或者关闭时候。可以审核成功
-        List<WhAsn> asnList = this.asnManager.findWhAsnByPoIdOuIdToShard(whpo.getId(), whpo.getOuId());
+        List<WhAsn> asnList = this.asnManager.findWhAsnByPoIdOuIdToShard(whpo.getId(), ouId);
         if (null == asnList || asnList.size() == 0) {
 
         } else {
@@ -296,7 +291,7 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
                 if (null == asn) {
                     throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
                 } else {
-                    if (PoAsnStatus.ASN_CANCELED != asn.getStatus() || PoAsnStatus.ASN_CLOSE != asn.getStatus()) {
+                    if (PoAsnStatus.ASN_CANCELED != asn.getStatus().intValue() && PoAsnStatus.ASN_CLOSE != asn.getStatus().intValue()) {
                         throw new BusinessException(ErrorCodes.PO_AUDIT_ASNSTATUS_ERROR);
                     }
 
@@ -304,15 +299,7 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
             }
         }
         // 修改PO单状态为关闭
-        WhPo po = new WhPo();
-        BeanUtils.copyProperties(whpo, po);
-        po.setStatus(PoAsnStatus.PO_CLOSE);
-        po.setModifiedId(poCommand.getUserId());
-        if (null == po.getOuId()) {
-            this.poManager.saveOrUpdateByVersionToInfo(po);
-        } else {
-            this.poManager.saveOrUpdateByVersionToShard(po);
-        }
+        this.poManager.closePo(whpo.getId(), ouId, userId);
         log.info("EditPoAsnManager.auditPo end =======================");
     }
 
@@ -358,7 +345,9 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
         whAsnCommand.setAsnIds(Arrays.asList(new Long[] {asnCommand.getId()}));
 
         try {
-            asnManager.editAsnStatusByShard(Arrays.asList(new Long[] {asnCommand.getId()}), asnCommand.getOuId(), PoAsnStatus.ASN_CLOSE, asnCommand.getUserId());
+            this.asnManager.closeAsn(asnCommand.getId(), asnCommand.getOuId(), asnCommand.getUserId());
+            // asnManager.editAsnStatusByShard(Arrays.asList(new Long[] {asnCommand.getId()}),
+            // asnCommand.getOuId(), PoAsnStatus.ASN_CLOSE, asnCommand.getUserId());
         } catch (Exception e) {
             if (e instanceof BusinessException) {
                 log.error(e + "");
@@ -548,11 +537,8 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
             serachPoCommand.setId(entry.getKey());
             serachPoCommand.setOuId(command.getPoOuId());
             WhPoLineCommand returnPoCommand = null;
-            if (null == command.getPoOuId()) {
-                returnPoCommand = this.poLineManager.findPoLineCommandbyIdToInfo(entry.getKey(), command.getPoOuId());// INFO库
-            } else {
-                returnPoCommand = this.poLineManager.findPoLineCommandbyIdToShard(entry.getKey(), command.getPoOuId());// SHARD库
-            }
+            // @mender yimin.lu 2016/12/8
+            returnPoCommand = this.poLineManager.findPoLineCommandbyIdToShard(entry.getKey(), command.getPoOuId());// SHARD库
             WhPoLine poline = new WhPoLine();
             BeanUtils.copyProperties(returnPoCommand, poline);
             // PO单明细需更新内容

@@ -580,4 +580,35 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
         return whPoCommands;
     }
 
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void closePo(Long id, Long ouId,Long userId) {
+        try{
+            List<WhPoLine> lineList=this.whPoLineDao.findWhPoLineByPoIdOuIdUuid(id, ouId, null);
+            if(lineList!=null&&lineList.size()>0){
+                for(WhPoLine line:lineList){
+                    line.setModifiedId(userId);
+                    line.setStatus(PoAsnStatus.POLINE_CLOSE);
+                    int updateCountLine=this.whPoLineDao.saveOrUpdateByVersion(line);
+                    if(updateCountLine<=0){
+                        throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                    }
+                }
+            }
+            WhPo po=this.whPoDao.findWhPoById(id, ouId);
+            po.setModifiedId(userId);
+            po.setStatus(PoAsnStatus.PO_CLOSE);
+           int updateCountPo= this.whPoDao.saveOrUpdateByVersion(po);
+           if(updateCountPo<=0){
+               throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+           }
+            
+        }catch(BusinessException e){
+            throw e;
+        }catch(Exception ex){
+            log.error(ex+"");
+            throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
+        }
+    }
+
 }

@@ -882,4 +882,35 @@ public class AsnManagerImpl extends BaseManagerImpl implements AsnManager {
     public WhAsnCommand findWhAsnCommandByIdToShard(Long id, Long ouId) {
         return this.whAsnDao.findWhAsnCommandById(id, ouId);
     }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void closeAsn(Long id, Long ouId, Long userId) {
+        try {
+
+            List<WhAsnLine> lineList = this.whAsnLineDao.findWhAsnLineByAsnIdOuId(id, ouId);
+            if (lineList != null && lineList.size() > 0) {
+                for (WhAsnLine line : lineList) {
+                    line.setStatus(PoAsnStatus.ASNLINE_CLOSE);
+                    line.setModifiedId(userId);
+                    int updateCountLine = this.whAsnLineDao.saveOrUpdateByVersion(line);
+                    if (updateCountLine <= 0) {
+                        throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                    }
+                }
+            }
+            WhAsn asn = this.whAsnDao.findWhAsnById(id, ouId);
+            asn.setModifiedId(userId);
+            asn.setStatus(PoAsnStatus.ASN_CLOSE);
+            int updateCountAsn = this.whAsnDao.saveOrUpdateByVersion(asn);
+            if (updateCountAsn <= 0) {
+                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            }
+        } catch (BusinessException ex) {
+            throw ex;
+        } catch (Exception e) {
+            log.error(e + "");
+            throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
+        }
+    }
 }

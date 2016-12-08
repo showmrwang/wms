@@ -184,4 +184,13 @@ public interface PoManager extends BaseManager {
      */
     List<WhPoCommand> findPoListByExtCodeStoreId(String extCode, String storeId);
 
+    /**
+     * 关闭PO单
+     * 
+     * @param id
+     * @param ouId
+     * @param userId
+     */
+    void closePo(Long id, Long ouId, Long userId);
+
 }
