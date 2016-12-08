@@ -437,7 +437,6 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
 
     @Override
     public void changeFromOrderPool(String oldCode, String newCode, Long odoId) {
-        // TODO Auto-generated method stub
 
     }
 
