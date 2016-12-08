@@ -492,8 +492,9 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
         }
 
         // 添加到波次中时候，计数器需要-1；
-        while (odoIt.hasNext()) {
-            Entry<Long, WhOdo> entry = odoIt.next();
+        Iterator<Entry<Long, WhOdo>> odoIt2 = odoMap.entrySet().iterator();
+        while (odoIt2.hasNext()) {
+            Entry<Long, WhOdo> entry = odoIt2.next();
             WhOdo odo = entry.getValue();
             this.distributionModeArithmeticManagerProxy.AddToWave(odo.getCounterCode(), odo.getId());
         }
