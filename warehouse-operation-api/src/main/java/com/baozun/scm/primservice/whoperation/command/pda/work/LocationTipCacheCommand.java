@@ -44,7 +44,8 @@ public class LocationTipCacheCommand extends BaseCommand {
     private ArrayDeque<Long> tipLocSkuIds = new ArrayDeque<Long>();
     /** 缓存库位队列 */
     private ArrayDeque<Long> tipLocationIds = new ArrayDeque<Long>();
-
+    /**有小车有出库箱的情况下:出库箱的队列*/
+    private ArrayDeque<String> tipOutBonxBoxIds = new ArrayDeque<String>();
     public int getPickingType() {
         return pickingType;
     }
@@ -115,6 +116,14 @@ public class LocationTipCacheCommand extends BaseCommand {
 
     public void setTipLocationIds(ArrayDeque<Long> tipLocationIds) {
         this.tipLocationIds = tipLocationIds;
+    }
+
+    public ArrayDeque<String> getTipOutBonxBoxIds() {
+        return tipOutBonxBoxIds;
+    }
+
+    public void setTipOutBonxBoxIds(ArrayDeque<String> tipOutBonxBoxIds) {
+        this.tipOutBonxBoxIds = tipOutBonxBoxIds;
     }
 
    

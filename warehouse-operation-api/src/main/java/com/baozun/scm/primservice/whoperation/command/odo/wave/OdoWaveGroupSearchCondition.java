@@ -19,7 +19,7 @@ public class OdoWaveGroupSearchCondition extends BaseCommand {
     /** 运输服务商 */
     private String transportServiceProvider;
     /** 上位单据类型 */
-    private String epostaticSystemsOrderType;
+    private String epistaticSystemsOrderType;
 
 
     private Boolean isDistributeMode;
@@ -50,12 +50,13 @@ public class OdoWaveGroupSearchCondition extends BaseCommand {
         this.transportServiceProvider = transportServiceProvider;
     }
 
-    public String getEpostaticSystemsOrderType() {
-        return epostaticSystemsOrderType;
+
+    public String getEpistaticSystemsOrderType() {
+        return epistaticSystemsOrderType;
     }
 
-    public void setEpostaticSystemsOrderType(String epostaticSystemsOrderType) {
-        this.epostaticSystemsOrderType = epostaticSystemsOrderType;
+    public void setEpistaticSystemsOrderType(String epistaticSystemsOrderType) {
+        this.epistaticSystemsOrderType = epistaticSystemsOrderType;
     }
 
     public Boolean getIsDistributeMode() {

@@ -25,7 +25,6 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
-import com.baozun.scm.primservice.whoperation.constant.WhPutawayPatternDetailType;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.OutBoundBoxTypeDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOperationLineDao;
@@ -55,27 +54,80 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
     @Autowired
     private WhOperationLineDao whOperationLineDao;
     
-    
+    /***
+     * 有小车，而且有出库箱的时候，提示出库箱
+     * @param operatorLineList
+     * @param operationId
+     * @return
+     */
+    @Override
+    public CheckScanResultCommand pdaPickingTipOutBounxBoxCode(List<WhOperationLineCommand> operatorLineList, Long operationId, Map<Integer, String> carStockToOutgoingBox) {
+        // TODO Auto-generated method stub
+        log.info("pdaManmadePutawayCacheManager pdaPickingTipOutBounxBoxCode is start");
+        CheckScanResultCommand cSRCmd = new CheckScanResultCommand();
+        String outBounxBoxCode = null;
+        for(WhOperationLineCommand operLineCmd:operatorLineList) {
+            Integer useContainerLatticeNo = operLineCmd.getUseContainerLatticeNo(); 
+            outBounxBoxCode = carStockToOutgoingBox.get(useContainerLatticeNo);
+            LocationTipCacheCommand tipLocationCmd = cacheManager.getObject(CacheConstants.CACHE_LOCATION + operationId.toString());
+            if(null == tipLocationCmd) {
+                LocationTipCacheCommand tipCmd = new LocationTipCacheCommand();
+                ArrayDeque<String> tipOutBonxBoxIds = new ArrayDeque<String>();
+                tipOutBonxBoxIds.addFirst(outBounxBoxCode);
+                tipCmd.setTipOutBonxBoxIds(tipOutBonxBoxIds);
+                cacheManager.setObject(CacheConstants.CACHE_LOCATION + operationId.toString(), tipCmd, CacheConstants.CACHE_ONE_DAY);
+                cSRCmd.setOutBounxBoxCode(outBounxBoxCode);
+                cSRCmd.setIsNeedScanOutBounxBox(true);
+                cSRCmd.setUseContainerLatticeNo(useContainerLatticeNo);  //货格号
+            }else{
+                ArrayDeque<String> tipOutBonxBoxIds = tipLocationCmd.getTipOutBonxBoxIds();
+                if(null == tipOutBonxBoxIds){
+                    tipOutBonxBoxIds = new ArrayDeque<String>();
+                    tipOutBonxBoxIds.addFirst(outBounxBoxCode);
+                    tipLocationCmd.setTipOutBonxBoxIds(tipOutBonxBoxIds);
+                    cSRCmd.setOutBounxBoxCode(outBounxBoxCode);
+                    cSRCmd.setIsNeedScanOutBounxBox(true);
+                    cSRCmd.setUseContainerLatticeNo(useContainerLatticeNo);  //货格号
+                }else{
+                     if(!tipOutBonxBoxIds.contains(outBounxBoxCode)) {
+                         tipOutBonxBoxIds.addFirst(outBounxBoxCode);
+                         cSRCmd.setOutBounxBoxCode(outBounxBoxCode);
+                         cSRCmd.setIsNeedScanOutBounxBox(true);
+                         cSRCmd.setUseContainerLatticeNo(useContainerLatticeNo);  //货格号
+                     }else{
+                         cSRCmd.setIsNeedScanOutBounxBox(false);
+                         continue;
+                     }
+               
+                }
+                cacheManager.setObject(CacheConstants.CACHE_LOCATION + operationId.toString(), tipLocationCmd, CacheConstants.CACHE_ONE_DAY);
+            }
+            break;
+        }
+       
+        log.info("pdaManmadePutawayCacheManager pdaPickingTipOutBounxBoxCode is end");
+        return cSRCmd;
+    }
     /***
      * 统计要拣货的库位库存
-     * @param operatorId
+     * @param operationId
      * @param locationId
      * @param ouId
      * @return
      */
-    public List<WhSkuInventoryCommand> cacheLocationInventory(Long operatorId,Long locationId,Long ouId) {
+    public List<WhSkuInventoryCommand> cacheLocationInventory(Long operationId,Long locationId,Long ouId) {
         log.info("pdaManmadePutawayCacheManager cacheLocationInventory is start");
-        List<WhSkuInventoryCommand> skuInvList = cacheManager.getObject(CacheConstants.CACHE_LOC_INVENTORY + operatorId.toString());
+        List<WhSkuInventoryCommand> skuInvList = cacheManager.getObject(CacheConstants.CACHE_LOC_INVENTORY + operationId.toString());
         if(null == skuInvList) {
             List<WhSkuInventoryCommand> locInventoryList = new ArrayList<WhSkuInventoryCommand>();
-            List<WhSkuInventoryCommand> list = cacheManager.getObject(CacheConstants.CACHE_LOC_INVENTORY + operatorId.toString());
+            List<WhSkuInventoryCommand> list = cacheManager.getObject(CacheConstants.CACHE_LOC_INVENTORY + operationId.toString());
             if(null == list || list.size() == 0) {
                 List<WhSkuInventoryCommand> skuInvCmdList = whSkuInventoryDao.findWhSkuInvCmdByLocationContainerIdIsNull(ouId,locationId);
                 if(null == skuInvCmdList || skuInvCmdList.size() == 0) {
                     throw new BusinessException(ErrorCodes.LOCATION_INVENTORY_IS_NO);   //库位库存不存在
                 } 
             }
-            List<WhOperationLineCommand> operationLineList = whOperationLineDao.findOperationLineByLocationId(operatorId,ouId,locationId);
+            List<WhOperationLineCommand> operationLineList = whOperationLineDao.findOperationLineByLocationId(operationId,ouId,locationId);
             for(WhOperationLineCommand operLineCmd : operationLineList) {
                 WhSkuInventoryCommand invSkuCmd = new WhSkuInventoryCommand();
                 invSkuCmd.setSkuId(operLineCmd.getSkuId()); 
@@ -102,7 +154,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
             }
             
             
-            cacheManager.setObject(CacheConstants.CACHE_LOC_INVENTORY + operatorId.toString(), locInventoryList, CacheConstants.CACHE_ONE_DAY);
+            cacheManager.setObject(CacheConstants.CACHE_LOC_INVENTORY + operationId.toString(), locInventoryList, CacheConstants.CACHE_ONE_DAY);
         }
         log.info("pdaManmadePutawayCacheManager cacheLocationInventory is end");
         return skuInvList;
@@ -112,11 +164,11 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
      * @param command
      * @return
      */
-    public CheckScanResultCommand locationTipcache(Long operatorId,Integer pickingType,List<Long> locationIds){
+    public CheckScanResultCommand locationTipcache(Long operationId,Integer pickingType,List<Long> locationIds){
         log.info("pdaManmadePutawayCacheManager containerPutawayCacheInsideContainer is start");
         CheckScanResultCommand scanResult = new CheckScanResultCommand();
         Long tipLocationId = null;
-        LocationTipCacheCommand tipLocationCmd = cacheManager.getObject(CacheConstants.CACHE_LOCATION + operatorId.toString());
+        LocationTipCacheCommand tipLocationCmd = cacheManager.getObject(CacheConstants.CACHE_LOCATION + operationId.toString());
         for(Long locationId:locationIds) {
             if(null == tipLocationCmd) {
                 LocationTipCacheCommand tipCmd = new LocationTipCacheCommand();
@@ -124,7 +176,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                 ArrayDeque<Long> locIds = new ArrayDeque<Long>();
                 locIds.addFirst(locationId);
                 tipCmd.setTipLocationIds(locIds);
-                cacheManager.setObject(CacheConstants.CACHE_LOCATION + operatorId.toString(), tipCmd, CacheConstants.CACHE_ONE_DAY);
+                cacheManager.setObject(CacheConstants.CACHE_LOCATION + operationId.toString(), tipCmd, CacheConstants.CACHE_ONE_DAY);
                 scanResult.setTipLocationId(tipLocationId);
                 scanResult.setIsPicking(false);  // 没有上架结束
             }else{
@@ -136,13 +188,13 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                             continue;
                         }else{
                             tipLocationIds.addFirst(locationId);
-                            cacheManager.setObject(CacheConstants.CACHE_LOCATION+ operatorId.toString(), tipLocationCmd, CacheConstants.CACHE_ONE_DAY);
+                            cacheManager.setObject(CacheConstants.CACHE_LOCATION+ operationId.toString(), tipLocationCmd, CacheConstants.CACHE_ONE_DAY);
                         }
                     } else {
                         ArrayDeque<Long> locIds = new ArrayDeque<Long>();
                         locIds.addFirst(locationId);
                         tipLocationCmd.setTipLocationIds(locIds);
-                        cacheManager.setObject(CacheConstants.CACHE_LOCATION + operatorId.toString(), tipLocationCmd, CacheConstants.CACHE_ONE_DAY);
+                        cacheManager.setObject(CacheConstants.CACHE_LOCATION + operationId.toString(), tipLocationCmd, CacheConstants.CACHE_ONE_DAY);
                     }
                     scanResult.setTipLocationId(tipLocationId);
                     scanResult.setIsPicking(false);  // 没有上架结束
@@ -159,15 +211,15 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
     
     /***
      * 提示小车
-     * @param operatorId
+     * @param operationId
      * @return
      */
     @Override
-    public String pdaPickingWorkTipOutContainer(Long operatorId,Long ouId) {
+    public String pdaPickingWorkTipOutContainer(Long operationId,Long ouId) {
         // TODO Auto-generated method stub
         log.info("PdaPickingWorkCacheManagerImpl pdaPickingWorkTipOutContainer is start");
         String tipOuterContainer = null;
-        OperatioLineStatisticsCommand operatorLine = cacheManager.getObject(CacheConstants.OPERATIONLINE_STATISTICS + operatorId.toString());
+        OperatioLineStatisticsCommand operatorLine = cacheManager.getObject(CacheConstants.OPERATIONLINE_STATISTICS + operationId.toString());
         if(null == operatorLine) {
             throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
         }
@@ -202,15 +254,15 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
 
     /***
      * 提示出库箱
-     * @param operatorId
+     * @param operationId
      * @return
      */
     @Override
-    public String pdaPickingWorkTipoutboundBox(Long operatorId,Long ouId) {
+    public String pdaPickingWorkTipoutboundBox(Long operationId,Long ouId) {
         // TODO Auto-generated method stub
         log.info("PdaPickingWorkCacheManagerImpl pdaPickingWorkTipOutContainer is start");
         String outbounxBox = null;
-        OperatioLineStatisticsCommand operatorLine = cacheManager.getObject(CacheConstants.OPERATIONLINE_STATISTICS + operatorId.toString());
+        OperatioLineStatisticsCommand operatorLine = cacheManager.getObject(CacheConstants.OPERATIONLINE_STATISTICS + operationId.toString());
         if(null == operatorLine) {
             throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
         }
@@ -241,15 +293,15 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
 
     /***
      * 提示周转箱
-     * @param operatorId
+     * @param operationId
      * @return
      */
     @Override
-    public String pdaPickingWorkTipTurnoverBox(Long operatorId,Long ouId) {
+    public String pdaPickingWorkTipTurnoverBox(Long operationId,Long ouId) {
         // TODO Auto-generated method stub
         log.info("PdaPickingWorkCacheManagerImpl pdaPickingWorkTipOutBound is start");
         String turnoverBox = null;
-        OperatioLineStatisticsCommand operatorLine = cacheManager.getObject(CacheConstants.OPERATIONLINE_STATISTICS + operatorId.toString());
+        OperatioLineStatisticsCommand operatorLine = cacheManager.getObject(CacheConstants.OPERATIONLINE_STATISTICS + operationId.toString());
         if(null == operatorLine) {
             throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
         }
@@ -283,26 +335,26 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
      * 缓存统计分析结果
      * 
      * @author qiming.liu
-     * @param operatorId
+     * @param operationId
      * @param operatioLineStatisticsCommand
      * @return
      */
     @Override
-    public void operatioLineStatisticsRedis(Long operatorId, OperatioLineStatisticsCommand operatioLineStatisticsCommand) {
-        cacheManager.setObject(operatorId.toString(), operatioLineStatisticsCommand);
+    public void operatioLineStatisticsRedis(Long operationId, OperatioLineStatisticsCommand operatioLineStatisticsCommand) {
+        cacheManager.setObject(operationId.toString(), operatioLineStatisticsCommand);
     }
 
     /**
-     * 提示库位
+     * 根据作业ID和OUID获取统计分析结果
      * 
      * @author qiming.liu
-     * @param operatorId
+     * @param operationId
      * @param ouId
      * @return
      */
     @Override
-    public OperatioLineStatisticsCommand pdaPickingWorkTipWholeCase(Long operatorId, Long ouId) {
-        OperatioLineStatisticsCommand operatorLine = cacheManager.getObject(CacheConstants.OPERATIONLINE_STATISTICS + operatorId.toString());
+    public OperatioLineStatisticsCommand getOperatioLineStatistics(Long operationId, Long ouId) {
+        OperatioLineStatisticsCommand operatorLine = cacheManager.getObject(CacheConstants.OPERATIONLINE_STATISTICS + operationId.toString());
         return operatorLine;
     }
 
@@ -313,11 +365,11 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
      * @param locationId
      * @return
      */
-      public CheckScanResultCommand pdaPickingTipOuterContainer(Set<Long> outerContainerIds,Long operatorId){
+      public CheckScanResultCommand pdaPickingTipOuterContainer(Set<Long> outerContainerIds,Long operationId){
           log.info("PdaPickingWorkCacheManagerImpl pdaPickingTipOuterContainer is start");
           CheckScanResultCommand scanResult = new CheckScanResultCommand();
           Long tipOuterContainerId = null;
-          LocationTipCacheCommand tipLocationCmd = cacheManager.getObject(CacheConstants.CACHE_LOCATION + operatorId.toString());
+          LocationTipCacheCommand tipLocationCmd = cacheManager.getObject(CacheConstants.CACHE_LOCATION + operationId.toString());
           if(null == tipLocationCmd) {
               throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
           }else{
@@ -338,7 +390,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                           }
                           //存入缓存
                           tipOuterContainerId = ocId;
-                          cacheManager.setObject(CacheConstants.CACHE_LOCATION + operatorId.toString(), tipLocationCmd, CacheConstants.CACHE_ONE_DAY);
+                          cacheManager.setObject(CacheConstants.CACHE_LOCATION + operationId.toString(), tipLocationCmd, CacheConstants.CACHE_ONE_DAY);
                           break;
                       }
                    }
@@ -359,14 +411,14 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
        * pda拣货提示货箱
        * @author tangming
        * @param insideContainerIds
-       * @param operatorId
+       * @param operationId
        * @return
        */
-      public CheckScanResultCommand pdaPickingTipInsideContainer(Set<Long> insideContainerIds,Long operatorId){
+      public CheckScanResultCommand pdaPickingTipInsideContainer(Set<Long> insideContainerIds,Long operationId){
           log.info("PdaPickingWorkCacheManagerImpl pdaPickingTipInsideContainer is start");
           Long tipInsideContainerId = null;
           CheckScanResultCommand scanResult = new CheckScanResultCommand();
-          LocationTipCacheCommand tipLocationCmd = cacheManager.getObject(CacheConstants.CACHE_LOCATION + operatorId.toString());
+          LocationTipCacheCommand tipLocationCmd = cacheManager.getObject(CacheConstants.CACHE_LOCATION + operationId.toString());
           if(null == tipLocationCmd) {
               throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
           }else{
@@ -385,7 +437,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                       }
                     //存入缓存
                       tipInsideContainerId = icId;
-                      cacheManager.setObject(CacheConstants.CACHE_LOCATION + operatorId.toString(), tipLocationCmd, CacheConstants.CACHE_ONE_DAY);
+                      cacheManager.setObject(CacheConstants.CACHE_LOCATION + operationId.toString(), tipLocationCmd, CacheConstants.CACHE_ONE_DAY);
                       break;
                   }
                   scanResult.setIsNeedTipInsideContainer(true);
@@ -401,15 +453,15 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
       /***
        * pda拣货提示sku
        * @param insideContainerIds
-       * @param operatorId
+       * @param operationId
        * @return
        */
-      public CheckScanResultCommand pdaPickingTipSku(Set<Long> skuIds,Long operatorId,Long locationId,Long ouId,Long insideContainerId){
+      public CheckScanResultCommand pdaPickingTipSku(Set<Long> skuIds,Long operationId,Long locationId,Long ouId,Long insideContainerId){
           log.info("PdaPickingWorkCacheManagerImpl pdaPickingTipSku is start");
           CheckScanResultCommand scanResult = new CheckScanResultCommand();
           //该库位要拣货的所有库存记录
-          List<WhSkuInventoryCommand> list = this.cacheLocationInventory(operatorId, locationId, ouId);
-          LocationTipCacheCommand tipLocationCmd = cacheManager.getObject(CacheConstants.CACHE_LOCATION + operatorId.toString());
+          List<WhSkuInventoryCommand> list = this.cacheLocationInventory(operationId, locationId, ouId);
+          LocationTipCacheCommand tipLocationCmd = cacheManager.getObject(CacheConstants.CACHE_LOCATION + operationId.toString());
           if(null == tipLocationCmd) {
               throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
           }else{
@@ -439,7 +491,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                       skuAttrId = SkuCategoryProvider.getSkuAttrIdByInv(skuCmd);
                                    }
                                   //把直接放在库位上的sku，放入缓存
-                                  LocationTipCacheCommand cacheLocationCmd = cacheManager.getObject(CacheConstants.CACHE_LOCATION + operatorId.toString());
+                                  LocationTipCacheCommand cacheLocationCmd = cacheManager.getObject(CacheConstants.CACHE_LOCATION + operationId.toString());
                                   if(null == cacheLocationCmd) {
                                       throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
                                   }else{
@@ -451,7 +503,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                           tipLocSkuIds.addFirst(skuId);
                                       }
                                       cacheLocationCmd.setTipLocSkuIds(tipLocSkuIds);
-                                      cacheManager.setObject(CacheConstants.CACHE_LOCATION + operatorId.toString(), cacheLocationCmd, CacheConstants.CACHE_ONE_DAY);
+                                      cacheManager.setObject(CacheConstants.CACHE_LOCATION + operationId.toString(), cacheLocationCmd, CacheConstants.CACHE_ONE_DAY);
                                   }
                               }
                           }
@@ -465,7 +517,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                           cacheManager.setObject(CacheConstants.CACHE_LOCATION + locationId.toString()+skuId.toString(), skuAttrIds, CacheConstants.CACHE_ONE_DAY);
                       }
                        //存入缓存
-                      cacheManager.setObject(CacheConstants.CACHE_LOCATION + operatorId.toString(), tipLocationCmd, CacheConstants.CACHE_ONE_DAY);
+                      cacheManager.setObject(CacheConstants.CACHE_LOCATION + operationId.toString(), tipLocationCmd, CacheConstants.CACHE_ONE_DAY);
                       break;
                   }
                   scanResult.setIsNeedTipSku(true);
@@ -487,7 +539,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
        * @param locSkuIds(库位上所有sku(sku不在任何容器内))
        * @param outerContainerIds(库位上所有外部容器)
        * @param outerContainerCmd(外部容器)
-       * @param operatorId(作业id)
+       * @param operationId(作业id)
        * @param insideContainerSkuIdsQty(内部容器每个sku总件数)
        * @param insideContainerSkuIds( 内部容器对应所有sku)
        * @param locInsideContainerIds(库位上所有的内部容器(无外部容器情况))
@@ -496,7 +548,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
        * @param skuCmd(扫描的sku)
        * @return
        */
-      public CheckScanResultCommand pdaPickingyCacheSkuAndCheckContainer(List<Long> locationIds, Map<Long, Long> locSkuQty,Long locationId,Set<Long> locSkuIds,Set<Long> outerContainerIds,ContainerCommand outerContainerCmd,Long operatorId,Map<Long,Long> insideContainerSkuIdsQty,Map<Long, Set<Long>> insideContainerSkuIds,Set<Long> insideContainerIds,Set<Long> locInsideContainerIds,ContainerCommand insideContainerCmd,WhSkuCommand skuCmd){
+      public CheckScanResultCommand pdaPickingyCacheSkuAndCheckContainer(List<Long> locationIds, Map<Long, Long> locSkuQty,Long locationId,Set<Long> locSkuIds,Set<Long> outerContainerIds,ContainerCommand outerContainerCmd,Long operationId,Map<Long,Long> insideContainerSkuIdsQty,Map<Long, Set<Long>> insideContainerSkuIds,Set<Long> insideContainerIds,Set<Long> locInsideContainerIds,ContainerCommand insideContainerCmd,WhSkuCommand skuCmd){
           log.info("PdaPickingWorkCacheManagerImpl pdaPickingyCacheSkuAndCheckContainer is start");
           CheckScanResultCommand cssrCmd = new CheckScanResultCommand();
           if (null != outerContainerCmd) {  //有托盘的情况(如果货箱提示完毕，直接提示下一个托盘)
@@ -515,7 +567,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                   throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
               }
               // 1.当前的内部容器是不是提示容器队列的第一个
-              LocationTipCacheCommand cacheContainerCmd = cacheManager.getObject(CacheConstants.CACHE_LOCATION + operatorId.toString());
+              LocationTipCacheCommand cacheContainerCmd = cacheManager.getObject(CacheConstants.CACHE_LOCATION + operationId.toString());
               ArrayDeque<Long> cacheInsideContainerIds = null;
               if (null != cacheContainerCmd) {
                   cacheInsideContainerIds = cacheContainerCmd.getTipInsideContainerIds();
@@ -690,7 +742,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                   throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
               }
              // 1.当前的内部容器是不是提示容器队列的第一个
-              LocationTipCacheCommand cacheContainerCmd = cacheManager.getObject(CacheConstants.CACHE_LOCATION + operatorId.toString());
+              LocationTipCacheCommand cacheContainerCmd = cacheManager.getObject(CacheConstants.CACHE_LOCATION + operationId.toString());
               ArrayDeque<Long> cacheInsideContainerIds = null;
               if (null != cacheContainerCmd) {
                   cacheInsideContainerIds = cacheContainerCmd.getTipInsideContainerIds();
@@ -830,7 +882,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
               }
           }else if(null == outerContainerCmd && null == insideContainerCmd){//  sku直接放在库位上
               Long skuId = skuCmd.getId();
-              LocationTipCacheCommand cacheContainerCmd = cacheManager.getObject(CacheConstants.CACHE_LOCATION + operatorId.toString());
+              LocationTipCacheCommand cacheContainerCmd = cacheManager.getObject(CacheConstants.CACHE_LOCATION + operationId.toString());
               ArrayDeque<Long> cacheLocaitionIds = null;
               if (null != cacheContainerCmd) {
                   cacheLocaitionIds = cacheContainerCmd.getTipLocationIds();
@@ -867,7 +919,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                   if (0 == skuId.compareTo(sId)) {
                       skuExists = true;
                       Long icSkuQty = locSkuQty.get(sId);
-                          ScanTipSkuCacheCommand tipScanSkuCmd = cacheManager.getObject(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + operatorId.toString());
+                          ScanTipSkuCacheCommand tipScanSkuCmd = cacheManager.getObject(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + operationId.toString());
                           ArrayDeque<Long> oneByOneScanSkuIds = null;
                           if (null != tipScanSkuCmd) {
                               oneByOneScanSkuIds = tipScanSkuCmd.getOneByOneScanSkuIds();
@@ -976,10 +1028,10 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
           
           return cssrCmd;
       }
-      private boolean isCacheAllExists2(List<Long> locaiotnIds, ArrayDeque<Long> cacheKeys) {
+      private boolean isCacheAllExists2(List<Long> ids, ArrayDeque<Long> cacheKeys) {
           boolean allExists = true;  //默认没有复合完毕
           if (null != cacheKeys && !cacheKeys.isEmpty()) {
-              for (Long id : locaiotnIds) {
+              for (Long id : ids) {
                   boolean isExists = false;
                   Iterator<Long> iter = cacheKeys.iterator();
                   while (iter.hasNext()) {

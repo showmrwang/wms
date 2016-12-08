@@ -54,4 +54,27 @@ public interface WaveDistributionModeManagerProxy extends BaseManager {
     public Map<String, List<Long>> getTwoSuitsOdoList(Long ouId);
 
     public void initTwoSuitsDistributionMode(String code, Long ouId, List<Long> odoIdList, String distributeMode);
+
+    /**
+     * 重置
+     */
+    List<String> findDistinctCounterCode(Long ouId);
+
+    /**
+     * 根据出库单counterCode查找出库单
+     * 
+     * @param counterCode
+     * @param ouId
+     * @return
+     */
+    public List<Long> findOdoByCounterCode(String counterCode, Long ouId);
+
+    /**
+     * 清除所有的计数器
+     * 
+     * @param ouId
+     */
+    public void breakCounter(Long ouId);
+
+    public void addToWhDistributionModeArithmeticPool(String counterCode, Long odoId);
 }

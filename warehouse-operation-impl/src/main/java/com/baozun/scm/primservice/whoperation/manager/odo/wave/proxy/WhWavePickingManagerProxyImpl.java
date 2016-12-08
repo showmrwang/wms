@@ -402,6 +402,8 @@ public class WhWavePickingManagerProxyImpl implements WhWavePickingManagerProxy 
             whWorkLineCommand.setInvAttr4(whSkuInventory.getInvAttr4());
             //库存属性5 
             whWorkLineCommand.setInvAttr5(whSkuInventory.getInvAttr5());
+            //内部对接码 
+            whWorkLineCommand.setUuid(whSkuInventory.getUuid());
             //原始库位 
             whWorkLineCommand.setFromLocationId(whSkuInventory.getLocationId());
             //原始库位外部容器 
@@ -710,6 +712,8 @@ public class WhWavePickingManagerProxyImpl implements WhWavePickingManagerProxy 
             WhOperationLineCommand.setInvAttr4(whWorkLineCommand.getInvAttr4());
             //库存属性5
             WhOperationLineCommand.setInvAttr5(whWorkLineCommand.getInvAttr5());
+            //内部对接码
+            WhOperationLineCommand.setUuid(whWorkLineCommand.getUuid());
             //原始库位
             WhOperationLineCommand.setFromLocationId(whWorkLineCommand.getFromLocationId());
             //原始库位外部容器

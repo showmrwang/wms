@@ -98,6 +98,44 @@ public class OdoSearchCommand extends BaseCommand {
     // 是否波次运行异常订单
     private Integer isExceptionOrder;
 
+    // 用于导出
+    private List<Long> customerList;
+    private List<Long> storeList;
+    private Integer limit;
+    private String sqlCondition;
+
+
+    public String getSqlCondition() {
+        return sqlCondition;
+    }
+
+    public void setSqlCondition(String sqlCondition) {
+        this.sqlCondition = sqlCondition;
+    }
+
+    public List<Long> getCustomerList() {
+        return customerList;
+    }
+
+    public void setCustomerList(List<Long> customerList) {
+        this.customerList = customerList;
+    }
+
+    public List<Long> getStoreList() {
+        return storeList;
+    }
+
+    public void setStoreList(List<Long> storeList) {
+        this.storeList = storeList;
+    }
+
+    public Integer getLimit() {
+        return limit;
+    }
+
+    public void setLimit(Integer limit) {
+        this.limit = limit;
+    }
 
     public Boolean getIsDistributeMode() {
         return isDistributeMode;

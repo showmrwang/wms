@@ -248,4 +248,13 @@ public interface OdoManagerProxy extends BaseManager {
      * @param odoCommand
      */
     void finishCreateOdo(OdoCommand odoCommand);
+
+    /**
+     * 出库单导出
+     * 
+     * @param odoSearchCommand
+     * @return
+     */
+    List<String> findExportExeclList(OdoSearchCommand odoSearchCommand);
+
 }

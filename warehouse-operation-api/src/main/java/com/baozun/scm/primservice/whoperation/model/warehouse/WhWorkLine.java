@@ -77,6 +77,8 @@ public class WhWorkLine extends BaseModel {
 	private java.lang.String invAttr4;
 	/** 库存属性5 */
 	private java.lang.String invAttr5;
+	/** 内部对接码 */
+    private java.lang.String uuid;
 	/** 原始库位 */
 	private java.lang.Long fromLocationId;
 	/** 原始库位外部容器 */
@@ -347,6 +349,12 @@ public class WhWorkLine extends BaseModel {
     }
     public void setCancelQty(java.lang.Double cancelQty) {
         this.cancelQty = cancelQty;
+    }
+    public java.lang.String getUuid() {
+        return uuid;
+    }
+    public void setUuid(java.lang.String uuid) {
+        this.uuid = uuid;
     }
 }
 

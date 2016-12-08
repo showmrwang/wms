@@ -203,4 +203,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		order by 
 			t.qty
 	</select>
+	
+	<select id="findLocWhSkuInventoryTobefilled" resultMap="WhSkuInventoryTobefilledResultExt">
+	       select <include refid="whSkuInventoryTobefilledColumnsExt"/>
+	       from t_wh_sku_inventory_tobefilled  where
+		       ou_id = #{ouId}
+	      <if test="locationId!=null and locationId!=''">
+					 and location_id=#{locationId}
+	     </if>
+
+	</select>
 </mapper>

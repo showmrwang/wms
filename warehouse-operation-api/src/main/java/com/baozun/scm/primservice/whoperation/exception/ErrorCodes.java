@@ -390,6 +390,8 @@ public class ErrorCodes {
     public static final int CODE_MANAGER_ERROR = 10055;
     /** 没有收货数据，请确认容器收货完成 */
     public static final int RCVD_CONTAINER_FINISH_ERROR = 10056;
+    /** 没有可导出的数据 请刷新页面后重试 */
+    public static final int EXPORT_EXCEL_NULL_ERROR = 10057;
     // 10001-20000 luyimin
 
 

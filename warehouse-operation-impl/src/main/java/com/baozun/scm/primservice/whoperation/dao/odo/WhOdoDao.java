@@ -194,4 +194,23 @@ public interface WhOdoDao extends BaseDao<WhOdo, Long> {
      */
     List<WhOdo> findListByParamExt(WhOdo odo);
 
+    /**
+     * 出库单导出
+     * 
+     * @param odoSearchCommand
+     * @return
+     */
+    List<String> findExportExeclList(OdoSearchCommand odoSearchCommand);
+
+    List<String> findDistinctCounterCode(@Param("ouId") Long ouId);
+
+    /**
+     * [业务方法]
+     * 
+     * @param counterCode
+     * @param ouId
+     * @return
+     */
+    List<Long> findOdoByCounterCode(@Param("counterCode") String counterCode, @Param("ouId") Long ouId);
+
 }

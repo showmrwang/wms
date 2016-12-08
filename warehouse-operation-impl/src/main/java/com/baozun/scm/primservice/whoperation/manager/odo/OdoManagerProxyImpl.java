@@ -984,7 +984,7 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
                 search.setGroupStoreId(gsc.getStoreId());
                 search.setGroupOdoType(gsc.getOdoType());
                 search.setGroupDistributeMode(gsc.getDistributeMode());
-                search.setGroupEpistaticSystemsOrderType(gsc.getEpostaticSystemsOrderType());
+                search.setGroupEpistaticSystemsOrderType(gsc.getEpistaticSystemsOrderType());
                 search.setGroupTransportServiceProvider(gsc.getTransportServiceProvider());
                 search.setIsEpistaticSystemsOrderType(gsc.getIsEpistaticSystemsOrderType());
                 search.setIsDistributeMode(gsc.getIsDistributeMode());
@@ -1109,7 +1109,6 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
         if (command.getOdoIdList() != null && command.getOdoIdList().size() > 0) {
             for (Long odoId : command.getOdoIdList()) {
                 WhOdo odo = this.odoManager.findOdoByIdOuId(odoId, ouId);
-                OdoCommand odoComm = this.odoManager.findOdoCommandByIdOuId(odoId, ouId);
                 if (odo == null) {
                     throw new BusinessException(ErrorCodes.PARAMS_ERROR);
                 }
@@ -1297,7 +1296,7 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
             waveLine.setIsWholeOrderOutbound(odo.getIsWholeOrderOutbound());
             waveLine.setFullLineOutbound(line.getFullLineOutbound());
             waveLine.setMfgDate(line.getMfgDate());
-            waveLine.setExpDate(line.getMfgDate());
+            waveLine.setExpDate(line.getExpDate());
             waveLine.setMinExpDate(line.getMinExpDate());
             waveLine.setMaxExpDate(line.getMaxExpDate());
             waveLine.setBatchNumber(line.getBatchNumber());
@@ -1413,6 +1412,11 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
             }
         }
 
+    }
+
+    @Override
+    public List<String> findExportExeclList(OdoSearchCommand odoSearchCommand) {
+        return this.odoManager.findExportExeclList(odoSearchCommand);
     }
 
 }

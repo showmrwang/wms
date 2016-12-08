@@ -32,6 +32,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	inv_attr3 as invAttr3,
 	        	inv_attr4 as invAttr4,
 	        	inv_attr5 as invAttr5,
+	        	uuid as uuid,
 	        	from_location_id as fromLocationId,
 	        	from_outer_container_id as fromOuterContainerId,
 	        	from_inside_container_id as fromInsideContainerId,
@@ -81,6 +82,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	inv_attr3 ,
 		        	inv_attr4 ,
 		        	inv_attr5 ,
+		        	uuid ,
 		        	from_location_id ,
 		        	from_outer_container_id ,
 		        	from_inside_container_id ,
@@ -119,6 +121,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{invAttr3,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{invAttr4,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{invAttr5,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{uuid,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{fromLocationId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{fromOuterContainerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{fromInsideContainerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -164,6 +167,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        inv_attr3 = #{invAttr3,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        inv_attr4 = #{invAttr4,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        inv_attr5 = #{invAttr5,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        uuid = #{uuid,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        from_location_id = #{fromLocationId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        from_outer_container_id = #{fromOuterContainerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        from_inside_container_id = #{fromInsideContainerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -307,8 +311,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				</if>
 	       
 	       
-		       <if test="invAttr5!=null and invAttr5!=''">
+		       	<if test="invAttr5!=null and invAttr5!=''">
 					and inv_attr5 = #{invAttr5}
+				</if>
+				
+				<if test="uuid!=null and uuid!=''">
+					and uuid = #{uuid}
 				</if>
 	       
 				<if test="fromLocationId!=null">

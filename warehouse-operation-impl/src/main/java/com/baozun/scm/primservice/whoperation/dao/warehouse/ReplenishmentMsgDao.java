@@ -25,6 +25,8 @@ import lark.common.dao.QueryCondition;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentMsg;
 
 public interface ReplenishmentMsgDao extends BaseDao<ReplenishmentMsg, Long> {
@@ -42,5 +44,15 @@ public interface ReplenishmentMsgDao extends BaseDao<ReplenishmentMsg, Long> {
 
     @CommonQuery
     int saveOrUpdate(ReplenishmentMsg o);
+
+
+    int deleteByIdOuId(@Param("id") Long id, @Param("ouId") Long ouId);
+
+    @CommonQuery
+    int saveOrUpdateByVersion(ReplenishmentMsg o);
+
+    ReplenishmentMsg findByLocIdAndSkuId(@Param("locId") Long locId, @Param("skuId") Long skuId, @Param("ouId") Long ouId);
+
+    ReplenishmentMsg findByIdExt(@Param("id") Long id, @Param("ouId") Long ouId);
 
 }

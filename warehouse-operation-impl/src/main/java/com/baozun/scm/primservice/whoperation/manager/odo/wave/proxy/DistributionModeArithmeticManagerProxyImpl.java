@@ -121,11 +121,11 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
         if (seckill == seckillOdoQtys) {
             List<String> keyList = this.cacheManager.Keys(CacheKeyConstant.OU_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + "*");
             for (String key : keyList) {
-
-                String[] keyArray = key.substring(key.indexOf("%")).split("\\" + CacheKeyConstant.WAVE_ODO_SPLIT);
-                String idStr = this.cacheManager.getValue(CacheKeyConstant.OU_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + keyArray[4]);
-                this.cacheManager.setValue(CacheKeyConstant.SECKILL_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + idStr, idStr);
-                this.cacheManager.remove(key.substring(key.indexOf("%")));
+                String[] keyArray = key.split("%");
+                String keyCodeId = keyArray[2];
+                String[] keyCodeArray = keyCodeId.split("\\|");
+                this.cacheManager.setValue(CacheKeyConstant.SECKILL_ODO_PREFIX + keyCodeId, keyCodeArray[4]);
+                this.cacheManager.remove(CacheKeyConstant.OU_ODO_PREFIX + keyCodeId);
             }
             this.cacheManager.setValue(CacheKeyConstant.SECKILL_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + odoId, odoId + "");
 
@@ -147,8 +147,9 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
      * @param odoId
      */
     private void calcTwoSkuSuit(String code, Warehouse wh, Long odoId) {
-        if (!wh.getIsCalcSeckill()) {
+        if (!wh.getIsCalcTwoSkuSuit()) {
             calcSuits(code, wh, odoId);
+            return;
         }
         int twoSkuSuitOdoQtys = wh.getTwoSkuSuitOdoQtys();
 
@@ -225,11 +226,12 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
         if (suits == suitsOdoQtys) {
             List<String> keyList = this.cacheManager.Keys(CacheKeyConstant.OU_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + "*");
             for (String key : keyList) {
-                String[] keyArray = key.split("\\" + CacheKeyConstant.WAVE_ODO_SPLIT);
-                String idStr = this.cacheManager.getValue(CacheKeyConstant.OU_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + keyArray[4]);
-                this.cacheManager.setValue(CacheKeyConstant.SUITS_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + idStr, idStr);
+                String[] keyArray = key.split("%");
+                String keyCodeId = keyArray[2];
+                String[] keyCodeIdArray = keyCodeId.split("\\|");
+                this.cacheManager.setValue(CacheKeyConstant.SUITS_ODO_PREFIX + keyCodeId, keyCodeIdArray[4]);
                 // 移除
-                this.cacheManager.remove(CacheKeyConstant.OU_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + idStr);
+                this.cacheManager.remove(CacheKeyConstant.OU_ODO_PREFIX + keyCodeId);
             }
             this.cacheManager.setValue(CacheKeyConstant.SUITS_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + odoId, odoId + "");
         } else if (suits > suitsOdoQtys) {
@@ -254,20 +256,23 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
         this.cacheManager.setValue(CacheKeyConstant.TWOSKUSUIT_DIV_ODO_PREFIX + twoSkuSuitPrefix + CacheKeyConstant.WAVE_ODO_SPLIT + decrSkuId + CacheKeyConstant.WAVE_ODO_SPLIT + odoId, odoId + "");
         this.cacheManager.setValue(CacheKeyConstant.SUITS_DIV_ODO_PREFIX + twoSkuSuitPrefix + CacheKeyConstant.WAVE_ODO_SPLIT + decrSkuId + CacheKeyConstant.WAVE_ODO_SPLIT + odoId, odoId + "");
         List<String> keyList = this.cacheManager.Keys(CacheKeyConstant.OU_ODO_PREFIX + twoSkuSuitPrefix + "*$" + incrSkuId + "$*");
+
         for (String key : keyList) {
 
             String[] keyArray = key.split("%");
-            String[] keyCodeOdoId = keyArray[2].split("\\|");
-            String keyOdoId = keyCodeOdoId[4];
+            String keyCodeId = keyArray[2];
+            String[] keyCodeOdoIdArray = keyCodeId.split("\\|");
+            String keyOdoId = keyCodeOdoIdArray[4];
             this.cacheManager.setValue(CacheKeyConstant.TWOSKUSUIT_ODO_PREFIX + twoSkuSuitPrefix + CacheKeyConstant.WAVE_ODO_SPLIT + incrSkuId + CacheKeyConstant.WAVE_ODO_SPLIT + keyOdoId, keyOdoId);
              //扣减集合
-            String keyDecrSkuId = keyCodeOdoId[3].replace("$" + incrSkuId + "$", "").replace("$", "");
+            String keyDecrSkuId = keyCodeOdoIdArray[3].replace("$" + incrSkuId + "$", "").replace("$", "");
             this.cacheManager.decr(CacheKeyConstant.TWOSKUSUIT_PREFIX + twoSkuSuitPrefix + CacheKeyConstant.WAVE_ODO_SPLIT + keyDecrSkuId);
             this.cacheManager.decr(CacheKeyConstant.SUITS_PREFIX + code);
 
             this.cacheManager.setValue(CacheKeyConstant.TWOSKUSUIT_DIV_ODO_PREFIX + twoSkuSuitPrefix+CacheKeyConstant.WAVE_ODO_SPLIT +keyDecrSkuId+CacheKeyConstant.WAVE_ODO_SPLIT+keyOdoId,keyOdoId);
             this.cacheManager.setValue(CacheKeyConstant.SUITS_DIV_ODO_PREFIX + twoSkuSuitPrefix + CacheKeyConstant.WAVE_ODO_SPLIT + keyDecrSkuId + CacheKeyConstant.WAVE_ODO_SPLIT + keyOdoId, keyOdoId);
 
+            this.cacheManager.remove(CacheKeyConstant.OU_ODO_PREFIX + keyCodeId);
 
 
         }
@@ -288,6 +293,7 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
             }
             switch (skuType.intValue()) {
                 case 1:
+
                     this.cacheManager.decr(CacheKeyConstant.SECKILL_PREFIX + code);
                     if (!isExists) {
                         this.cacheManager.remove(CacheKeyConstant.SECKILL_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + odoId);
@@ -364,7 +370,7 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
         if (skuType.intValue() == skuQty.intValue()) {
             switch (skuType.intValue()) {
                 case 1:
-                    this.cacheManager.incr(CacheKeyConstant.SECKILL_PREFIX + code);
+                    this.cacheManager.decr(CacheKeyConstant.SECKILL_PREFIX + code);
                     break;
                 case 2:
                     String twoSkuSuitPrefix = codeArray[0] + CacheKeyConstant.WAVE_ODO_SPLIT + codeArray[1] + CacheKeyConstant.WAVE_ODO_SPLIT + codeArray[2];
@@ -375,33 +381,40 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
 
                     String result1=this.cacheManager.getValue(CacheKeyConstant.TWOSKUSUIT_DIV_ODO_PREFIX + twoSkuSuitPrefix + CacheKeyConstant.WAVE_ODO_SPLIT + skuIdA + CacheKeyConstant.WAVE_ODO_SPLIT + odoId);
                     String result2 = this.cacheManager.getValue(CacheKeyConstant.TWOSKUSUIT_DIV_ODO_PREFIX + twoSkuSuitPrefix + CacheKeyConstant.WAVE_ODO_SPLIT + skuIdB + CacheKeyConstant.WAVE_ODO_SPLIT + odoId);
-                    String result3 = this.cacheManager.getValue(CacheKeyConstant.SUITS_DIV_ODO_PREFIX + code);
+                    String result3 = this.cacheManager.getValue(CacheKeyConstant.SUITS_DIV_ODO_PREFIX + code+ CacheKeyConstant.WAVE_ODO_SPLIT + odoId);
                     boolean flag = false;
                     if (StringUtils.isEmpty(result2) && StringUtils.isEmpty(result2) && StringUtils.isEmpty(result3)) {
                         flag = true;
                     }
                     if(StringUtils.isEmpty(result1)){
                         this.cacheManager.decr(CacheKeyConstant.TWOSKUSUIT_PREFIX+  twoSkuSuitPrefix + CacheKeyConstant.WAVE_ODO_SPLIT + skuIdA);
-                        if(flag){
+                        if (!flag) {
                             this.cacheManager.remove(CacheKeyConstant.TWOSKUSUIT_ODO_PREFIX + twoSkuSuitPrefix + CacheKeyConstant.WAVE_ODO_SPLIT + skuIdA + CacheKeyConstant.WAVE_ODO_SPLIT + odoId);
                         }
+                    } else {
+                        this.cacheManager.remove(CacheKeyConstant.TWOSKUSUIT_DIV_ODO_PREFIX + twoSkuSuitPrefix + CacheKeyConstant.WAVE_ODO_SPLIT + skuIdA + CacheKeyConstant.WAVE_ODO_SPLIT + odoId);
                     }
                     if (StringUtils.isEmpty(result2)) {
                         this.cacheManager.decr(CacheKeyConstant.TWOSKUSUIT_PREFIX + twoSkuSuitPrefix + CacheKeyConstant.WAVE_ODO_SPLIT + skuIdB);
-                        if (flag) {
+                        if (!flag) {
                             this.cacheManager.remove(CacheKeyConstant.TWOSKUSUIT_ODO_PREFIX + twoSkuSuitPrefix + CacheKeyConstant.WAVE_ODO_SPLIT + skuIdB + CacheKeyConstant.WAVE_ODO_SPLIT + odoId);
                         }
+                    } else {
+                        this.cacheManager.remove(CacheKeyConstant.TWOSKUSUIT_DIV_ODO_PREFIX + twoSkuSuitPrefix + CacheKeyConstant.WAVE_ODO_SPLIT + skuIdB + CacheKeyConstant.WAVE_ODO_SPLIT + odoId);
                     }
                     if (StringUtils.isEmpty(result3)) {
                         this.cacheManager.decr(CacheKeyConstant.SUITS_PREFIX + code);
-                        if (flag) {
+                        if (!flag) {
                             this.cacheManager.remove(CacheKeyConstant.SUITS_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + odoId);
                         }
+                    }else{
+                        this.cacheManager.remove(CacheKeyConstant.SUITS_DIV_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + odoId);
                     }
                     break;
                 default:
                     this.cacheManager.decr(CacheKeyConstant.SUITS_PREFIX + code);
                     this.cacheManager.remove(CacheKeyConstant.SUITS_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + odoId);
+                    this.cacheManager.remove(CacheKeyConstant.SUITS_DIV_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + odoId);
                     break;
             }
         }
@@ -429,9 +442,15 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
     }
 
     @Override
-    public void mergeOdo(String code, Long odoId) {
-        // TODO Auto-generated method stub
-
+    public void mergeOdo(String newCode, Long odoId, Map<Long, String> mergedOdoMap) {
+        if (mergedOdoMap != null && mergedOdoMap.size() > 0) {
+            Iterator<Entry<Long, String>> it = mergedOdoMap.entrySet().iterator();
+            while (it.hasNext()) {
+                Entry<Long, String> entry = it.next();
+                this.divFromOrderPool(entry.getValue(), entry.getKey());
+            }
+        }
+        this.addToWhDistributionModeArithmeticPool(newCode, odoId);
     }
 
 }

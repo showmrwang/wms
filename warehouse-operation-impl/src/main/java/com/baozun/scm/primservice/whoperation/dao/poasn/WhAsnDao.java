@@ -222,6 +222,6 @@ public interface WhAsnDao extends BaseDao<WhAsn, Long> {
      * @param ouId
      * @return
      */
-    List<WhAsn> findWhAsnByPoIdOuId(Long poId, Long ouId);
+    List<WhAsn> findWhAsnByPoIdOuId(@Param("poId") Long poId, @Param("ouId") Long ouId);
 
 }

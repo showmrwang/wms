@@ -296,7 +296,7 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
                 if (null == asn) {
                     throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
                 } else {
-                    if (PoAsnStatus.ASN_CANCELED != asn.getStatus() && PoAsnStatus.ASN_CLOSE != asn.getStatus()) {
+                    if (PoAsnStatus.ASN_CANCELED != asn.getStatus() || PoAsnStatus.ASN_CLOSE != asn.getStatus()) {
                         throw new BusinessException(ErrorCodes.PO_AUDIT_ASNSTATUS_ERROR);
                     }
 
@@ -358,7 +358,7 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
         whAsnCommand.setAsnIds(Arrays.asList(new Long[] {asnCommand.getId()}));
 
         try {
-            asnManager.editAsnStatusByShard(Arrays.asList(new Long[] {asnCommand.getId()}), asnCommand.getOuId(), PoAsnStatus.ASN_CLOSE, asnCommand.getModifiedId());
+            asnManager.editAsnStatusByShard(Arrays.asList(new Long[] {asnCommand.getId()}), asnCommand.getOuId(), PoAsnStatus.ASN_CLOSE, asnCommand.getUserId());
         } catch (Exception e) {
             if (e instanceof BusinessException) {
                 log.error(e + "");

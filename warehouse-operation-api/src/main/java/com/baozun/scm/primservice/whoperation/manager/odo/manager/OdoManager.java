@@ -211,4 +211,16 @@ public interface OdoManager extends BaseManager {
 
     int updateByVersion(WhOdo odo);
 
+    /**
+     * 出库单导出
+     * 
+     * @param odoSearchCommand
+     * @return
+     */
+    List<String> findExportExeclList(OdoSearchCommand odoSearchCommand);
+
+    List<String> findDistinctCounterCode(Long ouId);
+
+    List<Long> findOdoByCounterCode(String counterCode, Long ouId);
+
 }

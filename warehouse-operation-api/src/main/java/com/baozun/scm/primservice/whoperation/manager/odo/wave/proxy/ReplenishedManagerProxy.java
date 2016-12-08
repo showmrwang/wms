@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.baozun.scm.primservice.whoperation.command.warehouse.ReplenishmentRuleCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.ReplenishmentStrategyCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine;
 import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
@@ -51,4 +52,13 @@ public interface ReplenishedManagerProxy extends BaseManager{
     Map<Long, List<ReplenishmentRuleCommand>> getSkuReplenishmentRule(List<Long> skuIds, Long ouId);
 
     String generateBhCode();
+
+    /**
+     * 查找补货规则对应的分配策略
+     * 
+     * @param id
+     * @param ouId
+     * @return
+     */
+    List<ReplenishmentStrategyCommand> findReplenishmentStrategyListByRuleId(Long id, Long ouId);
 }
