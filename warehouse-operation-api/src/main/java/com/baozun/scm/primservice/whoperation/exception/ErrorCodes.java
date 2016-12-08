@@ -745,6 +745,7 @@ public class ErrorCodes {
     /**库位库存不存在*/
     public static final int LOCATION_INVENTORY_IS_NO = 70050;
     
+    
     // 70001-80000 tangming
     
     // 80001-90000 shenlijun

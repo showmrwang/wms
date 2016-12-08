@@ -26,6 +26,7 @@ public interface PdaPickingWorkCacheManager extends BaseManager{
     
     /***
      * 提示小车
+     *  @tangming
      * @param operatorId
      * @return
      */
@@ -34,6 +35,7 @@ public interface PdaPickingWorkCacheManager extends BaseManager{
     
     /***
      * 提示出库箱
+     *  @tangming
      * @param operatorId
      * @return
      */
@@ -41,6 +43,7 @@ public interface PdaPickingWorkCacheManager extends BaseManager{
     
     /**
      * 提示周转箱
+     *  @tangming
      * @param operatorId
      * @return
      */
@@ -58,6 +61,7 @@ public interface PdaPickingWorkCacheManager extends BaseManager{
     
    /***
     * 缓存库位信息
+    *  @tangming
     * @param operatorId
     * @param pickingType
     * @param locationIds
@@ -67,6 +71,7 @@ public interface PdaPickingWorkCacheManager extends BaseManager{
     
     /***
      * 缓存作业明细
+     *  @tangming
      * @param operatorId
      * @param locationId
      * @param ouId
@@ -94,6 +99,7 @@ public interface PdaPickingWorkCacheManager extends BaseManager{
       
       /***
        * pda拣货提示sku
+       *  @tangming
        * @param insideContainerIds
        * @param operatorId
        * @return
@@ -101,7 +107,7 @@ public interface PdaPickingWorkCacheManager extends BaseManager{
       public CheckScanResultCommand pdaPickingTipSku(Set<Long> skuIds,Long operatorId,Long locationId,Long ouId,Long insideContainerId);
       
       /***
-       * 
+       *  @tangming
        * @param locationIds
        * @param locSkuQty
        * @param locationId
@@ -120,11 +126,32 @@ public interface PdaPickingWorkCacheManager extends BaseManager{
     
       /***
        * 有小车，而且有出库箱的时候，提示出库箱
+       *  @tangming
        * @param operatorLineList
        * @param operationId
        * @return
        */
       public CheckScanResultCommand pdaPickingTipOutBounxBoxCode(List<WhOperationLineCommand> operatorLineList,Long operationId, Map<Integer, String> carStockToOutgoingBox);
+      
+      /***
+       * 缓存作业明细
+       * @tangming
+       * @param operationId
+       * @param ouId
+       */
+      public List<WhOperationLineCommand> cacheOperationLine(Long operationId,Long ouId);
+      
+      /***
+       * 缓存已经拣货作业id
+       *  @tangming
+       * @param operationId
+       * @param skuAttrIds
+       * @param outerContainerId
+       * @param insideContainerId
+       * @param locationId
+       * @param ouId
+       */
+     public Long cachePickingOperLineId(Long operationId,String skuAttrIds,Long outerContainerId,Long insideContainerId,Long locationId,Long ouId);
       
     
 }

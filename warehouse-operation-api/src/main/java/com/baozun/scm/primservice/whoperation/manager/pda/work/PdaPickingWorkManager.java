@@ -91,4 +91,12 @@ public interface PdaPickingWorkManager extends BaseManager {
      * @return
      */
     public PickingScanResultCommand judgeSkuAttrIdsIsUnique(PickingScanResultCommand  command);
+    
+    /***
+     * 出库箱或者周转箱/满箱处理
+     * @param command
+     * @return
+     */
+    public void scanTrunkfulContainer(PickingScanResultCommand  command);
+    
 }

@@ -21,6 +21,8 @@ public class PickingScanResultCommand extends BaseCommand {
 
     /** 出库箱号 */
     private String outBounxBoxCode;
+    
+    private Long outBoundBoxId;
     /** 作业id */
     private Long operationId;
 
@@ -51,6 +53,8 @@ public class PickingScanResultCommand extends BaseCommand {
     private String locationBarCode; // 库位条码
     /** 仓库id */
     private Long ouId;
+    
+    private Long userId;
     /** 捡货方式 */
     private Integer pickingWay;
     /** 库存占用模型 */
@@ -155,6 +159,12 @@ public class PickingScanResultCommand extends BaseCommand {
     
     /**货格号*/
     private Integer useContainerLatticeNo;
+    /**是否短拣*/
+    private Boolean isShortPicking;
+    /**是否满箱*/
+    private Boolean isTrunkful;
+    /**出库箱/周转箱满箱后是否使用新的容器*/
+    private Boolean isUserNewContainer;
 
     /**
      * 出库箱集合(仅限于有小车,有出库箱的情况)
@@ -863,6 +873,56 @@ public class PickingScanResultCommand extends BaseCommand {
 
     public void setUseContainerLatticeNo(Integer useContainerLatticeNo) {
         this.useContainerLatticeNo = useContainerLatticeNo;
+    }
+
+
+    public Long getUserId() {
+        return userId;
+    }
+
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+
+    public Long getOutBoundBoxId() {
+        return outBoundBoxId;
+    }
+
+
+    public void setOutBoundBoxId(Long outBoundBoxId) {
+        this.outBoundBoxId = outBoundBoxId;
+    }
+
+
+    public Boolean getIsShortPicking() {
+        return isShortPicking;
+    }
+
+
+    public void setIsShortPicking(Boolean isShortPicking) {
+        this.isShortPicking = isShortPicking;
+    }
+
+
+    public Boolean getIsTrunkful() {
+        return isTrunkful;
+    }
+
+
+    public void setIsTrunkful(Boolean isTrunkful) {
+        this.isTrunkful = isTrunkful;
+    }
+
+
+    public Boolean getIsUserNewContainer() {
+        return isUserNewContainer;
+    }
+
+
+    public void setIsUserNewContainer(Boolean isUserNewContainer) {
+        this.isUserNewContainer = isUserNewContainer;
     }
 
     

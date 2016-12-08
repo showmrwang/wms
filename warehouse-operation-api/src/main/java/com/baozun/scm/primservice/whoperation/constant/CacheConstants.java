@@ -91,4 +91,6 @@ public final class CacheConstants {
     /** pda拣货:已扫描的Sku队列 */
     public static final String PDA_PICKING_SCAN_SKU_QUEUE = "PDA_PICKING_SCAN_SKU_QUEUE_";
     
+    public static final String OPERATION_LINE="OPERATION_LINE";
+
 }
