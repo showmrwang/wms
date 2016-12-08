@@ -56,6 +56,7 @@ import com.baozun.scm.primservice.whoperation.constant.WavePhase;
 import com.baozun.scm.primservice.whoperation.constant.WhPutawayPatternDetailType;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.ReplenishmentMsgDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ReplenishmentStrategyDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhLocationDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhSkuDao;
@@ -123,6 +124,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     private CodeManager codeManager;
     @Autowired
     private ReplenishmentStrategyDao replenishmentStrategyDao;
+    @Autowired
+    private ReplenishmentMsgDao replenishmentMsgDao;
     /**
      * 库位绑定（分配容器库存及生成待移入库位库存）
      * 
@@ -3946,6 +3949,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 
 
         }
+
+        this.replenishmentMsgDao.deleteByIdOuId(msg.getId(), ouId);
     }
     
 }

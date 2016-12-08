@@ -222,6 +222,10 @@ public class LocationReplenishmentManagerProxyImpl extends BaseManagerImpl imple
 
     }
 
+    @Override
+    public List<ReplenishmentMsg> findReplenishmentMsgListByOuId(Long ouId) {
+        return this.replenishmentMsgManager.findMsgByOuId(ouId);
+    }
 
 
 

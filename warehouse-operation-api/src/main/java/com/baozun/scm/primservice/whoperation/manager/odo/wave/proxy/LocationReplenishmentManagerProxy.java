@@ -24,4 +24,11 @@ public interface LocationReplenishmentManagerProxy extends BaseManager {
     void locationReplenishmentMsg(Warehouse wh, List<Location> locationList);
     
     void locationReplenishmentTask(List<ReplenishmentMsg> msgList, Warehouse wh);
+
+    /**
+     * 查找所有的补货信息
+     * 
+     * @param ouId
+     */
+    List<ReplenishmentMsg> findReplenishmentMsgListByOuId(Long ouId);
 }

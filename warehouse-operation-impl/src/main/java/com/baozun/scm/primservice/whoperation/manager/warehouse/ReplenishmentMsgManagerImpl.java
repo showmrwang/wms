@@ -1,5 +1,7 @@
 package com.baozun.scm.primservice.whoperation.manager.warehouse;
 
+import java.util.List;
+
 import lark.common.annotation.MoreDB;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,6 +67,14 @@ public class ReplenishmentMsgManagerImpl extends BaseManagerImpl implements Repl
             throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
         }
 
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<ReplenishmentMsg> findMsgByOuId(Long ouId) {
+        ReplenishmentMsg search = new ReplenishmentMsg();
+        search.setOuId(ouId);
+        return this.replenishmentMsgDao.findListByParam(search);
     }
 
 }
