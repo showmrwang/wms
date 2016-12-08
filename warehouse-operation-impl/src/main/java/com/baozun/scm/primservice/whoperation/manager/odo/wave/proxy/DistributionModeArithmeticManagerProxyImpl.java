@@ -293,6 +293,7 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
             }
             switch (skuType.intValue()) {
                 case 1:
+
                     this.cacheManager.decr(CacheKeyConstant.SECKILL_PREFIX + code);
                     if (!isExists) {
                         this.cacheManager.remove(CacheKeyConstant.SECKILL_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + odoId);
@@ -434,9 +435,15 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
     }
 
     @Override
-    public void mergeOdo(String code, Long odoId) {
-        // TODO Auto-generated method stub
-
+    public void mergeOdo(String newCode, Long odoId, Map<Long, String> mergedOdoMap) {
+        if (mergedOdoMap != null && mergedOdoMap.size() > 0) {
+            Iterator<Entry<Long, String>> it = mergedOdoMap.entrySet().iterator();
+            while (it.hasNext()) {
+                Entry<Long, String> entry = it.next();
+                this.divFromOrderPool(entry.getValue(), entry.getKey());
+            }
+        }
+        this.addToWhDistributionModeArithmeticPool(newCode, odoId);
     }
 
 }
