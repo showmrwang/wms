@@ -781,7 +781,7 @@
 
 	<select id="findOdoMergableIds" resultType="string"
 		parameterType="java.lang.Long">
-		select group_concat(odo.odoId) as odoId from (
+		select concat(odo.odoId) as odoId from (
 		select
 		group_concat(odo.id) as
 		odoId,
@@ -860,7 +860,7 @@
 
 	<select id="findWaveOdoMergableIds" resultType="string"
 		parameterType="java.lang.Long">
-		select group_concat(odo.odoId) as odoId from (
+		select concat(odo.odoId) as odoId from (
 		select
 		group_concat(odo.id) as
 		odoId,

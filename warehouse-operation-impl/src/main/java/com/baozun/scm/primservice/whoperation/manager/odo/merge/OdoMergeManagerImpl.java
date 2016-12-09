@@ -102,8 +102,15 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
         String isNeedEpistaticSystemsOrderType = ((boolean) params.get("isNeedEpistaticSystemsOrderType")) ? "1" : "0";
         String isNeedStore = ((boolean) params.get("isNeedStore")) ? "1" : "0";
         String isNeedDeliverGoodsTime = ((boolean) params.get("isNeedDeliverGoodsTime")) ? "1" : "0";
-        String idString = this.whOdoDao.findOdoMergableIds(ouId, isNeedOutboundCartonType, isNeedEpistaticSystemsOrderType, isNeedStore, isNeedDeliverGoodsTime);
-        String ids = "(" + idString + ")";
+        List<String> idString = this.whOdoDao.findOdoMergableIds(ouId, isNeedOutboundCartonType, isNeedEpistaticSystemsOrderType, isNeedStore, isNeedDeliverGoodsTime);
+        String idStr = "";
+        if (null != idString && !idString.isEmpty()) {
+            for (String id : idString) {
+                idStr += id + ",";
+            }
+        }
+        idStr = idStr.substring(0, idStr.length() - 1);
+        String ids = "(" + idStr + ")";
         return ids;
     }
 

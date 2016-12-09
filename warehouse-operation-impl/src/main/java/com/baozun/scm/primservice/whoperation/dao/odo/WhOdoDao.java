@@ -86,7 +86,7 @@ public interface WhOdoDao extends BaseDao<WhOdo, Long> {
      * @param deliverGoodsTime
      * @return
      */
-    String findOdoMergableIds(@Param("ouId") Long ouId, @Param("outboundCartonType") String outboundCartonType, @Param("epistaticSystemsOrderType") String epistaticSystemsOrderType, @Param("store") String store,
+    List<String> findOdoMergableIds(@Param("ouId") Long ouId, @Param("outboundCartonType") String outboundCartonType, @Param("epistaticSystemsOrderType") String epistaticSystemsOrderType, @Param("store") String store,
             @Param("deliverGoodsTime") String deliverGoodsTime);
 
     /**
@@ -98,8 +98,8 @@ public interface WhOdoDao extends BaseDao<WhOdo, Long> {
      * @param deliverGoodsTime
      * @return
      */
-    String findWaveOdoMergableIds(@Param("waveCode") String waveCode, @Param("ouId") Long ouId, @Param("outboundCartonType") String outboundCartonType, @Param("epistaticSystemsOrderType") String epistaticSystemsOrderType, @Param("store") String store,
-            @Param("deliverGoodsTime") String deliverGoodsTime);
+    List<String> findWaveOdoMergableIds(@Param("waveCode") String waveCode, @Param("ouId") Long ouId, @Param("outboundCartonType") String outboundCartonType, @Param("epistaticSystemsOrderType") String epistaticSystemsOrderType,
+            @Param("store") String store, @Param("deliverGoodsTime") String deliverGoodsTime);
 
     /**
      * [业务方法] 合并订单-合并出库单

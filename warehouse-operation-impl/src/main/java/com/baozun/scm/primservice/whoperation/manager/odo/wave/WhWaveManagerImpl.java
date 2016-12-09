@@ -321,7 +321,17 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         String store = command.getNeedStore();
         String deliverGoodsTime = command.getNeedDeliverGoodsTime();
         // 所有可以合并的单子
-        String odoIds = "(" + this.whOdoDao.findWaveOdoMergableIds(waveCode, ouId, outboundCartonType, epistaticSystemsOrderType, store, deliverGoodsTime) + ")";
+        List<String> idString = this.whOdoDao.findWaveOdoMergableIds(waveCode, ouId, outboundCartonType, epistaticSystemsOrderType, store, deliverGoodsTime);
+        String idStr = "";
+        if (null != idString && !idString.isEmpty()) {
+            for (String id : idString) {
+                idStr += id + ",";
+            }
+        }
+        idStr = idStr.substring(0, idStr.length() - 1);
+        String odoIds = "(" + idStr + ")";
+        // String odoIds = "(" + this.whOdoDao.findWaveOdoMergableIds(waveCode, ouId,
+        // outboundCartonType, epistaticSystemsOrderType, store, deliverGoodsTime) + ")";
         List<OdoMergeCommand> list = new ArrayList<OdoMergeCommand>();
         if (StringUtils.hasText(odoIds)) {
             list = this.whOdoDao.odoMerge(OdoStatus.ODO_WAVE, odoIds, ouId, outboundCartonType, epistaticSystemsOrderType, store, deliverGoodsTime);
@@ -423,7 +433,9 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
                     }
                 } else {
                     // 剔除规则中没有静态库位可超分配或空库位的工作单
-                    // SysDictionary dictionary = sysDictionaryDao.getGroupbyGroupValueAndDicValue(Constants.WAVE_FAIL_REASON, Constants.INVENTORY_SHORTAGE);
+                    // SysDictionary dictionary =
+                    // sysDictionaryDao.getGroupbyGroupValueAndDicValue(Constants.WAVE_FAIL_REASON,
+                    // Constants.INVENTORY_SHORTAGE);
                     for (Long odoId : odoIds) {
                         whWaveLineManager.deleteWaveLinesByOdoId(odoId, waveId, ouId, Constants.INVENTORY_SHORTAGE);
                         // 释放库存
@@ -434,7 +446,9 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
                 }
             } else {
                 // 剔除库存数量没有分配完全所有工作单
-                // SysDictionary dictionary = sysDictionaryDao.getGroupbyGroupValueAndDicValue(Constants.WAVE_FAIL_REASON, Constants.INVENTORY_SHORTAGE);
+                // SysDictionary dictionary =
+                // sysDictionaryDao.getGroupbyGroupValueAndDicValue(Constants.WAVE_FAIL_REASON,
+                // Constants.INVENTORY_SHORTAGE);
                 for (Long odoId : allOdoIds) {
                     whWaveLineManager.deleteWaveLinesByOdoId(odoId, waveId, ouId, Constants.INVENTORY_SHORTAGE);
                     // 释放库存
