@@ -644,6 +644,7 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
 
     @Override
     public List<String> findDistinctCounterCode(Long ouId) {
+        log.info(this.getClass().getSimpleName() + ".findDistinctCounterCode params:{}", ouId);
         return this.odoManager.findDistinctCounterCode(ouId);
     }
 
