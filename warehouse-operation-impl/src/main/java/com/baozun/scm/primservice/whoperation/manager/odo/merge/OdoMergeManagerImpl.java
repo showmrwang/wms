@@ -86,7 +86,7 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
             page.setSize(Integer.parseInt(pageOption));
         }
         String ids = this.findOdoMergableIds(params);
-        if ("(null)".equalsIgnoreCase(ids)) {
+        if ("()".equalsIgnoreCase(ids)) {
             return null;
         }
         params.put("ids", ids);
@@ -108,8 +108,8 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
             for (String id : idString) {
                 idStr += id + ",";
             }
+            idStr = idStr.substring(0, idStr.length() - 1);
         }
-        idStr = idStr.substring(0, idStr.length() - 1);
         String ids = "(" + idStr + ")";
         return ids;
     }

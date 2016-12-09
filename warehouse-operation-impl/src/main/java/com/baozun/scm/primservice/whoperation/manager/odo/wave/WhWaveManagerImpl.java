@@ -327,13 +327,13 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
             for (String id : idString) {
                 idStr += id + ",";
             }
+            idStr = idStr.substring(0, idStr.length() - 1);
         }
-        idStr = idStr.substring(0, idStr.length() - 1);
         String odoIds = "(" + idStr + ")";
         // String odoIds = "(" + this.whOdoDao.findWaveOdoMergableIds(waveCode, ouId,
         // outboundCartonType, epistaticSystemsOrderType, store, deliverGoodsTime) + ")";
         List<OdoMergeCommand> list = new ArrayList<OdoMergeCommand>();
-        if (StringUtils.hasText(odoIds)) {
+        if (StringUtils.hasText(odoIds) && !"()".equals(odoIds)) {
             list = this.whOdoDao.odoMerge(OdoStatus.ODO_WAVE, odoIds, ouId, outboundCartonType, epistaticSystemsOrderType, store, deliverGoodsTime);
         }
         return list;
