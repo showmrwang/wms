@@ -491,7 +491,7 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
             // 待合并订单不是合并订单 插入操作
             whOdoDao.insert(whOdo);
         }
-        if (StringUtils.hasText(whOdo.getWaveCode())) {
+        if (!StringUtils.hasText(whOdo.getWaveCode())) {
             /* 波次中的合并订单不需要考虑订单池 */
             this.distributionModeArithmeticManagerProxy.mergeOdo(whOdo.getOdoCode(), whOdo.getId(), mergedOdoMp);
         }
