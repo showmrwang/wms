@@ -71,7 +71,7 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
         if (StringUtils.isEmpty(code)) {
             throw new BusinessException("计数器编码为空");
         }
-        if (testCounterCount(code)) {
+        if (!testCounterCount(code)) {
             throw new BusinessException("计数器编码格式异常[counterCode:" + code + "]");
         }
         String[] codeArray = code.split("\\" + CacheKeyConstant.WAVE_ODO_SPLIT);
@@ -290,7 +290,7 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
 
     @Override
     public void divFromOrderPool(String code, Long odoId) {
-        if (testCounterCount(code)) {
+        if (!testCounterCount(code)) {
             throw new BusinessException("计数器编码格式异常[counterCode:" + code + "]");
         }
         String[] codeArray = code.split("\\" + CacheKeyConstant.WAVE_ODO_SPLIT);
@@ -374,7 +374,7 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
 
     @Override
     public void AddToWave(String code, Long odoId) {
-        if (testCounterCount(code)) {
+        if (!testCounterCount(code)) {
             throw new BusinessException("计数器编码格式异常[counterCode:" + code + "]");
         }
         String[] codeArray = code.split("\\" + CacheKeyConstant.WAVE_ODO_SPLIT);
