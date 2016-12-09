@@ -1351,21 +1351,18 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
         Long userId=odoCommand.getUserId();
         String logId = odoCommand.getLogId();
         List<WhOdoLine> lineList = this.odoLineManager.findOdoLineListByOdoId(odoId, ouId);
+        List<WhOdoLine> saveLineList = new ArrayList<WhOdoLine>();// 用于保存的明细行
         if (lineList != null && lineList.size() > 0) {
             WhOdo odo = this.odoManager.findOdoByIdOuId(odoId, ouId);
             // 出库单统计数目
-            double qty = odo.getQty();
-            int skuNumberOfPackages = odo.getSkuNumberOfPackages();
-            double amt = odo.getAmt();
+            double qty = Constants.DEFAULT_DOUBLE;
+            int skuNumberOfPackages = Constants.DEFAULT_INTEGER;
+            double amt = Constants.DEFAULT_DOUBLE;
             boolean isHazardous = odo.getIncludeHazardousCargo();
             boolean isFragile = odo.getIncludeFragileCargo();
             Set<Long> skuIdSet = new HashSet<Long>();
             for (WhOdoLine line : lineList) {
                 if (OdoStatus.ODOLINE_TOBECREATED.equals(line.getOdoLineStatus())) {
-                    int flag = this.odoManager.existsSkuInOdo(odoId, line.getSkuId(), ouId);
-                    if (flag == 0) {
-                        skuNumberOfPackages += 1;
-                    }
                     SkuRedisCommand skuMaster = skuRedisManager.findSkuMasterBySkuId(line.getSkuId(), ouId, logId);
                     SkuMgmt skuMgmt = skuMaster.getSkuMgmt();
                     if (!isHazardous && skuMgmt.getIsHazardousCargo()) {
@@ -1374,15 +1371,18 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
                     if (!isFragile && skuMgmt.getIsFragileCargo()) {
                         isFragile = true;
                     }
-                    amt += line.getLineAmt();
-                    qty += line.getQty();
+
                     line.setOdoLineStatus(OdoStatus.ODOLINE_NEW);
                     line.setModifiedId(userId);
+                    saveLineList.add(line);
                 }
                 skuIdSet.add(line.getSkuId());
+                amt += line.getLineAmt();
+                qty += line.getQty();
             }
             odo.setQty(qty);
             odo.setAmt(amt);
+            skuNumberOfPackages = skuIdSet.size();
             odo.setSkuNumberOfPackages(skuNumberOfPackages);
             odo.setIncludeFragileCargo(isFragile);
             odo.setIncludeHazardousCargo(isHazardous);
@@ -1402,7 +1402,7 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
             odo.setModifiedId(userId);
             boolean flag = false;
             try {
-                this.odoManager.finishCreateOdo(odo, lineList);
+                this.odoManager.finishCreateOdo(odo, saveLineList);
                 flag = true;
             } catch (Exception e) {
                 throw e;

@@ -644,27 +644,31 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
 
     @Override
     public List<String> findDistinctCounterCode(Long ouId) {
-        log.info(this.getClass().getSimpleName() + ".findDistinctCounterCode params:{}", ouId);
+        log.info(this.getClass().getSimpleName() + ".findDistinctCounterCode params:[ouId:{}]", ouId);
         return this.odoManager.findDistinctCounterCode(ouId);
     }
 
 
     @Override
     public List<Long> findOdoByCounterCode(String counterCode, Long ouId) {
+        log.info(this.getClass().getSimpleName() + ".findOdoByCounterCode params [counterCode:{},ouId:{}]", counterCode, ouId);
         return this.odoManager.findOdoByCounterCode(counterCode, ouId);
     }
 
 
     @Override
     public boolean breakCounter(Long ouId) {
+        log.info(this.getClass().getSimpleName() + ".breakCounter params [ouId:{}]", ouId);
         boolean flag = true;
         try {
 
             flag = this.cacheManager.remonKeys(CacheKeyConstant.OU_ODO_PREFIX + ouId + "*");
+            log.info(this.getClass().getSimpleName() + ".breakCounter REMOVE cache OU_ODO returns {}", flag);
             if (!flag) {
                 return flag;
             }
             flag = this.cacheManager.remonKeys(CacheKeyConstant.SECKILL_ODO_PREFIX + ouId + "*");
+            log.info(this.getClass().getSimpleName() + ".breakCounter REMOVE cache SECKILL_ODO returns {}", flag);
             if (!flag) {
                 return flag;
             }
@@ -678,12 +682,13 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
                 }
             }
             flag = this.cacheManager.remonKeys(CacheKeyConstant.SECKILL_PREFIX + ouId + "*");
+            log.info(this.getClass().getSimpleName() + ".breakCounter REMOVE cache SECKILL returns {}", flag);
             if (!flag) {
                 return flag;
             }
 
             flag = this.cacheManager.remonKeys(CacheKeyConstant.TWOSKUSUIT_ODO_PREFIX + ouId + "*");
-
+            log.info(this.getClass().getSimpleName() + ".breakCounter REMOVE cache TWOSKUSUIT_ODO returns {}", flag);
             if (!flag) {
                 return flag;
             }
@@ -699,13 +704,13 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
                 }
             }
             flag = this.cacheManager.remonKeys(CacheKeyConstant.TWOSKUSUIT_PREFIX + ouId + "*");
-
+            log.info(this.getClass().getSimpleName() + ".breakCounter REMOVE cache TWOSKUSUIT returns {}", flag);
             if (!flag) {
                 return flag;
             }
 
             flag = this.cacheManager.remonKeys(CacheKeyConstant.SUITS_ODO_PREFIX + ouId + "*");
-
+            log.info(this.getClass().getSimpleName() + ".breakCounter REMOVE cache SUITS_ODO returns {}", flag);
             if (!flag) {
                 return flag;
             }
@@ -721,16 +726,19 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
             }
 
             flag = this.cacheManager.remonKeys(CacheKeyConstant.SUITS_PREFIX + ouId + "*");
+            log.info(this.getClass().getSimpleName() + ".breakCounter REMOVE cache SUITS returns {}", flag);
             if (!flag) {
                 return flag;
             }
 
             flag = this.cacheManager.remonKeys(CacheKeyConstant.TWOSKUSUIT_DIV_ODO_PREFIX + ouId + "*");
+            log.info(this.getClass().getSimpleName() + ".breakCounter REMOVE cache TWOSKUSUIT_DIV_ODO returns {}", flag);
             if (!flag) {
                 return flag;
             }
 
             flag = this.cacheManager.remonKeys(CacheKeyConstant.SUITS_DIV_ODO_PREFIX + ouId + "*");
+            log.info(this.getClass().getSimpleName() + ".breakCounter REMOVE cache SUITS_DIV_ODO returns {}", flag);
             if (!flag) {
                 return flag;
             }
@@ -745,7 +753,12 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
 
     @Override
     public void addToWhDistributionModeArithmeticPool(String counterCode, Long odoId) {
-        this.distributionModeArithmeticManagerProxy.addToWhDistributionModeArithmeticPool(counterCode, odoId);
+        try {
+
+            this.distributionModeArithmeticManagerProxy.addToWhDistributionModeArithmeticPool(counterCode, odoId);
+        } catch (Exception e) {
+            log.error(e + "");
+        }
     }
 
 

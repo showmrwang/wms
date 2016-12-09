@@ -82,8 +82,11 @@ public class LocationReplenishmentManagerProxyImpl extends BaseManagerImpl imple
         Long maxQty = Constants.DEFAULT_LONG;
         Long minQty = Constants.DEFAULT_LONG;
 
-        Long upBound = 90l;
-        Long downBound = 10l;
+        Integer upBound = location.getUpBound();
+        Integer downBound = location.getDownBound();
+        if (upBound == null || downBound == null) {
+            return;
+        }
 
         SkuRedisCommand skuRedis = this.skuRedisManager.findSkuMasterBySkuId(skuId, ouId, logId);
         Sku sku = skuRedis.getSku();
