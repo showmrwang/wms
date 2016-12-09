@@ -967,6 +967,7 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
         Long ouId = command.getOuId();
         Long userId = command.getUserId();
         Map<Long, WhOdo> odoMap = new HashMap<Long, WhOdo>();
+
         Map<Long, WhOdoTransportMgmt> transMap = new HashMap<Long, WhOdoTransportMgmt>();
         List<WhOdoLine> odolineList = new ArrayList<WhOdoLine>();
         Long waveMasterId = command.getWaveMasterId();// 波次主档信息
@@ -1073,8 +1074,8 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
                 }
                 List<WhOdo> liOdoList = this.odoManager.findOdoListForWave(search);
                 if(liOdoList!=null&&liOdoList.size()>0){
-                    for (WhOdo odo : liOdoList) {
-
+                    for (WhOdo odoBk : liOdoList) {
+                        WhOdo odo = this.odoManager.findOdoByIdOuId(odoBk.getId(), ouId);
                         if (OdoStatus.ODO_NEW.equals(odo.getOdoStatus()) || OdoStatus.ODO_OUTSTOCK.equals(odo.getOdoStatus())) {
                             if (StringUtils.hasText(odo.getWaveCode())) {
                                 throw new BusinessException(odo.getExtCode() + "已处于别的波次[波次编号：" + odo.getWaveCode() + "]中");
