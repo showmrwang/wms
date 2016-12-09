@@ -39,6 +39,7 @@ import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveLineDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
+import com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy.DistributionModeArithmeticManagerProxy;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAddress;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAttr;
@@ -72,7 +73,8 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
     private WhWaveLineDao whWaveLineDao;
     @Autowired
     private WhWaveDao whWaveDao;
-
+    @Autowired
+    private DistributionModeArithmeticManagerProxy distributionModeArithmeticManagerProxy;
     @Autowired
     private CodeManager codeManager;
 
@@ -455,17 +457,26 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
         List<OdoCommand> newOdoList = whOdoDao.findOdoListByIdOuId(idString, ouId, null);
         Double qty = 0.0;
         Double amt = 0.0;
+        /* 配货模式 */
+        Set<Long> skuIdSet = new HashSet<Long>();
+        Map<Long, String> mergedOdoMp = new HashMap<Long, String>();
         for (OdoCommand newOdo : newOdoList) {
             qty += newOdo.getQty();
             amt += newOdo.getAmt();
+            skuIdSet = this.calculateSkuNumberOfPackages(newOdo, skuIdSet);
             originalOdoCode += (null == newOdo.getOriginalOdoCode()) ? newOdo.getOdoCode() + "," : newOdo.getOriginalOdoCode() + ",";
+            /* 配货模式 */
+            mergedOdoMp.put(newOdo.getId(), newOdo.getCounterCode());
         }
+        whOdo.setSkuNumberOfPackages(skuIdSet.size());
         whOdo.setQty(qty);
         whOdo.setAmt(amt);
         if (!StringUtil.isEmpty(originalOdoCode)) {
             originalOdoCode = originalOdoCode.substring(0, originalOdoCode.length() - 1);
         }
         whOdo.setOriginalOdoCode(originalOdoCode);
+        String counterCode = this.distributionModeArithmeticManagerProxy.getCounterCodeForOdo(ouId, skuIdSet.size(), qty, skuIdSet);
+        whOdo.setCounterCode(counterCode);
         if (null != whOdo.getId()) {
             // 待合并订单是合并订单 更新操作
             whOdoDao.saveOrUpdateByVersion(whOdo);
@@ -473,7 +484,21 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
             // 待合并订单不是合并订单 插入操作
             whOdoDao.insert(whOdo);
         }
+        if (StringUtils.hasText(whOdo.getWaveCode())) {
+            /* 波次中的合并订单不需要考虑订单池 */
+            this.distributionModeArithmeticManagerProxy.mergeOdo(whOdo.getOdoCode(), whOdo.getId(), mergedOdoMp);
+        }
         return whOdo;
+    }
+
+    private Set<Long> calculateSkuNumberOfPackages(OdoCommand command, Set<Long> skuIdSet) {
+        List<WhOdoLine> odoLineList = this.whOdoLineDao.findOdoLineListByOdoIdOuId(command.getId(), command.getOuId());
+        if (null != odoLineList && !odoLineList.isEmpty()) {
+            for (WhOdoLine odoLine : odoLineList) {
+                skuIdSet.add(odoLine.getSkuId());
+            }
+        }
+        return skuIdSet;
     }
 
     /**

@@ -77,6 +77,8 @@ public class OdoCommand extends BaseCommand {
     private String waveCode;
     /** 计划发货时间 */
     private Date planDeliverGoodsTime;
+    /** 计数器编码 */
+    private String counterCode;
     // ------------------------------------------------------------------------------------
     // 自定义字段
     private Long userId;
@@ -86,7 +88,7 @@ public class OdoCommand extends BaseCommand {
     private String storeName;
     private String customerName;
     private Long waveId;
-    
+
     // 分组字段
     private String groupCode;
 
@@ -413,12 +415,20 @@ public class OdoCommand extends BaseCommand {
         this.customerName = customerName;
     }
 
-	public Long getWaveId() {
-		return waveId;
-	}
+    public Long getWaveId() {
+        return waveId;
+    }
 
-	public void setWaveId(Long waveId) {
-		this.waveId = waveId;
-	}
+    public void setWaveId(Long waveId) {
+        this.waveId = waveId;
+    }
+
+    public String getCounterCode() {
+        return counterCode;
+    }
+
+    public void setCounterCode(String counterCode) {
+        this.counterCode = counterCode;
+    }
 
 }
