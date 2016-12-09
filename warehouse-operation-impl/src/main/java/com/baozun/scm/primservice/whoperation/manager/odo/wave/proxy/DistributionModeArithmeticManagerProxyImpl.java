@@ -8,6 +8,8 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +22,9 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 
 @Service("distributionModeArithmeticManagerProxy")
 public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl implements DistributionModeArithmeticManagerProxy {
+
+    protected static final Logger log = LoggerFactory.getLogger(DistributionModeArithmeticManagerProxy.class);
+
     @Autowired
     private CacheManager cacheManager;
     @Autowired
@@ -65,6 +70,9 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
     public void addToWhDistributionModeArithmeticPool(String code, Long odoId) {
         if (StringUtils.isEmpty(code)) {
             throw new BusinessException("计数器编码为空");
+        }
+        if (testCounterCount(code)) {
+            throw new BusinessException("计数器编码格式异常[counterCode:" + code + "]");
         }
         String[] codeArray = code.split("\\" + CacheKeyConstant.WAVE_ODO_SPLIT);
         Integer skuType = Integer.parseInt(codeArray[1]);
@@ -282,6 +290,9 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
 
     @Override
     public void divFromOrderPool(String code, Long odoId) {
+        if (testCounterCount(code)) {
+            throw new BusinessException("计数器编码格式异常[counterCode:" + code + "]");
+        }
         String[] codeArray = code.split("\\" + CacheKeyConstant.WAVE_ODO_SPLIT);
         Integer skuType = Integer.parseInt(codeArray[1]);
         Integer skuQty = Integer.parseInt(codeArray[2]);
@@ -363,6 +374,9 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
 
     @Override
     public void AddToWave(String code, Long odoId) {
+        if (testCounterCount(code)) {
+            throw new BusinessException("计数器编码格式异常[counterCode:" + code + "]");
+        }
         String[] codeArray = code.split("\\" + CacheKeyConstant.WAVE_ODO_SPLIT);
         Integer skuType = Integer.parseInt(codeArray[1]);
         Integer skuQty = Integer.parseInt(codeArray[2]);
@@ -450,6 +464,22 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
             }
         }
         this.addToWhDistributionModeArithmeticPool(newCode, odoId);
+    }
+
+    private boolean testCounterCount(String counterCode) {
+        try {
+            String[] codeArray = counterCode.split("\\|");
+            Integer skuType = Integer.parseInt(codeArray[1]);
+            Integer skuQty = Integer.parseInt(codeArray[2]);
+            String[] skuIdArray = codeArray[3].substring(1, codeArray[3].length() - 1).split("\\" + CacheKeyConstant.WAVE_ODO_SKU_SPLIT);
+            if (skuIdArray == null || skuIdArray.length - skuType != 0) {
+                return false;
+            }
+        } catch (Exception e) {
+            log.error(e + "");
+            return false;
+        }
+        return true;
     }
 
 }
