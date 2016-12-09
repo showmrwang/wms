@@ -2125,7 +2125,8 @@
 		DATE_FORMAT(odo.last_modify_time,'%Y-%m-%d') as lastModifyTime,
 		odo.modified_id as modifiedId,
 		user2.user_name as modifiedName,
-		odo.is_locked as isLocked
+		odo.is_locked as isLocked,
+		odo.assign_fail_reason as assignFailReason
 		
 		from t_wh_odo odo
 		left join t_wh_odo_address
