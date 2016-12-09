@@ -74,7 +74,7 @@ public interface WaveDistributionModeManagerProxy extends BaseManager {
      * 
      * @param ouId
      */
-    public void breakCounter(Long ouId);
+    public boolean breakCounter(Long ouId);
 
     public void addToWhDistributionModeArithmeticPool(String counterCode, Long odoId);
 }

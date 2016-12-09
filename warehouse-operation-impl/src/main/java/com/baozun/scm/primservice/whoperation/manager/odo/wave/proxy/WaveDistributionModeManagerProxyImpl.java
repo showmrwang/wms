@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -40,6 +42,9 @@ import com.baozun.scm.primservice.whoperation.model.sku.Sku;
 
 @Service("waveDistributionModeManagerProxy")
 public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implements WaveDistributionModeManagerProxy {
+
+    protected static final Logger log = LoggerFactory.getLogger(WaveDistributionModeManagerProxy.class);
+
     @Autowired
     private WarehouseManager warehouseManager;
     @Autowired
@@ -650,64 +655,90 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
 
 
     @Override
-    public void breakCounter(Long ouId) {
-        boolean flag = false;
-        while (!flag) {
+    public boolean breakCounter(Long ouId) {
+        boolean flag = true;
+        try {
+
             flag = this.cacheManager.remonKeys(CacheKeyConstant.OU_ODO_PREFIX + ouId + "*");
-        }
-        flag = false;
-        while (!flag) {
+            if (!flag) {
+                return flag;
+            }
             flag = this.cacheManager.remonKeys(CacheKeyConstant.SECKILL_ODO_PREFIX + ouId + "*");
-        }
-        flag = false;
-        while (!flag) {
-            List<String> keys = this.cacheManager.Keys(CacheKeyConstant.SECKILL_PREFIX + ouId + "*");
-            for (String key : keys) {
-                String[] keyArray = key.split("%");
-                String code = keyArray[2];
-                long i = this.cacheManager.incr(CacheKeyConstant.SECKILL_PREFIX + code);
-                this.cacheManager.decrBy(CacheKeyConstant.SECKILL_PREFIX + code, (int) i);
+            if (!flag) {
+                return flag;
+            }
+            List<String> seckillKeys = this.cacheManager.Keys(CacheKeyConstant.SECKILL_PREFIX + ouId + "*");
+            if (seckillKeys != null && seckillKeys.size() > 0) {
+                for (String key : seckillKeys) {
+                    String[] keyArray = key.split("%");
+                    String code = keyArray[2];
+                    long i = this.cacheManager.incr(CacheKeyConstant.SECKILL_PREFIX + code);
+                    this.cacheManager.decrBy(CacheKeyConstant.SECKILL_PREFIX + code, (int) i);
+                }
             }
             flag = this.cacheManager.remonKeys(CacheKeyConstant.SECKILL_PREFIX + ouId + "*");
-        }
-        flag = false;
-        while (!flag) {
+            if (!flag) {
+                return flag;
+            }
+
             flag = this.cacheManager.remonKeys(CacheKeyConstant.TWOSKUSUIT_ODO_PREFIX + ouId + "*");
-        }
-        flag = false;
-        while (!flag) {
-            List<String> keys = this.cacheManager.Keys(CacheKeyConstant.TWOSKUSUIT_PREFIX + ouId + "*");
-            for (String key : keys) {
-                String[] keyArray = key.split("%");
-                String code = keyArray[2];
-                long i = this.cacheManager.incr(CacheKeyConstant.TWOSKUSUIT_PREFIX + code);
-                this.cacheManager.decrBy(CacheKeyConstant.TWOSKUSUIT_PREFIX + code, (int) i);
+
+            if (!flag) {
+                return flag;
+            }
+
+            List<String> twoKeys = this.cacheManager.Keys(CacheKeyConstant.TWOSKUSUIT_PREFIX + ouId + "*");
+
+            if (twoKeys != null && twoKeys.size() > 0) {
+                for (String key : twoKeys) {
+                    String[] keyArray = key.split("%");
+                    String code = keyArray[2];
+                    long i = this.cacheManager.incr(CacheKeyConstant.TWOSKUSUIT_PREFIX + code);
+                    this.cacheManager.decrBy(CacheKeyConstant.TWOSKUSUIT_PREFIX + code, (int) i);
+                }
             }
             flag = this.cacheManager.remonKeys(CacheKeyConstant.TWOSKUSUIT_PREFIX + ouId + "*");
-        }
-        flag = false;
-        while (!flag) {
-            flag = this.cacheManager.remonKeys(CacheKeyConstant.SUITS_ODO_PREFIX + ouId + "*");
-        }
-        flag = false;
-        while (!flag) {
-            List<String> keys = this.cacheManager.Keys(CacheKeyConstant.SUITS_PREFIX + ouId + "*");
-            for (String key : keys) {
-                String[] keyArray = key.split("%");
-                String code = keyArray[2];
-                long i = this.cacheManager.incr(CacheKeyConstant.SUITS_PREFIX + code);
-                this.cacheManager.decrBy(CacheKeyConstant.SUITS_PREFIX + code, (int) i);
+
+            if (!flag) {
+                return flag;
             }
+
+            flag = this.cacheManager.remonKeys(CacheKeyConstant.SUITS_ODO_PREFIX + ouId + "*");
+
+            if (!flag) {
+                return flag;
+            }
+
+            List<String> suitsKeys = this.cacheManager.Keys(CacheKeyConstant.SUITS_PREFIX + ouId + "*");
+            if (suitsKeys != null && suitsKeys.size() > 0) {
+                for (String key : suitsKeys) {
+                    String[] keyArray = key.split("%");
+                    String code = keyArray[2];
+                    long i = this.cacheManager.incr(CacheKeyConstant.SUITS_PREFIX + code);
+                    this.cacheManager.decrBy(CacheKeyConstant.SUITS_PREFIX + code, (int) i);
+                }
+            }
+
             flag = this.cacheManager.remonKeys(CacheKeyConstant.SUITS_PREFIX + ouId + "*");
-        }
-        flag = false;
-        while (!flag) {
+            if (!flag) {
+                return flag;
+            }
+
             flag = this.cacheManager.remonKeys(CacheKeyConstant.TWOSKUSUIT_DIV_ODO_PREFIX + ouId + "*");
-        }
-        flag = false;
-        while (!flag) {
+            if (!flag) {
+                return flag;
+            }
+
             flag = this.cacheManager.remonKeys(CacheKeyConstant.SUITS_DIV_ODO_PREFIX + ouId + "*");
+            if (!flag) {
+                return flag;
+            }
+        } catch (Exception e) {
+            log.error(e + "");
+            return false;
         }
+
+        return flag;
     }
 
 
