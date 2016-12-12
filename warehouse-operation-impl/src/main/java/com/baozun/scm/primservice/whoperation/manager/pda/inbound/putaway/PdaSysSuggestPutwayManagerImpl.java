@@ -27,6 +27,7 @@ import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.Locati
 import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.LocationRecommendResultCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.ScanResultCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.TipContainerCacheCommand;
+import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.TipLocationCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.rule.RuleAfferCommand;
 import com.baozun.scm.primservice.whoperation.command.rule.RuleExportCommand;
 import com.baozun.scm.primservice.whoperation.command.sku.SkuRedisCommand;
@@ -246,7 +247,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
             //如果扫描的不是外部容器,缓存内部容器库存
             List<WhSkuInventoryCommand> invList = cacheManager.getMapObject(CacheConstants.CONTAINER_INVENTORY, containerCmd.getId().toString());
             if(null == invList) {
-                invList = this.containerPutwayCacheInventory(containerCmd, ouId, logId);
+                invList = this.splitPutwayCacheInventory(containerCmd, ouId, logId);
             }
             //容器库存统计缓存
             InventoryStatisticResultCommand isrCmd = cacheManager.getMapObject(CacheConstants.CONTAINER_INVENTORY_STATISTIC, containerCmd.getId().toString());
@@ -306,13 +307,17 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
         }
         Long containerId = containerCmd.getId();
         String containerCode = containerCmd.getCode();
-        ContainerCommand outerCmd = containerDao.getContainerByCode(outerContainerCode, ouId);
-        Long outerContainerId = outerCmd.getId();
+
+        Long outerContainerId = null;
+        if(!StringUtils.isEmpty(outerContainerCode)){
+            ContainerCommand outerCmd = containerDao.getContainerByCode(outerContainerCode, ouId);
+            outerContainerId = outerCmd.getId();
+        }
         //根据库存盘点是否有外部容器
         int outerCount1 = whSkuInventoryDao.findRcvdInventoryCountsByOuterContainerId(ouId,containerCmd.getId());  //根据容器id，查询容器是否是外部
         int insideCount1 = whSkuInventoryDao.findRcvdInventoryCountsByInsideContainerId(ouId,containerCmd.getId()); //根据容器id，查询容器是否是内部
-        int insideCount2 = whSkuInventoryDao.findLocToBeFilledInventoryCountsByOuterContainerId(ouId, containerCmd.getId());
-        int outerCount2 = whSkuInventoryDao.findLocToBeFilledInventoryCountsByInsideContainerId(ouId, containerCmd.getId());
+        int outerCount2 = whSkuInventoryDao.findLocToBeFilledInventoryCountsByOuterContainerId(ouId, containerCmd.getId());
+        int insideCount2 = whSkuInventoryDao.findLocToBeFilledInventoryCountsByInsideContainerId(ouId, containerCmd.getId());
         if (0 < insideCount1 || 0 < insideCount2) {
             // 拆箱上架判断是是否有外部容器号
             int ocCount = whSkuInventoryDao.findRcvdInventoryCountsByInsideContainerId1(ouId, containerId);
@@ -665,16 +670,13 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
         Long containerId = containerCmd.getId();
         // 2.判断是否已经缓存所有库存信息
         List<WhSkuInventoryCommand> cacheInvs = cacheManager.getMapObject(CacheConstants.CONTAINER_INVENTORY, containerId.toString());
-        List<WhSkuInventoryCommand> invList = null;
         if (null == cacheInvs || 0 == cacheInvs.size()) {
             //缓存容器库存信息
-            invList = pdaPutawayCacheManager.sysGuideContainerPutawayCacheInventory(containerCmd, ouId, logId);
-            cacheManager.setMapObject(CacheConstants.CONTAINER_INVENTORY, containerId.toString(), invList, CacheConstants.CACHE_ONE_DAY);   
-        } else {
-            invList = cacheInvs;
+            cacheInvs = pdaPutawayCacheManager.sysGuideSplitContainerPutawayCacheInventory(containerCmd, ouId, logId);
+            cacheManager.setMapObject(CacheConstants.CONTAINER_INVENTORY, containerId.toString(), cacheInvs, CacheConstants.CACHE_ONE_DAY);   
         }
         log.info("PdaSysSuggestPutwayManagerImpl cacheContainerInventory is end"); 
-        return invList;
+        return cacheInvs;
     } 
     
     /**
@@ -706,6 +708,8 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
             Map<Long, Map<Long, Long>> insideContainerSkuIdsQty = new HashMap<Long, Map<Long, Long>>();// 内部容器单个sku总件数
             Map<Long, Set<String>> insideContainerSkuAttrIds = new HashMap<Long, Set<String>>();// 内部容器唯一sku(skuId|库存装填|库存类型|生产日期|失效日期|库存属性1|库存属性2|库存属性3|库存属性4|库存属性51|)
             Map<Long, Map<String, Long>> insideContainerSkuAttrIdsQty = new HashMap<Long, Map<String, Long>>();// 内部容器唯一sku总件数
+            Map<Long, Map<Long, Set<String>>> insideContainerLocSkuAttrIds = new HashMap<Long, Map<Long, Set<String>>>();   /** 内部容器推荐库位对应唯一sku及残次条码 */
+            Map<Long, Set<String>> locSkuAttrIds = new HashMap<Long, Set<String>>();
             /** 内部容器唯一sku对应所有残次条码 和sn*/
             Map<Long, Map<String, Set<String>>> insideContainerSkuAttrIdsSnDefect = new HashMap<Long, Map<String, Set<String>>>(); //内部容器内唯一sku对应所有sn及残次条码
             Double outerContainerWeight = 0.0;
@@ -742,6 +746,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
                 }
                 isrCmd = new InventoryStatisticResultCommand();
                 for (WhSkuInventoryCommand invCmd : invList) { 
+                    String skuAttrId = SkuCategoryProvider.getSkuAttrIdByInv(invCmd);
                     String asnCode = invCmd.getOccupationCode();
                     if (StringUtils.isEmpty(asnCode)) {
                         pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(containerCmd, ouId, logId);
@@ -829,18 +834,18 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
                     } else {
                         notcaselevelContainerIds.add(icId);   //统计非caselevel内部容器信息
                     }
-//                    String invType = invCmd.getInvType();
-//                    if (StringUtils.isEmpty(invType)) {
-//                        pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(containerCmd, ouId, logId);
-//                        log.error("inv type is null error, logId is:[{}]", logId);
-//                        throw new BusinessException(ErrorCodes.COMMON_INV_TYPE_NOT_FOUND_ERROR);
-//                    }
-//                    List<SysDictionary> invTypeList = sysDictionaryManager.getListByGroupAndDicValue(Constants.INVENTORY_TYPE, invType, BaseModel.LIFECYCLE_NORMAL);  //根据字段组编码及参数值查询字典信息
-//                    if (null == invTypeList || 0 == invTypeList.size()) {
-//                        pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(containerCmd, ouId, logId);
-//                        log.error("inv type is not defined error, invType is:[{}], logId is:[{}]", invType, logId);
-//                        throw new BusinessException(ErrorCodes.COMMON_INV_TYPE_NOT_FOUND_ERROR);
-//                    }
+                    String invType = invCmd.getInvType();
+                    if (StringUtils.isEmpty(invType)) {
+                        pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(containerCmd, ouId, logId);
+                        log.error("inv type is null error, logId is:[{}]", logId);
+                        throw new BusinessException(ErrorCodes.COMMON_INV_TYPE_NOT_FOUND_ERROR);
+                    }
+                    List<SysDictionary> invTypeList = sysDictionaryManager.getListByGroupAndDicValue(Constants.INVENTORY_TYPE, invType, BaseModel.LIFECYCLE_NORMAL);  //根据字段组编码及参数值查询字典信息
+                    if (null == invTypeList || 0 == invTypeList.size()) {
+                        pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(containerCmd, ouId, logId);
+                        log.error("inv type is not defined error, invType is:[{}], logId is:[{}]", invType, logId);
+                        throw new BusinessException(ErrorCodes.COMMON_INV_TYPE_NOT_FOUND_ERROR);
+                    }
                     Long invStatus = invCmd.getInvStatus();
                     if (null == invStatus) {
                         pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(containerCmd, ouId, logId);
@@ -953,7 +958,11 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
                             insideContainerWeight.put(icId, insideContainerWeight.get(icId) + (weightCalculator.calculateStuffWeight(skuWeight) * curerntSkuQty));
                         }
                     }
-                    skuAttrIds.add(SkuCategoryProvider.getSkuAttrIdByInv(invCmd));    //所有唯一的sku(包含库存属性)
+                    skuAttrIds.add(skuAttrId);    //所有唯一的sku(包含库存属性)
+                    if(null != locationId) {
+                        locSkuAttrIds.put(locationId, skuAttrIds);
+                    }
+                    insideContainerLocSkuAttrIds.put(icId, locSkuAttrIds);
                     Long stroeId = invCmd.getStoreId();
                     if (null != stroeId) {
                         storeIds.add(stroeId);  //统计所有店铺
@@ -1072,6 +1081,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
                 isrCmd.setInsideContainerSkuAttrIdsQty(insideContainerSkuAttrIdsQty);  // 内部容器单个sku总件数
                 isrCmd.setInsideContainerSkuAttrIds(insideContainerSkuAttrIds);// 内部容器唯一sku(skuId|库存装填|库存类型|生产日期|失效日期|库存属性1|库存属性2|库存属性3|库存属性4|库存属性51|)
                 isrCmd.setInsideContainerSkuAttrIdsSnDefect(insideContainerSkuAttrIdsSnDefect); //内部容器内唯一sku对应所有sn及残次条码
+                isrCmd.setInsideContainerLocSkuAttrIds(insideContainerLocSkuAttrIds);
                 if(WhPutawayPatternDetailType.PALLET_PUTAWAY == putawayPatternDetailType){   //整托上架
                     isrCmd.setOuterContainerCode(containerCmd.getCode());  //外部容器号
                 }else{//整箱上架,拆箱上架
@@ -1299,10 +1309,10 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
         isrCommand.setInsideContainerLocSkuAttrIds(insideContainerLocSkuAttrIds);
         LocationRecommendResultCommand lrr = lrrList.get(0);
         Long locationId = lrr.getLocationId();  //推荐库位id
-        Long lrrLocId =  pdaPutawayCacheManager.sysGuideSplitContainerPutawayTipLocation(containerCmd,suggestLocationIds,locationId,logId);
-        Location loc = locationDao.findByIdExt(lrrLocId, ouId);
+//        Long lrrLocId =  pdaPutawayCacheManager.sysGuideSplitContainerPutawayTipLocation(containerCmd,suggestLocationIds,locationId,logId);
+        Location loc = locationDao.findByIdExt(locationId, ouId);
         if (null == loc) {
-            log.error("location is null error, locId is:[{}], logId is:[{}]", lrrLocId, logId);
+            log.error("location is null error, locId is:[{}], logId is:[{}]", locationId, logId);
             throw new BusinessException(ErrorCodes.COMMON_LOCATION_IS_NOT_EXISTS);
         }
         //缓存容器库存统计信息
@@ -1630,7 +1640,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
      * @return
      */
     @Override
-    public ScanResultCommand splitUserSuggestLocation(String outContainerCode,String locationCode, String insideContainerCode, Long userId, Long ouId,String locBarCode) {
+    public ScanResultCommand splitUserSuggestLocation(Boolean isNotUser,String outContainerCode,String locationCode, String insideContainerCode, Long userId, Long ouId,String locBarCode) {
         // TODO Auto-generated method stub
         log.info("PdaSysSuggestPutwayManagerImpl splitUserSuggestLocation is start"); 
         ScanResultCommand srCmd = new ScanResultCommand();
@@ -1667,6 +1677,12 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
             log.error("location is null error, locCode is:[{}], logId is:[{}]", locationCode, logId);
             throw new BusinessException(ErrorCodes.COMMON_LOCATION_IS_NOT_EXISTS);
         }
+        Long locationId = loc.getId();
+        Set<Long> locationIds = isCmd.getLocationIds();
+        if(isNotUser) {
+            locationIds.add(locationId);   //没有使用推荐库位的
+        }
+        pdaPutawayCacheManager.sysGuideSplitContainerPutawayTipLocation(insideContainerCmd,locationIds,locationId,logId);
         Map<Long, Set<String>> locSkuAttrIds = insideContainerLocSkuAttrIds.get(containerId);  //库位属性
         Map<String, Long> skuAttrIdsQty = insideContainerSkuAttrIdsQty.get(containerId);   //内部容器唯一sku总件数
         String tipSkuAttrId = pdaPutawayCacheManager.sysGuideSplitContainerPutawayTipSku0(insideContainerCmd, loc.getId(), locSkuAttrIds, logId);
@@ -2147,6 +2163,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
             locationCode = loc.getCode();
         }
         srCmd.setLocationCode(locationCode);
+        Long locationId = loc.getId();
         // 1.获取功能配置
         WhFunctionPutAway putawyaFunc = whFunctionPutAwayManager.findWhFunctionPutAwayByFunctionId(functionId, ouId, logId);
         if (null == putawyaFunc) {

@@ -57,7 +57,7 @@ public interface PdaSysSuggestPutwayManager extends BaseManager{
      * @param srCmd
      * @return
      */
-    public ScanResultCommand  splitUserSuggestLocation(String outContainerCode,String locationCode,String containerCode,Long userId,Long ouId,String locBarCode);
+    public ScanResultCommand  splitUserSuggestLocation(Boolean isNotUser,String outContainerCode,String locationCode,String containerCode,Long userId,Long ouId,String locBarCode);
     
     
     
