@@ -95,7 +95,6 @@ public class WarehouseManagerImpl extends BaseManagerImpl implements WarehouseMa
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Warehouse findWarehouseById(Long id) {
         Warehouse wh = getWhToRedis(id);
         return wh;
