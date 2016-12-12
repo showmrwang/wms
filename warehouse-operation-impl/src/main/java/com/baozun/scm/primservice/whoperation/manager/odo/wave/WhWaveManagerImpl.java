@@ -36,14 +36,12 @@ import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveLineDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveMasterDao;
-import com.baozun.scm.primservice.whoperation.dao.system.SysDictionaryDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.AllocateStrategyDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.UomDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhDistributionPatternRuleDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
-import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
@@ -54,7 +52,6 @@ import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveMaster;
 import com.baozun.scm.primservice.whoperation.model.sku.Sku;
 import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
-
 @Service("whWaveManager")
 @Transactional
 public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager {
@@ -68,8 +65,6 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
     @Autowired
     private UomDao uomDao;
     @Autowired
-    private OdoManager odoManager;
-    @Autowired
     private WhWaveMasterDao whWaveMasterDao;
     @Autowired
     private WhOdoDao whOdoDao;
@@ -77,8 +72,6 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
     private AllocateStrategyDao allocateStrategyDao;
     @Autowired
     private WhWaveLineManager whWaveLineManager;
-    @Autowired
-    private SysDictionaryDao sysDictionaryDao;
     @Autowired
     private WhSkuInventoryManager whSkuInventoryManager;
     @Autowired
@@ -466,6 +459,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         for (WhWaveLine line : waveLines) {
             WhOdoLine odoLine = whOdoLineDao.findOdoLineById(line.getOdoLineId(), ouId);
             odoLine.setAssignQty(line.getAllocateQty());
+            odoLine.setAssignFailReason(null);
             odoLine.setIsAssignSuccess(true);
             whOdoLineDao.saveOrUpdate(odoLine);
         }
