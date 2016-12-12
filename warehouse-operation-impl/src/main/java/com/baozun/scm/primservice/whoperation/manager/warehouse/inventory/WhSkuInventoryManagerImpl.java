@@ -3052,16 +3052,18 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 					if (Constants.ALLOCATE_STRATEGY_QUANTITYBESTMATCH.equals(strategyCode)) {
 						List<WhSkuInventoryCommand> uuids = findInventoryUuidByBestMatchAndPiece(skuCommand, qty);
 						num = inventoryOccupyManager.occupyInvUuids(uuids, qty, occupyCode, odoLineId, Constants.SKU_INVENTORY_OCCUPATION_SOURCE_ODO, wh, Constants.ALLOCATE_UNIT_HX, allSkuInvs, isStaticLocation, staticLocationIds);
+						qty -= num;
 						occupyQty += num;
 					} else {
 						// 按件占用
 						num = inventoryOccupyManager.hardAllocateListOccupy(allSkuInvs, qty, occupyCode, odoLineId, Constants.SKU_INVENTORY_OCCUPATION_SOURCE_ODO, wh, isStaticLocation, staticLocationIds);
+						qty -= num;
 						occupyQty += num;
 					}
 				}
-				if (1 == qty.compareTo(num)) {
-					line.setQty(qty - num);
-				} else if (0 == qty.compareTo(num)) {
+				if (-1 == Constants.DEFAULT_DOUBLE.compareTo(qty)) {
+					line.setQty(qty);
+				} else if (0 == Constants.DEFAULT_DOUBLE.compareTo(qty)) {
 					notHaveInvAttrLines.remove(j--);
 				}
 				whWaveLineManager.updateWaveLineByAllocateQty(line.getId(), occupyQty, containerQty, isStaticLocation, staticLocationIds, trayIds, packingCaseIds, areaId, ouId, logId);
