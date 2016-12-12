@@ -86,8 +86,7 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
 
     }
 
-    @Override
-    public void DistributionModeArithmetic(String code, Long odoId) {
+    private void DistributionModeArithmetic(String code, Long odoId) {
         String[] codeArray = code.split("\\" + CacheKeyConstant.WAVE_ODO_SPLIT);
         Long ouId = Long.parseLong(codeArray[0]);
         // 仓库缓存
@@ -493,5 +492,6 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
             }
         }
     }
+
 
 }

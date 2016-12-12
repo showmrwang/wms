@@ -19,7 +19,7 @@ import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Location;
 import com.baozun.scm.primservice.whoperation.model.warehouse.LocationProductVolume;
 
-@Service("locationManager")
+@Service("locationManagerProxy")
 @Transactional
 public class LocationManagerImpl extends BaseManagerImpl implements LocationManager {
     @Autowired

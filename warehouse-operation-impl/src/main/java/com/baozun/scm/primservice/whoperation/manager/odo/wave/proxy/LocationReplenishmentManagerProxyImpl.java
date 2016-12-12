@@ -96,7 +96,10 @@ public class LocationReplenishmentManagerProxyImpl extends BaseManagerImpl imple
             if (skuWhmgmt != null) {
                 if (skuWhmgmt.getTypeOfGoods() != null) {
                     LocationProductVolume locationProductVolume = this.locationManager.getLocationProductVolumeByPcIdAndSize(skuWhmgmt.getTwoLevelType(), location.getSizeType(), ouId);
-                    locationQty = locationProductVolume.getVolume();
+                    if (locationProductVolume != null) {
+
+                        locationQty = locationProductVolume.getVolume();
+                    }
                 }
             }
         }
@@ -107,7 +110,7 @@ public class LocationReplenishmentManagerProxyImpl extends BaseManagerImpl imple
         // 库位库存量=库位在库库存+库位待移入库存
         double invQty = this.whskuInventoryManager.findInventoryByLocation(locationId, ouId);
 
-        if (invQty < minQty) {
+        if (invQty >= minQty) {
             return;
         }
 

@@ -59,11 +59,6 @@ public interface DistributionModeArithmeticManagerProxy extends BaseManager {
     public void changeFromOrderPool(String oldCode, String newCode, Long odoId);
 
 
-    /**
-     * 仓库陪陪模式计算：仓库匹配模式计算
-     */
-    public void DistributionModeArithmetic(String code, Long odoId);
-
 
 
     /**

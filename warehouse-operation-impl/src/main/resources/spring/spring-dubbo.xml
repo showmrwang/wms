@@ -66,6 +66,7 @@
     <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy.WaveDistributionModeManagerProxy"  ref="waveDistributionModeManagerProxy" />
 	<!-- 库位补货 -->
     <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy.LocationReplenishmentManagerProxy"  ref="locationReplenishmentManagerProxy" />
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.LocationManager"  ref="locationManagerProxy" />
 	<!-- 硬分配 -->
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoManager" ref="odoManager" />
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.odo.wave.WhWaveManager" ref="whWaveManager" />

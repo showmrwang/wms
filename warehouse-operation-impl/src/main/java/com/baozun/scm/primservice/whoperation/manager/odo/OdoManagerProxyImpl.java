@@ -1072,9 +1072,9 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
                 if (search.getOdoLineStatus() == null || search.getOdoLineStatus().size() == 0) {
                     search.setOdoLineStatus(Arrays.asList(new String[] {OdoStatus.ODOLINE_NEW, OdoStatus.ODOLINE_OUTSTOCK}));
                 }
-                List<WhOdo> liOdoList = this.odoManager.findOdoListForWave(search);
+                List<OdoResultCommand> liOdoList = this.odoManager.findOdoCommandListForWave(search);
                 if(liOdoList!=null&&liOdoList.size()>0){
-                    for (WhOdo odoBk : liOdoList) {
+                    for (OdoResultCommand odoBk : liOdoList) {
                         WhOdo odo = this.odoManager.findOdoByIdOuId(odoBk.getId(), ouId);
                         if (OdoStatus.ODO_NEW.equals(odo.getOdoStatus()) || OdoStatus.ODO_OUTSTOCK.equals(odo.getOdoStatus())) {
                             if (StringUtils.hasText(odo.getWaveCode())) {
