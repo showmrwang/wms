@@ -91,7 +91,7 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
         String[] codeArray = code.split("\\" + CacheKeyConstant.WAVE_ODO_SPLIT);
         Long ouId = Long.parseLong(codeArray[0]);
         // 仓库缓存
-        Warehouse wh = this.warehouseManager.findWarehouseById(ouId);
+        Warehouse wh = this.warehouseManager.findWarehouseByIdExt(ouId);
         Integer skuType = Integer.parseInt(codeArray[1]);
         switch(skuType.intValue()){
             case 1:
