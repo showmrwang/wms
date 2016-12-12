@@ -482,4 +482,16 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
         return true;
     }
 
+    @Override
+    public void CancelFormergeOdo(String mergedCounterCode, Long odoId, Map<Long, String> reNewOdoMap) {
+        this.divFromOrderPool(mergedCounterCode, odoId);
+        if (reNewOdoMap != null) {
+            Iterator<Entry<Long, String>> it = reNewOdoMap.entrySet().iterator();
+            while (it.hasNext()) {
+                Entry<Long, String> entry = it.next();
+                this.addToWhDistributionModeArithmeticPool(entry.getValue(), entry.getKey());
+            }
+        }
+    }
+
 }

@@ -84,4 +84,13 @@ public interface DistributionModeArithmeticManagerProxy extends BaseManager {
      * 出库单合并
      */
     public void mergeOdo(String newCode, Long odoId, Map<Long, String> mergedOdoMp);
+
+    /**
+     * 取消合并出库单
+     * 
+     * @param mergedCounterCode
+     * @param odoId
+     * @param reNewOdoMap
+     */
+    public void CancelFormergeOdo(String mergedCounterCode, Long odoId, Map<Long, String> reNewOdoMap);
 }

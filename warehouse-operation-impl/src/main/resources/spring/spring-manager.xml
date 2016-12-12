@@ -59,6 +59,7 @@
                     <value>com.baozun.scm.primservice.whoperation.model.warehouse.WhOperation</value>
                     <value>com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationLine</value>
                     <value>com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentTask</value>
+                    <value>com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentMsg</value>
 				</list>
 			</property>
 			
