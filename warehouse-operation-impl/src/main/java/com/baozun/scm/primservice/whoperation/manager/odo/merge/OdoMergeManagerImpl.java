@@ -493,7 +493,7 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
         }
         if (!StringUtils.hasText(whOdo.getWaveCode())) {
             /* 波次中的合并订单不需要考虑订单池 */
-            this.distributionModeArithmeticManagerProxy.mergeOdo(whOdo.getOdoCode(), whOdo.getId(), mergedOdoMp);
+            this.distributionModeArithmeticManagerProxy.mergeOdo(counterCode, whOdo.getId(), mergedOdoMp);
         }
         return whOdo;
     }
