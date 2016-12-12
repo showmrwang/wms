@@ -1260,6 +1260,7 @@
 
 		odo.odo_status as odoStatus,
 		odo.order_type as orderType,
+		odo.counter_code as counterCode,
 
 		transprovider.type as
 		transportServiceProviderType,
@@ -1705,7 +1706,7 @@
 		SELECT
 		 	odo.id as id,
 	       	odo.odo_code as odoCode,
-	       odo.ext_code as extCode,
+	       	odo.ext_code as extCode,
 	       	odo.ec_order_code as ecOrderCode,
 	       	odo.customer_id as customerId,
 	       	odo.store_id as storeId,
@@ -1739,6 +1740,7 @@
 	       	odo.last_modify_time as lastModifyTime,
 	       	odo.modified_id as modifiedId,
 	       	odo.wave_code as waveCode,
+	       	odo.counter_code as counterCode,
 	       	transmgmt.plan_deliver_goods_time as planDeliverGoodsTime
 		
 		from t_wh_odo odo
