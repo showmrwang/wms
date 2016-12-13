@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.CheckOperationsAreaRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.OutboundBoxRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.RecommendPlatformCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ReplenishmentRuleCommand;
@@ -62,6 +63,9 @@ public class RuleExportCommand extends BaseCommand {
     private Map<Long, OutboundBoxRuleCommand> odoOutboundBoxRuleMap;
     /** 出库箱装箱规则拆分条件列表，已按照指定的排序规则排序 */
     private List<String> odoLineIdGroupList;
+
+    /** 复核台推荐规则 */
+    private CheckOperationsAreaRuleCommand checkOperationsAreaRuleCommand;
 
     public Boolean getUsableness() {
         return usableness;
@@ -173,5 +177,13 @@ public class RuleExportCommand extends BaseCommand {
 
     public void setOdoLineIdGroupList(List<String> odoLineIdGroupList) {
         this.odoLineIdGroupList = odoLineIdGroupList;
+    }
+
+    public CheckOperationsAreaRuleCommand getCheckOperationsAreaRuleCommand() {
+        return checkOperationsAreaRuleCommand;
+    }
+
+    public void setCheckOperationsAreaRuleCommand(CheckOperationsAreaRuleCommand checkOperationsAreaRuleCommand) {
+        this.checkOperationsAreaRuleCommand = checkOperationsAreaRuleCommand;
     }
 }

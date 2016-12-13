@@ -80,6 +80,8 @@ public class RuleAfferCommand extends BaseCommand {
     /** 出库箱装箱规则拆分策略出库单ID */
     private Long outboundBoxSortOdoId;
 
+    /** 复核台推荐规则 */
+    private List<Long> checkOperationsAreaOdoIdList;
 
     public String getRuleType() {
         return ruleType;
@@ -270,5 +272,13 @@ public class RuleAfferCommand extends BaseCommand {
 
     public void setOutboundBoxSortOdoId(Long outboundBoxSortOdoId) {
         this.outboundBoxSortOdoId = outboundBoxSortOdoId;
+    }
+
+    public List<Long> getCheckOperationsAreaOdoIdList() {
+        return checkOperationsAreaOdoIdList;
+    }
+
+    public void setCheckOperationsAreaOdoIdList(List<Long> checkOperationsAreaOdoIdList) {
+        this.checkOperationsAreaOdoIdList = checkOperationsAreaOdoIdList;
     }
 }

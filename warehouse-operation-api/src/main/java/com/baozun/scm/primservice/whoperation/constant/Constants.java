@@ -279,6 +279,9 @@ public final class Constants {
     /** 补货规则库位规则locationId占位符 */
     public static final String REOLENISHMENT_RULE_LOCATIONID_LIST_PLACEHOLDER = "${locationIdListStr}";
 
+    /** 复核台推荐规则出库单ID占位符 */
+    public static final String CHECK_OPERATIONS_AREA_ODOID_LIST_PLACEHOLDER = "${odoIdListStr}";
+
     /** 出库箱装箱规则sql占位符 */
     public static final String OUTBOUNDBOX_RULE_PLACEHOLDER = "${odoIdListStr}";
 
@@ -478,5 +481,7 @@ public final class Constants {
     /** 修改出库单状态-原始出库单明细还原为新建*/
     public static final int ODO_LINE_NEW = 3;
 
+    /** 复核台推荐规则 */
+    public static final String RULE_TYPE_CHECK_OPERATIONS_AREA = "CHECK_OPERATIONS_AREA";
 
 }

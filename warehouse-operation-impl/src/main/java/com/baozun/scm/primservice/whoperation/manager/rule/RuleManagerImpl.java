@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.whoperation.command.rule.RuleAfferCommand;
 import com.baozun.scm.primservice.whoperation.command.rule.RuleExportCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.CheckOperationsAreaRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.OutboundBoxRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.PlatformRecommendRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.RecommendPlatformCommand;
@@ -28,6 +29,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuI
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.CheckOperationsAreaRuleDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.OutboundBoxRuleDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.PlatformRecommendRuleDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.RecommendPlatformDao;
@@ -73,6 +75,9 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
 
     @Autowired
     private OutboundBoxRuleDao outboundBoxRuleDao;
+
+    @Autowired
+    private CheckOperationsAreaRuleDao checkOperationsAreaRuleDao;
 
     /***
      * 根据规则传入参数返回对应规则输出参数
@@ -126,6 +131,10 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
             case Constants.RULE_TYPE_OUTBOUND_BOX:
                 // 出库箱装箱规则
                 export = exportOutboundBoxRule(ruleAffer);
+                break;
+            case Constants.RULE_TYPE_CHECK_OPERATIONS_AREA:
+                //复核台推荐规则
+                export = exportCheckOperationsAreaRule(ruleAffer);
                 break;
             default:
                 log.error("ruleExport ruleAffer.getRuleType() is error ruleAffer.getRuleType() = " + ruleAffer.getRuleType() + " logid: " + ruleAffer.getLogId());
@@ -481,6 +490,34 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
 
         RuleExportCommand ruleExportCommand = new RuleExportCommand();
         ruleExportCommand.setOdoOutboundBoxRuleMap(odoOutboundBoxRuleMap);
+        return ruleExportCommand;
+    }
+
+    private RuleExportCommand exportCheckOperationsAreaRule(RuleAfferCommand ruleAffer){
+        if (null == ruleAffer.getCheckOperationsAreaOdoIdList() || ruleAffer.getCheckOperationsAreaOdoIdList().isEmpty()) {
+            log.error("ruleExport exportCheckOperationsAreaRule error, param odoIdList is null, checkOperationsAreaOdoIdList is:[{}]", ruleAffer.getCheckOperationsAreaOdoIdList());
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+        }
+        // 出库单ID列表
+        List<Long> odoIdList = ruleAffer.getCheckOperationsAreaOdoIdList();
+        // 组织ID
+        Long ouId = ruleAffer.getOuid();
+
+        CheckOperationsAreaRuleCommand availableRule = null;
+        // 查询所有可用的出库箱装箱规则,按照优先级排序
+        List<CheckOperationsAreaRuleCommand> ruleCommandList = checkOperationsAreaRuleDao.findRuleByOuIdOrderByPriorityAsc(ouId);
+        for (CheckOperationsAreaRuleCommand ruleCommand : ruleCommandList) {
+            String odoIdListStr = StringUtil.listToStringWithoutBrackets(odoIdList, ',');
+            List<Long> matchOdoIdList = checkOperationsAreaRuleDao.executeRuleSql(ruleCommand.getRuleSql().replace(Constants.CHECK_OPERATIONS_AREA_ODOID_LIST_PLACEHOLDER, odoIdListStr), ouId);
+            if (null != matchOdoIdList && !matchOdoIdList.isEmpty()) {
+                //找到一个可用的即可
+                availableRule = ruleCommand;
+                break;
+            }
+        }
+
+        RuleExportCommand ruleExportCommand = new RuleExportCommand();
+        ruleExportCommand.setCheckOperationsAreaRuleCommand(availableRule);
         return ruleExportCommand;
     }
 
