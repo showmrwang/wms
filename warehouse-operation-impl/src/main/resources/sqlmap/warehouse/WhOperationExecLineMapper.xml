@@ -1,0 +1,478 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.WhOperationExecLineDao">
+	<resultMap id="WhOperationExecLineResult" type="com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationExecLine">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whOperationExecLineColumns">
+	    <![CDATA[
+	        	id as id,
+	        	operation_id as operationId,
+	        	work_line_id as workLineId,
+	        	ou_id as ouId,
+	        	start_time as startTime,
+	        	finish_time as finishTime,
+	        	sku_id as skuId,
+	        	qty as qty,
+	        	inv_status as invStatus,
+	        	inv_type as invType,
+	        	batch_number as batchNumber,
+	        	mfg_date as mfgDate,
+	        	exp_date as expDate,
+	        	min_exp_date as minExpDate,
+	        	max_exp_date as maxExpDate,
+	        	country_of_origin as countryOfOrigin,
+	        	inv_attr1 as invAttr1,
+	        	inv_attr2 as invAttr2,
+	        	inv_attr3 as invAttr3,
+	        	inv_attr4 as invAttr4,
+	        	inv_attr5 as invAttr5,
+	        	from_location_id as fromLocationId,
+	        	from_outer_container_id as fromOuterContainerId,
+	        	from_inside_container_id as fromInsideContainerId,
+	        	use_outboundbox_id as useOutboundboxId,
+	        	use_outboundbox_code as useOutboundboxCode,
+	        	use_container_id as useContainerId,
+	        	use_outer_container_id as useOuterContainerId,
+	        	use_container_lattice_no as useContainerLatticeNo,
+	        	to_location_id as toLocationId,
+	        	to_outer_container_id as toOuterContainerId,
+	        	to_inside_container_id as toInsideContainerId,
+	        	is_short_picking as isShortPicking,
+	        	is_use_new as isUseNew,
+	        	old_outboundbox_id as oldOutboundboxId,
+	        	old_outboundbox_code as oldOutboundboxCode,
+	        	old_container_id as oldContainerId,
+	        	old_outer_container_id as oldOuterContainerId,
+	        	old_container_lattice_no as oldContainerLatticeNo,
+	        	odo_id as odoId,
+	        	odo_line_id as odoLineId,
+	        	create_time as createTime,
+	        	last_modify_time as lastModifyTime,
+	        	operator_id as operatorId
+	    ]]>
+	</sql>
+	
+		<!-- 如果有自增字段 -->
+		
+			<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+			<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationExecLine" 
+				
+			 flushCache="true">
+		    <![CDATA[
+		        INSERT INTO
+		        t_wh_operation_exec_line (
+		        id,
+		        	operation_id ,
+		        	work_line_id ,
+		        	ou_id ,
+		        	start_time ,
+		        	finish_time ,
+		        	sku_id ,
+		        	qty ,
+		        	inv_status ,
+		        	inv_type ,
+		        	batch_number ,
+		        	mfg_date ,
+		        	exp_date ,
+		        	min_exp_date ,
+		        	max_exp_date ,
+		        	country_of_origin ,
+		        	inv_attr1 ,
+		        	inv_attr2 ,
+		        	inv_attr3 ,
+		        	inv_attr4 ,
+		        	inv_attr5 ,
+		        	from_location_id ,
+		        	from_outer_container_id ,
+		        	from_inside_container_id ,
+		        	use_outboundbox_id ,
+		        	use_outboundbox_code ,
+		        	use_container_id ,
+		        	use_outer_container_id ,
+		        	use_container_lattice_no ,
+		        	to_location_id ,
+		        	to_outer_container_id ,
+		        	to_inside_container_id ,
+		        	is_short_picking ,
+		        	is_use_new ,
+		        	old_outboundbox_id ,
+		        	old_outboundbox_code ,
+		        	old_container_id ,
+		        	old_outer_container_id ,
+		        	old_container_lattice_no ,
+		        	odo_id ,
+		        	odo_line_id ,
+		        	create_time ,
+		        	last_modify_time ,
+		        	operator_id 
+		        ) VALUES (
+		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{operationId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{workLineId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{startTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{finishTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{qty,javaType=Long,jdbcType=DECIMAL} ,
+		        	#{invStatus,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{invType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{batchNumber,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{mfgDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{expDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{minExpDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{maxExpDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{countryOfOrigin,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invAttr1,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invAttr2,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invAttr3,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invAttr4,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invAttr5,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{fromLocationId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{fromOuterContainerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{fromInsideContainerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{useOutboundboxId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{useOutboundboxCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{useContainerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{useOuterContainerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{useContainerLatticeNo,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{toLocationId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{toOuterContainerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{toInsideContainerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{isShortPicking,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	#{isUseNew,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	#{oldOutboundboxId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{oldOutboundboxCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{oldContainerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{oldOuterContainerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{oldContainerLatticeNo,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{odoLineId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        )
+		    ]]>
+
+		</insert>
+		
+		
+		<update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationExecLine">
+	    <![CDATA[
+	        UPDATE t_wh_operation_exec_line SET
+		        operation_id = #{operationId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        work_line_id = #{workLineId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        start_time = #{startTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        finish_time = #{finishTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        sku_id = #{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        qty = #{qty,javaType=Long,jdbcType=DECIMAL} ,
+		        inv_status = #{invStatus,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        inv_type = #{invType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        batch_number = #{batchNumber,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        mfg_date = #{mfgDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        exp_date = #{expDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        min_exp_date = #{minExpDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        max_exp_date = #{maxExpDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        country_of_origin = #{countryOfOrigin,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        inv_attr1 = #{invAttr1,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        inv_attr2 = #{invAttr2,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        inv_attr3 = #{invAttr3,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        inv_attr4 = #{invAttr4,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        inv_attr5 = #{invAttr5,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        from_location_id = #{fromLocationId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        from_outer_container_id = #{fromOuterContainerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        from_inside_container_id = #{fromInsideContainerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        use_outboundbox_id = #{useOutboundboxId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        use_outboundbox_code = #{useOutboundboxCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        use_container_id = #{useContainerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        use_outer_container_id = #{useOuterContainerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        use_container_lattice_no = #{useContainerLatticeNo,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        to_location_id = #{toLocationId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        to_outer_container_id = #{toOuterContainerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        to_inside_container_id = #{toInsideContainerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        is_short_picking = #{isShortPicking,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        is_use_new = #{isUseNew,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        old_outboundbox_id = #{oldOutboundboxId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        old_outboundbox_code = #{oldOutboundboxCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        old_container_id = #{oldContainerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        old_outer_container_id = #{oldOuterContainerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        old_container_lattice_no = #{oldContainerLatticeNo,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        odo_id = #{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        odo_line_id = #{odoLineId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} 
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+		</update>
+	   <delete id="delete" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from t_wh_operation_exec_line where
+		        id = #{id} 
+	    ]]>
+	    </delete> 
+	    
+	     <delete id="deleteByIds" parameterType="list">
+	    
+	        delete from t_wh_operation_exec_line 
+	        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>	
+	  
+	    </delete>  
+	         
+	    <select id="findById" parameterType="java.lang.Long" resultMap="WhOperationExecLineResult" flushCache="false">
+			select <include refid="whOperationExecLineColumns" />
+		    <![CDATA[
+			    from t_wh_operation_exec_line 
+		        where 
+		        id = #{id} 
+		    ]]>
+		</select>	
+		<select id="getByIds" parameterType="list"  resultMap="WhOperationExecLineResult" flushCache="false">
+			select <include refid="whOperationExecLineColumns" />
+			    from t_wh_operation_exec_line 
+		        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>					
+		</select>	
+	<sql id="whOperationExecLineDynamicWhere">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+				<if test="operationId!=null">
+					and operation_id = #{operationId}
+				</if>
+	       
+				<if test="workLineId!=null">
+					and work_line_id = #{workLineId}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+	       
+				<if test="startTime!=null">
+					and start_time = #{startTime}
+				</if>
+	       
+				<if test="finishTime!=null">
+					and finish_time = #{finishTime}
+				</if>
+	       
+				<if test="skuId!=null">
+					and sku_id = #{skuId}
+				</if>
+	       
+				<if test="qty!=null">
+					and qty = #{qty}
+				</if>
+	       
+				<if test="invStatus!=null">
+					and inv_status = #{invStatus}
+				</if>
+	       
+	       
+		       <if test="invType!=null and invType!=''">
+					and inv_type = #{invType}
+				</if>
+	       
+	       
+		       <if test="batchNumber!=null and batchNumber!=''">
+					and batch_number = #{batchNumber}
+				</if>
+	       
+				<if test="mfgDate!=null">
+					and mfg_date = #{mfgDate}
+				</if>
+	       
+				<if test="expDate!=null">
+					and exp_date = #{expDate}
+				</if>
+	       
+				<if test="minExpDate!=null">
+					and min_exp_date = #{minExpDate}
+				</if>
+	       
+				<if test="maxExpDate!=null">
+					and max_exp_date = #{maxExpDate}
+				</if>
+	       
+	       
+		       <if test="countryOfOrigin!=null and countryOfOrigin!=''">
+					and country_of_origin = #{countryOfOrigin}
+				</if>
+	       
+	       
+		       <if test="invAttr1!=null and invAttr1!=''">
+					and inv_attr1 = #{invAttr1}
+				</if>
+	       
+	       
+		       <if test="invAttr2!=null and invAttr2!=''">
+					and inv_attr2 = #{invAttr2}
+				</if>
+	       
+	       
+		       <if test="invAttr3!=null and invAttr3!=''">
+					and inv_attr3 = #{invAttr3}
+				</if>
+	       
+	       
+		       <if test="invAttr4!=null and invAttr4!=''">
+					and inv_attr4 = #{invAttr4}
+				</if>
+	       
+	       
+		       <if test="invAttr5!=null and invAttr5!=''">
+					and inv_attr5 = #{invAttr5}
+				</if>
+	       
+				<if test="fromLocationId!=null">
+					and from_location_id = #{fromLocationId}
+				</if>
+	       
+				<if test="fromOuterContainerId!=null">
+					and from_outer_container_id = #{fromOuterContainerId}
+				</if>
+	       
+				<if test="fromInsideContainerId!=null">
+					and from_inside_container_id = #{fromInsideContainerId}
+				</if>
+	       
+				<if test="useOutboundboxId!=null">
+					and use_outboundbox_id = #{useOutboundboxId}
+				</if>
+	       
+	       
+		       <if test="useOutboundboxCode!=null and useOutboundboxCode!=''">
+					and use_outboundbox_code = #{useOutboundboxCode}
+				</if>
+	       
+				<if test="useContainerId!=null">
+					and use_container_id = #{useContainerId}
+				</if>
+	       
+				<if test="useOuterContainerId!=null">
+					and use_outer_container_id = #{useOuterContainerId}
+				</if>
+	       
+				<if test="useContainerLatticeNo!=null">
+					and use_container_lattice_no = #{useContainerLatticeNo}
+				</if>
+	       
+				<if test="toLocationId!=null">
+					and to_location_id = #{toLocationId}
+				</if>
+	       
+				<if test="toOuterContainerId!=null">
+					and to_outer_container_id = #{toOuterContainerId}
+				</if>
+	       
+				<if test="toInsideContainerId!=null">
+					and to_inside_container_id = #{toInsideContainerId}
+				</if>
+	       
+				<if test="isShortPicking!=null">
+					and is_short_picking = #{isShortPicking}
+				</if>
+	       
+				<if test="isUseNew!=null">
+					and is_use_new = #{isUseNew}
+				</if>
+	       
+				<if test="oldOutboundboxId!=null">
+					and old_outboundbox_id = #{oldOutboundboxId}
+				</if>
+	       
+	       
+		       <if test="oldOutboundboxCode!=null and oldOutboundboxCode!=''">
+					and old_outboundbox_code = #{oldOutboundboxCode}
+				</if>
+	       
+				<if test="oldContainerId!=null">
+					and old_container_id = #{oldContainerId}
+				</if>
+	       
+				<if test="oldOuterContainerId!=null">
+					and old_outer_container_id = #{oldOuterContainerId}
+				</if>
+	       
+				<if test="oldContainerLatticeNo!=null">
+					and old_container_lattice_no = #{oldContainerLatticeNo}
+				</if>
+	       
+				<if test="odoId!=null">
+					and odo_id = #{odoId}
+				</if>
+	       
+				<if test="odoLineId!=null">
+					and odo_line_id = #{odoLineId}
+				</if>
+	       
+				<if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="operatorId!=null">
+					and operator_id = #{operatorId}
+				</if>
+		</where>
+	</sql>
+	
+
+	<select id="getCount" resultType="long">
+        select count(*) from t_wh_operation_exec_line 
+    </select>
+    <select id="findListCountByQueryMap" resultType="long">
+        select count(*) from t_wh_operation_exec_line 
+		<include refid="whOperationExecLineDynamicWhere"/>    
+    </select>
+    
+    <select id="findListCountByParam" resultType="long">
+        select count(*) from t_wh_operation_exec_line 
+		<include refid="whOperationExecLineDynamicWhere"/>    
+    </select>
+    
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPage" resultMap="WhOperationExecLineResult">
+    	select <include refid="whOperationExecLineColumns" />
+	    from t_wh_operation_exec_line 
+		<include refid="whOperationExecLineDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByQueryMap" resultMap="WhOperationExecLineResult">
+    	select <include refid="whOperationExecLineColumns" />
+	    from t_wh_operation_exec_line 
+		<include refid="whOperationExecLineDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByParam" resultMap="WhOperationExecLineResult">
+    	select <include refid="whOperationExecLineColumns" />
+	    from t_wh_operation_exec_line 
+		<include refid="whOperationExecLineDynamicWhere"/>
+		
+    </select>
+
+	
+</mapper>
