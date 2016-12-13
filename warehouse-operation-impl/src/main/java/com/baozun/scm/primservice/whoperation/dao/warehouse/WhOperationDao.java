@@ -62,6 +62,16 @@ public interface WhOperationDao extends BaseDao<WhOperation,Long>{
      * @param ouId
      * @return
      */
+    WhOperationCommand findOperationCommandByWorkId(@Param("workId") Long workId, @Param("ouId") Long ouId);
+    
+    /**
+     * 根据Id获取作业头信息
+     * 
+     * @author qiming.liu
+     * @param workId
+     * @param ouId
+     * @return
+     */
     WhOperationCommand findOperationCommandById(@Param("workId") Long workId, @Param("ouId") Long ouId);
 	
 }

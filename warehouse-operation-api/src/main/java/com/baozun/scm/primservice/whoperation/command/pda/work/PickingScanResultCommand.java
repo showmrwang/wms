@@ -1,6 +1,8 @@
 package com.baozun.scm.primservice.whoperation.command.pda.work;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
@@ -25,7 +27,6 @@ public class PickingScanResultCommand extends BaseCommand {
     private String tipOuterContainer;
     /** 外部容器号(小车,外部容器) */
     private String outerContainer;
-
     /** 出库箱号 */
     private String outBounxBoxCode;
     
@@ -177,793 +178,572 @@ public class PickingScanResultCommand extends BaseCommand {
      * 出库箱集合(仅限于有小车,有出库箱的情况)
      */
     private Set<Long> outBoundIds = new HashSet<Long>();
-
-    public Boolean getIsRemmendContainer() {
-        return isRemmendContainer;
-    }
-
-
-    public void setIsRemmendContainer(Boolean isRemmendContainer) {
-        this.isRemmendContainer = isRemmendContainer;
-    }
-
-    public String getInsideContainerCode() {
-        return insideContainerCode;
-    }
-
-
-    public void setInsideContainerCode(String insideContainerCode) {
-        this.insideContainerCode = insideContainerCode;
-    }
-
-
-    public Long getOuId() {
-        return ouId;
-    }
-
-
-    public void setOuId(Long ouId) {
-        this.ouId = ouId;
-    }
-
-
-    public Integer getPickingWay() {
-        return pickingWay;
-    }
-
-
-    public void setPickingWay(Integer pickingWay) {
-        this.pickingWay = pickingWay;
-    }
-
-
-    public String getTurnoverBoxCode() {
-        return turnoverBoxCode;
-    }
-
-
-    public void setTurnoverBoxCode(String turnoverBoxCode) {
-        this.turnoverBoxCode = turnoverBoxCode;
-    }
-
-
-    public String getTipTurnoverBoxCode() {
-        return tipTurnoverBoxCode;
-    }
-
-
-    public void setTipTurnoverBoxCode(String tipTurnoverBoxCode) {
-        this.tipTurnoverBoxCode = tipTurnoverBoxCode;
-    }
-
-
-    public Long getFunctionId() {
-        return functionId;
-    }
-
-
-    public void setFunctionId(Long functionId) {
-        this.functionId = functionId;
-    }
-
-
-    public String getTipOuterContainer() {
-        return tipOuterContainer;
-    }
-
-
-    public void setTipOuterContainer(String tipOuterContainer) {
-        this.tipOuterContainer = tipOuterContainer;
-    }
-
-
-    public Boolean getIsScanLocation() {
-        return isScanLocation;
-    }
-
-
-    public void setIsScanLocation(Boolean isScanLocation) {
-        this.isScanLocation = isScanLocation;
-    }
-
-    public String getLocationCode() {
-        return locationCode;
-    }
-
-
-    public void setLocationCode(String locationCode) {
-        this.locationCode = locationCode;
-    }
-
-
-    public String getLocationBarCode() {
-        return locationBarCode;
-    }
-
-
-    public void setLocationBarCode(String locationBarCode) {
-        this.locationBarCode = locationBarCode;
-    }
-
-
-    public Integer getInvOccupyMode() {
-        return invOccupyMode;
-    }
-
-
-    public void setInvOccupyMode(Integer invOccupyMode) {
-        this.invOccupyMode = invOccupyMode;
-    }
-
-
-    public Set<Long> getOutBoundIds() {
-        return outBoundIds;
-    }
-
-
-    public void setOutBoundIds(Set<Long> outBoundIds) {
-        this.outBoundIds = outBoundIds;
-    }
-
-
-    public String getOuterContainer() {
-        return outerContainer;
-    }
-
-
-    public void setOuterContainer(String outerContainer) {
-        this.outerContainer = outerContainer;
-    }
-
-
-    public java.lang.Boolean getIsScanOuterContainer() {
-        return isScanOuterContainer;
-    }
-
-
-    public void setIsScanOuterContainer(java.lang.Boolean isScanOuterContainer) {
-        this.isScanOuterContainer = isScanOuterContainer;
-    }
-
-
-    public java.lang.Boolean getIsScanInsideContainer() {
-        return isScanInsideContainer;
-    }
-
-
-    public void setIsScanInsideContainer(java.lang.Boolean isScanInsideContainer) {
-        this.isScanInsideContainer = isScanInsideContainer;
-    }
-
-
-    public java.lang.Boolean getIsScanSku() {
-        return isScanSku;
-    }
-
-
-    public void setIsScanSku(java.lang.Boolean isScanSku) {
-        this.isScanSku = isScanSku;
-    }
-
-
-    public java.lang.Integer getScanPattern() {
-        return scanPattern;
-    }
-
-
-    public void setScanPattern(java.lang.Integer scanPattern) {
-        this.scanPattern = scanPattern;
-    }
-
-
-    public java.lang.Boolean getIsTipInvAttr() {
-        return isTipInvAttr;
-    }
-
-
-    public void setIsTipInvAttr(java.lang.Boolean isTipInvAttr) {
-        this.isTipInvAttr = isTipInvAttr;
-    }
-
-
-    public java.lang.Boolean getIsScanInvAttr() {
-        return isScanInvAttr;
-    }
-
-
-    public void setIsScanInvAttr(java.lang.Boolean isScanInvAttr) {
-        this.isScanInvAttr = isScanInvAttr;
-    }
-
-
-    public java.lang.Boolean getIsScanLatticeNo() {
-        return isScanLatticeNo;
-    }
-
-
-    public void setIsScanLatticeNo(java.lang.Boolean isScanLatticeNo) {
-        this.isScanLatticeNo = isScanLatticeNo;
-    }
-
-
-    public java.lang.Integer getPalletPickingMode() {
-        return palletPickingMode;
-    }
-
-
-    public void setPalletPickingMode(java.lang.Integer palletPickingMode) {
-        this.palletPickingMode = palletPickingMode;
-    }
-
-
-    public java.lang.Integer getContainerPickingMode() {
-        return containerPickingMode;
-    }
-
-
-    public void setContainerPickingMode(java.lang.Integer containerPickingMode) {
-        this.containerPickingMode = containerPickingMode;
-    }
-
-
-    public String getTipLocationCode() {
-        return tipLocationCode;
-    }
-
-
-    public void setTipLocationCode(String tipLocationCode) {
-        this.tipLocationCode = tipLocationCode;
-    }
-
-
-    public String getTipLocationBarCode() {
-        return tipLocationBarCode;
-    }
-
-
-    public void setTipLocationBarCode(String tipLocationBarCode) {
-        this.tipLocationBarCode = tipLocationBarCode;
-    }
-
-
-    public Long getLocationId() {
-        return locationId;
-    }
-
-
-    public void setLocationId(Long locationId) {
-        this.locationId = locationId;
-    }
-
-
-    public String getOuterContainerCode() {
-        return outerContainerCode;
-    }
-
-
-    public void setOuterContainerCode(String outerContainerCode) {
-        this.outerContainerCode = outerContainerCode;
-    }
-
-
-    public Boolean getIsPicking() {
-        return isPicking;
-    }
-
-
-    public void setIsPicking(Boolean isPicking) {
-        this.isPicking = isPicking;
-    }
-
-
-    public String getTipOuterContainerCode() {
-        return tipOuterContainerCode;
-    }
-
-
-    public void setTipOuterContainerCode(String tipOuterContainerCode) {
-        this.tipOuterContainerCode = tipOuterContainerCode;
-    }
-
-
-    public String getTipInsideContainerCode() {
-        return tipInsideContainerCode;
-    }
-
-
-    public void setTipInsideContainerCode(String tipInsideContainerCode) {
-        this.tipInsideContainerCode = tipInsideContainerCode;
-    }
-
-
-    public Boolean getIsInboundLocationBarcode() {
-        return isInboundLocationBarcode;
-    }
-
-
-    public void setIsInboundLocationBarcode(Boolean isInboundLocationBarcode) {
-        this.isInboundLocationBarcode = isInboundLocationBarcode;
-    }
-
-
-    public String getSkuBarCode() {
-        return skuBarCode;
-    }
-
-
-    public void setSkuBarCode(String skuBarCode) {
-        this.skuBarCode = skuBarCode;
-    }
-
-
-    public Boolean getIsUniqueSkuAttrInside() {
-        return isUniqueSkuAttrInside;
-    }
-
-
-    public void setIsUniqueSkuAttrInside(Boolean isUniqueSkuAttrInside) {
-        this.isUniqueSkuAttrInside = isUniqueSkuAttrInside;
-    }
-
-
-    public Boolean getIsNeedScanSkuInvType() {
-        return isNeedScanSkuInvType;
-    }
-
-
-    public void setIsNeedScanSkuInvType(Boolean isNeedScanSkuInvType) {
-        this.isNeedScanSkuInvType = isNeedScanSkuInvType;
-    }
-
-
-    public String getSkuInvType() {
-        return skuInvType;
-    }
-
-
-    public void setSkuInvType(String skuInvType) {
-        this.skuInvType = skuInvType;
-    }
-
-
-    public Boolean getIsNeedScanSkuInvStatus() {
-        return isNeedScanSkuInvStatus;
-    }
-
-
-    public void setIsNeedScanSkuInvStatus(Boolean isNeedScanSkuInvStatus) {
-        this.isNeedScanSkuInvStatus = isNeedScanSkuInvStatus;
-    }
-
-
-    public String getSkuInvStatus() {
-        return skuInvStatus;
-    }
-
-
-    public void setSkuInvStatus(String skuInvStatus) {
-        this.skuInvStatus = skuInvStatus;
-    }
-
-
-    public Boolean getIsNeedScanBatchNumber() {
-        return isNeedScanBatchNumber;
-    }
-
-
-    public void setIsNeedScanBatchNumber(Boolean isNeedScanBatchNumber) {
-        this.isNeedScanBatchNumber = isNeedScanBatchNumber;
-    }
-
-
-    public String getBatchNumber() {
-        return batchNumber;
-    }
-
-
-    public void setBatchNumber(String batchNumber) {
-        this.batchNumber = batchNumber;
-    }
-
-
-    public Boolean getIsNeedScanOrigin() {
-        return isNeedScanOrigin;
-    }
-
-
-    public void setIsNeedScanOrigin(Boolean isNeedScanOrigin) {
-        this.isNeedScanOrigin = isNeedScanOrigin;
-    }
-
-
-    public String getSkuOrigin() {
-        return skuOrigin;
-    }
-
-
-    public void setSkuOrigin(String skuOrigin) {
-        this.skuOrigin = skuOrigin;
-    }
-
-
-    public Boolean getIsNeedScanSkuMfgDate() {
-        return isNeedScanSkuMfgDate;
-    }
-
-
-    public void setIsNeedScanSkuMfgDate(Boolean isNeedScanSkuMfgDate) {
-        this.isNeedScanSkuMfgDate = isNeedScanSkuMfgDate;
-    }
-
-    public Boolean getIsNeedScanSkuExpDate() {
-        return isNeedScanSkuExpDate;
-    }
-
-
-    public void setIsNeedScanSkuExpDate(Boolean isNeedScanSkuExpDate) {
-        this.isNeedScanSkuExpDate = isNeedScanSkuExpDate;
-    }
-
-    public Boolean getIsNeedScanSkuInvAttr1() {
-        return isNeedScanSkuInvAttr1;
-    }
-
-
-    public void setIsNeedScanSkuInvAttr1(Boolean isNeedScanSkuInvAttr1) {
-        this.isNeedScanSkuInvAttr1 = isNeedScanSkuInvAttr1;
-    }
-
-
-    public String getSkuInvAttr1() {
-        return skuInvAttr1;
-    }
-
-
-    public void setSkuInvAttr1(String skuInvAttr1) {
-        this.skuInvAttr1 = skuInvAttr1;
-    }
-
-
-    public Boolean getIsNeedScanSkuInvAttr2() {
-        return isNeedScanSkuInvAttr2;
-    }
-
-
-    public void setIsNeedScanSkuInvAttr2(Boolean isNeedScanSkuInvAttr2) {
-        this.isNeedScanSkuInvAttr2 = isNeedScanSkuInvAttr2;
-    }
-
-
-    public String getSkuInvAttr2() {
-        return skuInvAttr2;
-    }
-
-
-    public void setSkuInvAttr2(String skuInvAttr2) {
-        this.skuInvAttr2 = skuInvAttr2;
-    }
-
-
-    public Boolean getIsNeedScanSkuInvAttr3() {
-        return isNeedScanSkuInvAttr3;
-    }
-
-
-    public void setIsNeedScanSkuInvAttr3(Boolean isNeedScanSkuInvAttr3) {
-        this.isNeedScanSkuInvAttr3 = isNeedScanSkuInvAttr3;
-    }
-
-
-    public String getSkuInvAttr3() {
-        return skuInvAttr3;
-    }
-
-
-    public void setSkuInvAttr3(String skuInvAttr3) {
-        this.skuInvAttr3 = skuInvAttr3;
-    }
-
-
-    public Boolean getIsNeedScanSkuInvAttr4() {
-        return isNeedScanSkuInvAttr4;
-    }
-
-
-    public void setIsNeedScanSkuInvAttr4(Boolean isNeedScanSkuInvAttr4) {
-        this.isNeedScanSkuInvAttr4 = isNeedScanSkuInvAttr4;
-    }
-
-
-    public String getSkuInvAttr4() {
-        return skuInvAttr4;
-    }
-
-
-    public void setSkuInvAttr4(String skuInvAttr4) {
-        this.skuInvAttr4 = skuInvAttr4;
-    }
-
-
-    public Boolean getIsNeedScanSkuInvAttr5() {
-        return isNeedScanSkuInvAttr5;
-    }
-
-
-    public void setIsNeedScanSkuInvAttr5(Boolean isNeedScanSkuInvAttr5) {
-        this.isNeedScanSkuInvAttr5 = isNeedScanSkuInvAttr5;
-    }
-
-
-    public String getSkuInvAttr5() {
-        return skuInvAttr5;
-    }
-
-
-    public void setSkuInvAttr5(String skuInvAttr5) {
-        this.skuInvAttr5 = skuInvAttr5;
-    }
-
-
-    public Long getSkuId() {
-        return skuId;
-    }
-
-
-    public void setSkuId(Long skuId) {
-        this.skuId = skuId;
-    }
-
-
-    public Long getTipSkuQty() {
-        return tipSkuQty;
-    }
-
-
-    public void setTipSkuQty(Long tipSkuQty) {
-        this.tipSkuQty = tipSkuQty;
-    }
-
-
-    public String getSkuMfgDate() {
-        return skuMfgDate;
-    }
-
-
-    public void setSkuMfgDate(String skuMfgDate) {
-        this.skuMfgDate = skuMfgDate;
-    }
-
-
-    public String getSkuExpDate() {
-        return skuExpDate;
-    }
-
-
-    public void setSkuExpDate(String skuExpDate) {
-        this.skuExpDate = skuExpDate;
-    }
-
-
-    public Boolean getIsNeedScanSkuSn() {
-        return IsNeedScanSkuSn;
-    }
-
-
-    public void setIsNeedScanSkuSn(Boolean isNeedScanSkuSn) {
-        IsNeedScanSkuSn = isNeedScanSkuSn;
-    }
-
-
-    public Boolean getIsNeedScanSkuDefect() {
-        return IsNeedScanSkuDefect;
-    }
-
-
-    public void setIsNeedScanSkuDefect(Boolean isNeedScanSkuDefect) {
-        IsNeedScanSkuDefect = isNeedScanSkuDefect;
-    }
-
-
-    public String getSkuSn() {
-        return skuSn;
-    }
-
-
-    public void setSkuSn(String skuSn) {
-        this.skuSn = skuSn;
-    }
-
-
-    public String getSkuDefect() {
-        return skuDefect;
-    }
-
-
-    public void setSkuDefect(String skuDefect) {
-        this.skuDefect = skuDefect;
-    }
-
-
-    public Boolean getIsNeedSkuDetail() {
-        return isNeedSkuDetail;
-    }
-
-
-    public void setIsNeedSkuDetail(Boolean isNeedSkuDetail) {
-        this.isNeedSkuDetail = isNeedSkuDetail;
-    }
-
-
-    public Boolean getIsNeedTipOutContainer() {
-        return isNeedTipOutContainer;
-    }
-
-
-    public void setIsNeedTipOutContainer(Boolean isNeedTipOutContainer) {
-        this.isNeedTipOutContainer = isNeedTipOutContainer;
-    }
-
-
-    public Boolean getIsNeedTipInsideContainer() {
-        return isNeedTipInsideContainer;
-    }
-
-
-    public void setIsNeedTipInsideContainer(Boolean isNeedTipInsideContainer) {
-        this.isNeedTipInsideContainer = isNeedTipInsideContainer;
-    }
-
-
-    public Boolean getIsNeedTipSku() {
-        return isNeedTipSku;
-    }
-
-
-    public void setIsNeedTipSku(Boolean isNeedTipSku) {
-        this.isNeedTipSku = isNeedTipSku;
-    }
-
-
-    public Boolean getIsNeedTipLocation() {
-        return isNeedTipLocation;
-    }
-
-
-    public void setIsNeedTipLocation(Boolean isNeedTipLocation) {
-        this.isNeedTipLocation = isNeedTipLocation;
-    }
-
-    public Boolean getIsNeedScanOutBounxBox() {
-        return isNeedScanOutBounxBox;
-    }
-
-
-    public void setIsNeedScanOutBounxBox(Boolean isNeedScanOutBounxBox) {
-        this.isNeedScanOutBounxBox = isNeedScanOutBounxBox;
-    }
-
-
-    public String getTipOutBounxBoxCode() {
-        return tipOutBounxBoxCode;
-    }
-
-
-    public void setTipOutBounxBoxCode(String tipOutBounxBoxCode) {
-        this.tipOutBounxBoxCode = tipOutBounxBoxCode;
-    }
-
-
-    public Long getOperationId() {
-        return operationId;
-    }
-
-
-    public void setOperationId(Long operationId) {
-        this.operationId = operationId;
-    }
-
-
-    public String getOutBounxBoxCode() {
-        return outBounxBoxCode;
-    }
-
-
-    public void setOutBounxBoxCode(String outBounxBoxCode) {
-        this.outBounxBoxCode = outBounxBoxCode;
-    }
-
-
-    public Integer getUseContainerLatticeNo() {
-        return useContainerLatticeNo;
-    }
-
-
-    public void setUseContainerLatticeNo(Integer useContainerLatticeNo) {
-        this.useContainerLatticeNo = useContainerLatticeNo;
-    }
-
-
-    public Long getUserId() {
-        return userId;
-    }
-
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-
-    public Long getOutBoundBoxId() {
-        return outBoundBoxId;
-    }
-
-
-    public void setOutBoundBoxId(Long outBoundBoxId) {
-        this.outBoundBoxId = outBoundBoxId;
-    }
-
-
-    public Boolean getIsShortPicking() {
-        return isShortPicking;
-    }
-
-
-    public void setIsShortPicking(Boolean isShortPicking) {
-        this.isShortPicking = isShortPicking;
-    }
-
-
-    public Boolean getIsTrunkful() {
-        return isTrunkful;
-    }
-
-
-    public void setIsTrunkful(Boolean isTrunkful) {
-        this.isTrunkful = isTrunkful;
-    }
-
-
-    public Boolean getIsUserNewContainer() {
-        return isUserNewContainer;
-    }
-
-
-    public void setIsUserNewContainer(Boolean isUserNewContainer) {
-        this.isUserNewContainer = isUserNewContainer;
-    }
-
-
+    
+    /**************************************************整托整箱开始**************************************************/   
+    /**推荐内部容器*/
+    private List<String> tipContainer = new ArrayList<String>();
+    /**推荐商品*/
+    private List<Long> tipSkuLst = new ArrayList<Long>();
+    /**推荐当前商品*/
+    private List<Long> tipCurrentSkuLst = new ArrayList<Long>();
+    /**推荐唯一sku*/
+    private List<String> onlySkuLst = new ArrayList<String>();
+    
+    /**判断是否提示商品属性*/
+    private Boolean isNeedTipSkuAttr;
+    /**判断是否扫描商品属性*/
+    private Boolean isNeedScanSkuAttr;
+    /**推荐唯一sku*/
+    private String onlySku;
+    /**推荐唯一sku*/
+    private Long onlySkuQty;
+    /** 提示内部容器id */
+    private Long tipInsideContainerId;
+    /**判断是否是SN/残次商品*/
+    private Boolean isSkuSn;
+    /**判断是否占用SN/残次条码*/
+    private Boolean isSkuSnOccupation;
+    
+    /**************************************************整托整箱结束**************************************************/
+    
     public String getWorkBarCode() {
         return workBarCode;
     }
-
-
     public void setWorkBarCode(String workBarCode) {
         this.workBarCode = workBarCode;
     }
-
-
     public String getName() {
         return name;
     }
-
-
     public void setName(String name) {
         this.name = name;
     }
-
-
     public String getOutBoundBoxName() {
         return outBoundBoxName;
     }
-
-
     public void setOutBoundBoxName(String outBoundBoxName) {
         this.outBoundBoxName = outBoundBoxName;
     }
-
-    
-
-    
-
+    public String getTipOuterContainer() {
+        return tipOuterContainer;
+    }
+    public void setTipOuterContainer(String tipOuterContainer) {
+        this.tipOuterContainer = tipOuterContainer;
+    }
+    public String getOuterContainer() {
+        return outerContainer;
+    }
+    public void setOuterContainer(String outerContainer) {
+        this.outerContainer = outerContainer;
+    }
+    public String getOutBounxBoxCode() {
+        return outBounxBoxCode;
+    }
+    public void setOutBounxBoxCode(String outBounxBoxCode) {
+        this.outBounxBoxCode = outBounxBoxCode;
+    }
+    public Long getOutBoundBoxId() {
+        return outBoundBoxId;
+    }
+    public void setOutBoundBoxId(Long outBoundBoxId) {
+        this.outBoundBoxId = outBoundBoxId;
+    }
+    public Long getOperationId() {
+        return operationId;
+    }
+    public void setOperationId(Long operationId) {
+        this.operationId = operationId;
+    }
+    public Long getFunctionId() {
+        return functionId;
+    }
+    public void setFunctionId(Long functionId) {
+        this.functionId = functionId;
+    }
+    public String getTipTurnoverBoxCode() {
+        return tipTurnoverBoxCode;
+    }
+    public void setTipTurnoverBoxCode(String tipTurnoverBoxCode) {
+        this.tipTurnoverBoxCode = tipTurnoverBoxCode;
+    }
+    public String getTurnoverBoxCode() {
+        return turnoverBoxCode;
+    }
+    public void setTurnoverBoxCode(String turnoverBoxCode) {
+        this.turnoverBoxCode = turnoverBoxCode;
+    }
+    public Boolean getIsRemmendContainer() {
+        return isRemmendContainer;
+    }
+    public void setIsRemmendContainer(Boolean isRemmendContainer) {
+        this.isRemmendContainer = isRemmendContainer;
+    }
+    public Boolean getIsScanLocation() {
+        return isScanLocation;
+    }
+    public void setIsScanLocation(Boolean isScanLocation) {
+        this.isScanLocation = isScanLocation;
+    }
+    public String getTipOuterContainerCode() {
+        return tipOuterContainerCode;
+    }
+    public void setTipOuterContainerCode(String tipOuterContainerCode) {
+        this.tipOuterContainerCode = tipOuterContainerCode;
+    }
+    public String getTipInsideContainerCode() {
+        return tipInsideContainerCode;
+    }
+    public void setTipInsideContainerCode(String tipInsideContainerCode) {
+        this.tipInsideContainerCode = tipInsideContainerCode;
+    }
+    public String getOuterContainerCode() {
+        return outerContainerCode;
+    }
+    public void setOuterContainerCode(String outerContainerCode) {
+        this.outerContainerCode = outerContainerCode;
+    }
+    public String getInsideContainerCode() {
+        return insideContainerCode;
+    }
+    public void setInsideContainerCode(String insideContainerCode) {
+        this.insideContainerCode = insideContainerCode;
+    }
+    public Long getLocationId() {
+        return locationId;
+    }
+    public void setLocationId(Long locationId) {
+        this.locationId = locationId;
+    }
+    public String getTipLocationCode() {
+        return tipLocationCode;
+    }
+    public void setTipLocationCode(String tipLocationCode) {
+        this.tipLocationCode = tipLocationCode;
+    }
+    public String getTipLocationBarCode() {
+        return tipLocationBarCode;
+    }
+    public void setTipLocationBarCode(String tipLocationBarCode) {
+        this.tipLocationBarCode = tipLocationBarCode;
+    }
+    public String getLocationCode() {
+        return locationCode;
+    }
+    public void setLocationCode(String locationCode) {
+        this.locationCode = locationCode;
+    }
+    public String getLocationBarCode() {
+        return locationBarCode;
+    }
+    public void setLocationBarCode(String locationBarCode) {
+        this.locationBarCode = locationBarCode;
+    }
+    public Long getOuId() {
+        return ouId;
+    }
+    public void setOuId(Long ouId) {
+        this.ouId = ouId;
+    }
+    public Long getUserId() {
+        return userId;
+    }
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+    public Integer getPickingWay() {
+        return pickingWay;
+    }
+    public void setPickingWay(Integer pickingWay) {
+        this.pickingWay = pickingWay;
+    }
+    public Integer getInvOccupyMode() {
+        return invOccupyMode;
+    }
+    public void setInvOccupyMode(Integer invOccupyMode) {
+        this.invOccupyMode = invOccupyMode;
+    }
+    public java.lang.Boolean getIsScanOuterContainer() {
+        return isScanOuterContainer;
+    }
+    public void setIsScanOuterContainer(java.lang.Boolean isScanOuterContainer) {
+        this.isScanOuterContainer = isScanOuterContainer;
+    }
+    public java.lang.Boolean getIsScanInsideContainer() {
+        return isScanInsideContainer;
+    }
+    public void setIsScanInsideContainer(java.lang.Boolean isScanInsideContainer) {
+        this.isScanInsideContainer = isScanInsideContainer;
+    }
+    public java.lang.Boolean getIsScanSku() {
+        return isScanSku;
+    }
+    public void setIsScanSku(java.lang.Boolean isScanSku) {
+        this.isScanSku = isScanSku;
+    }
+    public java.lang.Integer getScanPattern() {
+        return scanPattern;
+    }
+    public void setScanPattern(java.lang.Integer scanPattern) {
+        this.scanPattern = scanPattern;
+    }
+    public java.lang.Boolean getIsTipInvAttr() {
+        return isTipInvAttr;
+    }
+    public void setIsTipInvAttr(java.lang.Boolean isTipInvAttr) {
+        this.isTipInvAttr = isTipInvAttr;
+    }
+    public java.lang.Boolean getIsScanInvAttr() {
+        return isScanInvAttr;
+    }
+    public void setIsScanInvAttr(java.lang.Boolean isScanInvAttr) {
+        this.isScanInvAttr = isScanInvAttr;
+    }
+    public java.lang.Boolean getIsScanLatticeNo() {
+        return isScanLatticeNo;
+    }
+    public void setIsScanLatticeNo(java.lang.Boolean isScanLatticeNo) {
+        this.isScanLatticeNo = isScanLatticeNo;
+    }
+    public java.lang.Integer getPalletPickingMode() {
+        return palletPickingMode;
+    }
+    public void setPalletPickingMode(java.lang.Integer palletPickingMode) {
+        this.palletPickingMode = palletPickingMode;
+    }
+    public java.lang.Integer getContainerPickingMode() {
+        return containerPickingMode;
+    }
+    public void setContainerPickingMode(java.lang.Integer containerPickingMode) {
+        this.containerPickingMode = containerPickingMode;
+    }
+    public Boolean getIsPicking() {
+        return isPicking;
+    }
+    public void setIsPicking(Boolean isPicking) {
+        this.isPicking = isPicking;
+    }
+    public Boolean getIsInboundLocationBarcode() {
+        return isInboundLocationBarcode;
+    }
+    public void setIsInboundLocationBarcode(Boolean isInboundLocationBarcode) {
+        this.isInboundLocationBarcode = isInboundLocationBarcode;
+    }
+    public String getSkuBarCode() {
+        return skuBarCode;
+    }
+    public void setSkuBarCode(String skuBarCode) {
+        this.skuBarCode = skuBarCode;
+    }
+    public Long getSkuId() {
+        return skuId;
+    }
+    public void setSkuId(Long skuId) {
+        this.skuId = skuId;
+    }
+    public Boolean getIsUniqueSkuAttrInside() {
+        return isUniqueSkuAttrInside;
+    }
+    public void setIsUniqueSkuAttrInside(Boolean isUniqueSkuAttrInside) {
+        this.isUniqueSkuAttrInside = isUniqueSkuAttrInside;
+    }
+    public Boolean getIsNeedScanSkuInvType() {
+        return isNeedScanSkuInvType;
+    }
+    public void setIsNeedScanSkuInvType(Boolean isNeedScanSkuInvType) {
+        this.isNeedScanSkuInvType = isNeedScanSkuInvType;
+    }
+    public String getSkuInvType() {
+        return skuInvType;
+    }
+    public void setSkuInvType(String skuInvType) {
+        this.skuInvType = skuInvType;
+    }
+    public Boolean getIsNeedScanSkuInvStatus() {
+        return isNeedScanSkuInvStatus;
+    }
+    public void setIsNeedScanSkuInvStatus(Boolean isNeedScanSkuInvStatus) {
+        this.isNeedScanSkuInvStatus = isNeedScanSkuInvStatus;
+    }
+    public String getSkuInvStatus() {
+        return skuInvStatus;
+    }
+    public void setSkuInvStatus(String skuInvStatus) {
+        this.skuInvStatus = skuInvStatus;
+    }
+    public Boolean getIsNeedScanBatchNumber() {
+        return isNeedScanBatchNumber;
+    }
+    public void setIsNeedScanBatchNumber(Boolean isNeedScanBatchNumber) {
+        this.isNeedScanBatchNumber = isNeedScanBatchNumber;
+    }
+    public String getBatchNumber() {
+        return batchNumber;
+    }
+    public void setBatchNumber(String batchNumber) {
+        this.batchNumber = batchNumber;
+    }
+    public Boolean getIsNeedScanOrigin() {
+        return isNeedScanOrigin;
+    }
+    public void setIsNeedScanOrigin(Boolean isNeedScanOrigin) {
+        this.isNeedScanOrigin = isNeedScanOrigin;
+    }
+    public String getSkuOrigin() {
+        return skuOrigin;
+    }
+    public void setSkuOrigin(String skuOrigin) {
+        this.skuOrigin = skuOrigin;
+    }
+    public Boolean getIsNeedScanSkuMfgDate() {
+        return isNeedScanSkuMfgDate;
+    }
+    public void setIsNeedScanSkuMfgDate(Boolean isNeedScanSkuMfgDate) {
+        this.isNeedScanSkuMfgDate = isNeedScanSkuMfgDate;
+    }
+    public String getSkuMfgDate() {
+        return skuMfgDate;
+    }
+    public void setSkuMfgDate(String skuMfgDate) {
+        this.skuMfgDate = skuMfgDate;
+    }
+    public Boolean getIsNeedScanSkuExpDate() {
+        return isNeedScanSkuExpDate;
+    }
+    public void setIsNeedScanSkuExpDate(Boolean isNeedScanSkuExpDate) {
+        this.isNeedScanSkuExpDate = isNeedScanSkuExpDate;
+    }
+    public String getSkuExpDate() {
+        return skuExpDate;
+    }
+    public void setSkuExpDate(String skuExpDate) {
+        this.skuExpDate = skuExpDate;
+    }
+    public Boolean getIsNeedScanSkuInvAttr1() {
+        return isNeedScanSkuInvAttr1;
+    }
+    public void setIsNeedScanSkuInvAttr1(Boolean isNeedScanSkuInvAttr1) {
+        this.isNeedScanSkuInvAttr1 = isNeedScanSkuInvAttr1;
+    }
+    public String getSkuInvAttr1() {
+        return skuInvAttr1;
+    }
+    public void setSkuInvAttr1(String skuInvAttr1) {
+        this.skuInvAttr1 = skuInvAttr1;
+    }
+    public Boolean getIsNeedScanSkuInvAttr2() {
+        return isNeedScanSkuInvAttr2;
+    }
+    public void setIsNeedScanSkuInvAttr2(Boolean isNeedScanSkuInvAttr2) {
+        this.isNeedScanSkuInvAttr2 = isNeedScanSkuInvAttr2;
+    }
+    public String getSkuInvAttr2() {
+        return skuInvAttr2;
+    }
+    public void setSkuInvAttr2(String skuInvAttr2) {
+        this.skuInvAttr2 = skuInvAttr2;
+    }
+    public Boolean getIsNeedScanSkuInvAttr3() {
+        return isNeedScanSkuInvAttr3;
+    }
+    public void setIsNeedScanSkuInvAttr3(Boolean isNeedScanSkuInvAttr3) {
+        this.isNeedScanSkuInvAttr3 = isNeedScanSkuInvAttr3;
+    }
+    public String getSkuInvAttr3() {
+        return skuInvAttr3;
+    }
+    public void setSkuInvAttr3(String skuInvAttr3) {
+        this.skuInvAttr3 = skuInvAttr3;
+    }
+    public Boolean getIsNeedScanSkuInvAttr4() {
+        return isNeedScanSkuInvAttr4;
+    }
+    public void setIsNeedScanSkuInvAttr4(Boolean isNeedScanSkuInvAttr4) {
+        this.isNeedScanSkuInvAttr4 = isNeedScanSkuInvAttr4;
+    }
+    public String getSkuInvAttr4() {
+        return skuInvAttr4;
+    }
+    public void setSkuInvAttr4(String skuInvAttr4) {
+        this.skuInvAttr4 = skuInvAttr4;
+    }
+    public Boolean getIsNeedScanSkuInvAttr5() {
+        return isNeedScanSkuInvAttr5;
+    }
+    public void setIsNeedScanSkuInvAttr5(Boolean isNeedScanSkuInvAttr5) {
+        this.isNeedScanSkuInvAttr5 = isNeedScanSkuInvAttr5;
+    }
+    public String getSkuInvAttr5() {
+        return skuInvAttr5;
+    }
+    public void setSkuInvAttr5(String skuInvAttr5) {
+        this.skuInvAttr5 = skuInvAttr5;
+    }
+    public Long getTipSkuQty() {
+        return tipSkuQty;
+    }
+    public void setTipSkuQty(Long tipSkuQty) {
+        this.tipSkuQty = tipSkuQty;
+    }
+    public Boolean getIsNeedScanSkuSn() {
+        return IsNeedScanSkuSn;
+    }
+    public void setIsNeedScanSkuSn(Boolean isNeedScanSkuSn) {
+        IsNeedScanSkuSn = isNeedScanSkuSn;
+    }
+    public Boolean getIsNeedScanSkuDefect() {
+        return IsNeedScanSkuDefect;
+    }
+    public void setIsNeedScanSkuDefect(Boolean isNeedScanSkuDefect) {
+        IsNeedScanSkuDefect = isNeedScanSkuDefect;
+    }
+    public String getSkuSn() {
+        return skuSn;
+    }
+    public void setSkuSn(String skuSn) {
+        this.skuSn = skuSn;
+    }
+    public String getSkuDefect() {
+        return skuDefect;
+    }
+    public void setSkuDefect(String skuDefect) {
+        this.skuDefect = skuDefect;
+    }
+    public Boolean getIsNeedSkuDetail() {
+        return isNeedSkuDetail;
+    }
+    public void setIsNeedSkuDetail(Boolean isNeedSkuDetail) {
+        this.isNeedSkuDetail = isNeedSkuDetail;
+    }
+    public Boolean getIsNeedTipOutContainer() {
+        return isNeedTipOutContainer;
+    }
+    public void setIsNeedTipOutContainer(Boolean isNeedTipOutContainer) {
+        this.isNeedTipOutContainer = isNeedTipOutContainer;
+    }
+    public Boolean getIsNeedTipInsideContainer() {
+        return isNeedTipInsideContainer;
+    }
+    public void setIsNeedTipInsideContainer(Boolean isNeedTipInsideContainer) {
+        this.isNeedTipInsideContainer = isNeedTipInsideContainer;
+    }
+    public Boolean getIsNeedTipSku() {
+        return isNeedTipSku;
+    }
+    public void setIsNeedTipSku(Boolean isNeedTipSku) {
+        this.isNeedTipSku = isNeedTipSku;
+    }
+    public Boolean getIsNeedTipLocation() {
+        return isNeedTipLocation;
+    }
+    public void setIsNeedTipLocation(Boolean isNeedTipLocation) {
+        this.isNeedTipLocation = isNeedTipLocation;
+    }
+    public String getTipOutBounxBoxCode() {
+        return tipOutBounxBoxCode;
+    }
+    public void setTipOutBounxBoxCode(String tipOutBounxBoxCode) {
+        this.tipOutBounxBoxCode = tipOutBounxBoxCode;
+    }
+    public Boolean getIsNeedScanOutBounxBox() {
+        return isNeedScanOutBounxBox;
+    }
+    public void setIsNeedScanOutBounxBox(Boolean isNeedScanOutBounxBox) {
+        this.isNeedScanOutBounxBox = isNeedScanOutBounxBox;
+    }
+    public Integer getUseContainerLatticeNo() {
+        return useContainerLatticeNo;
+    }
+    public void setUseContainerLatticeNo(Integer useContainerLatticeNo) {
+        this.useContainerLatticeNo = useContainerLatticeNo;
+    }
+    public Boolean getIsShortPicking() {
+        return isShortPicking;
+    }
+    public void setIsShortPicking(Boolean isShortPicking) {
+        this.isShortPicking = isShortPicking;
+    }
+    public Boolean getIsTrunkful() {
+        return isTrunkful;
+    }
+    public void setIsTrunkful(Boolean isTrunkful) {
+        this.isTrunkful = isTrunkful;
+    }
+    public Boolean getIsUserNewContainer() {
+        return isUserNewContainer;
+    }
+    public void setIsUserNewContainer(Boolean isUserNewContainer) {
+        this.isUserNewContainer = isUserNewContainer;
+    }
+    public Set<Long> getOutBoundIds() {
+        return outBoundIds;
+    }
+    public void setOutBoundIds(Set<Long> outBoundIds) {
+        this.outBoundIds = outBoundIds;
+    }
+    public List<String> getTipContainer() {
+        return tipContainer;
+    }
+    public void setTipContainer(List<String> tipContainer) {
+        this.tipContainer = tipContainer;
+    }
+    public List<Long> getTipSkuLst() {
+        return tipSkuLst;
+    }
+    public void setTipSkuLst(List<Long> tipSkuLst) {
+        this.tipSkuLst = tipSkuLst;
+    }
+    public List<Long> getTipCurrentSkuLst() {
+        return tipCurrentSkuLst;
+    }
+    public void setTipCurrentSkuLst(List<Long> tipCurrentSkuLst) {
+        this.tipCurrentSkuLst = tipCurrentSkuLst;
+    }
+    public Boolean getIsNeedTipSkuAttr() {
+        return isNeedTipSkuAttr;
+    }
+    public void setIsNeedTipSkuAttr(Boolean isNeedTipSkuAttr) {
+        this.isNeedTipSkuAttr = isNeedTipSkuAttr;
+    }
+    public Boolean getIsNeedScanSkuAttr() {
+        return isNeedScanSkuAttr;
+    }
+    public void setIsNeedScanSkuAttr(Boolean isNeedScanSkuAttr) {
+        this.isNeedScanSkuAttr = isNeedScanSkuAttr;
+    }
+    public String getOnlySku() {
+        return onlySku;
+    }
+    public void setOnlySku(String onlySku) {
+        this.onlySku = onlySku;
+    }
+    public Long getOnlySkuQty() {
+        return onlySkuQty;
+    }
+    public void setOnlySkuQty(Long onlySkuQty) {
+        this.onlySkuQty = onlySkuQty;
+    }
+    public Long getTipInsideContainerId() {
+        return tipInsideContainerId;
+    }
+    public void setTipInsideContainerId(Long tipInsideContainerId) {
+        this.tipInsideContainerId = tipInsideContainerId;
+    }
+    public List<String> getOnlySkuLst() {
+        return onlySkuLst;
+    }
+    public void setOnlySkuLst(List<String> onlySkuLst) {
+        this.onlySkuLst = onlySkuLst;
+    }
+    public Boolean getIsSkuSn() {
+        return isSkuSn;
+    }
+    public void setIsSkuSn(Boolean isSkuSn) {
+        this.isSkuSn = isSkuSn;
+    }
+    public Boolean getIsSkuSnOccupation() {
+        return isSkuSnOccupation;
+    }
+    public void setIsSkuSnOccupation(Boolean isSkuSnOccupation) {
+        this.isSkuSnOccupation = isSkuSnOccupation;
+    }
 }

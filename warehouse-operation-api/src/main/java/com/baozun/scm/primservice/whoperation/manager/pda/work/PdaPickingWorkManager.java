@@ -1,7 +1,10 @@
 package com.baozun.scm.primservice.whoperation.manager.pda.work;
 
+import java.util.List;
+
 import com.baozun.scm.primservice.whoperation.command.pda.work.PickingScanResultCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationExecLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhWork;
@@ -99,6 +102,78 @@ public interface PdaPickingWorkManager extends BaseManager {
      * @return
      */
     public void scanTrunkfulContainer(PickingScanResultCommand  command);
+    
+    /**
+     * 生成作业执行明细  
+     * 
+     * @author qiming.liu
+     * @param PickingScanResultCommand
+     * @return
+     */
+    void operatorExecutionLines(PickingScanResultCommand command);
+    
+    /**
+     * 循环提示内部容器--整箱整托拣货
+     * 
+     * @author qiming.liu
+     * @param PickingScanResultCommand
+     * @return PickingScanResultCommand
+     */
+    PickingScanResultCommand wholeCaseForTipInsideContainer(PickingScanResultCommand command);
+    
+    /**
+     * 循环提示扫描商品--整箱整托拣货
+     * 
+     * @author qiming.liu
+     * @param PickingScanResultCommand
+     * @return PickingScanResultCommand
+     */
+    PickingScanResultCommand wholeCaseForTipSku(PickingScanResultCommand command);
+    
+    /**
+     * 循环扫描当前商品--整箱整托拣货
+     * 
+     * @author qiming.liu
+     * @param PickingScanResultCommand 
+     * @return PickingScanResultCommand
+     */
+    PickingScanResultCommand wholeCaseForTipCurrentSku(PickingScanResultCommand command);
+    
+    /**
+     * 提示托盘--整箱整托拣货 
+     * 
+     * @author qiming.liu
+     * @param PickingScanResultCommand
+     * @return
+     */
+    PickingScanResultCommand wholeCaseTipTray(PickingScanResultCommand command);
+    
+    /**
+     * 提示内部容器--整箱整托拣货 
+     * 
+     * @author qiming.liu
+     * @param PickingScanResultCommand
+     * @return
+     */
+    PickingScanResultCommand wholeCaseTipInsideContainer(PickingScanResultCommand command);
+    
+    /**
+     * 判断是否是SN/残次商品--整箱整托拣货
+     * 
+     * @author qiming.liu
+     * @param 
+     * @return
+     */
+    PickingScanResultCommand wholeCaseIsSn(PickingScanResultCommand command); 
+    
+    /**
+     * 根据库存UUID查找对应SN/残次信息
+     * 
+     * @author qiming.liu
+     * @param 
+     * @return
+     */
+    List<WhSkuInventorySnCommand> findWhSkuInventoryByUuid(Long ouid, String uuid);
     
     
 }

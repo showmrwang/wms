@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import lark.common.annotation.MoreDB;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -33,6 +35,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuI
 import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
+import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.WhScanPatternType;
 import com.baozun.scm.primservice.whoperation.constant.WorkStatus;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.Container2ndCategoryDao;
@@ -100,7 +103,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
     @Autowired
     private WhFunctionPickingDao whFunctionPickingDao;
     @Autowired
-    private WhSkuInventoryDao WhSkuInventoryDao;
+    private WhSkuInventoryDao whSkuInventoryDao;
     @Autowired
     private LocationManager locationManager;
     @Autowired
@@ -211,6 +214,8 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         Map<Long, Map<String, Set<String>>> insideSkuAttrIdsSnDefect = new HashMap<Long, Map<String, Set<String>>>();
         // 内部容器每个唯一sku对应的货格（is_whole_case=0&&有小车）
         Map<Long, Map<String, Set<String>>> insideSkuAttrIdsContainerLattice = new HashMap<Long, Map<String, Set<String>>>();
+        // 工作明细ID和唯一sku对应关系       
+        Map<String, String> workLineToOnlySku = new HashMap<String, String>();
         
         //根据工作id获取作业信息        
         WhOperationCommand whOperationCommand = whOperationManager.findOperationByWorkId(whWork.getId(), ouId);
@@ -241,6 +246,8 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             Map<Long, Map<String, Long>> temporarylmMap = new HashMap<Long, Map<String, Long>>();
             //获取内部容器唯一sku
             String onlySku = SkuCategoryProvider.getSkuAttrIdByOperationLine(operationLine);
+            String lineToSku = this.getWorkLineToOnlySku(operationLine.getId(), operationLine.getWorkLineId(), operationLine.getUuid());
+            workLineToOnlySku.put(lineToSku, onlySku);
             //根据库存UUID查找对应SN/残次信息
             List<WhSkuInventorySnCommand> skuInventorySnCommands = whSkuInventorySnDao.findWhSkuInventoryByUuid(ouId, operationLine.getUuid());
             //获取库位ID            
@@ -529,6 +536,9 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         statisticsCommand.setInsideSkuAttrIdsSnDefect(insideSkuAttrIdsSnDefect);
         // 内部容器每个唯一sku对应的货格（is_whole_case=0&&有小车）
         statisticsCommand.setInsideSkuAttrIdsContainerLattice(insideSkuAttrIdsContainerLattice);
+        // 工作明细ID和唯一sku对应关系
+        statisticsCommand.setWorkLineIdToOnlySku(workLineToOnlySku);
+        
         //缓存统计分析结果        
         pdaPickingWorkCacheManager.operatioLineStatisticsRedis(whOperationCommand.getId(), statisticsCommand);
         
@@ -1580,6 +1590,304 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         }
         
         log.info("PdaPickingWorkManagerImpl scanTrunkfulContainer is end");
+    }
+    
+    /**
+     * 生成作业执行明细--整托整箱 
+     * 
+     * @author qiming.liu
+     * @param PickingScanResultCommand
+     * @return
+     */
+    @Override
+    public void operatorExecutionLines(PickingScanResultCommand command) {
+        if( 1 == command.getPalletPickingMode() ||  2 == command.getPalletPickingMode()){
+            List<WhOperationLineCommand> operationLineCommands = whOperationLineManager.findOperationLineByOperationId(command.getOperationId(), command.getOuId());
+            for(WhOperationLineCommand operationLineCommand : operationLineCommands){
+                WhOperationExecLine operationExecLine = new WhOperationExecLine();
+                //将operationLineCommand基本信息复制到operationExecLine中
+                BeanUtils.copyProperties(operationLineCommand, operationExecLine);
+                //是否短拣
+                operationExecLine.setIsShortPicking(false);
+                //是否使用新的出库箱/周转箱
+                operationExecLine.setIsUseNew(false);
+                whOperationExecLineDao.insert(operationExecLine);
+            }
+        }else{
+            // 根据作业ID获取统计信息
+            OperatioLineStatisticsCommand statisticsCommand = pdaPickingWorkCacheManager.getOperatioLineStatistics(command.getOperationId(),command.getOuId());
+            Map<Long, Map<String, Long>> insideMap = statisticsCommand.getInsideSkuAttrIds().get(command.getTipInsideContainerCode());
+            for (Map<String, Long> SkuAttr : insideMap.values()) {
+                for (String onlySku : SkuAttr.keySet()) {
+                    List<Long> demergeLst= this.demergeWorkLineToOnlySku(statisticsCommand.getWorkLineIdToOnlySku().get(onlySku));
+                    WhOperationLineCommand operationLineCommand = whOperationLineManager.findLineByWorkLineIdAndId(demergeLst.get(0), demergeLst.get(1));
+                    WhOperationExecLine operationExecLine = new WhOperationExecLine();
+                    //将operationLineCommand基本信息复制到operationExecLine中
+                    BeanUtils.copyProperties(operationLineCommand, operationExecLine);
+                    //是否短拣
+                    operationExecLine.setIsShortPicking(false);
+                    //是否使用新的出库箱/周转箱
+                    operationExecLine.setIsUseNew(false);
+                    whOperationExecLineDao.insert(operationExecLine);
+                }
+            }
+        }
+    }
+    
+    /**
+     * 循环提示内部容器--整箱整托拣货
+     * 
+     * @author qiming.liu
+     * @param PickingScanResultCommand
+     * @return PickingScanResultCommand
+     */
+    @Override
+    public PickingScanResultCommand wholeCaseForTipInsideContainer(PickingScanResultCommand command) {
+        log.info("PdaPickingWorkManagerImpl wholeCaseForTipInsideContainer is start");
+        // 提示内部容器列表
+        List<String> tipContainerLst = new ArrayList<String>();
+        // 根据作业ID获取统计信息
+        OperatioLineStatisticsCommand statisticsCommand = pdaPickingWorkCacheManager.getOperatioLineStatistics(command.getOperationId(),command.getOuId());
+        // 提示内部容器
+        if(null == command.getTipContainer() || 0 == command.getTipContainer().size()){
+            // 库位上所有外部容器 
+            Set<Long> outerContainerIds = statisticsCommand.getOuterContainerIds().get(command.getLocationId());
+            if(null != outerContainerIds && 0 != outerContainerIds.size()){
+                //整托                
+                for(Long outerContainerId : outerContainerIds){
+                    Set<Long> insideContainerIds = statisticsCommand.getOuterToInside().get(outerContainerId);
+                    for(Long insideContainerId : insideContainerIds){
+                        // 根据容器ID获取容器CODE                
+                        Container Container = containerDao.findById(insideContainerId);
+                        //推荐托盘列表                
+                        tipContainerLst.add(Container.getCode());
+                    }
+                }
+                command.setTipContainer(tipContainerLst);
+                command.setTipInsideContainerCode(command.getTipContainer().get(0));
+                command.getTipContainer().remove(0);
+            }else{
+                //整箱                
+                Set<Long> insideContainerIds = statisticsCommand.getInsideContainerIds().get(command.getLocationId());
+                for(Long insideContainerId : insideContainerIds){
+                    // 根据容器ID获取容器CODE                
+                    Container Container = containerDao.findById(insideContainerId);
+                    //推荐托盘列表                
+                    tipContainerLst.add(Container.getCode());
+                }
+                command.setTipContainer(tipContainerLst);
+                command.setTipInsideContainerCode(command.getTipContainer().get(0));
+                command.getTipContainer().remove(0);
+            }
+        }else{
+            command.setTipInsideContainerCode(command.getTipContainer().get(0));
+            command.getTipContainer().remove(0);
+        }
+        log.info("PdaPickingWorkManagerImpl wholeCaseForTipInsideContainer is end");
+        return command;
+    }
+    
+    /**
+     * 循环提示扫描商品--整箱整托拣货
+     * 
+     * @author qiming.liu
+     * @param PickingScanResultCommand
+     * @return PickingScanResultCommand
+     */
+    @Override
+    public PickingScanResultCommand wholeCaseForTipSku(PickingScanResultCommand command) {
+        log.info("PdaPickingWorkManagerImpl wholeCaseForTipSku is start");
+        // 提示商品列表
+        List<Long> tipSkuLst = new ArrayList<Long>();
+        // 根据作业ID获取统计信息
+        OperatioLineStatisticsCommand statisticsCommand = pdaPickingWorkCacheManager.getOperatioLineStatistics(command.getOperationId(),command.getOuId());
+        // 提示扫描商品
+        if(null == command.getTipSkuLst() || 0 == command.getTipSkuLst().size()){
+            Set<Long> tipSkus = statisticsCommand.getInsideSkuIds().get(command.getTipInsideContainerCode());
+            for(Long tipSku : tipSkus){
+                // 提示扫描商品列表                
+                tipSkuLst.add(tipSku);
+            }
+            if(1 == tipSkuLst.size() && 1 == statisticsCommand.getInsideSkuAttrIds().get(command.getTipInsideContainerCode()).get(tipSkuLst.get(0)).size()){
+                command.setIsUniqueSkuAttrInside(true);
+            }else{
+                command.setIsUniqueSkuAttrInside(false);
+            }
+            command.setTipSkuLst(tipSkuLst);
+            command.setSkuId(command.getTipSkuLst().get(0));
+            command.setTipSkuQty(statisticsCommand.getInsideSkuQty().get(command.getLocationId()).get(command.getSkuId()));
+            /** 内部容器每个sku对应的唯一sku及件数 */
+            Map<String, Long> onlySkuAndQty= statisticsCommand.getInsideSkuAttrIds().get(command.getTipInsideContainerId()).get(command.getTipSkuLst().get(0));
+            List<String> onlySkuLst = new ArrayList<String>();
+            for (String s : onlySkuAndQty.keySet()) {
+                onlySkuLst.add(s);
+            }
+            command.setOnlySkuLst(onlySkuLst);
+            WhSkuCommand whSkuCommand = whSkuDao.findWhSkuByIdExt(command.getSkuId(), command.getOuId());
+            command.setSkuBarCode(whSkuCommand.getBarCode());
+            command.getTipSkuLst().remove(0);
+        }else{
+            command.setSkuId(command.getTipSkuLst().get(0));
+            command.setTipSkuQty(statisticsCommand.getInsideSkuQty().get(command.getLocationId()).get(command.getSkuId()));
+            /** 内部容器每个sku对应的唯一sku及件数 */
+            Map<String, Long> onlySkuAndQty= statisticsCommand.getInsideSkuAttrIds().get(command.getTipInsideContainerCode()).get(command.getTipSkuLst().get(0));
+            List<String> onlySkuLst = new ArrayList<String>();
+            for (String s : onlySkuAndQty.keySet()) {
+                onlySkuLst.add(s);
+            }
+            command.setOnlySkuLst(onlySkuLst);
+            WhSkuCommand whSkuCommand = whSkuDao.findWhSkuByIdExt(command.getSkuId(), command.getOuId());
+            command.setSkuBarCode(whSkuCommand.getBarCode());
+            command.getTipSkuLst().remove(0);
+        }
+        log.info("PdaPickingWorkManagerImpl wholeCaseForTipSku is end");
+        return command;
+    }
+    
+    /**
+     * 循环扫描当前商品--整箱整托拣货
+     * 
+     * @author qiming.liu
+     * @param PickingScanResultCommand 
+     * @return PickingScanResultCommand
+     */
+    @Override
+    public PickingScanResultCommand wholeCaseForTipCurrentSku(PickingScanResultCommand command) {
+        log.info("PdaPickingWorkManagerImpl wholeCaseForTipCurrentSku is start");
+        if(null != command.getOnlySkuLst() && 0 < command.getOnlySkuLst().size()){
+            // 根据作业ID获取统计信息
+            OperatioLineStatisticsCommand statisticsCommand = pdaPickingWorkCacheManager.getOperatioLineStatistics(command.getOperationId(),command.getOuId());
+            command.setOnlySku(command.getOnlySkuLst().get(0));
+            command.setOnlySkuQty(statisticsCommand.getInsideSkuAttrIds().get(command.getTipInsideContainerCode()).get(command.getTipSkuLst().get(0)).get(command.getOnlySku()));
+        }
+        log.info("PdaPickingWorkManagerImpl wholeCaseForTipCurrentSku is end");
+        return command;
+    }
+
+    /**
+     * 提示托盘--整箱整托拣货 
+     * 
+     * @author qiming.liu
+     * @param PickingScanResultCommand
+     * @return
+     */
+    @Override
+    public PickingScanResultCommand wholeCaseTipTray(PickingScanResultCommand command) {
+        log.info("PdaPickingWorkManagerImpl wholeCaseTipTray is start");
+        // 根据作业ID获取统计信息
+        OperatioLineStatisticsCommand statisticsCommand = pdaPickingWorkCacheManager.getOperatioLineStatistics(command.getOperationId(),command.getOuId());
+        // 库位上所有外部容器 
+        Set<Long> outerContainerIds = statisticsCommand.getOuterContainerIds().get(command.getLocationId());
+        //提示托盘
+        for(Long outerContainerId : outerContainerIds){
+            Container c = containerDao.findByIdExt(outerContainerId, command.getOuId());
+            //提示外部容器编码
+            command.setTipOuterContainerCode(c.getCode());
+        }
+        log.info("PdaPickingWorkManagerImpl wholeCaseTipTray is end");
+        return command;
+    }
+
+    /**
+     * 提示内部容器--整箱整托拣货 
+     * 
+     * @author qiming.liu
+     * @param PickingScanResultCommand
+     * @return
+     */
+    @Override
+    public PickingScanResultCommand wholeCaseTipInsideContainer(PickingScanResultCommand command) {
+        log.info("PdaPickingWorkManagerImpl wholeCaseTipInsideContainer is start");
+        OperatioLineStatisticsCommand statisticsCommand = pdaPickingWorkCacheManager.getOperatioLineStatistics(command.getOperationId(),command.getOuId());
+        PickingScanResultCommand resultCommand = new PickingScanResultCommand();
+        //根据库位ID提示内部容器列表        
+        if(null == command.getTipContainer() && null != statisticsCommand.getOuterToInside().get(command.getTipOuterContainerCode())){
+            //提示托盘
+            Set<Long> outerContainerIds = statisticsCommand.getOuterContainerIds().get(command.getLocationId());
+            List<String> trayLst = new ArrayList<String>(); 
+            for(Long outerContainerId : outerContainerIds){
+                //外部容器                
+                Container Container = containerDao.findById(outerContainerId);
+                trayLst.add(Container.getCode());
+            }
+        }
+        if(null != statisticsCommand.getOuterContainerIds()){
+            // TODO 有外部容器的情况，整托
+        }else{
+            // 没有外部容器的情况，整箱
+            if(null != statisticsCommand.getInsideContainerIds().get(command.getLocationId())){
+                Set<Long> tipInsideContainers = statisticsCommand.getInsideContainerIds().get(command.getLocationId());
+                for(Long tipInsideContainer : tipInsideContainers){
+                    resultCommand.setTipInsideContainerCode(tipInsideContainer.toString());    
+                }
+            }
+        }
+        log.info("PdaPickingWorkManagerImpl wholeCaseTipInsideContainer is end");
+        return resultCommand;
+    }
+
+    /**
+     * 判断是否是SN/残次商品--整箱整托拣货
+     * 
+     * @author qiming.liu
+     * @param 
+     * @return
+     */
+    @Override
+    public PickingScanResultCommand wholeCaseIsSn(PickingScanResultCommand command) {
+        log.info("PdaPickingWorkManagerImpl wholeCaseIsSn is start");
+        OperatioLineStatisticsCommand statisticsCommand = pdaPickingWorkCacheManager.getOperatioLineStatistics(command.getOperationId(),command.getOuId());
+        List<Long> demergeLst= this.demergeWorkLineToOnlySku(statisticsCommand.getWorkLineIdToOnlySku().get(command.getOnlySku()));
+        
+        List<WhSkuInventorySnCommand> whSkuInventorySnCommands = whSkuInventorySnDao.findWhSkuInventoryByUuid(command.getOuId(), demergeLst.get(3).toString());
+        
+        // 判断是否是SN/残次商品        
+        if(0 == whSkuInventorySnCommands.size()){
+            command.setIsSkuSn(true);
+            List<WhSkuInventoryCommand> whSkuInventoryCommands= whSkuInventoryDao.findInventorysByUuid(command.getOuId(), demergeLst.get(3).toString());
+            Boolean isSkuSnOccupation = false;
+            for(WhSkuInventorySnCommand whSkuInventorySnCommand : whSkuInventorySnCommands){
+                // 判断是否占用SN/残次条码 
+                if(whSkuInventoryCommands.get(0).getOccupationCode() == whSkuInventorySnCommand.getOccupationCode()){
+                    isSkuSnOccupation = true;
+                }
+            }
+            command.setIsSkuSnOccupation(isSkuSnOccupation);
+        }else{
+            command.setIsSkuSn(false);      
+        }
+        log.info("PdaPickingWorkManagerImpl wholeCaseIsSn is end");
+        return null;
+    }
+    
+    /**
+     * 根据库存UUID查找对应SN/残次信息
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<WhSkuInventorySnCommand> findWhSkuInventoryByUuid(Long ouid, String uuid) {
+        return whSkuInventorySnDao.findWhSkuInventoryByUuid(ouid, uuid); 
+    }
+    
+    /**
+     * 拼写工作明细ID和作业明细ID
+     */
+    public static String getWorkLineToOnlySku(Long id, Long workLineId, String uuid) {
+        String lineToSku = "";
+        lineToSku = id + "-" + workLineId + "-" + workLineId;
+        return lineToSku;
+    }
+    
+    /**
+     * 拆分工作明细ID和作业明细ID
+     */
+    public static List<Long> demergeWorkLineToOnlySku(String skuAttrId) {
+        List<Long> lineToSku = new ArrayList<Long>();
+        String[] values = skuAttrId.split("-");
+        for(int i=0; i<values.length; i++){
+            lineToSku.add(Long.valueOf(values[i]));    
+        }
+        return lineToSku;
     }
     
     /****

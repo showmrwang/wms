@@ -2752,13 +2752,52 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         <include refid="whSkuInventoryDynamicWhereExt"/>
 	</select>
 	
-	    <select id="findWhSkuInvCmdByLocationContainerIdIsNull" resultMap="WhSkuInventoryCommandResultExt">
-				select  <include refid="whSkuInventoryColumnsExt" />
-					from 
-					t_wh_sku_inventory 
-					where 
-					location_id = #{locationId} 
-					and ou_id = #{ouId} and outer_container_id is null and inside_container_id is null and occupation_code is null
+    <select id="findWhSkuInvCmdByLocationContainerIdIsNull" resultMap="WhSkuInventoryCommandResultExt">
+			select  <include refid="whSkuInventoryColumnsExt" />
+				from 
+				t_wh_sku_inventory 
+				where 
+				location_id = #{locationId} 
+				and ou_id = #{ouId} and outer_container_id is null and inside_container_id is null and occupation_code is null
     </select>
+    
+    <select id="getSkuInvListGroupUuid" resultMap="WhSkuInventoryResultExt">
+		select  
+			id as id,
+        	sku_id as skuId,
+        	location_id as locationId,
+        	outer_container_id as outerContainerId,
+        	inside_container_id as insideContainerId,
+        	customer_id as customerId,
+        	store_id as storeId,
+        	occupation_code as occupationCode,
+        	occupation_line_id as occupationLineId,
+        	sum(on_hand_qty) as onHandQty,
+        	allocated_qty as allocatedQty,
+        	to_be_filled_qty as toBeFilledQty,
+        	frozen_qty as frozenQty,
+        	inv_status as invStatus,
+        	inv_type as invType,
+        	batch_number as batchNumber,
+        	mfg_date as mfgDate,
+        	exp_date as expDate,
+        	country_of_origin as countryOfOrigin,
+        	inv_attr1 as invAttr1,
+        	inv_attr2 as invAttr2,
+        	inv_attr3 as invAttr3,
+        	inv_attr4 as invAttr4,
+        	inv_attr5 as invAttr5,
+        	uuid as uuid,
+        	is_locked as isLocked,
+        	ou_id as ouId,
+        	occupation_code_source as occupationCodeSource,
+        	inbound_time as inboundTime,
+        	last_modify_time as lastModifyTime
+		from
+			t_wh_sku_inventory
+        <include refid="whSkuInventoryDynamicWhereExt"/>
+        group by
+			uuid
+	</select>
     
 </mapper>

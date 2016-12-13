@@ -41,5 +41,13 @@ public interface WhOperationLineManager extends BaseManager{
      */
     List<WhOperationLineCommand> findOperationLineByOperationId(Long operationId, Long ouId);
     
+    /**
+     * [通用方法] 根据作业明细ID和工作明细ID查询作业明细信息
+     * 
+     * @param id
+     * @param workLineId
+     * @return
+     */
+    WhOperationLineCommand findLineByWorkLineIdAndId(Long id, Long workLineId);
 
 }

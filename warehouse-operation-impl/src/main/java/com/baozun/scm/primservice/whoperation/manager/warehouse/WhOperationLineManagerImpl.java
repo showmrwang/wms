@@ -49,5 +49,11 @@ public class WhOperationLineManagerImpl extends BaseManagerImpl implements WhOpe
         return operationLineList;
     }
 
+    @Override
+    public WhOperationLineCommand findLineByWorkLineIdAndId(Long id, Long workLineId) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
     
 }

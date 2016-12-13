@@ -44,5 +44,13 @@ public interface WhOperationManager extends BaseManager{
      * @return
      */
     WhOperationCommand findOperationByWorkId(Long workId , Long ouId);
+    
+    /**
+     * [通用方法] 根据id获取作业信息
+     * @param id
+     * @param ouId
+     * @return
+     */
+    WhOperationCommand findOperationById(Long id , Long ouId);
 
 }

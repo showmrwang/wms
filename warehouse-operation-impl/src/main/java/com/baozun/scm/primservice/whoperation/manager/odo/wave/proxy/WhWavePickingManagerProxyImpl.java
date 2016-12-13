@@ -328,7 +328,7 @@ public class WhWavePickingManagerProxyImpl implements WhWavePickingManagerProxy 
         whSkuInventory.setOccupationCode(whOdo.getOdoCode());
         whSkuInventory.setOccupationLineId(whOdoOutBoundBoxCommand.getOdoLineId());
         whSkuInventory.setIsLocked(null);
-        List<WhSkuInventory> SkuInventoryList = this.whSkuInventoryDao.getSkuInvListByPramas(whSkuInventory);
+        List<WhSkuInventory> SkuInventoryList = this.whSkuInventoryDao.getSkuInvListGroupUuid(whSkuInventory);
         return SkuInventoryList;
     }
     

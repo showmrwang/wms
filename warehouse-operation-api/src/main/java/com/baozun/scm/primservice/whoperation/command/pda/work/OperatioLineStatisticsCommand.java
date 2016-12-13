@@ -69,6 +69,11 @@ public class OperatioLineStatisticsCommand extends BaseCommand{
     /** 内部容器每个唯一sku对应的货格（is_whole_case=0&&有小车） */
     private Map<Long, Map<String, Set<String>>> insideSkuAttrIdsContainerLattice = new HashMap<Long, Map<String, Set<String>>>();
     
+    //追加统计信息
+    
+    /** 唯一sku与工作明细ID和uuid对应关系 */
+    private Map<String, String> workLineIdToOnlySku = new HashMap<String, String>();
+    
     //columns END
 
     public Boolean getIsWholeCase() {
@@ -196,5 +201,11 @@ public class OperatioLineStatisticsCommand extends BaseCommand{
     }
     public void setInsideSkuAttrIdsContainerLattice(Map<Long, Map<String, Set<String>>> insideSkuAttrIdsContainerLattice) {
         this.insideSkuAttrIdsContainerLattice = insideSkuAttrIdsContainerLattice;
+    }
+    public Map<String, String> getWorkLineIdToOnlySku() {
+        return workLineIdToOnlySku;
+    }
+    public void setWorkLineIdToOnlySku(Map<String, String> workLineIdToOnlySku) {
+        this.workLineIdToOnlySku = workLineIdToOnlySku;
     }
 }

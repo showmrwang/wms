@@ -669,4 +669,12 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @return
      */
     public List<WhSkuInventoryCommand> findWhSkuInventoryByLocationIds(@Param("ouId") Long ouId,@Param("locIdList") List<Long> locIdList);
+    
+    /**
+     * 根据参数查询出库存信息并根据uuid分组--创拣货工作
+     * @author qiming.liu
+     * @param whSkuInventory
+     * @return
+     */
+    List<WhSkuInventory> getSkuInvListGroupUuid(WhSkuInventory whSkuInventory);
 }

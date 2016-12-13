@@ -25,6 +25,11 @@ public class WhOperationManagerImpl extends BaseManagerImpl implements WhOperati
     @Autowired
     private WhOperationDao whOperationDao;
     
+    /**
+     * [通用方法] 创建作业头信息
+     * @param WhOperationCommand
+     * @return
+     */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     @Transactional(propagation = Propagation.SUPPORTS)
@@ -40,6 +45,12 @@ public class WhOperationManagerImpl extends BaseManagerImpl implements WhOperati
         return null;
     }
 
+    /**
+     * [通用方法] 根据作业号查询作业头信息
+     * @param operationCode
+     * @param ouId
+     * @return
+     */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public WhOperationCommand findOperationByCode(String operationCode, Long ouId) {
@@ -47,10 +58,29 @@ public class WhOperationManagerImpl extends BaseManagerImpl implements WhOperati
         return whOperationCommand;
     }
 
+    /**
+     * [通用方法] 根据workId获取作业信息
+     * @param workId
+     * @param ouId
+     * @return
+     */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public WhOperationCommand findOperationByWorkId(Long workId, Long ouId) {
-        WhOperationCommand whOperationCommand = this.whOperationDao.findOperationCommandById(workId, ouId);
+        WhOperationCommand whOperationCommand = this.whOperationDao.findOperationCommandByWorkId(workId, ouId);
+        return whOperationCommand;
+    }
+
+    /**
+     * [通用方法] 根据id获取作业信息
+     * @param id
+     * @param ouId
+     * @return
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public WhOperationCommand findOperationById(Long id, Long ouId) {
+        WhOperationCommand whOperationCommand = this.whOperationDao.findOperationCommandById(id, ouId);
         return whOperationCommand;
     }
     

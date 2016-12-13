@@ -193,7 +193,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
     </select>
     
-    <select id="findOperationCommandById" resultMap="whOperationCommandResultExt">
+    <select id="findOperationCommandByWorkId" resultMap="whOperationCommandResultExt">
     	select 
     		<include refid="whOperationColumnsExt" />
 	    from 
@@ -205,7 +205,17 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			</if>
 		</where>
     </select>
-		
-		
-	
+    
+	<select id="findOperationCommandById" resultMap="whOperationCommandResultExt">
+    	select 
+    		<include refid="whOperationColumnsExt" />
+	    from 
+	    	t_wh_operation
+		<where> 
+				ou_id = #{ouId}
+			<if test="id!=null">
+				and id = #{id}
+			</if>
+		</where>
+    </select>	
 </mapper>
