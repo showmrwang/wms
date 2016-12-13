@@ -293,6 +293,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				<if test="lifecycle!=null">
 					and lifecycle = #{lifecycle}
 				</if>
+				
+				<if test="isRunWave!=null">
+					and is_run_wave = #{isRunWave}
+				</if>
 		</where>
 	</sql>
 	
