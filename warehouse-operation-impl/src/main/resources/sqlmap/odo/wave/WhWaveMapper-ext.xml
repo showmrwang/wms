@@ -441,7 +441,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			</if>
 			<if test="searchCreateTimeStart!=null and searchCreateTimeStart!='' ">
 				and
-				DATE_FORMAT(wave.create_time,'%Y-%m-%d')&lt;=#{searchCreateTimeStart}
+				DATE_FORMAT(wave.create_time,'%Y-%m-%d')&gt;=#{searchCreateTimeStart}
 			</if>
 			<if test="searchCreateTimeEnd!=null and searchCreateTimeEnd!=''">
 				and

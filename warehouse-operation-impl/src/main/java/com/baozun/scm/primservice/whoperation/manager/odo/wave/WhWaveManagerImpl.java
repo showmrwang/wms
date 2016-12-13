@@ -239,8 +239,8 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
                     wave.setStatusName(sys == null ? (wave.getStatus() + "") : sys.getDicLabel());
                 }
                 if (StringUtils.hasText(wave.getPhaseCode())) {
-                    SysDictionary sys = dicMap.get(Constants.WAVE_STATUS + "_" + wave.getPhaseCode());
-                    wave.setStatusName(sys == null ? wave.getPhaseCode() : sys.getDicLabel());
+                    SysDictionary sys = dicMap.get(Constants.WH_WAVE_PHASE + "_" + wave.getPhaseCode());
+                    wave.setPhaseName(sys == null ? wave.getPhaseCode() : sys.getDicLabel());
                 }
             }
 
@@ -545,6 +545,31 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public WhWaveMaster findWaveMasterbyIdOuId(Long waveMasterId, Long ouId) {
         return this.whWaveMasterDao.findByIdExt(waveMasterId, ouId);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<WhWave> findWaveNotRunning(Long ouId) {
+        WhWave wave = new WhWave();
+        wave.setOuId(ouId);
+        wave.setIsRunWave(false);
+        wave.setAllocatePhase(null);
+        wave.setLifecycle(Constants.LIFECYCLE_START);
+        List<WhWave> list = this.whWaveDao.findListByParam(wave);
+        return list;
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void startWave(WhWave wave) {
+        wave.setIsRunWave(true);
+        wave.setStatus(WaveStatus.WAVE_EXECUTED);
+        wave.setStartTime(new Date());
+        int updateCount = this.whWaveDao.saveOrUpdateByVersion(wave);
+        if (updateCount <= 0) {
+            log.error("update wave[id:{}] error", wave.getId());
+            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+        }
     }
 
 }

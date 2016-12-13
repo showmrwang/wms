@@ -201,5 +201,20 @@ public interface WhWaveManager extends BaseManager {
      * @return
      */
     public WhWaveMaster findWaveMasterbyIdOuId(Long waveMasterId, Long ouId);
+
+    /**
+     * 查找所有未运行的波次
+     * 
+     * @param id
+     * @return
+     */
+    public List<WhWave> findWaveNotRunning(Long id);
+
+    /**
+     * 启动波次
+     * 
+     * @param wave
+     */
+    public void startWave(WhWave wave);
     
 }
