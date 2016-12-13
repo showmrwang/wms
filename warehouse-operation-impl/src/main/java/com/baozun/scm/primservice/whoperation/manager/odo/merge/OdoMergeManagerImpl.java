@@ -587,6 +587,7 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
                 // 状态:已合并->新建;
                 odo.setOdoStatus(OdoStatus.ODO_NEW);
                 odo.setGroupOdoCode(null);
+                break;
             default:
                 throw new BusinessException("更新原来订单状态失败2");
         }
@@ -942,6 +943,7 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
             case Constants.ODO_LINE_CANCEL:
                 // 状态:新建->取消;
                 whOdoLine.setOdoLineStatus(OdoStatus.ODOLINE_CANCEL);
+                break;
             case Constants.ODO_LINE_NEW:
                 // 状态:已合并->新建;
                 whOdoLine.setOdoLineStatus(OdoStatus.ODO_NEW);
@@ -1126,6 +1128,10 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void odoMergeCancel(Long whOdoId, Long ouId, Long userId) {
+        WhOdo odo = this.whOdoDao.findByIdOuId(whOdoId, ouId);
+        if (null == odo.getOriginalOdoCode() || !StringUtils.hasText(odo.getOriginalOdoCode())) {
+            throw new BusinessException("不是合并订单");
+        }
         // TODO 更新原来合并出库单状态为取消
         this.updateOriginalOdo(null, whOdoId, null, ouId, userId, Constants.ODO_CANCEL);
         // TODO 更新原来合并出库单明细状态为取消
@@ -1136,21 +1142,20 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
             }
         }
         // TODO 更新原始出库单状态为新建
-        WhOdo odo = this.whOdoDao.findByIdOuId(whOdoId, ouId);
-        if (null == odo.getOriginalOdoCode() || StringUtils.hasText(odo.getOriginalOdoCode())) {
-            throw new BusinessException("不是合并订单");
-        }
         String[] originalOdoCodes = odo.getOriginalOdoCode().split(",");
+        Map<Long, String> reNewOdoMap = new HashMap<Long, String>();
         for (String originalOdoCode : originalOdoCodes) {
-            odo = this.whOdoDao.findOdoByCodeAndOuId(originalOdoCode, ouId);
-            this.updateOriginalOdo(null, null, odo, ouId, userId, Constants.ODO_NEW);
+            WhOdo whOdo = this.whOdoDao.findOdoByCodeAndOuId(originalOdoCode, ouId);
+            reNewOdoMap.put(whOdo.getId(), whOdo.getCounterCode());
+            this.updateOriginalOdo(null, null, whOdo, ouId, userId, Constants.ODO_NEW);
             // TODO 更新原始出库单明细状态为新建
-            List<WhOdoLine> odoLineList = this.whOdoLineDao.findOdoLineListByOdoIdOuId(odo.getId(), ouId);
+            List<WhOdoLine> odoLineList = this.whOdoLineDao.findOdoLineListByOdoIdOuId(whOdo.getId(), ouId);
             if (null != odoLineList && !odoLineList.isEmpty()) {
                 for (WhOdoLine odoLine : odoLineList) {
                     this.updateOdoLine(odoLine, userId, Constants.ODO_LINE_NEW);
                 }
             }
         }
+        distributionModeArithmeticManagerProxy.CancelFormergeOdo(odo.getCounterCode(), whOdoId, reNewOdoMap);
     }
 }

@@ -37,4 +37,10 @@ public class OdoMergeManagerProxyImpl implements OdoMergeManagerProxy {
         return idList;
     }
 
+    @Override
+    public void odoMergeCancel(Long odoId, Long ouId, Long userId) {
+        this.odoMergeManager.odoMergeCancel(odoId, ouId, userId);
+
+    }
+
 }
