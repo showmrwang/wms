@@ -48,6 +48,6 @@ public class WhOperationLineManagerImpl extends BaseManagerImpl implements WhOpe
         List<WhOperationLineCommand> operationLineList = whOperationLineDao.findOperationLineByOperationId(operationId, ouId);
         return operationLineList;
     }
-    
+
     
 }

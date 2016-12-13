@@ -744,6 +744,8 @@ public class ErrorCodes {
     public static final int  OUT_BOUNX_BOX_IS_STATUS_NO= 70049;
     /**库位库存不存在*/
     public static final int LOCATION_INVENTORY_IS_NO = 70050;
+    /**校验作业执行明细*/
+    public static final int CHECK_OPERTAION_EXEC_LINE_DIFF = 70050;
     
     
     // 70001-80000 tangming

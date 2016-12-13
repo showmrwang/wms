@@ -11,6 +11,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationLineC
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationExecLine;
 
 public interface PdaPickingWorkCacheManager extends BaseManager{
 
@@ -70,7 +71,7 @@ public interface PdaPickingWorkCacheManager extends BaseManager{
     public CheckScanResultCommand locationTipcache(Long operatorId,Integer pickingType,List<Long> locationIds);
     
     /***
-     * 缓存作业明细
+     * 缓存单个库位的作业明细
      *  @tangming
      * @param operatorId
      * @param locationId
@@ -151,7 +152,24 @@ public interface PdaPickingWorkCacheManager extends BaseManager{
        * @param locationId
        * @param ouId
        */
-     public Long cachePickingOperLineId(Long operationId,String skuAttrIds,Long outerContainerId,Long insideContainerId,Long locationId,Long ouId);
+     public Long cachePickingOperLineId(Long operationId,String skuAttrIds,Long outerContainerId,Long insideContainerId,Long locationId,Long ouId,Boolean isShortPicking,Double scanQty);
+     
+     
+     /***
+      * 缓存周转箱作业明细
+      * @param whoperLinCmd
+      * @param trunOverBoxId(周转箱id)
+      * @param operationId
+      */
+     public void cacheTurnoverBoxPickingWhOperLineCmd(Long trunOverBoxId,Long operationId,Long operationLineId);
+     
+     /***
+      * 缓存出库箱箱作业明细
+      * @param whoperLinCmd
+      * @param trunOverBoxId(周转箱id)
+      * @param operationId
+      */
+     public void cacheOutBoundxBoxPickingWhOperLineCmd(String outBoundxBoxCode,Long operationId,Long operationLineId);
       
     
 }
