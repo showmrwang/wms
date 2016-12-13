@@ -3956,8 +3956,11 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 
 
         }
-
-        this.replenishmentMsgDao.deleteByIdOuId(msg.getId(), ouId);
+        // 删除库位补货信息
+        int count = this.replenishmentMsgDao.deleteByIdOuId(msg.getId(), ouId);
+        if (count <= 0) {
+            throw new BusinessException(ErrorCodes.DELETE_DATA_ERROR);
+        }
     }
     
     

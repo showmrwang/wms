@@ -1,6 +1,7 @@
 package com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy;
 
 import java.util.List;
+import java.util.Map;
 
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Location;
@@ -31,4 +32,13 @@ public interface LocationReplenishmentManagerProxy extends BaseManager {
      * @param ouId
      */
     List<ReplenishmentMsg> findReplenishmentMsgListByOuId(Long ouId);
+
+    /**
+     * 插入补货失败信息
+     * 
+     * @param map
+     * @param logId
+     * @return
+     */
+    boolean insertLocationReplenishmentErrorMsg(Map<String, List<ReplenishmentMsg>> map, String logId);
 }

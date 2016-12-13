@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -36,6 +38,8 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.WhSkuWhmgmt;
 
 @Service("locationReplenishmentManagerProxy")
 public class LocationReplenishmentManagerProxyImpl extends BaseManagerImpl implements LocationReplenishmentManagerProxy {
+    private static final Logger log = LoggerFactory.getLogger(LocationReplenishmentManagerProxy.class);
+
     @Autowired
     private LocationManager locationManager;
     @Autowired
@@ -231,6 +235,31 @@ public class LocationReplenishmentManagerProxyImpl extends BaseManagerImpl imple
     @Override
     public List<ReplenishmentMsg> findReplenishmentMsgListByOuId(Long ouId) {
         return this.replenishmentMsgManager.findMsgByOuId(ouId);
+    }
+
+    @Override
+    public boolean insertLocationReplenishmentErrorMsg(Map<String, List<ReplenishmentMsg>> map, String logId) {
+        if (map == null || map.size() <= 0) {
+            return false;
+        }
+        Iterator<Entry<String, List<ReplenishmentMsg>>> it = map.entrySet().iterator();
+        while (it.hasNext()) {
+            Entry<String, List<ReplenishmentMsg>> entry = it.next();
+            String errorCode = entry.getKey();
+            List<ReplenishmentMsg> msgList = entry.getValue();
+            for (ReplenishmentMsg msg : msgList) {
+                msg.setErrorCode(errorCode);
+                try {
+
+                    this.replenishmentMsgManager.updateByVersion(msg);
+                } catch (Exception e) {
+                    log.error(e + "");
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
 
