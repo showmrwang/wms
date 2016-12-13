@@ -40,6 +40,7 @@ import com.baozun.scm.primservice.whoperation.command.odo.wave.OdoWaveGroupSearc
 import com.baozun.scm.primservice.whoperation.command.odo.wave.WaveCommand;
 import com.baozun.scm.primservice.whoperation.command.sku.SkuRedisCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.UomCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhDistributionPatternRuleCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
 import com.baozun.scm.primservice.whoperation.constant.WaveStatus;
@@ -58,6 +59,7 @@ import com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy.Distributio
 import com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy.WaveDistributionModeManagerProxy;
 import com.baozun.scm.primservice.whoperation.manager.redis.SkuRedisManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.InventoryStatusManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.WhDistributionPatternRuleManager;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
@@ -105,6 +107,8 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
     private WaveDistributionModeManagerProxy waveDistributionModeManagerProxy;
     @Autowired
     private SkuRedisManager skuRedisManager;
+    @Autowired
+    private WhDistributionPatternRuleManager whDistributionPatternRuleManager;
 
     @Override
     public Pagination<OdoResultCommand> findOdoListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params) {
@@ -738,6 +742,7 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
     public Pagination<OdoWaveGroupResultCommand> findOdoSummaryListForWaveByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params) {
         Pagination<OdoWaveGroupResultCommand> pages = this.odoManager.findOdoListForWaveByQueryMapWithPageExt(page, sorts, params);
         try {
+            Long ouId = (Long) params.get("ouId");
 
             if (pages != null) {
                 Set<String> dic1 = new HashSet<String>();// 出库单状态
@@ -747,6 +752,7 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
                 Set<String> transCodeSet = new HashSet<String>();// 运输服务商
                 Set<Long> customerIdSet = new HashSet<Long>();
                 Set<Long> storeIdSet = new HashSet<Long>();
+                Map<String,String> distributionModeMap=new HashMap<String,String>();
                 List<OdoWaveGroupResultCommand> list = pages.getItems();
                 if (list != null && list.size() > 0) {
                     for (OdoWaveGroupResultCommand command : list) {
@@ -779,8 +785,16 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
                     if (dic2.size() > 0) {
                         map.put(Constants.ODO_TYPE, new ArrayList<String>(dic2));
                     }
+                    //配货模式
                     if (dic3.size() > 0) {
-                        map.put(Constants.DISTRIBUTE_MODE, new ArrayList<String>(dic3));
+                        for (String ruleCode : dic3) {
+                            
+                            WhDistributionPatternRuleCommand rule = this.whDistributionPatternRuleManager.findRuleByCode(ruleCode, ouId);
+                            if (rule != null) {
+                                distributionModeMap.put(ruleCode, rule.getDistributionPatternName());
+                            }
+                        }
+                       
                     }
                     if (dic4.size() > 0) {
                         map.put(Constants.ODO_PRE_TYPE, new ArrayList<String>(dic4));
@@ -821,8 +835,12 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
                             groupName += "$" + command.getOdoTypeName();
                         }
                         if (StringUtils.hasText(command.getDistributeMode())) {
-                            SysDictionary sys = dicMap.get(Constants.DISTRIBUTE_MODE + "_" + command.getDistributeMode());
-                            command.setDistributeModeName(sys.getDicLabel());
+                            String name = distributionModeMap.get(command.getDistributeMode());
+                            if (StringUtils.hasText(name)) {
+                                command.setDistributeModeName(name);
+                            } else {
+                                command.setDistributeModeName(command.getDistributeMode());
+                            }
                             groupName += "$" + command.getDistributeModeName();
                         }
                         if (StringUtils.hasText(command.getTransportServiceProvider())) {

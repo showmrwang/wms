@@ -400,6 +400,12 @@
 			<if test="isExceptionOrder!=null and isExceptionOrder == 0">
 				and IFNULL(odo.is_assign_success, 1) != 0
 			</if>
+			<if test="isMerged!=null and isMerged == 1">
+				and odo.original_odo_code is not null and odo.original_odo_code !=''
+			</if>
+			<if test="isMerged!=null and isMerged == 0">
+				and (odo.original_odo_code is null or odo.original_odo_code ='')
+			</if>
 			<if test="lineFlag">
 				and EXISTS(select 1 from t_wh_odo_line odoline
 				inner join t_wh_sku

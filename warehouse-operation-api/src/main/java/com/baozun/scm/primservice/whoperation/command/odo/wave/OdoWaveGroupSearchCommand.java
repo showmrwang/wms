@@ -114,6 +114,16 @@ public class OdoWaveGroupSearchCommand extends BaseCommand {
     
     private Integer isExceptionOrder;
 
+    private Integer isMerged;
+
+    public Integer getIsMerged() {
+        return isMerged;
+    }
+
+    public void setIsMerged(Integer isMerged) {
+        this.isMerged = isMerged;
+    }
+
     public Long getGroupCustomerId() {
         return groupCustomerId;
     }
