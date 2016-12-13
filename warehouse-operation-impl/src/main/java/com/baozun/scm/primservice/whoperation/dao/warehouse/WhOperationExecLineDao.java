@@ -14,9 +14,8 @@
  */
 package com.baozun.scm.primservice.whoperation.dao.warehouse;
 
+import java.util.List;
 import java.util.Map;
-
-import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationExecLine;
 
 import lark.common.annotation.CommonQuery;
 import lark.common.annotation.QueryPage;
@@ -24,6 +23,10 @@ import lark.common.dao.Page;
 import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
+
+import org.apache.ibatis.annotations.Param;
+
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationExecLine;
 
 
 
@@ -39,4 +42,23 @@ public interface WhOperationExecLineDao extends BaseDao<WhOperationExecLine, Lon
 
     @CommonQuery
     int saveOrUpdateByVersion(WhOperationExecLine o);
+    
+    /****
+     * 校验作业执行明细
+     * @param operationId
+     * @param ouId
+     * @return
+     */
+    public List<WhOperationExecLine> checkOperationExecLine(@Param("operationId")Long operationId,@Param("ouId") Long ouId);
+    
+    
+    public WhOperationExecLine findOperationExecLine(@Param("ouId") Long ouId,@Param("id") Long id);
+    
+    /***
+     * 获取当前作业下的所有执行明细
+     * @param operationId
+     * @param ouId
+     * @return
+     */
+    public List<WhOperationExecLine> getOperationExecLine(@Param("operationId")Long operationId,@Param("ouId") Long ouId);
 }

@@ -148,5 +148,12 @@ public interface WhSkuInventoryManager extends BaseManager {
      * @param wh
      */
     void replenishmentToLocation(ReplenishmentMsg msg, ReplenishmentRuleCommand rule, Warehouse wh);
+    
+    /***
+     * pda拣货生成容器库存
+     * @param operationId
+     * @param ouId
+     */
+    public void pickingAddContainerInventory(Long operationId,Long ouId,Integer pickingWay,Boolean isTabbInvTotal,Long userId,ContainerCommand outerCmd,ContainerCommand insideCmd);
 
 }

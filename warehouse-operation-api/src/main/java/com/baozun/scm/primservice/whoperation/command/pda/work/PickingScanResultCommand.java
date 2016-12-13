@@ -12,6 +12,13 @@ public class PickingScanResultCommand extends BaseCommand {
      */
     private static final long serialVersionUID = 5696756957904723061L;
 
+    /**工作条码*/
+    private String workBarCode;
+    
+    /**小车，出库箱，周转箱名称*/
+    private String name;
+    /**周转箱名称(有小车，有周转箱的情况)*/
+    private String outBoundBoxName;
     /**
      * 提示外部容器号(小车,外部容器)
      */
@@ -923,6 +930,36 @@ public class PickingScanResultCommand extends BaseCommand {
 
     public void setIsUserNewContainer(Boolean isUserNewContainer) {
         this.isUserNewContainer = isUserNewContainer;
+    }
+
+
+    public String getWorkBarCode() {
+        return workBarCode;
+    }
+
+
+    public void setWorkBarCode(String workBarCode) {
+        this.workBarCode = workBarCode;
+    }
+
+
+    public String getName() {
+        return name;
+    }
+
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+
+    public String getOutBoundBoxName() {
+        return outBoundBoxName;
+    }
+
+
+    public void setOutBoundBoxName(String outBoundBoxName) {
+        this.outBoundBoxName = outBoundBoxName;
     }
 
     

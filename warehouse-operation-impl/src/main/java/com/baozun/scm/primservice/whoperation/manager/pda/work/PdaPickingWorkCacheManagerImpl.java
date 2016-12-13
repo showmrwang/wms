@@ -2,6 +2,7 @@ package com.baozun.scm.primservice.whoperation.manager.pda.work;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -19,6 +20,7 @@ import com.baozun.redis.manager.CacheManager;
 import com.baozun.scm.primservice.whoperation.command.pda.work.CheckScanResultCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.work.LocationTipCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.work.OperatioLineStatisticsCommand;
+import com.baozun.scm.primservice.whoperation.command.pda.work.OperationLineCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.work.ScanTipSkuCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationLineCommand;
@@ -38,6 +40,7 @@ import com.baozun.scm.primservice.whoperation.manager.pda.inbound.putaway.SkuCat
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhOperationLineManager;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
 import com.baozun.scm.primservice.whoperation.model.warehouse.OutBoundBoxType;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationExecLine;
 import com.baozun.utilities.type.StringUtil;
 
 @Service("pdaPickingWorkCacheManager")
@@ -111,7 +114,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
         return cSRCmd;
     }
     /***
-     * 统计要拣货的库位库存(一个库位)
+     * 统计要拣货的库位库存
      * @param operationId
      * @param locationId
      * @param ouId
@@ -119,44 +122,48 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
      */
     public List<WhSkuInventoryCommand> cacheLocationInventory(Long operationId,Long locationId,Long ouId) {
         log.info("pdaManmadePutawayCacheManager cacheLocationInventory is start");
-        List<WhSkuInventoryCommand> skuInvList = cacheManager.getObject(CacheConstants.CACHE_LOC_INVENTORY + operationId.toString());
-        if(null == skuInvList) {
-            List<WhSkuInventoryCommand> locInventoryList = new ArrayList<WhSkuInventoryCommand>();
-            List<WhSkuInventoryCommand> list = cacheManager.getObject(CacheConstants.CACHE_LOC_INVENTORY + operationId.toString());
-            if(null == list || list.size() == 0) {
-                List<WhSkuInventoryCommand> skuInvCmdList = whSkuInventoryDao.findWhSkuInvCmdByLocationContainerIdIsNull(ouId,locationId);
-                if(null == skuInvCmdList || skuInvCmdList.size() == 0) {
+        List<WhSkuInventoryCommand> skuInvList = cacheManager.getObject(CacheConstants.CACHE_LOC_INVENTORY + operationId.toString()+locationId.toString());
+        if(null == skuInvList || skuInvList.size() == 0) {
+            skuInvList = new ArrayList<WhSkuInventoryCommand>();
+            List<WhSkuInventoryCommand> skuInvCmdList = whSkuInventoryDao.findWhSkuInvCmdByLocationContainerIdIsNull(ouId,locationId);
+            if(null == skuInvCmdList || skuInvCmdList.size() == 0) {
                     throw new BusinessException(ErrorCodes.LOCATION_INVENTORY_IS_NO);   //库位库存不存在
-                } 
-            }
-            List<WhOperationLineCommand> operationLineList = whOperationLineDao.findOperationLineByLocationId(operationId,ouId,locationId);
+            } 
+            List<WhOperationLineCommand> operationLineList = whOperationLineDao.findOperationLineByOperationId(operationId, ouId);   //当前工作下所有的作业明细集合
             for(WhOperationLineCommand operLineCmd : operationLineList) {
-                WhSkuInventoryCommand invSkuCmd = new WhSkuInventoryCommand();
-                invSkuCmd.setSkuId(operLineCmd.getSkuId()); 
-                invSkuCmd.setInvType(operLineCmd.getInvType());
-                invSkuCmd.setBatchNumber(operLineCmd.getBatchNumber());
-                invSkuCmd.setMfgDate(operLineCmd.getMfgDate());
-                invSkuCmd.setExpDate(operLineCmd.getExpDate());
-                invSkuCmd.setCountryOfOrigin(operLineCmd.getCountryOfOrigin());
-                invSkuCmd.setInvAttr1(operLineCmd.getInvAttr1());
-                invSkuCmd.setInvAttr2(operLineCmd.getInvAttr2());
-                invSkuCmd.setInvAttr3(operLineCmd.getInvAttr3());
-                invSkuCmd.setInvAttr4(operLineCmd.getInvAttr4());
-                invSkuCmd.setInvAttr5(operLineCmd.getInvAttr5());
-                invSkuCmd.setInvStatus(operLineCmd.getInvStatus());
-                String invSkuCmdIds = SkuCategoryProvider.getSkuAttrIdByInv(invSkuCmd);
-                for(WhSkuInventoryCommand skuInvCmd:list) {
-                    String skuInvCmdIds = SkuCategoryProvider.getSkuAttrIdByInv(skuInvCmd);
-                    if(invSkuCmdIds.equals(skuInvCmdIds)) {   //库存属性相同,确定一条库位库存记录
-                        if(!locInventoryList.contains(skuInvCmd)) {
-                            locInventoryList.add(skuInvCmd);
+                String opLineSkuAttrIds = SkuCategoryProvider.getSkuAttrIdByOperationLine(operLineCmd);
+                for(WhSkuInventoryCommand skuInvCmd:skuInvCmdList) {
+                        String skuAttrIds = SkuCategoryProvider.getSkuAttrIdByInv(skuInvCmd);
+                        if(opLineSkuAttrIds.equals(skuAttrIds)){
+                            if(null != operLineCmd.getFromOuterContainerId() && null != skuInvCmd.getOuterContainerId()) { //外部容器不为空
+                                if(operLineCmd.getFromOuterContainerId() == skuInvCmd.getOuterContainerId()) {
+                                    if(operLineCmd.getFromInsideContainerId().equals(skuInvCmd.getInsideContainerId())) {
+                                        skuInvList.add(skuInvCmd);    //外部容器
+                                    }
+                                }
+                            }else{
+                                if(null == operLineCmd.getFromOuterContainerId() && null == skuInvCmd.getOuterContainerId()){
+                                    if(null != operLineCmd.getFromInsideContainerId() && null != skuInvCmd.getInsideContainerId()) {
+                                        if(operLineCmd.getFromInsideContainerId().equals(skuInvCmd.getInsideContainerId())) {
+                                            skuInvList.add(skuInvCmd);    //外部容器
+                                        }
+                                    }else{  //散装
+                                        skuInvList.add(skuInvCmd); 
+                                    }
+                                }
+                            }
                         }
-                    }
-                }
+               }
             }
-            
-            
-            cacheManager.setObject(CacheConstants.CACHE_LOC_INVENTORY + operationId.toString(), locInventoryList, CacheConstants.CACHE_ONE_DAY);
+            cacheManager.setObject(CacheConstants.CACHE_LOC_INVENTORY + operationId.toString()+locationId.toString(), skuInvList, CacheConstants.CACHE_ONE_DAY);
+            //缓存一次作业下的所有库位库存
+            List<WhSkuInventoryCommand> allSkuInvList = cacheManager.getObject(CacheConstants.CAHCEH_LOCATIONS_INVENTORY  + operationId.toString());
+            if(null == allSkuInvList) {
+                allSkuInvList = skuInvList;
+            }else{
+                allSkuInvList.addAll(skuInvList);
+            }
+            cacheManager.setObject(CacheConstants.CAHCEH_LOCATIONS_INVENTORY + operationId.toString(), allSkuInvList, CacheConstants.CACHE_ONE_DAY);
         }
         log.info("pdaManmadePutawayCacheManager cacheLocationInventory is end");
         return skuInvList;
@@ -1039,34 +1046,66 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
        * @param insideContainerId
        * @param locationId
        * @param ouId
+       * @param isShortPicking
+       * @param scanQty
        */
-     public Long cachePickingOperLineId(Long operationId,String skuAttrIds,Long outerContainerId,Long insideContainerId,Long locationId,Long ouId) {
+     public Long cachePickingOperLineId(Long operationId,String skuAttrIds,Long outerContainerId,Long insideContainerId,Long locationId,Long ouId,Boolean isShortPicking,Double scanQty) {
           log.info("PdaPickingWorkCacheManagerImpl cachePickingOperLineId is start");
+          OperationLineCacheCommand operLineCacheCmd = cacheManager.getObject(CacheConstants.OPERATION_LINE_TRUNKFUL + operationId.toString());
           List<WhOperationLineCommand> operationLineList = this.cacheOperationLine(operationId, ouId);
           Long operationLineId = null;
           for(WhOperationLineCommand operLineCmd:operationLineList) {
-              WhSkuInventoryCommand invSkuCmd = new WhSkuInventoryCommand();
-              invSkuCmd.setSkuId(operLineCmd.getSkuId()); 
-              invSkuCmd.setInvType(operLineCmd.getInvType());
-              invSkuCmd.setBatchNumber(operLineCmd.getBatchNumber());
-              invSkuCmd.setMfgDate(operLineCmd.getMfgDate());
-              invSkuCmd.setExpDate(operLineCmd.getExpDate());
-              invSkuCmd.setCountryOfOrigin(operLineCmd.getCountryOfOrigin());
-              invSkuCmd.setInvAttr1(operLineCmd.getInvAttr1());
-              invSkuCmd.setInvAttr2(operLineCmd.getInvAttr2());
-              invSkuCmd.setInvAttr3(operLineCmd.getInvAttr3());
-              invSkuCmd.setInvAttr4(operLineCmd.getInvAttr4());
-              invSkuCmd.setInvAttr5(operLineCmd.getInvAttr5());
-              invSkuCmd.setInvStatus(operLineCmd.getInvStatus());
-              String invSkuCmdIds = SkuCategoryProvider.getSkuAttrIdByInv(invSkuCmd);
-             if(locationId == operLineCmd.getFromLocationId() && invSkuCmdIds.equals(skuAttrIds) && null != outerContainerId && outerContainerId == operLineCmd.getFromOuterContainerId() && null != insideContainerId && insideContainerId == operLineCmd.getFromInsideContainerId()) {
+              String invSkuCmdIds = SkuCategoryProvider.getSkuAttrIdByOperationLine(operLineCmd);
+             if(locationId == operLineCmd.getFromLocationId() && invSkuCmdIds.equals(skuAttrIds) && null != insideContainerId && insideContainerId == operLineCmd.getFromInsideContainerId() && null != outerContainerId && outerContainerId == operLineCmd.getFromOuterContainerId() ) {
                  operationLineId  = operLineCmd.getId();
-                 break;
+                 //判断当前作业明细id是否在缓存中
+                 if(null == operLineCacheCmd) {
+                     operLineCacheCmd = new OperationLineCacheCommand();
+                     if(isShortPicking) {//短拣扫描
+                         Set<Long> shortPikcingOperIds =  new HashSet<Long>();
+                         shortPikcingOperIds.add(operationLineId);
+                     }else{ //非短拣扫描
+                         Set<Long> pickingOperIds =  new HashSet<Long>();
+                         pickingOperIds.add(operationLineId);
+                     }
+                     Map<Long,Double> operLineIdToQty = new HashMap<Long,Double>();
+                     operLineIdToQty.put(operationLineId, scanQty);
+                     break;
+                 }else{
+                     if(isShortPicking) {
+                         Set<Long> shortPikcingOperIds = operLineCacheCmd.getShortPikcingOperIds();
+                         if(null == shortPikcingOperIds) {
+                             shortPikcingOperIds = new HashSet<Long>();
+                         }else if(shortPikcingOperIds.contains(operationLineId)){
+                             continue;
+                         }
+                         shortPikcingOperIds.add(operationLineId);
+                     }else{
+                         Set<Long> pickingOperIds = operLineCacheCmd.getPickingOperIds();
+                         if(null == pickingOperIds){
+                             pickingOperIds = new HashSet<Long>();
+                         }else if(pickingOperIds.contains(operationLineId)) {
+                             continue;
+                         }
+                         pickingOperIds.add(operationLineId);
+                     }
+                     break;
+                 }
+                 
              }
           }
           if(null == operationLineId){
               throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
           }
+          Map<Long,Double> operLineIdToQty =  operLineCacheCmd.getOperLineIdToQty();
+          if(null == operLineIdToQty) {
+              operLineIdToQty = new HashMap<Long,Double>();
+              operLineIdToQty.put(operationLineId, scanQty);
+          }else{
+              Double qty = operLineIdToQty.get(operationLineId);
+              operLineIdToQty.put(operationLineId, qty+scanQty);
+          }
+          cacheManager.setObject(CacheConstants.OPERATION_LINE_TRUNKFUL + operationId.toString(), operLineCacheCmd, CacheConstants.CACHE_ONE_DAY);
           log.info("PdaPickingWorkCacheManagerImpl cachePickingOperLineId is end");
           return operationLineId;
       }
@@ -1090,6 +1129,83 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
           
           return operationLineList;
       }
+      
+      
+      
+      /***
+       * 缓存周转箱作业明细
+       * @param whoperLinCmd
+       * @param trunOverBoxId(周转箱id)
+       * @param operationId
+       */
+      public void cacheTurnoverBoxPickingWhOperLineCmd(Long trunOverBoxId,Long operationId,Long operationLineId){
+          OperationLineCacheCommand operLineCacheCmd = cacheManager.getObject(CacheConstants.OPERATION_LINE_TRUNKFUL + operationId.toString());
+          if(null == operLineCacheCmd) {
+              throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+          }else{
+              Set<Long> turnoverBoxs = operLineCacheCmd.getTurnoverBoxs();   //周转箱集合
+              if(null == turnoverBoxs) {
+                  turnoverBoxs = new HashSet<Long>();
+              }
+              turnoverBoxs.add(trunOverBoxId);
+              Map<Long,Set<Long>> turnoverBoxsOpLineIdMap = operLineCacheCmd.getTurnoverBoxsOpLineIdMap();
+              if(null == turnoverBoxsOpLineIdMap) {
+                  turnoverBoxsOpLineIdMap = new HashMap<Long,Set<Long>>();
+                  Set<Long> operationLineIds = new HashSet<Long>();
+                  operationLineIds.add(operationLineId);
+                  turnoverBoxsOpLineIdMap.put(trunOverBoxId, operationLineIds);
+              }else{
+                  Set<Long> operationLineIds = turnoverBoxsOpLineIdMap.get(trunOverBoxId);
+                  if(null == operationLineIds) {
+                      operationLineIds = new HashSet<Long>();
+                  } 
+                  operationLineIds.add(operationLineId);
+                  
+                  turnoverBoxsOpLineIdMap.put(trunOverBoxId, operationLineIds);
+              }
+             
+              operLineCacheCmd.setTurnoverBoxs(turnoverBoxs);  //周转箱列表
+              operLineCacheCmd.setTurnoverBoxsOpLineIdMap(turnoverBoxsOpLineIdMap);   //周转箱操作的作业明细
+          }
+          cacheManager.setObject(CacheConstants.OPERATION_LINE_TRUNKFUL + operationId.toString(), operLineCacheCmd, CacheConstants.CACHE_ONE_DAY);
+      }
+      
+      /***
+       * 缓存出库箱箱作业明细
+       * @param whoperLinCmd
+       * @param trunOverBoxId(周转箱id)
+       * @param operationId
+       */
+      public void cacheOutBoundxBoxPickingWhOperLineCmd(String outBoundxBoxCode,Long operationId,Long operationLineId){
+          OperationLineCacheCommand operLineCacheCmd = cacheManager.getObject(CacheConstants.OPERATION_LINE_TRUNKFUL + operationId.toString());
+          if(null == operLineCacheCmd) {
+              throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+          }else{
+              Set<String> outBoundxBoxs = operLineCacheCmd.getOutBoundxBoxs();   //周转箱集合
+              if(null == outBoundxBoxs) {
+                  outBoundxBoxs = new HashSet<String>();
+              }
+              outBoundxBoxs.add(outBoundxBoxCode);
+              Map<String,Set<Long>> outBoundxBoxsOpLineIdMap = operLineCacheCmd.getOutBoundxBoxOpLineIdMap();
+              if(null == outBoundxBoxsOpLineIdMap) {
+                  outBoundxBoxsOpLineIdMap =  new HashMap<String,Set<Long>>();
+                  Set<Long> operationIds = new HashSet<Long>();
+                  operationIds.add(operationLineId);
+                  outBoundxBoxsOpLineIdMap.put(outBoundxBoxCode, operationIds);
+              }else{
+                  Set<Long> operationIds = outBoundxBoxsOpLineIdMap.get(outBoundxBoxCode);
+                  if(null == operationIds) {
+                      operationIds = new HashSet<Long>();
+                  }
+                  operationIds.add(operationLineId);
+                  outBoundxBoxsOpLineIdMap.put(outBoundxBoxCode, operationIds);
+              }
+              operLineCacheCmd.setOutBoundxBoxs(outBoundxBoxs);  //出库箱集合
+              operLineCacheCmd.setOutBoundxBoxOpLineIdMap(outBoundxBoxsOpLineIdMap);    //出库箱操作作业集合
+          }
+          cacheManager.setObject(CacheConstants.OPERATION_LINE_TRUNKFUL + operationId.toString(), operLineCacheCmd, CacheConstants.CACHE_ONE_DAY);
+      }
+      
       private boolean isCacheAllExists2(List<Long> ids, ArrayDeque<Long> cacheKeys) {
           boolean allExists = true;  //默认没有复合完毕
           if (null != cacheKeys && !cacheKeys.isEmpty()) {
@@ -1137,4 +1253,5 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
           }
           return allExists;
       }
+  
 }

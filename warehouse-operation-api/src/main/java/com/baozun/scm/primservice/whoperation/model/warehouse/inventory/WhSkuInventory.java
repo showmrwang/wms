@@ -91,6 +91,11 @@ public class WhSkuInventory extends BaseModel {
     /** 最后操作时间 */
     private Date lastModifyTime;
     
+    /**货格号*/
+    private Integer containerLatticeNo;
+    /**出库箱号*/
+    private String outBoundBoxCode;
+    
     public Long getSkuId() {
         return skuId;
     }
@@ -354,4 +359,22 @@ public class WhSkuInventory extends BaseModel {
 	public void setOccupationLineId(Long occupationLineId) {
 		this.occupationLineId = occupationLineId;
 	}
+
+    public Integer getContainerLatticeNo() {
+        return containerLatticeNo;
+    }
+
+    public void setContainerLatticeNo(Integer containerLatticeNo) {
+        this.containerLatticeNo = containerLatticeNo;
+    }
+
+    public String getOutBoundBoxCode() {
+        return outBoundBoxCode;
+    }
+
+    public void setOutBoundBoxCode(String outBoundBoxCode) {
+        this.outBoundBoxCode = outBoundBoxCode;
+    }
+	
+	
 }

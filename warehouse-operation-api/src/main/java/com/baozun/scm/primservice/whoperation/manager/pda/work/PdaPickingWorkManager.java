@@ -3,6 +3,7 @@ package com.baozun.scm.primservice.whoperation.manager.pda.work;
 import com.baozun.scm.primservice.whoperation.command.pda.work.PickingScanResultCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationExecLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhWork;
 
 
@@ -98,5 +99,6 @@ public interface PdaPickingWorkManager extends BaseManager {
      * @return
      */
     public void scanTrunkfulContainer(PickingScanResultCommand  command);
+    
     
 }
