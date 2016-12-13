@@ -1640,7 +1640,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
      * @return
      */
     @Override
-    public ScanResultCommand splitUserSuggestLocation(Boolean isNotUser,String outContainerCode,String locationCode, String insideContainerCode, Long userId, Long ouId,String locBarCode) {
+    public ScanResultCommand splitUserSuggestLocation(String outContainerCode,String locationCode, String insideContainerCode, Long userId, Long ouId,String locBarCode) {
         // TODO Auto-generated method stub
         log.info("PdaSysSuggestPutwayManagerImpl splitUserSuggestLocation is start"); 
         ScanResultCommand srCmd = new ScanResultCommand();
@@ -1679,9 +1679,6 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
         }
         Long locationId = loc.getId();
         Set<Long> locationIds = isCmd.getLocationIds();
-        if(isNotUser) {
-            locationIds.add(locationId);   //没有使用推荐库位的
-        }
         pdaPutawayCacheManager.sysGuideSplitContainerPutawayTipLocation(insideContainerCmd,locationIds,locationId,logId);
         Map<Long, Set<String>> locSkuAttrIds = insideContainerLocSkuAttrIds.get(containerId);  //库位属性
         Map<String, Long> skuAttrIdsQty = insideContainerSkuAttrIdsQty.get(containerId);   //内部容器唯一sku总件数
