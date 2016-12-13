@@ -3,6 +3,7 @@ package com.baozun.scm.primservice.whoperation.manager.warehouse;
 import java.util.List;
 import java.util.Set;
 
+import com.baozun.scm.primservice.whoperation.command.sku.SkuRedisCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Location;
 import com.baozun.scm.primservice.whoperation.model.warehouse.LocationProductVolume;
@@ -29,6 +30,17 @@ public interface LocationManager extends BaseManager {
     Long getBindedSkuByLocationId(Long locationId, Long ouId);
     
     List<Long> sortByIds(Set<Long> ids, Long ouId);
+
+    /**
+     * 查取商品所有数据
+     * 
+     * @param skuId
+     * @param ouId
+     * @param logId
+     * @return
+     */
+    SkuRedisCommand findSkuMasterBySkuId(Long skuId, Long ouId, String logId);
+
 
 
 }

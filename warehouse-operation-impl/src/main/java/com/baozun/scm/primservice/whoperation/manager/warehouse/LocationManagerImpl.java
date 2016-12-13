@@ -9,11 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.baozun.scm.primservice.whoperation.command.sku.SkuRedisCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuLocationCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.LocationProductVolumeDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhLocationDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhSkuDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhSkuLocationDao;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Location;
@@ -28,6 +30,8 @@ public class LocationManagerImpl extends BaseManagerImpl implements LocationMana
     private WhSkuLocationDao whSkuLocationDao;
     @Autowired
     private LocationProductVolumeDao locationProductVolumeDao;
+    @Autowired
+    private WhSkuDao whSkuDao;
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
@@ -69,5 +73,11 @@ public class LocationManagerImpl extends BaseManagerImpl implements LocationMana
             return null;
         }
         return list.get(0).getSkuId();
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public SkuRedisCommand findSkuMasterBySkuId(Long skuId, Long ouId, String logId) {
+        return whSkuDao.findSkuAllInfoByParamExt(skuId, ouId);
     }
 }

@@ -99,7 +99,7 @@ public class LocationReplenishmentManagerProxyImpl extends BaseManagerImpl imple
             WhSkuWhmgmt skuWhmgmt = skuRedis.getWhSkuWhMgmt();
             if (skuWhmgmt != null) {
                 if (skuWhmgmt.getTypeOfGoods() != null) {
-                    LocationProductVolume locationProductVolume = this.locationManager.getLocationProductVolumeByPcIdAndSize(skuWhmgmt.getTwoLevelType(), location.getSizeType(), ouId);
+                    LocationProductVolume locationProductVolume = this.locationManager.getLocationProductVolumeByPcIdAndSize(skuWhmgmt.getTypeOfGoods(), location.getSizeType(), ouId);
                     if (locationProductVolume != null) {
 
                         locationQty = locationProductVolume.getVolume();
