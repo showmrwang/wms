@@ -59,6 +59,7 @@ import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ReplenishmentMsgDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ReplenishmentStrategyDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.ReplenishmentTaskDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhLocationDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOperationExecLineDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhSkuDao;
@@ -79,6 +80,7 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.AllocateStrategy;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Location;
 import com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentMsg;
+import com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentTask;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationExecLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
@@ -131,6 +133,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     private WhOperationExecLineDao whOperationExecLineDao;
     @Autowired
     private ReplenishmentMsgDao replenishmentMsgDao;
+    @Autowired
+    private ReplenishmentTaskDao replenishmentTaskDao;
     /**
      * 库位绑定（分配容器库存及生成待移入库位库存）
      * 
@@ -3961,6 +3965,16 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         if (count <= 0) {
             throw new BusinessException(ErrorCodes.DELETE_DATA_ERROR);
         }
+
+        ReplenishmentTask task = new ReplenishmentTask();
+        task.setReplenishmentCode(replenishmentCode);
+        task.setLocationId(locationId);
+        task.setStatus(1);
+        task.setOuId(ouId);
+        task.setCreateTime(new Date());
+        task.setLastModifyTime(new Date());
+        this.replenishmentTaskDao.insert(task);
+
     }
     
     
