@@ -97,6 +97,8 @@ public class OdoSearchCommand extends BaseCommand {
     private Boolean lineFlag;
     // 是否波次运行异常订单
     private Integer isExceptionOrder;
+    // 是否合并出库单
+    private Integer isMerged;
 
     // 用于导出
     private List<Long> customerList;
@@ -729,5 +731,13 @@ public class OdoSearchCommand extends BaseCommand {
 	public void setIsExceptionOrder(Integer isExceptionOrder) {
 		this.isExceptionOrder = isExceptionOrder;
 	}
+
+    public Integer getIsMerged() {
+        return isMerged;
+    }
+
+    public void setIsMerged(Integer isMerged) {
+        this.isMerged = isMerged;
+    }
 
 }
