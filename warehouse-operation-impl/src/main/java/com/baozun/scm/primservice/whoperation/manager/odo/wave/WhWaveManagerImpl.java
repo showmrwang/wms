@@ -563,7 +563,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void startWave(WhWave wave) {
         wave.setIsRunWave(true);
-        wave.setStatus(WaveStatus.WAVE_EXECUTED);
+        wave.setStatus(WaveStatus.WAVE_EXECUTING);
         wave.setStartTime(new Date());
         int updateCount = this.whWaveDao.saveOrUpdateByVersion(wave);
         if (updateCount <= 0) {

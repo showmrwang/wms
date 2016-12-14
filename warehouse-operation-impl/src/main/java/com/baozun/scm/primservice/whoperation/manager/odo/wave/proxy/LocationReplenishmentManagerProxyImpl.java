@@ -92,7 +92,7 @@ public class LocationReplenishmentManagerProxyImpl extends BaseManagerImpl imple
             return;
         }
 
-        SkuRedisCommand skuRedis = this.locationManager.findSkuMasterBySkuId(skuId, ouId, logId);
+        SkuRedisCommand skuRedis = this.skuRedisManager.findSkuMasterBySkuId(skuId, ouId, logId);
         Sku sku = skuRedis.getSku();
         Long locationQty = (long) Math.floor(location.getVolume() / sku.getVolume());
         if (StringUtils.hasText(location.getSizeType())) {
@@ -109,7 +109,7 @@ public class LocationReplenishmentManagerProxyImpl extends BaseManagerImpl imple
         }
         // 上下限数量
         maxQty = locationQty * upBound / 100;
-        minQty = locationQty * downBound / 100;
+        minQty = (long) Math.ceil(locationQty * downBound / 100);
 
         // 库位库存量=库位在库库存+库位待移入库存
         double invQty = this.whskuInventoryManager.findInventoryByLocation(locationId, ouId);

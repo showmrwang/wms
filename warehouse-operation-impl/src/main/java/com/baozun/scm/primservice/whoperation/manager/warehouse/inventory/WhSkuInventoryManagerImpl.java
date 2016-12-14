@@ -3933,6 +3933,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     skuCommand.setSkuId(skuId);
                     skuCommand.setAreaId(rsc.getAreaId());
                     skuCommand.setOuId(ouId);
+                    skuCommand.setAllocateUnitCodes(Constants.ALLOCATE_UNIT_PIECE);
                     List<WhSkuInventoryCommand> skuInvs = findInventorysByAllocateStrategy(rsc.getStrategyCode(), skuCommand, upperLimitQty);
                     if (null != skuInvs && !skuInvs.isEmpty()) {
                         for (WhSkuInventoryCommand invCommand : skuInvs) {
