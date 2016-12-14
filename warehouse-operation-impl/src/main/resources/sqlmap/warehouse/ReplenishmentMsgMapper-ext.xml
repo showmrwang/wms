@@ -76,7 +76,7 @@
                 upper_limit_qty = #{upperLimitQty,javaType=Long,jdbcType=DECIMAL} ,
                 error_code = #{errorCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
                 create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-                last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} 
+                last_modify_time = now()
             WHERE 
                 id = #{id} and ou_id=#{ouId} and last_modify_time=#{lastModifyTime}
         ]]>

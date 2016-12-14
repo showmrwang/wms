@@ -400,7 +400,15 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
         if (null != ruleCommandList && !ruleCommandList.isEmpty()) {
             for (ReplenishmentRuleCommand ruleCommand : ruleCommandList) {
                 // 转换成逗号分隔的字符串
-                String skuIdListStr = StringUtil.listToStringWithoutBrackets(skuIdList, ',');
+                // String skuIdListStr = StringUtil.listToStringWithoutBrackets(skuIdList, ',');
+                String skuIdListStr = "";
+                for (int i = 0; i < skuIdList.size(); i++) {
+                    if (i == skuIdList.size() - 1) {
+                        skuIdListStr += skuIdList.get(i);
+                    } else {
+                        skuIdListStr += skuIdList.get(i) + ",";
+                    }
+                }
                 // 匹配规则的商品
                 List<Long> matchSkuIdList = replenishmentRuleDao.executeSkuRuleSql(ruleCommand.getSkuRuleSql().replace(Constants.REOLENISHMENT_RULE_SKUID_LIST_PLACEHOLDER, skuIdListStr), ouId);
                 if (null != matchSkuIdList && !matchSkuIdList.isEmpty()) {
@@ -440,7 +448,15 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
         Long ouId = ruleAffer.getOuid();
         ReplenishmentRuleCommand replenishmentRuleCommand = ruleAffer.getReplenishmentRuleCommand();
         // 转换成逗号分隔的字符串
-        String locationIdListStr = StringUtil.listToStringWithoutBrackets(locationIdList, ',');
+        // String locationIdListStr = StringUtil.listToStringWithoutBrackets(locationIdList, ',');
+        String locationIdListStr = "";
+        for (int i = 0; i < locationIdList.size(); i++) {
+            if (i == locationIdList.size() - 1) {
+                locationIdListStr += locationIdList.get(i);
+            } else {
+                locationIdListStr += locationIdList.get(i) + ",";
+            }
+        }
         // 匹配库位的规则
         List<Long> matchLocationIdList = replenishmentRuleDao.executeLocationRuleSql(replenishmentRuleCommand.getLocationRuleSql().replace(Constants.REOLENISHMENT_RULE_LOCATIONID_LIST_PLACEHOLDER, locationIdListStr), ouId);
 
