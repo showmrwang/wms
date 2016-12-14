@@ -1438,4 +1438,9 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
         return this.odoManager.findExportExeclList(odoSearchCommand);
     }
 
+    @Override
+    public WhWave getWaveByIdAndOuId(Long id, Long ouId) {
+        return this.waveManager.getWaveByIdAndOuId(id, ouId);
+    }
+
 }
