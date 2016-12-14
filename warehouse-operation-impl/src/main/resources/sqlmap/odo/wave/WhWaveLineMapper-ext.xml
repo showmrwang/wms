@@ -711,5 +711,75 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			wave_id = #{waveId} and odo_line_id = #{odoLineId} and ou_id = #{ouId}
 	</select>
 	
+	<sql id="whWaveLineColumnsExt1">
+	    <![CDATA[
+        	waveLine.id as id,
+        	waveLine.wave_id as waveId,
+        	waveLine.odo_line_id as odoLineId,
+        	waveLine.odo_id as odoId,
+        	waveLine.odo_code as odoCode,
+        	waveLine.odo_priority_level as odoPriorityLevel,
+        	waveLine.odo_plan_deliver_goods_time as odoPlanDeliverGoodsTime,
+        	waveLine.odo_order_time as odoOrderTime,
+        	waveLine.allocate_rule_id as allocateRuleId,
+        	waveLine.linenum as linenum,
+        	waveLine.store_id as storeId,
+        	waveLine.ext_linenum as extLinenum,
+        	waveLine.sku_id as skuId,
+        	waveLine.sku_bar_code as skuBarCode,
+        	waveLine.sku_name as skuName,
+        	waveLine.ext_sku_name as extSkuName,
+        	waveLine.qty as qty,
+        	waveLine.allocate_qty as allocateQty,
+        	waveLine.is_whole_order_outbound as isWholeOrderOutbound,
+        	waveLine.full_line_outbound as fullLineOutbound,
+        	waveLine.mfg_date as mfgDate,
+        	waveLine.exp_date as expDate,
+        	waveLine.min_exp_date as minExpDate,
+        	waveLine.max_exp_date as maxExpDate,
+        	waveLine.batch_number as batchNumber,
+        	waveLine.country_of_origin as countryOfOrigin,
+        	waveLine.inv_status as invStatus,
+        	waveLine.inv_type as invType,
+        	waveLine.inv_attr1 as invAttr1,
+        	waveLine.inv_attr2 as invAttr2,
+        	waveLine.inv_attr3 as invAttr3,
+        	waveLine.inv_attr4 as invAttr4,
+        	waveLine.inv_attr5 as invAttr5,
+        	waveLine.outbound_carton_type as outboundCartonType,
+        	waveLine.color as color,
+        	waveLine.style as style,
+        	waveLine.size as size,
+        	waveLine.ou_id as ouId,
+        	waveLine.create_time as createTime,
+        	waveLine.created_id as createdId,
+        	waveLine.last_modify_time as lastModifyTime,
+        	waveLine.modified_id as modifiedId, 
+        	waveLine.is_pallet_container as isPalletContainer,
+        	waveLine.pallet_container_qty as palleContainerQty, 
+        	waveLine.is_static_location_allocate as isStaticLocationAllocate,
+        	waveLine.static_location_ids as staticLocationIds,
+        	waveLine.area_id as areaId,
+			waveLine.tray_ids as trayIds,
+			waveLine.packing_case_ids as packingCaseIds
+	    ]]>
+	</sql>
+	
+	<select id="findSoftAllocationWhWaveLine" resultMap="WhWaveLineResultExt">
+		select
+		<include refid="whWaveLineColumnsExt1" />
+		from t_wh_wave wave,t_wh_wave_line waveLine
+		where
+		waveLine.wave_id=wave.id
+		and waveLine.ou_id=wave.ou_id
+		and wave.status = #{waveStatus}
+		and wave.lifecycle = #{lifecycle}
+		and wave.id = #{waveId}
+		and wave.ou_id = #{ouId}
+		order by
+		waveLine.odo_priority_level,waveLine.odo_plan_deliver_goods_time,
+		waveLine.odo_order_time desc,waveLine.qty, waveLine.odo_id asc
+	</select>
+	
 	
 </mapper>

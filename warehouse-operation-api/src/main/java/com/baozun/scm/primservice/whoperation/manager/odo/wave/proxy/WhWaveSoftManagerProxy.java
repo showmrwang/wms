@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.baozun.scm.primservice.whoperation.command.odo.wave.SoftAllocationCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.SoftAllocationResponseCommand;
+import com.baozun.scm.primservice.whoperation.command.odo.wave.SoftAllocationWaveCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine;
@@ -22,7 +23,7 @@ public interface WhWaveSoftManagerProxy extends BaseManager {
      * @param ouId
      * @return
      */
-    public List<WhWaveLine> getWaveLineForSoft(Long waveId, Long ouId);
+    public SoftAllocationWaveCommand getWaveLineForSoft(Long waveId, Long ouId);
 
     /**
      * [通用方法] 获取波次头信息
@@ -85,10 +86,10 @@ public interface WhWaveSoftManagerProxy extends BaseManager {
 
     /**
     * [业务方法] 软分配-更新波次头
-    * @param waveId
+    * @param whWave
     * @param ouId
     */
-    public void updateWave(Long waveId, Long ouId);
+    public void updateWave(WhWave whWave, Long ouId);
 
     /**
      * [业务方法] 软分配-清除数据

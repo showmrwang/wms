@@ -47,10 +47,10 @@ public interface WhWaveManager extends BaseManager {
 
     /**
      * [业务方法] 软分配-更新波次头
-     * @param waveId
+     * @param whWave
      * @param ouId
      */
-    public void updateWaveAfterSoftAllocate(Long waveId, Long ouId);
+    public void updateWaveAfterSoftAllocate(WhWave whWave, Long ouId);
 
     /**
      * [业务方法]波次一览
@@ -77,7 +77,7 @@ public interface WhWaveManager extends BaseManager {
      * [业务方法] 软分配-软分配开始阶段更新波次状态
      * @param whWave
      */
-    public void updateWaveForSoftStart(WhWave whWave);
+    public WhWave updateWaveForSoftStart(WhWave whWave);
 
     /**
      * [通用方法] 根据波次阶段查找波次列表
@@ -161,12 +161,12 @@ public interface WhWaveManager extends BaseManager {
      * @return
      */
     List<Long> findWaveIdsByWavePhaseCode(String phaseCode, Long ouId);
-    
-	/**
-	 * [业务方法] 整出库单剔除并释放库存
-	 */
-	void deleteWaveLinesAndReleaseInventoryByOdoId(Long waveId, Long odoId, String reason, Warehouse wh);
-	
+
+    /**
+     * [业务方法] 整出库单剔除并释放库存
+     */
+    void deleteWaveLinesAndReleaseInventoryByOdoId(Long waveId, Long odoId, String reason, Warehouse wh);
+
     /**
      * [业务方法] 在一个波次中查找包含skuIds的OdoId
      * @param skuIds
@@ -179,12 +179,12 @@ public interface WhWaveManager extends BaseManager {
      * [业务方法] 软分配-查找可以进行软分配波次
      */
     public List<Long> getNeedSoftAllocationWhWave(Long ouId);
-    
+
     /**
      * [业务方法] 创捡货工作和作业-查找所有需要匹配规则的波次
      */
     public List<Long> getNeedPickingWorkWhWave(Long ouId);
-    
+
     /**
      * [通用方法] 获取波次下一阶段的code
      * @param waveId
@@ -216,5 +216,5 @@ public interface WhWaveManager extends BaseManager {
      * @param wave
      */
     public void startWave(WhWave wave);
-    
+
 }

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.baozun.redis.manager.CacheManager;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.SoftAllocationCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.SoftAllocationResponseCommand;
+import com.baozun.scm.primservice.whoperation.command.odo.wave.SoftAllocationWaveCommand;
 import com.baozun.scm.primservice.whoperation.constant.CacheKeyConstant;
 import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
 import com.baozun.scm.primservice.whoperation.constant.WaveStatus;
@@ -41,7 +42,7 @@ public class WhWaveSoftManagerProxyImpl implements WhWaveSoftManagerProxy {
     private OdoManager odoManager;
 
     @Override
-    public List<WhWaveLine> getWaveLineForSoft(Long waveId, Long ouId) {
+    public SoftAllocationWaveCommand getWaveLineForSoft(Long waveId, Long ouId) {
         // 1.获取波次头
         WhWave whWave = this.getWaveHeadByIdAndOuId(waveId, ouId);
         if (null == whWave) {
@@ -49,6 +50,7 @@ public class WhWaveSoftManagerProxyImpl implements WhWaveSoftManagerProxy {
         }
         if (BaseModel.LIFECYCLE_NORMAL != whWave.getLifecycle() || WaveStatus.WAVE_NEW != whWave.getStatus()) {
             throw new BusinessException("波次头不可用或者波次状态不为新建");
+            // return null;
         }
         // 2.设置波次运行状态信息
         whWaveManager.updateWaveForSoftStart(whWave);
@@ -57,7 +59,10 @@ public class WhWaveSoftManagerProxyImpl implements WhWaveSoftManagerProxy {
         // 3.查询波次明细及排序
         List<WhWaveLine> whWaveLineList = whWaveLineManager.getSoftAllocationWhWaveLine(waveId, ouId);
         // List<WhWaveLine> whWaveLineList = this.getWaveLineByWaveIdAndOuIdForSoft(waveId, ouId);
-        return whWaveLineList;
+        SoftAllocationWaveCommand command = new SoftAllocationWaveCommand();
+        command.setWhWave(whWave);
+        command.setWhWaveLine(whWaveLineList);
+        return command;
     }
 
     @SuppressWarnings("unused")
@@ -125,6 +130,7 @@ public class WhWaveSoftManagerProxyImpl implements WhWaveSoftManagerProxy {
                     if (0 == quantity) {
                         this.cacheAddEmptySku(waveId, skuId);
                     }
+                    command.setSuccess(true);
                 } else {
                     throw new BusinessException("更新状态失败");
                 }
@@ -136,7 +142,7 @@ public class WhWaveSoftManagerProxyImpl implements WhWaveSoftManagerProxy {
         } else {
             // 库存为0 剔除
         }
-        return null;
+        return command;
     }
 
     /**
@@ -192,8 +198,8 @@ public class WhWaveSoftManagerProxyImpl implements WhWaveSoftManagerProxy {
     }
 
     @Override
-    public void updateWave(Long waveId, Long ouId) {
-        whWaveManager.updateWaveAfterSoftAllocate(waveId, ouId);
+    public void updateWave(WhWave whWave, Long ouId) {
+        whWaveManager.updateWaveAfterSoftAllocate(whWave, ouId);
     }
 
     @Override

@@ -52,6 +52,7 @@ import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveMaster;
 import com.baozun.scm.primservice.whoperation.model.sku.Sku;
 import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
+
 @Service("whWaveManager")
 @Transactional
 public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager {
@@ -118,10 +119,10 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void updateWaveAfterSoftAllocate(Long waveId, Long ouId) {
+    public void updateWaveAfterSoftAllocate(WhWave wave, Long ouId) {
         // WhWave whWave = this.whWaveDao.calculateQuantity(waveId, ouId);
 
-        List<SoftAllocationCommand> commandList = this.whWaveLineDao.findWaveLineCommandByWaveIdAndStatus(waveId, ouId, WaveStatus.WAVE_EXECUTING, BaseModel.LIFECYCLE_NORMAL);
+        List<SoftAllocationCommand> commandList = this.whWaveLineDao.findWaveLineCommandByWaveIdAndStatus(wave.getId(), ouId, WaveStatus.WAVE_EXECUTING, BaseModel.LIFECYCLE_NORMAL);
 
         Integer totalOdoQty = 0; // 出库单总数
         Integer totalOdoLineQty = 0;// 出库单明细行总数
@@ -182,10 +183,10 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         skuCategoryQty = skuCategorySet.size();
 
 
-        WhWave wave = new WhWave();
-        wave.setId(waveId);
+        // WhWave wave = new WhWave();
+        // wave.setId(waveId);
         wave.setOuId(ouId);
-        wave = this.whWaveDao.findListByParam(wave).get(0);
+        // wave = this.whWaveDao.findListByParam(wave).get(0);
 
         // 获取下一个波次阶段
         WhWaveMaster whWaveMaster = whWaveMasterDao.findByIdExt(wave.getWaveMasterId(), ouId);
@@ -202,6 +203,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         wave.setTotalWeight(totalWeight);
         wave.setTotalSkuQty(totalSkuQty);
         wave.setSkuCategoryQty(skuCategoryQty);
+        wave.setFinishTime(new Date());
         this.whWaveDao.saveOrUpdateByVersion(wave);
     }
 
@@ -271,14 +273,15 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void updateWaveForSoftStart(WhWave whWave) {
+    public WhWave updateWaveForSoftStart(WhWave whWave) {
         whWave.setStatus(WaveStatus.WAVE_EXECUTING);
         whWave.setIsWeakAllocated(true);
         whWave.setStartTime(new Date());
-        int cnt = this.whWaveDao.saveOrUpdateByVersion(whWave);
-        if (0 >= cnt) {
-            throw new BusinessException("软分配开始阶段-更新波次信息失败");
-        }
+        return whWave;
+        // int cnt = this.whWaveDao.saveOrUpdateByVersion(whWave);
+        // if (0 >= cnt) {
+        // throw new BusinessException("软分配开始阶段-更新波次信息失败");
+        // }
     }
 
     @Override
