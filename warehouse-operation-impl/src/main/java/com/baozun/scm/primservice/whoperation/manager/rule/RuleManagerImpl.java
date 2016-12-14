@@ -225,7 +225,7 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
             log.warn("ruleExport ruleAffer.getAfferInsideContainerIdList().size() == 0 logid: " + ruleAffer.getLogId());
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
-        String insideContainerIdListStr = forMatAfferInsideContainerIdList(ruleAffer.getAfferInsideContainerIdList());
+        String insideContainerIdListStr = this.listToStringWithoutBrackets(ruleAffer.getAfferInsideContainerIdList());
         RuleExportCommand export = new RuleExportCommand();
         // 查询所有对应容器号的库存信息 返回的String是"invId,invSnId"或者"invId,null"
         List<String> originInvSnIdList = whSkuInventorySnDao.findInvSnIdStrByInsideContainerId(ruleAffer.getOuid(), ruleAffer.getAfferInsideContainerIdList());
@@ -261,7 +261,7 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
             log.warn("ruleExport ruleAffer.getAfferInsideContainerIdList().size() == 0 logid: " + ruleAffer.getLogId());
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
-        String insideContainerIdListStr = forMatAfferInsideContainerIdList(ruleAffer.getAfferInsideContainerIdList());
+        String insideContainerIdListStr = this.listToStringWithoutBrackets(ruleAffer.getAfferInsideContainerIdList());
         RuleExportCommand export = new RuleExportCommand();
         // 查询所有可用上架规则 并且排序
         List<ShelveRecommendRuleCommand> shelveRuleList = shelveRecommendRuleDao.findShelveRecommendRuleByOuid(ruleAffer.getOuid());
@@ -400,15 +400,7 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
         if (null != ruleCommandList && !ruleCommandList.isEmpty()) {
             for (ReplenishmentRuleCommand ruleCommand : ruleCommandList) {
                 // 转换成逗号分隔的字符串
-                // String skuIdListStr = StringUtil.listToStringWithoutBrackets(skuIdList, ',');
-                String skuIdListStr = "";
-                for (int i = 0; i < skuIdList.size(); i++) {
-                    if (i == skuIdList.size() - 1) {
-                        skuIdListStr += skuIdList.get(i);
-                    } else {
-                        skuIdListStr += skuIdList.get(i) + ",";
-                    }
-                }
+                String skuIdListStr = this.listToStringWithoutBrackets(skuIdList);
                 // 匹配规则的商品
                 List<Long> matchSkuIdList = replenishmentRuleDao.executeSkuRuleSql(ruleCommand.getSkuRuleSql().replace(Constants.REOLENISHMENT_RULE_SKUID_LIST_PLACEHOLDER, skuIdListStr), ouId);
                 if (null != matchSkuIdList && !matchSkuIdList.isEmpty()) {
@@ -448,15 +440,7 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
         Long ouId = ruleAffer.getOuid();
         ReplenishmentRuleCommand replenishmentRuleCommand = ruleAffer.getReplenishmentRuleCommand();
         // 转换成逗号分隔的字符串
-        // String locationIdListStr = StringUtil.listToStringWithoutBrackets(locationIdList, ',');
-        String locationIdListStr = "";
-        for (int i = 0; i < locationIdList.size(); i++) {
-            if (i == locationIdList.size() - 1) {
-                locationIdListStr += locationIdList.get(i);
-            } else {
-                locationIdListStr += locationIdList.get(i) + ",";
-            }
-        }
+        String locationIdListStr = this.listToStringWithoutBrackets(locationIdList);
         // 匹配库位的规则
         List<Long> matchLocationIdList = replenishmentRuleDao.executeLocationRuleSql(replenishmentRuleCommand.getLocationRuleSql().replace(Constants.REOLENISHMENT_RULE_LOCATIONID_LIST_PLACEHOLDER, locationIdListStr), ouId);
 
@@ -479,7 +463,7 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
         // 存储哪些出库单对应哪个规则
         Map<List<Long>, OutboundBoxRuleCommand> odoListoutboundRuleListMap = new HashMap<>();
         for (OutboundBoxRuleCommand ruleCommand : ruleCommandList) {
-            String odoIdListStr = StringUtil.listToStringWithoutBrackets(odoIdList, ',');
+            String odoIdListStr = this.listToStringWithoutBrackets(odoIdList);
             List<Long> matchOdoIdList = outboundBoxRuleDao.executeRuleSql(ruleCommand.getOutboundboxRuleSql().replace(Constants.OUTBOUNDBOX_RULE_PLACEHOLDER, odoIdListStr), ouId);
             if (null != matchOdoIdList && !matchOdoIdList.isEmpty()) {
                 odoListoutboundRuleListMap.put(matchOdoIdList, ruleCommand);
@@ -523,7 +507,7 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
         // 查询所有可用的出库箱装箱规则,按照优先级排序
         List<CheckOperationsAreaRuleCommand> ruleCommandList = checkOperationsAreaRuleDao.findRuleByOuIdOrderByPriorityAsc(ouId);
         for (CheckOperationsAreaRuleCommand ruleCommand : ruleCommandList) {
-            String odoIdListStr = StringUtil.listToStringWithoutBrackets(odoIdList, ',');
+            String odoIdListStr = this.listToStringWithoutBrackets(odoIdList);
             List<Long> matchOdoIdList = checkOperationsAreaRuleDao.executeRuleSql(ruleCommand.getRuleSql().replace(Constants.CHECK_OPERATIONS_AREA_ODOID_LIST_PLACEHOLDER, odoIdListStr), ouId);
             if (null != matchOdoIdList && !matchOdoIdList.isEmpty()) {
                 //找到一个可用的即可
@@ -589,16 +573,16 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
     /***
      * 封装容器号
      * 
-     * @param afferInsideContainerIdList
+     * @param items
      * @return
      */
-    private String forMatAfferInsideContainerIdList(List<Long> afferInsideContainerIdList) {
+    private String listToStringWithoutBrackets(List<Long> items) {
         StringBuilder stringBuilder = new StringBuilder();
         // 封装容器号
-        for (int i = 0; i < afferInsideContainerIdList.size(); i++) {
-            Long insideContainerId = afferInsideContainerIdList.get(i);
-            stringBuilder.append(insideContainerId);
-            if (i != afferInsideContainerIdList.size() - 1) {
+        for (int i = 0; i < items.size(); i++) {
+            Long item = items.get(i);
+            stringBuilder.append(item);
+            if (i != items.size() - 1) {
                 stringBuilder.append(",");
             }
         }
