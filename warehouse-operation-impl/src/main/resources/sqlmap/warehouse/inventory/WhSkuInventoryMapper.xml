@@ -43,7 +43,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	inbound_time as inboundTime,
 	        	last_modify_time as lastModifyTime,
 	        	container_lattice_no as containerLatticeNo,
-	            outboundbox_code as as outboundboxCode
+	            outboundbox_code as outboundboxCode
 	    ]]>
 	</sql>
 	<sql id="whSkuInventoryConditionWhereExt">
