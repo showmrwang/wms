@@ -94,7 +94,7 @@ public class WhSkuInventory extends BaseModel {
     /**货格号*/
     private Integer containerLatticeNo;
     /**出库箱号*/
-    private String outBoundBoxCode;
+    private String outboundboxCode;
     
     public Long getSkuId() {
         return skuId;
@@ -368,13 +368,15 @@ public class WhSkuInventory extends BaseModel {
         this.containerLatticeNo = containerLatticeNo;
     }
 
-    public String getOutBoundBoxCode() {
-        return outBoundBoxCode;
+    public String getOutboundboxCode() {
+        return outboundboxCode;
     }
 
-    public void setOutBoundBoxCode(String outBoundBoxCode) {
-        this.outBoundBoxCode = outBoundBoxCode;
+    public void setOutboundboxCode(String outboundboxCode) {
+        this.outboundboxCode = outboundboxCode;
     }
-	
-	
+
+   
+
+     	
 }

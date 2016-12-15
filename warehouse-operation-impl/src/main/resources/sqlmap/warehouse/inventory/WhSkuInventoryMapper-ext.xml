@@ -1876,7 +1876,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        inv.inbound_time as inboundTime,
 	               	inv.last_modify_time as lastModifyTime,
 	                inv.container_lattice_no as containerLatticeNo,
-	                inv.outboundbox_code as outboundboxCode,
+	                inv.outboundbox_code as outboundboxCode
 		    <![CDATA[
 			    from t_wh_sku_inventory inv
 			    left join t_wh_sku_inventory_tobefilled tobefilled on inv.location_id = tobefilled.location_id 
