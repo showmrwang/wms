@@ -29,6 +29,8 @@ public interface DistributionModeArithmeticManagerProxy extends BaseManager {
      */
     public void addToWhDistributionModeArithmeticPool(String code, Long odoId);
 
+    public void addToPool(Map<Long, String> odoIdCounterCodeMap);
+
     /**
      * 是否存在订单池中
      * 
@@ -44,7 +46,7 @@ public interface DistributionModeArithmeticManagerProxy extends BaseManager {
      * @param code
      */
     public void divFromOrderPool(String code, Long odoId);
-    
+
     /**
      * 从订单池中移除
      * @param code
@@ -88,4 +90,7 @@ public interface DistributionModeArithmeticManagerProxy extends BaseManager {
      * @param reNewOdoMap
      */
     public void CancelFormergeOdo(String mergedCounterCode, Long odoId, Map<Long, String> reNewOdoMap);
+
+
+
 }

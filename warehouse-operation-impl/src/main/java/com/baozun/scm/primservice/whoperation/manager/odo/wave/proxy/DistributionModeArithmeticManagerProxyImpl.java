@@ -435,7 +435,7 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
 
     @Override
     public boolean isExistsInOrderPool(String code, Long odoId) {
-        String key = code + CacheKeyConstant.WAVE_ODO_SPLIT + odoId;
+        String key = CacheKeyConstant.OU_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + odoId;
         String value = this.cacheManager.getValue(key);
         if (StringUtils.isEmpty(value)) {
             return false;
@@ -490,6 +490,15 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
                 Entry<Long, String> entry = it.next();
                 this.addToWhDistributionModeArithmeticPool(entry.getValue(), entry.getKey());
             }
+        }
+    }
+
+    @Override
+    public void addToPool(Map<Long, String> odoIdCounterCodeMap) {
+        Iterator<Entry<Long, String>> it = odoIdCounterCodeMap.entrySet().iterator();
+        while (it.hasNext()) {
+            Entry<Long, String> entry = it.next();
+            this.addToWhDistributionModeArithmeticPool(entry.getValue(), entry.getKey());
         }
     }
 
