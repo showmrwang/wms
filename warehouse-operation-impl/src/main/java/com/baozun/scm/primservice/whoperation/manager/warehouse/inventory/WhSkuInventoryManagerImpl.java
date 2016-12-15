@@ -4352,7 +4352,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             if(pickingWay.equals(Constants.PICKING_WAY_THREE)) {  //出库箱模式
                 inv.setOuterContainerId(null);
                 inv.setInsideContainerId(null);
-                inv.setOutBoundBoxCode(outBoundBoxCode);
+                inv.setOutboundboxCode(outBoundBoxCode);
             }
             if(pickingWay.equals(Constants.PICKING_WAY_FOUR)){  //周转箱模式
                 inv.setOuterContainerId(null);
@@ -4408,7 +4408,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             if(pickingWay.equals(Constants.PICKING_WAY_THREE)) {  //出库箱模式
                 inv.setOuterContainerId(null);
                 inv.setInsideContainerId(null);
-                inv.setOutBoundBoxCode(outBoundBoxCode);
+                inv.setOutboundboxCode(outBoundBoxCode);
             }
             if(pickingWay.equals(Constants.PICKING_WAY_FOUR)){  //周转箱模式
                 inv.setOuterContainerId(null);
