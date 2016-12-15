@@ -49,8 +49,8 @@ public class WhWaveSoftManagerProxyImpl implements WhWaveSoftManagerProxy {
             throw new BusinessException("没有波次头信息");
         }
         if (BaseModel.LIFECYCLE_NORMAL != whWave.getLifecycle() || WaveStatus.WAVE_NEW != whWave.getStatus()) {
-            throw new BusinessException("波次头不可用或者波次状态不为新建");
-            // return null;
+            // throw new BusinessException("波次头不可用或者波次状态不为新建");
+            return null;
         }
         // 2.设置波次运行状态信息
         whWaveManager.updateWaveForSoftStart(whWave);
