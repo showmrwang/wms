@@ -105,7 +105,7 @@ public interface PdaPickingWorkCacheManager extends BaseManager{
        * @param operatorId
        * @return
        */
-      public CheckScanResultCommand pdaPickingTipSku(Set<Long> skuIds,Long operatorId,Long locationId,Long ouId,Long insideContainerId);
+      public CheckScanResultCommand pdaPickingTipSku(Set<Long> skuIds,Long operatorId,Long locationId,Long ouId,Long insideContainerId,Map<Long, Map<String, Set<String>>> locskuAttrIdsSnDefect,Map<Long, Map<String, Set<String>>> insideSkuAttrIdsSnDefect);
       
       /***
        *  @tangming
@@ -123,7 +123,7 @@ public interface PdaPickingWorkCacheManager extends BaseManager{
        * @param skuCmd
        * @return
        */
-      public CheckScanResultCommand pdaPickingyCacheSkuAndCheckContainer(List<Long> locationIds, Map<Long, Long> locSkuQty,Long locationId,Set<Long> locSkuIds,Set<Long> outerContainerIds,ContainerCommand outerContainerCmd,Long operatorId,Map<Long,Long> insideContainerSkuIdsQty,Map<Long, Set<Long>> insideContainerSkuIds,Set<Long> insideContainerIds,Set<Long> locInsideContainerIds,ContainerCommand insideContainerCmd,WhSkuCommand skuCmd);
+      public CheckScanResultCommand pdaPickingyCacheSkuAndCheckContainer(Integer scanPattern,List<Long> locationIds, Map<Long, Long> locSkuQty,Long locationId,Set<Long> locSkuIds,Set<Long> outerContainerIds,ContainerCommand outerContainerCmd,Long operatorId,Map<Long,Long> insideContainerSkuIdsQty,Map<Long, Set<Long>> insideContainerSkuIds,Set<Long> insideContainerIds,Set<Long> locInsideContainerIds,ContainerCommand insideContainerCmd,WhSkuCommand skuCmd);
     
       /***
        * 有小车，而且有出库箱的时候，提示出库箱
@@ -142,18 +142,18 @@ public interface PdaPickingWorkCacheManager extends BaseManager{
        */
       public List<WhOperationLineCommand> cacheOperationLine(Long operationId,Long ouId);
       
-      /***
-       * 缓存已经拣货作业id
-       *  @tangming
-       * @param operationId
-       * @param skuAttrIds
-       * @param outerContainerId
-       * @param insideContainerId
-       * @param locationId
-       * @param ouId
-       */
-     public Long cachePickingOperLineId(Long operationId,String skuAttrIds,Long outerContainerId,Long insideContainerId,Long locationId,Long ouId,Boolean isShortPicking,Double scanQty);
-     
+//      /***
+//       * 缓存已经拣货作业id
+//       *  @tangming
+//       * @param operationId
+//       * @param skuAttrIds
+//       * @param outerContainerId
+//       * @param insideContainerId
+//       * @param locationId
+//       * @param ouId
+//       */
+//     public Long cachePickingOperLineId(Long operationId,String skuAttrIds,Long outerContainerId,Long insideContainerId,Long locationId,Long ouId,Boolean isShortPicking,Double scanQty);
+//     
 //     
 //     /***
 //      * 缓存周转箱作业明细
