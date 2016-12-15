@@ -48,6 +48,8 @@ public class CheckScanResultCommand extends BaseCommand {
     private Boolean isNeedTipSkuSn;
     /** 提示唯一sku */
     private String tipSkuAttrId;
+    /**唯一sku,sn及残次条码*/
+    private String tipSkuAttrIdSnDefect;
     /** 是否提示库位 (所有的库位是否已经扫描完毕)*/
     private Boolean isNeedTipLoc;
     /**提示库位id*/
@@ -161,6 +163,12 @@ public class CheckScanResultCommand extends BaseCommand {
     }
     public void setUseContainerLatticeNo(Integer useContainerLatticeNo) {
         this.useContainerLatticeNo = useContainerLatticeNo;
+    }
+    public String getTipSkuAttrIdSnDefect() {
+        return tipSkuAttrIdSnDefect;
+    }
+    public void setTipSkuAttrIdSnDefect(String tipSkuAttrIdSnDefect) {
+        this.tipSkuAttrIdSnDefect = tipSkuAttrIdSnDefect;
     }
 
     
