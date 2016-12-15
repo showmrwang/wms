@@ -632,4 +632,97 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    ]]>
 	</sql>
 
+
+	<select id="getOperationExecLine" resultMap="WhOperationExecLineResultExt">
+		select
+		<include refid="whOperationExecLineColumnsExt" />
+		from
+		t_wh_operation_exec_line
+		where
+			ou_id = #{ouId}
+			and operation_id = #{operationId}
+	</select>
+	
+	<select id="checkContainerInventory" resultMap="WhOperationExecLineResultExt">
+		SELECT
+		opLine.useContainerLatticeNo,
+		opLine.useOuterContainerId,
+		opLine.useContainerId,
+		opLine.useOutboundboxCode,
+		opLine.skuId,
+		sum(qty) as qty
+		FROM
+		(
+		SELECT
+		operationExecLine.use_container_lattice_no as useContainerLatticeNo,
+		operationExecLine.use_outer_container_id as useOuterContainerId,
+		operationExecLine.use_container_id as useContainerId,
+		operationExecLine.use_outboundbox_code as useOutboundboxCode,
+		operationExecLine.sku_id as skuId ,
+		sum(
+		IFNULL(operationExecLine.qty, 0)
+		) AS qty
+		FROM
+		t_wh_operation_exec_line operationExecLine
+		WHERE
+		operationExecLine.operation_id = #{operationId}
+		GROUP BY
+		operationExecLine.use_container_lattice_no,
+		operationExecLine.use_outer_container_id,
+		operationExecLine.use_container_id,
+		operationExecLine.use_outboundbox_code,
+		operationExecLine.sku_id
+		UNION ALL
+		SELECT
+		inventory.container_lattice_no as useContainerLatticeNo,
+		inventory.outer_container_id as useOuterContainerId,
+		inventory.inside_container_id as useContainerId,
+		inventory.outboundbox_code as useOutboundboxCode,
+		inventory.sku_id as skuId,
+		sum(
+		IFNULL(inventory.on_hand_qty, 0)
+		) AS qty
+		FROM
+		t_wh_sku_inventory inventory
+		WHERE
+		1=1
+		<if test="outerContainerId!=null">
+	      and	inventory.outer_container_id = #{outerContainerId}
+		</if>
+		<if test="insideIdList!=null">
+		  and inventory.inside_container_id in 
+		   <foreach item="insideIdList" index="index" collection="list" open="(" separator="," close=")">
+              #{insideIdList}				
+           </foreach>
+		</if>
+		<if test="containerLatticeNoList!=null">
+		  	and inventory.container_lattice_no in
+		   <foreach item="containerLatticeNoList" index="indexs" collection="list" open="(" separator="," close=")">
+             #{containerLatticeNoList}				
+            </foreach>
+		</if>
+		<if test="outboundboxIdList!=null">
+		    and  inventory.outboundbox_code in 
+           <foreach item="outboundboxIdList" index="ids" collection="list" open="(" separator="," close=")">
+                 #{outboundboxIdList}				
+           </foreach>
+		</if>
+		GROUP BY
+		inventory.container_lattice_no,
+		inventory.outer_container_id,
+		inventory.inside_container_id,
+		inventory.outboundbox_code,
+		inventory.sku_id
+		) opLine
+		WHERE
+		1 = 1
+		GROUP BY
+		opLine.use_container_lattice_no,
+		opLine.use_outer_container_id,
+		opLine.use_container_id,
+		opLine.use_outboundbox_code,
+		opLine.sku_id
+		HAVING
+		sum(qty) != 0
+	</select>
 </mapper>

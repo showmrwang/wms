@@ -61,4 +61,15 @@ public interface WhOperationExecLineDao extends BaseDao<WhOperationExecLine, Lon
      * @return
      */
     public List<WhOperationExecLine> getOperationExecLine(@Param("operationId")Long operationId,@Param("ouId") Long ouId);
+    
+    
+    /***
+     * /校验容器/出库箱库存与删除的拣货库位库存时否一致
+     * @param operationId
+     * @param ouId
+     * @param insideIdList
+     * @param containerLatticeNoList
+     * @return
+     */
+    public  List<WhOperationExecLine> checkContainerInventory(@Param("operationId")Long operationId,@Param("ouId") Long ouId,@Param("outerContainerId") Long outerContainerId,@Param("insideIdList") List<Long> insideIdList,@Param("containerLatticeNoList") List<Integer> containerLatticeNoList,@Param("outboundboxIdList") List<String> outboundboxIdList);
 }

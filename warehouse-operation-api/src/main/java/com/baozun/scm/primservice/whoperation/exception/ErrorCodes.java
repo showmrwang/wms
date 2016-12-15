@@ -746,6 +746,10 @@ public class ErrorCodes {
     public static final int LOCATION_INVENTORY_IS_NO = 70050;
     /**校验作业执行明细*/
     public static final int CHECK_OPERTAION_EXEC_LINE_DIFF = 70050;
+    /**作业执行明细不存在*/
+    public static final int OPERATION_EXEC_LINE_NO_EXIST= 70051;
+    /**作业执行明细不存在*/
+    public static final int WORK_NO_EXIST= 70052;
     
     
     // 70001-80000 tangming

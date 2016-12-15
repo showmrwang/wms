@@ -213,4 +213,19 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	     </if>
 
 	</select>
+	
+	<select id="findWhSkuInventoryTobefilled" resultMap="WhSkuInventoryTobefilledResultExt">
+	     select <include refid="whSkuInventoryTobefilledColumnsExt"/>
+	       from t_wh_sku_inventory_tobefilled  where
+		       ou_id = #{ouId}
+	      <if test="insideContainerId!=null and insideContainerId!=''">
+					 and inside_container_id=#{insideContainerId}
+	     </if>
+	</select>
+	
+	<delete id="deleteByExt" >
+		delete from
+		t_wh_sku_inventory_tobefilled
+		where ou_id=#{ouId} and id=#{id}
+	</delete>
 </mapper>

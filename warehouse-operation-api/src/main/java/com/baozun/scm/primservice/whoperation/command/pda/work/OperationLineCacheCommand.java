@@ -1,10 +1,10 @@
 package com.baozun.scm.primservice.whoperation.command.pda.work;
 
+import java.util.ArrayDeque;
 import java.util.Map;
 import java.util.Set;
 
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
-import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationExecLine;
 
 public class OperationLineCacheCommand extends BaseCommand{
 
@@ -27,20 +27,25 @@ public class OperationLineCacheCommand extends BaseCommand{
     /** 周转箱列表*/
     private Set<Long> turnoverBoxs;
     
-    /**出库箱拣货的作业明细*/
-    private Map<String,Set<Long>> outBoundxBoxOpLineIdMap;
+//    /**出库箱拣货的作业明细*/
+//    private Map<String,Set<Long>> outBoundxBoxOpLineIdMap;
+//    
+//    /**周转箱拣货的作业明细*/
+//    private Map<Long,Set<Long>> turnoverBoxsOpLineIdMap;
     
-    /**周转箱拣货的作业明细*/
-    private Map<Long,Set<Long>> turnoverBoxsOpLineIdMap;
+    
+//    /**出库箱拣货的作业执行明细*/
+//    private Map<String,Set<WhOperationExecLine>> outBoundxBoxOpLineExecIdMap;
+//    
+//    /**周转箱拣货的作业执行明细*/
+//    private Map<Long,Set<WhOperationExecLine>> turnoverBoxsOpLineExecIdMap;
+    
+    /** 缓存库位队列 */
+    private ArrayDeque<Long> tipLocationIds = new ArrayDeque<Long>();
     
     
-    /**出库箱拣货的作业执行明细*/
-    private Map<String,Set<WhOperationExecLine>> outBoundxBoxOpLineExecIdMap;
-    
-    /**周转箱拣货的作业执行明细*/
-    private Map<Long,Set<WhOperationExecLine>> turnoverBoxsOpLineExecIdMap;
-    /**货格号集合(有小车，有出库箱的情况下)*/
-    private Set<Integer> containerLatticNo;
+    /**有小车有出库箱的情况下:出库箱的队列*/
+    private ArrayDeque<String> tipOutBonxBoxIds = new ArrayDeque<String>();
     
     
     
@@ -87,45 +92,55 @@ public class OperationLineCacheCommand extends BaseCommand{
         this.operLineIdToQty = operLineIdToQty;
     }
 
-    public Map<String, Set<Long>> getOutBoundxBoxOpLineIdMap() {
-        return outBoundxBoxOpLineIdMap;
+//    public Map<String, Set<Long>> getOutBoundxBoxOpLineIdMap() {
+//        return outBoundxBoxOpLineIdMap;
+//    }
+//
+//    public void setOutBoundxBoxOpLineIdMap(Map<String, Set<Long>> outBoundxBoxOpLineIdMap) {
+//        this.outBoundxBoxOpLineIdMap = outBoundxBoxOpLineIdMap;
+//    }
+//
+//    public Map<Long, Set<Long>> getTurnoverBoxsOpLineIdMap() {
+//        return turnoverBoxsOpLineIdMap;
+//    }
+//
+//    public void setTurnoverBoxsOpLineIdMap(Map<Long, Set<Long>> turnoverBoxsOpLineIdMap) {
+//        this.turnoverBoxsOpLineIdMap = turnoverBoxsOpLineIdMap;
+//    }
+
+//    public Map<String, Set<WhOperationExecLine>> getOutBoundxBoxOpLineExecIdMap() {
+//        return outBoundxBoxOpLineExecIdMap;
+//    }
+//
+//    public void setOutBoundxBoxOpLineExecIdMap(Map<String, Set<WhOperationExecLine>> outBoundxBoxOpLineExecIdMap) {
+//        this.outBoundxBoxOpLineExecIdMap = outBoundxBoxOpLineExecIdMap;
+//    }
+//
+//    public Map<Long, Set<WhOperationExecLine>> getTurnoverBoxsOpLineExecIdMap() {
+//        return turnoverBoxsOpLineExecIdMap;
+//    }
+//
+//    public void setTurnoverBoxsOpLineExecIdMap(Map<Long, Set<WhOperationExecLine>> turnoverBoxsOpLineExecIdMap) {
+//        this.turnoverBoxsOpLineExecIdMap = turnoverBoxsOpLineExecIdMap;
+//    }
+
+    public ArrayDeque<Long> getTipLocationIds() {
+        return tipLocationIds;
     }
 
-    public void setOutBoundxBoxOpLineIdMap(Map<String, Set<Long>> outBoundxBoxOpLineIdMap) {
-        this.outBoundxBoxOpLineIdMap = outBoundxBoxOpLineIdMap;
+    public void setTipLocationIds(ArrayDeque<Long> tipLocationIds) {
+        this.tipLocationIds = tipLocationIds;
     }
 
-    public Map<Long, Set<Long>> getTurnoverBoxsOpLineIdMap() {
-        return turnoverBoxsOpLineIdMap;
+    public ArrayDeque<String> getTipOutBonxBoxIds() {
+        return tipOutBonxBoxIds;
     }
 
-    public void setTurnoverBoxsOpLineIdMap(Map<Long, Set<Long>> turnoverBoxsOpLineIdMap) {
-        this.turnoverBoxsOpLineIdMap = turnoverBoxsOpLineIdMap;
+    public void setTipOutBonxBoxIds(ArrayDeque<String> tipOutBonxBoxIds) {
+        this.tipOutBonxBoxIds = tipOutBonxBoxIds;
     }
 
-    public Map<String, Set<WhOperationExecLine>> getOutBoundxBoxOpLineExecIdMap() {
-        return outBoundxBoxOpLineExecIdMap;
-    }
-
-    public void setOutBoundxBoxOpLineExecIdMap(Map<String, Set<WhOperationExecLine>> outBoundxBoxOpLineExecIdMap) {
-        this.outBoundxBoxOpLineExecIdMap = outBoundxBoxOpLineExecIdMap;
-    }
-
-    public Map<Long, Set<WhOperationExecLine>> getTurnoverBoxsOpLineExecIdMap() {
-        return turnoverBoxsOpLineExecIdMap;
-    }
-
-    public void setTurnoverBoxsOpLineExecIdMap(Map<Long, Set<WhOperationExecLine>> turnoverBoxsOpLineExecIdMap) {
-        this.turnoverBoxsOpLineExecIdMap = turnoverBoxsOpLineExecIdMap;
-    }
-
-    public Set<Integer> getContainerLatticNo() {
-        return containerLatticNo;
-    }
-
-    public void setContainerLatticNo(Set<Integer> containerLatticNo) {
-        this.containerLatticNo = containerLatticNo;
-    }
-
+    
+    
 
 }

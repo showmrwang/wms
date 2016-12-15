@@ -87,7 +87,7 @@ public interface PdaPickingWorkCacheManager extends BaseManager{
      * @param locationId
      * @return
      */
-      public CheckScanResultCommand pdaPickingTipOuterContainer(Set<Long> outerContainerIds,Long operatorId);
+      public CheckScanResultCommand pdaPickingTipOuterContainer(Set<Long> outerContainerIds,Long locationId);
       
       /***
        * pda拣货提示货箱
@@ -96,7 +96,7 @@ public interface PdaPickingWorkCacheManager extends BaseManager{
        * @param operatorId
        * @return
        */
-      public CheckScanResultCommand pdaPickingTipInsideContainer(Set<Long> insideContainerIds,Long operatorId);
+      public CheckScanResultCommand pdaPickingTipInsideContainer(Set<Long> insideContainerIds,Long locationId);
       
       /***
        * pda拣货提示sku
@@ -154,22 +154,40 @@ public interface PdaPickingWorkCacheManager extends BaseManager{
        */
      public Long cachePickingOperLineId(Long operationId,String skuAttrIds,Long outerContainerId,Long insideContainerId,Long locationId,Long ouId,Boolean isShortPicking,Double scanQty);
      
+//     
+//     /***
+//      * 缓存周转箱作业明细
+//      * @param whoperLinCmd
+//      * @param trunOverBoxId(周转箱id)
+//      * @param operationId
+//      */
+//     public void cacheTurnoverBoxPickingWhOperLineCmd(Long trunOverBoxId,Long operationId,Long operationLineId);
+//     
+//     /***
+//      * 缓存出库箱箱作业明细
+//      * @param whoperLinCmd
+//      * @param trunOverBoxId(周转箱id)
+//      * @param operationId
+//      */
+//     public void cacheOutBoundxBoxPickingWhOperLineCmd(String outBoundxBoxCode,Long operationId,Long operationLineId);
+     
+    /***
+     * 清楚缓存
+     * @param operationId
+     * @param isAfterScanLocation
+     * @param skuId
+     * @param insideContainerCmd
+     * @param outerContainerCmd
+     */
+     public void pdaPickingRemoveAllCache(Long operationId,Boolean isAfterScanLocation,Long locationId);
+     
      
      /***
-      * 缓存周转箱作业明细
-      * @param whoperLinCmd
-      * @param trunOverBoxId(周转箱id)
+      * 修改工作/作业状态
       * @param operationId
+      * @param workId
       */
-     public void cacheTurnoverBoxPickingWhOperLineCmd(Long trunOverBoxId,Long operationId,Long operationLineId);
-     
-     /***
-      * 缓存出库箱箱作业明细
-      * @param whoperLinCmd
-      * @param trunOverBoxId(周转箱id)
-      * @param operationId
-      */
-     public void cacheOutBoundxBoxPickingWhOperLineCmd(String outBoundxBoxCode,Long operationId,Long operationLineId);
+     public void pdaPickingUpdateStatus(Long operationId,String workCode,Long ouId,Long userId);
       
     
 }

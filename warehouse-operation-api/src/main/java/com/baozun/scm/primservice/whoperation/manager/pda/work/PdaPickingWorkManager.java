@@ -6,7 +6,6 @@ import com.baozun.scm.primservice.whoperation.command.pda.work.PickingScanResult
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
-import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationExecLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhWork;
 
 
@@ -87,7 +86,7 @@ public interface PdaPickingWorkManager extends BaseManager {
      * @param command
      * @return
      */
-    public PickingScanResultCommand scanSku(PickingScanResultCommand  command,WhSkuCommand skuCmd);
+    public PickingScanResultCommand scanSku(PickingScanResultCommand  command,WhSkuCommand skuCmd,Boolean isTabbInvTotal);
     
     /***
      * 判断货箱内库存属性是否唯一

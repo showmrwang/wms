@@ -41,7 +41,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	ou_id as ouId,
 	        	occupation_code_source as occupationCodeSource,
 	        	inbound_time as inboundTime,
-	        	last_modify_time as lastModifyTime
+	        	last_modify_time as lastModifyTime,
+	        	container_lattice_no as containerLatticeNo,
+	            outboundbox_code as as outboundboxCode
 	    ]]>
 	</sql>
 	<sql id="whSkuInventoryConditionWhereExt">
@@ -149,7 +151,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	ou_id ,
 		        	occupation_code_source ,
 		        	inbound_time ,
-		        	last_modify_time 
+		        	last_modify_time,
+		        	container_lattice_no,
+	                outboundbox_code 
 		        ) VALUES (
 		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -178,7 +182,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{occupationCodeSource,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{inboundTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} 
+		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{containerLatticeNo,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{outboundboxCode,javaType=java.lang.String,jdbcType=VARCHAR}
 		        )
 		    ]]>
 
@@ -213,7 +219,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        is_locked = #{isLocked,javaType=java.lang.Boolean,jdbcType=BIT} ,
 		        occupation_code_source = #{occupationCodeSource,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        inbound_time = #{inboundTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} 
+		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        container_lattice_no = #{containerLatticeNo,javaType=java.lang.Integer,jdbcType=INTEGER},
+	            outboundbox_code  = #{outboundboxCode,javaType=java.lang.String,jdbcType=VARCHAR}
 	        WHERE 
 		        id = #{id} 
 		        and ou_id = #{ouId}
@@ -377,6 +385,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	       
 				<if test="ouId!=null">
 					and ou_id = #{ouId}
+				</if>
+				<!-- 货格号 -->
+				<if test="containerLatticeNo!=null and containerLatticeNo!=''">
+					 and t.container_lattice_no = #{containerLatticeNo}
+				</if>
+				<!-- 出库箱号 -->
+				<if test="outboundboxCode!=null and outboundboxCode!=''">
+					 and t.outboundbox_code = #{outboundboxCode}
 				</if>
 		</where>
 	</sql>

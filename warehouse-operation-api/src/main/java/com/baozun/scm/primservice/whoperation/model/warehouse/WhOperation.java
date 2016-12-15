@@ -75,6 +75,8 @@ public class WhOperation extends BaseModel {
 	private java.lang.Long operatorId;
 	/** 是否启用 1:启用 0:停用 */
 	private java.lang.Integer lifecycle;
+	/**作业状态*/
+	private java.lang.Integer status;
 	
 	//columns END
 
@@ -253,6 +255,15 @@ public class WhOperation extends BaseModel {
     public void setIsWholeCase(java.lang.Boolean isWholeCase) {
         this.isWholeCase = isWholeCase;
     }
+
+    public java.lang.Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(java.lang.Integer status) {
+        this.status = status;
+    }
+    
     
 }
 

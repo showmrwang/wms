@@ -80,12 +80,6 @@ public final class CacheConstants {
     public static final String CACHE_LOCATION = "CACHE_LOCATION";
     /***缓存单个库位库存*/
     public static final String CACHE_LOC_INVENTORY = "CACHE_LOC_INVENTORY";
-    /**缓存库位上的托盘*/
-    public static final String CACAHE_LOC_OUT_CONTAINER="CACHE_LOC_OUT_CONTAINER";
-    /**缓存库位上的货箱*/
-    public static final String CACHE_LOC_INSIDE_CONTAINER="CACHE_LOC_INSIDE_CONTAINER";
-    /**缓存库位上的sku*/
-    public static final String CACHE_LOC_SKU="CACHE_LOC_SKU";
     /***缓存唯一sku*/
     public static final String CACHE_LOC_SKU_ATTR = "CACHE_LOC_SKU_ATTR";
     /** pda拣货:已扫描的Sku队列 */
@@ -93,9 +87,8 @@ public final class CacheConstants {
     
     public static final String OPERATION_LINE="OPERATION_LINE";
     
-    public static final String OPERATION_LINE_ID = "OPERATION_LINE_ID";
     /**满箱作业处理*/
-    public static final String OPERATION_LINE_TRUNKFUL="OPERATION_LINE_TRUNKFUL";
+    public static final String CACHE_OPERATION_LINE="CACHE_OPERATION_LINE";
     /**缓存一次作业下的所有库位库存记录*/
     public static final String CAHCEH_LOCATIONS_INVENTORY = " CAHCEH_LOCATIONS_INVENTORY";
 

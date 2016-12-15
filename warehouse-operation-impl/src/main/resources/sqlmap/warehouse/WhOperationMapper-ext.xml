@@ -33,7 +33,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	created_id as createdId,
 	        	modified_id as modifiedId,
 	        	operator_id as operatorId,
-	        	lifecycle as lifecycle
+	        	lifecycle as lifecycle,
+	        	status as status
 	    ]]>
 	</sql>
 	
@@ -141,6 +142,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				<if test="lifecycle!=null">
 					and lifecycle = #{lifecycle}
 				</if>
+				<if test="status!=null">
+					and status = #{status}
+				</if>
 		</where>
 	</sql>
 	
@@ -169,7 +173,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-			        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
+			        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER},
+			        status =  #{status,javaType=java.lang.Integer,jdbcType=INTEGER}
 		        WHERE 
 			        id = #{id} 
 			        
@@ -205,6 +210,20 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			</if>
 		</where>
     </select>
+		
+	  <select id="findOperationByIdExt" resultMap="WhOperationResultExt">
+    	select 
+    		<include refid="whOperationColumnsExt" />
+	    from 
+	    	t_wh_operation
+		<where> 
+				ou_id = #{ouId}
+			<if test="id!=null and id!=''">
+				and id = #{id}
+			</if>
+		</where>
+    </select>	
+	
     
 	<select id="findOperationCommandById" resultMap="whOperationCommandResultExt">
     	select 
