@@ -3744,6 +3744,19 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             if (StringUtils.isEmpty(rsc.getAllocateUnitCodes())) {
                 continue;
             }
+            // 不支持静态库位超分配和空库位策略
+            if (Constants.ALLOCATE_STRATEGY_STATICLOCATIONCANASSIGNMENT.equals(rsc.getStrategyCode()) || Constants.ALLOCATE_STRATEGY_EMPTYLOCATION.equals(rsc.getStrategyCode())) {
+                continue;
+            }
+            // 先到期先出,先到期后出验证是否是有效期商品
+            if (Constants.ALLOCATE_STRATEGY_FIRSTEXPIRATIONFIRSTOUT.equals(rsc.getStrategyCode()) || Constants.ALLOCATE_STRATEGY_FIRSTEXPIRATIONLASTOUT.equals(rsc.getStrategyCode())) {
+                Boolean isExpirationSku = skuDao.checkIsExpirationSku(skuId, ouId);
+                if (isExpirationSku == null || !isExpirationSku) {
+                    continue;
+                }
+            }
+
+
             // 策略COde
             String strategyCode = rsc.getStrategyCode();
             // 策略应用对象:托盘，货箱，件
@@ -3960,6 +3973,10 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             }
 
 
+        }
+
+        if (upperLimitQty > 0) {
+            throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
         }
         // 删除库位补货信息
         int count = this.replenishmentMsgDao.deleteByIdOuId(msg.getId(), ouId);
