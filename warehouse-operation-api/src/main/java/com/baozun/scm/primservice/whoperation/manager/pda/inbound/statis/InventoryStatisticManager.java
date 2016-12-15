@@ -19,6 +19,7 @@ import java.util.List;
 import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.ContainerStatisticResultCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.InventoryStatisticResultCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.UomCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 
@@ -29,6 +30,8 @@ import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 public interface InventoryStatisticManager extends BaseManager {
 
     public InventoryStatisticResultCommand sysGuidePutawayInvStatistic(List<WhSkuInventoryCommand> invList, Integer putawayPatternDetailType, Long ouId, String logId);
+    
+    public InventoryStatisticResultCommand sysGuidePutawayInvStatistic(List<WhSkuInventoryCommand> invList, Integer putawayPatternDetailType, List<UomCommand> lenUomCmds, List<UomCommand> weightUomCmds, ContainerCommand containerCmd, Long ouId, Long userId, String logId);
     
     public ContainerStatisticResultCommand sysGuidePutawayContainerStatistic(List<ContainerCommand> icList, Integer putawayPatternDetailType, Long ouId, String logId);
 

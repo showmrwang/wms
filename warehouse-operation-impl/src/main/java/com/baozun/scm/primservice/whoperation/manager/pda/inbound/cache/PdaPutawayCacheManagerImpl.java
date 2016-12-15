@@ -15,7 +15,6 @@
 package com.baozun.scm.primservice.whoperation.manager.pda.inbound.cache;
 
 import java.util.ArrayDeque;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -82,7 +81,7 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
      */
     @Override
     public synchronized boolean sysGuidePutawayLocRecommendQueue(Long containerId, String logId) {
-        boolean ret = true;
+        /*boolean ret = true;
         if (log.isInfoEnabled()) {
             log.info("sys guide putaway locRecommend queue validate start, contianerId is:[{}], logId is:[{}]", containerId, logId);
         }
@@ -164,11 +163,69 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
         if (log.isInfoEnabled()) {
             log.info("sys guide putaway locRecommend queue validate end, contianerId is:[{}], logId is:[{}]", containerId, logId);
         }
+        return ret;*/
+        boolean ret = true;
+        if (log.isInfoEnabled()) {
+            log.info("sys guide putaway locRecommend queue validate start, contianerId is:[{}], logId is:[{}]", containerId, logId);
+        }
+        int expireTime = 20;//过期时间
+        int execTime = 10;//执行需要最少时间
+        int queueTime = expireTime - execTime;//排队时间
+        long len = cacheManager.listLen(CacheConstants.LOCATION_RECOMMEND_QUEUE);
+        String qcId = "";// 当前队列头
+        if (0 < len) {
+            // 此刻已有排队
+            Set<String> ids = new HashSet<String>();
+            ids.add(containerId.toString());
+            if (isCacheAllExistsContain(ids, CacheConstants.LOCATION_RECOMMEND_QUEUE)) {
+                // 已在队列中
+                String first = getFirstValidDataFromQueue(CacheConstants.LOCATION_RECOMMEND_QUEUE);
+                if (!containerId.toString().equals(first)) {
+                    ret = false;// 需要排队
+                } else {
+                    qcId = first;
+                }
+            } else {
+                // 未在队列中,则放入队列
+                cacheManager.setMapValue(CacheConstants.LOCATION_RECOMMEND_EXPIRE_TIME, containerId.toString(), containerId.toString(), expireTime);
+                cacheManager.setMapValue(CacheConstants.LOCATION_RECOMMEND_VALID_TIME, containerId.toString(), containerId.toString(), queueTime);
+                cacheManager.pushToListFooter(CacheConstants.LOCATION_RECOMMEND_QUEUE, containerId.toString());
+                String first = getFirstValidDataFromQueue(CacheConstants.LOCATION_RECOMMEND_QUEUE);
+                if (!containerId.toString().equals(first)) {
+                    ret = false;// 需要排队
+                } else {
+                    qcId = first;
+                }
+            }
+        } else {
+            // 此刻尚未排队
+            cacheManager.setMapValue(CacheConstants.LOCATION_RECOMMEND_EXPIRE_TIME, containerId.toString(), containerId.toString(), expireTime);
+            cacheManager.setMapValue(CacheConstants.LOCATION_RECOMMEND_VALID_TIME, containerId.toString(), containerId.toString(), queueTime);
+            cacheManager.pushToListFooter(CacheConstants.LOCATION_RECOMMEND_QUEUE, containerId.toString());
+            String first = cacheManager.findListItem(CacheConstants.LOCATION_RECOMMEND_QUEUE, 0);
+            if (!containerId.toString().equals(first)) {
+                ret = false;// 需要排队
+            } else {
+                qcId = first;
+            }
+        }
+        if (true == ret && !StringUtils.isEmpty(qcId)) {
+            // 判断剩余时间，少于10秒需要重新排队
+            String validC = cacheManager.getMapValue(CacheConstants.LOCATION_RECOMMEND_VALID_TIME, containerId.toString());
+            if(StringUtils.isEmpty(validC)){
+                // 剩余时间少于10秒，认为时间不足够用来执行逻辑，需要重新排队
+                cacheManager.popListHead(CacheConstants.LOCATION_RECOMMEND_QUEUE);
+                ret = false;
+            }
+        }
+        if (log.isInfoEnabled()) {
+            log.info("sys guide putaway locRecommend queue validate end, contianerId is:[{}], logId is:[{}]", containerId, logId);
+        }
         return ret;
     }
 
     private String getFirstValidDataFromQueue(String key) {
-        String ret = null;
+        /*String ret = null;
         long len = cacheManager.listLen(key);
         for (int i = 0; i < len; i++) {
             String fisrt = cacheManager.findListItem(key, i);
@@ -185,6 +242,22 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                 } else {
                     ret = fisrt;
                 }
+            }
+            if (null != ret) {
+                break;
+            }
+        }
+        return ret;*/
+        String ret = null;
+        long len = cacheManager.listLen(key);
+        for (int i = 0; i < len; i++) {
+            String fisrt = cacheManager.findListItem(key, i);
+            String expC = cacheManager.getMapValue(CacheConstants.LOCATION_RECOMMEND_EXPIRE_TIME, fisrt);
+            if (StringUtils.isEmpty(expC)) {
+                // 排队超时，移出队列
+                cacheManager.popListHead(key);
+            } else {
+                ret = fisrt;
             }
             if (null != ret) {
                 break;

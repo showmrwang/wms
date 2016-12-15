@@ -46,7 +46,6 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.ShelveRecommendR
 import com.baozun.scm.primservice.whoperation.command.warehouse.UomCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
-import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
 import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
@@ -73,6 +72,7 @@ import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.pda.inbound.cache.PdaPutawayCacheManager;
+import com.baozun.scm.primservice.whoperation.manager.pda.inbound.statis.InventoryStatisticManager;
 import com.baozun.scm.primservice.whoperation.manager.redis.SkuRedisManager;
 import com.baozun.scm.primservice.whoperation.manager.rule.RuleManager;
 import com.baozun.scm.primservice.whoperation.manager.rule.WhLocationRecommendManager;
@@ -93,7 +93,6 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.InventoryStatus;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Location;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionPutAway;
-import com.baozun.scm.primservice.whoperation.model.warehouse.carton.WhCarton;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 import com.baozun.scm.primservice.whoperation.util.formula.SimpleCubeCalculator;
 import com.baozun.scm.primservice.whoperation.util.formula.SimpleWeightCalculator;
@@ -152,6 +151,8 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
     private WhSkuInventoryManager whSkuInventoryManager;
     @Autowired
     private SkuRedisManager skuRedisManager;
+    @Autowired
+    InventoryStatisticManager inventoryStatisticManager;
 
 
     /**
@@ -426,7 +427,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         }
         // 3.库存信息统计
         InventoryStatisticResultCommand isrCmd = cacheManager.getMapObject(CacheConstants.CONTAINER_INVENTORY_STATISTIC, containerId.toString());
-        Long outerContainerId = containerCmd.getId();
+        /*Long outerContainerId = containerCmd.getId();
         Set<Long> insideContainerIds = new HashSet<Long>();// 所有内部容器
         Set<Long> caselevelContainerIds = new HashSet<Long>();// 所有caselevel内部容器
         Set<Long> notcaselevelContainerIds = new HashSet<Long>();// 所有非caselevel内部容器
@@ -759,7 +760,62 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                 pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(containerCmd, ouId, logId);
                 throw e;
             }
+        }*/
+        Map<String, Double> lenUomConversionRate = new HashMap<String, Double>();
+        Map<String, Double> weightUomConversionRate = new HashMap<String, Double>();
+        List<UomCommand> lenUomCmds;
+        List<UomCommand> weightUomCmds;
+        lenUomCmds = uomDao.findUomByGroupCode(WhUomType.LENGTH_UOM, BaseModel.LIFECYCLE_NORMAL);
+        for (UomCommand lenUom : lenUomCmds) {
+            String uomCode = "";
+            Double uomRate = 0.0;
+            if (null != lenUom) {
+                uomCode = lenUom.getUomCode();
+                uomRate = lenUom.getConversionRate();
+                lenUomConversionRate.put(uomCode, uomRate);
+            }
         }
+        weightUomCmds = uomDao.findUomByGroupCode(WhUomType.WEIGHT_UOM, BaseModel.LIFECYCLE_NORMAL);
+        for (UomCommand lenUom : weightUomCmds) {
+            String uomCode = "";
+            Double uomRate = 0.0;
+            if (null != lenUom) {
+                uomCode = lenUom.getUomCode();
+                uomRate = lenUom.getConversionRate();
+                weightUomConversionRate.put(uomCode, uomRate);
+            }
+        }
+        SimpleCubeCalculator cubeCalculator = new SimpleCubeCalculator(lenUomConversionRate);
+        SimpleWeightCalculator weightCalculator = new SimpleWeightCalculator(weightUomConversionRate);
+        InventoryStatisticResultCommand invStatisticCmd = null;
+        if(null == isrCmd){
+            invStatisticCmd = inventoryStatisticManager.sysGuidePutawayInvStatistic(invList, WhPutawayPatternDetailType.PALLET_PUTAWAY, lenUomCmds, weightUomCmds, containerCmd, ouId, userId, logId);
+            if(null == invStatisticCmd){
+                log.error("sys guide putaway inv statistic is error, logId is:[{}]", logId);
+                throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
+            }
+        }
+        Long outerContainerId = containerCmd.getId();
+        Set<Long> insideContainerIds = invStatisticCmd.getInsideContainerIds();// 所有内部容器
+        Set<Long> caselevelContainerIds = invStatisticCmd.getCaselevelContainerIds();// 所有caselevel内部容器
+        Set<Long> notcaselevelContainerIds = invStatisticCmd.getNotcaselevelContainerIds();// 所有非caselevel内部容器
+        Set<Long> skuIds = invStatisticCmd.getSkuIds();// 所有sku种类
+        Long skuQty = invStatisticCmd.getSkuQty();// sku总件数
+        Set<String> skuAttrIds = invStatisticCmd.getSkuAttrIds();// 所有唯一sku
+        Set<Long> storeIds = invStatisticCmd.getStoreIds();// 所有店铺
+        Set<Long> locationIds = invStatisticCmd.getLocationIds();// 所有推荐库位
+        Map<Long, Set<Long>> insideContainerSkuIds = invStatisticCmd.getInsideContainerSkuIds();// 内部容器所有sku种类
+        Map<Long, Long> insideContainerSkuQty = invStatisticCmd.getInsideContainerSkuQty();// 内部容器所有sku总件数
+        Map<Long, Map<Long, Long>> insideContainerSkuIdsQty = invStatisticCmd.getInsideContainerSkuIdsQty();// 内部容器单个sku总件数
+        Map<Long, Set<String>> insideContainerSkuAttrIds = invStatisticCmd.getInsideContainerSkuAttrIds();// 内部容器唯一sku种类
+        Map<Long, Map<String, Long>> insideContainerSkuAttrIdsQty = invStatisticCmd.getInsideContainerSkuAttrIdsQty();// 内部容器唯一sku总件数
+        //Map<Long, Map<Long, Set<String>>> insideContainerSkuAndSkuAttrIds = invStatisticCmd.getInsideContainerSkuAndSkuAttrIds();// 内部容器sku对应所有唯一sku
+        Map<Long, Set<Long>> insideContainerStoreIds = invStatisticCmd.getInsideContainerStoreIds();// 内部容器所有店铺
+        Map<Long, Double> insideContainerWeight = invStatisticCmd.getInsideContainerWeight();// 内部容器重量
+        //Map<Long, Double> insideContainerVolume = invStatisticCmd.getInsideContainerVolume();// 内部容器体积
+        Map<Long, ContainerAssist> insideContainerAsists = invStatisticCmd.getInsideContainerAsists();
+        Double outerContainerWeight = 0.0;
+        Double outerContainerVolume = 0.0;
         // 4.判断是否已推荐库位
         if (null != isrCmd) {
             locationIds = isrCmd.getLocationIds();
@@ -773,7 +829,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
             srCmd.setRecommendLocation(true);// 已推荐库位
             if (1 < locationIds.size()) {
                 log.error("sys guide pallet putaway location is more than one error, logId is:[{}]", logId);
-                throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
+                throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
             }
             Long locId = null;
             for (Long locationId : locationIds) {
@@ -1282,7 +1338,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         }
         // 3.库存信息统计
         InventoryStatisticResultCommand isrCmd = cacheManager.getMapObject(CacheConstants.CONTAINER_INVENTORY_STATISTIC, insideContainerId.toString());
-        Long outerContainerId = containerCmd.getId();
+        /*Long outerContainerId = containerCmd.getId();
         Set<Long> insideContainerIds = new HashSet<Long>();// 所有内部容器
         Set<Long> caselevelContainerIds = new HashSet<Long>();// 所有caselevel内部容器
         Set<Long> notcaselevelContainerIds = new HashSet<Long>();// 所有非caselevel内部容器
@@ -1612,7 +1668,58 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                 pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(insideContainerCmd, ouId, logId);
                 throw e;
             }
+        }*/
+        Map<String, Double> lenUomConversionRate = new HashMap<String, Double>();
+        Map<String, Double> weightUomConversionRate = new HashMap<String, Double>();
+        List<UomCommand> lenUomCmds;
+        List<UomCommand> weightUomCmds;
+        lenUomCmds = uomDao.findUomByGroupCode(WhUomType.LENGTH_UOM, BaseModel.LIFECYCLE_NORMAL);
+        for (UomCommand lenUom : lenUomCmds) {
+            String uomCode = "";
+            Double uomRate = 0.0;
+            if (null != lenUom) {
+                uomCode = lenUom.getUomCode();
+                uomRate = lenUom.getConversionRate();
+                lenUomConversionRate.put(uomCode, uomRate);
+            }
         }
+        weightUomCmds = uomDao.findUomByGroupCode(WhUomType.WEIGHT_UOM, BaseModel.LIFECYCLE_NORMAL);
+        for (UomCommand lenUom : weightUomCmds) {
+            String uomCode = "";
+            Double uomRate = 0.0;
+            if (null != lenUom) {
+                uomCode = lenUom.getUomCode();
+                uomRate = lenUom.getConversionRate();
+                weightUomConversionRate.put(uomCode, uomRate);
+            }
+        }
+        InventoryStatisticResultCommand invStatisticCmd = null;
+        if(null == isrCmd){
+            invStatisticCmd = inventoryStatisticManager.sysGuidePutawayInvStatistic(invList, WhPutawayPatternDetailType.CONTAINER_PUTAWAY, lenUomCmds, weightUomCmds, insideContainerCmd, ouId, userId, logId);
+            if(null == invStatisticCmd){
+                log.error("sys guide putaway inv statistic is error, logId is:[{}]", logId);
+                throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
+            }
+        }
+        Long outerContainerId = containerCmd.getId();
+        Set<Long> insideContainerIds = invStatisticCmd.getInsideContainerIds();// 所有内部容器
+        Set<Long> caselevelContainerIds = invStatisticCmd.getCaselevelContainerIds();// 所有caselevel内部容器
+        Set<Long> notcaselevelContainerIds = invStatisticCmd.getNotcaselevelContainerIds();// 所有非caselevel内部容器
+        Set<Long> skuIds = invStatisticCmd.getSkuIds();// 所有sku种类
+        Long skuQty = invStatisticCmd.getSkuQty();// sku总件数
+        Set<String> skuAttrIds = invStatisticCmd.getSkuAttrIds();// 所有唯一sku
+        Set<Long> storeIds = invStatisticCmd.getStoreIds();// 所有店铺
+        Set<Long> locationIds = invStatisticCmd.getLocationIds();// 所有推荐库位
+        Map<Long, Set<Long>> insideContainerSkuIds = invStatisticCmd.getInsideContainerSkuIds();// 内部容器所有sku种类
+        Map<Long, Long> insideContainerSkuQty = invStatisticCmd.getInsideContainerSkuQty();// 内部容器所有sku总件数
+        Map<Long, Map<Long, Long>> insideContainerSkuIdsQty = invStatisticCmd.getInsideContainerSkuIdsQty();// 内部容器单个sku总件数
+        Map<Long, Set<String>> insideContainerSkuAttrIds = invStatisticCmd.getInsideContainerSkuAttrIds();// 内部容器唯一sku种类
+        Map<Long, Map<String, Long>> insideContainerSkuAttrIdsQty = invStatisticCmd.getInsideContainerSkuAttrIdsQty();// 内部容器唯一sku总件数
+        //Map<Long, Map<Long, Set<String>>> insideContainerSkuAndSkuAttrIds = invStatisticCmd.getInsideContainerSkuAndSkuAttrIds();// 内部容器sku对应所有唯一sku
+        Map<Long, Set<Long>> insideContainerStoreIds = invStatisticCmd.getInsideContainerStoreIds();// 内部容器所有店铺
+        Map<Long, Double> insideContainerWeight = invStatisticCmd.getInsideContainerWeight();// 内部容器重量
+        //Map<Long, Double> insideContainerVolume = invStatisticCmd.getInsideContainerVolume();// 内部容器体积
+        Map<Long, ContainerAssist> insideContainerAsists = invStatisticCmd.getInsideContainerAsists();
         // 4.判断是否已推荐库位
         if (null != isrCmd) {
             locationIds = isrCmd.getLocationIds();
@@ -2065,7 +2172,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         }
         // 3.库存信息统计
         InventoryStatisticResultCommand isrCmd = cacheManager.getMapObject(CacheConstants.CONTAINER_INVENTORY_STATISTIC, insideContainerId.toString());
-        Long outerContainerId = containerCmd.getId();
+        /*Long outerContainerId = containerCmd.getId();
         Set<Long> insideContainerIds = new HashSet<Long>();// 所有内部容器
         Set<Long> caselevelContainerIds = new HashSet<Long>();// 所有caselevel内部容器
         Set<Long> notcaselevelContainerIds = new HashSet<Long>();// 所有非caselevel内部容器
@@ -2426,7 +2533,59 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                 pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(insideContainerCmd, ouId, logId);
                 throw e;
             }
+        }*/
+        Map<String, Double> lenUomConversionRate = new HashMap<String, Double>();
+        Map<String, Double> weightUomConversionRate = new HashMap<String, Double>();
+        List<UomCommand> lenUomCmds;
+        List<UomCommand> weightUomCmds;
+        lenUomCmds = uomDao.findUomByGroupCode(WhUomType.LENGTH_UOM, BaseModel.LIFECYCLE_NORMAL);
+        for (UomCommand lenUom : lenUomCmds) {
+            String uomCode = "";
+            Double uomRate = 0.0;
+            if (null != lenUom) {
+                uomCode = lenUom.getUomCode();
+                uomRate = lenUom.getConversionRate();
+                lenUomConversionRate.put(uomCode, uomRate);
+            }
         }
+        weightUomCmds = uomDao.findUomByGroupCode(WhUomType.WEIGHT_UOM, BaseModel.LIFECYCLE_NORMAL);
+        for (UomCommand lenUom : weightUomCmds) {
+            String uomCode = "";
+            Double uomRate = 0.0;
+            if (null != lenUom) {
+                uomCode = lenUom.getUomCode();
+                uomRate = lenUom.getConversionRate();
+                weightUomConversionRate.put(uomCode, uomRate);
+            }
+        }
+        InventoryStatisticResultCommand invStatisticCmd = null;
+        if(null == isrCmd){
+            invStatisticCmd = inventoryStatisticManager.sysGuidePutawayInvStatistic(invList, WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY, lenUomCmds, weightUomCmds, insideContainerCmd, ouId, userId, logId);
+            if(null == invStatisticCmd){
+                log.error("sys guide putaway inv statistic is error, logId is:[{}]", logId);
+                throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
+            }
+        }
+        Long outerContainerId = containerCmd.getId();
+        Set<Long> insideContainerIds = invStatisticCmd.getInsideContainerIds();// 所有内部容器
+        Set<Long> caselevelContainerIds = invStatisticCmd.getCaselevelContainerIds();// 所有caselevel内部容器
+        Set<Long> notcaselevelContainerIds = invStatisticCmd.getNotcaselevelContainerIds();// 所有非caselevel内部容器
+        Set<Long> skuIds = invStatisticCmd.getSkuIds();// 所有sku种类
+        Long skuQty = invStatisticCmd.getSkuQty();// sku总件数
+        Set<String> skuAttrIds = invStatisticCmd.getSkuAttrIds();// 所有唯一sku
+        Set<Long> storeIds = invStatisticCmd.getStoreIds();// 所有店铺
+        Set<Long> locationIds = invStatisticCmd.getLocationIds();// 所有推荐库位
+        Map<Long, Set<Long>> insideContainerSkuIds = invStatisticCmd.getInsideContainerSkuIds();// 内部容器所有sku种类
+        Map<Long, Long> insideContainerSkuQty = invStatisticCmd.getInsideContainerSkuQty();// 内部容器所有sku总件数
+        Map<Long, Map<Long, Long>> insideContainerSkuIdsQty = invStatisticCmd.getInsideContainerSkuIdsQty();// 内部容器单个sku总件数
+        Map<Long, Set<String>> insideContainerSkuAttrIds = invStatisticCmd.getInsideContainerSkuAttrIds();// 内部容器唯一sku种类
+        Map<Long, Map<String, Long>> insideContainerSkuAttrIdsQty = invStatisticCmd.getInsideContainerSkuAttrIdsQty();// 内部容器唯一sku总件数
+        //Map<Long, Map<Long, Set<String>>> insideContainerSkuAndSkuAttrIds = invStatisticCmd.getInsideContainerSkuAndSkuAttrIds();// 内部容器sku对应所有唯一sku
+        Map<Long, Map<String, Set<String>>> insideContainerSkuAttrIdsSnDefect = invStatisticCmd.getInsideContainerSkuAttrIdsSnDefect();// 内部容器唯一sku对应所有残次条码
+        Map<Long, Set<Long>> insideContainerStoreIds = invStatisticCmd.getInsideContainerStoreIds();// 内部容器所有店铺
+        Map<Long, Double> insideContainerWeight = invStatisticCmd.getInsideContainerWeight();// 内部容器重量
+        //Map<Long, Double> insideContainerVolume = invStatisticCmd.getInsideContainerVolume();// 内部容器体积
+        Map<Long, ContainerAssist> insideContainerAsists = invStatisticCmd.getInsideContainerAsists();
         // 4.判断是否已推荐库位
         if (null != isrCmd) {
             locationIds = isrCmd.getLocationIds();
