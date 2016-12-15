@@ -122,7 +122,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
     public void updateWaveAfterSoftAllocate(WhWave wave, Long ouId) {
         // WhWave whWave = this.whWaveDao.calculateQuantity(waveId, ouId);
 
-        List<SoftAllocationCommand> commandList = this.whWaveLineDao.findWaveLineCommandByWaveIdAndStatus(wave.getId(), ouId, WaveStatus.WAVE_EXECUTING, BaseModel.LIFECYCLE_NORMAL);
+        List<SoftAllocationCommand> commandList = this.whWaveLineDao.findWaveLineCommandByWaveIdAndStatus(wave.getId(), ouId, BaseModel.LIFECYCLE_NORMAL);
 
         Integer totalOdoQty = 0; // 出库单总数
         Integer totalOdoLineQty = 0;// 出库单明细行总数

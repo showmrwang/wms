@@ -97,6 +97,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<result column="odoLineSkuName" property="skuName" />
 			<result column="odoLineExtSkuName" property="extSkuName" />
 			<result column="odoLineQty" property="qty" />
+			<result column="odoLinePlanQty" property="planQty" />
 			<result column="odoLineCurrentQty" property="currentQty" />
 			<result column="odoLineActualQty" property="actualQty" />
 			<result column="odoLineCancelQty" property="cancelQty" />
@@ -542,6 +543,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	odoLine.sku_name as odoLineSkuName,
 	        	odoLine.ext_sku_name as odoLineExtSkuName,
 	        	odoLine.qty as odoLineQty,
+	        	odoLine.plan_qty as odoLinePlanQty,
 	        	odoLine.current_qty as odoLineCurrentQty,
 	        	odoLine.actual_qty as odoLineActualQty,
 	        	odoLine.cancel_qty as odoLineCancelQty,
@@ -592,7 +594,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		and waveLine.sku_id = sku.id
 		and waveLine.ou_id=wave.ou_id
 		and waveLine.odo_line_id = odoLine.id
-		and wave.status = #{waveStatus}
 		and wave.lifecycle = #{lifecycle}
 		and wave.id = #{waveId}
 		and wave.ou_id = #{ouId}
@@ -772,7 +773,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		where
 		waveLine.wave_id=wave.id
 		and waveLine.ou_id=wave.ou_id
-		and wave.status = #{waveStatus}
 		and wave.lifecycle = #{lifecycle}
 		and wave.id = #{waveId}
 		and wave.ou_id = #{ouId}

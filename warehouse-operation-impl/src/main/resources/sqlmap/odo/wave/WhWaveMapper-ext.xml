@@ -340,7 +340,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			wave.ou_id = waveLine.ou_id
 			AND wave.id = #{waveId}
 			AND wave.ou_id = #{ouId}
-			AND wave. STATUS = 1
+			-- AND wave. STATUS = 1
 			GROUP BY
 			waveLine.sku_id
 		) waveline
@@ -392,7 +392,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			AND occupyWave.id = occupyWaveline.wave_id
 		)
 		WHERE
-			occupyWave. STATUS = 5
+			-- occupyWave. STATUS = 5
+			1 = 1
 			AND ((
 			-- 软分配阶段
 				occupyWave.phase_code = 'WEAK_ALLOCATED'
@@ -601,6 +602,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		FROM t_wh_wave w 
 		WHERE w.phase_code = #{phaseCode} 
 		AND w.ou_id = #{ouId}
+		and w.is_run_wave = 1
 	</select>
 	
 	<select id="getNeedPickingWorkWhWave" parameterType="map" resultType="long">

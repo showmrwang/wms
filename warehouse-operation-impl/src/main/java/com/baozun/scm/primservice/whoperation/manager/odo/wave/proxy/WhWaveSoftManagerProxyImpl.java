@@ -12,7 +12,6 @@ import com.baozun.scm.primservice.whoperation.command.odo.wave.SoftAllocationRes
 import com.baozun.scm.primservice.whoperation.command.odo.wave.SoftAllocationWaveCommand;
 import com.baozun.scm.primservice.whoperation.constant.CacheKeyConstant;
 import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
-import com.baozun.scm.primservice.whoperation.constant.WaveStatus;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoLineManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoManager;
@@ -48,12 +47,15 @@ public class WhWaveSoftManagerProxyImpl implements WhWaveSoftManagerProxy {
         if (null == whWave) {
             throw new BusinessException("没有波次头信息");
         }
-        if (BaseModel.LIFECYCLE_NORMAL != whWave.getLifecycle() || WaveStatus.WAVE_NEW != whWave.getStatus()) {
+        if (BaseModel.LIFECYCLE_NORMAL != whWave.getLifecycle()/*
+                                                                * || WaveStatus.WAVE_NEW !=
+                                                                * whWave.getStatus()
+                                                                */) {
             // throw new BusinessException("波次头不可用或者波次状态不为新建");
             return null;
         }
         // 2.设置波次运行状态信息
-        whWaveManager.updateWaveForSoftStart(whWave);
+        whWave = whWaveManager.updateWaveForSoftStart(whWave);
         // this.updateWaveForSoftStart(whWave);
 
         // 3.查询波次明细及排序

@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
-import com.baozun.scm.primservice.whoperation.constant.WaveStatus;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveDao;
@@ -62,7 +61,7 @@ public class WhWaveLineManagerImpl extends BaseManagerImpl implements WhWaveLine
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<WhWaveLine> getSoftAllocationWhWaveLine(Long waveId, Long ouId) {
-        List<WhWaveLine> whWaveLineList = this.whWaveLineDao.findSoftAllocationWhWaveLine(waveId, ouId, WaveStatus.WAVE_NEW, BaseModel.LIFECYCLE_NORMAL);
+        List<WhWaveLine> whWaveLineList = this.whWaveLineDao.findSoftAllocationWhWaveLine(waveId, ouId, BaseModel.LIFECYCLE_NORMAL);
         return whWaveLineList;
     }
 
