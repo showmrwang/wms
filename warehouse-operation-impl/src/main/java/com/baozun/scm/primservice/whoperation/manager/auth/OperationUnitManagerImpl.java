@@ -51,8 +51,8 @@ public class OperationUnitManagerImpl implements OperationUnitManager {
         List<OpUnitTreeCommand> childList = findListByParentId(parent.getId(), allOrg);// 获取子节点
         List<OpUnitTreeCommand> childList2 = new ArrayList<OpUnitTreeCommand>();
         for (OpUnitTreeCommand oc : outList) {// 验证当前结点是否是用户拥有的
-            //FIXME Long对象直接==判断
-            if (oc.getId() == parent.getId()) {
+            // FIXME Long对象直接==判断
+            if (oc.getId().equals(parent.getId())) {
                 b = true;
                 parent.setSelectable("true");
                 break;
