@@ -92,7 +92,7 @@ public class LocationReplenishmentManagerProxyImpl extends BaseManagerImpl imple
             return;
         }
 
-        SkuRedisCommand skuRedis = this.skuRedisManager.findSkuMasterBySkuId(skuId, ouId, logId);
+        SkuRedisCommand skuRedis = this.locationManager.findSkuMasterBySkuId(skuId, ouId, logId);
         Sku sku = skuRedis.getSku();
         Long locationQty = (long) Math.floor(location.getVolume() / sku.getVolume());
         if (StringUtils.hasText(location.getSizeType())) {
