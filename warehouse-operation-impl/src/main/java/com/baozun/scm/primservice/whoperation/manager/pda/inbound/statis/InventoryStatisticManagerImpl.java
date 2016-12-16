@@ -123,6 +123,7 @@ public class InventoryStatisticManagerImpl extends BaseManagerImpl implements In
         Map<Long, Map<Long, Long>> insideContainerSkuIdsQty = new HashMap<Long, Map<Long, Long>>();// 内部容器单个sku总件数
         Map<Long, Set<String>> insideContainerSkuAttrIds = new HashMap<Long, Set<String>>();// 内部容器唯一sku种类
         Map<Long, Map<String, Long>> insideContainerSkuAttrIdsQty = new HashMap<Long, Map<String, Long>>();// 内部容器唯一sku总件数
+        Map<Long, Map<Long, Set<String>>> insideContainerSkuAndSkuAttrIds = new HashMap<Long, Map<Long, Set<String>>>();// 内部容器sku对应所有唯一sku
         Map<Long, Map<String, Set<String>>> insideContainerSkuAttrIdsSnDefect = new HashMap<Long, Map<String, Set<String>>>();// 内部容器唯一sku对应所有残次条码
         Map<Long, Map<Long, Set<String>>> insideContainerLocSkuAttrIds = new HashMap<Long, Map<Long, Set<String>>>();// 内部容器推荐库位对应唯一sku及残次条码
         Map<Long, Set<Long>> insideContainerStoreIds = new HashMap<Long, Set<Long>>();// 内部容器所有店铺
@@ -223,6 +224,26 @@ public class InventoryStatisticManagerImpl extends BaseManagerImpl implements In
                 Map<String, Long> saq = new HashMap<String, Long>();
                 saq.put(SkuCategoryProvider.getSkuAttrIdByInv(invCmd), curerntSkuQty.longValue());
                 insideContainerSkuAttrIdsQty.put(icId, saq);
+            }
+            if (null != insideContainerSkuAndSkuAttrIds.get(icId)) {
+                Map<Long, Set<String>> skuAndSkuAttrIds = insideContainerSkuAndSkuAttrIds.get(icId);
+                Set<String> icSkus = skuAndSkuAttrIds.get(skuId);
+                if (null != icSkus) {
+                    icSkus.add(SkuCategoryProvider.getSkuAttrIdByInv(invCmd));
+                    skuAndSkuAttrIds.put(skuId, icSkus);
+                    insideContainerSkuAndSkuAttrIds.put(icId, skuAndSkuAttrIds);
+                } else {
+                    icSkus = new HashSet<String>();
+                    icSkus.add(SkuCategoryProvider.getSkuAttrIdByInv(invCmd));
+                    skuAndSkuAttrIds.put(skuId, icSkus);
+                    insideContainerSkuAndSkuAttrIds.put(icId, skuAndSkuAttrIds);
+                }
+            } else {
+                Set<String> icSkus = new HashSet<String>();
+                icSkus.add(SkuCategoryProvider.getSkuAttrIdByInv(invCmd));
+                Map<Long, Set<String>> skuAndSkuAttrIds = new HashMap<Long, Set<String>>();
+                skuAndSkuAttrIds.put(skuId, icSkus);
+                insideContainerSkuAndSkuAttrIds.put(icId, skuAndSkuAttrIds);
             }
             // 统计残次品
             if (WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY == putawayPatternDetailType) {
@@ -325,6 +346,7 @@ public class InventoryStatisticManagerImpl extends BaseManagerImpl implements In
         isCmd.setInsideContainerSkuIdsQty(insideContainerSkuIdsQty);
         isCmd.setInsideContainerSkuAttrIds(insideContainerSkuAttrIds);
         isCmd.setInsideContainerSkuAttrIdsQty(insideContainerSkuAttrIdsQty);
+        isCmd.setInsideContainerSkuAndSkuAttrIds(insideContainerSkuAndSkuAttrIds);
         isCmd.setInsideContainerSkuAttrIdsSnDefect(insideContainerSkuAttrIdsSnDefect);
         isCmd.setInsideContainerLocSkuAttrIds(insideContainerLocSkuAttrIds);
         isCmd.setInsideContainerStoreIds(insideContainerStoreIds);

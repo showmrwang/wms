@@ -367,7 +367,8 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
         // Long funcId = ruleAffer.getFuncId();
         Long ouId = ruleAffer.getOuid();
         Long outerContainerId = ruleAffer.getContainerId();
-        List<Long> storeIds = (null == ruleAffer.getStoreIdList() ? new ArrayList<Long>() : ruleAffer.getStoreIdList());
+        // List<Long> storeIds = (null == ruleAffer.getStoreIdList() ? new ArrayList<Long>() :
+        // ruleAffer.getStoreIdList());
         // 获取外部容器辅助信息
         ContainerAssist outerContainerAssist = caMap.get(outerContainerId);// 获取外部容器辅助信息
         if (null == outerContainerAssist) {
@@ -478,7 +479,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                         avaliableLocs = null;
                         continue;
                     }
-                    attrParams.setIsMixStacking(false);// 库位不允许混放
+                    /*attrParams.setIsMixStacking(false);// 库位不允许混放
                     String invAttrMgmt = "";
                     if (1 == storeIds.size()) {
                         // 获取店铺上配置的库存关键属性
@@ -505,9 +506,9 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                             avaliableLocs = null;
                             continue;
                         }
-                    }
+                    }*/
                     WhSkuInventoryCommand invCmd = invList.get(0);// 取一条库存信息
-                    attrParams.setInvAttrMgmt(invAttrMgmt);
+                    attrParams.setInvAttrMgmt(InvAttrMgmtType.ALL_INV_ATTRS);
                     // 解析库存关键属性
                     invAttrMgmtAspect(attrParams, invCmd);
                     PutawayCondition putawayCondition = putawayConditionFactory.getPutawayCondition(WhPutawayPatternType.SYS_GUIDE_PUTAWAY, WhPutawayPatternDetailType.PALLET_PUTAWAY, logId);
@@ -525,6 +526,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                         avaliableLocs = null;
                         continue;
                     }
+                    attrParams.setIsMixStacking(true);// 库位允许混放
                     WhSkuInventoryCommand invCmd = invList.get(0);// 取一条库存信息
                     attrParams.setInvAttrMgmt("");
                     // 解析库存关键属性
@@ -555,6 +557,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                 }
                 for (LocationCommand al : avaliableLocs) {
                     Long locId = al.getId();
+                    Integer palletCount = al.getTrayCount();
                     // String templetCode = al.getTempletCode();
                     // LocationTemplet locTemplet =
                     // locationTempletDao.findLocationTempletByCodeAndOuId(templetCode, ouId);
@@ -573,23 +576,36 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                     }
                     // Double volumeRate = al.getVolumeRate();
                     if (WhLocationRecommendType.EMPTY_LOCATION.equals(locationRecommendRule)) {
-                        // 计算体积
-                        SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate);
-                        calc.initStuffCube(length, width, height, SimpleCubeCalculator.SYS_UOM);
-                        boolean cubageAvailable = calc.calculateAvailable();
-                        // 计算重量
-                        SimpleWeightCalculator weightCal = new SimpleWeightCalculator(locWeight, SimpleWeightCalculator.SYS_UOM, weightUomConversionRate);
-                        weightCal.initStuffWeight(weight, SimpleWeightCalculator.SYS_UOM);
-                        boolean weightAvailable = weightCal.calculateAvailable();
-                        if (cubageAvailable & weightAvailable) {
-                            LocationRecommendResultCommand lrrc = new LocationRecommendResultCommand();
-                            lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
-                            lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.PALLET_PUTAWAY);
-                            lrrc.setLocationCode(al.getCode());
-                            lrrc.setLocationId(al.getId());
-                            lrrc.setOuterContainerCode(containerCode);
-                            lrrc.setOuterContainerId(outerContainerId);
-                            list.add(lrrc);
+                        if (null != palletCount) {
+                            if (palletCount >= 1) {
+                                LocationRecommendResultCommand lrrc = new LocationRecommendResultCommand();
+                                lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
+                                lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.PALLET_PUTAWAY);
+                                lrrc.setLocationCode(al.getCode());
+                                lrrc.setLocationId(al.getId());
+                                lrrc.setOuterContainerCode(containerCode);
+                                lrrc.setOuterContainerId(outerContainerId);
+                                list.add(lrrc);
+                            }
+                        } else {
+                            // 计算体积
+                            SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate);
+                            calc.initStuffCube(length, width, height, SimpleCubeCalculator.SYS_UOM);
+                            boolean cubageAvailable = calc.calculateAvailable();
+                            // 计算重量
+                            SimpleWeightCalculator weightCal = new SimpleWeightCalculator(locWeight, SimpleWeightCalculator.SYS_UOM, weightUomConversionRate);
+                            weightCal.initStuffWeight(weight, SimpleWeightCalculator.SYS_UOM);
+                            boolean weightAvailable = weightCal.calculateAvailable();
+                            if (cubageAvailable & weightAvailable) {
+                                LocationRecommendResultCommand lrrc = new LocationRecommendResultCommand();
+                                lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
+                                lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.PALLET_PUTAWAY);
+                                lrrc.setLocationCode(al.getCode());
+                                lrrc.setLocationId(al.getId());
+                                lrrc.setOuterContainerCode(containerCode);
+                                lrrc.setOuterContainerId(outerContainerId);
+                                list.add(lrrc);
+                            }
                         }
                     } else if (WhLocationRecommendType.STATIC_LOCATION.equals(locationRecommendRule)) {
                         int count = whSkuLocationDao.findContainerSkuCountNotInSkuLocation(ouId, locId, ruleAffer.getAfferContainerCodeList());
@@ -597,101 +613,143 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                             // 此静态库位不可用，容器中包含商品当前静态库位没有绑定
                             continue;
                         }
-                        LocationInvVolumeWeightCommand livw = whLocationInvVolumeWieghtManager.calculateLocationInvVolumeAndWeight(locId, ouId, uomMap, logId);
-                        Double livwVolume = livw.getVolume();// 库位上已有货物总体积
-                        Double livwWeight = livw.getWeight();// 库位上已有货物总重量
-                        // 计算体积
-                        SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate);
-                        calc.initStuffCube(length, width, height, SimpleCubeCalculator.SYS_UOM);
-                        calc.addStuffVolume(livwVolume);
-                        boolean cubageAvailable = calc.calculateAvailable();
-                        // 计算重量
-                        SimpleWeightCalculator weightCal = new SimpleWeightCalculator(locWeight, SimpleWeightCalculator.SYS_UOM, weightUomConversionRate);
-                        weightCal.initStuffWeight(weight, SimpleWeightCalculator.SYS_UOM);
-                        weightCal.addStuffWeight(livwWeight);
-                        boolean weightAvailable = weightCal.calculateAvailable();
-                        if (cubageAvailable & weightAvailable) {
-                            LocationRecommendResultCommand lrrc = new LocationRecommendResultCommand();
-                            lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
-                            lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.PALLET_PUTAWAY);
-                            lrrc.setLocationCode(al.getCode());
-                            lrrc.setLocationId(al.getId());
-                            lrrc.setOuterContainerCode(containerCode);
-                            lrrc.setOuterContainerId(outerContainerId);
-                            list.add(lrrc);
+                        if (null != palletCount) {
+                            int pCount = whSkuLocationDao.findPalletCountByLocation(ouId, locId);
+                            if (palletCount >= (pCount + 1)) {
+                                LocationRecommendResultCommand lrrc = new LocationRecommendResultCommand();
+                                lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
+                                lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.PALLET_PUTAWAY);
+                                lrrc.setLocationCode(al.getCode());
+                                lrrc.setLocationId(al.getId());
+                                lrrc.setOuterContainerCode(containerCode);
+                                lrrc.setOuterContainerId(outerContainerId);
+                                list.add(lrrc);
+                            }
+                        } else {
+                            LocationInvVolumeWeightCommand livw = whLocationInvVolumeWieghtManager.calculateLocationInvVolumeAndWeight(locId, ouId, uomMap, logId);
+                            Double livwVolume = livw.getVolume();// 库位上已有货物总体积
+                            Double livwWeight = livw.getWeight();// 库位上已有货物总重量
+                            // 计算体积
+                            SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate);
+                            calc.initStuffCube(length, width, height, SimpleCubeCalculator.SYS_UOM);
+                            calc.addStuffVolume(livwVolume);
+                            boolean cubageAvailable = calc.calculateAvailable();
+                            // 计算重量
+                            SimpleWeightCalculator weightCal = new SimpleWeightCalculator(locWeight, SimpleWeightCalculator.SYS_UOM, weightUomConversionRate);
+                            weightCal.initStuffWeight(weight, SimpleWeightCalculator.SYS_UOM);
+                            weightCal.addStuffWeight(livwWeight);
+                            boolean weightAvailable = weightCal.calculateAvailable();
+                            if (cubageAvailable & weightAvailable) {
+                                LocationRecommendResultCommand lrrc = new LocationRecommendResultCommand();
+                                lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
+                                lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.PALLET_PUTAWAY);
+                                lrrc.setLocationCode(al.getCode());
+                                lrrc.setLocationId(al.getId());
+                                lrrc.setOuterContainerCode(containerCode);
+                                lrrc.setOuterContainerId(outerContainerId);
+                                list.add(lrrc);
+                            }
                         }
                     } else if (WhLocationRecommendType.MERGE_LOCATION_SAME_INV_ATTRS.equals(locationRecommendRule)) {
-                        LocationInvVolumeWeightCommand livw = whLocationInvVolumeWieghtManager.calculateLocationInvVolumeAndWeight(locId, ouId, uomMap, logId);
-                        Double livwVolume = livw.getVolume();// 库位上已有货物总体积
-                        Double livwWeight = livw.getWeight();// 库位上已有货物总重量
-                        // 计算体积
-                        SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate);
-                        calc.initStuffCube(length, width, height, SimpleCubeCalculator.SYS_UOM);
-                        calc.addStuffVolume(livwVolume);
-                        boolean cubageAvailable = calc.calculateAvailable();
-                        // 计算重量
-                        SimpleWeightCalculator weightCal = new SimpleWeightCalculator(locWeight, SimpleWeightCalculator.SYS_UOM, weightUomConversionRate);
-                        weightCal.initStuffWeight(weight, SimpleWeightCalculator.SYS_UOM);
-                        weightCal.addStuffWeight(livwWeight);
-                        boolean weightAvailable = weightCal.calculateAvailable();
-                        if (cubageAvailable & weightAvailable) {
-                            LocationRecommendResultCommand lrrc = new LocationRecommendResultCommand();
-                            lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
-                            lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.PALLET_PUTAWAY);
-                            lrrc.setLocationCode(al.getCode());
-                            lrrc.setLocationId(al.getId());
-                            lrrc.setOuterContainerCode(containerCode);
-                            lrrc.setOuterContainerId(outerContainerId);
-                            list.add(lrrc);
+                        if (null != palletCount) {
+                            int pCount = whSkuLocationDao.findPalletCountByLocation(ouId, locId);
+                            if (palletCount >= (pCount + 1)) {
+                                LocationRecommendResultCommand lrrc = new LocationRecommendResultCommand();
+                                lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
+                                lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.PALLET_PUTAWAY);
+                                lrrc.setLocationCode(al.getCode());
+                                lrrc.setLocationId(al.getId());
+                                lrrc.setOuterContainerCode(containerCode);
+                                lrrc.setOuterContainerId(outerContainerId);
+                                list.add(lrrc);
+                            }
+                        } else {
+                            LocationInvVolumeWeightCommand livw = whLocationInvVolumeWieghtManager.calculateLocationInvVolumeAndWeight(locId, ouId, uomMap, logId);
+                            Double livwVolume = livw.getVolume();// 库位上已有货物总体积
+                            Double livwWeight = livw.getWeight();// 库位上已有货物总重量
+                            // 计算体积
+                            SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate);
+                            calc.initStuffCube(length, width, height, SimpleCubeCalculator.SYS_UOM);
+                            calc.addStuffVolume(livwVolume);
+                            boolean cubageAvailable = calc.calculateAvailable();
+                            // 计算重量
+                            SimpleWeightCalculator weightCal = new SimpleWeightCalculator(locWeight, SimpleWeightCalculator.SYS_UOM, weightUomConversionRate);
+                            weightCal.initStuffWeight(weight, SimpleWeightCalculator.SYS_UOM);
+                            weightCal.addStuffWeight(livwWeight);
+                            boolean weightAvailable = weightCal.calculateAvailable();
+                            if (cubageAvailable & weightAvailable) {
+                                LocationRecommendResultCommand lrrc = new LocationRecommendResultCommand();
+                                lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
+                                lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.PALLET_PUTAWAY);
+                                lrrc.setLocationCode(al.getCode());
+                                lrrc.setLocationId(al.getId());
+                                lrrc.setOuterContainerCode(containerCode);
+                                lrrc.setOuterContainerId(outerContainerId);
+                                list.add(lrrc);
+                            }
                         }
                     } else if (WhLocationRecommendType.MERGE_LOCATION_DIFF_INV_ATTRS.equals(locationRecommendRule)) {
-                        LocationInvVolumeWeightCommand livw = whLocationInvVolumeWieghtManager.calculateLocationInvVolumeAndWeight(locId, ouId, uomMap, logId);
-                        Double livwVolume = livw.getVolume();// 库位上已有货物总体积
-                        Double livwWeight = livw.getWeight();// 库位上已有货物总重量
-                        // 计算体积
-                        SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate);
-                        calc.initStuffCube(length, width, height, SimpleCubeCalculator.SYS_UOM);
-                        calc.addStuffVolume(livwVolume);
-                        boolean cubageAvailable = calc.calculateAvailable();
-                        // 计算重量
-                        SimpleWeightCalculator weightCal = new SimpleWeightCalculator(locWeight, SimpleWeightCalculator.SYS_UOM, weightUomConversionRate);
-                        weightCal.initStuffWeight(weight, SimpleWeightCalculator.SYS_UOM);
-                        weightCal.addStuffWeight(livwWeight);
-                        boolean weightAvailable = weightCal.calculateAvailable();
-                        if (cubageAvailable & weightAvailable) {
-                            LocationRecommendResultCommand lrrc = new LocationRecommendResultCommand();
-                            lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
-                            lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.PALLET_PUTAWAY);
-                            lrrc.setLocationCode(al.getCode());
-                            lrrc.setLocationId(al.getId());
-                            lrrc.setOuterContainerCode(containerCode);
-                            lrrc.setOuterContainerId(outerContainerId);
-                            list.add(lrrc);
+                        if (null != palletCount) {
+                            int pCount = whSkuLocationDao.findPalletCountByLocation(ouId, locId);
+                            if (palletCount >= (pCount + 1)) {
+                                LocationRecommendResultCommand lrrc = new LocationRecommendResultCommand();
+                                lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
+                                lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.PALLET_PUTAWAY);
+                                lrrc.setLocationCode(al.getCode());
+                                lrrc.setLocationId(al.getId());
+                                lrrc.setOuterContainerCode(containerCode);
+                                lrrc.setOuterContainerId(outerContainerId);
+                                list.add(lrrc);
+                            }
+                        } else {
+                            LocationInvVolumeWeightCommand livw = whLocationInvVolumeWieghtManager.calculateLocationInvVolumeAndWeight(locId, ouId, uomMap, logId);
+                            Double livwVolume = livw.getVolume();// 库位上已有货物总体积
+                            Double livwWeight = livw.getWeight();// 库位上已有货物总重量
+                            // 计算体积
+                            SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate);
+                            calc.initStuffCube(length, width, height, SimpleCubeCalculator.SYS_UOM);
+                            calc.addStuffVolume(livwVolume);
+                            boolean cubageAvailable = calc.calculateAvailable();
+                            // 计算重量
+                            SimpleWeightCalculator weightCal = new SimpleWeightCalculator(locWeight, SimpleWeightCalculator.SYS_UOM, weightUomConversionRate);
+                            weightCal.initStuffWeight(weight, SimpleWeightCalculator.SYS_UOM);
+                            weightCal.addStuffWeight(livwWeight);
+                            boolean weightAvailable = weightCal.calculateAvailable();
+                            if (cubageAvailable & weightAvailable) {
+                                LocationRecommendResultCommand lrrc = new LocationRecommendResultCommand();
+                                lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
+                                lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.PALLET_PUTAWAY);
+                                lrrc.setLocationCode(al.getCode());
+                                lrrc.setLocationId(al.getId());
+                                lrrc.setOuterContainerCode(containerCode);
+                                lrrc.setOuterContainerId(outerContainerId);
+                                list.add(lrrc);
+                            }
                         }
                     } else if (WhLocationRecommendType.ONE_LOCATION_ONLY.equals(locationRecommendRule)) {
-                        LocationInvVolumeWeightCommand livw = whLocationInvVolumeWieghtManager.calculateLocationInvVolumeAndWeight(locId, ouId, uomMap, logId);
-                        Double livwVolume = livw.getVolume();// 库位上已有货物总体积
-                        Double livwWeight = livw.getWeight();// 库位上已有货物总重量
-                        // 计算体积
-                        SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate);
-                        calc.initStuffCube(length, width, height, SimpleCubeCalculator.SYS_UOM);
-                        calc.addStuffVolume(livwVolume);
-                        boolean cubageAvailable = calc.calculateAvailable();
-                        // 计算重量
-                        SimpleWeightCalculator weightCal = new SimpleWeightCalculator(locWeight, SimpleWeightCalculator.SYS_UOM, weightUomConversionRate);
-                        weightCal.initStuffWeight(weight, SimpleWeightCalculator.SYS_UOM);
-                        weightCal.addStuffWeight(livwWeight);
-                        boolean weightAvailable = weightCal.calculateAvailable();
-                        if (cubageAvailable & weightAvailable) {
-                            LocationRecommendResultCommand lrrc = new LocationRecommendResultCommand();
-                            lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
-                            lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.PALLET_PUTAWAY);
-                            lrrc.setLocationCode(al.getCode());
-                            lrrc.setLocationId(al.getId());
-                            lrrc.setOuterContainerCode(containerCode);
-                            lrrc.setOuterContainerId(outerContainerId);
-                            list.add(lrrc);
-                        }
+//                        LocationInvVolumeWeightCommand livw = whLocationInvVolumeWieghtManager.calculateLocationInvVolumeAndWeight(locId, ouId, uomMap, logId);
+//                        Double livwVolume = livw.getVolume();// 库位上已有货物总体积
+//                        Double livwWeight = livw.getWeight();// 库位上已有货物总重量
+//                        // 计算体积
+//                        SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate);
+//                        calc.initStuffCube(length, width, height, SimpleCubeCalculator.SYS_UOM);
+//                        calc.addStuffVolume(livwVolume);
+//                        boolean cubageAvailable = calc.calculateAvailable();
+//                        // 计算重量
+//                        SimpleWeightCalculator weightCal = new SimpleWeightCalculator(locWeight, SimpleWeightCalculator.SYS_UOM, weightUomConversionRate);
+//                        weightCal.initStuffWeight(weight, SimpleWeightCalculator.SYS_UOM);
+//                        weightCal.addStuffWeight(livwWeight);
+//                        boolean weightAvailable = weightCal.calculateAvailable();
+//                        if (cubageAvailable & weightAvailable) {
+//                            LocationRecommendResultCommand lrrc = new LocationRecommendResultCommand();
+//                            lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
+//                            lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.PALLET_PUTAWAY);
+//                            lrrc.setLocationCode(al.getCode());
+//                            lrrc.setLocationId(al.getId());
+//                            lrrc.setOuterContainerCode(containerCode);
+//                            lrrc.setOuterContainerId(outerContainerId);
+//                            list.add(lrrc);
+//                        }
                     } else {
                         break;
                     }
@@ -764,7 +822,8 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
         // Long funcId = ruleAffer.getFuncId();
         Long ouId = ruleAffer.getOuid();
         Long containerId = ruleAffer.getContainerId();
-        List<Long> storeIds = (null == ruleAffer.getStoreIdList() ? new ArrayList<Long>() : ruleAffer.getStoreIdList());
+        // List<Long> storeIds = (null == ruleAffer.getStoreIdList() ? new ArrayList<Long>() :
+        // ruleAffer.getStoreIdList());
         // 获取内部容器辅助信息
         ContainerAssist containerAssist = caMap.get(containerId);// 获取内部容器辅助信息
         if (null == containerAssist) {
@@ -875,7 +934,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                         avaliableLocs = null;
                         continue;
                     }
-                    attrParams.setIsMixStacking(false);// 库位不允许混放
+                    /*attrParams.setIsMixStacking(false);// 库位不允许混放
                     String invAttrMgmt = "";
                     if (1 == storeIds.size()) {
                         // 获取店铺上配置的库存关键属性
@@ -902,9 +961,9 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                             avaliableLocs = null;
                             continue;
                         }
-                    }
+                    }*/
                     WhSkuInventoryCommand invCmd = invList.get(0);// 取一条库存信息
-                    attrParams.setInvAttrMgmt(invAttrMgmt);
+                    attrParams.setInvAttrMgmt(InvAttrMgmtType.ALL_INV_ATTRS);
                     // 解析库存关键属性
                     invAttrMgmtAspect(attrParams, invCmd);
                     PutawayCondition putawayCondition = putawayConditionFactory.getPutawayCondition(WhPutawayPatternType.SYS_GUIDE_PUTAWAY, WhPutawayPatternDetailType.CONTAINER_PUTAWAY, logId);
@@ -922,6 +981,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                         avaliableLocs = null;
                         continue;
                     }
+                    attrParams.setIsMixStacking(true);// 库位允许混放
                     WhSkuInventoryCommand invCmd = invList.get(0);// 取一条库存信息
                     attrParams.setInvAttrMgmt("");
                     // 解析库存关键属性
@@ -1066,29 +1126,29 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                             list.add(lrrc);
                         }
                     } else if (WhLocationRecommendType.ONE_LOCATION_ONLY.equals(locationRecommendRule)) {
-                        LocationInvVolumeWeightCommand livw = whLocationInvVolumeWieghtManager.calculateLocationInvVolumeAndWeight(locId, ouId, uomMap, logId);
-                        Double livwVolume = livw.getVolume();// 库位上已有货物总体积
-                        Double livwWeight = livw.getWeight();// 库位上已有货物总重量
-                        // 计算体积
-                        SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate);
-                        calc.initStuffCube(length, width, height, SimpleCubeCalculator.SYS_UOM);
-                        calc.addStuffVolume(livwVolume);
-                        boolean cubageAvailable = calc.calculateAvailable();
-                        // 计算重量
-                        SimpleWeightCalculator weightCal = new SimpleWeightCalculator(locWeight, SimpleWeightCalculator.SYS_UOM, weightUomConversionRate);
-                        weightCal.initStuffWeight(weight, SimpleWeightCalculator.SYS_UOM);
-                        weightCal.addStuffWeight(livwWeight);
-                        boolean weightAvailable = weightCal.calculateAvailable();
-                        if (cubageAvailable & weightAvailable) {
-                            LocationRecommendResultCommand lrrc = new LocationRecommendResultCommand();
-                            lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
-                            lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.CONTAINER_PUTAWAY);
-                            lrrc.setLocationCode(al.getCode());
-                            lrrc.setLocationId(al.getId());
-                            lrrc.setInsideContainerCode(containerCode);
-                            lrrc.setInsideContainerId(containerId);
-                            list.add(lrrc);
-                        }
+//                        LocationInvVolumeWeightCommand livw = whLocationInvVolumeWieghtManager.calculateLocationInvVolumeAndWeight(locId, ouId, uomMap, logId);
+//                        Double livwVolume = livw.getVolume();// 库位上已有货物总体积
+//                        Double livwWeight = livw.getWeight();// 库位上已有货物总重量
+//                        // 计算体积
+//                        SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate);
+//                        calc.initStuffCube(length, width, height, SimpleCubeCalculator.SYS_UOM);
+//                        calc.addStuffVolume(livwVolume);
+//                        boolean cubageAvailable = calc.calculateAvailable();
+//                        // 计算重量
+//                        SimpleWeightCalculator weightCal = new SimpleWeightCalculator(locWeight, SimpleWeightCalculator.SYS_UOM, weightUomConversionRate);
+//                        weightCal.initStuffWeight(weight, SimpleWeightCalculator.SYS_UOM);
+//                        weightCal.addStuffWeight(livwWeight);
+//                        boolean weightAvailable = weightCal.calculateAvailable();
+//                        if (cubageAvailable & weightAvailable) {
+//                            LocationRecommendResultCommand lrrc = new LocationRecommendResultCommand();
+//                            lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
+//                            lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.CONTAINER_PUTAWAY);
+//                            lrrc.setLocationCode(al.getCode());
+//                            lrrc.setLocationId(al.getId());
+//                            lrrc.setInsideContainerCode(containerCode);
+//                            lrrc.setInsideContainerId(containerId);
+//                            list.add(lrrc);
+//                        }
                     } else {
                         break;
                     }
@@ -1261,6 +1321,40 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                             } else if (WhLocationRecommendType.MERGE_LOCATION_SAME_INV_ATTRS.equals(locationRecommendRule)) {
                                 attrParams.setLrt(WhLocationRecommendType.MERGE_LOCATION_SAME_INV_ATTRS);
                                 attrParams.setIsMixStacking(false);// 库位不允许混放
+                               /* String invAttrMgmt = "";
+                                if (1 == storeIds.size()) {
+                                    // 获取店铺上配置的库存关键属性
+                                    Store store = storeManager.getStoreById(storeIds.get(0));
+                                    if (null == store) {
+                                        log.error("store is null error, logId is:[{}]", logId);
+                                        throw new BusinessException(ErrorCodes.COMMON_STORE_NOT_FOUND_ERROR);
+                                    }
+                                    invAttrMgmt = store.getInvAttrMgmt();
+                                }
+                                if (StringUtils.isEmpty(invAttrMgmt)) {
+                                    // 获取仓库上配置的库存关键属性
+                                    Warehouse warehouse = warehouseManager.findWarehouseByIdExt(ouId);
+                                    if (null == warehouse) {
+                                        log.error("warehouse is null error, logId is:[{}]", logId);
+                                        throw new BusinessException(ErrorCodes.COMMON_WAREHOUSE_NOT_FOUND_ERROR);
+                                    }
+                                    invAttrMgmt = warehouse.getInvAttrMgmt();
+                                }*/
+                                WhSkuInventoryCommand invCmd = invRule;// 取到库存信息
+                                attrParams.setInvAttrMgmt(InvAttrMgmtType.ALL_INV_ATTRS);
+                                // 解析库存关键属性
+                                invAttrMgmtAspect(attrParams, invCmd);
+                                PutawayCondition putawayCondition = putawayConditionFactory.getPutawayCondition(WhPutawayPatternType.SYS_GUIDE_PUTAWAY, WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY, logId);
+                                if (null != putawayCondition) {
+                                    cSql = putawayCondition.getCondition(attrParams);
+                                }
+                                if (StringUtils.isEmpty(cSql)) {
+                                    cSql = null;
+                                }
+                                avaliableLocs = locationDao.findAllInvLocsByAreaIdAndSameAttrs(area.getId(), ouId, cSql);
+                            } else if (WhLocationRecommendType.MERGE_LOCATION_DIFF_INV_ATTRS.equals(locationRecommendRule)) {
+                                attrParams.setLrt(WhLocationRecommendType.MERGE_LOCATION_DIFF_INV_ATTRS);
+                                WhSkuInventoryCommand invCmd = invRule;// 取到库存信息
                                 String invAttrMgmt = "";
                                 if (1 == storeIds.size()) {
                                     // 获取店铺上配置的库存关键属性
@@ -1280,22 +1374,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                     }
                                     invAttrMgmt = warehouse.getInvAttrMgmt();
                                 }
-                                WhSkuInventoryCommand invCmd = invRule;// 取到库存信息
                                 attrParams.setInvAttrMgmt(invAttrMgmt);
-                                // 解析库存关键属性
-                                invAttrMgmtAspect(attrParams, invCmd);
-                                PutawayCondition putawayCondition = putawayConditionFactory.getPutawayCondition(WhPutawayPatternType.SYS_GUIDE_PUTAWAY, WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY, logId);
-                                if (null != putawayCondition) {
-                                    cSql = putawayCondition.getCondition(attrParams);
-                                }
-                                if (StringUtils.isEmpty(cSql)) {
-                                    cSql = null;
-                                }
-                                avaliableLocs = locationDao.findAllInvLocsByAreaIdAndSameAttrs(area.getId(), ouId, cSql);
-                            } else if (WhLocationRecommendType.MERGE_LOCATION_DIFF_INV_ATTRS.equals(locationRecommendRule)) {
-                                attrParams.setLrt(WhLocationRecommendType.MERGE_LOCATION_DIFF_INV_ATTRS);
-                                WhSkuInventoryCommand invCmd = invRule;// 取到库存信息
-                                attrParams.setInvAttrMgmt("");
                                 // 解析库存关键属性
                                 invAttrMgmtAspect(attrParams, invCmd);
                                 PutawayCondition putawayCondition = putawayConditionFactory.getPutawayCondition(WhPutawayPatternType.SYS_GUIDE_PUTAWAY, WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY, logId);
@@ -1307,15 +1386,15 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                 }
                                 avaliableLocs = locationDao.findAllInvLocsByAreaIdAndDiffAttrs(area.getId(), ouId, cSql);
                             } else if (WhLocationRecommendType.ONE_LOCATION_ONLY.equals(locationRecommendRule)) {
-                                attrParams.setLrt(WhLocationRecommendType.ONE_LOCATION_ONLY);
-                                PutawayCondition putawayCondition = putawayConditionFactory.getPutawayCondition(WhPutawayPatternType.SYS_GUIDE_PUTAWAY, WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY, logId);
-                                if (null != putawayCondition) {
-                                    cSql = putawayCondition.getCondition(attrParams);
-                                }
-                                if (StringUtils.isEmpty(cSql)) {
-                                    cSql = null;
-                                }
-                                avaliableLocs = locationDao.findAllAvailableLocsByAreaId(area.getId(), ouId, cSql);
+//                                attrParams.setLrt(WhLocationRecommendType.ONE_LOCATION_ONLY);
+//                                PutawayCondition putawayCondition = putawayConditionFactory.getPutawayCondition(WhPutawayPatternType.SYS_GUIDE_PUTAWAY, WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY, logId);
+//                                if (null != putawayCondition) {
+//                                    cSql = putawayCondition.getCondition(attrParams);
+//                                }
+//                                if (StringUtils.isEmpty(cSql)) {
+//                                    cSql = null;
+//                                }
+//                                avaliableLocs = locationDao.findAllAvailableLocsByAreaId(area.getId(), ouId, cSql);
                             } else {
                                 avaliableLocs = null;
                             }
@@ -1613,6 +1692,40 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                 } else if (WhLocationRecommendType.MERGE_LOCATION_SAME_INV_ATTRS.equals(locationRecommendRule)) {
                                     attrParams.setLrt(WhLocationRecommendType.MERGE_LOCATION_SAME_INV_ATTRS);
                                     attrParams.setIsMixStacking(false);// 库位不允许混放
+                                   /* String invAttrMgmt = "";
+                                    if (1 == storeIds.size()) {
+                                        // 获取店铺上配置的库存关键属性
+                                        Store store = storeManager.getStoreById(storeIds.get(0));
+                                        if (null == store) {
+                                            log.error("store is null error, logId is:[{}]", logId);
+                                            throw new BusinessException(ErrorCodes.COMMON_STORE_NOT_FOUND_ERROR);
+                                        }
+                                        invAttrMgmt = store.getInvAttrMgmt();
+                                    }
+                                    if (StringUtils.isEmpty(invAttrMgmt)) {
+                                        // 获取仓库上配置的库存关键属性
+                                        Warehouse warehouse = warehouseManager.findWarehouseByIdExt(ouId);
+                                        if (null == warehouse) {
+                                            log.error("warehouse is null error, logId is:[{}]", logId);
+                                            throw new BusinessException(ErrorCodes.COMMON_WAREHOUSE_NOT_FOUND_ERROR);
+                                        }
+                                        invAttrMgmt = warehouse.getInvAttrMgmt();
+                                    }*/
+                                    WhSkuInventoryCommand invCmd = invRule;// 取到库存信息
+                                    attrParams.setInvAttrMgmt(InvAttrMgmtType.ALL_INV_ATTRS);
+                                    // 解析库存关键属性
+                                    invAttrMgmtAspect(attrParams, invCmd);
+                                    PutawayCondition putawayCondition = putawayConditionFactory.getPutawayCondition(WhPutawayPatternType.SYS_GUIDE_PUTAWAY, WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY, logId);
+                                    if (null != putawayCondition) {
+                                        cSql = putawayCondition.getCondition(attrParams);
+                                    }
+                                    if (StringUtils.isEmpty(cSql)) {
+                                        cSql = null;
+                                    }
+                                    avaliableLocs = locationDao.findAllInvLocsByAreaIdAndSameAttrs(area.getId(), ouId, cSql);
+                                } else if (WhLocationRecommendType.MERGE_LOCATION_DIFF_INV_ATTRS.equals(locationRecommendRule)) {
+                                    attrParams.setLrt(WhLocationRecommendType.MERGE_LOCATION_DIFF_INV_ATTRS);
+                                    WhSkuInventoryCommand invCmd = invRule;// 取到库存信息
                                     String invAttrMgmt = "";
                                     if (1 == storeIds.size()) {
                                         // 获取店铺上配置的库存关键属性
@@ -1632,22 +1745,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                         }
                                         invAttrMgmt = warehouse.getInvAttrMgmt();
                                     }
-                                    WhSkuInventoryCommand invCmd = invRule;// 取到库存信息
                                     attrParams.setInvAttrMgmt(invAttrMgmt);
-                                    // 解析库存关键属性
-                                    invAttrMgmtAspect(attrParams, invCmd);
-                                    PutawayCondition putawayCondition = putawayConditionFactory.getPutawayCondition(WhPutawayPatternType.SYS_GUIDE_PUTAWAY, WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY, logId);
-                                    if (null != putawayCondition) {
-                                        cSql = putawayCondition.getCondition(attrParams);
-                                    }
-                                    if (StringUtils.isEmpty(cSql)) {
-                                        cSql = null;
-                                    }
-                                    avaliableLocs = locationDao.findAllInvLocsByAreaIdAndSameAttrs(area.getId(), ouId, cSql);
-                                } else if (WhLocationRecommendType.MERGE_LOCATION_DIFF_INV_ATTRS.equals(locationRecommendRule)) {
-                                    attrParams.setLrt(WhLocationRecommendType.MERGE_LOCATION_DIFF_INV_ATTRS);
-                                    WhSkuInventoryCommand invCmd = invRule;// 取到库存信息
-                                    attrParams.setInvAttrMgmt("");
                                     // 解析库存关键属性
                                     invAttrMgmtAspect(attrParams, invCmd);
                                     PutawayCondition putawayCondition = putawayConditionFactory.getPutawayCondition(WhPutawayPatternType.SYS_GUIDE_PUTAWAY, WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY, logId);
@@ -1659,15 +1757,15 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                     }
                                     avaliableLocs = locationDao.findAllInvLocsByAreaIdAndDiffAttrs(area.getId(), ouId, cSql);
                                 } else if (WhLocationRecommendType.ONE_LOCATION_ONLY.equals(locationRecommendRule)) {
-                                    attrParams.setLrt(WhLocationRecommendType.ONE_LOCATION_ONLY);
-                                    PutawayCondition putawayCondition = putawayConditionFactory.getPutawayCondition(WhPutawayPatternType.SYS_GUIDE_PUTAWAY, WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY, logId);
-                                    if (null != putawayCondition) {
-                                        cSql = putawayCondition.getCondition(attrParams);
-                                    }
-                                    if (StringUtils.isEmpty(cSql)) {
-                                        cSql = null;
-                                    }
-                                    avaliableLocs = locationDao.findAllAvailableLocsByAreaId(area.getId(), ouId, cSql);
+//                                    attrParams.setLrt(WhLocationRecommendType.ONE_LOCATION_ONLY);
+//                                    PutawayCondition putawayCondition = putawayConditionFactory.getPutawayCondition(WhPutawayPatternType.SYS_GUIDE_PUTAWAY, WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY, logId);
+//                                    if (null != putawayCondition) {
+//                                        cSql = putawayCondition.getCondition(attrParams);
+//                                    }
+//                                    if (StringUtils.isEmpty(cSql)) {
+//                                        cSql = null;
+//                                    }
+//                                    avaliableLocs = locationDao.findAllAvailableLocsByAreaId(area.getId(), ouId, cSql);
                                 } else {
                                     avaliableLocs = null;
                                 }
@@ -1825,33 +1923,33 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                             list.add(lrrc);
                                         }
                                     } else if (WhLocationRecommendType.ONE_LOCATION_ONLY.equals(locationRecommendRule)) {
-                                        LocationInvVolumeWeightCommand livw = whLocationInvVolumeWieghtManager.calculateLocationInvVolumeAndWeight(locId, ouId, uomMap, logId);
-                                        Double livwVolume = livw.getVolume();// 库位上已有货物总体积
-                                        Double livwWeight = livw.getWeight();// 库位上已有货物总重量
-                                        // 计算体积
-                                        SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate);
-                                        calc.initStuffCube(length, width, height, onHandQty, SimpleCubeCalculator.SYS_UOM);
-                                        calc.addStuffVolume(livwVolume);
-                                        boolean cubageAvailable = calc.calculateAvailable();
-                                        // 计算重量
-                                        SimpleWeightCalculator weightCal = new SimpleWeightCalculator(locWeight, SimpleWeightCalculator.SYS_UOM, weightUomConversionRate);
-                                        weightCal.initStuffWeight(weight, onHandQty, SimpleWeightCalculator.SYS_UOM);
-                                        weightCal.addStuffWeight(livwWeight);
-                                        boolean weightAvailable = weightCal.calculateAvailable();
-                                        if (cubageAvailable & weightAvailable) {
-                                            lrrc = new LocationRecommendResultCommand();
-                                            lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
-                                            lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY);
-                                            lrrc.setLocationCode(al.getCode());
-                                            lrrc.setLocationId(al.getId());
-                                            lrrc.setInsideContainerCode(containerCode);
-                                            lrrc.setInsideContainerId(containerId);
-                                            lrrc.setSkuId(skuId);
-                                            lrrc.setSkuAttrId(SkuCategoryProvider.concatSkuAttrId(SkuCategoryProvider.getSkuAttrIdByInv(invRule), sn, defectBarcode));
-                                            lrrc.setDefectBarcode(defectBarcode);
-                                            lrrc.setSn(sn);
-                                            list.add(lrrc);
-                                        }
+//                                        LocationInvVolumeWeightCommand livw = whLocationInvVolumeWieghtManager.calculateLocationInvVolumeAndWeight(locId, ouId, uomMap, logId);
+//                                        Double livwVolume = livw.getVolume();// 库位上已有货物总体积
+//                                        Double livwWeight = livw.getWeight();// 库位上已有货物总重量
+//                                        // 计算体积
+//                                        SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate);
+//                                        calc.initStuffCube(length, width, height, onHandQty, SimpleCubeCalculator.SYS_UOM);
+//                                        calc.addStuffVolume(livwVolume);
+//                                        boolean cubageAvailable = calc.calculateAvailable();
+//                                        // 计算重量
+//                                        SimpleWeightCalculator weightCal = new SimpleWeightCalculator(locWeight, SimpleWeightCalculator.SYS_UOM, weightUomConversionRate);
+//                                        weightCal.initStuffWeight(weight, onHandQty, SimpleWeightCalculator.SYS_UOM);
+//                                        weightCal.addStuffWeight(livwWeight);
+//                                        boolean weightAvailable = weightCal.calculateAvailable();
+//                                        if (cubageAvailable & weightAvailable) {
+//                                            lrrc = new LocationRecommendResultCommand();
+//                                            lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
+//                                            lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY);
+//                                            lrrc.setLocationCode(al.getCode());
+//                                            lrrc.setLocationId(al.getId());
+//                                            lrrc.setInsideContainerCode(containerCode);
+//                                            lrrc.setInsideContainerId(containerId);
+//                                            lrrc.setSkuId(skuId);
+//                                            lrrc.setSkuAttrId(SkuCategoryProvider.concatSkuAttrId(SkuCategoryProvider.getSkuAttrIdByInv(invRule), sn, defectBarcode));
+//                                            lrrc.setDefectBarcode(defectBarcode);
+//                                            lrrc.setSn(sn);
+//                                            list.add(lrrc);
+//                                        }
                                     } else {
                                         break;
                                     }
