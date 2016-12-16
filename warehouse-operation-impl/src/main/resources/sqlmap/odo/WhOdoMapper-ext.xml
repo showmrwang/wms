@@ -549,9 +549,20 @@
 			<if test="ouId!=null">
 				and odo.ou_id = #{ouId}
 			</if>
-
 			<if test="ids!=null">
-				and odo.id IN ${ids}
+				and odo.id in ${ids}
+			</if>
+			<if test="odoStatusNo!=null">
+				and odo.odo_status not in
+				<foreach collection="odoStatusNo" item="s" open="(" separator="," close=")">
+					#{s}
+				</foreach>
+			</if>
+			<if test="counterCodeNull!=null and counterCodeNull!=''">
+				and odo.counter_code is not null  
+			</if>
+			<if test="distributionCode!=null and distributionCode!=''">
+				and odo.distribution_code=#{distributionCode} 
 			</if>
 		</where>
 	</sql>
