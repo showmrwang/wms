@@ -448,7 +448,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        size = #{size,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-			        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+			        last_modify_time = now() ,
 			        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        allocate_qty = #{allocateQty,javaType=Double,jdbcType=DECIMAL} ,
 			        is_pallet_container = #{isPalletContainer,javaType=java.lang.Boolean,jdbcType=BIT} ,
