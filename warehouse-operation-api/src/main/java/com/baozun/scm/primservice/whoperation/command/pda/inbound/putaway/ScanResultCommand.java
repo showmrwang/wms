@@ -141,9 +141,9 @@ public class ScanResultCommand extends BaseCommand {
     private String locationCode;
     
     
-    private Boolean isNeedScanNewLocation;   //拆箱扫描商品重量达到库位承重的时候,跳转
+    private Boolean isNeedScanNewLocation = false;   //拆箱扫描商品重量达到库位承重的时候,跳转
     
-    private Boolean isContinueScanSn;   //
+    private Boolean isContinueScanSn = false;   //
 
     public int getPutawayPatternType() {
         return putawayPatternType;
