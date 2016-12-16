@@ -35,10 +35,6 @@ public class ScanTipSkuCacheCommand extends BaseCommand {
     private Long insideContainerId;
     /** 內部容器号 */
     private String insideContainerCode;
-    /** 库位id */
-    private Long locationId;
-    /** 库位编码 */
-    private String locationCode;
     /** 已复合商品队列 */
     private ArrayDeque<Long> scanSkuIds = new ArrayDeque<Long>();
     /** 已复合唯一商品列表 */
@@ -84,22 +80,6 @@ public class ScanTipSkuCacheCommand extends BaseCommand {
 
     public void setInsideContainerCode(String insideContainerCode) {
         this.insideContainerCode = insideContainerCode;
-    }
-
-    public Long getLocationId() {
-        return locationId;
-    }
-
-    public void setLocationId(Long locationId) {
-        this.locationId = locationId;
-    }
-
-    public String getLocationCode() {
-        return locationCode;
-    }
-
-    public void setLocationCode(String locationCode) {
-        this.locationCode = locationCode;
     }
 
     public ArrayDeque<Long> getScanSkuIds() {

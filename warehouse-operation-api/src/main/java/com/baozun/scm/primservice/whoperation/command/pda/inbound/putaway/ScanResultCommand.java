@@ -137,6 +137,11 @@ public class ScanResultCommand extends BaseCommand {
     private String tipLocBarCode;  //提示库位条码
     
     private String locationCode;
+    
+    
+    private Boolean isNeedScanNewLocation;   //拆箱扫描商品重量达到库位承重的时候,跳转
+    
+    private Boolean isContinueScanSn;   //
 
     public int getPutawayPatternType() {
         return putawayPatternType;
@@ -584,6 +589,22 @@ public class ScanResultCommand extends BaseCommand {
 
     public void setLocationCode(String locationCode) {
         this.locationCode = locationCode;
+    }
+
+    public Boolean getIsNeedScanNewLocation() {
+        return isNeedScanNewLocation;
+    }
+
+    public void setIsNeedScanNewLocation(Boolean isNeedScanNewLocation) {
+        this.isNeedScanNewLocation = isNeedScanNewLocation;
+    }
+
+    public Boolean getIsContinueScanSn() {
+        return isContinueScanSn;
+    }
+
+    public void setIsContinueScanSn(Boolean isContinueScanSn) {
+        this.isContinueScanSn = isContinueScanSn;
     }
 
     
