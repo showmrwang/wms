@@ -32,6 +32,10 @@ public final class CacheConstants {
     
     /** 库位推荐队列 */
     public static final String LOCATION_RECOMMEND_QUEUE = "LOCATION_RECOMMEND_QUEUE";
+    /** 库位推荐排队过期 */
+    public static final String LOCATION_RECOMMEND_EXPIRE_TIME = "LOCATION_RECOMMEND_EXPIRE_TIME";
+    /** 库位推荐排队时间 */
+    public static final String LOCATION_RECOMMEND_VALID_TIME = "LOCATION_RECOMMEND_VALID_TIME";
     /** 库存缓存 */
     public static final String INVENTORY = "INVENTORY";
     /** 容器库存缓存 */
