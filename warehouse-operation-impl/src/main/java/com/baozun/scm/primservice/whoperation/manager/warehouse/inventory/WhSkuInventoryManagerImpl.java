@@ -2495,31 +2495,31 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 log.error("insideContainerId is null error, logId is:[{}]", logId);
                 throw new BusinessException(ErrorCodes.COMMON_INSIDE_CONTAINER_IS_NOT_EXISTS);
             }
-            List<WhSkuInventoryCommand> invLocList = whSkuInventoryDao.findWhSkuInvCmdByLocationContainerIdIsNull(ouId,locationId);
+//            List<WhSkuInventoryCommand> invLocList = whSkuInventoryDao.findWhSkuInvCmdByLocationContainerIdIsNull(ouId,locationId);
             List<WhSkuInventorySn> skuSnlist = cacheManager.getMapObject(CacheConstants.PDA_MAN_MANDE_SCAN_SKU_SN, insideContainerId.toString() + skuId.toString());
             // 2.执行上架
-            Boolean result = false;
-            String  putwaySkuAttrsId = SkuCategoryProvider.getSkuAttrIdByInv(invSkuCmd);
-            WhSkuInventoryCommand whSkuInvLoc = null;
-            for(WhSkuInventoryCommand whSkuInve:invLocList){
-                    String  skuAttrsIdLoc = SkuCategoryProvider.getSkuAttrIdByInv(whSkuInve);  
-                    if(invLocList.size() != 0) {   //判断是否有库位
-                          if(whSkuInve.getSkuId().longValue() == invSkuCmd.getSkuId().longValue() && putwaySkuAttrsId.equals(skuAttrsIdLoc)) {
-                                result = true;
-                                whSkuInvLoc = whSkuInve;
-                                break;
-                          }else{
-                                result = false;     
-                          }
-                     }else{
-                          result = false;        
-                     }
-            }
-            if(result) {
-                this.manPutwayExistLoc(skuSnlist,warehouse, scanSkuQty, whSkuInvLoc, isBM, isVM, locationId, userId, ouId,invSkuCmd);
-            }else{
+//            Boolean result = false;
+//            String  putwaySkuAttrsId = SkuCategoryProvider.getSkuAttrIdByInv(invSkuCmd);
+//            WhSkuInventoryCommand whSkuInvLoc = null;
+//            for(WhSkuInventoryCommand whSkuInve:invLocList){
+//                    String  skuAttrsIdLoc = SkuCategoryProvider.getSkuAttrIdByInv(whSkuInve);  
+//                    if(invLocList.size() != 0) {   //判断是否有库位
+//                          if(whSkuInve.getSkuId().longValue() == invSkuCmd.getSkuId().longValue() && putwaySkuAttrsId.equals(skuAttrsIdLoc)) {
+//                                result = true;
+//                                whSkuInvLoc = whSkuInve;
+//                                break;
+//                          }else{
+//                                result = false;     
+//                          }
+//                     }else{
+//                          result = false;        
+//                     }
+//            }
+//            if(result) {
+//                this.manPutwayExistLoc(skuSnlist,warehouse, scanSkuQty, whSkuInvLoc, isBM, isVM, locationId, userId, ouId,invSkuCmd);
+//            }else{
                 this.manPutwayNoLoc(skuSnlist,warehouse, scanSkuQty, invSkuCmd, isBM, isVM, locationId, userId, ouId);
-            }
+//            }
             // 如果不跟踪容器号，则上架后需判断是否释放容器
             if (false == isTV) {
                 // 判断修改内部容器状态
