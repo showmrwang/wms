@@ -582,6 +582,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                 lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
                                 lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.PALLET_PUTAWAY);
                                 lrrc.setLocationCode(al.getCode());
+                                lrrc.setLocBarcode(al.getBarCode());
                                 lrrc.setLocationId(al.getId());
                                 lrrc.setOuterContainerCode(containerCode);
                                 lrrc.setOuterContainerId(outerContainerId);
@@ -601,6 +602,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                 lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
                                 lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.PALLET_PUTAWAY);
                                 lrrc.setLocationCode(al.getCode());
+                                lrrc.setLocBarcode(al.getBarCode());
                                 lrrc.setLocationId(al.getId());
                                 lrrc.setOuterContainerCode(containerCode);
                                 lrrc.setOuterContainerId(outerContainerId);
@@ -620,6 +622,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                 lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
                                 lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.PALLET_PUTAWAY);
                                 lrrc.setLocationCode(al.getCode());
+                                lrrc.setLocBarcode(al.getBarCode());
                                 lrrc.setLocationId(al.getId());
                                 lrrc.setOuterContainerCode(containerCode);
                                 lrrc.setOuterContainerId(outerContainerId);
@@ -644,6 +647,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                 lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
                                 lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.PALLET_PUTAWAY);
                                 lrrc.setLocationCode(al.getCode());
+                                lrrc.setLocBarcode(al.getBarCode());
                                 lrrc.setLocationId(al.getId());
                                 lrrc.setOuterContainerCode(containerCode);
                                 lrrc.setOuterContainerId(outerContainerId);
@@ -658,6 +662,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                 lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
                                 lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.PALLET_PUTAWAY);
                                 lrrc.setLocationCode(al.getCode());
+                                lrrc.setLocBarcode(al.getBarCode());
                                 lrrc.setLocationId(al.getId());
                                 lrrc.setOuterContainerCode(containerCode);
                                 lrrc.setOuterContainerId(outerContainerId);
@@ -682,6 +687,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                 lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
                                 lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.PALLET_PUTAWAY);
                                 lrrc.setLocationCode(al.getCode());
+                                lrrc.setLocBarcode(al.getBarCode());
                                 lrrc.setLocationId(al.getId());
                                 lrrc.setOuterContainerCode(containerCode);
                                 lrrc.setOuterContainerId(outerContainerId);
@@ -696,6 +702,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                 lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
                                 lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.PALLET_PUTAWAY);
                                 lrrc.setLocationCode(al.getCode());
+                                lrrc.setLocBarcode(al.getBarCode());
                                 lrrc.setLocationId(al.getId());
                                 lrrc.setOuterContainerCode(containerCode);
                                 lrrc.setOuterContainerId(outerContainerId);
@@ -720,6 +727,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                 lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
                                 lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.PALLET_PUTAWAY);
                                 lrrc.setLocationCode(al.getCode());
+                                lrrc.setLocBarcode(al.getBarCode());
                                 lrrc.setLocationId(al.getId());
                                 lrrc.setOuterContainerCode(containerCode);
                                 lrrc.setOuterContainerId(outerContainerId);
@@ -1043,6 +1051,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                             lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
                             lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.CONTAINER_PUTAWAY);
                             lrrc.setLocationCode(al.getCode());
+                            lrrc.setLocBarcode(al.getBarCode());
                             lrrc.setLocationId(al.getId());
                             lrrc.setInsideContainerCode(containerCode);
                             lrrc.setInsideContainerId(containerId);
@@ -1072,6 +1081,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                             lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
                             lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.CONTAINER_PUTAWAY);
                             lrrc.setLocationCode(al.getCode());
+                            lrrc.setLocBarcode(al.getBarCode());
                             lrrc.setLocationId(al.getId());
                             lrrc.setInsideContainerCode(containerCode);
                             lrrc.setInsideContainerId(containerId);
@@ -1096,6 +1106,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                             lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
                             lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.CONTAINER_PUTAWAY);
                             lrrc.setLocationCode(al.getCode());
+                            lrrc.setLocBarcode(al.getBarCode());
                             lrrc.setLocationId(al.getId());
                             lrrc.setInsideContainerCode(containerCode);
                             lrrc.setInsideContainerId(containerId);
@@ -1120,6 +1131,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                             lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
                             lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.CONTAINER_PUTAWAY);
                             lrrc.setLocationCode(al.getCode());
+                            lrrc.setLocBarcode(al.getBarCode());
                             lrrc.setLocationId(al.getId());
                             lrrc.setInsideContainerCode(containerCode);
                             lrrc.setInsideContainerId(containerId);
@@ -1250,6 +1262,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                     lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
                     lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY);
                     lrrc.setLocationCode(null);
+                    lrrc.setLocBarcode(null);
                     lrrc.setLocationId(null);
                     lrrc.setInsideContainerCode(containerCode);
                     lrrc.setInsideContainerId(containerId);
@@ -1435,6 +1448,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                         lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
                                         lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY);
                                         lrrc.setLocationCode(al.getCode());
+                                        lrrc.setLocBarcode(al.getBarCode());
                                         lrrc.setLocationId(al.getId());
                                         lrrc.setInsideContainerCode(containerCode);
                                         lrrc.setInsideContainerId(containerId);
@@ -1481,6 +1495,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                         lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
                                         lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY);
                                         lrrc.setLocationCode(al.getCode());
+                                        lrrc.setLocBarcode(al.getBarCode());
                                         lrrc.setLocationId(al.getId());
                                         lrrc.setInsideContainerCode(containerCode);
                                         lrrc.setInsideContainerId(containerId);
@@ -1509,6 +1524,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                         lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
                                         lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY);
                                         lrrc.setLocationCode(al.getCode());
+                                        lrrc.setLocBarcode(al.getBarCode());
                                         lrrc.setLocationId(al.getId());
                                         lrrc.setInsideContainerCode(containerCode);
                                         lrrc.setInsideContainerId(containerId);
@@ -1537,6 +1553,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                         lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
                                         lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY);
                                         lrrc.setLocationCode(al.getCode());
+                                        lrrc.setLocBarcode(al.getBarCode());
                                         lrrc.setLocationId(al.getId());
                                         lrrc.setInsideContainerCode(containerCode);
                                         lrrc.setInsideContainerId(containerId);
@@ -1565,6 +1582,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                         lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
                                         lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY);
                                         lrrc.setLocationCode(al.getCode());
+                                        lrrc.setLocBarcode(al.getBarCode());
                                         lrrc.setLocationId(al.getId());
                                         lrrc.setInsideContainerCode(containerCode);
                                         lrrc.setInsideContainerId(containerId);
@@ -1595,6 +1613,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                         lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
                         lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY);
                         lrrc.setLocationCode(null);
+                        lrrc.setLocBarcode(null);
                         lrrc.setLocationId(null);
                         lrrc.setInsideContainerCode(containerCode);
                         lrrc.setInsideContainerId(containerId);
@@ -1621,6 +1640,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                         lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
                         lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY);
                         lrrc.setLocationCode(null);
+                        lrrc.setLocBarcode(null);
                         lrrc.setLocationId(null);
                         lrrc.setInsideContainerCode(containerCode);
                         lrrc.setInsideContainerId(containerId);
@@ -1806,6 +1826,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                             lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
                                             lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY);
                                             lrrc.setLocationCode(al.getCode());
+                                            lrrc.setLocBarcode(al.getBarCode());
                                             lrrc.setLocationId(al.getId());
                                             lrrc.setInsideContainerCode(containerCode);
                                             lrrc.setInsideContainerId(containerId);
@@ -1857,6 +1878,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                             lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
                                             lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY);
                                             lrrc.setLocationCode(al.getCode());
+                                            lrrc.setLocBarcode(al.getBarCode());
                                             lrrc.setLocationId(al.getId());
                                             lrrc.setInsideContainerCode(containerCode);
                                             lrrc.setInsideContainerId(containerId);
@@ -1885,6 +1907,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                             lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
                                             lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY);
                                             lrrc.setLocationCode(al.getCode());
+                                            lrrc.setLocBarcode(al.getBarCode());
                                             lrrc.setLocationId(al.getId());
                                             lrrc.setInsideContainerCode(containerCode);
                                             lrrc.setInsideContainerId(containerId);
@@ -1913,6 +1936,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                             lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
                                             lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY);
                                             lrrc.setLocationCode(al.getCode());
+                                            lrrc.setLocBarcode(al.getBarCode());
                                             lrrc.setLocationId(al.getId());
                                             lrrc.setInsideContainerCode(containerCode);
                                             lrrc.setInsideContainerId(containerId);
@@ -1971,6 +1995,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                             lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
                             lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY);
                             lrrc.setLocationCode(null);
+                            lrrc.setLocBarcode(null);
                             lrrc.setLocationId(null);
                             lrrc.setInsideContainerCode(containerCode);
                             lrrc.setInsideContainerId(containerId);

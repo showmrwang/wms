@@ -817,6 +817,11 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         Double outerContainerWeight = 0.0;
         Double outerContainerVolume = 0.0;
         // 4.判断是否已推荐库位
+        Warehouse warehouse = warehouseManager.findWarehouseByIdExt(ouId);
+        if (null == warehouse) {
+            log.error("warehouse is null error, logId is:[{}]", logId);
+            throw new BusinessException(ErrorCodes.COMMON_WAREHOUSE_NOT_FOUND_ERROR);
+        }
         if (null != isrCmd) {
             locationIds = isrCmd.getLocationIds();
             if (null == locationIds || 0 == locationIds.size()) {
@@ -844,6 +849,14 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                 throw new BusinessException(ErrorCodes.COMMON_LOCATION_IS_NOT_EXISTS);
             }
             srCmd.setTipLocationCode(loc.getCode());// 提示库位编码
+            srCmd.setTipLocBarCode(loc.getBarCode());// 库位条码
+            if(null != warehouse){
+                if(true == warehouse.getIsInboundLocationBarcode()){
+                    srCmd.setValidateLocation(true);
+                }else{
+                    srCmd.setValidateLocation(false);
+                }
+            }
             srCmd.setNeedTipLocation(true);// 提示库位
             return srCmd;
         }
@@ -1063,11 +1076,6 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         // containerId.toString(), isCmd, CacheConstants.CACHE_ONE_MONTH);
         pdaPutawayCacheManager.sysGuidePalletPutawayCacheInventoryStatistic(containerCmd, isCmd, ouId, logId);
         // 11.绑定库位(一入一出)
-        Warehouse warehouse = warehouseManager.findWarehouseByIdExt(ouId);
-        if (null == warehouse) {
-            log.error("warehouse is null error, logId is:[{}]", logId);
-            throw new BusinessException(ErrorCodes.COMMON_WAREHOUSE_NOT_FOUND_ERROR);
-        }
         // 先待移入库位库存
 //        for (WhSkuInventoryCommand invCmd : invList) {
 //            List<WhSkuInventorySnCommand> snList = invCmd.getWhSkuInventorySnCommandList();
@@ -1205,6 +1213,14 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         // 12.提示库位
         srCmd.setRecommendLocation(true);// 已推荐库位
         srCmd.setTipLocationCode(lrrLocCode);// 提示库位编码
+        srCmd.setTipLocBarCode(lrr.getLocBarcode());// 库位条码
+        if(null != warehouse){
+            if(true == warehouse.getIsInboundLocationBarcode()){
+                srCmd.setValidateLocation(true);
+            }else{
+                srCmd.setValidateLocation(false);
+            }
+        }
         srCmd.setNeedTipLocation(true);// 提示库位
         return srCmd;
     }
@@ -1721,6 +1737,11 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         //Map<Long, Double> insideContainerVolume = invStatisticCmd.getInsideContainerVolume();// 内部容器体积
         Map<Long, ContainerAssist> insideContainerAsists = invStatisticCmd.getInsideContainerAsists();
         // 4.判断是否已推荐库位
+        Warehouse warehouse = warehouseManager.findWarehouseByIdExt(ouId);
+        if (null == warehouse) {
+            log.error("warehouse is null error, logId is:[{}]", logId);
+            throw new BusinessException(ErrorCodes.COMMON_WAREHOUSE_NOT_FOUND_ERROR);
+        }
         if (null != isrCmd) {
             locationIds = isrCmd.getLocationIds();
             if (null == locationIds || 0 == locationIds.size()) {
@@ -1748,6 +1769,14 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                 throw new BusinessException(ErrorCodes.COMMON_LOCATION_IS_NOT_EXISTS);
             }
             srCmd.setTipLocationCode(loc.getCode());// 提示库位编码
+            srCmd.setTipLocBarCode(loc.getBarCode());// 库位条码
+            if(null != warehouse){
+                if(true == warehouse.getIsInboundLocationBarcode()){
+                    srCmd.setValidateLocation(true);
+                }else{
+                    srCmd.setValidateLocation(false);
+                }
+            }
             srCmd.setNeedTipLocation(true);// 提示库位
             return srCmd;
         }
@@ -1897,11 +1926,6 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         // containerId.toString(), isCmd, CacheConstants.CACHE_ONE_MONTH);
         pdaPutawayCacheManager.sysGuideContainerPutawayCacheInventoryStatistic(insideContainerCmd, isCmd, ouId, logId);
         // 9.绑定库位(一入一出)
-        Warehouse warehouse = warehouseManager.findWarehouseByIdExt(ouId);
-        if (null == warehouse) {
-            log.error("warehouse is null error, logId is:[{}]", logId);
-            throw new BusinessException(ErrorCodes.COMMON_WAREHOUSE_NOT_FOUND_ERROR);
-        }
 //        // 先待移入库位库存
 //        for (WhSkuInventoryCommand invCmd : invList) {
 //            List<WhSkuInventorySnCommand> snList = invCmd.getWhSkuInventorySnCommandList();
@@ -2039,6 +2063,14 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         // 10.提示库位
         srCmd.setRecommendLocation(true);// 已推荐库位
         srCmd.setTipLocationCode(lrrLocCode);// 提示库位编码
+        srCmd.setTipLocBarCode(lrr.getLocBarcode());// 库位条码
+        if(null != warehouse){
+            if(true == warehouse.getIsInboundLocationBarcode()){
+                srCmd.setValidateLocation(true);
+            }else{
+                srCmd.setValidateLocation(false);
+            }
+        }
         srCmd.setNeedTipLocation(true);// 提示库位
         return srCmd;
     }
@@ -2587,6 +2619,11 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         //Map<Long, Double> insideContainerVolume = invStatisticCmd.getInsideContainerVolume();// 内部容器体积
         Map<Long, ContainerAssist> insideContainerAsists = invStatisticCmd.getInsideContainerAsists();
         // 4.判断是否已推荐库位
+        Warehouse warehouse = warehouseManager.findWarehouseByIdExt(ouId);
+        if (null == warehouse) {
+            log.error("warehouse is null error, logId is:[{}]", logId);
+            throw new BusinessException(ErrorCodes.COMMON_WAREHOUSE_NOT_FOUND_ERROR);
+        }
         if (null != isrCmd) {
             locationIds = isrCmd.getLocationIds();
             if (null == locationIds || 0 == locationIds.size()) {
@@ -2604,6 +2641,14 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                 throw new BusinessException(ErrorCodes.COMMON_LOCATION_IS_NOT_EXISTS);
             }
             srCmd.setTipLocationCode(loc.getCode());// 提示库位编码
+            srCmd.setTipLocBarCode(loc.getBarCode());// 库位条码
+            if(null != warehouse){
+                if(true == warehouse.getIsInboundLocationBarcode()){
+                    srCmd.setValidateLocation(true);
+                }else{
+                    srCmd.setValidateLocation(false);
+                }
+            }
             srCmd.setNeedTipLocation(true);// 提示库位
             return srCmd;
         }
@@ -2781,11 +2826,6 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         // containerId.toString(), isCmd, CacheConstants.CACHE_ONE_MONTH);
         pdaPutawayCacheManager.sysGuideSplitContainerPutawayCacheInventoryStatistic(insideContainerCmd, isCmd, ouId, logId);
         // 10.绑定库位(一入一出)
-        Warehouse warehouse = warehouseManager.findWarehouseByIdExt(ouId);
-        if (null == warehouse) {
-            log.error("warehouse is null error, logId is:[{}]", logId);
-            throw new BusinessException(ErrorCodes.COMMON_WAREHOUSE_NOT_FOUND_ERROR);
-        }
 //        // 先待移入库位库存
 //        for (WhSkuInventoryCommand invCmd : invList) {
 //            List<WhSkuInventorySnCommand> snList = invCmd.getWhSkuInventorySnCommandList();
@@ -3006,6 +3046,14 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
             throw new BusinessException(ErrorCodes.COMMON_LOCATION_IS_NOT_EXISTS);
         }
         srCmd.setTipLocationCode(loc.getCode());// 提示库位编码
+        srCmd.setTipLocBarCode(loc.getBarCode());// 库位条码
+        if(null != warehouse){
+            if(true == warehouse.getIsInboundLocationBarcode()){
+                srCmd.setValidateLocation(true);
+            }else{
+                srCmd.setValidateLocation(false);
+            }
+        }
         srCmd.setNeedTipLocation(true);// 提示库位
         return srCmd;
     }
