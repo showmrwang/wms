@@ -2,6 +2,7 @@ package com.baozun.scm.primservice.whoperation.manager.auth;
 
 import java.util.List;
 
+import com.baozun.scm.primservice.whoperation.command.auth.OpUnitTreeCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.auth.OperationUnit;
 

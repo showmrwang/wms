@@ -25,9 +25,8 @@ import lark.orm.dao.supports.BaseDao;
 
 import org.apache.ibatis.annotations.Param;
 
-import com.baozun.scm.primservice.whoperation.manager.auth.OpUnitTreeCommand;
+import com.baozun.scm.primservice.whoperation.command.auth.OpUnitTreeCommand;
 import com.baozun.scm.primservice.whoperation.model.auth.OperationUnit;
-
 
 
 
