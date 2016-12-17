@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.WhFunctionPickingDao">
+	<resultMap id="WhFunctionPickingResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionPicking">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whFunctionPickingColumnsExt">
+	    <![CDATA[
+	        	id as id,
+	        	function_id as functionId,
+	        	is_auto_obtain_work as isAutoObtainWork,
+	        	obtain_work_way as obtainWorkWay,
+	        	max_obtain_work_qty as maxObtainWorkQty,
+	        	is_scan_location as isScanLocation,
+	        	is_scan_outer_container as isScanOuterContainer,
+	        	is_scan_inside_container as isScanInsideContainer,
+	        	is_scan_sku as isScanSku,
+	        	scan_pattern as scanPattern,
+	        	is_tip_inv_attr as isTipInvAttr,
+	        	is_scan_inv_attr as isScanInvAttr,
+	        	is_scan_lattice_no as isScanLatticeNo,
+	        	pallet_picking_mode as palletPickingMode,
+	        	container_picking_mode as containerPickingMode,
+	        	is_scan_outboundbox as isScanOutBoundBox,
+	        	ou_id as ouId
+	    ]]>
+	</sql>
+	
+	<sql id="whFunctionPickingDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+				<if test="functionId!=null">
+					and function_id = #{functionId}
+				</if>
+	       
+				<if test="isAutoObtainWork!=null">
+					and is_auto_obtain_work = #{isAutoObtainWork}
+				</if>
+	       
+	       
+		       <if test="obtainWorkWay!=null and obtainWorkWay!=''">
+					and obtain_work_way = #{obtainWorkWay}
+				</if>
+	       
+				<if test="maxObtainWorkQty!=null">
+					and max_obtain_work_qty = #{maxObtainWorkQty}
+				</if>
+	       
+				<if test="isScanLocation!=null">
+					and is_scan_location = #{isScanLocation}
+				</if>
+	       
+				<if test="isScanOuterContainer!=null">
+					and is_scan_outer_container = #{isScanOuterContainer}
+				</if>
+	       
+				<if test="isScanInsideContainer!=null">
+					and is_scan_inside_container = #{isScanInsideContainer}
+				</if>
+	       
+				<if test="isScanSku!=null">
+					and is_scan_sku = #{isScanSku}
+				</if>
+	       
+				<if test="scanPattern!=null">
+					and scan_pattern = #{scanPattern}
+				</if>
+	       
+				<if test="isTipInvAttr!=null">
+					and is_tip_inv_attr = #{isTipInvAttr}
+				</if>
+	       
+				<if test="isScanInvAttr!=null">
+					and is_scan_inv_attr = #{isScanInvAttr}
+				</if>
+	       
+				<if test="isScanLatticeNo!=null">
+					and is_scan_lattice_no = #{isScanLatticeNo}
+				</if>
+	       
+				<if test="palletPickingMode!=null">
+					and pallet_picking_mode = #{palletPickingMode}
+				</if>
+	       
+				<if test="containerPickingMode!=null">
+					and container_picking_mode = #{containerPickingMode}
+				</if>
+				<if test="isScanOutBoundBox!=null">
+					and is_scan_outboundbox = #{isScanOutBoundBox}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+		</where>
+	</sql>
+	
+	<delete id="deleteExt">
+	            <![CDATA[
+	        delete from t_wh_function_picking  where
+		        function_id = #{id}  and ou_id = #{ouId}
+	    ]]>
+	</delete>
+	
+	
+	<update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionPicking">
+	    <![CDATA[
+	        UPDATE t_wh_function_picking SET
+		        function_id = #{functionId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        is_auto_obtain_work = #{isAutoObtainWork,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        obtain_work_way = #{obtainWorkWay,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        max_obtain_work_qty = #{maxObtainWorkQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        is_scan_location = #{isScanLocation,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        is_scan_outer_container = #{isScanOuterContainer,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        is_scan_inside_container = #{isScanInsideContainer,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        is_scan_sku = #{isScanSku,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        is_scan_outboundbox =  #{isScanOutBoundBox,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        scan_pattern = #{scanPattern,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        is_tip_inv_attr = #{isTipInvAttr,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        is_scan_inv_attr = #{isScanInvAttr,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        is_scan_lattice_no = #{isScanLatticeNo,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        pallet_picking_mode = #{palletPickingMode,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        container_picking_mode = #{containerPickingMode,javaType=java.lang.Integer,jdbcType=INTEGER}
+	        WHERE 
+		         id = #{id} and ou_id = #{ouId}
+	    ]]>
+   </update>
+   
+   <select id="findByIdExt" resultType="com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionPicking">
+	        select <include refid="whFunctionPickingColumnsExt" />
+	        from t_wh_function_picking
+	        where id=#{id} and ou_id=#{ouId}
+	</select>
+	
+	
+	<select id="findByFunctionIdExt" resultType="com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionPicking">
+	        select <include refid="whFunctionPickingColumnsExt" />
+	        from  t_wh_function_picking 
+	        where function_id=#{functionId} and ou_id=#{ouId}
+	</select>
+	
+</mapper>
