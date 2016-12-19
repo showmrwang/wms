@@ -384,11 +384,10 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         Long ouId = wh.getId();
         List<WhWaveLine> lines = whWaveLineDao.findNotEnoughAllocationQty(waveId, ouId);
         // 获取下一个波次阶段编码
-        WhWave wave = new WhWave();
-        wave.setId(waveId);
-        wave.setOuId(ouId);
-        wave.setAllocatePhase(null);
-        wave = this.whWaveDao.findListByParam(wave).get(0);
+        WhWave wave = whWaveDao.findWaveExtByIdAndOuId(waveId, ouId);
+        if (null == wave) {
+			throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
+		}
         WhWaveMaster whWaveMaster = whWaveMasterDao.findByIdExt(wave.getWaveMasterId(), ouId);
         Long waveTempletId = whWaveMaster.getWaveTemplateId();
         String phaseCode = this.getWavePhaseCode(wave.getPhaseCode(), waveTempletId, ouId);
@@ -403,8 +402,11 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
                 throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
             }
         } else {
+        	// key:分配规则Id, value:规则下对应的策略
             Map<Long, List<String>> ruleMap = new HashMap<Long, List<String>>();
+            // 库存数量没有分配完整的波次明细中包含的所有的出库单Id
             Set<Long> allOdoIds = new HashSet<Long>();
+            // 库存数量没有分配完整的波次明细中不包含静态库位超分配和空库位的出库单Id
             Set<Long> odoIds = new HashSet<Long>();
             // 判断分配策略是否包含静态库位可超分配或者空库位
             for (WhWaveLine whWaveLine : lines) {
@@ -429,9 +431,6 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
                     }
                 } else {
                     // 剔除规则中没有静态库位可超分配或空库位的工作单
-                    // SysDictionary dictionary =
-                    // sysDictionaryDao.getGroupbyGroupValueAndDicValue(Constants.WAVE_FAIL_REASON,
-                    // Constants.INVENTORY_SHORTAGE);
                     for (Long odoId : odoIds) {
                         whWaveLineManager.deleteWaveLinesByOdoId(odoId, waveId, ouId, Constants.INVENTORY_SHORTAGE);
                         // 释放库存
@@ -442,9 +441,6 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
                 }
             } else {
                 // 剔除库存数量没有分配完全所有工作单
-                // SysDictionary dictionary =
-                // sysDictionaryDao.getGroupbyGroupValueAndDicValue(Constants.WAVE_FAIL_REASON,
-                // Constants.INVENTORY_SHORTAGE);
                 for (Long odoId : allOdoIds) {
                     whWaveLineManager.deleteWaveLinesByOdoId(odoId, waveId, ouId, Constants.INVENTORY_SHORTAGE);
                     // 释放库存

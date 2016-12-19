@@ -121,16 +121,17 @@ public class WhWaveLineManagerImpl extends BaseManagerImpl implements WhWaveLine
     public void deleteWaveLinesByOdoId(Long odoId, Long waveId, Long ouId, String reason) {
         // 1.修改出库单明细waveCode为空
         int num = whOdoLineDao.updateOdoLineByAllocateFail(odoId, reason, ouId);
-        if (-1 == num) {
+        if (0 == num) {
             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
         }
         // 2.修改出库单waveCode为空
         num = whOdoDao.updateOdoByAllocateFail(odoId, reason, ouId);
-        if (-1 == num) {
+        if (0 == num) {
             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
         }
         // 3.从波次明细中剔除出库单
-        whWaveLineDao.removeWaveLineWhole(waveId, odoId, ouId);
+        num = whWaveLineDao.removeWaveLineWhole(waveId, odoId, ouId);
+        
         WhWaveLine line = new WhWaveLine();
         line.setWaveId(waveId);
         line.setOuId(ouId);

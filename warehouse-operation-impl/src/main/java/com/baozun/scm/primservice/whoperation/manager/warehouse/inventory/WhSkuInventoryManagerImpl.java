@@ -3289,13 +3289,18 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     log.error("sum sku inv onHand qty error, logId is:[{}]", logId);
                     throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
                 }
-            } else {
-                oldQty = 0.0;
             }
+            // 清除库存占用编码
+            skuInv.setOccupationCode(null);
+            skuInv.setOccupationLineId(null);
+            skuInv.setOccupationCodeSource(null);
+            int num = whSkuInventoryDao.saveOrUpdateByVersion(skuInv);
+            if (1 != num) {
+				throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+			}
+            // 还原库存日志
 			insertSkuInventoryLog(invId, qty, oldQty, wh.getIsTabbInvTotal(), ouId, 1L);
 		}
-		// 清除库存占用编码
-		whSkuInventoryDao.releaseInventoryOccupyCode(occupyCode, ouId);
 	}
 	
 	/**
