@@ -1599,8 +1599,13 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             boolean isVM = true;// 是否管理效期
             Location loc = locationDao.findLocationByCode(locationCode, ouId);
             if (null == loc) {
-                log.error("location is null error, locationCode is:[{}], logId is:[{}]", locationCode, logId);
-                throw new BusinessException(ErrorCodes.COMMON_LOCATION_IS_NOT_EXISTS);
+                if(null == loc) {
+                    loc = locationDao.getLocationByBarcode(locationCode, ouId);
+                }
+                if(null == loc) {
+                    log.error("location is null error, locationCode is:[{}], logId is:[{}]", locationCode, logId);
+                    throw new BusinessException(ErrorCodes.COMMON_LOCATION_IS_NOT_EXISTS);
+                }
             }
             isTV = false;// 拆箱上架默认不跟踪容器号，不管库位是否跟踪容器号
             isBM = (null == loc.getIsBatchMgt() ? false : loc.getIsBatchMgt());

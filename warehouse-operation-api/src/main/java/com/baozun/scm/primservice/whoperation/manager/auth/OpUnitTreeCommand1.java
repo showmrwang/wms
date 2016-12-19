@@ -5,7 +5,7 @@ import java.util.List;
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
 
 
-public class OpUnitTreeCommand extends BaseCommand {
+public class OpUnitTreeCommand1 extends BaseCommand {
 
 	private static final long serialVersionUID = 2463898548990062547L;
 
@@ -25,7 +25,7 @@ public class OpUnitTreeCommand extends BaseCommand {
     /** 父组织 */
     private Long parentUnitId;
     
-    private List<OpUnitTreeCommand> nodes;
+    private List<OpUnitTreeCommand1> nodes;
 
 	public Long getId() {
 		return id;
@@ -59,11 +59,11 @@ public class OpUnitTreeCommand extends BaseCommand {
 		this.selectable = selectable;
 	}
 
-	public List<OpUnitTreeCommand> getNodes() {
+	public List<OpUnitTreeCommand1> getNodes() {
 		return nodes;
 	}
 
-	public void setNodes(List<OpUnitTreeCommand> nodes) {
+	public void setNodes(List<OpUnitTreeCommand1> nodes) {
 		this.nodes = nodes;
 	}
 

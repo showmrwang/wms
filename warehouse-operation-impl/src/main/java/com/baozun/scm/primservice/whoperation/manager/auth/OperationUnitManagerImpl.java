@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.baozun.scm.primservice.whoperation.command.auth.OpUnitTreeCommand;
 import com.baozun.scm.primservice.whoperation.dao.auth.OperationUnitDao;
 import com.baozun.scm.primservice.whoperation.model.auth.OperationUnit;
 

@@ -45,4 +45,6 @@ public class InvAttrMgmtType implements Serializable {
     public static final String INV_ATTR4 = "10";
     // 库存属性5(库存属性)
     public static final String INV_ATTR5 = "11";
+    // 所有库存属性
+    public static final String ALL_INV_ATTRS = "1,2,3,4,5,6,7,8,9,10,11";
 }

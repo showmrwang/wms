@@ -263,7 +263,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			iout.code as insideContainerCode,
 			invstatus.name as invstatusName,
 			t.container_lattice_no as containerLatticeNo,
-	       	t.outboundbox_code as as outboundboxCode
+	       	t.outboundbox_code as outboundboxCode
 	    ]]>
 	</sql>
 	
@@ -308,7 +308,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			t.insideContainerCode as insideContainerCode,
 			t.invstatusName as invstatusName,
 			t.container_lattice_no as containerLatticeNo,
-	       	t.outboundbox_code as as outboundboxCode
+	       	t.outboundbox_code as outboundboxCode
 	    ]]>
 	</sql>
 	
@@ -1642,7 +1642,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					t.inbound_time as inboundTime,
 			 	    t.last_modify_time as lastModifyTime,
 			 	    t.container_lattice_no as containerLatticeNo,
-	            	t.outboundbox_code as as outboundboxCode,
+	            	t.outboundbox_code as outboundboxCode,
 					sys.dic_label as invTypeName,
 					invstatus.name as invstatusName,
 					inva1.dic_label as invAttr1Str,

@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.auth.OperPrivilegeDao">
+	<resultMap id="WhWorkCommand" type="com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkCommand">
+	</resultMap>
+
+	<sql id="whWorkColumnsExt">
+	    <![CDATA[
+	        	work.id as id,
+	        	work.code as code,
+	        	work.status as status,
+	        	work.ou_id as ouId,
+	        	work.work_type as workType,
+	        	work.work_category as workCategory,
+	        	work.is_locked as isLocked,
+	        	work.work_priority as workPriority,
+	        	work.batch as batch,
+	        	work.start_time as startTime,
+	        	work.finish_time as finishTime,
+	        	work.wave_id as waveId,
+	        	work.wave_code as waveCode,
+	        	work.order_code as orderCode,
+	        	work.location_code as locationCode,
+	        	work.outer_container_code as outerContainerCode,
+	        	work.container_code as containerCode,
+	        	work.create_time as createTime,
+	        	work.last_modify_time as lastModifyTime,
+	        	work.created_id as createdId,
+	        	work.modified_id as modifiedId,
+	        	work.operator_id as operatorId,
+	        	work.lifecycle as lifecycle
+	    ]]>
+	</sql>
+
+	<select id="findworkAreaByUserAndOuId" resultType="string" >
+		select group_concat(distinct workArea.id) from
+			oper_user_role operUserRole,
+			oper_role_privilege operPrivilege,
+			t_wh_work_area workArea,
+			t_wh_work_type workType,
+			t_wh_work_area_type workAreaType
+		where 
+	    <![CDATA[
+	    	-- 查找角色id
+			operUserRole.user_id=#{userId}
+			and operUserRole.ou_id = #{ouId}
+			-- 查找操作权限
+			and operPrivilege.role_id = operUserRole.role_id
+			and operPrivilege.ou_id=operUserRole.ou_id
+			-- 查找工作类型
+			and workArea.work_privilege_id = operPrivilege.work_privilege_id
+			and operPrivilege.work_privilege_id = workAreaType.work_privilege_id
+			and workAreaType.work_type_id = workType.id
+			-- 工作类型为"拣货/补货"
+			and workType.work_category = #{category}
+	    ]]>
+	</select>	
+
+	<select id="findwork" parameterType="java.lang.Long" resultMap="WhWorkCommand">
+		select
+		<include refid="whWorkColumnsExt" /> 
+		from 
+			oper_user_role operUserRole,
+			oper_role_privilege operPrivilege,
+			t_wh_work_privilege workPrivilege,
+			t_wh_work_area workArea,
+			t_wh_work_type workType,
+			t_wh_work_area_type workAreaType,
+			t_wh_work work,
+			t_wh_operation operation,
+			t_wh_operation_line operationLine,
+			t_wh_location loc,
+			t_wh_area area 
+		where 
+			-- 查找角色id
+			operUserRole.user_id=#{userId}
+			and operUserRole.ou_id = #{ouId}
+			-- 查找操作权限
+			and operPrivilege.role_id = operUserRole.role_id
+			and operPrivilege.ou_id=operUserRole.ou_id
+			-- 查找工作类型
+			-- and operPrivilege.work_privilege_id = workArea.work_privilege_id
+			and operPrivilege.work_privilege_id = workAreaType.work_privilege_id
+			-- and workArea.id = workAreaType.work_area_id
+			and workAreaType.work_type_id = workType.id
+			and workType.code = work.work_type
+			and workType.work_category = work.work_category
+			-- 工作类型为 "拣货/补货"
+			and workType.work_category = #{category}
+			-- 工作状态为 "新建/部分完成"
+			and work.status in (1, 9)
+			-- 查找作业
+			and work.id = operation.work_id
+			and operation.status = 1
+			and operation.id = operationLine.operation_id
+			and operationLine.from_location_id = loc.id
+			-- 从库位的工作区域为符合的工作区域
+			and loc.work_area_id in #{workAreaIds}
+			group by work.id
+			order by work.work_priority,loc.pick_sort,area.area_code,loc.code asc
+			-- limit 1,#{maxObtainWorkQty}
+			limit 1,7
+	</select>	
+
+		<select id="findWorkListByQueryMapWithPage" resultMap="WhWorkCommand">
+			select
+			<include refid="whWorkColumnsExt" /> 
+			from 
+				oper_user_role operUserRole,
+				oper_role_privilege operPrivilege,
+				t_wh_work_privilege workPrivilege,
+				t_wh_work_area workArea,
+				t_wh_work_type workType,
+				t_wh_work_area_type workAreaType,
+				t_wh_work work,
+				t_wh_operation operation,
+				t_wh_operation_line operationLine,
+				t_wh_location loc,
+				t_wh_area area 
+			<where>
+				operPrivilege.role_id = operUserRole.role_id
+				and operPrivilege.ou_id=operUserRole.ou_id
+				and operPrivilege.work_privilege_id = workAreaType.work_privilege_id
+				and workAreaType.work_type_id = workType.id
+				and workType.code = work.work_type
+				and workType.work_category = work.work_category
+				and work.status in (1, 9)
+				and work.id = operation.work_id
+				and operation.status = 1
+				and operation.id = operationLine.operation_id
+				and operationLine.from_location_id = loc.id
+				<if test="workAreaIds!=null and workAreaIds!=''">
+					and loc.work_area_id in (#{workAreaIds})
+				</if>
+				<if test="category!=null and category!=''">
+					and workType.work_category = #{category}
+				</if>
+				<if test="userId!=null">
+					and operUserRole.user_id=#{userId}
+				</if>
+				<if test="ouId!=null">
+					and operUserRole.ou_id = #{ouId}
+				</if>
+				order by work.work_priority,loc.pick_sort,area.area_code,loc.code asc
+				<if test="maxObtainWorkQty!=null">
+					limit 1,#{maxObtainWorkQty}
+				</if>
+		    </where>
+		</select>	
+	
+	<!-- 对工作菜单进行分页查询 -->
+	    <select id="findWorkListCountByQueryMap" resultType="long">
+	        select count(*) 
+	        from 
+				oper_user_role operUserRole,
+				oper_role_privilege operPrivilege,
+				t_wh_work_privilege workPrivilege,
+				t_wh_work_area workArea,
+				t_wh_work_type workType,
+				t_wh_work_area_type workAreaType,
+				t_wh_work work,
+				t_wh_operation operation,
+				t_wh_operation_line operationLine,
+				t_wh_location loc,
+				t_wh_area area 
+			<where>
+				operPrivilege.role_id = operUserRole.role_id
+				and operPrivilege.ou_id=operUserRole.ou_id
+				and operPrivilege.work_privilege_id = workAreaType.work_privilege_id
+				and workAreaType.work_type_id = workType.id
+				and workType.code = work.work_type
+				and workType.work_category = work.work_category
+				and work.status in (1, 9)
+				and work.id = operation.work_id
+				and operation.status = 1
+				and operation.id = operationLine.operation_id
+				and operationLine.from_location_id = loc.id
+				<if test="workAreaIds!=null and workAreaIds!=''">
+					and loc.work_area_id in  (#{workAreaIds})
+				</if>
+				<if test="category!=null and category!=''">
+					and workType.work_category = #{category}
+				</if>
+				<if test="userId!=null">
+					and operUserRole.user_id=#{userId}
+				</if>
+				<if test="ouId!=null">
+					and operUserRole.ou_id = #{ouId}
+				</if>
+				order by work.work_priority,loc.pick_sort,area.area_code,loc.code asc
+				<if test="maxObtainWorkQty!=null">
+					limit 1,#{maxObtainWorkQty}
+				</if>
+		    </where>
+	    </select>
+	    
+	    <select id="1fap1" resultType="long">
+	        select count(*) 
+	        from 
+				oper_user_role operUserRole,
+				oper_role_privilege operPrivilege,
+				t_wh_work_privilege workPrivilege,
+				t_wh_work_area workArea,
+				t_wh_work_type workType,
+				t_wh_work_area_type workAreaType,
+				t_wh_work work,
+				t_wh_operation operation,
+				t_wh_operation_line operationLine,
+				t_wh_location loc,
+				t_wh_area area 
+			<where>
+				-- 查找操作权限
+				operPrivilege.role_id = operUserRole.role_id
+				and operPrivilege.ou_id=operUserRole.ou_id
+				-- 查找工作类型
+				-- and operPrivilege.work_privilege_id = workArea.work_privilege_id
+				and operPrivilege.work_privilege_id = workAreaType.work_privilege_id
+				-- and workArea.id = workAreaType.work_area_id
+				and workAreaType.work_type_id = workType.id
+				and workType.code = work.work_type
+				and workType.work_category = work.work_category
+				-- 工作状态为 "新建/部分完成"
+				and work.status in (1, 9)
+				-- 查找作业
+				and work.id = operation.work_id
+				and operation.status = 1
+				and operation.id = operationLine.operation_id
+				and operationLine.from_location_id = loc.id
+				<if test="workAreaIds!=null and workAreaIds!=''">
+				-- 从库位的工作区域为符合的工作区域
+				and loc.work_area_id in #{workAreaIds}
+				</if>
+				<if test="category!=null and category!=''">
+					-- 工作类型为 "拣货/补货"
+					and workType.work_category = #{category}
+				</if>
+				<if test="userId!=null">
+					-- 查找角色id
+					and operUserRole.user_id=#{userId}
+				</if>
+				<if test="ouId!=null">
+					and operUserRole.ou_id = #{ouId}
+				</if>
+				order by work.work_priority,loc.pick_sort,area.area_code,loc.code asc
+				<if test="maxObtainWorkQty!=null">
+					limit 1,#{maxObtainWorkQty}
+				</if>
+		    </where>
+	    </select>
+	
+		
+</mapper>

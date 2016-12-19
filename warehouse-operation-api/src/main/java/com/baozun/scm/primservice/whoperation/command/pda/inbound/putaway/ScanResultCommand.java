@@ -30,6 +30,8 @@ public class ScanResultCommand extends BaseCommand {
     private int putawayPatternDetailType;
     /** 是否提示库位 */
     private boolean isNeedTipLocation;
+    /** 上架是否校验库位 */
+    private boolean isValidateLocation;
     /** 是否有外部容器 */
     private boolean isHasOuterContainer;
     /** 是否有内部容器 */
@@ -139,9 +141,9 @@ public class ScanResultCommand extends BaseCommand {
     private String locationCode;
     
     
-    private Boolean isNeedScanNewLocation;   //拆箱扫描商品重量达到库位承重的时候,跳转
+    private Boolean isNeedScanNewLocation = false;   //拆箱扫描商品重量达到库位承重的时候,跳转
     
-    private Boolean isContinueScanSn;   //
+    private Boolean isContinueScanSn = false;   //
 
     public int getPutawayPatternType() {
         return putawayPatternType;
@@ -165,6 +167,14 @@ public class ScanResultCommand extends BaseCommand {
 
     public void setNeedTipLocation(boolean isNeedTipLocation) {
         this.isNeedTipLocation = isNeedTipLocation;
+    }
+    
+    public boolean isValidateLocation() {
+        return isValidateLocation;
+    }
+
+    public void setValidateLocation(boolean isValidateLocation) {
+        this.isValidateLocation = isValidateLocation;
     }
 
     public boolean isHasOuterContainer() {

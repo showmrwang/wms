@@ -1,17 +1,15 @@
 /**
  * Copyright (c) 2013 Baozun All Rights Reserved.
  *
- * This software is the confidential and proprietary information of Baozun.
- * You shall not disclose such Confidential Information and shall use it only in
- * accordance with the terms of the license agreement you entered into
- * with Baozun.
+ * This software is the confidential and proprietary information of Baozun. You shall not disclose
+ * such Confidential Information and shall use it only in accordance with the terms of the license
+ * agreement you entered into with Baozun.
  *
- * BAOZUN MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT THE SUITABILITY OF THE
- * SOFTWARE, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
- * PURPOSE, OR NON-INFRINGEMENT. BAOZUN SHALL NOT BE LIABLE FOR ANY DAMAGES
- * SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING
- * THIS SOFTWARE OR ITS DERIVATIVES.
+ * BAOZUN MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT THE SUITABILITY OF THE SOFTWARE, EITHER
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT. BAOZUN SHALL NOT BE LIABLE FOR ANY DAMAGES
+ * SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS SOFTWARE OR ITS
+ * DERIVATIVES.
  *
  */
 package com.baozun.scm.primservice.whoperation.dao.warehouse;
@@ -32,25 +30,34 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.WhWork;
 
 
 
-public interface WhWorkDao extends BaseDao<WhWork,Long>{
+public interface WhWorkDao extends BaseDao<WhWork, Long> {
 
 
-	@QueryPage("findListCountByQueryMap")
-	Pagination<WhWork> findListByQueryMapWithPage(Page page,Sort[] sorts,Map<String, Object> params);
-	
-	@CommonQuery
-	int saveOrUpdate(WhWork o);
-	
-	@CommonQuery
-	int saveOrUpdateByVersion(WhWork o);
-	
-	 /**
-     * 根据code和ouId查找工作头信息
-     * @author qiming.liu
-     * @param code
-     * @param ouId
+    @QueryPage("findListCountByQueryMap")
+    Pagination<WhWork> findListByQueryMapWithPage(Page page, Sort[] sorts, Map<String, Object> params);
+
+    @CommonQuery
+    int saveOrUpdate(WhWork o);
+
+    @CommonQuery
+    int saveOrUpdateByVersion(WhWork o);
+
+    /**
+    * 根据code和ouId查找工作头信息
+    * @author qiming.liu
+    * @param code
+    * @param ouId
+    * @return
+    */
+    WhWorkCommand findWorkByWorkCode(@Param("code") String code, @Param("ouId") Long ouId);
+
+    /**
+     * [业务方法] 工作查询-根据拣货工作配置获取工作列表
+     * @param page
+     * @param sorts
+     * @param params
      * @return
      */
-	WhWorkCommand findWorkByWorkCode(@Param("code") String code, @Param("ouId") Long ouId);
-	
+    @QueryPage("findListCountByQueryMapForPda")
+    Pagination<WhWorkCommand> findListByQueryMapWithPageForPda(Page page, Sort[] sorts, Map<String, Object> params);
 }

@@ -43,6 +43,8 @@ public class LocationRecommendResultCommand extends BaseCommand {
     private Long locationId;
     /** 推荐库位编码 */
     private String locationCode;
+    /** 推荐库位条码 */
+    private String locBarcode;
     /** 唯一商品 */
     private String skuAttrId;
     /** 残次条码 */
@@ -128,6 +130,14 @@ public class LocationRecommendResultCommand extends BaseCommand {
 
     public void setLocationCode(String locationCode) {
         this.locationCode = locationCode;
+    }
+    
+    public String getLocBarcode() {
+        return locBarcode;
+    }
+
+    public void setLocBarcode(String locBarcode) {
+        this.locBarcode = locBarcode;
     }
 
     public String getSkuAttrId() {

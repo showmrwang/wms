@@ -28,6 +28,7 @@ import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.Locati
 import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.ScanResultCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.TipContainerCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.TipLocationCacheCommand;
+import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.TipScanSkuCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.rule.RuleAfferCommand;
 import com.baozun.scm.primservice.whoperation.command.rule.RuleExportCommand;
 import com.baozun.scm.primservice.whoperation.command.sku.SkuRedisCommand;
@@ -88,7 +89,6 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionPutAway;
 import com.baozun.scm.primservice.whoperation.model.warehouse.carton.WhCarton;
-import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryTobefilled;
 import com.baozun.scm.primservice.whoperation.util.StringUtil;
 import com.baozun.scm.primservice.whoperation.util.formula.SimpleCubeCalculator;
@@ -2600,6 +2600,27 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
         return srCmd;
     }
     
+    
+    /**
+     * 
+     * @param insideContainerId
+     * @param locationId
+     * @param skuAttrIds
+     */
+    private void splitCacheScanSku(Long insideContainerId,Long locationId,String skuAttrIds) {
+        log.info("PdaSysSuggestPutwayManagerImpl splitCacheScanSku is start"); 
+        TipScanSkuCacheCommand cacheSkuCmd = cacheManager.getObject(CacheConstants.SCAN_SKU_QUEUE + insideContainerId.toString() + locationId.toString());
+        if(null == cacheSkuCmd) {
+            
+        }
+        ArrayDeque<String> scanSkuAttrIds = cacheSkuCmd.getScanSkuAttrIds();
+        if(!scanSkuAttrIds.contains(skuAttrIds)) {
+            scanSkuAttrIds.addFirst(skuAttrIds);
+        }
+        cacheSkuCmd.setScanSkuAttrIds(scanSkuAttrIds);
+        cacheManager.setObject(CacheConstants.SCAN_SKU_QUEUE + insideContainerId.toString() + locationId.toString(), cacheSkuCmd, CacheConstants.CACHE_ONE_DAY);
+        log.info("PdaSysSuggestPutwayManagerImpl splitCacheScanSku is end"); 
+    }
     /***
      * 拆箱箱上架:扫描sku商品
      * @param barCode
@@ -2731,6 +2752,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
 //              srCmd.setNeedScanSkuSn(true);// 继续扫sn
 //              srCmd.setNeedTipSkuDefect(true);   //sku残次信息
               String tipSkuAttrId = cssrCmd.getTipSkuAttrId();
+              this.splitCacheScanSku(insideContainerId, locationId, tipSkuAttrId);   //  缓存
               tipSkuDetailAspect(srCmd, tipSkuAttrId, locSkuAttrIds, skuAttrIdsQty, logId);
               srCmd.setIsContinueScanSn(true);
           } else if (cssrCmd.isNeedTipSku()) {

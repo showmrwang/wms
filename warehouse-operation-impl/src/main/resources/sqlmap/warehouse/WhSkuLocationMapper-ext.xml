@@ -128,7 +128,20 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        delete from t_wh_sku_location where
 		        id = #{id} and ou_id=#{ouId}
 	    ]]>
-	    </delete>	
+	    </delete>
+	    	
+	 <select id="findPalletCountByLocation"  resultType="int">
+      select count(1)
+	  	from 
+	   (select distinct inv.outer_container_id  as outer_container_id
+	   from
+					t_wh_sku_inventory inv 
+					where 
+					inv.ou_id = #{ouId}
+					and inv.location_id = #{locId}
+		) containerList
+		where containerList.outer_container_id is not null
+    </select> 
 	    
 	 <select id="findContainerSkuCountNotInSkuLocation"  resultType="int">
       select count(1)
@@ -159,6 +172,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    			and sl.sku_id = inv.sku_id
 			       )
 		) skuList
+		where skuList.sku_id is not null
     </select>
     
     <select id="findSkuCountInSkuLocation"  resultType="int">
@@ -176,6 +190,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    			and location.is_static = 1
 	    			and sl.sku_id = #{skuId}
 		) skuList
+		where skuList.sku_id is not null
     </select>
     
     <select id="findAllSkuCountInSkuLocation"  resultType="int">
@@ -192,5 +207,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    			and sl.lifecycle = 1
 	    			and location.is_static = 1
 		) skuList
+		where skuList.sku_id is not null
     </select>
 </mapper>

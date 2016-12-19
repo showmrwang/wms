@@ -1,20 +1,20 @@
 /**
  * Copyright (c) 2013 Baozun All Rights Reserved.
- * 
+ *
  * This software is the confidential and proprietary information of Baozun. You shall not disclose
  * such Confidential Information and shall use it only in accordance with the terms of the license
  * agreement you entered into with Baozun.
- * 
+ *
  * BAOZUN MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT THE SUITABILITY OF THE SOFTWARE, EITHER
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT. BAOZUN SHALL NOT BE LIABLE FOR ANY DAMAGES
  * SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS SOFTWARE OR ITS
  * DERIVATIVES.
- * 
+ *
  */
-package com.baozun.scm.primservice.whoperation.dao.auth;
+package com.baozun.scm.primservice.whoperation.dao.warehouse;
 
-import java.util.List;
+import java.util.Map;
 
 import lark.common.annotation.CommonQuery;
 import lark.common.annotation.QueryPage;
@@ -25,44 +25,25 @@ import lark.orm.dao.supports.BaseDao;
 
 import org.apache.ibatis.annotations.Param;
 
-import com.baozun.scm.primservice.whoperation.command.auth.OpUnitTreeCommand;
-import com.baozun.scm.primservice.whoperation.model.auth.OperationUnit;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionReplenishment;
 
 
 
-public interface OperationUnitDao extends BaseDao<OperationUnit, Long> {
+public interface WhFunctionReplenishmentDao extends BaseDao<WhFunctionReplenishment, Long> {
 
 
     @QueryPage("findListCountByQueryMap")
-    Pagination<OperationUnit> findListByQueryMapWithPage(Page page, Sort[] sorts, OperationUnit o);
+    Pagination<WhFunctionReplenishment> findListByQueryMapWithPage(Page page, Sort[] sorts, Map<String, Object> params);
 
     @CommonQuery
-    int saveOrUpdate(OperationUnit o);
-
-    @CommonQuery
-    int saveOrUpdateByVersion(OperationUnit o);
+    int saveOrUpdate(WhFunctionReplenishment o);
 
     /**
-     * 根据父ID获取子数据
-     * 
-     * @param parentId
+     * 查询pda补货
+     * @param ouId
+     * @param functionId
      * @return
      */
-    List<OpUnitTreeCommand> findListByParentId(@Param("parentId") Long parentId);
+    public WhFunctionReplenishment findByFunctionIdExt(@Param("ouId") Long ouId, @Param("functionId") Long functionId);
 
-    /**
-     * 根据用户ID获取与其相关的组织
-     * 
-     * @param userId
-     * @return
-     */
-    List<OpUnitTreeCommand> findUnitTreeByUserId(@Param("userId") Long userId);
-
-    /**
-     * 根据用户ID获取与其相关的组织
-     * 
-     * @param userId
-     * @return
-     */
-    List<OpUnitTreeCommand> findCommandList(OperationUnit o);
 }

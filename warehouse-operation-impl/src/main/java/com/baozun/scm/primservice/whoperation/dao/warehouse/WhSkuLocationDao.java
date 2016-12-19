@@ -79,6 +79,15 @@ public interface WhSkuLocationDao extends BaseDao<WhSkuLocation,Long>{
     int deleteByIdOuId(@Param("id") Long id, @Param("ouId") Long ouId);
     
     /**
+     * 根据库位查询当前库位上的已有托盘数
+     * @author lichuan
+     * @param ouId
+     * @param locId
+     * @return
+     */
+    int findPalletCountByLocation(@Param("ouId") Long ouId, @Param("locId") Long locId);
+    
+    /**
      * 检查容器内商品是否全部绑定到静态库位
      * @author lichuan
      * @param ouId
