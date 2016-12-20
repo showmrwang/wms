@@ -48,9 +48,9 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.WhWorkLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WorkType;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 
-@Service("whWavePickingManagerProxy")
+@Service("createWorkInWaveManagerProxy")
 @Transactional
-public class WhWavePickingManagerProxyImpl implements WhWavePickingManagerProxy {
+public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManagerProxy {
 
     @Autowired
     private CodeManager codeManager;
@@ -104,7 +104,13 @@ public class WhWavePickingManagerProxyImpl implements WhWavePickingManagerProxy 
      * @return
      */
     @Override
-    public void createJobs(List<WhOdoOutBoundBox> whOdoOutBoundBoxList, Long ouId, Long userId) {
+    public void createWorkInWave(Long waveId, Long ouId, Long userId) {
+        // 查询出小批次列表        
+        List<WhOdoOutBoundBox> whOdoOutBoundBoxList = this.getBoxBatchsForPicking(waveId, ouId);
+        if (null == whOdoOutBoundBoxList || whOdoOutBoundBoxList.isEmpty()) {
+            throw new BusinessException("找不到波次明细");
+        }
+        // 循环小批次        
         for (WhOdoOutBoundBox whOdoOutBoundBox : whOdoOutBoundBoxList) {
             //根据批次查询小批次分组数据            
             whOdoOutBoundBox.setOuId(ouId);
@@ -157,17 +163,17 @@ public class WhWavePickingManagerProxyImpl implements WhWavePickingManagerProxy 
     }
 
     /**
-     * 查询出小批次列表
+     * 查询出波次头信息
      * 
      * @param waveId
      * @param ouId
      * @return
      */
     @Override
-    public List<WhOdoOutBoundBox> getOdoOutBoundBoxForPicking(Long waveId, Long ouId) {
-        // 1.获取波次头并校验波次信息
+    public WhWave getWhWaveHead(Long waveId, Long ouId) {
+        // 获取波次头并校验波次信息
         if (null == waveId || null == ouId) {
-            throw new BusinessException("软分配 : 没有参数");
+            throw new BusinessException("创工作 : 没有参数");
         }
         WhWave oldWhWave = new WhWave();
         oldWhWave.setId(waveId);
@@ -185,10 +191,23 @@ public class WhWavePickingManagerProxyImpl implements WhWavePickingManagerProxy 
         if (BaseModel.LIFECYCLE_NORMAL != whWave.getLifecycle() || WaveStatus.WAVE_EXECUTING != whWave.getStatus() || !WavePhase.CREATE_WORK.equals(whWave.getPhaseCode())) {
             throw new BusinessException("波次头不可用或波次状态不为运行中或波次阶段不为创建工作");
         }
-        // 2.查询波次中的所有小批次
+        return whWave;
+    }
+    
+    /**
+     * 查询波次中的所有小批次
+     * 
+     * @param waveId
+     * @param ouId
+     * @return
+     */
+    @Override
+    public List<WhOdoOutBoundBox> getBoxBatchsForPicking(Long waveId, Long ouId) {
+        // 查询波次中的所有小批次
         List<WhOdoOutBoundBox> whOdoOutBoundBoxList = this.whOdoOutBoundBoxDao.findPickingWorkWhOdoOutBoundBox(waveId, ouId);
         return whOdoOutBoundBoxList;
     }
+    
     
     /**
      * 根据批次查询小批次分组数据

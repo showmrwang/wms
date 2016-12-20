@@ -5,6 +5,7 @@ import java.util.List;
 import com.baozun.scm.primservice.whoperation.command.odo.WhOdoOutBoundBoxCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoOutBoundBox;
+import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 
 
@@ -13,16 +14,16 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInv
  *
  * 2016年11月02日 上午11:07:20
  */
-public interface WhWavePickingManagerProxy extends BaseManager {
+public interface CreateWorkInWaveManagerProxy extends BaseManager {
 
     
     /**
-     * [业务方法] 创建拣货工作和作业
+     * [业务方法] 波次中创建工作和作业
      * @param WhOdoOutBoundBox
      * @param userId
      * @return
      */
-    public void createJobs(List<WhOdoOutBoundBox> whOdoOutBoundBoxList, Long ouId, Long userId);
+    public void createWorkInWave(Long waveId, Long ouId, Long userId);
     
     /**
      * [业务方法] 创建拣货工作-返回小批次列表给上层服务
@@ -30,7 +31,15 @@ public interface WhWavePickingManagerProxy extends BaseManager {
      * @param ouId
      * @return
      */
-    public List<WhOdoOutBoundBox> getOdoOutBoundBoxForPicking(Long waveId, Long ouId);
+    public WhWave getWhWaveHead(Long waveId, Long ouId);
+    
+    /**
+     * [业务方法] 创建拣货工作-返回小批次列表给上层服务
+     * @param waveId
+     * @param ouId
+     * @return
+     */
+    public List<WhOdoOutBoundBox> getBoxBatchsForPicking(Long waveId, Long ouId);
     
     /**
      * [业务方法] 创建拣货工作-返回小批次分组数据列表给上层服务
@@ -103,6 +112,4 @@ public interface WhWavePickingManagerProxy extends BaseManager {
      * @return
      */
     public void updateWhOdoOutBoundBoxCommand (WhOdoOutBoundBoxCommand whOdoOutBoundBoxCommand);
-    
-
 }
