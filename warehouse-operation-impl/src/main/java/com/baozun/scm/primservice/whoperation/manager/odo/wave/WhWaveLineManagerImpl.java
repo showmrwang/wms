@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineDao;
@@ -149,7 +150,7 @@ public class WhWaveLineManagerImpl extends BaseManagerImpl implements WhWaveLine
         Double oldAllocateQty = null == whWaveLine.getAllocateQty() ? 0.0 : whWaveLine.getAllocateQty();
         Double newAllocateQty = allocateQty + oldAllocateQty;
         whWaveLine.setAllocateQty(newAllocateQty);
-        if (-1 == new Double(0.0).compareTo(containerQty)) {
+        if (-1 == Constants.DEFAULT_DOUBLE.compareTo(containerQty)) {
             whWaveLine.setIsPalletContainer(Boolean.TRUE);
             Double oldPalletContainerQty = null == whWaveLine.getPalletContainerQty() ? 0.0 : whWaveLine.getPalletContainerQty();
             whWaveLine.setPalletContainerQty(containerQty + oldPalletContainerQty);
@@ -157,14 +158,26 @@ public class WhWaveLineManagerImpl extends BaseManagerImpl implements WhWaveLine
         if (null != isStaticLocation && isStaticLocation) {
             whWaveLine.setIsStaticLocationAllocate(isStaticLocation);
             if (!staticLocationIds.isEmpty()) {
-                whWaveLine.setStaticLocationIds(StringUtils.collectionToCommaDelimitedString(staticLocationIds));
+				String staticLocationIdsStr = whWaveLine.getStaticLocationIds();
+				staticLocationIdsStr = StringUtils.isEmpty(staticLocationIdsStr)
+						? StringUtils.collectionToCommaDelimitedString(staticLocationIds)
+						: staticLocationIdsStr + "," + StringUtils.collectionToCommaDelimitedString(staticLocationIds);
+				whWaveLine.setStaticLocationIds(staticLocationIdsStr);
             }
         }
         if (!trayIds.isEmpty()) {
-            whWaveLine.setTrayIds(StringUtils.collectionToCommaDelimitedString(trayIds));
+        	String trayIdsStr = whWaveLine.getTrayIds();
+        	trayIdsStr = StringUtils.isEmpty(trayIdsStr) 
+        			? StringUtils.collectionToCommaDelimitedString(trayIds)
+        			: trayIdsStr + "," + StringUtils.collectionToCommaDelimitedString(trayIds);
+            whWaveLine.setTrayIds(trayIdsStr);
         }
         if (!packingCaseIds.isEmpty()) {
-            whWaveLine.setPackingCaseIds(StringUtils.collectionToCommaDelimitedString(packingCaseIds));
+        	String packingCaseIdsStr = whWaveLine.getPackingCaseIds();
+        	packingCaseIdsStr = StringUtils.isEmpty(packingCaseIdsStr) 
+        			? StringUtils.collectionToCommaDelimitedString(packingCaseIds)
+                	: packingCaseIdsStr + "," + StringUtils.collectionToCommaDelimitedString(packingCaseIds);
+            whWaveLine.setPackingCaseIds(packingCaseIdsStr);
         }
         if (null != areaId) {
             whWaveLine.setAreaId(areaId);
