@@ -132,6 +132,8 @@ public class WhWaveSoftManagerProxyImpl implements WhWaveSoftManagerProxy {
                     if (0 == quantity) {
                         this.cacheAddEmptySku(waveId, skuId);
                     }
+                    command.setSkuId(skuId);
+                    command.setQty(quantity);
                     command.setSuccess(true);
                 } else {
                     throw new BusinessException("更新状态失败");

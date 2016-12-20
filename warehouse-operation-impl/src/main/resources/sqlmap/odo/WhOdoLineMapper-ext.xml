@@ -783,5 +783,20 @@
 				</foreach>
 			</if>
     </select>
+    
+    <select id="findListCountNotNew" resultType="long">
+		select count(*) from t_wh_odo_line line
+		<where>
+			<if test="odoId!=null">
+				and line.odo_id = #{odoId}
+			</if>
+			<if test="ouId!=null">
+				and line.ou_id = #{ouId}
+			</if>
+			<if test="odoLineStatus!=null">
+				and line.odo_line_status != #{odoLineStatus}
+			</if>
+		</where>
+	</select>
 	
 </mapper>

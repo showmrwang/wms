@@ -10,10 +10,14 @@ public class SoftAllocationResponseCommand extends BaseCommand {
      * 
      */
     private static final long serialVersionUID = -5079222778481500744L;
-
+    /** 当前软分配是否成功*/
     private boolean isSuccess;
-
+    /** 空列表*/
     private List<Long> emptyQtyList;
+    /** 剩余库存*/
+    private Long qty;
+    /** 当前sku id*/
+    private Long skuId;
 
     public boolean isSuccess() {
         return isSuccess;
@@ -31,5 +35,20 @@ public class SoftAllocationResponseCommand extends BaseCommand {
         this.emptyQtyList = emptyQtyList;
     }
 
+    public Long getQty() {
+        return qty;
+    }
+
+    public void setQty(Long qty) {
+        this.qty = qty;
+    }
+
+    public Long getSkuId() {
+        return skuId;
+    }
+
+    public void setSkuId(Long skuId) {
+        this.skuId = skuId;
+    }
 
 }

@@ -85,6 +85,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     private WhWaveLineDao whWaveLineDao;
     @Autowired
     private DistributionModeArithmeticManagerProxy distributionModeArithmeticManagerProxy;
+
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public Pagination<OdoResultCommand> findListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params) {
@@ -261,17 +262,17 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void createOdo(WhOdo odo, List<WhOdoLine> odoLineList, WhOdoTransportMgmt transportMgmt, WhOdoAddress odoAddress, List<WhOdoVas> odoVasList, List<WhOdoLineAttrSn> lineSnList, Long ouId, Long userId) {
         try {
-            if(odoLineList!=null&&odoLineList.size()>0){
-                for(WhOdoLine line:odoLineList){
+            if (odoLineList != null && odoLineList.size() > 0) {
+                for (WhOdoLine line : odoLineList) {
                     this.whOdoLineDao.insert(line);
                 }
             }
-            if(odoAddress!=null){
+            if (odoAddress != null) {
                 this.whOdoAddressDao.insert(odoAddress);
             }
-            if(odoVasList!=null&&odoVasList.size()>0){
-                for(WhOdoVas vas:odoVasList){
-                    
+            if (odoVasList != null && odoVasList.size() > 0) {
+                for (WhOdoVas vas : odoVasList) {
+
                     this.whOdoVasDao.insert(vas);
                 }
             }
@@ -553,7 +554,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                 WhOdoLine whOdoLine = this.whOdoLineDao.findOdoLineById(odoLineId, ouId);
                 whOdoLine.setWaveCode(null);
                 whOdoLine.setOdoLineStatus(OdoStatus.ODOLINE_NEW);
-                int cnt = this.whOdoLineDao.saveOrUpdateByVersion(null);
+                int cnt = this.whOdoLineDao.saveOrUpdateByVersion(whOdoLine);
                 if (cnt <= 0) {
                     throw new BusinessException("剔除逻辑-更新出库单明细-失败");
                 }
@@ -573,7 +574,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
         whOdoLine.setOuId(ouId);
         whOdoLine.setOdoLineStatus(OdoStatus.ODOLINE_NEW);
         WhOdo whOdo = this.whOdoDao.findByIdOuId(odoId, ouId);
-        Long cnt = this.whOdoLineDao.findListCountByParam(whOdoLine);
+        Long cnt = this.whOdoLineDao.findListCountNotNew(whOdoLine);
         if (0 == cnt) {
             whOdo.setOdoStatus(OdoStatus.ODO_NEW);
         }
@@ -586,11 +587,11 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     }
 
     @Override
-	public List<OdoCommand> getNoRuleOdoIdList(List<Long> waveIdList, Long ouId) {
-		List<OdoCommand> datas = whOdoDao.getNoRuleOdoIdList(waveIdList, ouId);
-		return datas;
-	}
-    
+    public List<OdoCommand> getNoRuleOdoIdList(List<Long> waveIdList, Long ouId) {
+        List<OdoCommand> datas = whOdoDao.getNoRuleOdoIdList(waveIdList, ouId);
+        return datas;
+    }
+
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<WhOdo> findOdoListByWaveCode(String code, Long ouId) {
         WhOdo odo = new WhOdo();

@@ -109,7 +109,7 @@ public interface WhOdoLineDao extends BaseDao<WhOdoLine, Long> {
      */
     WhOdoLine findByOdoCodeAndLineNum(@Param("lineNum") Integer lineNum, @Param("originalOdoCode") String originalOdoCode, @Param("ouId") Long ouId);
 
-	int updateOdoLineByAllocateFail(@Param("odoId") Long odoId, @Param("reason") String reason, @Param("ouId") Long ouId);
+    int updateOdoLineByAllocateFail(@Param("odoId") Long odoId, @Param("reason") String reason, @Param("ouId") Long ouId);
 
     /**
      * [通用方法]根据ODOID查找某种状态的出库单
@@ -121,4 +121,10 @@ public interface WhOdoLineDao extends BaseDao<WhOdoLine, Long> {
      */
     List<WhOdoLine> findOdoLineListByOdoIdStatus(@Param("odoId") Long odoId, @Param("ouId") Long ouId, @Param("statusList") String[] statusList);
 
+    /**
+     * [业务方法] 软分配-查询不为新建状态的出库单明细
+     * @param line
+     * @return
+     */
+    Long findListCountNotNew(WhOdoLine line);
 }

@@ -386,8 +386,8 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         // 获取下一个波次阶段编码
         WhWave wave = whWaveDao.findWaveExtByIdAndOuId(waveId, ouId);
         if (null == wave) {
-			throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
-		}
+            throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
+        }
         WhWaveMaster whWaveMaster = whWaveMasterDao.findByIdExt(wave.getWaveMasterId(), ouId);
         Long waveTempletId = whWaveMaster.getWaveTemplateId();
         String phaseCode = this.getWavePhaseCode(wave.getPhaseCode(), waveTempletId, ouId);
@@ -402,7 +402,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
                 throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
             }
         } else {
-        	// key:分配规则Id, value:规则下对应的策略
+            // key:分配规则Id, value:规则下对应的策略
             Map<Long, List<String>> ruleMap = new HashMap<Long, List<String>>();
             // 库存数量没有分配完整的波次明细中包含的所有的出库单Id
             Set<Long> allOdoIds = new HashSet<Long>();
