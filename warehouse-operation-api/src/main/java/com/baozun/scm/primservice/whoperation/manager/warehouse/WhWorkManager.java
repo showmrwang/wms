@@ -16,6 +16,8 @@
  */
 package com.baozun.scm.primservice.whoperation.manager.warehouse;
 
+import java.util.List;
+
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhWork;
@@ -45,5 +47,25 @@ public interface WhWorkManager extends BaseManager{
      * @return
      */
     WhWork findWorkByWorkId(Long id);
+
+    /**
+     * [业务方法]波次释放锁定的工作
+     * 
+     * @param code
+     * @param ouId
+     * @param isLock
+     * @return
+     */
+    List<WhWork> findWorkByWaveWithLock(String code, Long ouId);
+
+    /**
+     * [业务方法]寻找波次下的工作
+     * 
+     * @param code
+     * @param ouId
+     * @param isLock
+     * @return
+     */
+    List<WhWork> findWorkByWave(String code, Long ouId);
 
 }

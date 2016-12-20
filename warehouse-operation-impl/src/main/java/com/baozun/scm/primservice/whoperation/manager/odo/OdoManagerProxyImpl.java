@@ -41,10 +41,13 @@ import com.baozun.scm.primservice.whoperation.command.odo.wave.WaveCommand;
 import com.baozun.scm.primservice.whoperation.command.sku.SkuRedisCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.UomCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhDistributionPatternRuleCommand;
+import com.baozun.scm.primservice.whoperation.command.wave.WaveLineCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
+import com.baozun.scm.primservice.whoperation.constant.ReplenishmentTaskStatus;
 import com.baozun.scm.primservice.whoperation.constant.WaveStatus;
 import com.baozun.scm.primservice.whoperation.constant.WhUomType;
+import com.baozun.scm.primservice.whoperation.constant.WorkStatus;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
@@ -59,7 +62,11 @@ import com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy.Distributio
 import com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy.WaveDistributionModeManagerProxy;
 import com.baozun.scm.primservice.whoperation.manager.redis.SkuRedisManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.InventoryStatusManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.ReplenishmentTaskManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhDistributionPatternRuleManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.WhWorkLineManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.WhWorkManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
@@ -76,7 +83,9 @@ import com.baozun.scm.primservice.whoperation.model.sku.SkuMgmt;
 import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
 import com.baozun.scm.primservice.whoperation.model.warehouse.InventoryStatus;
+import com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentTask;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhWork;
 import com.baozun.scm.primservice.whoperation.model.warehouse.ma.TransportProvider;
 
 @Service("odoManagerProxy")
@@ -109,6 +118,14 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
     private SkuRedisManager skuRedisManager;
     @Autowired
     private WhDistributionPatternRuleManager whDistributionPatternRuleManager;
+    @Autowired
+    private WhWorkManager whWorkManager;
+    @Autowired
+    private WhWorkLineManager whWorkLineManager;
+    @Autowired
+    private ReplenishmentTaskManager replenishmentTaskManager;
+    @Autowired
+    private WhSkuInventoryManager whSkuInventoryManager;
 
     @Override
     public Pagination<OdoResultCommand> findOdoListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params) {
@@ -1440,7 +1457,234 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
 
     @Override
     public WhWave getWaveByIdAndOuId(Long id, Long ouId) {
-        return this.waveManager.getWaveByIdAndOuId(id, ouId);
+        return this.waveManager.findWaveByIdOuId(id, ouId);
     }
 
+    @Override
+    public Pagination<WaveLineCommand> findWaveLineListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params) {
+        Pagination<WaveLineCommand> pages = this.waveLineManager.findWaveLineListByQueryMapWithPageExt(page, sorts, params);
+        List<WaveLineCommand> waveLineList=pages.getItems();
+        if(waveLineList!=null&&waveLineList.size()>0){
+            //库存状态
+            List<InventoryStatus> invStatusList=this.inventoryStatusManager.findAllInventoryStatus();
+            Map<Long, String> invStatusMap = new HashMap<Long, String>();
+            for(InventoryStatus s:invStatusList){
+                invStatusMap.put(s.getId(), s.getName());
+            }
+            for(WaveLineCommand wave:waveLineList){
+                wave.setInvStatusName(invStatusMap.get(wave.getInvStatus()));
+            }
+        }
+        pages.setItems(waveLineList);
+        return pages;
+    }
+
+    @Override
+    public void divFromWaveByOdo(WaveLineCommand waveLineCommand) {
+        String logId = "";
+        List<Long> odoIdList = waveLineCommand.getOdoIds();
+        if (odoIdList == null || odoIdList.size() == 0) {
+            throw new BusinessException(ErrorCodes.PARAM_IS_NULL);
+        }
+        Long ouId = waveLineCommand.getOdoId();
+        Long userId = waveLineCommand.getUserId();
+        Long waveId = waveLineCommand.getWaveId();
+
+        WhWave wave = this.waveManager.findWaveByIdOuId(waveId, ouId);
+
+        List<WhWaveLine> waveLineAll = this.waveLineManager.findWaveLineListByWaveId(waveId, ouId);
+
+        Map<Long, List<WhWaveLine>> odoIdWaveLineAllMap = new HashMap<Long, List<WhWaveLine>>();
+
+        for (WhWaveLine waveLine : waveLineAll) {
+            if (odoIdWaveLineAllMap.containsKey(waveLine.getOdoId())) {
+                odoIdWaveLineAllMap.get(waveLine.getId()).add(waveLine);
+            } else {
+                List<WhWaveLine> waveLineList = new ArrayList<WhWaveLine>();
+                waveLineList.add(waveLine);
+                odoIdWaveLineAllMap.put(waveLine.getId(), waveLineList);
+            }
+        }
+
+
+
+        Map<Long, List<WhWaveLine>> odoIdWaveLineMap = new HashMap<Long, List<WhWaveLine>>();
+
+        WhWaveLine lineSearch = new WhWaveLine();
+        lineSearch.setWaveId(waveId);
+        lineSearch.setOuId(ouId);
+        for (Long odoId : odoIdList) {
+            lineSearch.setOdoId(odoId);
+            List<WhWaveLine> waveLineList = this.waveLineManager.getWaveLineByParam(lineSearch);
+            if (waveLineList == null || waveLineList.size() == 0) {
+                continue;
+            }
+            odoIdWaveLineAllMap.remove(odoId);
+            odoIdWaveLineMap.put(odoId, waveLineList);
+        }
+
+        if (odoIdWaveLineAllMap.size() == 0) {
+
+            // return;
+        }
+
+        statisticsForWave(wave, odoIdWaveLineAllMap);
+
+        this.waveManager.divFromWaveByOdo(wave, odoIdWaveLineMap, ouId, userId, logId);
+
+    }
+
+
+    private void statisticsForWave(WhWave wave, Map<Long, List<WhWaveLine>> odoIdWaveLineAllMap) {
+        Long ouId = wave.getOuId();
+        List<WhOdoLine> odolineList = new ArrayList<WhOdoLine>();
+        Iterator<Entry<Long, List<WhWaveLine>>> it = odoIdWaveLineAllMap.entrySet().iterator();
+        while (it.hasNext()) {
+            Entry<Long, List<WhWaveLine>> entry = it.next();
+            for (WhWaveLine line : entry.getValue()) {
+                WhOdoLine odoLine = this.odoLineManager.findOdoLineById(line.getOdoLineId(), ouId);
+                odolineList.add(odoLine);
+            }
+        }
+
+        int odoCount = odoIdWaveLineAllMap.size();// 波次出库单总单数
+        int odolineCount = odolineList.size();// 波次明细数
+
+        Map<Long, Double> skuMap = new HashMap<Long, Double>();// 商品总件数
+        double totalAmt = Constants.DEFAULT_DOUBLE;// 总金额
+        double totalSkuQty = Constants.DEFAULT_DOUBLE;// 商品总件数
+        for (WhOdoLine line : odolineList) {
+            totalAmt += line.getPlanQty() * line.getLinePrice();
+            if (skuMap.containsKey(line.getSkuId())) {
+                skuMap.put(line.getSkuId(), skuMap.get(line.getSkuId()) + line.getPlanQty());
+            } else {
+
+                skuMap.put(line.getSkuId(), line.getPlanQty());
+            }
+            totalSkuQty += line.getPlanQty();
+        }
+        // 商品种类数
+        int skuCategoryQty = skuMap.size();
+        // 总体积
+        double totalVolume = Constants.DEFAULT_DOUBLE;
+        // 总重量
+        double totalWeight = Constants.DEFAULT_DOUBLE;
+
+        // 体积单位转换率
+        Map<String, Double> lenUomConversionRate = new HashMap<String, Double>();
+        List<UomCommand> lenUomCmds = this.odoManager.findUomByGroupCode(WhUomType.LENGTH_UOM, BaseModel.LIFECYCLE_NORMAL);
+        for (UomCommand lenUom : lenUomCmds) {
+            String uomCode = "";
+            Double uomRate = 0.0;
+            if (null != lenUom) {
+                uomCode = lenUom.getUomCode();
+                uomRate = lenUom.getConversionRate();
+                lenUomConversionRate.put(uomCode, uomRate);
+            }
+        }
+        // 重量单位转换率
+        Map<String, Double> weightUomConversionRate = new HashMap<String, Double>();
+        List<UomCommand> weightUomCmds = this.odoManager.findUomByGroupCode(WhUomType.WEIGHT_UOM, BaseModel.LIFECYCLE_NORMAL);
+        for (UomCommand lenUom : weightUomCmds) {
+            String uomCode = "";
+            Double uomRate = 0.0;
+            if (null != lenUom) {
+                uomCode = lenUom.getUomCode();
+                uomRate = lenUom.getConversionRate();
+                weightUomConversionRate.put(uomCode, uomRate);
+            }
+        }
+
+        Iterator<Entry<Long, Double>> skuIt = skuMap.entrySet().iterator();
+        while (skuIt.hasNext()) {
+            Entry<Long, Double> entry = skuIt.next();
+            Sku sku = this.odoManager.findSkuByIdToShard(entry.getKey(), wave.getOuId());
+            if (sku != null) {
+                totalVolume += sku.getVolume() * entry.getValue() * (StringUtils.isEmpty(sku.getVolumeUom()) ? 1 : lenUomConversionRate.get(sku.getVolumeUom()));
+                totalWeight = sku.getWeight() * entry.getValue() * (StringUtils.isEmpty(sku.getWeightUom()) ? 1 : weightUomConversionRate.get(sku.getWeightUom()));
+            }
+        }
+
+        wave.setTotalOdoQty(odoCount);
+        wave.setTotalOdoLineQty(odolineCount);
+        wave.setTotalAmount(totalAmt);
+        wave.setTotalVolume(totalVolume);
+        wave.setTotalWeight(totalWeight);
+        wave.setTotalSkuQty(totalSkuQty);
+        wave.setSkuCategoryQty(skuCategoryQty);
+    }
+
+    @Override
+    public void releaseWave(WaveCommand waveCommand) {
+        Long waveId = waveCommand.getId();
+        Long ouId = waveCommand.getOuId();
+        Long userId = waveCommand.getUserId();
+        WhWave wave = this.waveManager.findWaveByIdOuId(waveId, ouId);
+        wave.setStatus(WaveStatus.WAVE_RELEASE);
+        wave.setModifiedId(userId);
+
+        List<WhWork> workList = this.whWorkManager.findWorkByWaveWithLock(wave.getCode(), ouId);
+
+        this.waveManager.releaseWave(wave, workList, ouId, userId);
+
+
+
+    }
+
+    @Override
+    public void cancelWave(WaveCommand waveCommand) {
+        // yimin.lu 2016/12/16
+        // 取消逻辑：
+        // 新建状态下取消：-》取消
+        // 完成状态下取消->取消处理中-》取消
+        Long waveId = waveCommand.getId();
+        Long ouId = waveCommand.getOuId();
+        Long userId = waveCommand.getUserId();
+        WhWave wave = this.waveManager.findWaveByIdOuId(waveId, ouId);
+
+        List<WhOdo> odoList = this.odoManager.findOdoListByWaveCode(wave.getCode(), ouId);
+
+        // 新建状态下的波次
+        if (WaveStatus.WAVE_NEW == wave.getStatus()) {
+            wave.setModifiedId(userId);
+            wave.setStatus(WaveStatus.WAVE_CANCEL);
+            this.waveManager.cancelWaveForNew(wave, odoList, ouId, userId);
+            return;
+        }
+        // 完成状态下的波次
+        // 取消所有的补货任务
+        // 取消所有的未执行的补货工作和拣货工作
+        // 如果有正在执行的工作，波次状态置为取消处理中；否则为取消
+        // 库存的回滚
+        Set<Long> odoToLazyFreeSet = new HashSet<Long>();// 需要延后取消的出库单
+        Map<String,Long> odoCodeIdMap=new HashMap<String,Long>();
+        for(WhOdo odo:odoList){
+            odoCodeIdMap.put(odo.getOdoCode(), odo.getId());
+        }
+        // 补货任务
+        ReplenishmentTask task = this.replenishmentTaskManager.findTaskByWaveWithStatus(waveId, ouId, ReplenishmentTaskStatus.REPLENISHMENT_TASK_NEW);
+
+        List<WhWork> workList = this.whWorkManager.findWorkByWave(wave.getCode(), ouId);
+        if (workList == null || workList.size() == 0) {
+
+        }
+        // Map<Long,List<WhWorkLine>> workToCancelMap = new HashMap<Long,List<WhWorkLine>>();
+        Set<Long> workToLazyCancelSet = new HashSet<Long>();
+        for (WhWork work : workList) {
+            if (WorkStatus.NEW.intValue() == work.getStatus().intValue()) {
+                // workToCancelMap.put(work.getId(),workLineList);
+            } else {
+                workToLazyCancelSet.add(work.getId());
+                // List<WhWorkLine> workLineList =
+                // this.whWorkLineManager.findListByWorkId(work.getId(), ouId);
+                if(odoCodeIdMap.containsKey(work.getOrderCode())){
+                    Long l=odoCodeIdMap.get(work.getOrderCode());
+                    odoToLazyFreeSet.add(l);
+                }
+            }
+        }
+        
+        this.waveManager.cancelWaveWithWork(wave, task, workList, workToLazyCancelSet, odoList, odoToLazyFreeSet, userId);
+        // this.waveManager.cancelWaveWithLazy(wave)
+    }
 }

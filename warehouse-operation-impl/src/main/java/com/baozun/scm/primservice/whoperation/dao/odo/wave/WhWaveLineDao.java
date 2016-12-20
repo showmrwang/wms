@@ -27,12 +27,16 @@ import lark.orm.dao.supports.BaseDao;
 import org.apache.ibatis.annotations.Param;
 
 import com.baozun.scm.primservice.whoperation.command.odo.wave.SoftAllocationCommand;
+import com.baozun.scm.primservice.whoperation.command.wave.WaveLineCommand;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine;
 
 public interface WhWaveLineDao extends BaseDao<WhWaveLine, Long> {
 
     @QueryPage("findListCountByQueryMap")
     Pagination<WhWaveLine> findListByQueryMapWithPage(Page page, Sort[] sorts, Map<String, Object> params);
+
+    @QueryPage("findListCountByQueryMapExt")
+    Pagination<WaveLineCommand> findListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params);
 
     @CommonQuery
     int saveOrUpdate(WhWaveLine o);
@@ -138,4 +142,6 @@ public interface WhWaveLineDao extends BaseDao<WhWaveLine, Long> {
      */
     WhWaveLine findHighestPriorityByOdoIds(@Param("waveId") Long waveId, @Param("odoIds") String odoIds, @Param("ouId") Long ouId);
 
+
+    
 }

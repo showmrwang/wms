@@ -20,6 +20,7 @@ import java.util.List;
 
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkLineCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhWorkLine;
 
 
 public interface WhWorkLineManager extends BaseManager{
@@ -38,6 +39,15 @@ public interface WhWorkLineManager extends BaseManager{
      * @return
      */
     List<WhWorkLineCommand> findWorkLineByWorkId(Long workId, Long ouId);
+
+    /**
+     * [通用方法]
+     * 
+     * @param id
+     * @param ouId
+     * @return
+     */
+    List<WhWorkLine> findListByWorkId(Long id, Long ouId);
     
 
 }

@@ -209,4 +209,20 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		order by 
 			t.qty
 	</select>
+	
+	 <select id="findbyOccupationCode" resultMap="WhSkuInventoryAllocatedResult" flushCache="false">
+			select <include refid="whSkuInventoryAllocatedColumns" />
+		    <![CDATA[
+			    from t_wh_sku_inventory_allocated 
+		        where 
+		        occupation_code = #{occupationCode} and ou_id=#{ouId}
+		    ]]>
+		</select>
+		
+		 <delete id="deleteExt">
+	    <![CDATA[
+	        delete from t_wh_sku_inventory_allocated where
+		        id = #{id} and ou_id=#{ouId}
+	    ]]>
+	    </delete>	
 </mapper>

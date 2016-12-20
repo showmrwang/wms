@@ -77,4 +77,10 @@ public interface WaveDistributionModeManagerProxy extends BaseManager {
     public boolean breakCounter(Long ouId);
 
     public void addToWhDistributionModeArithmeticPool(String counterCode, Long odoId);
+
+    public void divFromOrderPool(String string, Long long1);
+
+    public void getCounter(String string, Long skuIdA);
+
+    public void printCache(long l);
 }

@@ -2860,5 +2860,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         group by
 			uuid
 	</select>
+	
+	<select id="findbyOccupationCode"  resultMap="WhSkuInventoryResult" flushCache="false">
+			select <include refid="whSkuInventoryColumns" />
+		    <![CDATA[
+			    from t_wh_sku_inventory 
+		        where 
+		        occupation_code = #{occupationCode} and ou_id=#{ouId}
+		    ]]>
+		</select>	
     
 </mapper>

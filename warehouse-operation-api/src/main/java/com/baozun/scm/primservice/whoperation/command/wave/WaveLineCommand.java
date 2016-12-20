@@ -1,6 +1,7 @@
 package com.baozun.scm.primservice.whoperation.command.wave;
 
 import java.util.Date;
+import java.util.List;
 
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
 
@@ -97,6 +98,38 @@ public class WaveLineCommand extends BaseCommand {
     private Long modifiedId;
     /** 商品体积 */
     private Double skuVolume;
+
+    private Long userId;
+    /** 库存状态 */
+    public String invStatusName;
+
+    /** 用于踢出出库单出波次 */
+    private List<Long> odoIds;
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+
+    public List<Long> getOdoIds() {
+        return odoIds;
+    }
+
+    public void setOdoIds(List<Long> odoIds) {
+        this.odoIds = odoIds;
+    }
+
+    public String getInvStatusName() {
+        return invStatusName;
+    }
+
+    public void setInvStatusName(String invStatusName) {
+        this.invStatusName = invStatusName;
+    }
 
     public Long getId() {
         return id;

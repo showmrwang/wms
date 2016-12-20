@@ -48,5 +48,13 @@ public class WhWorkLineManagerImpl extends BaseManagerImpl implements WhWorkLine
         List<WhWorkLineCommand> whWorkLineCommandList = this.whWorkLineDao.findWorkLineByWorkId(workId, ouId);
         return whWorkLineCommandList;
     }
+
+    @Override
+    public List<WhWorkLine> findListByWorkId(Long id, Long ouId) {
+        WhWorkLine search = new WhWorkLine();
+        search.setWorkId(id);
+        search.setOuId(ouId);
+        return this.whWorkLineDao.findListByParam(search);
+    }
     
 }

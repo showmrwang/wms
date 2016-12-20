@@ -7,6 +7,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveLineDao">
 	<resultMap id="WhWaveLineResultExt" type="com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine">
 	</resultMap>
+	<resultMap id="WhWaveLineCommandResultExt" type="com.baozun.scm.primservice.whoperation.command.wave.WaveLineCommand">
+	</resultMap>
 	
 	<resultMap id="WaveLineSku"
 		type="com.baozun.scm.primservice.whoperation.command.odo.wave.SoftAllocationCommand">
@@ -780,6 +782,20 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		waveLine.odo_priority_level,waveLine.odo_plan_deliver_goods_time,
 		waveLine.odo_order_time desc,waveLine.qty, waveLine.odo_id asc
 	</select>
+	
+	
+	<select id="findListByQueryMapWithPageExt" resultMap="WhWaveLineCommandResultExt">
+    	select <include refid="whWaveLineColumns" />
+	    from t_wh_wave_line 
+		<include refid="whWaveLineDynamicWhereExt"/>
+		
+    </select>
+    
+   <select id="findListCountByQueryMapExt" resultType="long">
+        select count(*) from t_wh_wave_line
+       <include refid="whWaveLineDynamicWhereExt"/>
+       order by odoCode 
+    </select>
 	
 	
 </mapper>

@@ -19,10 +19,6 @@
 import java.util.List;
 import java.util.Map;
 
-import org.apache.ibatis.annotations.Param;
-
-import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryAllocated;
-
 import lark.common.annotation.CommonQuery;
 import lark.common.annotation.QueryPage;
 import lark.common.dao.Page;
@@ -30,6 +26,10 @@ import lark.common.dao.Pagination;
 import lark.common.dao.QueryCondition;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
+
+import org.apache.ibatis.annotations.Param;
+
+import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryAllocated;
 
 public interface WhSkuInventoryAllocatedDao extends BaseDao<WhSkuInventoryAllocated,Long>{
 
@@ -48,5 +48,9 @@ public interface WhSkuInventoryAllocatedDao extends BaseDao<WhSkuInventoryAlloca
 	int saveOrUpdate(WhSkuInventoryAllocated o);
 
 	List<WhSkuInventoryAllocated> findNotOccupyListBySkuIdAndBhCode(@Param("skuId") Long skuId, @Param("bhCode") String bhCode, @Param("ouId") Long ouId);
+
+    List<WhSkuInventoryAllocated> findbyOccupationCode(@Param("occupationCode") String odoCode, @Param("ouId") Long ouId);
+
+    int deleteExt(@Param("id") Long id, @Param("ouId") Long ouId);
 	
 }

@@ -762,5 +762,51 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
     }
 
 
+    @Override
+    public void divFromOrderPool(String counterCode, Long odoId) {
+        this.distributionModeArithmeticManagerProxy.divFromOrderPool(counterCode, odoId);
+    }
+
+
+    @Override
+    public void getCounter(String string, Long skuIdA) {
+        System.out.println("sku[" + skuIdA + "]:");
+        long a = this.cacheManager.incr(CacheKeyConstant.TWOSKUSUIT_PREFIX + string + "|" + skuIdA);
+        this.cacheManager.decr(CacheKeyConstant.TWOSKUSUIT_PREFIX + string + "|" + skuIdA);
+        System.out.println("counter:" + (a - 1));
+
+        List<String> keys = this.cacheManager.Keys(CacheKeyConstant.TWOSKUSUIT_ODO_PREFIX + string + "|" + skuIdA + "|*");
+        System.out.println("ou_count[" + skuIdA + "]:" + keys.size());
+        for (String key : keys) {
+            System.out.println("key:" + key);
+        }
+
+    }
+
+
+    @Override
+    public void printCache(long l) {
+        List<String> key3s = this.cacheManager.Keys(CacheKeyConstant.WMS_CACHE_SYS_DICTIONARY + "*");
+        System.out.println("key3s:" + key3s);
+        boolean flag = this.cacheManager.remonKeys(CacheKeyConstant.WMS_CACHE_SYS_DICTIONARY + "*");
+        System.out.println("key3s:" + flag);
+        if (1 == 1) {
+            return;
+        }
+        List<String> key2s = this.cacheManager.Keys(CacheKeyConstant.TWOSKUSUIT_PREFIX + l + "|*");
+        System.out.println("counter[ ]:" + key2s.size());
+        for (String key : key2s) {
+            String[] array = key.split("%");
+            System.out.println("key:" + key + ";count:" + this.cacheManager.getValue(CacheKeyConstant.TWOSKUSUIT_PREFIX + array[2]));
+        }
+
+        List<String> key1s = this.cacheManager.Keys(CacheKeyConstant.TWOSKUSUIT_ODO_PREFIX + l + "|*");
+        System.out.println("ou_count[ ]:" + key1s.size());
+        for (String key : key1s) {
+            System.out.println("key:" + key);
+        }
+    }
+
+
 
 }

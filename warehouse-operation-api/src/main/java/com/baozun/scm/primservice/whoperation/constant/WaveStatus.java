@@ -14,5 +14,6 @@ public class WaveStatus implements Serializable {
     public static final int WAVE_EXECUTED = 10;// 运行完成
     public static final int WAVE_RELEASE = 15;// 释放
     public static final int WAVE_CANCEL = 17;// 取消
+    public static final int WAVE_CANCELING = 97;// 取消处理中
     public static final int WAVE_CLOSE = 20;// 关闭
 }

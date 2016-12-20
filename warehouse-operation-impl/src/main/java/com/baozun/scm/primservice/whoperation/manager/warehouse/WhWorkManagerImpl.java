@@ -1,5 +1,7 @@
 package com.baozun.scm.primservice.whoperation.manager.warehouse;
 
+import java.util.List;
+
 import lark.common.annotation.MoreDB;
 
 import org.slf4j.Logger;
@@ -11,6 +13,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkCommand;
+import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhWorkDao;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
@@ -52,6 +55,27 @@ public class WhWorkManagerImpl extends BaseManagerImpl implements WhWorkManager 
     public WhWork findWorkByWorkId(Long id) {
         WhWork whWork = this.whWorkDao.findById(id);
         return whWork;
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<WhWork> findWorkByWaveWithLock(String waveCode, Long ouId) {
+        WhWork work = new WhWork();
+        work.setWaveCode(waveCode);
+        work.setOuId(ouId);
+        work.setLifecycle(Constants.LIFECYCLE_START);
+        work.setIsLocked(true);
+        return this.whWorkDao.findListByParam(work);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<WhWork> findWorkByWave(String code, Long ouId) {
+        WhWork work = new WhWork();
+        work.setWaveCode(code);
+        work.setOuId(ouId);
+        work.setLifecycle(Constants.LIFECYCLE_START);
+        return this.whWorkDao.findListByParam(work);
     }
     
 }

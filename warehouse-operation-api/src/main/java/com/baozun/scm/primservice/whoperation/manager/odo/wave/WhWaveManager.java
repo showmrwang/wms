@@ -2,6 +2,7 @@ package com.baozun.scm.primservice.whoperation.manager.odo.wave;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import lark.common.dao.Page;
 import lark.common.dao.Pagination;
@@ -17,7 +18,9 @@ import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveMaster;
+import com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentTask;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhWork;
 
 public interface WhWaveManager extends BaseManager {
 
@@ -216,5 +219,60 @@ public interface WhWaveManager extends BaseManager {
      * @param wave
      */
     public void startWave(WhWave wave);
+
+    /**
+     * [通用方法]查找波次
+     * 
+     * @param id
+     * @param ouId
+     * @return
+     */
+    public WhWave findWaveByIdOuId(Long id, Long ouId);
+
+    /**
+     * [业务方法]从波次中剔除出库单
+     * 
+     * @param wave
+     * @param odoIdWaveLineMap
+     * @param logId
+     * @param userId
+     * @param ouId
+     */
+    public void divFromWaveByOdo(WhWave wave, Map<Long, List<WhWaveLine>> odoIdWaveLineMap, Long ouId, Long userId, String logId);
+
+    /**
+     * 【业务方法】
+     * 
+     * @param wave
+     * @param workList
+     * @param ouId
+     * @param userId
+     */
+    public void releaseWave(WhWave wave, List<WhWork> workList, Long ouId, Long userId);
+
+    /**
+     * 取消新建状态下的出库单
+     * 
+     * @param wave
+     * @param odoList
+     * @param ouId
+     * @param userId
+     */
+    public void cancelWaveForNew(WhWave wave, List<WhOdo> odoList, Long ouId, Long userId);
+
+    /**
+     * [业务方法]波次取消
+     * 
+     * @param wave
+     * @param task
+     * @param workList
+     * @param workToCancelMap
+     * @param workToLazyCancelSet
+     * @param odoList
+     * @param odoToLazyFreeSet
+     * @param userId
+     */
+    public void cancelWaveWithWork(WhWave wave, ReplenishmentTask task, List<WhWork> workList, Set<Long> workToLazyCancelSet, List<WhOdo> odoList, Set<Long> odoToLazyFreeSet, Long userId);
+
 
 }

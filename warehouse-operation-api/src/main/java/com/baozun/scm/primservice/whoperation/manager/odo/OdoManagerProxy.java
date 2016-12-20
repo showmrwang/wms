@@ -18,6 +18,7 @@ import com.baozun.scm.primservice.whoperation.command.odo.wave.OdoGroupSearchCom
 import com.baozun.scm.primservice.whoperation.command.odo.wave.OdoWaveGroupResultCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.OdoWaveGroupSearchCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.WaveCommand;
+import com.baozun.scm.primservice.whoperation.command.wave.WaveLineCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
@@ -266,5 +267,36 @@ public interface OdoManagerProxy extends BaseManager {
      * @return
      */
     WhWave getWaveByIdAndOuId(Long id, Long ouId);
+
+    /**
+     * 出库单波次列表
+     * 
+     * @param page
+     * @param sorts
+     * @param params
+     * @return
+     */
+    Pagination<WaveLineCommand> findWaveLineListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params);
+
+    /**
+     * 从波次中剔除出库单
+     * 
+     * @param waveLineCommand
+     */
+    void divFromWaveByOdo(WaveLineCommand waveLineCommand);
+
+    /**
+     * 释放波次
+     * 
+     * @param waveCommand
+     */
+    void releaseWave(WaveCommand waveCommand);
+
+    /**
+     * 【业务方法】
+     * 
+     * @param waveCommand
+     */
+    void cancelWave(WaveCommand waveCommand);
 
 }
