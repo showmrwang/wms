@@ -87,6 +87,14 @@ public class WhSkuInventoryLog extends BaseModel {
     private Date modifyTime;
     /** 对应月份表 */
     private String sysDate;
+    /** upc */
+    private String extCode;
+    /** 颜色 */
+    private String color;
+    /** 款式 */
+    private String style;
+    /** 尺码 */
+    private String size;
 
     public String getSkuCode() {
         return skuCode;
@@ -318,6 +326,38 @@ public class WhSkuInventoryLog extends BaseModel {
 
     public void setSysDate(String sysDate) {
         this.sysDate = sysDate;
+    }
+
+    public String getExtCode() {
+        return extCode;
+    }
+
+    public void setExtCode(String extCode) {
+        this.extCode = extCode;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    public String getStyle() {
+        return style;
+    }
+
+    public void setStyle(String style) {
+        this.style = style;
+    }
+
+    public String getSize() {
+        return size;
+    }
+
+    public void setSize(String size) {
+        this.size = size;
     }
 
 
