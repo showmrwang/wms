@@ -151,7 +151,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	occupation_code_source ,
 		        	inbound_time ,
 		        	modified_id ,
-		        	modify_time 
+		        	modify_time ,
+		        	ext_code ,
+		        	color ,
+		        	style ,
+		        	size ,
 		        ) VALUES (
 		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{skuCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -181,7 +185,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{occupationCodeSource,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{inboundTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        	#{modifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} 
+		        	#{modifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{extCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{color,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{style,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{size,javaType=java.lang.String,jdbcType=VARCHAR}
 		        )
 		    ]]>
 
@@ -217,7 +225,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        occupation_code_source = #{occupationCodeSource,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        inbound_time = #{inboundTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        modify_time = #{modifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} 
+		        modify_time = #{modifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        ext_code = #{extCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        color = #{color,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        style = #{style,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        size = #{size,javaType=java.lang.String,jdbcType=VARCHAR}
 	        WHERE 
 		        id = #{id} 
 		        and ou_id = #{ouid}
