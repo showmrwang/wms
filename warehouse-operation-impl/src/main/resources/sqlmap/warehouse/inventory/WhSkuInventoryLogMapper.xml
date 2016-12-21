@@ -155,7 +155,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	ext_code ,
 		        	color ,
 		        	style ,
-		        	size ,
+		        	size 
 		        ) VALUES (
 		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{skuCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
