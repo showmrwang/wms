@@ -215,11 +215,6 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
             if(null == invList) {
                 invList = this.containerPutwayCacheInventory(containerCmd, ouId, logId);
             }
-            //容器库存统计缓存
-//            InventoryStatisticResultCommand isrCmd = cacheManager.getMapObject(CacheConstants.CONTAINER_INVENTORY_STATISTIC, containerCmd.getId().toString());
-//            if (null == isrCmd) {
-//                isrCmd = this.cacheContainerInventoryStatistics(invList,userId, ouId, logId, containerCmd, scanResult, putawayPatternDetailType,outerContainerCode);
-//            }
             InventoryStatisticResultCommand isrCmd = this.cacheContainerInventoryStatistics(invList,userId, ouId, logId, containerCmd, scanResult, putawayPatternDetailType,outerContainerCode);
             ScanResultCommand srCommand = new ScanResultCommand();
             // 4.判断是否已推荐库位
@@ -1559,8 +1554,10 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
         // 判断该容器是否有符合的上架规则,有则走库位推荐排队系统,没有抛出异常
         List<ShelveRecommendRuleCommand> ruleList = export.getShelveRecommendRuleList();
         if (null == ruleList || 0 == ruleList.size()) {
-            log.error("no available shelveRecommendRule, recommend location fail! logId is:[{}]", logId);
-            throw new BusinessException(ErrorCodes.RECOMMEND_LOCATION_NO_RULE_ERROR);
+            srCmd.setRecommendFail(true);   //推荐库位失败
+            //缓存容器库存统计信息
+            pdaPutawayCacheManager.sysGuidePalletPutawayCacheInventoryStatistic(containerCmd, isrCommand, ouId, logId);
+            return srCmd;
         }
         //将lrrList存入缓存
         List<LocationRecommendResultCommand> list = cacheManager.getMapObject(CacheConstants.LOCATION_RECOMMEND,containerId.toString());  //整托上架，外部容器id

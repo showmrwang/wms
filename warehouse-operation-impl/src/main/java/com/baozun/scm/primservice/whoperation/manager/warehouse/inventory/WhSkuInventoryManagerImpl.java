@@ -4662,7 +4662,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         oldSkuInvOnHandQty = 0.0;
                     }
                     // 记录出库库存日志(这个实现的有问题)
-                    insertSkuInventoryLog(invCmd.getId(), -invCmd.getOnHandQty(), oldSkuInvOnHandQty, warehouse.getIsTabbInvTotal(), ouId, userId);
+//                    insertSkuInventoryLog(invCmd.getId(), -invCmd.getOnHandQty(), oldSkuInvOnHandQty, warehouse.getIsTabbInvTotal(), ouId, userId);
                     WhSkuInventory invDelete = new WhSkuInventory();
                     BeanUtils.copyProperties(invCmd, invDelete);
                     whSkuInventoryDao.delete(invDelete.getId());
