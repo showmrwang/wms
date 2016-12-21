@@ -497,5 +497,9 @@ public interface PdaPutawayCacheManager extends BaseManager {
      * @return
      */
     Long sysGuideSplitContainerPutawayTipContainer(ContainerCommand containerCmd, Set<Long> insideContainerIds, Long containerId, String logId);
+    
+    
+    public CheckScanSkuResultCommand sysSuggestSplitContainerPutawayTipSkuOrContainer(Integer scanPattern,ContainerCommand ocCmd, ContainerCommand icCmd, Set<Long> insideContainerIds, Map<Long, Map<String, Long>> insideContainerSkuAttrIdsQty,
+                                                                                           Map<Long, Map<String, Set<String>>> insideContainerSkuAttrIdsSnDefect, Map<Long, Set<String>> insideContainerSkuAttrIds, Long locationId, WhSkuCommand skuCmd, String logId);
 
 }

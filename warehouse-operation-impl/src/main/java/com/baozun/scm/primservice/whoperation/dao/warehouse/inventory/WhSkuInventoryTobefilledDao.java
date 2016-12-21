@@ -54,6 +54,10 @@ public interface WhSkuInventoryTobefilledDao extends BaseDao<WhSkuInventoryTobef
      */
     public void deleteByExt(@Param("id") Long id,@Param("ouId") Long ouId);
     
+    
+    @CommonQuery
+    public int saveOrUpdateByVersion(WhSkuInventoryTobefilled o);
+    
     /**
      * 
      * @param outerContainerId
