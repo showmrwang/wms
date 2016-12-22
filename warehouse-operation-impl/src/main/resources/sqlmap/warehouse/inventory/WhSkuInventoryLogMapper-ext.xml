@@ -39,7 +39,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	occupation_code_source as occupationCodeSource,
 	        	inbound_time as inboundTime,
 	        	modified_id as modifiedId,
-	        	modify_time as modifyTime
+	        	modify_time as modifyTime,
+	        	ext_code as extCode,
+	        	color as color,
+	        	style as style,
+	        	size as size
 	    ]]>
 	</sql>
 	
@@ -186,6 +190,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	 <select id="findInventoryLogBySkuInvId" resultMap="WhSkuInventoryLogResultExt">
 				select 	  
 					sku.code as skuCode,
+					sku.ext_code as extCode,
+					sku.color as color,
+					sku.style as style,
+					sku.size as size,
 					l.code as locationCode,
 					cout.code as outerContainerCode,
 					iout.code as insideContainerCode,

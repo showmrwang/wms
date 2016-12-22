@@ -155,5 +155,27 @@ public interface WhSkuInventoryManager extends BaseManager {
      * @param ouId
      */
     public void pickingAddContainerInventory(Long operationId,Long ouId,Integer pickingWay,Boolean isTabbInvTotal,Long userId,List<WhSkuInventoryCommand> allSkuInvList);
+    
+    
+    /**
+     * 建议上架推荐库位失败的情况下走人工分支,库位绑定（分配容器库存及生成待移入库位库存）
+     * @author tangming
+     * @param invList
+     * @param warehouse
+     * @param lrrList
+     * @param putawayPatternDetailType
+     */
+    public void manMadeBinding(Long outerContainerId,Long insideContainerId,List<WhSkuInventoryCommand> invList, Warehouse warehouse, Long locationId, Integer putawayPatternDetailType, Long ouId, Long userId, String logId,Double scanSkuQty);
 
+    
+    /****
+     * 建议上架走人工流程,上架
+     * @param outerContainerCmd
+     * @param insideConatinerCmd
+     * @param locationId
+     * @param putawayPatternDetailType
+     * @param ouId
+     * @param skuAttrId
+     */
+    public void sysManPutaway(Double skuScanQty,Warehouse warehouse,Long userId,ContainerCommand outerContainerCmd,ContainerCommand insideContainerCmd,String locationCode,Integer putawayPatternDetailType,Long ouId,String skuAttrId);
 }
