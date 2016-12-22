@@ -73,6 +73,16 @@
         replenishment_rule_id = #{replenishmentRuleId}
         and ou_id = #{ouId}
     </select>
+    
+    <select id="findCommandByRuleIdWithPriority" resultMap="ReplenishmentStrategyCommand">
+        select
+        <include refid="replenishmentStrategyColumnsExt"/>
+        from t_wh_replenishment_strategy
+        where
+        replenishment_rule_id = #{replenishmentRuleId}
+        and ou_id = #{ouId}
+        order by priority
+    </select>
 
 
     <select id="findListCountByRuleId" resultType="long">
