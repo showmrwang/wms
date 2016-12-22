@@ -120,7 +120,7 @@ public class WhWaveSoftManagerProxyImpl implements WhWaveSoftManagerProxy {
             // 2.计算每个波次明细行是否可以占用库存
             WhWaveLine whWaveLine = this.whWaveLineManager.getWaveLineByIdAndOuId(waveLineId, ouId);
             Double skuQty = whWaveLine.getQty();
-            if (qty > skuQty) {
+            if (qty >= skuQty) {
                 // 实际可用数量 > 需求数量:可以占用 执行占用方法
                 Long odoLineId = whWaveLine.getOdoLineId();
                 Long odoId = whWaveLine.getOdoId();
@@ -139,6 +139,8 @@ public class WhWaveSoftManagerProxyImpl implements WhWaveSoftManagerProxy {
                     throw new BusinessException("更新状态失败");
                 }
             } else {
+                command.setSkuId(skuId);
+                command.setQty(qty);
                 // 实际可用数量 < 需求数量:不可以占用 剔除
                 // removeOperation(odoId)
 
@@ -170,7 +172,7 @@ public class WhWaveSoftManagerProxyImpl implements WhWaveSoftManagerProxy {
      */
     private void cacheAddEmptySku(Long waveId, Long skuId) {
         String[] ids = {skuId.toString()};
-        cacheManager.addSet(waveId.toString(), ids);
+        cacheManager.addSet(CacheKeyConstant.CACHE_ALLOCATE_SOFT + waveId.toString(), ids);
     }
 
     /**
