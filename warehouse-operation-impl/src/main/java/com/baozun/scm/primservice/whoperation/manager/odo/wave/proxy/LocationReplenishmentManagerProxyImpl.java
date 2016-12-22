@@ -239,6 +239,7 @@ public class LocationReplenishmentManagerProxyImpl extends BaseManagerImpl imple
 
     @Override
     public boolean insertLocationReplenishmentErrorMsg(Map<String, List<ReplenishmentMsg>> map, String logId) {
+        log.info("logId:{},insertLocationReplenishmentErrorMsg,params:[Map<errorCode,List<ReplenishmentMsg>>:{}]", logId, map);
         if (map == null || map.size() <= 0) {
             return false;
         }
@@ -250,7 +251,7 @@ public class LocationReplenishmentManagerProxyImpl extends BaseManagerImpl imple
             for (ReplenishmentMsg msg : msgList) {
                 msg.setErrorCode(errorCode);
                 try {
-
+                    log.debug("logId:{},invoke replenishmentMsgManager.updateByVersion params:{}", logId, msg);
                     this.replenishmentMsgManager.updateByVersion(msg);
                 } catch (Exception e) {
                     log.error(e + "");
