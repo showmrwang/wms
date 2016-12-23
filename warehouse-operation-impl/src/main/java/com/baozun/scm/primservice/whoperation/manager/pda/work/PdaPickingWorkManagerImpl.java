@@ -2,7 +2,6 @@ package com.baozun.scm.primservice.whoperation.manager.pda.work;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -709,7 +708,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         command.setIsScanInvAttr(picking.getIsScanInvAttr());           //是否扫描sku属性
         command.setScanPattern(picking.getScanPattern());  //扫描模式 
         List<Long> locationIds = operatorLine.getLocationIds();
-        CheckScanResultCommand cSRCmd =  pdaPickingWorkCacheManager.locationTipcache(operationId, pickingWay, locationIds);
+        CheckScanResultCommand cSRCmd =  pdaPickingWorkCacheManager.locationTipcache(operationId, locationIds);
         if(cSRCmd.getIsPicking()) { //拣货完毕
             Long locationId = cSRCmd.getTipLocationId();
             Location location = whLocationDao.findByIdExt(locationId, ouId);
@@ -1379,7 +1378,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR); 
             }
         }else if(cSRCmd.getIsNeedTipLoc()) {  //提示下一个库位
-            CheckScanResultCommand cSRCommand = pdaPickingWorkCacheManager.locationTipcache(operationId,pickingWay,locationIds);
+            CheckScanResultCommand cSRCommand = pdaPickingWorkCacheManager.locationTipcache(operationId,locationIds);
             if(cSRCommand.getIsNeedTipLoc()) {
                 Long locId = cSRCmd.getTipLocationId();
                 Location location = whLocationDao.findByIdExt(locId, ouId);

@@ -11,7 +11,6 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationLineC
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
-import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationExecLine;
 
 public interface PdaPickingWorkCacheManager extends BaseManager{
 
@@ -68,7 +67,7 @@ public interface PdaPickingWorkCacheManager extends BaseManager{
     * @param locationIds
     * @return
     */
-    public CheckScanResultCommand locationTipcache(Long operatorId,Integer pickingType,List<Long> locationIds);
+    public CheckScanResultCommand locationTipcache(Long operatorId,List<Long> locationIds);
     
     /***
      * 缓存单个库位的作业明细
