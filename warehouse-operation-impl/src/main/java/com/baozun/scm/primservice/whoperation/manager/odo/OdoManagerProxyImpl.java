@@ -1687,4 +1687,17 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
         this.waveManager.cancelWaveWithWork(wave, task, workList, workToLazyCancelSet, odoList, odoToLazyFreeSet, userId);
         // this.waveManager.cancelWaveWithLazy(wave)
     }
+
+    @Override
+    public void runWave(WaveCommand waveCommand) {
+        WhWave wave = this.waveManager.findWaveByIdOuId(waveCommand.getId(), waveCommand.getOuId());
+        if (wave.getIsRunWave()) {
+            throw new BusinessException("波次已在运行中");
+        }
+        if (WaveStatus.WAVE_NEW != wave.getStatus()) {
+            throw new BusinessException("波次状态非新建");
+        }
+        wave.setModifiedId(waveCommand.getUserId());
+        this.waveManager.startWave(wave);
+    }
 }

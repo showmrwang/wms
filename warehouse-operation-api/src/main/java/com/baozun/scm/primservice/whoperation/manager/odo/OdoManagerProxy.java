@@ -299,4 +299,11 @@ public interface OdoManagerProxy extends BaseManager {
      */
     void cancelWave(WaveCommand waveCommand);
 
+    /**
+     * [业务方法]运行波次
+     * 
+     * @param waveCommand
+     */
+    void runWave(WaveCommand waveCommand);
+
 }
