@@ -12,7 +12,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	
 	<resultMap id="WaveLineSku"
 		type="com.baozun.scm.primservice.whoperation.command.odo.wave.SoftAllocationCommand">
-		<id column="skuId" property="skuId" />
+		<id column="waveLineId" property="lineId" />
+		<result column="skuId" property="skuId" />
 		<result column="ouId1" property="ouId" />
 		<result column="qtys1" property="qtys" />
 		<result column="sQtys1" property="sQtys" />
@@ -469,6 +470,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		
 		<sql id="waveLineSkuColumn">
 	    <![CDATA[
+	    		sku.id as skuId,
+	    		
 	        	waveline.id as waveLineId,
 	        	waveline.wave_id as waveLineWaveId,
 	        	waveline.odo_line_id as waveLineOdoLineId,

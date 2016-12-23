@@ -12,6 +12,8 @@ public class SoftAllocationCommand extends BaseCommand {
      */
     private static final long serialVersionUID = -364209048786170897L;
 
+    /** 波次明细行id*/
+    private Long lineId;
     /** 商品id */
     private Long skuId;
     /** 组织id */
@@ -81,6 +83,14 @@ public class SoftAllocationCommand extends BaseCommand {
 
     public void setWhOdoLine(WhOdoLine whOdoLine) {
         this.whOdoLine = whOdoLine;
+    }
+
+    public Long getLineId() {
+        return lineId;
+    }
+
+    public void setLineId(Long lineId) {
+        this.lineId = lineId;
     }
 
 }

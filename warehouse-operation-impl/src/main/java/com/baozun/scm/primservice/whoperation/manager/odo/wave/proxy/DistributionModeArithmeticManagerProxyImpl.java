@@ -39,6 +39,7 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
      * @return
      */
     public String getCounterCodeForOdo(Long ouId, Integer skuNumberOfPackages, Double qty, Set<Long> skuIdSet) {
+        log.info("");
         if (ouId == null || skuNumberOfPackages == null || qty == null || skuIdSet == null || skuIdSet.size() == 0) {
             return "";
         }
@@ -47,6 +48,10 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
         Iterator<Long> it = skuIdSortSet.iterator();
         while (it.hasNext()) {
             counterCode += it.next() + CacheKeyConstant.WAVE_ODO_SKU_SPLIT;
+        }
+        boolean flag = this.testCounterCount(counterCode);
+        if (!flag) {
+            throw new BusinessException("计数器编码格式异常[counterCode:" + counterCode);
         }
         return counterCode;
     }
@@ -68,6 +73,7 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
      * 添加到匹配配货模式的计算池中
      */
     public void addToWhDistributionModeArithmeticPool(String code, Long odoId) {
+        log.info("invoke method addToWhDistributionModeArithmeticPool params:[counterCode:{},odoId:{}]", code, odoId);
         if (StringUtils.isEmpty(code)) {
             throw new BusinessException("计数器编码为空");
         }

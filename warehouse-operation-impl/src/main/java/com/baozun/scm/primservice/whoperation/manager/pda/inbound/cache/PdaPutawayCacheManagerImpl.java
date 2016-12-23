@@ -168,7 +168,7 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
         if (log.isInfoEnabled()) {
             log.info("sys guide putaway locRecommend queue validate start, contianerId is:[{}], logId is:[{}]", containerId, logId);
         }
-        int expireTime = 60;//过期时间
+        int expireTime = 15;//过期时间
         int execTime = 10;//执行需要最少时间
         int queueTime = expireTime - execTime;//排队时间
         long len = cacheManager.listLen(CacheConstants.LOCATION_RECOMMEND_QUEUE);
@@ -2092,7 +2092,6 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                 cacheManager.remove(CacheConstants.SCAN_CONTAINER_QUEUE + ocId.toString());
                 // 2.清除所有内部容器统计信息
                 cacheManager.removeMapValue(CacheConstants.CONTAINER_STATISTIC, ocId.toString());
-
             } else {
                 Long icId = insideContainerCmd.getId();
                 // 0.清除所有库存统计信息
@@ -3161,5 +3160,344 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
             }
         }
         return tipContainerId;
+    }
+    
+    
+    /**
+     * 建议上架推荐库位失败走人为分支判断流程
+     * @param ocCmd
+     * @param icCmd
+     * @param insideContainerIds
+     * @param insideContainerSkuAttrIdsQty
+     * @param insideContainerSkuAttrIdsSnDefect
+     * @param insideContainerLocSkuAttrIds
+     * @param locationId
+     * @param skuCmd
+     * @param logId
+     * @return
+     */
+    @Override
+    public CheckScanSkuResultCommand sysSuggestSplitContainerPutawayTipSkuOrContainer(Integer scanPattern,ContainerCommand ocCmd, ContainerCommand icCmd, Set<Long> insideContainerIds, Map<Long, Map<String, Long>> insideContainerSkuAttrIdsQty,
+            Map<Long, Map<String, Set<String>>> insideContainerSkuAttrIdsSnDefect, Map<Long, Set<String>> insideContainerSkuAttrIds, Long locationId, WhSkuCommand skuCmd, String logId) {
+        CheckScanSkuResultCommand cssrCmd = new CheckScanSkuResultCommand();
+        Long ocId = null;
+        Long icId = icCmd.getId();
+        Long skuId = skuCmd.getId();
+        // 0.先判断当前内部容器是否在缓存中
+        boolean icExists = false;
+        for (Long iId : insideContainerIds) {
+            if (0 == icId.compareTo(iId)) {
+                icExists = true;
+                break;
+            }
+        }
+        if (false == icExists) {
+            log.error("tip container is not in cache server error, logId is[{}]", logId);
+            throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+        }
+        Map<String, Long> skuAttrIdsQty = insideContainerSkuAttrIdsQty.get(icId);// 当前内部容器中所有唯一sku
+        Map<String, Set<String>> skuAttrIdsSnDefect = insideContainerSkuAttrIdsSnDefect.get(icId);// 唯一sku对应的所有sn残次信息
+        Set<String> skuAttrIds = insideContainerSkuAttrIds.get(icId);// 库位对应的所有唯一sku
+        if (null != ocCmd) {
+            ocId = ocCmd.getId();
+            // 1.当前的内部容器是不是提示容器队列的第一个
+            TipContainerCacheCommand cacheContainerCmd = cacheManager.getObject(CacheConstants.SCAN_CONTAINER_QUEUE + ocId.toString());
+            ArrayDeque<Long> cacheContainerIds = null;
+            if (null != cacheContainerCmd) {
+                cacheContainerIds = cacheContainerCmd.getTipInsideContainerIds();
+            }
+            if (null != cacheContainerIds && !cacheContainerIds.isEmpty()) {
+                Long value = cacheContainerIds.peekFirst();
+                if (null == value) value = -1L;
+                if (0 != value.compareTo(icId)) {
+                    log.error("tip container is not queue first element exception, logId is:[{}]", logId);
+                    throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+                }
+            } else {
+                log.error("scan container queue is exception, logId is:[{}]", logId);
+                throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+
+            }
+            // 2.当前的库位是不是提示库位队列的第一个
+            TipLocationCacheCommand tipLocCmd = cacheManager.getObject(CacheConstants.SCAN_LOCATION_QUEUE + icId.toString());
+            ArrayDeque<Long> tipLocIds = null;
+            if (null != tipLocCmd) {
+                tipLocIds = tipLocCmd.getTipLocationIds();
+            }
+            if (null != tipLocIds && !tipLocIds.isEmpty()) {
+                Long value = tipLocIds.peekFirst(); // 队列的第一个
+                if (null == value) value = -1L;
+                if (0 != value.compareTo(locationId)) {
+                    log.error("tip location is not queue first element exception, logId is:[{}]", logId);
+                    throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+                }
+            } else {
+                log.error("scan location queue is exception, logId is:[{}]", logId);
+                throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+            }
+            // 3.当前的商品是不是提示商品队列的第一个
+            String skuAttrId = "";
+            String saId = "";
+            Boolean isTipSkuSn = skuCmd.getIsNeedTipSkuSn();
+            Boolean isTipSkuDefect = skuCmd.getIsNeedTipSkuDefect();
+            boolean isSnLine = false;
+            if ((null != isTipSkuSn && true == isTipSkuSn) || (null != isTipSkuDefect && true == isTipSkuDefect)) {
+                skuAttrId = SkuCategoryProvider.concatSkuAttrId(skuCmd.getId(), skuCmd.getInvType(), skuCmd.getInvStatus(), skuCmd.getInvMfgDate(), skuCmd.getInvExpDate(), skuCmd.getInvAttr1(), skuCmd.getInvAttr2(), skuCmd.getInvAttr3(),
+                        skuCmd.getInvAttr4(), skuCmd.getInvAttr5(), skuCmd.getSkuSn(), skuCmd.getSkuDefect());
+                isSnLine = true;
+            } else {
+                skuAttrId = SkuCategoryProvider.concatSkuAttrId(skuCmd.getId(), skuCmd.getInvType(), skuCmd.getInvStatus(), skuCmd.getInvMfgDate(), skuCmd.getInvExpDate(), skuCmd.getInvAttr1(), skuCmd.getInvAttr2(), skuCmd.getInvAttr3(),
+                        skuCmd.getInvAttr4(), skuCmd.getInvAttr5());
+                isSnLine = false;
+            }
+            TipScanSkuCacheCommand tipSkuCmd = cacheManager.getObject(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString());
+            ArrayDeque<String> tipSkuAttrIds = null;
+            if (null != tipSkuCmd) {
+                tipSkuAttrIds = tipSkuCmd.getScanSkuAttrIds();
+            }
+            if (null != tipSkuAttrIds && !tipSkuAttrIds.isEmpty()) {
+                String value = tipSkuAttrIds.peekFirst();
+                if (!skuAttrId.equals(value)) {
+                    log.error("tip sku is not queue first element exception, logId is:[{}]", logId);
+                    throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+                }
+            } else {
+                log.error("scan sku queue is exception, logId is:[{}]", logId);
+                throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+            }
+            saId = SkuCategoryProvider.getSkuAttrId(skuAttrId);
+            // 4.判断当前商品是否扫描完毕
+            Double scanSkuQty = skuCmd.getScanSkuQty();
+            boolean isSkuChecked = true;
+            if (true == isSnLine) {
+                // sn或残次商品
+                String snDefect = SkuCategoryProvider.getSnDefect(skuAttrId);// 当前sn残次信息
+                Set<String> allSnDefect = skuAttrIdsSnDefect.get(saId);// 唯一sku对应的所有sn残次信息
+                // 判断所有sn残次信息是否都已扫描完毕
+                String tipSkuAttrId = "";
+                for (String sd : allSnDefect) {
+                    if (snDefect.equals(sd)) {
+                        continue;// 跳过当前的
+                    }
+                    String tempSkuAttrId = SkuCategoryProvider.concatSkuAttrId(saId, sd);
+                    Set<String> tempSkuAttrIds = new HashSet<String>();
+                    tempSkuAttrIds.add(tempSkuAttrId);
+                    boolean isExists = isCacheAllExists2(tempSkuAttrIds, tipSkuAttrIds);
+                    if (true == isExists) {
+                        continue;
+                    } else {
+                        isSkuChecked = false;
+                        tipSkuAttrId = tempSkuAttrId;
+                        break;
+                    }
+                }
+                if (false == isSkuChecked) {
+                    // 提示相同商品的下一个sn明细
+                    cssrCmd.setNeedTipSkuSn(true);
+                    cssrCmd.setTipSkuAttrId(tipSkuAttrId);
+                    return cssrCmd;
+                }
+            } else {
+                Long skuQty = skuAttrIdsQty.get(saId);
+                if(scanPattern == WhScanPatternType.NUMBER_ONLY_SCAN) {  //批量扫描
+                    // 非sn残次商品
+                    if (null != scanSkuQty && (0 == new Long(scanSkuQty.longValue()).compareTo(skuQty))) {
+                        isSkuChecked = true;
+                    } else {
+                        isSkuChecked = false;
+                    }
+                    if (false == isSkuChecked) {
+                        log.error("scan sku qty is not equals loc binding qty error, logId is:[{}]", logId);
+                        throw new BusinessException(ErrorCodes.SCAN_SKU_QTY_IS_VALID);
+                    }
+                }else{ //逐件扫描
+                    long cacheValue = cacheManager.incrBy(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + skuId.toString(), scanSkuQty.intValue());
+                    if (cacheValue == skuQty.longValue()) {
+                        // 4.提示下一个商品
+                        boolean isAllCache = isCacheAllExists2(skuAttrIds, tipSkuAttrIds);
+                        if (false == isAllCache) {
+                            // 提示下个商品
+                            String tipSkuAttrId = "";
+                            for (String sId : skuAttrIds) {
+                                Set<String> tempSkuAttrIds = new HashSet<String>();
+                                tempSkuAttrIds.add(sId);
+                                boolean isExists = isCacheAllExists2(tempSkuAttrIds, tipSkuAttrIds);
+                                if (true == isExists) {
+                                    continue;
+                                } else {
+                                    tipSkuAttrId = sId;
+                                    break;
+                                }
+                            }
+                            cssrCmd.setNeedTipSku(true);
+                            cssrCmd.setTipSkuAttrId(tipSkuAttrId);
+                        } else {
+                            // 判断是否需要提示下一个容器
+                            Set<Long> allContainerIds = insideContainerIds;
+                            boolean isAllContainerCache = isCacheAllExists(allContainerIds, cacheContainerIds);
+                            Long tipContainerId = null;
+                            if (false == isAllContainerCache) {
+                                // 提示下一个容器
+                                cssrCmd.setPutaway(true);
+                                for (Long cId : allContainerIds) {
+                                    if (0 == icId.compareTo(cId)) {
+                                        continue;
+                                    }
+                                    Set<Long> tempContainerIds = new HashSet<Long>();
+                                    tempContainerIds.add(cId);
+                                    boolean isExists = isCacheAllExists(tempContainerIds, cacheContainerIds);
+                                    if (true == isExists) {
+                                        continue;
+                                    } else {
+                                        tipContainerId = cId;
+                                        break;
+                                    }
+                                }
+                                cssrCmd.setNeedTipContainer(true);
+                                cssrCmd.setTipContainerId(tipContainerId);
+                            } else {
+                                cssrCmd.setPutaway(true);// 可上架
+                            }
+                          }
+                      } else if (cacheValue < skuQty.longValue()) {
+                        // 继续复核
+                          cssrCmd.setNeedTipSku(true);
+                          cssrCmd.setTipSkuAttrId(skuAttrId);
+                      } else {
+                        log.error("sku scan qty has already more than rcvd qty, skuId is:[{}], scan qty is:[{}], rcvd qty is:[{}], logId is:[{}]", skuId, cacheValue, scanSkuQty, logId);
+                        throw new BusinessException(ErrorCodes.SCAN_SKU_QTY_IS_MORE_THAN_RCVD_QTY);
+                    }
+                }
+            }
+            return cssrCmd;
+        } else {
+            // 无外部容器
+            // 1.当前的库位是不是提示库位队列的第一个
+            TipLocationCacheCommand tipLocCmd = cacheManager.getObject(CacheConstants.SCAN_LOCATION_QUEUE + icId.toString());
+            ArrayDeque<Long> tipLocIds = null;
+            if (null != tipLocCmd) {
+                tipLocIds = tipLocCmd.getTipLocationIds();
+            }
+            if (null != tipLocIds && !tipLocIds.isEmpty()) {
+                Long value = tipLocIds.peekFirst(); // 队列的第一个
+                if (null == value) value = -1L;
+                if (0 != value.compareTo(locationId)) {
+                    log.error("tip location is not queue first element exception, logId is:[{}]", logId);
+                    throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+                }
+            } else {
+                log.error("scan location queue is exception, logId is:[{}]", logId);
+                throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+            }
+            // 2.当前的商品是不是提示商品队列的第一个
+            String skuAttrId = "";
+            String saId = "";
+            Boolean isTipSkuSn = skuCmd.getIsNeedTipSkuSn();
+            Boolean isTipSkuDefect = skuCmd.getIsNeedTipSkuDefect();
+            boolean isSnLine = false;
+            if ((null != isTipSkuSn && true == isTipSkuSn) || (null != isTipSkuDefect && true == isTipSkuDefect)) {
+                skuAttrId = SkuCategoryProvider.concatSkuAttrId(skuCmd.getId(), skuCmd.getInvType(), skuCmd.getInvStatus(), skuCmd.getInvMfgDate(), skuCmd.getInvExpDate(), skuCmd.getInvAttr1(), skuCmd.getInvAttr2(), skuCmd.getInvAttr3(),
+                        skuCmd.getInvAttr4(), skuCmd.getInvAttr5(), skuCmd.getSkuSn(), skuCmd.getSkuDefect());
+                isSnLine = true;
+            } else {
+                skuAttrId = SkuCategoryProvider.concatSkuAttrId(skuCmd.getId(), skuCmd.getInvType(), skuCmd.getInvStatus(), skuCmd.getInvMfgDate(), skuCmd.getInvExpDate(), skuCmd.getInvAttr1(), skuCmd.getInvAttr2(), skuCmd.getInvAttr3(),
+                        skuCmd.getInvAttr4(), skuCmd.getInvAttr5());
+                isSnLine = false;
+            }
+            TipScanSkuCacheCommand tipSkuCmd = cacheManager.getObject(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString());
+            ArrayDeque<String> tipSkuAttrIds = null;
+            if (null != tipSkuCmd) {
+                tipSkuAttrIds = tipSkuCmd.getScanSkuAttrIds();
+            }
+            if (null != tipSkuAttrIds && !tipSkuAttrIds.isEmpty()) {
+                String value = tipSkuAttrIds.peekFirst();
+                if (!skuAttrId.equals(value)) {
+                    log.error("tip sku is not queue first element exception, logId is:[{}]", logId);
+                    throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+                }
+            } else {
+                log.error("scan sku queue is exception, logId is:[{}]", logId);
+                throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+            }
+            saId = SkuCategoryProvider.getSkuAttrId(skuAttrId);
+            // 3.判断当前商品是否扫描完毕
+            Double scanSkuQty = skuCmd.getScanSkuQty();
+            boolean isSkuChecked = true;
+            if (true == isSnLine) {
+                // sn或残次商品
+                String snDefect = SkuCategoryProvider.getSnDefect(skuAttrId);// 当前sn残次信息
+                Set<String> allSnDefect = skuAttrIdsSnDefect.get(saId);// 唯一sku对应的所有sn残次信息
+                // 判断所有sn残次信息是否都已扫描完毕
+                String tipSkuAttrId = "";
+                for (String sd : allSnDefect) {
+                    if (snDefect.equals(sd)) {
+                        continue;// 跳过当前的
+                    }
+                    String tempSkuAttrId = SkuCategoryProvider.concatSkuAttrId(saId, sd);
+                    Set<String> tempSkuAttrIds = new HashSet<String>();
+                    tempSkuAttrIds.add(tempSkuAttrId);
+                    boolean isExists = isCacheAllExists2(tempSkuAttrIds, tipSkuAttrIds);
+                    if (true == isExists) {
+                        continue;
+                    } else {
+                        isSkuChecked = false;
+                        tipSkuAttrId = tempSkuAttrId;
+                        break;
+                    }
+                }
+                if (false == isSkuChecked) {
+                    // 提示相同商品的下一个sn明细
+                    cssrCmd.setNeedTipSkuSn(true);
+                    cssrCmd.setTipSkuAttrId(tipSkuAttrId);
+                    return cssrCmd;
+                }
+            } else {
+                Long skuQty = skuAttrIdsQty.get(saId);
+                if(scanPattern == WhScanPatternType.NUMBER_ONLY_SCAN) {  //批量扫描
+                    // 非sn残次商品
+                    if (null != scanSkuQty && (0 == new Long(scanSkuQty.longValue()).compareTo(skuQty))) {
+                        isSkuChecked = true;
+                    } else {
+                        isSkuChecked = false;
+                    }
+                    if (false == isSkuChecked) {
+                        log.error("scan sku qty is not equals loc binding qty error, logId is:[{}]", logId);
+                        throw new BusinessException(ErrorCodes.SCAN_SKU_QTY_IS_VALID);
+                    }
+                }else{ //逐件扫描
+                    long cacheValue = cacheManager.incrBy(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + skuId.toString(), scanSkuQty.intValue());
+                    if (cacheValue == skuQty.longValue()) {
+                        // 4.提示下一个商品
+                        boolean isAllCache = isCacheAllExists2(skuAttrIds, tipSkuAttrIds);
+                        if (false == isAllCache) {
+                            // 提示下个商品
+                            String tipSkuAttrId = "";
+                            for (String sId : skuAttrIds) {
+                                Set<String> tempSkuAttrIds = new HashSet<String>();
+                                tempSkuAttrIds.add(sId);
+                                boolean isExists = isCacheAllExists2(tempSkuAttrIds, tipSkuAttrIds);
+                                if (true == isExists) {
+                                    continue;
+                                } else {
+                                    tipSkuAttrId = sId;
+                                    break;
+                                }
+                            }
+                            cssrCmd.setNeedTipSku(true);
+                            cssrCmd.setTipSkuAttrId(tipSkuAttrId);
+                        } 
+                    } else if (cacheValue < skuQty.longValue()) {
+                        // 继续复核
+                        cssrCmd.setNeedTipSku(true);
+                        cssrCmd.setTipSkuAttrId(skuAttrId);
+                    } else {
+                        log.error("sku scan qty has already more than rcvd qty, skuId is:[{}], scan qty is:[{}], rcvd qty is:[{}], logId is:[{}]", skuId, cacheValue, scanSkuQty, logId);
+                        throw new BusinessException(ErrorCodes.SCAN_SKU_QTY_IS_MORE_THAN_RCVD_QTY);
+                    }
+                }
+                
+            }
+            return cssrCmd;
+        }
     }
 }

@@ -21,6 +21,7 @@ import org.springframework.util.StringUtils;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationExecLine;
+import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryTobefilled;
 
 /**
  * @author lichuan
@@ -100,6 +101,22 @@ public final class SkuCategoryProvider {
         return ret;
     }
 
+    public static String getSkuAttrIdByWhSkuInvTobefilled(WhSkuInventoryTobefilled skuTobefilled) {
+        String ret = "";
+        Long skuId = skuTobefilled.getSkuId();
+        String invType = (StringUtils.isEmpty(skuTobefilled.getInvType()) ? PH : skuTobefilled.getInvType());
+        String invStatus = (StringUtils.isEmpty(skuTobefilled.getInvStatus()) ? PH : skuTobefilled.getInvStatus() + "");
+        String mfgDate = (StringUtils.isEmpty(skuTobefilled.getMfgDate()) ? PH : new SimpleDateFormat("yyyyMMddHHmmss").format(skuTobefilled.getMfgDate()));
+        String expDate = (StringUtils.isEmpty(skuTobefilled.getExpDate()) ? PH : new SimpleDateFormat("yyyyMMddHHmmss").format(skuTobefilled.getExpDate()));
+        String invAttr1 = (StringUtils.isEmpty(skuTobefilled.getInvAttr1()) ? PH : skuTobefilled.getInvAttr1());
+        String invAttr2 = (StringUtils.isEmpty(skuTobefilled.getInvAttr2()) ? PH : skuTobefilled.getInvAttr2());
+        String invAttr3 = (StringUtils.isEmpty(skuTobefilled.getInvAttr3()) ? PH : skuTobefilled.getInvAttr3());
+        String invAttr4 = (StringUtils.isEmpty(skuTobefilled.getInvAttr4()) ? PH : skuTobefilled.getInvAttr4());
+        String invAttr5 = (StringUtils.isEmpty(skuTobefilled.getInvAttr5()) ? PH : skuTobefilled.getInvAttr5());
+        ret = skuId + DV + invType + DV + invStatus + DV + mfgDate + DV + expDate + DV + invAttr1 + DV + invAttr2 + DV + invAttr3 + DV + invAttr4 + DV + invAttr5;
+        return ret;
+    }
+    
     public static String concatSkuAttrId(Object... argArray) {
         String ret = "";
         int i = 0;

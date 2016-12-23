@@ -183,12 +183,13 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
         log.info("PdaPickingWorkCacheManagerImpl cacheLocationInventory is end");
         return skuInvList;
     }
+    
     /***
      * 提是库位
      * @param command
      * @return
      */
-    public CheckScanResultCommand locationTipcache(Long operationId,Integer pickingType,List<Long> locationIds){
+    public CheckScanResultCommand locationTipcache(Long operationId,List<Long> locationIds){
         log.info("PdaPickingWorkCacheManagerImpl containerPutawayCacheInsideContainer is start");
         CheckScanResultCommand scanResult = new CheckScanResultCommand();
         Long tipLocationId = null;
@@ -220,7 +221,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                         cacheManager.setObject(CacheConstants.CACHE_OPERATION_LINE + operationId.toString(), tipLocationCmd, CacheConstants.CACHE_ONE_DAY);
                     }
                     scanResult.setTipLocationId(tipLocationId);
-                    scanResult.setIsPicking(false);  // 没有上架结束
+                    scanResult.setIsPicking(false);  // 没有结束
                 }else{
                     scanResult.setIsPicking(true); //所有库位已经扫描完毕
                 }

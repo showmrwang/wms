@@ -212,7 +212,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
 
         // WhWave wave = new WhWave();
         // wave.setId(waveId);
-        wave.setOuId(ouId);
+        // wave.setOuId(ouId);
         // wave = this.whWaveDao.findListByParam(wave).get(0);
 
         // 获取下一个波次阶段
@@ -607,12 +607,12 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void divFromWaveByOdo(WhWave wave, Map<Long, List<WhWaveLine>> odoIdWaveLineMap, Long ouId, Long userId, String logId) {
-        Iterator<Entry<Long,List<WhWaveLine>>> it=odoIdWaveLineMap.entrySet().iterator();
+        Iterator<Entry<Long, List<WhWaveLine>>> it = odoIdWaveLineMap.entrySet().iterator();
         Set<Long> odoIdSet = new HashSet<Long>();
-        while(it.hasNext()){
-            Entry<Long,List<WhWaveLine>> entry=it.next();
-            Long odoId=entry.getKey();
-            for(WhWaveLine waveLine:entry.getValue()){
+        while (it.hasNext()) {
+            Entry<Long, List<WhWaveLine>> entry = it.next();
+            Long odoId = entry.getKey();
+            for (WhWaveLine waveLine : entry.getValue()) {
                 WhOdoLine odoLine = this.whOdoLineDao.findOdoLineById(waveLine.getOdoLineId(), ouId);
                 odoLine.setWaveCode("");
                 odoLine.setOdoLineStatus(OdoStatus.ODOLINE_NEW);
@@ -728,8 +728,8 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
                 throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
             }
         }
-        
-        if(task!=null){
+
+        if (task != null) {
             task.setStatus(ReplenishmentTaskStatus.REPLENISHMENT_TASK_CANCEL);
             task.setOperatorId(userId);
             int updateTaskCount = this.replenishmentTaskDao.saveOrUpdateByVersion(task);
@@ -759,13 +759,13 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
             odoIdCounterCodeMap.put(odo.getId(), odo.getCounterCode());
             // 获得需要回滚的库存：已分配和待移入。
             List<WhSkuInventory> skuInvList = this.whSkuInventoryDao.findbyOccupationCode(odo.getOdoCode(), ouId);
-            if(skuInvList!=null&&skuInvList.size()>0){
-                for(WhSkuInventory skuInv:skuInvList){
+            if (skuInvList != null && skuInvList.size() > 0) {
+                for (WhSkuInventory skuInv : skuInvList) {
                     skuInv.setOccupationCode(null);
                     skuInv.setOccupationCodeSource(null);
                     skuInv.setOccupationLineId(null);
-                    int updateSkuInvCount=this.whSkuInventoryDao.saveOrUpdateByVersion(skuInv);
-                    if(updateSkuInvCount<=0){
+                    int updateSkuInvCount = this.whSkuInventoryDao.saveOrUpdateByVersion(skuInv);
+                    if (updateSkuInvCount <= 0) {
                         throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
                     }
                 }

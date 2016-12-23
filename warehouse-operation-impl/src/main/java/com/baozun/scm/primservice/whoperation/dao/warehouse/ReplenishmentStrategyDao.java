@@ -75,4 +75,13 @@ public interface ReplenishmentStrategyDao extends BaseDao<ReplenishmentStrategy,
      * @return
      */
     Long findListCountByRuleId(@Param("replenishmentRuleId") Long replenishmentRuleId, @Param("ouId") Long ouId);
+
+    /**
+     * 根据规则编号查找规则，按照优先级排序
+     * 
+     * @param replenishmentRuleId
+     * @param ouId
+     * @return
+     */
+    List<ReplenishmentStrategyCommand> findCommandByRuleIdWithPriority(@Param("replenishmentRuleId") Long replenishmentRuleId, @Param("ouId") Long ouId);
 }
