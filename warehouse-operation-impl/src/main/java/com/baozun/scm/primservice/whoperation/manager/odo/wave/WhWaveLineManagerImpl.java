@@ -28,7 +28,9 @@ import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveLineDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
+import com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy.DistributionModeArithmeticManagerProxy;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine;
 
 @Service("whWaveLineManager")
@@ -45,6 +47,8 @@ public class WhWaveLineManagerImpl extends BaseManagerImpl implements WhWaveLine
     private WhOdoDao whOdoDao;
     @Autowired
     private WhWaveDao whWaveDao;
+    @Autowired
+    private DistributionModeArithmeticManagerProxy distributionModeArithmeticManagerProxy;
 
     /**
      * 得到所有硬阶段的波次名次行集合
@@ -136,7 +140,11 @@ public class WhWaveLineManagerImpl extends BaseManagerImpl implements WhWaveLine
         }
         // 3.从波次明细中剔除出库单
         num = whWaveLineDao.removeWaveLineWhole(waveId, odoId, ouId);
-        
+        // 4.提出的出库单加入配货模式
+        WhOdo odo = whOdoDao.findByIdOuId(odoId, ouId);
+        Map<Long, String> odoIdCounterCodeMap = new HashMap<Long, String>();
+        odoIdCounterCodeMap.put(odoId, odo.getCounterCode());
+        distributionModeArithmeticManagerProxy.addToPool(odoIdCounterCodeMap);
         WhWaveLine line = new WhWaveLine();
         line.setWaveId(waveId);
         line.setOuId(ouId);

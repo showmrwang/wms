@@ -2416,9 +2416,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		select 
 			<if test="allocateUnitCodes != null and allocateUnitCodes == 'TP'">
 				inv.outer_container_id as outerContainerId, 
-				sum(inv.on_hand_qty) sumOnHandQty, 
+				sum(inv.on_hand_qty) as sumOnHandQty, 
 				min(inv.inbound_time) as inboundTime, 
-				GROUP_CONCAT(DISTINCT inv.uuid) uuid
+				GROUP_CONCAT(DISTINCT inv.uuid) as uuid
 			</if>
 			<if test="allocateUnitCodes != null and allocateUnitCodes == 'HX'">
 				inv.inside_container_id as insideContainerId,
@@ -2700,7 +2700,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	
 	<select id="findInventoryUuid" parameterType="com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand" resultMap="WhSkuInventoryCommandResultExt">
 		select 
-			sum(inv.on_hand_qty) as sumOnHandQty, 
+			sum(inv.on_hand_qty) - (select IFNULL(sum(a.qty),0) from t_wh_sku_inventory_allocated a where a.uuid = inv.uuid) as sumOnHandQty, 
 			inv.uuid as uuid
 		from 
 			t_wh_sku_inventory inv,
@@ -2870,4 +2870,35 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    ]]>
 		</select>	
     
+    <select id="getUseableQtyByUuidList" resultType="double">
+		select sum(qty) useableQty 
+		from (
+			select IFNULL(SUM(inv.on_hand_qty), 0) qty from t_wh_sku_inventory inv where inv.uuid in 
+			<foreach item="item" collection="uuidList" open="(" separator="," close=")">
+	            #{item}
+	        </foreach>
+	        and inv.occupation_code is null
+			and inv.occupation_line_id is null 
+	        and ou_id = #{ouId}
+			union all 
+			select IFNULL(-SUM(a.qty), 0) qty from t_wh_sku_inventory_allocated a where a.uuid in 
+			<foreach item="item" collection="uuidList" open="(" separator="," close=")">
+	            #{item}
+	        </foreach>
+	        and ou_id = #{ouId}
+		) t
+    </select>
+    
+    <select id="getUseableQtyByUuid" resultType="double">
+		select sum(qty) useableQty 
+		from (
+			select IFNULL(SUM(inv.on_hand_qty), 0) qty from t_wh_sku_inventory inv where inv.uuid = #{uuid}
+	        and inv.occupation_code is null
+			and inv.occupation_line_id is null 
+	        and ou_id = #{ouId}
+			union all 
+			select IFNULL(-SUM(a.qty), 0) qty from t_wh_sku_inventory_allocated a where a.uuid = #{uuid}
+	        and ou_id = #{ouId}
+		) t
+    </select>
 </mapper>

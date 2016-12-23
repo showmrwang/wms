@@ -92,10 +92,16 @@ public class InventoryOccupyManagerImpl extends BaseInventoryManagerImpl impleme
 		if (null == skuInvs || skuInvs.isEmpty()) {
 			return 0.0;
 		}
+		Long ouId = wh.getId();
 		Double occupyNum = 0.0;	// 实际占用数量
 		Double count = qty;		// 传入的计划占用量
 		for (WhSkuInventoryCommand inv : skuInvs) {
-			Double oldQty = whSkuInventoryLogDao.sumSkuInvOnHandQty(inv.getUuid(), wh.getId());
+			Double oldQty = whSkuInventoryLogDao.sumSkuInvOnHandQty(inv.getUuid(), ouId);
+			// 可用数量:在库数量减去已分配的数量
+			Double useableQty = inventoryDao.getUseableQtyByUuid(inv.getUuid(), ouId);
+			if (-1 != Constants.DEFAULT_DOUBLE.compareTo(useableQty)) {
+				continue;
+			}
 			if (-1 == count.compareTo(inv.getOnHandQty())) {
 				boolean b = occupyInv(inv.getId(), count, oldQty, occupyCode, occupySource, odoLineId, wh);
 				if(!b){
@@ -165,32 +171,67 @@ public class InventoryOccupyManagerImpl extends BaseInventoryManagerImpl impleme
 		if (null == list || list.isEmpty()) {
 			return 0.0;
 		}
+		Long ouId = wh.getId();
 		Double occupyNum = 0.0;	// 实际占用数量
 		Double count = qty;		// 传入的计划占用量
 		for (int i = 0; i < list.size(); i++) {
 			WhSkuInventoryCommand inv = list.get(i);
-			Double oldQty = whSkuInventoryLogDao.sumSkuInvOnHandQty(inv.getUuid(), wh.getId());
-			if (-1 == count.compareTo(inv.getOnHandQty())) {
-				// 扣减原来的库存的数量
-				boolean b = subtractInv(inv.getId(), count, oldQty, occupyCode, occupySource, wh);
-				if(!b){
-                    throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
-                }
-				// 插入被占用的库存信息
-				insertOccupyInventory(inv, count, occupyCode, odoLineId, occupySource, logId);
-				inv.setOnHandQty(inv.getOnHandQty() - count);
-				occupyNum = occupyNum + count;
-				count = 0.0;
-			} else {
-				boolean b = occupyInv(inv.getId(), inv.getOnHandQty(), oldQty, occupyCode, occupySource, odoLineId, wh);
-				if(!b){
-                    throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
-                }
-				count = count - inv.getOnHandQty();
-				occupyNum = occupyNum + inv.getOnHandQty();
-				// inv.setOnHandQty(inv.getOnHandQty() - count);
+			Double oldQty = whSkuInventoryLogDao.sumSkuInvOnHandQty(inv.getUuid(), ouId);
+			// 可用数量:在库数量减去已分配的数量
+			Double useableQty = inventoryDao.getUseableQtyByUuid(inv.getUuid(), ouId);
+			if (-1 != Constants.DEFAULT_DOUBLE.compareTo(useableQty)) {
 				list.remove(i--);
+				continue;
 			}
+			// OnHandQty <= useableQty
+			if (1 != inv.getOnHandQty().compareTo(useableQty)) {
+				if (-1 == count.compareTo(inv.getOnHandQty())) {
+					// 扣减原来的库存的数量
+					boolean b = subtractInv(inv.getId(), count, oldQty, occupyCode, occupySource, wh);
+					if(!b){
+						throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
+					}
+					// 插入被占用的库存信息
+					insertOccupyInventory(inv, count, occupyCode, odoLineId, occupySource, logId);
+					inv.setOnHandQty(inv.getOnHandQty() - count);
+					occupyNum = occupyNum + count;
+					count = 0.0;
+				} else {
+					boolean b = occupyInv(inv.getId(), inv.getOnHandQty(), oldQty, occupyCode, occupySource, odoLineId, wh);
+					if(!b){
+						throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
+					}
+					count = count - inv.getOnHandQty();
+					occupyNum = occupyNum + inv.getOnHandQty();
+					// inv.setOnHandQty(inv.getOnHandQty() - count);
+					list.remove(i--);
+				}
+			} else {
+				// count < useableQty
+				if (-1 == count.compareTo(useableQty)) {
+					// 扣减原来的库存的数量
+					boolean b = subtractInv(inv.getId(), count, oldQty, occupyCode, occupySource, wh);
+					if(!b){
+						throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
+					}
+					// 插入被占用的库存信息
+					insertOccupyInventory(inv, count, occupyCode, odoLineId, occupySource, logId);
+					inv.setOnHandQty(inv.getOnHandQty() - count);
+					occupyNum = occupyNum + count;
+					count = 0.0;
+				} else {
+					boolean b = subtractInv(inv.getId(), useableQty, oldQty, occupyCode, occupySource, wh);
+					if(!b){
+						throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
+					}
+					// 插入被占用的库存信息
+					insertOccupyInventory(inv, useableQty, occupyCode, odoLineId, occupySource, logId);
+					inv.setOnHandQty(inv.getOnHandQty() - useableQty);
+					occupyNum = occupyNum + useableQty;
+					count = count - useableQty;
+				}
+			}
+			
 			if (null != isStaticLocation && isStaticLocation && null != staticLocationIds) {
 				staticLocationIds.add(inv.getLocationId().toString());
 			}
@@ -206,36 +247,62 @@ public class InventoryOccupyManagerImpl extends BaseInventoryManagerImpl impleme
 		if (null == uuids || uuids.isEmpty()) {
 			return 0.0;
 		}
+		Long ouId = wh.getId();
 		Double actualQty = 0.0;
 		for (WhSkuInventoryCommand invCmd : uuids) {
-			Double onHandQty = invCmd.getSumOnHandQty();
-			if (-1 != qty.compareTo(onHandQty)) {
+			// Double onHandQty = invCmd.getSumOnHandQty();
+			List<String> uuidList = Arrays.asList(invCmd.getUuid().split(","));
+			// 可用数量:在库数量减去已分配的数量
+			Double useableQty = inventoryDao.getUseableQtyByUuidList(uuidList, ouId);
+			if (-1 != qty.compareTo(useableQty) && -1 == Constants.DEFAULT_DOUBLE.compareTo(useableQty)) {
 				List<WhSkuInventoryCommand> invs = null;
 				if (Constants.ALLOCATE_UNIT_TP.equals(unitCodes)) {
-					List<String> uuidList = Arrays.asList(invCmd.getUuid().split(","));
-					invs = inventoryDao.findWhSkuInventoryByUuidList(wh.getId(), uuidList);
+					invs = inventoryDao.findWhSkuInventoryByUuidList(ouId, uuidList);
 				} else {
-					invCmd.setOuId(wh.getId());
+					invCmd.setOuId(ouId);
 					invs = inventoryDao.findInventoryByUuidAndCondition(invCmd);
 				}
 				
 				Double occupyNum = 0.0;
 				for (WhSkuInventoryCommand inv : invs) {
-					Double oldQty = whSkuInventoryLogDao.sumSkuInvOnHandQty(inv.getUuid(), wh.getId());
-					boolean b = occupyInv(inv.getId(), inv.getOnHandQty(), oldQty, occupyCode, occupySource, odoLineId, wh);
-					if(!b){
-	                    throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
-	                }
-					// 在所有库存sku列表中扣除
-					if (null != allSkuInvs) {
-						for (int i = 0; i < allSkuInvs.size(); i++) {
-							WhSkuInventoryCommand skuInv = allSkuInvs.get(i);
-							if (skuInv.getId().equals(inv.getId())) {
-								allSkuInvs.remove(i);
-								break;
+					Double oldQty = whSkuInventoryLogDao.sumSkuInvOnHandQty(inv.getUuid(), ouId);
+					// OnHandQty <= useableQty
+					if (1 != inv.getOnHandQty().compareTo(useableQty)) {
+						boolean b = occupyInv(inv.getId(), inv.getOnHandQty(), oldQty, occupyCode, occupySource, odoLineId, wh);
+						if(!b){
+		                    throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
+		                }
+						occupyNum += inv.getOnHandQty();
+						useableQty -= inv.getOnHandQty();
+						// 在所有库存sku列表中扣除
+						if (null != allSkuInvs) {
+							for (int i = 0; i < allSkuInvs.size(); i++) {
+								WhSkuInventoryCommand skuInv = allSkuInvs.get(i);
+								if (skuInv.getId().equals(inv.getId())) {
+									allSkuInvs.remove(i);
+									break;
+								}
+							}
+						}
+					} else {
+						boolean b = subtractInv(inv.getId(), useableQty, oldQty, occupyCode, occupySource, wh);
+						if(!b){
+		                    throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
+		                }
+						insertOccupyInventory(inv, useableQty, occupyCode, odoLineId, occupySource, logId);
+						occupyNum += useableQty;
+						useableQty = 0.0;
+						// 这些uuid的可用量没有了,在所有库存sku列表中扣除
+						if (null != allSkuInvs) {
+							for (int i = 0; i < allSkuInvs.size(); i++) {
+								WhSkuInventoryCommand skuInv = allSkuInvs.get(i);
+								if (uuidList.contains(skuInv.getUuid())) {
+									allSkuInvs.remove(i--);
+								}
 							}
 						}
 					}
+					
 					if (null != isStaticLocation && isStaticLocation && null != staticLocationIds) {
 						staticLocationIds.add(inv.getLocationId().toString());
 					}
@@ -244,9 +311,10 @@ public class InventoryOccupyManagerImpl extends BaseInventoryManagerImpl impleme
 					} else if (Constants.ALLOCATE_UNIT_HX.equals(unitCodes) && null != packingCaseIds) {
 						packingCaseIds.add(inv.getInsideContainerId().toString());
 					}
-					occupyNum += inv.getOnHandQty();
+					if (0 == Constants.DEFAULT_DOUBLE.compareTo(useableQty)) {
+						break;
+					}
 				}
-				qty -= occupyNum;
 				actualQty += occupyNum;
 			}
 		}
@@ -258,48 +326,67 @@ public class InventoryOccupyManagerImpl extends BaseInventoryManagerImpl impleme
 		if (null == uuids || uuids.isEmpty()) {
 			return 0.0;
 		}
+		Long ouId = wh.getId();
 		Double actualQty = 0.0;
 		Double count = qty;
 		for (WhSkuInventoryCommand invCmd : uuids) {
+			Double useableQty = invCmd.getSumOnHandQty();
+			if (-1 != Constants.DEFAULT_DOUBLE.compareTo(useableQty)) {
+				if (null != allSkuInvs) {
+					for (int i = 0; i < allSkuInvs.size(); i++) {
+						WhSkuInventoryCommand skuInv = allSkuInvs.get(i);
+						if (skuInv.getUuid().equals(invCmd.getUuid())) {
+							allSkuInvs.remove(i--);
+						}
+					}
+				}
+				continue;
+			}
 			invCmd.setOuId(wh.getId());
 			List<WhSkuInventoryCommand> invs = inventoryDao.findInventoryByUuidAndCondition(invCmd);
 			for (WhSkuInventoryCommand inv : invs) {
-				Double oldQty = whSkuInventoryLogDao.sumSkuInvOnHandQty(inv.getUuid(), wh.getId());
-				
-				if (-1 == count.compareTo(inv.getOnHandQty())) {
-					boolean b = subtractInv(inv.getId(), count, oldQty, occupyCode, occupySource, wh);
-					if(!b){
-	                    throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
-	                }
-					insertOccupyInventory(inv, count, occupyCode, odoLineId, occupySource, logId);
-					count = 0.0;
-					actualQty = qty;
-					// 在所有库存sku列表中扣除
-					if (null != allSkuInvs) {
-						for (int i = 0; i < allSkuInvs.size(); i++) {
-							WhSkuInventoryCommand skuInv = allSkuInvs.get(i);
-							if (skuInv.getId().equals(inv.getId())) {
-								skuInv.setOnHandQty(skuInv.getOnHandQty() - count);
-								break;
-							}
+				Double oldQty = whSkuInventoryLogDao.sumSkuInvOnHandQty(inv.getUuid(), ouId);
+				// OnHandQty <= useableQty
+				if (1 != inv.getOnHandQty().compareTo(useableQty)) {
+					if (-1 == count.compareTo(inv.getOnHandQty())) {
+						boolean b = subtractInv(inv.getId(), count, oldQty, occupyCode, occupySource, wh);
+						if(!b){
+							throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
 						}
+						insertOccupyInventory(inv, count, occupyCode, odoLineId, occupySource, logId);
+						count = 0.0;
+						actualQty = qty;
+						minusAllSkuInv(allSkuInvs, inv.getId(), count);
+					} else {
+						boolean b = occupyInv(inv.getId(), inv.getOnHandQty(), oldQty, occupyCode, occupySource, odoLineId, wh);
+						if(!b){
+							throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
+						}
+						count -= inv.getOnHandQty();
+						actualQty += inv.getOnHandQty();
+						// 在所有库存sku列表中扣除
+						minusAllSkuInv(allSkuInvs, inv.getId(), null);
 					}
 				} else {
-					boolean b = occupyInv(inv.getId(), inv.getOnHandQty(), oldQty, occupyCode, occupySource, odoLineId, wh);
-					if(!b){
-	                    throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
-	                }
-					count -= inv.getOnHandQty();
-					actualQty += inv.getOnHandQty();
-					// 在所有库存sku列表中扣除
-					if (null != allSkuInvs) {
-						for (int i = 0; i < allSkuInvs.size(); i++) {
-							WhSkuInventoryCommand skuInv = allSkuInvs.get(i);
-							if (skuInv.getId().equals(inv.getId())) {
-								allSkuInvs.remove(i);
-								break;
-							}
+					if (-1 == count.compareTo(useableQty)) {
+						boolean b = subtractInv(inv.getId(), count, oldQty, occupyCode, occupySource, wh);
+						if(!b){
+							throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
 						}
+						insertOccupyInventory(inv, count, occupyCode, odoLineId, occupySource, logId);
+						count = 0.0;
+						actualQty = qty;
+						// 在所有库存sku列表中扣除
+						minusAllSkuInv(allSkuInvs, inv.getId(), count);
+					} else {
+						boolean b = subtractInv(inv.getId(), useableQty, oldQty, occupyCode, occupySource, wh);
+						if(!b){
+							throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
+						}
+						insertOccupyInventory(inv, useableQty, occupyCode, odoLineId, occupySource, logId);
+						count -= useableQty;
+						actualQty += useableQty;
+						minusAllSkuInv(allSkuInvs, inv.getId(), count);
 					}
 				}
 				if (null != isStaticLocation && isStaticLocation && null != staticLocationIds) {
@@ -311,6 +398,22 @@ public class InventoryOccupyManagerImpl extends BaseInventoryManagerImpl impleme
 			}
 		}
 		return actualQty;
+	}
+
+	private void minusAllSkuInv(List<WhSkuInventoryCommand> allSkuInvs, Long invId, Double count) {
+		if (null != allSkuInvs) {
+			for (int i = 0; i < allSkuInvs.size(); i++) {
+				WhSkuInventoryCommand skuInv = allSkuInvs.get(i);
+				if (skuInv.getId().equals(invId)) {
+					if (null != count) {
+						skuInv.setOnHandQty(skuInv.getOnHandQty() - count);
+					} else {
+						allSkuInvs.remove(i);
+					}
+					break;
+				}
+			}
+		}
 	}
 	
 }
