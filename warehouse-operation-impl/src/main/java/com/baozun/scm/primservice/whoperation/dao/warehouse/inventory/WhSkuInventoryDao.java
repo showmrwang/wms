@@ -604,6 +604,13 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
 	List<WhSkuInventoryCommand> findInventoryByExpTime(WhSkuInventoryCommand invCommand);
 	
 	/**
+	 * 按照库位上数量多少查找库存
+	 * @param whWaveLineCommand
+	 * @return
+	 */
+	List<WhSkuInventoryCommand> findInventoryByLocation(WhSkuInventoryCommand invCommand);
+	
+	/**
 	 * 按照数量多少查找库存
 	 * @param whWaveLineCommand
 	 * @return
@@ -621,6 +628,8 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
 
 	List<WhSkuInventoryCommand> findInventoryUuidByExpTime(WhSkuInventoryCommand invCommand);
 
+	List<WhSkuInventoryCommand> findInventoryUuidByLocation(WhSkuInventoryCommand invCommand);
+	
 	List<WhSkuInventoryCommand> findInventoryUuidByAmount(WhSkuInventoryCommand invCommand);
 
 	List<WhSkuInventoryCommand> findInventoryUuid(WhSkuInventoryCommand invCommand);

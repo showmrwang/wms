@@ -2110,6 +2110,48 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					and ou_id = #{ouId}
     </select>
     
+    <sql id="invAttrWhereCondition">
+    	<if test="locationId != null">
+			and inv.location_id = #{locationId}
+		</if>
+		<if test="storeId != null">
+			and inv.store_id = #{storeId}
+		</if>
+		<if test="invStatus != null and invStatus !=''">
+			and inv.inv_status = #{invStatus}
+		</if>
+		<if test="invType != null and invType !=''">
+			and inv.inv_type = #{invType}
+		</if>
+        <if test="batchNumber != null and batchNumber !=''">
+			and inv.batch_number = #{batchNumber}
+		</if>
+		<if test="mfgDate != null">
+			and inv.mfg_date = #{mfgDate}
+		</if>
+		<if test="expDate != null">
+			and inv.exp_date = #{expDate}
+		</if>
+        <if test="countryOfOrigin!=null and countryOfOrigin!=''">
+			and inv.country_of_origin = #{countryOfOrigin}
+		</if>
+        <if test="invAttr1!=null and invAttr1!=''">
+			and inv.inv_attr1 = #{invAttr1}
+		</if>
+        <if test="invAttr2!=null and invAttr2!=''">
+			and inv.inv_attr2 = #{invAttr2}
+		</if>
+        <if test="invAttr3!=null and invAttr3!=''">
+			and inv.inv_attr3 = #{invAttr3}
+		</if>
+        <if test="invAttr4!=null and invAttr4!=''">
+			and inv.inv_attr4 = #{invAttr4}
+		</if>
+        <if test="invAttr5!=null and invAttr5!=''">
+			and inv.inv_attr5 = #{invAttr5}
+		</if>
+    </sql>
+    
     <select id="findInventoryByInBoundTime" parameterType="com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand" resultMap="WhSkuInventoryCommandResultExt">
 		select 
 			<include refid="whSkuInventoryColumnsInvExt" /> 
@@ -2136,45 +2178,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					and inv.ou_id = #{ouId}
 					and loc.allocate_area_id = #{areaId}
 					and inv.sku_id = #{skuId}
-					<if test="locationId != null">
-						and inv.location_id = #{locationId}
-					</if>
-					<if test="storeId != null">
-						and inv.store_id = #{storeId}
-					</if>
-					<if test="invStatus != null and invStatus !=''">
-						and inv.inv_status = #{invStatus}
-					</if>
-					<if test="invType != null and invType !=''">
-						and inv.inv_type = #{invType}
-					</if>
-			        <if test="batchNumber != null and batchNumber !=''">
-						and inv.batch_number = #{batchNumber}
-					</if>
-					<if test="mfgDate != null">
-						and inv.mfg_date = #{mfgDate}
-					</if>
-					<if test="expDate != null">
-						and inv.exp_date = #{expDate}
-					</if>
-			        <if test="countryOfOrigin!=null and countryOfOrigin!=''">
-						and inv.country_of_origin = #{countryOfOrigin}
-					</if>
-			        <if test="invAttr1!=null and invAttr1!=''">
-						and inv.inv_attr1 = #{invAttr1}
-					</if>
-			        <if test="invAttr2!=null and invAttr2!=''">
-						and inv.inv_attr2 = #{invAttr2}
-					</if>
-			        <if test="invAttr3!=null and invAttr3!=''">
-						and inv.inv_attr3 = #{invAttr3}
-					</if>
-			        <if test="invAttr4!=null and invAttr4!=''">
-						and inv.inv_attr4 = #{invAttr4}
-					</if>
-			        <if test="invAttr5!=null and invAttr5!=''">
-						and inv.inv_attr5 = #{invAttr5}
-					</if>
+					<include refid="invAttrWhereCondition"/>
 				group by inv.inbound_time,inv.uuid
 				order by 
 				<if test="priority != null and priority == true">
@@ -2192,6 +2196,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			and inv.occupation_code is null 
 			and inv.occupation_line_id is null 
 			and inv.on_hand_qty > 0.0 
+			and inv.ou_id = #{ouId}
 		order by rowNo,inv.on_hand_qty
 	</select>
 	
@@ -2221,45 +2226,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					and inv.ou_id = #{ouId}
 					and loc.allocate_area_id = #{areaId}
 					and inv.sku_id = #{skuId}
-					<if test="locationId != null">
-						and inv.location_id = #{locationId}
-					</if>
-					<if test="storeId != null">
-						and inv.store_id = #{storeId}
-					</if>
-					<if test="invStatus != null and invStatus !=''">
-						and inv.inv_status = #{invStatus}
-					</if>
-					<if test="invType != null and invType !=''">
-						and inv.inv_type = #{invType}
-					</if>
-			        <if test="batchNumber != null and batchNumber !=''">
-						and inv.batch_number = #{batchNumber}
-					</if>
-			        <if test="countryOfOrigin!=null and countryOfOrigin!=''">
-						and inv.country_of_origin = #{countryOfOrigin}
-					</if>
-			        <if test="invAttr1!=null and invAttr1!=''">
-						and inv.inv_attr1 = #{invAttr1}
-					</if>
-			        <if test="invAttr2!=null and invAttr2!=''">
-						and inv.inv_attr2 = #{invAttr2}
-					</if>
-			        <if test="invAttr3!=null and invAttr3!=''">
-						and inv.inv_attr3 = #{invAttr3}
-					</if>
-			        <if test="invAttr4!=null and invAttr4!=''">
-						and inv.inv_attr4 = #{invAttr4}
-					</if>
-			        <if test="invAttr5!=null and invAttr5!=''">
-						and inv.inv_attr5 = #{invAttr5}
-					</if>
-					<if test="mfgDate != null">
-						and inv.mfg_date = #{mfgDate}
-					</if>
-					<if test="expDate != null">
-						and inv.exp_date = #{expDate}
-					</if>
+					<include refid="invAttrWhereCondition"/>
 					<if test="minExpDate != null and maxExpDate != null">
 						and inv.exp_date between #{minExpDate} and #{maxExpDate} 
 					</if>
@@ -2280,6 +2247,63 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			and inv.occupation_code is null 
 			and inv.occupation_line_id is null 
 			and inv.on_hand_qty > 0.0 
+			and inv.ou_id = #{ouId}
+		order by rowNo,inv.on_hand_qty
+	</select>
+	
+	<select id="findInventoryByLocation" parameterType="com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand" resultMap="WhSkuInventoryCommandResultExt">
+		select 
+			<include refid="whSkuInventoryColumnsInvExt" /> 
+			from t_wh_sku_inventory inv,(
+			select *,(@n := @n + 1) rowNo from (
+				select 
+					sum(inv.on_hand_qty) sumOnHandQty, inv.location_id, (select @n := 0) r
+				from 
+					t_wh_sku_inventory inv,
+					t_wh_location loc,
+					t_wh_inventory_status s
+				where 
+					inv.location_id = loc.id 
+					and inv.inv_status = s.id
+					and inv.location_id is not null 
+					and inv.occupation_code is null 
+					and inv.occupation_line_id is null 
+					and inv.on_hand_qty > 0.0 
+					and IFNULL(is_locked,0) != 1
+					and loc.lifecycle = 1
+					and s.is_for_sale = 1
+					and s.lifecycle = 1
+					
+					and inv.ou_id = #{ouId}
+					and loc.allocate_area_id = #{areaId}
+					and inv.sku_id = #{skuId}
+					<include refid="invAttrWhereCondition"/>
+					
+					<if test="isStatic != null and isStatic == true">
+						and loc.is_static = 1
+					</if>
+					<if test="isMixStacking != null and isMixStacking == true">
+						and loc.is_mix_stacking = 1
+					</if>
+				group by inv.location_id
+				order by 
+				<if test="priority != null and priority == true">
+					sumOnHandQty,loc.pick_sort,loc.code
+				</if>
+				<if test="priority != null and priority == false">
+					sumOnHandQty desc,loc.pick_sort,loc.code
+				</if>
+			) t
+		) inv2 
+		where 
+			inv.location_id = inv2.location_id 
+			and inv.location_id is not null 
+			and inv.occupation_code is null 
+			and inv.occupation_line_id is null 
+			and inv.on_hand_qty > 0.0 
+			and inv.ou_id = #{ouId}
+			and inv.sku_id = #{skuId}
+			<include refid="invAttrWhereCondition"/>
 		order by rowNo,inv.on_hand_qty
 	</select>
 	
@@ -2309,45 +2333,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					and inv.ou_id = #{ouId}
 					and loc.allocate_area_id = #{areaId}
 					and inv.sku_id = #{skuId}
-					<if test="locationId != null">
-						and inv.location_id = #{locationId}
-					</if>
-					<if test="storeId != null">
-						and inv.store_id = #{storeId}
-					</if>
-					<if test="invStatus != null and invStatus !=''">
-						and inv.inv_status = #{invStatus}
-					</if>
-					<if test="invType != null and invType !=''">
-						and inv.inv_type = #{invType}
-					</if>
-			        <if test="batchNumber != null and batchNumber !=''">
-						and inv.batch_number = #{batchNumber}
-					</if>
-			        <if test="countryOfOrigin!=null and countryOfOrigin!=''">
-						and inv.country_of_origin = #{countryOfOrigin}
-					</if>
-			        <if test="invAttr1!=null and invAttr1!=''">
-						and inv.inv_attr1 = #{invAttr1}
-					</if>
-			        <if test="invAttr2!=null and invAttr2!=''">
-						and inv.inv_attr2 = #{invAttr2}
-					</if>
-			        <if test="invAttr3!=null and invAttr3!=''">
-						and inv.inv_attr3 = #{invAttr3}
-					</if>
-			        <if test="invAttr4!=null and invAttr4!=''">
-						and inv.inv_attr4 = #{invAttr4}
-					</if>
-			        <if test="invAttr5!=null and invAttr5!=''">
-						and inv.inv_attr5 = #{invAttr5}
-					</if>
-					<if test="mfgDate != null">
-						and inv.mfg_date = #{mfgDate}
-					</if>
-					<if test="expDate != null">
-						and inv.exp_date = #{expDate}
-					</if>
+					<include refid="invAttrWhereCondition"/>
 					<if test="isStatic != null and isStatic == true">
 						and loc.is_static = 1
 					</if>
@@ -2370,6 +2356,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			and inv.occupation_code is null 
 			and inv.occupation_line_id is null 
 			and inv.on_hand_qty > 0.0 
+			and inv.ou_id = #{ouId}
 		order by rowNo,inv.on_hand_qty
 	</select>
 	
@@ -2451,45 +2438,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<if test="allocateUnitCodes != null and allocateUnitCodes == 'HX'">
 				and inv.inside_container_id is not null
 			</if>
-			<if test="locationId != null">
-				and inv.location_id = #{locationId}
-			</if>
-			<if test="storeId != null">
-				and inv.store_id = #{storeId}
-			</if>
-			<if test="invStatus != null and invStatus !=''">
-				and inv.inv_status = #{invStatus}
-			</if>
-			<if test="invType != null and invType !=''">
-				and inv.inv_type = #{invType}
-			</if>
-			<if test="batchNumber != null and batchNumber !=''">
-				and inv.batch_number = #{batchNumber}
-			</if>
-	        <if test="countryOfOrigin!=null and countryOfOrigin!=''">
-				and inv.country_of_origin = #{countryOfOrigin}
-			</if>
-	        <if test="invAttr1!=null and invAttr1!=''">
-				and inv.inv_attr1 = #{invAttr1}
-			</if>
-	        <if test="invAttr2!=null and invAttr2!=''">
-				and inv.inv_attr2 = #{invAttr2}
-			</if>
-	        <if test="invAttr3!=null and invAttr3!=''">
-				and inv.inv_attr3 = #{invAttr3}
-			</if>
-	        <if test="invAttr4!=null and invAttr4!=''">
-				and inv.inv_attr4 = #{invAttr4}
-			</if>
-	        <if test="invAttr5!=null and invAttr5!=''">
-				and inv.inv_attr5 = #{invAttr5}
-			</if>
-			<if test="mfgDate != null">
-				and inv.mfg_date = #{mfgDate}
-			</if>
-			<if test="expDate != null">
-				and inv.exp_date = #{expDate}
-			</if>
+			<include refid="invAttrWhereCondition"/>
 		<if test="allocateUnitCodes != null and allocateUnitCodes == 'TP'">
 			group by outer_container_id
 		</if>
@@ -2544,45 +2493,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<if test="allocateUnitCodes != null and allocateUnitCodes == 'HX'">
 				and inv.inside_container_id is not null
 			</if>
-			<if test="locationId != null">
-				and inv.location_id = #{locationId}
-			</if>
-			<if test="storeId != null">
-				and inv.store_id = #{storeId}
-			</if>
-			<if test="invStatus != null and invStatus !=''">
-				and inv.inv_status = #{invStatus}
-			</if>
-			<if test="invType != null and invType !=''">
-				and inv.inv_type = #{invType}
-			</if>
-			<if test="batchNumber != null and batchNumber !=''">
-				and inv.batch_number = #{batchNumber}
-			</if>
-	        <if test="countryOfOrigin!=null and countryOfOrigin!=''">
-				and inv.country_of_origin = #{countryOfOrigin}
-			</if>
-	        <if test="invAttr1!=null and invAttr1!=''">
-				and inv.inv_attr1 = #{invAttr1}
-			</if>
-	        <if test="invAttr2!=null and invAttr2!=''">
-				and inv.inv_attr2 = #{invAttr2}
-			</if>
-	        <if test="invAttr3!=null and invAttr3!=''">
-				and inv.inv_attr3 = #{invAttr3}
-			</if>
-	        <if test="invAttr4!=null and invAttr4!=''">
-				and inv.inv_attr4 = #{invAttr4}
-			</if>
-	        <if test="invAttr5!=null and invAttr5!=''">
-				and inv.inv_attr5 = #{invAttr5}
-			</if>
-			<if test="mfgDate != null">
-				and inv.mfg_date = #{mfgDate}
-			</if>
-			<if test="expDate != null">
-				and inv.exp_date = #{expDate}
-			</if>
+			<include refid="invAttrWhereCondition"/>
 			<if test="minExpDate != null and maxExpDate != null">
 				and inv.exp_date between #{minExpDate} and #{maxExpDate} 
 			</if>
@@ -2599,6 +2510,84 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		<if test="priority != null and priority == false">
 			inv.exp_date desc,sumOnHandQty,loc.pick_sort,loc.code
 		</if>
+	</select>
+	
+	<select id="findInventoryUuidByLocation" parameterType="com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand" resultMap="WhSkuInventoryCommandResultExt">
+		select 
+			<if test="allocateUnitCodes != null and allocateUnitCodes == 'TP'">
+				inv.outer_container_id as outerContainerId, 
+				sum(inv.on_hand_qty) as sumOnHandQty, 
+				GROUP_CONCAT(DISTINCT inv.uuid) as uuid
+			</if>
+			<if test="allocateUnitCodes != null and allocateUnitCodes == 'HX'">
+				inv.inside_container_id as insideContainerId,
+				sum(inv.on_hand_qty) as sumOnHandQty,
+				inv.uuid as uuid
+			</if>
+		from t_wh_sku_inventory inv,
+		(
+			select location_id, sumOnHandQty,(@n := @n + 1) rowNo from (
+			  select 
+					inv.location_id as location_id,
+					sum(inv.on_hand_qty) as sumOnHandQty, 
+					(select @n := 0) r
+				from 
+					t_wh_sku_inventory inv,
+					t_wh_location loc,
+					t_wh_inventory_status s
+				where 
+					inv.location_id = loc.id 
+					and inv.inv_status = s.id
+					and inv.location_id is not null 
+					and inv.occupation_code is null 
+					and inv.occupation_line_id is null 
+					and inv.on_hand_qty > 0.0 
+					and IFNULL(is_locked,0) != 1
+					and loc.lifecycle = 1
+					and s.is_for_sale = 1
+					and s.lifecycle = 1
+					
+					and inv.ou_id = #{ouId}
+					and loc.allocate_area_id = #{areaId}
+					and inv.sku_id = #{skuId}
+					<include refid="invAttrWhereCondition"/>
+					<if test="allocateUnitCodes != null and allocateUnitCodes == 'TP'">
+						and inv.outer_container_id is not null
+					</if>
+					<if test="allocateUnitCodes != null and allocateUnitCodes == 'HX'">
+						and inv.inside_container_id is not null
+					</if>
+					group by location_id
+				order by 
+				<if test="priority != null and priority == true">
+					sumOnHandQty,loc.pick_sort,loc.code
+				</if>
+				<if test="priority != null and priority == false">
+					sumOnHandQty desc,loc.pick_sort,loc.code
+				</if>
+			) t
+		) inv1
+		where inv1.location_id = inv.location_id
+		and inv.location_id is not null 
+		<if test="allocateUnitCodes != null and allocateUnitCodes == 'TP'">
+			and inv.outer_container_id is not null
+		</if>
+		<if test="allocateUnitCodes != null and allocateUnitCodes == 'HX'">
+			and inv.inside_container_id is not null
+		</if>
+		and inv.occupation_code is null 
+		and inv.occupation_line_id is null 
+		and inv.on_hand_qty > 0.0 
+		and inv.sku_id = #{skuId}
+		and inv.ou_id = #{ouId}
+		<include refid="invAttrWhereCondition"/>
+		<if test="allocateUnitCodes != null and allocateUnitCodes == 'TP'">
+			group by inv.outer_container_id
+		</if>
+		<if test="allocateUnitCodes != null and allocateUnitCodes == 'HX'">
+			group by inv.inside_container_id,inv.uuid
+		</if>
+		order by rowNo,sumOnHandQty
 	</select>
 	
 	<select id="findInventoryUuidByAmount" parameterType="com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand" resultMap="WhSkuInventoryCommandResultExt">
@@ -2638,45 +2627,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<if test="allocateUnitCodes != null and allocateUnitCodes == 'HX'">
 				and inv.inside_container_id is not null
 			</if>
-			<if test="locationId != null">
-				and inv.location_id = #{locationId}
-			</if>
-			<if test="storeId != null">
-				and inv.store_id = #{storeId}
-			</if>
-			<if test="invStatus != null and invStatus !=''">
-				and inv.inv_status = #{invStatus}
-			</if>
-			<if test="invType != null and invType !=''">
-				and inv.inv_type = #{invType}
-			</if>
-			<if test="batchNumber != null and batchNumber !=''">
-				and inv.batch_number = #{batchNumber}
-			</if>
-	        <if test="countryOfOrigin!=null and countryOfOrigin!=''">
-				and inv.country_of_origin = #{countryOfOrigin}
-			</if>
-	        <if test="invAttr1!=null and invAttr1!=''">
-				and inv.inv_attr1 = #{invAttr1}
-			</if>
-	        <if test="invAttr2!=null and invAttr2!=''">
-				and inv.inv_attr2 = #{invAttr2}
-			</if>
-	        <if test="invAttr3!=null and invAttr3!=''">
-				and inv.inv_attr3 = #{invAttr3}
-			</if>
-	        <if test="invAttr4!=null and invAttr4!=''">
-				and inv.inv_attr4 = #{invAttr4}
-			</if>
-	        <if test="invAttr5!=null and invAttr5!=''">
-				and inv.inv_attr5 = #{invAttr5}
-			</if>
-			<if test="mfgDate != null">
-				and inv.mfg_date = #{mfgDate}
-			</if>
-			<if test="expDate != null">
-				and inv.exp_date = #{expDate}
-			</if>
+			<include refid="invAttrWhereCondition"/>
 			<if test="isStatic != null and isStatic == true">
 				and loc.is_static = 1
 			</if>
@@ -2721,45 +2672,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			and inv.ou_id = #{ouId}
 			and loc.allocate_area_id = #{areaId}
 			and inv.sku_id = #{skuId}
-			<if test="locationId != null">
-				and inv.location_id = #{locationId}
-			</if>
-			<if test="storeId != null">
-				and inv.store_id = #{storeId}
-			</if>
-			<if test="invStatus != null and invStatus !=''">
-				and inv.inv_status = #{invStatus}
-			</if>
-			<if test="invType != null and invType !=''">
-				and inv.inv_type = #{invType}
-			</if>
-			<if test="batchNumber != null and batchNumber !=''">
-				and inv.batch_number = #{batchNumber}
-			</if>
-	        <if test="countryOfOrigin!=null and countryOfOrigin!=''">
-				and inv.country_of_origin = #{countryOfOrigin}
-			</if>
-	        <if test="invAttr1!=null and invAttr1!=''">
-				and inv.inv_attr1 = #{invAttr1}
-			</if>
-	        <if test="invAttr2!=null and invAttr2!=''">
-				and inv.inv_attr2 = #{invAttr2}
-			</if>
-	        <if test="invAttr3!=null and invAttr3!=''">
-				and inv.inv_attr3 = #{invAttr3}
-			</if>
-	        <if test="invAttr4!=null and invAttr4!=''">
-				and inv.inv_attr4 = #{invAttr4}
-			</if>
-	        <if test="invAttr5!=null and invAttr5!=''">
-				and inv.inv_attr5 = #{invAttr5}
-			</if>
-			<if test="mfgDate != null">
-				and inv.mfg_date = #{mfgDate}
-			</if>
-			<if test="expDate != null">
-				and inv.exp_date = #{expDate}
-			</if>
+			<include refid="invAttrWhereCondition"/>
 			group by uuid
 		order by 
 		<if test="priority != null and priority == true">

@@ -3138,11 +3138,11 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 		}
 		// 最大存储空间
 		else if (Constants.ALLOCATE_STRATEGY_MAXIMUMSTORAGESPACE.equals(strategyCode)) {
-			list = findInventoryUuidByAmount(whSkuInventoryCommand, true);
+			list = findInventoryUuidByLocation(whSkuInventoryCommand, true);
 		}
 		// 最小拣货次数
 		else if (Constants.ALLOCATE_STRATEGY_MINIMUMORDERPICKINGTIMES.equals(strategyCode)) {
-			list = findInventoryUuidByAmount(whSkuInventoryCommand, false);
+			list = findInventoryUuidByLocation(whSkuInventoryCommand, false);
 		}
 		// 静态库位可超分配
 		else if (Constants.ALLOCATE_STRATEGY_STATICLOCATIONCANASSIGNMENT.equals(strategyCode)) {
@@ -3204,15 +3204,15 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 		return skuInvs;
 	}
 
-	public List<WhSkuInventoryCommand> findInventoryUuidByAmount(WhSkuInventoryCommand whSkuInventoryCommand, boolean flag) {
+	public List<WhSkuInventoryCommand> findInventoryUuidByLocation(WhSkuInventoryCommand whSkuInventoryCommand, boolean flag) {
 		List<WhSkuInventoryCommand> skuInvs = null;
 		// 入库时间顺序 true:升序 false:降序
 		whSkuInventoryCommand.setPriority(new Boolean(flag));
 		if (Constants.ALLOCATE_UNIT_TP.equals(whSkuInventoryCommand.getAllocateUnitCodes())
 				|| Constants.ALLOCATE_UNIT_HX.equals(whSkuInventoryCommand.getAllocateUnitCodes())) {
-			skuInvs = whSkuInventoryDao.findInventoryUuidByAmount(whSkuInventoryCommand);
+			skuInvs = whSkuInventoryDao.findInventoryUuidByLocation(whSkuInventoryCommand);
 		} else if (Constants.ALLOCATE_UNIT_PIECE.equals(whSkuInventoryCommand.getAllocateUnitCodes())) {
-			skuInvs = whSkuInventoryDao.findInventoryByAmount(whSkuInventoryCommand);
+			skuInvs = whSkuInventoryDao.findInventoryByLocation(whSkuInventoryCommand);
 		}
 		return skuInvs;
 	}
