@@ -1,9 +1,13 @@
 package com.baozun.scm.primservice.whoperation.manager.pda.putaway;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -1950,19 +1954,34 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
         WhSkuInventoryCommand invSkuCmd = new WhSkuInventoryCommand();
         invSkuCmd.setSkuId(skuId);
         if (pdaManMadePutawayCommand.getIsNeedSkuDetail()) { // 需要扫描sku库存属性
-            List<InventoryStatus> listInventoryStatus = inventoryStatusManager.findAllInventoryStatus();
-            String statusValue = pdaManMadePutawayCommand.getSkuInvStatus();
-            // 库存状态
-            if (!StringUtils.isEmpty(statusValue)) {
-                for (InventoryStatus inventoryStatus : listInventoryStatus) {
-                    if (statusValue.equals(inventoryStatus.getName())) invSkuCmd.setInvStatus(inventoryStatus.getId()); // 库存状态
-                    break;
-                }
-            }
+//            List<InventoryStatus> listInventoryStatus = inventoryStatusManager.findAllInventoryStatus();
+//            String statusValue = pdaManMadePutawayCommand.getSkuInvStatus();
+//            // 库存状态
+//            if (!StringUtils.isEmpty(statusValue)) {
+//                for (InventoryStatus inventoryStatus : listInventoryStatus) {
+//                    if (statusValue.equals(inventoryStatus.getName())) invSkuCmd.setInvStatus(inventoryStatus.getId()); // 库存状态
+//                    break;
+//                }
+//            }
+            invSkuCmd.setInvStatus(Long.valueOf(pdaManMadePutawayCommand.getSkuInvStatus())); // 库存状态
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             invSkuCmd.setInvType(pdaManMadePutawayCommand.getSkuInvType());
             invSkuCmd.setBatchNumber(pdaManMadePutawayCommand.getBatchNumber());
-            invSkuCmd.setMfgDate(pdaManMadePutawayCommand.getSkuMfgDate());
-            invSkuCmd.setExpDate(pdaManMadePutawayCommand.getSkuExpDate());
+            try {
+                Date date = sdf.parse(pdaManMadePutawayCommand.getSkuMfgDate());
+                invSkuCmd.setMfgDate(date);
+            } catch (ParseException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                throw new BusinessException(ErrorCodes.SYSTEM_ERROR); 
+            }
+            try {
+                invSkuCmd.setExpDate(sdf.parse(pdaManMadePutawayCommand.getSkuExpDate()));
+            } catch (ParseException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                throw new BusinessException(ErrorCodes.SYSTEM_ERROR); 
+            }
             invSkuCmd.setCountryOfOrigin(pdaManMadePutawayCommand.getSkuOrigin());
             invSkuCmd.setInvAttr1(pdaManMadePutawayCommand.getSkuInvAttr1());
             invSkuCmd.setInvAttr2(pdaManMadePutawayCommand.getSkuInvAttr2());
@@ -2388,19 +2407,34 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
         invSkuCmd.setSkuId(skuId);
         String uuid="";
         if (mPaCmd.getIsNeedSkuDetail()) { // 需要扫描sku库存属性
-            List<InventoryStatus> listInventoryStatus = inventoryStatusManager.findAllInventoryStatus();
-            String statusValue = mPaCmd.getSkuInvStatus();
-            // 库存状态
-            if (!StringUtils.isEmpty(statusValue)) {
-                for (InventoryStatus inventoryStatus : listInventoryStatus) {
-                    if (statusValue.equals(inventoryStatus.getName())) invSkuCmd.setInvStatus(inventoryStatus.getId()); // 库存状态
-                    break;
-                }
+//            List<InventoryStatus> listInventoryStatus = inventoryStatusManager.findAllInventoryStatus();
+//            String statusValue = mPaCmd.getSkuInvStatus();
+//            // 库存状态
+//            if (!StringUtils.isEmpty(statusValue)) {
+//                for (InventoryStatus inventoryStatus : listInventoryStatus) {
+//                    if (statusValue.equals(inventoryStatus.getId())) 
+//                        invSkuCmd.setInvStatus(inventoryStatus.getId()); // 库存状态
+//                    break;
+//                }
+//            }
+            invSkuCmd.setInvStatus(Long.valueOf(mPaCmd.getSkuInvStatus())); // 库存状态
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            try {
+                invSkuCmd.setMfgDate(sdf.parse(mPaCmd.getSkuMfgDate()));
+            } catch (ParseException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                throw new BusinessException(ErrorCodes.SYSTEM_ERROR); 
+            }
+            try {
+                invSkuCmd.setExpDate(sdf.parse(mPaCmd.getSkuExpDate()));
+            } catch (ParseException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                throw new BusinessException(ErrorCodes.SYSTEM_ERROR); 
             }
             invSkuCmd.setInvType(mPaCmd.getSkuInvType());
             invSkuCmd.setBatchNumber(mPaCmd.getBatchNumber());
-            invSkuCmd.setMfgDate(mPaCmd.getSkuMfgDate());
-            invSkuCmd.setExpDate(mPaCmd.getSkuExpDate());
             invSkuCmd.setCountryOfOrigin(mPaCmd.getSkuOrigin());
             invSkuCmd.setInvAttr1(mPaCmd.getSkuInvAttr1());
             invSkuCmd.setInvAttr2(mPaCmd.getSkuInvAttr2());
@@ -2417,8 +2451,9 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
                     if(skuAttrsId.equals(locSkuAttrsId)) {
                         whskuInv = whSkuInventory;
                         uuid = whSkuInventory.getUuid();
+                        BeanUtils.copyProperties(whSkuInventory, invSkuCmd);
+                        break;
                     }
-                    break;
                 }
             }
         } else { // 不需要扫描sku库存属性

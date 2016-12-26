@@ -14,8 +14,6 @@
 
 package com.baozun.scm.primservice.whoperation.command.pda.putaway;
 
-import java.util.Date;
-
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
 
 /**
@@ -101,11 +99,11 @@ public class PdaManMadePutawayCommand extends BaseCommand {
     /** 是否需要扫商品的生产日期 */
     private Boolean isNeedScanSkuMfgDate = false;
     /** 提示商品生产日期 */
-    private Date skuMfgDate;
+    private String skuMfgDate;
     /** 是否需要扫商品过期日期 */
     private Boolean isNeedScanSkuExpDate = false;
     /** 提示商品过期日期 */
-    private Date skuExpDate;
+    private String skuExpDate;
     /** 是否需要扫商品库存属性1 */
     private Boolean isNeedScanSkuInvAttr1 = false;
     /** 提示商品库存属性1 */
@@ -415,13 +413,6 @@ public class PdaManMadePutawayCommand extends BaseCommand {
         this.isNeedScanSkuMfgDate = isNeedScanSkuMfgDate;
     }
 
-    public Date getSkuMfgDate() {
-        return skuMfgDate;
-    }
-
-    public void setSkuMfgDate(Date skuMfgDate) {
-        this.skuMfgDate = skuMfgDate;
-    }
 
     public Boolean getIsNeedScanSkuExpDate() {
         return isNeedScanSkuExpDate;
@@ -431,13 +422,6 @@ public class PdaManMadePutawayCommand extends BaseCommand {
         this.isNeedScanSkuExpDate = isNeedScanSkuExpDate;
     }
 
-    public Date getSkuExpDate() {
-        return skuExpDate;
-    }
-
-    public void setSkuExpDate(Date skuExpDate) {
-        this.skuExpDate = skuExpDate;
-    }
 
     public Boolean getIsNeedScanSkuInvAttr1() {
         return isNeedScanSkuInvAttr1;
@@ -581,6 +565,22 @@ public class PdaManMadePutawayCommand extends BaseCommand {
 
     public void setSkuId(Long skuId) {
         this.skuId = skuId;
+    }
+
+    public String getSkuMfgDate() {
+        return skuMfgDate;
+    }
+
+    public void setSkuMfgDate(String skuMfgDate) {
+        this.skuMfgDate = skuMfgDate;
+    }
+
+    public String getSkuExpDate() {
+        return skuExpDate;
+    }
+
+    public void setSkuExpDate(String skuExpDate) {
+        this.skuExpDate = skuExpDate;
     }
     
 
