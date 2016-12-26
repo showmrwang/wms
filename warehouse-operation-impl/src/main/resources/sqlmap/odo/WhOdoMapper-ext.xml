@@ -590,7 +590,7 @@
 		odo.ext_code as extCode,
 		odo.priority_level as priorityLevel,
 		odo.is_whole_order_outbound as isWholeOrderOutbound,
-
+		
 		odo.cross_docking_symbol as crossDockingSysmbol,
 
 		odo.ec_order_code as ecOrderCode,
@@ -690,6 +690,7 @@
 		user2.user_name as modifiedName,
 		odo.is_locked as isLocked,
 		odo.is_assign_success as isAssignSuccess,
+		odo.original_odo_code as originalOdoCode,
 		odo.assign_fail_reason as assignFailReason
 		from t_wh_odo odo
 		left join t_wh_odo_address

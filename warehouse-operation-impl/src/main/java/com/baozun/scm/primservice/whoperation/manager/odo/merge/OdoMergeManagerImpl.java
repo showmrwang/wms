@@ -1146,6 +1146,9 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
         Map<Long, String> reNewOdoMap = new HashMap<Long, String>();
         for (String originalOdoCode : originalOdoCodes) {
             WhOdo whOdo = this.whOdoDao.findOdoByCodeAndOuId(originalOdoCode, ouId);
+            if (null == whOdo) {
+                throw new BusinessException("not this original odo");
+            }
             reNewOdoMap.put(whOdo.getId(), whOdo.getCounterCode());
             this.updateOriginalOdo(null, null, whOdo, ouId, userId, Constants.ODO_NEW);
             // TODO 更新原始出库单明细状态为新建

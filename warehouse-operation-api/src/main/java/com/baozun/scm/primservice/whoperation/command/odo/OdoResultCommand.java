@@ -86,7 +86,9 @@ public class OdoResultCommand extends BaseCommand {
     private String qty;
     private String isAssignSuccess;
     private String assignFailReason;
-	
+    /** 原始出库单号 */
+    private String originalOdoCode;
+
     public String getQty() {
         return qty;
     }
@@ -695,20 +697,28 @@ public class OdoResultCommand extends BaseCommand {
         this.createdName = createdName;
     }
 
-	public String getIsAssignSuccess() {
-		return isAssignSuccess;
-	}
+    public String getIsAssignSuccess() {
+        return isAssignSuccess;
+    }
 
-	public void setIsAssignSuccess(String isAssignSuccess) {
-		this.isAssignSuccess = isAssignSuccess;
-	}
+    public void setIsAssignSuccess(String isAssignSuccess) {
+        this.isAssignSuccess = isAssignSuccess;
+    }
 
-	public String getAssignFailReason() {
-		return assignFailReason;
-	}
+    public String getAssignFailReason() {
+        return assignFailReason;
+    }
 
-	public void setAssignFailReason(String assignFailReason) {
-		this.assignFailReason = assignFailReason;
-	}
+    public void setAssignFailReason(String assignFailReason) {
+        this.assignFailReason = assignFailReason;
+    }
+
+    public String getOriginalOdoCode() {
+        return originalOdoCode;
+    }
+
+    public void setOriginalOdoCode(String originalOdoCode) {
+        this.originalOdoCode = originalOdoCode;
+    }
 
 }
