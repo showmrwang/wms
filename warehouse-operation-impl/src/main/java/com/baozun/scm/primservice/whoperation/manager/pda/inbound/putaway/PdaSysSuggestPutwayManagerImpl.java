@@ -192,8 +192,11 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
                     //走没有推荐库位分支
                     srCommand = this.palletPutwayNoLocation(isrCmd, ouId, userId, sanResult, funcId, containerCmd, invList,warehouse,putawayPatternDetailType);
                 }else{
-                    //已经推荐库位
-                    pdaPutawayCacheManager.sysGuidePalletPutawayCacheInventoryStatistic(containerCmd, isrCmd, ouId, logId);
+                    InventoryStatisticResultCommand isCmd = cacheManager.getMapObject(CacheConstants.CONTAINER_INVENTORY_STATISTIC, containerCmd.getId().toString());
+                    if(null == isCmd) {
+                        //缓存容器库存统计信息
+                        pdaPutawayCacheManager.sysGuidePalletPutawayCacheInventoryStatistic(containerCmd, isrCmd, ouId, logId);
+                    }
                     srCommand = this.reminderLocation(isrCmd, sanResult, ouId);
                 }
             }else{  
@@ -1550,8 +1553,11 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
         List<ShelveRecommendRuleCommand> ruleList = export.getShelveRecommendRuleList();
         if (null == ruleList || 0 == ruleList.size()) {
             srCmd.setRecommendFail(true);   //推荐库位失败
-            //缓存容器库存统计信息
-            pdaPutawayCacheManager.sysGuidePalletPutawayCacheInventoryStatistic(containerCmd, isrCommand, ouId, logId);
+            InventoryStatisticResultCommand isCmd = cacheManager.getMapObject(CacheConstants.CONTAINER_INVENTORY_STATISTIC, containerCmd.getId().toString());
+            if(null == isCmd) {
+                //缓存容器库存统计信息
+                pdaPutawayCacheManager.sysGuidePalletPutawayCacheInventoryStatistic(containerCmd, isrCommand, ouId, logId);
+            }
             return srCmd;
         }
         //将lrrList存入缓存
@@ -1568,6 +1574,11 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
         boolean isRecommend = pdaPutawayCacheManager.sysGuidePutawayLocRecommendQueue(containerCmd.getId(), logId);
         if (false == isRecommend) {  //需要等待排队,否则得到库位推荐执行权
             srCmd.setNeedQueueUp(true);   
+            InventoryStatisticResultCommand isCmd = cacheManager.getMapObject(CacheConstants.CONTAINER_INVENTORY_STATISTIC, containerCmd.getId().toString());
+            if(null == isCmd) {
+                //缓存容器库存统计信息
+                pdaPutawayCacheManager.sysGuidePalletPutawayCacheInventoryStatistic(containerCmd, isrCommand, ouId, logId);
+            }
             return srCmd;  //跳转到扫描容器页面
         }
         //推荐库位流程
@@ -1585,7 +1596,11 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
         if (null == lrrList || 0 == lrrList.size() || StringUtils.isEmpty(lrrList.get(0).getLocationCode())) {
               srCmd.setRecommendFail(true);   //推荐库位失败
               //缓存容器库存统计信息
-              pdaPutawayCacheManager.sysGuidePalletPutawayCacheInventoryStatistic(containerCmd, isrCommand, ouId, logId);
+              InventoryStatisticResultCommand isCmd = cacheManager.getMapObject(CacheConstants.CONTAINER_INVENTORY_STATISTIC, containerCmd.getId().toString());
+              if(null == isCmd) {
+                  //缓存容器库存统计信息
+                  pdaPutawayCacheManager.sysGuidePalletPutawayCacheInventoryStatistic(containerCmd, isrCommand, ouId, logId);
+              }
               return srCmd;
         }
         LocationRecommendResultCommand lrr = lrrList.get(0);
@@ -1601,7 +1616,11 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
         suggestLocationIds.add(lrrLocId);
         isrCommand.setLocationIds(suggestLocationIds);
         // 10.缓存容器库存统计信息
-        pdaPutawayCacheManager.sysGuidePalletPutawayCacheInventoryStatistic(containerCmd, isrCommand, ouId, logId);
+        InventoryStatisticResultCommand isCmd = cacheManager.getMapObject(CacheConstants.CONTAINER_INVENTORY_STATISTIC, containerCmd.getId().toString());
+        if(null == isCmd) {
+            //缓存容器库存统计信息
+            pdaPutawayCacheManager.sysGuidePalletPutawayCacheInventoryStatistic(containerCmd, isrCommand, ouId, logId);
+        }
         //库位绑定
         //先待移入库位库存，将on_hand_qty(在库库存)值设置到to_be_filled_qty(待移入库存)、将on_hand_qty设置为0.0、为每行库存记录增加库位插入一条新的库存记录（注意更新uuid），即插入待移入库位库存。如果有SN/残次信息则同样插入SN/残次信息记录（一待入）
         whSkuInventoryManager.execBinding(invList, warehouse, lrrList, putawayPatternDetailType, ouId, userId, lrrLocCode);
@@ -2253,9 +2272,9 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
                 log.error("sku is null error, logId is:[{}]", logId);
                 throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
             }
-            InventoryStatisticResultCommand isCmd = cacheManager.getMapObject(CacheConstants.CONTAINER_INVENTORY_STATISTIC, insideCommand.getId().toString());
+            InventoryStatisticResultCommand isCmd = cacheManager.getMapObject(CacheConstants.CONTAINER_INVENTORY_STATISTIC, outCommand.getId().toString());
             if (null == isCmd) {
-                isCmd = pdaPutawayCacheManager.sysGuidePalletPutawayCacheInventoryStatistic(outCommand, ouId, logId);
+                throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
             }
             // 1.获取功能配置
             WhFunctionPutAway putawyaFunc = whFunctionPutAwayManager.findWhFunctionPutAwayByFunctionId(functionId, ouId, logId);
