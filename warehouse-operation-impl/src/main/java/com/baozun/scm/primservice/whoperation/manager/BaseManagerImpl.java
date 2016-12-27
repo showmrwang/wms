@@ -315,11 +315,13 @@ public abstract class BaseManagerImpl implements BaseManager {
                 if (null == c) {
                     // 缓存无对应数据 查询数据库
                     c = customerDao.findById(Long.parseLong(s.substring(s.lastIndexOf("-") + 1, s.length())));
-                    try {
-                        cacheManager.setObject(redisKey + c.getId(), c);
-                    } catch (Exception e) {
-                        // redis出错只记录log
-                        log.error("findCustomerAllByRedis cacheManager.setObject(" + redisKey + c.getId() + ") error");
+                    if (null != c) {
+                        try {
+                            cacheManager.setObject(redisKey + c.getId(), c);
+                        } catch (Exception e) {
+                            // redis出错只记录log
+                            log.error("findCustomerAllByRedis cacheManager.setObject(" + redisKey + c.getId() + ") error");
+                        }
                     }
                 }
                 if (null != c) {
