@@ -322,7 +322,9 @@ public abstract class BaseManagerImpl implements BaseManager {
                         log.error("findCustomerAllByRedis cacheManager.setObject(" + redisKey + c.getId() + ") error");
                     }
                 }
-                returnList.put(c.getId(), c);
+                if (null != c) {
+                    returnList.put(c.getId(), c);
+                }
             }
         } else {
             // 没有数据 查询数据库 然后封装数据
