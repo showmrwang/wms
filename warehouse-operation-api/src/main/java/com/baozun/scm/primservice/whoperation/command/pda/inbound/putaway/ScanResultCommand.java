@@ -119,7 +119,7 @@ public class ScanResultCommand extends BaseCommand {
     /** 是否需要排队 */
     private boolean isNeedQueueUp;
     /** 是否库位推荐失败 */
-    private boolean isRecommendFail;
+    private boolean isRecommendFail =false;
     /** 库位推荐失败以后是否提示下一个容器 */
     private boolean isAfterRecommendTipContainer;
     /**只扫caselevel的容器*/
@@ -144,6 +144,7 @@ public class ScanResultCommand extends BaseCommand {
     private Boolean isNeedScanNewLocation = false;   //拆箱扫描商品重量达到库位承重的时候,跳转
     
     private Boolean isContinueScanSn = false;   //
+    
 
     public int getPutawayPatternType() {
         return putawayPatternType;

@@ -1,10 +1,13 @@
 package com.baozun.scm.primservice.whoperation.manager.pda.inbound.putaway;
 
+import java.util.List;
 import java.util.Map;
 
+import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.InventoryStatisticResultCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.ScanResultCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 
@@ -141,5 +144,18 @@ public interface PdaSysSuggestPutwayManager extends BaseManager{
      * @param insideContainerCode
      */
     public void sysSuggestScanInsideContainer(String insideContainerCode,Long ouId);
+    
+    /***
+     * 拆箱上架：推荐库位
+     * @param outerContainerCode
+     * @param ouId
+     * @param userId
+     * @param insideContainerCode
+     * @param functionId
+     * @param putawayPatternDetailType
+     * @param warehouse
+     * @return
+     */
+    public ScanResultCommand splitPutWayRemmendLocation(String outerContainerCode,Long ouId,Long userId,String insideContainerCode,Long functionId,Integer putawayPatternDetailType,Warehouse warehouse);
     
 }

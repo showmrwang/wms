@@ -2,6 +2,7 @@ package com.baozun.scm.primservice.whoperation.manager.pda.work;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,6 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.WhLocationDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
-import com.baozun.scm.primservice.whoperation.manager.warehouse.LocationManager;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Location;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionReplenishment;
 
@@ -77,5 +77,35 @@ public class PdaReplenishmentWorkManagerImpl extends BaseManagerImpl implements 
            psRCmd.setIsTipInvAttr(resplenishment.getIsTipInvAttr());  //是否提示sku库存属性
            psRCmd.setScanPattern(resplenishment.getScanPattern());  //扫描模式 
            return psRCmd;
+    }
+
+    /**
+     * 校验库位
+     * @param locationCode
+     * @param locationBarCode
+     * @param ouId
+     * @return
+     */
+    @Override
+    public Long verificationLocation(String locationCode, String locationBarCode, Long ouId) {
+        // TODO Auto-generated method stub
+        log.info("PdaPickingWorkController verificationLocation is start");
+        Long locationId = null;
+        if(!StringUtils.isEmpty(locationCode)) {
+            Location location =  whLocationDao.findLocationByCode(locationCode, ouId);
+            if(null == location) {
+                throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_LOCATION_NULL );
+            }
+            locationId = location.getId();
+        }
+        if(!StringUtils.isEmpty(locationBarCode)) {
+            Location location =  whLocationDao.getLocationByBarcode(locationBarCode, ouId);
+            if(null == location) {
+                throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_LOCATION_NULL );
+            }
+            locationId = location.getId();
+        }
+        log.info("PdaPickingWorkController verificationLocation is end");
+        return locationId;
     }
 }

@@ -750,8 +750,10 @@ public class ErrorCodes {
     public static final int OPERATION_EXEC_LINE_NO_EXIST= 70051;
     /**作业执行明细不存在*/
     public static final int WORK_NO_EXIST= 70052;
-    
-    
+    /**库位条码不正确*/
+    public static final int LOCATION_BARCODE_IS_ERROR=70053;
+    /**库位编码不正确*/
+    public static final int LOCATION_CODE_IS_EEROR=70054;
     // 70001-80000 tangming
     
     // 80001-90000 shenlijun

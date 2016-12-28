@@ -816,6 +816,9 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                     this.judeContainerStatus(c);
                     //提示外部容器编码
                     command.setTipOuterContainerCode(c.getCode());
+                    command.setIsTipOuterContainer(true);
+                }else{
+                    command.setIsTipOuterContainer(false);
                 }
             }
             
@@ -863,6 +866,9 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             this.judeContainerStatus(ic);
             command.setTipInsideContainerCode(ic.getCode());
             command.setOuterContainerCode(tipOuterContainerCode);
+            command.setIsTipinsideCotnainer(true);
+       }else{
+            command.setIsTipinsideCotnainer(false);
        }
         log.info("PdaPickingWorkManagerImpl confirmTipOuterContainer is end");
         return command;
@@ -915,6 +921,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
             }
             command.setSkuBarCode(skuCmd.getBarCode());
+            command.setIsNeedScanSku(true);
             this.tipSkuDetailAspect(command, cSRCmd.getTipSkuAttrIdSnDefect(), skuAttrIdsQty, logId);
         }
         log.info("PdaPickingWorkManagerImpl tipSku is end");

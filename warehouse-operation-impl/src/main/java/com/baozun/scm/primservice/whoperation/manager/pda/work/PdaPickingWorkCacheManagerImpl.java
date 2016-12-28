@@ -145,30 +145,39 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                     throw new BusinessException(ErrorCodes.LOCATION_INVENTORY_IS_NO);   //库位库存不存在
             } 
             List<WhOperationLineCommand> operationLineList = whOperationLineDao.findOperationLineByOperationId(operationId, ouId);   //当前工作下所有的作业明细集合
-            for(WhOperationLineCommand operLineCmd : operationLineList) {
-                String opLineSkuAttrIds = SkuCategoryProvider.getSkuAttrIdByOperationLine(operLineCmd);
+//            for(WhOperationLineCommand operLineCmd : operationLineList) {
+//                String opLineSkuAttrIds = SkuCategoryProvider.getSkuAttrIdByOperationLine(operLineCmd);
+//                for(WhSkuInventoryCommand skuInvCmd:skuInvCmdList) {
+//                        String skuAttrIds = SkuCategoryProvider.getSkuAttrIdByInv(skuInvCmd);
+//                        if(opLineSkuAttrIds.equals(skuAttrIds)){
+//                            if(null != operLineCmd.getFromOuterContainerId() && null != skuInvCmd.getOuterContainerId()) { //外部容器不为空
+//                                if(operLineCmd.getFromOuterContainerId() == skuInvCmd.getOuterContainerId()) {
+//                                    if(operLineCmd.getFromInsideContainerId().equals(skuInvCmd.getInsideContainerId())) {
+//                                        skuInvList.add(skuInvCmd);    //外部容器
+//                                    }
+//                                }
+//                            }else{
+//                                if(null == operLineCmd.getFromOuterContainerId() && null == skuInvCmd.getOuterContainerId()){
+//                                    if(null != operLineCmd.getFromInsideContainerId() && null != skuInvCmd.getInsideContainerId()) {
+//                                        if(operLineCmd.getFromInsideContainerId().equals(skuInvCmd.getInsideContainerId())) {
+//                                            skuInvList.add(skuInvCmd);    //外部容器
+//                                        }
+//                                    }else{  //散装
+//                                        skuInvList.add(skuInvCmd); 
+//                                    }
+//                                }
+//                            }
+//                        }
+//               }
+//            }
+            for(WhOperationLineCommand operLineCmd : operationLineList){
+                Long odoLineId = operLineCmd.getOdoLineId();  //出库单明细ID
                 for(WhSkuInventoryCommand skuInvCmd:skuInvCmdList) {
-                        String skuAttrIds = SkuCategoryProvider.getSkuAttrIdByInv(skuInvCmd);
-                        if(opLineSkuAttrIds.equals(skuAttrIds)){
-                            if(null != operLineCmd.getFromOuterContainerId() && null != skuInvCmd.getOuterContainerId()) { //外部容器不为空
-                                if(operLineCmd.getFromOuterContainerId() == skuInvCmd.getOuterContainerId()) {
-                                    if(operLineCmd.getFromInsideContainerId().equals(skuInvCmd.getInsideContainerId())) {
-                                        skuInvList.add(skuInvCmd);    //外部容器
-                                    }
-                                }
-                            }else{
-                                if(null == operLineCmd.getFromOuterContainerId() && null == skuInvCmd.getOuterContainerId()){
-                                    if(null != operLineCmd.getFromInsideContainerId() && null != skuInvCmd.getInsideContainerId()) {
-                                        if(operLineCmd.getFromInsideContainerId().equals(skuInvCmd.getInsideContainerId())) {
-                                            skuInvList.add(skuInvCmd);    //外部容器
-                                        }
-                                    }else{  //散装
-                                        skuInvList.add(skuInvCmd); 
-                                    }
-                                }
-                            }
-                        }
-               }
+                    Long occupationLineId = skuInvCmd.getOccupationId();
+                    if(odoLineId.equals(occupationLineId)) {
+                        skuInvList.add(skuInvCmd); 
+                    }
+                }
             }
             cacheManager.setObject(CacheConstants.CACHE_LOC_INVENTORY + operationId.toString()+locationId.toString(), skuInvList, CacheConstants.CACHE_ONE_DAY);
             //缓存一次作业下的所有库位库存

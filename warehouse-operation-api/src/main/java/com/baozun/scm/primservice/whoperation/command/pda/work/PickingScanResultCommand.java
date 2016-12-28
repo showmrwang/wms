@@ -45,8 +45,12 @@ public class PickingScanResultCommand extends BaseCommand {
 
     /**提示托盘*/
     private String tipOuterContainerCode;
+    /**是否提示外部托盘*/
+    private Boolean isTipOuterContainer;
     /** 提示内部容器号 */
     private String tipInsideContainerCode;
+    /**是否提示内部容器*/
+    private Boolean isTipinsideCotnainer;
     /**托盘*/
     private String outerContainerCode;
     /** 内部容器号 */
@@ -69,8 +73,12 @@ public class PickingScanResultCommand extends BaseCommand {
     private Integer invOccupyMode;
     /** 是否扫描拣货库位托盘 */
     private java.lang.Boolean isScanOuterContainer;
+    /**是否已经扫描外部容器*/
+    private Boolean isNeedScanOuter = false;
     /** 是否扫描拣货库位货箱 */
     private java.lang.Boolean isScanInsideContainer;
+    /**是否已经扫描内部容器*/
+    private Boolean isNeedScanInsider = false;
     /** 是否扫描商品 */
     private java.lang.Boolean isScanSku;
     /** 扫描模式 1数量扫描 2逐件扫描 默认数量扫描 */
@@ -173,6 +181,8 @@ public class PickingScanResultCommand extends BaseCommand {
     private Boolean isTrunkful;
     /**出库箱/周转箱满箱后是否使用新的容器*/
     private Boolean isUserNewContainer;
+    
+    private Boolean isNeedScanSku;  //是否扫描sku
 
     /**
      * 出库箱集合(仅限于有小车,有出库箱的情况)
@@ -746,4 +756,37 @@ public class PickingScanResultCommand extends BaseCommand {
     public void setIsSkuSnOccupation(Boolean isSkuSnOccupation) {
         this.isSkuSnOccupation = isSkuSnOccupation;
     }
+    public Boolean getIsTipinsideCotnainer() {
+        return isTipinsideCotnainer;
+    }
+    public void setIsTipinsideCotnainer(Boolean isTipinsideCotnainer) {
+        this.isTipinsideCotnainer = isTipinsideCotnainer;
+    }
+    public Boolean getIsTipOuterContainer() {
+        return isTipOuterContainer;
+    }
+    public void setIsTipOuterContainer(Boolean isTipOuterContainer) {
+        this.isTipOuterContainer = isTipOuterContainer;
+    }
+    public Boolean getIsNeedScanOuter() {
+        return isNeedScanOuter;
+    }
+    public void setIsNeedScanOuter(Boolean isNeedScanOuter) {
+        this.isNeedScanOuter = isNeedScanOuter;
+    }
+    public Boolean getIsNeedScanInsider() {
+        return isNeedScanInsider;
+    }
+    public void setIsNeedScanInsider(Boolean isNeedScanInsider) {
+        this.isNeedScanInsider = isNeedScanInsider;
+    }
+    public Boolean getIsNeedScanSku() {
+        return isNeedScanSku;
+    }
+    public void setIsNeedScanSku(Boolean isNeedScanSku) {
+        this.isNeedScanSku = isNeedScanSku;
+    }
+
+    
+    
 }
