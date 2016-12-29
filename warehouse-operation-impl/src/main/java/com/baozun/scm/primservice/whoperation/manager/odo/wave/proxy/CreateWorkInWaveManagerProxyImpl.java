@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -58,7 +57,6 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.WhWork;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhWorkLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WorkType;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
-import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryTobefilled;
 
 @Service("createWorkInWaveManagerProxy")
 @Transactional
@@ -131,9 +129,10 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
     @Override
     public void createWorkInWave(Long waveId, Long ouId, Long userId) {
         // 查询补货工作释放及拆分条件分组 -- 补货工作
-        List<ReplenishmentRuleCommand> replenishmentRuleCommands = this.getReplenishmentConditionGroup(waveId, ouId);
+        List<ReplenishmentRuleCommand> replenishmentRuleCommands = this.getInReplenishmentConditionGroup(waveId, ouId);
         // 循环补货工作释放及拆分条件分组        
         for(ReplenishmentRuleCommand replenishmentRuleCommand : replenishmentRuleCommands){
+            replenishmentRuleCommand.setTaskOuId(ouId);
             // 根据补货工作拆分条件统计分析补货数据 
             Map<String, List<WhSkuInventoryAllocatedCommand>> siacMap = getSkuInventoryAllocatedCommandForGroup(replenishmentRuleCommand);
             // 循环统计的分组信息分别创建工作           
@@ -232,6 +231,54 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
     }
 
     /**
+     * 创建波次外工作和作业
+     * 
+     * @param ouId
+     * @param userId
+     * @return
+     */
+    @Override
+    public void createWorkOutWave(Long ouId, Long userId) {
+        // 查询补货工作释放及拆分条件分组 -- 补货工作
+        List<ReplenishmentRuleCommand> replenishmentRuleCommands = this.getOutReplenishmentConditionGroup(ouId);
+        // 循环补货工作释放及拆分条件分组        
+        for(ReplenishmentRuleCommand replenishmentRuleCommand : replenishmentRuleCommands){
+            // 根据补货工作拆分条件统计分析补货数据 
+            Map<String, List<WhSkuInventoryAllocatedCommand>> siacMap = getSkuInventoryAllocatedCommandForGroup(replenishmentRuleCommand);
+            // 循环统计的分组信息分别创建工作           
+            for(String key : siacMap.keySet()){
+                // 创建拣货工作--创建工作头信息
+                String replenishmentWorkCode = this.saveOutReplenishmentWork(siacMap.get(key).get(0), userId);
+                int rWorkLineTotal = 0;
+                // 循环统计的分组补货信息列表
+                for(WhSkuInventoryAllocatedCommand skuInventoryAllocatedCommand : siacMap.get(key)){
+                    // 判断分配量与待移入量是否相等
+                    if(skuInventoryAllocatedCommand.getQty() != skuInventoryAllocatedCommand.getToQty()){
+                        throw new BusinessException("分配量与待移入量不相等");
+                    }
+                    // 创建补货工作明细
+                    this.saveReplenishmentWorkLine(key, replenishmentWorkCode, userId, skuInventoryAllocatedCommand);
+                    rWorkLineTotal = rWorkLineTotal + 1;
+                }
+                // 校验工作明细数量是否正确
+                if (rWorkLineTotal != siacMap.get(key).size()) {
+                    throw new BusinessException("工作明细数量不正确");
+                }
+                // 更新补货工作头信息
+                this.updateOutReplenishmentWork(replenishmentWorkCode, siacMap.get(key).get(0));
+                // 生成作业头
+                String replenishmentOperationCode = this.saveReplenishmentOperation(key, replenishmentWorkCode, siacMap.get(key).get(0));
+                // 基于工作明细生成作业明细
+                int replenishmentOperationLineCount = this.saveReplenishmentOperationLine(replenishmentWorkCode, replenishmentOperationCode, ouId);
+                // 校验作业明细
+                if (replenishmentOperationLineCount != rWorkLineTotal) {
+                    throw new BusinessException("创建的作业明细不正确");
+                }
+            }
+        }
+    }
+    
+    /**
      * 查询出波次头信息
      * 
      * @param waveId
@@ -264,16 +311,30 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
     }
     
     /**
-     * 查询补货工作释放及拆分条件分组 -- 补货工作
+     * 查询波次内补货工作释放及拆分条件分组 -- 补货工作
      * 
      * @param waveId
      * @param ouId
      * @return
      */
     @Override
-    public List<ReplenishmentRuleCommand> getReplenishmentConditionGroup(Long waveId, Long ouId) {
+    public List<ReplenishmentRuleCommand> getInReplenishmentConditionGroup(Long waveId, Long ouId) {
         // 查询补货工作释放及拆分条件分组
-        List<ReplenishmentRuleCommand> replenishmentRuleCommands = this.replenishmentRuleDao.getReplenishmentConditionGroup(waveId, ouId);
+        List<ReplenishmentRuleCommand> replenishmentRuleCommands = this.replenishmentRuleDao.getInReplenishmentConditionGroup(waveId, ouId);
+        return replenishmentRuleCommands;
+    }
+    
+    /**
+     * 查询波次外补货工作释放及拆分条件分组 -- 补货工作
+     * 
+     * @param waveId
+     * @param ouId
+     * @return
+     */
+    @Override
+    public List<ReplenishmentRuleCommand> getOutReplenishmentConditionGroup(Long ouId) {
+        // 查询补货工作释放及拆分条件分组
+        List<ReplenishmentRuleCommand> replenishmentRuleCommands = this.replenishmentRuleDao.getOutReplenishmentConditionGroup(ouId);
         return replenishmentRuleCommands;
     }
     
@@ -284,9 +345,22 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
      * @return
      */
     @Override
-    public List<WhSkuInventoryAllocatedCommand> getAllReplenishmentLst(ReplenishmentRuleCommand replenishmentRuleCommand) {
+    public List<WhSkuInventoryAllocatedCommand> getInAllReplenishmentLst(ReplenishmentRuleCommand replenishmentRuleCommand) {
         // 根据补货工作释放及拆分条件获取所有补货数据
-        List<WhSkuInventoryAllocatedCommand> skuInventoryAllocatedCommandLst = this.skuInventoryAllocatedDao.getAllReplenishmentLst(replenishmentRuleCommand);
+        List<WhSkuInventoryAllocatedCommand> skuInventoryAllocatedCommandLst = this.skuInventoryAllocatedDao.getInAllReplenishmentLst(replenishmentRuleCommand);
+        return skuInventoryAllocatedCommandLst;
+    }
+    
+    /**
+     * 根据补货工作释放及拆分条件获取所有补货数据
+     * 
+     * @param WhSkuInventoryAllocatedCommand
+     * @return
+     */
+    @Override
+    public List<WhSkuInventoryAllocatedCommand> getOutAllReplenishmentLst(ReplenishmentRuleCommand replenishmentRuleCommand) {
+        // 根据补货工作释放及拆分条件获取所有补货数据
+        List<WhSkuInventoryAllocatedCommand> skuInventoryAllocatedCommandLst = this.skuInventoryAllocatedDao.getOutAllReplenishmentLst(replenishmentRuleCommand);
         return skuInventoryAllocatedCommandLst;
     }
     
@@ -903,8 +977,13 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
     public Map<String, List<WhSkuInventoryAllocatedCommand>> getSkuInventoryAllocatedCommandForGroup(ReplenishmentRuleCommand replenishmentRuleCommand) {
         // 初始化分组MAP
         Map<String, List<WhSkuInventoryAllocatedCommand>> rMap = new HashMap<String, List<WhSkuInventoryAllocatedCommand>>();
-        // 根据补货工作释放及拆分条件获取所有补货数据      
-        List<WhSkuInventoryAllocatedCommand> skuInventoryAllocatedCommandLst =  getAllReplenishmentLst(replenishmentRuleCommand);
+        // 根据补货工作释放及拆分条件获取所有补货数据
+        List<WhSkuInventoryAllocatedCommand> skuInventoryAllocatedCommandLst = new ArrayList<WhSkuInventoryAllocatedCommand>();
+        if(null != replenishmentRuleCommand.getWaveId()){
+            skuInventoryAllocatedCommandLst =  getInAllReplenishmentLst(replenishmentRuleCommand); 
+        }else{
+            skuInventoryAllocatedCommandLst =  getOutAllReplenishmentLst(replenishmentRuleCommand);
+        }
         // 根据补货工作拆分条件统计分析补货数据
         for(WhSkuInventoryAllocatedCommand whSkuInventoryAllocatedCommand : skuInventoryAllocatedCommandLst){
             // 初始化WhSkuInventoryAllocatedCommand列表
@@ -1558,5 +1637,205 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
             count = count + 1;
         }
         return count;
+    }
+    
+    /**
+     *  创建补货工作头信息
+     * 
+     * @param whOdoOutBoundBox
+     * @param userId
+     * @return
+     */
+    @Override
+    public String saveOutReplenishmentWork(WhSkuInventoryAllocatedCommand skuInventoryAllocatedCommand, Long userId) {
+        //获取工作类型      
+        WorkType workType = this.workTypeDao.findWorkTypeByworkCategory("REPLENISHMENT", skuInventoryAllocatedCommand.getOuId());
+        
+        //根据容器ID获取容器CODE
+        Container outerContainer = new Container();
+        Container insideContainer = new Container();
+        if(skuInventoryAllocatedCommand.getOuterContainerId() != null){
+            outerContainer = containerDao.findByIdExt(skuInventoryAllocatedCommand.getOuterContainerId(),skuInventoryAllocatedCommand.getOuId());
+        }
+        if(skuInventoryAllocatedCommand.getInsideContainerId() != null){
+            insideContainer = containerDao.findByIdExt(skuInventoryAllocatedCommand.getInsideContainerId(),skuInventoryAllocatedCommand.getOuId());
+        }
+        
+        //调编码生成器工作头实体标识        
+        String workCode = codeManager.generateCode(Constants.WMS, Constants.WHWORK_MODEL_URL, "", "WORK", null);
+        
+        //所有值为null的字段，将会在更新工作头信息时获取，如果到时候还没有值，那就是被骗了        
+        WhWorkCommand whWorkCommand = new WhWorkCommand();
+        //工作号        
+        whWorkCommand.setCode(workCode);
+        //工作状态，系统常量        
+        whWorkCommand.setStatus(WorkStatus.NEW);
+        //仓库组织ID        
+        whWorkCommand.setOuId(skuInventoryAllocatedCommand.getOuId());
+        //工作类型编码
+        whWorkCommand.setWorkType(null == workType ? null : workType.getCode());
+        //工作类别编码 
+        whWorkCommand.setWorkCategory("REPLENISHMENT");
+        //是否锁定 默认值：1
+        whWorkCommand.setIsLocked(true);
+        //是否已迁出        
+        whWorkCommand.setIsAssignOut(false);
+        //是否短拣--执行时判断
+        whWorkCommand.setIsShortPicking(null);
+        //是否波次内补货
+        whWorkCommand.setIsWaveReplenish(false);
+        //是否拣货库存待移入
+        whWorkCommand.setIsPickingTobefilled(null);
+        //是否多次作业--需计算后再更新
+        whWorkCommand.setIsMultiOperation(null);
+        //当前工作明细设计到的所有库区编码信息列表--更新时获取数据      
+        whWorkCommand.setWorkArea(null);
+        //工作优先级     
+        whWorkCommand.setWorkPriority(workType.getPriority());
+        //小批次
+        whWorkCommand.setBatch(null);
+        //签出批次
+        whWorkCommand.setAssignOutBatch(null);
+        //操作开始时间
+        whWorkCommand.setStartTime(new Date());
+        //操作结束时间
+        whWorkCommand.setFinishTime(new Date());
+        //波次ID
+        whWorkCommand.setWaveId(null);
+        //波次号
+        whWorkCommand.setWaveCode(null);
+        //订单号--更新时获取数据
+        whWorkCommand.setOrderCode(null);
+        //库位--更新时获取数据
+        whWorkCommand.setLocationCode(null);
+        //托盘--更新时获取数据
+        whWorkCommand.setOuterContainerCode(null == outerContainer ? null : outerContainer.getCode());
+        //容器
+        whWorkCommand.setContainerCode(null == insideContainer ? null : insideContainer.getCode());
+        //创建时间
+        whWorkCommand.setCreateTime(new Date());
+        //最后操作时间
+        whWorkCommand.setLastModifyTime(new Date());
+        //创建人ID
+        whWorkCommand.setCreatedId(userId);
+        //修改人ID
+        whWorkCommand.setModifiedId(userId);
+        //操作人ID
+        whWorkCommand.setOperatorId(userId);
+        //是否启用 1:启用 0:停用
+        whWorkCommand.setLifecycle(0);
+        
+        WhWork whWork = new WhWork();
+        //复制数据        
+        BeanUtils.copyProperties(whWorkCommand, whWork);
+        if(null != whWorkCommand.getId() ){
+            workDao.saveOrUpdateByVersion(whWork);
+        }else{
+            workDao.insert(whWork);
+        }
+        
+        return workCode;
+    }
+    
+    /**
+     *  更新补货工作头信息
+     * 
+     * @param waveId
+     * @param replenishmentWorkCode
+     * @param skuInventoryAllocatedCommand
+     * @return
+     */
+    @Override
+    public void updateOutReplenishmentWork(String replenishmentWorkCode, WhSkuInventoryAllocatedCommand skuInventoryAllocatedCommand) {
+        //获取工作头信息        
+        WhWorkCommand whWorkCommand = this.workDao.findWorkByWorkCode(replenishmentWorkCode, skuInventoryAllocatedCommand.getOuId());
+        //获取工作明细信息列表        
+        List<WhWorkLineCommand> whWorkLineCommandList = this.workLineDao.findWorkLineByWorkId(whWorkCommand.getId(), skuInventoryAllocatedCommand.getOuId());
+        String workArea = "" ;
+        int count = 0;
+        Boolean isFromLocationId = true;
+        Boolean isUseOuterContainerId = true;
+        Boolean isUseContainerId = true;
+        Boolean isOdoId = true;
+        
+        for(WhWorkLineCommand whWorkLineCommand : whWorkLineCommandList){
+            if(count !=  0){
+                //获取上一次循环的实体类            
+                WhWorkLineCommand whWorkLineCommandBefor = whWorkLineCommandList.get(count-1);
+                
+                if(whWorkLineCommandBefor.getFromLocationId() != whWorkLineCommand.getFromLocationId()){
+                    isFromLocationId = false;
+                }
+                if(whWorkLineCommandBefor.getUseOuterContainerId() != whWorkLineCommand.getUseOuterContainerId()){
+                    isUseOuterContainerId = false;
+                }
+                if(whWorkLineCommandBefor.getUseContainerId() != whWorkLineCommand.getUseContainerId()){
+                    isUseContainerId = false;
+                }
+                if(whWorkLineCommandBefor.getOdoId() != whWorkLineCommand.getOdoId()){
+                    isOdoId = false;
+                }
+            }
+            
+            LocationCommand locationCommand = locationDao.findLocationCommandByParam(whWorkLineCommand.getFromLocationId(), whWorkLineCommand.getOuId());
+            if(null != locationCommand){
+                Area area = areaDao.findByIdExt(locationCommand.getWorkAreaId(),locationCommand.getOuId());
+                if(workArea == ""){
+                    workArea = area.getAreaCode();
+                }else{
+                    workArea = workArea +","+area.getAreaCode();
+                }
+            }
+            //索引自增            
+            count++;
+        }
+        //判断工作明细是否只有唯一库位
+        if(isFromLocationId == true){
+            //获取库位表数据                              
+            LocationCommand locationCommand = locationDao.findLocationCommandByParam(whWorkLineCommandList.get(0).getFromLocationId(), whWorkLineCommandList.get(0).getOuId());
+            if(null != locationCommand){
+              //设置库位      
+              whWorkCommand.setLocationCode(locationCommand.getCode());
+            }
+        }
+        //判断工作明细是否只有唯一外部容器
+        if(isUseOuterContainerId == true){
+            //根据容器ID获取容器CODE      
+            Container containerOut = new Container();
+            containerOut = containerDao.findByIdExt(whWorkLineCommandList.get(0).getUseOuterContainerId(),skuInventoryAllocatedCommand.getOuId());
+            if(null != containerOut){
+                //设置外部容器
+                whWorkCommand.setOuterContainerCode(containerOut.getCode());
+            }
+        }
+        //判断据工作明细是否只有唯一内部容器
+        if(isUseContainerId == true){
+            //根据容器ID获取容器CODE      
+            Container containerIn = new Container();
+            containerIn = containerDao.findByIdExt(whWorkLineCommandList.get(0).getUseContainerId(),skuInventoryAllocatedCommand.getOuId());
+            if(null != containerIn){
+                //设置内部容器
+                whWorkCommand.setContainerCode(containerIn.getCode());
+            }
+        }
+        //判断据工作明细是否只有唯一出库单
+        if(isOdoId == true){
+            OdoCommand odoCommand = this.odoDao.findCommandByIdOuId(whWorkLineCommandList.get(0).getOdoId(), skuInventoryAllocatedCommand.getOuId());
+            if(null != odoCommand){
+                //设置订单号
+                whWorkCommand.setOrderCode(odoCommand.getEcOrderCode());
+            }
+        }
+        
+        //当前工作明细设计到的所有库区编码信息列表
+        whWorkCommand.setWorkArea(workArea);
+        WhWork whWork = new WhWork();
+        //复制数据        
+        BeanUtils.copyProperties(whWorkCommand, whWork);
+        if(null != whWorkCommand.getId() ){
+            workDao.saveOrUpdateByVersion(whWork);
+        }else{
+            workDao.insert(whWork);
+        }
     }
 }

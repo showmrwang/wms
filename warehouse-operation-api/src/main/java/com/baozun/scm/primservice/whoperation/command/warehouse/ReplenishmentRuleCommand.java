@@ -82,6 +82,8 @@ public class ReplenishmentRuleCommand extends BaseCommand {
     private Long locationId;
     /** 波次Id -- 创补货工作*/
     private Long waveId;
+    /** ouId -- 补货任务*/
+    private Long taskOuId;
     
     
     public Integer getLifecycle() {
@@ -314,5 +316,13 @@ public class ReplenishmentRuleCommand extends BaseCommand {
 
     public void setWaveId(Long waveId) {
         this.waveId = waveId;
+    }
+
+    public Long getTaskOuId() {
+        return taskOuId;
+    }
+
+    public void setTaskOuId(Long taskOuId) {
+        this.taskOuId = taskOuId;
     }
 }

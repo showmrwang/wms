@@ -28,6 +28,14 @@ public interface CreateWorkInWaveManagerProxy extends BaseManager {
      * @return
      */
     public void createWorkInWave(Long waveId, Long ouId, Long userId);
+   
+    /**
+     * [业务方法] 波次外创建工作和作业
+     * @param WhOdoOutBoundBox
+     * @param userId
+     * @return
+     */
+    public void createWorkOutWave(Long ouId, Long userId);
     
     /**
      * [业务方法] 创建拣货工作-返回小批次列表给上层服务
@@ -114,19 +122,34 @@ public interface CreateWorkInWaveManagerProxy extends BaseManager {
     public void updateWhOdoOutBoundBoxCommand (WhOdoOutBoundBoxCommand whOdoOutBoundBoxCommand);
     
     /**
-     * [业务方法] 创建补货工作-查询补货工作释放及拆分条件分组
+     * [业务方法] 创建补货工作-查询波次内补货工作释放及拆分条件分组
      * @param waveId, 
      * @param ouId
      * @return
      */
-    public List<ReplenishmentRuleCommand> getReplenishmentConditionGroup (Long waveId, Long ouId);
+    public List<ReplenishmentRuleCommand> getInReplenishmentConditionGroup (Long waveId, Long ouId);
     
     /**
-     * [业务方法] 创建补货工作-根据补货工作释放及拆分条件获取所有补货数据
+     * [业务方法] 创建补货工作-查询波次外补货工作释放及拆分条件分组
+     * @param waveId, 
+     * @param ouId
+     * @return
+     */
+    public List<ReplenishmentRuleCommand> getOutReplenishmentConditionGroup (Long ouId);
+    
+    /**
+     * [业务方法] 创建补货工作-根据波次内补货工作释放及拆分条件获取所有补货数据
      * @param ReplenishmentRuleCommand
      * @return
      */
-    public List<WhSkuInventoryAllocatedCommand> getAllReplenishmentLst (ReplenishmentRuleCommand replenishmentRuleCommand);
+    public List<WhSkuInventoryAllocatedCommand> getInAllReplenishmentLst (ReplenishmentRuleCommand replenishmentRuleCommand);
+    
+    /**
+     * [业务方法] 创建补货工作-根据波次内补货工作释放及拆分条件获取所有补货数据
+     * @param ReplenishmentRuleCommand
+     * @return
+     */
+    public List<WhSkuInventoryAllocatedCommand> getOutAllReplenishmentLst (ReplenishmentRuleCommand replenishmentRuleCommand);
     
     /**
      * [业务方法] 创建补货工作-根据补货工作释放及拆分条件获取所有补货数据
@@ -136,13 +159,23 @@ public interface CreateWorkInWaveManagerProxy extends BaseManager {
     public Map<String, List<WhSkuInventoryAllocatedCommand>> getSkuInventoryAllocatedCommandForGroup(ReplenishmentRuleCommand replenishmentRuleCommand);
     
     /**
-     * [业务方法] 创建补货工作-创建补货工作头信息
+     * [业务方法] 创建补货工作-创建波次内补货工作头信息
      * @param waveId
      * @param whOdoOutBoundBox
      * @param userId
      * @return
      */
     public String saveReplenishmentWork(Long waveId, WhSkuInventoryAllocatedCommand skuInventoryAllocatedCommand, Long userId);
+    
+    /**
+     * [业务方法] 创建补货工作-创建波次外补货工作头信息
+     * @param waveId
+     * @param whOdoOutBoundBox
+     * @param userId
+     * @return
+     */
+    public String saveOutReplenishmentWork(WhSkuInventoryAllocatedCommand skuInventoryAllocatedCommand, Long userId);
+    
     /**
      * [业务方法] 创建补货工作-创建工作明细
      * @param WhSkuInventoryAllocatedCommand
@@ -151,7 +184,14 @@ public interface CreateWorkInWaveManagerProxy extends BaseManager {
     public void saveReplenishmentWorkLine(String key, String replenishmentWorkCode, Long userId, WhSkuInventoryAllocatedCommand skuInventoryAllocatedCommand);
     
     /**
-     * [业务方法] 创建补货工作-更新工作头信息
+     * [业务方法] 创建补货工作-更新波次内工作头信息
+     * @param WhOdoOutBoundBox
+     * @return
+     */
+    public void updateOutReplenishmentWork(String replenishmentWorkCode, WhSkuInventoryAllocatedCommand skuInventoryAllocatedCommand);
+    
+    /**
+     * [业务方法] 创建补货工作-更新波次外工作头信息
      * @param WhOdoOutBoundBox
      * @return
      */
