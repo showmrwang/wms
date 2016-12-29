@@ -2437,6 +2437,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			</if>
 			<if test="allocateUnitCodes != null and allocateUnitCodes == 'HX'">
 				and inv.inside_container_id is not null
+				and inv.outer_container_id is null
 			</if>
 			<include refid="invAttrWhereCondition"/>
 		<if test="allocateUnitCodes != null and allocateUnitCodes == 'TP'">
@@ -2492,6 +2493,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			</if>
 			<if test="allocateUnitCodes != null and allocateUnitCodes == 'HX'">
 				and inv.inside_container_id is not null
+				and inv.outer_container_id is null
 			</if>
 			<include refid="invAttrWhereCondition"/>
 			<if test="minExpDate != null and maxExpDate != null">
@@ -2556,6 +2558,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					</if>
 					<if test="allocateUnitCodes != null and allocateUnitCodes == 'HX'">
 						and inv.inside_container_id is not null
+						and inv.outer_container_id is null
 					</if>
 					group by location_id
 				order by 
@@ -2574,6 +2577,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</if>
 		<if test="allocateUnitCodes != null and allocateUnitCodes == 'HX'">
 			and inv.inside_container_id is not null
+			and inv.outer_container_id is null
 		</if>
 		and inv.occupation_code is null 
 		and inv.occupation_line_id is null 
@@ -2626,6 +2630,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			</if>
 			<if test="allocateUnitCodes != null and allocateUnitCodes == 'HX'">
 				and inv.inside_container_id is not null
+				and inv.outer_container_id is null
 			</if>
 			<include refid="invAttrWhereCondition"/>
 			<if test="isStatic != null and isStatic == true">
