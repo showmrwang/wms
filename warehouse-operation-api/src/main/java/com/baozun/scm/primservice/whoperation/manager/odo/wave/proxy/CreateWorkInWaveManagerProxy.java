@@ -1,8 +1,12 @@
 package com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import com.baozun.scm.primservice.whoperation.command.odo.WhOdoOutBoundBoxCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.ReplenishmentRuleCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryAllocatedCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoOutBoundBox;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
@@ -48,16 +52,12 @@ public interface CreateWorkInWaveManagerProxy extends BaseManager {
      */
     public List<WhOdoOutBoundBox> getOdoOutBoundBoxForGroup(WhOdoOutBoundBox whOdoOutBoundBox);
     
-    
-    
     /**
      * [业务方法] 创建拣货工作-返回出库箱/容器信息列表给上层服务
      * @param WhOdoOutBoundBox
      * @return
      */
     public List<WhOdoOutBoundBoxCommand> getOdoOutBoundBoxListByGroup(WhOdoOutBoundBox whOdoOutBoundBox);
-    
-    
     
     /**
      * [业务方法] 创建拣货工作-创建工作头信息
@@ -66,7 +66,7 @@ public interface CreateWorkInWaveManagerProxy extends BaseManager {
      * @param ouId
      * @return
      */
-    public String saveWhWork(WhOdoOutBoundBox whOdoOutBoundBox, Long userId);
+    public String savePickingWork(WhOdoOutBoundBox whOdoOutBoundBox, Long userId);
     
     /**
      * [业务方法] 创建拣货工作-查询占用的库存信息
@@ -82,14 +82,14 @@ public interface CreateWorkInWaveManagerProxy extends BaseManager {
      * @param ouId
      * @return
      */
-    public int saveWorkLine(WhOdoOutBoundBoxCommand whOdoOutBoundBoxCommand, List<WhSkuInventory> whSkuInventoryList, Long userId, String workCode);
+    public int savePickingWorkLine(WhOdoOutBoundBoxCommand whOdoOutBoundBoxCommand, List<WhSkuInventory> whSkuInventoryList, Long userId, String workCode);
     
     /**
      * [业务方法] 创建拣货工作-更新工作头信息
      * @param WhOdoOutBoundBox
      * @return
      */
-    public void updateWhWork(String workCode, WhOdoOutBoundBox whOdoOutBoundBox);
+    public void updatePickingWork(String workCode, WhOdoOutBoundBox whOdoOutBoundBox);
     
     /**
      * [业务方法] 创建拣货工作-创建作业头
@@ -97,14 +97,14 @@ public interface CreateWorkInWaveManagerProxy extends BaseManager {
      * @param whOdoOutBoundBox
      * @return
      */
-    public String saveWhOperation(String workCode, WhOdoOutBoundBox whOdoOutBoundBox);
+    public String savePickingOperation(String workCode, WhOdoOutBoundBox whOdoOutBoundBox);
     
     /**
      * [业务方法] 创建拣货工作-创建作业明细
      * @param List<WhOdoOutBoundBox>
      * @return
      */
-    public int saveWhOperationLine(String workCode, String operationCode, Long ouId);
+    public int savePickingOperationLine(String workCode, String operationCode, Long ouId);
     
     /**
      * [业务方法] 创建拣货工作-设置出库箱行标识
@@ -112,4 +112,63 @@ public interface CreateWorkInWaveManagerProxy extends BaseManager {
      * @return
      */
     public void updateWhOdoOutBoundBoxCommand (WhOdoOutBoundBoxCommand whOdoOutBoundBoxCommand);
+    
+    /**
+     * [业务方法] 创建补货工作-查询补货工作释放及拆分条件分组
+     * @param waveId, 
+     * @param ouId
+     * @return
+     */
+    public List<ReplenishmentRuleCommand> getReplenishmentConditionGroup (Long waveId, Long ouId);
+    
+    /**
+     * [业务方法] 创建补货工作-根据补货工作释放及拆分条件获取所有补货数据
+     * @param ReplenishmentRuleCommand
+     * @return
+     */
+    public List<WhSkuInventoryAllocatedCommand> getAllReplenishmentLst (ReplenishmentRuleCommand replenishmentRuleCommand);
+    
+    /**
+     * [业务方法] 创建补货工作-根据补货工作释放及拆分条件获取所有补货数据
+     * @param ReplenishmentRuleCommand
+     * @return
+     */
+    public Map<String, List<WhSkuInventoryAllocatedCommand>> getSkuInventoryAllocatedCommandForGroup(ReplenishmentRuleCommand replenishmentRuleCommand);
+    
+    /**
+     * [业务方法] 创建补货工作-创建补货工作头信息
+     * @param waveId
+     * @param whOdoOutBoundBox
+     * @param userId
+     * @return
+     */
+    public String saveReplenishmentWork(Long waveId, WhSkuInventoryAllocatedCommand skuInventoryAllocatedCommand, Long userId);
+    /**
+     * [业务方法] 创建补货工作-创建工作明细
+     * @param WhSkuInventoryAllocatedCommand
+     * @return
+     */
+    public void saveReplenishmentWorkLine(String key, String replenishmentWorkCode, Long userId, WhSkuInventoryAllocatedCommand skuInventoryAllocatedCommand);
+    
+    /**
+     * [业务方法] 创建补货工作-更新工作头信息
+     * @param WhOdoOutBoundBox
+     * @return
+     */
+    public void updateReplenishmentWork(Long waveId, String replenishmentWorkCode, WhSkuInventoryAllocatedCommand skuInventoryAllocatedCommand);
+    
+    /**
+     * [业务方法] 创建补货工作-创建作业头
+     * @param workCode
+     * @param whOdoOutBoundBox
+     * @return
+     */
+    public String saveReplenishmentOperation(String key, String replenishmentWorkCode, WhSkuInventoryAllocatedCommand skuInventoryAllocatedCommand);
+    
+    /**
+     * [业务方法] 创建补货工作-创建作业明细
+     * @param List<WhOdoOutBoundBox>
+     * @return
+     */
+    public int saveReplenishmentOperationLine(String replenishmentWorkCode, String replenishmentOperationCode, Long ouId);
 }

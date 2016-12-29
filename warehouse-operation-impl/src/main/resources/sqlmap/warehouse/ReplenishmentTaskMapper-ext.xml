@@ -17,6 +17,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	location_id as locationId,
 	        	status as status,
 	        	ou_id as ouId,
+	        	is_create_work as isCreateWork,
 	        	create_time as createTime,
 	        	last_modify_time as lastModifyTime,
 	        	operator_id as operatorId
@@ -52,6 +53,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					and ou_id = #{ouId}
 				</if>
 	       
+	       		<if test="isCreateWork!=null">
+					and is_create_work = #{isCreateWork}
+				</if>
+	       		
 				<if test="createTime!=null">
 					and create_time = #{createTime}
 				</if>
@@ -74,6 +79,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        wave_id = #{waveId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        location_id = #{locationId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        status = #{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        is_create_work = #{isCreateWork,javaType=java.lang.Boolean,jdbcType=BIT} ,
 			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} 

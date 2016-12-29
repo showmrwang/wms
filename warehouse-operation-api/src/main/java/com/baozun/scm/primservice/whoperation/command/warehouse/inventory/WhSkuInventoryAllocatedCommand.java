@@ -55,6 +55,8 @@ public class WhSkuInventoryAllocatedCommand extends BaseModel {
 	public static final String ALIAS_UUID = "内部对接码";
 	public static final String ALIAS_OU_ID = "对应仓库ID";
 	public static final String ALIAS_LAST_MODIFY_TIME = "最后操作时间";
+	public static final String ALIAS_OCCUPATION_CODE_SOURCE = "占用单据来源";
+	public static final String ALIAS_REPLENISHMENT_RULE_ID = "补货阶段使用的规则id";
 	
 	//columns START
 	/** 商品ID */
@@ -105,6 +107,16 @@ public class WhSkuInventoryAllocatedCommand extends BaseModel {
 	private java.lang.Long ouId;
 	/** 最后操作时间 */
 	private java.util.Date lastModifyTime;
+	/** 占用单据来源 */
+    private java.lang.String occupationCodeSource;
+    /** 补货阶段使用的规则id */
+    private java.lang.Long replenishmentRuleId;
+    
+	//创补货工作
+	/** 目标库位 */
+    private java.lang.Long toLocationId;
+    /** 目标库位数量 */
+    private Double toQty;
 	//columns END
 
 	public WhSkuInventoryAllocatedCommand(){
@@ -288,6 +300,38 @@ public class WhSkuInventoryAllocatedCommand extends BaseModel {
 		return this.lastModifyTime;
 	}
 	
+    public java.lang.String getOccupationCodeSource() {
+        return occupationCodeSource;
+    }
+
+    public void setOccupationCodeSource(java.lang.String occupationCodeSource) {
+        this.occupationCodeSource = occupationCodeSource;
+    }
+
+    public java.lang.Long getReplenishmentRuleId() {
+        return replenishmentRuleId;
+    }
+
+    public void setReplenishmentRuleId(java.lang.Long replenishmentRuleId) {
+        this.replenishmentRuleId = replenishmentRuleId;
+    }
+
+    public java.lang.Long getToLocationId() {
+        return toLocationId;
+    }
+
+    public void setToLocationId(java.lang.Long toLocationId) {
+        this.toLocationId = toLocationId;
+    }
+
+    public Double getToQty() {
+        return toQty;
+    }
+
+    public void setToQty(Double toQty) {
+        this.toQty = toQty;
+    }
+    
     @Override
 	public String toString() {
 		return new ToStringBuilder(this)

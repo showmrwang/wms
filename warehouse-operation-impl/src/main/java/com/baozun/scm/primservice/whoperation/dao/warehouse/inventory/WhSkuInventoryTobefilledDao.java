@@ -87,5 +87,13 @@ public interface WhSkuInventoryTobefilledDao extends BaseDao<WhSkuInventoryTobef
 	List<WhSkuInventoryTobefilled> findNotOccupyListBySkuIdAndBhCode(@Param("skuId") Long skuId, @Param("bhCode") String bhCode, @Param("ouId") Long ouId);
 
     List<WhSkuInventoryTobefilled> findbyOccupationCode(@Param("occupationCode") String odoCode, @Param("ouId") Long ouId);
+    
+    /**
+     * 根据条件查询信息
+     * 
+     * @param WhSkuInventoryTobefilled
+     * @return WhSkuInventoryTobefilled
+     */
+    public List<WhSkuInventoryTobefilled> findskuInventoryTobefilleds(WhSkuInventoryTobefilled whSkuInventoryTobefilled);
 	
 }

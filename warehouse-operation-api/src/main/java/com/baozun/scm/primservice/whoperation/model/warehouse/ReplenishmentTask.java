@@ -39,6 +39,8 @@ public class ReplenishmentTask extends BaseModel {
 	private Integer status;
 	/** 仓库组织ID */
 	private Long ouId;
+	/** 是否已创建工作 */
+    private Boolean isCreateWork;
 	/** 创建时间 */
 	private Date createTime;
 	/** 修改时间 */
@@ -102,5 +104,11 @@ public class ReplenishmentTask extends BaseModel {
 	public Long getOperatorId() {
 		return this.operatorId;
 	}
+    public Boolean getIsCreateWork() {
+        return isCreateWork;
+    }
+    public void setIsCreateWork(Boolean isCreateWork) {
+        this.isCreateWork = isCreateWork;
+    }
 }
 

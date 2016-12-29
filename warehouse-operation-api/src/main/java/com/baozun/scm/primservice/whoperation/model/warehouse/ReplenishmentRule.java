@@ -47,6 +47,16 @@ public class ReplenishmentRule extends BaseModel {
     private Boolean waveReplenish;
     /** 仓库组织ID */
     private Long ouId;
+    /** 补货工作释放方式 */
+    private Integer releaseWorkWay;
+    /** 原始库位拆分工作 */
+    private Boolean isFromLocationSplitWork;
+    /** 原始库位托盘拆分工作 */
+    private Boolean isFromOuterContainerSplitWork;
+    /** 原始库位货箱拆分工作 */
+    private Boolean isFromInsideContainerSplitWork;
+    /** 目标库位拆分工作 */
+    private Boolean isToLocationSplitWork;
     /** 优先级 */
     private Integer priority;
     /** 描述 */
@@ -196,5 +206,45 @@ public class ReplenishmentRule extends BaseModel {
 
     public void setLifecycle(Integer lifecycle) {
         this.lifecycle = lifecycle;
+    }
+
+    public Integer getReleaseWorkWay() {
+        return releaseWorkWay;
+    }
+
+    public void setReleaseWorkWay(Integer releaseWorkWay) {
+        this.releaseWorkWay = releaseWorkWay;
+    }
+
+    public Boolean getIsFromLocationSplitWork() {
+        return isFromLocationSplitWork;
+    }
+
+    public void setIsFromLocationSplitWork(Boolean isFromLocationSplitWork) {
+        this.isFromLocationSplitWork = isFromLocationSplitWork;
+    }
+
+    public Boolean getIsFromOuterContainerSplitWork() {
+        return isFromOuterContainerSplitWork;
+    }
+
+    public void setIsFromOuterContainerSplitWork(Boolean isFromOuterContainerSplitWork) {
+        this.isFromOuterContainerSplitWork = isFromOuterContainerSplitWork;
+    }
+
+    public Boolean getIsFromInsideContainerSplitWork() {
+        return isFromInsideContainerSplitWork;
+    }
+
+    public void setIsFromInsideContainerSplitWork(Boolean isFromInsideContainerSplitWork) {
+        this.isFromInsideContainerSplitWork = isFromInsideContainerSplitWork;
+    }
+
+    public Boolean getIsToLocationSplitWork() {
+        return isToLocationSplitWork;
+    }
+
+    public void setIsToLocationSplitWork(Boolean isToLocationSplitWork) {
+        this.isToLocationSplitWork = isToLocationSplitWork;
     }
 }

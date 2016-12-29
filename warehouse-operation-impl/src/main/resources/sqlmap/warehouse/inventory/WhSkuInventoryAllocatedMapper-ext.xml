@@ -7,6 +7,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryAllocatedDao">
 	<resultMap id="WhSkuInventoryAllocatedResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryAllocated">
 	</resultMap>
+	<resultMap id="WhSkuInventoryAllocatedCommandResultExt" type="com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryAllocatedCommand">
+	</resultMap>
 	
 	<!-- 用于select查询公用抽取的列 -->
 	<sql id="whSkuInventoryAllocatedColumnsExt">
@@ -213,8 +215,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	 <select id="findbyOccupationCode" resultMap="WhSkuInventoryAllocatedResult" flushCache="false">
 			select <include refid="whSkuInventoryAllocatedColumns" />
 		    <![CDATA[
-			    from t_wh_sku_inventory_allocated 
-		        where 
+			    from t_wh_sku_inventory_allocated
+		        where
 		        occupation_code = #{occupationCode} and ou_id=#{ouId}
 		    ]]>
 		</select>
@@ -224,5 +226,84 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        delete from t_wh_sku_inventory_allocated where
 		        id = #{id} and ou_id=#{ouId}
 	    ]]>
-	    </delete>	
+    </delete>
+    
+    <select id="getAllReplenishmentLst" resultMap="WhSkuInventoryAllocatedCommandResultExt">
+		select 
+			invAllocated.*, 
+			invTobefilled.location_id toLocationId,
+			invTobefilled.qty toQty
+		from 
+			t_wh_wave wave, 
+			t_wh_wave_template waveTemplate, 
+			t_wh_wave_phase wavePhase, 
+			t_wh_wave_master waveMaster, 
+			t_wh_replenishment_task replenishTask, 
+			t_wh_sku_inventory_allocated invAllocated, 
+			t_wh_sku_inventory_tobefilled invTobefilled, 
+			t_wh_replenishment_rule replenishRule 
+		where 
+			replenishTask.wave_id = wave.id 
+		and replenishTask.is_create_work != 1 
+		and wave.wave_master_id = waveMaster.id 
+		and waveTemplate.id = waveMaster.wave_template_id 
+		and wavePhase.wave_template_id = waveTemplate.id 
+		and wavePhase.phase_code = 'CREATE_WORK' 
+		and replenishTask.replenishment_code = invAllocated.replenishment_code 
+		and replenishTask.replenishment_code = invTobefilled.replenishment_code 
+		and invAllocated.sku_id = invTobefilled.sku_id 
+		and invAllocated.occupation_code = invTobefilled.occupation_code 
+		and invAllocated.occupation_line_id = invTobefilled.occupation_line_id 
+		and invAllocated.replenishment_rule_id = replenishRule.id 
+		<if test="waveId!=null and waveId!=''">
+			and wave.id = #{waveId} 
+		</if>
+		<if test="ouId!=null and ouId!=''">
+			and wave.ou_id = #{ouId} 
+		</if>
+		<if test="releaseWorkWay!=null and releaseWorkWay!=''">
+			and replenishRule.release_work_way = #{releaseWorkWay} 
+		</if>
+		<if test="isFromLocationSplitWork!=null and isFromLocationSplitWork!=''">
+			and replenishRule.is_from_location_split_work = #{isFromLocationSplitWork} 
+		</if>
+		<if test="isFromOuterContainerSplitWork!=null and isFromOuterContainerSplitWork!=''">
+			and replenishRule.is_from_outer_container_split_work = #{isFromOuterContainerSplitWork} 
+		</if>
+		<if test="isFromInsideContainerSplitWork!=null and isFromInsideContainerSplitWork!=''">
+			and replenishRule.is_from_inside_container_split_work = #{isFromInsideContainerSplitWork} 
+		</if>
+		<if test="isToLocationSplitWork!=null and isToLocationSplitWork!=''">
+			and replenishRule.is_to_location_split_work = #{isToLocationSplitWork} 
+		</if>
+		order by 
+			invAllocated.sku_id, 
+			invAllocated.location_id, 
+			invAllocated.outer_container_id, 
+			invAllocated.inside_container_id, 
+			invAllocated.qty, 
+			invTobefilled.location_id, 
+			invTobefilled.qty 
+	</select>
+	
+	<select id="skuInventoryAllocatedQty" resultType="Double">
+		select
+			sum(invAllocated.qty)
+		from
+			t_wh_sku_inventory_allocated invAllocated
+		<where>
+			<if test="outerContainerId!=null and outerContainerId!=''">
+				and invAllocated.outer_container_id = #{outerContainerId} 
+			</if>
+			<if test="insideContainerId!=null and insideContainerId!=''">
+				and invAllocated.inside_container_id = #{insideContainerId} 
+			</if>
+			<if test="replenishmentCode!=null and replenishmentCode!=''">
+				and invAllocated.replenishment_code = #{replenishmentCode} 
+			</if>
+			<if test="replenishmentRuleId!=null and replenishmentRuleId!=''">
+				and invAllocated.replenishment_rule_id = #{replenishmentRuleId} 
+			</if>
+		</where>
+	</select>	
 </mapper>

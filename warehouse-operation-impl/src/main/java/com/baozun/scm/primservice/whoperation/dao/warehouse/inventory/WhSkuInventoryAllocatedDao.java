@@ -29,6 +29,8 @@ import lark.orm.dao.supports.BaseDao;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.baozun.scm.primservice.whoperation.command.warehouse.ReplenishmentRuleCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryAllocatedCommand;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryAllocated;
 
 public interface WhSkuInventoryAllocatedDao extends BaseDao<WhSkuInventoryAllocated,Long>{
@@ -53,4 +55,21 @@ public interface WhSkuInventoryAllocatedDao extends BaseDao<WhSkuInventoryAlloca
 
     int deleteExt(@Param("id") Long id, @Param("ouId") Long ouId);
 	
+	/**
+     * 根据补货工作释放及拆分条件获取所有补货数据
+     *
+     * @author qiming.liu
+     * @param ReplenishmentRuleCommand
+     * @return
+     */
+	List<WhSkuInventoryAllocatedCommand> getAllReplenishmentLst(ReplenishmentRuleCommand replenishmentRuleCommand);
+	
+	/**
+     * 根据条件查询库存数量
+     *
+     * @author qiming.liu
+     * @param ReplenishmentRuleCommand
+     * @return
+     */
+	Double skuInventoryAllocatedQty (WhSkuInventoryAllocatedCommand whSkuInventoryAllocatedCommand);
 }

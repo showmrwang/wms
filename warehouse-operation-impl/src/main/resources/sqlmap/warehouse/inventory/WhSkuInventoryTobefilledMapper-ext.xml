@@ -233,11 +233,19 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	</delete>
 	
 	 <select id="findbyOccupationCode" resultMap="WhSkuInventoryTobefilledResult" flushCache="false">
-			select <include refid="whSkuInventoryTobefilledColumns" />
-		    <![CDATA[
-			    from t_wh_sku_inventory_tobefilled 
-		        where 
-		        occupation_code = #{occupationCode} and ou_id=#{ouId}
-		    ]]>
-		</select>	
+		select <include refid="whSkuInventoryTobefilledColumns" />
+	    <![CDATA[
+		    from t_wh_sku_inventory_tobefilled 
+	        where 
+	        occupation_code = #{occupationCode} and ou_id=#{ouId}
+	    ]]>
+	</select>
+	
+	<select id="findskuInventoryTobefilleds" resultMap="WhSkuInventoryTobefilledResultExt">
+		select 
+			<include refid="whSkuInventoryTobefilledColumnsExt"/>
+		from t_wh_sku_inventory_tobefilled
+			<include refid="whSkuInventoryTobefilledDynamicWhereExt"/>
+	</select>
+	
 </mapper>

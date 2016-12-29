@@ -16,6 +16,7 @@ package com.baozun.scm.primservice.whoperation.dao.warehouse;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import lark.common.annotation.CommonQuery;
 import lark.common.annotation.QueryPage;
@@ -120,4 +121,16 @@ public interface ReplenishmentRuleDao extends BaseDao<ReplenishmentRule, Long> {
      * @return
      */
     List<ReplenishmentRuleCommand> findRuleByReplenishTypeOuIdOrderByPriorityAsc(@Param("orderReplenish") Boolean orderReplenish, @Param("realTimeReplenish") Boolean realTimeReplenish, @Param("waveReplenish") Boolean waveReplenish, @Param("ouId") Long ouId);
+
+    /**
+     * 查询补货工作释放及拆分条件分组
+     *
+     * @author qiming.liu
+     * @param waveId
+     * @param ouId
+     * @return
+     */
+    List<ReplenishmentRuleCommand> getReplenishmentConditionGroup(@Param("waveId") Long waveId, @Param("ouId") Long ouId);
+
+
 }

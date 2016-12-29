@@ -25,6 +25,8 @@ import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentTask;
 
 public interface ReplenishmentTaskDao extends BaseDao<ReplenishmentTask,Long>{
@@ -37,5 +39,14 @@ public interface ReplenishmentTaskDao extends BaseDao<ReplenishmentTask,Long>{
 	
 	@CommonQuery
 	int saveOrUpdateByVersion(ReplenishmentTask o);
+	
+	/**
+     * 根据补货编码查询信息
+     * 
+     * @param replenishmentCode
+     * @param ouId
+     * @return
+     */
+	ReplenishmentTask findReplenishmentTaskByCode(@Param("replenishmentCode") String replenishmentCode, @Param("ouId") Long ouId);
 	
 }

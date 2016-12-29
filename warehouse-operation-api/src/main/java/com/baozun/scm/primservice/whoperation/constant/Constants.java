@@ -495,6 +495,20 @@ public final class Constants {
     public static final String WAVE_CODE = "WAVE_CODE";
     /** 出库箱*/
     public static final String OUT_BOUND_BOX = "OUT_BOUND_BOX";
-
+   
+    /** 配置为原始库位*/
+    public static final String FROM_LOCATION = "FROM_LOCATION";
+    /** 配置为原始库位与目标库位*/
+    public static final String FROM_LOCATION_TO_LOCATION = "FROM_LOCATION_TO_LOCATION";
+    /** 配置为原始库位托盘*/
+    public static final String FROM_OUTER_CONTAINER = "FROM_OUTER_CONTAINER";
+    /** 配置为原始库位托盘与目标库位*/
+    public static final String FROM_OUTER_CONTAINER_TO_LOCATION = "FROM_OUTER_CONTAINER_TO_LOCATION";
+    /** 配置为原始库位货箱*/
+    public static final String FROM_INSIDE_CONTAINER = "FROM_INSIDE_CONTAINER";
+    /** 配置为原始库位货箱与目标库位*/
+    public static final String FROM_INSIDE_CONTAINER_TO_LOCATION = "FROM_INSIDE_CONTAINER_TO_LOCATION";
+    /** 配置为目标库位*/
+    public static final String TO_LOCATION = "TO_LOCATION";
 
 }
