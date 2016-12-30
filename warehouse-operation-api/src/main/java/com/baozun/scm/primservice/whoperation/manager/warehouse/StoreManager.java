@@ -127,5 +127,23 @@ public interface StoreManager extends BaseManager {
      */
     Store findStoreById(Long id);
 
+    /**
+     * 获取店铺
+     * 
+     * @param storeCode
+     * @return
+     */
+    Store findStoreByCode(String storeCode);
+
+    /**
+     * 校验用户是否有此店铺和客户的权限
+     * 
+     * @param customerId
+     * @param storeId
+     * @param userId
+     * @return
+     */
+    public Boolean checkCustomerStoreUser(Long customerId, Long storeId, Long userId);
+
 
 }

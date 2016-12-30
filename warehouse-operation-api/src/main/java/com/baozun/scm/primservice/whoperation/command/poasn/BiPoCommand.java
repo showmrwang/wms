@@ -131,6 +131,56 @@ public class BiPoCommand extends BaseCommand {
     /** 商品编码 */
     private String skuName;
 
+    /**
+     * 客户编码
+     */
+    private String customerCode;
+    /**
+     * 店铺编码
+     */
+    private String storeCode;
+    /**
+     * 供应商编码
+     */
+    private String supplierCode;
+    /**
+     * 运输商编码
+     */
+    private String logisticsProviderCode;
+
+
+    public String getCustomerCode() {
+        return customerCode;
+    }
+
+    public void setCustomerCode(String customerCode) {
+        this.customerCode = customerCode;
+    }
+
+    public String getStoreCode() {
+        return storeCode;
+    }
+
+    public void setStoreCode(String storeCode) {
+        this.storeCode = storeCode;
+    }
+
+    public String getSupplierCode() {
+        return supplierCode;
+    }
+
+    public void setSupplierCode(String supplierCode) {
+        this.supplierCode = supplierCode;
+    }
+
+    public String getLogisticsProviderCode() {
+        return logisticsProviderCode;
+    }
+
+    public void setLogisticsProviderCode(String logisticsProviderCode) {
+        this.logisticsProviderCode = logisticsProviderCode;
+    }
+
     public String getSkuCode() {
         return skuCode;
     }

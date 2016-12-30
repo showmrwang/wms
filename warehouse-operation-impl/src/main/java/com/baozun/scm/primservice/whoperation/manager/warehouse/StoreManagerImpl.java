@@ -25,13 +25,14 @@ import com.baozun.scm.primservice.whoperation.dao.auth.OperationUnitDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.StoreDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
+import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.system.GlobalLogManager;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
 
 @Service("storeManager")
 @Transactional
-public class StoreManagerImpl implements StoreManager {
+public class StoreManagerImpl extends BaseManagerImpl implements StoreManager {
     public static final Logger log = LoggerFactory.getLogger(StoreManagerImpl.class);
     
     @Autowired
@@ -299,5 +300,31 @@ public class StoreManagerImpl implements StoreManager {
     @Override
     public Store findStoreById(Long id) {
         return storeDao.findById(id);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
+    public Store findStoreByCode(String storeCode) {
+        return this.storeDao.findByCode(storeCode);
+    }
+
+    @Override
+    public Boolean checkCustomerStoreUser(Long customerId, Long storeId, Long userId) {
+        try {
+
+            StoreCommand command = new StoreCommand();
+            command.setCustomerId(customerId);
+            command.setUserId(userId);
+            command.setLifecycle(BaseModel.LIFECYCLE_NORMAL);
+            command.setId(storeId);
+            List<Store> sList = this.storeDao.findStoreListByParams(command);
+            if (sList == null || sList.size() == 0) {
+                return false;
+            }
+            return true;
+        } catch (Exception e) {
+            log.error(e + "");
+            return false;
+        }
     }
 }

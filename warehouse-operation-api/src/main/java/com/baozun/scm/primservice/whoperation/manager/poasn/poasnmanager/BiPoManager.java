@@ -12,6 +12,7 @@ import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.poasn.BiPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
+import com.baozun.scm.primservice.whoperation.model.warehouse.ma.TransportProvider;
 
 /**
  * @author yimin.lu
@@ -166,5 +167,13 @@ public interface BiPoManager extends BaseManager {
      * @return
      */
     BiPo findBiPoByExtCodeStoreId(String extCode, Long storeId);
+
+    /**
+     * 根据运输服务商Code查找运输服务商
+     * 
+     * @param logisticsProviderCode
+     * @return
+     */
+    TransportProvider findTransportProviderByCode(String logisticsProviderCode);
 
 }

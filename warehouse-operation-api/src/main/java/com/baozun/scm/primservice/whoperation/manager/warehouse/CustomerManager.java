@@ -15,6 +15,7 @@ public interface CustomerManager extends BaseManager {
 
     /**
      * @author yimin.lu 2016/1/7 查找有效的客户
+     * @mender yimin.lu 2016/12/30 【业务方法】
      * @param userId
      * @param lifecycle
      * @return
@@ -125,6 +126,16 @@ public interface CustomerManager extends BaseManager {
     public List<Customer> findCustomerList(Integer lifecycle, List<Long> customeridList);
 
     List<Customer> findCustomerAllList();
+
+    /**
+     * 根据Code查找客户
+     * 
+     * @param customerCode
+     * @return
+     */
+    public Customer findCustomerbyCode(String customerCode);
+
+
 
 
 }

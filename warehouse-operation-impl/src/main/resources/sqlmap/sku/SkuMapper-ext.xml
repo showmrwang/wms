@@ -29,7 +29,7 @@
 	</resultMap> -->
 
 
-	<!-- 用于select查询公用抽取的列 -->
+	<!-- 用于select查询公用抽取的列 ，集团下-->
 	<sql id="skuColumnsExt">
         <![CDATA[
                 sku.id as id,
@@ -687,5 +687,34 @@
 		left join t_wh_sku sku on sku.id = bar.sku_id 
 		where bar.bar_code = #{barCode}
 	</select>
+	
+	 <select id="findSkuByBarCodeCustomerIdInAll" resultMap="SkuResultExt">
+        select
+         		sku.id as id,
+                sku.code as code,
+                sku.bar_code as barCode,
+                sku.name as name,
+                sku.en_name as enName,
+                sku.description as description,
+                sku.color as color,
+                sku.length as length,
+                sku.width as width,
+                sku.height as height,
+                sku.volume as volume,
+                sku.weight as weight,
+                sku.brand_id as brandId,
+                sku.customer_id as customerId,
+                sku.create_time as createTime,
+                sku.created_id as createdId,
+                sku.last_modify_time as lastModifyTime,
+                sku.modified_id as modifiedId, 
+                sku.style as style,
+                sku.size as size,
+                sku.lifecycle as lifecycle,
+                sku.ext_code as extCode
+        from t_wh_sku sku
+       where sku.bar_code=#{barCode} and sku.customer_id=#{customerId}
+    </select>
+	
 
 </mapper>

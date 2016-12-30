@@ -10,6 +10,7 @@ import lark.common.dao.Sort;
 import com.baozun.scm.primservice.whoperation.command.poasn.BiPoLineCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.poasn.BiPoLine;
+import com.baozun.scm.primservice.whoperation.model.sku.Sku;
 
 public interface BiPoLineManager extends BaseManager {
 
@@ -103,5 +104,14 @@ public interface BiPoLineManager extends BaseManager {
      * @return
      */
     void deleteList(List<BiPoLine> lineList);
+
+    /**
+     * 查找商品信息
+     * 
+     * @param skuBarCode
+     * @param customerId
+     * @param logId
+     */
+    Sku findSkuByBarCode(String skuBarCode, Long customerId, String logId);
 
 }

@@ -15,6 +15,7 @@
 		<version.logback>1.0.3</version.logback>
 		<native2ascii_pattern>**/*.properties</native2ascii_pattern>
 
+		<commons-collections.version>3.2.1</commons-collections.version>
 		<!-- tomcat6-maven-plugin properties -->
 		<tomcat6.port>80</tomcat6.port>
 		<tomcat6.path>/</tomcat6.path>
@@ -374,6 +375,13 @@
 		    </exclusion>
 		   </exclusions> 
 		 </dependency>
+		 
+		 <!-- collections -->
+		<dependency>
+			<groupId>commons-collections</groupId>
+			<artifactId>commons-collections</artifactId>
+			<version>${commons-collections.version}</version>
+		</dependency>
 	</dependencies>
 
 	<profiles>

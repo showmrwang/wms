@@ -28,6 +28,7 @@ import com.baozun.scm.primservice.whoperation.dao.poasn.BiPoDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.BiPoLineDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoLineDao;
+import com.baozun.scm.primservice.whoperation.dao.sku.SkuDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
@@ -35,6 +36,7 @@ import com.baozun.scm.primservice.whoperation.model.poasn.BiPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.BiPoLine;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
+import com.baozun.scm.primservice.whoperation.model.sku.Sku;
 
 @Service("BiPoLineManager")
 @Transactional
@@ -53,6 +55,8 @@ public class BiPoLineManagerImpl extends BaseManagerImpl implements BiPoLineMana
     private BiPoManager biPoManager;
     @Autowired
     private CodeManager codeManager;
+    @Autowired
+    private SkuDao skudao;
 
     @Override
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
@@ -303,6 +307,12 @@ public class BiPoLineManagerImpl extends BaseManagerImpl implements BiPoLineMana
             bipo.setModifiedId(userId);
             this.biPoDao.saveOrUpdateByVersion(bipo);
         }
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
+    public Sku findSkuByBarCode(String skuBarCode, Long customerId, String logId) {
+        return this.skudao.findSkuByBarCodeCustomerIdInAll(skuBarCode, customerId);
     }
 
 }

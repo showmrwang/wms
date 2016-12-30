@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.whoperation.command.warehouse.CustomerCommand;
+import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.CustomerDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
@@ -28,7 +29,7 @@ import com.baozun.scm.primservice.whoperation.util.ParamsUtil;
 
 @Service("customerManager")
 @Transactional
-public class CustomerManagerImpl implements CustomerManager {
+public class CustomerManagerImpl extends BaseManagerImpl implements CustomerManager {
     public static final Logger log = LoggerFactory.getLogger(CustomerManagerImpl.class);
 
     @Autowired
@@ -328,5 +329,19 @@ public class CustomerManagerImpl implements CustomerManager {
     public List<Customer> findCustomerAllList() {
         return customerDao.findCustomerAllList();
     }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_GLOBALSOURCE)
+    public Customer findCustomerbyCode(String customerCode) {
+        Customer customer = new Customer();
+        customer.setLifecycle(Constants.LIFECYCLE_START);
+        customer.setCustomerCode(customerCode);
+        List<Customer> customerList = customerDao.findListByParam(customer);
+        if (customerList == null || customerList.size() == 0) {
+            return null;
+        }
+        return customerList.get(0);
+    }
+
 
 }

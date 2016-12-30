@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<excels>
+<excel id="biPo" class="com.baozun.scm.primservice.whoperation.command.poasn.BiPoCommand" sheetname="入库单列表" defaultColumnWidth="5000" enableStyle="true">
+	<field name="extCode" title="入库单外接编码" isNull="false" regexErrMsg=""/>
+	<field name="poType" title="入库单类型" format="1:采购入库" isNull="false" regexErrMsg=""/>
+	<field name="isIqc" title="是否质检" format="1:是,0:否"/>
+	<field name="poDate" title="采购时间"  pattern="yyyy/MM/dd"/>
+	<field name="eta" title="计划到货时间"  pattern="yyyy/MM/dd"/>
+	<field name="isWms" title="是否上位系统创建" format="1:是,0:否"/>
+	<field name="isVmi" title="是否VMI创建" format="1:是,0:否" />
+	<field name="customerCode" title="客户编码" isNull="false" regexErrMsg=""/>
+	<field name="storeCode" title="店铺编码" isNull="false" regexErrMsg=""/>
+	<field name="supplierCode" title="供应商编码" isNull="false" regexErrMsg=""/>
+	<field name="logisticsProviderCode" title="运输商编码" isNull="false" regexErrMsg=""/>
+</excel>
+<excel id="biPoLine" class="com.baozun.scm.primservice.whoperation.command.poasn.BiPoLineCommand" sheetname="入库单明细列表" defaultColumnWidth="5000" enableStyle="true">
+	<field name="linenum" title="行号"/>
+	<field name="qtyPlanned" title="计划数量" decimalFormatPattern="###,##0.00"/>
+	<field name="ctnPlanned" title="计划箱数" decimalFormatPattern="###,##0.00"/>
+	<field name="isIqc" title="是否质检" format="1:是,0:否"/>
+	<field name="mfgDate" title="生产日期" pattern="yyyy/MM/dd"/>
+	<field name="expDate" title="失效日期" pattern="yyyy/MM/dd"/>
+	<field name="validDate" title="效期"/>
+	<field name="batchNo" title="批次号"/>
+	<field name="countryOfOrigin" title="原产地"/>
+	<field name="invStatus" title="库存状态" format="3:良品,4:残次可销售,5:残次不可销售,6:待处理,7:待报废,8:临近保质期"/>
+	<field name="invType" title="库存类型" format="CCPLX:残次品类型,LP:良品"/>
+	<field name="invAttr1" title="库存属性1" format="1:红色,2:蓝色,3:折扣,4:半销"/>
+	<field name="invAttr2" title="库存属性2" format="1:固体,2:气体"/>
+	<field name="invAttr3" title="库存属性3" format="1:圆柱体,2:长方体"/>
+	<field name="invAttr4" title="库存属性4" format="1:年检,2:月检"/>
+	<field name="invAttr5" title="库存属性5" format="1:BD,2:CBD"/>
+	<field name="extCode" title="入库单外接编码"/>
+	<field name="skuCode" title="商品编码"/>
+	<field name="skuExtCode" title="商品外接编码"/>
+	<field name="skuBarCode" title="商品条码"/>
+</excel>
+</excels>

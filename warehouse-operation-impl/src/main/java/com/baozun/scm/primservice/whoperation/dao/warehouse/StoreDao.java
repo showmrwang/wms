@@ -89,4 +89,7 @@ public interface StoreDao extends BaseDao<Store, Long> {
      * @return
      */
     List<Store> findStoreByCustomerId(Long id);
+
+
+    Store findByCode(@Param("code") String storeCode);
 }

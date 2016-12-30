@@ -16,7 +16,7 @@ public interface CreatePoAsnManagerProxy extends BaseManager {
      * @param command
      * @return
      */
-    ResponseMsg createPoNew(WhPoCommand command);
+    ResponseMsg createPoNew(BiPoCommand command);
     
     /**
      * 创建POLINE明细【 业务方法】
@@ -125,5 +125,12 @@ public interface CreatePoAsnManagerProxy extends BaseManager {
      * @return
      */
     String getAsnExtCode();
+
+    /**
+     * 集团下入库单导入
+     * 
+     * @return
+     */
+    ResponseMsg importBiPo();
 
 }

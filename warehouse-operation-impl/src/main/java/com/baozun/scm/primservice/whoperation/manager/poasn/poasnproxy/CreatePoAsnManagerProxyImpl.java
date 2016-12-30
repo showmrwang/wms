@@ -1,11 +1,17 @@
 package com.baozun.scm.primservice.whoperation.manager.poasn.poasnproxy;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -26,6 +32,10 @@ import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoLineCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
+import com.baozun.scm.primservice.whoperation.excel.context.BiPoDefaultExcelContext;
+import com.baozun.scm.primservice.whoperation.excel.exception.ExcelException;
+import com.baozun.scm.primservice.whoperation.excel.exception.RootExcelException;
+import com.baozun.scm.primservice.whoperation.excel.vo.ExcelImportResult;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
@@ -35,6 +45,9 @@ import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.BiPoLin
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.BiPoManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoLineManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoManager;
+import com.baozun.scm.primservice.whoperation.manager.redis.SkuRedisManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.CustomerManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.StoreManager;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
 import com.baozun.scm.primservice.whoperation.model.poasn.BiPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.BiPoLine;
@@ -42,6 +55,10 @@ import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
+import com.baozun.scm.primservice.whoperation.model.sku.Sku;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
+import com.baozun.scm.primservice.whoperation.model.warehouse.ma.TransportProvider;
 import com.baozun.scm.primservice.whoperation.util.StringUtil;
 
 /**
@@ -73,13 +90,20 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
     @Autowired
     private BiPoLineManager biPoLineManager;
 
+    @Autowired
+    private CustomerManager customerManager;
+    @Autowired
+    private StoreManager storeManager;
+    @Autowired
+    private SkuRedisManager skuRedisManager;
+
     /**
      * 验证po单数据是否完整
      * 
      * @param po
      * @return
      */
-    private static void checkPoParameter(WhPoCommand po) {
+    private static void checkPoParameter(BiPoCommand po) {
         if (null == po) {
             throw new BusinessException(ErrorCodes.PO_IS_NULL);
         }
@@ -132,7 +156,7 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
      * @param po
      * @return
      */
-    private WhPo copyPropertiesPo(WhPoCommand po) {
+    private WhPo copyPropertiesPo(BiPoCommand po) {
         log.info(this.getClass().getSimpleName() + ".copyPropertiesPo method begin!");
         WhPo whPo = new WhPo();
         BeanUtils.copyProperties(po, whPo);
@@ -168,14 +192,14 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
      * @param po
      * @return
      */
-    private List<WhPoLine> copyPropertiesPoLine(WhPoCommand po) {
+    private List<WhPoLine> copyPropertiesPoLine(BiPoCommand po) {
         log.info(this.getClass().getSimpleName() + ".copyPropertiesPoLine method begin!");
         List<WhPoLine> whPoLine = new ArrayList<WhPoLine>();
         if (null != po.getPoLineList()) {
             // 有line信息保存
             log.debug("CopyPropertiesPoLine po.getPoLineList().size(): " + po.getPoLineList().size());
             for (int i = 0; i < po.getPoLineList().size(); i++) {
-                WhPoLineCommand polineCommand = po.getPoLineList().get(i);
+                BiPoLineCommand polineCommand = po.getPoLineList().get(i);
                 WhPoLine poline = new WhPoLine();
                 BeanUtils.copyProperties(polineCommand, poline);
                 poline.setOuId(po.getOuId());
@@ -446,7 +470,7 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
      * 创建BIPO单据
      */
     @Override
-    public ResponseMsg createPoNew(WhPoCommand po) {
+    public ResponseMsg createPoNew(BiPoCommand po) {
         log.info("CreatePo start =======================");
         // @author yimin.lu
         // ①校验数据完整性
@@ -484,11 +508,8 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
             /**
              * @mender yimin.lu 2016/4/27 以下逻辑做修正；修改后的逻辑： 1.生成主库备份 2.如果有仓库，则在仓库中再插入一份
              */
-            biPoManager.createPoAndLineToInfo(whPo, whPoLines);
-            if (ouId != null) {
-                whPo.setPoCode(getUniqueCode());
-                biPoManager.createPoAndLineToShared(whPo, whPoLines);
-            }
+            this.createPoDefault(whPo, whPoLines, ouId);
+
         } catch (BusinessException e) {
             rm.setResponseStatus(ResponseMsg.DATA_ERROR);
             rm.setMsg(e.getErrorCode() + "");
@@ -506,6 +527,15 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
         return rm;
     }
 
+
+    private void createPoDefault(WhPo whPo, List<WhPoLine> whPoLines, Long ouId) {
+        biPoManager.createPoAndLineToInfo(whPo, whPoLines);
+        if (ouId != null) {
+            whPo.setPoCode(getUniqueCode());
+            biPoManager.createPoAndLineToShared(whPo, whPoLines);
+        }
+
+    }
 
     @Override
     public void createSubPoToInfo(BiPoCommand command) {
@@ -956,5 +986,199 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
         return extCode;
     }
 
+    @Override
+    public ResponseMsg importBiPo() {
+        String inPath = "D:/projects/TEST/IN-INFO/bipoTest.xlsx";
+        String outPath = "D:/projects/TEST/OUT-INFO/bipoTestout.xlsx";
+        Locale locale=Locale.CHINESE;
+        String[] excelIdArray = new String[] {"biPo", "biPoLine"};
+        return importBiPoForDefault(inPath, outPath, excelIdArray, locale);
+    }
 
+    private ResponseMsg importBiPoForDefault(String inPath, String outPath, String[] excelIdArray, Locale locale) {
+
+        BiPoCommand excelPo = null;
+
+        if (excelIdArray != null && excelIdArray.length > 0) {
+            try {
+                InputStream fis = new FileInputStream(inPath);
+                OutputStream fos = new FileOutputStream(outPath);
+                ExcelImportResult result = BiPoDefaultExcelContext.getContext().readExcel(excelIdArray[0], fis, fos, locale);
+                if (result == null) {
+                    throw new BusinessException("入库单头信息Excel解析失败");
+                }
+                List<BiPoCommand> poCommandList = result.getListBean();
+                System.out.println("行数： " + poCommandList.size());
+                excelPo = poCommandList.get(0);
+
+                if (excelPo == null) {
+                    throw new BusinessException("入库单头信息读取失败");
+                }
+                fis = new FileInputStream(inPath);
+                fos = new FileOutputStream(outPath);
+                ExcelImportResult poLineCommandListResult = BiPoDefaultExcelContext.getContext().readExcel(excelIdArray[1], fis, fos, locale);
+                if (poLineCommandListResult == null) {
+                    throw new BusinessException("入库单明细信息Excel解析失败");
+                }
+                List<BiPoLineCommand> poLineList = poLineCommandListResult.getListBean();
+                excelPo.setPoLineList(poLineList);
+            } catch (RootExcelException e) {
+                System.out.println(e.getMessage() + " [" + e.getSheetName() + "]");
+                for (ExcelException ee : e.getExcelExceptions()) {
+                    System.out.println(e.getSheetName() + ":第[" + ee.getRow() + "]行 [" + ee.getTitleName() + "] " + ee.getErrorCode() + " " + ee.getMessage());
+                }
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        ResponseMsg msg = this.createBiPoFromExcel(excelPo);
+        return msg;
+    }
+
+    /**
+     * EXCEL导入PO
+     * 
+     * @param excelPo
+     * @return
+     */
+    private ResponseMsg createBiPoFromExcel(BiPoCommand excelPo) {
+        String logId = excelPo.getLogId();
+        Long ouId = excelPo.getOuId();
+        Long userId = null == excelPo.getUserId() ? 100011L : excelPo.getUserId();
+        Long customerId, storeId;
+        ResponseMsg rm = new ResponseMsg();
+        try {
+            // 校验逻辑
+            if (StringUtils.isEmpty(excelPo.getExtCode())) {
+                throw new BusinessException("入库单客户编码不能为空");
+            }
+
+            if (StringUtils.isEmpty(excelPo.getPoType())) {
+                throw new BusinessException("入库单类型不能为空");
+            }
+            Customer customer = this.customerManager.findCustomerbyCode(excelPo.getCustomerCode());
+            if (customer == null) {
+                throw new BusinessException("客户编码有误，找不到对应的客户信息");
+            }
+            customerId = customer.getId();
+            Store store = this.storeManager.findStoreByCode(excelPo.getStoreCode());
+            if (store == null) {
+                throw new BusinessException("店铺编码找不到对应的店铺信息");
+            }
+            storeId = store.getId();
+            if (!Constants.LIFECYCLE_START.equals(store.getLifecycle())) {
+                throw new BusinessException("店铺无效");
+            }
+            if (!customer.getId().equals(store.getCustomerId())) {
+                throw new BusinessException("客户-店铺不对应");
+            }
+            Boolean customerStoreUserFlag = this.storeManager.checkCustomerStoreUser(customerId, storeId, userId);
+            if (!customerStoreUserFlag) {
+                // throw new BusinessException("用户不具有此客户-店铺权限");
+            }
+            // 校验ExtCode: ext_code与storeId 唯一性
+            List<BiPo> checkExtCodeBiPoList = this.biPoManager.findListByStoreIdExtCode(storeId, excelPo.getExtCode());
+            if (null == checkExtCodeBiPoList || checkExtCodeBiPoList.size() > 0) {
+                log.warn("check extcode returns failure when createPo!");
+                throw new BusinessException(ErrorCodes.PO_CHECK_EXTCODE_ERROR);
+            }
+            // TODO
+            Long supplierId = null;
+            TransportProvider tp = this.biPoManager.findTransportProviderByCode(excelPo.getLogisticsProviderCode());
+            if (tp == null) {
+                throw new BusinessException("运输服务商编码有误");
+            }
+            List<BiPoLineCommand> biPoLineCommandList = excelPo.getPoLineList();
+            List<WhPoLine> lineList = new ArrayList<WhPoLine>();
+            // #TODO
+            Double qtyPlanned = Constants.DEFAULT_DOUBLE;
+            Map<String, Long> skubarIdMap = new HashMap<String, Long>();
+            if (biPoLineCommandList != null && biPoLineCommandList.size() > 0) {
+                for (BiPoLineCommand lineCommand : biPoLineCommandList) {
+                    WhPoLine line = new WhPoLine();
+                    if (skubarIdMap.containsKey(lineCommand.getSkuBarCode())) {
+                        line.setSkuId(skubarIdMap.get(lineCommand.getSkuBarCode()));
+                    } else {
+                        Sku sku = this.biPoLineManager.findSkuByBarCode(lineCommand.getSkuBarCode(), customerId, logId);
+                        if (sku == null) {
+                            throw new BusinessException("条码找不到对应的商品");
+                        }
+                        line.setSkuId(sku.getId());
+                        skubarIdMap.put(lineCommand.getSkuBarCode(), sku.getId());
+                    }
+                    line.setQtyPlanned(lineCommand.getQtyPlanned());
+                    line.setAvailableQty(line.getQtyPlanned());
+                    qtyPlanned += line.getQtyPlanned();
+                    line.setStatus(PoAsnStatus.POLINE_NEW);
+                    line.setIsIqc(lineCommand.getIsIqc());
+                    line.setMfgDate(lineCommand.getMfgDate());
+                    line.setExpDate(lineCommand.getExpDate());
+                    line.setValidDate(lineCommand.getValidDate());
+                    line.setBatchNo(lineCommand.getBatchNo());
+                    line.setCountryOfOrigin(lineCommand.getCountryOfOrigin());
+                    line.setInvStatus(lineCommand.getInvStatus());
+                    line.setInvAttr1(lineCommand.getInvAttr1());
+                    line.setInvAttr2(lineCommand.getInvAttr2());
+                    line.setInvAttr3(lineCommand.getInvAttr3());
+                    line.setInvAttr4(lineCommand.getInvAttr4());
+                    line.setInvAttr5(lineCommand.getInvAttr5());
+                    line.setInvType(lineCommand.getInvType());
+                    line.setCreatedId(userId);
+                    line.setCreateTime(new Date());
+                    line.setModifiedId(userId);
+                    line.setLastModifyTime(new Date());
+                    lineList.add(line);
+                }
+            }
+
+            WhPo po = new WhPo();
+            // 相关单据号 调用HUB编码生成器获得
+            String poCode = getUniqueCode();
+            if (StringUtil.isEmpty(poCode)) {
+                log.warn("CreatePo warn poCode generateCode is null");
+                throw new BusinessException(ErrorCodes.GET_GENERATECODE_NULL);
+            }
+
+            po.setPoCode(poCode);
+            po.setExtCode(excelPo.getExtCode());
+            po.setOuId(ouId);
+            po.setSupplierId(supplierId);
+            po.setLogisticsProviderId(tp.getId());
+            po.setPoType(excelPo.getPoType());
+            po.setStatus(PoAsnStatus.PO_NEW);
+            po.setIsIqc(excelPo.getIsIqc());
+            po.setPoDate(excelPo.getPoDate());
+            po.setEta(excelPo.getEta());
+
+            Integer ctnPlanned = Constants.DEFAULT_INTEGER;
+            po.setQtyPlanned(qtyPlanned);
+            po.setCtnPlanned(ctnPlanned);
+            po.setIsWms(excelPo.getIsWms());
+            po.setIsVmi(excelPo.getIsVmi());
+            po.setCreateTime(new Date());
+            po.setCreatedId(userId);
+            po.setLastModifyTime(new Date());
+            po.setModifiedId(userId);
+            this.createPoDefault(po, lineList, ouId);
+
+        } catch (BusinessException e) {
+            rm.setResponseStatus(ResponseMsg.DATA_ERROR);
+            rm.setMsg(e.getErrorCode() + "");
+            return rm;
+        } catch (Exception ex) {
+            log.error("CreatePoAsnManagerProxyImpl.createPoNew error:[exception:{}]", ex);
+            rm.setResponseStatus(ResponseMsg.DATA_ERROR);
+            rm.setMsg(ErrorCodes.SAVE_PO_FAILED + "");
+            return rm;
+        }
+
+        log.info("CreateBIPo end =======================");
+        rm.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
+        rm.setMsg("Success!");
+        return rm;
+
+    }
 }

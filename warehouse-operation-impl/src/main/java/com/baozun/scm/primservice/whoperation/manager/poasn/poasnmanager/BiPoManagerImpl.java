@@ -30,6 +30,7 @@ import com.baozun.scm.primservice.whoperation.dao.poasn.BiPoDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.BiPoLineDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoLineDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.ma.TransportProviderDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
@@ -40,6 +41,7 @@ import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
+import com.baozun.scm.primservice.whoperation.model.warehouse.ma.TransportProvider;
 
 @Service("biPoManager")
 @Transactional
@@ -52,6 +54,8 @@ public class BiPoManagerImpl extends BaseManagerImpl implements BiPoManager {
     private WhPoDao whPoDao;
     @Autowired
     private WhPoLineDao whPoLineDao;
+    @Autowired
+    private TransportProviderDao transportProviderDao;
 
     protected static final Logger log = LoggerFactory.getLogger(BiPoManager.class);
 
@@ -458,6 +462,12 @@ public class BiPoManagerImpl extends BaseManagerImpl implements BiPoManager {
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public BiPo findBiPoByExtCodeStoreId(String extCode, Long storeId) {
         return this.biPoDao.findBiPoByExtCodeStoreId(extCode, storeId);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
+    public TransportProvider findTransportProviderByCode(String logisticsProviderCode) {
+        return transportProviderDao.findByCode(logisticsProviderCode);
     }
 
 }

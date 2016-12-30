@@ -355,4 +355,13 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         from t_bi_store 
         where customer_id = #{id}
     </select>
+    
+      <select id="findByCode" resultMap="StoreResult" flushCache="false">
+			select <include refid="storeColumns" />
+		    <![CDATA[
+			    from t_bi_store 
+		        where 
+		        store_code = #{code} 
+		    ]]>
+		</select>	
 </mapper>
