@@ -527,6 +527,8 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                         continue;
                     }
                     attrParams.setIsMixStacking(true);// 库位允许混放
+                    attrParams.setSkuCategory(skuCategory);
+                    attrParams.setSkuAttrCategory(skuAttrCategory);
                     WhSkuInventoryCommand invCmd = invList.get(0);// 取一条库存信息
                     attrParams.setInvAttrMgmt("");
                     // 解析库存关键属性
@@ -990,6 +992,8 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                         continue;
                     }
                     attrParams.setIsMixStacking(true);// 库位允许混放
+                    attrParams.setSkuCategory(skuCategory);
+                    attrParams.setSkuAttrCategory(skuAttrCategory);
                     WhSkuInventoryCommand invCmd = invList.get(0);// 取一条库存信息
                     attrParams.setInvAttrMgmt("");
                     // 解析库存关键属性

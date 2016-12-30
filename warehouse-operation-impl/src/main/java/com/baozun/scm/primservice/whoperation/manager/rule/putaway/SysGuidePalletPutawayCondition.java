@@ -60,6 +60,8 @@ public class SysGuidePalletPutawayCondition extends PutawayBaseCondition impleme
                 return sql.toString();
             case WhLocationRecommendType.MERGE_LOCATION_DIFF_INV_ATTRS:
                 sql.append(" ").append("loc.is_mix_stacking = ").append("1");
+                sql.append(" ").append(" loc.mix_stacking_number >= ").append(attrParams.getSkuCategory());
+                sql.append(" ").append(" and loc.max_chaos_sku >= ").append(attrParams.getSkuAttrCategory());
                 sql.append(" exists (select 1 from t_wh_sku_inventory inv where inv.location_id = loc.id and inv.ou_id = ").append(attrParams.getOuId());
                 invAttrMgmtAspect(attrParams, sql);
                 //sql.append(" ").append("group by inv.location_id,inv.ou_id,inv.sku_id having count(inv.sku_id) = 1");
