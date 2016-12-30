@@ -490,9 +490,9 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         waveLine.setWaveId(waveId);
         waveLine.setOuId(ouId);
         List<WhWaveLine> waveLines = whWaveLineDao.findListByParam(waveLine);
-        for (WhWaveLine line : waveLines) {
-            WhOdoLine odoLine = whOdoLineDao.findOdoLineById(line.getOdoLineId(), ouId);
-            odoLine.setAssignQty(line.getAllocateQty());
+        for (WhWaveLine wavelines : waveLines) {
+            WhOdoLine odoLine = whOdoLineDao.findOdoLineById(wavelines.getOdoLineId(), ouId);
+            odoLine.setAssignQty(wavelines.getAllocateQty());
             odoLine.setAssignFailReason(null);
             odoLine.setIsAssignSuccess(true);
             whOdoLineDao.saveOrUpdate(odoLine);
