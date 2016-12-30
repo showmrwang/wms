@@ -27,189 +27,168 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	other_contact3 as otherContact3,
 	        	country_id as countryId,
 	        	province_id as provinceId,
+	        	villages_towns_id as villagesTownsId,
+	        	district_id as districtId,
 	        	city_id as cityId,
 	        	address as address,
 	        	zip_code as zipCode,
+	        	email as email,
 	        	size as size,
 	        	size_uom as sizeUom,
 	        	rent_price as rentPrice,
 	        	rent_price_uom as rentPriceUom,
 	        	description as description,
-	        	is_mandatorily_reserved as isMandatorilyReserved,
-	        	is_po_overcharge as isPoOvercharge,
-	        	po_overcharge_proportion as poOverchargeProportion,
-	        	is_asn_overcharge as isAsnOvercharge,
-	        	asn_overcharge_proportion as asnOverchargeProportion,
-	        	is_po_auto_verify as isPoAutoVerify,
-	        	is_asn_auto_verify as isAsnAutoVerify,
-	        	goods_receipt_mode as goodsReceiptMode,
-	        	is_auto_print_bintag as isAutoPrintBintag,
-	        	is_auto_generation_cn as isAutoGenerationCn,
-	        	is_allow_blocked as isAllowBlocked,
-	        	is_sku_needs_scan as isSkuNeedsScan,
-	        	inv_attr_mgmt as invAttrMgmt,
-	        	is_auto_print_diff as isAutoPrintDiff,
-	        	is_hint_quality_testing as isHintQualityTesting,
-	        	is_auto_print_goods_receipt as isAutoPrintGoodsReceipt,
-	        	is_auto_print_platformtag as isAutoPrintPlatformtag,
-	        	sku_mix_number as skuMixNumber,
 	        	create_time as createTime,
 	        	last_modify_time as lastModifyTime,
 	        	operator_id as operatorId,
-	        	
-	        	is_sortation_container_assign as isSortationContainerAssign,
-	        	is_repeatedly_outbound as isRepeatedlyOutbound, 
-	        	is_tabb_inv_total as isTabbInvTotal,
-
-				default_length_uom_type as defaultLengthUomType,
-	        	default_weight_uom_type as defaultWeightUomType,
-	        	default_volume_uom_type as defaultVolumeUomType,
-	        	default_area_uom_type as defaultAreaUomType,
-				
-				is_generate_inventory_task as isGenerateInventoryTask,
-
-	        	lifecycle as lifecycle,
-	        	seeding_odo_qty as seedinfOdoQty
+	        	lifecycle as lifecycle
 	    ]]>
 	</sql>
+	
+	<sql id="warehouseCommandColumns">
+		w.id as id,
+      	w.code as code,
+      	w.name as name,
+      	w.op_mode as opMode,
+      	w.manage_mode as manageMode,
+      	w.pic as pic,
+      	w.pic_contact as picContact,
+      	w.phone as phone,
+      	w.fax as fax,
+      	w.other_contact1 as otherContact1,
+      	w.other_contact2 as otherContact2,
+      	w.other_contact3 as otherContact3,
+      	w.country_id as countryId,
+      	w.province_id as provinceId,
+      	w.city_id as cityId,
+      	w.villages_towns_id as villagesTownsId,
+  		w.district_id as districtId,
+      	w.address as address,
+      	w.zip_code as zipCode,
+      	w.size as size,
+      	w.size_uom as sizeUom,
+      	w.rent_price as rentPrice,
+      	w.rent_price_uom as rentPriceUom,
+      	w.description as description,
+      	w.operator_id as operatorId,
+  		w.email as email,
+  		w.create_time as createTime,
+  		w.last_modify_time as lastModifyTime,
+  		w.lifecycle as lifecycle,
+  		
+       	mgmt.is_mandatorily_reserved as isMandatorilyReserved,
+       	mgmt.is_po_overcharge as isPoOvercharge,
+       	mgmt.po_overcharge_proportion as poOverchargeProportion,
+       	mgmt.is_asn_overcharge as isAsnOvercharge,
+       	mgmt.asn_overcharge_proportion as asnOverchargeProportion,
+       	mgmt.is_po_auto_verify as isPoAutoVerify,
+       	mgmt.is_asn_auto_verify as isAsnAutoVerify,
+       	mgmt.goods_receipt_mode as goodsReceiptMode,
+       	mgmt.is_auto_print_bintag as isAutoPrintBintag,
+       	mgmt.is_auto_generation_cn as isAutoGenerationCn,
+       	mgmt.is_allow_blocked as isAllowBlocked,
+       	mgmt.is_sku_needs_scan as isSkuNeedsScan,
+       	mgmt.inv_attr_mgmt as invAttrMgmt,
+       	mgmt.is_auto_print_diff as isAutoPrintDiff,
+       	mgmt.is_hint_quality_testing as isHintQualityTesting,
+       	mgmt.is_auto_print_goods_receipt as isAutoPrintGoodsReceipt,
+       	mgmt.is_auto_print_platformtag as isAutoPrintPlatformtag,
+       	mgmt.sku_mix_number as skuMixNumber,
+       	mgmt.is_sortation_container_assign as isSortationContainerAssign,
+       	mgmt.is_repeatedly_outbound as isRepeatedlyOutbound,
+       	mgmt.is_tabb_inv_total as isTabbInvTotal,
+       	mgmt.is_calc_seckill as isCalcSeckill,
+       	mgmt.seckill_odo_qtys as seckillOdoQtys,
+       	mgmt.is_calc_two_sku_suit as isCalcTwoSkuSuit,
+       	mgmt.two_sku_suit_odo_qtys as twoSkuSuitOdoQtys,
+       	mgmt.is_calc_suits as isCalcSuits,
+       	mgmt.suits_odo_qtys as suitsOdoQtys,
+       	mgmt.suits_max_sku_categorys as suitsMaxSkuCategorys,
+       	mgmt.default_length_uom_type as defaultLengthUomType,
+       	mgmt.default_weight_uom_type as defaultWeightUomType,
+       	mgmt.default_volume_uom_type as defaultVolumeUomType,
+       	mgmt.default_area_uom_type as defaultAreaUomType,
+       	mgmt.is_generate_inventory_task as isGenerateInventoryTask,
+       	mgmt.is_inbound_location_barcode as isInboundLocationBarcode,
+       	mgmt.is_replenishment_location_barcode as isReplenishmentLocationBarcode,
+       	mgmt.is_apply_facility as isApplyFacility,
+       	mgmt.is_dieking_check_message as isDiekingCheckMessage,
+       	mgmt.is_dieking_seedingwall_message as isDiekingSeedingwallMessage,
+       	mgmt.is_temporary_storage_check_code as isTemporaryStorageCheckCode,
+       	mgmt.seeding_mode as seedingMode,
+       	mgmt.x_qty as xqty,
+       	mgmt.y_qty as yqty,
+       	mgmt.z_qty as zqty,
+       	mgmt.seeding_odo_qty as seedingOdoQty
+	</sql>
+	
 	<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
 	<insert id="insert"
 		parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse"
 		flushCache="true">
 	    <![CDATA[
 	        INSERT INTO
-	        t_bi_warehouse (
-	        	id,
-	        	code ,
-	        	name ,
-	        	op_mode ,
-	        	manage_mode ,
-	        	pic ,
-	        	pic_contact ,
-	        	phone ,
-	        	fax ,
-	        	other_contact1 ,
-	        	other_contact2 ,
-	        	other_contact3 ,
-	        	country_id ,
-	        	province_id ,
-	        	city_id ,
-	        	address ,
-	        	zip_code ,
-	        	size ,
-	        	size_uom ,
-	        	rent_price ,
-	        	rent_price_uom ,
-	        	description ,
-	        	is_mandatorily_reserved ,
-	        	is_po_overcharge ,
-	        	po_overcharge_proportion ,
-	        	is_asn_overcharge ,
-	        	asn_overcharge_proportion ,
-	        	is_po_auto_verify ,
-	        	is_asn_auto_verify ,
-	        	goods_receipt_mode ,
-	        	is_auto_print_bintag ,
-	        	is_auto_generation_cn ,
-	        	is_allow_blocked ,
-	        	is_sku_needs_scan ,
-	        	inv_attr_mgmt ,
-	        	is_auto_print_diff ,
-	        	is_hint_quality_testing ,
-	        	is_auto_print_goods_receipt ,
-	        	is_auto_print_platformtag ,
-	        	sku_mix_number ,
-	        	create_time ,
-	        	last_modify_time ,
-	        	operator_id ,
-	        	is_sortation_container_assign,
-	        	is_repeatedly_outbound,
-	        	is_tabb_inv_total,
-	        	
-	        	default_length_uom_type,
-	        	default_weight_uom_type,
-	        	default_volume_uom_type,
-	        	default_area_uom_type,
-	        	
-	        	is_generate_inventory_task,
-	        	
-	        	lifecycle,
-	        	is_calc_suits,
-		        suits_odo_qtys,
-		        suits_max_sku_categorys,
-		        is_calc_seckill,
-		        seckill_odo_qtys,
-		        is_calc_two_sku_suit,
-		        two_sku_suit_odo_qtys,
-		        seeding_odo_qty  
-	        ) VALUES (
-	        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
-	        	#{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
-	        	#{name,javaType=java.lang.String,jdbcType=VARCHAR} ,
-	        	#{opMode,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-	        	#{manageMode,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-	        	#{pic,javaType=java.lang.String,jdbcType=VARCHAR} ,
-	        	#{picContact,javaType=java.lang.String,jdbcType=VARCHAR} ,
-	        	#{phone,javaType=java.lang.String,jdbcType=VARCHAR} ,
-	        	#{fax,javaType=java.lang.String,jdbcType=VARCHAR} ,
-	        	#{otherContact1,javaType=java.lang.String,jdbcType=VARCHAR} ,
-	        	#{otherContact2,javaType=java.lang.String,jdbcType=VARCHAR} ,
-	        	#{otherContact3,javaType=java.lang.String,jdbcType=VARCHAR} ,
-	        	#{countryId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-	        	#{provinceId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-	        	#{cityId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-	        	#{address,javaType=java.lang.String,jdbcType=VARCHAR} ,
-	        	#{zipCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-	        	#{size,javaType=Double,jdbcType=DECIMAL} ,
-	        	#{sizeUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
-	        	#{rentPrice,javaType=Double,jdbcType=DECIMAL} ,
-	        	#{rentPriceUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
-	        	#{description,javaType=java.lang.String,jdbcType=VARCHAR} ,
-	        	#{isMandatorilyReserved,javaType=java.lang.Boolean,jdbcType=BIT} ,
-	        	#{isPoOvercharge,javaType=java.lang.Boolean,jdbcType=BIT} ,
-	        	#{poOverchargeProportion,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-	        	#{isAsnOvercharge,javaType=java.lang.Boolean,jdbcType=BIT} ,
-	        	#{asnOverchargeProportion,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-	        	#{isPoAutoVerify,javaType=java.lang.Boolean,jdbcType=BIT} ,
-	        	#{isAsnAutoVerify,javaType=java.lang.Boolean,jdbcType=BIT} ,
-	        	#{goodsReceiptMode,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-	        	#{isAutoPrintBintag,javaType=java.lang.Boolean,jdbcType=BIT} ,
-	        	#{isAutoGenerationCn,javaType=java.lang.Boolean,jdbcType=BIT} ,
-	        	#{isAllowBlocked,javaType=java.lang.Boolean,jdbcType=BIT} ,
-	        	#{isSkuNeedsScan,javaType=java.lang.Boolean,jdbcType=BIT} ,
-	        	#{invAttrMgmt,javaType=java.lang.String,jdbcType=VARCHAR} ,
-	        	#{isAutoPrintDiff,javaType=java.lang.Boolean,jdbcType=BIT} ,
-	        	#{isHintQualityTesting,javaType=java.lang.Boolean,jdbcType=BIT} ,
-	        	#{isAutoPrintGoodsReceipt,javaType=java.lang.Boolean,jdbcType=BIT} ,
-	        	#{isAutoPrintPlatformtag,javaType=java.lang.Boolean,jdbcType=BIT} ,
-	        	#{skuMixNumber,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-        		#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-	        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-	        	#{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-	        	
-	        	#{isSortationContainerAssign,javaType=java.lang.Boolean,jdbcType=BIT} ,
-	        	#{isRepeatedlyOutbound,javaType=java.lang.Boolean,jdbcType=BIT} ,
-	        	#{isTabbInvTotal,javaType=java.lang.Boolean,jdbcType=BIT} ,
-	        	
-	        	
-	        	#{defaultLengthUomType,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        #{defaultWeightUomType,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        #{defaultVolumeUomType,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        #{defaultAreaUomType,javaType=java.lang.Long,jdbcType=BIGINT} ,
-	        	
-	        	#{isGenerateInventoryTask,javaType=java.lang.Boolean,jdbcType=BIT} ,
-	        	
-	        	#{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER},
-	        	#{isCalcSuits,javaType=java.lang.Boolean,jdbcType=BIT}, 
-	        	#{suitsOdoQtys,javaType=java.lang.Integer,jdbcType=INTEGER}, 
-	        	#{suitsMaxSkuCategorys,javaType=java.lang.Integer,jdbcType=INTEGER},
-	        	#{isCalcSeckill,javaType=java.lang.Boolean,jdbcType=BIT}, 
-	        	#{seckillOdoQtys,javaType=java.lang.Integer,jdbcType=INTEGER},
-	        	#{isCalcTwoSkuSuit,javaType=java.lang.Boolean,jdbcType=BIT}, 
-	        	#{twoSkuSuitOdoQtys,javaType=java.lang.Integer,jdbcType=INTEGER},
-	        	#{seedinfOdoQty,javaType=java.lang.Integer,jdbcType=INTEGER} 
-	       
-	        )
+		        t_bi_warehouse (
+		        id,
+		        	code ,
+		        	name ,
+		        	op_mode ,
+		        	manage_mode ,
+		        	pic ,
+		        	pic_contact ,
+		        	phone ,
+		        	fax ,
+		        	other_contact1 ,
+		        	other_contact2 ,
+		        	other_contact3 ,
+		        	country_id ,
+		        	province_id ,
+		        	villages_towns_id ,
+		        	district_id ,
+		        	city_id ,
+		        	address ,
+		        	zip_code ,
+		        	email ,
+		        	size ,
+		        	size_uom ,
+		        	rent_price ,
+		        	rent_price_uom ,
+		        	description ,
+		        	create_time ,
+		        	last_modify_time ,
+		        	operator_id ,
+		        	lifecycle 
+		        ) VALUES (
+		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{name,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{opMode,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{manageMode,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{pic,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{picContact,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{phone,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{fax,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{otherContact1,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{otherContact2,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{otherContact3,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{countryId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{provinceId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{villagesTownsId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{districtId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{cityId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{address,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{zipCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{email,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{size,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+		        	#{sizeUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{rentPrice,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+		        	#{rentPriceUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{description,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
+		        )
 	    ]]>
 
 	</insert>
@@ -218,63 +197,34 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse">
 	    <![CDATA[
 		        UPDATE t_bi_warehouse SET
-			        code = #{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        name = #{name,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        op_mode = #{opMode,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-			        manage_mode = #{manageMode,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-			        pic = #{pic,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        pic_contact = #{picContact,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        phone = #{phone,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        fax = #{fax,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        other_contact1 = #{otherContact1,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        other_contact2 = #{otherContact2,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        other_contact3 = #{otherContact3,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        country_id = #{countryId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-			        province_id = #{provinceId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-			        city_id = #{cityId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-			        address = #{address,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        zip_code = #{zipCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        size = #{size,javaType=Double,jdbcType=DECIMAL} ,
-			        size_uom = #{sizeUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        rent_price = #{rentPrice,javaType=Double,jdbcType=DECIMAL} ,
-			        rent_price_uom = #{rentPriceUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        description = #{description,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        is_mandatorily_reserved = #{isMandatorilyReserved,javaType=java.lang.Boolean,jdbcType=BIT} ,
-			        is_po_overcharge = #{isPoOvercharge,javaType=java.lang.Boolean,jdbcType=BIT} ,
-			        po_overcharge_proportion = #{poOverchargeProportion,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-			        is_asn_overcharge = #{isAsnOvercharge,javaType=java.lang.Boolean,jdbcType=BIT} ,
-			        asn_overcharge_proportion = #{asnOverchargeProportion,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-			        is_po_auto_verify = #{isPoAutoVerify,javaType=java.lang.Boolean,jdbcType=BIT} ,
-			        is_asn_auto_verify = #{isAsnAutoVerify,javaType=java.lang.Boolean,jdbcType=BIT} ,
-			        goods_receipt_mode = #{goodsReceiptMode,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-			        is_auto_print_bintag = #{isAutoPrintBintag,javaType=java.lang.Boolean,jdbcType=BIT} ,
-			        is_auto_generation_cn = #{isAutoGenerationCn,javaType=java.lang.Boolean,jdbcType=BIT} ,
-			        is_allow_blocked = #{isAllowBlocked,javaType=java.lang.Boolean,jdbcType=BIT} ,
-			        is_sku_needs_scan = #{isSkuNeedsScan,javaType=java.lang.Boolean,jdbcType=BIT} ,
-			        inv_attr_mgmt = #{invAttrMgmt,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        is_auto_print_diff = #{isAutoPrintDiff,javaType=java.lang.Boolean,jdbcType=BIT} ,
-			        is_hint_quality_testing = #{isHintQualityTesting,javaType=java.lang.Boolean,jdbcType=BIT} ,
-			        is_auto_print_goods_receipt = #{isAutoPrintGoodsReceipt,javaType=java.lang.Boolean,jdbcType=BIT} ,
-			        is_auto_print_platformtag = #{isAutoPrintPlatformtag,javaType=java.lang.Boolean,jdbcType=BIT} ,
-			        sku_mix_number = #{skuMixNumber,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-			        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-			        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-			      
-			        is_sortation_container_assign = #{isSortationContainerAssign,javaType=java.lang.Boolean,jdbcType=BIT} ,
-			        is_repeatedly_outbound = #{isRepeatedlyOutbound,javaType=java.lang.Boolean,jdbcType=BIT} ,
-			        is_tabb_inv_total = #{isTabbInvTotal,javaType=java.lang.Boolean,jdbcType=BIT} ,
-			        
-			        
-			        default_length_uom_type = #{defaultLengthUomType,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        	default_weight_uom_type = #{defaultWeightUomType,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		       		default_volume_uom_type = #{defaultVolumeUomType,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        	default_area_uom_type = #{defaultAreaUomType,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        	
-		        	is_generate_inventory_task = #{isGenerateInventoryTask,javaType=java.lang.Long,jdbcType=BIGINT} ,
-			        
-			        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER},
-			        seeding_odo_qty = #{seedinfOdoQty,javaType=java.lang.Integer,jdbcType=INTEGER} 
+		        code = #{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        name = #{name,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        op_mode = #{opMode,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        manage_mode = #{manageMode,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        pic = #{pic,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        pic_contact = #{picContact,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        phone = #{phone,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        fax = #{fax,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        other_contact1 = #{otherContact1,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        other_contact2 = #{otherContact2,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        other_contact3 = #{otherContact3,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        country_id = #{countryId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        province_id = #{provinceId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        villages_towns_id = #{villagesTownsId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        district_id = #{districtId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        city_id = #{cityId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        address = #{address,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        zip_code = #{zipCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        email = #{email,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        size = #{size,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+		        size_uom = #{sizeUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        rent_price = #{rentPrice,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+		        rent_price_uom = #{rentPriceUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        description = #{description,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
 	        WHERE 
 		        id = #{id} 
 	    ]]>
@@ -297,22 +247,22 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 
 	</delete>
 
-	<select id="findById" parameterType="java.lang.Long" resultMap="WarehouseResult"
-		flushCache="false">
+	<select id="findById" parameterType="java.lang.Long" resultMap="WarehouseResult" flushCache="false">
 		select
-		<include refid="warehouseColumns" />
-		    <![CDATA[
-			    from t_bi_warehouse 
-		        where 
-		        id = #{id} 
-		    ]]>
+			<include refid="warehouseCommandColumns" />
+		from 
+			t_bi_warehouse w
+			left join t_bi_warehouse_mgmt mgmt on (w.id = mgmt.warehouse_id)
+		where 
+			w.id = #{id} 
 	</select>
 	<select id="getByIds" parameterType="list" resultMap="WarehouseResult"
 		flushCache="false">
 		select
-		<include refid="warehouseColumns" />
-		from t_bi_warehouse
-		where id in
+		<include refid="warehouseCommandColumns" />
+		from t_bi_warehouse w 
+		left join t_bi_warehouse_mgmt mgmt on (w.id = mgmt.warehouse_id)
+		where w.id in
 		<foreach item="item" index="index" collection="list" open="("
 			separator="," close=")">
 			#{item}
@@ -321,161 +271,120 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<sql id="warehouseDynamicWhere">
 		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
 		<where>
-
 			<if test="id!=null">
 				and id = #{id}
 			</if>
-
-
-			<if test="code!=null and code!=''">
+       
+	       <if test="code!=null and code!=''">
 				and code = #{code}
 			</if>
-
-
-			<if test="name!=null and name!=''">
+       
+	       <if test="name!=null and name!=''">
 				and name = #{name}
 			</if>
-
+       
 			<if test="opMode!=null">
 				and op_mode = #{opMode}
 			</if>
-
+       
 			<if test="manageMode!=null">
 				and manage_mode = #{manageMode}
 			</if>
-
-
-			<if test="pic!=null and pic!=''">
+       
+	       <if test="pic!=null and pic!=''">
 				and pic = #{pic}
 			</if>
-
-
-			<if test="picContact!=null and picContact!=''">
+       
+	       <if test="picContact!=null and picContact!=''">
 				and pic_contact = #{picContact}
 			</if>
-
-
-			<if test="phone!=null and phone!=''">
+       
+	       <if test="phone!=null and phone!=''">
 				and phone = #{phone}
 			</if>
-
-
-			<if test="fax!=null and fax!=''">
+       
+	       <if test="fax!=null and fax!=''">
 				and fax = #{fax}
 			</if>
-
-
-			<if test="otherContact1!=null and otherContact1!=''">
+       
+	       <if test="otherContact1!=null and otherContact1!=''">
 				and other_contact1 = #{otherContact1}
 			</if>
-
-
-			<if test="otherContact2!=null and otherContact2!=''">
+       
+	       <if test="otherContact2!=null and otherContact2!=''">
 				and other_contact2 = #{otherContact2}
 			</if>
-
-
-			<if test="otherContact3!=null and otherContact3!=''">
+       
+	       <if test="otherContact3!=null and otherContact3!=''">
 				and other_contact3 = #{otherContact3}
 			</if>
-
+       
 			<if test="countryId!=null">
 				and country_id = #{countryId}
 			</if>
-
+       
 			<if test="provinceId!=null">
 				and province_id = #{provinceId}
 			</if>
-
+       
+			<if test="villagesTownsId!=null">
+				and villages_towns_id = #{villagesTownsId}
+			</if>
+       
+			<if test="districtId!=null">
+				and district_id = #{districtId}
+			</if>
+       
 			<if test="cityId!=null">
 				and city_id = #{cityId}
 			</if>
-
-
-			<if test="address!=null and address!=''">
+       
+	       <if test="address!=null and address!=''">
 				and address = #{address}
 			</if>
-
-
-			<if test="zipCode!=null and zipCode!=''">
+       
+	       <if test="zipCode!=null and zipCode!=''">
 				and zip_code = #{zipCode}
 			</if>
-
+       
+	       <if test="email!=null and email!=''">
+				and email = #{email}
+			</if>
+       
 			<if test="size!=null">
 				and size = #{size}
 			</if>
-
-
-			<if test="sizeUom!=null and sizeUom!=''">
+       
+	       <if test="sizeUom!=null and sizeUom!=''">
 				and size_uom = #{sizeUom}
 			</if>
-
+       
 			<if test="rentPrice!=null">
 				and rent_price = #{rentPrice}
 			</if>
-
-
-			<if test="rentPriceUom!=null and rentPriceUom!=''">
+       
+	       <if test="rentPriceUom!=null and rentPriceUom!=''">
 				and rent_price_uom = #{rentPriceUom}
 			</if>
-
-
-			<if test="description!=null and description!=''">
+       
+	       <if test="description!=null and description!=''">
 				and description = #{description}
 			</if>
-
+       
 			<if test="createTime!=null">
 				and create_time = #{createTime}
 			</if>
-
+       
 			<if test="lastModifyTime!=null">
 				and last_modify_time = #{lastModifyTime}
 			</if>
-
+       
 			<if test="operatorId!=null">
 				and operator_id = #{operatorId}
 			</if>
-			
-			<if test="isSortationContainerAssign!=null">
-				and is_sortation_container_assign = #{isSortationContainerAssign}
-			</if>
-
-			<if test="isRepeatedlyOutbound!=null">
-				and is_repeatedly_outbound = #{isRepeatedlyOutbound}
-			</if>
-
-			<if test="isTabbInvTotal!=null">
-				and is_tabb_inv_total = #{isTabbInvTotal}
-			</if>
-			
-			
-			<if test="defaultLengthUomType!=null">
-					and default_length_uom_type = #{defaultLengthUomType}
-			</if>
-	       
-			<if test="defaultWeightUomType!=null">
-					and default_weight_uom_type = #{defaultWeightUomType}
-			</if>
-	       
-			<if test="defaultVolumeUomType!=null">
-					and default_volume_uom_type = #{defaultVolumeUomType}
-			</if>
-	       
-			<if test="defaultAreaUomType!=null">
-					and default_area_uom_type = #{defaultAreaUomType}
-			</if>
-			
-			
-			<if test="isGenerateInventoryTask!=null">
-					and is_generate_inventory_task = #{isGenerateInventoryTask}
-			</if>
-			
-			
+       
 			<if test="lifecycle!=null">
 				and lifecycle = #{lifecycle}
-			</if>
-			<if test="seedinfOdoQty != null">
-			    and seeding_odo_qty = #{seedinfOdoQty}
 			</if>
 		</where>
 	</sql>
