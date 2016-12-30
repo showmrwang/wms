@@ -578,6 +578,15 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                     }
                     // Double volumeRate = al.getVolumeRate();
                     if (WhLocationRecommendType.EMPTY_LOCATION.equals(locationRecommendRule)) {
+                        // 判断当前空库位是否为静态库位
+                        Boolean isStatic = al.getIsStatic();
+                        if (null != isStatic && true == isStatic) {
+                            int count = whSkuLocationDao.findContainerSkuCountNotInSkuLocation(ouId, locId, ruleAffer.getAfferContainerCodeList());
+                            if (count > 0) {
+                                // 此静态库位不可用，容器中包含商品当前静态库位没有绑定
+                                continue;
+                            }
+                        }
                         if (null != palletCount) {
                             if (palletCount >= 1) {
                                 LocationRecommendResultCommand lrrc = new LocationRecommendResultCommand();
@@ -1042,6 +1051,15 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                     }
                     // Double volumeRate = al.getVolumeRate();
                     if (WhLocationRecommendType.EMPTY_LOCATION.equals(locationRecommendRule)) {
+                        // 判断当前空库位是否为静态库位
+                        Boolean isStatic = al.getIsStatic();
+                        if (null != isStatic && true == isStatic) {
+                            int count = whSkuLocationDao.findContainerSkuCountNotInSkuLocation(ouId, locId, ruleAffer.getAfferContainerCodeList());
+                            if (count > 0) {
+                                // 此静态库位不可用，容器中包含商品当前静态库位没有绑定
+                                continue;
+                            }
+                        }
                         // 计算体积
                         SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate);
                         calc.initStuffCube(length, width, height, SimpleCubeCalculator.SYS_UOM);
@@ -1439,6 +1457,15 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                 }
                                 // Double volumeRate = al.getVolumeRate();
                                 if (WhLocationRecommendType.EMPTY_LOCATION.equals(locationRecommendRule)) {
+                                    // 判断当前空库位是否为静态库位
+                                    Boolean isStatic = al.getIsStatic();
+                                    if (null != isStatic && true == isStatic) {
+                                        int count = whSkuLocationDao.findSkuCountInSkuLocation(ouId, locId, skuId);
+                                        if (count <= 0) {
+                                            // 此静态库位不可用，商品当前静态库位没有绑定
+                                            continue;
+                                        }
+                                    }
                                     // 计算体积
                                     SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate);
                                     calc.initStuffCube(length, width, height, onHandQty, SimpleCubeCalculator.SYS_UOM);
