@@ -10,10 +10,12 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.baozun.scm.baseservice.sac.manager.CodeManager;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.WhOdoOutBoundBoxCommand;
+import com.baozun.scm.primservice.whoperation.command.sku.SkuRedisCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.LocationCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ReplenishmentRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationCommand;
@@ -43,16 +45,21 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInven
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryTobefilledDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.LocationManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoOutBoundBox;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveMaster;
+import com.baozun.scm.primservice.whoperation.model.sku.Sku;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Area;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
+import com.baozun.scm.primservice.whoperation.model.warehouse.LocationProductVolume;
 import com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentTask;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperation;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationLine;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhSkuWhmgmt;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhWork;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhWorkLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WorkType;
@@ -116,6 +123,12 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
     @Autowired
     private ReplenishmentTaskDao replenishmentTaskDao;
     
+    @Autowired
+    private LocationManager locationManager;
+    
+    @Autowired
+    private WhSkuInventoryManager whskuInventoryManager;
+    
     
     
     
@@ -138,7 +151,8 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
             // 循环统计的分组信息分别创建工作           
             for(String key : siacMap.keySet()){
                 // 创建拣货工作--创建工作头信息
-                String replenishmentWorkCode = this.saveReplenishmentWork(waveId, siacMap.get(key).get(0), userId);
+                WhSkuInventoryAllocatedCommand siaCommand = siacMap.get(key).get(0);
+                String replenishmentWorkCode = this.saveReplenishmentWork(waveId, siaCommand, userId);
                 int rWorkLineTotal = 0;
                 // 循环统计的分组补货信息列表
                 for(WhSkuInventoryAllocatedCommand skuInventoryAllocatedCommand : siacMap.get(key)){
@@ -155,20 +169,25 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
                     throw new BusinessException("工作明细数量不正确");
                 }
                 // 更新补货工作头信息
-                this.updateReplenishmentWork(waveId, replenishmentWorkCode, siacMap.get(key).get(0));
+                this.updateReplenishmentWork(waveId, replenishmentWorkCode, siaCommand);
                 // 生成作业头
-                String replenishmentOperationCode = this.saveReplenishmentOperation(key, replenishmentWorkCode, siacMap.get(key).get(0));
+                String replenishmentOperationCode = this.saveReplenishmentOperation(key, replenishmentWorkCode, siaCommand);
                 // 判断补货工作释放方式是否是按照需求量释放
                 if(1 == replenishmentRuleCommand.getReleaseWorkWay()){
                     // 基于工作明细生成作业明细
-                    int replenishmentOperationLineCount = this.saveReplenishmentOperationLine(replenishmentWorkCode, replenishmentOperationCode, ouId);
+                    int replenishmentOperationLineCount = this.saveReplenishmentOperationLine(replenishmentWorkCode, replenishmentOperationCode, ouId, null);
                     // 校验作业明细
                     if (replenishmentOperationLineCount != rWorkLineTotal) {
                         throw new BusinessException("创建的作业明细不正确");
                     }
                 }else{
-                    // 计算目标库位容器-- TODO --明天问是否有共同方法
-                    // 基于目标库位容器及工作明细生成作业明细                    
+                    // 计算目标库位容器
+                    Double qty = locationReplenishmentCalculation(siaCommand, ouId);
+                    // 基于目标库位容器及工作明细生成作业明细 
+                    int replenishmentOperationLineCount = this.saveReplenishmentOperationLine(replenishmentWorkCode, replenishmentOperationCode, ouId, qty);
+                    if (replenishmentOperationLineCount != rWorkLineTotal) {
+                        throw new BusinessException("创建的作业明细不正确");
+                    }
                 }
             }
         }
@@ -248,7 +267,8 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
             // 循环统计的分组信息分别创建工作           
             for(String key : siacMap.keySet()){
                 // 创建拣货工作--创建工作头信息
-                String replenishmentWorkCode = this.saveOutReplenishmentWork(siacMap.get(key).get(0), userId);
+                WhSkuInventoryAllocatedCommand siaCommand = siacMap.get(key).get(0);
+                String replenishmentWorkCode = this.saveOutReplenishmentWork(siaCommand, userId);
                 int rWorkLineTotal = 0;
                 // 循环统计的分组补货信息列表
                 for(WhSkuInventoryAllocatedCommand skuInventoryAllocatedCommand : siacMap.get(key)){
@@ -265,11 +285,11 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
                     throw new BusinessException("工作明细数量不正确");
                 }
                 // 更新补货工作头信息
-                this.updateOutReplenishmentWork(replenishmentWorkCode, siacMap.get(key).get(0));
+                this.updateOutReplenishmentWork(replenishmentWorkCode, siaCommand);
                 // 生成作业头
-                String replenishmentOperationCode = this.saveReplenishmentOperation(key, replenishmentWorkCode, siacMap.get(key).get(0));
+                String replenishmentOperationCode = this.saveReplenishmentOperation(key, replenishmentWorkCode, siaCommand);
                 // 基于工作明细生成作业明细
-                int replenishmentOperationLineCount = this.saveReplenishmentOperationLine(replenishmentWorkCode, replenishmentOperationCode, ouId);
+                int replenishmentOperationLineCount = this.saveReplenishmentOperationLine(replenishmentWorkCode, replenishmentOperationCode, ouId, null);
                 // 校验作业明细
                 if (replenishmentOperationLineCount != rWorkLineTotal) {
                     throw new BusinessException("创建的作业明细不正确");
@@ -1540,7 +1560,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
      * @return
      */
     @Override
-    public int saveReplenishmentOperationLine(String replenishmentWorkCode, String replenishmentOperationCode, Long ouId) {
+    public int saveReplenishmentOperationLine(String replenishmentWorkCode, String replenishmentOperationCode, Long ouId, Double qty) {
         //获取工作头信息        
         WhWorkCommand whWorkCommand = this.workDao.findWorkByWorkCode(replenishmentWorkCode, ouId);
         //获取工作明细信息列表        
@@ -1564,7 +1584,11 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
             //商品ID
             WhOperationLineCommand.setSkuId(whWorkLineCommand.getSkuId());
             //计划量
-            WhOperationLineCommand.setQty(whWorkLineCommand.getQty());
+            if(null == qty){
+                WhOperationLineCommand.setQty(whWorkLineCommand.getQty());
+            }else{
+                WhOperationLineCommand.setQty(qty);
+            }
             //库存状态
             WhOperationLineCommand.setInvStatus(whWorkLineCommand.getInvStatus());
             //库存类型
@@ -1838,4 +1862,45 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
             workDao.insert(whWork);
         }
     }
+    
+    /**
+     *  计算库位容量
+     * 
+     * @param replenishmentWorkCode
+     * @param ouId
+     * @return
+     */
+    @Override
+    public Double locationReplenishmentCalculation(WhSkuInventoryAllocatedCommand siaCommand, Long ouId) {
+        String logId = "";
+        Long locationId = siaCommand.getToLocationId();
+        LocationCommand location = locationDao.findLocationCommandByParam(locationId, ouId);
+        Double maxQty = 0.00;
+        Integer upBound = location.getUpBound();
+        if (upBound == null) {
+            return null;
+        }
+        SkuRedisCommand skuRedis = this.locationManager.findSkuMasterBySkuId(siaCommand.getSkuId(), ouId, logId);
+        Sku sku = skuRedis.getSku();
+        Double locationQty =  Math.floor(location.getVolume() / sku.getVolume());
+        if (StringUtils.hasText(location.getSizeType())) {
+            WhSkuWhmgmt skuWhmgmt = skuRedis.getWhSkuWhMgmt();
+            if (skuWhmgmt != null) {
+                if (skuWhmgmt.getTypeOfGoods() != null) {
+                    LocationProductVolume locationProductVolume = this.locationManager.getLocationProductVolumeByPcIdAndSize(skuWhmgmt.getTypeOfGoods(), location.getSizeType(), ouId);
+                    if (locationProductVolume != null) {
+                        locationQty = (double)locationProductVolume.getVolume();
+                    }
+                }
+            }
+        }
+        // 上下限数量
+        maxQty = locationQty * upBound / 100;
+        // 库位库存量=库位在库库存+库位待移入库存
+        double invQty = this.whskuInventoryManager.findInventoryByLocation(locationId, ouId);
+        Double replenishmentQty =  Math.floor(maxQty - invQty);
+        Double rQty = siaCommand.getQty() - replenishmentQty;
+        return rQty;
+    }
+    
 }
