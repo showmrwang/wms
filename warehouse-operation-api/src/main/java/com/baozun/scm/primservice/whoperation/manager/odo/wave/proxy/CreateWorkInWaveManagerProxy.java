@@ -210,5 +210,12 @@ public interface CreateWorkInWaveManagerProxy extends BaseManager {
      * @param List<WhOdoOutBoundBox>
      * @return
      */
-    public int saveReplenishmentOperationLine(String replenishmentWorkCode, String replenishmentOperationCode, Long ouId);
+    public int saveReplenishmentOperationLine(String replenishmentWorkCode, String replenishmentOperationCode, Long ouId, Double qty);
+    
+    /**
+     * [业务方法] 创建补货工作-计算库位容量
+     * @param List<WhOdoOutBoundBox>
+     * @return
+     */
+    public Double locationReplenishmentCalculation(WhSkuInventoryAllocatedCommand siaCommand, Long ouId);
 }
