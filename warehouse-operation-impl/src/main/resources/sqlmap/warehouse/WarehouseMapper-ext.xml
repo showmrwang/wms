@@ -320,7 +320,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		from t_bi_warehouse w
 		left join t_bi_warehouse_mgmt mgmt on (w.id = mgmt.warehouse_id),
 		au_operation_unit ou
-		where id = #{id}
+		where w.code = ou.code and w.id = #{id}
 	</select>
 	
 	<select id="findWarehouseByIdExt" resultMap="WarehouseResultExt">
@@ -329,7 +329,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		from t_bi_warehouse w
 		left join t_bi_warehouse_mgmt mgmt on (w.id = mgmt.warehouse_id),
 		au_operation_unit ou
-		where id = #{id}
+		where w.code = ou.code and w.id = #{id}
 	</select>
 
 	<select id="findWarehouseByCode" resultMap="WarehouseResultExt">
@@ -338,7 +338,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		from t_bi_warehouse  w
 		left join t_bi_warehouse_mgmt mgmt on (w.id = mgmt.warehouse_id),
 		au_operation_unit ou
-		where code = #{code}
+		where w.code = ou.code and w.code = #{code} 
 	</select>
 
 
