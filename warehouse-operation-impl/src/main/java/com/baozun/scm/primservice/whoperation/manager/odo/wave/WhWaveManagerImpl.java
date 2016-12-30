@@ -409,6 +409,14 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void checkWaveHardAllocateEnough(Long waveId, Warehouse wh) {
         Long ouId = wh.getId();
+        WhWaveLine line = new WhWaveLine();
+        line.setWaveId(waveId);
+        line.setOuId(ouId);
+        long lineCount = whWaveLineDao.findListCountByParam(line);
+        if (lineCount == 0) {
+        	return;
+        }
+        
         List<WhWaveLine> lines = whWaveLineDao.findNotEnoughAllocationQty(waveId, ouId);
         // 获取下一个波次阶段编码
         WhWave wave = whWaveDao.findWaveExtByIdAndOuId(waveId, ouId);
