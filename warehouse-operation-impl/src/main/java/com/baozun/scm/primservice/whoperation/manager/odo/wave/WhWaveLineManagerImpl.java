@@ -23,7 +23,6 @@ import com.baozun.scm.primservice.whoperation.command.wave.WaveLineCommand;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineDao;
-import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveLineDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
@@ -45,8 +44,6 @@ public class WhWaveLineManagerImpl extends BaseManagerImpl implements WhWaveLine
     private WhOdoLineDao whOdoLineDao;
     @Autowired
     private WhOdoDao whOdoDao;
-    @Autowired
-    private WhWaveDao whWaveDao;
     @Autowired
     private DistributionModeArithmeticManagerProxy distributionModeArithmeticManagerProxy;
 
@@ -145,14 +142,14 @@ public class WhWaveLineManagerImpl extends BaseManagerImpl implements WhWaveLine
         Map<Long, String> odoIdCounterCodeMap = new HashMap<Long, String>();
         odoIdCounterCodeMap.put(odoId, odo.getCounterCode());
         distributionModeArithmeticManagerProxy.addToPool(odoIdCounterCodeMap);
-        WhWaveLine line = new WhWaveLine();
+        /*WhWaveLine line = new WhWaveLine();
         line.setWaveId(waveId);
         line.setOuId(ouId);
         long lineCount = whWaveLineDao.findListCountByParam(line);
         if (lineCount == 0) {
             whWaveDao.deleteByIdOuId(waveId, ouId);
             log.info("waveId:{} not have lines,delete", waveId);
-        }
+        }*/
     }
 
     @Override

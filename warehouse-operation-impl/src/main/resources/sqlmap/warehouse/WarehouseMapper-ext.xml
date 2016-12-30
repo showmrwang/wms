@@ -27,141 +27,22 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	other_contact3 as otherContact3,
 	        	country_id as countryId,
 	        	province_id as provinceId,
+	        	villages_towns_id as villagesTownsId,
+	        	district_id as districtId,
 	        	city_id as cityId,
 	        	address as address,
 	        	zip_code as zipCode,
+	        	email as email,
 	        	size as size,
 	        	size_uom as sizeUom,
 	        	rent_price as rentPrice,
 	        	rent_price_uom as rentPriceUom,
 	        	description as description,
-	        	is_mandatorily_reserved as isMandatorilyReserved,
-	        	is_po_overcharge as isPoOvercharge,
-	        	po_overcharge_proportion as poOverchargeProportion,
-	        	is_asn_overcharge as isAsnOvercharge,
-	        	asn_overcharge_proportion as asnOverchargeProportion,
-	        	is_po_auto_verify as isPoAutoVerify,
-	        	is_asn_auto_verify as isAsnAutoVerify,
-	        	goods_receipt_mode as goodsReceiptMode,
-	        	is_auto_print_bintag as isAutoPrintBintag,
-	        	is_auto_generation_cn as isAutoGenerationCn,
-	        	is_allow_blocked as isAllowBlocked,
-	        	is_sku_needs_scan as isSkuNeedsScan,
-	        	inv_attr_mgmt as invAttrMgmt,
-	        	is_auto_print_diff as isAutoPrintDiff,
-	        	is_hint_quality_testing as isHintQualityTesting,
-	        	is_auto_print_goods_receipt as isAutoPrintGoodsReceipt,
-	        	is_auto_print_platformtag as isAutoPrintPlatformtag,
-	        	sku_mix_number as skuMixNumber,
 	        	create_time as createTime,
 	        	last_modify_time as lastModifyTime,
 	        	operator_id as operatorId,
-	        	
-			  	is_sortation_container_assign as isSortationContainerAssign,
-	        	is_repeatedly_outbound as isRepeatedlyOutbound, 
-	        	is_tabb_inv_total as isTabbInvTotal,
-
-	        	default_length_uom_type as defaultLengthUomType,
-	        	default_weight_uom_type as defaultWeightUomType,
-	        	default_volume_uom_type as defaultVolumeUomType,
-	        	default_area_uom_type as defaultAreaUomType,
-	        	
-	        	is_generate_inventory_task as isGenerateInventoryTask,
-	        	
-	        	lifecycle as lifecycle,
-	        	email as email,
-		        villages_towns_id as villagesTownsId,
-		        district_id as districtId,
-
-		        is_inbound_location_barcode as isInboundLocationBarcode,
-		        is_replenishment_location_barcode as isReplenishmentLocationBarcode,
-
-		        is_calc_suits as isCalcSuits,
-		        suits_odo_qtys as suitsOdoQtys,
-		        suits_max_sku_categorys as suitsMaxSkuCategorys,
-		        is_calc_seckill as isCalcSeckill,
-		        seckill_odo_qtys as seckillOdoQtys,
-		        is_calc_two_sku_suit as isCalcTwoSkuSuit,
-		        two_sku_suit_odo_qtys as twoSkuSuitOdoQtys,
-		        seeding_odo_qty as seedinfOdoQty
+	        	lifecycle as lifecycle
 	    ]]>
-	</sql>
-	
-	<sql id="warehouseCommandColumnsExt">
-		w.id as id,
-      	w.code as code,
-      	w.name as name,
-      	w.op_mode as opMode,
-      	w.manage_mode as manageMode,
-      	w.pic as pic,
-      	w.pic_contact as picContact,
-      	w.phone as phone,
-      	w.fax as fax,
-      	w.other_contact1 as otherContact1,
-      	w.other_contact2 as otherContact2,
-      	w.other_contact3 as otherContact3,
-      	w.country_id as countryId,
-      	w.province_id as provinceId,
-      	w.city_id as cityId,
-      	w.villages_towns_id as villagesTownsId,
-  		w.district_id as districtId,
-      	w.address as address,
-      	w.zip_code as zipCode,
-      	w.size as size,
-      	w.size_uom as sizeUom,
-      	w.rent_price as rentPrice,
-      	w.rent_price_uom as rentPriceUom,
-      	w.description as description,
-      	w.operator_id as operatorId,
-  		w.email as email,
-  		w.create_time as createTime,
-  		w.last_modify_time as lastModifyTime,
-  		w.lifecycle as lifecycle,
-  		
-       	mgmt.is_mandatorily_reserved as isMandatorilyReserved,
-       	mgmt.is_po_overcharge as isPoOvercharge,
-       	mgmt.po_overcharge_proportion as poOverchargeProportion,
-       	mgmt.is_asn_overcharge as isAsnOvercharge,
-       	mgmt.asn_overcharge_proportion as asnOverchargeProportion,
-       	mgmt.is_po_auto_verify as isPoAutoVerify,
-       	mgmt.is_asn_auto_verify as isAsnAutoVerify,
-       	mgmt.goods_receipt_mode as goodsReceiptMode,
-       	mgmt.is_auto_print_bintag as isAutoPrintBintag,
-       	mgmt.is_auto_generation_cn as isAutoGenerationCn,
-       	mgmt.is_allow_blocked as isAllowBlocked,
-       	mgmt.is_sku_needs_scan as isSkuNeedsScan,
-       	mgmt.inv_attr_mgmt as invAttrMgmt,
-       	mgmt.is_auto_print_diff as isAutoPrintDiff,
-       	mgmt.is_hint_quality_testing as isHintQualityTesting,
-       	mgmt.is_auto_print_goods_receipt as isAutoPrintGoodsReceipt,
-       	mgmt.is_auto_print_platformtag as isAutoPrintPlatformtag,
-       	mgmt.sku_mix_number as skuMixNumber,
-       	mgmt.is_sortation_container_assign as isSortationContainerAssign,
-       	mgmt.is_repeatedly_outbound as isRepeatedlyOutbound,
-       	mgmt.is_tabb_inv_total as isTabbInvTotal,
-       	mgmt.is_calc_seckill as isCalcSeckill,
-       	mgmt.seckill_odo_qtys as seckillOdoQtys,
-       	mgmt.is_calc_two_sku_suit as isCalcTwoSkuSuit,
-       	mgmt.two_sku_suit_odo_qtys as twoSkuSuitOdoQtys,
-       	mgmt.is_calc_suits as isCalcSuits,
-       	mgmt.suits_odo_qtys as suitsOdoQtys,
-       	mgmt.suits_max_sku_categorys as suitsMaxSkuCategorys,
-       	mgmt.default_length_uom_type as defaultLengthUomType,
-       	mgmt.default_weight_uom_type as defaultWeightUomType,
-       	mgmt.default_volume_uom_type as defaultVolumeUomType,
-       	mgmt.default_area_uom_type as defaultAreaUomType,
-       	mgmt.is_generate_inventory_task as isGenerateInventoryTask,
-       	mgmt.is_inbound_location_barcode as isInboundLocationBarcode,
-       	mgmt.is_replenishment_location_barcode as isReplenishmentLocationBarcode,
-       	mgmt.is_apply_facility as isApplyFacility,
-       	mgmt.is_dieking_check_message as isDiekingCheckMessage,
-       	mgmt.is_dieking_seedingwall_message as isDiekingSeedingwallMessage,
-       	mgmt.is_temporary_storage_check_code as isTemporaryStorageCheckCode,
-       	mgmt.seeding_mode as seedingMode,
-       	mgmt.x_qty as xqty,
-       	mgmt.y_qty as yqty,
-       	mgmt.z_qty as zqty,
-       	mgmt.seeding_odo_qty as seedingOdoQty
 	</sql>
 
 	<sql id="warehouseDynamicWhereExt">
@@ -171,158 +52,117 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<if test="id!=null">
 				and id = #{id}
 			</if>
-
-
-			<if test="code!=null and code!=''">
+       
+	       <if test="code!=null and code!=''">
 				and code = #{code}
 			</if>
-
-
-			<if test="name!=null and name!=''">
+       
+	       <if test="name!=null and name!=''">
 				and name = #{name}
 			</if>
-
+       
 			<if test="opMode!=null">
 				and op_mode = #{opMode}
 			</if>
-
+       
 			<if test="manageMode!=null">
 				and manage_mode = #{manageMode}
 			</if>
-
-
-			<if test="pic!=null and pic!=''">
+       
+	       <if test="pic!=null and pic!=''">
 				and pic = #{pic}
 			</if>
-
-
-			<if test="picContact!=null and picContact!=''">
+       
+	       <if test="picContact!=null and picContact!=''">
 				and pic_contact = #{picContact}
 			</if>
-
-
-			<if test="phone!=null and phone!=''">
+       
+	       <if test="phone!=null and phone!=''">
 				and phone = #{phone}
 			</if>
-
-
-			<if test="fax!=null and fax!=''">
+       
+	       <if test="fax!=null and fax!=''">
 				and fax = #{fax}
 			</if>
-
-
-			<if test="otherContact1!=null and otherContact1!=''">
+       
+	       <if test="otherContact1!=null and otherContact1!=''">
 				and other_contact1 = #{otherContact1}
 			</if>
-
-
-			<if test="otherContact2!=null and otherContact2!=''">
+       
+	       <if test="otherContact2!=null and otherContact2!=''">
 				and other_contact2 = #{otherContact2}
 			</if>
-
-
-			<if test="otherContact3!=null and otherContact3!=''">
+       
+	       <if test="otherContact3!=null and otherContact3!=''">
 				and other_contact3 = #{otherContact3}
 			</if>
-
+       
 			<if test="countryId!=null">
 				and country_id = #{countryId}
 			</if>
-
+       
 			<if test="provinceId!=null">
 				and province_id = #{provinceId}
 			</if>
-
+       
+			<if test="villagesTownsId!=null">
+				and villages_towns_id = #{villagesTownsId}
+			</if>
+       
+			<if test="districtId!=null">
+				and district_id = #{districtId}
+			</if>
+       
 			<if test="cityId!=null">
 				and city_id = #{cityId}
 			</if>
-
-
-			<if test="address!=null and address!=''">
+       
+	       <if test="address!=null and address!=''">
 				and address = #{address}
 			</if>
-
-
-			<if test="zipCode!=null and zipCode!=''">
+       
+	       <if test="zipCode!=null and zipCode!=''">
 				and zip_code = #{zipCode}
 			</if>
-
+       
+	       <if test="email!=null and email!=''">
+				and email = #{email}
+			</if>
+       
 			<if test="size!=null">
 				and size = #{size}
 			</if>
-
-
-			<if test="sizeUom!=null and sizeUom!=''">
+       
+	       <if test="sizeUom!=null and sizeUom!=''">
 				and size_uom = #{sizeUom}
 			</if>
-
+       
 			<if test="rentPrice!=null">
 				and rent_price = #{rentPrice}
 			</if>
-
-
-			<if test="rentPriceUom!=null and rentPriceUom!=''">
+       
+	       <if test="rentPriceUom!=null and rentPriceUom!=''">
 				and rent_price_uom = #{rentPriceUom}
 			</if>
-
-
-			<if test="description!=null and description!=''">
+       
+	       <if test="description!=null and description!=''">
 				and description = #{description}
 			</if>
-
+       
 			<if test="createTime!=null">
 				and create_time = #{createTime}
 			</if>
-
+       
 			<if test="lastModifyTime!=null">
 				and last_modify_time = #{lastModifyTime}
 			</if>
-
+       
 			<if test="operatorId!=null">
 				and operator_id = #{operatorId}
 			</if>
-
-
-			<if test="isSortationContainerAssign!=null">
-				and is_sortation_container_assign =
-				#{isSortationContainerAssign}
-			</if>
-
-			<if test="isRepeatedlyOutbound!=null">
-				and is_repeatedly_outbound = #{isRepeatedlyOutbound}
-			</if>
-
-			<if test="isTabbInvTotal!=null">
-				and is_tabb_inv_total = #{isTabbInvTotal}
-			</if>
-			
-			
-			
-			<if test="defaultLengthUomType!=null">
-					and default_length_uom_type = #{defaultLengthUomType}
-			</if>
-	       
-			<if test="defaultWeightUomType!=null">
-					and default_weight_uom_type = #{defaultWeightUomType}
-			</if>
-	       
-			<if test="defaultVolumeUomType!=null">
-					and default_volume_uom_type = #{defaultVolumeUomType}
-			</if>
-	       
-			<if test="defaultAreaUomType!=null">
-					and default_area_uom_type = #{defaultAreaUomType}
-			</if>
-			
-			<if test="isGenerateInventoryTask!=null">
-					and is_generate_inventory_task = #{isGenerateInventoryTask}
-			</if>
-
+       
 			<if test="lifecycle!=null">
 				and lifecycle = #{lifecycle}
-			</if>
-			<if test="seedinfOdoQty != null">
-			    and seeding_odo_qty = #{seedinfOdoQty}
 			</if>
 		</where>
 	</sql>
@@ -380,102 +220,125 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<sql id="warehouseListColumnsExt">
 	    <![CDATA[
 				w.id as id,
-				w.code as code,
-				w.name as name,
-				w.op_mode as opMode,
-				w.manage_mode as manageMode,
-				w.pic as pic,
-				w.pic_contact as picContact,
-				w.phone as phone,
-				w.fax as fax,
-				w.other_contact1 as otherContact1,
-				w.other_contact2 as otherContact2,
-				w.other_contact3 as otherContact3,
-				w.country_id as countryId,
-				w.province_id as provinceId,
-				w.city_id as cityId,
-				w.address as address,
-				w.zip_code as zipCode,
-				w.size as size,
-				w.size_uom as sizeUom,
-				w.rent_price as rentPrice,
-				w.rent_price_uom as rentPriceUom,
-				w.description as description,
-				w.is_mandatorily_reserved as isMandatorilyReserved,
-	        	w.is_po_overcharge as isPoOvercharge,
-	        	w.po_overcharge_proportion as poOverchargeProportion,
-	        	w.is_asn_overcharge as isAsnOvercharge,
-	        	w.asn_overcharge_proportion as asnOverchargeProportion,
-	        	w.is_po_auto_verify as isPoAutoVerify,
-				w.is_asn_auto_verify as isAsnAutoVerify,
-				w.goods_receipt_mode as goodsReceiptMode,
-				w.is_auto_print_bintag as isAutoPrintBintag,
-				w.is_auto_generation_cn as isAutoGenerationCn,
-				w.is_allow_blocked as isAllowBlocked,
-				w.is_sku_needs_scan as isSkuNeedsScan,
-				w.inv_attr_mgmt as invAttrMgmt,
-				w.is_auto_print_diff as isAutoPrintDiff,
-				w.is_hint_quality_testing as isHintQualityTesting,
-				w.is_auto_print_goods_receipt as isAutoPrintGoodsReceipt,
-				w.is_auto_print_platformtag as isAutoPrintPlatformtag,
-				w.create_time as createTime,
-				w.sku_mix_number as skuMixNumber,
-				w.last_modify_time as lastModifyTime,
-				w.operator_id as operatorId,
-				
-				w.is_sortation_container_assign as isSortationContainerAssign,
-				w.is_repeatedly_outbound as isRepeatedlyOutbound,
-				w.is_tabb_inv_total as isTabbInvTotal,
-
-
-				w.default_length_uom_type as defaultLengthUomType,
-	        	w.default_weight_uom_type as defaultWeightUomType,
-	        	w.default_volume_uom_type as defaultVolumeUomType,
-	        	w.default_area_uom_type as defaultAreaUomType,
-	        	
-	        	w.is_generate_inventory_task as isGenerateInventoryTask,
-
-				w.lifecycle as lifecycle,
-				w.seeding_odo_qty as seedinfOdoQty,
+		      	w.code as code,
+		      	w.name as name,
+		      	w.op_mode as opMode,
+		      	w.manage_mode as manageMode,
+		      	w.pic as pic,
+		      	w.pic_contact as picContact,
+		      	w.phone as phone,
+		      	w.fax as fax,
+		      	w.other_contact1 as otherContact1,
+		      	w.other_contact2 as otherContact2,
+		      	w.other_contact3 as otherContact3,
+		      	w.country_id as countryId,
+		      	w.province_id as provinceId,
+		      	w.city_id as cityId,
+		      	w.villages_towns_id as villagesTownsId,
+		  		w.district_id as districtId,
+		      	w.address as address,
+		      	w.zip_code as zipCode,
+		      	w.size as size,
+		      	w.size_uom as sizeUom,
+		      	w.rent_price as rentPrice,
+		      	w.rent_price_uom as rentPriceUom,
+		      	w.description as description,
+		      	w.operator_id as operatorId,
+		  		w.email as email,
+		  		w.create_time as createTime,
+		  		w.last_modify_time as lastModifyTime,
+		  		w.lifecycle as lifecycle,
+		  		
+		       	mgmt.is_mandatorily_reserved as isMandatorilyReserved,
+		       	mgmt.is_po_overcharge as isPoOvercharge,
+		       	mgmt.po_overcharge_proportion as poOverchargeProportion,
+		       	mgmt.is_asn_overcharge as isAsnOvercharge,
+		       	mgmt.asn_overcharge_proportion as asnOverchargeProportion,
+		       	mgmt.is_po_auto_verify as isPoAutoVerify,
+		       	mgmt.is_asn_auto_verify as isAsnAutoVerify,
+		       	mgmt.goods_receipt_mode as goodsReceiptMode,
+		       	mgmt.is_auto_print_bintag as isAutoPrintBintag,
+		       	mgmt.is_auto_generation_cn as isAutoGenerationCn,
+		       	mgmt.is_allow_blocked as isAllowBlocked,
+		       	mgmt.is_sku_needs_scan as isSkuNeedsScan,
+		       	mgmt.inv_attr_mgmt as invAttrMgmt,
+		       	mgmt.is_auto_print_diff as isAutoPrintDiff,
+		       	mgmt.is_hint_quality_testing as isHintQualityTesting,
+		       	mgmt.is_auto_print_goods_receipt as isAutoPrintGoodsReceipt,
+		       	mgmt.is_auto_print_platformtag as isAutoPrintPlatformtag,
+		       	mgmt.sku_mix_number as skuMixNumber,
+		       	mgmt.is_sortation_container_assign as isSortationContainerAssign,
+		       	mgmt.is_repeatedly_outbound as isRepeatedlyOutbound,
+		       	mgmt.is_tabb_inv_total as isTabbInvTotal,
+		       	mgmt.is_calc_seckill as isCalcSeckill,
+		       	mgmt.seckill_odo_qtys as seckillOdoQtys,
+		       	mgmt.is_calc_two_sku_suit as isCalcTwoSkuSuit,
+		       	mgmt.two_sku_suit_odo_qtys as twoSkuSuitOdoQtys,
+		       	mgmt.is_calc_suits as isCalcSuits,
+		       	mgmt.suits_odo_qtys as suitsOdoQtys,
+		       	mgmt.suits_max_sku_categorys as suitsMaxSkuCategorys,
+		       	mgmt.default_length_uom_type as defaultLengthUomType,
+		       	mgmt.default_weight_uom_type as defaultWeightUomType,
+		       	mgmt.default_volume_uom_type as defaultVolumeUomType,
+		       	mgmt.default_area_uom_type as defaultAreaUomType,
+		       	mgmt.is_generate_inventory_task as isGenerateInventoryTask,
+		       	mgmt.is_inbound_location_barcode as isInboundLocationBarcode,
+		       	mgmt.is_replenishment_location_barcode as isReplenishmentLocationBarcode,
+		       	mgmt.is_apply_facility as isApplyFacility,
+		       	mgmt.is_dieking_check_message as isDiekingCheckMessage,
+		       	mgmt.is_dieking_seedingwall_message as isDiekingSeedingwallMessage,
+		       	mgmt.is_temporary_storage_check_code as isTemporaryStorageCheckCode,
+		       	mgmt.seeding_mode as seedingMode,
+		       	mgmt.x_qty as xqty,
+		       	mgmt.y_qty as yqty,
+		       	mgmt.z_qty as zqty,
+		       	mgmt.seeding_odo_qty as seedingOdoQty,
 	        	ou.parent_ou_id as parentOuId,
 	        	ou.id as ouId
 	    ]]>
 	</sql>
 	<select id="findListByQueryMapWithPageExt" resultMap="warehouseCommand">
 		SELECT
-		<include refid="warehouseListColumnsExt"></include>
-		from t_bi_warehouse w,
+		<include refid="warehouseListColumnsExt" />
+		from t_bi_warehouse w
+		left join t_bi_warehouse_mgmt mgmt on (w.id = mgmt.warehouse_id),
 		au_operation_unit ou
 		<include refid="warehouseDynamicWhereLikeExt" />
 	</select>
 
 	<select id="findListCountByQueryMapExt" resultType="long">
 		select count(*)
-		from t_bi_warehouse w,
+		from t_bi_warehouse w
+		left join t_bi_warehouse_mgmt mgmt on (w.id = mgmt.warehouse_id),
 		au_operation_unit ou
 		<include refid="warehouseDynamicWhereLikeExt" />
 	</select>
 
 	<select id="findWarehouseById" resultMap="WarehouseResultExt">
 		SELECT
-		<include refid="warehouseCommandColumnsExt" />
+		<include refid="warehouseListColumnsExt"></include>
 		from t_bi_warehouse w
-		left join t_bi_warehouse_mgmt mgmt on (w.id = mgmt.warehouse_id)
-		where w.id = #{id}
+		left join t_bi_warehouse_mgmt mgmt on (w.id = mgmt.warehouse_id),
+		au_operation_unit ou
+		where w.code = ou.code and w.id = #{id}
 	</select>
 	
 	<select id="findWarehouseByIdExt" resultMap="WarehouseResultExt">
 		SELECT
-		<include refid="warehouseCommandColumnsExt" />
+		<include refid="warehouseListColumnsExt"></include>
 		from t_bi_warehouse w
-		left join t_bi_warehouse_mgmt mgmt on (w.id = mgmt.warehouse_id)
-		where w.id = #{id}
+		left join t_bi_warehouse_mgmt mgmt on (w.id = mgmt.warehouse_id),
+		au_operation_unit ou
+		where w.code = ou.code and w.id = #{id}
 	</select>
 
 	<select id="findWarehouseByCode" resultMap="WarehouseResultExt">
 		SELECT
-		<include refid="warehouseColumnsExt"></include>
-		from t_bi_warehouse where code = #{code}
+		<include refid="warehouseListColumnsExt"></include>
+		from t_bi_warehouse  w
+		left join t_bi_warehouse_mgmt mgmt on (w.id = mgmt.warehouse_id),
+		au_operation_unit ou
+		where w.code = ou.code and w.code = #{code} 
 	</select>
 
 
@@ -507,66 +370,24 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        other_contact3 = #{otherContact3,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        country_id = #{countryId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        province_id = #{provinceId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        villages_towns_id = #{villagesTownsId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        district_id = #{districtId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        city_id = #{cityId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        address = #{address,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        zip_code = #{zipCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        size = #{size,javaType=Double,jdbcType=DECIMAL} ,
+			        email = #{email,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        size = #{size,javaType=java.lang.Double,jdbcType=DECIMAL} ,
 			        size_uom = #{sizeUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        rent_price = #{rentPrice,javaType=Double,jdbcType=DECIMAL} ,
+			        rent_price = #{rentPrice,javaType=java.lang.Double,jdbcType=DECIMAL} ,
 			        rent_price_uom = #{rentPriceUom,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        description = #{description,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        is_mandatorily_reserved = #{isMandatorilyReserved,javaType=java.lang.Boolean,jdbcType=BIT} ,
-			        is_po_overcharge = #{isPoOvercharge,javaType=java.lang.Boolean,jdbcType=BIT} ,
-			        po_overcharge_proportion = #{poOverchargeProportion,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-			        is_asn_overcharge = #{isAsnOvercharge,javaType=java.lang.Boolean,jdbcType=BIT} ,
-			        asn_overcharge_proportion = #{asnOverchargeProportion,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-			       	is_po_auto_verify = #{isPoAutoVerify,javaType=java.lang.Boolean,jdbcType=BIT} ,
-			        is_asn_auto_verify = #{isAsnAutoVerify,javaType=java.lang.Boolean,jdbcType=BIT} ,
-			        goods_receipt_mode = #{goodsReceiptMode,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-			        is_auto_print_bintag = #{isAutoPrintBintag,javaType=java.lang.Boolean,jdbcType=BIT} ,
-			        is_auto_generation_cn = #{isAutoGenerationCn,javaType=java.lang.Boolean,jdbcType=BIT} ,
-			        is_allow_blocked = #{isAllowBlocked,javaType=java.lang.Boolean,jdbcType=BIT} ,
-			        is_sku_needs_scan = #{isSkuNeedsScan,javaType=java.lang.Boolean,jdbcType=BIT} ,
-			        inv_attr_mgmt = #{invAttrMgmt,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        is_auto_print_diff = #{isAutoPrintDiff,javaType=java.lang.Boolean,jdbcType=BIT} ,
-			        is_hint_quality_testing = #{isHintQualityTesting,javaType=java.lang.Boolean,jdbcType=BIT} ,
-			        is_auto_print_goods_receipt = #{isAutoPrintGoodsReceipt,javaType=java.lang.Boolean,jdbcType=BIT} ,
-			        is_auto_print_platformtag = #{isAutoPrintPlatformtag,javaType=java.lang.Boolean,jdbcType=BIT} ,
-			        sku_mix_number = #{skuMixNumber,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-			        last_modify_time = now(),
+			        last_modify_time = now() ,
 			        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-			        
-			        is_sortation_container_assign = #{isSortationContainerAssign,javaType=java.lang.Boolean,jdbcType=BIT} ,
-			        is_repeatedly_outbound = #{isRepeatedlyOutbound,javaType=java.lang.Boolean,jdbcType=BIT} ,
-			        is_tabb_inv_total = #{isTabbInvTotal,javaType=java.lang.Boolean,jdbcType=BIT} ,
-			        
-			        default_length_uom_type = #{defaultLengthUomType,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        	default_weight_uom_type = #{defaultWeightUomType,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		       		default_volume_uom_type = #{defaultVolumeUomType,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        	default_area_uom_type = #{defaultAreaUomType,javaType=java.lang.Long,jdbcType=BIGINT} ,
-			        
-			        is_generate_inventory_task = #{isGenerateInventoryTask,javaType=java.lang.Long,jdbcType=BIGINT} ,
-			        
-			        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER},
-			         email = #{email,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        villages_towns_id = #{villagesTownsId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-			        district_id = #{districtId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-
-			        is_inbound_location_barcode = #{isInboundLocationBarcode,javaType=java.lang.Boolean,jdbcType=BIT} ,
-		            is_replenishment_location_barcode = #{isReplenishmentLocationBarcode,javaType=java.lang.Boolean,jdbcType=BIT} ,
-
-		            is_calc_suits = #{isCalcSuits,javaType=java.lang.Boolean,jdbcType=BIT} ,
-			        suits_odo_qtys = #{suitsOdoQtys,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-			        suits_max_sku_categorys = #{suitsMaxSkuCategorys,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-			        is_calc_seckill = #{isCalcSeckill,javaType=java.lang.Boolean,jdbcType=BIT} ,
-			        seckill_odo_qtys = #{seckillOdoQtys,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-			        is_calc_two_sku_suit = #{isCalcTwoSkuSuit,javaType=java.lang.Boolean,jdbcType=BIT} ,
-			        two_sku_suit_odo_qtys = #{twoSkuSuitOdoQtys,javaType=java.lang.Integer,jdbcType=INTEGER},
-			        seeding_odo_qty = #{seedinfOdoQty,javaType=java.lang.Integer,jdbcType=INTEGER} 
+			        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
 		        WHERE 
 			        id = #{id} 
-			        and last_modify_time	=  #{lastModifyTime}    
+			        and last_modify_time	<=  #{lastModifyTime}    
 		    ]]>
 	</update>
 
@@ -574,9 +395,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		resultType="com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse">
 		SELECT
 		<include refid="warehouseColumnsExt"></include>
-		from t_bi_warehouse
-		where lifecycle =
-		#{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER}
+		from t_bi_warehouse w
+		left join t_bi_warehouse_mgmt mgmt on (w.id = mgmt.warehouse_id)
+		where w.lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER}
 	</select>
 
 </mapper>

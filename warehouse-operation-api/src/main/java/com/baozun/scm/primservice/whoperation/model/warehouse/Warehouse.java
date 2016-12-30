@@ -151,9 +151,24 @@ public class Warehouse extends BaseModel {
     private Integer suitsMaxSkuCategorys;
     private Boolean isCalcSuits;
     private Integer suitsOdoQtys;
-    /**播种墙对应单据数*/
-    private Integer seedinfOdoQty;
-
+    /** 是否应用复核台和播种墙推荐逻辑 */
+	private Boolean isApplyFacility;
+	/** 拣货是否提示复核台信息 */
+	private Boolean isDiekingCheckMessage;
+	/** 拣货是否提示播种墙信息 */
+	private Boolean isDiekingSeedingwallMessage;
+	/** 是否校验暂存库位校验码 */
+	private Boolean isTemporaryStorageCheckCode;
+	/** 播种模式 */
+	private String seedingMode;
+	/** 播种墙行数 */
+	private Integer xqty;
+	/** 播种墙列数 */
+	private Integer yqty;
+	/** z列数量 */
+	private Integer zqty;
+	/** 播种墙对应单据数 */
+	private Integer seedingOdoQty;
 
 
     public Integer getSuitsMaxSkuCategorys() {
@@ -628,14 +643,6 @@ public class Warehouse extends BaseModel {
         this.skuMixNumber = skuMixNumber;
     }
 
-    public Integer getSeedinfOdoQty() {
-        return seedinfOdoQty;
-    }
-
-    public void setSeedinfOdoQty(Integer seedinfOdoQty) {
-        this.seedinfOdoQty = seedinfOdoQty;
-    }
-
     public Boolean getIsInboundLocationBarcode() {
         return isInboundLocationBarcode;
     }
@@ -643,5 +650,77 @@ public class Warehouse extends BaseModel {
     public void setIsInboundLocationBarcode(Boolean isInboundLocationBarcode) {
         this.isInboundLocationBarcode = isInboundLocationBarcode;
     }
+
+	public Boolean getIsApplyFacility() {
+		return isApplyFacility;
+	}
+
+	public void setIsApplyFacility(Boolean isApplyFacility) {
+		this.isApplyFacility = isApplyFacility;
+	}
+
+	public Boolean getIsDiekingCheckMessage() {
+		return isDiekingCheckMessage;
+	}
+
+	public void setIsDiekingCheckMessage(Boolean isDiekingCheckMessage) {
+		this.isDiekingCheckMessage = isDiekingCheckMessage;
+	}
+
+	public Boolean getIsDiekingSeedingwallMessage() {
+		return isDiekingSeedingwallMessage;
+	}
+
+	public void setIsDiekingSeedingwallMessage(Boolean isDiekingSeedingwallMessage) {
+		this.isDiekingSeedingwallMessage = isDiekingSeedingwallMessage;
+	}
+
+	public Boolean getIsTemporaryStorageCheckCode() {
+		return isTemporaryStorageCheckCode;
+	}
+
+	public void setIsTemporaryStorageCheckCode(Boolean isTemporaryStorageCheckCode) {
+		this.isTemporaryStorageCheckCode = isTemporaryStorageCheckCode;
+	}
+
+	public String getSeedingMode() {
+		return seedingMode;
+	}
+
+	public void setSeedingMode(String seedingMode) {
+		this.seedingMode = seedingMode;
+	}
+
+	public Integer getXqty() {
+		return xqty;
+	}
+
+	public void setXqty(Integer xqty) {
+		this.xqty = xqty;
+	}
+
+	public Integer getYqty() {
+		return yqty;
+	}
+
+	public void setYqty(Integer yqty) {
+		this.yqty = yqty;
+	}
+
+	public Integer getZqty() {
+		return zqty;
+	}
+
+	public void setZqty(Integer zqty) {
+		this.zqty = zqty;
+	}
+
+	public Integer getSeedingOdoQty() {
+		return seedingOdoQty;
+	}
+
+	public void setSeedingOdoQty(Integer seedingOdoQty) {
+		this.seedingOdoQty = seedingOdoQty;
+	}
 
 }
