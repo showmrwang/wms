@@ -787,7 +787,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         }
         SimpleCubeCalculator cubeCalculator = new SimpleCubeCalculator(lenUomConversionRate);
         SimpleWeightCalculator weightCalculator = new SimpleWeightCalculator(weightUomConversionRate);
-        InventoryStatisticResultCommand invStatisticCmd = null;
+        InventoryStatisticResultCommand invStatisticCmd = isrCmd;
         if(null == isrCmd){
             invStatisticCmd = inventoryStatisticManager.sysGuidePutawayInvStatistic(invList, WhPutawayPatternDetailType.PALLET_PUTAWAY, lenUomCmds, weightUomCmds, containerCmd, ouId, userId, logId);
             if(null == invStatisticCmd){
@@ -1709,7 +1709,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                 weightUomConversionRate.put(uomCode, uomRate);
             }
         }
-        InventoryStatisticResultCommand invStatisticCmd = null;
+        InventoryStatisticResultCommand invStatisticCmd = isrCmd;
         if(null == isrCmd){
             invStatisticCmd = inventoryStatisticManager.sysGuidePutawayInvStatistic(invList, WhPutawayPatternDetailType.CONTAINER_PUTAWAY, lenUomCmds, weightUomCmds, insideContainerCmd, ouId, userId, logId);
             if(null == invStatisticCmd){
@@ -2590,7 +2590,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                 weightUomConversionRate.put(uomCode, uomRate);
             }
         }
-        InventoryStatisticResultCommand invStatisticCmd = null;
+        InventoryStatisticResultCommand invStatisticCmd = isrCmd;
         if(null == isrCmd){
             invStatisticCmd = inventoryStatisticManager.sysGuidePutawayInvStatistic(invList, WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY, lenUomCmds, weightUomCmds, insideContainerCmd, ouId, userId, logId);
             if(null == invStatisticCmd){
