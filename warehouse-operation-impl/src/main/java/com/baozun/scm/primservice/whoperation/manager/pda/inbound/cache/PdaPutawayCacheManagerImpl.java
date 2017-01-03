@@ -168,7 +168,7 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
         if (log.isInfoEnabled()) {
             log.info("sys guide putaway locRecommend queue validate start, contianerId is:[{}], logId is:[{}]", containerId, logId);
         }
-        int expireTime = 15;//过期时间
+        int expireTime = 60;//过期时间
         int execTime = 10;//执行需要最少时间
         int queueTime = expireTime - execTime;//排队时间
         long len = cacheManager.listLen(CacheConstants.LOCATION_RECOMMEND_QUEUE);
@@ -249,13 +249,15 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
         }
         return ret;*/
         String ret = null;
+        int e = 0;
         long len = cacheManager.listLen(key);
         for (int i = 0; i < len; i++) {
-            String fisrt = cacheManager.findListItem(key, i);
+            String fisrt = cacheManager.findListItem(key, (i - e));
             String expC = cacheManager.getMapValue(CacheConstants.LOCATION_RECOMMEND_EXPIRE_TIME, fisrt);
             if (StringUtils.isEmpty(expC)) {
                 // 排队超时，移出队列
                 cacheManager.popListHead(key);
+                e++;// 队列过期数
             } else {
                 ret = fisrt;
             }
