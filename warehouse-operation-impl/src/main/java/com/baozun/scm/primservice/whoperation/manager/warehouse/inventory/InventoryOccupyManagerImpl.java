@@ -274,6 +274,7 @@ public class InventoryOccupyManagerImpl extends BaseInventoryManagerImpl impleme
 		                }
 						occupyNum += inv.getOnHandQty();
 						useableQty -= inv.getOnHandQty();
+						qty -= inv.getOnHandQty();
 						// 在所有库存sku列表中扣除
 						if (null != allSkuInvs) {
 							for (int i = 0; i < allSkuInvs.size(); i++) {
@@ -291,6 +292,7 @@ public class InventoryOccupyManagerImpl extends BaseInventoryManagerImpl impleme
 		                }
 						insertOccupyInventory(inv, useableQty, occupyCode, odoLineId, occupySource, logId);
 						occupyNum += useableQty;
+						qty -= useableQty;
 						useableQty = 0.0;
 						// 这些uuid的可用量没有了,在所有库存sku列表中扣除
 						if (null != allSkuInvs) {
@@ -316,6 +318,9 @@ public class InventoryOccupyManagerImpl extends BaseInventoryManagerImpl impleme
 					}
 				}
 				actualQty += occupyNum;
+				if (0 == Constants.DEFAULT_DOUBLE.compareTo(qty)) {
+					break;
+				}
 			}
 		}
 		return actualQty;
