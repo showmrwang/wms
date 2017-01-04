@@ -710,4 +710,7 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @return
      */
 	Double getUseableQtyByUuid(@Param("uuid") String uuid, @Param("ouId") Long ouId);
+	
+	public List<WhSkuInventoryCommand> getWhSkuInventoryByOccupationLineId(@Param("ouId") Long ouId,@Param("operationId") Long operationId);
+	
 }

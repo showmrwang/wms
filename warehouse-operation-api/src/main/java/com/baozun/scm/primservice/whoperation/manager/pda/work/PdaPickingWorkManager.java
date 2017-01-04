@@ -175,4 +175,13 @@ public interface PdaPickingWorkManager extends BaseManager {
     List<WhSkuInventorySnCommand> findWhSkuInventoryByUuid(Long ouid, String uuid);
     
     
+    /***
+     * 查询库存sn残次信息
+     * @param sn
+     * @param defectWareBarCode
+     * @return
+     */
+    public PickingScanResultCommand judgeIsOccupationCode(PickingScanResultCommand command);
+    
+    
 }

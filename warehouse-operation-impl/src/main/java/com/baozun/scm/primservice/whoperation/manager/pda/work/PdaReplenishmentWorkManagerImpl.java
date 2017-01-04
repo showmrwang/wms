@@ -13,6 +13,7 @@ import com.baozun.redis.manager.CacheManager;
 import com.baozun.scm.primservice.whoperation.command.pda.work.CheckScanResultCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.work.OperatioLineStatisticsCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.work.PickingScanResultCommand;
+import com.baozun.scm.primservice.whoperation.command.pda.work.ReplenishmentResultCommand;
 import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhFunctionReplenishmentDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhLocationDao;
@@ -21,6 +22,7 @@ import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Location;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionReplenishment;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhWork;
 
 @Service("pdaReplenishmentWorkManager")
 @Transactional
@@ -37,6 +39,22 @@ public class PdaReplenishmentWorkManagerImpl extends BaseManagerImpl implements 
     private WhLocationDao whLocationDao;
     @Autowired
     private WhFunctionReplenishmentDao whFunctionReplenishmentDao;
+    
+    /**
+     * 统计分析补货工作及明细并缓存
+     * 
+     * @author qiming.liu
+     * @param whWork
+     * @param ouId
+     * @return
+     */
+    @Override
+    public ReplenishmentResultCommand getReplenishmentForGroup(WhWork whWork, Long ouId) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    
     
     /***
      * 提示拣货库位
