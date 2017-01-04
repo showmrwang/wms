@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhSeedingWallRuleCommand;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhSeedingWallRuleDao;
 import com.baozun.scm.primservice.whoperation.command.rule.RuleAfferCommand;
 import com.baozun.scm.primservice.whoperation.command.rule.RuleExportCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.CheckOperationsAreaRuleCommand;
@@ -78,7 +80,9 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
 
     @Autowired
     private CheckOperationsAreaRuleDao checkOperationsAreaRuleDao;
-
+    @Autowired
+    private WhSeedingWallRuleDao whSeedingWallRuleDao;
+    
     /***
      * 根据规则传入参数返回对应规则输出参数
      */
@@ -135,6 +139,10 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
             case Constants.RULE_TYPE_CHECK_OPERATIONS_AREA:
                 //复核台推荐规则
                 export = exportCheckOperationsAreaRule(ruleAffer);
+                break;
+            case Constants.RULE_TYPE_SEEDING_WALL:
+                // 播种墙推荐规则
+                export = exportSeedingWallRule(ruleAffer);
                 break;
             default:
                 log.error("ruleExport ruleAffer.getRuleType() is error ruleAffer.getRuleType() = " + ruleAffer.getRuleType() + " logid: " + ruleAffer.getLogId());
@@ -520,6 +528,38 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
         ruleExportCommand.setCheckOperationsAreaRuleCommand(availableRule);
         return ruleExportCommand;
     }
+    
+    /**
+     * 播种墙推荐
+     * @param ruleAffer
+     * @return
+     */
+    private RuleExportCommand exportSeedingWallRule(RuleAfferCommand ruleAffer) {
+    	if (null == ruleAffer.getSeedingWallOdoIdList() || ruleAffer.getSeedingWallOdoIdList().isEmpty() || null == ruleAffer.getOuid()) {
+            log.error("ruleExport exportSeedingWallRule error, param is null, ouId:[{}]", ruleAffer.getOuid());
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+        }
+    	// 出库单ID列表
+        List<Long> odoIdList = ruleAffer.getSeedingWallOdoIdList();
+        // 组织ID
+        Long ouId = ruleAffer.getOuid();
+        String odoIdListStr = this.listToStringWithoutBrackets(odoIdList);
+        // 播种墙规则
+        WhSeedingWallRuleCommand availableRule = null;
+        List<WhSeedingWallRuleCommand> ruleList = whSeedingWallRuleDao.findAllSeedingWallRules(ouId);
+        for (WhSeedingWallRuleCommand command : ruleList) {
+        	List<Long> matchOdoIdList = whSeedingWallRuleDao.executeRuleSql(command.getRuleSql().replace(Constants.SEEDING_WALL_ODOID_LIST_PLACEHOLDER, odoIdListStr), ouId);
+        	if (null != matchOdoIdList && !matchOdoIdList.isEmpty()) {
+                //找到一个可用的即可
+                availableRule = command;
+                break;
+            }
+		}
+        
+        RuleExportCommand ruleExportCommand = new RuleExportCommand();
+        ruleExportCommand.setWhSeedingWallRuleCommand(availableRule);
+		return ruleExportCommand;
+	}
 
     /**
      * 配货模式规则

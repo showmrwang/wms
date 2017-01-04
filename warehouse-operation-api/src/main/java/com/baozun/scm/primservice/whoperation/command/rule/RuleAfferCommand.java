@@ -82,6 +82,8 @@ public class RuleAfferCommand extends BaseCommand {
 
     /** 复核台推荐规则 */
     private List<Long> checkOperationsAreaOdoIdList;
+    /** 播种墙推荐规则 */
+    private List<Long> seedingWallOdoIdList;
 
     public String getRuleType() {
         return ruleType;
@@ -281,4 +283,12 @@ public class RuleAfferCommand extends BaseCommand {
     public void setCheckOperationsAreaOdoIdList(List<Long> checkOperationsAreaOdoIdList) {
         this.checkOperationsAreaOdoIdList = checkOperationsAreaOdoIdList;
     }
+
+	public List<Long> getSeedingWallOdoIdList() {
+		return seedingWallOdoIdList;
+	}
+
+	public void setSeedingWallOdoIdList(List<Long> seedingWallOdoIdList) {
+		this.seedingWallOdoIdList = seedingWallOdoIdList;
+	}
 }

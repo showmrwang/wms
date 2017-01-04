@@ -281,7 +281,9 @@ public final class Constants {
 
     /** 复核台推荐规则出库单ID占位符 */
     public static final String CHECK_OPERATIONS_AREA_ODOID_LIST_PLACEHOLDER = "${odoIdListStr}";
-
+    /** 播种墙推荐规则出库单ID占位符 */
+    public static final String SEEDING_WALL_ODOID_LIST_PLACEHOLDER = "${odoIdListStr}";
+    
     /** 出库箱装箱规则sql占位符 */
     public static final String OUTBOUNDBOX_RULE_PLACEHOLDER = "${odoIdListStr}";
 
@@ -481,6 +483,8 @@ public final class Constants {
     /** 修改出库单状态-原始出库单明细还原为新建*/
     public static final int ODO_LINE_NEW = 3;
 
+    /** 播种墙推荐规则 */
+    public static final String RULE_TYPE_SEEDING_WALL = "SEEDING_WALL";
     /** 复核台推荐规则 */
     public static final String RULE_TYPE_CHECK_OPERATIONS_AREA = "CHECK_OPERATIONS_AREA";
     /** 工作号*/

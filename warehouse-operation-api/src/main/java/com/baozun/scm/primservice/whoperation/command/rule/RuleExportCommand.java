@@ -3,6 +3,7 @@ package com.baozun.scm.primservice.whoperation.command.rule;
 import java.util.List;
 import java.util.Map;
 
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhSeedingWallRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.CheckOperationsAreaRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.OutboundBoxRuleCommand;
@@ -66,7 +67,9 @@ public class RuleExportCommand extends BaseCommand {
 
     /** 复核台推荐规则 */
     private CheckOperationsAreaRuleCommand checkOperationsAreaRuleCommand;
-
+    /** 播种墙推荐规则 */
+    private WhSeedingWallRuleCommand whSeedingWallRuleCommand;
+    
     public Boolean getUsableness() {
         return usableness;
     }
@@ -186,4 +189,12 @@ public class RuleExportCommand extends BaseCommand {
     public void setCheckOperationsAreaRuleCommand(CheckOperationsAreaRuleCommand checkOperationsAreaRuleCommand) {
         this.checkOperationsAreaRuleCommand = checkOperationsAreaRuleCommand;
     }
+
+	public WhSeedingWallRuleCommand getWhSeedingWallRuleCommand() {
+		return whSeedingWallRuleCommand;
+	}
+
+	public void setWhSeedingWallRuleCommand(WhSeedingWallRuleCommand whSeedingWallRuleCommand) {
+		this.whSeedingWallRuleCommand = whSeedingWallRuleCommand;
+	}
 }
