@@ -374,7 +374,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
      */
     @Override
     public void operatioLineStatisticsRedis(Long operationId, OperatioLineStatisticsCommand operatioLineStatisticsCommand) {
-        cacheManager.setObject(operationId.toString(), operatioLineStatisticsCommand);
+        cacheManager.setObject(CacheConstants.OPERATIONLINE_STATISTICS + operationId.toString(), operatioLineStatisticsCommand);
     }
 
     /**

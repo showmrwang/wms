@@ -3,6 +3,7 @@ package com.baozun.scm.primservice.whoperation.manager.pda.work;
 import java.util.List;
 
 import com.baozun.scm.primservice.whoperation.command.pda.work.PickingScanResultCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
@@ -11,6 +12,7 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.WhWork;
 
 
 public interface PdaPickingWorkManager extends BaseManager {
+    
     
     /**
      * 保存工作操作员信息
@@ -24,14 +26,23 @@ public interface PdaPickingWorkManager extends BaseManager {
     void saveWorkOper (Long workId, Long ouId, Long userId);
     
     /**
-     * 统计分析工作及明细并缓存
+     * [通用方法] 统计分析工作及明细并缓存
+     * 
+     * @author qiming.liu
+     * @param WhOperationCommand
+     * @return
+     */
+    void getOperatioLineForGroup(WhOperationCommand whOperationCommand);
+    
+    /**
+     * 确定补货方式和占用模型
      * 
      * @author qiming.liu
      * @param whWork
      * @param ouId
      * @return
      */
-    PickingScanResultCommand getOperatioLineForGroup(WhWork whWork, Long ouId);
+    PickingScanResultCommand getPickingForGroup(WhWork whWork, Long ouId);
     
     /**
      * pda拣货推荐容器
@@ -41,7 +52,6 @@ public interface PdaPickingWorkManager extends BaseManager {
      * @return
      */
     public PickingScanResultCommand pdaPickingRemmendContainer(PickingScanResultCommand  command);
-    
     
     /**
      * 扫描容器
@@ -174,7 +184,6 @@ public interface PdaPickingWorkManager extends BaseManager {
      */
     List<WhSkuInventorySnCommand> findWhSkuInventoryByUuid(Long ouid, String uuid);
     
-    
     /***
      * 查询库存sn残次信息
      * @param sn
@@ -182,6 +191,5 @@ public interface PdaPickingWorkManager extends BaseManager {
      * @return
      */
     public PickingScanResultCommand judgeIsOccupationCode(PickingScanResultCommand command);
-    
     
 }

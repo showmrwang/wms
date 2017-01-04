@@ -230,6 +230,14 @@ public class PickingScanResultCommand extends BaseCommand {
     
     /**************************************************整托整箱结束**************************************************/
     
+    /**************************************************pda补货开始**************************************************/   
+   
+    /** 补货方式 */
+    private Integer replenishWay;
+    
+    /**************************************************pda补货结束**************************************************/
+    
+    
     public String getWorkBarCode() {
         return workBarCode;
     }
@@ -836,7 +844,10 @@ public class PickingScanResultCommand extends BaseCommand {
     public void setIsNeedScanDefect(Boolean isNeedScanDefect) {
         this.isNeedScanDefect = isNeedScanDefect;
     }
-
-    
-    
+    public Integer getReplenishWay() {
+        return replenishWay;
+    }
+    public void setReplenishWay(Integer replenishWay) {
+        this.replenishWay = replenishWay;
+    }
 }

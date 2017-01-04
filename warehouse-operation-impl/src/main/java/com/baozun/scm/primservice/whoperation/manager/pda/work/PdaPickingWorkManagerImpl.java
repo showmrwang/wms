@@ -176,7 +176,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
      * @return
      */
     @Override
-    public PickingScanResultCommand getOperatioLineForGroup(WhWork whWork, Long ouId) {
+    public void getOperatioLineForGroup(WhOperationCommand whOperationCommand) {
         // 所有小车
         Set<Long> outerContainers = new HashSet<Long>();
         // 所有出库箱
@@ -220,10 +220,8 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         // 工作明细ID和唯一sku对应关系       
         Map<String, String> workLineToOnlySku = new HashMap<String, String>();
         
-        //根据工作id获取作业信息        
-        WhOperationCommand whOperationCommand = whOperationManager.findOperationByWorkId(whWork.getId(), ouId);
         //根据作业id获取作业明细信息  
-        List<WhOperationLineCommand> operationLineList = whOperationLineManager.findOperationLineByOperationId(whOperationCommand.getId(), ouId);
+        List<WhOperationLineCommand> operationLineList = whOperationLineManager.findOperationLineByOperationId(whOperationCommand.getId(), whOperationCommand.getOuId());
         for(WhOperationLineCommand operationLine : operationLineList){
             //流程相关统计信息 
             if(whOperationCommand.getIsWholeCase() == false){
@@ -252,7 +250,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             String lineToSku = this.getWorkLineToOnlySku(operationLine.getId(), operationLine.getWorkLineId(), operationLine.getUuid());
             workLineToOnlySku.put(lineToSku, onlySku);
             //根据库存UUID查找对应SN/残次信息
-            List<WhSkuInventorySnCommand> skuInventorySnCommands = whSkuInventorySnDao.findWhSkuInventoryByUuid(ouId, operationLine.getUuid());
+            List<WhSkuInventorySnCommand> skuInventorySnCommands = whSkuInventorySnDao.findWhSkuInventoryByUuid(whOperationCommand.getOuId(), operationLine.getUuid());
             //获取库位ID            
             locationIds.add(operationLine.getFromLocationId());
             //获取外部容器 
@@ -510,7 +508,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         statisticsCommand.setContainers(containers);
         // 库位排序
         List<Long> sortLocationIds = new ArrayList<Long>();
-        sortLocationIds = locationManager.sortByIds(locationIds, ouId);
+        sortLocationIds = locationManager.sortByIds(locationIds, whOperationCommand.getOuId());
         // 所有库位
         statisticsCommand.setLocationIds(sortLocationIds);
         // 库位上所有外部容器
@@ -544,43 +542,6 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         
         //缓存统计分析结果        
         pdaPickingWorkCacheManager.operatioLineStatisticsRedis(whOperationCommand.getId(), statisticsCommand);
-        
-        //返回结果        
-        PickingScanResultCommand pickingScanResultCommand = new PickingScanResultCommand();
-        //作业id        
-        pickingScanResultCommand.setOperationId(whOperationCommand.getId());//是否需要仓库id
-        
-        //捡货方式        
-        if(whOperationCommand.getIsWholeCase() == false && outerContainers.size() > 0 && outbounxBoxs.size() == 0){
-            pickingScanResultCommand.setPickingWay(Constants.PICKING_WAY_ONE);
-        }else if(whOperationCommand.getIsWholeCase() == false && outerContainers.size() > 0 && outbounxBoxs.size() > 0){
-            pickingScanResultCommand.setPickingWay(Constants.PICKING_WAY_TWO);
-        }else if(whOperationCommand.getIsWholeCase() == false && outerContainers.size() == 0 && outbounxBoxs.size() == 0){
-            pickingScanResultCommand.setPickingWay(Constants.PICKING_WAY_THREE);
-        }else if(whOperationCommand.getIsWholeCase() == false && outerContainers.size() == 0 && turnoverBoxs.size() == 0){
-            pickingScanResultCommand.setPickingWay(Constants.PICKING_WAY_FOUR);
-        }else if(whOperationCommand.getIsWholeCase() == true && pallets.size() > 0 && pallets.size() > 0){
-            pickingScanResultCommand.setPickingWay(Constants.PICKING_WAY_FIVE);
-        }else if(whOperationCommand.getIsWholeCase() == true && pallets.size() == 0 && pallets.size() > 0){
-            pickingScanResultCommand.setPickingWay(Constants.PICKING_WAY_SIX);
-        }
-       
-        //库存占用模型
-        if(outerContainerIds.size() > 0 && insideContainerIds.size() == 0 && insideSkuIds.size() == 0){
-            //仅占用托盘内商品            
-            pickingScanResultCommand.setInvOccupyMode(Constants.INV_OCCUPY_MODE_ONE);
-        }else if(outerContainerIds.size() == 0 && insideContainerIds.size() > 0 && insideSkuIds.size() == 0){
-            //仅占用货箱内商品
-            pickingScanResultCommand.setInvOccupyMode(Constants.INV_OCCUPY_MODE_TWO);
-        }else if(outerContainerIds.size() == 0 && insideContainerIds.size() == 0 && insideSkuIds.size() > 0){
-            //仅占用库位上散件商品
-            pickingScanResultCommand.setInvOccupyMode(Constants.INV_OCCUPY_MODE_THREE);
-        }else{//有托盘||有货箱（无外部容器）||散件
-            //混合占用
-            pickingScanResultCommand.setInvOccupyMode(Constants.INV_OCCUPY_MODE_FOUR);
-        }
-        
-        return pickingScanResultCommand;
     }
     
     /**
@@ -1998,5 +1959,55 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         log.info("PdaPickingWorkManagerImpl judgeIsOccupationCode is end");
         return command;
     }
-    
+
+    /****
+     * 确定补货方式和占用模型
+     * 
+     * @author qiming.liu
+     * @param  whWork
+     * @param  ouId
+     * @return
+     */
+    @Override
+    public PickingScanResultCommand getPickingForGroup(WhWork whWork, Long ouId) {
+        // 根据工作id获取作业信息        
+        WhOperationCommand whOperationCommand = whOperationManager.findOperationByWorkId(whWork.getId(), ouId);
+        // 统计分析工作及明细并缓存
+        this.getOperatioLineForGroup(whOperationCommand);
+        // 获取缓存中的统计分析数据        
+        OperatioLineStatisticsCommand statisticsCommand = pdaPickingWorkCacheManager.getOperatioLineStatistics(whOperationCommand.getId(), whOperationCommand.getOuId());
+        //返回结果初始化        
+        PickingScanResultCommand pickingScanResultCommand = new PickingScanResultCommand();
+        //作业id        
+        pickingScanResultCommand.setOperationId(whOperationCommand.getId());//是否需要仓库id
+        //捡货方式        
+        if(whOperationCommand.getIsWholeCase() == false && statisticsCommand.getOuterContainers().size() > 0 && statisticsCommand.getOutbounxBoxs().size() == 0){
+            pickingScanResultCommand.setPickingWay(Constants.PICKING_WAY_ONE);
+        }else if(whOperationCommand.getIsWholeCase() == false && statisticsCommand.getOuterContainers().size() > 0 && statisticsCommand.getOutbounxBoxs().size() > 0){
+            pickingScanResultCommand.setPickingWay(Constants.PICKING_WAY_TWO);
+        }else if(whOperationCommand.getIsWholeCase() == false && statisticsCommand.getOuterContainers().size() == 0 && statisticsCommand.getOutbounxBoxs().size() == 0){
+            pickingScanResultCommand.setPickingWay(Constants.PICKING_WAY_THREE);
+        }else if(whOperationCommand.getIsWholeCase() == false && statisticsCommand.getOuterContainers().size() == 0 && statisticsCommand.getTurnoverBoxs().size() == 0){
+            pickingScanResultCommand.setPickingWay(Constants.PICKING_WAY_FOUR);
+        }else if(whOperationCommand.getIsWholeCase() == true && statisticsCommand.getPallets().size() > 0 && statisticsCommand.getPallets().size() > 0){
+            pickingScanResultCommand.setPickingWay(Constants.PICKING_WAY_FIVE);
+        }else if(whOperationCommand.getIsWholeCase() == true && statisticsCommand.getPallets().size() == 0 && statisticsCommand.getPallets().size() > 0){
+            pickingScanResultCommand.setPickingWay(Constants.PICKING_WAY_SIX);
+        }
+        //库存占用模型
+        if(statisticsCommand.getOuterContainerIds().size() > 0 && statisticsCommand.getInsideContainerIds().size() == 0 && statisticsCommand.getInsideSkuIds().size() == 0){
+            //仅占用托盘内商品            
+            pickingScanResultCommand.setInvOccupyMode(Constants.INV_OCCUPY_MODE_ONE);
+        }else if(statisticsCommand.getOuterContainerIds().size() == 0 && statisticsCommand.getInsideContainerIds().size() > 0 && statisticsCommand.getInsideSkuIds().size() == 0){
+            //仅占用货箱内商品
+            pickingScanResultCommand.setInvOccupyMode(Constants.INV_OCCUPY_MODE_TWO);
+        }else if(statisticsCommand.getOuterContainerIds().size() == 0 && statisticsCommand.getInsideContainerIds().size() == 0 && statisticsCommand.getInsideSkuIds().size() > 0){
+            //仅占用库位上散件商品
+            pickingScanResultCommand.setInvOccupyMode(Constants.INV_OCCUPY_MODE_THREE);
+        }else{//有托盘||有货箱（无外部容器）||散件
+            //混合占用
+            pickingScanResultCommand.setInvOccupyMode(Constants.INV_OCCUPY_MODE_FOUR);
+        }
+        return pickingScanResultCommand;
+    }
 }

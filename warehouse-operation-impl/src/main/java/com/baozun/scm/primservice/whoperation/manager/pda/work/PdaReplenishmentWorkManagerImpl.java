@@ -13,13 +13,15 @@ import com.baozun.redis.manager.CacheManager;
 import com.baozun.scm.primservice.whoperation.command.pda.work.CheckScanResultCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.work.OperatioLineStatisticsCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.work.PickingScanResultCommand;
-import com.baozun.scm.primservice.whoperation.command.pda.work.ReplenishmentResultCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationCommand;
 import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
+import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhFunctionReplenishmentDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhLocationDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.WhOperationManager;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Location;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionReplenishment;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhWork;
@@ -32,30 +34,64 @@ public class PdaReplenishmentWorkManagerImpl extends BaseManagerImpl implements 
     protected static final Logger log = LoggerFactory.getLogger(PdaReplenishmentWorkManagerImpl.class);
     
     @Autowired
-    private PdaPickingWorkCacheManager    pdaPickingWorkCacheManager;
+    private PdaPickingWorkCacheManager pdaPickingWorkCacheManager;
     @Autowired
     private CacheManager cacheManager; 
     @Autowired
     private WhLocationDao whLocationDao;
     @Autowired
     private WhFunctionReplenishmentDao whFunctionReplenishmentDao;
+    @Autowired
+    private PdaPickingWorkManager pdaPickingWorkManager;
+    @Autowired
+    private WhOperationManager whOperationManager;
     
-    /**
-     * 统计分析补货工作及明细并缓存
+    
+    /****
+     * 确定补货方式和占用模型
      * 
      * @author qiming.liu
-     * @param whWork
-     * @param ouId
+     * @param  whWork
+     * @param  ouId
      * @return
      */
     @Override
-    public ReplenishmentResultCommand getReplenishmentForGroup(WhWork whWork, Long ouId) {
-        // TODO Auto-generated method stub
-        return null;
+    public PickingScanResultCommand getReplenishmentForGroup(WhWork whWork, Long ouId) {
+        // 根据工作id获取作业信息        
+        WhOperationCommand whOperationCommand = whOperationManager.findOperationByWorkId(whWork.getId(), ouId);
+        // 统计分析工作及明细并缓存
+        pdaPickingWorkManager.getOperatioLineForGroup(whOperationCommand);
+        // 获取缓存中的统计分析数据        
+        OperatioLineStatisticsCommand statisticsCommand = pdaPickingWorkCacheManager.getOperatioLineStatistics(whOperationCommand.getId(), whOperationCommand.getOuId());
+        // 返回结果初始化        
+        PickingScanResultCommand psRCmd = new PickingScanResultCommand();
+        // 作业id        
+        psRCmd.setOperationId(whOperationCommand.getId());
+        // 捡货方式        
+        if(whOperationCommand.getIsWholeCase() == false && statisticsCommand.getOuterContainers().size() > 0 && statisticsCommand.getOutbounxBoxs().size() == 0){
+            psRCmd.setReplenishWay(Constants.REPLENISH_WAY_ONE);
+        }else if(whOperationCommand.getIsWholeCase() == true && statisticsCommand.getPallets().size() > 0 && statisticsCommand.getPallets().size() > 0){
+            psRCmd.setReplenishWay(Constants.REPLENISH_WAY_TWO);
+        }else if(whOperationCommand.getIsWholeCase() == true && statisticsCommand.getPallets().size() == 0 && statisticsCommand.getPallets().size() > 0){
+            psRCmd.setReplenishWay(Constants.REPLENISH_WAY_THREE);
+        }
+        // 库存占用模型
+        if(statisticsCommand.getOuterContainerIds().size() > 0 && statisticsCommand.getInsideContainerIds().size() == 0 && statisticsCommand.getInsideSkuIds().size() == 0){
+            // 仅占用托盘内商品            
+            psRCmd.setInvOccupyMode(Constants.INV_OCCUPY_MODE_ONE);
+        }else if(statisticsCommand.getOuterContainerIds().size() == 0 && statisticsCommand.getInsideContainerIds().size() > 0 && statisticsCommand.getInsideSkuIds().size() == 0){
+            // 仅占用货箱内商品
+            psRCmd.setInvOccupyMode(Constants.INV_OCCUPY_MODE_TWO);
+        }else if(statisticsCommand.getOuterContainerIds().size() == 0 && statisticsCommand.getInsideContainerIds().size() == 0 && statisticsCommand.getInsideSkuIds().size() > 0){
+            // 仅占用库位上散件商品
+            psRCmd.setInvOccupyMode(Constants.INV_OCCUPY_MODE_THREE);
+        }else{
+            //混合占用
+            psRCmd.setInvOccupyMode(Constants.INV_OCCUPY_MODE_FOUR);
+        }
+        return psRCmd;
     }
 
-    
-    
     /***
      * 提示拣货库位
      * @author tangming
