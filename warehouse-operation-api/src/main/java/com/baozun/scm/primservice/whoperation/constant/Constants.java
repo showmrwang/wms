@@ -510,5 +510,11 @@ public final class Constants {
     public static final String FROM_INSIDE_CONTAINER_TO_LOCATION = "FROM_INSIDE_CONTAINER_TO_LOCATION";
     /** 配置为目标库位*/
     public static final String TO_LOCATION = "TO_LOCATION";
-
+    
+    /**整托拣货流程*/
+    public static final Integer REPLENISH_WAY_ONE = 1;
+    /**整托拣货流程*/
+    public static final Integer REPLENISH_WAY_TWO = 2;
+    /**整托拣货流程*/
+    public static final Integer REPLENISH_WAY_THREE = 3;
 }
