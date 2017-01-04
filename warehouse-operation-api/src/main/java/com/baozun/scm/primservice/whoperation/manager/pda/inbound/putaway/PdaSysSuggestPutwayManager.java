@@ -81,7 +81,7 @@ public interface PdaSysSuggestPutwayManager extends BaseManager{
      * @param sRCommand
      * @return
      */
-    public ScanResultCommand containerPutwayScanSku(WhSkuCommand skuCmd,String containerCode,Long ouId,Long userId,String locationCode,String insideContainerCode,Long functionId,Warehouse warehouse,Integer putawayPatternDetailType);
+    public ScanResultCommand containerPutwayScanSku(Boolean isNotUser,Boolean isRecommendFail,WhSkuCommand skuCmd,String containerCode,Long ouId,Long userId,String locationCode,String insideContainerCode,Long functionId,Warehouse warehouse,Integer putawayPatternDetailType);
     
     
   /***
@@ -98,7 +98,7 @@ public interface PdaSysSuggestPutwayManager extends BaseManager{
    * @param finish
    * @return
    */
-    public ScanResultCommand splitPutwayScanSku(Boolean isScanSkuSn,Boolean isRecommendFail,String outerContainerCode,String insideContainerCode,WhSkuCommand skuCmd, String locationCode, Long funcId, Long ouId, Long userId, String logId,Integer putawayPatternDetailType,Warehouse warehouse);
+    public ScanResultCommand splitPutwayScanSku(Boolean isNotUser,Boolean isScanSkuSn,Boolean isRecommendFail,String outerContainerCode,String insideContainerCode,WhSkuCommand skuCmd, String locationCode, Long funcId, Long ouId, Long userId, String logId,Integer putawayPatternDetailType,Warehouse warehouse);
     
 
     /***
