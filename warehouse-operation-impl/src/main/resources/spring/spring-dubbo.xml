@@ -121,5 +121,6 @@
     <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.redis.SkuRedisManager"  ref="skuRedisManager" />
     <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.pda.caseLevel.CaseLevelManagerProxy"  ref="caseLevelManagerProxy" />
     <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.pda.inbound.rcvd.CaseLevelRcvdManager"  ref="caseLevelRcvdManager" />
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.pda.concentration.PdaConcentrationManager"  ref="pdaConcentrationManager" />
 
 </beans>
