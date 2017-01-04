@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundFacilityGroupDao">
+    <resultMap id="WhOutboundFacilityGroupResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundFacilityGroup">
+    </resultMap>
+
+    <resultMap id="WhOutboundFacilityGroupCommand" type="com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundFacilityGroupCommand">
+    </resultMap>
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="whOutboundFacilityGroupColumnsExt">
+        <![CDATA[
+                id as id,
+                facility_group_code as facilityGroupCode,
+                facility_group_name as facilityGroupName,
+                facility_group_type as facilityGroupType,
+                working_storage_section_id as workingStorageSectionId,
+                create_time as createTime,
+                last_modify_time as lastModifyTime,
+                operator_id as operatorId,
+                lifecycle as lifecycle,
+                ou_id as ouId
+        ]]>
+    </sql>
+	
+	<sql id="whOutboundFacilityGroupSreachColumnsExt">
+		g.id as id,
+		g.facility_group_code as facilityGroupCode,
+		g.facility_group_name as facilityGroupName,
+		g.facility_group_type as facilityGroupType,
+		g.working_storage_section_id as workingStorageSectionId,
+		g.create_time as createTime,
+		g.last_modify_time as lastModifyTime,
+		g.operator_id as operatorId,
+		g.lifecycle as lifecycle,
+		g.ou_id as ouId,
+		s.working_storage_section_name as workingStorageSectionName,
+		sys.dic_label as facilityGroupTypeName
+	</sql>
+	
+    <sql id="whOutboundFacilityGroupDynamicWhereExt">
+        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+
+            <if test="id!=null">
+                and id = #{id}
+            </if>
+
+            <if test="facilityGroupCode!=null and facilityGroupCode!=''">
+                and facility_group_code = #{facilityGroupCode}
+            </if>
+
+            <if test="facilityGroupName!=null and facilityGroupName!=''">
+                and facility_group_name = #{facilityGroupName}
+            </if>
+
+            <if test="facilityGroupType!=null and facilityGroupType!=''">
+                and facility_group_type = #{facilityGroupType}
+            </if>
+
+            <if test="workingStorageSectionId!=null">
+                and working_storage_section_id = #{workingStorageSectionId}
+            </if>
+
+            <if test="createTime!=null">
+                and create_time = #{createTime}
+            </if>
+
+            <if test="lastModifyTime!=null">
+                and last_modify_time = #{lastModifyTime}
+            </if>
+
+            <if test="operatorId!=null">
+                and operator_id = #{operatorId}
+            </if>
+
+            <if test="lifecycle!=null">
+                and lifecycle = #{lifecycle}
+            </if>
+
+            <if test="ouId!=null">
+                and ou_id = #{ouId}
+            </if>
+        </where>
+    </sql>
+	
+	<sql id="whOutboundFacilityGroupSreachWhereExt">
+		<where>
+            <if test="facilityGroupCode!=null and facilityGroupCode!=''">
+                and g.facility_group_code like #{facilityGroupCode}
+            </if>
+
+            <if test="facilityGroupName!=null and facilityGroupName!=''">
+                and g.facility_group_name like #{facilityGroupName}
+            </if>
+
+            <if test="facilityGroupTypeList != null and facilityGroupTypeList.size > 0">
+                and g.facility_group_type in 
+                <foreach collection="facilityGroupTypeList" item="gid" open="(" separator="," close=")">
+					#{gid}
+				</foreach>
+            </if>
+
+            <if test="workingStorageSectionList != null and workingStorageSectionList.size > 0">
+                and g.working_storage_section_id in 
+                <foreach collection="workingStorageSectionList" item="wid" open="(" separator="," close=")">
+					#{wid}
+				</foreach>
+            </if>
+
+            <if test="lifecycle!=null">
+                and g.lifecycle = #{lifecycle}
+            </if>
+
+            <if test="ouId!=null">
+                and g.ou_id = #{ouId}
+            </if>
+        </where>
+	</sql>
+	
+    <update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundFacilityGroup">
+        <![CDATA[
+                UPDATE t_wh_outbound_facility_group SET
+                    facility_group_code = #{facilityGroupCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    facility_group_name = #{facilityGroupName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    facility_group_type = #{facilityGroupType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    working_storage_section_id = #{workingStorageSectionId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                    last_modify_time = now() ,
+                    operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER}
+                WHERE 
+                    id = #{id} 
+                    and ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+                    and last_modify_time    <=  #{lastModifyTime}    
+            ]]>
+    </update>
+
+    <select id="getOutboundFacilityGroupCommandList" resultMap="WhOutboundFacilityGroupCommand">
+        select
+            <include refid="whOutboundFacilityGroupColumnsExt"/>
+        from
+            t_wh_outbound_facility_group
+        where
+            ou_id = #{ouId}
+            and lifecycle = 1
+            <if test="type != null and type != ''">
+            	and facility_group_type = #{type}
+            </if>
+    </select>
+	
+	<select id="findListByQueryMapWithPageExt" resultMap="WhOutboundFacilityGroupCommand">
+		select
+            <include refid="whOutboundFacilityGroupSreachColumnsExt"/>
+        from
+            t_wh_outbound_facility_group g
+            left join sys_dictionary sys on (sys.dic_value = g.facility_group_type and sys.group_value = 'FACILITY_GROUP_TYPE')
+			left join t_wh_working_storage_section s on g.working_storage_section_id = s.id
+		<include refid="whOutboundFacilityGroupSreachWhereExt"/>
+	</select>
+	
+	<select id="findListCountByQueryMapExt" resultType="long">
+        select count(*) from t_wh_outbound_facility_group g
+        left join t_wh_working_storage_section s on g.working_storage_section_id = s.id
+		<include refid="whOutboundFacilityGroupSreachWhereExt"/>    
+    </select>
+    
+    <select id="findByIdExt" resultMap="WhOutboundFacilityGroupCommand">
+    	select
+            <include refid="whOutboundFacilityGroupSreachColumnsExt"/>
+        from
+            t_wh_outbound_facility_group g
+            left join sys_dictionary sys on (sys.dic_value = g.facility_group_type and sys.group_value = 'FACILITY_GROUP_TYPE')
+			left join t_wh_working_storage_section s on g.working_storage_section_id = s.id
+		where 
+			g.id = #{id}
+			and g.ou_id = #{ouId}
+    </select>
+    
+    <delete id="deleteByIdExt">
+    	delete from t_wh_outbound_facility_group
+    	where id = #{id} and ou_id = #{ouId}
+    </delete>
+    
+    <select id="findAreaDataByPathType" resultType="map">
+    	select 
+    		g.id id,
+    		g.facility_group_code code,
+    		g.facility_group_name name 
+    	from 
+    		t_wh_outbound_facility_group g
+		where 
+			ou_id = #{ouId}
+			and g.lifecycle = 1
+			<if test='typeValue != null and typeValue == "1"'>
+				and g.facility_group_type = 'seedingWallGroup'
+			</if>
+			<if test='typeValue != null and typeValue == "2"'>
+				and g.facility_group_type = 'checkTableGroup'
+			</if>
+    </select>
+</mapper>

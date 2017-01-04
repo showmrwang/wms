@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.WhWorkingStorageSectionDao">
+	<resultMap id="WhWorkingStorageSectionResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.WhWorkingStorageSection">
+	</resultMap>
+	<resultMap id="WhWorkingStorageSectionCommandExt" type="com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkingStorageSectionCommand">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whWorkingStorageSectionColumnsExt">
+	    <![CDATA[
+	        	id as id,
+	        	working_storage_section_code as workingStorageSectionCode,
+	        	working_storage_section_name as workingStorageSectionName,
+	        	create_time as createTime,
+	        	last_modify_time as lastModifyTime,
+	        	operator_id as operatorId,
+	        	lifecycle as lifecycle,
+	        	ou_id as ouId
+	    ]]>
+	</sql>
+	
+	<sql id="whWorkingStorageSectionDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+	       
+		       <if test="workingStorageSectionCode!=null and workingStorageSectionCode!=''">
+					and working_storage_section_code = #{workingStorageSectionCode}
+				</if>
+	       
+	       
+		       <if test="workingStorageSectionName!=null and workingStorageSectionName!=''">
+					and working_storage_section_name = #{workingStorageSectionName}
+				</if>
+	       
+				<if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="operatorId!=null">
+					and operator_id = #{operatorId}
+				</if>
+	       
+				<if test="lifecycle!=null">
+					and lifecycle = #{lifecycle}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+		</where>
+	</sql>
+	
+
+		<update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhWorkingStorageSection">
+		    <![CDATA[
+		        UPDATE t_wh_working_storage_section SET
+			        working_storage_section_code = #{workingStorageSectionCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        working_storage_section_name = #{workingStorageSectionName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+			        last_modify_time = now() ,
+			        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER}
+		        WHERE 
+			        id = #{id} 
+			        and ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+			        and last_modify_time	<=  #{lastModifyTime}    
+		    ]]>
+		</update>
+	
+	<select id="findByIdExt" resultMap="WhWorkingStorageSectionCommandExt">
+		select 
+			<include refid="whWorkingStorageSectionColumnsExt"/>
+		from 
+			t_wh_working_storage_section
+		where
+			id = #{id}
+			and ou_id = #{ouId}
+	</select>
+	
+	<select id="findFreeWorkingStorageSectionList" resultMap="WhWorkingStorageSectionResultExt">
+		select
+			<include refid="whWorkingStorageSectionColumnsExt"/>
+		from
+			t_wh_working_storage_section
+		where
+			id not in (
+				select
+					g.working_storage_section_id
+				from
+					t_wh_outbound_facility_group g
+				where
+					ou_id = #{ouId}
+				group by
+					g.working_storage_section_id
+			)
+		and ou_id = #{ouId}
+	</select>
+</mapper>

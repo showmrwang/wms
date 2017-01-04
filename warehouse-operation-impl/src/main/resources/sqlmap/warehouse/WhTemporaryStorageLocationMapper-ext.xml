@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.WhTemporaryStorageLocationDao">
+	<resultMap id="WhTemporaryStorageLocationResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.WhTemporaryStorageLocation">
+	</resultMap>
+	
+	<resultMap id="WhTemporaryStorageLocationResultCommandExt" type="com.baozun.scm.primservice.whoperation.command.warehouse.WhTemporaryStorageLocationCommand">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whTemporaryStorageLocationColumnsExt">
+	    <![CDATA[
+	        	id as id,
+	        	temporary_storage_code as temporaryStorageCode,
+	        	temporary_storage_name as temporaryStorageName,
+	        	temporary_storage_type as temporaryStorageType,
+	        	check_code as checkCode,
+	        	capacity as capacity,
+	        	check_operations_area_id as checkOperationsAreaId,
+	        	working_storage_section_id as workingStorageSectionId,
+	        	create_time as createTime,
+	        	last_modify_time as lastModifyTime,
+	        	operator_id as operatorId,
+	        	lifecycle as lifecycle,
+	        	ou_id as ouId
+	    ]]>
+	</sql>
+	
+	<sql id="whTemporaryStorageLocationCommandColumnsExt">
+	    <![CDATA[
+	        	l.id as id,
+				l.temporary_storage_code as temporaryStorageCode,
+				l.temporary_storage_name as temporaryStorageName,
+				l.temporary_storage_type as temporaryStorageType,
+				l.check_code as checkCode,
+				l.capacity as capacity,
+				l.check_operations_area_id as checkOperationsAreaId,
+				l.working_storage_section_id as workingStorageSectionId,
+				l.create_time as createTime,
+				l.last_modify_time as lastModifyTime,
+				l.operator_id as operatorId,
+				l.lifecycle as lifecycle,
+				l.ou_id as ouId,
+				f.facility_name as checkOperationsArea,
+				s.working_storage_section_name as workingStorageSection,
+				sys.dic_label as temporaryStorageTypeName
+	    ]]>
+	</sql>
+	
+	<sql id="whTemporaryStorageLocationDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+				<if test="id!=null">
+					and l.id = #{id}
+				</if>
+	       
+		       <if test="temporaryStorageCode!=null and temporaryStorageCode!=''">
+					and l.temporary_storage_code like #{temporaryStorageCode}
+				</if>
+	       
+		       <if test="temporaryStorageName!=null and temporaryStorageName!=''">
+					and l.temporary_storage_name like #{temporaryStorageName}
+				</if>
+	       
+		       <if test="temporaryStorageTypeList!=null and temporaryStorageTypeList.size > 0">
+					and l.temporary_storage_type in 
+					<foreach collection="temporaryStorageTypeList" item="type" open="(" separator="," close=")">
+						#{type}
+					</foreach>
+				</if>
+	       
+		       <if test="checkCode!=null and checkCode!=''">
+					and l.check_code like #{checkCode}
+				</if>
+	       
+				<if test="capacity!=null">
+					and l.capacity = #{capacity}
+				</if>
+	       
+				<if test="checkOperationsAreaList != null and checkOperationsAreaList.size > 0">
+					and l.check_operations_area_id in 
+					<foreach collection="checkOperationsAreaList" item="cid" open="(" separator="," close=")">
+						#{cid}
+					</foreach>
+				</if>
+	       
+				<if test="workingStorageSectionList != null and workingStorageSectionList.size > 0">
+					and l.working_storage_section_id in 
+					<foreach collection="workingStorageSectionList" item="wid" open="(" separator="," close=")">
+						#{wid}
+					</foreach>
+				</if>
+	       
+				<if test="createTime!=null">
+					and l.create_time = #{createTime}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and l.last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="operatorId!=null">
+					and l.operator_id = #{operatorId}
+				</if>
+	       
+				<if test="lifecycle!=null">
+					and l.lifecycle = #{lifecycle}
+				</if>
+	       
+				<if test="ouId!=null">
+					and l.ou_id = #{ouId}
+				</if>
+		</where>
+	</sql>
+	
+
+		<update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhTemporaryStorageLocation">
+		    <![CDATA[
+		        UPDATE t_wh_temporary_storage_location SET
+			        temporary_storage_code = #{temporaryStorageCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        temporary_storage_name = #{temporaryStorageName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        temporary_storage_type = #{temporaryStorageType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        check_code = #{checkCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        capacity = #{capacity,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        check_operations_area_id = #{checkOperationsAreaId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        working_storage_section_id = #{workingStorageSectionId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+			        last_modify_time = now() ,
+			        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER}
+		        WHERE 
+			        id = #{id} 
+			        and ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+			        and last_modify_time	<=  #{lastModifyTime}    
+		    ]]>
+		</update>
+	
+	<select id="findListCountByQueryMapExt" resultType="long">
+        select count(*) from t_wh_temporary_storage_location l
+		<include refid="whTemporaryStorageLocationDynamicWhereExt"/>    
+    </select>
+	
+	<select id="findListByQueryMapWithPageExt" resultMap="WhTemporaryStorageLocationResultCommandExt">
+		select 
+			<include refid="whTemporaryStorageLocationCommandColumnsExt" />
+	    from 
+	    	t_wh_temporary_storage_location l
+			left join sys_dictionary sys on (sys.dic_value = l.temporary_storage_type and sys.group_value = 'TEMPORARY_STORAGE_TYPE')
+			left join t_wh_outbound_facility f on f.id = l.check_operations_area_id
+			left join t_wh_working_storage_section s on s.id = l.working_storage_section_id
+		<include refid="whTemporaryStorageLocationDynamicWhereExt"/>
+	</select>
+	
+	<select id="findByIdExt" parameterType="map" resultMap="WhTemporaryStorageLocationResultCommandExt">
+		select 
+			l.id as id,
+			l.temporary_storage_code as temporaryStorageCode,
+			l.temporary_storage_name as temporaryStorageName,
+			l.temporary_storage_type as temporaryStorageType,
+			l.check_code as checkCode,
+			l.capacity as capacity,
+			l.check_operations_area_id as checkOperationsAreaId,
+			l.working_storage_section_id as workingStorageSectionId,
+			l.create_time as createTime,
+			l.last_modify_time as lastModifyTime,
+			l.operator_id as operatorId,
+			l.lifecycle as lifecycle,
+			l.ou_id as ouId,
+			f.facility_name as checkOperationsArea,
+			s.working_storage_section_name as workingStorageSection,
+			sys.dic_label as temporaryStorageTypeName,
+			sort.priority as priority
+	    from 
+	    	t_wh_temporary_storage_location l
+			left join sys_dictionary sys on (sys.dic_value = l.temporary_storage_type and sys.group_value = 'TEMPORARY_STORAGE_TYPE')
+			left join t_wh_outbound_facility f on f.id = l.check_operations_area_id
+			left join t_wh_working_storage_section s on s.id = l.working_storage_section_id
+			left join t_wh_outbound_facility_sortorder sort on (sort.facility_id = l.id and sort.facility_type = l.temporary_storage_type)
+		where 
+			l.id = #{id}
+			and l.ou_id = #{ouId}
+	</select>
+	
+	<update id="updateCheckOperationsAreaIsNull" parameterType="map">
+		update 
+			t_wh_temporary_storage_location l 
+		set 
+			l.check_operations_area_id = null 
+		where 
+			l.check_operations_area_id = #{id}
+			and l.ou_id = #{ouId}
+	</update>
+	
+	<update id="updateWorkingStorageSectionIsNull" parameterType="map">
+		update 
+			t_wh_temporary_storage_location l 
+		set 
+			l.working_storage_section_id = null 
+		where 
+			l.working_storage_section_id = #{id}
+			and l.ou_id = #{ouId}
+	</update>
+	
+	<select id="findTemporaryStorageUsableList" parameterType="map" resultMap="WhTemporaryStorageLocationResultExt">
+		select 
+			<include refid="whTemporaryStorageLocationColumnsExt" />
+		from 
+	    	t_wh_temporary_storage_location
+	    where 
+	    	temporary_storage_type = #{type}
+	    	<if test="type == 'checkTableTemporaryStorage'">
+		    	and check_operations_area_id is null
+	    	</if>
+	    	<if test="type == 'outBoundTemporaryStorage'">
+		    	and working_storage_section_id is null
+	    	</if>
+	    	and ou_id = #{ouId}
+	    	and lifecycle = 1
+	</select>
+	
+	<select id="findTemporaryStorageBindList" parameterType="map" resultMap="WhTemporaryStorageLocationResultExt">
+		select 
+			<include refid="whTemporaryStorageLocationColumnsExt" />
+		from 
+	    	t_wh_temporary_storage_location
+	    where 
+	    	temporary_storage_type = #{type}
+	    	<if test="type == 'checkTableTemporaryStorage'">
+		    	and check_operations_area_id = #{id}
+	    	</if>
+	    	<if test="type == 'outBoundTemporaryStorage'">
+		    	and working_storage_section_id = #{id}
+	    	</if>
+	    	and ou_id = #{ouId}
+	    	and lifecycle = 1
+	</select>
+	
+	<delete id="deleteByIdExt" parameterType="map">
+		delete from t_wh_temporary_storage_location
+		where id = #{id} and ou_id = #{ouId}
+	</delete>
+	
+</mapper>

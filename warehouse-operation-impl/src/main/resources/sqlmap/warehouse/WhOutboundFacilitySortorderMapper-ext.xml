@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundFacilitySortorderDao">
+	<resultMap id="WhOutboundFacilitySortorderResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundFacilitySortorder">
+	</resultMap>
+	<resultMap id="WhOutboundFacilitySortorderCommand" type="com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundFacilitySortorderCommand">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whOutboundFacilitySortorderColumnsExt">
+	    <![CDATA[
+	        	id as id,
+	        	facility_id as facilityId,
+	        	facility_type as facilityType,
+	        	priority as priority,
+	        	ou_id as ouId
+	    ]]>
+	</sql>
+	
+	<sql id="whOutboundFacilitySortorderDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+				<if test="facilityId!=null">
+					and facility_id = #{facilityId}
+				</if>
+	       
+		       <if test="facilityType!=null and facilityType!=''">
+					and facility_type = #{facilityType}
+				</if>
+	       
+				<if test="priority!=null">
+					and priority = #{priority}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+		</where>
+	</sql>
+	
+	<sql id="whOutboundFacilitySortorderCommandWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       <if test="facilityGroupType != null and facilityGroupType != ''">
+	       		and g.facility_group_type = #{facilityGroupType}
+	       </if>
+	       <if test="facilityGroupCode != null and facilityGroupCode != ''">
+	       		and g.facility_group_code like #{facilityGroupCode}
+	       </if>
+	       <if test="facilityGroupName != null and facilityGroupName != ''">
+	       		and g.facility_group_name like #{facilityGroupName}
+	       </if>
+	       <if test="facilityType != null and facilityType != ''">
+				and IFNULL(f.facility_type, l.temporary_storage_type) = #{facilityType}
+			</if>
+	       <if test="facilityCode != null and facilityCode != ''">
+				and IFNULL(f.facility_code, l.temporary_storage_code) like #{facilityCode}
+			</if>
+	       <if test="facilityName != null and facilityName != ''">
+				and IFNULL(f.facility_name, l.temporary_storage_name) like #{facilityName}
+			</if>
+			<if test="ouId!=null">
+				and sort.ou_id = #{ouId}
+			</if>
+		</where>
+	</sql>
+	
+	<select id="checkPriorityUnique" resultType="int">
+		select 
+			count(1)
+		from
+			t_wh_outbound_facility_sortorder
+		where 
+			priority = #{priority}
+			<if test="id != null">
+				and id not in (select id from t_wh_outbound_facility_sortorder where facility_id = #{id} and facility_type = #{type})
+			</if>
+			and ou_id = #{ouId}
+	</select>
+	
+	<select id="findByFacilityIdAndType" resultMap="WhOutboundFacilitySortorderResultExt">
+		select 
+			<include refid="whOutboundFacilitySortorderColumnsExt"/>
+		from
+			t_wh_outbound_facility_sortorder
+		where 
+			facility_id = #{id} 
+			and facility_type = #{type}
+			and ou_id = #{ouId}
+	</select>
+	
+	<delete id="deleteByFacilityIdAndType">
+		delete from 
+			t_wh_outbound_facility_sortorder
+		where 
+			facility_id = #{id} 
+			and facility_type = #{type}
+			and ou_id = #{ouId}
+	</delete>
+	
+	<select id="getNextPriority" resultType="int">
+		select
+			IFNULL(max(priority), 0) + 1
+		from 
+			t_wh_outbound_facility_sortorder
+		where 
+			ou_id = #{ouId}
+	</select>
+	
+	<select id="findListCountByQueryMapExt" resultType="long">
+		select count(1)
+		from t_wh_outbound_facility_sortorder sort
+		left join t_wh_outbound_facility f on (f.id = sort.facility_id and f.facility_type = sort.facility_type)
+		left join t_wh_outbound_facility_group g on (g.id = f.facility_group)
+		left join t_wh_temporary_storage_location l on (l.id = sort.facility_id and l.temporary_storage_type = sort.facility_type)
+		left join sys_dictionary sys1 on (sys1.dic_value = g.facility_group_type and sys1.group_value = 'FACILITY_GROUP_TYPE')
+		left join sys_dictionary sys2 on (sys2.dic_value = f.facility_type and sys2.group_value = 'FACILITY_TYPE')
+		left join sys_dictionary sys3 on (sys3.dic_value = l.temporary_storage_type and sys3.group_value = 'TEMPORARY_STORAGE_TYPE')
+		<include refid="whOutboundFacilitySortorderCommandWhereExt"/>
+	</select>
+	
+	<select id="findListByQueryMapWithPageExt" resultMap="WhOutboundFacilitySortorderCommand">
+		select 
+			sys1.dic_label facilityGroupType,
+			g.facility_group_code facilityGroupCode,
+			g.facility_group_name facilityGroupName,
+			IFNULL(sys2.dic_label, sys3.dic_label) facilityType, 
+			IFNULL(f.facility_code, l.temporary_storage_code) facilityCode, 
+			IFNULL(f.facility_name, l.temporary_storage_name) facilityName,
+			sort.priority
+		from t_wh_outbound_facility_sortorder sort
+		left join t_wh_outbound_facility f on (f.id = sort.facility_id and f.facility_type = sort.facility_type)
+		left join t_wh_outbound_facility_group g on (g.id = f.facility_group)
+		left join t_wh_temporary_storage_location l on (l.id = sort.facility_id and l.temporary_storage_type = sort.facility_type)
+		left join sys_dictionary sys1 on (sys1.dic_value = g.facility_group_type and sys1.group_value = 'FACILITY_GROUP_TYPE')
+		left join sys_dictionary sys2 on (sys2.dic_value = f.facility_type and sys2.group_value = 'FACILITY_TYPE')
+		left join sys_dictionary sys3 on (sys3.dic_value = l.temporary_storage_type and sys3.group_value = 'TEMPORARY_STORAGE_TYPE')
+		<include refid="whOutboundFacilitySortorderCommandWhereExt"/>
+		order by sort.priority
+	</select>
+</mapper>

@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.WhTemporaryStorageLocationDao">
+	<resultMap id="WhTemporaryStorageLocationResult" type="com.baozun.scm.primservice.whoperation.model.warehouse.WhTemporaryStorageLocation">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whTemporaryStorageLocationColumns">
+	    <![CDATA[
+	        	id as id,
+	        	temporary_storage_code as temporaryStorageCode,
+	        	temporary_storage_name as temporaryStorageName,
+	        	temporary_storage_type as temporaryStorageType,
+	        	check_code as checkCode,
+	        	capacity as capacity,
+	        	check_operations_area_id as checkOperationsAreaId,
+	        	working_storage_section_id as workingStorageSectionId,
+	        	create_time as createTime,
+	        	last_modify_time as lastModifyTime,
+	        	operator_id as operatorId,
+	        	lifecycle as lifecycle,
+	        	ou_id as ouId
+	    ]]>
+	</sql>
+	
+		<!-- 如果有自增字段 -->
+		
+			<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+			<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhTemporaryStorageLocation" 
+				
+			 flushCache="true">
+		    <![CDATA[
+		        INSERT INTO
+		        t_wh_temporary_storage_location (
+		        id,
+		        	temporary_storage_code ,
+		        	temporary_storage_name ,
+		        	temporary_storage_type ,
+		        	check_code ,
+		        	capacity ,
+		        	check_operations_area_id ,
+		        	working_storage_section_id ,
+		        	create_time ,
+		        	last_modify_time ,
+		        	operator_id ,
+		        	lifecycle ,
+		        	ou_id 
+		        ) VALUES (
+		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{temporaryStorageCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{temporaryStorageName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{temporaryStorageType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{checkCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{capacity,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{checkOperationsAreaId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{workingStorageSectionId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        )
+		    ]]>
+
+		</insert>
+		
+		
+		<update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhTemporaryStorageLocation">
+	    <![CDATA[
+	        UPDATE t_wh_temporary_storage_location SET
+		        temporary_storage_code = #{temporaryStorageCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        temporary_storage_name = #{temporaryStorageName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        temporary_storage_type = #{temporaryStorageType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        check_code = #{checkCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        capacity = #{capacity,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        check_operations_area_id = #{checkOperationsAreaId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        working_storage_section_id = #{workingStorageSectionId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER}
+	        WHERE 
+		        id = #{id} 
+		        and ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+	    ]]>
+		</update>
+	   <delete id="delete" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from t_wh_temporary_storage_location where
+		        id = #{id} 
+	    ]]>
+	    </delete> 
+	    
+	     <delete id="deleteByIds" parameterType="list">
+	    
+	        delete from t_wh_temporary_storage_location 
+	        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+					#{item}				
+				</foreach>	
+	    </delete>  
+	         
+	    <select id="findById" parameterType="java.lang.Long" resultMap="WhTemporaryStorageLocationResult" flushCache="false">
+			select <include refid="whTemporaryStorageLocationColumns" />
+		    <![CDATA[
+			    from t_wh_temporary_storage_location 
+		        where 
+		        id = #{id} 
+		    ]]>
+		</select>	
+		<select id="getByIds" parameterType="list"  resultMap="WhTemporaryStorageLocationResult" flushCache="false">
+			select <include refid="whTemporaryStorageLocationColumns" />
+			    from t_wh_temporary_storage_location 
+		        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+					#{item}				
+				</foreach>					
+		</select>	
+	<sql id="whTemporaryStorageLocationDynamicWhere">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+	       
+		       <if test="temporaryStorageCode!=null and temporaryStorageCode!=''">
+					and temporary_storage_code = #{temporaryStorageCode}
+				</if>
+	       
+	       
+		       <if test="temporaryStorageName!=null and temporaryStorageName!=''">
+					and temporary_storage_name = #{temporaryStorageName}
+				</if>
+	       
+	       
+		       <if test="temporaryStorageType!=null and temporaryStorageType!=''">
+					and temporary_storage_type = #{temporaryStorageType}
+				</if>
+	       
+	       
+		       <if test="checkCode!=null and checkCode!=''">
+					and check_code = #{checkCode}
+				</if>
+	       
+				<if test="capacity!=null">
+					and capacity = #{capacity}
+				</if>
+	       
+				<if test="checkOperationsAreaId!=null">
+					and check_operations_area_id = #{checkOperationsAreaId}
+				</if>
+	       
+				<if test="workingStorageSectionId!=null">
+					and working_storage_section_id = #{workingStorageSectionId}
+				</if>
+	       
+				<if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="operatorId!=null">
+					and operator_id = #{operatorId}
+				</if>
+	       
+				<if test="lifecycle!=null">
+					and lifecycle = #{lifecycle}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+		</where>
+	</sql>
+	
+
+	<select id="getCount" resultType="long">
+        select count(*) from t_wh_temporary_storage_location 
+    </select>
+    <select id="findListCountByQueryMap" resultType="long">
+        select count(*) from t_wh_temporary_storage_location 
+		<include refid="whTemporaryStorageLocationDynamicWhere"/>    
+    </select>
+    
+    <select id="findListCountByParam" resultType="long">
+        select count(*) from t_wh_temporary_storage_location 
+		<include refid="whTemporaryStorageLocationDynamicWhere"/>    
+    </select>
+    
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPage" resultMap="WhTemporaryStorageLocationResult">
+    	select <include refid="whTemporaryStorageLocationColumns" />
+	    from t_wh_temporary_storage_location 
+		<include refid="whTemporaryStorageLocationDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByQueryMap" resultMap="WhTemporaryStorageLocationResult">
+    	select <include refid="whTemporaryStorageLocationColumns" />
+	    from t_wh_temporary_storage_location 
+		<include refid="whTemporaryStorageLocationDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByParam" resultMap="WhTemporaryStorageLocationResult">
+    	select <include refid="whTemporaryStorageLocationColumns" />
+	    from t_wh_temporary_storage_location 
+		<include refid="whTemporaryStorageLocationDynamicWhere"/>
+		
+    </select>
+	
+	<select id="findByIdAndOuId" parameterType="map" resultMap="WhTemporaryStorageLocationResult">
+		select 
+			<include refid="whTemporaryStorageLocationColumns" />
+	    from 
+	    	t_wh_temporary_storage_location 
+	    where 
+	    	id = #{id}
+	    	and ou_id = #{ouId}
+	</select>
+	
+	<select id="checkCodeAndNameUnique" parameterType="map" resultType="int">
+		select 
+			count(1)
+		from 
+			t_wh_temporary_storage_location 
+		where 
+			ou_id = #{ouId}
+			<if test="code != null">
+				and temporary_storage_code = #{code}
+			</if>
+			<if test="name != null">
+				and temporary_storage_name = #{name}
+			</if>
+			<if test="id != null">
+				and id != #{id}
+			</if>
+	</select>
+</mapper>

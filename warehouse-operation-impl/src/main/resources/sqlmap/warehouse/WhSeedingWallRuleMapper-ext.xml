@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.WhSeedingWallRuleDao">
+	<resultMap id="WhSeedingWallRuleResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.WhSeedingWallRule">
+	</resultMap>
+	<resultMap id="WhSeedingWallRuleCommandResultExt" type="com.baozun.scm.primservice.whoperation.command.warehouse.WhSeedingWallRuleCommand">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whSeedingWallRuleColumnsExt">
+	    <![CDATA[
+	        	id as id,
+	        	seedingwall_rule_name as seedingwallRuleName,
+	        	seedingwall_rule_code as seedingwallRuleCode,
+	        	rule as rule,
+	        	rule_sql as ruleSql,
+	        	outbound_facility_group_id as outboundFacilityGroupId,
+	        	ou_id as ouId,
+	        	priority as priority,
+	        	description as description,
+	        	create_time as createTime,
+	        	created_id as createdId,
+	        	last_modify_time as lastModifyTime,
+	        	modified_id as modifiedId,
+	        	lifecycle as lifecycle
+	    ]]>
+	</sql>
+	
+	<sql id="whSeedingWallRuleCommandColumnsExt">
+		rule.id as id,
+		rule.seedingwall_rule_name as seedingwallRuleName,
+		rule.seedingwall_rule_code as seedingwallRuleCode,
+		rule.rule as rule,
+		rule.rule_sql as ruleSql,
+		rule.outbound_facility_group_id as outboundFacilityGroupId,
+		rule.ou_id as ouId,
+		rule.priority as priority,
+		rule.description as description,
+		rule.create_time as createTime,
+		rule.created_id as createdId,
+		rule.last_modify_time as lastModifyTime,
+		rule.modified_id as modifiedId,
+		rule.lifecycle as lifecycle,
+		facilityGroup.facility_group_name as facilityGroupName
+	</sql>
+	
+	<sql id="whSeedingWallRuleDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+	       
+		       <if test="seedingwallRuleName!=null and seedingwallRuleName!=''">
+					and seedingwall_rule_name = #{seedingwallRuleName}
+				</if>
+	       
+	       
+		       <if test="seedingwallRuleCode!=null and seedingwallRuleCode!=''">
+					and seedingwall_rule_code = #{seedingwallRuleCode}
+				</if>
+	       
+	       
+		       <if test="rule!=null and rule!=''">
+					and rule = #{rule}
+				</if>
+	       
+	       
+		       <if test="ruleSql!=null and ruleSql!=''">
+					and rule_sql = #{ruleSql}
+				</if>
+	       
+				<if test="outboundFacilityGroupId!=null">
+					and outbound_facility_group_id = #{outboundFacilityGroupId}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+	       
+				<if test="priority!=null">
+					and priority = #{priority}
+				</if>
+	       
+	       
+		       <if test="description!=null and description!=''">
+					and description = #{description}
+				</if>
+	       
+				<if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="createdId!=null">
+					and created_id = #{createdId}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="modifiedId!=null">
+					and modified_id = #{modifiedId}
+				</if>
+	       
+				<if test="lifecycle!=null">
+					and lifecycle = #{lifecycle}
+				</if>
+		</where>
+	</sql>
+	
+	<sql id="whSeedingWallRuleDynamicLikeWhereExt">
+	<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+
+            <if test="id!=null">
+                and rule.id = #{id}
+            </if>
+
+            <if test="seedingwallRuleName!=null and seedingwallRuleName!=''">
+                and rule.seedingwall_rule_name like #{checkOperationsAreaRuleName}
+            </if>
+
+            <if test="ruleNameByCriteriasData!=null and ruleNameByCriteriasData!=''">
+                and rule.seedingwall_rule_name like #{ruleNameByCriteriasData}
+            </if>
+
+            <if test="seedingwallRuleCode!=null and seedingwallRuleCode!=''">
+                and rule.seedingwall_rule_code like #{checkOperationsAreaRuleCode}
+            </if>
+
+            <if test="ruleCodeByCriteriasData!=null and ruleCodeByCriteriasData!=''">
+                and rule.seedingwall_rule_code like #{ruleCodeByCriteriasData}
+            </if>
+
+            <if test="rule!=null and rule!=''">
+                and rule.rule = #{rule}
+            </if>
+
+            <if test="ruleSql!=null and ruleSql!=''">
+                and rule.rule_sql = #{ruleSql}
+            </if>
+
+            <if test="outboundFacilityGroupId!=null">
+                and rule.outbound_facility_group_id = #{outboundFacilityGroupId}
+            </if>
+
+            <if test="ouId!=null">
+                and rule.ou_id = #{ouId}
+            </if>
+
+            <if test="priority!=null">
+                and rule.priority = #{priority}
+            </if>
+
+            <if test="description!=null and description!=''">
+                and rule.description like #{description}
+            </if>
+
+            <if test="createTime!=null">
+                and rule.create_time = #{createTime}
+            </if>
+
+            <if test="createdId!=null">
+                and rule.created_id = #{createdId}
+            </if>
+
+            <if test="lastModifyTime!=null">
+                and rule.last_modify_time = #{lastModifyTime}
+            </if>
+
+            <if test="modifiedId!=null">
+                and rule.modified_id = #{modifiedId}
+            </if>
+
+            <if test="lifecycle!=null">
+                and rule.lifecycle = #{lifecycle}
+            </if>
+
+            <if test="facilityGroupName!=null">
+                and facilityGroup.facility_group_name like #{facilityGroupName}
+            </if>
+
+            <if test="facilityName!=null">
+                and facility.facility_name like #{facilityName}
+            </if>
+        </where>
+	</sql>
+
+		<update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhSeedingWallRule">
+		    <![CDATA[
+		        UPDATE t_wh_seedingwall_rule SET
+			        seedingwall_rule_name = #{seedingwallRuleName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        seedingwall_rule_code = #{seedingwallRuleCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        rule = #{rule,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        rule_sql = #{ruleSql,javaType=java.lang.String,jdbcType=LONGVARCHAR} ,
+			        outbound_facility_group_id = #{outboundFacilityGroupId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        priority = #{priority,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        description = #{description,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+			        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        last_modify_time = now() ,
+			        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
+		        WHERE 
+			        id = #{id} 
+			        and ou_id = #{ouId}
+			        and last_modify_time	<=  #{lastModifyTime}    
+		    ]]>
+		</update>
+	
+	<select id="findListCountByQueryMapExt" resultType="long">
+        select count(1)
+        from t_wh_seedingwall_rule as rule
+            left join t_wh_outbound_facility_group as facilityGroup on rule.outbound_facility_group_id = facilityGroup.id
+            <include refid="whSeedingWallRuleDynamicLikeWhereExt"/>
+    </select>
+	
+	<select id="findListByQueryMapWithPageExt" resultMap="WhSeedingWallRuleCommandResultExt">
+		select
+            <include refid="whSeedingWallRuleCommandColumnsExt"/>
+        from t_wh_seedingwall_rule as rule
+            left join t_wh_outbound_facility_group as facilityGroup on rule.outbound_facility_group_id = facilityGroup.id
+            <include refid="whSeedingWallRuleDynamicLikeWhereExt"/>
+	</select>
+	
+	<select id="findByIdAndOuId" resultMap="WhSeedingWallRuleResultExt">
+        select
+            <include refid="whSeedingWallRuleColumnsExt"/>
+            from t_wh_seedingwall_rule
+        where
+            id = #{id}
+            and ou_id = #{ouId}
+    </select>
+
+    <select id="findByIdExt" resultMap="WhSeedingWallRuleCommandResultExt">
+        select
+            <include refid="whSeedingWallRuleCommandColumnsExt"/>
+        from t_wh_seedingwall_rule as rule
+            left join t_wh_outbound_facility_group as facilityGroup on rule.outbound_facility_group_id = facilityGroup.id
+        where
+            rule.id = #{id}
+            and rule.ou_id = #{ouId}
+    </select>
+    
+    <select id="checkUnique" resultType="int">
+        select count(1) from t_wh_seedingwall_rule
+        <where>
+            <if test="id!=null">
+                and id != #{id}
+            </if>
+            <if test="(seedingwallRuleName!=null and seedingwallRuleName!='')
+                    or (seedingwallRuleCode!=null and seedingwallRuleCode!='')
+                    or (priority!=null and priority!='')">
+                and (
+                <trim prefix="" prefixOverrides="or">
+                    <if test="seedingwallRuleName!=null and seedingwallRuleName!=''">
+                        or seedingwall_rule_name = #{seedingwallRuleName}
+                    </if>
+                    <if test="seedingwallRuleCode!=null and seedingwallRuleCode!=''">
+                        or seedingwall_rule_code = #{seedingwallRuleCode}
+                    </if>
+                    <if test="priority!=null and priority!=''">
+                        or priority = #{priority}
+                    </if>
+                </trim>
+                )
+            </if>
+            and ou_id = #{ouId}
+        </where>
+    </select>
+
+    <select id="executeRuleSql" resultType="long">
+        ${ruleSql}
+    </select>
+    
+    <select id="findAllSeedingWallRules" resultMap="WhSeedingWallRuleCommandResultExt">
+    	select
+    		<include refid="whSeedingWallRuleColumnsExt"/>
+    	from 
+    		t_wh_seedingwall_rule
+    	where 
+    		ou_id = #{ouId}
+    		and lifecycle = 1
+    	order by 
+    		priority
+    </select>
+</mapper>

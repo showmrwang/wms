@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundFacilityGroupDao">
+	<resultMap id="WhOutboundFacilityGroupResult" type="com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundFacilityGroup">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whOutboundFacilityGroupColumns">
+	    <![CDATA[
+	        	id as id,
+	        	facility_group_code as facilityGroupCode,
+	        	facility_group_name as facilityGroupName,
+	        	facility_group_type as facilityGroupType,
+	        	working_storage_section_id as workingStorageSectionId,
+	        	create_time as createTime,
+	        	last_modify_time as lastModifyTime,
+	        	operator_id as operatorId,
+	        	lifecycle as lifecycle,
+	        	ou_id as ouId
+	    ]]>
+	</sql>
+	
+		<!-- 如果有自增字段 -->
+		
+			<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+			<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundFacilityGroup" 
+				
+			 flushCache="true">
+		    <![CDATA[
+		        INSERT INTO
+		        t_wh_outbound_facility_group (
+		        id,
+		        	facility_group_code ,
+		        	facility_group_name ,
+		        	facility_group_type ,
+		        	working_storage_section_id ,
+		        	create_time ,
+		        	last_modify_time ,
+		        	operator_id ,
+		        	lifecycle ,
+		        	ou_id 
+		        ) VALUES (
+		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{facilityGroupCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{facilityGroupName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{facilityGroupType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{workingStorageSectionId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        )
+		    ]]>
+
+		</insert>
+		
+		
+		<update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundFacilityGroup">
+	    <![CDATA[
+	        UPDATE 
+	        	t_wh_outbound_facility_group 
+	        SET
+		        facility_group_code = #{facilityGroupCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        facility_group_name = #{facilityGroupName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        facility_group_type = #{facilityGroupType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        working_storage_section_id = #{workingStorageSectionId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER}
+	        WHERE 
+		        id = #{id} 
+		        and ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+	    ]]>
+		</update>
+	   <delete id="delete" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from t_wh_outbound_facility_group where
+		        id = #{id} 
+	    ]]>
+	    </delete> 
+	    
+	     <delete id="deleteByIds" parameterType="list">
+	    
+	        delete from t_wh_outbound_facility_group 
+	        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+					#{item}				
+				</foreach>	
+	    </delete>  
+	         
+	    <select id="findById" parameterType="java.lang.Long" resultMap="WhOutboundFacilityGroupResult" flushCache="false">
+			select <include refid="whOutboundFacilityGroupColumns" />
+		    <![CDATA[
+			    from t_wh_outbound_facility_group 
+		        where 
+		        id = #{id} 
+		    ]]>
+		</select>	
+		<select id="getByIds" parameterType="list"  resultMap="WhOutboundFacilityGroupResult" flushCache="false">
+			select <include refid="whOutboundFacilityGroupColumns" />
+			    from t_wh_outbound_facility_group 
+		        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+					#{item}				
+				</foreach>					
+		</select>	
+	<sql id="whOutboundFacilityGroupDynamicWhere">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+	       
+		       <if test="facilityGroupCode!=null and facilityGroupCode!=''">
+					and facility_group_code = #{facilityGroupCode}
+				</if>
+	       
+	       
+		       <if test="facilityGroupName!=null and facilityGroupName!=''">
+					and facility_group_name = #{facilityGroupName}
+				</if>
+	       
+	       
+		       <if test="facilityGroupType!=null and facilityGroupType!=''">
+					and facility_group_type = #{facilityGroupType}
+				</if>
+	       
+				<if test="workingStorageSectionId!=null">
+					and working_storage_section_id = #{workingStorageSectionId}
+				</if>
+	       
+				<if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="operatorId!=null">
+					and operator_id = #{operatorId}
+				</if>
+	       
+				<if test="lifecycle!=null">
+					and lifecycle = #{lifecycle}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+		</where>
+	</sql>
+	
+
+	<select id="getCount" resultType="long">
+        select count(*) from t_wh_outbound_facility_group 
+    </select>
+    <select id="findListCountByQueryMap" resultType="long">
+        select count(*) from t_wh_outbound_facility_group 
+		<include refid="whOutboundFacilityGroupDynamicWhere"/>    
+    </select>
+    
+    <select id="findListCountByParam" resultType="long">
+        select count(*) from t_wh_outbound_facility_group 
+		<include refid="whOutboundFacilityGroupDynamicWhere"/>    
+    </select>
+    
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPage" resultMap="WhOutboundFacilityGroupResult">
+    	select <include refid="whOutboundFacilityGroupColumns" />
+	    from t_wh_outbound_facility_group 
+		<include refid="whOutboundFacilityGroupDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByQueryMap" resultMap="WhOutboundFacilityGroupResult">
+    	select <include refid="whOutboundFacilityGroupColumns" />
+	    from t_wh_outbound_facility_group 
+		<include refid="whOutboundFacilityGroupDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByParam" resultMap="WhOutboundFacilityGroupResult">
+    	select <include refid="whOutboundFacilityGroupColumns" />
+	    from t_wh_outbound_facility_group 
+		<include refid="whOutboundFacilityGroupDynamicWhere"/>
+		
+    </select>
+	
+	<select id="findByIdAndOuId" resultMap="WhOutboundFacilityGroupResult">
+		select
+			<include refid="whOutboundFacilityGroupColumns" />
+		from 
+			t_wh_outbound_facility_group 
+		where 
+			id = #{id}
+			and ou_id = #{ouId}
+	</select>
+	
+	<select id="checkCodeAndNameUnique" resultType="int">
+		select 
+			count(1)
+		from 
+			t_wh_outbound_facility_group 
+		where 
+			ou_id = #{ouId}
+			<if test="code != null">
+				and facility_group_code = #{code}
+			</if>
+			<if test="name != null">
+				and facility_group_name = #{name}
+			</if>
+			<if test="sectionId != null">
+				and working_storage_section_id = #{sectionId}
+			</if>
+			<if test="id != null">
+				and id != #{id}
+			</if>
+	</select>
+</mapper>

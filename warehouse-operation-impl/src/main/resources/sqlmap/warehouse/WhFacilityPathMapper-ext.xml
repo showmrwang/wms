@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.WhFacilityPathDao">
+	<resultMap id="WhFacilityPathResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.WhFacilityPath">
+	</resultMap>
+	<resultMap id="WhFacilityPathCommand" type="com.baozun.scm.primservice.whoperation.command.warehouse.WhFacilityPathCommand">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whFacilityPathColumnsExt">
+	    <![CDATA[
+	        	id as id,
+	        	from_area_type as fromAreaType,
+	        	from_area_code as fromAreaCode,
+	        	from_area_name as fromAreaName,
+	        	to_area_type as toAreaType,
+	        	to_area_code as toAreaCode,
+	        	to_area_name as toAreaName,
+	        	transit_location_code as transitLocationCode,
+	        	ou_id as ouId,
+	        	create_time as createTime,
+	        	last_modify_time as lastModifyTime,
+	        	operator_id as operatorId
+	    ]]>
+	</sql>
+	
+	<sql id="whFacilityPathCommandExt">
+		path.id as id,
+       	path.from_area_type as fromAreaType,
+       	path.from_area_code as fromAreaCode,
+       	path.from_area_name as fromAreaName,
+       	path.to_area_type as toAreaType,
+       	path.to_area_code as toAreaCode,
+       	path.to_area_name as toAreaName,
+       	path.transit_location_code as transitLocationCode,
+       	path.ou_id as ouId,
+       	path.create_time as createTime,
+       	path.last_modify_time as lastModifyTime,
+       	path.operator_id as operatorId,
+       	sys1.dic_label as fromAreaTypeName,
+		sys2.dic_label as toAreaTypeName
+	</sql>
+	
+	<sql id="whFacilityPathDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+	       
+		       <if test="fromAreaType!=null and fromAreaType!=''">
+					and from_area_type = #{fromAreaType}
+				</if>
+	       
+	       
+		       <if test="fromAreaCode!=null and fromAreaCode!=''">
+					and from_area_code = #{fromAreaCode}
+				</if>
+	       
+	       
+		       <if test="fromAreaName!=null and fromAreaName!=''">
+					and from_area_name = #{fromAreaName}
+				</if>
+	       
+	       
+		       <if test="toAreaType!=null and toAreaType!=''">
+					and to_area_type = #{toAreaType}
+				</if>
+	       
+	       
+		       <if test="toAreaCode!=null and toAreaCode!=''">
+					and to_area_code = #{toAreaCode}
+				</if>
+	       
+	       
+		       <if test="toAreaName!=null and toAreaName!=''">
+					and to_area_name = #{toAreaName}
+				</if>
+	       
+	       
+		       <if test="transitLocationCode!=null and transitLocationCode!=''">
+					and transit_location_code = #{transitLocationCode}
+				</if>
+	       
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+	       
+				<if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="operatorId!=null">
+					and operator_id = #{operatorId}
+				</if>
+		</where>
+	</sql>
+	
+	<sql id="whFacilityPathCommandDynamicWhereExt">
+		<where>
+	       <if test="fromAreaType!=null and fromAreaType!=''">
+				and path.from_area_type = #{fromAreaType}
+			</if>
+       
+	       <if test="fromAreaCode!=null and fromAreaCode!=''">
+				and path.from_area_code like #{fromAreaCode}
+			</if>
+       
+	       <if test="fromAreaName!=null and fromAreaName!=''">
+				and path.from_area_name like #{fromAreaName}
+			</if>
+       
+	       <if test="toAreaType!=null and toAreaType!=''">
+				and path.to_area_type = #{toAreaType}
+			</if>
+       
+	       <if test="toAreaCode!=null and toAreaCode!=''">
+				and path.to_area_code like #{toAreaCode}
+			</if>
+       
+	       <if test="toAreaName!=null and toAreaName!=''">
+				and path.to_area_name like #{toAreaName}
+			</if>
+       
+	       <if test="transitLocationCode!=null and transitLocationCode!=''">
+				and path.transit_location_code like #{transitLocationCode}
+			</if>
+       
+			<if test="ouId!=null">
+				and path.ou_id = #{ouId}
+			</if>
+		</where>
+	</sql>
+
+		<update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhFacilityPath">
+		    <![CDATA[
+		        UPDATE t_wh_facility_path SET
+			        from_area_type = #{fromAreaType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        from_area_code = #{fromAreaCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        from_area_name = #{fromAreaName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        to_area_type = #{toAreaType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        to_area_code = #{toAreaCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        to_area_name = #{toAreaName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        transit_location_code = #{transitLocationCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+			        last_modify_time = now() ,
+			        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        WHERE 
+			        id = #{id} 
+			        and ou_id = #{ouId}
+			        and last_modify_time	<=  #{lastModifyTime}    
+		    ]]>
+		</update>
+	<select id="findListCountByQueryMapExt" resultType="long">
+        select count(*) from t_wh_facility_path path
+		<include refid="whFacilityPathCommandDynamicWhereExt"/>    
+    </select>
+    
+	<select id="findListByQueryMapWithPageExt" resultMap="WhFacilityPathCommand">
+		select 
+		    <include refid="whFacilityPathCommandExt" />
+		from t_wh_facility_path path
+		left join sys_dictionary sys1 on (sys1.dic_value = path.from_area_type and sys1.group_name = 'PATH_REGION_TYPE')
+		left join sys_dictionary sys2 on (sys2.dic_value = path.to_area_type and sys2.group_name = 'PATH_REGION_TYPE')
+		<include refid="whFacilityPathCommandDynamicWhereExt"/>
+    </select>
+    
+    <select id="findByIdExt" resultMap="WhFacilityPathCommand">
+    	select 
+		    <include refid="whFacilityPathCommandExt" />
+		from 
+			t_wh_facility_path path
+			left join sys_dictionary sys1 on (sys1.dic_value = path.from_area_type and sys1.group_name = 'PATH_REGION_TYPE')
+			left join sys_dictionary sys2 on (sys2.dic_value = path.to_area_type and sys2.group_name = 'PATH_REGION_TYPE')
+		where 
+			path.id = #{id}
+			and path.ou_id = #{ouId}
+    </select>
+    
+    <select id="findByIdAndOuId" resultMap="WhFacilityPathResultExt">
+    	select 
+		    <include refid="whFacilityPathColumnsExt" />
+		from 
+			t_wh_facility_path path
+		where 
+			id = #{id}
+			and ou_id = #{ouId}
+    </select>
+    
+    <select id="checkUnique" parameterType="com.baozun.scm.primservice.whoperation.command.warehouse.WhFacilityPathCommand" resultType="int">
+    	select 
+    		count(1) 
+    	from 
+    		t_wh_facility_path p
+		where 
+			p.from_area_type = #{fromAreaType}
+			and p.from_area_code = #{fromAreaCode}
+			and p.from_area_name = #{fromAreaName}
+			and p.to_area_type = #{toAreaType}
+			and p.to_area_code = #{toAreaCode}
+			and p.to_area_name = #{toAreaName}
+			and p.ou_id = #{ouId}
+    </select>
+    
+    <delete id="deleteByIdExt">
+    	delete from t_wh_facility_path
+    	where id = #{id} and ou_id = #{ouId}
+    </delete>
+</mapper>
