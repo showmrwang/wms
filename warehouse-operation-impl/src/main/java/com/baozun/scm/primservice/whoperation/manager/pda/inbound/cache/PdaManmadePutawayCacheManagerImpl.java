@@ -1835,6 +1835,8 @@ public class PdaManmadePutawayCacheManagerImpl extends BaseManagerImpl implement
                                 for (Long skuId : skuIds) {
                                     // 清楚扫描商品数量
                                     cacheManager.remove(CacheConstants.PDA_MAN_MANDE_SCAN_SKU_QUEUE + icId.toString() + skuId.toString());
+                                    cacheManager.remove(CacheConstants.PDA_MAN_MANDE_SCAN_SKU_SN_DEFECT+icId.toString()+skuId.toString());
+                                    cacheManager.remove(CacheConstants.PDA_MAN_MANDE_SCAN_SKU_SN+icId.toString()+skuId.toString());
                             }
                                 //清楚扫描商品队列
                             cacheManager.remove(CacheConstants.PDA_MAN_MANDE_SCAN_SKU_QUEUE + icId.toString());
