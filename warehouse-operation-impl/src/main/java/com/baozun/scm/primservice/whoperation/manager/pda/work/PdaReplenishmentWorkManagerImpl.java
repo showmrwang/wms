@@ -54,6 +54,8 @@ public class PdaReplenishmentWorkManagerImpl extends BaseManagerImpl implements 
         return null;
     }
 
+    
+    
     /***
      * 提示拣货库位
      * @author tangming

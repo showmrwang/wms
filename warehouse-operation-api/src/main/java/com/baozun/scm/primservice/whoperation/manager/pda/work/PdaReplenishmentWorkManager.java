@@ -37,4 +37,6 @@ public interface PdaReplenishmentWorkManager extends BaseManager {
      */
     public Long verificationLocation(String locationCode,String locationBarCode,Long ouId);
     
+    
+    
 }

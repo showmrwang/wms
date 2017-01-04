@@ -559,7 +559,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                   break;
                               }
                           }
-                          cacheManager.setObject(CacheConstants.CACHE_LOCATION + locationId.toString()+skuId.toString(),skuAttrIdsSn, CacheConstants.CACHE_ONE_DAY);
+                          cacheManager.setObject(CacheConstants.CACHE_LOC_SKU_ATTR + locationId.toString()+skuId.toString(),skuAttrIdsSn, CacheConstants.CACHE_ONE_DAY);
                       }
                        //存入缓存
                       cacheManager.setObject(CacheConstants.CACHE_LOCATION + locationId.toString(), tipLocationCmd, CacheConstants.CACHE_ONE_DAY);
