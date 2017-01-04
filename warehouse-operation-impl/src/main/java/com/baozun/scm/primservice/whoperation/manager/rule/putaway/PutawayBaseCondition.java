@@ -105,14 +105,14 @@ public abstract class PutawayBaseCondition extends BaseManagerImpl implements Pu
                             if (null == attrParams.getMfgDate()) {
                                 sql.append(" ").append(" and (inv.mfg_date is null or inv.mfg_date = '')");
                             } else {
-                                sql.append(" ").append(" and inv.mfg_date = ").append("'").append(null == attrParams.getMfgDate() ? null : new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(attrParams.getMfgDate())).append("'");
+                                sql.append(" ").append(" and inv.mfg_date = ").append("'").append(null == attrParams.getMfgDate() ? null : new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(attrParams.getMfgDate())).append("'");
                             }
                             break;
                         case InvAttrMgmtType.EXP_DATE:
                             if (null == attrParams.getExpDate()) {
                                 sql.append(" ").append(" and (inv.exp_date is null or inv.exp_date = '')");
                             } else {
-                                sql.append(" ").append(" and inv.exp_date = ").append("'").append(null == attrParams.getExpDate() ? null : new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(attrParams.getExpDate())).append("'");
+                                sql.append(" ").append(" and inv.exp_date = ").append("'").append(null == attrParams.getExpDate() ? null : new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(attrParams.getExpDate())).append("'");
                             }
                             break;
                         case InvAttrMgmtType.COUNTRY_OF_ORIGIN:
