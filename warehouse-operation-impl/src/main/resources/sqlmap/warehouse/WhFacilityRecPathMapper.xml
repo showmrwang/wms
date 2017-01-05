@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.WhFacilityRecPathDao">
+    <resultMap id="WhFacilityRecPathResult" type="com.baozun.scm.primservice.whoperation.model.warehouse.WhFacilityRecPath">
+    </resultMap>
+    <resultMap id="WhFacilityRecPathPaginationResult" type="lark.common.dao.Pagination">
+        <collection property="items" javaType="ArrayList" resultMap="WhFacilityRecPathResult"/>
+    </resultMap>
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="whFacilityRecPathColumns">
+        <![CDATA[
+                id as id,
+                batch as batch,
+                container_code as containerCode,
+                seedingwall_code as seedingwallCode,
+                seedingwall_upper_limit as seedingwallUpperLimit,
+                seedingwall_check_code as seedingwallCheckCode,
+                temporary_storage_location_code as temporaryStorageLocationCode,
+                temporary_storage_location_check_code as temporaryStorageLocationCheckCode,
+                transit_location_code as transitLocationCode,
+                transit_location_check_code as transitLocationCheckCode,
+                status as status,
+                ou_id as ouId,
+                batch_container_qty as batchContainerQty
+        ]]>
+    </sql>
+    <sql id="whFacilityRecPathConditionWhereExt">
+        <where>
+            <if test="likeEqualsMap != null">
+                <foreach collection="likeEqualsMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} like CONCAT('%',#{value},'%')
+                </foreach>
+            </if>
+            <if test="equalsMap != null">
+                <foreach collection="equalsMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} = #{value}
+                </foreach>
+            </if>
+            <if test="notEqualsMap != null">
+                <foreach collection="notEqualsMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} != #{value}
+                </foreach>
+            </if>
+            <if test="greateMap != null">
+                <foreach collection="greateMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} &gt; #{value}
+                </foreach>
+            </if>
+            <if test="greateEqualsMap != null">
+                <foreach collection="greateEqualsMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} &gt;= #{value}
+                </foreach>
+            </if>
+            <if test="lessMap != null">
+                <foreach collection="lessMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} &lt; #{value}
+                </foreach>
+            </if>
+            <if test="lessEqualsMap != null">
+                <foreach collection="lessEqualsMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} &lt;= #{value}
+                </foreach>
+            </if>
+            <if test="nullMap != null">
+                <foreach collection="nullMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} is null
+                </foreach>
+            </if>
+            <if test="notNullMap != null">
+                <foreach collection="notNullMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} is not null
+                </foreach>
+            </if>
+            <if test="inMap != null">
+                <foreach collection="inMap" index="key" item="value" separator="and" open=" and (" close=")">
+                    <foreach collection="value" item="itemin" index="index" separator="or">
+                        ${key} = #{itemin}
+                    </foreach>
+                </foreach>
+            </if>
+            <if test="notInMap != null">
+                <foreach collection="notInMap" index="key" item="value" separator="and" open=" and (" close=")">
+                    <foreach collection="value" item="itemin" index="index" separator="and">
+                        ${key} != #{itemin}
+                    </foreach>
+                </foreach>
+            </if>
+        </where>
+        <if test="sortBy != null">
+            <foreach collection="sortBy" item="item" separator="," open=" order by ">
+                ${item.field} ${item.type}
+            </foreach>
+        </if>
+    </sql>
+
+    <!-- 如果有自增字段 -->
+
+    <!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+    <insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhFacilityRecPath"
+
+            flushCache="true">
+        <![CDATA[
+                INSERT INTO
+                t_wh_facility_rec_path (
+                id,
+                    batch ,
+                    container_code ,
+                    seedingwall_code ,
+                    seedingwall_upper_limit ,
+                    seedingwall_check_code ,
+                    temporary_storage_location_code ,
+                    temporary_storage_location_check_code ,
+                    transit_location_code ,
+                    transit_location_check_code ,
+                    status ,
+                    ou_id ,
+                    batch_container_qty 
+                ) VALUES (
+                #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{batch,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{containerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{seedingwallCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{seedingwallUpperLimit,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                    #{seedingwallCheckCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{temporaryStorageLocationCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{temporaryStorageLocationCheckCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{transitLocationCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{transitLocationCheckCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                    #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{batchContainerQty,javaType=java.lang.Integer,jdbcType=INTEGER} 
+                )
+            ]]>
+
+    </insert>
+
+
+    <update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhFacilityRecPath">
+        <![CDATA[
+            UPDATE t_wh_facility_rec_path SET
+                batch = #{batch,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                container_code = #{containerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                seedingwall_code = #{seedingwallCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                seedingwall_upper_limit = #{seedingwallUpperLimit,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                seedingwall_check_code = #{seedingwallCheckCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                temporary_storage_location_code = #{temporaryStorageLocationCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                temporary_storage_location_check_code = #{temporaryStorageLocationCheckCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                transit_location_code = #{transitLocationCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                transit_location_check_code = #{transitLocationCheckCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                status = #{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                batch_container_qty = #{batchContainerQty,javaType=java.lang.Integer,jdbcType=INTEGER} 
+            WHERE 
+                id = #{id} 
+        ]]>
+    </update>
+    <update id="batchUpdate">
+        UPDATE t_wh_facility_rec_path SET
+        <foreach collection="batchUpdateMap" index="key" item="value" separator=",">
+            ${key} = #{value}
+        </foreach>
+        <include refid="whFacilityRecPathConditionWhereExt"/>
+    </update>
+
+    <delete id="delete" parameterType="java.lang.Long">
+        <![CDATA[
+            delete from t_wh_facility_rec_path where
+                id = #{id} 
+        ]]>
+    </delete>
+
+    <delete id="deleteByIds" parameterType="list">
+
+        delete from t_wh_facility_rec_path
+        where id in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+
+    </delete>
+    <update id="batchDelete">
+        delete from t_wh_facility_rec_path
+        <include refid="whFacilityRecPathConditionWhereExt"/>
+    </update>
+
+    <select id="findById" parameterType="java.lang.Long" resultMap="WhFacilityRecPathResult" flushCache="false">
+        select
+        <include refid="whFacilityRecPathColumns"/>
+        <![CDATA[
+                from t_wh_facility_rec_path 
+                where 
+                id = #{id} 
+            ]]>
+    </select>
+    <select id="getByIds" parameterType="list" resultMap="WhFacilityRecPathResult" flushCache="false">
+        select
+        <include refid="whFacilityRecPathColumns"/>
+        from t_wh_facility_rec_path
+        where id in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+    <sql id="whFacilityRecPathDynamicWhere">
+        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+
+            <if test="id!=null">
+                and id = #{id}
+            </if>
+
+
+            <if test="batch!=null and batch!=''">
+                and batch = #{batch}
+            </if>
+
+
+            <if test="containerCode!=null and containerCode!=''">
+                and container_code = #{containerCode}
+            </if>
+
+
+            <if test="seedingwallCode!=null and seedingwallCode!=''">
+                and seedingwall_code = #{seedingwallCode}
+            </if>
+
+            <if test="seedingwallUpperLimit!=null">
+                and seedingwall_upper_limit = #{seedingwallUpperLimit}
+            </if>
+
+
+            <if test="seedingwallCheckCode!=null and seedingwallCheckCode!=''">
+                and seedingwall_check_code = #{seedingwallCheckCode}
+            </if>
+
+
+            <if test="temporaryStorageLocationCode!=null and temporaryStorageLocationCode!=''">
+                and temporary_storage_location_code = #{temporaryStorageLocationCode}
+            </if>
+
+
+            <if test="temporaryStorageLocationCheckCode!=null and temporaryStorageLocationCheckCode!=''">
+                and temporary_storage_location_check_code = #{temporaryStorageLocationCheckCode}
+            </if>
+
+
+            <if test="transitLocationCode!=null and transitLocationCode!=''">
+                and transit_location_code = #{transitLocationCode}
+            </if>
+
+
+            <if test="transitLocationCheckCode!=null and transitLocationCheckCode!=''">
+                and transit_location_check_code = #{transitLocationCheckCode}
+            </if>
+
+            <if test="status!=null">
+                and status = #{status}
+            </if>
+
+            <if test="ouId!=null">
+                and ou_id = #{ouId}
+            </if>
+
+            <if test="batchContainerQty!=null">
+                and batch_container_qty = #{batchContainerQty}
+            </if>
+        </where>
+    </sql>
+
+
+    <select id="getCount" resultType="long">
+        select count(*) from t_wh_facility_rec_path
+    </select>
+    <select id="findListCountByQueryMap" resultType="long">
+        select count(*) from t_wh_facility_rec_path
+        <include refid="whFacilityRecPathDynamicWhere"/>
+    </select>
+
+    <select id="findListCountByParam" resultType="long">
+        select count(*) from t_wh_facility_rec_path
+        <include refid="whFacilityRecPathDynamicWhere"/>
+    </select>
+
+    <!--
+        分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+        因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPage" resultMap="WhFacilityRecPathResult">
+        select
+        <include refid="whFacilityRecPathColumns"/>
+        from t_wh_facility_rec_path
+        <include refid="whFacilityRecPathDynamicWhere"/>
+
+    </select>
+
+    <select id="findListByQueryMap" resultMap="WhFacilityRecPathResult">
+        select
+        <include refid="whFacilityRecPathColumns"/>
+        from t_wh_facility_rec_path
+        <include refid="whFacilityRecPathDynamicWhere"/>
+
+    </select>
+
+    <select id="findListByParam" resultMap="WhFacilityRecPathResult">
+        select
+        <include refid="whFacilityRecPathColumns"/>
+        from t_wh_facility_rec_path
+        <include refid="whFacilityRecPathDynamicWhere"/>
+
+    </select>
+
+    <select id="query" resultMap="WhFacilityRecPathResult">
+        select
+        <include refid="whFacilityRecPathColumns"/>
+        from t_wh_facility_rec_path
+        <include refid="whFacilityRecPathConditionWhereExt"/>
+    </select>
+
+    <select id="queryCount" resultType="long">
+        select count(*) from t_wh_facility_rec_path
+        <include refid="whFacilityRecPathConditionWhereExt"/>
+    </select>
+
+
+</mapper>
