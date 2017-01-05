@@ -140,36 +140,14 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
         List<WhSkuInventoryCommand> skuInvList = cacheManager.getObject(CacheConstants.CACHE_LOC_INVENTORY + operationId.toString()+locationId.toString());
         if(null == skuInvList || skuInvList.size() == 0) {
             skuInvList = new ArrayList<WhSkuInventoryCommand>();
-            List<WhSkuInventoryCommand> skuInvCmdList = whSkuInventoryDao.findWhSkuInvCmdByLocationContainerIdIsNull(ouId,locationId);
-            if(null == skuInvCmdList || skuInvCmdList.size() == 0) {
-                    throw new BusinessException(ErrorCodes.LOCATION_INVENTORY_IS_NO);   //库位库存不存在
-            } 
+            List<WhSkuInventoryCommand> skuInvCmdList = whSkuInventoryDao.getWhSkuInventoryByOccupationLineId(ouId, operationId);
+            if(null == skuInvCmdList || skuInvCmdList.size() == 0){
+                skuInvCmdList = whSkuInventoryDao.getWhSkuInventoryTobefilledByOccupationLineId(ouId, operationId);
+                if(null == skuInvCmdList || skuInvCmdList.size() == 0) {
+                    throw new BusinessException(ErrorCodes.LOCATION_INVENTORY_IS_NO);
+                }
+            }
             List<WhOperationLineCommand> operationLineList = whOperationLineDao.findOperationLineByOperationId(operationId, ouId);   //当前工作下所有的作业明细集合
-//            for(WhOperationLineCommand operLineCmd : operationLineList) {
-//                String opLineSkuAttrIds = SkuCategoryProvider.getSkuAttrIdByOperationLine(operLineCmd);
-//                for(WhSkuInventoryCommand skuInvCmd:skuInvCmdList) {
-//                        String skuAttrIds = SkuCategoryProvider.getSkuAttrIdByInv(skuInvCmd);
-//                        if(opLineSkuAttrIds.equals(skuAttrIds)){
-//                            if(null != operLineCmd.getFromOuterContainerId() && null != skuInvCmd.getOuterContainerId()) { //外部容器不为空
-//                                if(operLineCmd.getFromOuterContainerId() == skuInvCmd.getOuterContainerId()) {
-//                                    if(operLineCmd.getFromInsideContainerId().equals(skuInvCmd.getInsideContainerId())) {
-//                                        skuInvList.add(skuInvCmd);    //外部容器
-//                                    }
-//                                }
-//                            }else{
-//                                if(null == operLineCmd.getFromOuterContainerId() && null == skuInvCmd.getOuterContainerId()){
-//                                    if(null != operLineCmd.getFromInsideContainerId() && null != skuInvCmd.getInsideContainerId()) {
-//                                        if(operLineCmd.getFromInsideContainerId().equals(skuInvCmd.getInsideContainerId())) {
-//                                            skuInvList.add(skuInvCmd);    //外部容器
-//                                        }
-//                                    }else{  //散装
-//                                        skuInvList.add(skuInvCmd); 
-//                                    }
-//                                }
-//                            }
-//                        }
-//               }
-//            }
             for(WhOperationLineCommand operLineCmd : operationLineList){
                 Long odoLineId = operLineCmd.getOdoLineId();  //出库单明细ID
                 for(WhSkuInventoryCommand skuInvCmd:skuInvCmdList) {
@@ -180,14 +158,6 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                 }
             }
             cacheManager.setObject(CacheConstants.CACHE_LOC_INVENTORY + operationId.toString()+locationId.toString(), skuInvList, CacheConstants.CACHE_ONE_DAY);
-            //缓存一次作业下的所有库位库存
-            List<WhSkuInventoryCommand> allSkuInvList = cacheManager.getObject(CacheConstants.CAHCEH_LOCATIONS_INVENTORY  + operationId.toString());
-            if(null == allSkuInvList) {
-                allSkuInvList = skuInvList;
-            }else{
-                allSkuInvList.addAll(skuInvList);
-            }
-            cacheManager.setObject(CacheConstants.CAHCEH_LOCATIONS_INVENTORY + operationId.toString(), allSkuInvList, CacheConstants.CACHE_ONE_DAY);
         }
         log.info("PdaPickingWorkCacheManagerImpl cacheLocationInventory is end");
         return skuInvList;
@@ -1488,7 +1458,6 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
              //清楚作业明细
                cacheManager.remove(CacheConstants.OPERATION_LINE+operationId.toString());
                cacheManager.remove(CacheConstants.CACHE_OPERATION_LINE + operationId.toString());
-               cacheManager.remove(CacheConstants.CAHCEH_LOCATIONS_INVENTORY+operationId.toString());
            }
            
            log.info("PdaPickingWorkCacheManagerImpl addPickingOperationExecLine is end");

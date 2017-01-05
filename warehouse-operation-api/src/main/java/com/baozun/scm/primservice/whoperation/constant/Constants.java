@@ -283,7 +283,7 @@ public final class Constants {
     public static final String CHECK_OPERATIONS_AREA_ODOID_LIST_PLACEHOLDER = "${odoIdListStr}";
     /** 播种墙推荐规则出库单ID占位符 */
     public static final String SEEDING_WALL_ODOID_LIST_PLACEHOLDER = "${odoIdListStr}";
-    
+
     /** 出库箱装箱规则sql占位符 */
     public static final String OUTBOUNDBOX_RULE_PLACEHOLDER = "${odoIdListStr}";
 
@@ -404,7 +404,7 @@ public final class Constants {
 
     public static final Integer SN_DEFECR_COUNT = 1;
 
-    /**配货模式规则*/
+    /** 配货模式规则 */
     public static final String DISTRIBUTION_PATTERN = "DISTRIBUTION_PATTERN";
 
     /** 波次阶段 分配失败原因分组 */
@@ -447,78 +447,103 @@ public final class Constants {
     /** 体积单位升在Uom表中的编码 */
     public static final String LENGTH_TO_VOLUME_UOM_CODE = "LENGTH_TO_VOLUME_CODE";
 
-    /** 软分配阶段*/
+    /** 软分配阶段 */
     public static final String WEAK_ALLOCATED = "WEAK_ALLOCATED";
-    /**使用外部容器(小车)无出库箱拣货流程*/
+    /** 使用外部容器(小车)无出库箱拣货流程 */
     public static final Integer PICKING_WAY_ONE = 1;
-    /**使用外部容器(小车)有出库箱拣货流程*/
+    /** 使用外部容器(小车)有出库箱拣货流程 */
     public static final Integer PICKING_WAY_TWO = 2;
-    /**使用出库箱拣货流程*/
+    /** 使用出库箱拣货流程 */
     public static final Integer PICKING_WAY_THREE = 3;
-    /**使用周转箱拣货流程*/
+    /** 使用周转箱拣货流程 */
     public static final Integer PICKING_WAY_FOUR = 4;
-    /**整托拣货流程*/
+    /** 整托拣货流程 */
     public static final Integer PICKING_WAY_FIVE = 5;
-    /**整箱拣货流程*/
+    /** 整箱拣货流程 */
     public static final Integer PICKING_WAY_SIX = 6;
 
-    /**仅占用托盘内商品*/
+    /** 仅占用托盘内商品 */
     public static final Integer INV_OCCUPY_MODE_ONE = 1;
-    /**仅占用货箱内商品*/
+    /** 仅占用货箱内商品 */
     public static final Integer INV_OCCUPY_MODE_TWO = 2;
-    /**仅占用库位上散件商品*/
+    /** 仅占用库位上散件商品 */
     public static final Integer INV_OCCUPY_MODE_THREE = 3;
-    /**混合占用*/
+    /** 混合占用 */
     public static final Integer INV_OCCUPY_MODE_FOUR = 4;
-    /** 修改出库单状态-合并出库单*/
+    /** 修改出库单状态-合并出库单 */
     public static final int ODO_MERGE = 1;
-    /** 修改出库单状态-取消合并出库单*/
+    /** 修改出库单状态-取消合并出库单 */
     public static final int ODO_CANCEL = 2;
-    /** 修改出库单状态-原始出库单还原为新建*/
+    /** 修改出库单状态-原始出库单还原为新建 */
     public static final int ODO_NEW = 3;
-    /** 修改出库单状态-合并出库单明细*/
+    /** 修改出库单状态-合并出库单明细 */
     public static final int ODO_LINE_MERGE = 1;
-    /** 修改出库单状态-合并出库单明细-取消*/
+    /** 修改出库单状态-合并出库单明细-取消 */
     public static final int ODO_LINE_CANCEL = 2;
-    /** 修改出库单状态-原始出库单明细还原为新建*/
+    /** 修改出库单状态-原始出库单明细还原为新建 */
     public static final int ODO_LINE_NEW = 3;
 
     /** 播种墙推荐规则 */
     public static final String RULE_TYPE_SEEDING_WALL = "SEEDING_WALL";
     /** 复核台推荐规则 */
     public static final String RULE_TYPE_CHECK_OPERATIONS_AREA = "CHECK_OPERATIONS_AREA";
-    /** 工作号*/
+    /** 工作号 */
     public static final String WORK_CODE = "WORK_CODE";
-    /** 库位号*/
+    /** 库位号 */
     public static final String LOC_CODE = "LOC_CODE";
-    /** 容器号*/
+    /** 容器号 */
     public static final String CONTAINER_CODE = "CONTAINER_CODE";
-    /** 出库小批次*/
+    /** 出库小批次 */
     public static final String OUT_BOUND = "OUT_BOUND";
-    /** 波次号*/
+    /** 波次号 */
     public static final String WAVE_CODE = "WAVE_CODE";
-    /** 出库箱*/
+    /** 出库箱 */
     public static final String OUT_BOUND_BOX = "OUT_BOUND_BOX";
-   
-    /** 配置为原始库位*/
+
+    /** 配置为原始库位 */
     public static final String FROM_LOCATION = "FROM_LOCATION";
-    /** 配置为原始库位与目标库位*/
+    /** 配置为原始库位与目标库位 */
     public static final String FROM_LOCATION_TO_LOCATION = "FROM_LOCATION_TO_LOCATION";
-    /** 配置为原始库位托盘*/
+    /** 配置为原始库位托盘 */
     public static final String FROM_OUTER_CONTAINER = "FROM_OUTER_CONTAINER";
-    /** 配置为原始库位托盘与目标库位*/
+    /** 配置为原始库位托盘与目标库位 */
     public static final String FROM_OUTER_CONTAINER_TO_LOCATION = "FROM_OUTER_CONTAINER_TO_LOCATION";
-    /** 配置为原始库位货箱*/
+    /** 配置为原始库位货箱 */
     public static final String FROM_INSIDE_CONTAINER = "FROM_INSIDE_CONTAINER";
-    /** 配置为原始库位货箱与目标库位*/
+    /** 配置为原始库位货箱与目标库位 */
     public static final String FROM_INSIDE_CONTAINER_TO_LOCATION = "FROM_INSIDE_CONTAINER_TO_LOCATION";
-    /** 配置为目标库位*/
+    /** 配置为目标库位 */
     public static final String TO_LOCATION = "TO_LOCATION";
-    
-    /**整托拣货流程*/
+
+    /** 整托拣货流程 */
     public static final Integer REPLENISH_WAY_ONE = 1;
-    /**整托拣货流程*/
+    /** 整托拣货流程 */
     public static final Integer REPLENISH_WAY_TWO = 2;
-    /**整托拣货流程*/
+    /** 整托拣货流程 */
     public static final Integer REPLENISH_WAY_THREE = 3;
+
+    /** 导入EXCEL 错误信息文件上传路径 zk 配置 */
+    public static final String IMPORT_EXCEL_ZK_ERROR_URL = "/upload.file.error.url";
+
+    /** 导入EXCEL 文件上传路径 zk 配置 */
+    public static final String IMPORT_EXCEL_ZK_URL = "/upload.file.url";
+
+    public static final String ERROR = "ERROR";
+
+    public static final String OK = "OK";
+
+    /** 导入EXCEL信息CODE */
+    public static final String IMPORT_EXCEL_CODE = "IMPORT_EXCEL_CODE";
+
+    /** 导出EXECL文件后缀 .xls */
+    public static final String EXPORT_EXCEL_XLS = ".xls";
+
+    /** 导出EXECL文件后缀 .xlsx */
+    public static final String EXPORT_EXCEL_XLSX = ".xlsx";
+
+    /** 导出EXCEL上传路径 zk 配置 */
+    public static final String EXPORT_EXCEL_ZK_URL = "/export.excel.url";
+
+    /** 导入EXCEL模板下载路径 ZK 配置 */
+    public static final String DOWNLOAD_EXCEL_ZK_URL = "/download.excel.url";
 }

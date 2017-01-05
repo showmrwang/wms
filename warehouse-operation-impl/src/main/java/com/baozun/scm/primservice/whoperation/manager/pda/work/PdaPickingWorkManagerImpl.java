@@ -1374,11 +1374,6 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                this.addPickingOperationExecLine(userId, pickingWay, outBoundBoxId, outBoundBoxCode, turnoverBoxId, outerContainerId, insideContainerId, operationId, ouId); 
                //校验作业执行明细
                this.checkOperationExecLine(operationId, ouId);
-             //一次作业缓存的所有sku
-               List<WhSkuInventoryCommand> allSkuInvList = cacheManager.getObject(CacheConstants.CAHCEH_LOCATIONS_INVENTORY  + operationId.toString());
-               if(null == allSkuInvList) {
-                   throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
-               }
                //生成容器/出库箱库存               
                whSkuInventoryManager.pickingAddContainerInventory(operationId, ouId, isTabbInvTotal, userId);
 //               更新工作及作业状态

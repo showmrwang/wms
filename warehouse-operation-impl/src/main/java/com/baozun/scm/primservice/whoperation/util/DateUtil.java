@@ -35,4 +35,9 @@ public class DateUtil {
         return df.format(new Date());// new Date()为获取当前系统时间
     }
 
+    public static String getSysDateFormat(String format) {
+        SimpleDateFormat df = new SimpleDateFormat(format);// 设置日期格式
+        return df.format(new Date());// new Date()为获取当前系统时间
+    }
+
 }

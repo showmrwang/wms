@@ -4229,9 +4229,13 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
      */
     public void pickingAddContainerInventory(Long operationId,Long ouId,Boolean isTabbInvTotal,Long userId){
         
+        //到库存表中查询
         List<WhSkuInventoryCommand> allSkuInvList = whSkuInventoryDao.getWhSkuInventoryByOccupationLineId(ouId, operationId);
         if(null == allSkuInvList || allSkuInvList.size() == 0){
-            throw new BusinessException(ErrorCodes.LOCATION_INVENTORY_IS_NO);
+            allSkuInvList = whSkuInventoryDao.getWhSkuInventoryTobefilledByOccupationLineId(ouId, operationId);
+            if(null == allSkuInvList || allSkuInvList.size() == 0) {
+                throw new BusinessException(ErrorCodes.LOCATION_INVENTORY_IS_NO);
+            }
         }
         List<Long> skuInvCmdList = new ArrayList<Long>();
         List<Long> insideIdList = new ArrayList<Long>();
@@ -4434,6 +4438,15 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
               }
            }
         }
+        
+        //修改作业中的uuid
+        List<WhOperationLineCommand> operationLineList = whOperationLineDao.findOperationLineByOperationId(operationId, ouId);
+//        whSkuInventoryDao.getContainerInventory(ouId, outerContainerId, insideContainerId, containerLatticeNo, outboundboxCode);
+        for(WhOperationLineCommand operationLieCmd:operationLineList){
+            
+            
+        }
+        
         //校验容器/出库箱库存与删除的拣货库位库存时否一致
         List<WhOperationExecLine> list = whOperationExecLineDao.checkContainerInventory(operationId, ouId, outerContainerId,insideIdList, containerLatticeNoList,outboundboxCodeList);
         for(WhOperationExecLine operationExecline:list) {
