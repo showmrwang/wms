@@ -382,8 +382,6 @@
 			<artifactId>commons-collections</artifactId>
 			<version>${commons-collections.version}</version>
 		</dependency>
-	</dependencies>
-	
 			<!-- POI -->
 		<dependency>
 			<groupId>org.apache.poi</groupId>
@@ -400,6 +398,8 @@
 			<artifactId>poi-ooxml-schemas</artifactId>
 			<version>${poi.version}</version>
 		</dependency>
+	</dependencies>
+	
 
 	<profiles>
 		<profile>
