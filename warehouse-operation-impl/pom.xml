@@ -14,7 +14,7 @@
 		<version.slf4j>1.7.5</version.slf4j>
 		<version.logback>1.0.3</version.logback>
 		<native2ascii_pattern>**/*.properties</native2ascii_pattern>
-
+		<poi.version>3.14</poi.version>
 		<commons-collections.version>3.2.1</commons-collections.version>
 		<!-- tomcat6-maven-plugin properties -->
 		<tomcat6.port>80</tomcat6.port>
@@ -382,7 +382,24 @@
 			<artifactId>commons-collections</artifactId>
 			<version>${commons-collections.version}</version>
 		</dependency>
+			<!-- POI -->
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi</artifactId>
+			<version>${poi.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+			<version>${poi.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml-schemas</artifactId>
+			<version>${poi.version}</version>
+		</dependency>
 	</dependencies>
+	
 
 	<profiles>
 		<profile>
