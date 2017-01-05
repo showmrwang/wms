@@ -2869,6 +2869,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					t_wh_asn asn,	
 					t_wh_sku_inventory inv
 					left join t_wh_operation_line operLine on operLine.odo_line_id = inv.occupation_line_id and operLine.uuid = inv.uuid
+					
 					left join t_wh_sku_inventory_sn sn on inv.uuid = sn.uuid
 					where 
 						inv.occupation_code is not null 
@@ -2888,10 +2889,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					inv.customer_id as customerId,
 					inv.store_id as storeId,
 					inv.occupation_code as invOccupationCode,
-					inv.on_hand_qty as onHandQty,
-					inv.allocated_qty as allocatedQty,
-					inv.to_be_filled_qty as toBeFilledQty,
-					inv.frozen_qty as frozenQty,
+					inv.qty as onHandQty,
 					inv.inv_status as invStatus,
 					inv.inv_type as invType,
 					inv.batch_number as batchNumber,
@@ -2904,13 +2902,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					inv.inv_attr4 as invAttr4,
 					inv.inv_attr5 as invAttr5,
 					inv.uuid as invUuid,
-					inv.is_locked as isLocked,
 					inv.ou_id as invOuId,
 					inv.occupation_code_source as occupationCodeSource,
-					inv.inbound_time as inboundTime,
 	        		inv.last_modify_time as lastModifyTime,
-	        		inv.container_lattice_no as containerLatticeNo,
-	                inv.outboundbox_code as outboundboxCode,
 	        		sn.id as snId,
 	        		sn.sn as snSn,
 	        		sn.occupation_code as snOccupationCode,
