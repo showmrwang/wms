@@ -14,8 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.whoperation.constant.Constants;
+import com.baozun.scm.primservice.whoperation.dao.bi.UserImportExcelDao;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
-import com.baozun.scm.primservice.whoperation.manager.odo.bi.UserImportExcelDao;
 import com.baozun.scm.primservice.whoperation.model.bi.ImportExcel;
 import com.baozun.scm.primservice.whoperation.model.bi.UserImportExcel;
 import com.baozun.scm.primservice.whoperation.util.DateUtil;
