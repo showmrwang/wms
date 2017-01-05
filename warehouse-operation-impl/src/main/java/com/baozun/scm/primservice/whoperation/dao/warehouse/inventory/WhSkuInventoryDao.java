@@ -715,13 +715,5 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
 	
 	public List<WhSkuInventoryCommand> getWhSkuInventoryTobefilledByOccupationLineId(@Param("ouId") Long ouId,@Param("operationId") Long operationId);
 	
-	/***
-	 * 返回容器库存
-	 * @param ouId
-	 * @param outerContainerId
-	 * @param insideContainerId
-	 * @return
-	 */
-	public List<WhSkuInventoryCommand> getContainerInventory(@Param("ouId") Long ouId,@Param("outerContainerId") Long outerContainerId,@Param("insideContainerId") Long insideContainerId,@Param("containerLatticeNo") Integer containerLatticeNo,@Param("outboundboxCode") String outboundboxCode);
-	
+
 }
