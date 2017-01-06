@@ -631,7 +631,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                         int allCount = whSkuLocationDao.findAllSkuCountInSkuLocation(ouId, locId);
                         if (1 == allCount && 1L == skuCategory.longValue() && 1L == skuAttrCategory.longValue()) {
                             Boolean isMixStack = al.getIsMixStacking();
-                            if (false == isMixStack) {
+                            if (null != isMixStack && false == isMixStack) {
                                 // 不允许混放则库存属性要保持一致
                                 WhSkuInventoryCommand invCmd = invList.get(0);// 取一条库存信息
                                 AttrParams invAttr1 = new AttrParams();
@@ -666,9 +666,9 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                     String inv2InvAttr3 = (null == invAttr2.getInvAttr3() ? "" : invAttr2.getInvAttr3());
                                     String inv2InvAttr4 = (null == invAttr2.getInvAttr4() ? "" : invAttr2.getInvAttr4());
                                     String inv2InvAttr5 = (null == invAttr2.getInvAttr5() ? "" : invAttr2.getInvAttr5());
-                                    if (!(invAttr1InvType.equals(invAttr2InvType)) && invAttr1InvStatus.equals(invAttr2InvStatus) && inv1BatchNumber.equals(inv2BatchNumber) && inv1CountryOfOrigin.equals(inv2CountryOfOrigin) && inv1MfgDate.equals(inv2MfgDate)
+                                    if (!(invAttr1InvType.equals(invAttr2InvType) && invAttr1InvStatus.equals(invAttr2InvStatus) && inv1BatchNumber.equals(inv2BatchNumber) && inv1CountryOfOrigin.equals(inv2CountryOfOrigin) && inv1MfgDate.equals(inv2MfgDate)
                                             && inv1ExpDate.equals(inv2ExpDate) && inv1InvAttr1.equals(inv2InvAttr1) && inv1InvAttr2.equals(inv2InvAttr2) && inv1InvAttr3.equals(inv2InvAttr3) && inv1InvAttr4.equals(inv2InvAttr4)
-                                            && inv1InvAttr5.equals(inv2InvAttr5)) {
+                                            && inv1InvAttr5.equals(inv2InvAttr5))) {
                                         continue;
                                     }
                                 }
@@ -1153,7 +1153,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                         int allCount = whSkuLocationDao.findAllSkuCountInSkuLocation(ouId, locId);
                         if (1 == allCount && 1L == skuCategory.longValue() && 1L == skuAttrCategory.longValue()) {
                             Boolean isMixStack = al.getIsMixStacking();
-                            if (false == isMixStack) {
+                            if (null != isMixStack && false == isMixStack) {
                                 // 不允许混放则库存属性要保持一致
                                 WhSkuInventoryCommand invCmd = invList.get(0);// 取一条库存信息
                                 AttrParams invAttr1 = new AttrParams();
@@ -1188,9 +1188,9 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                     String inv2InvAttr3 = (null == invAttr2.getInvAttr3() ? "" : invAttr2.getInvAttr3());
                                     String inv2InvAttr4 = (null == invAttr2.getInvAttr4() ? "" : invAttr2.getInvAttr4());
                                     String inv2InvAttr5 = (null == invAttr2.getInvAttr5() ? "" : invAttr2.getInvAttr5());
-                                    if (!(invAttr1InvType.equals(invAttr2InvType)) && invAttr1InvStatus.equals(invAttr2InvStatus) && inv1BatchNumber.equals(inv2BatchNumber) && inv1CountryOfOrigin.equals(inv2CountryOfOrigin) && inv1MfgDate.equals(inv2MfgDate)
+                                    if (!(invAttr1InvType.equals(invAttr2InvType) && invAttr1InvStatus.equals(invAttr2InvStatus) && inv1BatchNumber.equals(inv2BatchNumber) && inv1CountryOfOrigin.equals(inv2CountryOfOrigin) && inv1MfgDate.equals(inv2MfgDate)
                                             && inv1ExpDate.equals(inv2ExpDate) && inv1InvAttr1.equals(inv2InvAttr1) && inv1InvAttr2.equals(inv2InvAttr2) && inv1InvAttr3.equals(inv2InvAttr3) && inv1InvAttr4.equals(inv2InvAttr4)
-                                            && inv1InvAttr5.equals(inv2InvAttr5)) {
+                                            && inv1InvAttr5.equals(inv2InvAttr5))) {
                                         continue;
                                     }
                                 }
@@ -1631,7 +1631,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                     int allCount = whSkuLocationDao.findAllSkuCountInSkuLocation(ouId, locId);
                                     if (1 == allCount && 1L == skuCategory.longValue() && 1L == skuAttrCategory.longValue()) {
                                         Boolean isMixStack = al.getIsMixStacking();
-                                        if (false == isMixStack) {
+                                        if (null != isMixStack && false == isMixStack) {
                                             // 不允许混放则库存属性要保持一致
                                             WhSkuInventoryCommand invCmd = invRule;// 取到库存信息
                                             AttrParams invAttr1 = new AttrParams();
@@ -1666,9 +1666,9 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                                 String inv2InvAttr3 = (null == invAttr2.getInvAttr3() ? "" : invAttr2.getInvAttr3());
                                                 String inv2InvAttr4 = (null == invAttr2.getInvAttr4() ? "" : invAttr2.getInvAttr4());
                                                 String inv2InvAttr5 = (null == invAttr2.getInvAttr5() ? "" : invAttr2.getInvAttr5());
-                                                if (!(invAttr1InvType.equals(invAttr2InvType)) && invAttr1InvStatus.equals(invAttr2InvStatus) && inv1BatchNumber.equals(inv2BatchNumber) && inv1CountryOfOrigin.equals(inv2CountryOfOrigin)
+                                                if (!(invAttr1InvType.equals(invAttr2InvType) && invAttr1InvStatus.equals(invAttr2InvStatus) && inv1BatchNumber.equals(inv2BatchNumber) && inv1CountryOfOrigin.equals(inv2CountryOfOrigin)
                                                         && inv1MfgDate.equals(inv2MfgDate) && inv1ExpDate.equals(inv2ExpDate) && inv1InvAttr1.equals(inv2InvAttr1) && inv1InvAttr2.equals(inv2InvAttr2) && inv1InvAttr3.equals(inv2InvAttr3)
-                                                        && inv1InvAttr4.equals(inv2InvAttr4) && inv1InvAttr5.equals(inv2InvAttr5)) {
+                                                        && inv1InvAttr4.equals(inv2InvAttr4) && inv1InvAttr5.equals(inv2InvAttr5))) {
                                                     continue;
                                                 }
                                             }
@@ -2069,7 +2069,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                         int allCount = whSkuLocationDao.findAllSkuCountInSkuLocation(ouId, locId);
                                         if (1 == allCount && 1L == skuCategory.longValue() && 1L == skuAttrCategory.longValue()) {
                                             Boolean isMixStack = al.getIsMixStacking();
-                                            if (false == isMixStack) {
+                                            if (null != isMixStack && false == isMixStack) {
                                                 // 不允许混放则库存属性要保持一致
                                                 WhSkuInventoryCommand invCmd = invRule;// 取到库存信息
                                                 AttrParams invAttr1 = new AttrParams();
@@ -2104,9 +2104,9 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                                     String inv2InvAttr3 = (null == invAttr2.getInvAttr3() ? "" : invAttr2.getInvAttr3());
                                                     String inv2InvAttr4 = (null == invAttr2.getInvAttr4() ? "" : invAttr2.getInvAttr4());
                                                     String inv2InvAttr5 = (null == invAttr2.getInvAttr5() ? "" : invAttr2.getInvAttr5());
-                                                    if (!(invAttr1InvType.equals(invAttr2InvType)) && invAttr1InvStatus.equals(invAttr2InvStatus) && inv1BatchNumber.equals(inv2BatchNumber) && inv1CountryOfOrigin.equals(inv2CountryOfOrigin)
+                                                    if (!(invAttr1InvType.equals(invAttr2InvType) && invAttr1InvStatus.equals(invAttr2InvStatus) && inv1BatchNumber.equals(inv2BatchNumber) && inv1CountryOfOrigin.equals(inv2CountryOfOrigin)
                                                             && inv1MfgDate.equals(inv2MfgDate) && inv1ExpDate.equals(inv2ExpDate) && inv1InvAttr1.equals(inv2InvAttr1) && inv1InvAttr2.equals(inv2InvAttr2) && inv1InvAttr3.equals(inv2InvAttr3)
-                                                            && inv1InvAttr4.equals(inv2InvAttr4) && inv1InvAttr5.equals(inv2InvAttr5)) {
+                                                            && inv1InvAttr4.equals(inv2InvAttr4) && inv1InvAttr5.equals(inv2InvAttr5))) {
                                                         continue;
                                                     }
                                                 }
