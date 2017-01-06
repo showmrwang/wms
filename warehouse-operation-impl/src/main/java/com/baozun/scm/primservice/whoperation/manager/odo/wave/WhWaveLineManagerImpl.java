@@ -156,12 +156,12 @@ public class WhWaveLineManagerImpl extends BaseManagerImpl implements WhWaveLine
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void updateWaveLineByAllocateQty(Long id, Double allocateQty, Double containerQty, Boolean isStaticLocation, Set<String> staticLocationIds, Set<String> trayIds, Set<String> packingCaseIds, Long areaId, Long ouId, String logId) {
         WhWaveLine whWaveLine = whWaveLineDao.findWhWaveLineById(id, ouId);
-        Double oldAllocateQty = null == whWaveLine.getAllocateQty() ? 0.0 : whWaveLine.getAllocateQty();
+        Double oldAllocateQty = (null == whWaveLine.getAllocateQty() ? 0.0 : whWaveLine.getAllocateQty());
         Double newAllocateQty = allocateQty + oldAllocateQty;
         whWaveLine.setAllocateQty(newAllocateQty);
         if (-1 == Constants.DEFAULT_DOUBLE.compareTo(containerQty)) {
             whWaveLine.setIsPalletContainer(Boolean.TRUE);
-            Double oldPalletContainerQty = null == whWaveLine.getPalletContainerQty() ? 0.0 : whWaveLine.getPalletContainerQty();
+            Double oldPalletContainerQty = (null == whWaveLine.getPalletContainerQty() ? 0.0 : whWaveLine.getPalletContainerQty());
             whWaveLine.setPalletContainerQty(containerQty + oldPalletContainerQty);
         }
         if (null != isStaticLocation && isStaticLocation) {
@@ -194,7 +194,7 @@ public class WhWaveLineManagerImpl extends BaseManagerImpl implements WhWaveLine
         whWaveLineDao.saveOrUpdateByVersion(whWaveLine);
         log.info("update whwaveLineId:[{}], allocateQty:[{}], logId:[{}]", id, newAllocateQty, logId);
     }
-
+    
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public Map<Long, Map<Long, Map<Long, Map<Long, Map<Boolean, List<WhWaveLine>>>>>> getNeedInventoryMap(List<Long> waveIdList, Long ouId) {

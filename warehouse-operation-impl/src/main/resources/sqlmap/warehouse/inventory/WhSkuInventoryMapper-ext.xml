@@ -2405,6 +2405,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        and inv.location_id is not null 
 			and inv.occupation_code is null 
 			and inv.occupation_line_id is null 
+			and IFNULL(is_locked,0) != 1
 			and inv.on_hand_qty > 0.0 
 	    order by inv.on_hand_qty 
     </select>
@@ -2420,8 +2421,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<if test="allocateUnitCodes != null and allocateUnitCodes == 'HX'">
 				inv.inside_container_id as insideContainerId,
 				sum(inv.on_hand_qty) sumOnHandQty,
-				inv.inbound_time inboundTime, 
-				inv.uuid uuid
+				GROUP_CONCAT(DISTINCT inv.uuid) as uuid
 			</if>
 		from 
 			t_wh_sku_inventory inv,
@@ -2454,14 +2454,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			group by outer_container_id
 		</if>
 		<if test="allocateUnitCodes != null and allocateUnitCodes == 'HX'">
-			group by inside_container_id,inbound_time,uuid
+			group by inside_container_id
 		</if>
 		order by 
 		<if test="priority != null and priority == true">
-			inv.inbound_time asc,sumOnHandQty,loc.pick_sort,loc.code
+			inbound_time asc,sumOnHandQty desc,loc.pick_sort,loc.code
 		</if>
 		<if test="priority != null and priority == false">
-			inv.inbound_time desc,sumOnHandQty,loc.pick_sort,loc.code
+			inbound_time desc,sumOnHandQty desc,loc.pick_sort,loc.code
 		</if>
 	</select>
 	
@@ -2476,8 +2476,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<if test="allocateUnitCodes != null and allocateUnitCodes == 'HX'">
 				inv.inside_container_id as insideContainerId,
 				sum(inv.on_hand_qty) as sumOnHandQty,
-				inv.exp_date as expDate, 
-				inv.uuid as uuid
+				GROUP_CONCAT(DISTINCT inv.uuid) as uuid
 			</if>
 		from 
 			t_wh_sku_inventory inv,
@@ -2513,14 +2512,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			group by outer_container_id
 		</if>
 		<if test="allocateUnitCodes != null and allocateUnitCodes == 'HX'">
-			group by inside_container_id,exp_date,uuid
+			group by inside_container_id
 		</if>
 		order by 
 		<if test="priority != null and priority == true">
-			inv.exp_date asc,sumOnHandQty,loc.pick_sort,loc.code
+			inv.exp_date asc,sumOnHandQty desc,loc.pick_sort,loc.code
 		</if>
 		<if test="priority != null and priority == false">
-			inv.exp_date desc,sumOnHandQty,loc.pick_sort,loc.code
+			inv.exp_date desc,sumOnHandQty desc,loc.pick_sort,loc.code
 		</if>
 	</select>
 	
@@ -2534,7 +2533,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<if test="allocateUnitCodes != null and allocateUnitCodes == 'HX'">
 				inv.inside_container_id as insideContainerId,
 				sum(inv.on_hand_qty) as sumOnHandQty,
-				inv.uuid as uuid
+				GROUP_CONCAT(DISTINCT inv.uuid) as uuid
 			</if>
 		from t_wh_sku_inventory inv,
 		(
@@ -2563,6 +2562,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					and loc.allocate_area_id = #{areaId}
 					and inv.sku_id = #{skuId}
 					<include refid="invAttrWhereCondition"/>
+					<if test="isStatic != null and isStatic == true">
+						and loc.is_static = 1
+					</if>
+					<if test="isMixStacking != null and isMixStacking == true">
+						and loc.is_mix_stacking = 1
+					</if>
 					<if test="allocateUnitCodes != null and allocateUnitCodes == 'TP'">
 						and inv.outer_container_id is not null
 					</if>
@@ -2599,9 +2604,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			group by inv.outer_container_id
 		</if>
 		<if test="allocateUnitCodes != null and allocateUnitCodes == 'HX'">
-			group by inv.inside_container_id,inv.uuid
+			group by inv.inside_container_id
 		</if>
-		order by rowNo,sumOnHandQty
+		order by rowNo,sumOnHandQty desc
 	</select>
 	
 	<select id="findInventoryUuidByAmount" parameterType="com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand" resultMap="WhSkuInventoryCommandResultExt">
@@ -2614,7 +2619,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<if test="allocateUnitCodes != null and allocateUnitCodes == 'HX'">
 				inv.inside_container_id as insideContainerId,
 				sum(inv.on_hand_qty) as sumOnHandQty,
-				inv.uuid as uuid
+				GROUP_CONCAT(DISTINCT inv.uuid) as uuid
 			</if>
 		from 
 			t_wh_sku_inventory inv,
@@ -2653,7 +2658,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			group by outer_container_id
 		</if>
 		<if test="allocateUnitCodes != null and allocateUnitCodes == 'HX'">
-			group by inside_container_id,uuid
+			group by inside_container_id
 		</if>
 		order by 
 		<if test="priority != null and priority == true">
@@ -2664,10 +2669,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</if>
 	</select>
 	
-	<select id="findInventoryUuid" parameterType="com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand" resultMap="WhSkuInventoryCommandResultExt">
-		select 
-			sum(inv.on_hand_qty) - (select IFNULL(sum(a.qty),0) from t_wh_sku_inventory_allocated a where a.uuid = inv.uuid) as sumOnHandQty, 
-			inv.uuid as uuid
+	<select id="findInventoryUuidByBestMatch" parameterType="com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand" resultMap="WhSkuInventoryCommandResultExt">
+	    select 
+			inv.location_id as locationId,
+			sum(IFNULL(inv.on_hand_qty,0) - (select IFNULL(sum(a.qty),0) from t_wh_sku_inventory_allocated a where a.uuid = inv.uuid)) as sumOnHandQty
 		from 
 			t_wh_sku_inventory inv,
 			t_wh_location loc,
@@ -2688,7 +2693,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			and loc.allocate_area_id = #{areaId}
 			and inv.sku_id = #{skuId}
 			<include refid="invAttrWhereCondition"/>
-			group by uuid
+			<if test="allocateUnitCodes != null and allocateUnitCodes == 'TP'">
+				and inv.outer_container_id is not null
+			</if>
+			<if test="allocateUnitCodes != null and allocateUnitCodes == 'HX'">
+				and inv.inside_container_id is not null
+				and inv.outer_container_id is null
+			</if>
+			group by location_id
 		order by 
 		<if test="priority != null and priority == true">
 			sumOnHandQty,loc.pick_sort,loc.code
@@ -2696,6 +2708,87 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		<if test="priority != null and priority == false">
 			sumOnHandQty desc,loc.pick_sort,loc.code
 		</if>
+	</select>
+	
+	<select id="findInventoryUuid" parameterType="com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand" resultMap="WhSkuInventoryCommandResultExt">
+		select 
+			sum(IFNULL(inv.on_hand_qty,0) - (select IFNULL(sum(a.qty),0) from t_wh_sku_inventory_allocated a where a.uuid = inv.uuid)) as sumOnHandQty, 
+			inv.location_id, 
+			GROUP_CONCAT(DISTINCT inv.uuid) as uuid
+		from 
+			t_wh_sku_inventory inv,
+			t_wh_location loc,
+			t_wh_inventory_status s
+		where 
+			inv.location_id = loc.id 
+			and inv.inv_status = s.id
+			and inv.location_id is not null 
+			and inv.occupation_code is null 
+			and inv.occupation_line_id is null 
+			and inv.on_hand_qty > 0.0 
+			and IFNULL(is_locked,0) != 1
+			and loc.lifecycle = 1
+			and s.is_for_sale = 1
+			and s.lifecycle = 1
+			
+			and inv.ou_id = #{ouId}
+			and loc.allocate_area_id = #{areaId}
+			and inv.sku_id = #{skuId}
+			<include refid="invAttrWhereCondition"/>
+			group by inv.location_id
+		order by 
+		<if test="priority != null and priority == true">
+			sumOnHandQty,loc.pick_sort,loc.code
+		</if>
+		<if test="priority != null and priority == false">
+			sumOnHandQty desc,loc.pick_sort,loc.code
+		</if>
+	</select>
+	
+	<select id="findSkuInvByLocationIds" resultMap="WhSkuInventoryCommandResultExt">
+		select
+			<if test="allocateUnitCodes != null and allocateUnitCodes == 'TP'">
+				inv.outer_container_id as outerContainerId,
+				sum(inv.on_hand_qty) as sumOnHandQty,
+				GROUP_CONCAT(DISTINCT inv.uuid) as uuid
+			</if>
+			<if test="allocateUnitCodes != null and allocateUnitCodes == 'HX'">
+				inv.inside_container_id as insideContainerId,
+				sum(inv.on_hand_qty) as sumOnHandQty,
+				GROUP_CONCAT(DISTINCT inv.uuid) as uuid
+			</if>
+		from
+			t_wh_sku_inventory inv
+		where
+			inv.occupation_code is null
+			and inv.occupation_line_id is null 
+			<if test="allocateUnitCodes != null and allocateUnitCodes == 'TP'">
+				and inv.outer_container_id is not null
+			</if>
+			<if test="allocateUnitCodes != null and allocateUnitCodes == 'HX'">
+				and inv.inside_container_id is not null
+				and inv.outer_container_id is null
+			</if>
+			and inv.on_hand_qty > 0.0 
+			and IFNULL(is_locked,0) != 1
+			and inv.location_id in 
+			<foreach item="locId" collection="locationIds" open="(" separator="," close=")">
+	            #{locId}
+	        </foreach>
+			and ou_id = #{ouId}
+		group by 
+			<if test="allocateUnitCodes != null and allocateUnitCodes == 'TP'">
+				inv.outer_container_id
+			</if>
+			<if test="allocateUnitCodes != null and allocateUnitCodes == 'HX'">
+				inv.inside_container_id
+			</if>
+			<if test="priority != null and priority == true">
+				order by sumOnHandQty
+			</if>
+			<if test="priority != null and priority == false">
+				order by sumOnHandQty desc
+			</if>
 	</select>
 	
 	<select id="findOccupyInventory" parameterType="map" resultMap="WhSkuInventoryResultExt">
