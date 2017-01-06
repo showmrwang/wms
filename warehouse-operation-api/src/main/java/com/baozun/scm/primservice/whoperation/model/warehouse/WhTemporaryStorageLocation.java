@@ -54,12 +54,23 @@ public class WhTemporaryStorageLocation extends BaseModel {
 	private Integer lifecycle;
 	/** 仓库组织ID */
 	private Long ouId;
+    /** 状态 */
+    private Integer status;
 	//columns END
 	
 	public String getTemporaryStorageCode() {
 		return temporaryStorageCode;
 	}
-	public void setTemporaryStorageCode(String temporaryStorageCode) {
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    public void setTemporaryStorageCode(String temporaryStorageCode) {
 		this.temporaryStorageCode = temporaryStorageCode;
 	}
 	public String getTemporaryStorageName() {

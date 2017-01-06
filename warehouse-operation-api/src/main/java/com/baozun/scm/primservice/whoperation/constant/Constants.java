@@ -491,35 +491,35 @@ public final class Constants {
     public static final String WORK_CODE = "WORK_CODE";
     /** 库位号 */
     public static final String LOC_CODE = "LOC_CODE";
-    /** 容器号 */
+    /** 容器号*/
     public static final String CONTAINER_CODE = "CONTAINER_CODE";
-    /** 出库小批次 */
+    /** 出库小批次*/
     public static final String OUT_BOUND = "OUT_BOUND";
-    /** 波次号 */
+    /** 波次号*/
     public static final String WAVE_CODE = "WAVE_CODE";
-    /** 出库箱 */
+    /** 出库箱*/
     public static final String OUT_BOUND_BOX = "OUT_BOUND_BOX";
-
-    /** 配置为原始库位 */
+   
+    /** 配置为原始库位*/
     public static final String FROM_LOCATION = "FROM_LOCATION";
-    /** 配置为原始库位与目标库位 */
+    /** 配置为原始库位与目标库位*/
     public static final String FROM_LOCATION_TO_LOCATION = "FROM_LOCATION_TO_LOCATION";
-    /** 配置为原始库位托盘 */
+    /** 配置为原始库位托盘*/
     public static final String FROM_OUTER_CONTAINER = "FROM_OUTER_CONTAINER";
-    /** 配置为原始库位托盘与目标库位 */
+    /** 配置为原始库位托盘与目标库位*/
     public static final String FROM_OUTER_CONTAINER_TO_LOCATION = "FROM_OUTER_CONTAINER_TO_LOCATION";
-    /** 配置为原始库位货箱 */
+    /** 配置为原始库位货箱*/
     public static final String FROM_INSIDE_CONTAINER = "FROM_INSIDE_CONTAINER";
-    /** 配置为原始库位货箱与目标库位 */
+    /** 配置为原始库位货箱与目标库位*/
     public static final String FROM_INSIDE_CONTAINER_TO_LOCATION = "FROM_INSIDE_CONTAINER_TO_LOCATION";
-    /** 配置为目标库位 */
+    /** 配置为目标库位*/
     public static final String TO_LOCATION = "TO_LOCATION";
-
-    /** 整托拣货流程 */
+    
+    /**整托拣货流程*/
     public static final Integer REPLENISH_WAY_ONE = 1;
-    /** 整托拣货流程 */
+    /**整托拣货流程*/
     public static final Integer REPLENISH_WAY_TWO = 2;
-    /** 整托拣货流程 */
+    /**整托拣货流程*/
     public static final Integer REPLENISH_WAY_THREE = 3;
 
     /** 导入EXCEL 错误信息文件上传路径 zk 配置 */
@@ -546,4 +546,28 @@ public final class Constants {
 
     /** 导入EXCEL模板下载路径 ZK 配置 */
     public static final String DOWNLOAD_EXCEL_ZK_URL = "/download.excel.url";
+
+    /**
+     * 仓库出库设施增加状态
+     */
+    public static final Integer WH_FACILITY_STATUS_1 = 1;// 空闲
+    public static final Integer WH_FACILITY_STATUS_2 = 2;// 占用
+    public static final Integer WH_FACILITY_STATUS_3 = 3;// 播种中
+    public static final Integer WH_FACILITY_STATUS_4 = 4;// 播种完成
+    public static final Integer WH_FACILITY_STATUS_5 = 5;// 播种异常
+
+    /**
+     * 仓库暂存库位增加状态
+     */
+    public static final Integer WH_GLOBAL_STATUS_1 = 1;// 空闲
+    public static final Integer WH_GLOBAL_STATUS_2 = 1;// 占用
+
+    /** 播种模式 */
+    public static final String WH_SEEDING_WALL = "SEEDING_WALL_MODE";
+
+    /** 播种模式 */
+    public static final String SEEDING_MODE_1 = "1";// 边拣货边播种
+    public static final String SEEDING_MODE_2 = "2";// 拣完货再播种
+
+
 }
