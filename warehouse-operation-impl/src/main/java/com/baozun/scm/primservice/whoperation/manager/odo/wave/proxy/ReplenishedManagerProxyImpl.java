@@ -1,7 +1,9 @@
 package com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,6 +17,8 @@ import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveLineDao;
 import com.baozun.scm.primservice.whoperation.dao.system.SysDictionaryDao;
+import com.baozun.scm.primservice.whoperation.exception.BusinessException;
+import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.rule.RuleManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.ReplenishmentRuleManager;
@@ -54,8 +58,17 @@ public class ReplenishedManagerProxyImpl extends BaseManagerImpl implements Repl
 	}
 
 	@Override
-	public List<Long> findOdoContainsSkuId(Long waveId, List<Long> skuIds, Long ouId) {
-		return whWaveDao.findOdoContainsSkuId(waveId, skuIds, ouId);
+	public Set<Long> findOdoContainsSkuId(List<WhWaveLine> waveLines, List<Long> skuIds, Long ouId) {
+		if (null == waveLines || skuIds == null) {
+			throw new BusinessException(ErrorCodes.PARAM_IS_NULL);
+		}
+		Set<Long> odoIds = new HashSet<Long>();
+		for (WhWaveLine line : waveLines) {
+			if (skuIds.contains(line.getSkuId())) {
+				odoIds.add(line.getOdoId());
+			}
+		}
+		return odoIds;
 	}
 
 	@Override

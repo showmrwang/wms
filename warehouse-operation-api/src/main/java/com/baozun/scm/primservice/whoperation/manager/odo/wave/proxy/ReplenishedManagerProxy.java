@@ -2,6 +2,7 @@ package com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.baozun.scm.primservice.whoperation.command.warehouse.ReplenishmentRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ReplenishmentStrategyCommand;
@@ -33,7 +34,7 @@ public interface ReplenishedManagerProxy extends BaseManager{
      * @param ouId
      * @return
      */
-	List<Long> findOdoContainsSkuId(Long waveId, List<Long> skuIds, Long ouId);
+	Set<Long> findOdoContainsSkuId(List<WhWaveLine> waveLines, List<Long> skuIds, Long ouId);
 
 	/**
      * 通过groupValue+dicValue查询对应系统参数信息
