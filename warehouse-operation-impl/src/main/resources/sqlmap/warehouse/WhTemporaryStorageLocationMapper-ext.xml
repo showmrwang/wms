@@ -26,6 +26,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	last_modify_time as lastModifyTime,
 	        	operator_id as operatorId,
 	        	lifecycle as lifecycle,
+	        	status as status,
 	        	ou_id as ouId
 	    ]]>
 	</sql>
@@ -45,6 +46,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				l.operator_id as operatorId,
 				l.lifecycle as lifecycle,
 				l.ou_id as ouId,
+				l.status as status,
 				f.facility_name as checkOperationsArea,
 				s.working_storage_section_name as workingStorageSection,
 				sys.dic_label as temporaryStorageTypeName
@@ -110,6 +112,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				<if test="lifecycle!=null">
 					and l.lifecycle = #{lifecycle}
 				</if>
+				
+				<if test="status!=null">
+					and l.status = #{status}
+				</if>
 	       
 				<if test="ouId!=null">
 					and l.ou_id = #{ouId}
@@ -131,6 +137,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        last_modify_time = now() ,
 			        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        status = #{status,javaType=java.lang.Integer,jdbcType=INTEGER},
 			        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER}
 		        WHERE 
 			        id = #{id} 
@@ -170,6 +177,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			l.operator_id as operatorId,
 			l.lifecycle as lifecycle,
 			l.ou_id as ouId,
+			l.status as status,
 			f.facility_name as checkOperationsArea,
 			s.working_storage_section_name as workingStorageSection,
 			sys.dic_label as temporaryStorageTypeName,
@@ -237,6 +245,29 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    	</if>
 	    	and ou_id = #{ouId}
 	    	and lifecycle = 1
+	</select>
+	
+	<select id="getTopFreeStorageLocationByWorkingStorageSectionId" parameterType="map" resultMap="WhTemporaryStorageLocationResultExt">
+		SELECT
+			l.id as id,
+			l.temporary_storage_code as temporaryStorageCode,
+			l.temporary_storage_name as temporaryStorageName,
+			l.temporary_storage_type AS temporaryStorageType,
+			l.check_code AS checkCode,
+			l.capacity AS capacity,
+			l.check_operations_area_id AS checkOperationsAreaId,
+			l.working_storage_section_id AS workingStorageSectionId,
+			l.create_time AS createTime,
+			l.last_modify_time AS lastModifyTime,
+			l.operator_id AS operatorId,
+			l.lifecycle AS lifecycle,
+			l.STATUS AS STATUS,
+			l.ou_id AS ouId
+		from t_wh_temporary_storage_location l
+		left join t_wh_outbound_facility_sortorder s on s.facility_id=l.id and s.facility_type=l.temporary_storage_type
+		where l.`status`='1' and l.lifecycle=1 and l.working_storage_section_id=#{workingStorageSectionId} and l.ou_id = #{ouId}
+		order by s.priority
+		limit 1
 	</select>
 	
 	<delete id="deleteByIdExt" parameterType="map">

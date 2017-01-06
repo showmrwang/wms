@@ -58,12 +58,23 @@ public class WhOutboundFacility extends BaseModel {
 	private Integer lifecycle;
 	/** 仓库组织ID */
 	private Long ouId;
+    /** 仓库组织ID */
+    private Integer status;
 	//columns END
 	
 	public String getFacilityCode() {
 		return facilityCode;
 	}
-	public void setFacilityCode(String facilityCode) {
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    public void setFacilityCode(String facilityCode) {
 		this.facilityCode = facilityCode;
 	}
 	public String getFacilityName() {
