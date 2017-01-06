@@ -3564,12 +3564,12 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     						if (Constants.REPLENISHMENT_UP.equals(rsc.getReplenishmentCode())) {
     							for (WhSkuInventoryCommand invCmd : uuids) {
     								// Double onHandQty = invCmd.getSumOnHandQty();
-    								Double useableQty = whSkuInventoryDao.getUseableQtyByUuid(invCmd.getUuid(), ouId);
+    								List<String> uuid = Arrays.asList(invCmd.getUuid().split(","));
+    								Double useableQty = whSkuInventoryDao.getUseableQtyByUuidList(uuid, ouId);
     								if (-1 != Constants.DEFAULT_DOUBLE.compareTo(useableQty)) {
 										continue;
 									}
-    								invCmd.setOuId(wh.getId());
-    								List<WhSkuInventoryCommand> invs = whSkuInventoryDao.findInventoryByUuidAndCondition(invCmd);
+	    							List<WhSkuInventoryCommand> invs = whSkuInventoryDao.findWhSkuInventoryByUuidList(ouId, uuid);
     								// 封装成方法获取补货超出数量和占用数量
     								Map<String, Double> mapQty = replenishmentUp(invs, occupyQty, useableQty, bhCode, occupyCode, occupyLineId, targetLocation, ruleId, wh);
     								occupyQty -= mapQty.get("qty");
@@ -3585,10 +3585,10 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     						else if (Constants.REPLENISHMENT_DOWN.equals(rsc.getReplenishmentCode()) || Constants.REPLENISHMENT_ONDEMAND.equals(rsc.getReplenishmentCode())) {
     							for (WhSkuInventoryCommand invCmd : uuids) {
     								// Double onHandQty = invCmd.getSumOnHandQty();
-    								Double useableQty = whSkuInventoryDao.getUseableQtyByUuid(invCmd.getUuid(), ouId);
+    								List<String> uuid = Arrays.asList(invCmd.getUuid().split(","));
+    								Double useableQty = whSkuInventoryDao.getUseableQtyByUuidList(uuid, ouId);
     								if (-1 != occupyQty.compareTo(useableQty)) {
-    									invCmd.setOuId(wh.getId());
-        								List<WhSkuInventoryCommand> invs = whSkuInventoryDao.findInventoryByUuidAndCondition(invCmd);
+    	    							List<WhSkuInventoryCommand> invs = whSkuInventoryDao.findWhSkuInventoryByUuidList(ouId, uuid);
         								occupyQty -= useableQty;
     									replenishmentDown(invs, useableQty, bhCode, occupyCode, occupyLineId, targetLocation, ruleId, wh);
     								}
@@ -3607,8 +3607,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     					if (Constants.ALLOCATE_STRATEGY_QUANTITYBESTMATCH.equals(rsc.getStrategyCode())) {
     						List<WhSkuInventoryCommand> invs = findInventoryUuidByBestMatchAndPiece(skuCommand, occupyQty);
     						for (WhSkuInventoryCommand invCmd : invs) {
-    							invCmd.setOuId(wh.getId());
-    							List<WhSkuInventoryCommand> skuInvs = whSkuInventoryDao.findInventoryByUuidAndCondition(invCmd);
+    							List<String> uuid = Arrays.asList(invCmd.getUuid().split(","));
+    							List<WhSkuInventoryCommand> skuInvs = whSkuInventoryDao.findWhSkuInventoryByUuidList(ouId, uuid);
     							Double useableQty = whSkuInventoryDao.getUseableQtyByUuid(invCmd.getUuid(), ouId);
     							if (null != skuInvs && !skuInvs.isEmpty()) {
     								for (WhSkuInventoryCommand invCommand : skuInvs) {
