@@ -14,6 +14,7 @@
  */
 package com.baozun.scm.primservice.whoperation.manager.rule;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -626,6 +627,53 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                             // 此静态库位不可用，容器中包含商品当前静态库位没有绑定
                             continue;
                         }
+                        // 当静态库位只绑定一个商品并且不允许混放，校验库存属性
+                        int allCount = whSkuLocationDao.findAllSkuCountInSkuLocation(ouId, locId);
+                        if (1 == allCount && 1L == skuCategory.longValue() && 1L == skuAttrCategory.longValue()) {
+                            Boolean isMixStack = al.getIsMixStacking();
+                            if (false == isMixStack) {
+                                // 不允许混放则库存属性要保持一致
+                                WhSkuInventoryCommand invCmd = invList.get(0);// 取一条库存信息
+                                AttrParams invAttr1 = new AttrParams();
+                                invAttr1.setInvAttrMgmt(InvAttrMgmtType.ALL_INV_ATTRS);
+                                // 解析库存关键属性
+                                invAttrMgmtAspect(invAttr1, invCmd);
+                                WhSkuInventoryCommand invCmd2 = whSkuInventoryDao.findFirstWhSkuInvCmdByLocation(ouId, locId);
+                                AttrParams invAttr2 = new AttrParams();
+                                invAttr1.setInvAttrMgmt(InvAttrMgmtType.ALL_INV_ATTRS);
+                                if (null != invCmd2) {
+                                    // 解析库存关键属性
+                                    invAttrMgmtAspect(invAttr2, invCmd2);
+                                }
+                                String invAttr1InvType = (null == invAttr1.getInvType() ? "" : invAttr1.getInvType());
+                                String invAttr1InvStatus = (null == invAttr1.getInvStatus() ? "" : invAttr1.getInvStatus().toString());
+                                String inv1BatchNumber = (null == invAttr1.getBatchNumber() ? "" : invAttr1.getBatchNumber());
+                                String inv1CountryOfOrigin = (null == invAttr1.getCountryOfOrigin() ? "" : invAttr1.getCountryOfOrigin());
+                                String inv1MfgDate = (null == invAttr1.getMfgDate() ? "" : new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(invAttr1.getMfgDate()));
+                                String inv1ExpDate = (null == invAttr1.getExpDate() ? "" : new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(invAttr1.getExpDate()));
+                                String inv1InvAttr1 = (null == invAttr1.getInvAttr1() ? "" : invAttr1.getInvAttr1());
+                                String inv1InvAttr2 = (null == invAttr1.getInvAttr2() ? "" : invAttr1.getInvAttr2());
+                                String inv1InvAttr3 = (null == invAttr1.getInvAttr3() ? "" : invAttr1.getInvAttr3());
+                                String inv1InvAttr4 = (null == invAttr1.getInvAttr4() ? "" : invAttr1.getInvAttr4());
+                                String inv1InvAttr5 = (null == invAttr1.getInvAttr5() ? "" : invAttr1.getInvAttr5());
+                                String invAttr2InvType = (null == invAttr2.getInvType() ? "" : invAttr2.getInvType());
+                                String invAttr2InvStatus = (null == invAttr2.getInvStatus() ? "" : invAttr2.getInvStatus().toString());
+                                String inv2BatchNumber = (null == invAttr2.getBatchNumber() ? "" : invAttr2.getBatchNumber());
+                                String inv2CountryOfOrigin = (null == invAttr2.getCountryOfOrigin() ? "" : invAttr2.getCountryOfOrigin());
+                                String inv2MfgDate = (null == invAttr2.getMfgDate() ? "" : new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(invAttr2.getMfgDate()));
+                                String inv2ExpDate = (null == invAttr2.getExpDate() ? "" : new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(invAttr2.getExpDate()));
+                                String inv2InvAttr1 = (null == invAttr2.getInvAttr1() ? "" : invAttr2.getInvAttr1());
+                                String inv2InvAttr2 = (null == invAttr2.getInvAttr2() ? "" : invAttr2.getInvAttr2());
+                                String inv2InvAttr3 = (null == invAttr2.getInvAttr3() ? "" : invAttr2.getInvAttr3());
+                                String inv2InvAttr4 = (null == invAttr2.getInvAttr4() ? "" : invAttr2.getInvAttr4());
+                                String inv2InvAttr5 = (null == invAttr2.getInvAttr5() ? "" : invAttr2.getInvAttr5());
+                                if (!(invAttr1InvType.equals(invAttr2InvType)) && invAttr1InvStatus.equals(invAttr2InvStatus) && inv1BatchNumber.equals(inv2BatchNumber) && inv1CountryOfOrigin.equals(inv2CountryOfOrigin) && inv1MfgDate.equals(inv2MfgDate)
+                                        && inv1ExpDate.equals(inv2ExpDate) && inv1InvAttr1.equals(inv2InvAttr1) && inv1InvAttr2.equals(inv2InvAttr2) && inv1InvAttr3.equals(inv2InvAttr3) && inv1InvAttr4.equals(inv2InvAttr4)
+                                        && inv1InvAttr5.equals(inv2InvAttr5)) {
+                                    continue;
+                                }
+                            }
+                        }
                         if (null != palletCount) {
                             int pCount = whSkuLocationDao.findPalletCountByLocation(ouId, locId);
                             if (palletCount >= (pCount + 1)) {
@@ -707,6 +755,14 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                         }
                     } else if (WhLocationRecommendType.MERGE_LOCATION_DIFF_INV_ATTRS.equals(locationRecommendRule)) {
                         if (null != palletCount) {
+                            Boolean isStatic = al.getIsStatic();
+                            if (null != isStatic && true == isStatic) {
+                                int count = whSkuLocationDao.findContainerSkuCountNotInSkuLocation(ouId, locId, ruleAffer.getAfferContainerCodeList());
+                                if (count > 0) {
+                                    // 此静态库位不可用，容器中包含商品当前静态库位没有绑定
+                                    continue;
+                                }
+                            }
                             int pCount = whSkuLocationDao.findPalletCountByLocation(ouId, locId);
                             if (palletCount >= (pCount + 1)) {
                                 LocationRecommendResultCommand lrrc = new LocationRecommendResultCommand();
@@ -720,6 +776,14 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                 list.add(lrrc);
                             }
                         } else {
+                            Boolean isStatic = al.getIsStatic();
+                            if (true == isStatic) {
+                                int count = whSkuLocationDao.findContainerSkuCountNotInSkuLocation(ouId, locId, ruleAffer.getAfferContainerCodeList());
+                                if (count > 0) {
+                                    // 此静态库位不可用，容器中包含商品当前静态库位没有绑定
+                                    continue;
+                                }
+                            }
                             LocationInvVolumeWeightCommand livw = whLocationInvVolumeWieghtManager.calculateLocationInvVolumeAndWeight(locId, ouId, uomMap, logId);
                             Double livwVolume = livw.getVolume();// 库位上已有货物总体积
                             Double livwWeight = livw.getWeight();// 库位上已有货物总重量
@@ -1085,6 +1149,53 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                             // 此静态库位不可用，容器中包含商品当前静态库位没有绑定
                             continue;
                         }
+                        // 当静态库位只绑定一个商品并且不允许混放，校验库存属性
+                        int allCount = whSkuLocationDao.findAllSkuCountInSkuLocation(ouId, locId);
+                        if (1 == allCount && 1L == skuCategory.longValue() && 1L == skuAttrCategory.longValue()) {
+                            Boolean isMixStack = al.getIsMixStacking();
+                            if (false == isMixStack) {
+                                // 不允许混放则库存属性要保持一致
+                                WhSkuInventoryCommand invCmd = invList.get(0);// 取一条库存信息
+                                AttrParams invAttr1 = new AttrParams();
+                                invAttr1.setInvAttrMgmt(InvAttrMgmtType.ALL_INV_ATTRS);
+                                // 解析库存关键属性
+                                invAttrMgmtAspect(invAttr1, invCmd);
+                                WhSkuInventoryCommand invCmd2 = whSkuInventoryDao.findFirstWhSkuInvCmdByLocation(ouId, locId);
+                                AttrParams invAttr2 = new AttrParams();
+                                invAttr1.setInvAttrMgmt(InvAttrMgmtType.ALL_INV_ATTRS);
+                                if (null != invCmd2) {
+                                    // 解析库存关键属性
+                                    invAttrMgmtAspect(invAttr2, invCmd2);
+                                }
+                                String invAttr1InvType = (null == invAttr1.getInvType() ? "" : invAttr1.getInvType());
+                                String invAttr1InvStatus = (null == invAttr1.getInvStatus() ? "" : invAttr1.getInvStatus().toString());
+                                String inv1BatchNumber = (null == invAttr1.getBatchNumber() ? "" : invAttr1.getBatchNumber());
+                                String inv1CountryOfOrigin = (null == invAttr1.getCountryOfOrigin() ? "" : invAttr1.getCountryOfOrigin());
+                                String inv1MfgDate = (null == invAttr1.getMfgDate() ? "" : new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(invAttr1.getMfgDate()));
+                                String inv1ExpDate = (null == invAttr1.getExpDate() ? "" : new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(invAttr1.getExpDate()));
+                                String inv1InvAttr1 = (null == invAttr1.getInvAttr1() ? "" : invAttr1.getInvAttr1());
+                                String inv1InvAttr2 = (null == invAttr1.getInvAttr2() ? "" : invAttr1.getInvAttr2());
+                                String inv1InvAttr3 = (null == invAttr1.getInvAttr3() ? "" : invAttr1.getInvAttr3());
+                                String inv1InvAttr4 = (null == invAttr1.getInvAttr4() ? "" : invAttr1.getInvAttr4());
+                                String inv1InvAttr5 = (null == invAttr1.getInvAttr5() ? "" : invAttr1.getInvAttr5());
+                                String invAttr2InvType = (null == invAttr2.getInvType() ? "" : invAttr2.getInvType());
+                                String invAttr2InvStatus = (null == invAttr2.getInvStatus() ? "" : invAttr2.getInvStatus().toString());
+                                String inv2BatchNumber = (null == invAttr2.getBatchNumber() ? "" : invAttr2.getBatchNumber());
+                                String inv2CountryOfOrigin = (null == invAttr2.getCountryOfOrigin() ? "" : invAttr2.getCountryOfOrigin());
+                                String inv2MfgDate = (null == invAttr2.getMfgDate() ? "" : new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(invAttr2.getMfgDate()));
+                                String inv2ExpDate = (null == invAttr2.getExpDate() ? "" : new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(invAttr2.getExpDate()));
+                                String inv2InvAttr1 = (null == invAttr2.getInvAttr1() ? "" : invAttr2.getInvAttr1());
+                                String inv2InvAttr2 = (null == invAttr2.getInvAttr2() ? "" : invAttr2.getInvAttr2());
+                                String inv2InvAttr3 = (null == invAttr2.getInvAttr3() ? "" : invAttr2.getInvAttr3());
+                                String inv2InvAttr4 = (null == invAttr2.getInvAttr4() ? "" : invAttr2.getInvAttr4());
+                                String inv2InvAttr5 = (null == invAttr2.getInvAttr5() ? "" : invAttr2.getInvAttr5());
+                                if (!(invAttr1InvType.equals(invAttr2InvType)) && invAttr1InvStatus.equals(invAttr2InvStatus) && inv1BatchNumber.equals(inv2BatchNumber) && inv1CountryOfOrigin.equals(inv2CountryOfOrigin) && inv1MfgDate.equals(inv2MfgDate)
+                                        && inv1ExpDate.equals(inv2ExpDate) && inv1InvAttr1.equals(inv2InvAttr1) && inv1InvAttr2.equals(inv2InvAttr2) && inv1InvAttr3.equals(inv2InvAttr3) && inv1InvAttr4.equals(inv2InvAttr4)
+                                        && inv1InvAttr5.equals(inv2InvAttr5)) {
+                                    continue;
+                                }
+                            }
+                        }
                         LocationInvVolumeWeightCommand livw = whLocationInvVolumeWieghtManager.calculateLocationInvVolumeAndWeight(locId, ouId, uomMap, logId);
                         Double livwVolume = livw.getVolume();// 库位上已有货物总体积
                         Double livwWeight = livw.getWeight();// 库位上已有货物总重量
@@ -1135,6 +1246,14 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                             list.add(lrrc);
                         }
                     } else if (WhLocationRecommendType.MERGE_LOCATION_DIFF_INV_ATTRS.equals(locationRecommendRule)) {
+                        Boolean isStatic = al.getIsStatic();
+                        if (null != isStatic && true == isStatic) {
+                            int count = whSkuLocationDao.findContainerSkuCountNotInSkuLocation(ouId, locId, ruleAffer.getAfferContainerCodeList());
+                            if (count > 0) {
+                                // 此静态库位不可用，容器中包含商品当前静态库位没有绑定
+                                continue;
+                            }
+                        }
                         LocationInvVolumeWeightCommand livw = whLocationInvVolumeWieghtManager.calculateLocationInvVolumeAndWeight(locId, ouId, uomMap, logId);
                         Double livwVolume = livw.getVolume();// 库位上已有货物总体积
                         Double livwWeight = livw.getWeight();// 库位上已有货物总重量
@@ -1508,6 +1627,53 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                             }
                                         }
                                     }
+                                    // 当静态库位只绑定一个商品并且不允许混放，校验库存属性
+                                    int allCount = whSkuLocationDao.findAllSkuCountInSkuLocation(ouId, locId);
+                                    if (1 == allCount && 1L == skuCategory.longValue() && 1L == skuAttrCategory.longValue()) {
+                                        Boolean isMixStack = al.getIsMixStacking();
+                                        if (false == isMixStack) {
+                                            // 不允许混放则库存属性要保持一致
+                                            WhSkuInventoryCommand invCmd = invRule;// 取到库存信息
+                                            AttrParams invAttr1 = new AttrParams();
+                                            invAttr1.setInvAttrMgmt(InvAttrMgmtType.ALL_INV_ATTRS);
+                                            // 解析库存关键属性
+                                            invAttrMgmtAspect(invAttr1, invCmd);
+                                            WhSkuInventoryCommand invCmd2 = whSkuInventoryDao.findFirstWhSkuInvCmdByLocation(ouId, locId);
+                                            AttrParams invAttr2 = new AttrParams();
+                                            invAttr1.setInvAttrMgmt(InvAttrMgmtType.ALL_INV_ATTRS);
+                                            if (null != invCmd2) {
+                                                // 解析库存关键属性
+                                                invAttrMgmtAspect(invAttr2, invCmd2);
+                                            }
+                                            String invAttr1InvType = (null == invAttr1.getInvType() ? "" : invAttr1.getInvType());
+                                            String invAttr1InvStatus = (null == invAttr1.getInvStatus() ? "" : invAttr1.getInvStatus().toString());
+                                            String inv1BatchNumber = (null == invAttr1.getBatchNumber() ? "" : invAttr1.getBatchNumber());
+                                            String inv1CountryOfOrigin = (null == invAttr1.getCountryOfOrigin() ? "" : invAttr1.getCountryOfOrigin());
+                                            String inv1MfgDate = (null == invAttr1.getMfgDate() ? "" : new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(invAttr1.getMfgDate()));
+                                            String inv1ExpDate = (null == invAttr1.getExpDate() ? "" : new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(invAttr1.getExpDate()));
+                                            String inv1InvAttr1 = (null == invAttr1.getInvAttr1() ? "" : invAttr1.getInvAttr1());
+                                            String inv1InvAttr2 = (null == invAttr1.getInvAttr2() ? "" : invAttr1.getInvAttr2());
+                                            String inv1InvAttr3 = (null == invAttr1.getInvAttr3() ? "" : invAttr1.getInvAttr3());
+                                            String inv1InvAttr4 = (null == invAttr1.getInvAttr4() ? "" : invAttr1.getInvAttr4());
+                                            String inv1InvAttr5 = (null == invAttr1.getInvAttr5() ? "" : invAttr1.getInvAttr5());
+                                            String invAttr2InvType = (null == invAttr2.getInvType() ? "" : invAttr2.getInvType());
+                                            String invAttr2InvStatus = (null == invAttr2.getInvStatus() ? "" : invAttr2.getInvStatus().toString());
+                                            String inv2BatchNumber = (null == invAttr2.getBatchNumber() ? "" : invAttr2.getBatchNumber());
+                                            String inv2CountryOfOrigin = (null == invAttr2.getCountryOfOrigin() ? "" : invAttr2.getCountryOfOrigin());
+                                            String inv2MfgDate = (null == invAttr2.getMfgDate() ? "" : new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(invAttr2.getMfgDate()));
+                                            String inv2ExpDate = (null == invAttr2.getExpDate() ? "" : new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(invAttr2.getExpDate()));
+                                            String inv2InvAttr1 = (null == invAttr2.getInvAttr1() ? "" : invAttr2.getInvAttr1());
+                                            String inv2InvAttr2 = (null == invAttr2.getInvAttr2() ? "" : invAttr2.getInvAttr2());
+                                            String inv2InvAttr3 = (null == invAttr2.getInvAttr3() ? "" : invAttr2.getInvAttr3());
+                                            String inv2InvAttr4 = (null == invAttr2.getInvAttr4() ? "" : invAttr2.getInvAttr4());
+                                            String inv2InvAttr5 = (null == invAttr2.getInvAttr5() ? "" : invAttr2.getInvAttr5());
+                                            if (!(invAttr1InvType.equals(invAttr2InvType)) && invAttr1InvStatus.equals(invAttr2InvStatus) && inv1BatchNumber.equals(inv2BatchNumber) && inv1CountryOfOrigin.equals(inv2CountryOfOrigin)
+                                                    && inv1MfgDate.equals(inv2MfgDate) && inv1ExpDate.equals(inv2ExpDate) && inv1InvAttr1.equals(inv2InvAttr1) && inv1InvAttr2.equals(inv2InvAttr2) && inv1InvAttr3.equals(inv2InvAttr3)
+                                                    && inv1InvAttr4.equals(inv2InvAttr4) && inv1InvAttr5.equals(inv2InvAttr5)) {
+                                                continue;
+                                            }
+                                        }
+                                    }
                                     LocationInvVolumeWeightCommand livw = whLocationInvVolumeWieghtManager.calculateLocationInvVolumeAndWeight(locId, ouId, uomMap, logId);
                                     Double livwVolume = livw.getVolume();// 库位上已有货物总体积
                                     Double livwWeight = livw.getWeight();// 库位上已有货物总重量
@@ -1566,6 +1732,14 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                         list.add(lrrc);
                                     }
                                 } else if (WhLocationRecommendType.MERGE_LOCATION_DIFF_INV_ATTRS.equals(locationRecommendRule)) {
+                                    Boolean isStatic = al.getIsStatic();
+                                    if (null != isStatic && true == isStatic) {
+                                        int count = whSkuLocationDao.findSkuCountInSkuLocation(ouId, locId, skuId);
+                                        if (count <= 0) {
+                                            // 此静态库位不可用，商品当前静态库位没有绑定
+                                            continue;
+                                        }
+                                    }
                                     LocationInvVolumeWeightCommand livw = whLocationInvVolumeWieghtManager.calculateLocationInvVolumeAndWeight(locId, ouId, uomMap, logId);
                                     Double livwVolume = livw.getVolume();// 库位上已有货物总体积
                                     Double livwWeight = livw.getWeight();// 库位上已有货物总重量
@@ -1891,6 +2065,53 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                                 }
                                             }
                                         }
+                                     // 当静态库位只绑定一个商品并且不允许混放，校验库存属性
+                                        int allCount = whSkuLocationDao.findAllSkuCountInSkuLocation(ouId, locId);
+                                        if (1 == allCount && 1L == skuCategory.longValue() && 1L == skuAttrCategory.longValue()) {
+                                            Boolean isMixStack = al.getIsMixStacking();
+                                            if (false == isMixStack) {
+                                                // 不允许混放则库存属性要保持一致
+                                                WhSkuInventoryCommand invCmd = invRule;// 取到库存信息
+                                                AttrParams invAttr1 = new AttrParams();
+                                                invAttr1.setInvAttrMgmt(InvAttrMgmtType.ALL_INV_ATTRS);
+                                                // 解析库存关键属性
+                                                invAttrMgmtAspect(invAttr1, invCmd);
+                                                WhSkuInventoryCommand invCmd2 = whSkuInventoryDao.findFirstWhSkuInvCmdByLocation(ouId, locId);
+                                                AttrParams invAttr2 = new AttrParams();
+                                                invAttr1.setInvAttrMgmt(InvAttrMgmtType.ALL_INV_ATTRS);
+                                                if (null != invCmd2) {
+                                                    // 解析库存关键属性
+                                                    invAttrMgmtAspect(invAttr2, invCmd2);
+                                                }
+                                                String invAttr1InvType = (null == invAttr1.getInvType() ? "" : invAttr1.getInvType());
+                                                String invAttr1InvStatus = (null == invAttr1.getInvStatus() ? "" : invAttr1.getInvStatus().toString());
+                                                String inv1BatchNumber = (null == invAttr1.getBatchNumber() ? "" : invAttr1.getBatchNumber());
+                                                String inv1CountryOfOrigin = (null == invAttr1.getCountryOfOrigin() ? "" : invAttr1.getCountryOfOrigin());
+                                                String inv1MfgDate = (null == invAttr1.getMfgDate() ? "" : new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(invAttr1.getMfgDate()));
+                                                String inv1ExpDate = (null == invAttr1.getExpDate() ? "" : new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(invAttr1.getExpDate()));
+                                                String inv1InvAttr1 = (null == invAttr1.getInvAttr1() ? "" : invAttr1.getInvAttr1());
+                                                String inv1InvAttr2 = (null == invAttr1.getInvAttr2() ? "" : invAttr1.getInvAttr2());
+                                                String inv1InvAttr3 = (null == invAttr1.getInvAttr3() ? "" : invAttr1.getInvAttr3());
+                                                String inv1InvAttr4 = (null == invAttr1.getInvAttr4() ? "" : invAttr1.getInvAttr4());
+                                                String inv1InvAttr5 = (null == invAttr1.getInvAttr5() ? "" : invAttr1.getInvAttr5());
+                                                String invAttr2InvType = (null == invAttr2.getInvType() ? "" : invAttr2.getInvType());
+                                                String invAttr2InvStatus = (null == invAttr2.getInvStatus() ? "" : invAttr2.getInvStatus().toString());
+                                                String inv2BatchNumber = (null == invAttr2.getBatchNumber() ? "" : invAttr2.getBatchNumber());
+                                                String inv2CountryOfOrigin = (null == invAttr2.getCountryOfOrigin() ? "" : invAttr2.getCountryOfOrigin());
+                                                String inv2MfgDate = (null == invAttr2.getMfgDate() ? "" : new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(invAttr2.getMfgDate()));
+                                                String inv2ExpDate = (null == invAttr2.getExpDate() ? "" : new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(invAttr2.getExpDate()));
+                                                String inv2InvAttr1 = (null == invAttr2.getInvAttr1() ? "" : invAttr2.getInvAttr1());
+                                                String inv2InvAttr2 = (null == invAttr2.getInvAttr2() ? "" : invAttr2.getInvAttr2());
+                                                String inv2InvAttr3 = (null == invAttr2.getInvAttr3() ? "" : invAttr2.getInvAttr3());
+                                                String inv2InvAttr4 = (null == invAttr2.getInvAttr4() ? "" : invAttr2.getInvAttr4());
+                                                String inv2InvAttr5 = (null == invAttr2.getInvAttr5() ? "" : invAttr2.getInvAttr5());
+                                                if (!(invAttr1InvType.equals(invAttr2InvType)) && invAttr1InvStatus.equals(invAttr2InvStatus) && inv1BatchNumber.equals(inv2BatchNumber) && inv1CountryOfOrigin.equals(inv2CountryOfOrigin)
+                                                        && inv1MfgDate.equals(inv2MfgDate) && inv1ExpDate.equals(inv2ExpDate) && inv1InvAttr1.equals(inv2InvAttr1) && inv1InvAttr2.equals(inv2InvAttr2) && inv1InvAttr3.equals(inv2InvAttr3)
+                                                        && inv1InvAttr4.equals(inv2InvAttr4) && inv1InvAttr5.equals(inv2InvAttr5)) {
+                                                    continue;
+                                                }
+                                            }
+                                        }
                                         LocationInvVolumeWeightCommand livw = whLocationInvVolumeWieghtManager.calculateLocationInvVolumeAndWeight(locId, ouId, uomMap, logId);
                                         Double livwVolume = livw.getVolume();// 库位上已有货物总体积
                                         Double livwWeight = livw.getWeight();// 库位上已有货物总重量
@@ -1949,6 +2170,14 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
                                             list.add(lrrc);
                                         }
                                     } else if (WhLocationRecommendType.MERGE_LOCATION_DIFF_INV_ATTRS.equals(locationRecommendRule)) {
+                                        Boolean isStatic = al.getIsStatic();
+                                        if (null != isStatic && true == isStatic) {
+                                            int count = whSkuLocationDao.findSkuCountInSkuLocation(ouId, locId, skuId);
+                                            if (count <= 0) {
+                                                // 此静态库位不可用，商品当前静态库位没有绑定
+                                                continue;
+                                            }
+                                        }
                                         LocationInvVolumeWeightCommand livw = whLocationInvVolumeWieghtManager.calculateLocationInvVolumeAndWeight(locId, ouId, uomMap, logId);
                                         Double livwVolume = livw.getVolume();// 库位上已有货物总体积
                                         Double livwWeight = livw.getWeight();// 库位上已有货物总重量

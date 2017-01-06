@@ -64,4 +64,6 @@ public interface WhOutboundFacilityDao extends BaseDao<WhOutboundFacility, Long>
 
 	List<WhOutboundFacility> findUseableFacilityList(@Param("type") String type, @Param("ouId") Long ouId);
 
+    WhOutboundFacility getTopFreeOutBoundFacilityByFacilityGroupId(@Param("facilityGroupId") Long facilityGroupId, @Param("ouId") Long ouId);
+
 }

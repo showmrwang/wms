@@ -27,6 +27,7 @@
                 last_modify_time as lastModifyTime,
                 operator_id as operatorId,
                 lifecycle as lifecycle,
+                status as status,
                 ou_id as ouId
         ]]>
     </sql>
@@ -46,6 +47,7 @@
 		f.last_modify_time as lastModifyTime,
 		f.operator_id as operatorId,
 		f.lifecycle as lifecycle,
+		f.status as status,
 		f.ou_id as ouId,
 		sys.dic_label as facilityTypeName,
 		t.name as outboundboxTypeName,
@@ -110,6 +112,10 @@
 
             <if test="lifecycle!=null">
                 and lifecycle = #{lifecycle}
+            </if>
+            
+            <if test="status!=null">
+                and status = #{status}
             </if>
 
             <if test="ouId!=null">
@@ -192,6 +198,7 @@
                     create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
                     last_modify_time = now() ,
                     operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    status = #{status,javaType=java.lang.Integer,jdbcType=INTEGER},
                     lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER}
                 WHERE 
                     id = #{id} 
@@ -243,6 +250,7 @@
 			f.operator_id as operatorId,
 			f.lifecycle as lifecycle,
 			f.ou_id as ouId,
+			f.status as status,
 			sys.dic_label as facilityTypeName,
 			t.name as outboundboxTypeName,
 			g.facility_group_name as facilityGroupName,
@@ -285,6 +293,32 @@
 			and ou_id = #{ouId}
 			and facility_group is null
 			and lifecycle = 1
+	</select>
+	
+	<select id="getTopFreeOutBoundFacilityByFacilityGroupId" resultMap="WhOutboundFacilityResultExt">
+		select 
+			f.id as id,
+            f.facility_code as facilityCode,
+            f.facility_name as facilityName,
+            f.facility_type as facilityType,
+            f.outboundbox_type_id as outboundboxTypeId,
+            f.capacity as capacity,
+            f.facility_lower_limit as facilityLowerLimit,
+            f.facility_upper_limit as facilityUpperLimit,
+            f.facility_group as facilityGroup,
+            f.check_code as checkCode,
+            f.create_time as createTime,
+            f.last_modify_time as lastModifyTime,
+            f.operator_id as operatorId,
+            f.lifecycle as lifecycle,
+            f.status as status,
+            f.ou_id as ouId    
+		from t_wh_outbound_facility f
+		inner join t_wh_outbound_facility_group g on f.facility_group=g.id
+		left join t_wh_outbound_facility_sortorder s on s.facility_id=f.id and s.facility_type=f.facility_type
+		where f.`status`='1' and f.lifecycle = 1 and g.id=#{facilityGroupId} and f.ou_id=#{ouId}
+		order by s.priority
+		limit 1
 	</select>
 	
 </mapper>

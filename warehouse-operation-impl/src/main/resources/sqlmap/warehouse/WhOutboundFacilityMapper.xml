@@ -25,6 +25,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	last_modify_time as lastModifyTime,
 	        	operator_id as operatorId,
 	        	lifecycle as lifecycle,
+	        	status as status,
 	        	ou_id as ouId
 	    ]]>
 	</sql>
@@ -52,6 +53,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	last_modify_time ,
 		        	operator_id ,
 		        	lifecycle ,
+		        	status,
 		        	ou_id 
 		        ) VALUES (
 		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -68,6 +70,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        	#{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
 		        )
 		    ]]>
@@ -90,6 +93,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        status= #{status,javaType=java.lang.Integer,jdbcType=INTEGER},
 		        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER}
 	        WHERE 
 		        id = #{id} 
@@ -189,6 +193,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	       
 				<if test="lifecycle!=null">
 					and lifecycle = #{lifecycle}
+				</if>
+	       
+	       
+				<if test="status!=null">
+					and status = #{status}
 				</if>
 	       
 				<if test="ouId!=null">
