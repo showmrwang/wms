@@ -631,6 +631,8 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
 	List<WhSkuInventoryCommand> findInventoryUuidByLocation(WhSkuInventoryCommand invCommand);
 	
 	List<WhSkuInventoryCommand> findInventoryUuidByAmount(WhSkuInventoryCommand invCommand);
+	
+	List<WhSkuInventoryCommand> findInventoryUuidByBestMatch(WhSkuInventoryCommand invCommand);
 
 	List<WhSkuInventoryCommand> findInventoryUuid(WhSkuInventoryCommand invCommand);
 	
@@ -712,5 +714,7 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
 	Double getUseableQtyByUuid(@Param("uuid") String uuid, @Param("ouId") Long ouId);
 	
 	public List<WhSkuInventoryCommand> getWhSkuInventoryByOccupationLineId(@Param("ouId") Long ouId,@Param("operationId") Long operationId);
+
+	List<WhSkuInventoryCommand> findSkuInvByLocationIds(@Param("locationIds") List<Long> locationIds, @Param("allocateUnitCodes") String unitCodes, @Param("ouId") Long ouId);
 	
 }

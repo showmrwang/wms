@@ -3101,7 +3101,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 				} else if (0 == Constants.DEFAULT_DOUBLE.compareTo(qty)) {
 					notHaveInvAttrLines.remove(j--);
 				}
-				whWaveLineManager.updateWaveLineByAllocateQty(line.getId(), occupyQty, containerQty, isStaticLocation, staticLocationIds, trayIds, packingCaseIds, areaId, ouId, logId);
+				if (-1 == Constants.DEFAULT_DOUBLE.compareTo(occupyQty) || Constants.ALLOCATE_STRATEGY_STATICLOCATIONCANASSIGNMENT.equals(strategyCode)) {
+					whWaveLineManager.updateWaveLineByAllocateQty(line.getId(), occupyQty, containerQty, isStaticLocation, staticLocationIds, trayIds, packingCaseIds, areaId, ouId, logId);
+				}
 				if ((null == allSkuInvs || allSkuInvs.isEmpty()) && !Constants.ALLOCATE_STRATEGY_STATICLOCATIONCANASSIGNMENT.equals(strategyCode)) {
 					break;
 				}
@@ -3171,6 +3173,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 		List<WhSkuInventoryCommand> skuInvs = null;
 		// 入库时间顺序 true:升序 false:降序
 		whSkuInventoryCommand.setPriority(new Boolean(flag));
+		whSkuInventoryCommand.setIsStatic(null);
+		whSkuInventoryCommand.setIsMixStacking(null);
 		if (Constants.ALLOCATE_UNIT_TP.equals(whSkuInventoryCommand.getAllocateUnitCodes())
 				|| Constants.ALLOCATE_UNIT_HX.equals(whSkuInventoryCommand.getAllocateUnitCodes())) {
 			skuInvs = whSkuInventoryDao.findInventoryUuidByInBoundTime(whSkuInventoryCommand);
@@ -3184,6 +3188,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     	List<WhSkuInventoryCommand> skuInvs = null;
 		// 入库时间顺序 true:升序 false:降序
     	whSkuInventoryCommand.setPriority(new Boolean(flag));
+    	whSkuInventoryCommand.setIsStatic(null);
+		whSkuInventoryCommand.setIsMixStacking(null);
 		if (Constants.ALLOCATE_UNIT_TP.equals(whSkuInventoryCommand.getAllocateUnitCodes())
 				|| Constants.ALLOCATE_UNIT_HX.equals(whSkuInventoryCommand.getAllocateUnitCodes())) {
 			skuInvs = whSkuInventoryDao.findInventoryUuidByExpTime(whSkuInventoryCommand);
@@ -3196,14 +3202,16 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 	public List<WhSkuInventoryCommand> findInventoryUuidByBestMatch(WhSkuInventoryCommand whSkuInventoryCommand, Double qty) {
 		List<WhSkuInventoryCommand> skuInvs = null;
 		whSkuInventoryCommand.setPriority(Boolean.TRUE);
+		whSkuInventoryCommand.setIsStatic(null);
+		whSkuInventoryCommand.setIsMixStacking(null);
 		if (Constants.ALLOCATE_UNIT_TP.equals(whSkuInventoryCommand.getAllocateUnitCodes())
 				|| Constants.ALLOCATE_UNIT_HX.equals(whSkuInventoryCommand.getAllocateUnitCodes())) {
-			skuInvs = whSkuInventoryDao.findInventoryUuidByAmount(whSkuInventoryCommand);
+			skuInvs = whSkuInventoryDao.findInventoryUuidByBestMatch(whSkuInventoryCommand);
 			// 数量最佳计算
-			return bestMatchSkuInvs(skuInvs, qty);
+			return bestMatchSkuInvs(skuInvs, qty, whSkuInventoryCommand);
 		} else if (Constants.ALLOCATE_UNIT_PIECE.equals(whSkuInventoryCommand.getAllocateUnitCodes())) {
 			whSkuInventoryCommand.setPriority(Boolean.FALSE);
-			skuInvs = whSkuInventoryDao.findInventoryByAmount(whSkuInventoryCommand);
+			skuInvs = whSkuInventoryDao.findInventoryByLocation(whSkuInventoryCommand);
 		}
 		return skuInvs;
 	}
@@ -3212,6 +3220,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 		List<WhSkuInventoryCommand> skuInvs = null;
 		// 入库时间顺序 true:升序 false:降序
 		whSkuInventoryCommand.setPriority(new Boolean(flag));
+		whSkuInventoryCommand.setIsStatic(null);
+		whSkuInventoryCommand.setIsMixStacking(null);
 		if (Constants.ALLOCATE_UNIT_TP.equals(whSkuInventoryCommand.getAllocateUnitCodes())
 				|| Constants.ALLOCATE_UNIT_HX.equals(whSkuInventoryCommand.getAllocateUnitCodes())) {
 			skuInvs = whSkuInventoryDao.findInventoryUuidByLocation(whSkuInventoryCommand);
@@ -3229,9 +3239,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 		whSkuInventoryCommand.setIsMixStacking(null);
 		if (Constants.ALLOCATE_UNIT_TP.equals(whSkuInventoryCommand.getAllocateUnitCodes())
 				|| Constants.ALLOCATE_UNIT_HX.equals(whSkuInventoryCommand.getAllocateUnitCodes())) {
-			skuInvs = whSkuInventoryDao.findInventoryUuidByAmount(whSkuInventoryCommand);
+			skuInvs = whSkuInventoryDao.findInventoryUuidByLocation(whSkuInventoryCommand);
 		} else if (Constants.ALLOCATE_UNIT_PIECE.equals(whSkuInventoryCommand.getAllocateUnitCodes())) {
-			skuInvs = whSkuInventoryDao.findInventoryByAmount(whSkuInventoryCommand);
+			skuInvs = whSkuInventoryDao.findInventoryByLocation(whSkuInventoryCommand);
 		}
 		return skuInvs;
 	}
@@ -3244,57 +3254,103 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 		whSkuInventoryCommand.setIsMixStacking(Boolean.TRUE);
 		if (Constants.ALLOCATE_UNIT_TP.equals(whSkuInventoryCommand.getAllocateUnitCodes())
 				|| Constants.ALLOCATE_UNIT_HX.equals(whSkuInventoryCommand.getAllocateUnitCodes())) {
-			skuInvs = whSkuInventoryDao.findInventoryUuidByAmount(whSkuInventoryCommand);
+			skuInvs = whSkuInventoryDao.findInventoryUuidByLocation(whSkuInventoryCommand);
 		} else if (Constants.ALLOCATE_UNIT_PIECE.equals(whSkuInventoryCommand.getAllocateUnitCodes())) {
-			skuInvs = whSkuInventoryDao.findInventoryByAmount(whSkuInventoryCommand);
+			skuInvs = whSkuInventoryDao.findInventoryByLocation(whSkuInventoryCommand);
 		}
 		return skuInvs;
 	}
 	
 	public List<WhSkuInventoryCommand> findInventoryUuidByBestMatchAndPiece(WhSkuInventoryCommand whSkuInventoryCommand, Double qty) {
 		whSkuInventoryCommand.setPriority(Boolean.TRUE);
+		whSkuInventoryCommand.setIsStatic(null);
+		whSkuInventoryCommand.setIsMixStacking(null);
+		whSkuInventoryCommand.setAllocateUnitCodes(Constants.ALLOCATE_UNIT_PIECE);
 		List<WhSkuInventoryCommand> skuInvs = whSkuInventoryDao.findInventoryUuid(whSkuInventoryCommand);
-		List<WhSkuInventoryCommand> bestMatchList = bestMatchSkuInvs(skuInvs, qty);
+		List<WhSkuInventoryCommand> bestMatchList = bestMatchSkuInvs(skuInvs, qty, whSkuInventoryCommand);
 		return bestMatchList;
 	}
 	
 	/**
 	 * 数量最佳匹配,返回最佳匹配的库存集合
+	 * @param unitCodes 
 	 */
-	private List<WhSkuInventoryCommand> bestMatchSkuInvs(List<WhSkuInventoryCommand> skuInvs, Double qty) {
-		List<WhSkuInventoryCommand> invBestList = new ArrayList<WhSkuInventoryCommand>();
-		Double num = 0.0;
+	private List<WhSkuInventoryCommand> bestMatchSkuInvs(List<WhSkuInventoryCommand> skuInvs, Double qty, WhSkuInventoryCommand whSkuInventoryCommand) {
+		List<WhSkuInventoryCommand> invBestList = null;
 		for (int i = 0; i < skuInvs.size(); i++) {
-			WhSkuInventoryCommand skuInv = skuInvs.get(i);
-			if (0 == skuInv.getSumOnHandQty().compareTo(qty)) {
-				invBestList.add(skuInv);
-				return invBestList;
-			}
-			num += skuInv.getSumOnHandQty();
-		}
-		if (-1 == num.compareTo(qty)) {
-			return skuInvs;
-		}
-		num = 0.0;
-		for (int i = 0; i < skuInvs.size(); i++) {
-			WhSkuInventoryCommand skuInv = skuInvs.get(i);
-			if (-1 == skuInv.getSumOnHandQty().compareTo(qty)) {
-				invBestList.add(0, skuInv);
-				num += skuInv.getSumOnHandQty();
-				if (0 == num.compareTo(qty)) {
+			invBestList = new ArrayList<WhSkuInventoryCommand>();
+			if (getPaiLieCheck(skuInvs, 0, i, qty, invBestList, false)) {
+				if (null != invBestList && !invBestList.isEmpty()) {
+					// 根据库位id找出上面TP或HX的uuid
+					if (Constants.ALLOCATE_UNIT_TP.equals(whSkuInventoryCommand.getAllocateUnitCodes())
+							|| Constants.ALLOCATE_UNIT_HX.equals(whSkuInventoryCommand.getAllocateUnitCodes())) {
+						List<Long> locationIds = getLocationIds(invBestList);
+						whSkuInventoryCommand.setPriority(Boolean.FALSE);
+						invBestList = whSkuInventoryDao.findSkuInvByLocationIds(locationIds, whSkuInventoryCommand.getAllocateUnitCodes(), whSkuInventoryCommand.getOuId());
+						
+					}
 					return invBestList;
-				} else if (1 == num.compareTo(qty)) {
-					break;
 				}
-			} else if (1 == skuInv.getSumOnHandQty().compareTo(qty)) {
+			}
+		}
+		invBestList = new ArrayList<WhSkuInventoryCommand>();
+		for (WhSkuInventoryCommand command : skuInvs) {
+			Double onHandQty = command.getSumOnHandQty();
+			if (onHandQty.compareTo(qty) == -1) {
+				invBestList.add(0, command);
+				qty -= onHandQty;
+			} else {
+				invBestList.add(0, command);
 				break;
 			}
 		}
-		invBestList.clear();
-		for (int i = skuInvs.size() - 1; i >= 0; i--) {
-			invBestList.add(skuInvs.get(i));
+		
+		if (Constants.ALLOCATE_UNIT_TP.equals(whSkuInventoryCommand.getAllocateUnitCodes())
+				|| Constants.ALLOCATE_UNIT_HX.equals(whSkuInventoryCommand.getAllocateUnitCodes())) {
+			List<Long> locationIds = getLocationIds(invBestList);
+			whSkuInventoryCommand.setPriority(Boolean.FALSE);
+			invBestList = whSkuInventoryDao.findSkuInvByLocationIds(locationIds, whSkuInventoryCommand.getAllocateUnitCodes(), whSkuInventoryCommand.getOuId());
 		}
+		
 		return invBestList;
+	}
+	
+	/**
+	 * 排列分组,递归运算
+	 * 筛选出数量等于qty的集合
+	 */
+	private static boolean getPaiLieCheck(List<WhSkuInventoryCommand> skuInvs, int i, int length, Double qty, List<WhSkuInventoryCommand> invBestList, boolean cheked) {
+		if (length < 0) {
+			return sum(invBestList).compareTo(qty) == 0;
+		}
+		if (i >= skuInvs.size()) {
+			return sum(invBestList).compareTo(qty) == 0;
+		}
+		invBestList.add(skuInvs.get(i));
+		cheked = getPaiLieCheck(skuInvs, i + 1, length - 1, qty, invBestList, cheked);
+		if (cheked) {
+			return cheked;
+		}
+		invBestList.remove(skuInvs.get(i));
+		return getPaiLieCheck(skuInvs, i + 1, length, qty, invBestList, cheked);
+	}
+	
+	// 算总库存id
+	private static List<Long> getLocationIds(List<WhSkuInventoryCommand> skuInvs) {
+		List<Long> locationIds = new ArrayList<Long>();
+		for (WhSkuInventoryCommand inv : skuInvs) {
+			locationIds.add(inv.getLocationId());
+		}
+		return locationIds;
+	}
+	
+	// 算总数
+	private static Double sum(List<WhSkuInventoryCommand> invBestList) {
+		Double sum = Constants.DEFAULT_DOUBLE;
+		for (WhSkuInventoryCommand inv : invBestList) {
+			sum += inv.getSumOnHandQty();
+		}
+		return sum;
 	}
 
 	@Override

@@ -255,13 +255,7 @@ public class InventoryOccupyManagerImpl extends BaseInventoryManagerImpl impleme
 			// 可用数量:在库数量减去已分配的数量
 			Double useableQty = inventoryDao.getUseableQtyByUuidList(uuidList, ouId);
 			if (-1 != qty.compareTo(useableQty) && -1 == Constants.DEFAULT_DOUBLE.compareTo(useableQty)) {
-				List<WhSkuInventoryCommand> invs = null;
-				if (Constants.ALLOCATE_UNIT_TP.equals(unitCodes)) {
-					invs = inventoryDao.findWhSkuInventoryByUuidList(ouId, uuidList);
-				} else {
-					invCmd.setOuId(ouId);
-					invs = inventoryDao.findInventoryByUuidAndCondition(invCmd);
-				}
+				List<WhSkuInventoryCommand> invs = inventoryDao.findWhSkuInventoryByUuidList(ouId, uuidList);
 				
 				Double occupyNum = 0.0;
 				for (WhSkuInventoryCommand inv : invs) {
@@ -335,22 +329,23 @@ public class InventoryOccupyManagerImpl extends BaseInventoryManagerImpl impleme
 		Double actualQty = 0.0;
 		Double count = qty;
 		for (WhSkuInventoryCommand invCmd : uuids) {
-			Double useableQty = invCmd.getSumOnHandQty();
-			if (-1 != Constants.DEFAULT_DOUBLE.compareTo(useableQty)) {
+			Double sumOnHandQty = invCmd.getSumOnHandQty();
+			List<String> uuid = Arrays.asList(invCmd.getUuid().split(","));
+			if (-1 != Constants.DEFAULT_DOUBLE.compareTo(sumOnHandQty)) {
 				if (null != allSkuInvs) {
 					for (int i = 0; i < allSkuInvs.size(); i++) {
 						WhSkuInventoryCommand skuInv = allSkuInvs.get(i);
-						if (skuInv.getUuid().equals(invCmd.getUuid())) {
+						if (uuid.contains(skuInv.getUuid())) {
 							allSkuInvs.remove(i--);
 						}
 					}
 				}
 				continue;
 			}
-			invCmd.setOuId(wh.getId());
-			List<WhSkuInventoryCommand> invs = inventoryDao.findInventoryByUuidAndCondition(invCmd);
+			List<WhSkuInventoryCommand> invs = inventoryDao.findWhSkuInventoryByUuidList(ouId, uuid);
 			for (WhSkuInventoryCommand inv : invs) {
 				Double oldQty = whSkuInventoryLogDao.sumSkuInvOnHandQty(inv.getUuid(), ouId);
+				Double useableQty = inventoryDao.getUseableQtyByUuid(inv.getUuid(), ouId);
 				// OnHandQty <= useableQty
 				if (1 != inv.getOnHandQty().compareTo(useableQty)) {
 					if (-1 == count.compareTo(inv.getOnHandQty())) {
