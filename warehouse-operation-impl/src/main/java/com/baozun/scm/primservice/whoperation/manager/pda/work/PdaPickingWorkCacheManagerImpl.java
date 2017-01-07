@@ -3,7 +3,6 @@ package com.baozun.scm.primservice.whoperation.manager.pda.work;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -182,6 +181,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                 cacheManager.setObject(CacheConstants.CACHE_OPERATION_LINE + operationId.toString(), tipCmd, CacheConstants.CACHE_ONE_DAY);
                 scanResult.setTipLocationId(tipLocationId);
                 scanResult.setIsPicking(false);  // 没有上架结束
+                break;
             }else{
                 ArrayDeque<Long> tipLocationIds = tipLocationCmd.getTipLocationIds();
                 if(this.isCacheAllExists2(locationIds, tipLocationIds)) {
@@ -204,7 +204,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                 }else{
                     scanResult.setIsPicking(true); //所有库位已经扫描完毕
                 }
-                
+                break;
             }
         }
         log.info("PdaPickingWorkCacheManagerImpl containerPutawayCacheInsideContainer is start");
@@ -1341,79 +1341,6 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
       
       
       
-//      /***
-//       * 缓存周转箱作业明细
-//       * @param whoperLinCmd
-//       * @param trunOverBoxId(周转箱id)
-//       * @param operationId
-//       */
-//      public void cacheTurnoverBoxPickingWhOperLineCmd(Long trunOverBoxId,Long operationId,Long operationLineId){
-//          OperationLineCacheCommand operLineCacheCmd = cacheManager.getObject(CacheConstants.CACHE_OPERATION_LINE + operationId.toString());
-//          if(null == operLineCacheCmd) {
-//              throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
-//          }else{
-//              Set<Long> turnoverBoxs = operLineCacheCmd.getTurnoverBoxs();   //周转箱集合
-//              if(null == turnoverBoxs) {
-//                  turnoverBoxs = new HashSet<Long>();
-//              }
-//              turnoverBoxs.add(trunOverBoxId);
-//              Map<Long,Set<Long>> turnoverBoxsOpLineIdMap = operLineCacheCmd.getTurnoverBoxsOpLineIdMap();
-//              if(null == turnoverBoxsOpLineIdMap) {
-//                  turnoverBoxsOpLineIdMap = new HashMap<Long,Set<Long>>();
-//                  Set<Long> operationLineIds = new HashSet<Long>();
-//                  operationLineIds.add(operationLineId);
-//                  turnoverBoxsOpLineIdMap.put(trunOverBoxId, operationLineIds);
-//              }else{
-//                  Set<Long> operationLineIds = turnoverBoxsOpLineIdMap.get(trunOverBoxId);
-//                  if(null == operationLineIds) {
-//                      operationLineIds = new HashSet<Long>();
-//                  } 
-//                  operationLineIds.add(operationLineId);
-//                  
-//                  turnoverBoxsOpLineIdMap.put(trunOverBoxId, operationLineIds);
-//              }
-//             
-//              operLineCacheCmd.setTurnoverBoxs(turnoverBoxs);  //周转箱列表
-//              operLineCacheCmd.setTurnoverBoxsOpLineIdMap(turnoverBoxsOpLineIdMap);   //周转箱操作的作业明细
-//          }
-//          cacheManager.setObject(CacheConstants.CACHE_OPERATION_LINE + operationId.toString(), operLineCacheCmd, CacheConstants.CACHE_ONE_DAY);
-//      }
-//      
-//      /***
-//       * 缓存出库箱箱作业明细
-//       * @param whoperLinCmd
-//       * @param trunOverBoxId(周转箱id)
-//       * @param operationId
-//       */
-//      public void cacheOutBoundxBoxPickingWhOperLineCmd(String outBoundxBoxCode,Long operationId,Long operationLineId){
-//          OperationLineCacheCommand operLineCacheCmd = cacheManager.getObject(CacheConstants.CACHE_OPERATION_LINE + operationId.toString());
-//          if(null == operLineCacheCmd) {
-//              throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
-//          }else{
-//              Set<String> outBoundxBoxs = operLineCacheCmd.getOutBoundxBoxs();   //周转箱集合
-//              if(null == outBoundxBoxs) {
-//                  outBoundxBoxs = new HashSet<String>();
-//              }
-//              outBoundxBoxs.add(outBoundxBoxCode);
-//              Map<String,Set<Long>> outBoundxBoxsOpLineIdMap = operLineCacheCmd.getOutBoundxBoxOpLineIdMap();
-//              if(null == outBoundxBoxsOpLineIdMap) {
-//                  outBoundxBoxsOpLineIdMap =  new HashMap<String,Set<Long>>();
-//                  Set<Long> operationIds = new HashSet<Long>();
-//                  operationIds.add(operationLineId);
-//                  outBoundxBoxsOpLineIdMap.put(outBoundxBoxCode, operationIds);
-//              }else{
-//                  Set<Long> operationIds = outBoundxBoxsOpLineIdMap.get(outBoundxBoxCode);
-//                  if(null == operationIds) {
-//                      operationIds = new HashSet<Long>();
-//                  }
-//                  operationIds.add(operationLineId);
-//                  outBoundxBoxsOpLineIdMap.put(outBoundxBoxCode, operationIds);
-//              }
-//              operLineCacheCmd.setOutBoundxBoxs(outBoundxBoxs);  //出库箱集合
-//              operLineCacheCmd.setOutBoundxBoxOpLineIdMap(outBoundxBoxsOpLineIdMap);    //出库箱操作作业集合
-//          }
-//          cacheManager.setObject(CacheConstants.CACHE_OPERATION_LINE + operationId.toString(), operLineCacheCmd, CacheConstants.CACHE_ONE_DAY);
-//      }
       
       
       /***
@@ -1561,4 +1488,18 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
         
     }
   
+    /***
+     * 将作业投标识为拣货完成
+     * @param operationId
+     * @param ouId
+     */
+    public void pdaReplenishmentUpdateOperation(Long operationId,Long ouId,Long userId){
+        WhOperation operation = whOperationDao.findOperationByIdExt(operationId, ouId);
+        if(null == operation){
+            throw new BusinessException(ErrorCodes.OPATION_NO_EXIST);
+        }
+        operation.setIsPickingFinish(true);
+        operation.setModifiedId(userId);
+        whOperationDao.saveOrUpdateByVersion(operation);
+    }
 }

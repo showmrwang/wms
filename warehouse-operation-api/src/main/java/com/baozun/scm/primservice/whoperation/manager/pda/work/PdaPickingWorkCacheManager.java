@@ -141,34 +141,6 @@ public interface PdaPickingWorkCacheManager extends BaseManager{
        */
       public List<WhOperationLineCommand> cacheOperationLine(Long operationId,Long ouId);
       
-//      /***
-//       * 缓存已经拣货作业id
-//       *  @tangming
-//       * @param operationId
-//       * @param skuAttrIds
-//       * @param outerContainerId
-//       * @param insideContainerId
-//       * @param locationId
-//       * @param ouId
-//       */
-//     public Long cachePickingOperLineId(Long operationId,String skuAttrIds,Long outerContainerId,Long insideContainerId,Long locationId,Long ouId,Boolean isShortPicking,Double scanQty);
-//     
-//     
-//     /***
-//      * 缓存周转箱作业明细
-//      * @param whoperLinCmd
-//      * @param trunOverBoxId(周转箱id)
-//      * @param operationId
-//      */
-//     public void cacheTurnoverBoxPickingWhOperLineCmd(Long trunOverBoxId,Long operationId,Long operationLineId);
-//     
-//     /***
-//      * 缓存出库箱箱作业明细
-//      * @param whoperLinCmd
-//      * @param trunOverBoxId(周转箱id)
-//      * @param operationId
-//      */
-//     public void cacheOutBoundxBoxPickingWhOperLineCmd(String outBoundxBoxCode,Long operationId,Long operationLineId);
      
     /***
      * 清楚缓存
@@ -187,6 +159,13 @@ public interface PdaPickingWorkCacheManager extends BaseManager{
       * @param workId
       */
      public void pdaPickingUpdateStatus(Long operationId,String workCode,Long ouId,Long userId);
+     
+     /***
+      * 将作业投标识为拣货完成
+      * @param operationId
+      * @param ouId
+      */
+     public void pdaReplenishmentUpdateOperation(Long operationId,Long ouId,Long userId);
       
     
 }

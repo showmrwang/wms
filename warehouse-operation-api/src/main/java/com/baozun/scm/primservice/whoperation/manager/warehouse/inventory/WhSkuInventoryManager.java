@@ -178,4 +178,14 @@ public interface WhSkuInventoryManager extends BaseManager {
      * @param skuAttrId
      */
     public void sysManPutaway(Double skuScanQty,Warehouse warehouse,Long userId,ContainerCommand outerContainerCmd,ContainerCommand insideContainerCmd,String locationCode,Integer putawayPatternDetailType,Long ouId,String skuAttrId);
+    
+    /***
+     * 补货上架
+     * @param operationId
+     * @param ouId
+     * @param isTabbInvTotal
+     * @param userId
+     * @param workCode
+     */
+    public void replenishmentPutaway(Long operationId,Long ouId,Boolean isTabbInvTotal,Long userId,String workCode);
 }

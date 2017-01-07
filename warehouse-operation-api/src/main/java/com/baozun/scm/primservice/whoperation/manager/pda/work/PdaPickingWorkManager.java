@@ -192,4 +192,11 @@ public interface PdaPickingWorkManager extends BaseManager {
      */
     public PickingScanResultCommand judgeIsOccupationCode(PickingScanResultCommand command);
     
+    /***
+     * pda拣货完成
+     * @param command
+     * @return
+     */
+    public void pdaPickingFinish(PickingScanResultCommand command);
+    
 }

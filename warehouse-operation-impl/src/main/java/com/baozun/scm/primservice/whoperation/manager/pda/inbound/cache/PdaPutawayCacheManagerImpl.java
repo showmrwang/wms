@@ -3244,11 +3244,11 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
             Boolean isTipSkuDefect = skuCmd.getIsNeedTipSkuDefect();
             boolean isSnLine = false;
             if ((null != isTipSkuSn && true == isTipSkuSn) || (null != isTipSkuDefect && true == isTipSkuDefect)) {
-                skuAttrId = SkuCategoryProvider.concatSkuAttrId(skuCmd.getId(), skuCmd.getInvType(), skuCmd.getInvStatus(), skuCmd.getInvMfgDate(), skuCmd.getInvExpDate(), skuCmd.getInvAttr1(), skuCmd.getInvAttr2(), skuCmd.getInvAttr3(),
+                skuAttrId = SkuCategoryProvider.concatSkuAttrId(skuCmd.getId(), skuCmd.getInvType(), skuCmd.getInvStatus(), skuCmd.getBatchNumber(),skuCmd.getInvMfgDate(), skuCmd.getInvExpDate(),skuCmd.getCountryOfOrigin(), skuCmd.getInvAttr1(), skuCmd.getInvAttr2(), skuCmd.getInvAttr3(),
                         skuCmd.getInvAttr4(), skuCmd.getInvAttr5(), skuCmd.getSkuSn(), skuCmd.getSkuDefect());
                 isSnLine = true;
             } else {
-                skuAttrId = SkuCategoryProvider.concatSkuAttrId(skuCmd.getId(), skuCmd.getInvType(), skuCmd.getInvStatus(), skuCmd.getInvMfgDate(), skuCmd.getInvExpDate(), skuCmd.getInvAttr1(), skuCmd.getInvAttr2(), skuCmd.getInvAttr3(),
+                skuAttrId = SkuCategoryProvider.concatSkuAttrId(skuCmd.getId(), skuCmd.getInvType(), skuCmd.getInvStatus(),skuCmd.getBatchNumber(), skuCmd.getInvMfgDate(), skuCmd.getInvExpDate(),skuCmd.getCountryOfOrigin(), skuCmd.getInvAttr1(), skuCmd.getInvAttr2(), skuCmd.getInvAttr3(),
                         skuCmd.getInvAttr4(), skuCmd.getInvAttr5());
                 isSnLine = false;
             }

@@ -4852,6 +4852,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             insertGlobalLog(GLOBAL_LOG_UPDATE, invDelete, ouId, userId, null, null);
                         }
                     }else{
+                        locSkuQty = invCmd.getToBeFilledQty()-scanSkuQty;
                         if(locSkuQty.equals(0.0)) {//删除
                             WhSkuInventoryTobefilled invTobefilled = new WhSkuInventoryTobefilled();
                             BeanUtils.copyProperties(invCmd, invTobefilled);
@@ -4935,6 +4936,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                insertGlobalLog(GLOBAL_LOG_UPDATE, invUpdate, ouId, userId, null, null);
                            }
                        }else{
+                           locSkuQty = invCmd.getToBeFilledQty()-scanSkuQty;
                            if(locSkuQty.equals(0.0)) {//删除
                                WhSkuInventoryTobefilled invTobefilled = new WhSkuInventoryTobefilled();
                                BeanUtils.copyProperties(invCmd, invTobefilled);
@@ -4952,11 +4954,15 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                      if (!uuid.equals(invCmd.getUuid())) {
                          // uuid发生变更,重新插入sn
                          for(WhSkuInventorySnCommand snCmd:snList) { //已经扫描过的sn
-                             WhSkuInventorySn sn = new WhSkuInventorySn();
-                             BeanUtils.copyProperties(snCmd, sn);
-                             sn.setUuid(uuid);
-                             whSkuInventorySnDao.saveOrUpdate(sn);
-                             insertGlobalLog(GLOBAL_LOG_UPDATE, sn, ouId, userId, null, null);
+                             if(invCmd.getUuid().equals(snCmd.getUuid())) {
+                                 WhSkuInventorySn sn = new WhSkuInventorySn();
+                                 BeanUtils.copyProperties(snCmd, sn);
+                                 sn.setUuid(uuid);
+                                 whSkuInventorySnDao.saveOrUpdate(sn);
+                                 insertGlobalLog(GLOBAL_LOG_UPDATE, sn, ouId, userId, null, null);
+                                 break;
+                             }
+                            
                          }
                         // 记录SN日志
                        insertSkuInventorySnLog(uuid, ouId);
@@ -5425,5 +5431,26 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         } else {
             // 整托上架、整箱上架(整托,整箱可用强制上架的流程)
         }
+    }
+
+    /***
+     * 补货上架
+     * @param operationId
+     * @param ouId
+     * @param isTabbInvTotal
+     * @param userId
+     * @param workCode
+     */
+    @Override
+    public void replenishmentPutaway(Long operationId, Long ouId, Boolean isTabbInvTotal, Long userId,String workCode) {
+        // TODO Auto-generated method stub
+        List<WhOperationExecLine>  operationExecLineList = whOperationExecLineDao.getOperationExecLine(operationId, ouId);
+        if(null== operationExecLineList || operationExecLineList.size()==0) {
+            throw new BusinessException(ErrorCodes.OPERATION_EXEC_LINE_NO_EXIST);
+        }
+        for(WhOperationExecLine operExecLine:operationExecLineList){
+            
+        }
+        
     }
 }
