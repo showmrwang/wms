@@ -754,6 +754,12 @@ public class ErrorCodes {
     public static final int LOCATION_BARCODE_IS_ERROR=70053;
     /**库位编码不正确*/
     public static final int LOCATION_CODE_IS_EEROR=70054;
+    /**作业不存在*/
+    public static final int OPATION_NO_EXIST= 70055;
+    /**提示库位失败*/
+    public static final int TIP_LOCATION_FAIL= 70056;
+    /**提示周转箱失败*/
+    public static final int TIP_CONTAINER_FAIL=70057;
     // 70001-80000 tangming
     
     // 80001-90000 shenlijun

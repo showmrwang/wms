@@ -2591,7 +2591,7 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
 //             // 缓存残次信息
 //                cacheManager.setMapObject(CacheConstants.PDA_MAN_MANDE_SCAN_SKU_DEFECT, insideContainerId.toString() + skuId.toString(), skuSnlist, CacheConstants.CACHE_ONE_DAY);
 //            }
-//            
+//
 //        }
     }
 

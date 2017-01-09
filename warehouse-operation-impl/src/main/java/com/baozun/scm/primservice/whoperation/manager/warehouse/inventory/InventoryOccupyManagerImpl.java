@@ -392,6 +392,9 @@ public class InventoryOccupyManagerImpl extends BaseInventoryManagerImpl impleme
 				if (null != isStaticLocation && isStaticLocation && null != staticLocationIds) {
 					staticLocationIds.add(inv.getLocationId().toString());
 				}
+				if (0 == Constants.DEFAULT_DOUBLE.compareTo(count)) {
+					break;
+				}
 			}
 			if (0 == Constants.DEFAULT_DOUBLE.compareTo(count)) {
 				break;

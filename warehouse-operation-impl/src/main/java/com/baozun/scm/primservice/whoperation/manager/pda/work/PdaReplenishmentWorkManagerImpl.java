@@ -162,4 +162,20 @@ public class PdaReplenishmentWorkManagerImpl extends BaseManagerImpl implements 
         log.info("PdaPickingWorkController verificationLocation is end");
         return locationId;
     }
+    
+    /***
+     * 拣货完成
+     * @param command
+     */
+    public void pdaPickingFinish(PickingScanResultCommand  command){
+        Long operationId = command.getOperationId();
+        String workCode = command.getWorkBarCode();
+        Long ouId = command.getOuId();
+        Long userId = command.getUserId();
+        Long locationId = command.getLocationId();
+       //更新工作及作业状态
+        pdaPickingWorkCacheManager.pdaReplenishmentUpdateOperation(operationId, ouId,userId);
+        //清除缓存
+        pdaPickingWorkCacheManager.pdaPickingRemoveAllCache(operationId, false, locationId);
+    }
 }

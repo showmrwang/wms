@@ -36,4 +36,10 @@ public interface PdaReplenishmentWorkManager extends BaseManager {
      */
     public Long verificationLocation(String locationCode,String locationBarCode,Long ouId);
     
+    /***
+     * 拣货完成
+     * @param command
+     */
+    public void pdaPickingFinish(PickingScanResultCommand  command);
+    
 }

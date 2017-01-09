@@ -85,7 +85,10 @@ public class WhSkuCommand extends BaseCommand {
     private String skuSn;
     private String skuDefect;
 
-
+    /** 批次号 */
+    private String batchNumber;
+    /** 原产地 */
+    private String countryOfOrigin;
 
     public Long getId() {
         return id;
@@ -438,6 +441,22 @@ public class WhSkuCommand extends BaseCommand {
 
     public void setSkuDefect(String skuDefect) {
         this.skuDefect = skuDefect;
+    }
+
+    public String getBatchNumber() {
+        return batchNumber;
+    }
+
+    public void setBatchNumber(String batchNumber) {
+        this.batchNumber = batchNumber;
+    }
+
+    public String getCountryOfOrigin() {
+        return countryOfOrigin;
+    }
+
+    public void setCountryOfOrigin(String countryOfOrigin) {
+        this.countryOfOrigin = countryOfOrigin;
     }
 
 
