@@ -748,7 +748,7 @@ public class ErrorCodes {
     public static final int CHECK_OPERTAION_EXEC_LINE_DIFF = 70050;
     /**作业执行明细不存在*/
     public static final int OPERATION_EXEC_LINE_NO_EXIST= 70051;
-    /**作业执行明细不存在*/
+    /**工作不存在*/
     public static final int WORK_NO_EXIST= 70052;
     /**库位条码不正确*/
     public static final int LOCATION_BARCODE_IS_ERROR=70053;

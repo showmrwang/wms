@@ -2971,8 +2971,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					from 
 					t_wh_asn asn,	
 					t_wh_sku_inventory inv
-					left join t_wh_operation_line operLine on operLine.odo_line_id = inv.occupation_line_id and operLine.uuid = inv.uuid
-					
+					left join t_wh_operation_line operLine on operLine.odo_line_id = inv.occupation_line_id
+					left join t_wh_odo odo.id = operLine.odo_id  and odo.odo_code = inv.occupation_code
 					left join t_wh_sku_inventory_sn sn on inv.uuid = sn.uuid
 					where 
 						inv.occupation_code is not null 
@@ -3023,7 +3023,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					from 
 					t_wh_asn asn,	
 					t_wh_sku_inventory_tobefilled inv
-					left join t_wh_operation_line operLine on operLine.odo_line_id = inv.occupation_line_id and operLine.uuid = inv.uuid
+					left join t_wh_operation_line operLine on operLine.odo_line_id = inv.occupation_line_id 
+					left join t_wh_odo odo.id = operLine.odo_id  and odo.odo_code = inv.occupation_code
 					left join t_wh_sku_inventory_sn sn on inv.uuid = sn.uuid
 					where 
 						inv.occupation_code is not null 
@@ -3031,5 +3032,116 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 						and (asn.status=5 or asn.status=10)
 					    and inv.ou_id = #{ouId}
 					and operLine.odo_line_id = #{operationId}
+    </select>
+    
+    
+     <select id="getWhSkuInventoryCommandByNoWave" resultMap="WhSkuInventoryCommandSnResultExt">
+			select 
+					inv.id as invId,
+					inv.sku_id as skuId,
+					inv.location_id as locationId,
+					inv.outer_container_id as outerContainerId,
+					inv.inside_container_id as insideContainerId,
+					inv.customer_id as customerId,
+					inv.store_id as storeId,
+					inv.occupation_code as invOccupationCode,
+					inv.qty as onHandQty,
+					inv.inv_status as invStatus,
+					inv.inv_type as invType,
+					inv.batch_number as batchNumber,
+					inv.mfg_date as mfgDate,
+					inv.exp_date as expDate,
+					inv.country_of_origin as countryOfOrigin,
+					inv.inv_attr1 as invAttr1,
+					inv.inv_attr2 as invAttr2,
+					inv.inv_attr3 as invAttr3,
+					inv.inv_attr4 as invAttr4,
+					inv.inv_attr5 as invAttr5,
+					inv.uuid as invUuid,
+					inv.ou_id as invOuId,
+					inv.occupation_code_source as occupationCodeSource,
+	        		inv.last_modify_time as lastModifyTime,
+	        		sn.id as snId,
+	        		sn.sn as snSn,
+	        		sn.occupation_code as snOccupationCode,
+	        		sn.defect_ware_barcode as snDefectWareBarcode,
+	        		sn.defect_source as snDefectSource,
+	        		sn.defect_type_id as snDefectTypeId,
+	        		sn.defect_reasons_id as snDefectReasonsId,
+	        		sn.status as snStatus,
+	        		sn.inv_attr as snInvAttr,
+	        		sn.uuid as snUuid,
+	        		sn.ou_id as snOuId,
+	        		sn.sys_uuid as snSysUuid
+					from 
+					t_wh_sku_inventory_tobefilled inv
+					left join t_wh_sku_inventory_sn sn on inv.uuid = sn.uuid
+					where 
+					    inv.ou_id = #{ouId}
+					    <if test="skuId!=null and skuId!=''">
+				          	 and inv.sku_id = #{skuId}
+	                   </if>
+					   <if test="outerContainerId!=null and outerContainerId!=''">
+				          	 and inv.outer_container_id = #{outerContainerId}
+	                   </if>
+	                   <if test="insideContainerId!=null and insideContainerId!=''">
+					         and inv.inside_container_id=#{insideContainerId}
+	                  </if>
+	                  <if test="locationId!=null and locationId!=''">
+	                         and inv.locationId = #{locationId}
+	                  </if>
+	                  <if test="replenishmentCode!=null and replenishmentCode!=''">
+	                         and inv.replenishmentCode = #{replenishmentCode}
+	                  </if>
+    </select>
+    
+     <select id="getWhSkuInventoryTobefilledByWave" resultMap="WhSkuInventoryCommandSnResultExt">
+			select 
+					inv.id as invId,
+					inv.sku_id as skuId,
+					inv.location_id as locationId,
+					inv.outer_container_id as outerContainerId,
+					inv.inside_container_id as insideContainerId,
+					inv.customer_id as customerId,
+					inv.store_id as storeId,
+					inv.occupation_code as invOccupationCode,
+					inv.qty as onHandQty,
+					inv.inv_status as invStatus,
+					inv.inv_type as invType,
+					inv.batch_number as batchNumber,
+					inv.mfg_date as mfgDate,
+					inv.exp_date as expDate,
+					inv.country_of_origin as countryOfOrigin,
+					inv.inv_attr1 as invAttr1,
+					inv.inv_attr2 as invAttr2,
+					inv.inv_attr3 as invAttr3,
+					inv.inv_attr4 as invAttr4,
+					inv.inv_attr5 as invAttr5,
+					inv.uuid as invUuid,
+					inv.ou_id as invOuId,
+					inv.occupation_code_source as occupationCodeSource,
+	        		inv.last_modify_time as lastModifyTime,
+	        		sn.id as snId,
+	        		sn.sn as snSn,
+	        		sn.occupation_code as snOccupationCode,
+	        		sn.defect_ware_barcode as snDefectWareBarcode,
+	        		sn.defect_source as snDefectSource,
+	        		sn.defect_type_id as snDefectTypeId,
+	        		sn.defect_reasons_id as snDefectReasonsId,
+	        		sn.status as snStatus,
+	        		sn.inv_attr as snInvAttr,
+	        		sn.uuid as snUuid,
+	        		sn.ou_id as snOuId,
+	        		sn.sys_uuid as snSysUuid
+					from 
+					t_wh_sku_inventory_tobefilled inv
+					left join t_wh_operation_line operLine on operLine.odo_line_id = inv.occupation_line_id 
+					left join t_wh_odo odo.id = operLine.odo_id  and odo.odo_code = inv.occupation_code
+					left join t_wh_sku_inventory_sn sn on inv.uuid = sn.uuid
+					where 
+						inv.occupation_code is not null 
+					    and inv.ou_id = #{ouId}
+					    and operLine.odo_line_id = #{operationId}
+	                    and inv.replenishmentCode = #{replenishmentCode}
     </select>
 </mapper>

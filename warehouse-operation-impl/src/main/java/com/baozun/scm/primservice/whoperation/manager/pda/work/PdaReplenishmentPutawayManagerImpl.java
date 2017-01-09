@@ -21,6 +21,7 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.WhLocationDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Location;
 /***
@@ -41,6 +42,8 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
     private WhLocationDao whLocationDao;
     @Autowired
     private ContainerDao containerDao;
+    @Autowired
+    private WhSkuInventoryManager whSkuInventoryManager;
     
     @Override
     public ReplenishmentPutawayCommand putawayTipLocation(ReplenishmentPutawayCommand command) {
@@ -111,12 +114,14 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
 
     
     @Override
-    public ReplenishmentPutawayCommand putawayScanTurnoverBox(ReplenishmentPutawayCommand command) {
+    public ReplenishmentPutawayCommand putawayScanTurnoverBox(ReplenishmentPutawayCommand command,Boolean isTabbInvTotal) {
         // TODO Auto-generated method stub
         log.info("PdaReplenishmentPutawayManagerImpl putawayScanTurnoverBox is start");
         Long operationId = command.getOperationId();
         Long ouId = command.getOuId();
         Long locationId = command.getLcoationId();
+        Long userId = command.getUserId();
+        String workCode = command.getWorkBarCode();
         OperatioExecLineStatisticsCommand opExecLineCmd = cacheManager.getObject(CacheConstants.CACHE_OPERATION_EXEC_LINE + operationId.toString());
         if(null == opExecLineCmd){
             throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
@@ -144,6 +149,8 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                 command.setIsNeedScanLocation(true);
             }else{ //库位已经扫描完毕
                 command.setIsScanFinsh(true);
+                whSkuInventoryManager.replenishmentPutaway(operationId, ouId, isTabbInvTotal, userId, workCode);
+                //校验库位库存
             }
         }
         log.info("PdaReplenishmentPutawayManagerImpl putawayScanTurnoverBox is end");
