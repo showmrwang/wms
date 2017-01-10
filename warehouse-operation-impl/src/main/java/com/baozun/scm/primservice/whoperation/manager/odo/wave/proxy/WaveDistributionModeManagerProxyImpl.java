@@ -40,6 +40,7 @@ import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveMaster;
 import com.baozun.scm.primservice.whoperation.model.sku.Sku;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 
 @Service("waveDistributionModeManagerProxy")
 public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implements WaveDistributionModeManagerProxy {
@@ -64,7 +65,8 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
     private DistributionModeArithmeticManagerProxy distributionModeArithmeticManagerProxy;
 
     @Override
-    public void setWaveDistributionMode(Long waveId, Long ouId, Long userId) {
+    public void setWaveDistributionMode(Long waveId, Warehouse wh, Long userId) {
+        Long ouId = wh.getId();
         if (userId == null) {
             userId = 1000001L;
         }
@@ -265,7 +267,7 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
         // 封装波次头
         packageWave(wave, waveLineMap, master, ouId, offOdoLineList, noModeOdoList.size());
         // 保存
-        this.whWaveManager.matchWaveDisTributionMode(odoList, offWaveLineList, offOdoLineList, wave, ouId, userId);
+        this.whWaveManager.matchWaveDisTributionMode(odoList, offWaveLineList, offOdoLineList, wave, ouId, userId, wh);
 
     }
     

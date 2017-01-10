@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 
 public interface WaveDistributionModeManagerProxy extends BaseManager {
 
@@ -14,7 +15,7 @@ public interface WaveDistributionModeManagerProxy extends BaseManager {
      * @param ouId
      * @param userId
      */
-    public void setWaveDistributionMode(Long waveId, Long ouId, Long userId);
+    public void setWaveDistributionMode(Long waveId, Warehouse wh, Long userId);
 
     /**
      * 获取秒杀出库单集合
