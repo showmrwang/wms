@@ -17,6 +17,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	location_id as locationId,
 	        	container_id as containerId,
 	        	batch as batch,
+	        	collection_status as collectionStatus,
 	        	ou_id as ouId
 	    ]]>
 	</sql>
@@ -45,6 +46,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					and container_id = #{containerId}
 				</if>
 	       
+				<if test="collectionStatus!=null">
+					and collection_status = #{collectionStatus}
+				</if>
+	       
 	       
 		       <if test="batch!=null and batch!=''">
 					and batch = #{batch}
@@ -55,5 +60,46 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				</if>
 		</where>
 	</sql>
+	
+	<select id="countCapacityByParamExt" resultType="int">
+        select count(*) from t_wh_seeding_collection sc, t_wh_outbound_facility facility
+        where sc.facility_id = facility.id
+        
+        <if test="seedingwallCode!=null and seedingwallCode!=''">
+        	and facility.facility_code = #{seedingwallCode}
+        </if>
+        
+        <if test="id!=null">
+			and sc.id = #{id}
+		</if>
+      
+		<if test="facilityId!=null">
+			and sc.facility_id = #{facilityId}
+		</if>
+      
+		<if test="temporaryLocationId!=null">
+			and sc.temporary_location_id = #{temporaryLocationId}
+		</if>
+      
+		<if test="locationId!=null">
+			and sc.location_id = #{locationId}
+		</if>
+      
+		<if test="containerId!=null">
+			and sc.container_id = #{containerId}
+		</if>
+      
+       <if test="batch!=null and batch!=''">
+			and sc.batch = #{batch}
+		</if>
+
+       <if test="collectionStatus!=null">
+			and sc.collection_status = #{collectionStatus}
+		</if>
+      
+		<if test="ouId!=null">
+			and sc.ou_id = #{ouId}
+		</if>
+    </select>
 	
 </mapper>

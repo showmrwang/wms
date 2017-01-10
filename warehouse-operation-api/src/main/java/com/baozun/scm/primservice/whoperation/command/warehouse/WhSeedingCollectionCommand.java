@@ -39,7 +39,7 @@ public class WhSeedingCollectionCommand extends BaseCommand {
     /** 小批次 */
     private String batch;
     /** 播种状态*/
-    private Integer seedingStatus;
+    private Integer collectionStatus;
     /** 对应组织ID */
     private Long ouId;
 
@@ -119,12 +119,12 @@ public class WhSeedingCollectionCommand extends BaseCommand {
         this.seedingwallCode = seedingwallCode;
     }
 
-    public Integer getSeedingStatus() {
-        return seedingStatus;
+    public Integer getCollectionStatus() {
+        return collectionStatus;
     }
 
-    public void setSeedingStatus(Integer seedingStatus) {
-        this.seedingStatus = seedingStatus;
+    public void setCollectionStatus(Integer collectionStatus) {
+        this.collectionStatus = collectionStatus;
     }
 
 }
