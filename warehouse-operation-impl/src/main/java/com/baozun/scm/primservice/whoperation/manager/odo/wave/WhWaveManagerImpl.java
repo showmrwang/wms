@@ -555,16 +555,25 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
                 }
             }
         }
-        if (WaveStatus.WAVE_EXECUTED == wave.getStatus()) {
-            ReplenishmentTask task = new ReplenishmentTask();
-            task.setOuId(ouId);
-            task.setWaveId(wave.getId());
-            task.setStatus(ReplenishmentTaskStatus.REPLENISHMENT_TASK_NEW);
-            List<ReplenishmentTask> rtList = this.replenishmentTaskDao.findListByParam(task);
-            if (rtList != null && rtList.size() > 0) {
-                for (ReplenishmentTask rt : rtList) {
+        ReplenishmentTask task = new ReplenishmentTask();
+        task.setOuId(ouId);
+        task.setWaveId(wave.getId());
+        task.setStatus(ReplenishmentTaskStatus.REPLENISHMENT_TASK_NEW);
+        List<ReplenishmentTask> rtList = this.replenishmentTaskDao.findListByParam(task);
+        if (rtList != null && rtList.size() > 0) {
+            for (ReplenishmentTask rt : rtList) {
+                if (WaveStatus.WAVE_EXECUTED == wave.getStatus()) {
                     rt.setStatus(ReplenishmentTaskStatus.REPLENISHMENT_TASK_CANCEL);
                     this.replenishmentTaskDao.saveOrUpdateByVersion(rt);
+                } else {
+                    WhSkuInventoryTobefilled tbfInv = new WhSkuInventoryTobefilled();
+                    tbfInv.setOuId(ouId);
+                    tbfInv.setReplenishmentCode(rt.getReplenishmentCode());
+                    List<WhSkuInventoryTobefilled> tbfInvList = this.whSkuInventoryTobefilledDao.findskuInventoryTobefilleds(tbfInv);
+                    if (tbfInvList == null || tbfInvList.size() == 0) {
+                        rt.setStatus(ReplenishmentTaskStatus.REPLENISHMENT_TASK_CANCEL);
+                        this.replenishmentTaskDao.saveOrUpdateByVersion(rt);
+                    }
                 }
             }
         }
