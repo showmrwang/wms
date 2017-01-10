@@ -123,7 +123,7 @@ public interface WhWaveLineDao extends BaseDao<WhWaveLine, Long> {
      * @param id
      * @param ouId
      */
-    void deleteByIdOuId(Long id, Long ouId);
+    void deleteByIdOuId(@Param("id") Long id, @Param("ouId") Long ouId);
 
     /**
      * [业务方法] 波次中合并订单-根据波次id和出库单明细行查找波次明细行
