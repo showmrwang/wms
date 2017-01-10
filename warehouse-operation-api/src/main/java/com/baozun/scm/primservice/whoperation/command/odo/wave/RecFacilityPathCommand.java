@@ -31,6 +31,8 @@ public class RecFacilityPathCommand extends BaseCommand {
     private boolean isLastContainer;
     /** 状态 0：失败 1：成功 */
     private Integer status;
+    /** 是否扫描校验码*/
+    private Boolean isScanCheckCode;
 
     public String getBatch() {
         return batch;
@@ -112,5 +114,12 @@ public class RecFacilityPathCommand extends BaseCommand {
         this.status = status;
     }
 
+    public Boolean getIsScanCheckCode() {
+        return isScanCheckCode;
+    }
+
+    public void setIsScanCheckCode(Boolean isScanCheckCode) {
+        this.isScanCheckCode = isScanCheckCode;
+    }
 
 }

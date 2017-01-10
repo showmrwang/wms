@@ -117,6 +117,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         whWave.setId(waveId);
         whWave.setOuId(ouId);
         whWave.setLifecycle(BaseModel.LIFECYCLE_NORMAL);
+        whWave.setAllocatePhase(null);
         List<WhWave> whWaveList = this.whWaveDao.findListByParam(whWave);
         if (null == whWaveList || 1 != whWaveList.size()) {
             throw new BusinessException("多个波次");
@@ -329,7 +330,9 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         WhWave whWave = new WhWave();
         whWave.setOuId(ouId);
         whWave.setPhaseCode(phaseCode);
+        whWave.setAllocatePhase(null);
         whWave.setIsRunWave(true);
+        whWave.setStatus(WaveStatus.WAVE_EXECUTING);
         List<Long> waveIds = this.whWaveDao.findWaveIdsByParam(whWave);
         return waveIds;
     }

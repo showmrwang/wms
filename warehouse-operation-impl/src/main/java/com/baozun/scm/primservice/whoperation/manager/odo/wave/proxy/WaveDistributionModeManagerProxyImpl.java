@@ -24,6 +24,7 @@ import com.baozun.scm.primservice.whoperation.constant.CacheKeyConstant;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DistributionMode;
 import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
+import com.baozun.scm.primservice.whoperation.constant.WaveStatus;
 import com.baozun.scm.primservice.whoperation.constant.WhUomType;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoLineManager;
@@ -69,7 +70,8 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
         }
         // 从缓存中获取波次主档
         WhWave wave = this.whWaveManager.getWaveByIdAndOuId(waveId, ouId);
-        WhWaveMaster master = this.cacheManager.getObject(CacheKeyConstant.CACHE_WAVE_MASTER + wave.getWaveMasterId());
+        WhWaveMaster master = null;// this.cacheManager.getObject(CacheKeyConstant.CACHE_WAVE_MASTER
+                                   // + wave.getWaveMasterId());
         if (master == null) {
 
             master = this.whWaveManager.findWaveMasterbyIdOuId(wave.getWaveMasterId(), ouId);
@@ -133,7 +135,8 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
                 }
             } else {// 否：进入自定义分配模式计算流程
                 noModeOdoList.add(unitOdoId);
-                odoIdCounterCodeMap.remove(unitOdoId);
+                // odoIdCounterCodeMap.remove(unitOdoId);
+                it.remove();
             }
 
 
@@ -475,6 +478,9 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
         wave.setTotalWeight(totalWeight);
         wave.setTotalSkuQty(totalSkuQty);
         wave.setSkuCategoryQty(skuCategoryQty);
+        if (waveLineMap.size() == 0) {
+            wave.setStatus(WaveStatus.WAVE_EXECUTED);
+        }
     }
 
 

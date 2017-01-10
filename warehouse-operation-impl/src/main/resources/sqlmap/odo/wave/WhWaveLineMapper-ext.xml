@@ -799,6 +799,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
        <include refid="whWaveLineDynamicWhereExt"/>
        order by odoCode 
     </select>
-	
+		<delete id="deleteByIdOuId" parameterType="map">
+	    <![CDATA[
+	        delete from t_wh_wave_line where
+		        id = #{id} and ou_id=#{ouId}
+	    ]]>
+	    </delete> 
 	
 </mapper>
