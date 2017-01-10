@@ -287,7 +287,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		       	mgmt.is_apply_facility as isApplyFacility,
 		       	mgmt.is_dieking_check_message as isDiekingCheckMessage,
 		       	mgmt.is_dieking_seedingwall_message as isDiekingSeedingwallMessage,
-		       	mgmt.is_temporary_storage_check_code as isTemporaryStorageCheckCode,
+		       	mgmt.is_facility_check_code as isFacilityCheckCode,
 		       	mgmt.seeding_mode as seedingMode,
 		       	mgmt.x_qty as xqty,
 		       	mgmt.y_qty as yqty,
