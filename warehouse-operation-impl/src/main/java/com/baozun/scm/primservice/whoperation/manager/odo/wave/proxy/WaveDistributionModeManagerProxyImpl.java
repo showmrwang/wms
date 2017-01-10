@@ -111,6 +111,7 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
         Set<String> twoSuitsOdoSet = new HashSet<String>();
         Set<String> twoSuitsSkuSet = new HashSet<String>();
 
+        Map<String, Integer> twoSuitsCounterMap = new HashMap<String, Integer>();
         while (it.hasNext()) {
             Entry<Long, String> entry = it.next();
             Long unitOdoId = entry.getKey();
@@ -128,7 +129,7 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
                         calcSeckill(unitCode, master, unitOdoId, secKillOdoMap, noModeOdoList);
                         break;
                     case 2:
-                        calcTwoSuits(unitCode, unitOdoId, twoSuitsOdoSet, twoSuitsSkuSet, master, suitsOdoMap, noModeOdoList);
+                        calcTwoSuits(unitCode, unitOdoId, twoSuitsOdoSet, twoSuitsSkuSet, twoSuitsCounterMap, master, suitsOdoMap, noModeOdoList);
                         break;
                     default:
                         calcSuits(unitCode, master, unitOdoId, suitsOdoMap, noModeOdoList);
@@ -187,7 +188,7 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
         }
         // 主副品：
         Map<Long, String> twoSuitsSet = new HashMap<Long, String>();
-        Iterator<Entry<String, Set<Long>>> twoSuitsIt = suitsOdoMap.entrySet().iterator();
+        Iterator<Entry<String, Set<Long>>> twoSuitsIt = twoSuitsOdoMap.entrySet().iterator();
         while (twoSuitsIt.hasNext()) {
             Entry<String, Set<Long>> entry = twoSuitsIt.next();
             for (Long twoSuitOdoId : entry.getValue()) {
@@ -336,11 +337,10 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
      * @param noModeOdoList
      * @param twoSuitsOdoSet
      */
-    private void calcTwoSuits(String code, Long odoId, Set<String> twoSuitsOdoSet, Set<String> twoSuitsSkuSet, WhWaveMaster master, Map<String, Set<Long>> suitsOdoMap, Set<Long> noModeOdoList) {
+    private void calcTwoSuits(String code, Long odoId, Set<String> twoSuitsOdoSet, Set<String> twoSuitsSkuSet, Map<String, Integer> twoSuitsSkuMap, WhWaveMaster master, Map<String, Set<Long>> suitsOdoMap, Set<Long> noModeOdoList) {
         if(!master.getIsCalcTwoSkuSuit()){
             calcSuits(code,master,odoId,suitsOdoMap,noModeOdoList);
         }else{
-            Map<String, Integer> twoSuitsSkuMap = new HashMap<String, Integer>();
             String[] unitCodeArray = code.split("\\|");
             
             String[] unitSkuIdArray = unitCodeArray[3].substring(1, unitCodeArray[3].length() - 1).split("\\$");
