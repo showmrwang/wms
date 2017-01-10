@@ -527,9 +527,51 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
             }
             if (StringUtils.isEmpty(odo.getWaveCode())) {
                 this.deleteWaveLinesAndReleaseInventoryByOdoId(wave.getId(), odo.getId(), "波次-配货模式阶段剔除数据", wh);
+
+                // 获得需要回滚的库存：已分配和待移入。
+                List<WhSkuInventory> skuInvList = this.whSkuInventoryDao.findbyOccupationCode(odo.getOdoCode(), ouId);
+                if (skuInvList != null && skuInvList.size() > 0) {
+                    for (WhSkuInventory skuInv : skuInvList) {
+                        skuInv.setOccupationCode(null);
+                        skuInv.setOccupationCodeSource(null);
+                        skuInv.setOccupationLineId(null);
+                        int updateSkuInvCount = this.whSkuInventoryDao.saveOrUpdateByVersion(skuInv);
+                        if (updateSkuInvCount <= 0) {
+                            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                        }
+                    }
+                }
+                List<WhSkuInventoryAllocated> skuInvAllocatedList = this.whSkuInventoryAllocatedDao.findbyOccupationCode(odo.getOdoCode(), ouId);
+                if (skuInvAllocatedList != null && skuInvAllocatedList.size() > 0) {
+                    for (WhSkuInventoryAllocated invAllocated : skuInvAllocatedList) {
+                        this.whSkuInventoryAllocatedDao.deleteExt(invAllocated.getId(), ouId);
+                    }
+                }
+                List<WhSkuInventoryTobefilled> skuInvTobefilledList = this.whSkuInventoryTobefilledDao.findbyOccupationCode(odo.getOdoCode(), ouId);
+                if (skuInvTobefilledList != null && skuInvTobefilledList.size() > 0) {
+                    for (WhSkuInventoryTobefilled invTobefilled : skuInvTobefilledList) {
+                        this.whSkuInventoryTobefilledDao.deleteByExt(invTobefilled.getId(), ouId);
+                    }
+                }
             }
         }
-        this.whWaveDao.saveOrUpdateByVersion(wave);
+        if (WaveStatus.WAVE_EXECUTED == wave.getStatus()) {
+            ReplenishmentTask task = new ReplenishmentTask();
+            task.setOuId(ouId);
+            task.setWaveId(wave.getId());
+            task.setStatus(ReplenishmentTaskStatus.REPLENISHMENT_TASK_NEW);
+            List<ReplenishmentTask> rtList = this.replenishmentTaskDao.findListByParam(task);
+            if (rtList != null && rtList.size() > 0) {
+                for (ReplenishmentTask rt : rtList) {
+                    rt.setStatus(ReplenishmentTaskStatus.REPLENISHMENT_TASK_CANCEL);
+                    this.replenishmentTaskDao.saveOrUpdateByVersion(rt);
+                }
+            }
+        }
+        int updateCount = this.whWaveDao.saveOrUpdateByVersion(wave);
+        if (updateCount <= 0) {
+            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+        }
 
     }
 
