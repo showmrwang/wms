@@ -503,7 +503,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
     }
 
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void matchWaveDisTributionMode(List<WhOdo> odoList, List<WhWaveLine> offWaveLineList, List<WhOdoLine> offOdoLineList, WhWave wave, Long ouId, Long userId) {
+    public void matchWaveDisTributionMode(List<WhOdo> odoList, List<WhWaveLine> offWaveLineList, List<WhOdoLine> offOdoLineList, WhWave wave, Long ouId, Long userId, Warehouse wh) {
         for (WhWaveLine line : offWaveLineList) {
             this.whWaveLineDao.deleteByIdOuId(line.getId(), ouId);
         }
@@ -511,13 +511,23 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
             if (userId != null) {
                 line.setModifiedId(userId);
             }
-            this.whOdoLineDao.saveOrUpdateByVersion(line);
+            int updateCount = this.whOdoLineDao.saveOrUpdateByVersion(line);
+            if (updateCount <= 0) {
+                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            }
+
         }
         for (WhOdo odo : odoList) {
             if (userId != null) {
                 odo.setModifiedId(userId);
             }
-            this.whOdoDao.saveOrUpdateByVersion(odo);
+            int updateCount = this.whOdoDao.saveOrUpdateByVersion(odo);
+            if (updateCount <= 0) {
+                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            }
+            if (StringUtils.isEmpty(odo.getWaveCode())) {
+                this.deleteWaveLinesAndReleaseInventoryByOdoId(wave.getId(), odo.getId(), "波次-配货模式阶段剔除数据", wh);
+            }
         }
         this.whWaveDao.saveOrUpdateByVersion(wave);
 
