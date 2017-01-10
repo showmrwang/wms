@@ -499,7 +499,7 @@ public final class Constants {
     public static final String WAVE_CODE = "WAVE_CODE";
     /** 出库箱*/
     public static final String OUT_BOUND_BOX = "OUT_BOUND_BOX";
-   
+
     /** 配置为原始库位*/
     public static final String FROM_LOCATION = "FROM_LOCATION";
     /** 配置为原始库位与目标库位*/
@@ -514,7 +514,7 @@ public final class Constants {
     public static final String FROM_INSIDE_CONTAINER_TO_LOCATION = "FROM_INSIDE_CONTAINER_TO_LOCATION";
     /** 配置为目标库位*/
     public static final String TO_LOCATION = "TO_LOCATION";
-    
+
     /**整托拣货流程*/
     public static final Integer REPLENISH_WAY_ONE = 1;
     /**整托拣货流程*/
@@ -568,6 +568,14 @@ public final class Constants {
     /** 播种模式 */
     public static final String SEEDING_MODE_1 = "1";// 边拣货边播种
     public static final String SEEDING_MODE_2 = "2";// 拣完货再播种
+
+    /** 播种墙推荐逻辑:中转库位*/
+    public static final String TARGET_1 = "TRANSIT_LOCATION";
+    /** 播种墙推荐逻辑:出库暂存库位*/
+    public static final String TARGET_2 = "TEMPORARY_STORAGE_LOCATION";
+    /** 播种墙推荐逻辑:播种墙*/
+    public static final String TARGET_3 = "SEEDING_WALL";
+
 
 
 }
