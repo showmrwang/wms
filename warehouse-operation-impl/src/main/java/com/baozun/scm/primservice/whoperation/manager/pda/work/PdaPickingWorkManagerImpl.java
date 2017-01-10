@@ -1334,6 +1334,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 Container ic = containerDao.findByIdExt(tipInsideContainerId, ouId);
                 this.judeContainerStatus(ic);
                 command.setTipInsideContainerCode(ic.getCode());
+                command.setIsNeedTipInsideContainer(true);
             }else{
                 throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
             }

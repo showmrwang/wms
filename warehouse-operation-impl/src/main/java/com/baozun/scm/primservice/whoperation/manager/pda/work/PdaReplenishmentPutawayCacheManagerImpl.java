@@ -116,5 +116,20 @@ public class PdaReplenishmentPutawayCacheManagerImpl extends BaseManagerImpl imp
         log.info("PdaReplenishmentPutawayCacheManagerImpl tipTurnoverBox is end");
         return command;
     }
+    
+
+    /***
+     * 清楚补货上架缓存
+     * @param operationId
+     */
+     public void pdaReplenishPutwayRemoveAllCache(Long operationId){
+         log.info("PdaPickingWorkCacheManagerImpl addPickingOperationExecLine is start");
+         ReplenishmentPutawayCacheCommand replenishment = cacheManager.getObject(CacheConstants.CACHE_PUTAWAY_LOCATION + operationId.toString());
+         if(null == replenishment) {
+             throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+         }
+         cacheManager.remove(CacheConstants.CACHE_PUTAWAY_LOCATION+operationId.toString());
+         log.info("PdaPickingWorkCacheManagerImpl addPickingOperationExecLine is end");
+     }
 
 }

@@ -760,6 +760,8 @@ public class ErrorCodes {
     public static final int TIP_LOCATION_FAIL= 70056;
     /**提示周转箱失败*/
     public static final int TIP_CONTAINER_FAIL=70057;
+    
+    public static final int CHECK_INVENTORY_IS_ERROR=70058;
     // 70001-80000 tangming
     
     // 80001-90000 shenlijun
