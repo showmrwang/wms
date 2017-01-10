@@ -66,6 +66,6 @@ public interface WhOperationLineDao extends BaseDao<WhOperationLine,Long>{
      * @param ouId
      * @return
      */
-    List<WhOperationLineCommand> findOperationLineByLocationId(@Param("operationId") Long operationId, @Param("ouId") Long ouId,@Param("locationId") Long locationId);
+    List<WhOperationLineCommand> findOperationLineByLocationId(@Param("ouId") Long ouId,@Param("locationId") Long locationId);
 	
 }

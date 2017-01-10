@@ -3144,4 +3144,76 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					    and operLine.odo_line_id = #{operationId}
 	                    and inv.replenishmentCode = #{replenishmentCode}
     </select>
+    
+    <select id="checkReplenishmentInventory" resultMap="WhSkuInventoryCommandSnResultExt">
+      SELECT
+	        opLine.locationId,
+	        opLine.outerContainerId,
+	        opLine.insideContainerId,
+	        opLine.skuId,
+	        sum(qty) AS qty
+			FROM
+				(
+					SELECT
+						inventory.location_id as locationId,
+						inventory.outer_container_id as outerContainerId,
+						inventory.inside_container_id as insideContainerId,
+						inventory.sku_id as skuId,
+						sum(
+							IFNULL(inventory.on_hand_qty, 0)
+						) AS qty
+					FROM
+						t_wh_sku_inventory inventory
+			       left join t_wh_operation_exec_line execLine on execLine.odo_line_id = inventory.occupation_line_id
+			       left join t_wh_odo odo on odo.id = execLine.odo_id and odo.odo_code = inventory.occupation_code
+					WHERE
+						execLine.operation_id = #{operationId}
+						execLine.ou_id = #{ouId}
+					GROUP BY
+						inventory.location_id,
+						inventory.outer_container_id,
+						inventory.inside_container_id,
+						inventory.sku_id
+					UNION ALL
+						SELECT
+							operationExecLine.from_location_id as locationId,
+							operationExecLine.from_outer_container_id as outerContainerId,
+							operationExecLine.from_inside_container_id as insideContainerId,
+							operationExecLine.sku_id as skuId,
+			        sum(
+								IFNULL(operationExecLine.qty,0)
+							) AS qty
+						FROM
+							t_wh_operation_exec_line operationExecLine
+						WHERE
+							operationExecLine.operation_id = #{operationId}
+							operationExecLine.ou_id = #{ouId}
+						GROUP BY
+							operationExecLine.from_location_id,
+							operationExecLine.from_outer_container_id,
+							operationExecLine.from_inside_container_id,
+							operationExecLine.sku_id
+				) opLine
+			WHERE
+				1 = 1
+			GROUP BY
+				opLine.locationId,
+				opLine.outerContainerId,
+				opLine.insideContainerId,
+				opLine.skuId
+			HAVING
+				sum(qty) != 0
+    </select>
+    	<select id="findReplenishmentBylocationId" resultMap="WhSkuInventoryResultExt">
+		select  <include refid="whSkuInventoryColumnsExt" />
+		from
+		t_wh_sku_inventory
+		left join t_wh_operation_line operLine on operLine.odo_line_id = inv.occupation_line_id 
+		left join t_wh_odo odo.id = operLine.odo_id  and odo.odo_code = inv.occupation_code
+        where   inv.occupation_code is not null 
+			    and inv.ou_id = #{ouId}
+			    and operLine.odo_line_id = #{odoLineId}
+	            and inv.location_id = #{locationId}
+	            and operLine.odo_id = #{odoId}
+	</select>
 </mapper>
