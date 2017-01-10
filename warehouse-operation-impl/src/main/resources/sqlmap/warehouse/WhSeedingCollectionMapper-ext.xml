@@ -56,4 +56,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
 	</sql>
 	
+	<select id="getSeedingNumFromFacility" resultType="int">
+		select
+			count(1)
+		from
+			t_wh_seeding_collection s
+		where
+			s.facility_id = #{fid} 
+			and s.batch = #{batch}
+			and s.ou_id = #{ouId}
+	</select>
 </mapper>
