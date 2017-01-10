@@ -3670,7 +3670,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 									// Double onHandQty = invCommand.getOnHandQty();
 									Double useableQty = whSkuInventoryDao.getUseableQtyByUuid(invCommand.getUuid(), ouId);
 									if (-1 != Constants.DEFAULT_DOUBLE.compareTo(useableQty)) {
-										break;
+										continue;
 									}
 									// OnHandQty <= useableQty
 									if (1 != invCommand.getOnHandQty().compareTo(useableQty)) {
