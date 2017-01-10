@@ -3323,6 +3323,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 	/**
 	 * 排列分组,递归运算
 	 * 筛选出数量等于qty的集合
+	 * 从1位到skuInvs.size位数的相加递归运算比对
 	 */
 	private static boolean getPaiLieCheck(List<WhSkuInventoryCommand> skuInvs, int i, int length, Double qty, List<WhSkuInventoryCommand> invBestList, boolean cheked) {
 		if (length < 0) {
