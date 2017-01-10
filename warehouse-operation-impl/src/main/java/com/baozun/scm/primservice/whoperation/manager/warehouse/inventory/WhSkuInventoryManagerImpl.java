@@ -3730,6 +3730,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 				createSkuInventoryAllocatedAndTobefilled(invCommand, occupyCode, bhCode, occupyLineId, targetLocation, wh, useableQty, ruleId, GLOBAL_LOG_UPDATE);
 				useableQty = Constants.DEFAULT_DOUBLE;
 			}
+			if (0 == Constants.DEFAULT_DOUBLE.compareTo(useableQty)) {
+				break;
+			}
 		}
 		return useableQty;
 	}
