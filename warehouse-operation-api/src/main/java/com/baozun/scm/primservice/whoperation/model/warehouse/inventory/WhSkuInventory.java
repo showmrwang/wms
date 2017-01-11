@@ -96,7 +96,7 @@ public class WhSkuInventory extends BaseModel {
     /**出库箱号*/
     private String outboundboxCode;
     /** 暂存库位ID*/
-    private Integer temporaryLocationId;
+    private Long temporaryLocationId;
 
     public Long getSkuId() {
         return skuId;
@@ -373,11 +373,11 @@ public class WhSkuInventory extends BaseModel {
         this.outboundboxCode = outboundboxCode;
     }
 
-    public Integer getTemporaryLocationId() {
+    public Long getTemporaryLocationId() {
         return temporaryLocationId;
     }
 
-    public void setTemporaryLocationId(Integer temporaryLocationId) {
+    public void setTemporaryLocationId(Long temporaryLocationId) {
         this.temporaryLocationId = temporaryLocationId;
     }
 

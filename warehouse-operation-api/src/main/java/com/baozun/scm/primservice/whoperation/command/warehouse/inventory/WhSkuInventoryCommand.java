@@ -140,7 +140,7 @@ public class WhSkuInventoryCommand extends BaseCommand {
     private Date lastModifyTime;
 
     /** 暂存库位ID*/
-    private Integer temporaryLocationId;
+    private Long temporaryLocationId;
 
     // 用于通用收货的流程-------------------------------------------------------------------------------------
     /** 通用收货所选择的功能 */
@@ -1034,11 +1034,11 @@ public class WhSkuInventoryCommand extends BaseCommand {
         this.skuRcvdCount = skuRcvdCount;
     }
 
-    public Integer getTemporaryLocationId() {
+    public Long getTemporaryLocationId() {
         return temporaryLocationId;
     }
 
-    public void setTemporaryLocationId(Integer temporaryLocationId) {
+    public void setTemporaryLocationId(Long temporaryLocationId) {
         this.temporaryLocationId = temporaryLocationId;
     }
 
