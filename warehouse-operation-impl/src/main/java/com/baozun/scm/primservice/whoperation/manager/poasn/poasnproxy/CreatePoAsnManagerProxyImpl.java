@@ -35,7 +35,7 @@ import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
 import com.baozun.scm.primservice.whoperation.excel.context.BiPoDefaultExcelContext;
 import com.baozun.scm.primservice.whoperation.excel.exception.ExcelException;
 import com.baozun.scm.primservice.whoperation.excel.exception.RootExcelException;
-import com.baozun.scm.primservice.whoperation.excel.vo.ExcelImportResult;
+import com.baozun.scm.primservice.whoperation.excel.result.ExcelImportResult;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
@@ -987,10 +987,12 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
     }
 
     @Override
-    public ResponseMsg importBiPo() {
-        String inPath = "D:/projects/TEST/IN-INFO/bipoTest.xlsx";
-        String outPath = "D:/projects/TEST/OUT-INFO/bipoTestout.xlsx";
-        Locale locale=Locale.CHINESE;
+    public ResponseMsg importBiPo(String url, String errorUrl, String fileName, Locale locale) {
+        String inPath = url + "/" + fileName;
+        String outPath = null;// errorUrl + "\\/" + fileName;
+        if (locale == null) {
+            locale = Locale.CHINESE;
+        }
         String[] excelIdArray = new String[] {"biPo", "biPoLine"};
         return importBiPoForDefault(inPath, outPath, excelIdArray, locale);
     }
@@ -1002,7 +1004,7 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
         if (excelIdArray != null && excelIdArray.length > 0) {
             try {
                 InputStream fis = new FileInputStream(inPath);
-                OutputStream fos = new FileOutputStream(outPath);
+                OutputStream fos = StringUtils.isEmpty(outPath) ? null : new FileOutputStream(outPath);
                 ExcelImportResult result = BiPoDefaultExcelContext.getContext().readExcel(excelIdArray[0], fis, fos, locale);
                 if (result == null) {
                     throw new BusinessException("入库单头信息Excel解析失败");
@@ -1015,7 +1017,7 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
                     throw new BusinessException("入库单头信息读取失败");
                 }
                 fis = new FileInputStream(inPath);
-                fos = new FileOutputStream(outPath);
+                fos = StringUtils.isEmpty(outPath) ? null : new FileOutputStream(outPath);
                 ExcelImportResult poLineCommandListResult = BiPoDefaultExcelContext.getContext().readExcel(excelIdArray[1], fis, fos, locale);
                 if (poLineCommandListResult == null) {
                     throw new BusinessException("入库单明细信息Excel解析失败");
@@ -1027,6 +1029,8 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
                 for (ExcelException ee : e.getExcelExceptions()) {
                     System.out.println(e.getSheetName() + ":第[" + ee.getRow() + "]行 [" + ee.getTitleName() + "] " + ee.getErrorCode() + " " + ee.getMessage());
                 }
+            } catch (BusinessException bex) {
+                bex.printStackTrace();
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (Exception e) {

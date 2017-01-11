@@ -130,8 +130,8 @@ public class WarehouseCommand extends BaseCommand {
 	private Boolean isDiekingCheckMessage;
 	/** 拣货是否提示播种墙信息 */
 	private Boolean isDiekingSeedingwallMessage;
-	/** 是否校验暂存库位校验码 */
-	private Boolean isTemporaryStorageCheckCode;
+	/** 是否校验设施校验码 */
+	private Boolean isFacilityCheckCode;
 	/** 播种模式 */
 	private String seedingMode;
 	/** 播种墙行数 */
@@ -619,14 +619,6 @@ public class WarehouseCommand extends BaseCommand {
 		this.isDiekingSeedingwallMessage = isDiekingSeedingwallMessage;
 	}
 
-	public Boolean getIsTemporaryStorageCheckCode() {
-		return isTemporaryStorageCheckCode;
-	}
-
-	public void setIsTemporaryStorageCheckCode(Boolean isTemporaryStorageCheckCode) {
-		this.isTemporaryStorageCheckCode = isTemporaryStorageCheckCode;
-	}
-
 	public String getSeedingMode() {
 		return seedingMode;
 	}
@@ -665,6 +657,14 @@ public class WarehouseCommand extends BaseCommand {
 
 	public void setSeedingOdoQty(Integer seedingOdoQty) {
 		this.seedingOdoQty = seedingOdoQty;
+	}
+
+	public Boolean getIsFacilityCheckCode() {
+		return isFacilityCheckCode;
+	}
+
+	public void setIsFacilityCheckCode(Boolean isFacilityCheckCode) {
+		this.isFacilityCheckCode = isFacilityCheckCode;
 	}
 
 

@@ -117,6 +117,8 @@ public class WhOperationExecLine extends BaseModel {
     private Date lastModifyTime;
     /** 操作人ID */
     private Long operatorId;
+    
+    private String replenishmentCode;
 
     // columns END
     public Long getOperationId() {
@@ -461,6 +463,14 @@ public class WhOperationExecLine extends BaseModel {
 
     public void setOperatorId(Long operatorId) {
         this.operatorId = operatorId;
+    }
+
+    public String getReplenishmentCode() {
+        return replenishmentCode;
+    }
+
+    public void setReplenishmentCode(String replenishmentCode) {
+        this.replenishmentCode = replenishmentCode;
     }
 
 }

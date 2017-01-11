@@ -14,9 +14,9 @@ import com.baozun.scm.primservice.whoperation.excel.ExcelExport;
 import com.baozun.scm.primservice.whoperation.excel.ExcelHeader;
 import com.baozun.scm.primservice.whoperation.excel.ExcelImport;
 import com.baozun.scm.primservice.whoperation.excel.result.ExcelExportResult;
+import com.baozun.scm.primservice.whoperation.excel.result.ExcelImportResult;
 import com.baozun.scm.primservice.whoperation.excel.util.ReflectUtil;
 import com.baozun.scm.primservice.whoperation.excel.vo.ExcelDefinition;
-import com.baozun.scm.primservice.whoperation.excel.vo.ExcelImportResult;
 import com.baozun.scm.primservice.whoperation.excel.vo.FieldValue;
 import com.baozun.scm.primservice.whoperation.excel.xml.ExcelDefinitionReader;
 
@@ -32,14 +32,10 @@ public abstract class ExcelContext {
     private ExcelImport excelImport;
 
 
-    @SuppressWarnings("unused")
-    private ExcelContext() {
-
-    }
     /**
      * @param location 配置文件类路径
      */
-    protected ExcelContext(String location) {
+    public ExcelContext(String location) {
         try {
             definitionReader = new ExcelDefinitionReader(location);
             excelExport = new ExcelExport(definitionReader);

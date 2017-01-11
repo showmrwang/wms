@@ -1,5 +1,7 @@
 package com.baozun.scm.primservice.whoperation.manager.poasn.poasnproxy;
 
+import java.util.Locale;
+
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.BiPoCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
@@ -129,8 +131,13 @@ public interface CreatePoAsnManagerProxy extends BaseManager {
     /**
      * 集团下入库单导入
      * 
+     * @param locale
+     * @param errorUrl
+     * @param url
+     * @param fileName
+     * 
      * @return
      */
-    ResponseMsg importBiPo();
+    ResponseMsg importBiPo(String url, String errorUrl, String fileName, Locale locale);
 
 }

@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,15 +15,22 @@ import com.baozun.redis.manager.CacheManager;
 import com.baozun.scm.primservice.whoperation.command.pda.work.OperatioExecLineStatisticsCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.work.ReplenishmentPutawayCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.work.ReplenishmentScanResultComamnd;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkCommand;
 import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
+import com.baozun.scm.primservice.whoperation.constant.WorkStatus;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhLocationDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOperationDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhWorkDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Location;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperation;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhWork;
 /***
  * 补货中的上架
  * @author Administrator
@@ -41,6 +49,12 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
     private WhLocationDao whLocationDao;
     @Autowired
     private ContainerDao containerDao;
+    @Autowired
+    private WhSkuInventoryManager whSkuInventoryManager;
+    @Autowired
+    private WhWorkDao whWorkDao;
+    @Autowired
+    private WhOperationDao  whOperationDao;
     
     @Override
     public ReplenishmentPutawayCommand putawayTipLocation(ReplenishmentPutawayCommand command) {
@@ -111,12 +125,14 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
 
     
     @Override
-    public ReplenishmentPutawayCommand putawayScanTurnoverBox(ReplenishmentPutawayCommand command) {
+    public ReplenishmentPutawayCommand putawayScanTurnoverBox(ReplenishmentPutawayCommand command,Boolean isTabbInvTotal) {
         // TODO Auto-generated method stub
         log.info("PdaReplenishmentPutawayManagerImpl putawayScanTurnoverBox is start");
         Long operationId = command.getOperationId();
         Long ouId = command.getOuId();
         Long locationId = command.getLcoationId();
+        Long userId = command.getUserId();
+        String workCode = command.getWorkBarCode();
         OperatioExecLineStatisticsCommand opExecLineCmd = cacheManager.getObject(CacheConstants.CACHE_OPERATION_EXEC_LINE + operationId.toString());
         if(null == opExecLineCmd){
             throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
@@ -144,10 +160,42 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                 command.setIsNeedScanLocation(true);
             }else{ //库位已经扫描完毕
                 command.setIsScanFinsh(true);
+                whSkuInventoryManager.replenishmentPutaway(operationId, ouId, isTabbInvTotal, userId, workCode);
+                //更新工作及作业状态
+                this.updateStatus(operationId, workCode, ouId, userId);
+                //清除所有缓存
+                pdaReplenishmentPutawayCacheManager.pdaReplenishPutwayRemoveAllCache(operationId);
             }
         }
         log.info("PdaReplenishmentPutawayManagerImpl putawayScanTurnoverBox is end");
         return command;
+    }
+
+    @Override
+    public void updateStatus(Long operationId, String workCode,Long ouId,Long userId) {
+        // TODO Auto-generated method stub
+        log.info("PdaReplenishmentPutawayManagerImpl updateStatus is start");
+        WhOperation whOperation = whOperationDao.findOperationByIdExt(operationId,ouId);
+        if(null == whOperation) {
+            log.error("whOperation id is not normal, operationId is:[{}]", operationId);
+            throw new BusinessException(ErrorCodes.OPATION_NO_EXIST);
+        }
+        whOperation.setStatus(WorkStatus.FINISH);
+        whOperation.setModifiedId(userId);
+        whOperationDao.saveOrUpdateByVersion(whOperation);
+        insertGlobalLog(GLOBAL_LOG_UPDATE, whOperation, ouId, userId, null, null);
+        WhWorkCommand workCmd = whWorkDao.findWorkByWorkCode(workCode, ouId);
+        if(null == workCmd) {
+            log.error("whOperation id is not normal, operationId is:[{}]", operationId);
+            throw new BusinessException(ErrorCodes.WORK_NO_EXIST);
+        }
+        WhWork work = new WhWork();
+        BeanUtils.copyProperties(workCmd, work);
+        work.setStatus(WorkStatus.FINISH);
+        whWorkDao.saveOrUpdateByVersion(work);
+        insertGlobalLog(GLOBAL_LOG_UPDATE, work, ouId, userId, null, null);
+        log.info("PdaReplenishmentPutawayManagerImpl updateStatus is end");
+        
     }
 
 }

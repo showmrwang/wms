@@ -47,4 +47,7 @@ public interface WhWorkLineDao extends BaseDao<WhWorkLine,Long>{
 	
 	List<WhWorkLineCommand> findWorkLineByWorkId(@Param("workId") Long workId, @Param("ouId") Long ouId);
 	
+	
+	  public List<WhWorkLineCommand> findWorkLineByLocationId(@Param("locationId") Long locationId,@Param("ouId") Long ouId);
+	
 }

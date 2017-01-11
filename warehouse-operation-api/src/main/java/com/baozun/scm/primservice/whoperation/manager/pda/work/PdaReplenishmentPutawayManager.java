@@ -26,5 +26,15 @@ public interface PdaReplenishmentPutawayManager extends BaseManager {
      * @param command
      * @return
      */
-    public ReplenishmentPutawayCommand putawayScanTurnoverBox(ReplenishmentPutawayCommand command);
+    public ReplenishmentPutawayCommand putawayScanTurnoverBox(ReplenishmentPutawayCommand command,Boolean isTabbInvTotal);
+    
+    
+    /***
+     * 更新工作及作业状态
+     * @param operationId
+     * @param workCode
+     * @param ouId
+     * @param userId
+     */
+    public void updateStatus(Long operationId,String workCode,Long ouId,Long userId);
 }
