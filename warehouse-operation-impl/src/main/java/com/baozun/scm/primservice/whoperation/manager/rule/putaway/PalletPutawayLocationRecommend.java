@@ -63,7 +63,7 @@ import com.baozun.scm.primservice.whoperation.util.formula.SimpleWeightCalculato
  * @author lichuan
  *
  */
-@Service("pallectPutawayLocationRecommend")
+@Service("palletPutawayLocationRecommend")
 @Transactional
 public class PalletPutawayLocationRecommend extends BasePutawayLocationRecommend implements PutawayLocationRecommend {
     protected static final Logger log = LoggerFactory.getLogger(PalletPutawayLocationRecommend.class);
