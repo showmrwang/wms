@@ -4304,10 +4304,10 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         //到库存表中查询
         List<WhSkuInventoryCommand> allSkuInvList = whSkuInventoryDao.getWhSkuInventoryByOccupationLineId(ouId, operationId);
         if(null == allSkuInvList || allSkuInvList.size() == 0){
-            allSkuInvList = whSkuInventoryDao.getWhSkuInventoryTobefilledByOccupationLineId(ouId, operationId);
-            if(null == allSkuInvList || allSkuInvList.size() == 0) {
+//            allSkuInvList = whSkuInventoryDao.getWhSkuInventoryTobefilledByOccupationLineId(ouId, operationId);
+//            if(null == allSkuInvList || allSkuInvList.size() == 0) {
                 throw new BusinessException(ErrorCodes.LOCATION_INVENTORY_IS_NO);
-            }
+//            }
         }
         List<Long> skuInvCmdList = new ArrayList<Long>();
         List<Long> insideIdList = new ArrayList<Long>();

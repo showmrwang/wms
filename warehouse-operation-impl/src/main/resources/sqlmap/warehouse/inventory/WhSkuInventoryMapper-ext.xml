@@ -2969,19 +2969,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        		sn.ou_id as snOuId,
 	        		sn.sys_uuid as snSysUuid
 					from 
-					t_wh_asn asn,	
 					t_wh_sku_inventory inv
 					left join t_wh_operation_line operLine on operLine.odo_line_id = inv.occupation_line_id
 					left join t_wh_odo odo.id = operLine.odo_id  and odo.odo_code = inv.occupation_code
 					left join t_wh_sku_inventory_sn sn on inv.uuid = sn.uuid
 					where 
 						inv.occupation_code is not null 
-						and asn.asn_code = inv.occupation_code
-						and (asn.status=5 or asn.status=10)
 					    and inv.ou_id = #{ouId}
-					and operLine.odo_line_id = #{operationId}
+					and operLine.operation_id = #{operationId}
     </select>
-    
+   <!--  
     <select id="getWhSkuInventoryTobefilledByOccupationLineId" resultMap="WhSkuInventoryCommandSnResultExt">
 			select 
 					inv.id as invId,
@@ -3031,9 +3028,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 						and asn.asn_code = inv.occupation_code
 						and (asn.status=5 or asn.status=10)
 					    and inv.ou_id = #{ouId}
-					and operLine.odo_line_id = #{operationId}
+					and operLine.operation_id = #{operationId}
     </select>
-    
+    -->
     
      <select id="getWhSkuInventoryCommandByNoWave" resultMap="WhSkuInventoryCommandSnResultExt">
 			select 

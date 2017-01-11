@@ -141,10 +141,10 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
             skuInvList = new ArrayList<WhSkuInventoryCommand>();
             List<WhSkuInventoryCommand> skuInvCmdList = whSkuInventoryDao.getWhSkuInventoryByOccupationLineId(ouId, operationId);
             if(null == skuInvCmdList || skuInvCmdList.size() == 0){
-                skuInvCmdList = whSkuInventoryDao.getWhSkuInventoryTobefilledByOccupationLineId(ouId, operationId);
-                if(null == skuInvCmdList || skuInvCmdList.size() == 0) {
+//                skuInvCmdList = whSkuInventoryDao.getWhSkuInventoryTobefilledByOccupationLineId(ouId, operationId);
+//                if(null == skuInvCmdList || skuInvCmdList.size() == 0) {
                     throw new BusinessException(ErrorCodes.LOCATION_INVENTORY_IS_NO);
-                }
+//                }
             }
             List<WhOperationLineCommand> operationLineList = whOperationLineDao.findOperationLineByOperationId(operationId, ouId);   //当前工作下所有的作业明细集合
             for(WhOperationLineCommand operLineCmd : operationLineList){
