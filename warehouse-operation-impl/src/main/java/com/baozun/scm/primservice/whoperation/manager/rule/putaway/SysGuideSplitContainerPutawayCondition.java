@@ -29,7 +29,7 @@ import com.baozun.scm.primservice.whoperation.constant.WhLocationRecommendType;
  */
 @Service("sysGuideSplitContainerPutawayCondition")
 @Transactional
-public class SysGuideSplitContainerPutawayCondition extends PutawayBaseCondition implements PutawayCondition {
+public class SysGuideSplitContainerPutawayCondition extends BasePutawayCondition implements PutawayCondition {
     protected static final Logger log = LoggerFactory.getLogger(SysGuideSplitContainerPutawayCondition.class);
 
     /**

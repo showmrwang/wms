@@ -28,7 +28,7 @@ import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
  * @author lichuan
  *
  */
-public abstract class PutawayBaseCondition extends BaseManagerImpl implements PutawayCondition {
+public abstract class BasePutawayCondition extends BaseManagerImpl implements PutawayCondition {
 
     /**
      * @author lichuan
