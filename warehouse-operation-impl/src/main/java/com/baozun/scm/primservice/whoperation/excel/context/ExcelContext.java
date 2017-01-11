@@ -32,14 +32,10 @@ public abstract class ExcelContext {
     private ExcelImport excelImport;
 
 
-    @SuppressWarnings("unused")
-    private ExcelContext() {
-
-    }
     /**
      * @param location 配置文件类路径
      */
-    protected ExcelContext(String location) {
+    public ExcelContext(String location) {
         try {
             definitionReader = new ExcelDefinitionReader(location);
             excelExport = new ExcelExport(definitionReader);

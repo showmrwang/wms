@@ -247,6 +247,7 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
                 odo.setDistributionCode(suitsSet.get(odoId));
             } else if (diyOdoMap.containsKey(odoId)) {
                 odo.setDistributeMode(diyOdoMap.get(odoId));
+                odo.setDistributionCode(null);
             } else {
                 odo.setDistributeMode(null);
                 odo.setDistributionCode(null);
