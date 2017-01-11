@@ -74,32 +74,21 @@ public class PutawayConditionFactoryImpl implements PutawayConditionFactory {
         } else if (WhPutawayPatternType.SYS_SUGGEST_PUTAWAY == ppt) {
             switch (ppdt) {
                 case WhPutawayPatternDetailType.PALLET_PUTAWAY:
-                    return sysSuggetPalletPutawayCondition;
+                    return sysGuidePalletPutawayCondition;
                 case WhPutawayPatternDetailType.CONTAINER_PUTAWAY:
-
+                    return sysGuideContainerPutawayCondition;
                 case WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY:
-
+                    return sysGuideSplitContainerPutawayCondition;
                 default:
                     log.error("putawayConditionFactory.getPutawayCondition throw exception, putawayPatternDetailType is error, ppt is:[{}], ppdt is:[{}], logId is:[{}]", new Object[] {ppt, ppdt, logId});
                     throw new BusinessException(ErrorCodes.PARAMS_ERROR);
             }
 
-        } else if (WhPutawayPatternType.MANUAL_DECIDE_PUTAWAY == ppt) {
-            switch (ppdt) {
-                case WhPutawayPatternDetailType.PALLET_PUTAWAY:
-                    return manMadePalletPutawayCondition;
-                case WhPutawayPatternDetailType.CONTAINER_PUTAWAY:
-
-                case WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY:
-
-                default:
-                    log.error("putawayConditionFactory.getPutawayCondition throw exception, putawayPatternDetailType is error, ppt is:[{}], ppdt is:[{}], logId is:[{}]", new Object[] {ppt, ppdt, logId});
-                    throw new BusinessException(ErrorCodes.PARAMS_ERROR);
-            }
         } else {
-
+            log.error("putawayConditionFactory.getPutawayCondition throw exception, putawayPatternDetailType is error, ppt is:[{}], ppdt is:[{}], logId is:[{}]", new Object[] {ppt, ppdt, logId});
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
-        return null;
+        // return null;
     }
 
 }
