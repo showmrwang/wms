@@ -28,6 +28,7 @@ import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
  */
 @Service("manMadePalletPutawayCondition")
 @Transactional
+@Deprecated
 public class ManMadePalletPutawayCondition extends BaseManagerImpl implements PutawayCondition {
     protected static final Logger log = LoggerFactory.getLogger(ManMadePalletPutawayCondition.class);
 

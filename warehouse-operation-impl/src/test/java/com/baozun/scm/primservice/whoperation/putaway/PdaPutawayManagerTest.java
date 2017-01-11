@@ -27,6 +27,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
 import com.baozun.redis.manager.CacheManager;
+import com.baozun.scm.baseservice.sac.manager.CodeManager;
 import com.baozun.scm.baseservice.sac.manager.PkManager;
 import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.TipContainerCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
@@ -55,6 +56,8 @@ public class PdaPutawayManagerTest extends AbstractJUnit4SpringContextTests {
     private CacheManager cacheManagr;
     @Autowired
     private WhSkuInventoryDao whSkuInventoryDao;
+    @Autowired
+    private CodeManager codeManager;
     
     @Test
     public void getPK(){
@@ -76,10 +79,16 @@ public class PdaPutawayManagerTest extends AbstractJUnit4SpringContextTests {
        
 //       Long id = pkManager.generatePk(Constants.WMS, "com.baozun.scm.primservice.whinfo.model.warehouse.WhSkuLocation");
 //       System.out.println(id);
-       List<Long> ids = pkManager.generatePkList(Constants.WMS, "com.baozun.scm.primservice.whinfo.model.system.SysDictionary", 1).toArray();
+       List<Long> ids = pkManager.generatePkList(Constants.WMS, "com.baozun.scm.primservice.whinfo.model.warehouse.inventory.WhSkuInventory", 1).toArray();
        for(Long id : ids){
            System.out.println(id);
        }
+    }
+    
+    @Test
+    public void codeTest(){
+        String code = codeManager.generateCode("wms", "WORK_ASSIGN_OUT_BATCH", "", "", "");
+        System.out.println(code);
     }
     
     @Test
