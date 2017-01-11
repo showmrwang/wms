@@ -24,10 +24,10 @@ import org.springframework.context.support.ResourceBundleMessageSource;
 
 import com.baozun.scm.primservice.whoperation.excel.exception.ExcelException;
 import com.baozun.scm.primservice.whoperation.excel.exception.RootExcelException;
+import com.baozun.scm.primservice.whoperation.excel.result.ExcelImportResult;
 import com.baozun.scm.primservice.whoperation.excel.util.ReflectUtil;
 import com.baozun.scm.primservice.whoperation.excel.util.SpringUtil;
 import com.baozun.scm.primservice.whoperation.excel.vo.ExcelDefinition;
-import com.baozun.scm.primservice.whoperation.excel.vo.ExcelImportResult;
 import com.baozun.scm.primservice.whoperation.excel.vo.FieldValue;
 import com.baozun.scm.primservice.whoperation.excel.xml.ExcelDefinitionReader;
 
@@ -268,7 +268,7 @@ public class ExcelImport extends AbstractExcelResolver {
 		}
 	}
 
-	public void exportImportErroeMsg(Workbook workbook, RootExcelException rootExcelException)
+    public static void exportImportErroeMsg(Workbook workbook, RootExcelException rootExcelException)
 			throws EncryptedDocumentException, InvalidFormatException, IOException {
 		Sheet sheet = workbook.getSheet(rootExcelException.getSheetName());
 		if (sheet == null) {

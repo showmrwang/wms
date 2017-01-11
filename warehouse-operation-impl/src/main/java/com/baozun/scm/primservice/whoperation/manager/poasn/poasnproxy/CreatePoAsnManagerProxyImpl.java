@@ -35,7 +35,7 @@ import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
 import com.baozun.scm.primservice.whoperation.excel.context.BiPoDefaultExcelContext;
 import com.baozun.scm.primservice.whoperation.excel.exception.ExcelException;
 import com.baozun.scm.primservice.whoperation.excel.exception.RootExcelException;
-import com.baozun.scm.primservice.whoperation.excel.vo.ExcelImportResult;
+import com.baozun.scm.primservice.whoperation.excel.result.ExcelImportResult;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;

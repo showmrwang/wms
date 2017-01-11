@@ -78,6 +78,7 @@ public class WhWaveMaster extends BaseModel {
     private Integer twoSkuSuitOdoQtys;
     private Boolean isCalcSuits;
     private Integer suitsOdoQtys;
+    private Integer suitsMaxSkuCategorys;
     private Integer rcvdWorkPriority;   //收货工作优先级
     private Integer putawayWorkPriority;  //上架工作优先级
     private Integer pickingWorkPriority; //拣货工作优先级
@@ -91,6 +92,14 @@ public class WhWaveMaster extends BaseModel {
     // columns END
 
     public WhWaveMaster() {}
+
+    public Integer getSuitsMaxSkuCategorys() {
+        return suitsMaxSkuCategorys;
+    }
+
+    public void setSuitsMaxSkuCategorys(Integer suitsMaxSkuCategorys) {
+        this.suitsMaxSkuCategorys = suitsMaxSkuCategorys;
+    }
 
     public Boolean getIsCalcSeckill() {
         return isCalcSeckill;

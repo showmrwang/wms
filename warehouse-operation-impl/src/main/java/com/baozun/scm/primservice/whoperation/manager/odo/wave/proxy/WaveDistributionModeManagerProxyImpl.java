@@ -248,6 +248,8 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
             } else if (diyOdoMap.containsKey(odoId)) {
                 odo.setDistributeMode(diyOdoMap.get(odoId));
             } else {
+                odo.setDistributeMode(null);
+                odo.setDistributionCode(null);
                 odo.setWaveCode(null);
                 odo.setOdoStatus(OdoStatus.ODO_NEW);
                 List<WhOdoLine> odolineList = this.odoLineManager.findOdoLineListByOdoId(odoId, ouId);
@@ -315,7 +317,7 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
         }
         String[] codeArray = code.split("\\" + CacheKeyConstant.WAVE_ODO_SPLIT);
         Integer skuType = Integer.parseInt(codeArray[1]);
-        if (skuType < 2 || skuType > master.getMaxSkuCategoryQty()) {
+        if (skuType < 2 || skuType > master.getSuitsMaxSkuCategorys()) {
             noModeOdoList.add(odoId);
             return;
         }
