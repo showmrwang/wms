@@ -15,6 +15,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -998,7 +999,6 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
     }
 
     private ResponseMsg importBiPoForDefault(String inPath, String outPath, String[] excelIdArray, Locale locale) {
-
         BiPoCommand excelPo = null;
 
         if (excelIdArray != null && excelIdArray.length > 0) {
@@ -1009,6 +1009,7 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
                 if (result == null) {
                     throw new BusinessException("入库单头信息Excel解析失败");
                 }
+
                 List<BiPoCommand> poCommandList = result.getListBean();
                 System.out.println("行数： " + poCommandList.size());
                 excelPo = poCommandList.get(0);
@@ -1024,6 +1025,8 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
                 }
                 List<BiPoLineCommand> poLineList = poLineCommandListResult.getListBean();
                 excelPo.setPoLineList(poLineList);
+
+                this.createBiPoFromExcel(excelPo, result, poLineCommandListResult);
             } catch (RootExcelException e) {
                 System.out.println(e.getMessage() + " [" + e.getSheetName() + "]");
                 for (ExcelException ee : e.getExcelExceptions()) {
@@ -1038,30 +1041,33 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
             }
         }
 
-        ResponseMsg msg = this.createBiPoFromExcel(excelPo);
-        return msg;
+        return null;
     }
 
     /**
      * EXCEL导入PO
      * 
      * @param excelPo
+     * @param poLineCommandListResult
+     * @param result
      * @return
      */
-    private ResponseMsg createBiPoFromExcel(BiPoCommand excelPo) {
+    private ResponseMsg createBiPoFromExcel(BiPoCommand excelPo, ExcelImportResult result, ExcelImportResult poLineCommandListResult) {
         String logId = excelPo.getLogId();
         Long ouId = excelPo.getOuId();
         Long userId = null == excelPo.getUserId() ? 100011L : excelPo.getUserId();
         Long customerId, storeId;
         ResponseMsg rm = new ResponseMsg();
+        Workbook workbook = result.getWorkbook();
+        ExcelImportResult errorExcel = new ExcelImportResult();
         try {
             // 校验逻辑
             if (StringUtils.isEmpty(excelPo.getExtCode())) {
-                throw new BusinessException("入库单客户编码不能为空");
+                errorExcel.addRowException("入库单客户编码不能为空", "", result.getTitleIndex(), "biPo");
             }
 
             if (StringUtils.isEmpty(excelPo.getPoType())) {
-                throw new BusinessException("入库单类型不能为空");
+                errorExcel.addRowException("入库单类型不能为空", "", result.getTitleIndex(), "biPo");
             }
             Customer customer = this.customerManager.findCustomerbyCode(excelPo.getCustomerCode());
             if (customer == null) {
