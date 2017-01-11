@@ -52,6 +52,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	inbound_time as inboundTime,
 	        	last_modify_time as lastModifyTime,
 	        	container_lattice_no as containerLatticeNo,
+	        	temporary_location_id as temporaryLocationId,
 	        	outboundbox_code as outboundboxCode
 	    ]]>
 	</sql>
@@ -89,6 +90,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			inv.inbound_time as inboundTime,
 	       	inv.last_modify_time as lastModifyTime,
 	       	inv.container_lattice_no as containerLatticeNo,
+	       	inv.temporary_location_id as temporaryLocationId,
 	       	inv.outboundbox_code as outboundboxCode
 	    ]]>
 	</sql>
@@ -263,6 +265,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			iout.code as insideContainerCode,
 			invstatus.name as invstatusName,
 			t.container_lattice_no as containerLatticeNo,
+			t.temporary_location_id as temporaryLocationId,
 	       	t.outboundbox_code as outboundboxCode
 	    ]]>
 	</sql>
@@ -308,6 +311,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			t.insideContainerCode as insideContainerCode,
 			t.invstatusName as invstatusName,
 			t.container_lattice_no as containerLatticeNo,
+			t.temporary_location_id as temporaryLocationId,
 	       	t.outboundbox_code as outboundboxCode
 	    ]]>
 	</sql>
@@ -483,6 +487,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			sku.code as skuCode,
 			sku.name as skuName,
 			inv.container_lattice_no as containerLatticeNo,
+			inv.temporary_location_id as temporaryLocationId,
 	       	inv.outboundbox_code as outboundboxCode
 	    ]]>
 	</sql>
@@ -560,6 +565,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					inv.inbound_time as inboundTime,
 	        		inv.last_modify_time as lastModifyTime,
 	        		inv.container_lattice_no as containerLatticeNo,
+	        		inv.temporary_location_id as temporaryLocationId,
 	            	inv.outboundbox_code as outboundboxCode
 					from 
 					t_wh_sku_inventory inv 
@@ -603,6 +609,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        		inv.last_modify_time as lastModifyTime,
 	        		inv.container_lattice_no as containerLatticeNo,
 	            	inv.outboundbox_code as outboundboxCode,
+	            	inv.temporary_location_id as temporaryLocationId,
 	        		sn.id as snId,
 	        		sn.sn as snSn,
 	        		sn.occupation_code as snOccupationCode,
@@ -665,6 +672,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        		inv.last_modify_time as lastModifyTime,
 	        		inv.container_lattice_no as containerLatticeNo,
 	            	inv.outboundbox_code as outboundboxCode,
+	            	inv.temporary_location_id as temporaryLocationId,
 	        		sn.id as snId,
 	        		sn.sn as snSn,
 	        		sn.occupation_code as snOccupationCode,
@@ -727,6 +735,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		<result property="occupationCodeSource" column="occupationCodeSource"/>
 		<result property="inboundTime" column="inboundTime"/>
 		<result property="lastModifyTime" column="lastModifyTime"/>
+		<result property="temporaryLocationId" column="temporaryLocationId"/>
 		<collection property="whSkuInventorySnCommandList"
 			ofType="com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand">
 			<id property="id" column="snId"/>
@@ -777,6 +786,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        		inv.last_modify_time as lastModifyTime,
 	        		inv.container_lattice_no as containerLatticeNo,
 	            	inv.outboundbox_code as outboundboxCode,
+	            	inv.temporary_location_id as temporaryLocationId,
 	        		sn.id as snId,
 	        		sn.sn as snSn,
 	        		sn.occupation_code as snOccupationCode,
@@ -837,6 +847,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        		inv.last_modify_time as lastModifyTime,
 	        		inv.container_lattice_no as containerLatticeNo,
 	            	inv.outboundbox_code as outboundboxCode,
+	            	inv.temporary_location_id as temporaryLocationId,
 	        		sn.id as snId,
 	        		sn.sn as snSn,
 	        		sn.occupation_code as snOccupationCode,
@@ -889,6 +900,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					inv.uuid as invUuid,
 					inv.ou_id as invOuId,
 	        		inv.last_modify_time as lastModifyTime,
+	        		inv.temporary_location_id as temporaryLocationId,
 	        		sn.id as snId,
 	        		sn.sn as snSn,
 	        		sn.occupation_code as snOccupationCode,
@@ -941,6 +953,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					inv.uuid as invUuid,
 					inv.ou_id as invOuId,
 	        		inv.last_modify_time as lastModifyTime,
+	        		inv.temporary_location_id as temporaryLocationId,
 	        		sn.id as snId,
 	        		sn.sn as snSn,
 	        		sn.occupation_code as snOccupationCode,
@@ -1009,6 +1022,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        		inv.last_modify_time as lastModifyTime,
 	        		inv.container_lattice_no as containerLatticeNo,
 	            	inv.outboundbox_code as outboundboxCode,
+	            	inv.temporary_location_id as temporaryLocationId,
 	        		sn.id as snId,
 	        		sn.sn as snSn,
 	        		sn.occupation_code as snOccupationCode,
@@ -1071,6 +1085,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        		inv.last_modify_time as lastModifyTime,
 	        		inv.container_lattice_no as containerLatticeNo,
 	            	inv.outboundbox_code as outboundboxCode,
+	            	inv.temporary_location_id as temporaryLocationId,
 	        		sn.id as snId,
 	        		sn.sn as snSn,
 	        		sn.occupation_code as snOccupationCode,
@@ -1132,6 +1147,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        		inv.last_modify_time as lastModifyTime,
 	        		inv.container_lattice_no as containerLatticeNo,
 	            	inv.outboundbox_code as outboundboxCode,
+	            	inv.temporary_location_id as temporaryLocationId,
 	        		sn.id as snId,
 	        		sn.sn as snSn,
 	        		sn.occupation_code as snOccupationCode,
@@ -1184,6 +1200,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					inv.uuid as invUuid,
 					inv.ou_id as invOuId,
 	        		inv.last_modify_time as lastModifyTime,
+	        		inv.temporary_location_id as temporaryLocationId,
 	        		sn.id as snId,
 	        		sn.sn as snSn,
 	        		sn.occupation_code as snOccupationCode,
@@ -1250,6 +1267,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        		inv.last_modify_time as lastModifyTime,
 	        		inv.container_lattice_no as containerLatticeNo,
 	            	inv.outboundbox_code as outboundboxCode,
+	            	inv.temporary_location_id as temporaryLocationId,
 	        		sn.id as snId,
 	        		sn.sn as snSn,
 	        		sn.occupation_code as snOccupationCode,
@@ -1315,6 +1333,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        		inv.last_modify_time as lastModifyTime,
 	        		inv.container_lattice_no as containerLatticeNo,
 	            	inv.outboundbox_code as outboundboxCode,
+	            	inv.temporary_location_id as temporaryLocationId,
 	        		sn.id as snId,
 	        		sn.sn as snSn,
 	        		sn.occupation_code as snOccupationCode,
@@ -1374,6 +1393,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					inv.uuid as invUuid,
 					inv.ou_id as invOuId,
 	        		inv.last_modify_time as lastModifyTime,
+	        		inv.temporary_location_id as temporaryLocationId,
 	        		sn.id as snId,
 	        		sn.sn as snSn,
 	        		sn.occupation_code as snOccupationCode,
@@ -1552,6 +1572,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		       			 inbound_time = #{inboundTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		       		 	 last_modify_time = now() ,	
 	            	     container_lattice_no = #{containerLatticeNo,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+	            	     temporary_location_id = #{temporaryLocationId,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 	            	     outboundbox_code = #{outboundboxCode,javaType=java.lang.String,jdbcType=VARCHAR}
 	        WHERE 
 		        id = #{id} 
@@ -1643,6 +1664,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			 	    t.last_modify_time as lastModifyTime,
 			 	    t.container_lattice_no as containerLatticeNo,
 	            	t.outboundbox_code as outboundboxCode,
+	            	t.temporary_location_id as temporaryLocationId,
 					sys.dic_label as invTypeName,
 					invstatus.name as invstatusName,
 					inva1.dic_label as invAttr1Str,
@@ -1811,6 +1833,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
        		inv.last_modify_time as lastModifyTime,
        		inv.container_lattice_no as containerLatticeNo,
 	        inv.outboundbox_code as outboundboxCode,
+	        inv.temporary_location_id as temporaryLocationId,
        		sn.id as snId,
        		sn.sn as snSn,
        		sn.occupation_code as snOccupationCode,
@@ -1868,6 +1891,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        inv.inbound_time as inboundTime,
 	               	inv.last_modify_time as lastModifyTime,
 	                inv.container_lattice_no as containerLatticeNo,
+	                inv.temporary_location_id as temporaryLocationId,
 	                inv.outboundbox_code as outboundboxCode
 		    <![CDATA[
 			    from t_wh_sku_inventory inv
@@ -1990,6 +2014,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        		inv.last_modify_time as lastModifyTime,
 	        		inv.container_lattice_no as containerLatticeNo,
 	                inv.outboundbox_code as outboundboxCode,
+	                inv.temporary_location_id as temporaryLocationId,
 	        		sn.id as snId,
 	        		sn.sn as snSn,
 	        		sn.occupation_code as snOccupationCode,
@@ -2874,6 +2899,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         	ou_id as ouId,
         	occupation_code_source as occupationCodeSource,
         	inbound_time as inboundTime,
+        	temporary_location_id as temporaryLocationId,
         	last_modify_time as lastModifyTime
 		from
 			t_wh_sku_inventory
@@ -2956,6 +2982,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        		inv.last_modify_time as lastModifyTime,
 	        		inv.container_lattice_no as containerLatticeNo,
 	                inv.outboundbox_code as outboundboxCode,
+	                inv.temporary_location_id as temporaryLocationId,
 	        		sn.id as snId,
 	        		sn.sn as snSn,
 	        		sn.occupation_code as snOccupationCode,
@@ -3058,6 +3085,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					inv.ou_id as invOuId,
 					inv.occupation_code_source as occupationCodeSource,
 	        		inv.last_modify_time as lastModifyTime,
+	        		inv.temporary_location_id as temporaryLocationId,
 	        		sn.id as snId,
 	        		sn.sn as snSn,
 	        		sn.occupation_code as snOccupationCode,
@@ -3118,6 +3146,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					inv.ou_id as invOuId,
 					inv.occupation_code_source as occupationCodeSource,
 	        		inv.last_modify_time as lastModifyTime,
+	        		inv.temporary_location_id as temporaryLocationId,
 	        		sn.id as snId,
 	        		sn.sn as snSn,
 	        		sn.occupation_code as snOccupationCode,

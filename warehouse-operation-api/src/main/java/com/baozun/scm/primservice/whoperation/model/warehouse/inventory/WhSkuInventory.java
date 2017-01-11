@@ -90,12 +90,14 @@ public class WhSkuInventory extends BaseModel {
     private Date inboundTime;
     /** 最后操作时间 */
     private Date lastModifyTime;
-    
+
     /**货格号*/
     private Integer containerLatticeNo;
     /**出库箱号*/
     private String outboundboxCode;
-    
+    /** 暂存库位ID*/
+    private Integer temporaryLocationId;
+
     public Long getSkuId() {
         return skuId;
     }
@@ -320,29 +322,24 @@ public class WhSkuInventory extends BaseModel {
         this.lastModifyTime = lastModifyTime;
     }
 
-    @Override public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (!(o instanceof WhSkuInventory))
-            return false;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof WhSkuInventory)) return false;
 
         WhSkuInventory that = (WhSkuInventory) o;
 
-        if (getCountryOfOrigin() != null ? !getCountryOfOrigin().equals(that.getCountryOfOrigin()) : that.getCountryOfOrigin() != null)
-            return false;
-        if (getInvAttr1() != null ? !getInvAttr1().equals(that.getInvAttr1()) : that.getInvAttr1() != null)
-            return false;
-        if (getInvAttr2() != null ? !getInvAttr2().equals(that.getInvAttr2()) : that.getInvAttr2() != null)
-            return false;
-        if (getInvAttr3() != null ? !getInvAttr3().equals(that.getInvAttr3()) : that.getInvAttr3() != null)
-            return false;
-        if (getInvAttr4() != null ? !getInvAttr4().equals(that.getInvAttr4()) : that.getInvAttr4() != null)
-            return false;
+        if (getCountryOfOrigin() != null ? !getCountryOfOrigin().equals(that.getCountryOfOrigin()) : that.getCountryOfOrigin() != null) return false;
+        if (getInvAttr1() != null ? !getInvAttr1().equals(that.getInvAttr1()) : that.getInvAttr1() != null) return false;
+        if (getInvAttr2() != null ? !getInvAttr2().equals(that.getInvAttr2()) : that.getInvAttr2() != null) return false;
+        if (getInvAttr3() != null ? !getInvAttr3().equals(that.getInvAttr3()) : that.getInvAttr3() != null) return false;
+        if (getInvAttr4() != null ? !getInvAttr4().equals(that.getInvAttr4()) : that.getInvAttr4() != null) return false;
         return !(getInvAttr5() != null ? !getInvAttr5().equals(that.getInvAttr5()) : that.getInvAttr5() != null);
 
     }
 
-    @Override public int hashCode() {
+    @Override
+    public int hashCode() {
         int result = getCountryOfOrigin() != null ? getCountryOfOrigin().hashCode() : 0;
         result = 31 * result + (getInvAttr1() != null ? getInvAttr1().hashCode() : 0);
         result = 31 * result + (getInvAttr2() != null ? getInvAttr2().hashCode() : 0);
@@ -352,13 +349,13 @@ public class WhSkuInventory extends BaseModel {
         return result;
     }
 
-	public Long getOccupationLineId() {
-		return occupationLineId;
-	}
+    public Long getOccupationLineId() {
+        return occupationLineId;
+    }
 
-	public void setOccupationLineId(Long occupationLineId) {
-		this.occupationLineId = occupationLineId;
-	}
+    public void setOccupationLineId(Long occupationLineId) {
+        this.occupationLineId = occupationLineId;
+    }
 
     public Integer getContainerLatticeNo() {
         return containerLatticeNo;
@@ -376,7 +373,12 @@ public class WhSkuInventory extends BaseModel {
         this.outboundboxCode = outboundboxCode;
     }
 
-   
+    public Integer getTemporaryLocationId() {
+        return temporaryLocationId;
+    }
 
-     	
+    public void setTemporaryLocationId(Integer temporaryLocationId) {
+        this.temporaryLocationId = temporaryLocationId;
+    }
+
 }
