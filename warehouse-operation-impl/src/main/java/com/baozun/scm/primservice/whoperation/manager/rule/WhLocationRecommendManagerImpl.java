@@ -60,6 +60,8 @@ import com.baozun.scm.primservice.whoperation.manager.redis.SkuRedisManager;
 import com.baozun.scm.primservice.whoperation.manager.rule.putaway.AttrParams;
 import com.baozun.scm.primservice.whoperation.manager.rule.putaway.PutawayCondition;
 import com.baozun.scm.primservice.whoperation.manager.rule.putaway.PutawayConditionFactory;
+import com.baozun.scm.primservice.whoperation.manager.rule.putaway.PutawayLocationRecommend;
+import com.baozun.scm.primservice.whoperation.manager.rule.putaway.PutawayLocationRecommendFactory;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.StoreManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WarehouseManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhFunctionPutAwayManager;
@@ -116,6 +118,8 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
     private WhSkuDao whSkuDao;
     @Autowired
     private SkuRedisManager skuRedisManager;
+    @Autowired
+    private PutawayLocationRecommendFactory putawayLocationRecommendFactory;
 
     /**
      * @author lichuan
@@ -328,7 +332,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
             log.info("whLocationRecommandManager.recommendLocationByShevleRule start, logId is:[{}]", logId);
         }
         List<LocationRecommendResultCommand> list = new ArrayList<LocationRecommendResultCommand>();
-        if (WhPutawayPatternDetailType.PALLET_PUTAWAY == putawayPatternDetailType) {
+        /*if (WhPutawayPatternDetailType.PALLET_PUTAWAY == putawayPatternDetailType) {
             // 判断该容器是否有符合的上架规则
             List<ShelveRecommendRuleCommand> ruleList = export.getShelveRecommendRuleList();
             if (null == ruleList || 0 == ruleList.size()) {
@@ -355,6 +359,13 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
         } else {
             log.error("param putawayPatternDetailType is invalid, logId is:[{}]", logId);
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+        }*/
+        PutawayLocationRecommend locationRecommend = putawayLocationRecommendFactory.getPutawayLocationRecommend(putawayPatternDetailType, logId);
+        if (null != locationRecommend) {
+            list = locationRecommend.recommendLocation(ruleAffer, export, caMap, invList, uomMap, logId);
+        } else {
+            log.error("param putawayPatternDetailType is invalid, logId is:[{}]", logId);
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
         if (log.isInfoEnabled()) {
             log.info("whLocationRecommandManager.recommendLocationByShevleRule end, logId is:[{}]", logId);
@@ -362,6 +373,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
         return list;
     }
 
+    @SuppressWarnings("unused")
     private List<LocationRecommendResultCommand> sysGuidePalletPutawayRecommendLocation(RuleAfferCommand ruleAffer, List<ShelveRecommendRuleCommand> ruleList, Map<Long, ContainerAssist> caMap, List<WhSkuInventoryCommand> invList,
             Map<String, Map<String, Double>> uomMap, String logId) {
         List<LocationRecommendResultCommand> list = new ArrayList<LocationRecommendResultCommand>();
@@ -899,6 +911,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
         }
     }
 
+    @SuppressWarnings("unused")
     private List<LocationRecommendResultCommand> sysGuideContainerPutawayRecommendLocation(RuleAfferCommand ruleAffer, List<ShelveRecommendRuleCommand> ruleList, Map<Long, ContainerAssist> caMap, List<WhSkuInventoryCommand> invList,
             Map<String, Map<String, Double>> uomMap, String logId) {
         List<LocationRecommendResultCommand> list = new ArrayList<LocationRecommendResultCommand>();
@@ -1329,6 +1342,7 @@ public class WhLocationRecommendManagerImpl extends BaseManagerImpl implements W
         return list;
     }
 
+    @SuppressWarnings("unused")
     private List<LocationRecommendResultCommand> sysGuideSplitContainerPutawayRecommendLocation(RuleAfferCommand ruleAffer, List<WhSkuInventoryCommand> invRuleList, Map<Long, ContainerAssist> caMap, List<WhSkuInventoryCommand> invList,
             Map<String, Map<String, Double>> uomMap, String logId) {
         List<LocationRecommendResultCommand> list = new ArrayList<LocationRecommendResultCommand>();
