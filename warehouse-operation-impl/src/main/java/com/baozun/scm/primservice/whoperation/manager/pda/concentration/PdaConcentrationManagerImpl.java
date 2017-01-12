@@ -17,18 +17,24 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.WhFacilityRecPat
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundFacilityCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSeedingCollectionCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhTemporaryStorageLocationCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkCommand;
 import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
 import com.baozun.scm.primservice.whoperation.constant.CollectionStatus;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
+import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhDistributionPatternRuleDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhFacilityRecPathDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundFacilityDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhSeedingCollectionDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhTemporaryStorageLocationDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhWorkDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhDistributionPatternRule;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFacilityRecPath;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundFacility;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhSeedingCollection;
@@ -53,14 +59,34 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 
     @Autowired
     private WhSkuInventoryDao whSkuInventoryDao;
-    
+
+    @Autowired
+    private WhWorkDao whWorkDao;
+
+    @Autowired
+    private WhDistributionPatternRuleDao whDistributionPatternRuleDao;
+
+    @Autowired
+    private WhOdoDao whOdoDao;
+
     @Autowired
     private WhTemporaryStorageLocationDao whTemporaryStorageLocationDao;
-    
+
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public WorkCollectionCommand recommendSeedingWall(WorkCollectionCommand workCollectionCommand) {
-        String batch = workCollectionCommand.getBatch();
+        // TODO 根据workId查出批次号以及是否是播种模式
+        WhWorkCommand work = this.whWorkDao.findWorkByWorkCode(workCollectionCommand.getWorkCode(), workCollectionCommand.getOuId());
+        WhOdo odo = new WhOdo();
+        odo.setWaveCode(workCollectionCommand.getWorkCode());
+        odo.setOuId(workCollectionCommand.getOuId());
+        List<WhOdo> odoList = whOdoDao.findListByParam(odo);
+        if (null == odoList || odoList.isEmpty()) {
+            throw new BusinessException("no odo");
+        }
+        WhDistributionPatternRule whDistributionPatternRule = this.whDistributionPatternRuleDao.findByOdoIdAndOuId(odoList.get(0).getId(), workCollectionCommand.getOuId());
+        Integer pickingMode = whDistributionPatternRule.getPickingMode(); // 拣货模式
+        String batch = work.getBatch();
         Long userId = workCollectionCommand.getUserId();
         Boolean flag = false;
         // TODO 判断是否是播种模式
@@ -257,7 +283,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         String batch = workCollectionCommand.getBatch();
         cacheManager.removeMapValue(CacheConstants.PDA_CACHE_COLLECTION_REC + userId, batch);
     }
-    
+
     /**
 	 * 出库集货-获取系统推荐暂存库位
 	 * @return
@@ -323,12 +349,12 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 		}
 		throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
 	}
-	
+
 	private WhTemporaryStorageLocationCommand getTemporaryStorageLocationBySeedingWall(WhOutboundFacilityCommand facility) {
 		WhTemporaryStorageLocationCommand command = whTemporaryStorageLocationDao.getTemporaryStorageLocationBySeedingWall(facility);
 		return command;
 	}
-	
+
 	/**
 	 * 检查容器号对应的位置是否存在
 	 */
@@ -357,7 +383,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 		}
 		return seedingCollection;
 	}
-	
+
 	/**
 	 * 判断当前容器是否有推荐结果
 	 */
@@ -380,7 +406,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 		cacheManager.setMapObject(CacheConstants.PDA_CACHE_COLLECTION_REC + userId.toString(), batch, recPathList, CacheConstants.CACHE_ONE_DAY);
 		return rec;
 	}
-	
+
 	/**
 	 * 判断是否达到可携带容量数量限制且小于播种墙容器上限
 	 */
@@ -404,7 +430,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 		}
 		return rec;
 	}
-	
+
 	/**
 	 * 判断小批次是否全部移动到播种墙
 	 */
@@ -423,7 +449,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 		}
 		return false;
 	}
-	
+
 	/**
 	 * 记录容器到播种墙上集货信息
 	 */
