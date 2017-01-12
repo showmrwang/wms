@@ -526,7 +526,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
                 throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
             }
             if (StringUtils.isEmpty(odo.getWaveCode())) {
-                this.deleteWaveLinesAndReleaseInventoryByOdoId(wave.getId(), odo.getId(), "波次-配货模式阶段剔除数据", wh);
+                this.deleteWaveLinesAndReleaseInventoryByOdoId(wave.getId(), odo.getId(), Constants.DISTRIBUTE_MODE_FAIL, wh);
 
                 // 获得需要回滚的库存：已分配和待移入。
                 List<WhSkuInventory> skuInvList = this.whSkuInventoryDao.findbyOccupationCode(odo.getOdoCode(), ouId);
