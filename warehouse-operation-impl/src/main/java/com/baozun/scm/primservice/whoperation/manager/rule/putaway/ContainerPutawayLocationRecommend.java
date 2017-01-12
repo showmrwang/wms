@@ -464,6 +464,7 @@ public class ContainerPutawayLocationRecommend extends BasePutawayLocationRecomm
                         // 库位上除当前上架商品之外所有商品种类数
                         int locSkuCategory = whSkuLocationDao.findOtherSkuCountInLocation(ouId, locId, skuId);
                         AttrParams invAttr = new AttrParams();
+                        invAttr.setIsMixStacking(true);// 库位允许混放
                         invAttr.setInvAttrMgmt(InvAttrMgmtType.ALL_INV_ATTRS);
                         invAttr.setSkuId(skuId);
                         // 解析库存关键属性
