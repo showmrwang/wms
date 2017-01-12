@@ -50,10 +50,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        UPDATE t_wh_function_collection SET
 		        function_id = #{functionId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        collection_pattern = #{collectionPattern,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-		        container_qty = #{containerQty,javaType=java.lang.Integer,jdbcType=INTEGER} 
+		        container_qty = #{containerQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
 	        WHERE 
 		        id = #{id} 
-		        and ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        and ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT}
 	    ]]>
 		</update>
 	   <delete id="delete" parameterType="java.lang.Long">

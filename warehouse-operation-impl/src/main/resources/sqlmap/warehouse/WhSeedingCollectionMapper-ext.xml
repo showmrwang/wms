@@ -106,12 +106,22 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</if>
 
        <if test="collectionStatus!=null">
-			and sc.collection_status = #{collectionStatus}
+			and sc.collection_status != #{collectionStatus}
 		</if>
       
 		<if test="ouId!=null">
 			and sc.ou_id = #{ouId}
 		</if>
     </select>
+    
+    <select id="findByIdAndOuId" parameterType="java.lang.Long" resultMap="WhSeedingCollectionResult" flushCache="false">
+			select <include refid="whSeedingCollectionColumnsExt" />
+		    <![CDATA[
+			    from t_wh_seeding_collection 
+		        where 
+		        id = #{id} 
+		        and ou_id = #{ouId}
+		    ]]>
+		</select>	
 	
 </mapper>

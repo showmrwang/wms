@@ -43,4 +43,13 @@ public interface WhFacilityRecPathDao extends BaseDao<WhFacilityRecPath, Long> {
     @CommonQuery
     int saveOrUpdate(WhFacilityRecPath o);
 
+    /**
+     * [业务方法] 根据批次号和容器号查找推荐路径
+     * @param batch
+     * @param containerCode
+     * @param ouId
+     * @return
+     */
+    WhFacilityRecPath findWhFacilityRecPathByBatchAndContainer(String batch, String containerCode, Long ouId);
+
 }
