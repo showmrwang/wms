@@ -56,6 +56,8 @@ public class WhTemporaryStorageLocation extends BaseModel {
 	private Long ouId;
     /** 状态 */
     private Integer status;
+    /** 占用批次号 */
+	private String batch;
 	//columns END
 	
 	public String getTemporaryStorageCode() {
@@ -138,6 +140,14 @@ public class WhTemporaryStorageLocation extends BaseModel {
 	}
 	public void setOuId(Long ouId) {
 		this.ouId = ouId;
+	}
+
+	public String getBatch() {
+		return batch;
+	}
+
+	public void setBatch(String batch) {
+		this.batch = batch;
 	}
 
 }

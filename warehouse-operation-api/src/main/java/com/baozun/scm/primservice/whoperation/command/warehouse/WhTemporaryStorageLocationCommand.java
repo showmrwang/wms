@@ -26,6 +26,10 @@ public class WhTemporaryStorageLocationCommand extends BaseCommand {
 	private Long checkOperationsAreaId;
 	/** 暂存区域ID */
 	private Long workingStorageSectionId;
+	/** 暂存库位状态 */
+	private String status;
+	/** 占用批次号 */
+	private String batch;
 	/** 创建时间 */
 	private Date createTime;
 	/** 修改时间 */
@@ -173,5 +177,17 @@ public class WhTemporaryStorageLocationCommand extends BaseCommand {
 	}
 	public void setPriority(Integer priority) {
 		this.priority = priority;
+	}
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
+	}
+	public String getBatch() {
+		return batch;
+	}
+	public void setBatch(String batch) {
+		this.batch = batch;
 	}
 }

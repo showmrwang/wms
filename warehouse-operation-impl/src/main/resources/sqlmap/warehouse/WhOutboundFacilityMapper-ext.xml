@@ -320,5 +320,25 @@
 		order by s.priority
 		limit 1
 	</select>
+
+	<select id="getSeedingFacility" resultMap="WhOutboundFacilityCommand">
+		select
+			<include refid="whOutboundFacilityColumnsExt"/>
+		from
+			t_wh_outbound_facility f 
+		where 
+			f.status in ('2','3')
+			and EXISTS (select id from t_wh_seeding_collection c where c.batch = f.batch and c.temporary_location_id is not null)
+			and f.ou_id = #{ouId}
+	</select>
 	
+	<select id="findByCodeAndOuId" resultMap="WhOutboundFacilityResultExt">
+		select
+			<include refid="whOutboundFacilityColumnsExt"/>
+		from
+			t_wh_outbound_facility f 
+		where 
+			f.facility_code = #{facilityCode}
+			and f.ou_id = #{ouId}
+	</select>
 </mapper>

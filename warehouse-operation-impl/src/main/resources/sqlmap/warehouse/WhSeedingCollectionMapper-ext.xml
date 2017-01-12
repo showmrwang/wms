@@ -7,6 +7,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.WhSeedingCollectionDao">
 	<resultMap id="WhSeedingCollectionResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.WhSeedingCollection">
 	</resultMap>
+	<resultMap id="WhSeedingCollectionCommand" type="com.baozun.scm.primservice.whoperation.command.warehouse.WhSeedingCollectionCommand">
+	</resultMap>
 	
 	<!-- 用于select查询公用抽取的列 -->
 	<sql id="whSeedingCollectionColumnsExt">
@@ -106,12 +108,74 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</if>
 
        <if test="collectionStatus!=null">
-			and sc.collection_status = #{collectionStatus}
+			and sc.collection_status != #{collectionStatus}
 		</if>
       
 		<if test="ouId!=null">
 			and sc.ou_id = #{ouId}
 		</if>
     </select>
+    
+    <select id="findByIdAndOuId" parameterType="java.lang.Long" resultMap="WhSeedingCollectionResult" flushCache="false">
+			select <include refid="whSeedingCollectionColumnsExt" />
+		    <![CDATA[
+			    from t_wh_seeding_collection 
+		        where 
+		        id = #{id} 
+		        and ou_id = #{ouId}
+		    ]]>
+		</select>	
+	
+	<select id="checkContainerCodeInSeedingCollection" resultMap="WhSeedingCollectionCommand">
+		select  
+			s.id as id,
+        	s.facility_id as facilityId,
+        	s.temporary_location_id as temporaryLocationId,
+        	s.location_id as locationId,
+        	s.container_id as containerId,
+        	s.batch as batch,
+        	s.collection_status as collectionStatus,
+        	s.ou_id as ouId
+		from
+			t_wh_seeding_collection s
+			left join t_wh_container c on s.container_id = c.id
+		where 
+			c.code = #{containerCode}
+			and s.batch = #{batch}
+			and IFNULL(s.collection_status, 0) != 10
+			and s.ou_id = #{ouId}
+	</select>
+	
+	<select id="checkBatchIsAllIntoSeedingWall" resultType="int">
+		select
+			count(1)
+		from
+			t_wh_seeding_collection s
+		where
+			s.batch = #{batch}
+			and (s.temporary_location_id is not null or s.location_id is not null)
+			and s.ou_id = #{ouId}
+	</select>
+	
+	<update id="updateContainerToSeedingWall">
+		update 
+			t_wh_seeding_collection s 
+		set 
+			s.facility_id = #{facilityId} 
+			s.temporary_location_id = null
+		where 
+			s.container_id = #{containerId}
+			and s.batch = #{batch} 
+			and s.ou_id = #{ouId}
+	</update>
+	
+	<delete id="deleteContainerInSeedingWall">
+		delete from 
+			t_wh_seeding_collection
+		where 
+			container_id = #{containerId}
+			and batch = #{batch} 
+			and ou_id = #{ouId}
+	</delete>
 	
 </mapper>

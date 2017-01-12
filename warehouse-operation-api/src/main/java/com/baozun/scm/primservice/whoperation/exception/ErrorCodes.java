@@ -764,5 +764,12 @@ public class ErrorCodes {
     public static final int CHECK_INVENTORY_IS_ERROR=70058;
     // 70001-80000 tangming
     
-    // 80001-90000 shenlijun
+	// 80001-90000 zhukai
+    /** 容器[{0}]无集货数据 */
+    public static final int COLLECTION_CONTAINER_DATA_NULL_ERROR = 80001;
+    /** 容器[{0}]不在暂存库位上 */
+    public static final int COLLECTION_CONTAINER_NOT_IN_TEMPORARYLOCATION = 80002;
+    /** 该容器已扫描过 */
+    public static final int COLLECTION_RECOMMEND_RESULT_REPEAT = 80003;
+	// 80001-90000 zhukai
 }

@@ -423,6 +423,8 @@ public final class Constants {
     public static final String REPLENISHED_NO_TARGET_LOCATION = "ERROR002";
     /** 补货阶段 补货不足失败 */
     public static final String REPLENISHED_FAIL = "ERROR003";
+    /** 波次配货模式计算阶段未匹配到配货模式 */
+    public static final String DISTRIBUTE_MODE_FAIL = "ERROR006";
 
     public static final String ALLOCATE_STRATEGY_FIRSTINFIRSTOUT = "1"; // 先入先出
     public static final String ALLOCATE_STRATEGY_FIRSTINLASTOUT = "2"; // 先入后出
@@ -569,12 +571,25 @@ public final class Constants {
     public static final String SEEDING_MODE_1 = "1";// 边拣货边播种
     public static final String SEEDING_MODE_2 = "2";// 拣完货再播种
 
-    /** 播种墙推荐逻辑:中转库位*/
-    public static final String TARGET_1 = "TRANSIT_LOCATION";
-    /** 播种墙推荐逻辑:出库暂存库位*/
-    public static final String TARGET_2 = "TEMPORARY_STORAGE_LOCATION";
-    /** 播种墙推荐逻辑:播种墙*/
-    public static final String TARGET_3 = "SEEDING_WALL";
+    /** 扫描播种墙*/
+    public static final String TARGET_1 = "SEEDING_WALL";
+    /** 扫描播种墙校验码*/
+    public static final String TARGET_2 = "SEEDING_WALL_CHECK_CODE";
+    /** 扫描出库暂存库位*/
+    public static final String TARGET_3 = "TEMPORARY_STORAGE_LOCATION";
+    /** 扫描出库暂存库位校验码*/
+    public static final String TARGET_4 = "TEMPORARY_STORAGE_LOCATION_CHECK_CODE";
+    /** 扫描中转库位*/
+    public static final String TARGET_5 = "TRANSIT_LOCATION";
+    /** 扫描中转库位校验码*/
+    public static final String TARGET_6 = "TRANSIT_LOCATION_CHECK_CODE";
+
+    /** 目标位置类型:播种墙*/
+    public static final int SEEDING_WALL = 1;
+    /** 目标位置类型:出库暂存库位*/
+    public static final int TEMPORARY_STORAGE_LOCATION = 2;
+    /** 目标位置类型:中转库位*/
+    public static final int TRANSIT_LOCATION = 3;
 
 
 

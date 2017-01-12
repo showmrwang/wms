@@ -92,5 +92,41 @@
             </if>
         </where>
     </sql>
+	
+	<select id="getRecommendResultByContainerCode" resultMap="WhFacilityRecPathResultExt">
+		select 
+			<include refid="whFacilityRecPathColumnsExt"/> 
+		from 
+			t_wh_facility_rec_path p 
+		where 
+			p.container_code = #{containerCode}
+			and p.batch = #{batch}
+			and p.status = 1
+			and p.ou_id = #{ouId}
+	</select>
+	
+	<select id="findTemporaryStorageLocationCodeByBatch" resultType="string">
+		select 
+			p.temporary_storage_location_code
+		from 
+			t_wh_facility_rec_path p 
+		where  
+			p.batch = #{batch}
+			and p.status = 1
+			and p.ou_id = #{ouId}
+		group by 
+			p.temporary_storage_location_code
+	</select>
+    
+    
+    <select id="findWhFacilityRecPathByBatchAndContainer" resultMap="WhFacilityRecPathResultExt">
+        select
+        <include refid="whFacilityRecPathColumnsExt"/>
+        from t_wh_facility_rec_path
+       	where
+       		batch = #{batch}
+       		and ou_id = #{ouId}
+       		and container_code = #{containerCode}
+    </select>
 
 </mapper>

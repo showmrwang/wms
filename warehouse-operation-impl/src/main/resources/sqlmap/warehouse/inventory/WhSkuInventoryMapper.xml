@@ -43,6 +43,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	inbound_time as inboundTime,
 	        	last_modify_time as lastModifyTime,
 	        	container_lattice_no as containerLatticeNo,
+	        	temporary_location_id as temporaryLocationId,
 	            outboundbox_code as outboundboxCode
 	    ]]>
 	</sql>
@@ -153,6 +154,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	inbound_time ,
 		        	last_modify_time,
 		        	container_lattice_no,
+		        	temporary_location_id,
 	                outboundbox_code 
 		        ) VALUES (
 		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -184,6 +186,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{inboundTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        	#{containerLatticeNo,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{temporaryLocationId,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        	#{outboundboxCode,javaType=java.lang.String,jdbcType=VARCHAR}
 		        )
 		    ]]>
@@ -221,6 +224,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        inbound_time = #{inboundTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        container_lattice_no = #{containerLatticeNo,javaType=java.lang.Integer,jdbcType=INTEGER},
+		        temporary_location_id = #{temporaryLocationId,javaType=java.lang.Integer,jdbcType=INTEGER},
 	            outboundbox_code  = #{outboundboxCode,javaType=java.lang.String,jdbcType=VARCHAR}
 	        WHERE 
 		        id = #{id} 

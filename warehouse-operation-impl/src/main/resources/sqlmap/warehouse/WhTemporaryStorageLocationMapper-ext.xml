@@ -27,6 +27,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	operator_id as operatorId,
 	        	lifecycle as lifecycle,
 	        	status as status,
+	        	batch as batch,
 	        	ou_id as ouId
 	    ]]>
 	</sql>
@@ -47,6 +48,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				l.lifecycle as lifecycle,
 				l.ou_id as ouId,
 				l.status as status,
+				l.batch as batch,
 				f.facility_name as checkOperationsArea,
 				s.working_storage_section_name as workingStorageSection,
 				sys.dic_label as temporaryStorageTypeName
@@ -116,6 +118,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				<if test="status!=null">
 					and l.status = #{status}
 				</if>
+				
+				<if test="batch!=null">
+					and l.batch = #{batch}
+				</if>
 	       
 				<if test="ouId!=null">
 					and l.ou_id = #{ouId}
@@ -138,6 +144,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        last_modify_time = now() ,
 			        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        status = #{status,javaType=java.lang.Integer,jdbcType=INTEGER},
+			        batch = #{batch,javaType=java.lang.String,jdbcType=VARCHAR},
 			        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER}
 		        WHERE 
 			        id = #{id} 
@@ -178,6 +185,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			l.lifecycle as lifecycle,
 			l.ou_id as ouId,
 			l.status as status,
+			l.batch as batch,
 			f.facility_name as checkOperationsArea,
 			s.working_storage_section_name as workingStorageSection,
 			sys.dic_label as temporaryStorageTypeName,
@@ -275,4 +283,35 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		where id = #{id} and ou_id = #{ouId}
 	</delete>
 	
+	<select id="getTemporaryStorageLocationBySeedingWall" parameterType="com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundFacilityCommand" resultMap="WhTemporaryStorageLocationResultCommandExt">
+		select
+			<include refid="whTemporaryStorageLocationColumnsExt"/>
+		from
+			t_wh_temporary_storage_location l
+		where
+			l.temporary_storage_code = (
+				select
+					p.temporary_storage_location_code
+				from
+					t_wh_facility_rec_path p
+				where
+					p.batch = #{batch}
+					and p.seedingwall_code = #{facilityCode}
+					and ou_id = #{ouId}
+				group by
+					p.temporary_storage_location_code
+				limit 1
+			)
+			and ou_id = #{ouId}
+	</select>
+	
+	<select id="findByCodeAndOuId" resultMap="WhTemporaryStorageLocationResultExt">
+		select
+			<include refid="whTemporaryStorageLocationColumnsExt"/>
+		from 
+			t_wh_temporary_storage_location l
+		where 
+			l.temporary_storage_code = #{code}
+			and l.ou_id = #{ouId}
+	</select>
 </mapper>

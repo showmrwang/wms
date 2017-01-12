@@ -39,7 +39,16 @@ public class WhFunctionCollectionCommand extends BaseCommand {
 	/** 对应组织ID */
 	private Long ouId;
 	//columns END
-
+	
+	/** 容器编号 */
+	private String containerCode;
+	/** 已携带的容器数量 */
+	private Integer carryQty;
+	/** 批次号 */
+	private String batch;
+	/** 设施编号 */
+	private String facilityCode;
+	
 	public WhFunctionCollectionCommand(){}
 
 	public WhFunctionCollectionCommand(Long id){
@@ -81,6 +90,38 @@ public class WhFunctionCollectionCommand extends BaseCommand {
 	
 	public Long getOuId() {
 		return this.ouId;
+	}
+
+	public String getContainerCode() {
+		return containerCode;
+	}
+
+	public void setContainerCode(String containerCode) {
+		this.containerCode = containerCode;
+	}
+
+	public Integer getCarryQty() {
+		return carryQty;
+	}
+
+	public void setCarryQty(Integer carryQty) {
+		this.carryQty = carryQty;
+	}
+
+	public String getBatch() {
+		return batch;
+	}
+
+	public void setBatch(String batch) {
+		this.batch = batch;
+	}
+
+	public String getFacilityCode() {
+		return facilityCode;
+	}
+
+	public void setFacilityCode(String facilityCode) {
+		this.facilityCode = facilityCode;
 	}
 }
 

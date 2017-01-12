@@ -139,6 +139,9 @@ public class WhSkuInventoryCommand extends BaseCommand {
     /** 最后操作时间 */
     private Date lastModifyTime;
 
+    /** 暂存库位ID*/
+    private Long temporaryLocationId;
+
     // 用于通用收货的流程-------------------------------------------------------------------------------------
     /** 通用收货所选择的功能 */
     private WhFunctionRcvd rcvd;
@@ -242,7 +245,7 @@ public class WhSkuInventoryCommand extends BaseCommand {
     private Integer qtyRestContainer;
 
     private Double sumOnHandQty;
-    
+
     /** 分配区域id */
     private Long areaId;
     /** 分配单位 托盘 货箱 */
@@ -257,7 +260,7 @@ public class WhSkuInventoryCommand extends BaseCommand {
     private Date minExpDate;
     /** 最大失效日期 */
     private Date maxExpDate;
-    
+
     /** 商品条码*/
     private String skuBarcode;
     /** 容器序号*/
@@ -935,61 +938,61 @@ public class WhSkuInventoryCommand extends BaseCommand {
         this.isInvattrDiscrepancyAllowrcvd = isInvattrDiscrepancyAllowrcvd;
     }
 
-	public Long getAreaId() {
-		return areaId;
-	}
+    public Long getAreaId() {
+        return areaId;
+    }
 
-	public void setAreaId(Long areaId) {
-		this.areaId = areaId;
-	}
+    public void setAreaId(Long areaId) {
+        this.areaId = areaId;
+    }
 
-	public String getAllocateUnitCodes() {
-		return allocateUnitCodes;
-	}
+    public String getAllocateUnitCodes() {
+        return allocateUnitCodes;
+    }
 
-	public void setAllocateUnitCodes(String allocateUnitCodes) {
-		this.allocateUnitCodes = allocateUnitCodes;
-	}
+    public void setAllocateUnitCodes(String allocateUnitCodes) {
+        this.allocateUnitCodes = allocateUnitCodes;
+    }
 
-	public Boolean getPriority() {
-		return priority;
-	}
+    public Boolean getPriority() {
+        return priority;
+    }
 
-	public void setPriority(Boolean priority) {
-		this.priority = priority;
-	}
+    public void setPriority(Boolean priority) {
+        this.priority = priority;
+    }
 
-	public Boolean getIsStatic() {
-		return isStatic;
-	}
+    public Boolean getIsStatic() {
+        return isStatic;
+    }
 
-	public void setIsStatic(Boolean isStatic) {
-		this.isStatic = isStatic;
-	}
+    public void setIsStatic(Boolean isStatic) {
+        this.isStatic = isStatic;
+    }
 
-	public Boolean getIsMixStacking() {
-		return isMixStacking;
-	}
+    public Boolean getIsMixStacking() {
+        return isMixStacking;
+    }
 
-	public void setIsMixStacking(Boolean isMixStacking) {
-		this.isMixStacking = isMixStacking;
-	}
+    public void setIsMixStacking(Boolean isMixStacking) {
+        this.isMixStacking = isMixStacking;
+    }
 
-	public Date getMinExpDate() {
-		return minExpDate;
-	}
+    public Date getMinExpDate() {
+        return minExpDate;
+    }
 
-	public void setMinExpDate(Date minExpDate) {
-		this.minExpDate = minExpDate;
-	}
+    public void setMinExpDate(Date minExpDate) {
+        this.minExpDate = minExpDate;
+    }
 
-	public Date getMaxExpDate() {
-		return maxExpDate;
-	}
+    public Date getMaxExpDate() {
+        return maxExpDate;
+    }
 
-	public void setMaxExpDate(Date maxExpDate) {
-		this.maxExpDate = maxExpDate;
-	}
+    public void setMaxExpDate(Date maxExpDate) {
+        this.maxExpDate = maxExpDate;
+    }
 
     public String getSkuBarcode() {
         return skuBarcode;
@@ -1031,5 +1034,12 @@ public class WhSkuInventoryCommand extends BaseCommand {
         this.skuRcvdCount = skuRcvdCount;
     }
 
+    public Long getTemporaryLocationId() {
+        return temporaryLocationId;
+    }
+
+    public void setTemporaryLocationId(Long temporaryLocationId) {
+        this.temporaryLocationId = temporaryLocationId;
+    }
 
 }
