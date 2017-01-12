@@ -73,8 +73,6 @@ public interface WhOutboundFacilityDao extends BaseDao<WhOutboundFacility, Long>
      */
 	List<WhOutboundFacilityCommand> getSeedingFacility(@Param("ouId") Long ouId);
 
-	WhOutboundFacility findByCodeAndOuId(@Param("code") String seedingwallCode, @Param("ouId") Long ouId);
-
     /**
      * [通用方法] 根据设施编码查找设施
      * @param facilityCode
