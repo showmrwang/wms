@@ -284,6 +284,8 @@ public class ContainerPutawayLocationRecommend extends BasePutawayLocationRecomm
                 }
                 for (LocationCommand al : avaliableLocs) {
                     Long locId = al.getId();
+                    int mixStackingNumber = (null == al.getMixStackingNumber() ? new Integer(1) : al.getMixStackingNumber());
+                    int maxChaosSku = (null == al.getMaxChaosSku() ? new Long(1).intValue() : al.getMaxChaosSku().intValue());
                     // String templetCode = al.getTempletCode();
                     // LocationTemplet locTemplet =
                     // locationTempletDao.findLocationTempletByCodeAndOuId(templetCode, ouId);
@@ -448,6 +450,24 @@ public class ContainerPutawayLocationRecommend extends BasePutawayLocationRecomm
                                 // 此静态库位不可用，容器中包含商品当前静态库位没有绑定
                                 continue;
                             }
+                        }
+                        // SKU混放数量及SKU属性混放数必须满足
+                        WhSkuInventoryCommand invCmd = invList.get(0);// 取一条库存信息
+                        Long skuId = invCmd.getSkuId();
+                        // 库位上除当前上架商品之外所有商品种类数
+                        int locSkuCategory = whSkuLocationDao.findOtherSkuCountInLocation(ouId, locId, skuId);
+                        AttrParams invAttr = new AttrParams();
+                        invAttr.setInvAttrMgmt(InvAttrMgmtType.ALL_INV_ATTRS);
+                        invAttr.setSkuId(skuId);
+                        // 解析库存关键属性
+                        invAttrMgmtAspect(invAttr, invCmd);
+                        StringBuilder sql = new StringBuilder("");
+                        invAttrMgmtAspect(invAttr, sql);
+                        // 库位上当前商品属性之外所有商品属性总和
+                        int locSkuAttrCategory = whSkuLocationDao.findOtherSkuAttrCountInLocation(ouId, locId, sql.toString());
+                        if (mixStackingNumber < (locSkuCategory + skuCategory.intValue()) || maxChaosSku < (locSkuAttrCategory + skuAttrCategory.intValue())) {
+                            // 此混放库位超过最大sku混放数或sku属性混放数
+                            continue;
                         }
                         LocationInvVolumeWeightCommand livw = whLocationInvVolumeWieghtManager.calculateLocationInvVolumeAndWeight(locId, ouId, uomMap, logId);
                         Double livwVolume = livw.getVolume();// 库位上已有货物总体积

@@ -16,6 +16,7 @@
  */
 package com.baozun.scm.primservice.whoperation.manager.rule.putaway;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
 
@@ -51,7 +52,7 @@ public abstract class BasePutawayLocationRecommend extends BaseManagerImpl imple
         return null;
     }
     
-    public void invAttrMgmtAspect(AttrParams attrParams, WhSkuInventoryCommand invCmd) {
+    protected void invAttrMgmtAspect(AttrParams attrParams, WhSkuInventoryCommand invCmd) {
         String invAttrMgmt = attrParams.getInvAttrMgmt();
         attrParams.setSkuId(invCmd.getSkuId());
         if (!StringUtils.isEmpty(invAttrMgmt)) {
@@ -91,6 +92,97 @@ public abstract class BasePutawayLocationRecommend extends BaseManagerImpl imple
                             break;
                         case InvAttrMgmtType.INV_ATTR5:
                             attrParams.setInvAttr5(invCmd.getInvAttr5());
+                            break;
+                    }
+                }
+            }
+        }
+    }
+    
+    protected void invAttrMgmtAspect(AttrParams attrParams, StringBuilder sql) {
+        String invAttrMgmt = attrParams.getInvAttrMgmt();
+        sql.append(" ").append("and inv.sku_id = ").append(attrParams.getSkuId().toString());
+        if (!StringUtils.isEmpty(invAttrMgmt)) {
+            String[] invAttrs = invAttrMgmt.split(",");
+            if (null != invAttrs && 0 < invAttrs.length) {
+                for (String attr : invAttrs) {
+                    switch (attr) {
+                        case InvAttrMgmtType.INV_TYPE:
+                            if (StringUtils.isEmpty(attrParams.getInvType())) {
+                                sql.append(" ").append(" and (inv.inv_type is null or inv.inv_type = '' )");
+                            } else {
+                                sql.append(" ").append(" and inv.inv_type = ").append("'").append(attrParams.getInvType()).append("'");
+                            }
+                            break;
+                        case InvAttrMgmtType.INV_STATUS:
+                            if (null == attrParams.getInvStatus()) {
+                                sql.append(" ").append(" and (inv.inv_status is null or inv.inv_status = '') ");
+                            } else {
+                                sql.append(" ").append(" and inv.inv_status = ").append(attrParams.getInvStatus());
+                            }
+                            break;
+                        case InvAttrMgmtType.BATCH_NUMBER:
+                            if (StringUtils.isEmpty(attrParams.getBatchNumber())) {
+                                sql.append(" ").append(" and (inv.batch_number is null or inv.batch_number = '')");
+                            } else {
+                                sql.append(" ").append(" and inv.batch_number = ").append("'").append(attrParams.getBatchNumber()).append("'");
+                            }
+                            break;
+                        case InvAttrMgmtType.MFG_DATE:
+                            if (null == attrParams.getMfgDate()) {
+                                sql.append(" ").append(" and (inv.mfg_date is null or inv.mfg_date = '')");
+                            } else {
+                                sql.append(" ").append(" and inv.mfg_date = ").append("'").append(null == attrParams.getMfgDate() ? null : new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(attrParams.getMfgDate())).append("'");
+                            }
+                            break;
+                        case InvAttrMgmtType.EXP_DATE:
+                            if (null == attrParams.getExpDate()) {
+                                sql.append(" ").append(" and (inv.exp_date is null or inv.exp_date = '')");
+                            } else {
+                                sql.append(" ").append(" and inv.exp_date = ").append("'").append(null == attrParams.getExpDate() ? null : new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(attrParams.getExpDate())).append("'");
+                            }
+                            break;
+                        case InvAttrMgmtType.COUNTRY_OF_ORIGIN:
+                            if (StringUtils.isEmpty(attrParams.getCountryOfOrigin())) {
+                                sql.append(" ").append(" and (inv.country_of_origin is null or inv.country_of_origin = '')");
+                            } else {
+                                sql.append(" ").append(" and inv.country_of_origin = ").append("'").append(attrParams.getCountryOfOrigin()).append("'");
+                            }
+                            break;
+                        case InvAttrMgmtType.INV_ATTR1:
+                            if (StringUtils.isEmpty(attrParams.getInvAttr1())) {
+                                sql.append(" ").append(" and (inv.inv_attr1 is null or inv.inv_attr1 = '')");
+                            } else {
+                                sql.append(" ").append(" and inv.inv_attr1 = ").append("'").append(attrParams.getInvAttr1()).append("'");
+                            }
+                            break;
+                        case InvAttrMgmtType.INV_ATTR2:
+                            if (StringUtils.isEmpty(attrParams.getInvAttr1())) {
+                                sql.append(" ").append(" and (inv.inv_attr2 is null or inv.inv_attr2 = '')");
+                            } else {
+                                sql.append(" ").append(" and inv.inv_attr2 = ").append("'").append(attrParams.getInvAttr2()).append("'");
+                            }
+                            break;
+                        case InvAttrMgmtType.INV_ATTR3:
+                            if (StringUtils.isEmpty(attrParams.getInvAttr1())) {
+                                sql.append(" ").append(" and (inv.inv_attr3 is null or inv.inv_attr3 = '')");
+                            } else {
+                                sql.append(" ").append(" and inv.inv_attr3 = ").append("'").append(attrParams.getInvAttr3()).append("'");
+                            }
+                            break;
+                        case InvAttrMgmtType.INV_ATTR4:
+                            if (StringUtils.isEmpty(attrParams.getInvAttr1())) {
+                                sql.append(" ").append(" and (inv.inv_attr4 is null or inv.inv_attr4 = '')");
+                            } else {
+                                sql.append(" ").append(" and inv.inv_attr4 = ").append("'").append(attrParams.getInvAttr4()).append("'");
+                            }
+                            break;
+                        case InvAttrMgmtType.INV_ATTR5:
+                            if (StringUtils.isEmpty(attrParams.getInvAttr1())) {
+                                sql.append(" ").append(" and (inv.inv_attr5 is null or inv.inv_attr5 = '')");
+                            } else {
+                                sql.append(" ").append(" and inv.inv_attr5 = ").append("'").append(attrParams.getInvAttr5()).append("'");
+                            }
                             break;
                     }
                 }

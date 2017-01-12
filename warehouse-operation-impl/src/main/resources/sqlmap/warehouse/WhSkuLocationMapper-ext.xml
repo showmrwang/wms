@@ -209,4 +209,38 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		) skuList
 		where skuList.sku_id is not null
     </select>
+    
+    <select id="findOtherSkuCountInLocation"  resultType="int">
+		select count(1)
+		from 
+		(select inv.sku_id as sku_id 
+		from t_wh_sku_inventory inv,t_wh_sku_inventory_tobefilled tobefilled
+		where inv.ou_id = tobefilled.ou_id
+		and inv.location_id = tobefilled.location_id
+		and inv.location_id is not null 
+		and inv.sku_id != #{skuId}
+		and inv.ou_id = #{ouId}
+		and inv.location_id = #{locId}
+		group by inv.sku_id
+		) invSkus 
+		where invSKus.sku_id is not null 
+    </select>
+    
+     <select id="findOtherSkuAttrCountInLocation"  resultType="int">
+		select count(1)
+		from 
+		(select inv.sku_id as sku_id,inv.inv_type,inv.inv_status,inv.batch_number,inv.country_of_origin,inv.mfg_date,inv.exp_date,inv.inv_attr1,inv.inv_attr2,inv.inv_attr3,inv.inv_attr4,inv.inv_attr5 
+		from t_wh_sku_inventory inv,t_wh_sku_inventory_tobefilled tobefilled
+		where inv.ou_id = tobefilled.ou_id
+		and inv.location_id = tobefilled.location_id
+		and inv.location_id is not null 
+		and inv.ou_id = #{ouId}
+		and inv.location_id = #{locId}
+		<if test="cSql!=null and cSql!=''">
+			${cSql}
+		</if>
+		group by inv.sku_id,inv.inv_type,inv.inv_status,inv.batch_number,inv.country_of_origin,inv.mfg_date,inv.exp_date,inv.inv_attr1,inv.inv_attr2,inv.inv_attr3,inv.inv_attr4,inv.inv_attr5
+		) invSkuAttrs 
+		where invSkuAttrs.sku_id is not null 
+    </select>
 </mapper>
