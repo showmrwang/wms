@@ -52,6 +52,8 @@ public class WorkCollectionCommand extends BaseCommand {
     private Boolean isLastContainer;
     /** 拣货容器列表*/
     private List<Long> containerList;
+    /** 出库单列表*/
+    private List<Long> odoIdList;
 
     public Long getOuId() {
         return ouId;
@@ -203,6 +205,14 @@ public class WorkCollectionCommand extends BaseCommand {
 
     public void setContainerList(List<Long> containerList) {
         this.containerList = containerList;
+    }
+
+    public List<Long> getOdoIdList() {
+        return odoIdList;
+    }
+
+    public void setOdoIdList(List<Long> odoIdList) {
+        this.odoIdList = odoIdList;
     }
 
 }
