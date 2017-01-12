@@ -1006,7 +1006,7 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                         invAttrMgmtAspect(invAttr, sql);
                                         // 库位上当前商品属性之外所有商品属性总和
                                         int locSkuAttrCategory = whSkuLocationDao.findOtherSkuAttrCountInLocation(ouId, locId, sql.toString());
-                                        if (mixStackingNumber < (locSkuCategory + skuCategory) || maxChaosSku < (locSkuAttrCategory + skuAttrCategory)) {
+                                        if (mixStackingNumber < (locSkuCategory + 1) || maxChaosSku < (locSkuAttrCategory + 1)) {
                                             // 此混放库位超过最大sku混放数或sku属性混放数
                                             continue;
                                         }
