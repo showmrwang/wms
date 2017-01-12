@@ -20,16 +20,16 @@ package com.baozun.scm.primservice.whoperation.constant;
  */
 public final class CacheConstants {
     private CacheConstants() {}
-    
+
     public static final int CACHE_ONE_SECOND = 1;
     public static final int CACHE_ONE_MINUTE = 60;
-    public static final int CACHE_THIRTY_MINUTE = 30*60;
-    public static final int CACHE_ONE_HOUR = 60*60;
-    public static final int CACHE_ONE_DAY = 1*24*60*60;
-    public static final int CACHE_ONE_WEEK = 7*24*60*60;
-    public static final int CACHE_ONE_MONTH = 30*24*60*60;
-    public static final int CACHE_ONE_YEAR = 365*24*60*60;
-    
+    public static final int CACHE_THIRTY_MINUTE = 30 * 60;
+    public static final int CACHE_ONE_HOUR = 60 * 60;
+    public static final int CACHE_ONE_DAY = 1 * 24 * 60 * 60;
+    public static final int CACHE_ONE_WEEK = 7 * 24 * 60 * 60;
+    public static final int CACHE_ONE_MONTH = 30 * 24 * 60 * 60;
+    public static final int CACHE_ONE_YEAR = 365 * 24 * 60 * 60;
+
     /** 库位推荐队列 */
     public static final String LOCATION_RECOMMEND_QUEUE = "LOCATION_RECOMMEND_QUEUE";
     /** 库位推荐排队过期 */
@@ -54,12 +54,12 @@ public final class CacheConstants {
     public static final String SCAN_LOCATION_QUEUE = "SCAN_LOCATION_QUEUE_";
     /** 缓存库位推荐队列 */
     public static final String LOCATION_RECOMMEND = "LOCATION_RECOMMEND";
-    
+
     /**人工上架:扫sn*/
     public static final String PDA_MAN_MANDE_SCAN_SKU_SN = "MAN_MANDE_SCAN_SKU_SN";
     /**人工上架:扫sn/残次*/
     public static final String PDA_MAN_MANDE_SCAN_SKU_SN_DEFECT = "PDA_MAN_MANDE_SCAN_SKU_SN_DEFECT";
-    
+
     /**人工上架:扫SKU残次信息*/
     public static final String PDA_MAN_MANDE_SCAN_SKU_DEFECT = "MAN_MANDE_SCAN_SKU_DEFECT";
     /** 人工上架:容器库存缓存 */
@@ -74,12 +74,12 @@ public final class CacheConstants {
     public static final String PDA_MAN_MANDE_CONTAINER = "MAN_MANDE_CONTAINER";
     /** 人工上架:容器统计缓存 */
     public static final String PDA_MAN_MANDE_CONTAINER_STATISTIC = "MAN_MANDE_CONTAINER_STATISTIC";
-    
-    //pda拣货
+
+    // pda拣货
     /***pda拣货和补货，作业明细统计*/
     public static final String OPERATIONLINE_STATISTICS = "OPERATIONLINE_STATISTICS";
-    
-    
+
+
     /***缓存库位*/
     public static final String CACHE_LOCATION = "CACHE_LOCATION";
     /***缓存单个库位库存*/
@@ -88,20 +88,21 @@ public final class CacheConstants {
     public static final String CACHE_LOC_SKU_ATTR = "CACHE_LOC_SKU_ATTR";
     /** pda拣货:已扫描的Sku队列 */
     public static final String PDA_PICKING_SCAN_SKU_QUEUE = "PDA_PICKING_SCAN_SKU_QUEUE_";
-    
-    public static final String OPERATION_LINE="OPERATION_LINE";
-    
+
+    public static final String OPERATION_LINE = "OPERATION_LINE";
+
     /**满箱作业处理*/
-    public static final String CACHE_OPERATION_LINE="CACHE_OPERATION_LINE";
-    
+    public static final String CACHE_OPERATION_LINE = "CACHE_OPERATION_LINE";
+
     /**补货上架缓存库位*/
-    public static final String CACHE_PUTAWAY_LOCATION="CACHE_PUTAWAY_LOCATION";
+    public static final String CACHE_PUTAWAY_LOCATION = "CACHE_PUTAWAY_LOCATION";
     /**补货上架缓存周转箱*/
-    public static final String CACHE_TURNOVERBOX_IDS="CACHE_TURNOVERBOX_IDS";
+    public static final String CACHE_TURNOVERBOX_IDS = "CACHE_TURNOVERBOX_IDS";
     /**缓存作业执行明细统计信息*/
-    public static final String CACHE_OPERATION_EXEC_LINE="CACHE_OPERATION_EXEC_LINE";
-    
-    /** 集货推荐结果缓存 */
+    public static final String CACHE_OPERATION_EXEC_LINE = "CACHE_OPERATION_EXEC_LINE";
+
+    // --------------------------------------------集货缓存--------------------------------------------
+    /** 集货推荐结果缓存:前缀+USERID*/
     public static final String PDA_CACHE_COLLECTION_REC = "CACHE_COLLECTION_REC";
 
 }

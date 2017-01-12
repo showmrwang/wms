@@ -79,7 +79,7 @@ public final class CacheKeyConstant {
     /** 店铺缓存 前缀+ customerId+storeId */
     public static final String WMS_CACHE_STORE = "WMS-CACHE-STORE-";
 
-    
+
 
     /** caseLevel收货人缓存前缀 规则：前缀 + userId + asnId + containerId；间隔符："-" */
     public static final String WMS_CACHE_CL_OPT_USER_PREFIX = "WMS-CACHE-CL-OPT-USER-";
@@ -112,8 +112,8 @@ public final class CacheKeyConstant {
     public static final String KEY_PREFIX = "%";
     public static final String WAVE_ODO_SPLIT = "|";
     public static final String WAVE_ODO_SKU_SPLIT = "$";
-    
-    //出库单设置
+
+    // 出库单设置
     /** 出库单缓存 ：前缀$CODE|ODOID */
     public static final String OU_ODO_PREFIX = "%OU_ODO%";
 
@@ -132,7 +132,7 @@ public final class CacheKeyConstant {
     public static final String SUITS_ODO_PREFIX = "%SUITS_ODO%";
     /** 套装计数器 */
     public static final String SUITS_PREFIX = "%SUITS%";
-    
+
     /** 主副品扣减集合 */
     public static final String TWOSKUSUIT_DIV_ODO_PREFIX = "%TWOSKUSUIT_DIV_ODO%";
     /** 套装扣减集合 */
@@ -140,7 +140,7 @@ public final class CacheKeyConstant {
 
     /**仓库缓存：前缀+ouId*/
     public static final String CACHE_WAREHOSUE = "%WAREHOUSE%";
-    
+
     /** 波次主档缓存：前缀+waveMasterId */
     public static final String CACHE_WAVE_MASTER = "%WAVE_MASTER%";
 

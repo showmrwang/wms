@@ -28,7 +28,8 @@ public class SkuInventoryUuid {
                         + (inv.getMfgDate() == null ? "" : new SimpleDateFormat("yyyyMMddHHmmss").format(inv.getMfgDate())) + "" + (inv.getExpDate() == null ? "" : new SimpleDateFormat("yyyyMMddHHmmss").format(inv.getExpDate())) + ""
                         + (inv.getCountryOfOrigin() == null ? "" : inv.getCountryOfOrigin().trim().toString()) + "" + (inv.getInvAttr1() == null ? "" : inv.getInvAttr1().trim().toString()) + ""
                         + (inv.getInvAttr2() == null ? "" : inv.getInvAttr2().trim().toString()) + "" + (inv.getInvAttr3() == null ? "" : inv.getInvAttr3().trim().toString()) + "" + (inv.getInvAttr4() == null ? "" : inv.getInvAttr4().trim().toString())
-                        + "" + (inv.getInvAttr5() == null ? "" : inv.getInvAttr5().trim().toString()) + "" + (inv.getOutboundboxCode() == null ? "" : inv.getOutboundboxCode());
+                        + "" + (inv.getInvAttr5() == null ? "" : inv.getInvAttr5().trim().toString()) + "" + (inv.getOutboundboxCode() == null ? "" : inv.getOutboundboxCode()) + ""
+                        + (inv.getTemporaryLocationId() == null ? "" : inv.getTemporaryLocationId());
         uuid = Md5Util.getMd5(forMatString);
         return uuid;
     }

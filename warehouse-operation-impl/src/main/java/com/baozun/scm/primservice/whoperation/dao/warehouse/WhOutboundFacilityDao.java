@@ -48,21 +48,21 @@ public interface WhOutboundFacilityDao extends BaseDao<WhOutboundFacility, Long>
      * @return
      */
     List<WhOutboundFacilityCommand> findListByOutboundFacilityGroup(@Param("ouId") Long ouId, @Param("facilityGroup") Long facilityGroup);
-    
+
     @QueryPage("findListCountByQueryMapExt")
-	Pagination<WhOutboundFacilityCommand> findListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params);
+    Pagination<WhOutboundFacilityCommand> findListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params);
 
-	WhOutboundFacility findByIdAndOuId(@Param("id") Long id, @Param("ouId") Long ouId);
+    WhOutboundFacility findByIdAndOuId(@Param("id") Long id, @Param("ouId") Long ouId);
 
-	WhOutboundFacilityCommand findByIdExt(@Param("id") Long id, @Param("ouId") Long ouId);
+    WhOutboundFacilityCommand findByIdExt(@Param("id") Long id, @Param("ouId") Long ouId);
 
-	int checkCodeAndNameUnique(@Param("id") Long id, @Param("code") String code, @Param("name") String name, @Param("ouId") Long ouId);
+    int checkCodeAndNameUnique(@Param("id") Long id, @Param("code") String code, @Param("name") String name, @Param("ouId") Long ouId);
 
-	int deleteByIdAndOuId(@Param("id") Long id, @Param("ouId") Long ouId);
+    int deleteByIdAndOuId(@Param("id") Long id, @Param("ouId") Long ouId);
 
-	int updateFacilityGroupIsNull(@Param("groupId") Long groupId, @Param("ouId") Long ouId);
+    int updateFacilityGroupIsNull(@Param("groupId") Long groupId, @Param("ouId") Long ouId);
 
-	List<WhOutboundFacility> findUseableFacilityList(@Param("type") String type, @Param("ouId") Long ouId);
+    List<WhOutboundFacility> findUseableFacilityList(@Param("type") String type, @Param("ouId") Long ouId);
 
     WhOutboundFacility getTopFreeOutBoundFacilityByFacilityGroupId(@Param("facilityGroupId") Long facilityGroupId, @Param("ouId") Long ouId);
     
@@ -74,5 +74,13 @@ public interface WhOutboundFacilityDao extends BaseDao<WhOutboundFacility, Long>
 	List<WhOutboundFacilityCommand> getSeedingFacility(@Param("ouId") Long ouId);
 
 	WhOutboundFacility findByCodeAndOuId(@Param("code") String seedingwallCode, @Param("ouId") Long ouId);
+
+    /**
+     * [通用方法] 根据设施编码查找设施
+     * @param facilityCode
+     * @param ouId
+     * @return
+     */
+    WhOutboundFacility findByCodeAndOuId(@Param("facilityCode") String facilityCode, @Param("ouId") Long ouId);
 
 }
