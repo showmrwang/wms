@@ -27,6 +27,7 @@ import lark.common.dao.QueryCondition;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
 
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhFacilityRecPathCommand;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFacilityRecPath;
 
 public interface WhFacilityRecPathDao extends BaseDao<WhFacilityRecPath, Long> {
@@ -52,7 +53,7 @@ public interface WhFacilityRecPathDao extends BaseDao<WhFacilityRecPath, Long> {
      * @param ouId
      * @return
      */
-	WhFacilityRecPath getRecommendResultByContainerCode(@Param("containerCode") String containerCode, @Param("batch") String batch, @Param("ouId") Long ouId);
+	WhFacilityRecPathCommand getRecommendResultByContainerCode(@Param("containerCode") String containerCode, @Param("batch") String batch, @Param("ouId") Long ouId);
 	
 	/**
 	 * 根据批次查询暂存库位编码

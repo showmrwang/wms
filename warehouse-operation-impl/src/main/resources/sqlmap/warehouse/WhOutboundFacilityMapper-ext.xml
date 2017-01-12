@@ -28,6 +28,7 @@
                 operator_id as operatorId,
                 lifecycle as lifecycle,
                 status as status,
+                batch as batch,
                 ou_id as ouId
         ]]>
     </sql>
@@ -48,6 +49,7 @@
 		f.operator_id as operatorId,
 		f.lifecycle as lifecycle,
 		f.status as status,
+		f.batch as batch,
 		f.ou_id as ouId,
 		sys.dic_label as facilityTypeName,
 		t.name as outboundboxTypeName,
