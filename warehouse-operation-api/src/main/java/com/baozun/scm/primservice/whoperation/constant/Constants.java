@@ -423,6 +423,8 @@ public final class Constants {
     public static final String REPLENISHED_NO_TARGET_LOCATION = "ERROR002";
     /** 补货阶段 补货不足失败 */
     public static final String REPLENISHED_FAIL = "ERROR003";
+    /** 波次配货模式计算阶段未匹配到配货模式 */
+    public static final String DISTRIBUTE_MODE_FAIL = "ERROR006";
 
     public static final String ALLOCATE_STRATEGY_FIRSTINFIRSTOUT = "1"; // 先入先出
     public static final String ALLOCATE_STRATEGY_FIRSTINLASTOUT = "2"; // 先入后出
