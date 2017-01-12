@@ -28,6 +28,7 @@ import lark.orm.dao.supports.BaseDao;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundFacilityCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhTemporaryStorageLocationCommand;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhTemporaryStorageLocation;
 
@@ -59,5 +60,9 @@ public interface WhTemporaryStorageLocationDao extends BaseDao<WhTemporaryStorag
 	int updateWorkingStorageSectionIsNull(@Param("id") Long id, @Param("ouId") Long ouId);
 
     WhTemporaryStorageLocation getTopFreeStorageLocationByWorkingStorageSectionId(@Param("workingStorageSectionId") Long workingStorageSectionId, @Param("ouId") Long ouId);
+
+	WhTemporaryStorageLocationCommand getTemporaryStorageLocationBySeedingWall(WhOutboundFacilityCommand facility);
+
+	WhTemporaryStorageLocation findByCodeAndOuId(@Param("code") String temporaryStorageLocationCode, @Param("ouId") Long ouId);
 
 }

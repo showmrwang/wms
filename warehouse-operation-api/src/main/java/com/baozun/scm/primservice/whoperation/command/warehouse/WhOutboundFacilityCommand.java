@@ -51,6 +51,10 @@ public class WhOutboundFacilityCommand extends BaseCommand {
     private Long facilityGroup;
     /** 效验码 */
 	private String checkCode;
+	/** 设施状态 */
+	private String status;
+	/** 占用批次号 */
+	private String batch;
     /** 创建时间 */
     private Date createTime;
     /** 修改时间 */
@@ -77,6 +81,8 @@ public class WhOutboundFacilityCommand extends BaseCommand {
     private List<Long> facilityGroupList;
     /** 复核暂存库位集合 */
     private List<Long> checkTableIdList;
+    /** 正在播种的容器数量 */
+    private Integer seedingCount;
     
     public Long getId() {
         return Id;
@@ -260,5 +266,29 @@ public class WhOutboundFacilityCommand extends BaseCommand {
 
 	public void setCheckCode(String checkCode) {
 		this.checkCode = checkCode;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public String getBatch() {
+		return batch;
+	}
+
+	public void setBatch(String batch) {
+		this.batch = batch;
+	}
+
+	public Integer getSeedingCount() {
+		return seedingCount;
+	}
+
+	public void setSeedingCount(Integer seedingCount) {
+		this.seedingCount = seedingCount;
 	}
 }

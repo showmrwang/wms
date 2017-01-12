@@ -65,5 +65,14 @@ public interface WhOutboundFacilityDao extends BaseDao<WhOutboundFacility, Long>
 	List<WhOutboundFacility> findUseableFacilityList(@Param("type") String type, @Param("ouId") Long ouId);
 
     WhOutboundFacility getTopFreeOutBoundFacilityByFacilityGroupId(@Param("facilityGroupId") Long facilityGroupId, @Param("ouId") Long ouId);
+    
+    /**
+     * 找占用或者正在播种且对应暂存库位有容器的播种墙
+     * @param ouId
+     * @return
+     */
+	List<WhOutboundFacilityCommand> getSeedingFacility(@Param("ouId") Long ouId);
+
+	WhOutboundFacility findByCodeAndOuId(@Param("code") String seedingwallCode, @Param("ouId") Long ouId);
 
 }

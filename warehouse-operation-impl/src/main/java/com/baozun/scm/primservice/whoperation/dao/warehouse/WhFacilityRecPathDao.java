@@ -17,6 +17,8 @@ package com.baozun.scm.primservice.whoperation.dao.warehouse;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.annotations.Param;
+
 import lark.common.annotation.CommonQuery;
 import lark.common.annotation.QueryPage;
 import lark.common.dao.Page;
@@ -42,5 +44,22 @@ public interface WhFacilityRecPathDao extends BaseDao<WhFacilityRecPath, Long> {
 
     @CommonQuery
     int saveOrUpdate(WhFacilityRecPath o);
+    
+    /**
+     * 查询容器是否有推荐结果
+     * @param containerCode
+     * @param batch 
+     * @param ouId
+     * @return
+     */
+	WhFacilityRecPath getRecommendResultByContainerCode(@Param("containerCode") String containerCode, @Param("batch") String batch, @Param("ouId") Long ouId);
+	
+	/**
+	 * 根据批次查询暂存库位编码
+	 * @param batch
+	 * @param ouId
+	 * @return
+	 */
+	String findTemporaryStorageLocationCodeByBatch(@Param("batch") String batch, @Param("ouId") Long ouId);
 
 }
