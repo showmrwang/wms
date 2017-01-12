@@ -264,9 +264,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			cout.code as outerContainerCode,
 			iout.code as insideContainerCode,
 			invstatus.name as invstatusName,
-			t.container_lattice_no as containerLatticeNo,
-			t.temporary_location_id as temporaryLocationId,
-	       	t.outboundbox_code as outboundboxCode
+			t.container_lattice_no as container_lattice_no,
+			t.temporary_location_id as temporary_location_id,
+	       	t.outboundbox_code as outboundbox_code
 	    ]]>
 	</sql>
 	
