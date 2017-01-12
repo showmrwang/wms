@@ -7,6 +7,8 @@
 <mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.WhFacilityRecPathDao">
     <resultMap id="WhFacilityRecPathResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.WhFacilityRecPath">
     </resultMap>
+    <resultMap id="WhFacilityRecPathCommand" type="com.baozun.scm.primservice.whoperation.command.warehouse.WhFacilityRecPathCommand">
+    </resultMap>
 
     <!-- 用于select查询公用抽取的列 -->
     <sql id="whFacilityRecPathColumnsExt">
@@ -93,11 +95,31 @@
         </where>
     </sql>
 	
-	<select id="getRecommendResultByContainerCode" resultMap="WhFacilityRecPathResultExt">
+	<select id="getRecommendResultByContainerCode" resultMap="WhFacilityRecPathCommand">
 		select 
-			<include refid="whFacilityRecPathColumnsExt"/> 
+			p.id as id,
+			p.batch as batch,
+			p.container_code as containerCode,
+			p.seedingwall_code as seedingwallCode,
+			p.seedingwall_upper_limit as seedingwallUpperLimit,
+			p.seedingwall_check_code as seedingwallCheckCode,
+			p.temporary_storage_location_code as temporaryStorageLocationCode,
+			p.temporary_storage_location_check_code as temporaryStorageLocationCheckCode,
+			p.transit_location_code as transitLocationCode,
+			p.transit_location_check_code as transitLocationCheckCode,
+			p.status as status,
+			p.ou_id as ouId,
+			p.batch_container_qty as batchContainerQty,
+			f.id as facilityId,
+			l.id as temporaryStorageLocationId,
+			loc.id as transitLocationId,
+			c.id as containerId
 		from 
 			t_wh_facility_rec_path p 
+			left join t_wh_outbound_facility f on f.facility_code = p.seedingwall_code
+			left join t_wh_temporary_storage_location l on l.temporary_storage_code = p.temporary_storage_location_code
+			left join t_wh_location loc on loc.code = p.transit_location_code
+			left join t_wh_container c on c.code = p.container_code
 		where 
 			p.container_code = #{containerCode}
 			and p.batch = #{batch}

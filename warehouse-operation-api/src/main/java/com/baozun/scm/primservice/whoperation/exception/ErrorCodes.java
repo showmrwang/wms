@@ -769,7 +769,9 @@ public class ErrorCodes {
     public static final int COLLECTION_CONTAINER_DATA_NULL_ERROR = 80001;
     /** 容器[{0}]不在暂存库位上 */
     public static final int COLLECTION_CONTAINER_NOT_IN_TEMPORARYLOCATION = 80002;
+    /** 容器[{0}]不在中转库位上 */
+    public static final int COLLECTION_CONTAINER_NOT_IN_LOCATION = 80003;
     /** 该容器已扫描过 */
-    public static final int COLLECTION_RECOMMEND_RESULT_REPEAT = 80003;
+    public static final int COLLECTION_RECOMMEND_RESULT_REPEAT = 80004;
 	// 80001-90000 zhukai
 }

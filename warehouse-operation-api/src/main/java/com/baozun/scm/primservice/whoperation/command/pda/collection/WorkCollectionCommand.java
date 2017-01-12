@@ -54,6 +54,8 @@ public class WorkCollectionCommand extends BaseCommand {
     private List<Long> containerList;
     /** 出库单列表*/
     private List<Long> odoIdList;
+    /** 工作编码*/
+    private String workCode;
 
     public Long getOuId() {
         return ouId;
@@ -213,6 +215,14 @@ public class WorkCollectionCommand extends BaseCommand {
 
     public void setOdoIdList(List<Long> odoIdList) {
         this.odoIdList = odoIdList;
+    }
+
+    public String getWorkCode() {
+        return workCode;
+    }
+
+    public void setWorkCode(String workCode) {
+        this.workCode = workCode;
     }
 
 }

@@ -1,11 +1,10 @@
 package com.baozun.scm.primservice.whoperation.manager.pda.concentration;
 
-import com.baozun.scm.primservice.whoperation.command.warehouse.WhFunctionCollectionCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhFacilityRecPathCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSeedingCollectionCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhTemporaryStorageLocationCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.collection.WorkCollectionCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
-import com.baozun.scm.primservice.whoperation.model.warehouse.WhFacilityRecPath;
 
 /**
  * PDA-集货
@@ -27,7 +26,7 @@ public interface PdaConcentrationManager extends BaseManager {
 	 * @param ouId
 	 * @return
 	 */
-	WhSeedingCollectionCommand checkContainerInTemporaryLocation(String containerCode, String batch, Long ouId);
+	WhSeedingCollectionCommand checkContainerInWhere(String containerCode, String batch, Integer type, Long ouId);
 	
 	/**
 	 * 判断当前容器是否有推荐结果
@@ -35,16 +34,19 @@ public interface PdaConcentrationManager extends BaseManager {
 	 * @param ouId
 	 * @param ouId 
 	 */
-	WhFacilityRecPath checkContainerHaveRecommendResult(String containerCode, String batch, Long userId, Long ouId);
+	WhFacilityRecPathCommand checkContainerHaveRecommendResult(String containerCode, String batch, Long userId, Long ouId);
 	
 	/**
 	 * 判断是否达到可携带容量数量限制且小于播种墙容器上限
-	 * @param rec
-	 * @param collectionFunc
+	 * @param facilityId	设施Id
+	 * @param carryQty		已携带数量
+	 * @param containerQty	功能定义数量
+	 * @param upperLimit	播种墙上限
+	 * @param batch			批次
 	 * @param ouId
 	 * @return
 	 */
-	boolean checkContainerQtyLimit(WhFacilityRecPath rec, WhFunctionCollectionCommand collectionFunc, Long ouId);
+	boolean checkContainerQtyLimit(Long facilityId, Integer carryQty, Integer containerQty, Integer upperLimit, String batch, Long ouId);
 	
 	/**
 	 * 得到缓存里面的一条推荐结果
@@ -52,7 +54,7 @@ public interface PdaConcentrationManager extends BaseManager {
 	 * @param userId
 	 * @return
 	 */
-	WhFacilityRecPath popRecommendResultListHead(String batch, Long userId);
+	WhFacilityRecPathCommand popRecommendResultListHead(String batch, Long userId);
 	
 	/**
 	 * 判断小批次是否全部移动到播种墙
@@ -69,7 +71,7 @@ public interface PdaConcentrationManager extends BaseManager {
 	 * @param batch2 
 	 * @param ouId
 	 */
-	void updateContainerToSeedingWall(String facilityCode, String containerCode, String batch, Long ouId);
+	void updateContainerToSeedingWall(WhFacilityRecPathCommand rec, Long ouId);
 	
 	/**
 	 * 清除集货推荐缓存
@@ -104,4 +106,5 @@ public interface PdaConcentrationManager extends BaseManager {
      * @param workCollectionCommand
      */
     void cleanCache(WorkCollectionCommand workCollectionCommand);
+
 }
