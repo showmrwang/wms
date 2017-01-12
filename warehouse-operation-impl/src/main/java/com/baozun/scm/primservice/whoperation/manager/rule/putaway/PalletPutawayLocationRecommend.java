@@ -314,6 +314,13 @@ public class PalletPutawayLocationRecommend extends BasePutawayLocationRecommend
                                 continue;
                             }
                         }
+                        Boolean isMixStacking = al.getIsMixStacking();
+                        if (null != isMixStacking && true == isMixStacking) {
+                            if (mixStackingNumber < skuCategory.intValue() || maxChaosSku < skuAttrCategory.intValue()) {
+                                // 此混放库位超过最大sku混放数或sku属性混放数
+                                continue;
+                            }
+                        }
                         if (null != palletCount) {
                             if (palletCount >= 1) {
                                 LocationRecommendResultCommand lrrc = new LocationRecommendResultCommand();
@@ -509,7 +516,7 @@ public class PalletPutawayLocationRecommend extends BasePutawayLocationRecommend
                         StringBuilder sql = new StringBuilder("");
                         invAttrMgmtAspect(invAttr, sql);
                         // 库位上当前商品属性之外所有商品属性总和
-                        int locSkuAttrCategory = whSkuLocationDao.findOtherSkuAttrCountInLocation(ouId, locId, sql.toString());
+                        int locSkuAttrCategory = whSkuLocationDao.findOtherSkuAttrCountInLocation(ouId, locId, skuId, sql.toString());
                         if (mixStackingNumber < (locSkuCategory + skuCategory) || maxChaosSku < (locSkuAttrCategory + skuAttrCategory)) {
                             // 此混放库位超过最大sku混放数或sku属性混放数
                             continue;

@@ -236,6 +236,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		where inv.location_id is not null 
 		and inv.ou_id = #{ouId}
 		and inv.location_id = #{locId}
+		and inv.sku_id = #{skuId}
 		and inv.id not in (
 		select
 		inv.id
@@ -257,6 +258,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		where inv.location_id is not null 
 		and inv.ou_id = #{ouId}
 		and inv.location_id = #{locId}
+		and inv.sku_id = #{skuId}
 		and inv.id not in (
 		select
 		inv.id
@@ -274,5 +276,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		where invSkuAttrs.sku_id is not null 
 		group by invSkuAttrs.sku_id,invSkuAttrs.inv_type,invSkuAttrs.inv_status,invSkuAttrs.batch_number,invSkuAttrs.country_of_origin,invSkuAttrs.mfg_date,invSkuAttrs.exp_date,invSkuAttrs.inv_attr1,invSkuAttrs.inv_attr2,invSkuAttrs.inv_attr3,invSkuAttrs.inv_attr4,invSkuAttrs.inv_attr5
 		) allInvSkuAttrs
+		where allInvSkuAttrs.sku_id is not null
     </select>
 </mapper>

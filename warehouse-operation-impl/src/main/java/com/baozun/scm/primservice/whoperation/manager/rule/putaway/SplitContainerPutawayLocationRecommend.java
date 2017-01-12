@@ -553,7 +553,7 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                     StringBuilder sql = new StringBuilder("");
                                     invAttrMgmtAspect(invAttr, sql);
                                     // 库位上当前商品属性之外所有商品属性总和
-                                    int locSkuAttrCategory = whSkuLocationDao.findOtherSkuAttrCountInLocation(ouId, locId, sql.toString());
+                                    int locSkuAttrCategory = whSkuLocationDao.findOtherSkuAttrCountInLocation(ouId, locId, skuId, sql.toString());
                                     if (mixStackingNumber < (locSkuCategory + skuCategory) || maxChaosSku < (locSkuAttrCategory + skuAttrCategory)) {
                                         // 此混放库位超过最大sku混放数或sku属性混放数
                                         continue;
@@ -823,6 +823,20 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                     }
                                     // Double volumeRate = al.getVolumeRate();
                                     if (WhLocationRecommendType.EMPTY_LOCATION.equals(locationRecommendRule)) {
+                                        // 判断当前空库位是否为静态库位
+                                        Boolean isStatic = al.getIsStatic();
+                                        if (null != isStatic && true == isStatic) {
+                                            int count = whSkuLocationDao.findSkuCountInSkuLocation(ouId, locId, skuId);
+                                            if (count <= 0) {
+                                                // 此静态库位不可用，商品当前静态库位没有绑定
+                                                continue;
+                                            } 
+                                        }
+                                        // 判断混放库位sku混放数及sku属性混放数
+                                        Boolean isMixStacking = al.getIsMixStacking();
+                                        if (null != isMixStacking && true == isMixStacking) {
+                                            // TODO
+                                        }
                                         // 计算体积
                                         SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate);
                                         calc.initStuffCube(length, width, height, onHandQty, SimpleCubeCalculator.SYS_UOM);
@@ -1005,7 +1019,7 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                         StringBuilder sql = new StringBuilder("");
                                         invAttrMgmtAspect(invAttr, sql);
                                         // 库位上当前商品属性之外所有商品属性总和
-                                        int locSkuAttrCategory = whSkuLocationDao.findOtherSkuAttrCountInLocation(ouId, locId, sql.toString());
+                                        int locSkuAttrCategory = whSkuLocationDao.findOtherSkuAttrCountInLocation(ouId, locId, skuId, sql.toString());
                                         if (mixStackingNumber < (locSkuCategory + 1) || maxChaosSku < (locSkuAttrCategory + 1)) {
                                             // 此混放库位超过最大sku混放数或sku属性混放数
                                             continue;

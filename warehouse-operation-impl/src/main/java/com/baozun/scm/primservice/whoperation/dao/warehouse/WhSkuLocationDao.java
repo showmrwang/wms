@@ -136,5 +136,5 @@ public interface WhSkuLocationDao extends BaseDao<WhSkuLocation,Long>{
      * @param cSql
      * @return
      */
-    int findOtherSkuAttrCountInLocation(@Param("ouId") Long ouId, @Param("locId") Long locId, @Param("cSql") String cSql);
+    int findOtherSkuAttrCountInLocation(@Param("ouId") Long ouId, @Param("locId") Long locId, @Param("skuId") Long skuId, @Param("cSql") String cSql);
 }
