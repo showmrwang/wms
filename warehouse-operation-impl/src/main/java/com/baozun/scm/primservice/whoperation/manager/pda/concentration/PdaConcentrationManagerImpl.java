@@ -414,11 +414,13 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 		int count = whSeedingCollectionDao.checkBatchIsAllIntoSeedingWall(batch, ouId);
 		if (count == 0) {
 			String temporaryStorageLocationCode = whFacilityRecPathDao.findTemporaryStorageLocationCodeByBatch(batch, ouId);
-			// 全部移动到播种墙则释放暂存库位
-			WhTemporaryStorageLocation location = whTemporaryStorageLocationDao.findByCodeAndOuId(temporaryStorageLocationCode, ouId);
-			location.setStatus(1);
-			location.setBatch(null);
-			whTemporaryStorageLocationDao.saveOrUpdateByVersion(location);
+			if (!StringUtils.isEmpty(temporaryStorageLocationCode)) {
+				// 全部移动到播种墙则释放暂存库位
+				WhTemporaryStorageLocation location = whTemporaryStorageLocationDao.findByCodeAndOuId(temporaryStorageLocationCode, ouId);
+				location.setStatus(1);
+				location.setBatch(null);
+				whTemporaryStorageLocationDao.saveOrUpdateByVersion(location);
+			}
 			return true;
 		}
 		return false;
