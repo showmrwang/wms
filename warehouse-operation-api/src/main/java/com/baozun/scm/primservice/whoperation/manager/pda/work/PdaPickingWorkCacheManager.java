@@ -6,6 +6,7 @@ import java.util.Set;
 
 import com.baozun.scm.primservice.whoperation.command.pda.work.CheckScanResultCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.work.OperatioLineStatisticsCommand;
+import com.baozun.scm.primservice.whoperation.command.pda.work.OperationExecStatisticsCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
@@ -15,7 +16,7 @@ import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 public interface PdaPickingWorkCacheManager extends BaseManager{
 
     /**
-     * 缓存统计分析结果
+     * 缓存拣货统计分析结果
      * 
      * @author qiming.liu
      * @param operatorId
@@ -23,6 +24,16 @@ public interface PdaPickingWorkCacheManager extends BaseManager{
      * @return
      */
     public void operatioLineStatisticsRedis(Long operatorId, OperatioLineStatisticsCommand operatioLineStatisticsCommand);
+    
+    /**
+     * 缓存补货统计分析结果
+     * 
+     * @author qiming.liu
+     * @param operatorId
+     * @param operationExecStatisticsCommand
+     * @return
+     */
+    public void operationExecStatisticsRedis(Long operationId, OperationExecStatisticsCommand operationExecStatisticsCommand);
     
     /***
      * 提示小车

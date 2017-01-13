@@ -78,6 +78,8 @@ public final class CacheConstants {
     // pda拣货
     /***pda拣货和补货，作业明细统计*/
     public static final String OPERATIONLINE_STATISTICS = "OPERATIONLINE_STATISTICS";
+    /***pda补货，作业执行明细统计*/
+    public static final String OPERATIONEXEC_STATISTICS = "OPERATIONEXEC_STATISTICS";
 
 
     /***缓存库位*/
