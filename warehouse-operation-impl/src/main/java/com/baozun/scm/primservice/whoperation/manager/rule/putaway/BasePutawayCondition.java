@@ -74,7 +74,9 @@ public abstract class BasePutawayCondition extends BaseManagerImpl implements Pu
     
     protected void invAttrMgmtAspect(AttrParams attrParams, StringBuilder sql) {
         String invAttrMgmt = attrParams.getInvAttrMgmt();
-        sql.append(" ").append("and inv.sku_id = ").append(attrParams.getSkuId().toString());
+        if (null != attrParams.getSkuId()) {
+            sql.append(" ").append("and inv.sku_id = ").append(attrParams.getSkuId().toString());
+        }
         if (!StringUtils.isEmpty(invAttrMgmt)) {
             String[] invAttrs = invAttrMgmt.split(",");
             if (null != invAttrs && 0 < invAttrs.length) {

@@ -313,6 +313,13 @@ public class ContainerPutawayLocationRecommend extends BasePutawayLocationRecomm
                                 continue;
                             }
                         }
+                        Boolean isMixStacking = al.getIsMixStacking();
+                        if (null != isMixStacking && true == isMixStacking) {
+                            if (mixStackingNumber < skuCategory.intValue() || maxChaosSku < skuAttrCategory.intValue()) {
+                                // 此混放库位超过最大sku混放数或sku属性混放数
+                                continue;
+                            }
+                        }
                         // 计算体积
                         SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate);
                         calc.initStuffCube(length, width, height, SimpleCubeCalculator.SYS_UOM);
@@ -457,6 +464,7 @@ public class ContainerPutawayLocationRecommend extends BasePutawayLocationRecomm
                         // 库位上除当前上架商品之外所有商品种类数
                         int locSkuCategory = whSkuLocationDao.findOtherSkuCountInLocation(ouId, locId, skuId);
                         AttrParams invAttr = new AttrParams();
+                        invAttr.setIsMixStacking(true);// 库位允许混放
                         invAttr.setInvAttrMgmt(InvAttrMgmtType.ALL_INV_ATTRS);
                         invAttr.setSkuId(skuId);
                         // 解析库存关键属性
@@ -464,7 +472,7 @@ public class ContainerPutawayLocationRecommend extends BasePutawayLocationRecomm
                         StringBuilder sql = new StringBuilder("");
                         invAttrMgmtAspect(invAttr, sql);
                         // 库位上当前商品属性之外所有商品属性总和
-                        int locSkuAttrCategory = whSkuLocationDao.findOtherSkuAttrCountInLocation(ouId, locId, sql.toString());
+                        int locSkuAttrCategory = whSkuLocationDao.findOtherSkuAttrCountInLocation(ouId, locId, skuId, sql.toString());
                         if (mixStackingNumber < (locSkuCategory + skuCategory.intValue()) || maxChaosSku < (locSkuAttrCategory + skuAttrCategory.intValue())) {
                             // 此混放库位超过最大sku混放数或sku属性混放数
                             continue;
