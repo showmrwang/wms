@@ -61,8 +61,14 @@ public interface WhSeedingCollectionDao extends BaseDao<WhSeedingCollection, Lon
     int saveOrUpdateByVersion(WhSeedingCollection o);
 
 	Integer getSeedingNumFromFacility(@Param("fid") Long fid, @Param("batch") String batch, @Param("ouId") Long ouId);
-
-	WhSeedingCollectionCommand checkContainerCodeInSeedingCollection(@Param("containerCode") String containerCode, @Param("ouId") Long ouId);
+	
+	/**
+	 * 通过容器号获取它的集货中状态
+	 * @param containerCode
+	 * @param ouId
+	 * @return
+	 */
+	WhSeedingCollectionCommand getSeedingCollectionByContainerCode(@Param("containerCode") String containerCode, @Param("ouId") Long ouId);
 
 	int checkBatchIsAllIntoSeedingWall(@Param("batch") String batch, @Param("ouId") Long ouId);
 

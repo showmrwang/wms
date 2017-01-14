@@ -775,5 +775,11 @@ public class ErrorCodes {
     public static final int COLLECTION_RECOMMEND_RESULT_REPEAT = 80004;
     /** 该容器[{0}]与之前扫描的容器批次不同 */
     public static final int COLLECTION_CONTAINER_BATCH_DIFFERENCE = 80005;
+    /** 进入目的地之前请扫描1到多个容器 */
+    public static final int COLLECTION_CONTAINER_QTY_IS_NULL = 80006;
+    /** 容器[{0}]不在已携带容器中 */
+    public static final int COLLECTION_CONTAINER_IS_NOT_IN_SCAN_LIST = 80007;
+    /** 请在播种墙,暂存库位,中转库位中扫描正确的设施编码 */
+    public static final int COLLECTION_DESTINATION_NOT_RIGHT = 80008;
 	// 80001-90000 zhukai
 }

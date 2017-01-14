@@ -30,6 +30,7 @@ import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhDistributionPatternRuleDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhFacilityRecPathDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhLocationDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundFacilityDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhSeedingCollectionDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhTemporaryStorageLocationDao;
@@ -39,10 +40,12 @@ import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Location;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhDistributionPatternRule;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFacilityRecPath;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundFacility;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhSeedingCollection;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhSeedingCollectionLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhTemporaryStorageLocation;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 import com.baozun.scm.primservice.whoperation.util.SkuInventoryUuid;
@@ -81,6 +84,9 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
     
     @Autowired
     private ContainerDao containerDao;
+    
+    @Autowired
+    private WhLocationDao whLocationDao;
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
@@ -373,7 +379,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 		if (StringUtils.isEmpty(type)) {
 			throw new BusinessException(ErrorCodes.PARAMS_ERROR);
 		}
-		WhSeedingCollectionCommand seedingCollection = whSeedingCollectionDao.checkContainerCodeInSeedingCollection(containerCode, ouId);
+		WhSeedingCollectionCommand seedingCollection = whSeedingCollectionDao.getSeedingCollectionByContainerCode(containerCode, ouId);
 		if (null == seedingCollection) {
 			throw new BusinessException(ErrorCodes.COLLECTION_CONTAINER_DATA_NULL_ERROR, new Object[] { containerCode });
 		}
@@ -418,7 +424,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 				}
 			}
 		}
-		recPathList.add(rec);
+		recPathList.add(0, rec);
 		cacheManager.setMapObject(CacheConstants.PDA_CACHE_COLLECTION_REC + userId.toString(), batch, recPathList, CacheConstants.CACHE_ONE_DAY);
 		return rec;
 	}
@@ -472,11 +478,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 	 * 记录容器到播种墙上集货信息
 	 */
 	@Override
-	public void updateContainerToSeedingWall(WhFacilityRecPathCommand rec, Long ouId) {
-		Long facilityId = rec.getFacilityId();
-		if (null == facilityId) {
-			throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
-		}
+	public void updateContainerToDestination(WhFacilityRecPathCommand rec, Integer destinationType, Long ouId) {
 		Long containerId = rec.getContainerId();
 		if (null == containerId) {
 			throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
@@ -490,12 +492,51 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 			throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
 		}
 		WhSeedingCollection collection = new WhSeedingCollection();
-		collection.setFacilityId(facilityId);
+		if (destinationType == Constants.SEEDING_WALL) {
+			// 目标移到播种墙
+			Long facilityId = rec.getFacilityId();
+			if (null == facilityId) {
+				throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
+			}
+			collection.setFacilityId(facilityId);
+			collection.setCollectionStatus(CollectionStatus.TO_SEED);
+		} else if (destinationType == Constants.TEMPORARY_STORAGE_LOCATION) {
+			// 目标移到暂存库位
+			Long temporaryStorageLocationId = rec.getTemporaryStorageLocationId();
+			if (null == temporaryStorageLocationId) {
+				throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
+			}
+			collection.setTemporaryLocationId(temporaryStorageLocationId);
+			collection.setCollectionStatus(CollectionStatus.EXECUTING);
+		} else if (destinationType == Constants.TRANSIT_LOCATION) {
+			// 目标移到中转库位
+			Long transitLocationId = rec.getTransitLocationId();
+			if (null == transitLocationId) {
+				throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
+			}
+			collection.setTemporaryLocationId(transitLocationId);
+			collection.setCollectionStatus(CollectionStatus.EXECUTING);
+		}
 		collection.setContainerId(containerId);
 		collection.setBatch(batch);
 		collection.setOuId(ouId);
-		collection.setCollectionStatus(CollectionStatus.TO_SEED);
 		whSeedingCollectionDao.insert(collection);
+		if (destinationType == Constants.SEEDING_WALL) {
+			// 移到播种墙时保存redis数据
+			// SEEDING_(仓库ID)_(播种墙CODE)_(批次号)_(容器CODE)=Map<SkuId_uuid, WhSeedingCollectionLine>
+			String seedingWallCode = rec.getSeedingwallCode();
+			String containerCode = rec.getContainerCode();
+			if (StringUtils.isEmpty(seedingWallCode) || StringUtils.isEmpty(containerCode)) {
+				throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
+			}
+			StringBuilder sb = new StringBuilder(CacheConstants.CACHE_SEEDING);
+			sb.append(ouId).append("_");
+			sb.append(seedingWallCode).append("_");
+			sb.append(batch).append("_");
+			sb.append(containerCode);
+			
+			// WhSeedingCollectionLine line = 
+		}
 	}
 
 	@Override
@@ -524,4 +565,125 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         containerCodeDeque.addFirst(containerCode);
         cacheManager.setObject(CacheConstants.PDA_CACHE_MANUAL_COLLECTION_CONTAINER + userId, containerCodeDeque, CacheConstants.CACHE_ONE_DAY);
 	}
+	
+	@Override
+	public boolean checkManualContainerCacheNotNull(Long userId) {
+		ArrayDeque<String> containerCodeDeque = cacheManager.getObject(CacheConstants.PDA_CACHE_MANUAL_COLLECTION_CONTAINER);
+		if (null == containerCodeDeque || containerCodeDeque.isEmpty()) {
+			throw new BusinessException(ErrorCodes.COLLECTION_RECOMMEND_RESULT_REPEAT);
+		}
+		return true;
+	}
+	
+	/**
+	 * 通过扫描的目的地编码得到集货位置的类型
+	 */
+	@Override
+	public int getDestinationTypeByCode(String destinationCode, Long ouId) {
+		if (StringUtils.isEmpty(destinationCode)) {
+			throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+		}
+		WhOutboundFacility facility = whOutboundFacilityDao.findByCodeAndOuId(destinationCode, ouId);
+		if (null != facility) {
+			return Constants.SEEDING_WALL;
+		}
+		WhTemporaryStorageLocation storageLocation = whTemporaryStorageLocationDao.findByCodeAndOuId(destinationCode, ouId);
+		if (null != storageLocation) {
+			return Constants.TEMPORARY_STORAGE_LOCATION;
+		}
+		Location location = whLocationDao.findLocationByCode(destinationCode, ouId);
+		if (null != location) {
+			return Constants.TRANSIT_LOCATION;
+		}
+		throw new BusinessException(ErrorCodes.COLLECTION_DESTINATION_NOT_RIGHT);
+	}
+	
+	/**
+	 * 判断推荐结果表中当前容器对应的小批次是否关联当前目的地
+	 */
+	@Override
+	public boolean checkContainerAssociatedWithDestination(String containerCode, String destinationCode, Integer destinationType, Long ouId) {
+		if (StringUtils.isEmpty(containerCode) || StringUtils.isEmpty(destinationCode) || null == destinationType) {
+			throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+		}
+		ArrayDeque<String> containerCodeDeque = cacheManager.getObject(CacheConstants.PDA_CACHE_MANUAL_COLLECTION_CONTAINER);
+        if (!containerCodeDeque.contains(containerCode)) {
+        	throw new BusinessException(ErrorCodes.COLLECTION_RECOMMEND_RESULT_REPEAT, new Object[] { containerCode });
+		}
+		WhSeedingCollectionCommand seedingCollection = whSeedingCollectionDao.getSeedingCollectionByContainerCode(containerCode, ouId);
+		if (null == seedingCollection) {
+			throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
+		}
+        String batch = seedingCollection.getBatch();
+        List<WhFacilityRecPathCommand> recList = whFacilityRecPathDao.getRecommendDestinationByBatch(batch, ouId);
+        if (null != recList && !recList.isEmpty()) {
+        	for (WhFacilityRecPathCommand rec : recList) {
+        		if (destinationType == Constants.SEEDING_WALL && destinationCode.equals(rec.getSeedingwallCode())) {
+        			return true;
+        		} else if (destinationType == Constants.TEMPORARY_STORAGE_LOCATION && destinationCode.equals(rec.getTemporaryStorageLocationCode())) {
+        			return true;
+        		} else if (destinationType == Constants.TRANSIT_LOCATION && destinationCode.equals(rec.getTransitLocationCode())) {
+        			return true;
+        		}
+			}
+		}
+        // 判断目的地是否关联其他小批次
+        List<String> batchList = whFacilityRecPathDao.getBatchListByDestinationCode(destinationCode, destinationType, ouId);
+        if (null == batchList || batchList.isEmpty()) {
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public void manualMoveContainerToDestination(String containerCode, String destinationCode, Integer destinationType, Long ouId) {
+		if (StringUtils.isEmpty(containerCode) || StringUtils.isEmpty(destinationCode) || null == destinationType) {
+			throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+		}
+		WhSeedingCollectionCommand seedingCollection = whSeedingCollectionDao.getSeedingCollectionByContainerCode(containerCode, ouId);
+		if (null == seedingCollection) {
+			throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
+		}
+		// 1.将容器与目的地信息插入推荐结果表
+		WhOutboundFacility facility = null;
+		WhTemporaryStorageLocation storageLocation = null;
+		Location location = null;
+		WhFacilityRecPath rec = new WhFacilityRecPath();
+		if (destinationType == Constants.SEEDING_WALL) {
+			facility = whOutboundFacilityDao.findByCodeAndOuId(destinationCode, ouId);
+			if (null == facility) {
+				throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
+			}
+			rec.setSeedingwallCode(destinationCode);
+			rec.setSeedingwallCheckCode(facility.getCheckCode());
+			rec.setSeedingwallUpperLimit(facility.getFacilityUpperLimit());
+		} else if (destinationType == Constants.TEMPORARY_STORAGE_LOCATION) {
+			storageLocation = whTemporaryStorageLocationDao.findByCodeAndOuId(destinationCode, ouId);
+			if (null == storageLocation) {
+				throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
+			}
+			rec.setTemporaryStorageLocationCheckCode(storageLocation.getCheckCode());
+			rec.setTemporaryStorageLocationCode(storageLocation.getTemporaryStorageCode());
+		} else if (destinationType == Constants.TRANSIT_LOCATION) {
+			location = whLocationDao.findLocationByCode(destinationCode, ouId);
+			if (null == location) {
+				throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
+			}
+			rec.setTransitLocationCheckCode(location.getReplenishmentBarcode());
+			rec.setTransitLocationCode(location.getCode());
+		}
+		rec.setBatch(seedingCollection.getBatch());
+		rec.setStatus(1);
+		rec.setOuId(ouId);
+		rec.setContainerCode(containerCode);
+		whFacilityRecPathDao.insert(rec);
+		
+    	// 2.记录容器集货信息（到目的地）
+    	
+		
+    	// 3.将容器移动到目的地
+    	
+    	// 判断是否移动完成
+	}
+	
 }

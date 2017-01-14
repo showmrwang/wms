@@ -152,5 +152,42 @@
        		and ou_id = #{ouId}
        		and container_code = #{containerCode}
     </select>
-
+	
+	<select id="getRecommendDestinationByBatch" resultMap="WhFacilityRecPathResultExt">
+		select
+			p.seedingwall_code as seedingwallCode,
+			p.temporary_storage_location_code as temporaryStorageLocationCode,
+			p.transit_location_code as transitLocationCode
+		from
+			t_wh_facility_rec_path p
+		where
+			p.batch = #{batch}
+			and p.status = 1
+			and p.ou_id = #{ouId}
+		group by
+			p.seedingwall_code,
+			p.temporary_storage_location_code,
+			p.transit_location_code as transitLocationCode
+	</select>
+	
+	<select id="getBatchListByDestinationCode" resultType="string">
+		select
+			p.batch
+		from
+			t_wh_facility_rec_path p
+		where
+			p.status = 1
+			<if test="destinationType == 1">
+				and p.seedingwall_code = #{destinationCode}
+			</if>
+			<if test="destinationType == 2">
+				and p.temporary_storage_location_code = #{destinationCode}
+			</if>
+			<if test="destinationType == 3">
+				and p.transit_location_code = #{destinationCode}
+			</if>
+			and p.ou_id = #{ouId}
+		group by
+			p.batch
+	</select>
 </mapper>

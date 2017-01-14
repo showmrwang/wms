@@ -70,7 +70,7 @@ public interface PdaConcentrationManager extends BaseManager {
 	 * @param batch2 
 	 * @param ouId
 	 */
-	void updateContainerToSeedingWall(WhFacilityRecPathCommand rec, Long ouId);
+	void updateContainerToDestination(WhFacilityRecPathCommand rec, Integer destinationType, Long ouId);
 	
 	/**
 	 * 清除集货推荐缓存
@@ -107,5 +107,25 @@ public interface PdaConcentrationManager extends BaseManager {
     void cleanCache(WorkCollectionCommand workCollectionCommand);
 
 	void addContainerCodeIntoCache(String containerCode, Long userId, Long ouId);
+	
+	/**
+	 * 判断推荐结果表中当前容器对应的小批次是否关联当前目的地
+	 */
+	boolean checkContainerAssociatedWithDestination(String containerCode, String destinationCode, Integer destinationType, Long ouId);
+	
+	/**
+	 * 判断人为集货进入目的地之前扫描容器不为null
+	 */
+	boolean checkManualContainerCacheNotNull(Long userId);
+	
+	/**
+	 * 得到目的地类型
+	 * @param destinationCode
+	 * @param ouId
+	 * @return
+	 */
+	int getDestinationTypeByCode(String destinationCode, Long ouId);
+
+	void manualMoveContainerToDestination(String containerCode, String destinationCode, Integer destinationType, Long ouId);
 
 }
