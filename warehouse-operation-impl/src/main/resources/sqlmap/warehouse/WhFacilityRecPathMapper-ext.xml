@@ -122,7 +122,9 @@
 			left join t_wh_container c on c.code = p.container_code
 		where 
 			p.container_code = #{containerCode}
-			and p.batch = #{batch}
+			<if test="batch != null and batch != ''">
+				and p.batch = #{batch}
+			</if>
 			and p.status = 1
 			and p.ou_id = #{ouId}
 	</select>

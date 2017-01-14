@@ -773,5 +773,7 @@ public class ErrorCodes {
     public static final int COLLECTION_CONTAINER_NOT_IN_LOCATION = 80003;
     /** 该容器已扫描过 */
     public static final int COLLECTION_RECOMMEND_RESULT_REPEAT = 80004;
+    /** 该容器[{0}]与之前扫描的容器批次不同 */
+    public static final int COLLECTION_CONTAINER_BATCH_DIFFERENCE = 80005;
 	// 80001-90000 zhukai
 }

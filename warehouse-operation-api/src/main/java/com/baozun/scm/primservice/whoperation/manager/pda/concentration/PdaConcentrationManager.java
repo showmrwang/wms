@@ -22,11 +22,10 @@ public interface PdaConcentrationManager extends BaseManager {
 	/**
 	 * 通过容器号获取集货状态
 	 * @param containerCode
-	 * @param batch 
 	 * @param ouId
 	 * @return
 	 */
-	WhSeedingCollectionCommand checkContainerInWhere(String containerCode, String batch, Integer type, Long ouId);
+	WhSeedingCollectionCommand checkContainerInWhere(String containerCode, Integer type, Long ouId);
 	
 	/**
 	 * 判断当前容器是否有推荐结果
@@ -106,5 +105,7 @@ public interface PdaConcentrationManager extends BaseManager {
      * @param workCollectionCommand
      */
     void cleanCache(WorkCollectionCommand workCollectionCommand);
+
+	void addContainerCodeIntoCache(String containerCode, Long userId, Long ouId);
 
 }

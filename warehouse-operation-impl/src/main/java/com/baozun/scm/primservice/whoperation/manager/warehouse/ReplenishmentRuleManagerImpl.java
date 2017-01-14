@@ -314,6 +314,6 @@ public class ReplenishmentRuleManagerImpl extends BaseManagerImpl implements Rep
 
 	@Override
 	public List<ReplenishmentStrategyCommand> getReplenishmentStrategyCommandByRuleId(Long ruleId, Long ouId) {
-		return replenishmentStrategyDao.findCommandByRuleId(ruleId, ouId);
+		return replenishmentStrategyDao.findCommandByRuleIdWithPriority(ruleId, ouId);
 	}
 }

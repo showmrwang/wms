@@ -104,5 +104,7 @@ public final class CacheConstants {
     // --------------------------------------------集货缓存--------------------------------------------
     /** 集货推荐结果缓存:前缀+USERID*/
     public static final String PDA_CACHE_COLLECTION_REC = "CACHE_COLLECTION_REC";
+    /** 人为集货扫描容器缓存 */
+    public static final String PDA_CACHE_MANUAL_COLLECTION_CONTAINER = "CACHE_MANUAL_COLLECTION_CONTAINER";
 
 }

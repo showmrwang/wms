@@ -1,11 +1,14 @@
 package com.baozun.scm.primservice.whoperation.manager.pda.concentration;
 
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 
 import lark.common.annotation.MoreDB;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -13,6 +16,7 @@ import org.springframework.util.StringUtils;
 import com.baozun.redis.manager.CacheManager;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.RecFacilityPathCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.collection.WorkCollectionCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhFacilityRecPathCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundFacilityCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSeedingCollectionCommand;
@@ -23,6 +27,7 @@ import com.baozun.scm.primservice.whoperation.constant.CollectionStatus;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhDistributionPatternRuleDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhFacilityRecPathDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundFacilityDao;
@@ -44,7 +49,9 @@ import com.baozun.scm.primservice.whoperation.util.SkuInventoryUuid;
 
 @Service("pdaConcentrationManager")
 public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaConcentrationManager {
-
+	
+	protected static final Logger log = LoggerFactory.getLogger(PdaConcentrationManagerImpl.class);
+	
     @Autowired
     private WhFacilityRecPathDao whFacilityRecPathDao;
 
@@ -71,6 +78,9 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 
     @Autowired
     private WhTemporaryStorageLocationDao whTemporaryStorageLocationDao;
+    
+    @Autowired
+    private ContainerDao containerDao;
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
@@ -359,11 +369,11 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 	 * 检查容器号对应的位置是否存在
 	 */
 	@Override
-	public WhSeedingCollectionCommand checkContainerInWhere(String containerCode, String batch, Integer type, Long ouId) {
+	public WhSeedingCollectionCommand checkContainerInWhere(String containerCode, Integer type, Long ouId) {
 		if (StringUtils.isEmpty(type)) {
 			throw new BusinessException(ErrorCodes.PARAMS_ERROR);
 		}
-		WhSeedingCollectionCommand seedingCollection = whSeedingCollectionDao.checkContainerCodeInSeedingCollection(containerCode, batch, ouId);
+		WhSeedingCollectionCommand seedingCollection = whSeedingCollectionDao.checkContainerCodeInSeedingCollection(containerCode, ouId);
 		if (null == seedingCollection) {
 			throw new BusinessException(ErrorCodes.COLLECTION_CONTAINER_DATA_NULL_ERROR, new Object[] { containerCode });
 		}
@@ -390,6 +400,9 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 	@Override
 	public WhFacilityRecPathCommand checkContainerHaveRecommendResult(String containerCode, String batch, Long userId, Long ouId) {
 		// cacheManager.removeMapValue(CacheConstants.PDA_CACHE_COLLECTION_REC + userId.toString(), batch);
+		if (StringUtils.isEmpty(containerCode)) {
+			throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+		}
 		WhFacilityRecPathCommand rec = whFacilityRecPathDao.getRecommendResultByContainerCode(containerCode, batch, ouId);
 		List<WhFacilityRecPathCommand> recPathList = cacheManager.getMapObject(CacheConstants.PDA_CACHE_COLLECTION_REC + userId.toString(), batch);
 		if (null == recPathList) {
@@ -399,6 +412,9 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 			for (WhFacilityRecPathCommand recPath : recPathList) {
 				if (recPath.getContainerCode().equals(containerCode)) {
 					throw new BusinessException(ErrorCodes.COLLECTION_RECOMMEND_RESULT_REPEAT, new Object[] { containerCode });
+				}
+				if (!recPath.getBatch().equals(batch)) {
+					throw new BusinessException(ErrorCodes.COLLECTION_CONTAINER_BATCH_DIFFERENCE, new Object[] { containerCode });
 				}
 			}
 		}
@@ -485,5 +501,27 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 	@Override
 	public void removeRecommendResultListCache(String batch, Long userId) {
 		cacheManager.removeMapValue(CacheConstants.PDA_CACHE_COLLECTION_REC + userId.toString(), batch);
+	}
+	
+	/**
+	 * 人为集货扫描容器验证
+	 */
+	@Override
+	public void addContainerCodeIntoCache(String containerCode, Long userId, Long ouId) {
+		ContainerCommand containerCmd = containerDao.getContainerByCode(containerCode, ouId);
+        if (null == containerCmd) {
+            // 容器信息不存在
+            log.error("container is not exists, logId is:[{}]", logId);
+            throw new BusinessException(ErrorCodes.COMMON_CONTAINER_IS_NOT_EXISTS);
+        }
+        ArrayDeque<String> containerCodeDeque = cacheManager.getObject(CacheConstants.PDA_CACHE_MANUAL_COLLECTION_CONTAINER);
+        if (null == containerCodeDeque) {
+        	containerCodeDeque = new ArrayDeque<String>();
+		}
+        if (containerCodeDeque.contains(containerCode)) {
+        	throw new BusinessException(ErrorCodes.COLLECTION_RECOMMEND_RESULT_REPEAT, new Object[] { containerCode });
+		}
+        containerCodeDeque.addFirst(containerCode);
+        cacheManager.setObject(CacheConstants.PDA_CACHE_MANUAL_COLLECTION_CONTAINER + userId, containerCodeDeque, CacheConstants.CACHE_ONE_DAY);
 	}
 }
