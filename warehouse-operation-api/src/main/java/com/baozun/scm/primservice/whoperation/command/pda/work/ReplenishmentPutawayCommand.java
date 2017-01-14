@@ -42,6 +42,11 @@ public class ReplenishmentPutawayCommand extends BaseCommand {
     private Boolean isNeedScanTurnoverBox = false;
     /**是否扫描结束*/
     private Boolean isScanFinsh = false;
+    /**是否整托盘整箱补货*/
+    private Boolean isWholeCase = false;
+    /**是否只有唯一目标库位*/
+    private Boolean isOnlyLocation = false;
+    
 
     public Long getOperationId() {
         return operationId;
@@ -171,6 +176,20 @@ public class ReplenishmentPutawayCommand extends BaseCommand {
         this.isScanFinsh = isScanFinsh;
     }
 
-    
+    public Boolean getIsWholeCase() {
+        return isWholeCase;
+    }
+
+    public void setIsWholeCase(Boolean isWholeCase) {
+        this.isWholeCase = isWholeCase;
+    }
+
+    public Boolean getIsOnlyLocation() {
+        return isOnlyLocation;
+    }
+
+    public void setIsOnlyLocation(Boolean isOnlyLocation) {
+        this.isOnlyLocation = isOnlyLocation;
+    }
 
 }
