@@ -33,6 +33,7 @@ public class WaveFacilityManagerProxyImpl extends BaseManagerImpl implements Wav
     private WhWaveManager whWaveManager;
     @Autowired
     private WhFacilityRecPathManager whFacilityRecPathManager;
+
     @Override
     public RecFacilityPathCommand matchOutboundFacility(RecFacilityPathCommand recFacilityPath) {
         // 校验传入参数

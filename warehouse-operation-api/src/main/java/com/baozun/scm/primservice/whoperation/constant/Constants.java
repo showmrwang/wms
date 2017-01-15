@@ -591,6 +591,13 @@ public final class Constants {
     /** 目标位置类型:中转库位*/
     public static final int TRANSIT_LOCATION = 3;
 
+    /** 播种墙容量满足一次移动所有容器*/
+    public static final int SEEDING_WALL_SUFFICIENT = 1;
+    /** 每次只能移动一个容器到播种墙*/
+    public static final int SEEDING_WALL_MOVE_ONE = 2;
+    /** 播种墙剩余容量不满足, 容器只能移到暂存库位*/
+    public static final int SEEDING_WALL_NOT_SUFFICIENT = 3;
+
 
 
 }

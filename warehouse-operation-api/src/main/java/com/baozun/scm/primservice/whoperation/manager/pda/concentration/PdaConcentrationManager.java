@@ -1,9 +1,9 @@
 package com.baozun.scm.primservice.whoperation.manager.pda.concentration;
 
+import com.baozun.scm.primservice.whoperation.command.pda.collection.WorkCollectionCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhFacilityRecPathCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSeedingCollectionCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhTemporaryStorageLocationCommand;
-import com.baozun.scm.primservice.whoperation.command.pda.collection.WorkCollectionCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 
 /**
@@ -108,10 +108,23 @@ public interface PdaConcentrationManager extends BaseManager {
     Boolean checkAndMoveContainer(WorkCollectionCommand workCollectionCommand);
 
     /**
+     * [业务方法] 校验并且记录库存
+     * @param workCollectionCommand
+     * @return targetPos$containerCode
+     */
+    Boolean checkAndRecordInventory(WorkCollectionCommand workCollectionCommand);
+
+    /**
      * [通用方法] 清理缓存: cache+userId, batch
      * @param workCollectionCommand
      */
     void cleanCache(WorkCollectionCommand workCollectionCommand);
+
+    /**
+     * [通用方法] 补偿机制: cache+userId, batch
+     * @param workCollectionCommand
+     */
+    void compensationCache(WorkCollectionCommand workCollectionCommand);
 
 	void addManualContainerCodeIntoCache(String containerCode, Long userId, Long ouId);
 	
