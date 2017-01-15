@@ -50,11 +50,14 @@ public interface PdaConcentrationManager extends BaseManager {
 	/**
 	 * 得到缓存里面的一条推荐结果
 	 * @param batch
-	 * @param userId
-	 * @return
 	 */
 	WhFacilityRecPathCommand popRecommendResultListHead(String batch, Long userId);
 	
+	/**
+	 * 得到人为集货缓存里面的一条推荐结果
+	 * @param batch
+	 */
+	WhFacilityRecPathCommand popManualRecommendResultListHead(Long userId);
 	/**
 	 * 判断小批次是否全部移动到播种墙
 	 * @param batch
@@ -64,11 +67,15 @@ public interface PdaConcentrationManager extends BaseManager {
 	boolean checkBatchIsAllIntoSeedingWall(String batch, Long userId, Long ouId);
 	
 	/**
+	 * 移动容器
+	 * @param destinationType
+	 */
+	void updateContainerSkuInventory(WhFacilityRecPathCommand recCommand, Integer destinationType, Long ouId);
+	
+	/**
 	 * 记录容器到播种墙上集货信息
 	 * @param containerCode
 	 * @param batch
-	 * @param batch2 
-	 * @param ouId
 	 */
 	void updateContainerToDestination(WhFacilityRecPathCommand rec, Integer destinationType, Long ouId);
 	
@@ -106,17 +113,17 @@ public interface PdaConcentrationManager extends BaseManager {
      */
     void cleanCache(WorkCollectionCommand workCollectionCommand);
 
-	void addContainerCodeIntoCache(String containerCode, Long userId, Long ouId);
+	void addManualContainerCodeIntoCache(String containerCode, Long userId, Long ouId);
 	
 	/**
 	 * 判断推荐结果表中当前容器对应的小批次是否关联当前目的地
 	 */
-	boolean checkContainerAssociatedWithDestination(String containerCode, String destinationCode, Integer destinationType, Long ouId);
+	boolean checkContainerAssociatedWithDestination(String containerCode, String destinationCode, Integer destinationType, Long userId, Long ouId);
 	
 	/**
 	 * 判断人为集货进入目的地之前扫描容器不为null
 	 */
-	boolean checkManualContainerCacheNotNull(Long userId);
+	boolean checkManualContainerCacheNotNull(Boolean isApplyFacility, Long userId);
 	
 	/**
 	 * 得到目的地类型
@@ -125,7 +132,32 @@ public interface PdaConcentrationManager extends BaseManager {
 	 * @return
 	 */
 	int getDestinationTypeByCode(String destinationCode, Long ouId);
+	
+	/**
+	 * 容器移动到目的地
+	 * @param containerCode
+	 * @param destinationCode
+	 * @param destinationType 目的地类型 1:播种墙 2:暂存库位 3:中转库位
+	 * @return
+	 */
+	boolean manualMoveContainerToDestination(String containerCode, String destinationCode, Integer destinationType, Long userId, Long ouId);
 
-	void manualMoveContainerToDestination(String containerCode, String destinationCode, Integer destinationType, Long ouId);
+	void removeManualContainerCodeFromCache(Long userId);
+	
+	/**
+	 * 人为集货-应用系统推荐
+	 * @param containerCode
+	 * @param userId
+	 * @param ouId
+	 */
+	void useSysRecommendResult(String containerCode, Long userId, Long ouId);
+
+	void moveContainerToDestination(WhFacilityRecPathCommand recCommand, Integer destinationType, Boolean isManual, Long userId, Long ouId);
+	
+	/**
+	 * 通过推荐结果判断容器去哪
+	 * @return
+	 */
+	Integer checkDestinationByRecommendResult(WhFacilityRecPathCommand rec, Long ouId);
 
 }

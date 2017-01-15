@@ -32,6 +32,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand
 import com.baozun.scm.primservice.whoperation.command.warehouse.LocationCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhSeedingCollectionLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 
 public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
@@ -744,4 +745,6 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
 	
 	
 	public List<WhSkuInventoryCommand> findReplenishmentBylocationId(@Param("ouId") Long ouId,@Param("locationId") Long locationId,@Param("odoLineId") Long odoLineId,@Param("odoId") Long odoId);
+
+	List<WhSeedingCollectionLine> findSeedingDataByContainerId(@Param("containerId") Long containerId, @Param("ouId") Long ouId);
 }

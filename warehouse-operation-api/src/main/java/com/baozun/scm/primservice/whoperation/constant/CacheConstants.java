@@ -111,5 +111,7 @@ public final class CacheConstants {
     public static final String PDA_CACHE_COLLECTION_REC = "CACHE_COLLECTION_REC";
     /** 人为集货扫描容器缓存 */
     public static final String PDA_CACHE_MANUAL_COLLECTION_CONTAINER = "CACHE_MANUAL_COLLECTION_CONTAINER";
+    /** 人为集货-集货推荐结果缓存 */
+    public static final String PDA_CACHE_MANUAL_COLLECTION_REC = "CACHE_MANUAL_COLLECTION_REC";
 
 }

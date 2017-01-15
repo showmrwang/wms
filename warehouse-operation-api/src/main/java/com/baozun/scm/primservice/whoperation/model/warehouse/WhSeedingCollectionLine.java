@@ -30,8 +30,7 @@ public class WhSeedingCollectionLine extends BaseModel {
 	private static final long serialVersionUID = -3063727353047968263L;
 	
 	//columns START
-	/** 集货ID */
-	private Long seedingCollectionId;
+	private Long skuId;
 	/** 商品编码 */
 	private String skuCode;
 	/** 商品外部编码 */
@@ -42,8 +41,6 @@ public class WhSeedingCollectionLine extends BaseModel {
 	private String skuName;
 	/** 计划数量 */
 	private Long qty;
-	/** 已播种数量 */
-	private Long seedingQty;
 	/** 客户CODE */
 	private String customerCode;
 	/** 客户名称 */
@@ -86,14 +83,6 @@ public class WhSeedingCollectionLine extends BaseModel {
 		this.id = id;
 	}
 
-	public Long getSeedingCollectionId() {
-		return seedingCollectionId;
-	}
-
-	public void setSeedingCollectionId(Long seedingCollectionId) {
-		this.seedingCollectionId = seedingCollectionId;
-	}
-
 	public String getSkuCode() {
 		return skuCode;
 	}
@@ -132,14 +121,6 @@ public class WhSeedingCollectionLine extends BaseModel {
 
 	public void setQty(Long qty) {
 		this.qty = qty;
-	}
-
-	public Long getSeedingQty() {
-		return seedingQty;
-	}
-
-	public void setSeedingQty(Long seedingQty) {
-		this.seedingQty = seedingQty;
 	}
 
 	public String getCustomerCode() {
@@ -276,6 +257,14 @@ public class WhSeedingCollectionLine extends BaseModel {
 
 	public void setOuId(Long ouId) {
 		this.ouId = ouId;
+	}
+
+	public Long getSkuId() {
+		return skuId;
+	}
+
+	public void setSkuId(Long skuId) {
+		this.skuId = skuId;
 	}
 
 }

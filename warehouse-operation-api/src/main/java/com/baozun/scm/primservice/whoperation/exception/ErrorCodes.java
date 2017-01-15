@@ -775,7 +775,7 @@ public class ErrorCodes {
     public static final int COLLECTION_RECOMMEND_RESULT_REPEAT = 80004;
     /** 该容器[{0}]与之前扫描的容器批次不同 */
     public static final int COLLECTION_CONTAINER_BATCH_DIFFERENCE = 80005;
-    /** 进入目的地之前请扫描1到多个容器 */
+    /** 没有需要操作的容器 */
     public static final int COLLECTION_CONTAINER_QTY_IS_NULL = 80006;
     /** 容器[{0}]不在已携带容器中 */
     public static final int COLLECTION_CONTAINER_IS_NOT_IN_SCAN_LIST = 80007;
