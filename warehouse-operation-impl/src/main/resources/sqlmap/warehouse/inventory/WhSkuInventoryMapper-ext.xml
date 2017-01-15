@@ -1569,7 +1569,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		       			 inbound_time = #{inboundTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		       		 	 last_modify_time = now() ,	
 	            	     container_lattice_no = #{containerLatticeNo,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-	            	     temporary_location_id = #{temporaryLocationId,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+	            	     temporary_location_id = #{temporaryLocationId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	            	     outboundbox_code = #{outboundboxCode,javaType=java.lang.String,jdbcType=VARCHAR}
 	        WHERE 
 		        id = #{id} 
