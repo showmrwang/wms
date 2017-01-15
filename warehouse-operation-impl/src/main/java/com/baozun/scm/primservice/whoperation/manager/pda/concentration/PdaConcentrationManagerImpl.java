@@ -541,10 +541,10 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 		collection.setOuId(ouId);
 		whSeedingCollectionDao.insert(collection);
 		if (destinationType == Constants.SEEDING_WALL) {
-			// 移到播种墙时保存redis数据
-			// SEEDING_(仓库ID)_(播种墙CODE)_(批次号)_(容器CODE)=Map<SkuId_uuid, WhSeedingCollectionLine>
 			String seedingWallCode = rec.getSeedingwallCode();
 			String containerCode = rec.getContainerCode();
+			// 移到播种墙时保存redis数据
+			// SEEDING_(仓库ID)_(播种墙CODE)_(批次号)_(容器CODE)=Map<SkuId_uuid, WhSeedingCollectionLine>
 			addSeedingDataIntoCache(seedingWallCode, containerCode, containerId, batch, ouId);
 		}
 	}
@@ -562,13 +562,15 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 		
 		// 查找容器库存
 		List<WhSeedingCollectionLine> dataList = this.whSkuInventoryDao.findSeedingDataByContainerId(containerId, ouId);
-		// 封装集货sku数据
-		Map<String, WhSeedingCollectionLine> seedingDataMap = new HashMap<String, WhSeedingCollectionLine>();
-		for (WhSeedingCollectionLine data : dataList) {
-			String mapKey = data.getSkuId() + "_" + data.getUuid();
-			seedingDataMap.put(mapKey, data);
+		if (null != dataList && !dataList.isEmpty()) {
+			// 封装集货sku数据
+			Map<String, WhSeedingCollectionLine> seedingDataMap = new HashMap<String, WhSeedingCollectionLine>();
+			for (WhSeedingCollectionLine data : dataList) {
+				String mapKey = data.getSkuId() + "_" + data.getUuid();
+				seedingDataMap.put(mapKey, data);
+			}
+			cacheManager.setObject(cacheKey, seedingDataMap, CacheConstants.CACHE_ONE_WEEK);
 		}
-		cacheManager.setObject(cacheKey, seedingDataMap, CacheConstants.CACHE_ONE_WEEK);
 	}
 
 	@Override
