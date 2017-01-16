@@ -607,6 +607,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
     public void deleteWaveLinesAndReleaseInventoryByOdoId(Long waveId, Long odoId, String reason, Warehouse wh) {
         whWaveLineManager.deleteWaveLinesByOdoId(odoId, waveId, wh.getId(), reason);
         whSkuInventoryManager.releaseInventoryByOdoId(odoId, wh);
+        whOdoLineDao.updateOdoLineAssignQtyIsZero(odoId, wh.getId());
     }
 
     @Override

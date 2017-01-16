@@ -799,4 +799,13 @@
 		</where>
 	</select>
 	
+	<update id="updateOdoLineAssignQtyIsZero">
+		update 
+			t_wh_odo_line l
+		set 
+			l.assign_qty = 0.0
+		where
+			l.odo_id = #{odoId}
+			and l.ou_id = #{ouId}
+	</update>
 </mapper>

@@ -127,4 +127,12 @@ public interface WhOdoLineDao extends BaseDao<WhOdoLine, Long> {
      * @return
      */
     Long findListCountNotNew(WhOdoLine line);
+    
+    /**
+     * 根据OdoId把明细的分配数量变成0
+     * @param odoId
+     * @param ouId
+     * @return
+     */
+	int updateOdoLineAssignQtyIsZero(@Param("odoId") Long odoId, @Param("ouId") Long ouId);
 }
