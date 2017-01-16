@@ -496,7 +496,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 		if (null != facility) {
 			return getTemporaryStorageLocationBySeedingWall(facility);
 		}
-		throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
+		return null;
 	}
 
 	private WhTemporaryStorageLocationCommand getTemporaryStorageLocationBySeedingWall(WhOutboundFacilityCommand facility) {
@@ -980,7 +980,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 		String containerCode = rec.getContainerCode();
 		String batch = rec.getBatch();
 		WhSeedingCollectionCommand seedingCollection = whSeedingCollectionDao.getSeedingCollectionByContainerCode(containerCode, ouId);
-		Integer position = 4;	// 当期容器位置, 0为还在集货区
+		Integer position = 4;	// 当期容器位置, 4为还在集货区
 		if (null != seedingCollection.getLocationId()) {
 			position = Constants.TRANSIT_LOCATION;
 		} else if (null != seedingCollection.getTemporaryLocationId()) {
