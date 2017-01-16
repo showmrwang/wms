@@ -52,6 +52,7 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.WhDistributionPatt
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFacilityRecPath;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundFacility;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhSeedingCollection;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhSeedingCollectionLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhTemporaryStorageLocation;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 import com.baozun.scm.primservice.whoperation.util.SkuInventoryUuid;
@@ -97,10 +98,6 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
     
     @Autowired
     private WaveFacilityManagerProxy waveFacilityManagerProxy;
-
-    @Autowired
-    private WaveFacilityManagerProxy waveFacilityManagerProxy;
-
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
