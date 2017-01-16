@@ -3417,7 +3417,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-	public void replenishmentToLines(List<WhWaveLine> lines, String bhCode, Map<String, List<ReplenishmentRuleCommand>> ruleMap, Map<String, String> map, Warehouse wh) {
+	public void replenishmentToLines(List<WhWaveLine> lines, Long odoId, String bhCode, Map<String, List<ReplenishmentRuleCommand>> ruleMap, Map<String, String> map, Warehouse wh) {
     	Long ouId = wh.getId();
     	// tempMap用来存储这一组明细优化数据, 当这一组明细全部补货成功之后再回传给map
     	Map<String, String> tempMap = new HashMap<String, String>(map);
@@ -3722,6 +3722,12 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 				odoLine.setIsAssignSuccess(Boolean.TRUE);
 				whOdoLineDao.saveOrUpdate(odoLine);
 			}
+		}
+    	WhOdo odo = whOdoDao.findByIdOuId(odoId, ouId);
+    	if (StringUtils.hasText(odo.getAssignFailReason()) && null != odo.getIsAssignSuccess() && !odo.getIsAssignSuccess()) {
+    		odo.setAssignFailReason(null);
+    		odo.setIsAssignSuccess(Boolean.TRUE);
+    		whOdoDao.saveOrUpdate(odo);
 		}
     	map.clear();
     	map.putAll(tempMap);
