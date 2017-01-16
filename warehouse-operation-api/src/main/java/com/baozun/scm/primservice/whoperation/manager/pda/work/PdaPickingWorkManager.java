@@ -199,4 +199,15 @@ public interface PdaPickingWorkManager extends BaseManager {
      */
     public void pdaPickingFinish(PickingScanResultCommand command);
     
+    /**
+     * 生成作业执行明细
+     * 
+     * @author qiming.liu
+     * @param PickingScanResultCommand
+     * @param WhSkuCommand
+     * @param isTabbInvTotal
+     * @return
+     */
+    public PickingScanResultCommand wholeCaseOperationExecLine(PickingScanResultCommand  command,WhSkuCommand skuCmd,Boolean isTabbInvTotal);
+    
 }

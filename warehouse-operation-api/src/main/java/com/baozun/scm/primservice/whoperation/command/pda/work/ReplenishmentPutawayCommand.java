@@ -9,8 +9,12 @@ public class ReplenishmentPutawayCommand extends BaseCommand {
      */
     private static final long serialVersionUID = 1L;
 
+    /** 功能id */
+    private Long functionId;
     /** 作业id */
     private Long operationId;
+    /** 补货方式 */
+    private Integer replenishWay;
     /** 提示库位编码 */
     private String tipLocationCode;
     /** 库位编码 */
@@ -21,8 +25,6 @@ public class ReplenishmentPutawayCommand extends BaseCommand {
     private String tipLcoationBarCode;
     /** 工作条码 */
     private String workBarCode;
-    /** 功能id */
-    private Long functionId;
     /** 仓库id */
     private Long ouId;
 
@@ -192,4 +194,11 @@ public class ReplenishmentPutawayCommand extends BaseCommand {
         this.isOnlyLocation = isOnlyLocation;
     }
 
+    public Integer getReplenishWay() {
+        return replenishWay;
+    }
+
+    public void setReplenishWay(Integer replenishWay) {
+        this.replenishWay = replenishWay;
+    }
 }
