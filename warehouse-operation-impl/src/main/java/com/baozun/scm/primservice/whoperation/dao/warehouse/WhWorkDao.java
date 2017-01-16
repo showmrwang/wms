@@ -14,6 +14,7 @@
  */
 package com.baozun.scm.primservice.whoperation.dao.warehouse;
 
+import java.util.List;
 import java.util.Map;
 
 import lark.common.annotation.CommonQuery;
@@ -60,4 +61,6 @@ public interface WhWorkDao extends BaseDao<WhWork, Long> {
      */
     @QueryPage("findListCountByQueryMapForPda")
     Pagination<WhWorkCommand> findListByQueryMapWithPageForPda(Page page, Sort[] sorts, Map<String, Object> params);
+
+	List<Long> getOdoIdListByBatch(@Param("batch") String batch, @Param("ouId") Long ouId);
 }

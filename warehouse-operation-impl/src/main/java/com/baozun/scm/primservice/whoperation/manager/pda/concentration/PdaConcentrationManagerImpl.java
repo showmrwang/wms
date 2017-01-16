@@ -80,7 +80,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 
     @Autowired
     private WhWorkDao whWorkDao;
-
+    
     @Autowired
     private WhDistributionPatternRuleDao whDistributionPatternRuleDao;
 
@@ -813,42 +813,75 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 		WhOutboundFacility facility = null;
 		WhTemporaryStorageLocation storageLocation = null;
 		Location location = null;
-		WhFacilityRecPathCommand recCommand = new WhFacilityRecPathCommand();
-		if (destinationType == Constants.SEEDING_WALL) {
-			facility = whOutboundFacilityDao.findByCodeAndOuId(destinationCode, ouId);
-			if (null == facility) {
-				throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
+		WhFacilityRecPathCommand recCommand = whFacilityRecPathDao.getRecommendResultByContainerCode(containerCode, batch, ouId);
+		if (null == recCommand) {
+			recCommand = new WhFacilityRecPathCommand();
+			if (destinationType == Constants.SEEDING_WALL) {
+				facility = whOutboundFacilityDao.findByCodeAndOuId(destinationCode, ouId);
+				if (null == facility) {
+					throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
+				}
+				recCommand.setFacilityId(facility.getId());
+				recCommand.setSeedingwallCode(destinationCode);
+				recCommand.setSeedingwallCheckCode(facility.getCheckCode());
+				recCommand.setSeedingwallUpperLimit(facility.getFacilityUpperLimit());
+			} else if (destinationType == Constants.TEMPORARY_STORAGE_LOCATION) {
+				storageLocation = whTemporaryStorageLocationDao.findByCodeAndOuId(destinationCode, ouId);
+				if (null == storageLocation) {
+					throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
+				}
+				recCommand.setTemporaryStorageLocationId(storageLocation.getId());
+				recCommand.setTemporaryStorageLocationCheckCode(storageLocation.getCheckCode());
+				recCommand.setTemporaryStorageLocationCode(storageLocation.getTemporaryStorageCode());
+			} else if (destinationType == Constants.TRANSIT_LOCATION) {
+				location = whLocationDao.findLocationByCode(destinationCode, ouId);
+				if (null == location) {
+					throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
+				}
+				recCommand.setTransitLocationId(location.getId());
+				recCommand.setTransitLocationCheckCode(location.getReplenishmentBarcode());
+				recCommand.setTransitLocationCode(location.getCode());
 			}
-			recCommand.setFacilityId(facility.getId());
-			recCommand.setSeedingwallCode(destinationCode);
-			recCommand.setSeedingwallCheckCode(facility.getCheckCode());
-			recCommand.setSeedingwallUpperLimit(facility.getFacilityUpperLimit());
-		} else if (destinationType == Constants.TEMPORARY_STORAGE_LOCATION) {
-			storageLocation = whTemporaryStorageLocationDao.findByCodeAndOuId(destinationCode, ouId);
-			if (null == storageLocation) {
-				throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
+			recCommand.setBatch(batch);
+			recCommand.setStatus(1);
+			recCommand.setOuId(ouId);
+			recCommand.setContainerCode(containerCode);
+			recCommand.setContainerId(container.getId());
+			
+			WhFacilityRecPath rec = new WhFacilityRecPath();
+			BeanUtils.copyProperties(recCommand, rec);
+			whFacilityRecPathDao.insert(rec);
+		} else {
+			if (destinationType == Constants.SEEDING_WALL && StringUtils.isEmpty(recCommand.getSeedingwallCode())) {
+				facility = whOutboundFacilityDao.findByCodeAndOuId(destinationCode, ouId);
+				if (null == facility) {
+					throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
+				}
+				recCommand.setFacilityId(facility.getId());
+				recCommand.setSeedingwallCode(destinationCode);
+				recCommand.setSeedingwallCheckCode(facility.getCheckCode());
+				recCommand.setSeedingwallUpperLimit(facility.getFacilityUpperLimit());
+			} else if (destinationType == Constants.TEMPORARY_STORAGE_LOCATION && StringUtils.isEmpty(recCommand.getTemporaryStorageLocationCode())) {
+				storageLocation = whTemporaryStorageLocationDao.findByCodeAndOuId(destinationCode, ouId);
+				if (null == storageLocation) {
+					throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
+				}
+				recCommand.setTemporaryStorageLocationId(storageLocation.getId());
+				recCommand.setTemporaryStorageLocationCheckCode(storageLocation.getCheckCode());
+				recCommand.setTemporaryStorageLocationCode(storageLocation.getTemporaryStorageCode());
+			} else if (destinationType == Constants.TRANSIT_LOCATION && StringUtils.isEmpty(recCommand.getTransitLocationCode())) {
+				location = whLocationDao.findLocationByCode(destinationCode, ouId);
+				if (null == location) {
+					throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
+				}
+				recCommand.setTransitLocationId(location.getId());
+				recCommand.setTransitLocationCheckCode(location.getReplenishmentBarcode());
+				recCommand.setTransitLocationCode(location.getCode());
 			}
-			recCommand.setTemporaryStorageLocationId(storageLocation.getId());
-			recCommand.setTemporaryStorageLocationCheckCode(storageLocation.getCheckCode());
-			recCommand.setTemporaryStorageLocationCode(storageLocation.getTemporaryStorageCode());
-		} else if (destinationType == Constants.TRANSIT_LOCATION) {
-			location = whLocationDao.findLocationByCode(destinationCode, ouId);
-			if (null == location) {
-				throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
-			}
-			recCommand.setTransitLocationId(location.getId());
-			recCommand.setTransitLocationCheckCode(location.getReplenishmentBarcode());
-			recCommand.setTransitLocationCode(location.getCode());
+			WhFacilityRecPath rec = new WhFacilityRecPath();
+			BeanUtils.copyProperties(recCommand, rec);
+			whFacilityRecPathDao.saveOrUpdate(rec);
 		}
-		recCommand.setBatch(batch);
-		recCommand.setStatus(1);
-		recCommand.setOuId(ouId);
-		recCommand.setContainerCode(containerCode);
-		recCommand.setContainerId(container.getId());
-		
-		WhFacilityRecPath rec = new WhFacilityRecPath();
-		BeanUtils.copyProperties(recCommand, rec);
-		whFacilityRecPathDao.insert(rec);
 		
 		// 2.将容器移动到目的地
 		this.updateContainerSkuInventory(recCommand, destinationType, ouId);
@@ -924,11 +957,24 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 		String batch = seedingCollection.getBatch();
 		WhFacilityRecPathCommand rec = whFacilityRecPathDao.getRecommendResultByContainerCode(containerCode, batch, ouId);
 		if (null == rec) {
-			// TODO 推荐播种墙逻辑,并判断是否推荐成功
+			List<Long> odoIdList = whWorkDao.getOdoIdListByBatch(batch, ouId);
+			if (null == odoIdList || odoIdList.isEmpty()) {
+				throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
+			}
+			// 推荐播种墙逻辑,并判断是否推荐成功
 			RecFacilityPathCommand recFacilityPath = new RecFacilityPathCommand();
-			RecFacilityPathCommand command = waveFacilityManagerProxy.matchOutboundFacility(recFacilityPath);
-			
-			
+			recFacilityPath.setOuId(ouId);
+            recFacilityPath.setBatch(batch);
+            recFacilityPath.setContainerCode(containerCode);
+            recFacilityPath.setOdoIdList(odoIdList);
+            // 调用播种墙推荐逻辑
+            RecFacilityPathCommand command = waveFacilityManagerProxy.matchOutboundFacility(recFacilityPath);
+            if (1 == command.getStatus()) {
+            	// 推荐成功
+            	rec = whFacilityRecPathDao.getRecommendResultByContainerCode(containerCode, batch, ouId);
+            } else {
+            	throw new BusinessException(ErrorCodes.COLLECTION_RECOMMEND_RESULT_ERROR);
+            }
 		}
 		// 缓存推荐结果
 		List<WhFacilityRecPathCommand> recPathList = cacheManager.getMapObject(CacheConstants.PDA_CACHE_MANUAL_COLLECTION_REC, userId.toString());
