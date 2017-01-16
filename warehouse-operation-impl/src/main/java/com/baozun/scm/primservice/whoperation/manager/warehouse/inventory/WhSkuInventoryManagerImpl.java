@@ -60,6 +60,7 @@ import com.baozun.scm.primservice.whoperation.constant.ReplenishmentTaskStatus;
 import com.baozun.scm.primservice.whoperation.constant.WavePhase;
 import com.baozun.scm.primservice.whoperation.constant.WhPutawayPatternDetailType;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
+import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ReplenishmentMsgDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ReplenishmentStrategyDao;
@@ -82,6 +83,7 @@ import com.baozun.scm.primservice.whoperation.manager.odo.wave.WhWaveManager;
 import com.baozun.scm.primservice.whoperation.manager.pda.inbound.cache.PdaPutawayCacheManager;
 import com.baozun.scm.primservice.whoperation.manager.pda.inbound.putaway.SkuCategoryProvider;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.AllocateStrategy;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
@@ -133,6 +135,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     private WhWaveLineManager whWaveLineManager;
     @Autowired
     private WhOdoDao whOdoDao;
+    @Autowired
+    private WhOdoLineDao whOdoLineDao;
     @Autowired
     private WhWaveManager whWaveManager;
     @Autowired
@@ -3621,7 +3625,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     						for (WhSkuInventoryCommand invCmd : invs) {
     							List<String> uuid = Arrays.asList(invCmd.getUuid().split(","));
     							List<WhSkuInventoryCommand> skuInvs = whSkuInventoryDao.findWhSkuInventoryByUuidList(ouId, uuid);
-    							Double useableQty = whSkuInventoryDao.getUseableQtyByUuid(invCmd.getUuid(), ouId);
+    							Double useableQty = whSkuInventoryDao.getUseableQtyByUuidList(uuid, ouId);
     							if (null != skuInvs && !skuInvs.isEmpty()) {
     								for (WhSkuInventoryCommand invCommand : skuInvs) {
     									// Double onHandQty = invCommand.getOnHandQty();
@@ -3712,8 +3716,13 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 				log.info("replenishmentToLines is error, replenishment qty is not enough, occupyQty:[{}], waveId:[{}], odoId:[{}], skuId:[{}], ouId:[{}], logId:[{}]", occupyQty, line.getWaveId(), line.getOdoId(), skuId, ouId, logId);
 				throw new BusinessException(0);
 			}
+			WhOdoLine odoLine = whOdoLineDao.findOdoLineById(line.getOdoLineId(), ouId);
+			if (StringUtils.hasText(odoLine.getAssignFailReason()) && null != odoLine.getIsAssignSuccess() && !odoLine.getIsAssignSuccess()) {
+				odoLine.setAssignFailReason(null);
+				odoLine.setIsAssignSuccess(Boolean.TRUE);
+				whOdoLineDao.saveOrUpdate(odoLine);
+			}
 		}
-    		
     	map.clear();
     	map.putAll(tempMap);
 	}
