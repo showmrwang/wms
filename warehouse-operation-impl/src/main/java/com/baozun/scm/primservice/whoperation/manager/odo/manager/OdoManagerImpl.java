@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.baozun.scm.primservice.whoperation.command.odo.OdoCommand;
+import com.baozun.scm.primservice.whoperation.command.odo.OdoGroup;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoResultCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoSearchCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.OdoWaveGroupResultCommand;
@@ -637,8 +638,18 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     }
 
     @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<Long> findOdoByCounterCode(String counterCode, Long ouId) {
         return this.whOdoDao.findOdoByCounterCode(counterCode, ouId);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void createOdo(List<OdoGroup> groupList, Long ouId, Long userId) {
+        for (OdoGroup group : groupList) {
+            this.createOdo(group.getOdo(), group.getOdoLineList(), group.getTransportMgmt(), group.getWhOdoAddress(), group.getOdoVasList(), group.getLineSnList(), ouId, userId);
+        }
+
     }
 
 }

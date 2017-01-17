@@ -130,6 +130,8 @@ public class OdoLineCommand extends BaseCommand {
     private String maxExpDateStr;
     /** 出库单code */
     private String odoCode;
+    /** 出库单extcode */
+    private String odoExtCode;
     /** id集合，逗号分隔 */
     private String ids;
     /** 库存状态 */
@@ -139,6 +141,14 @@ public class OdoLineCommand extends BaseCommand {
 
     /***/
     private List<WhOdoVasCommand> odoVasList;
+
+    public String getOdoExtCode() {
+        return odoExtCode;
+    }
+
+    public void setOdoExtCode(String odoExtCode) {
+        this.odoExtCode = odoExtCode;
+    }
 
     public List<WhOdoVasCommand> getOdoVasList() {
         return odoVasList;

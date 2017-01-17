@@ -8,6 +8,7 @@ import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 
 import com.baozun.scm.primservice.whoperation.command.odo.OdoCommand;
+import com.baozun.scm.primservice.whoperation.command.odo.OdoGroup;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoResultCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoSearchCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.OdoWaveGroupResultCommand;
@@ -222,5 +223,7 @@ public interface OdoManager extends BaseManager {
     List<String> findDistinctCounterCode(Long ouId);
 
     List<Long> findOdoByCounterCode(String counterCode, Long ouId);
+
+    void createOdo(List<OdoGroup> groupList, Long ouId, Long userId);
 
 }

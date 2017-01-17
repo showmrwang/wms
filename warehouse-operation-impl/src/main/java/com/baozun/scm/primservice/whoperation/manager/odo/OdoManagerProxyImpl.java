@@ -1,5 +1,9 @@
 package com.baozun.scm.primservice.whoperation.manager.odo;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,6 +12,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -17,6 +22,9 @@ import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 
 import org.apache.commons.lang3.time.DateUtils;
+import org.apache.poi.EncryptedDocumentException;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -27,6 +35,7 @@ import org.springframework.util.StringUtils;
 import com.baozun.scm.baseservice.sac.manager.CodeManager;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoAddressCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoCommand;
+import com.baozun.scm.primservice.whoperation.command.odo.OdoGroup;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoGroupCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoLineCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoResultCommand;
@@ -48,6 +57,11 @@ import com.baozun.scm.primservice.whoperation.constant.ReplenishmentTaskStatus;
 import com.baozun.scm.primservice.whoperation.constant.WaveStatus;
 import com.baozun.scm.primservice.whoperation.constant.WhUomType;
 import com.baozun.scm.primservice.whoperation.constant.WorkStatus;
+import com.baozun.scm.primservice.whoperation.excel.ExcelImport;
+import com.baozun.scm.primservice.whoperation.excel.context.BiPoDefaultExcelContext;
+import com.baozun.scm.primservice.whoperation.excel.exception.ExcelException;
+import com.baozun.scm.primservice.whoperation.excel.exception.RootExcelException;
+import com.baozun.scm.primservice.whoperation.excel.result.ExcelImportResult;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
@@ -1699,5 +1713,290 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
         }
         wave.setModifiedId(waveCommand.getUserId());
         this.waveManager.startWave(wave);
+    }
+
+    @Override
+    public Workbook importWhOdo(String url, String errorUrl, String fileName, Locale locale, Long ouId, Long userId) {
+
+        String inPath = url + "/" + fileName;
+        String outPath = null;// errorUrl + "\\/" + fileName;
+        if (locale == null) {
+            locale = Locale.CHINESE;
+        }
+        String[] excelIdArray = new String[] {"whOdo", "whOdoLine", "whOdoAddress", "whOdoTransportMgmt", "whOdoVas"};
+
+        Workbook workbook;
+        try {
+            ExcelImportResult odoResult = this.readExcelSheet(inPath, excelIdArray[0], locale);
+            workbook = odoResult.getWorkbook();
+
+            ExcelImportResult odoLineResult = this.readExcelSheet(inPath, excelIdArray[1], locale);
+
+            ExcelImportResult odoAddressResult = this.readExcelSheet(inPath, excelIdArray[2], locale);
+
+            ExcelImportResult transportMgmtResult = this.readExcelSheet(inPath, excelIdArray[3], locale);
+
+            ExcelImportResult odoVasResult = this.readExcelSheet(inPath, excelIdArray[4], locale);
+
+            List<OdoGroup> groupList = new ArrayList<OdoGroup>();
+
+            this.checkAndPackageOdoForImport(odoResult, odoLineResult, odoAddressResult, transportMgmtResult, odoVasResult, groupList, workbook);
+
+            this.odoManager.createOdo(groupList, ouId, userId);
+
+            return workbook;
+
+
+
+        } catch (EncryptedDocumentException e) {
+            log.error("", e);
+        } catch (InvalidFormatException e) {
+            log.error("", e);
+        } catch (RootExcelException e) {
+            System.out.println(e.getMessage() + " [" + e.getSheetName() + "]");
+            for (ExcelException ee : e.getExcelExceptions()) {
+                System.out.println(e.getSheetName() + ":第[" + ee.getRow() + "]行 [" + ee.getTitleName() + "] " + ee.getErrorCode() + " " + ee.getMessage());
+            }
+        } catch (BusinessException bex) {
+            bex.printStackTrace();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            log.error("", e);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        // 校验逻辑
+
+        WhOdo odo = new WhOdo();
+        WhOdoTransportMgmt transportMgmt = new WhOdoTransportMgmt();
+        WhOdoAddress odoAddress = new WhOdoAddress();
+        List<WhOdoLine> odoLineList = new ArrayList<WhOdoLine>();
+        List<WhOdoVas> odoVasList = new ArrayList<WhOdoVas>();
+        List<WhOdoLineAttrSn> lineSnList = new ArrayList<WhOdoLineAttrSn>();
+
+        OdoGroup odoGroup = new OdoGroup();
+        odoGroup.setOdo(odo);
+        odoGroup.setOdoLineList(odoLineList);
+        odoGroup.setWhOdoAddress(odoAddress);
+        odoGroup.setOdoVasList(odoVasList);
+        odoGroup.setTransportMgmt(transportMgmt);
+        odoGroup.setLineSnList(lineSnList);
+        List<OdoGroup> groupList = new ArrayList<OdoGroup>();
+        this.createOdo(groupList, ouId, userId);
+
+        return null;
+    }
+
+    private void checkAndPackageOdoForImport(ExcelImportResult odoResult, ExcelImportResult odoLineResult, ExcelImportResult odoAddressResult, ExcelImportResult transportMgmtResult, ExcelImportResult odoVasResult, List<OdoGroup> groupList,
+            Workbook workbook) {
+        boolean checkFlag = true;
+
+        List<OdoCommand> odoCommandList = odoResult.getListBean();
+        List<OdoLineCommand> odoLineCommandList = odoLineResult.getListBean();
+        List<OdoAddressCommand> odoAddressList = odoAddressResult.getListBean();
+        List<OdoTransportMgmtCommand> transportMgmtCommandList = transportMgmtResult.getListBean();
+        List<WhOdoVasCommand> whOdoVasCommandList = odoVasResult.getListBean();
+        
+        Map<String, OdoGroup> groupMap = new HashMap<String, OdoGroup>();
+
+        for (int i = 0; i < odoCommandList.size(); i++) {
+            OdoCommand odoCommand = odoCommandList.get(i);
+            if (groupMap.containsKey(odoCommand.getExtCode())) {
+                odoResult.addRowException("出库单有重复的编码", "", i + 1);
+                if (checkFlag) {
+                    checkFlag = false;
+                }
+            } else {
+                WhOdo odo = new WhOdo();
+                BeanUtils.copyProperties(odoCommand, odo);
+                OdoGroup group = new OdoGroup();
+                group.setOdo(odo);
+                groupMap.put(odoCommand.getExtCode(), group);
+            }
+        }
+
+        for (int i = 0; i < odoLineCommandList.size(); i++) {
+            OdoLineCommand lineCommand = odoLineCommandList.get(i);
+            
+            if (groupMap.containsKey(lineCommand.getOdoExtCode())) {
+                WhOdoLine line = new WhOdoLine();
+                BeanUtils.copyProperties(lineCommand, line);
+                groupMap.get(lineCommand.getOdoExtCode()).getOdoLineList().add(line);
+            } else {
+                odoLineResult.addRowException("出库单明细找不到对应的出库单", "", i + 1);
+                if (checkFlag) {
+                    checkFlag = false;
+                }
+            }
+            
+        }
+
+        for (int i = 0; i < odoAddressList.size(); i++) {
+            OdoAddressCommand odoAddressCommand = odoAddressList.get(i);
+            if (groupMap.containsKey(odoAddressCommand.getOdoExtCode())) {
+                WhOdoAddress address = new WhOdoAddress();
+                BeanUtils.copyProperties(odoAddressCommand, address);
+                groupMap.get(odoAddressCommand.getOdoExtCode()).setWhOdoAddress(address);
+            } else {
+                odoLineResult.addRowException("出库单明细找不到对应的出库单", "", i + 1);
+                if (checkFlag) {
+                    checkFlag = false;
+                }
+            }
+
+        }
+
+        for (int i = 0; i < transportMgmtCommandList.size(); i++) {
+            OdoTransportMgmtCommand transportMgmtCommand = transportMgmtCommandList.get(i);
+            if (groupMap.containsKey(transportMgmtCommand.getOdoExtCode())) {
+                WhOdoTransportMgmt transportMgmt = new WhOdoTransportMgmt();
+                BeanUtils.copyProperties(transportMgmtCommand, transportMgmt);
+                groupMap.get(transportMgmtCommand.getOdoExtCode()).setTransportMgmt(transportMgmt);
+            } else {
+                odoLineResult.addRowException("出库单明细找不到对应的出库单", "", i + 1);
+                if (checkFlag) {
+                    checkFlag = false;
+                }
+            }
+
+        }
+
+        for (int i = 0; i < whOdoVasCommandList.size(); i++) {
+            WhOdoVasCommand vasCommand = whOdoVasCommandList.get(i);
+            if (groupMap.containsKey(vasCommand.getOdoExtCode())) {
+                WhOdoVas vas = new WhOdoVas();
+                BeanUtils.copyProperties(vasCommand, vas);
+                groupMap.get(vasCommand.getOdoExtCode()).getOdoVasList().add(vas);
+            } else {
+                odoLineResult.addRowException("出库单明细找不到对应的出库单", "", i + 1);
+                if (checkFlag) {
+                    checkFlag = false;
+                }
+            }
+
+        }
+
+        if (checkFlag) {
+            workbook = null;
+        } else {
+            try {
+                ExcelImport.exportImportErroeMsg(workbook, odoResult.getRootExcelException());
+                ExcelImport.exportImportErroeMsg(workbook, odoLineResult.getRootExcelException());
+                ExcelImport.exportImportErroeMsg(workbook, odoAddressResult.getRootExcelException());
+                ExcelImport.exportImportErroeMsg(workbook, transportMgmtResult.getRootExcelException());
+                ExcelImport.exportImportErroeMsg(workbook, odoVasResult.getRootExcelException());
+            } catch (EncryptedDocumentException e) {
+                log.error("", e);
+            } catch (InvalidFormatException e) {
+                log.error("", e);
+            } catch (IOException e) {
+                log.error("", e);
+            }
+        }
+
+        groupList = (List<OdoGroup>) groupMap.values();
+
+    }
+
+    private void createOdo(List<OdoGroup> groupList, Long ouId, Long userId) {
+
+        for (OdoGroup group : groupList) {
+            WhOdo odo = group.getOdo();
+            WhOdoTransportMgmt transportMgmt = group.getTransportMgmt();
+            List<WhOdoLine> odoLineList = group.getOdoLineList();
+            // 默认属性
+            if (odo.getCurrentQty() == null) {
+                odo.setCurrentQty(Constants.DEFAULT_DOUBLE);
+            }
+            if (odo.getActualQty() == null) {
+                odo.setActualQty(Constants.DEFAULT_DOUBLE);
+            }
+            if (odo.getCancelQty() == null) {
+                odo.setCancelQty(Constants.DEFAULT_DOUBLE);
+            }
+            if (null == odo.getIsWholeOrderOutbound()) {
+                odo.setIsWholeOrderOutbound(true);
+            }
+            if (null == odo.getPriorityLevel()) {
+                odo.setPriorityLevel(Constants.ODO_DEFAULT_PRIORITYLEVLE);
+            }
+            if (null == odo.getIncludeFragileCargo()) {
+                odo.setIncludeFragileCargo(false);
+            }
+            if (null == odo.getIncludeHazardousCargo()) {
+                odo.setIncludeHazardousCargo(false);
+            }
+            if (null == odo.getIsLocked()) {
+                odo.setIsLocked(false);
+            }
+            odo.setCreatedId(userId);
+            odo.setCreateTime(new Date());
+            odo.setModifiedId(userId);
+            odo.setLastModifyTime(new Date());
+            if (null == odo.getOrderTime()) {
+                odo.setOrderTime(new Date());
+            }
+            if (null == odo.getQty()) {
+                odo.setQty(Constants.DEFAULT_DOUBLE);
+            }
+            if (null == odo.getSkuNumberOfPackages()) {
+                odo.setSkuNumberOfPackages(Constants.DEFAULT_INTEGER);
+            }
+            if (null == odo.getAmt()) {
+                odo.setAmt(Constants.DEFAULT_DOUBLE);
+            }
+            if (null == odo.getIsAllowMerge()) {
+                odo.setIsAllowMerge(true);
+            }
+            if (StringUtils.isEmpty(odo.getOdoStatus())) {
+                odo.setOdoStatus(OdoStatus.ODO_NEW);
+            }
+            odo.setOuId(ouId);
+            // 设置单号和外部对接编码
+            String odoCode = codeManager.generateCode(Constants.WMS, Constants.WHODO_MODEL_URL, Constants.WMS_ODO_INNER, "ODO", null);
+            odo.setOdoCode(odoCode);
+            if (StringUtils.isEmpty(odo.getExtCode())) {
+                String extCode = codeManager.generateCode(Constants.WMS, Constants.WHODO_MODEL_URL, Constants.WMS_ODO_EXT, null, null);
+                odo.setExtCode(extCode);
+            }
+            // 如果单据为新建状态，则设置技术器编码，并放入到配货模式池中
+            if (OdoStatus.ODO_NEW.equals(odo.getOdoStatus())) {
+                // 设置计数器编码
+                Set<Long> skuIdSet = new HashSet<Long>();
+                for (WhOdoLine line : odoLineList) {
+                    skuIdSet.add(line.getSkuId());
+                }
+                String counterCode = this.distributionModeArithmeticManagerProxy.getCounterCodeForOdo(ouId, odo.getSkuNumberOfPackages(), odo.getQty(), skuIdSet);
+                odo.setCounterCode(counterCode);
+            }
+
+            // 匹配配货模式
+
+            transportMgmt.setOuId(ouId);
+        }
+        this.odoManager.createOdo(groupList, ouId, userId);
+
+    }
+
+
+    @SuppressWarnings("rawtypes")
+    private ExcelImportResult readExcelSheet(String inPath, String excelId, Locale locale) throws FileNotFoundException, BusinessException, Exception {
+        // 出库单头信息列表
+        InputStream fis = new FileInputStream(inPath);
+        ExcelImportResult result = BiPoDefaultExcelContext.getContext().readExcel(excelId, fis, null, locale);
+        if (result == null) {
+            throw new BusinessException("Excel解析失败");
+        }
+
+        List list = result.getListBean();
+
+        if (list == null) {
+            throw new BusinessException("EXCEL数据为空");
+        }
+        System.out.println("行数： " + list.size());
+        return result;
     }
 }

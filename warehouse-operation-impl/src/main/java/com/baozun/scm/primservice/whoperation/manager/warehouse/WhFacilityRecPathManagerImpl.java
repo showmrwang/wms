@@ -175,6 +175,7 @@ public class WhFacilityRecPathManagerImpl extends BaseManagerImpl implements WhF
         return recFacilityPath;
     }
 
+
     private WhTemporaryStorageLocation getTopFreeStorageLocation(boolean locationFlag, Long workingStorageSectionId, Long ouId) {
         WhTemporaryStorageLocation whTemporaryStorageLocation = null;
         while (locationFlag) {

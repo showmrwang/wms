@@ -258,6 +258,7 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
                 for (WhOdoLine line : odolineList) {
                     line.setOdoLineStatus(OdoStatus.ODOLINE_NEW);
                     line.setWaveCode(null);
+                    line.setAssignQty(null);
                     offOdoLineList.add(line);
                     // 波次明细：剔除
                     if (waveLineMap.containsKey(line.getId())) {

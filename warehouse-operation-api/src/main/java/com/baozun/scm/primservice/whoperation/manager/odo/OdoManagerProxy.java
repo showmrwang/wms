@@ -1,11 +1,14 @@
 package com.baozun.scm.primservice.whoperation.manager.odo;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import lark.common.dao.Page;
 import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
+
+import org.apache.poi.ss.usermodel.Workbook;
 
 import com.baozun.scm.primservice.whoperation.command.odo.OdoAddressCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoCommand;
@@ -305,5 +308,17 @@ public interface OdoManagerProxy extends BaseManager {
      * @param waveCommand
      */
     void runWave(WaveCommand waveCommand);
+
+    /**
+     * 导入
+     * 
+     * @param url
+     * @param errorUrl
+     * @param fileName
+     * @param locale
+     * @param userId
+     * @param ouId
+     */
+    Workbook importWhOdo(String url, String errorUrl, String fileName, Locale locale, Long ouId, Long userId);
 
 }

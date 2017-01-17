@@ -4007,12 +4007,21 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         List<WhSkuInventoryCommand> skuInvs = findInventorysByAllocateStrategy(rsc.getStrategyCode(), skuCommand, upperLimitQty);
         if (null != skuInvs && !skuInvs.isEmpty()) {
             for (WhSkuInventoryCommand invCommand : skuInvs) {
-                Double onHandQty = invCommand.getOnHandQty();
+                Double onHandQtySingle = invCommand.getOnHandQty();
+                Double usableQtySingle = this.whSkuInventoryDao.getUseableQtyByUuid(invCommand.getUuid(), ouId);
+                Double upperCounter;// 同UUID的可用数量
+                if (onHandQtySingle <= usableQtySingle) {
+                    upperCounter = onHandQtySingle;
+                } else {
+                    upperCounter = usableQtySingle;
+                }
+
+                invCommand.setOnHandQty(upperCounter);
                 // 占用数量 >= 在库数量
-                if (upperLimitQty >= onHandQty) {
+                if (upperLimitQty >= upperCounter) {
                     // 创建已分配库存,待移入库存
                     createSkuInventoryAllocatedAndTobefilled(invCommand, null, replenishmentCode, null, locationId, wh, upperLimitQty, ruleId, GLOBAL_LOG_DELETE);
-                    upperLimitQty -= onHandQty;
+                    upperLimitQty -= upperCounter;
                 } else {
                     // 创建已分配库存,待移入库存
                     createSkuInventoryAllocatedAndTobefilled(invCommand, null, replenishmentCode, null, locationId, wh, upperLimitQty, ruleId, GLOBAL_LOG_UPDATE);
@@ -4034,32 +4043,29 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         skuCommand.setAllocateUnitCodes(Constants.ALLOCATE_UNIT_PIECE);
         List<WhSkuInventoryCommand> invs = findInventoryUuidByBestMatchAndPiece(skuCommand, upperLimitQty);
         for (WhSkuInventoryCommand invCmd : invs) {
-
-            invCmd.setOuId(wh.getId());
-            List<WhSkuInventoryCommand> skuInvs = whSkuInventoryDao.findInventoryByUuidAndCondition(invCmd);
+            List<String> uuidList = Arrays.asList(invCmd.getUuid().split(","));
+            List<WhSkuInventoryCommand> skuInvs = whSkuInventoryDao.findWhSkuInventoryByUuidList(ouId, uuidList);
 
             if (skuInvs == null || skuInvs.isEmpty()) {
                 continue;
             }
-            Double allocatedQtyDiv = 0d;
             for (WhSkuInventoryCommand invCommand : skuInvs) {
-                Double onHandQty = invCommand.getOnHandQty();
-                // #TODO
-                Double allocatedQty = 15d;
-                if ((allocatedQty < allocatedQtyDiv) || (allocatedQty - allocatedQtyDiv) >= onHandQty) {
-                    allocatedQty -= onHandQty;
-                    allocatedQtyDiv += onHandQty;
-                    continue;
-                }
-                onHandQty -= ((allocatedQty - allocatedQtyDiv) < 0 ? 0d : (allocatedQty - allocatedQtyDiv));
-                allocatedQtyDiv = allocatedQty;
 
-                invCommand.setOnHandQty(onHandQty);
+                Double onHandQtySingle = invCommand.getOnHandQty();
+                Double usableQtySingle = this.whSkuInventoryDao.getUseableQtyByUuid(invCommand.getUuid(), ouId);
+                Double upperCounter;// 同UUID的可用数量
+                if (onHandQtySingle <= usableQtySingle) {
+                    upperCounter = onHandQtySingle;
+                } else {
+                    upperCounter = usableQtySingle;
+                }
+
+                invCommand.setOnHandQty(upperCounter);
                 // 占用数量 >= 在库数量
-                if (upperLimitQty >= onHandQty) {
+                if (upperLimitQty >= upperCounter) {
                     // 创建已分配库存,待移入库存
                     createSkuInventoryAllocatedAndTobefilled(invCommand, null, replenishmentCode, null, locationId, wh, upperLimitQty, ruleId, GLOBAL_LOG_DELETE);
-                    upperLimitQty -= onHandQty;
+                    upperLimitQty -= upperCounter;
                 } else {
                     // 创建已分配库存,待移入库存
                     createSkuInventoryAllocatedAndTobefilled(invCommand, null, replenishmentCode, null, locationId, wh, upperLimitQty, ruleId, GLOBAL_LOG_UPDATE);
@@ -4126,14 +4132,22 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     private Double replenishBoxDownOrOndemandToLimit(Warehouse wh, String replenishmentCode, Long locationId, Long ruleId, Long skuId, Long ouId, List<WhSkuInventoryCommand> uuids, Double upperLimitQty) {
         for (WhSkuInventoryCommand invCmd : uuids) {
             Double onHandQty = invCmd.getSumOnHandQty();
+            List<String> uuidList = Arrays.asList(invCmd.getUuid().split(","));
+            Double usableQty = this.whSkuInventoryDao.getUseableQtyByUuidList(uuidList, ouId);
+            Double allocatedQty = onHandQty.doubleValue() - usableQty;// 已分配
             // 占用数量 >= 在库数量
-            if (upperLimitQty < onHandQty) {
+            if (upperLimitQty < usableQty) {
                 break;
             }
-            List<String> uuidList = Arrays.asList(invCmd.getUuid().split(","));
             List<WhSkuInventoryCommand> invs = whSkuInventoryDao.findWhSkuInventoryByUuidList(ouId, uuidList);
             for (WhSkuInventoryCommand invCommand : invs) {
                 // 创建已分配库存,待移入库存
+                if (invCommand.getOnHandQty() <= allocatedQty) {
+                    allocatedQty -= invCommand.getOnHandQty();
+                    continue;
+                }
+                invCommand.setOnHandQty(invCommand.getOnHandQty() - allocatedQty);
+                allocatedQty = 0d;
                 createSkuInventoryAllocatedAndTobefilled(invCommand, null, replenishmentCode, null, locationId, wh, upperLimitQty, ruleId, GLOBAL_LOG_DELETE);
             }
             upperLimitQty -= onHandQty;
@@ -4148,21 +4162,36 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     private Double replenishBoxUpToLimit(Warehouse wh, String replenishmentCode, Long locationId, Long ruleId, Long skuId, Long ouId, List<WhSkuInventoryCommand> uuids, Double upperLimitQty) {
         for (WhSkuInventoryCommand invCmd : uuids) {
             Double onHandQty = invCmd.getSumOnHandQty();
+            // 新增逻辑：去除掉已经分配掉的库存
+            List<String> uuidList = Arrays.asList(invCmd.getUuid().split(","));
+            Double usableQty = this.whSkuInventoryDao.getUseableQtyByUuidList(uuidList, ouId);
+            Double allocatedQty = onHandQty.doubleValue() - usableQty;// 已分配
 
-            if (upperLimitQty.doubleValue() > onHandQty.doubleValue()) {
+            if (upperLimitQty.doubleValue() > usableQty) {
                 invCmd.setOuId(wh.getId());
                 List<WhSkuInventoryCommand> invs = whSkuInventoryDao.findInventoryByUuidAndCondition(invCmd);
                 for (WhSkuInventoryCommand invCommand : invs) {
                     // 创建已分配库存,待移入库存
+                    if (invCommand.getOnHandQty() < allocatedQty) {
+                        allocatedQty -= invCommand.getOnHandQty();
+                        continue;
+                    }
+                    invCommand.setOnHandQty(invCommand.getOnHandQty() - allocatedQty);
+                    allocatedQty = 0d;
                     createSkuInventoryAllocatedAndTobefilled(invCommand, null, replenishmentCode, null, locationId, wh, upperLimitQty, ruleId, GLOBAL_LOG_DELETE);
                 }
-                upperLimitQty -= onHandQty;
                 continue;
             }
 
             invCmd.setOuId(wh.getId());
             List<WhSkuInventoryCommand> invs = whSkuInventoryDao.findInventoryByUuidAndCondition(invCmd);
             for (WhSkuInventoryCommand invCommand : invs) {
+                if (invCommand.getOnHandQty() <= allocatedQty) {
+                    allocatedQty -= invCommand.getOnHandQty();
+                    continue;
+                }
+                invCommand.setOnHandQty(invCommand.getOnHandQty() - allocatedQty);
+                allocatedQty = 0d;
                 if (upperLimitQty.doubleValue() == 0) {
                     // 创建已分配库存,待移入库存
                     createSkuInventoryAllocatedAndTobefilled(invCommand, null, replenishmentCode, null, locationId, wh, upperLimitQty, ruleId, GLOBAL_LOG_DELETE);
@@ -4217,14 +4246,16 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     private Double replenishUpToLimit(Warehouse wh, String replenishmentCode, Long locationId, Long ruleId, Long skuId, Long ouId, List<WhSkuInventoryCommand> uuids, Double upperLimitQty) {
         for (WhSkuInventoryCommand invCmd : uuids) {
             Double onHandQty = invCmd.getSumOnHandQty();
-            // #TODO
             // 新增逻辑：去除掉已经分配掉的库存
-            Double allocatedQty = 15d;
-            if (upperLimitQty.doubleValue() > onHandQty.doubleValue() - allocatedQty) {
+            List<String> uuidList = Arrays.asList(invCmd.getUuid().split(","));
+            Double usableQty = this.whSkuInventoryDao.getUseableQtyByUuidList(uuidList, ouId);
+            Double allocatedQty = onHandQty.doubleValue() - usableQty;// 已分配
+
+            if (upperLimitQty.doubleValue() > usableQty) {
 
                 upperLimitQty -= (onHandQty - allocatedQty);
 
-                List<String> uuidList = Arrays.asList(invCmd.getUuid().split(","));
+
                 List<WhSkuInventoryCommand> invs = whSkuInventoryDao.findWhSkuInventoryByUuidList(ouId, uuidList);
                 for (WhSkuInventoryCommand invCommand : invs) {
                     // 创建已分配库存,待移入库存
@@ -4241,7 +4272,6 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 continue;
             }
 
-            List<String> uuidList = Arrays.asList(invCmd.getUuid().split(","));
             List<WhSkuInventoryCommand> invs = whSkuInventoryDao.findWhSkuInventoryByUuidList(ouId, uuidList);
             for (WhSkuInventoryCommand invCommand : invs) {
                 if (invCommand.getOnHandQty() <= allocatedQty) {
@@ -4281,13 +4311,14 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     private Double replenishDownOrOndemandToLimit(Warehouse wh, String replenishmentCode, Long locationId, Long ruleId, Long skuId, Long ouId, List<WhSkuInventoryCommand> uuids, Double upperLimitQty) {
         for (WhSkuInventoryCommand invCmd : uuids) {
             Double onHandQty = invCmd.getSumOnHandQty();
-            // #TODO
-            Double allocatedQty = 15d;
+            List<String> uuidList = Arrays.asList(invCmd.getUuid().split(","));
+            Double usableQty = this.whSkuInventoryDao.getUseableQtyByUuidList(uuidList, ouId);
+            Double allocatedQty = onHandQty.doubleValue() - usableQty;// 已分配
             // 占用数量 >= 在库数量
             if (upperLimitQty < onHandQty - allocatedQty) {
                 break;
             }
-            List<String> uuidList = Arrays.asList(invCmd.getUuid().split(","));
+
             List<WhSkuInventoryCommand> invs = whSkuInventoryDao.findWhSkuInventoryByUuidList(ouId, uuidList);
             for (WhSkuInventoryCommand invCommand : invs) {
                 if (invCommand.getOnHandQty() <= allocatedQty) {

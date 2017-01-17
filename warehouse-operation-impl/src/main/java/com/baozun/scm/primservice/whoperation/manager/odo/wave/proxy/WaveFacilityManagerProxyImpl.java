@@ -70,17 +70,19 @@ public class WaveFacilityManagerProxyImpl extends BaseManagerImpl implements Wav
         Long ouId = wh.getId();
         String batch = recFacilityPath.getBatch();
         String containerCode = recFacilityPath.getContainerCode();
+        List<Long> odoIdList = recFacilityPath.getOdoIdList();
         // 是否已有推荐成功的箱信息
         // 规则
         RuleAfferCommand ruleAffer = new RuleAfferCommand();
-        ruleAffer.setSeedingWallOdoIdList(recFacilityPath.getOdoIdList());
+        ruleAffer.setSeedingWallOdoIdList(odoIdList);
         ruleAffer.setOuid(ouId);
         RuleExportCommand export = this.ruleManager.ruleExport(ruleAffer);
         WhSeedingWallRuleCommand whSeedingWallRule = export.getWhSeedingWallRuleCommand();
         if (whSeedingWallRule == null) {
-            return null;
+            recFacilityPath.setStatus(0);
+            return recFacilityPath;
         }
-        List<WhFacilityRecPath> pathList = this.whFacilityRecPathManager.findWhFacilityRecPathByBatchAndContainer(batch, containerCode, ouId);
+        List<WhFacilityRecPath> pathList = this.whFacilityRecPathManager.findWhFacilityRecPathByBatchAndContainer(batch, null, ouId);
         if (pathList != null && pathList.size() > 0) {// 存在推荐成功的想信息
             return null;
         }

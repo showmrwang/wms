@@ -40,7 +40,17 @@ public class OdoTransportMgmtCommand extends BaseCommand {
     private String planDeliverGoodsTimeStr;
     private String actualDeliverGoodsTimeStr;
 
+    private String odoExtCode;
 
+
+
+    public String getOdoExtCode() {
+        return odoExtCode;
+    }
+
+    public void setOdoExtCode(String odoExtCode) {
+        this.odoExtCode = odoExtCode;
+    }
 
     public Boolean getIsCod() {
         return isCod;
