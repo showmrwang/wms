@@ -46,7 +46,6 @@ import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy.WaveFacilityManagerProxy;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
-import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Location;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhDistributionPatternRule;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFacilityRecPath;
@@ -95,9 +94,11 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 
     @Autowired
     private WhLocationDao whLocationDao;
-    
+
     @Autowired
     private WaveFacilityManagerProxy waveFacilityManagerProxy;
+
+
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
