@@ -140,7 +140,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
      * @return
      */
     @Override
-    public void createWorkInWave(Long waveId, Long ouId, Long userId) {
+    public void createReplenishmentWorkInWave(Long waveId, Long ouId, Long userId) {
         // 查询补货工作释放及拆分条件分组 -- 补货工作
         List<ReplenishmentRuleCommand> replenishmentRuleCommands = this.getInReplenishmentConditionGroup(waveId, ouId);
         // 循环补货工作释放及拆分条件分组        
@@ -191,8 +191,18 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
                 }
             }
         }
-        
-        // 查询出小批次列表 -- 捡货工作
+    }
+
+    /**
+     * 创建补货工作和作业
+     * 
+     * @param whOdoOutBoundBox
+     * @param userId
+     * @return
+     */
+    @Override
+    public void createPickingWorkInWave(Long waveId, Long ouId, Long userId) {
+        // 查询出小批次列表
         List<WhOdoOutBoundBox> whOdoOutBoundBoxList = this.getBoxBatchsForPicking(waveId, ouId);
         if (null == whOdoOutBoundBoxList || whOdoOutBoundBoxList.isEmpty()) {
             throw new BusinessException("找不到波次明细");
@@ -248,7 +258,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
             }
         }
     }
-
+    
     /**
      * 创建波次外工作和作业
      * 
@@ -257,7 +267,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
      * @return
      */
     @Override
-    public void createWorkOutWave(Long ouId, Long userId) {
+    public void createReplenishmentWorkOutWave(Long ouId, Long userId) {
         // 查询补货工作释放及拆分条件分组 -- 补货工作
         List<ReplenishmentRuleCommand> replenishmentRuleCommands = this.getOutReplenishmentConditionGroup(ouId);
         // 循环补货工作释放及拆分条件分组        
@@ -1902,5 +1912,4 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
         Double rQty = siaCommand.getQty() - replenishmentQty;
         return rQty;
     }
-    
 }

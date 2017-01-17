@@ -22,12 +22,20 @@ public interface CreateWorkInWaveManagerProxy extends BaseManager {
 
     
     /**
-     * [业务方法] 波次中创建工作和作业
+     * [业务方法] 波次中创建捡货工作和作业
      * @param WhOdoOutBoundBox
      * @param userId
      * @return
      */
-    public void createWorkInWave(Long waveId, Long ouId, Long userId);
+    public void createPickingWorkInWave(Long waveId, Long ouId, Long userId);
+    
+    /**
+     * [业务方法] 波次中创建补货工作和作业
+     * @param WhOdoOutBoundBox
+     * @param userId
+     * @return
+     */
+    public void createReplenishmentWorkInWave(Long waveId, Long ouId, Long userId);
    
     /**
      * [业务方法] 波次外创建工作和作业
@@ -35,7 +43,7 @@ public interface CreateWorkInWaveManagerProxy extends BaseManager {
      * @param userId
      * @return
      */
-    public void createWorkOutWave(Long ouId, Long userId);
+    public void createReplenishmentWorkOutWave(Long ouId, Long userId);
     
     /**
      * [业务方法] 创建拣货工作-返回小批次列表给上层服务
