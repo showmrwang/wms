@@ -248,4 +248,38 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<include refid="whSkuInventoryTobefilledDynamicWhereExt"/>
 	</select>
 	
+	<select id="getSkuItedListGroupUuid" resultMap="WhSkuInventoryTobefilledResultExt">
+		select  
+        	id as id,
+        	sku_id as skuId,
+        	location_id as locationId,
+        	outer_container_id as outerContainerId,
+        	inside_container_id as insideContainerId,
+        	customer_id as customerId,
+        	store_id as storeId,
+        	occupation_code as occupationCode,
+        	occupation_line_id as occupationLineId,
+        	replenishment_code as replenishmentCode,
+        	sum(qty) as qty,
+        	inv_status as invStatus,
+        	inv_type as invType,
+        	batch_number as batchNumber,
+        	mfg_date as mfgDate,
+        	exp_date as expDate,
+        	country_of_origin as countryOfOrigin,
+        	inv_attr1 as invAttr1,
+        	inv_attr2 as invAttr2,
+        	inv_attr3 as invAttr3,
+        	inv_attr4 as invAttr4,
+        	inv_attr5 as invAttr5,
+        	uuid as uuid,
+        	ou_id as ouId,
+        	last_modify_time as lastModifyTime
+		from
+			t_wh_sku_inventory_tobefilled
+        <include refid="whSkuInventoryTobefilledDynamicWhereExt"/>
+        group by
+			uuid
+	</select>
+	
 </mapper>

@@ -95,5 +95,13 @@ public interface WhSkuInventoryTobefilledDao extends BaseDao<WhSkuInventoryTobef
      * @return WhSkuInventoryTobefilled
      */
     public List<WhSkuInventoryTobefilled> findskuInventoryTobefilleds(WhSkuInventoryTobefilled whSkuInventoryTobefilled);
+    
+    /**
+     * 根据参数查询出库存信息并根据uuid分组--创拣货工作
+     * @author qiming.liu
+     * @param whSkuInventory
+     * @return
+     */
+    List<WhSkuInventoryTobefilled> getSkuItedListGroupUuid(WhSkuInventoryTobefilled whSkuInventoryTobefilled);
 	
 }

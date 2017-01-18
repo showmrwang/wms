@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -64,10 +66,13 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.WhWork;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhWorkLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WorkType;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
+import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryTobefilled;
 
 @Service("createWorkInWaveManagerProxy")
 @Transactional
 public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManagerProxy {
+    
+    protected static final Logger log = LoggerFactory.getLogger(CreateWorkInWaveManagerProxyImpl.class);
 
     @Autowired
     private CodeManager codeManager;
@@ -95,6 +100,9 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
     
     @Autowired
     private WhSkuInventoryDao skuInventoryDao;
+    
+    @Autowired
+    private WhSkuInventoryTobefilledDao whSkuInventoryTobefilledDao;
     
     @Autowired
     private WhOdoDao odoDao;
@@ -133,7 +141,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
     
     
     /**
-     * 创建拣货工作和作业
+     * 创建补货工作和作业
      * 
      * @param whOdoOutBoundBox
      * @param userId
@@ -194,7 +202,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
     }
 
     /**
-     * 创建补货工作和作业
+     * 创建拣货工作和作业
      * 
      * @param whOdoOutBoundBox
      * @param userId
@@ -218,43 +226,36 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
                 List<WhOdoOutBoundBoxCommand> whOdoOutBoundBoxCommandList = this.getOdoOutBoundBoxListByGroup(whOdoOutBoundBoxGroup);
                 //2.1.2 创建拣货工作--创建工作头信息
                 String workCode = this.savePickingWork(whOdoOutBoundBoxGroup,userId);
-                int workLineTotal = 0;
                 //2.1.3 循环出库箱/容器信息列表创建工作明细
                 for(WhOdoOutBoundBoxCommand whOdoOutBoundBoxCommand : whOdoOutBoundBoxCommandList){
                     //2.1.3.1 判断库位占用量是否满足 
                     //根据占用单据号和占用单据明细行ID查询库存列表                        
                     List<WhSkuInventory> whSkuInventoryList = this.getSkuInventory(whOdoOutBoundBoxCommand);
+                    List<WhSkuInventoryTobefilled> whSkuInventoryTobefilledList = this.getSkuInventoryTobefilled(whOdoOutBoundBoxCommand);
                     //初始化占用库存量
                     Double onHandQty =  0.0 ;
                     //计算占用库存量                       
                     for(WhSkuInventory whSkuInventory : whSkuInventoryList){
                         onHandQty =  whSkuInventory.getOnHandQty() + onHandQty;
                     }
+                    for(WhSkuInventoryTobefilled whSkuInventoryTobefilled : whSkuInventoryTobefilledList){
+                        onHandQty =  whSkuInventoryTobefilled.getQty() + onHandQty;
+                    }
                     //如果不满足，则抛出异常 
                     if(!onHandQty.equals(whOdoOutBoundBoxCommand.getQty())){
                         throw new BusinessException("库位占用量不满足");
                     }
                     //2.1.3.2 创建工作明细
-                    int workLineCount = this.savePickingWorkLine(whOdoOutBoundBoxCommand, whSkuInventoryList, userId, workCode);
+                    this.savePickingWorkLine(whOdoOutBoundBoxCommand, whSkuInventoryList, whSkuInventoryTobefilledList, userId, workCode);
                     //2.1.3.3 设置出库箱行标识  
                     this.updateWhOdoOutBoundBoxCommand(whOdoOutBoundBoxCommand);
-                    //2.1.3.4 校验工作明细是否正确
-                    if (workLineCount != whSkuInventoryList.size()) {
-                        throw new BusinessException("创建工作明细数量不正确");
-                    }else{
-                        workLineTotal = workLineCount + workLineTotal;
-                    }
                 }
                 //2.1.4 更新工作头信息
                 this.updatePickingWork(workCode, whOdoOutBoundBoxGroup);
                 //2.1.5 创建作业头
                 String operationCode = this.savePickingOperation(workCode, whOdoOutBoundBoxGroup);
                 //2.1.6 创建作业明细
-                int whOperationLineCount = this.savePickingOperationLine(workCode, operationCode, whOdoOutBoundBox.getOuId());
-                //2.1.10 作业明细校验
-                if (whOperationLineCount != workLineTotal) {
-                    throw new BusinessException("创建的作业明细不正确");
-                }
+                this.savePickingOperationLine(workCode, operationCode, whOdoOutBoundBox.getOuId());
             }
         }
     }
@@ -550,6 +551,22 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
     }
     
     /**
+     * 查询待移入库存信息
+     * 
+     * @param whOdoOutBoundBoxCommand
+     * @return
+     */
+    @Override
+    public List<WhSkuInventoryTobefilled> getSkuInventoryTobefilled(WhOdoOutBoundBoxCommand whOdoOutBoundBoxCommand) {
+        WhOdo whOdo = this.odoDao.findByIdOuId(whOdoOutBoundBoxCommand.getOdoId(), whOdoOutBoundBoxCommand.getOuId());
+        WhSkuInventoryTobefilled whSkuInventoryTobefilled = new WhSkuInventoryTobefilled();
+        whSkuInventoryTobefilled.setOccupationCode(whOdo.getOdoCode());
+        whSkuInventoryTobefilled.setOccupationLineId(whOdoOutBoundBoxCommand.getOdoLineId());
+        List<WhSkuInventoryTobefilled> SkuInventoryTobefilledList = this.skuInventoryTobefilledDao.getSkuItedListGroupUuid(whSkuInventoryTobefilled);
+        return SkuInventoryTobefilledList;
+    }
+    
+    /**
      *  创建工作明细信息
      * 
      * @param whOdoOutBoundBox
@@ -558,17 +575,15 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
      * @return
      */
     @Override
-    public int savePickingWorkLine(WhOdoOutBoundBoxCommand whOdoOutBoundBoxCommand, List<WhSkuInventory> whSkuInventoryList, Long userId, String workCode) {
+    public void savePickingWorkLine(WhOdoOutBoundBoxCommand whOdoOutBoundBoxCommand, List<WhSkuInventory> whSkuInventoryList, List<WhSkuInventoryTobefilled> whSkuInventoryTobefilledList, Long userId, String workCode) {
         //获取工作头信息        
         WhWorkCommand whWorkCommand = this.workDao.findWorkByWorkCode(workCode, whOdoOutBoundBoxCommand.getOuId());
         //查询对应的耗材        
         Long skuId = odoOutBoundBoxDao.findOutboundboxType(whOdoOutBoundBoxCommand.getOutbounxboxTypeId(), whOdoOutBoundBoxCommand.getOutbounxboxTypeCode(), whOdoOutBoundBoxCommand.getOuId());
         //调编码生成器工作明细实体标识
         String workLineCode = codeManager.generateCode(Constants.WMS, Constants.WHWORKLINE_MODEL_URL, "", "WORKLINE", null);
-        int count = 0;
         
         for(WhSkuInventory whSkuInventory : whSkuInventoryList){
-            
             WhWorkLineCommand whWorkLineCommand = new WhWorkLineCommand();
             
             //工作明细号  
@@ -584,7 +599,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
             //商品ID 
             whWorkLineCommand.setSkuId(whSkuInventory.getSkuId());
             //计划量 
-            if(whSkuInventoryList.size() == 1){
+            if(whSkuInventoryList.size() == 1 && null == whSkuInventoryTobefilledList ){
                 whWorkLineCommand.setQty(whOdoOutBoundBoxCommand.getQty());
             }else{
                 whWorkLineCommand.setQty(whSkuInventory.getOnHandQty());
@@ -654,6 +669,8 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
             whWorkLineCommand.setOdoId(whOdoOutBoundBoxCommand.getOdoId());
             //出库单明细ID 
             whWorkLineCommand.setOdoLineId(whOdoOutBoundBoxCommand.getOdoLineId());
+            //补货单据号 
+            whWorkLineCommand.setReplenishmentCode(null);
             //创建时间 
             whWorkLineCommand.setCreateTime(new Date());
             //最后操作时间 
@@ -669,11 +686,118 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
             }else{
                 workLineDao.insert(whWorkLine);
             }
-            
-            count = count +1;
-            
         }
-        return count;
+        if( null != whSkuInventoryTobefilledList){
+            WhWork whWork = new WhWork();
+            //复制数据        
+            BeanUtils.copyProperties(whWorkCommand, whWork);
+            whWork.setIsPickingTobefilled(true);
+            workDao.saveOrUpdateByVersion(whWork);
+            // 生成待移入工作明细           
+            for(WhSkuInventoryTobefilled whSkuInventoryTobefilled : whSkuInventoryTobefilledList){
+                WhWorkLineCommand whWorkLineCommand = new WhWorkLineCommand();
+                //工作明细号  
+                whWorkLineCommand.setLineCode(workLineCode);
+                //工作ID            
+                whWorkLineCommand.setWorkId(whWorkCommand.getId());
+                //仓库组织ID 
+                whWorkLineCommand.setOuId(whOdoOutBoundBoxCommand.getOuId());
+                //操作开始时间 
+                whWorkLineCommand.setStartTime(null);
+                //操作结束时间 
+                whWorkLineCommand.setFinishTime(null);
+                //商品ID 
+                whWorkLineCommand.setSkuId(whSkuInventoryTobefilled.getSkuId());
+                //计划量 
+                if(null == whSkuInventoryList && whSkuInventoryTobefilledList.size() == 1 ){
+                    whWorkLineCommand.setQty(whOdoOutBoundBoxCommand.getQty());
+                }else{
+                    whWorkLineCommand.setQty(whSkuInventoryTobefilled.getQty());
+                }
+                //执行量/完成量 
+                whWorkLineCommand.setCompleteQty(null);
+                //取消量 
+                whWorkLineCommand.setCancelQty(null);
+                //库存状态 
+                whWorkLineCommand.setInvStatus(whSkuInventoryTobefilled.getInvStatus());
+                //库存类型  
+                whWorkLineCommand.setInvType(whSkuInventoryTobefilled.getInvType());
+                //批次号 
+                whWorkLineCommand.setBatchNumber(whSkuInventoryTobefilled.getBatchNumber());
+                //生产日期 
+                whWorkLineCommand.setMfgDate(whSkuInventoryTobefilled.getMfgDate());
+                //失效日期 
+                whWorkLineCommand.setExpDate(whSkuInventoryTobefilled.getExpDate());
+                //最小失效日期 
+                whWorkLineCommand.setMinExpDate(null);
+                //最大失效日期 
+                whWorkLineCommand.setMaxExpDate(null);
+                //原产地 
+                whWorkLineCommand.setCountryOfOrigin(whSkuInventoryTobefilled.getCountryOfOrigin());
+                //库存属性1 
+                whWorkLineCommand.setInvAttr1(whSkuInventoryTobefilled.getInvAttr1());
+                //库存属性2 
+                whWorkLineCommand.setInvAttr2(whSkuInventoryTobefilled.getInvAttr2());
+                //库存属性3 
+                whWorkLineCommand.setInvAttr3(whSkuInventoryTobefilled.getInvAttr3());
+                //库存属性4 
+                whWorkLineCommand.setInvAttr4(whSkuInventoryTobefilled.getInvAttr4());
+                //库存属性5 
+                whWorkLineCommand.setInvAttr5(whSkuInventoryTobefilled.getInvAttr5());
+                //内部对接码 
+                whWorkLineCommand.setUuid(whSkuInventoryTobefilled.getUuid());
+                //原始库位 
+                whWorkLineCommand.setFromLocationId(whSkuInventoryTobefilled.getLocationId());
+                //原始库位外部容器 
+                whWorkLineCommand.setFromOuterContainerId(whSkuInventoryTobefilled.getOuterContainerId());
+                //原始库位内部容器 
+                whWorkLineCommand.setFromInsideContainerId(whSkuInventoryTobefilled.getInsideContainerId());
+                //使用出库箱，耗材ID
+                whWorkLineCommand.setUseOutboundboxId(skuId);
+                //使用出库箱编码 
+                whWorkLineCommand.setUseOutboundboxCode(whOdoOutBoundBoxCommand.getOutbounxboxTypeCode());
+                //使用容器 
+                whWorkLineCommand.setUseContainerId(whOdoOutBoundBoxCommand.getContainerId());
+                //使用外部容器，小车 
+                whWorkLineCommand.setUseOuterContainerId(whOdoOutBoundBoxCommand.getOuterContainerId());
+                //使用货格编码数
+                whWorkLineCommand.setUseContainerLatticeNo(whOdoOutBoundBoxCommand.getContainerLatticeNo());
+                //目标库位 --捡货模式没有
+                whWorkLineCommand.setToLocationId(whSkuInventoryTobefilled.getLocationId());
+                //目标库位外部容器 --捡货模式没有
+                whWorkLineCommand.setToOuterContainerId(null);
+                //目标库位内部容器 --捡货模式没有
+                whWorkLineCommand.setToInsideContainerId(null);
+                if(null != whOdoOutBoundBoxCommand.getWholeCase()){
+                    //是否整托整箱
+                    whWorkLineCommand.setIsWholeCase(true);  
+                }else{
+                    //是否整托整箱
+                    whWorkLineCommand.setIsWholeCase(false);  
+                }
+                //出库单ID 
+                whWorkLineCommand.setOdoId(whOdoOutBoundBoxCommand.getOdoId());
+                //出库单明细ID 
+                whWorkLineCommand.setOdoLineId(whOdoOutBoundBoxCommand.getOdoLineId());
+                //补货单据号 
+                whWorkLineCommand.setReplenishmentCode(whSkuInventoryTobefilled.getReplenishmentCode());
+                //创建时间 
+                whWorkLineCommand.setCreateTime(new Date());
+                //最后操作时间 
+                whWorkLineCommand.setLastModifyTime(new Date());
+                //操作人ID 
+                whWorkLineCommand.setOperatorId(userId);
+                
+                WhWorkLine whWorkLine = new WhWorkLine();
+                //复制数据        
+                BeanUtils.copyProperties(whWorkLineCommand, whWorkLine);
+                if(null != whWorkLineCommand.getId() ){
+                    workLineDao.saveOrUpdateByVersion(whWorkLine);
+                }else{
+                    workLineDao.insert(whWorkLine);
+                }
+            }
+        }
     }
     
     /**
@@ -878,7 +1002,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
      * @return
      */
     @Override
-    public int savePickingOperationLine(String workCode, String operationCode, Long ouId) {
+    public void savePickingOperationLine(String workCode, String operationCode, Long ouId) {
         //获取工作头信息        
         WhWorkCommand whWorkCommand = this.workDao.findWorkByWorkCode(workCode, ouId);
         //获取工作明细信息列表        
@@ -886,7 +1010,6 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
         //获取作业头信息  
         WhOperationCommand WhOperationCommand = this.operationDao.findOperationByCode(operationCode, ouId);
                 
-        int count = 0;
         for(WhWorkLineCommand whWorkLineCommand : whWorkLineCommandList){
             WhOperationLineCommand WhOperationLineCommand = new WhOperationLineCommand();
             //作业ID
@@ -972,10 +1095,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
             }else{
                 operationLineDao.insert(whOperationLine);
             }
-            
-            count = count + 1;
         }
-        return count;
     }
 
     

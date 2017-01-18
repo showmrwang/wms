@@ -2,7 +2,6 @@ package com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import com.baozun.scm.primservice.whoperation.command.odo.WhOdoOutBoundBoxCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ReplenishmentRuleCommand;
@@ -11,6 +10,7 @@ import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoOutBoundBox;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
+import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryTobefilled;
 
 
 /**
@@ -92,13 +92,20 @@ public interface CreateWorkInWaveManagerProxy extends BaseManager {
     public List<WhSkuInventory> getSkuInventory(WhOdoOutBoundBoxCommand whOdoOutBoundBoxCommand);
     
     /**
+     * [业务方法] 创建拣货工作-查询待移入占用的库存信息
+     * @param WhOdoOutBoundBox
+     * @return
+     */
+    public List<WhSkuInventoryTobefilled> getSkuInventoryTobefilled(WhOdoOutBoundBoxCommand whOdoOutBoundBoxCommand);
+    
+    /**
      * [业务方法] 创建拣货工作-创建工作明细信息
      * @param WhOdoOutBoundBox
      * @param waveId
      * @param ouId
      * @return
      */
-    public int savePickingWorkLine(WhOdoOutBoundBoxCommand whOdoOutBoundBoxCommand, List<WhSkuInventory> whSkuInventoryList, Long userId, String workCode);
+    public void savePickingWorkLine(WhOdoOutBoundBoxCommand whOdoOutBoundBoxCommand, List<WhSkuInventory> whSkuInventoryList, List<WhSkuInventoryTobefilled> whSkuInventoryTobefilledList, Long userId, String workCode);
     
     /**
      * [业务方法] 创建拣货工作-更新工作头信息
@@ -120,7 +127,7 @@ public interface CreateWorkInWaveManagerProxy extends BaseManager {
      * @param List<WhOdoOutBoundBox>
      * @return
      */
-    public int savePickingOperationLine(String workCode, String operationCode, Long ouId);
+    public void savePickingOperationLine(String workCode, String operationCode, Long ouId);
     
     /**
      * [业务方法] 创建拣货工作-设置出库箱行标识
