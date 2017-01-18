@@ -213,6 +213,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
         // 查询出小批次列表
         List<WhOdoOutBoundBox> whOdoOutBoundBoxList = this.getBoxBatchsForPicking(waveId, ouId);
         if (null == whOdoOutBoundBoxList || whOdoOutBoundBoxList.isEmpty()) {
+            log.error("whOdoOutBoundBoxList is null,ouId:{},waveId:{}", ouId, waveId);
             throw new BusinessException("找不到波次明细");
         }
         // 循环小批次        
@@ -320,22 +321,22 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
     public WhWave getWhWaveHead(Long waveId, Long ouId) {
         // 获取波次头并校验波次信息
         if (null == waveId || null == ouId) {
+            log.error("getWhWaveHead(null, null), ouId:{}, waveId:{}", ouId, waveId);
             throw new BusinessException("创工作 : 没有参数");
         }
-        WhWave oldWhWave = new WhWave();
-        oldWhWave.setId(waveId);
-        oldWhWave.setOuId(ouId);
-        oldWhWave.setLifecycle(BaseModel.LIFECYCLE_NORMAL);
-        List<WhWave> whWaveList = this.waveDao.findListByParam(oldWhWave);
-        if (null == whWaveList || 1 != whWaveList.size()) {
-            throw new BusinessException("多个波次");
+        WhWave whWave = new WhWave();
+        try {
+            whWave = this.waveDao.findWaveExtByIdAndOuId(waveId, ouId);
+        } catch (Exception e) {
+            log.error("findWaveExtByIdAndOuId is error, ouId:{}, waveId:{}", ouId, waveId);
+            log.error("", e);
         }
-        WhWave whWave = whWaveList.get(0);
-        
         if (null == whWave) {
+            log.error("whWave is null ,ouId:{}, waveId:{}", ouId, waveId);
             throw new BusinessException("没有波次头信息");
         }
         if (BaseModel.LIFECYCLE_NORMAL != whWave.getLifecycle() || WaveStatus.WAVE_EXECUTING != whWave.getStatus() || !WavePhase.CREATE_WORK.equals(whWave.getPhaseCode())) {
+            log.error("1 != lifecycle || 5 != status || CREATE_WORK != phaseCode, ouId:{}, waveId:{}", ouId, waveId);
             throw new BusinessException("波次头不可用或波次状态不为运行中或波次阶段不为创建工作");
         }
         return whWave;
