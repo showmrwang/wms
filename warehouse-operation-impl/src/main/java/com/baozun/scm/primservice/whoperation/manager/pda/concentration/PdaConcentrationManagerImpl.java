@@ -676,7 +676,8 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 		if (StringUtils.isEmpty(seedingWallCode) || StringUtils.isEmpty(containerCode)) {
 			throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
 		}
-		StringBuilder sb = new StringBuilder(CacheConstants.CACHE_SEEDING);
+		StringBuilder sb = new StringBuilder(64);
+		sb.append(CacheConstants.CACHE_SEEDING);
 		sb.append(ouId).append("_");
 		sb.append(seedingWallCode).append("_");
 		sb.append(batch).append("_");
@@ -779,16 +780,32 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 			throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
 		}
         String batch = seedingCollection.getBatch();
-        List<WhFacilityRecPathCommand> recList = whFacilityRecPathDao.getRecommendDestinationByBatch(batch, ouId);
-        if (null != recList && !recList.isEmpty()) {
-        	for (WhFacilityRecPathCommand rec : recList) {
-        		if (destinationType == Constants.SEEDING_WALL && destinationCode.equals(rec.getSeedingwallCode())) {
-        			return true;
-        		} else if (destinationType == Constants.TEMPORARY_STORAGE_LOCATION && destinationCode.equals(rec.getTemporaryStorageLocationCode())) {
-        			return true;
-        		} else if (destinationType == Constants.TRANSIT_LOCATION && destinationCode.equals(rec.getTransitLocationCode())) {
-        			return true;
-        		}
+    	if (destinationType == Constants.SEEDING_WALL) {
+    		String seedingWallCode = whFacilityRecPathDao.getRecommendSeedingWallCodeByBatch(batch, ouId);
+    		if (!StringUtils.isEmpty(seedingWallCode)) {
+    			if (seedingWallCode.equals(destinationCode)) {
+    				return true;
+				} else {
+					return false;
+				}
+			}
+		} else if (destinationType == Constants.TEMPORARY_STORAGE_LOCATION) {
+			String temporaryStorageLocationCode = whFacilityRecPathDao.getRecommendTemporaryStorageLocationCodeByBatch(batch, ouId);
+    		if (!StringUtils.isEmpty(temporaryStorageLocationCode)) {
+    			if (temporaryStorageLocationCode.equals(destinationCode)) {
+    				return true;
+				} else {
+					return false;
+				}
+			}
+		} else if (destinationType == Constants.TRANSIT_LOCATION) {
+			String transitLocationCode = whFacilityRecPathDao.getRecommendTransitLocationCodeByBatch(batch, ouId);
+    		if (!StringUtils.isEmpty(transitLocationCode)) {
+    			if (transitLocationCode.equals(destinationCode)) {
+    				return true;
+				} else {
+					return false;
+				}
 			}
 		}
         // 判断目的地是否关联其他小批次

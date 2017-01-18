@@ -783,5 +783,7 @@ public class ErrorCodes {
     public static final int COLLECTION_DESTINATION_NOT_RIGHT = 80008;
     /** 推荐失败无法携带 */
     public static final int COLLECTION_RECOMMEND_RESULT_ERROR = 80009;
+    /** 系统错误,推荐结果不唯一 */
+    public static final int COLLECTION_RECOMMEND_RESULT_NOT_UNIQE = 80010;
 	// 80001-90000 zhukai
 }
