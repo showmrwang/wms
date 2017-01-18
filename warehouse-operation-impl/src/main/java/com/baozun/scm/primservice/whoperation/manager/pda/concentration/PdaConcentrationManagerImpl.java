@@ -811,7 +811,26 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         // 判断目的地是否关联其他小批次
         List<String> batchList = whFacilityRecPathDao.getBatchListByDestinationCode(destinationCode, destinationType, ouId);
         if (null == batchList || batchList.isEmpty()) {
-			return true;
+        	if (destinationType == Constants.SEEDING_WALL) {
+        		WhOutboundFacility facility = whOutboundFacilityDao.findByCodeAndOuId(destinationCode, ouId);
+        		if (StringUtils.isEmpty(facility.getBatch())) {
+        			facility.setBatch(batch);
+        			facility.setStatus(Constants.WH_FACILITY_STATUS_2);
+        			whOutboundFacilityDao.saveOrUpdateByVersion(facility);
+        			return true;
+				}
+        	} else if (destinationType == Constants.TEMPORARY_STORAGE_LOCATION) {
+        		WhTemporaryStorageLocation storageLocation = whTemporaryStorageLocationDao.findByCodeAndOuId(destinationCode, ouId);
+        		if (StringUtils.isEmpty(storageLocation.getBatch())) {
+        			storageLocation.setBatch(batch);
+        			storageLocation.setStatus(2);
+        			whTemporaryStorageLocationDao.saveOrUpdateByVersion(storageLocation);
+        			return true;
+				}
+        		return true;
+        	} else if (destinationType == Constants.TRANSIT_LOCATION) {
+        		return true;
+        	}
 		}
 		return false;
 	}
@@ -879,6 +898,9 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 				recCommand.setSeedingwallCode(destinationCode);
 				recCommand.setSeedingwallCheckCode(facility.getCheckCode());
 				recCommand.setSeedingwallUpperLimit(facility.getFacilityUpperLimit());
+				WhFacilityRecPath rec = new WhFacilityRecPath();
+				BeanUtils.copyProperties(recCommand, rec);
+				whFacilityRecPathDao.saveOrUpdate(rec);
 			} else if (destinationType == Constants.TEMPORARY_STORAGE_LOCATION && StringUtils.isEmpty(recCommand.getTemporaryStorageLocationCode())) {
 				storageLocation = whTemporaryStorageLocationDao.findByCodeAndOuId(destinationCode, ouId);
 				if (null == storageLocation) {
@@ -887,6 +909,9 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 				recCommand.setTemporaryStorageLocationId(storageLocation.getId());
 				recCommand.setTemporaryStorageLocationCheckCode(storageLocation.getCheckCode());
 				recCommand.setTemporaryStorageLocationCode(storageLocation.getTemporaryStorageCode());
+				WhFacilityRecPath rec = new WhFacilityRecPath();
+				BeanUtils.copyProperties(recCommand, rec);
+				whFacilityRecPathDao.saveOrUpdate(rec);
 			} else if (destinationType == Constants.TRANSIT_LOCATION && StringUtils.isEmpty(recCommand.getTransitLocationCode())) {
 				location = whLocationDao.findLocationByCode(destinationCode, ouId);
 				if (null == location) {
@@ -895,10 +920,10 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 				recCommand.setTransitLocationId(location.getId());
 				recCommand.setTransitLocationCheckCode(location.getReplenishmentBarcode());
 				recCommand.setTransitLocationCode(location.getCode());
+				WhFacilityRecPath rec = new WhFacilityRecPath();
+				BeanUtils.copyProperties(recCommand, rec);
+				whFacilityRecPathDao.saveOrUpdate(rec);
 			}
-			WhFacilityRecPath rec = new WhFacilityRecPath();
-			BeanUtils.copyProperties(recCommand, rec);
-			whFacilityRecPathDao.saveOrUpdate(rec);
 		}
 		
 		// 2.将容器移动到目的地
