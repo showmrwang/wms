@@ -3985,6 +3985,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         task.setOuId(ouId);
         task.setCreateTime(new Date());
         task.setLastModifyTime(new Date());
+        task.setIsCreateWork(false);
         this.replenishmentTaskDao.insert(task);
 
     }
