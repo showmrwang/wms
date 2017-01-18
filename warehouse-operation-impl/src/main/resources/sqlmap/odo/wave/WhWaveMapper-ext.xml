@@ -559,6 +559,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			wave.id = #{waveId} and wave.ou_id = #{ouId}
     </select>
     
+    <select id="findWaveExtByIdAndOuIdAndLifecycle" resultMap="WhWaveResultExt">
+    	select 
+    		<include refid="whWaveColumnsExt" />
+	    from t_wh_wave wave 
+	    where 
+			wave.id = #{waveId} 
+		and wave.ou_id = #{ouId} 
+		and wave.lifecycle = #{lifecycle}
+    </select>
+    
     <select id="getNeedAllocationRuleWhWave" parameterType="map" resultType="long">
 		SELECT w.id 
 		FROM t_wh_wave w 

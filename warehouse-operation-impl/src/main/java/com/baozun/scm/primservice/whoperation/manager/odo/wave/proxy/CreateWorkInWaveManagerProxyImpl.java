@@ -151,53 +151,67 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
     public void createReplenishmentWorkInWave(Long waveId, Long ouId, Long userId) {
         // 查询补货工作释放及拆分条件分组 -- 补货工作
         List<ReplenishmentRuleCommand> replenishmentRuleCommands = this.getInReplenishmentConditionGroup(waveId, ouId);
-        // 循环补货工作释放及拆分条件分组        
-        for(ReplenishmentRuleCommand replenishmentRuleCommand : replenishmentRuleCommands){
-            replenishmentRuleCommand.setTaskOuId(ouId);
-            // 根据补货工作拆分条件统计分析补货数据 
-            Map<String, List<WhSkuInventoryAllocatedCommand>> siacMap = getSkuInventoryAllocatedCommandForGroup(replenishmentRuleCommand);
-            // 循环统计的分组信息分别创建工作           
-            for(String key : siacMap.keySet()){
-                // 创建拣货工作--创建工作头信息
-                WhSkuInventoryAllocatedCommand siaCommand = siacMap.get(key).get(0);
-                String replenishmentWorkCode = this.saveReplenishmentWork(waveId, siaCommand, userId);
-                int rWorkLineTotal = 0;
-                // 循环统计的分组补货信息列表
-                for(WhSkuInventoryAllocatedCommand skuInventoryAllocatedCommand : siacMap.get(key)){
-                    // 判断分配量与待移入量是否相等
-                    if(skuInventoryAllocatedCommand.getQty() != skuInventoryAllocatedCommand.getToQty()){
-                        throw new BusinessException("分配量与待移入量不相等");
+        Boolean judge = true;
+        try {
+            // 循环补货工作释放及拆分条件分组        
+            for(ReplenishmentRuleCommand replenishmentRuleCommand : replenishmentRuleCommands){
+                replenishmentRuleCommand.setTaskOuId(ouId);
+                // 根据补货工作拆分条件统计分析补货数据 
+                Map<String, List<WhSkuInventoryAllocatedCommand>> siacMap = getSkuInventoryAllocatedCommandForGroup(replenishmentRuleCommand);
+                // 循环统计的分组信息分别创建工作           
+                for(String key : siacMap.keySet()){
+                    // 创建拣货工作--创建工作头信息
+                    WhSkuInventoryAllocatedCommand siaCommand = siacMap.get(key).get(0);
+                    String replenishmentWorkCode = this.saveReplenishmentWork(waveId, siaCommand, userId);
+                    int rWorkLineTotal = 0;
+                    // 循环统计的分组补货信息列表
+                    for(WhSkuInventoryAllocatedCommand skuInventoryAllocatedCommand : siacMap.get(key)){
+                        // 判断分配量与待移入量是否相等
+                        if(skuInventoryAllocatedCommand.getQty() != skuInventoryAllocatedCommand.getToQty()){
+                            log.error("qty != toQty", skuInventoryAllocatedCommand.getQty(), skuInventoryAllocatedCommand.getToQty());
+                        }
+                        // 创建补货工作明细
+                        this.saveReplenishmentWorkLine(key, replenishmentWorkCode, userId, skuInventoryAllocatedCommand);
+                        rWorkLineTotal = rWorkLineTotal + 1;
                     }
-                    // 创建补货工作明细
-                    this.saveReplenishmentWorkLine(key, replenishmentWorkCode, userId, skuInventoryAllocatedCommand);
-                    rWorkLineTotal = rWorkLineTotal + 1;
-                }
-                // 校验工作明细数量是否正确
-                if (rWorkLineTotal != siacMap.get(key).size()) {
-                    throw new BusinessException("工作明细数量不正确");
-                }
-                // 更新补货工作头信息
-                this.updateReplenishmentWork(waveId, replenishmentWorkCode, siaCommand);
-                // 生成作业头
-                String replenishmentOperationCode = this.saveReplenishmentOperation(key, replenishmentWorkCode, siaCommand);
-                // 判断补货工作释放方式是否是按照需求量释放
-                if(1 == replenishmentRuleCommand.getReleaseWorkWay()){
-                    // 基于工作明细生成作业明细
-                    int replenishmentOperationLineCount = this.saveReplenishmentOperationLine(replenishmentWorkCode, replenishmentOperationCode, ouId, null);
-                    // 校验作业明细
-                    if (replenishmentOperationLineCount != rWorkLineTotal) {
-                        throw new BusinessException("创建的作业明细不正确");
+                    // 校验工作明细数量是否正确
+                    if (rWorkLineTotal != siacMap.get(key).size()) {
+                        log.error("rWorkLineTotal is error", rWorkLineTotal);
+                        judge = false;
                     }
-                }else{
-                    // 计算目标库位容器
-                    Double qty = locationReplenishmentCalculation(siaCommand, ouId);
-                    // 基于目标库位容器及工作明细生成作业明细 
-                    int replenishmentOperationLineCount = this.saveReplenishmentOperationLine(replenishmentWorkCode, replenishmentOperationCode, ouId, qty);
-                    if (replenishmentOperationLineCount != rWorkLineTotal) {
-                        throw new BusinessException("创建的作业明细不正确");
+                    // 更新补货工作头信息
+                    this.updateReplenishmentWork(waveId, replenishmentWorkCode, siaCommand);
+                    // 生成作业头
+                    String replenishmentOperationCode = this.saveReplenishmentOperation(key, replenishmentWorkCode, siaCommand);
+                    // 判断补货工作释放方式是否是按照需求量释放
+                    if(1 == replenishmentRuleCommand.getReleaseWorkWay()){
+                        // 基于工作明细生成作业明细
+                        int replenishmentOperationLineCount = this.saveReplenishmentOperationLine(replenishmentWorkCode, replenishmentOperationCode, ouId, null);
+                        // 校验作业明细
+                        if (replenishmentOperationLineCount != rWorkLineTotal) {
+                            log.error("replenishmentOperationLineCount is error", rWorkLineTotal);
+                            judge = false;
+                        }
+                    }else{
+                        // 计算目标库位容器
+                        Double qty = locationReplenishmentCalculation(siaCommand, ouId);
+                        // 基于目标库位容器及工作明细生成作业明细 
+                        int replenishmentOperationLineCount = this.saveReplenishmentOperationLine(replenishmentWorkCode, replenishmentOperationCode, ouId, qty);
+                        if (replenishmentOperationLineCount != rWorkLineTotal) {
+                            log.error("replenishmentOperationLineCount is error", rWorkLineTotal);
+                            judge = false;
+                        }
                     }
                 }
             }
+        } catch (Exception e) {
+            log.error("", e);
+            judge = false;
+        }
+        if(true == judge){
+            WhWave whWave = this.getWhWaveHead(waveId, ouId);
+            whWave.setIsCreateReplenishedWork(true);
+            this.updateWhWave(whWave);    
         }
     }
 
@@ -214,50 +228,62 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
         List<WhOdoOutBoundBox> whOdoOutBoundBoxList = this.getBoxBatchsForPicking(waveId, ouId);
         if (null == whOdoOutBoundBoxList || whOdoOutBoundBoxList.isEmpty()) {
             log.error("whOdoOutBoundBoxList is null,ouId:{},waveId:{}", ouId, waveId);
-            throw new BusinessException("找不到波次明细");
         }
-        // 循环小批次        
-        for (WhOdoOutBoundBox whOdoOutBoundBox : whOdoOutBoundBoxList) {
-            //根据批次查询小批次分组数据            
-            whOdoOutBoundBox.setOuId(ouId);
-            List<WhOdoOutBoundBox> odoOutBoundBoxForGroup = this.getOdoOutBoundBoxForGroup(whOdoOutBoundBox);
-            //循环小批次下所有分组信息分别创建工作 和作业         
-            for(WhOdoOutBoundBox whOdoOutBoundBoxGroup : odoOutBoundBoxForGroup){
-                //2.1.1 根据小批次分组查询出所有出库箱/容器信息
-                List<WhOdoOutBoundBoxCommand> whOdoOutBoundBoxCommandList = this.getOdoOutBoundBoxListByGroup(whOdoOutBoundBoxGroup);
-                //2.1.2 创建拣货工作--创建工作头信息
-                String workCode = this.savePickingWork(whOdoOutBoundBoxGroup,userId);
-                //2.1.3 循环出库箱/容器信息列表创建工作明细
-                for(WhOdoOutBoundBoxCommand whOdoOutBoundBoxCommand : whOdoOutBoundBoxCommandList){
-                    //2.1.3.1 判断库位占用量是否满足 
-                    //根据占用单据号和占用单据明细行ID查询库存列表                        
-                    List<WhSkuInventory> whSkuInventoryList = this.getSkuInventory(whOdoOutBoundBoxCommand);
-                    List<WhSkuInventoryTobefilled> whSkuInventoryTobefilledList = this.getSkuInventoryTobefilled(whOdoOutBoundBoxCommand);
-                    //初始化占用库存量
-                    Double onHandQty =  0.0 ;
-                    //计算占用库存量                       
-                    for(WhSkuInventory whSkuInventory : whSkuInventoryList){
-                        onHandQty =  whSkuInventory.getOnHandQty() + onHandQty;
+        Boolean judge = true;
+        try {
+            // 循环小批次        
+            for (WhOdoOutBoundBox whOdoOutBoundBox : whOdoOutBoundBoxList) {
+                //根据批次查询小批次分组数据            
+                whOdoOutBoundBox.setOuId(ouId);
+                List<WhOdoOutBoundBox> odoOutBoundBoxForGroup = this.getOdoOutBoundBoxForGroup(whOdoOutBoundBox);
+                //循环小批次下所有分组信息分别创建工作 和作业         
+                for(WhOdoOutBoundBox whOdoOutBoundBoxGroup : odoOutBoundBoxForGroup){
+                    //2.1.1 根据小批次分组查询出所有出库箱/容器信息
+                    List<WhOdoOutBoundBoxCommand> whOdoOutBoundBoxCommandList = this.getOdoOutBoundBoxListByGroup(whOdoOutBoundBoxGroup);
+                    //2.1.2 创建拣货工作--创建工作头信息
+                    String workCode = this.savePickingWork(whOdoOutBoundBoxGroup,userId);
+                    //2.1.3 循环出库箱/容器信息列表创建工作明细
+                    for(WhOdoOutBoundBoxCommand whOdoOutBoundBoxCommand : whOdoOutBoundBoxCommandList){
+                        //2.1.3.1 判断库位占用量是否满足 
+                        //根据占用单据号和占用单据明细行ID查询库存列表                        
+                        List<WhSkuInventory> whSkuInventoryList = this.getSkuInventory(whOdoOutBoundBoxCommand);
+                        List<WhSkuInventoryTobefilled> whSkuInventoryTobefilledList = this.getSkuInventoryTobefilled(whOdoOutBoundBoxCommand);
+                        //初始化占用库存量
+                        Double onHandQty =  0.0 ;
+                        //计算占用库存量                       
+                        for(WhSkuInventory whSkuInventory : whSkuInventoryList){
+                            onHandQty =  whSkuInventory.getOnHandQty() + onHandQty;
+                        }
+                        for(WhSkuInventoryTobefilled whSkuInventoryTobefilled : whSkuInventoryTobefilledList){
+                            onHandQty =  whSkuInventoryTobefilled.getQty() + onHandQty;
+                        }
+                        //如果不满足，则抛出异常 
+                        if(!onHandQty.equals(whOdoOutBoundBoxCommand.getQty())){
+                            log.error("onHandQty != whOdoOutBoundBoxCommand.getQty()", onHandQty, whOdoOutBoundBoxCommand.getQty());
+                            judge = false;
+                        }
+                        
+                        //2.1.3.2 创建工作明细
+                        this.savePickingWorkLine(whOdoOutBoundBoxCommand, whSkuInventoryList, whSkuInventoryTobefilledList, userId, workCode);
+                        //2.1.3.3 设置出库箱行标识  
+                        this.updateWhOdoOutBoundBoxCommand(whOdoOutBoundBoxCommand);
                     }
-                    for(WhSkuInventoryTobefilled whSkuInventoryTobefilled : whSkuInventoryTobefilledList){
-                        onHandQty =  whSkuInventoryTobefilled.getQty() + onHandQty;
-                    }
-                    //如果不满足，则抛出异常 
-                    if(!onHandQty.equals(whOdoOutBoundBoxCommand.getQty())){
-                        throw new BusinessException("库位占用量不满足");
-                    }
-                    //2.1.3.2 创建工作明细
-                    this.savePickingWorkLine(whOdoOutBoundBoxCommand, whSkuInventoryList, whSkuInventoryTobefilledList, userId, workCode);
-                    //2.1.3.3 设置出库箱行标识  
-                    this.updateWhOdoOutBoundBoxCommand(whOdoOutBoundBoxCommand);
+                    //2.1.4 更新工作头信息
+                    this.updatePickingWork(workCode, whOdoOutBoundBoxGroup);
+                    //2.1.5 创建作业头
+                    String operationCode = this.savePickingOperation(workCode, whOdoOutBoundBoxGroup);
+                    //2.1.6 创建作业明细
+                    this.savePickingOperationLine(workCode, operationCode, whOdoOutBoundBox.getOuId());
                 }
-                //2.1.4 更新工作头信息
-                this.updatePickingWork(workCode, whOdoOutBoundBoxGroup);
-                //2.1.5 创建作业头
-                String operationCode = this.savePickingOperation(workCode, whOdoOutBoundBoxGroup);
-                //2.1.6 创建作业明细
-                this.savePickingOperationLine(workCode, operationCode, whOdoOutBoundBox.getOuId());
             }
+        } catch (Exception e) {
+            log.error("", e);
+            judge = false;
+        }
+        if(true == judge){
+            WhWave whWave = this.getWhWaveHead(waveId, ouId);
+            whWave.setIsCreateReplenishedWork(true);;
+            this.updateWhWave(whWave);
         }
     }
     
@@ -286,7 +312,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
                 for(WhSkuInventoryAllocatedCommand skuInventoryAllocatedCommand : siacMap.get(key)){
                     // 判断分配量与待移入量是否相等
                     if(skuInventoryAllocatedCommand.getQty() != skuInventoryAllocatedCommand.getToQty()){
-                        throw new BusinessException("分配量与待移入量不相等");
+                        log.error("qty != toQty, qty:{}, toQty:{}", skuInventoryAllocatedCommand.getQty(), skuInventoryAllocatedCommand.getToQty());
                     }
                     // 创建补货工作明细
                     this.saveReplenishmentWorkLine(key, replenishmentWorkCode, userId, skuInventoryAllocatedCommand);
@@ -294,7 +320,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
                 }
                 // 校验工作明细数量是否正确
                 if (rWorkLineTotal != siacMap.get(key).size()) {
-                    throw new BusinessException("工作明细数量不正确");
+                    log.error("rWorkLineTotal is error, rWorkLineTotal:{}", rWorkLineTotal);
                 }
                 // 更新补货工作头信息
                 this.updateOutReplenishmentWork(replenishmentWorkCode, siaCommand);
@@ -304,7 +330,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
                 int replenishmentOperationLineCount = this.saveReplenishmentOperationLine(replenishmentWorkCode, replenishmentOperationCode, ouId, null);
                 // 校验作业明细
                 if (replenishmentOperationLineCount != rWorkLineTotal) {
-                    throw new BusinessException("创建的作业明细不正确");
+                    log.error("replenishmentOperationLineCount is error, replenishmentOperationLineCount:{}", replenishmentOperationLineCount);
                 }
             }
         }
@@ -322,7 +348,6 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
         // 获取波次头并校验波次信息
         if (null == waveId || null == ouId) {
             log.error("getWhWaveHead(null, null), ouId:{}, waveId:{}", ouId, waveId);
-            throw new BusinessException("创工作 : 没有参数");
         }
         WhWave whWave = new WhWave();
         try {
@@ -333,11 +358,9 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
         }
         if (null == whWave) {
             log.error("whWave is null ,ouId:{}, waveId:{}", ouId, waveId);
-            throw new BusinessException("没有波次头信息");
         }
         if (BaseModel.LIFECYCLE_NORMAL != whWave.getLifecycle() || WaveStatus.WAVE_EXECUTING != whWave.getStatus() || !WavePhase.CREATE_WORK.equals(whWave.getPhaseCode())) {
             log.error("1 != lifecycle || 5 != status || CREATE_WORK != phaseCode, ouId:{}, waveId:{}", ouId, waveId);
-            throw new BusinessException("波次头不可用或波次状态不为运行中或波次阶段不为创建工作");
         }
         return whWave;
     }
@@ -446,17 +469,15 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
     public String savePickingWork(WhOdoOutBoundBox whOdoOutBoundBox, Long userId) {
         //查询波次头信息     
         if (null == whOdoOutBoundBox.getWaveId() || null == whOdoOutBoundBox.getOuId()) {
-            throw new BusinessException("没有参数");
+            log.error("savePickingWork is error, whOdoOutBoundBox:{}, userId:{}", whOdoOutBoundBox.getWaveId(), whOdoOutBoundBox.getOuId());
         }
-        WhWave oldWhWave = new WhWave();
-        oldWhWave.setId(whOdoOutBoundBox.getWaveId());
-        oldWhWave.setOuId(whOdoOutBoundBox.getOuId());
-        oldWhWave.setLifecycle(BaseModel.LIFECYCLE_NORMAL);
-        List<WhWave> whWaveList = this.waveDao.findListByParam(oldWhWave);
-        if (null == whWaveList || 1 != whWaveList.size()) {
-            throw new BusinessException("多个波次");
+        WhWave whWave = new WhWave();
+        try {
+            whWave = this.waveDao.findWaveExtByIdAndOuIdAndLifecycle(whOdoOutBoundBox.getWaveId(), whOdoOutBoundBox.getOuId(), BaseModel.LIFECYCLE_NORMAL);
+        } catch (Exception e) {
+            log.error("findWaveExtByIdAndOuIdAndLifecycle is error, ouId:{}, waveId:{}, lifecycle:{}", whOdoOutBoundBox.getWaveId(), whOdoOutBoundBox.getOuId(), BaseModel.LIFECYCLE_NORMAL);
+            log.error("", e);
         }
-        WhWave whWave = whWaveList.get(0);
         //查询波次主档信息     
         WhWaveMaster whWaveMaster = waveMasterDao.findByIdExt(whWave.getWaveMasterId(), whWave.getOuId());
         //获取工作类型      
@@ -814,17 +835,15 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
         List<WhWorkLineCommand> whWorkLineCommandList = this.workLineDao.findWorkLineByWorkId(whWorkCommand.getId(), odoOutBoundBox.getOuId());
         //查询波次头信息     
         if (null == odoOutBoundBox.getWaveId() || null == odoOutBoundBox.getOuId()) {
-            throw new BusinessException("查询波次头信息  : 没有参数");
+            log.error("ouId:{},waveId:{}", odoOutBoundBox.getWaveId(), odoOutBoundBox.getOuId());
         }
-        WhWave oldWhWave = new WhWave();
-        oldWhWave.setId(odoOutBoundBox.getWaveId());
-        oldWhWave.setOuId(odoOutBoundBox.getOuId());
-        oldWhWave.setLifecycle(BaseModel.LIFECYCLE_NORMAL);
-        List<WhWave> whWaveList = this.waveDao.findListByParam(oldWhWave);
-        if (null == whWaveList || 1 != whWaveList.size()) {
-            throw new BusinessException("多个波次");
+        WhWave whWave = new WhWave();
+        try {
+            whWave = this.waveDao.findWaveExtByIdAndOuIdAndLifecycle(odoOutBoundBox.getWaveId(), odoOutBoundBox.getOuId(), BaseModel.LIFECYCLE_NORMAL);
+        } catch (Exception e) {
+            log.error("findWaveExtByIdAndOuIdAndLifecycle is error, ouId:{}, waveId:{}, lifecycle:{}", odoOutBoundBox.getWaveId(), odoOutBoundBox.getOuId(), BaseModel.LIFECYCLE_NORMAL);
+            log.error("", e);
         }
-        WhWave whWave = whWaveList.get(0);
         //查询波次主档信息     
         WhWaveMaster whWaveMaster = waveMasterDao.findByIdExt(whWave.getWaveMasterId(), whWave.getOuId());
         String workArea = "" ;
@@ -1211,17 +1230,15 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
     public String saveReplenishmentWork(Long waveId, WhSkuInventoryAllocatedCommand skuInventoryAllocatedCommand, Long userId) {
         //查询波次头信息     
         if (null == waveId || null == skuInventoryAllocatedCommand.getOuId()) {
-            throw new BusinessException("没有参数");
+            log.error("waveId:{}, skuInventoryAllocatedCommand:{}", waveId, skuInventoryAllocatedCommand);
         }
-        WhWave oldWhWave = new WhWave();
-        oldWhWave.setId(waveId);
-        oldWhWave.setOuId(skuInventoryAllocatedCommand.getOuId());
-        oldWhWave.setLifecycle(BaseModel.LIFECYCLE_NORMAL);
-        List<WhWave> whWaveList = this.waveDao.findListByParam(oldWhWave);
-        if (null == whWaveList || 1 != whWaveList.size()) {
-            throw new BusinessException("多个波次");
+        WhWave whWave = new WhWave();
+        try {
+            whWave = this.waveDao.findWaveExtByIdAndOuIdAndLifecycle(waveId, skuInventoryAllocatedCommand.getOuId(), BaseModel.LIFECYCLE_NORMAL);
+        } catch (Exception e) {
+            log.error("findWaveExtByIdAndOuIdAndLifecycle is error, ouId:{}, waveId:{}, lifecycle:{}", waveId, skuInventoryAllocatedCommand.getOuId(), BaseModel.LIFECYCLE_NORMAL);
+            log.error("", e);
         }
-        WhWave whWave = whWaveList.get(0);
         //查询波次主档信息     
         WhWaveMaster whWaveMaster = waveMasterDao.findByIdExt(whWave.getWaveMasterId(), whWave.getOuId());
         //获取工作类型      
@@ -1476,17 +1493,15 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
         
         //查询波次头信息     
         if (null == waveId || null == skuInventoryAllocatedCommand.getOuId()) {
-            throw new BusinessException("查询波次头信息  : 没有参数");
+            log.error("waveId:{}, ouId:{}", waveId, skuInventoryAllocatedCommand.getOuId());
         }
-        WhWave oldWhWave = new WhWave();
-        oldWhWave.setId(waveId);
-        oldWhWave.setOuId(skuInventoryAllocatedCommand.getOuId());
-        oldWhWave.setLifecycle(BaseModel.LIFECYCLE_NORMAL);
-        List<WhWave> whWaveList = this.waveDao.findListByParam(oldWhWave);
-        if (null == whWaveList || 1 != whWaveList.size()) {
-            throw new BusinessException("多个波次");
+        WhWave whWave = new WhWave();
+        try {
+            whWave = this.waveDao.findWaveExtByIdAndOuIdAndLifecycle(waveId, skuInventoryAllocatedCommand.getOuId(), BaseModel.LIFECYCLE_NORMAL);
+        } catch (Exception e) {
+            log.error("findWaveExtByIdAndOuIdAndLifecycle is error, ouId:{}, waveId:{}, lifecycle:{}", waveId, skuInventoryAllocatedCommand.getOuId(), BaseModel.LIFECYCLE_NORMAL);
+            log.error("", e);
         }
-        WhWave whWave = whWaveList.get(0);
         //查询波次主档信息     
         WhWaveMaster whWaveMaster = waveMasterDao.findByIdExt(whWave.getWaveMasterId(), whWave.getOuId());
         String workArea = "" ;
@@ -2032,5 +2047,15 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
         Double replenishmentQty =  Math.floor(maxQty - invQty);
         Double rQty = siaCommand.getQty() - replenishmentQty;
         return rQty;
+    }
+
+    /**
+     * [业务方法] 创建补货工作-更新波次头信息
+     * @param WhWave
+     * @return
+     */
+    @Override
+    public void updateWhWave(WhWave whWave) {
+        this.waveDao.update(whWave);
     }
 }

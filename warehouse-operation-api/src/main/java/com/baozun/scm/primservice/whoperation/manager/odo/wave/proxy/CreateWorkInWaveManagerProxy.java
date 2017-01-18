@@ -233,4 +233,11 @@ public interface CreateWorkInWaveManagerProxy extends BaseManager {
      * @return
      */
     public Double locationReplenishmentCalculation(WhSkuInventoryAllocatedCommand siaCommand, Long ouId);
+    
+    /**
+     * [业务方法] 创建补货工作-更新波次头信息
+     * @param WhWave
+     * @return
+     */
+    public void updateWhWave(WhWave whWave);
 }
