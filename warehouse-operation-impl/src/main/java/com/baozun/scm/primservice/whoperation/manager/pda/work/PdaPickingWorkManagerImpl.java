@@ -1365,6 +1365,10 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             pdaPickingWorkCacheManager.pdaPickingRemoveAllCache(operationId, true, locationId);
         }else if(cSRCmd.getIsPicking()){
                command.setIsPicking(true);
+               Location location = whLocationDao.findByIdExt(locationId, ouId);
+               Long workAreaId = location.getWorkAreaId();
+               command.setWorkAreaId(workAreaId);
+               command.setBatch(operatorLine.getBatch());
                //添加作业执行明细
                this.addPickingOperationExecLine(userId, outBoundBoxId, outBoundBoxCode, turnoverBoxId, outerContainerId, insideContainerId, operationId, ouId); 
                //校验作业执行明细
