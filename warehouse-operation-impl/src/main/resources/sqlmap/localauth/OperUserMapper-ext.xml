@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.localauth.OperUserDao">
+    <resultMap id="OperUserResultExt" type="com.baozun.scm.primservice.whoperation.model.localauth.OperUser">
+    </resultMap>
+
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="operUserColumnsExt">
+        <![CDATA[
+                id as id,
+                ou_id as ouId,
+                account as account,
+                user_name as userName,
+                password as password,
+                is_acc_non_expired as isAccNonExpired,
+                is_acc_non_locked as isAccNonLocked,
+                lifecycle as lifecycle,
+                create_time as createTime,
+                last_modify_time as lastModifyTime,
+                last_access_time as lastAccessTime,
+                email as email,
+                job_number as jobNumber,
+                memo as memo,
+                time_start as timeStart,
+                time_end as timeEnd,
+                modify_id as modifyId,
+                uac_id as uacId
+        ]]>
+    </sql>
+
+    <sql id="operUserDynamicWhereExt">
+        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+
+            <if test="id!=null">
+                and id = #{id}
+            </if>
+
+            <if test="ouId!=null">
+                and ou_id = #{ouId}
+            </if>
+
+
+            <if test="account!=null and account!=''">
+                and account like #{account}
+            </if>
+
+
+            <if test="userName!=null and userName!=''">
+                and user_name like #{userName}
+            </if>
+
+
+            <if test="password!=null and password!=''">
+                and password = #{password}
+            </if>
+
+            <if test="isAccNonExpired!=null">
+                and is_acc_non_expired = #{isAccNonExpired}
+            </if>
+
+            <if test="isAccNonLocked!=null">
+                and is_acc_non_locked = #{isAccNonLocked}
+            </if>
+
+            <if test="lifecycle!=null">
+                and lifecycle = #{lifecycle}
+            </if>
+
+            <if test="createTime!=null">
+                and create_time = #{createTime}
+            </if>
+
+            <if test="lastModifyTime!=null">
+                and last_modify_time = #{lastModifyTime}
+            </if>
+
+            <if test="lastAccessTime!=null">
+                and last_access_time = #{lastAccessTime}
+            </if>
+
+
+            <if test="email!=null and email!=''">
+                and email = #{email}
+            </if>
+
+
+            <if test="jobNumber!=null and jobNumber!=''">
+                and job_number = #{jobNumber}
+            </if>
+
+
+            <if test="memo!=null and memo!=''">
+                and memo = #{memo}
+            </if>
+
+            <if test="timeStart!=null">
+                and Date(time_start) <![CDATA[ = ]]>
+                #{timeStart}
+            </if>
+
+            <if test="timeEnd!=null">
+                and Date(time_end) <![CDATA[ = ]]>
+                #{timeEnd}
+            </if>
+
+            <if test="modifyId!=null">
+                and modify_id = #{modifyId}
+            </if>
+        </where>
+    </sql>
+
+
+
+</mapper>
