@@ -138,6 +138,7 @@
 			p.batch = #{batch}
 			and p.status = 1
 			and p.ou_id = #{ouId}
+			and p.temporary_storage_location_code is not null
 		group by 
 			p.temporary_storage_location_code
 	</select>

@@ -104,7 +104,7 @@ public final class CacheConstants {
     public static final String CACHE_OPERATION_EXEC_LINE = "CACHE_OPERATION_EXEC_LINE";
     
     /** 播种商品数据缓存 */
-    public static final String CACHE_SEEDING = "SEEDING_";
+    public static final String CACHE_SEEDING = "SEEDING";
     
     // --------------------------------------------集货缓存--------------------------------------------
     /** 集货推荐结果缓存:前缀+USERID*/
