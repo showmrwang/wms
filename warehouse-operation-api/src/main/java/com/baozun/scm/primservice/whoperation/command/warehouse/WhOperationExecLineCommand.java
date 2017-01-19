@@ -154,6 +154,8 @@ public class WhOperationExecLineCommand extends BaseCommand {
     private String odoLineCode;
     /** 操作人*/
     private String operator;
+    /** 是否最后一个拣货库位*/
+    private Boolean isLastPickingLocation;
 
 
     public Long getOperationId() {
@@ -714,6 +716,14 @@ public class WhOperationExecLineCommand extends BaseCommand {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Boolean getIsLastPickingLocation() {
+        return isLastPickingLocation;
+    }
+
+    public void setIsLastPickingLocation(Boolean isLastPickingLocation) {
+        this.isLastPickingLocation = isLastPickingLocation;
     }
 
 }
