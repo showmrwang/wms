@@ -758,10 +758,10 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
             throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
         }
         StringBuilder sb = new StringBuilder(64);
-        sb.append(CacheConstants.CACHE_SEEDING);
-        sb.append(ouId).append("_");
-        sb.append(seedingWallCode).append("_");
-        sb.append(batch).append("_");
+        sb.append(CacheConstants.CACHE_SEEDING).append("-");
+        sb.append(ouId).append("-");
+        sb.append(seedingWallCode).append("-");
+        sb.append(batch).append("-");
         sb.append(containerCode);
         String cacheKey = sb.toString();
 
@@ -1012,7 +1012,9 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 
         // 3.记录容器集货信息（到目的地）
         this.updateContainerToDestination(recCommand, destinationType, ouId);
-
+        
+        // TODO 4.判断暂存库位和中转库位上是否有货箱,没有就释放
+        
         ArrayDeque<String> containerCodeDeque = cacheManager.getObject(CacheConstants.PDA_CACHE_MANUAL_COLLECTION_CONTAINER + userId);
         if (null == containerCodeDeque || containerCodeDeque.isEmpty()) {
             throw new BusinessException(ErrorCodes.COLLECTION_CONTAINER_QTY_IS_NULL);
