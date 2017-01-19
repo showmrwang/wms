@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.localauth.OperUserDao">
+    <resultMap id="OperUserResult" type="com.baozun.scm.primservice.whoperation.model.localauth.OperUser">
+    </resultMap>
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="operUserColumns">
+        <![CDATA[
+                id as id,
+                ou_id as ouId,
+                account as account,
+                user_name as userName,
+                password as password,
+                is_acc_non_expired as isAccNonExpired,
+                is_acc_non_locked as isAccNonLocked,
+                lifecycle as lifecycle,
+                create_time as createTime,
+                last_modify_time as lastModifyTime,
+                last_access_time as lastAccessTime,
+                email as email,
+                job_number as jobNumber,
+                memo as memo,
+                time_start as timeStart,
+                time_end as timeEnd,
+                modify_id as modifyId,
+                uac_id as uacId
+        ]]>
+    </sql>
+
+    <!-- 如果有自增字段 -->
+
+    <!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+    <insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.localauth.OperUser"
+
+            flushCache="true">
+        <![CDATA[
+                INSERT INTO
+                oper_user (
+                id,
+                    ou_id ,
+                    account ,
+                    user_name ,
+                    password ,
+                    is_acc_non_expired ,
+                    is_acc_non_locked ,
+                    lifecycle ,
+                    create_time ,
+                    last_modify_time ,
+                    last_access_time ,
+                    email ,
+                    job_number ,
+                    memo ,
+                    time_start ,
+                    time_end ,
+                    modify_id ,
+                    uac_id
+                ) VALUES (
+                #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{account,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{userName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{password,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{isAccNonExpired,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                    #{isAccNonLocked,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                    #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                    #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                    #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                    #{lastAccessTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                    #{email,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{jobNumber,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{memo,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{timeStart,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                    #{timeEnd,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                    #{modifyId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{uacId,javaType=java.lang.Long,jdbcType=BIGINT} 
+                )
+            ]]>
+
+    </insert>
+
+
+    <update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.localauth.OperUser">
+        <![CDATA[
+            UPDATE oper_user SET
+                account = #{account,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                user_name = #{userName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                password = #{password,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                is_acc_non_expired = #{isAccNonExpired,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                is_acc_non_locked = #{isAccNonLocked,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                last_modify_time = #{globalModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                last_access_time = #{lastAccessTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                email = #{email,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                job_number = #{jobNumber,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                memo = #{memo,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                time_start = #{timeStart,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                time_end = #{timeEnd,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                modify_id = #{modifyId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                uac_id = #{uacId,javaType=java.lang.Long,jdbcType=BIGINT}                 
+        ]]>
+        WHERE
+        id = #{id}
+        and last_modify_time = #{lastModifyTime}
+        <if test="ouId!=null">
+            and ou_id = #{ouId}
+        </if>
+        <if test="uacId!=null">
+            and uac_id = #{uacId}
+        </if>
+    </update>
+    <delete id="delete" parameterType="java.lang.Long">
+        <![CDATA[
+            delete from oper_user where
+                id = #{id} 
+        ]]>
+    </delete>
+
+    <delete id="deleteByIds" parameterType="list">
+
+        delete from oper_user
+        where id in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+
+    </delete>
+
+    <select id="findById" parameterType="java.lang.Long" resultMap="OperUserResult" flushCache="false">
+        select
+        <include refid="operUserColumns"/>
+        <![CDATA[
+                from oper_user 
+                where 
+                id = #{id}
+            ]]>
+    </select>
+    <select id="getByIds" parameterType="list" resultMap="OperUserResult" flushCache="false">
+        select
+        <include refid="operUserColumns"/>
+        from oper_user
+        where id in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+    <sql id="operUserDynamicWhere">
+        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+
+            <if test="id!=null">
+                and id = #{id}
+            </if>
+
+            <if test="ouId!=null">
+                and ou_id = #{ouId}
+            </if>
+
+
+            <if test="account!=null and account!=''">
+                and account like #{account}
+            </if>
+
+
+            <if test="userName!=null and userName!=''">
+                and user_name like #{userName}
+            </if>
+
+
+            <if test="password!=null and password!=''">
+                and password = #{password}
+            </if>
+
+            <if test="isAccNonExpired!=null">
+                and is_acc_non_expired = #{isAccNonExpired}
+            </if>
+
+            <if test="isAccNonLocked!=null">
+                and is_acc_non_locked = #{isAccNonLocked}
+            </if>
+
+            <if test="lifecycle!=null">
+                and lifecycle = #{lifecycle}
+            </if>
+
+            <if test="createTime!=null">
+                and create_time = #{createTime}
+            </if>
+
+            <if test="lastModifyTime!=null">
+                and last_modify_time = #{lastModifyTime}
+            </if>
+
+            <if test="lastAccessTime!=null">
+                and last_access_time = #{lastAccessTime}
+            </if>
+
+
+            <if test="email!=null and email!=''">
+                and email = #{email}
+            </if>
+
+
+            <if test="jobNumber!=null and jobNumber!=''">
+                and job_number = #{jobNumber}
+            </if>
+
+
+            <if test="memo!=null and memo!=''">
+                and memo = #{memo}
+            </if>
+
+            <if test="timeStart!=null">
+                and time_start = #{timeStart}
+            </if>
+
+            <if test="timeEnd!=null">
+                and time_end = #{timeEnd}
+            </if>
+
+            <if test="modifyId!=null">
+                and modify_id = #{modifyId}
+            </if>
+        </where>
+    </sql>
+
+
+    <select id="getCount" resultType="long">
+        select count(*) from oper_user
+    </select>
+    <select id="findListCountByQueryMap" resultType="long">
+        select count(*) from oper_user
+        <include refid="operUserDynamicWhere"/>
+    </select>
+
+    <select id="findListCountByParam" resultType="long">
+        select count(*) from oper_user
+        <include refid="operUserDynamicWhere"/>
+    </select>
+
+    <!--
+        分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+        因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPage" resultMap="OperUserResult">
+        select
+        <include refid="operUserColumns"/>
+        from oper_user
+        <include refid="operUserDynamicWhere"/>
+
+    </select>
+
+    <select id="findListByQueryMap" resultMap="OperUserResult">
+        select
+        <include refid="operUserColumns"/>
+        from oper_user
+        <include refid="operUserDynamicWhere"/>
+
+    </select>
+
+    <select id="findListByParam" resultMap="OperUserResult">
+        select
+        <include refid="operUserColumns"/>
+        from oper_user
+        <include refid="operUserDynamicWhere"/>
+
+    </select>
+
+
+</mapper>

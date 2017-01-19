@@ -70,6 +70,10 @@ public class WorkCollectionCommand extends BaseCommand {
     private Integer containerQty;
     /** 播种墙容量上限*/
     private Integer upperLimit;
+    /** 工作id*/
+    private Long workId;
+    /** 最后一个容器库位*/
+    private Long lastLocationId;
 
     public Long getOuId() {
         return ouId;
@@ -293,6 +297,22 @@ public class WorkCollectionCommand extends BaseCommand {
 
     public void setContainerQty(Integer containerQty) {
         this.containerQty = containerQty;
+    }
+
+    public Long getWorkId() {
+        return workId;
+    }
+
+    public void setWorkId(Long workId) {
+        this.workId = workId;
+    }
+
+    public Long getLastLocationId() {
+        return lastLocationId;
+    }
+
+    public void setLastLocationId(Long lastLocationId) {
+        this.lastLocationId = lastLocationId;
     }
 
 }
