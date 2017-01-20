@@ -61,7 +61,7 @@ public class WhFacilityRecPathManagerImpl extends BaseManagerImpl implements WhF
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public RecFacilityPathCommand occupyFacilityAndlocationByFacilityGroup(WhOutboundFacilityGroup facilityGroup, RecFacilityPathCommand recFacilityPath, Warehouse wh) {
+    public RecFacilityPathCommand occupyFacilityAndlocationByFacilityGroup(WhOutboundFacilityGroup facilityGroup, WhFacilityRecPath prePath, RecFacilityPathCommand recFacilityPath, Warehouse wh) {
         Long ouId = wh.getId();
         WhTemporaryStorageLocation fromLocaiton = this.whTemporaryStorageLocationDao.findByIdAndOuId(recFacilityPath.getAreaId(), ouId);// 来源库位
         String pickingMode = recFacilityPath.getPickingMode();

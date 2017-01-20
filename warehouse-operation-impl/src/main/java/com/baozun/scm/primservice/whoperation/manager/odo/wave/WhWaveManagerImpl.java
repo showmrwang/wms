@@ -37,6 +37,7 @@ import com.baozun.scm.primservice.whoperation.constant.WhUomType;
 import com.baozun.scm.primservice.whoperation.constant.WorkStatus;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineDao;
+import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoTransportMgmtDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveLineDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveMasterDao;
@@ -56,6 +57,7 @@ import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuI
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveMaster;
@@ -106,6 +108,8 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
     private WhSkuInventoryTobefilledDao whSkuInventoryTobefilledDao;
     @Autowired
     private ReplenishmentTaskDao replenishmentTaskDao;
+    @Autowired
+    private WhOdoTransportMgmtDao whOdoTransportMgmtDao;
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
@@ -784,6 +788,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
     }
 
     @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void cancelWaveWithWork(WhWave wave, ReplenishmentTask task, List<WhWork> workList, Set<Long> workToLazyCancelSet, List<WhOdo> odoList, Set<Long> odoToLazyFreeSet, Long userId) {
         Long ouId = wave.getOuId();
         String waveCode = wave.getCode();
@@ -871,6 +876,93 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         }
 
         this.distributionModeArithmeticManagerProxy.addToPool(odoIdCounterCodeMap);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<WhWave> findWaveToBeCreated(Long ouId) {
+        WhWave wave = new WhWave();
+        wave.setOuId(ouId);
+        wave.setStatus(WaveStatus.WAVE_TOBECREATED);
+        wave.setAllocatePhase(null);
+        wave.setLifecycle(Constants.LIFECYCLE_START);
+        List<WhWave> list = this.whWaveDao.findListByParam(wave);
+        return list;
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void finishCreateWave(WhWave wave) {
+        wave.setStatus(WaveStatus.WAVE_NEW);
+        int waveCount = this.whWaveDao.saveOrUpdate(wave);
+        if (waveCount <= 0) {
+            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+        }
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void addOdoLineToWave(List<Long> odoIdList, WhWave wave) {
+        Long userId = wave.getCreatedId();
+        Long ouId = wave.getOuId();
+        for (Long odoId : odoIdList) {
+            WhOdo odo = this.whOdoDao.findByIdOuId(odoId, ouId);
+            WhOdoTransportMgmt trans = this.whOdoTransportMgmtDao.findTransportMgmtByOdoIdOuId(odoId, ouId);
+            List<WhOdoLine> odoLineList = this.whOdoLineDao.findOdoLineListByOdoIdOuId(odoId, ouId);
+            if (odoLineList != null && odoLineList.size() > 0) {
+
+                for (WhOdoLine line : odoLineList) {
+                    WhWaveLine waveLine = new WhWaveLine();
+                    waveLine.setOdoLineId(line.getId());
+                    waveLine.setOdoId(line.getOdoId());
+                    waveLine.setOdoCode(odo.getOdoCode());
+                    waveLine.setOdoPriorityLevel(odo.getPriorityLevel());
+                    waveLine.setOdoPlanDeliverGoodsTime(trans.getPlanDeliverGoodsTime());
+                    waveLine.setOdoOrderTime(odo.getOrderTime());
+                    waveLine.setIsStaticLocationAllocate(false);
+                    waveLine.setLinenum(line.getLinenum());
+                    waveLine.setStoreId(odo.getStoreId());
+                    waveLine.setExtLinenum(line.getExtLinenum());
+                    waveLine.setSkuId(line.getSkuId());
+                    waveLine.setSkuBarCode(line.getSkuBarCode());
+                    waveLine.setSkuName(line.getSkuName());
+                    waveLine.setQty(line.getPlanQty());
+                    waveLine.setAllocateQty(line.getAssignQty());
+                    waveLine.setIsWholeOrderOutbound(line.getFullLineOutbound());
+                    waveLine.setFullLineOutbound(line.getFullLineOutbound());
+                    waveLine.setMfgDate(line.getMfgDate());
+                    waveLine.setExpDate(line.getExpDate());
+                    waveLine.setMinExpDate(line.getMinExpDate());
+                    waveLine.setMaxExpDate(line.getMaxExpDate());
+                    waveLine.setBatchNumber(line.getBatchNumber());
+                    waveLine.setCountryOfOrigin(line.getCountryOfOrigin());
+                    waveLine.setInvStatus(line.getInvStatus());
+                    waveLine.setInvType(line.getInvType());
+                    waveLine.setInvAttr1(line.getInvAttr1());
+                    waveLine.setInvAttr2(line.getInvAttr2());
+                    waveLine.setInvAttr3(line.getInvAttr3());
+                    waveLine.setInvAttr4(line.getInvAttr4());
+                    waveLine.setInvAttr5(line.getInvAttr5());
+                    waveLine.setOutboundCartonType(line.getOutboundCartonType());
+                    waveLine.setColor(line.getColor());
+                    waveLine.setStyle(line.getStyle());
+                    waveLine.setSize(line.getSize());
+                    waveLine.setOuId(ouId);
+                    waveLine.setCreateTime(new Date());
+                    waveLine.setCreatedId(userId);
+                    waveLine.setLastModifyTime(new Date());
+                    waveLine.setModifiedId(userId);
+                    this.whWaveLineDao.insert(waveLine);
+
+                    line.setWaveCode(wave.getCode());
+                    line.setOdoLineStatus(OdoStatus.ODOLINE_WAVE);
+                    int updateCount = this.whOdoLineDao.saveOrUpdateByVersion(line);
+                    if (updateCount <= 0) {
+                        throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                    }
+                }
+            }
+        }
     }
 
 

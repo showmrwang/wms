@@ -83,8 +83,9 @@ public class WaveFacilityManagerProxyImpl extends BaseManagerImpl implements Wav
             return recFacilityPath;
         }
         List<WhFacilityRecPath> pathList = this.whFacilityRecPathManager.findWhFacilityRecPathByBatchAndContainer(batch, null, ouId);
-        if (pathList != null && pathList.size() > 0) {// 存在推荐成功的想信息
-            return null;
+        WhFacilityRecPath prePath = null;
+        if (pathList != null && pathList.size() > 0) {// 存在推荐成功的信息
+            prePath = pathList.get(0);
         }
         // 模式
         if (StringUtils.isEmpty(wh.getSeedingMode())) {
@@ -95,7 +96,7 @@ public class WaveFacilityManagerProxyImpl extends BaseManagerImpl implements Wav
         if (facilityGroup == null) {
             return null;
         }
-        return this.whFacilityRecPathManager.occupyFacilityAndlocationByFacilityGroup(facilityGroup, recFacilityPath, wh);
+        return this.whFacilityRecPathManager.occupyFacilityAndlocationByFacilityGroup(facilityGroup, prePath, recFacilityPath, wh);
     }
 
 }

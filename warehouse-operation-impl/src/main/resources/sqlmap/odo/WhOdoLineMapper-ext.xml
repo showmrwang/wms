@@ -808,4 +808,5 @@
 			l.odo_id = #{odoId}
 			and l.ou_id = #{ouId}
 	</update>
+	
 </mapper>

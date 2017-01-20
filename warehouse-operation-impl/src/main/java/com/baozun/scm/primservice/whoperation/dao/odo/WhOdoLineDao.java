@@ -29,6 +29,7 @@ import org.apache.ibatis.annotations.Param;
 
 import com.baozun.scm.primservice.whoperation.command.odo.OdoLineCommand;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
+import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine;
 
 public interface WhOdoLineDao extends BaseDao<WhOdoLine, Long> {
 
@@ -135,4 +136,13 @@ public interface WhOdoLineDao extends BaseDao<WhOdoLine, Long> {
      * @return
      */
 	int updateOdoLineAssignQtyIsZero(@Param("odoId") Long odoId, @Param("ouId") Long ouId);
+
+    /**
+     * 【业务方法】根据出库单ID集合查找出库单明细
+     * 
+     * @param odoIdList
+     * @param ouId
+     * @return
+     */
+    List<WhWaveLine> findByOdoIdList(List<Long> odoIdList, Long ouId);
 }
