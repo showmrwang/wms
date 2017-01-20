@@ -45,11 +45,11 @@ public class WhWorkLine extends BaseModel {
     /** 商品ID */
     private Long skuId;
     /** 计划量 */
-    private Long qty;
+    private Double qty;
     /** 执行量/完成量 */
-    private Long completeQty;
+    private Double completeQty;
     /** 取消量 */
-    private Long cancelQty;
+    private Double cancelQty;
     /** 库存状态 */
     private Long invStatus;
     /** 库存类型 */
@@ -163,27 +163,27 @@ public class WhWorkLine extends BaseModel {
         this.skuId = skuId;
     }
 
-    public Long getQty() {
+    public Double getQty() {
         return qty;
     }
 
-    public void setQty(Long qty) {
+    public void setQty(Double qty) {
         this.qty = qty;
     }
 
-    public Long getCompleteQty() {
+    public Double getCompleteQty() {
         return completeQty;
     }
 
-    public void setCompleteQty(Long completeQty) {
+    public void setCompleteQty(Double completeQty) {
         this.completeQty = completeQty;
     }
 
-    public Long getCancelQty() {
+    public Double getCancelQty() {
         return cancelQty;
     }
 
-    public void setCancelQty(Long cancelQty) {
+    public void setCancelQty(Double cancelQty) {
         this.cancelQty = cancelQty;
     }
 

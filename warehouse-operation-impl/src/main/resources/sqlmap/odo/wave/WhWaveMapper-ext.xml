@@ -278,6 +278,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        phase_code = #{phaseCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        is_weak_allocated = #{isWeakAllocated,javaType=java.lang.Boolean,jdbcType=BIT} ,
 			        allocate_phase = #{allocatePhase,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        is_create_picking_work = #{isCreatePickingWork,javaType=java.lang.Boolean,jdbcType=BIT} ,
+	        		is_create_replenished_work = #{isCreateReplenishedWork,javaType=java.lang.Boolean,jdbcType=BIT} ,
 			        start_time = #{startTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        finish_time = #{finishTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        total_odo_qty = #{totalOdoQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,

@@ -46,7 +46,6 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.WorkTypeDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryAllocatedDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryTobefilledDao;
-import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.LocationManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
@@ -167,7 +166,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
                     // 循环统计的分组补货信息列表
                     for(WhSkuInventoryAllocatedCommand skuInventoryAllocatedCommand : siacMap.get(key)){
                         // 判断分配量与待移入量是否相等
-                        if(skuInventoryAllocatedCommand.getQty() != skuInventoryAllocatedCommand.getToQty()){
+                        if(!skuInventoryAllocatedCommand.getQty().equals(skuInventoryAllocatedCommand.getToQty())){
                             log.error("qty != toQty", skuInventoryAllocatedCommand.getQty(), skuInventoryAllocatedCommand.getToQty());
                         }
                         // 创建补货工作明细
@@ -1160,7 +1159,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
             List<WhSkuInventoryAllocatedCommand> rList = new ArrayList<WhSkuInventoryAllocatedCommand>();
             if(null != replenishmentRuleCommand.getIsFromInsideContainerSplitWork() && null != replenishmentRuleCommand.getIsToLocationSplitWork()){
                 // 分组标示 -- 配置为原始库位货箱与目标库位 
-                String str = "fromInsideContainerToLocation" + whSkuInventoryAllocatedCommand.getInsideContainerId() + "-" + whSkuInventoryAllocatedCommand.getToLocationId();
+                String str = "fromInsideContainerToLocation" + "-" + whSkuInventoryAllocatedCommand.getInsideContainerId() + "-" + whSkuInventoryAllocatedCommand.getToLocationId();
                 if(null != rMap && null != rMap.get(str)){
                     rList = rMap.get(str);
                 }
@@ -1168,7 +1167,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
                 rMap.put(str, rList);
             }else if(null != replenishmentRuleCommand.getIsFromInsideContainerSplitWork() && null == replenishmentRuleCommand.getIsToLocationSplitWork()){
                 // 分组标示 -- 配置为原始库位货箱
-                String str = "fromInsideContainer" + whSkuInventoryAllocatedCommand.getInsideContainerId().toString();
+                String str = "fromInsideContainer" + "-" + whSkuInventoryAllocatedCommand.getInsideContainerId();
                 if(null != rMap && null != rMap.get(str)){
                     rList = rMap.get(str);
                 }
@@ -1176,7 +1175,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
                 rMap.put(str, rList);
             }else if(null != replenishmentRuleCommand.getIsFromOuterContainerSplitWork()  && null != replenishmentRuleCommand.getIsToLocationSplitWork()){
                 // 分组标示 -- 配置为原始库位托盘与目标库位
-                String str = "fromOuterContainerToLocation" + whSkuInventoryAllocatedCommand.getOuterContainerId() + "-" + whSkuInventoryAllocatedCommand.getToLocationId();
+                String str = "fromOuterContainerToLocation" + "-" + whSkuInventoryAllocatedCommand.getOuterContainerId() + "-" + whSkuInventoryAllocatedCommand.getToLocationId();
                 if(null != rMap && null != rMap.get(str)){
                     rList = rMap.get(str);
                 }
@@ -1184,7 +1183,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
                 rMap.put(str, rList);
             }else if(null != replenishmentRuleCommand.getIsFromOuterContainerSplitWork()  && null == replenishmentRuleCommand.getIsToLocationSplitWork()){
                 // 分组标示 -- 配置为原始库位托盘
-                String str = "fromOuterContainer" + whSkuInventoryAllocatedCommand.getOuterContainerId().toString();
+                String str = "fromOuterContainer" + "-" + whSkuInventoryAllocatedCommand.getOuterContainerId();
                 if(null != rMap && null != rMap.get(str)){
                     rList = rMap.get(str);
                 }
@@ -1192,7 +1191,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
                 rMap.put(str, rList);
             }else if(null != replenishmentRuleCommand.getIsFromLocationSplitWork() && null != replenishmentRuleCommand.getIsToLocationSplitWork()){ 
                 // 分组标示 -- 配置为原始库位与目标库位
-                String str = "fromLocationToLocation" + whSkuInventoryAllocatedCommand.getLocationId() + "-" + whSkuInventoryAllocatedCommand.getToLocationId();
+                String str = "fromLocationToLocation" + "-" + whSkuInventoryAllocatedCommand.getLocationId() + "-" + whSkuInventoryAllocatedCommand.getToLocationId();
                 if(null != rMap && null != rMap.get(str)){
                     rList = rMap.get(str);
                 }
@@ -1200,7 +1199,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
                 rMap.put(str, rList);
             }else if(null != replenishmentRuleCommand.getIsFromLocationSplitWork() && null == replenishmentRuleCommand.getIsToLocationSplitWork()){ 
                 // 分组标示 -- 配置为原始库位
-                String str = "fromLocation" + whSkuInventoryAllocatedCommand.getLocationId().toString();
+                String str = "fromLocation" + "-" + whSkuInventoryAllocatedCommand.getLocationId();
                 if(null != rMap && null != rMap.get(str)){
                     rList = rMap.get(str);
                 }
@@ -1208,7 +1207,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
                 rMap.put(str, rList);
             }else{ 
                 // 分组标示 -- 配置为目标库位
-                String str = "toLocation" + whSkuInventoryAllocatedCommand.getToLocationId().toString();
+                String str = "toLocation" + "-" + whSkuInventoryAllocatedCommand.getToLocationId();
                 if(null != rMap && null != rMap.get(str)){
                     rList = rMap.get(str);
                 }
@@ -1348,14 +1347,14 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
         String[] containerArray = key.split("-");
         // 判断是否整托整箱        
         if(null != skuInventoryAllocatedCommand.getInsideContainerId()){
-            skuInventory.setInsideContainerId(Long.valueOf(containerArray[0]));
-            allocatedCommand.setInsideContainerId(Long.valueOf(containerArray[0]));
-            totalCommand.setInsideContainerId(Long.valueOf(containerArray[0]));
+            skuInventory.setInsideContainerId(Long.valueOf(containerArray[1]));
+            allocatedCommand.setInsideContainerId(Long.valueOf(containerArray[1]));
+            totalCommand.setInsideContainerId(Long.valueOf(containerArray[1]));
         }else{
             if(null != skuInventoryAllocatedCommand.getOuterContainerId()){
-                skuInventory.setOuterContainerId(Long.valueOf(containerArray[0]));
-                allocatedCommand.setOuterContainerId(Long.valueOf(containerArray[0]));
-                totalCommand.setOuterContainerId(Long.valueOf(containerArray[0]));
+                skuInventory.setOuterContainerId(Long.valueOf(containerArray[1]));
+                allocatedCommand.setOuterContainerId(Long.valueOf(containerArray[1]));
+                totalCommand.setOuterContainerId(Long.valueOf(containerArray[1]));
             }   
         }
         List<WhSkuInventory> SkuInventoryList = skuInventoryDao.getSkuInvListGroupUuid(skuInventory);
@@ -1617,14 +1616,14 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
         String[] containerArray = key.split("-");
         // 判断是否整托整箱        
         if(null != skuInventoryAllocatedCommand.getInsideContainerId()){
-            skuInventory.setInsideContainerId(Long.valueOf(containerArray[0]));
-            allocatedCommand.setInsideContainerId(Long.valueOf(containerArray[0]));
-            totalCommand.setInsideContainerId(Long.valueOf(containerArray[0]));
+            skuInventory.setInsideContainerId(Long.valueOf(containerArray[1]));
+            allocatedCommand.setInsideContainerId(Long.valueOf(containerArray[1]));
+            totalCommand.setInsideContainerId(Long.valueOf(containerArray[1]));
         }else{
             if(null != skuInventoryAllocatedCommand.getOuterContainerId()){
-                skuInventory.setOuterContainerId(Long.valueOf(containerArray[0]));
-                allocatedCommand.setOuterContainerId(Long.valueOf(containerArray[0]));
-                totalCommand.setOuterContainerId(Long.valueOf(containerArray[0]));
+                skuInventory.setOuterContainerId(Long.valueOf(containerArray[1]));
+                allocatedCommand.setOuterContainerId(Long.valueOf(containerArray[1]));
+                totalCommand.setOuterContainerId(Long.valueOf(containerArray[1]));
             }   
         }
         List<WhSkuInventory> SkuInventoryList = skuInventoryDao.getSkuInvListGroupUuid(skuInventory);
