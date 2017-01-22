@@ -85,4 +85,6 @@ public interface WhSeedingCollectionDao extends BaseDao<WhSeedingCollection, Lon
 
     int deleteContainerInSeedingWall(@Param("containerId") Long containerId, @Param("batch") String batch, @Param("ouId") Long ouId);
 
+	int checkCountInDestination(@Param("batch") String batch, @Param("destinationType") Integer destinationType, @Param("ouId") Long ouId);
+
 }

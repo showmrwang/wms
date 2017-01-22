@@ -1013,7 +1013,15 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         // 3.记录容器集货信息（到目的地）
         this.updateContainerToDestination(recCommand, destinationType, ouId);
         
-        // TODO 4.判断暂存库位和中转库位上是否有货箱,没有就释放
+        // 4.判断暂存库位,没有就释放
+        if (destinationType == Constants.SEEDING_WALL) {
+        	int count = whSeedingCollectionDao.checkCountInDestination(batch, Constants.TEMPORARY_STORAGE_LOCATION, ouId);
+        	if (count == 0 && StringUtils.hasText(storageLocation.getBatch())) {
+        		storageLocation.setBatch(null);
+        		storageLocation.setStatus(1);
+        		whTemporaryStorageLocationDao.saveOrUpdateByVersion(storageLocation);
+			}
+		}
         
         ArrayDeque<String> containerCodeDeque = cacheManager.getObject(CacheConstants.PDA_CACHE_MANUAL_COLLECTION_CONTAINER + userId);
         if (null == containerCodeDeque || containerCodeDeque.isEmpty()) {
@@ -1083,16 +1091,22 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         String batch = seedingCollection.getBatch();
         WhFacilityRecPathCommand rec = whFacilityRecPathDao.getRecommendResultByContainerCode(containerCode, batch, ouId);
         if (null == rec) {
-            List<Long> odoIdList = whWorkDao.getOdoIdListByBatch(batch, ouId);
+            /*List<Long> odoIdList = whWorkDao.getOdoIdListByBatch(batch, ouId);
             if (null == odoIdList || odoIdList.isEmpty()) {
                 throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
-            }
+            }*/
+            ContainerCommand containerCmd = containerDao.getContainerByCode(containerCode, ouId);
+            Long scanContainerId = containerCmd.getId();
+            Long workId = whOperationExecLineDao.getWorkIdByUseContainerId(batch, scanContainerId, ouId);
+            WorkCollectionCommand workCommand = this.createObject(batch, workId, ouId, null, scanContainerId);
             // 推荐播种墙逻辑,并判断是否推荐成功
             RecFacilityPathCommand recFacilityPath = new RecFacilityPathCommand();
             recFacilityPath.setOuId(ouId);
             recFacilityPath.setBatch(batch);
             recFacilityPath.setContainerCode(containerCode);
-            recFacilityPath.setOdoIdList(odoIdList);
+            recFacilityPath.setOdoIdList(workCommand.getOdoIdList());
+            recFacilityPath.setLastContainer(workCommand.getIsLastContainer());
+            recFacilityPath.setAreaId(workCommand.getLastLocationId());
             // 调用播种墙推荐逻辑
             RecFacilityPathCommand command = waveFacilityManagerProxy.matchOutboundFacility(recFacilityPath);
             if (1 == command.getStatus()) {

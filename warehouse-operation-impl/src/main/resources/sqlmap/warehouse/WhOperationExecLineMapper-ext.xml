@@ -725,4 +725,18 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		HAVING
 		sum(qty) != 0
 	</select>
+	
+	<select id="getWorkIdByUseContainerId" resultType="long">
+		select
+			w.work_id
+		from
+			t_wh_operation_exec_line l
+			left join t_wh_work_line w on l.work_line_id = w.id
+		where
+			l.batch_number = #{batch}
+			and l.use_container_id = #{scanContainerId}
+			and l.ou_id = #{ouId}
+		group by
+			w.work_id
+	</select>
 </mapper>

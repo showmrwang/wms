@@ -178,4 +178,20 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			and ou_id = #{ouId}
 	</delete>
 	
+	<select id="checkCountInDestination" resultType="int">
+		select
+			count(1)
+		from
+			t_wh_seeding_collection s
+		where
+			s.batch = #{batch}
+			<if test="destinationType != null and destinationType == 2">
+				and s.temporary_location_id is not null
+			</if>
+			<if test="destinationType != null and destinationType == 3">
+				and s.location_id is not null
+			</if>
+			and s.collection_status = 1
+			and s.ou_id = #{ouId}
+	</select>
 </mapper>
