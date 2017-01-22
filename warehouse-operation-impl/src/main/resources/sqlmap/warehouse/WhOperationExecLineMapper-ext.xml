@@ -10,6 +10,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		type="com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationExecLine">
 	</resultMap>
 
+	<resultMap id="WhOperationExecLineResultCommandExt"
+		type="com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationExecLineCommand">
+	</resultMap>
+
 
 	<!-- 用于select查询公用抽取的列 -->
 	<sql id="whOperationExecLineColumnsExt">
@@ -739,4 +743,20 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		group by
 			w.work_id
 	</select>
+	
+	<select id="findCommandByBatchAndContainer" resultMap="WhOperationExecLineResultCommandExt">
+		
+		select <include refid="whOperationExecLineColumns" /> 
+		from t_wh_operation_exec_line line 
+		where line.work_line_id in (
+			select line.id 
+			from t_wh_work_line line 
+			where line.work_id in (
+				select work.id 
+				from t_wh_work work 
+				where work.batch = #{batch} and work.ou_id = #{ouId}
+			) 
+			and line.use_container_id = #{containerId})
+    </select>
+	
 </mapper>

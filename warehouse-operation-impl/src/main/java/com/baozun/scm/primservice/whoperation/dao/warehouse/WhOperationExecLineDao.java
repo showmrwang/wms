@@ -51,6 +51,15 @@ public interface WhOperationExecLineDao extends BaseDao<WhOperationExecLine, Lon
      */
     List<WhOperationExecLineCommand> findCommandByWorkId(@Param("workId") Long workId, @Param("ouId") Long ouId);
 
+    /**
+     * [通用方法] 通过批次号和传入容器查找当前工作工作下的所有作业执行明细
+     * @param batch
+     * @param containerId
+     * @param ouId
+     * @return
+     */
+    List<WhOperationExecLineCommand> findCommandByBatchAndContainer(@Param("batch") String batch, @Param("containerId") Long containerId, @Param("ouId") Long ouId);
+
     /****
      * 校验作业执行明细
      * @param operationId

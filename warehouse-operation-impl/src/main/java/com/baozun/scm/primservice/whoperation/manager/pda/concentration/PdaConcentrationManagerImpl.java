@@ -128,13 +128,20 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public WorkCollectionCommand createObject(String batch, Long workId, Long ouId, Boolean isLastContainer, Long scanContainerId) {
+
         WorkCollectionCommand command = new WorkCollectionCommand();
         // TODO 需要odoIds, 最后一个库位位子, 容器列表
         // 通过工作和组织找到批次下的所有拣货工作使用的容器和出库单列表
         Set<String> containerSet = new HashSet<String>();
         Set<Long> containerIdSet = new HashSet<Long>();
         Set<Long> odoIdSet = new HashSet<Long>();
-        List<WhOperationExecLineCommand> execLineCommandList = this.whOperationExecLineDao.findCommandByWorkId(workId, ouId);
+        List<WhOperationExecLineCommand> execLineCommandList = new ArrayList<WhOperationExecLineCommand>();
+        if (null != workId) {
+            execLineCommandList = this.whOperationExecLineDao.findCommandByWorkId(workId, ouId);
+        } else {
+            // TODO 根据batch和传入容器查找对应的工作下的所有作业执行明细
+            execLineCommandList = this.whOperationExecLineDao.findCommandByBatchAndContainer(batch, scanContainerId, ouId);
+        }
         // Long lastPickingLocation;
         if (null != execLineCommandList && !execLineCommandList.isEmpty()) {
             for (WhOperationExecLineCommand execLineCommand : execLineCommandList) {
