@@ -743,7 +743,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     public void createOdoWaveNew(WhWave wave, List<Long> odoIdList) {
         int batchCount = 500;
         int totalCount = odoIdList.size();
-        int ceil = (int) Math.ceil(totalCount / batchCount);
+        int ceil = (int) Math.ceil((double) totalCount / batchCount);
         Long ouId = wave.getOuId();
         for (int i = 0; i < ceil; i++) {
             List<Long> subList = null;
