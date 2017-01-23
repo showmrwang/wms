@@ -952,6 +952,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
                     waveLine.setCreatedId(userId);
                     waveLine.setLastModifyTime(new Date());
                     waveLine.setModifiedId(userId);
+                    waveLine.setWaveId(wave.getId());
                     this.whWaveLineDao.insert(waveLine);
 
                     line.setWaveCode(wave.getCode());

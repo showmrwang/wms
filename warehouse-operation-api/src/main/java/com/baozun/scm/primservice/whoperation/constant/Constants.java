@@ -179,6 +179,7 @@ public final class Constants {
     /** 分配规则 */
     public static final String ALLOCATE_RULE = "ALLOCATE_RULE";
     public static final String ALLOCATE = "ALLOCATE";
+    public static final String WAVE_CREATE = "WAVE_CREATE";
 
     /** 分配策略 */
     public static final String ALLOCATE_STRATEGY = "ALLOCATE_STRATEGY";

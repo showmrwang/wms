@@ -3190,7 +3190,7 @@
 		from t_wh_odo odo
 	
 		where odo.wave_code=#{waveCode} and odo.ou_id=#{ouId} 
-		and exists(select 1 from t_wh_odo_line odoline where odoline.odo_id=odo.id and (odoline.wave_code ='' or odoline.wave_code =null))
+		and exists(select 1 from t_wh_odo_line odoline where odoline.odo_id=odo.id and (odoline.wave_code ='' or odoline.wave_code is null))
 	</select>
 	
 	 <select id="findOdoIdCounterCodebyWaveCode" resultType="string">

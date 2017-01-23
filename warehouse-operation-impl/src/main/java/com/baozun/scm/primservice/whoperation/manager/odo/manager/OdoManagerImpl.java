@@ -758,7 +758,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                 if (fromIndex == 0) {
                     subList = odoIdList.subList(0, toIndex);
                 } else {
-                    subList = odoIdList.subList(fromIndex + 1, toIndex);
+                    subList = odoIdList.subList(fromIndex, toIndex);
                 }
             }
             int updateOdoCount = this.whOdoDao.addOdoToWave(subList, wave.getOuId(), wave.getCreatedId(), wave.getCode(), OdoStatus.ODO_WAVE);
