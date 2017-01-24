@@ -2281,7 +2281,7 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
     @Override
     public void addOdoLineToWave(List<Long> odoIdList, WhWave wave) {
         try {
-            this.waveManager.addOdoLineToWave(odoIdList, wave);
+            this.waveManager.addOdoLineToWaveNew(odoIdList, wave);
         } catch (Exception e) {
 
         }

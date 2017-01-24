@@ -1,5 +1,6 @@
 package com.baozun.scm.primservice.whoperation.command.odo;
 
+import java.util.Date;
 import java.util.List;
 
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
@@ -138,6 +139,36 @@ public class OdoLineCommand extends BaseCommand {
     private String invStatusName;
     /** 明细状态 */
     private String odoLineStatusName;
+
+    private Integer priorityLevel;
+    private Date planDeliverGoodsTime;
+    private Date orderTime;
+
+
+
+    public Integer getPriorityLevel() {
+        return priorityLevel;
+    }
+
+    public void setPriorityLevel(Integer priorityLevel) {
+        this.priorityLevel = priorityLevel;
+    }
+
+    public Date getPlanDeliverGoodsTime() {
+        return planDeliverGoodsTime;
+    }
+
+    public void setPlanDeliverGoodsTime(Date planDeliverGoodsTime) {
+        this.planDeliverGoodsTime = planDeliverGoodsTime;
+    }
+
+    public Date getOrderTime() {
+        return orderTime;
+    }
+
+    public void setOrderTime(Date orderTime) {
+        this.orderTime = orderTime;
+    }
 
     /***/
     private List<WhOdoVasCommand> odoVasList;

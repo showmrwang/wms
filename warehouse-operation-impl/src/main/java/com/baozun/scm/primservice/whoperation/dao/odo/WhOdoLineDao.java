@@ -144,5 +144,19 @@ public interface WhOdoLineDao extends BaseDao<WhOdoLine, Long> {
      * @param ouId
      * @return
      */
-    List<WhWaveLine> findByOdoIdList(List<Long> odoIdList, Long ouId);
+    List<WhWaveLine> findByOdoIdList(@Param("odoIdList") List<Long> odoIdList, @Param("ouId") Long ouId);
+
+    /**
+     * 【业务方法】将出库单明细添加到波次中
+     * 
+     * @param odoIdList
+     * @param status
+     * @param code
+     * @param ouId
+     * @param userId
+     * @return
+     */
+    int updateOdoLineToWave(@Param("odoIdList") List<Long> odoIdList, @Param("status") String status, @Param("waveCode") String code, @Param("ouId") Long ouId, @Param("userId") Long userId);
+
+    List<OdoLineCommand> findOdoLineListToWaveByOdoIdListOuId(@Param("odoIdList") List<Long> odoIdList, @Param("ouId") Long ouId);
 }
