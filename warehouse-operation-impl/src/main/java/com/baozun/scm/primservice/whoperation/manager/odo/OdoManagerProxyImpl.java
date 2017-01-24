@@ -2259,7 +2259,7 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
         wave.setLifecycle(Constants.LIFECYCLE_START);
 
 
-        this.odoManager.createOdoWaveNew(wave, odoIdList);
+        this.odoManager.createOdoWaveNew(wave, master.getWaveTemplateId(), odoIdList);
         return waveCode;
     }
 

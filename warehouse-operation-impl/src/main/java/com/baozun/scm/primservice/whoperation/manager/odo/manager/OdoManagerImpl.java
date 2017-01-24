@@ -740,7 +740,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void createOdoWaveNew(WhWave wave, List<Long> odoIdList) {
+    public void createOdoWaveNew(WhWave wave, Long waveTemplateId, List<Long> odoIdList) {
         int batchCount = 500;
         int totalCount = odoIdList.size();
         int ceil = (int) Math.ceil((double) totalCount / batchCount);
@@ -783,6 +783,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
             wave.setTotalAmount(waveCommand.getTotalAmount());
             wave.setTotalSkuQty(waveCommand.getTotalSkuQty());
         }
+        wave.setPhaseCode(this.getWavePhaseCode(null, waveTemplateId, wave.getOuId()));
         // 插入波次
         this.whWaveDao.insert(wave);
         // 仓库中配货模式计算
