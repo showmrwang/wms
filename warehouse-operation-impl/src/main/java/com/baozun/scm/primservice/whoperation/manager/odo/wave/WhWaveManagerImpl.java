@@ -975,12 +975,17 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void addOdoLineToWaveNew(List<Long> odoIdList, WhWave wave) {
+        Date date1 = new Date();
+        log.info("operation:addOdoLineToWaveNew,time start at {},{} odo are ready to begin!", date1, odoIdList.size());
         Long userId = wave.getCreatedId();
         Long ouId = wave.getOuId();
 
+        Date date2 = new Date();
+        log.info("operation:addOdoLineToWaveNew,update odo_lines,time start at {}", date2);
         // 更新明细数量
         int updateCount = this.whOdoLineDao.updateOdoLineToWave(odoIdList, OdoStatus.ODOLINE_WAVE, wave.getCode(), ouId, userId);
-        System.out.println("更新数目：" + updateCount);
+        Date date3 = new Date();
+        log.info("operation:addOdoLineToWaveNew,update odo_lines,time end at {},cost time {},update {} counts", date3, date3.getTime() - date2.getTime(), updateCount);
         // 插入波次明细数量
         JoinPkCommand pkCommand = this.pkManager.generatePkList(Constants.WMS, Constants.WAVE_LINE_URL, updateCount);
         List<Long> idList = pkCommand.toArray();
@@ -1039,9 +1044,15 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
                 // this.whWaveLineDao.insert(waveLine);
             }
         }
+        Date date4 = new Date();
+        log.info("operation:addOdoLineToWaveNew,insert wave_lines,time start at {}", date4);
         // 批量插入
         int insertCount = this.whWaveLineDao.batchInsert(waveLineList);
         System.out.print("插入条目：" + insertCount);
+        Date date5 = new Date();
+        log.info("operation:addOdoLineToWaveNew,insert wave_lines,time end at {},costs {},update {} counts", date5, date5.getTime() - date4.getTime(), insertCount);
+        Date date6 = new Date();
+        log.info("operation:addOdoLineToWaveNew,time end at {},costs {}!", date6, date6.getTime() - date1.getTime());
     }
 
 
