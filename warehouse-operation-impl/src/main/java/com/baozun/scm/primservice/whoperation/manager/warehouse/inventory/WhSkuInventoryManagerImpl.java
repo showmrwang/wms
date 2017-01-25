@@ -4013,6 +4013,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             for (WhSkuInventoryCommand invCommand : skuInvs) {
                 Double onHandQtySingle = invCommand.getOnHandQty();
                 Double usableQtySingle = this.whSkuInventoryDao.getUseableQtyByUuid(invCommand.getUuid(), ouId);
+                if (usableQtySingle.doubleValue() == 0) {
+                    continue;
+                }
                 Double upperCounter;// 同UUID的可用数量
                 if (onHandQtySingle <= usableQtySingle) {
                     upperCounter = onHandQtySingle;
@@ -4057,6 +4060,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 
                 Double onHandQtySingle = invCommand.getOnHandQty();
                 Double usableQtySingle = this.whSkuInventoryDao.getUseableQtyByUuid(invCommand.getUuid(), ouId);
+                if (usableQtySingle.doubleValue() == 0) {
+                    continue;
+                }
                 Double upperCounter;// 同UUID的可用数量
                 if (onHandQtySingle <= usableQtySingle) {
                     upperCounter = onHandQtySingle;
