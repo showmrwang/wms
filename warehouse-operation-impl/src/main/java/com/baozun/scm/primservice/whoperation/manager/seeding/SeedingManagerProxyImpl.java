@@ -31,7 +31,6 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInven
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhSeedingCollectionManager;
-import com.baozun.scm.primservice.whoperation.model.seeding.WhSeedingWallLattice;
 import com.baozun.scm.primservice.whoperation.model.seeding.WhSeedingWallLatticeLine;
 import com.baozun.scm.primservice.whoperation.model.seeding.WhSeedingWallLatticeObb;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhSeedingCollection;
@@ -164,42 +163,7 @@ public class SeedingManagerProxyImpl extends BaseManagerImpl implements SeedingM
         return sownSkuCount;
     }
 
-    /**
-     * 将小批次下的出库单分别绑定货格，保存货格对应的出库单的头信息，扫描播种墙进入操作台后，初始化方法中调用，完成出库单和货格的绑定
-     * 
-     * @param whSeedingWallLattice
-     * @param facilityCode
-     * @param batchNo
-     * @param gridCode
-     * @param ouId
-     * @param logId
-     */
-    public void saveSeedingWallLatticeInfoToCache(WhSeedingWallLattice whSeedingWallLattice, String facilityCode, String batchNo, String gridCode, Long ouId, String logId) {
-        // Key：SEEDING-仓库ID-播种墙CODE-批次号-货格号
-        // Value：WhSeedingWallLattice
 
-        String cacheKey = CacheConstants.CACHE_ONE_WEEK + "-" + ouId + "-" + facilityCode + "-" + batchNo + "-" + gridCode;
-        cacheManager.setObject(cacheKey, whSeedingWallLattice, CacheConstants.CACHE_ONE_WEEK);
-    }
-
-    /**
-     * 小批次下的出库单分别绑定货格，扫描货格后通过该方法获得对应出库单头信息，得到出库单号之后再获取出库单明细信息
-     * 
-     * @param facilityCode
-     * @param batchNo
-     * @param gridCode
-     * @param ouId
-     * @param logId
-     * @return
-     */
-    public WhSeedingWallLattice getWhSeedingwallLatticeFromCache(String facilityCode, String batchNo, String gridCode, Long ouId, String logId) {
-        // Key：SEEDING-仓库ID-播种墙CODE-批次号-货格号
-        // Value：WhSeedingWallLattice
-
-        String cacheKey = CacheConstants.CACHE_ONE_WEEK + "-" + ouId + "-" + facilityCode + "-" + batchNo + "-" + gridCode;
-        WhSeedingWallLattice whSeedingWallLattice = cacheManager.getObject(cacheKey);
-        return whSeedingWallLattice;
-    }
 
     /**
      * 将小批次下的出库单绑定货格，保存出库单的明细信息，扫描播种墙进入操作台之后，初始化方法中调用，完成出库单明细和货格的绑定
