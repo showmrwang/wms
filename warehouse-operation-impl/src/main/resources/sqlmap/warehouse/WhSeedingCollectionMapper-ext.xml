@@ -194,4 +194,13 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			and s.collection_status = 1
 			and s.ou_id = #{ouId}
 	</select>
+
+    <select id="getSeedingCollectionByFacilityId" resultMap="WhSeedingCollectionResultExt">
+        select <include refid="whSeedingCollectionColumns"/>
+        from t_wh_seeding_collection
+        where facility_id = #{facilityId}
+        and ou_id = #{ouId}
+
+    </select>
+
 </mapper>

@@ -392,6 +392,9 @@ public class ErrorCodes {
     public static final int RCVD_CONTAINER_FINISH_ERROR = 10056;
     /** 没有可导出的数据 请刷新页面后重试 */
     public static final int EXPORT_EXCEL_NULL_ERROR = 10057;
+
+    /** 更新数据失败， 请重新尝试 **/
+    public static final int UPDATE_FAILURE = 11079;
     // 10001-20000 luyimin
 
 

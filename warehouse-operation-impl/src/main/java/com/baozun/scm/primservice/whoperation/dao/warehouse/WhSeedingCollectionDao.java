@@ -87,4 +87,12 @@ public interface WhSeedingCollectionDao extends BaseDao<WhSeedingCollection, Lon
 
 	int checkCountInDestination(@Param("batch") String batch, @Param("destinationType") Integer destinationType, @Param("ouId") Long ouId);
 
+    /**
+     * 获取播种墙集货信息
+     *
+     * @param facilityId
+     * @param ouId
+     * @return
+     */
+    public List<WhSeedingCollection> getSeedingCollectionByFacilityId(@Param("facilityId") Long facilityId, @Param("ouId") Long ouId);
 }
