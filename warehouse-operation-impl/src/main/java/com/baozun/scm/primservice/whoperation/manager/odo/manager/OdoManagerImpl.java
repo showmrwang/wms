@@ -688,7 +688,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
         //
         int batchCount = 500;
         int totalCount = odoIdList.size();
-        int ceil = (int) Math.ceil(totalCount / batchCount);
+        int ceil = (int) Math.ceil((double) totalCount / batchCount);
         //
         // 商品种类数
         int skuCategoryQty = Constants.DEFAULT_INTEGER;
