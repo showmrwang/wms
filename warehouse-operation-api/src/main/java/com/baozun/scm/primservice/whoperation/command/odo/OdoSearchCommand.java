@@ -37,6 +37,7 @@ public class OdoSearchCommand extends BaseCommand {
     private Integer includeFragileCargo;
     private List<String> crossDockingSysmbol;
     private Integer isWholeOrderOutbound;
+    private Integer isLocked;
     private String skuCode;
     private String skuName;
     private String skuBarCode;
@@ -738,6 +739,14 @@ public class OdoSearchCommand extends BaseCommand {
 
     public void setIsMerged(Integer isMerged) {
         this.isMerged = isMerged;
+    }
+
+    public Integer getIsLocked() {
+        return isLocked;
+    }
+
+    public void setIsLocked(Integer isLocked) {
+        this.isLocked = isLocked;
     }
 
 }

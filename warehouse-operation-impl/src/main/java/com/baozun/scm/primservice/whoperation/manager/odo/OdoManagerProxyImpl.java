@@ -2059,6 +2059,8 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
             OdoSearchCommand search = new OdoSearchCommand();
             BeanUtils.copyProperties(command, search);
             search.setLineFlag(true);
+            // @mender yimin.lu 2017/2/7 非锁定的出库单
+            search.setIsLocked(Constants.DEFAULT_INTEGER);
             if (StringUtils.hasText(command.getOdoStatus())) {
                 search.setOdoStatus(Arrays.asList(command.getOdoStatus().split(",")));
             }
