@@ -96,7 +96,7 @@ public class WarehouseManagerImpl extends BaseManagerImpl implements WarehouseMa
     @Override
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public Warehouse findWarehouseById(Long id) {
-        Warehouse wh = getWhToRedis(id);
+        Warehouse wh = this.warehouseDao.findWarehouseById(id);
         return wh;
     }
 
