@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import lark.common.annotation.MoreDB;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -26,6 +28,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryAllocatedCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
+import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.WavePhase;
 import com.baozun.scm.primservice.whoperation.constant.WaveStatus;
 import com.baozun.scm.primservice.whoperation.constant.WorkStatus;
@@ -147,6 +150,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
      * @return
      */
     @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void createReplenishmentWorkInWave(Long waveId, Long ouId, Long userId) {
         // 查询补货工作释放及拆分条件分组 -- 补货工作
         List<ReplenishmentRuleCommand> replenishmentRuleCommands = this.getInReplenishmentConditionGroup(waveId, ouId);
@@ -222,6 +226,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
      * @return
      */
     @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void createPickingWorkInWave(Long waveId, Long ouId, Long userId) {
         // 查询出小批次列表
         List<WhOdoOutBoundBox> whOdoOutBoundBoxList = this.getBoxBatchsForPicking(waveId, ouId);
@@ -281,7 +286,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
         }
         if(true == judge){
             WhWave whWave = this.getWhWaveHead(waveId, ouId);
-            whWave.setIsCreateReplenishedWork(true);;
+            whWave.setIsCreateReplenishedWork(true);
             this.updateWhWave(whWave);
         }
     }
@@ -294,6 +299,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
      * @return
      */
     @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void createReplenishmentWorkOutWave(Long ouId, Long userId) {
         // 查询补货工作释放及拆分条件分组 -- 补货工作
         List<ReplenishmentRuleCommand> replenishmentRuleCommands = this.getOutReplenishmentConditionGroup(ouId);
@@ -343,6 +349,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
      * @return
      */
     @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public WhWave getWhWaveHead(Long waveId, Long ouId) {
         // 获取波次头并校验波次信息
         if (null == waveId || null == ouId) {
@@ -372,6 +379,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
      * @return
      */
     @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<ReplenishmentRuleCommand> getInReplenishmentConditionGroup(Long waveId, Long ouId) {
         // 查询补货工作释放及拆分条件分组
         List<ReplenishmentRuleCommand> replenishmentRuleCommands = this.replenishmentRuleDao.getInReplenishmentConditionGroup(waveId, ouId);
@@ -386,6 +394,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
      * @return
      */
     @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<ReplenishmentRuleCommand> getOutReplenishmentConditionGroup(Long ouId) {
         // 查询补货工作释放及拆分条件分组
         List<ReplenishmentRuleCommand> replenishmentRuleCommands = this.replenishmentRuleDao.getOutReplenishmentConditionGroup(ouId);
@@ -399,6 +408,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
      * @return
      */
     @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<WhSkuInventoryAllocatedCommand> getInAllReplenishmentLst(ReplenishmentRuleCommand replenishmentRuleCommand) {
         // 根据补货工作释放及拆分条件获取所有补货数据
         List<WhSkuInventoryAllocatedCommand> skuInventoryAllocatedCommandLst = this.skuInventoryAllocatedDao.getInAllReplenishmentLst(replenishmentRuleCommand);
@@ -412,6 +422,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
      * @return
      */
     @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<WhSkuInventoryAllocatedCommand> getOutAllReplenishmentLst(ReplenishmentRuleCommand replenishmentRuleCommand) {
         // 根据补货工作释放及拆分条件获取所有补货数据
         List<WhSkuInventoryAllocatedCommand> skuInventoryAllocatedCommandLst = this.skuInventoryAllocatedDao.getOutAllReplenishmentLst(replenishmentRuleCommand);
@@ -426,6 +437,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
      * @return
      */
     @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<WhOdoOutBoundBox> getBoxBatchsForPicking(Long waveId, Long ouId) {
         // 查询波次中的所有小批次
         List<WhOdoOutBoundBox> whOdoOutBoundBoxList = this.odoOutBoundBoxDao.findPickingWorkWhOdoOutBoundBox(waveId, ouId);
@@ -440,6 +452,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
      * @return
      */
     @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<WhOdoOutBoundBox> getOdoOutBoundBoxForGroup(WhOdoOutBoundBox whOdoOutBoundBox) {
         List<WhOdoOutBoundBox> whOdoOutBoundBoxList = this.odoOutBoundBoxDao.getOdoOutBoundBoxForGroup(whOdoOutBoundBox);
         return whOdoOutBoundBoxList;
@@ -452,6 +465,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
      * @return
      */
     @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<WhOdoOutBoundBoxCommand> getOdoOutBoundBoxListByGroup(WhOdoOutBoundBox whOdoOutBoundBox) {
         List<WhOdoOutBoundBoxCommand> whOdoOutBoundBoxCommandList = this.odoOutBoundBoxDao.getOdoOutBoundBoxListByGroup(whOdoOutBoundBox);
         return whOdoOutBoundBoxCommandList;
@@ -465,6 +479,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
      * @return
      */
     @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public String savePickingWork(WhOdoOutBoundBox whOdoOutBoundBox, Long userId) {
         //查询波次头信息     
         if (null == whOdoOutBoundBox.getWaveId() || null == whOdoOutBoundBox.getOuId()) {
@@ -561,6 +576,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
      * @return
      */
     @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<WhSkuInventory> getSkuInventory(WhOdoOutBoundBoxCommand whOdoOutBoundBoxCommand) {
         WhOdo whOdo = this.odoDao.findByIdOuId(whOdoOutBoundBoxCommand.getOdoId(), whOdoOutBoundBoxCommand.getOuId());
         WhSkuInventory whSkuInventory = new WhSkuInventory();
@@ -578,6 +594,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
      * @return
      */
     @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<WhSkuInventoryTobefilled> getSkuInventoryTobefilled(WhOdoOutBoundBoxCommand whOdoOutBoundBoxCommand) {
         WhOdo whOdo = this.odoDao.findByIdOuId(whOdoOutBoundBoxCommand.getOdoId(), whOdoOutBoundBoxCommand.getOuId());
         WhSkuInventoryTobefilled whSkuInventoryTobefilled = new WhSkuInventoryTobefilled();
@@ -596,6 +613,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
      * @return
      */
     @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void savePickingWorkLine(WhOdoOutBoundBoxCommand whOdoOutBoundBoxCommand, List<WhSkuInventory> whSkuInventoryList, List<WhSkuInventoryTobefilled> whSkuInventoryTobefilledList, Long userId, String workCode) {
         //获取工作头信息        
         WhWorkCommand whWorkCommand = this.workDao.findWorkByWorkCode(workCode, whOdoOutBoundBoxCommand.getOuId());
@@ -827,6 +845,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
      * @return
      */
     @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void updatePickingWork(String workCode, WhOdoOutBoundBox odoOutBoundBox) {
         //获取工作头信息        
         WhWorkCommand whWorkCommand = this.workDao.findWorkByWorkCode(workCode, odoOutBoundBox.getOuId());
@@ -945,6 +964,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
      * @return
      */
     @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public String savePickingOperation(String workCode, WhOdoOutBoundBox whOdoOutBoundBox) {
       //获取工作头信息        
       WhWorkCommand whWorkCommand = this.workDao.findWorkByWorkCode(workCode, whOdoOutBoundBox.getOuId());
@@ -1021,6 +1041,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
      * @return
      */
     @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void savePickingOperationLine(String workCode, String operationCode, Long ouId) {
         //获取工作头信息        
         WhWorkCommand whWorkCommand = this.workDao.findWorkByWorkCode(workCode, ouId);
@@ -1124,6 +1145,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
      * @return
      */
     @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void updateWhOdoOutBoundBoxCommand(WhOdoOutBoundBoxCommand whOdoOutBoundBoxCommand) {
         WhOdoOutBoundBoxCommand odoOutBoundBoxCommand = this.odoOutBoundBoxDao.findWhOdoOutBoundBoxCommandById(whOdoOutBoundBoxCommand.getId(),whOdoOutBoundBoxCommand.getOuId());
         odoOutBoundBoxCommand.setIsCreateWork(true);
@@ -1143,6 +1165,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
      * @return
      */
     @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public Map<String, List<WhSkuInventoryAllocatedCommand>> getSkuInventoryAllocatedCommandForGroup(ReplenishmentRuleCommand replenishmentRuleCommand) {
         // 初始化分组MAP
         Map<String, List<WhSkuInventoryAllocatedCommand>> rMap = new HashMap<String, List<WhSkuInventoryAllocatedCommand>>();
@@ -1226,6 +1249,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
      * @return
      */
     @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public String saveReplenishmentWork(Long waveId, WhSkuInventoryAllocatedCommand skuInventoryAllocatedCommand, Long userId) {
         //查询波次头信息     
         if (null == waveId || null == skuInventoryAllocatedCommand.getOuId()) {
@@ -1337,6 +1361,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
      * @return
      */
     @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void saveReplenishmentWorkLine(String key, String replenishmentWorkCode, Long userId, WhSkuInventoryAllocatedCommand skuInventoryAllocatedCommand) {
         
         Boolean isWholeCase = false; 
@@ -1484,6 +1509,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
      * @return
      */
     @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void updateReplenishmentWork(Long waveId, String replenishmentWorkCode, WhSkuInventoryAllocatedCommand skuInventoryAllocatedCommand) {
         //获取工作头信息        
         WhWorkCommand whWorkCommand = this.workDao.findWorkByWorkCode(replenishmentWorkCode, skuInventoryAllocatedCommand.getOuId());
@@ -1604,6 +1630,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
      * @return
      */
     @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public String saveReplenishmentOperation(String key, String replenishmentWorkCode, WhSkuInventoryAllocatedCommand skuInventoryAllocatedCommand) {
 
         //获取工作头信息        
@@ -1705,6 +1732,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
      * @return
      */
     @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public int saveReplenishmentOperationLine(String replenishmentWorkCode, String replenishmentOperationCode, Long ouId, Double qty) {
         //获取工作头信息        
         WhWorkCommand whWorkCommand = this.workDao.findWorkByWorkCode(replenishmentWorkCode, ouId);
@@ -1816,6 +1844,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
      * @return
      */
     @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public String saveOutReplenishmentWork(WhSkuInventoryAllocatedCommand skuInventoryAllocatedCommand, Long userId) {
         //获取工作类型      
         WorkType workType = this.workTypeDao.findWorkTypeByworkCategory("REPLENISHMENT", skuInventoryAllocatedCommand.getOuId());
@@ -1915,6 +1944,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
      * @return
      */
     @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void updateOutReplenishmentWork(String replenishmentWorkCode, WhSkuInventoryAllocatedCommand skuInventoryAllocatedCommand) {
         //获取工作头信息        
         WhWorkCommand whWorkCommand = this.workDao.findWorkByWorkCode(replenishmentWorkCode, skuInventoryAllocatedCommand.getOuId());
@@ -2016,6 +2046,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
      * @return
      */
     @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public Double locationReplenishmentCalculation(WhSkuInventoryAllocatedCommand siaCommand, Long ouId) {
         String logId = "";
         Long locationId = siaCommand.getToLocationId();
@@ -2054,6 +2085,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
      * @return
      */
     @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void updateWhWave(WhWave whWave) {
         this.waveDao.update(whWave);
     }

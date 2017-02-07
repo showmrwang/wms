@@ -632,6 +632,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
     }
 
     @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<Long> getNeedPickingWorkWhWave(Long ouId) {
         List<Long> WaveIds = whWaveDao.getNeedPickingWorkWhWave(WaveStatus.WAVE_EXECUTING, WavePhase.CREATE_WORK, ouId);
         return WaveIds;
