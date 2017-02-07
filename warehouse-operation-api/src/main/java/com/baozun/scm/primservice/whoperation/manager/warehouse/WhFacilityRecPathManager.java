@@ -37,5 +37,5 @@ public interface WhFacilityRecPathManager extends BaseManager {
      * @param wh
      * @return
      */
-    RecFacilityPathCommand occupyFacilityAndlocationByFacilityGroup(WhOutboundFacilityGroup facilityGroup, WhFacilityRecPath prePath, RecFacilityPathCommand recFacilityPath, Warehouse wh);
+    void occupyFacilityAndlocationByFacilityGroup(WhOutboundFacilityGroup facilityGroup, WhFacilityRecPath prePath, RecFacilityPathCommand recFacilityPath, Warehouse wh);
 }
