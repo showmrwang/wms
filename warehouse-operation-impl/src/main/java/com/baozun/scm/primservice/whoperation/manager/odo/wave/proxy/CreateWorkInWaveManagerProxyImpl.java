@@ -316,7 +316,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
                 // 循环统计的分组补货信息列表
                 for(WhSkuInventoryAllocatedCommand skuInventoryAllocatedCommand : siacMap.get(key)){
                     // 判断分配量与待移入量是否相等
-                    if(skuInventoryAllocatedCommand.getQty() != skuInventoryAllocatedCommand.getToQty()){
+                    if(!skuInventoryAllocatedCommand.getQty().equals(skuInventoryAllocatedCommand.getToQty())){
                         log.error("qty != toQty, qty:{}, toQty:{}", skuInventoryAllocatedCommand.getQty(), skuInventoryAllocatedCommand.getToQty());
                     }
                     // 创建补货工作明细
@@ -1475,7 +1475,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
         //是否整托整箱
         whWorkLineCommand.setIsWholeCase(isWholeCase);  
         //出库单ID 
-        whWorkLineCommand.setOdoId(odo.getId());
+        whWorkLineCommand.setOdoId(odo == null ? null : odo.getId());
         //出库单明细ID 
         whWorkLineCommand.setOdoLineId(skuInventoryAllocatedCommand.getOccupationLineId());
         //创建时间 
