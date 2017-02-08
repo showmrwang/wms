@@ -75,6 +75,8 @@ public class WhSkuCommand extends BaseCommand {
     private Boolean isNeedTipSkuDefect;
     private String invType;
     private String invStatus;
+    private String invBatchNumber;
+    private String invCountryOfOrigin;
     private String invMfgDate;
     private String invExpDate;
     private String invAttr1;
@@ -369,6 +371,22 @@ public class WhSkuCommand extends BaseCommand {
 
     public void setInvStatus(String invStatus) {
         this.invStatus = invStatus;
+    }
+    
+    public String getInvBatchNumber() {
+        return invBatchNumber;
+    }
+
+    public void setInvBatchNumber(String invBatchNumber) {
+        this.invBatchNumber = invBatchNumber;
+    }
+
+    public String getInvCountryOfOrigin() {
+        return invCountryOfOrigin;
+    }
+
+    public void setInvCountryOfOrigin(String invCountryOfOrigin) {
+        this.invCountryOfOrigin = invCountryOfOrigin;
     }
 
     public String getInvMfgDate() {

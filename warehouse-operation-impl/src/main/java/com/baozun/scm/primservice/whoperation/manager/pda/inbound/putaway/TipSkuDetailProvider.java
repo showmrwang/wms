@@ -95,6 +95,54 @@ public final class TipSkuDetailProvider {
         }
         return ret;
     }
+    
+    public static boolean isTipSkuBatchNumber(String skuAttrId) {
+        boolean ret = false;
+        String[] values = skuAttrId.split(SkuCategoryProvider.DV);
+        String v = values[SkuCategoryProvider.IDX_BATCHNUMBER];
+        if (SkuCategoryProvider.PH.equals(v)) {
+            ret = false;
+        } else {
+            ret = true;
+        }
+        return ret;
+    }
+
+    public static String getSkuBatchNumber(String skuAttrId) {
+        String ret = null;
+        String[] values = skuAttrId.split(SkuCategoryProvider.DV);
+        String v = values[SkuCategoryProvider.IDX_BATCHNUMBER];
+        if (SkuCategoryProvider.PH.equals(v)) {
+            ret = null;
+        } else {
+            ret = v;
+        }
+        return ret;
+    }
+    
+    public static boolean isTipSkuCountryOfOrigin(String skuAttrId) {
+        boolean ret = false;
+        String[] values = skuAttrId.split(SkuCategoryProvider.DV);
+        String v = values[SkuCategoryProvider.IDX_COUNTRYOFORIGIN];
+        if (SkuCategoryProvider.PH.equals(v)) {
+            ret = false;
+        } else {
+            ret = true;
+        }
+        return ret;
+    }
+
+    public static String getSkuCountryOfOrigin(String skuAttrId) {
+        String ret = null;
+        String[] values = skuAttrId.split(SkuCategoryProvider.DV);
+        String v = values[SkuCategoryProvider.IDX_COUNTRYOFORIGIN];
+        if (SkuCategoryProvider.PH.equals(v)) {
+            ret = null;
+        } else {
+            ret = v;
+        }
+        return ret;
+    }
 
     public static boolean isTipSkuMfgDate(String skuAttrId) {
         boolean ret = false;
