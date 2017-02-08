@@ -799,4 +799,111 @@
 		</where>
 	</select>
 	
+	<update id="updateOdoLineAssignQtyIsZero">
+		update 
+			t_wh_odo_line l
+		set 
+			l.assign_qty = 0.0
+		where
+			l.odo_id = #{odoId}
+			and l.ou_id = #{ouId}
+	</update>
+	
+	<update id="updateOdoLineToWave">
+		update 
+			t_wh_odo_line 
+		set 
+			odo_line_status = #{status},
+			wave_code=#{waveCode},
+			last_modify_time=now(),
+			modified_id=#{userId}
+		where
+			ou_id=#{ouId} 
+	    	and odo_id in
+	    	<foreach collection="odoIdList" item="odoId" open="(" separator="," close=")">
+					#{odoId}
+			</foreach>
+	</update>
+	
+	
+	<sql id="whOdoLineColumnsExtForWave">
+        <![CDATA[ 
+                odoline.id as id,
+	        	odoline.odo_id as odoId,
+	        	odoline.linenum as linenum,
+	        	odoline.original_linenum as originalLinenum,
+	        	odoline.store_id as storeId,
+	        	odoline.ext_linenum as extLinenum,
+	        	odoline.sku_id as skuId,
+	        	odoline.sku_bar_code as skuBarCode,
+	        	odoline.sku_name as skuName,
+	        	odoline.ext_sku_name as extSkuName,
+	        	odoline.qty as qty,
+	        	odoline.plan_qty as planQty,
+	        	odoline.current_qty as currentQty,
+	        	odoline.actual_qty as actualQty,
+	        	odoline.cancel_qty as cancelQty,
+	        	odoline.assign_qty as assignQty,
+	        	odoline.dieking_qty as diekingQty,
+	        	odoline.line_price as linePrice,
+	        	odoline.line_amt as lineAmt,
+	        	odoline.odo_line_status as odoLineStatus,
+	        	odoline.is_check as isCheck,
+	        	odoline.full_line_outbound as fullLineOutbound,
+	        	odoline.part_outbound_strategy as partOutboundStrategy,
+	        	odoline.mfg_date as mfgDate,
+	        	odoline.exp_date as expDate,
+	        	odoline.min_exp_date as minExpDate,
+	        	odoline.max_exp_date as maxExpDate,
+	        	odoline.batch_number as batchNumber,
+	        	odoline.country_of_origin as countryOfOrigin,
+	        	odoline.inv_status as invStatus,
+	        	odoline.inv_type as invType,
+	        	odoline.inv_attr1 as invAttr1,
+	        	odoline.inv_attr2 as invAttr2,
+	        	odoline.inv_attr3 as invAttr3,
+	        	odoline.inv_attr4 as invAttr4,
+	        	odoline.inv_attr5 as invAttr5,
+	        	odoline.outbound_carton_type as outboundCartonType,
+	        	odoline.color as color,
+	        	odoline.style as style,
+	        	odoline.size as size,
+	        	odoline.mixing_attr as mixingAttr,
+	        	odoline.original_odo_code as originalOdoCode,
+	        	odoline.assign_fail_reason as assignFailReason,
+	        	odoline.is_assign_success as isAssignSuccess,
+	        	odoline.ou_id as ouId,
+	        	odoline.create_time as createTime,
+	        	odoline.created_id as createdId,
+	        	odoline.last_modify_time as lastModifyTime,
+	        	odoline.modified_id as modifiedId,
+	        	odoline.wave_code as waveCode,
+	        	odo.odo_code as odoCode,
+				odo.priority_level as priorityLevel,
+				mgmt.plan_deliver_goods_time as planDeliverGoodsTime,
+				odo.order_time as orderTime,
+				odo.store_id as storeId
+        ]]>
+	</sql>
+	
+	
+	 <select id="findOdoLineListToWaveByOdoIdListOuId" parameterType="map" resultMap="WhOdoLineResultExt" flushCache="false">
+        select
+        <include refid="whOdoLineColumnsExtForWave"/>
+        <![CDATA[
+                from t_wh_odo_line odoline
+                inner join t_wh_odo odo on odo.id=odoline.odo_id
+				left join t_wh_odo_transport_mgmt mgmt on mgmt.odo_id=odo.id
+                where 
+               odoline.ou_id =#{ouId}
+            ]]>
+            <if test="odoIdList!=null">
+				and odoline.odo_id in
+				<foreach collection="odoIdList" item="s" open="(" separator=","
+					close=")">
+					#{s}
+				</foreach>
+			</if>
+    </select>
+	
 </mapper>

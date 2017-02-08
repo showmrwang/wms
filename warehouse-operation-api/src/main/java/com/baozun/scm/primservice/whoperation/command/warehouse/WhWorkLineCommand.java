@@ -109,6 +109,8 @@ public class WhWorkLineCommand extends BaseCommand {
 	private java.lang.Long odoId;
 	/** 出库单明细ID */
 	private java.lang.Long odoLineId;
+	/** 补货单据号 */
+    private String replenishmentCode;
 	/** 创建时间 */
 	private java.util.Date createTime;
 	/** 最后操作时间 */
@@ -363,6 +365,12 @@ public class WhWorkLineCommand extends BaseCommand {
     }
     public void setUuid(java.lang.String uuid) {
         this.uuid = uuid;
+    }
+    public String getReplenishmentCode() {
+        return replenishmentCode;
+    }
+    public void setReplenishmentCode(String replenishmentCode) {
+        this.replenishmentCode = replenishmentCode;
     }
 }
 

@@ -79,6 +79,16 @@ public class OdoAddressCommand extends BaseCommand {
     /** 收货人分机号 */
     private String consigneeTargetTelephoneDivision;
 
+    private String odoExtCode;
+
+
+    public String getOdoExtCode() {
+        return odoExtCode;
+    }
+
+    public void setOdoExtCode(String odoExtCode) {
+        this.odoExtCode = odoExtCode;
+    }
 
     public String getConsigneeTargetTelephoneCode() {
         return consigneeTargetTelephoneCode;

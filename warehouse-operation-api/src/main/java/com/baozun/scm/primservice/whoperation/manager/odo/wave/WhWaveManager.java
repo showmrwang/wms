@@ -274,5 +274,36 @@ public interface WhWaveManager extends BaseManager {
      */
     public void cancelWaveWithWork(WhWave wave, ReplenishmentTask task, List<WhWork> workList, Set<Long> workToLazyCancelSet, List<WhOdo> odoList, Set<Long> odoToLazyFreeSet, Long userId);
 
+    /**
+     * [业务方法]查找延迟创建的波次
+     * 
+     * @param ouId
+     * @return
+     */
+    public List<WhWave> findWaveToBeCreated(Long ouId);
+
+    /**
+     * 【定时任务】创建波次完成
+     * 
+     * @param wave
+     */
+    public void finishCreateWave(WhWave wave);
+
+    /**
+     * 【定时任务】将数据插入到波次明细中
+     * 
+     * @param odoId
+     * @param wave
+     */
+    public void addOdoLineToWave(List<Long> odoIdList, WhWave wave);
+
+    /**
+     * 【定时任务】将数据插入到波次明细中(批量)
+     * 
+     * @param odoId
+     * @param wave
+     */
+    public void addOdoLineToWaveNew(List<Long> odoIdList, WhWave wave);
+
 
 }

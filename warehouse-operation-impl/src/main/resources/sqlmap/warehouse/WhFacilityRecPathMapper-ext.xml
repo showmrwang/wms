@@ -122,7 +122,9 @@
 			left join t_wh_container c on c.code = p.container_code
 		where 
 			p.container_code = #{containerCode}
-			and p.batch = #{batch}
+			<if test="batch != null and batch != ''">
+				and p.batch = #{batch}
+			</if>
 			and p.status = 1
 			and p.ou_id = #{ouId}
 	</select>
@@ -136,6 +138,7 @@
 			p.batch = #{batch}
 			and p.status = 1
 			and p.ou_id = #{ouId}
+			and p.temporary_storage_location_code is not null
 		group by 
 			p.temporary_storage_location_code
 	</select>
@@ -150,5 +153,67 @@
        		and ou_id = #{ouId}
        		and container_code = #{containerCode}
     </select>
-
+	
+	<select id="getRecommendSeedingWallCodeByBatch" resultType="string">
+		select
+			p.seedingwall_code as seedingwallCode
+		from
+			t_wh_facility_rec_path p
+		where
+			p.batch = #{batch}
+			and p.status = 1
+			and p.ou_id = #{ouId}
+			and p.seedingwall_code is not null
+		group by
+			p.seedingwall_code
+	</select>
+	
+	<select id="getRecommendTemporaryStorageLocationCodeByBatch" resultType="string">
+		select
+			p.temporary_storage_location_code as temporaryStorageLocationCode
+		from
+			t_wh_facility_rec_path p
+		where
+			p.batch = #{batch}
+			and p.status = 1
+			and p.ou_id = #{ouId}
+			and p.temporary_storage_location_code is not null
+		group by
+			p.temporary_storage_location_code
+	</select>
+	
+	<select id="getRecommendTransitLocationCodeByBatch" resultType="string">
+		select
+			p.transit_location_code as transitLocationCode
+		from
+			t_wh_facility_rec_path p
+		where
+			p.batch = #{batch}
+			and p.status = 1
+			and p.ou_id = #{ouId}
+			and p.transit_location_code is not null
+		group by
+			p.transit_location_code as transitLocationCode
+	</select>
+	
+	<select id="getBatchListByDestinationCode" resultType="string">
+		select
+			p.batch
+		from
+			t_wh_facility_rec_path p
+		where
+			p.status = 1
+			<if test="destinationType == 1">
+				and p.seedingwall_code = #{destinationCode}
+			</if>
+			<if test="destinationType == 2">
+				and p.temporary_storage_location_code = #{destinationCode}
+			</if>
+			<if test="destinationType == 3">
+				and p.transit_location_code = #{destinationCode}
+			</if>
+			and p.ou_id = #{ouId}
+		group by
+			p.batch
+	</select>
 </mapper>

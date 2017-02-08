@@ -58,8 +58,10 @@ public class WhOutboundFacility extends BaseModel {
 	private Integer lifecycle;
 	/** 仓库组织ID */
 	private Long ouId;
-    /** 仓库组织ID */
+    /** 状态 */
     private Integer status;
+    /** 占用batch */
+    private String batch;
 	//columns END
 	
 	public String getFacilityCode() {
@@ -154,6 +156,14 @@ public class WhOutboundFacility extends BaseModel {
 	}
 	public void setCheckCode(String checkCode) {
 		this.checkCode = checkCode;
+	}
+
+	public String getBatch() {
+		return batch;
+	}
+
+	public void setBatch(String batch) {
+		this.batch = batch;
 	}
 
 }

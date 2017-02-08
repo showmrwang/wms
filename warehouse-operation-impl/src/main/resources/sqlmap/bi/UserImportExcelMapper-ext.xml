@@ -75,7 +75,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		where 
 		id = #{id} 
 		and ou_id = #{ouid}
-		
+
     </select>
 	
 </mapper>

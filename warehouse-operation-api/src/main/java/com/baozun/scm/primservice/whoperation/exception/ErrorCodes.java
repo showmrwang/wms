@@ -392,6 +392,13 @@ public class ErrorCodes {
     public static final int RCVD_CONTAINER_FINISH_ERROR = 10056;
     /** 没有可导出的数据 请刷新页面后重试 */
     public static final int EXPORT_EXCEL_NULL_ERROR = 10057;
+    /** 找不到空闲可用的暂存库位 */
+    public static final int FACILITYMATCH_NO_TEMPORARYSTORAGELOCATION = 10058;
+    /** 找不到播种墙推荐路径 */
+    public static final int FACILITYMATCH_NO_FACILITYRECPATH = 10059;
+
+    /** 更新数据失败， 请重新尝试 **/
+    public static final int UPDATE_FAILURE = 11079;
     // 10001-20000 luyimin
 
 
@@ -773,5 +780,17 @@ public class ErrorCodes {
     public static final int COLLECTION_CONTAINER_NOT_IN_LOCATION = 80003;
     /** 该容器已扫描过 */
     public static final int COLLECTION_RECOMMEND_RESULT_REPEAT = 80004;
+    /** 该容器[{0}]与之前扫描的容器批次不同 */
+    public static final int COLLECTION_CONTAINER_BATCH_DIFFERENCE = 80005;
+    /** 没有需要操作的容器 */
+    public static final int COLLECTION_CONTAINER_QTY_IS_NULL = 80006;
+    /** 容器[{0}]不在已携带容器中 */
+    public static final int COLLECTION_CONTAINER_IS_NOT_IN_SCAN_LIST = 80007;
+    /** 请在播种墙,暂存库位,中转库位中扫描正确的设施编码 */
+    public static final int COLLECTION_DESTINATION_NOT_RIGHT = 80008;
+    /** 推荐失败无法携带 */
+    public static final int COLLECTION_RECOMMEND_RESULT_ERROR = 80009;
+    /** 系统错误,推荐结果不唯一 */
+    public static final int COLLECTION_RECOMMEND_RESULT_NOT_UNIQE = 80010;
 	// 80001-90000 zhukai
 }

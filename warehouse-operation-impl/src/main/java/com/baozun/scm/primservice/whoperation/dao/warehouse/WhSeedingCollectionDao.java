@@ -14,9 +14,8 @@
  */
 package com.baozun.scm.primservice.whoperation.dao.warehouse;
 
+import java.util.List;
 import java.util.Map;
-
-import org.apache.ibatis.annotations.Param;
 
 import lark.common.annotation.CommonQuery;
 import lark.common.annotation.QueryPage;
@@ -24,6 +23,8 @@ import lark.common.dao.Page;
 import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
+
+import org.apache.ibatis.annotations.Param;
 
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSeedingCollectionCommand;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhSeedingCollection;
@@ -60,14 +61,38 @@ public interface WhSeedingCollectionDao extends BaseDao<WhSeedingCollection, Lon
     @CommonQuery
     int saveOrUpdateByVersion(WhSeedingCollection o);
 
-	Integer getSeedingNumFromFacility(@Param("fid") Long fid, @Param("batch") String batch, @Param("ouId") Long ouId);
+    /**
+     * [通用方法] 找到当前工作下所有未被推荐的容器
+     * @param containerIdList
+     * @param ouId
+     * @return
+     */
+    List<Long> findNoRecByContainerList(@Param("containerIdList") List<Long> containerIdList, @Param("ouId") Long ouId);
 
-	WhSeedingCollectionCommand checkContainerCodeInSeedingCollection(@Param("containerCode") String containerCode, @Param("batch") String batch, @Param("ouId") Long ouId);
+    Integer getSeedingNumFromFacility(@Param("fid") Long fid, @Param("batch") String batch, @Param("ouId") Long ouId);
 
-	int checkBatchIsAllIntoSeedingWall(@Param("batch") String batch, @Param("ouId") Long ouId);
+    /**
+     * 通过容器号获取它的集货中状态
+     * @param containerCode
+     * @param ouId
+     * @return
+     */
+    WhSeedingCollectionCommand getSeedingCollectionByContainerCode(@Param("containerCode") String containerCode, @Param("ouId") Long ouId);
 
-	int updateContainerToSeedingWall(@Param("facilityId") Long facilityId, @Param("containerId") Long containerId, @Param("batch") String batch, @Param("ouId") Long ouId);
+    int checkBatchIsAllIntoSeedingWall(@Param("batch") String batch, @Param("ouId") Long ouId);
 
-	int deleteContainerInSeedingWall(@Param("containerId") Long containerId, @Param("batch") String batch, @Param("ouId") Long ouId);
+    int updateContainerToSeedingWall(@Param("facilityId") Long facilityId, @Param("containerId") Long containerId, @Param("batch") String batch, @Param("ouId") Long ouId);
 
+    int deleteContainerInSeedingWall(@Param("containerId") Long containerId, @Param("batch") String batch, @Param("ouId") Long ouId);
+
+	int checkCountInDestination(@Param("batch") String batch, @Param("destinationType") Integer destinationType, @Param("ouId") Long ouId);
+
+    /**
+     * 获取播种墙集货信息
+     *
+     * @param facilityId
+     * @param ouId
+     * @return
+     */
+    public List<WhSeedingCollection> getSeedingCollectionByFacilityId(@Param("facilityId") Long facilityId, @Param("ouId") Long ouId);
 }

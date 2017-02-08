@@ -32,9 +32,10 @@ public interface WhFacilityRecPathManager extends BaseManager {
      * 占用设备逻辑
      * 
      * @param facilityGroup
+     * @param prePath
      * @param recFacilityPath
      * @param wh
      * @return
      */
-    RecFacilityPathCommand occupyFacilityAndlocationByFacilityGroup(WhOutboundFacilityGroup facilityGroup, RecFacilityPathCommand recFacilityPath, Warehouse wh);
+    void occupyFacilityAndlocationByFacilityGroup(WhOutboundFacilityGroup facilityGroup, WhFacilityRecPath prePath, RecFacilityPathCommand recFacilityPath, Warehouse wh);
 }

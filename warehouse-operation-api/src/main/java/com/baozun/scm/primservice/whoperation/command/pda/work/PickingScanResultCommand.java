@@ -14,6 +14,10 @@ public class PickingScanResultCommand extends BaseCommand {
      */
     private static final long serialVersionUID = 5696756957904723061L;
 
+    
+    private Long workAreaId;
+    /** 小批次*/
+    private String batch;
     /**工作条码*/
     private String workBarCode;
     
@@ -850,4 +854,19 @@ public class PickingScanResultCommand extends BaseCommand {
     public void setReplenishWay(Integer replenishWay) {
         this.replenishWay = replenishWay;
     }
+    public String getBatch() {
+        return batch;
+    }
+    public void setBatch(String batch) {
+        this.batch = batch;
+    }
+    public Long getWorkAreaId() {
+        return workAreaId;
+    }
+    public void setWorkAreaId(Long workAreaId) {
+        this.workAreaId = workAreaId;
+    }
+    
+    
+    
 }

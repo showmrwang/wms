@@ -44,6 +44,10 @@ public class WhWave extends BaseModel {
     private Boolean isWeakAllocated;
     /** 硬分配阶段0：分配规则1：硬分配  默认为0*/
     private Integer allocatePhase = 0;
+    /** 是否创建拣货工作 */
+    private Boolean isCreatePickingWork;
+    /** 是否创建补货工作 */
+    private Boolean isCreateReplenishedWork;
     /** 开始运行时间 */
     private Date startTime;
     /** 结束运行时间 */
@@ -302,5 +306,20 @@ public class WhWave extends BaseModel {
         this.isRunWave = isRunWave;
     }
 
+    public Boolean getIsCreatePickingWork() {
+        return isCreatePickingWork;
+    }
+
+    public void setIsCreatePickingWork(Boolean isCreatePickingWork) {
+        this.isCreatePickingWork = isCreatePickingWork;
+    }
+
+    public Boolean getIsCreateReplenishedWork() {
+        return isCreateReplenishedWork;
+    }
+
+    public void setIsCreateReplenishedWork(Boolean isCreateReplenishedWork) {
+        this.isCreateReplenishedWork = isCreateReplenishedWork;
+    }
 
 }

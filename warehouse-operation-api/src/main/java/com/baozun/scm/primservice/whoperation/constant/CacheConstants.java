@@ -78,6 +78,8 @@ public final class CacheConstants {
     // pda拣货
     /***pda拣货和补货，作业明细统计*/
     public static final String OPERATIONLINE_STATISTICS = "OPERATIONLINE_STATISTICS";
+    /***pda补货，作业执行明细统计*/
+    public static final String OPERATIONEXEC_STATISTICS = "OPERATIONEXEC_STATISTICS";
 
 
     /***缓存库位*/
@@ -100,9 +102,18 @@ public final class CacheConstants {
     public static final String CACHE_TURNOVERBOX_IDS = "CACHE_TURNOVERBOX_IDS";
     /**缓存作业执行明细统计信息*/
     public static final String CACHE_OPERATION_EXEC_LINE = "CACHE_OPERATION_EXEC_LINE";
-
+    
+    /** 播种商品数据缓存 */
+    public static final String CACHE_SEEDING = "SEEDING";
+    
     // --------------------------------------------集货缓存--------------------------------------------
     /** 集货推荐结果缓存:前缀+USERID*/
     public static final String PDA_CACHE_COLLECTION_REC = "CACHE_COLLECTION_REC";
+    /** 人为集货扫描容器缓存 */
+    public static final String PDA_CACHE_MANUAL_COLLECTION_CONTAINER = "CACHE_MANUAL_COLLECTION_CONTAINER";
+    /** 未获得推荐结果的容器列表缓存:前缀+USERID*/
+    public static final String PDA_CACHE_COLLECTION_REC_FAIL = "CACHE_COLLECTION_REC_FAIL";
+    /** 人为集货-集货推荐结果缓存 */
+    public static final String PDA_CACHE_MANUAL_COLLECTION_REC = "CACHE_MANUAL_COLLECTION_REC";
 
 }

@@ -418,8 +418,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				and replenishTask.replenishment_code = invTobefilled.replenishment_code
 				and replenishTask.location_id = invTobefilled.location_id
 				and invAllocated.sku_id = invTobefilled.sku_id
-				and invAllocated.occupation_code = invTobefilled.occupation_code
-				and invAllocated.occupation_line_id = invTobefilled.occupation_line_id
 				and invAllocated.replenishment_rule_id = replenishRule.id
 				<if test="taskOuId!=null and taskOuId!=''">
 					and replenishTask.ou_id = #{taskOuId} 

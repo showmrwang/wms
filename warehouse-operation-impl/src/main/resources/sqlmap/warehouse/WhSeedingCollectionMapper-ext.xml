@@ -126,7 +126,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    ]]>
 		</select>	
 	
-	<select id="checkContainerCodeInSeedingCollection" resultMap="WhSeedingCollectionCommand">
+	<select id="getSeedingCollectionByContainerCode" resultMap="WhSeedingCollectionCommand">
 		select  
 			s.id as id,
         	s.facility_id as facilityId,
@@ -141,8 +141,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			left join t_wh_container c on s.container_id = c.id
 		where 
 			c.code = #{containerCode}
-			and s.batch = #{batch}
-			and IFNULL(s.collection_status, 0) != 10
+			and IFNULL(s.collection_status, 1) = 1
 			and s.ou_id = #{ouId}
 	</select>
 	
@@ -154,6 +153,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		where
 			s.batch = #{batch}
 			and (s.temporary_location_id is not null or s.location_id is not null)
+			and s.collection_status = 1
 			and s.ou_id = #{ouId}
 	</select>
 	
@@ -178,4 +178,29 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			and ou_id = #{ouId}
 	</delete>
 	
+	<select id="checkCountInDestination" resultType="int">
+		select
+			count(1)
+		from
+			t_wh_seeding_collection s
+		where
+			s.batch = #{batch}
+			<if test="destinationType != null and destinationType == 2">
+				and s.temporary_location_id is not null
+			</if>
+			<if test="destinationType != null and destinationType == 3">
+				and s.location_id is not null
+			</if>
+			and s.collection_status = 1
+			and s.ou_id = #{ouId}
+	</select>
+
+    <select id="getSeedingCollectionByFacilityId" resultMap="WhSeedingCollectionResultExt">
+        select <include refid="whSeedingCollectionColumns"/>
+        from t_wh_seeding_collection
+        where facility_id = #{facilityId}
+        and ou_id = #{ouId}
+
+    </select>
+
 </mapper>

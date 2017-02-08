@@ -26,8 +26,8 @@ import lark.orm.dao.supports.BaseDao;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationExecLineCommand;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationExecLine;
-
 
 
 
@@ -42,27 +42,44 @@ public interface WhOperationExecLineDao extends BaseDao<WhOperationExecLine, Lon
 
     @CommonQuery
     int saveOrUpdateByVersion(WhOperationExecLine o);
-    
+
+    /**
+     * [通用方法] 通过工作和组织找到执行明细列表
+     * @param batch
+     * @param ouId
+     * @return
+     */
+    List<WhOperationExecLineCommand> findCommandByWorkId(@Param("workId") Long workId, @Param("ouId") Long ouId);
+
+    /**
+     * [通用方法] 通过批次号和传入容器查找当前工作工作下的所有作业执行明细
+     * @param batch
+     * @param containerId
+     * @param ouId
+     * @return
+     */
+    List<WhOperationExecLineCommand> findCommandByBatchAndContainer(@Param("batch") String batch, @Param("containerId") Long containerId, @Param("ouId") Long ouId);
+
     /****
      * 校验作业执行明细
      * @param operationId
      * @param ouId
      * @return
      */
-    public List<WhOperationExecLine> checkOperationExecLine(@Param("operationId")Long operationId,@Param("ouId") Long ouId);
-    
-    
-    public WhOperationExecLine findOperationExecLine(@Param("ouId") Long ouId,@Param("id") Long id);
-    
+    public List<WhOperationExecLine> checkOperationExecLine(@Param("operationId") Long operationId, @Param("ouId") Long ouId);
+
+
+    public WhOperationExecLine findOperationExecLine(@Param("ouId") Long ouId, @Param("id") Long id);
+
     /***
      * 获取当前作业下的所有执行明细
      * @param operationId
      * @param ouId
      * @return
      */
-    public List<WhOperationExecLine> getOperationExecLine(@Param("operationId")Long operationId,@Param("ouId") Long ouId);
-    
-    
+    public List<WhOperationExecLine> getOperationExecLine(@Param("operationId") Long operationId, @Param("ouId") Long ouId);
+
+
     /***
      * /校验容器/出库箱库存与删除的拣货库位库存时否一致
      * @param operationId
@@ -71,5 +88,8 @@ public interface WhOperationExecLineDao extends BaseDao<WhOperationExecLine, Lon
      * @param containerLatticeNoList
      * @return
      */
-    public  List<WhOperationExecLine> checkContainerInventory(@Param("operationId")Long operationId,@Param("ouId") Long ouId,@Param("outerContainerId") Long outerContainerId,@Param("insideIdList") List<Long> insideIdList,@Param("containerLatticeNoList") List<Integer> containerLatticeNoList,@Param("outboundboxIdList") List<String> outboundboxIdList);
+    public List<WhOperationExecLine> checkContainerInventory(@Param("operationId") Long operationId, @Param("ouId") Long ouId, @Param("outerContainerId") Long outerContainerId, @Param("insideIdList") List<Long> insideIdList,
+            @Param("containerLatticeNoList") List<Integer> containerLatticeNoList, @Param("outboundboxIdList") List<String> outboundboxIdList);
+
+	Long getWorkIdByUseContainerId(@Param("batch") String batch, @Param("scanContainerId") Long scanContainerId, @Param("ouId") Long ouId);
 }

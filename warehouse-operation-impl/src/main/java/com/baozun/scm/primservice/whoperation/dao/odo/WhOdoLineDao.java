@@ -29,6 +29,7 @@ import org.apache.ibatis.annotations.Param;
 
 import com.baozun.scm.primservice.whoperation.command.odo.OdoLineCommand;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
+import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine;
 
 public interface WhOdoLineDao extends BaseDao<WhOdoLine, Long> {
 
@@ -127,4 +128,35 @@ public interface WhOdoLineDao extends BaseDao<WhOdoLine, Long> {
      * @return
      */
     Long findListCountNotNew(WhOdoLine line);
+    
+    /**
+     * 根据OdoId把明细的分配数量变成0
+     * @param odoId
+     * @param ouId
+     * @return
+     */
+	int updateOdoLineAssignQtyIsZero(@Param("odoId") Long odoId, @Param("ouId") Long ouId);
+
+    /**
+     * 【业务方法】根据出库单ID集合查找出库单明细
+     * 
+     * @param odoIdList
+     * @param ouId
+     * @return
+     */
+    List<WhWaveLine> findByOdoIdList(@Param("odoIdList") List<Long> odoIdList, @Param("ouId") Long ouId);
+
+    /**
+     * 【业务方法】将出库单明细添加到波次中
+     * 
+     * @param odoIdList
+     * @param status
+     * @param code
+     * @param ouId
+     * @param userId
+     * @return
+     */
+    int updateOdoLineToWave(@Param("odoIdList") List<Long> odoIdList, @Param("status") String status, @Param("waveCode") String code, @Param("ouId") Long ouId, @Param("userId") Long userId);
+
+    List<OdoLineCommand> findOdoLineListToWaveByOdoIdListOuId(@Param("odoIdList") List<Long> odoIdList, @Param("ouId") Long ouId);
 }

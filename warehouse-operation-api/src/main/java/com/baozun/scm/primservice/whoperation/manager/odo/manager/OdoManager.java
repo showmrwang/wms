@@ -8,10 +8,12 @@ import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 
 import com.baozun.scm.primservice.whoperation.command.odo.OdoCommand;
+import com.baozun.scm.primservice.whoperation.command.odo.OdoGroup;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoResultCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoSearchCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.OdoWaveGroupResultCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.OdoWaveGroupSearchCommand;
+import com.baozun.scm.primservice.whoperation.command.odo.wave.WaveCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.UomCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
@@ -118,10 +120,20 @@ public interface OdoManager extends BaseManager {
     /**
      * [业务方法]出库单分组列表
      * 
+     * @author yimin.lu 查询优化设置
      * @param command
      * @return
      */
     List<OdoResultCommand> findOdoCommandListForWave(OdoSearchCommand command);
+
+    /**
+     * [业务方法]出库单分组列表
+     * 
+     * @param command
+     * @return
+     */
+    List<Long> findOdoIdListForWave(OdoSearchCommand command);
+
 
     OdoWaveGroupResultCommand findOdoSummaryForWave(OdoWaveGroupSearchCommand command);
 
@@ -222,5 +234,33 @@ public interface OdoManager extends BaseManager {
     List<String> findDistinctCounterCode(Long ouId);
 
     List<Long> findOdoByCounterCode(String counterCode, Long ouId);
+
+    void createOdo(List<OdoGroup> groupList, Long ouId, Long userId);
+
+    /**
+     * 【业务方法】统计批量出库单数据的总金额，总件数，商品种类数，体积数目
+     * 
+     * @param odoIdList
+     * @return
+     */
+    WaveCommand findWaveSumDatabyOdoIdList(List<Long> odoIdList, Long ouId);
+
+    /**
+     * 【业务方法】延迟创建波次
+     * 
+     * @param wave
+     * @param waveTemplateId
+     * @param odoIdList
+     */
+    void createOdoWaveNew(WhWave wave, Long waveTemplateId, List<Long> odoIdList);
+
+    /**
+     * 【业务方法】查找延迟加入波次的出库单
+     * 
+     * @param waveCode
+     * @param ouId
+     * @return
+     */
+    List<Long> findOdoToBeAddedToWave(String waveCode, Long ouId);
 
 }

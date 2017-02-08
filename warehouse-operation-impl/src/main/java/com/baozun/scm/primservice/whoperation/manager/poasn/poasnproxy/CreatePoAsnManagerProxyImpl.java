@@ -117,6 +117,8 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
         if (null == po.getStatus()) {
             throw new BusinessException(ErrorCodes.PO_STATUS_IS_NULL);
         }
+        //
+
         // 验证是否是WMS内部创建还是上位系统同步的PO单
         if (!po.getIsWms()) {
             // false为 上位系统同步的PO单 需要验证poline的数据
@@ -322,7 +324,7 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
      * @param storeId
      * @return
      */
-    private String getAsnExtCode(Long ouId, Long storeId) {
+    private String getAsnExtCode(Long storeId, Long ouId) {
         String asnExtCode = null;
         boolean isSuccess = false;
         // 验证asnextcode是否存在 最多调用接口5次

@@ -5,7 +5,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 
 
 <mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.ReplenishmentTaskDao">
-	<resultMap id="ReplenishmentTaskResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentTask">
+	<resultMap id="replenishmentTaskResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentTask">
 	</resultMap>
 	
 	<!-- 用于select查询公用抽取的列 -->
@@ -71,23 +71,44 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
 	</sql>
 	
-
-		<update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentTask">
-		    <![CDATA[
-		        UPDATE t_wh_replenishment_task SET
-			        replenishment_code = #{replenishmentCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        wave_id = #{waveId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-			        location_id = #{locationId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-			        status = #{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-			        is_create_work = #{isCreateWork,javaType=java.lang.Boolean,jdbcType=BIT} ,
-			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-			        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-			        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} 
-		        WHERE 
-			        id = #{id} 
-			        and ou_id = #{ouId}
-			        and last_modify_time	<=  #{lastModifyTime}    
-		    ]]>
-		</update>
+	<update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentTask">
+	    <![CDATA[
+	        UPDATE t_wh_replenishment_task SET
+		        replenishment_code = #{replenishmentCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        wave_id = #{waveId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        location_id = #{locationId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        status = #{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        is_create_work = #{isCreateWork,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} 
+	        WHERE 
+		        id = #{id} 
+		        and ou_id = #{ouId}
+		        and last_modify_time	<=  #{lastModifyTime}    
+	    ]]>
+	</update>
+	
+	<select id="findReplenishmentTaskByCode" resultMap="replenishmentTaskResultExt">
+    	select 
+    		id as id,
+        	replenishment_code as replenishmentCode,
+        	wave_id as waveId,
+        	location_id as locationId,
+        	status as status,
+        	ou_id as ouId,
+        	is_create_work as isCreateWork,
+        	create_time as createTime,
+        	last_modify_time as lastModifyTime,
+        	operator_id as operatorId
+	    from 
+	    	t_wh_replenishment_task
+		<where> 
+				ou_id = #{ouId}
+			<if test="replenishmentCode!=null">
+				and replenishment_code = #{replenishmentCode}
+			</if>
+		</where>
+    </select>
 	
 </mapper>

@@ -71,5 +71,25 @@ public interface WhFacilityRecPathDao extends BaseDao<WhFacilityRecPath, Long> {
      * @return
      */
     WhFacilityRecPath findWhFacilityRecPathByBatchAndContainer(String batch, String containerCode, Long ouId);
+    
+    /**
+     * 根据批次获取推荐表中对应的路径code
+     * @param batch
+     */
+	String getRecommendSeedingWallCodeByBatch(@Param("batch") String batch, @Param("ouId") Long ouId);
+	
+	/**
+	 * 根据批次获取推荐表中对应的路径code
+	 * @param batch
+	 */
+	String getRecommendTemporaryStorageLocationCodeByBatch(@Param("batch") String batch, @Param("ouId") Long ouId);
+	
+	/**
+	 * 根据批次获取推荐表中对应的路径code
+	 * @param batch
+	 */
+	String getRecommendTransitLocationCodeByBatch(@Param("batch") String batch, @Param("ouId") Long ouId);
+
+	List<String> getBatchListByDestinationCode(@Param("destinationCode") String destinationCode, @Param("destinationType") Integer destinationType, @Param("ouId") Long ouId);
 
 }

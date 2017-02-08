@@ -43,6 +43,9 @@ public final class Constants {
     /** 调编码生成器Asn预约实体标识 */
     public static final String ASN_RESERVE_MODEL_URL = "com.baozun.scm.primservice.whinfo.model.warehouse.AsnReserve";
 
+    /** 波次明细 */
+    public static final String WAVE_LINE_URL = "com.baozun.scm.primservice.whinfo.model.odo.wave.WhWaveLine";
+
 
     /** 调编码生成器 ASN单WMS内部单号分组 */
     public static final String WMS_ASN_INNER = "WMS_ASN_INNER";
@@ -179,6 +182,7 @@ public final class Constants {
     /** 分配规则 */
     public static final String ALLOCATE_RULE = "ALLOCATE_RULE";
     public static final String ALLOCATE = "ALLOCATE";
+    public static final String WAVE_CREATE = "WAVE_CREATE";
 
     /** 分配策略 */
     public static final String ALLOCATE_STRATEGY = "ALLOCATE_STRATEGY";
@@ -590,6 +594,13 @@ public final class Constants {
     public static final int TEMPORARY_STORAGE_LOCATION = 2;
     /** 目标位置类型:中转库位*/
     public static final int TRANSIT_LOCATION = 3;
+
+    /** 播种墙容量满足一次移动所有容器*/
+    public static final int SEEDING_WALL_SUFFICIENT = 1;
+    /** 每次只能移动一个容器到播种墙*/
+    public static final int SEEDING_WALL_MOVE_ONE = 2;
+    /** 播种墙剩余容量不满足, 容器只能移到暂存库位*/
+    public static final int SEEDING_WALL_NOT_SUFFICIENT = 3;
 
 
 

@@ -54,7 +54,17 @@ public class WhOdoVasCommand extends BaseCommand {
     private String whVasTypeValue;
     /***/
     private Long id;
+    /***/
+    private String odoExtCode;
 
+
+    public String getOdoExtCode() {
+        return odoExtCode;
+    }
+
+    public void setOdoExtCode(String odoExtCode) {
+        this.odoExtCode = odoExtCode;
+    }
 
     public String getWhVasTypeValue() {
         return whVasTypeValue;

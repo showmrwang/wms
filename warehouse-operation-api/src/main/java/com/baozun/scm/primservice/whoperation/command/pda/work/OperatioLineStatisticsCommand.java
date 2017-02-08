@@ -22,7 +22,8 @@ public class OperatioLineStatisticsCommand extends BaseCommand{
     private static final long serialVersionUID = -9131853146971418614L;
 
     //columns START
-    
+    /** 小批次*/
+    private String batch;
     //流程相关统计信息 
     /** 是否整托整箱 */
     private Boolean isWholeCase;
@@ -46,13 +47,13 @@ public class OperatioLineStatisticsCommand extends BaseCommand{
     private Map<Long, Set<Long>> outerContainerIds = new HashMap<Long, Set<Long>>();
     /** 库位上所有内部容器 */
     private Map<Long, Set<Long>> insideContainerIds = new HashMap<Long, Set<Long>>();
-    /** 库位上所有sku */
+    /** 库位上所有sku(不在容器内，散装sku) */
     private Map<Long, Set<Long>> skuIds = new HashMap<Long, Set<Long>>();
-    /** 库位上每个sku总件数 */
+    /** 库位上每个sku总件数 (不在容器内，散装sku)*/
     private Map<Long, Map<Long, Long>> skuQty = new HashMap<Long, Map<Long, Long>>();
-    /** 库位上每个sku对应的唯一sku及件数 */
+    /** 库位上每个sku对应的唯一sku及件数 (不在容器内，散装sku)*/
     private Map<Long, Map<Long, Map<String, Long>>> skuAttrIds = new HashMap<Long, Map<Long, Map<String, Long>>>();
-    /** 库位上每个唯一sku对应的所有sn及残次条码 */
+    /** 库位上每个唯一sku对应的所有sn及残次条码 (不在容器内，散装sku)*/
     private Map<Long, Map<String, Set<String>>> skuAttrIdsSnDefect = new HashMap<Long, Map<String, Set<String>>>();
     /** 库位上每个唯一sku对应的货格（is_whole_case=0&&有小车&&库位上sku不在任何容器内） */
     private Map<Long, Map<String, Set<String>>> skuAttrIdsContainerLattice = new HashMap<Long, Map<String, Set<String>>>();
@@ -208,4 +209,12 @@ public class OperatioLineStatisticsCommand extends BaseCommand{
     public void setWorkLineIdToOnlySku(Map<String, String> workLineIdToOnlySku) {
         this.workLineIdToOnlySku = workLineIdToOnlySku;
     }
+    public String getBatch() {
+        return batch;
+    }
+    public void setBatch(String batch) {
+        this.batch = batch;
+    }
+    
+    
 }

@@ -51,11 +51,29 @@ public class WorkCollectionCommand extends BaseCommand {
     /** 是否是最后一箱*/
     private Boolean isLastContainer;
     /** 拣货容器列表*/
-    private List<Long> containerList;
+    private List<String> containerList;
+    /** 拣货容器id列表*/
+    private List<Long> containerIdList;
     /** 出库单列表*/
     private List<Long> odoIdList;
     /** 工作编码*/
     private String workCode;
+    /** 是否执行补偿机制*/
+    private Boolean isCompensation = true;
+    /** 是否是推荐播种墙逻辑[推荐播种墙和拣货集货用一套逻辑]*/
+    private Boolean isRecPath = true;
+    /** 是否重新执行推荐逻辑[补偿机制]*/
+    private Boolean restart = false;
+    /** 携带数量*/
+    private Integer carryQty = 0;
+    /** 单次最多携带容器数量*/
+    private Integer containerQty;
+    /** 播种墙容量上限*/
+    private Integer upperLimit;
+    /** 工作id*/
+    private Long workId;
+    /** 最后一个容器库位*/
+    private Long lastLocationId;
 
     public Long getOuId() {
         return ouId;
@@ -201,11 +219,11 @@ public class WorkCollectionCommand extends BaseCommand {
         this.isLastContainer = isLastContainer;
     }
 
-    public List<Long> getContainerList() {
+    public List<String> getContainerList() {
         return containerList;
     }
 
-    public void setContainerList(List<Long> containerList) {
+    public void setContainerList(List<String> containerList) {
         this.containerList = containerList;
     }
 
@@ -223,6 +241,78 @@ public class WorkCollectionCommand extends BaseCommand {
 
     public void setWorkCode(String workCode) {
         this.workCode = workCode;
+    }
+
+    public Boolean getIsCompensation() {
+        return isCompensation;
+    }
+
+    public void setIsCompensation(Boolean isCompensation) {
+        this.isCompensation = isCompensation;
+    }
+
+    public Boolean getIsRecPath() {
+        return isRecPath;
+    }
+
+    public void setIsRecPath(Boolean isRecPath) {
+        this.isRecPath = isRecPath;
+    }
+
+    public Boolean getRestart() {
+        return restart;
+    }
+
+    public void setRestart(Boolean restart) {
+        this.restart = restart;
+    }
+
+    public List<Long> getContainerIdList() {
+        return containerIdList;
+    }
+
+    public void setContainerIdList(List<Long> containerIdList) {
+        this.containerIdList = containerIdList;
+    }
+
+    public Integer getCarryQty() {
+        return carryQty;
+    }
+
+    public void setCarryQty(Integer carryQty) {
+        this.carryQty = carryQty;
+    }
+
+    public Integer getUpperLimit() {
+        return upperLimit;
+    }
+
+    public void setUpperLimit(Integer upperLimit) {
+        this.upperLimit = upperLimit;
+    }
+
+    public Integer getContainerQty() {
+        return containerQty;
+    }
+
+    public void setContainerQty(Integer containerQty) {
+        this.containerQty = containerQty;
+    }
+
+    public Long getWorkId() {
+        return workId;
+    }
+
+    public void setWorkId(Long workId) {
+        this.workId = workId;
+    }
+
+    public Long getLastLocationId() {
+        return lastLocationId;
+    }
+
+    public void setLastLocationId(Long lastLocationId) {
+        this.lastLocationId = lastLocationId;
     }
 
 }

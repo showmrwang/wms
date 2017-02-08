@@ -31,6 +31,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	phase_code as phaseCode,
 	        	is_weak_allocated as isWeakAllocated,
 	        	allocate_phase as allocatePhase,
+	        	is_create_picking_work as isCreatePickingWork,
+	        	is_create_replenished_work as isCreateReplenishedWork,
 	        	start_time as startTime,
 	        	finish_time as finishTime,
 	        	total_odo_qty as totalOdoQty,
@@ -276,6 +278,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        phase_code = #{phaseCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        is_weak_allocated = #{isWeakAllocated,javaType=java.lang.Boolean,jdbcType=BIT} ,
 			        allocate_phase = #{allocatePhase,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        is_create_picking_work = #{isCreatePickingWork,javaType=java.lang.Boolean,jdbcType=BIT} ,
+	        		is_create_replenished_work = #{isCreateReplenishedWork,javaType=java.lang.Boolean,jdbcType=BIT} ,
 			        start_time = #{startTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        finish_time = #{finishTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        total_odo_qty = #{totalOdoQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
@@ -559,6 +563,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			wave.id = #{waveId} and wave.ou_id = #{ouId}
     </select>
     
+    <select id="findWaveExtByIdAndOuIdAndLifecycle" resultMap="WhWaveResultExt">
+    	select 
+    		<include refid="whWaveColumnsExt" />
+	    from t_wh_wave wave 
+	    where 
+			wave.id = #{waveId} 
+		and wave.ou_id = #{ouId} 
+		and wave.lifecycle = #{lifecycle}
+    </select>
+    
     <select id="getNeedAllocationRuleWhWave" parameterType="map" resultType="long">
 		SELECT w.id 
 		FROM t_wh_wave w 
@@ -615,4 +629,5 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			and w.phase_code = #{phaseCode} 
 		    and w.ou_id = #{ouId}
 	</select>
+	
 </mapper>

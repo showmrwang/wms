@@ -16,6 +16,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		
 	<resultMap id="WhSkuInventoryCommandResultExt" type="com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand">
 	</resultMap>
+	<resultMap id="WhSeedingCollectionLineResult" type="com.baozun.scm.primservice.whoperation.model.warehouse.WhSeedingCollectionLine">
+	</resultMap>
 	
 	
 	<!-- 用于select查询公用抽取的列 -->
@@ -1567,7 +1569,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		       			 inbound_time = #{inboundTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		       		 	 last_modify_time = now() ,	
 	            	     container_lattice_no = #{containerLatticeNo,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-	            	     temporary_location_id = #{temporaryLocationId,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+	            	     temporary_location_id = #{temporaryLocationId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	            	     outboundbox_code = #{outboundboxCode,javaType=java.lang.String,jdbcType=VARCHAR}
 	        WHERE 
 		        id = #{id} 
@@ -3236,5 +3238,49 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			    and operLine.odo_line_id = #{odoLineId}
 	            and inv.location_id = #{locationId}
 	            and operLine.odo_id = #{odoId}
+	</select>
+	
+	<select id="findSeedingDataByContainerId" resultMap="WhSeedingCollectionLineResult">
+		select
+			inv.sku_id as skuId,
+			sku. code as skuCode,
+			sku.ext_code as skuExtCode,
+			sku.bar_code as skuBarCode,
+			sku. name as skuName,
+			c.customer_code as customerCode,
+			c.customer_name as customerName,
+			inv.store_id as storeId,
+			store.store_code as storeCode,
+			store.store_name as storeName,
+			sum(inv.on_hand_qty) as qty,
+			inv.inv_status as invStatus,
+			inv.inv_type as invType,
+			inv.batch_number as batchNumber,
+			str_to_date(date_format(inv.mfg_date,'%Y-%m-%d'),'%Y-%m-%d') as mfgDate,
+			str_to_date(date_format(inv.exp_date,'%Y-%m-%d'),'%Y-%m-%d') as expDate,
+			inv.country_of_origin as countryOfOrigin,
+			inva1.dic_label as invAttr1,
+			inva2.dic_label as invAttr2,
+			inva3.dic_label as invAttr3,
+			inva4.dic_label as invAttr4,
+			inva5.dic_label as invAttr5,
+			inv.uuid as uuid,
+			inv.ou_id as ouId
+		from
+			t_wh_sku_inventory inv
+			left join t_wh_sku sku on sku.id = inv.sku_id
+			left join t_bi_store store on store.id = inv.store_id
+			left join t_bi_customer c on c.id = inv.customer_id
+			left join sys_dictionary inva1 on inv.inv_attr1 = inva1.dic_value and inva1.group_value = 'INVENTORY_ATTR_1' 
+			left join sys_dictionary inva2 on inv.inv_attr2 = inva2.dic_value and inva2.group_value = 'INVENTORY_ATTR_2' 
+			left join sys_dictionary inva3 on inv.inv_attr3 = inva3.dic_value and inva3.group_value = 'INVENTORY_ATTR_3' 
+			left join sys_dictionary inva4 on inv.inv_attr4 = inva4.dic_value and inva4.group_value = 'INVENTORY_ATTR_4' 
+			left join sys_dictionary inva5 on inv.inv_attr5 = inva5.dic_value and inva5.group_value = 'INVENTORY_ATTR_5' 
+		where
+			inv.inside_container_id = #{containerId}
+			and inv.ou_id = #{ouId}
+		GROUP BY
+			inv.sku_id,
+			inv.uuid	
 	</select>
 </mapper>

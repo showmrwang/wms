@@ -23,14 +23,17 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.baozun.scm.primservice.whoperation.command.odo.OdoCommand;
+import com.baozun.scm.primservice.whoperation.command.odo.OdoGroup;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoResultCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoSearchCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.OdoWaveGroupResultCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.OdoWaveGroupSearchCommand;
+import com.baozun.scm.primservice.whoperation.command.odo.wave.WaveCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.UomCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
+import com.baozun.scm.primservice.whoperation.dao.localauth.OperUserDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoAddressDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineDao;
@@ -45,6 +48,7 @@ import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy.DistributionModeArithmeticManagerProxy;
+import com.baozun.scm.primservice.whoperation.model.localauth.OperUser;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAddress;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
@@ -84,6 +88,8 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     @Autowired
     private WhWaveLineDao whWaveLineDao;
     @Autowired
+    private OperUserDao operUserDao;
+    @Autowired
     private DistributionModeArithmeticManagerProxy distributionModeArithmeticManagerProxy;
 
     @Override
@@ -107,7 +113,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                 Set<String> dic12 = new HashSet<String>();
                 Set<Long> customerIdSet = new HashSet<Long>();
                 Set<Long> storeIdSet = new HashSet<Long>();
-                Set<Long> userIdSet = new HashSet<Long>();
+                Set<String> userIdSet = new HashSet<String>();
                 if (list != null && list.size() > 0) {
                     for (OdoResultCommand command : list) {
                         if (StringUtils.hasText(command.getIsWholeOrderOutbound())) {
@@ -160,14 +166,25 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                             storeIdSet.add(Long.parseLong(command.getStoreId()));
                         }
                         if (StringUtils.hasText(command.getCreateId())) {
-                            userIdSet.add(Long.parseLong(command.getCreateId()));
+                            userIdSet.add(command.getCreateId());
                         }
                         if (StringUtils.hasText(command.getModifiedId())) {
-                            userIdSet.add(Long.parseLong(command.getModifiedId()));
+                            userIdSet.add(command.getModifiedId());
                         }
                         if (StringUtils.hasText(command.getOrderType())) {
                             dic12.add(command.getOrderType());
                         }
+                    }
+                    //查找用户
+                    Map<String, String> userMap = new HashMap<String, String>();
+                    if (userIdSet.size() > 0) {
+                        Iterator<String> userIt = userIdSet.iterator();
+                        while (userIt.hasNext()) {
+                            String id = userIt.next();
+                            OperUser user = this.operUserDao.findById(Long.parseLong(id));
+                            userMap.put(id, user == null ? id : user.getUserName());
+                        }
+
                     }
                     Map<String, List<String>> map = new HashMap<String, List<String>>();
                     map.put(Constants.IS_WHOLE_ORDER_OUTBOUND, new ArrayList<String>(dic1));
@@ -246,6 +263,14 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                         if (StringUtils.hasText(command.getStoreId())) {
                             Store store = storeMap.get(Long.parseLong(command.getStoreId()));
                             command.setStoreName(store == null ? command.getStoreId() : store.getStoreName());
+                        }
+                        if (StringUtils.hasText(command.getCreateId())) {
+
+                            command.setCreatedName(userMap.get(command.getCreateId()));
+                        }
+                        if (StringUtils.hasText(command.getModifiedId())) {
+
+                            command.setModifiedName(userMap.get(command.getModifiedId()));
                         }
                     }
                     pages.setItems(list);
@@ -414,6 +439,12 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     public List<OdoResultCommand> findOdoCommandListForWave(OdoSearchCommand command) {
 
         return this.whOdoDao.findCommandListForWave(command);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<Long> findOdoIdListForWave(OdoSearchCommand command) {
+        return this.whOdoDao.findOdoIdListForWave(command);
     }
 
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
@@ -637,8 +668,134 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     }
 
     @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<Long> findOdoByCounterCode(String counterCode, Long ouId) {
         return this.whOdoDao.findOdoByCounterCode(counterCode, ouId);
     }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void createOdo(List<OdoGroup> groupList, Long ouId, Long userId) {
+        for (OdoGroup group : groupList) {
+            this.createOdo(group.getOdo(), group.getOdoLineList(), group.getTransportMgmt(), group.getWhOdoAddress(), group.getOdoVasList(), group.getLineSnList(), ouId, userId);
+        }
+
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public WaveCommand findWaveSumDatabyOdoIdList(List<Long> odoIdList, Long ouId) {
+        //
+        int batchCount = 500;
+        int totalCount = odoIdList.size();
+        int ceil = (int) Math.ceil((double) totalCount / batchCount);
+        //
+        // 商品种类数
+        int skuCategoryQty = Constants.DEFAULT_INTEGER;
+        // 总体积
+        double totalVolume = Constants.DEFAULT_DOUBLE;
+        // 总重量
+        double totalWeight = Constants.DEFAULT_DOUBLE;
+        // 波次明细数
+        int totalOdoLineQty = Constants.DEFAULT_INTEGER;
+        // 总金额
+        double totalAmount = Constants.DEFAULT_DOUBLE;
+        // 商品总件数
+        double totalSkuQty = Constants.DEFAULT_DOUBLE;
+        for (int i = 0; i < ceil; i++) {
+            List<Long> subList = null;
+            if (ceil == 1) {
+                subList = odoIdList;
+            } else {
+                int fromIndex = batchCount * i;
+                int toIndex = batchCount * (i + 1);
+                if (totalCount < toIndex) {
+                    toIndex = totalCount;
+                }
+                if (fromIndex == 0) {
+                    subList = odoIdList.subList(0, toIndex);
+                } else {
+                    subList = odoIdList.subList(fromIndex + 1, toIndex);
+                }
+            }
+            WaveCommand waveCommand = this.whOdoDao.findWaveSumDatabyOdoIdList(subList, ouId);
+
+            skuCategoryQty += waveCommand.getSkuCategoryQty();
+            totalVolume += waveCommand.getTotalVolume();
+            totalWeight += waveCommand.getTotalWeight();
+            totalOdoLineQty += waveCommand.getTotalOdoLineQty();
+            totalAmount += waveCommand.getTotalAmount();
+            totalSkuQty += waveCommand.getTotalSkuQty();
+
+        }
+        WaveCommand waveCommand = new WaveCommand();
+        waveCommand.setSkuCategoryQty(skuCategoryQty);
+        waveCommand.setTotalVolume(totalVolume);
+        waveCommand.setTotalWeight(totalWeight);
+        waveCommand.setTotalOdoLineQty(totalOdoLineQty);
+        waveCommand.setTotalAmount(totalAmount);
+        waveCommand.setTotalSkuQty(totalSkuQty);
+        return waveCommand;
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void createOdoWaveNew(WhWave wave, Long waveTemplateId, List<Long> odoIdList) {
+        int batchCount = 500;
+        int totalCount = odoIdList.size();
+        int ceil = (int) Math.ceil((double) totalCount / batchCount);
+        Long ouId = wave.getOuId();
+        for (int i = 0; i < ceil; i++) {
+            List<Long> subList = null;
+            if (ceil == 1) {
+                subList = odoIdList;
+            } else {
+                int fromIndex = batchCount * i;
+                int toIndex = batchCount * (i + 1);
+                if (totalCount < toIndex) {
+                    toIndex = totalCount;
+                }
+                if (fromIndex == 0) {
+                    subList = odoIdList.subList(0, toIndex);
+                } else {
+                    subList = odoIdList.subList(fromIndex, toIndex);
+                }
+            }
+            int updateOdoCount = this.whOdoDao.addOdoToWave(subList, wave.getOuId(), wave.getCreatedId(), wave.getCode(), OdoStatus.ODO_WAVE);
+
+        }
+
+        List<String> odoIdCounterCodeList = this.whOdoDao.findOdoIdCounterCodebyWaveCode(wave.getCode(), wave.getOuId());
+        Map<Long, String> odoIdCounterCodeMap = new HashMap<Long, String>();
+        List<Long> waveOdoIdList = new ArrayList<Long>();
+        if (odoIdCounterCodeList != null && odoIdCounterCodeList.size() > 0) {
+            for (String str : odoIdCounterCodeList) {
+                String[] arr = str.split("_");
+                odoIdCounterCodeMap.put(Long.parseLong(arr[0]), arr[1]);
+                waveOdoIdList.add(Long.parseLong(arr[0]));
+            }
+            // 出库单头计算
+            WaveCommand waveCommand = this.findWaveSumDatabyOdoIdList(waveOdoIdList, ouId);
+            wave.setSkuCategoryQty(waveCommand.getSkuCategoryQty());
+            wave.setTotalVolume(waveCommand.getTotalVolume());
+            wave.setTotalWeight(waveCommand.getTotalWeight());
+            wave.setTotalOdoLineQty(waveCommand.getTotalOdoLineQty());
+            wave.setTotalAmount(waveCommand.getTotalAmount());
+            wave.setTotalSkuQty(waveCommand.getTotalSkuQty());
+        }
+        wave.setPhaseCode(this.getWavePhaseCode(null, waveTemplateId, wave.getOuId()));
+        // 插入波次
+        this.whWaveDao.insert(wave);
+        // 仓库中配货模式计算
+        // this.distributionModeArithmeticManagerProxy.AddToWave(odoIdCounterCodeMap);
+
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<Long> findOdoToBeAddedToWave(String waveCode, Long ouId) {
+        return this.whOdoDao.findOdoToBeAddedToWave(waveCode, ouId);
+    }
+
 
 }

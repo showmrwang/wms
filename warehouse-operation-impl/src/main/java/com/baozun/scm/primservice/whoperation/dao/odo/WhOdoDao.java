@@ -33,6 +33,7 @@ import com.baozun.scm.primservice.whoperation.command.odo.OdoResultCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoSearchCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.OdoWaveGroupResultCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.OdoWaveGroupSearchCommand;
+import com.baozun.scm.primservice.whoperation.command.odo.wave.WaveCommand;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 
 public interface WhOdoDao extends BaseDao<WhOdo, Long> {
@@ -159,6 +160,7 @@ public interface WhOdoDao extends BaseDao<WhOdo, Long> {
 
     List<OdoResultCommand> findCommandListForWave(OdoSearchCommand command);
 
+
     /**
      * [业务方法]获取创建波次的查询条件
      * 
@@ -168,6 +170,8 @@ public interface WhOdoDao extends BaseDao<WhOdo, Long> {
     OdoWaveGroupResultCommand findOdoSummaryForWave(OdoWaveGroupSearchCommand command);
 
     List<WhOdo> findListForWave(OdoSearchCommand search);
+
+    List<Long> findOdoIdListForWave(OdoSearchCommand command);
 
     List<WhOdo> findByIdsAndOuId(List<String> odoIds, Long ouId, Integer option);
 
@@ -212,5 +216,26 @@ public interface WhOdoDao extends BaseDao<WhOdo, Long> {
      * @return
      */
     List<Long> findOdoByCounterCode(@Param("counterCode") String counterCode, @Param("ouId") Long ouId);
+
+    /**
+     * [业务方法]
+     * 
+     * @param subList
+     * @return
+     */
+    WaveCommand findWaveSumDatabyOdoIdList(@Param("odoIdList") List<Long> subList, @Param("ouId") Long ouId);
+
+    int addOdoToWave(@Param("odoIdList") List<Long> subList, @Param("ouId") Long ouId, @Param("userId") Long userId, @Param("waveCode") String code, @Param("odoStatus") String odoStatus);
+
+    List<Long> findOdoToBeAddedToWave(@Param("waveCode") String waveCode, @Param("ouId") Long ouId);
+
+    /**
+     * [业务方法] 根据波次号查找出库单，返回 odoId-counterCode
+     * 
+     * @param code
+     * @param ouId
+     * @return
+     */
+    List<String> findOdoIdCounterCodebyWaveCode(@Param("waveCode") String code, @Param("ouId") Long ouId);
 
 }

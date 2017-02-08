@@ -189,5 +189,17 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			</if>
 		</where>
     </select>
-	
+
+	<select id="getOdoIdListByBatch" resultType="long">
+		select
+			l.odo_id
+		from
+			t_wh_work w
+			left join t_wh_work_line l on w.id = l.work_id
+		where
+			w.batch = #{batch}
+			and w.ou_id = #{ouId}
+		group by
+			l.odo_id
+	</select>
 </mapper>

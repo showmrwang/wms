@@ -18,6 +18,7 @@ import com.baozun.scm.primservice.whoperation.manager.rule.RuleManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WarehouseManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhFacilityRecPathManager;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhFacilityQueue;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFacilityRecPath;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundFacilityGroup;
 
@@ -33,6 +34,7 @@ public class WaveFacilityManagerProxyImpl extends BaseManagerImpl implements Wav
     private WhWaveManager whWaveManager;
     @Autowired
     private WhFacilityRecPathManager whFacilityRecPathManager;
+
     @Override
     public RecFacilityPathCommand matchOutboundFacility(RecFacilityPathCommand recFacilityPath) {
         // 校验传入参数
@@ -66,33 +68,51 @@ public class WaveFacilityManagerProxyImpl extends BaseManagerImpl implements Wav
      * @param whSeedingWallRule
      */
     private RecFacilityPathCommand matchSeedingWallWhenSeeding(Warehouse wh, RecFacilityPathCommand recFacilityPath) {
-        Long ouId = wh.getId();
-        String batch = recFacilityPath.getBatch();
-        String containerCode = recFacilityPath.getContainerCode();
-        // 是否已有推荐成功的箱信息
-        // 规则
-        RuleAfferCommand ruleAffer = new RuleAfferCommand();
-        ruleAffer.setSeedingWallOdoIdList(recFacilityPath.getOdoIdList());
-        ruleAffer.setOuid(ouId);
-        RuleExportCommand export = this.ruleManager.ruleExport(ruleAffer);
-        WhSeedingWallRuleCommand whSeedingWallRule = export.getWhSeedingWallRuleCommand();
-        if (whSeedingWallRule == null) {
-            return null;
+
+        try {
+            Long ouId = wh.getId();
+            String batch = recFacilityPath.getBatch();
+            List<Long> odoIdList = recFacilityPath.getOdoIdList();
+            // 是否已有推荐成功的箱信息
+            // 规则
+            RuleAfferCommand ruleAffer = new RuleAfferCommand();
+            ruleAffer.setSeedingWallOdoIdList(odoIdList);
+            ruleAffer.setOuid(ouId);
+            RuleExportCommand export = this.ruleManager.ruleExport(ruleAffer);
+            WhSeedingWallRuleCommand whSeedingWallRule = export.getWhSeedingWallRuleCommand();
+            if (whSeedingWallRule == null) {
+                recFacilityPath.setStatus(0);
+                return recFacilityPath;
+            }
+            List<WhFacilityRecPath> pathList = this.whFacilityRecPathManager.findWhFacilityRecPathByBatchAndContainer(batch, null, ouId);
+            WhFacilityRecPath prePath = null;
+            if (pathList != null && pathList.size() > 0) {// 存在推荐成功的信息
+                prePath = pathList.get(0);
+            }
+            // 模式
+            if (StringUtils.isEmpty(wh.getSeedingMode())) {
+                recFacilityPath.setStatus(0);
+                return recFacilityPath;
+            }
+            // 播种墙组
+            WhOutboundFacilityGroup facilityGroup = this.whFacilityRecPathManager.findOutboundFacilityGroupById(whSeedingWallRule.getOutboundFacilityGroupId(), ouId);
+            if (facilityGroup == null) {
+                recFacilityPath.setStatus(0);
+                return recFacilityPath;
+            }
+
+            this.whFacilityRecPathManager.occupyFacilityAndlocationByFacilityGroup(facilityGroup, prePath, recFacilityPath, wh);
+        } catch (Exception e) {
+            recFacilityPath.setStatus(0);
+            return recFacilityPath;
         }
-        List<WhFacilityRecPath> pathList = this.whFacilityRecPathManager.findWhFacilityRecPathByBatchAndContainer(batch, containerCode, ouId);
-        if (pathList != null && pathList.size() > 0) {// 存在推荐成功的想信息
-            return null;
-        }
-        // 模式
-        if (StringUtils.isEmpty(wh.getSeedingMode())) {
-            return null;
-        }
-        // 播种墙组
-        WhOutboundFacilityGroup facilityGroup = this.whFacilityRecPathManager.findOutboundFacilityGroupById(whSeedingWallRule.getOutboundFacilityGroupId(), ouId);
-        if (facilityGroup == null) {
-            return null;
-        }
-        return this.whFacilityRecPathManager.occupyFacilityAndlocationByFacilityGroup(facilityGroup, recFacilityPath, wh);
+        recFacilityPath.setStatus(1);
+        return recFacilityPath;
+    }
+
+    @Override
+    public void matchSeedingWalBySortQueue(WhFacilityQueue queue) {
+
     }
 
 }

@@ -19,7 +19,9 @@
 	<resultMap id="OdoWaveGroupResultCommand"
 		type="com.baozun.scm.primservice.whoperation.command.odo.wave.OdoWaveGroupResultCommand">
 	</resultMap>
-
+	<resultMap id="OdoWaveCommand"
+			type="com.baozun.scm.primservice.whoperation.command.odo.wave.WaveCommand">
+		</resultMap>
 
 	<!-- 用于select查询公用抽取的列 -->
 	<sql id="whOdoColumnsExt">
@@ -394,6 +396,9 @@
 			<if test="isWholeOrderOutbound!=null">
 				and odo.is_whole_order_outbound=#{isWholeOrderOutbound}
 			</if>
+			<if test="isLocked!=null">
+				and odo.is_locked=#{isLocked}
+			</if>
 			<if test="isExceptionOrder!=null and isExceptionOrder == 1">
 				and odo.is_assign_success = 0
 			</if>
@@ -557,7 +562,7 @@
 	</sql>
 	<select id="findListCountByQueryMapExt" resultType="long">
 		SELECT
-		count(*)
+		count(1)
 		from t_wh_odo odo
 		left join t_wh_odo_address address on
 		address.odo_id=odo.id
@@ -567,15 +572,10 @@
 		on transmgmt.transport_service_provider=transprovider.code
 		left join
 		t_ma_transport_service_type transType on
-		transType.tp_id=transprovider.id and
-		transType.code=transmgmt.courier_service_type
+		transType. CODE = transmgmt.courier_service_type and transType.tp_id = transprovider.id 
 		left join
 		t_wh_outboundbox_type boxType on
-		boxType.id=odo.outbound_carton_type and odo.ou_id=boxType.ou_id
-		left
-		join oper_user user1 on user1.id=odo.created_id
-		left join oper_user
-		user2 on user2.id=odo.modified_id
+		boxType.id=odo.outbound_carton_type 
 		<include refid="whOdoDynamicWherePageExt" />
 
 
@@ -684,10 +684,8 @@
 		DATE_FORMAT(odo.create_time,'%Y-%m-%d') as createTime,
 		odo.created_id
 		as createId,
-		user1.user_name as createName,
 		DATE_FORMAT(odo.last_modify_time,'%Y-%m-%d') as lastModifyTime,
 		odo.modified_id as modifiedId,
-		user2.user_name as modifiedName,
 		odo.is_locked as isLocked,
 		odo.is_assign_success as isAssignSuccess,
 		odo.original_odo_code as originalOdoCode,
@@ -705,18 +703,13 @@
 		transmgmt.transport_service_provider=transprovider.code
 		left join
 		t_ma_transport_service_type transType on
-		transType.tp_id=transprovider.id and
-		transType.code=transmgmt.courier_service_type
+		transType. CODE = transmgmt.courier_service_type and transType.tp_id = transprovider.id 
 		left join
 		t_wh_outboundbox_type boxType on
-		boxType.id=odo.outbound_carton_type and odo.ou_id=boxType.ou_id
-		left
-		join oper_user user1 on user1.id=odo.created_id
-		left join oper_user
-		user2 on user2.id=odo.modified_id
+		boxType.id=odo.outbound_carton_type 
+		
 		<include refid="whOdoDynamicWherePageExt" />
 	</select>
-
 
 	<update id="updateByVersion"
 		parameterType="com.baozun.scm.primservice.whoperation.model.odo.WhOdo">
@@ -778,7 +771,7 @@
 	</select>
 
 	<select id="existsSkuInOdo" resultType="int">
-		select count(*) from
+		select count(1) from
 		t_wh_odo_line odoline
 		where odoline.odo_id=#{odoId} and
 		odoline.ou_id=#{ouId}
@@ -1189,7 +1182,7 @@
     </select>
     
      <select id="findListCountForWaveByQueryMap" resultType="long">
-        select count(*) from (
+        select count(1) from (
 	        	select
 				<if test="isCustomer!=null">
 					odo.customer_id as customerId,
@@ -1341,10 +1334,8 @@
 		DATE_FORMAT(odo.create_time,'%Y-%m-%d') as createTime,
 		odo.created_id
 		as createId,
-		user1.user_name as createName,
 		DATE_FORMAT(odo.last_modify_time,'%Y-%m-%d') as lastModifyTime,
 		odo.modified_id as modifiedId,
-		user2.user_name as modifiedName,
 		odo.is_locked as isLocked
 		
 		from t_wh_odo odo
@@ -1360,15 +1351,411 @@
 		transmgmt.transport_service_provider=transprovider.code
 		left join
 		t_ma_transport_service_type transType on
-		transType.tp_id=transprovider.id and
-		transType.code=transmgmt.courier_service_type
+	transType. CODE = transmgmt.courier_service_type and transType.tp_id = transprovider.id 
 		left join
 		t_wh_outboundbox_type boxType on
-		boxType.id=odo.outbound_carton_type and odo.ou_id=boxType.ou_id
-		left
-		join oper_user user1 on user1.id=odo.created_id
-		left join oper_user
-		user2 on user2.id=odo.modified_id
+		boxType.id=odo.outbound_carton_type
+		<where>
+			<if test="groupCustomerId!=null">
+				and odo.customer_id=#{groupCustomerId}
+			</if>
+			<if test="groupStoreId!=null">
+				and odo.store_id=#{groupStoreId}
+			</if>
+			<if test="groupOdoStatus!=null and groupOdoStatus!=''">
+				and odo.odo_status=#{groupOdoStatus}
+			</if>
+			<if test="groupOdoType=null and groupOdoType!=''">
+				and odo.odo_type=#{groupOdoType}
+			</if>
+			<if test="isDistributeMode!=null">
+				<if test="groupDistributeMode!=null and groupDistributeMode!=''">
+					and odo.distribute_mode=#{groupDistributeMode}
+				</if>
+				<if test="groupDistributeMode==null || groupDistributeMode==''">
+					and (odo.distribute_mode is null or odo.distribute_mode='')
+				</if>
+			</if>
+			<if test="groupTransportServiceProvider!=null and groupTransportServiceProvider!=''">
+				and transmgmt.transport_service_provider=#{groupTransportServiceProvider}
+			</if>
+			<if test="isEpistaticSystemsOrderType!=null">
+				<if test="groupEpistaticSystemsOrderType!=null and groupEpistaticSystemsOrderType!=''">
+					and odo.epistatic_systems_order_type=#{groupEpistaticSystemsOrderType}
+				</if>
+				<if test="groupEpistaticSystemsOrderType==null || groupEpistaticSystemsOrderType==''">
+					and (odo.epistatic_systems_order_type is null or odo.epistatic_systems_order_type ='')
+				</if>
+			</if>
+			<if test="odoCode!=null and odoCode!=''">
+				and odo.odo_code like #{odoCode}
+			</if>
+			<if test="extCode!=null and extCode!=''">
+				and odo.ext_code LIKE #{extCode}
+			</if>
+			<if test="odoStatus!=null">
+				and odo.odo_status in
+				<foreach collection="odoStatus" item="s" open="(" separator=","
+					close=")">
+					#{s}
+				</foreach>
+			</if>
+			<if test="epistaticSystemsOrderType!=null">
+				and odo.epistatic_systems_order_type in
+				<foreach collection="epistaticSystemsOrderType" item="s"
+					open="(" separator="," close=")">
+					#{s}
+				</foreach>
+			</if>
+			<if test="customerId!=null">
+				and odo.customer_id in
+				<foreach collection="customerId" item="s" open="("
+					separator="," close=")">
+					#{s}
+				</foreach>
+			</if>
+			<if test="outboundTargetType!=null">
+				and transmgmt.outbound_target_type in
+				<foreach collection="outboundTargetType" item="s" open="("
+					separator="," close=")">
+					#{s}
+				</foreach>
+			</if>
+			<if test="odoType!=null">
+				and odo.odo_type in
+				<foreach collection="odoType" item="s" open="(" separator=","
+					close=")">
+					#{s}
+				</foreach>
+			</if>
+			<if test="storeId!=null">
+				and odo.store_id in
+				<foreach collection="storeId" item="s" open="(" separator=","
+					close=")">
+					#{s}
+				</foreach>
+			</if>
+			<if test="outboundTarget!=null and outboundTarget!=''">
+				and transmgmt.outbound_target like #{outboundTarget}
+			</if>
+			<if test="modeOfTransport!=null">
+				and transmgmt.mode_of_transport in
+				<foreach collection="modeOfTransport" item="s" open="("
+					separator="," close=")">
+					#{s}
+				</foreach>
+			</if>
+			<if test="transportServiceProvider!=null">
+				and transmgmt.transport_service_provider in
+				<foreach collection="transportServiceProvider" item="s"
+					open="(" separator="," close=")">
+					#{s}
+				</foreach>
+			</if>
+			<if test="transportServiceProviderType!=null">
+				and transmgmt.courier_service_type in
+				<foreach collection="transportServiceProviderType" item="s"
+					open="(" separator="," close=")">
+					#{s}
+				</foreach>
+
+			</if>
+			<if test="distributeMode!=null">
+				and odo.distribute_mode in
+				<foreach collection="distributeMode" item="s" open="("
+					separator="," close=")">
+					#{s}
+				</foreach>
+			</if>
+			<if test="outBoundCartonType!=null">
+				and odo.outbound_carton_type in
+				<foreach collection="outBoundCartonType" item="s" open="("
+					separator="," close=")">
+					#{s}
+				</foreach>
+			</if>
+			<if test="whVasType!=null">
+				and EXISTS(select 1 from t_wh_odo_vas odovas inner join t_wh_vas whvas on whvas.id=odovas.wh_vas_type and odovas.vas_type='WH' where odovas.odo_id=odo.id and
+				whvas.type in
+				<foreach collection="whVasType" item="s" open="(" separator=","
+					close=")">
+					#{s}
+				</foreach>
+
+				)
+			</if>
+
+			<if test="orderType!=null">
+				and odo.order_type in
+				<foreach collection="orderType" item="s" open="(" separator=","
+					close=")">
+					#{s}
+				</foreach>
+			</if>
+
+			<if test="createTimeStart!=null and createTimeStart!=''">
+				and
+				DATE_FORMAT(odo.create_time,'%Y-%m-%d')&gt;=#{createTimeStart}
+			</if>
+			<if test="createTimeEnd!=null and createTimeEnd!=''">
+				and
+				DATE_FORMAT(odo.create_time,'%Y-%m-%d')&lt;=#{createTimeEnd}
+			</if>
+			<if test="ecOrderCode!=null and ecOrderCode!=''">
+				and odo.ec_order_code LIKE #{ecOrderCode}
+			</if>
+			<if test="orderTimeStart!=null and orderTimeStart!=''">
+				and
+				DATE_FORMAT(odo.order_time,'%Y-%m-%d')&gt;=#{orderTimeStart}
+			</if>
+			<if test="orderTimeEnd!=null and orderTimeEnd!=''">
+				and
+				DATE_FORMAT(odo.order_time,'%Y-%m-%d')&lt;=#{orderTimeEnd}
+			</if>
+			<if test="deliverGoodsTimeMode!=null">
+				and transmgmt.deliver_goods_time_mode IN
+				<foreach collection="deliverGoodsTimeMode" item="s" open="("
+					separator="," close=")">
+					#{s}
+				</foreach>
+			</if>
+			<if test="deliverGoodsTimeStart!=null and deliverGoodsTimeStart!=''">
+				and
+				DATE_FORMAT(transmgmt.deliver_goods_time,'%Y-%m-%d')&gt;=#{deliverGoodsTimeStart}
+			</if>
+			<if test="deliverGoodsTimeEnd!=null and deliverGoodsTimeEnd!=''">
+				and
+				DATE_FORMAT(transmgmt.deliver_goods_time,'%Y-%m-%d')&lt;=#{deliverGoodsTimeEnd}
+			</if>
+			<if test="includeFragileCargo!=null">
+				and odo.include_fragile_cargo=#{includeFragileCargo}
+			</if>
+			<if test="crossDockingSysmbol!=null">
+				and odo.cross_docking_symbol IN
+				<foreach collection="crossDockingSysmbol" item="s" open="("
+					separator="," close=")">
+					#{s}
+				</foreach>
+			</if>
+			<if test="isWholeOrderOutbound!=null">
+				and odo.is_whole_order_outbound=#{isWholeOrderOutbound}
+			</if>
+			<if test="isLocked!=null">
+				and odo.is_locked=#{isLocked}
+			</if>
+			<if test="lineFlag">
+				and EXISTS(select 1 from t_wh_odo_line odoline
+				inner join t_wh_sku
+				sku on sku.id=odoline.sku_id
+				where odoline.odo_id=odo.id
+				<if test="skuCode!=null and skuCode!=''">
+					and sku.code like #{skuCode}
+				</if>
+				<if test="skuName!=null and skuName!=''">
+					and odoline.sku_name like #{skuName}
+				</if>
+				<if test="skuBarCode!=null and skuBarCode!=''">
+					and odoline.sku_bar_code like #{skuBarCode}
+				</if>
+				<if test="odoLineStatus!=null">
+					and odoline.odo_line_status IN
+					<foreach collection="odoLineStatus" item="s" open="("
+						separator="," close=")">
+						#{s}
+					</foreach>
+				</if>
+				<if test="lineOutboundCartonType!=null">
+					and odoline.outbound_carton_type IN
+					<foreach collection="lineOutboundCartonType" item="s" open="("
+						separator="," close=")">
+						#{s}
+					</foreach>
+				</if>
+				<if test="mixingAttr!=null and mixingAttr!=''">
+					and odoline.mixing_attr LIKE #{mixingAttr}
+				</if>
+				<if test="invType!=null">
+					and odoline.inv_type IN
+					<foreach collection="invType" item="s" open="(" separator=","
+						close=")">
+						#{s}
+					</foreach>
+				</if>
+				<if
+					test="(sn!=null and sn!='') ||(defectWareBarcode!=null and defectWareBarcode!='') ||(defectType!=null and defectType!='')||(defectReasons!=null and defectReasons!='')">
+					and exists(select 1 from t_wh_odo_line_sn linesn
+					where
+					linesn.odo_line_id=odoline.id
+					<if test="sn!=null and sn!=''">
+						and linesn.sn LIKE #{sn}
+					</if>
+					<if test="defectWareBarcode!=null and defectWareBarcode!=''">
+						and linesn.defect_ware_barcode LIKE
+						#{defectWareBarcode}
+					</if>
+					<if test="defectType!=null and defectType!=''">
+						and linesn.defect_type LIKE #{defectType}
+					</if>
+					<if test="defectReasons!=null and defectReasons!=''">
+						and linesn.defect_reasons LIKE #{defectReasons}
+					</if>
+					)
+				</if>
+				<if test="invStatus!=null">
+					and odoline.inv_status IN
+					<foreach collection="invStatus" item="s" open="("
+						separator="," close=")">
+						#{s}
+					</foreach>
+				</if>
+				<if test="invAttr1!=null">
+					and odoline.inv_attr1 IN
+					<foreach collection="invAttr1" item="s" open="(" separator=","
+						close=")">
+						#{s}
+					</foreach>
+				</if>
+				<if test="invAttr2!=null">
+					and odoline.inv_attr2 IN
+					<foreach collection="invAttr2" item="s" open="(" separator=","
+						close=")">
+						#{s}
+					</foreach>
+				</if>
+				<if test="invAttr3!=null">
+					and odoline.inv_attr3 IN
+					<foreach collection="invAttr3" item="s" open="(" separator=","
+						close=")">
+						#{s}
+					</foreach>
+				</if>
+				<if test="invAttr4!=null">
+					and odoline.inv_attr4 IN
+					<foreach collection="invAttr4" item="s" open="(" separator=","
+						close=")">
+						#{s}
+					</foreach>
+				</if>
+				<if test="invAttr5!=null">
+					and odoline.inv_attr5 IN
+					<foreach collection="invAttr5" item="s" open="(" separator=","
+						close=")">
+						#{s}
+					</foreach>
+				</if>
+				<if test="countryOfOrigin!=null and countryOfOrigin!=''">
+					and odoline.country_of_origin LIKE #{countryOfOrigin}
+				</if>
+				<if test="batchNumber!=null and batchNumber!=''">
+					and odoline.batch_number LIKE #{batchNumber}
+				</if>
+				<if test="mfgDateStart!=null and mfgDateStart!=''">
+					and
+					DATE_FORMAT(odoline.mfg_date,'%Y-%m-%d')&gt;=#{mfgDateStart}
+				</if>
+				<if test="mfgDateEnd!=null and mfgDateEnd!=''">
+					and
+					DATE_FORMAT(odoline.mfg_date,'%Y-%m-%d')&lt;=#{mfgDateEnd}
+				</if>
+				<if test="expDateStart!=null and expDateStart!=''">
+					and
+					DATE_FORMAT(odoline.exp_date,'%Y-%m-%d')&gt;=#{expDateStart}
+				</if>
+				<if test="expDateEnd!=null and expDateEnd!=''">
+					and
+					DATE_FORMAT(odoline.exp_date,'%Y-%m-%d')&lt;=#{expDateEnd}
+				</if>
+				<if test="minExpDateStart!=null and minExpDateStart!=''">
+					and
+					DATE_FORMAT(odoline.min_exp_date,'%Y-%m-%d')&gt;=#{minExpDateStart}
+				</if>
+				<if test="minExpDateEnd!=null and minExpDateEnd!=''">
+					and
+					DATE_FORMAT(odoline.min_exp_date,'%Y-%m-%d')&lt;=#{minExpDateEnd}
+				</if>
+				<if test="maxExpDateStart!=null and maxExpDateStart!=''">
+					and
+					DATE_FORMAT(odoline.max_exp_date,'%Y-%m-%d')&gt;=#{maxExpDateStart}
+				</if>
+				<if test="maxExpDateEnd!=null and maxExpDateEnd!=''">
+					and
+					DATE_FORMAT(odoline.max_exp_date,'%Y-%m-%d')&lt;=#{maxExpDateEnd}
+				</if>
+				)
+			</if>
+			<if test="ouId!=null">
+				and odo.ou_id = #{ouId}
+			</if>
+
+			<if test="ids!=null">
+				and odo.id IN ${ids}
+			</if>
+		</where>
+		<if test="lineNum!=null">
+			limit #{lineNum}
+		</if>
+		
+	</select>
+    <select id="findListForWave" resultMap="WhOdoResultExt"
+		parameterType="com.baozun.scm.primservice.whoperation.command.odo.OdoSearchCommand">
+
+		SELECT
+		 	odo.id as id,
+	       	odo.odo_code as odoCode,
+	       	odo.ext_code as extCode,
+	       	odo.ec_order_code as ecOrderCode,
+	       	odo.customer_id as customerId,
+	       	odo.store_id as storeId,
+	       	odo.odo_type as odoType,
+	       	odo.group_odo_code as groupOdoCode,
+	       	odo.original_odo_code as originalOdoCode,
+	       	odo.priority_level as priorityLevel,
+	       	odo.is_whole_order_outbound as isWholeOrderOutbound,
+	       	odo.cross_docking_symbol as crossDockingSymbol,
+	       	odo.order_type as orderType,
+	       	odo.order_time as orderTime,
+	       	odo.odo_status as odoStatus,
+	       	odo.qty as qty,
+	       	odo.current_qty as currentQty,
+	       	odo.actual_qty as actualQty,
+	       	odo.cancel_qty as cancelQty,
+	       	odo.sku_number_of_packages as skuNumberOfPackages,
+	       	odo.amt as amt,
+	       	odo.distribute_mode as distributeMode,
+	       	odo.epistatic_systems_order_type as epistaticSystemsOrderType,
+	       	odo.outbound_carton_type as outboundCartonType,
+	       	odo.include_hazardous_cargo as includeHazardousCargo,
+	       	odo.include_fragile_cargo as includeFragileCargo,
+	       	odo.is_assign_success as isAssignSuccess,
+	       	odo.assign_fail_reason as assignFailReason,
+	       	odo.is_allow_merge as isAllowMerge,
+	       	odo.is_locked as isLocked,
+	       	odo.ou_id as ouId,
+	       	odo.create_time as createTime,
+	       	odo.created_id as createdId,
+	       	odo.last_modify_time as lastModifyTime,
+	       	odo.modified_id as modifiedId,
+	       	odo.wave_code as waveCode,
+	       	odo.counter_code as counterCode,
+	       	transmgmt.plan_deliver_goods_time as planDeliverGoodsTime
+		
+		from t_wh_odo odo
+		left join t_wh_odo_address
+		address on
+		address.odo_id=odo.id
+		left join t_wh_odo_transport_mgmt
+		transmgmt on
+		transmgmt.odo_id=odo.id
+		left join t_ma_transport_provider
+		transprovider
+		on
+		transmgmt.transport_service_provider=transprovider.code
+		left join
+		t_ma_transport_service_type transType on
+		transType. CODE = transmgmt.courier_service_type and transType.tp_id = transprovider.id 
+		left join
+		t_wh_outboundbox_type boxType on
+		boxType.id=odo.outbound_carton_type 
 		<where>
 			<if test="groupCustomerId!=null">
 				and odo.customer_id=#{groupCustomerId}
@@ -1707,49 +2094,11 @@
 		</if>
 		
 	</select>
-    <select id="findListForWave" resultMap="WhOdoResultExt"
+    <select id="findOdoIdListForWave" resultType="long"
 		parameterType="com.baozun.scm.primservice.whoperation.command.odo.OdoSearchCommand">
 
 		SELECT
-		 	odo.id as id,
-	       	odo.odo_code as odoCode,
-	       	odo.ext_code as extCode,
-	       	odo.ec_order_code as ecOrderCode,
-	       	odo.customer_id as customerId,
-	       	odo.store_id as storeId,
-	       	odo.odo_type as odoType,
-	       	odo.group_odo_code as groupOdoCode,
-	       	odo.original_odo_code as originalOdoCode,
-	       	odo.priority_level as priorityLevel,
-	       	odo.is_whole_order_outbound as isWholeOrderOutbound,
-	       	odo.cross_docking_symbol as crossDockingSymbol,
-	       	odo.order_type as orderType,
-	       	odo.order_time as orderTime,
-	       	odo.odo_status as odoStatus,
-	       	odo.qty as qty,
-	       	odo.current_qty as currentQty,
-	       	odo.actual_qty as actualQty,
-	       	odo.cancel_qty as cancelQty,
-	       	odo.sku_number_of_packages as skuNumberOfPackages,
-	       	odo.amt as amt,
-	       	odo.distribute_mode as distributeMode,
-	       	odo.epistatic_systems_order_type as epistaticSystemsOrderType,
-	       	odo.outbound_carton_type as outboundCartonType,
-	       	odo.include_hazardous_cargo as includeHazardousCargo,
-	       	odo.include_fragile_cargo as includeFragileCargo,
-	       	odo.is_assign_success as isAssignSuccess,
-	       	odo.assign_fail_reason as assignFailReason,
-	       	odo.is_allow_merge as isAllowMerge,
-	       	odo.is_locked as isLocked,
-	       	odo.ou_id as ouId,
-	       	odo.create_time as createTime,
-	       	odo.created_id as createdId,
-	       	odo.last_modify_time as lastModifyTime,
-	       	odo.modified_id as modifiedId,
-	       	odo.wave_code as waveCode,
-	       	odo.counter_code as counterCode,
-	       	transmgmt.plan_deliver_goods_time as planDeliverGoodsTime
-		
+		 	odo.id as id
 		from t_wh_odo odo
 		left join t_wh_odo_address
 		address on
@@ -1763,15 +2112,10 @@
 		transmgmt.transport_service_provider=transprovider.code
 		left join
 		t_ma_transport_service_type transType on
-		transType.tp_id=transprovider.id and
-		transType.code=transmgmt.courier_service_type
+		transType. CODE = transmgmt.courier_service_type and transType.tp_id = transprovider.id 
 		left join
 		t_wh_outboundbox_type boxType on
-		boxType.id=odo.outbound_carton_type and odo.ou_id=boxType.ou_id
-		left
-		join oper_user user1 on user1.id=odo.created_id
-		left join oper_user
-		user2 on user2.id=odo.modified_id
+		boxType.id=odo.outbound_carton_type 
 		<where>
 			<if test="groupCustomerId!=null">
 				and odo.customer_id=#{groupCustomerId}
@@ -1956,6 +2300,9 @@
 			</if>
 			<if test="isWholeOrderOutbound!=null">
 				and odo.is_whole_order_outbound=#{isWholeOrderOutbound}
+			</if>
+			<if test="isLocked!=null">
+				and odo.is_locked=#{isLocked}
 			</if>
 			<if test="lineFlag">
 				and EXISTS(select 1 from t_wh_odo_line odoline
@@ -2231,10 +2578,8 @@
 		DATE_FORMAT(odo.create_time,'%Y-%m-%d') as createTime,
 		odo.created_id
 		as createId,
-		user1.user_name as createName,
 		DATE_FORMAT(odo.last_modify_time,'%Y-%m-%d') as lastModifyTime,
 		odo.modified_id as modifiedId,
-		user2.user_name as modifiedName,
 		odo.is_locked as isLocked
 		
 		from t_wh_odo odo
@@ -2250,16 +2595,10 @@
 		transmgmt.transport_service_provider=transprovider.code
 		left join
 		t_ma_transport_service_type transType on
-		transType.tp_id=transprovider.id and
-		transType.code=transmgmt.courier_service_type
+		transType. CODE = transmgmt.courier_service_type and transType.tp_id = transprovider.id 
 		left join
 		t_wh_outboundbox_type boxType on
-		boxType.id=odo.outbound_carton_type and odo.ou_id=boxType.ou_id
-		left
-		join oper_user user1 on user1.id=odo.created_id
-		left join oper_user
-		user2 on user2.id=odo.modified_id
-		where  odo.id = #{id} and odo.ou_id=#{ouId}
+		boxType.id=odo.outbound_carton_type 
 	</select>
 	
 	<select id="findOdoForMerge" resultMap="WhOdoResult"
@@ -2457,10 +2796,8 @@
 		DATE_FORMAT(odo.create_time,'%Y-%m-%d') as createTime,
 		odo.created_id
 		as createId,
-		user1.user_name as createName,
 		DATE_FORMAT(odo.last_modify_time,'%Y-%m-%d') as lastModifyTime,
 		odo.modified_id as modifiedId,
-		user2.user_name as modifiedName,
 		odo.is_locked as isLocked,
 		odo.assign_fail_reason as assignFailReason
 		
@@ -2477,15 +2814,11 @@
 		transmgmt.transport_service_provider=transprovider.code
 		left join
 		t_ma_transport_service_type transType on
-		transType.tp_id=transprovider.id and
-		transType.code=transmgmt.courier_service_type
+		transType. CODE = transmgmt.courier_service_type and transType.tp_id = transprovider.id 
 		left join
 		t_wh_outboundbox_type boxType on
-		boxType.id=odo.outbound_carton_type and odo.ou_id=boxType.ou_id
-		left
-		join oper_user user1 on user1.id=odo.created_id
-		left join oper_user
-		user2 on user2.id=odo.modified_id
+		boxType.id=odo.outbound_carton_type
+		
 		<where>
 			<if test="odoCode!=null and odoCode!=''">
 				and odo.odo_code like #{odoCode}
@@ -2819,4 +3152,60 @@
 
 	</select>
 	
+	<select id="findWaveSumDatabyOdoIdList" resultMap="OdoWaveCommand">
+		select
+			count(DISTINCT odoLine.sku_id) as skuCategoryQty,
+			SUM(odoLine.qty*sku.volume) as totalVolume,
+			sum(odoLine.qty*sku.weight) as totalWeight,
+			count(1) as totalOdoLineQty,
+			sum(odoLine.line_amt) as totalAmount,
+			sum(odoLine.qty) as totalSkuQty
+		
+		from t_wh_odo_line odoLine
+		inner join t_wh_odo odo on odo.id=odoLine.odo_id
+		inner join t_wh_sku sku on sku.id=odoLine.sku_id
+	
+		where odoLine.ou_id=#{ouId} and odoLine.odo_id in
+		<foreach collection="odoIdList" item="odoId" open="(" separator=","
+			close=")">
+			#{odoId}
+		</foreach>
+	</select>
+	
+	<update id="addOdoToWave" parameterType="map">
+	   update 
+			t_wh_odo 
+	   set
+	    	odo_status=#{odoStatus},
+	    	last_modify_time=now(),
+	    	modified_id=#{userId},
+	    	wave_code=#{waveCode}
+	    where
+			ou_id=#{ouId} 
+			and odo_status='1' 
+			and (wave_code is null or wave_code='') 
+	    	and id in
+	    	<foreach collection="odoIdList" item="odoId" open="(" separator="," close=")">
+					#{odoId}
+			</foreach>
+</update>
+    
+    
+    <select id="findOdoToBeAddedToWave" resultType="long">
+		select
+			
+		odo.id
+		
+		from t_wh_odo odo
+	
+		where odo.wave_code=#{waveCode} and odo.ou_id=#{ouId} 
+		and exists(select 1 from t_wh_odo_line odoline where odoline.odo_id=odo.id and (odoline.wave_code ='' or odoline.wave_code is null))
+	</select>
+	
+	 <select id="findOdoIdCounterCodebyWaveCode" resultType="string">
+		select
+			CONCAT_WS('_',odo.id,odo.counter_code)
+		from t_wh_odo odo
+		where odo.wave_code=#{waveCode} and odo.ou_id=#{ouId}
+	</select>
 </mapper>

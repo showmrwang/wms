@@ -35,4 +35,110 @@
 	<field name="skuExtCode" title="商品外接编码"/>
 	<field name="skuBarCode" title="商品条码"/>
 </excel>
+
+<excel id="whOdo" class="com.baozun.scm.primservice.whoperation.command.odo.OdoCommand" sheetname="出库单列表" defaultColumnWidth="5000" enableStyle="true">
+	<field name="extCode" title="外部对接编码"/>
+	<field name="ecOrderCode" title="电商平台订单号"/>
+	<field name="customerCode" title="客户编码"/>
+	<field name="storeCode" title="店铺编码"/>
+	<field name="odoType" title="出库单类型"/>
+	<field name="originalOdoCode" title="原始出库单号"/>
+	<field name="priorityLevel" title="优先级"/>
+	<field name="isWholeOrderOutbound" title="是否整单出库"/>
+	<field name="crossDockingSymbol" title="越库标志"/>
+	<field name="orderType" title="订单平台类型"/>
+	<field name="orderTime" title="下单时间" pattern="yyyy/MM/dd"/>
+	<field name="qty" title="计划数量"/>
+	<field name="amt" title="订单总金额"/>
+	<field name="epistaticSystemsOrderType" title="上位系统单据类型"/>
+	<field name="outboundCartonType" title="出库箱类型"/>
+	<field name="includeHazardousCargo" title="含危险品"/>
+	<field name="includeFragileCargo" title="含易碎品"/>
+	<field name="planDeliverGoodsTime" title="计划发货时间" pattern="yyyy/MM/dd"/>
+	<field name="storeName" title="店铺名称"/>
+	<field name="customerName" title="客户名称"/>
+</excel>
+<excel id="whOdoLine" class="com.baozun.scm.primservice.whoperation.command.odo.OdoLineCommand" sheetname="出库单明细列表" defaultColumnWidth="5000" enableStyle="true">
+	<field name="odoExtCode" title="外部对接编码"/>
+	<field name="linenum" title="行号"/>
+	<field name="originalLinenum" title="原始出库单明细行号"/>
+	<field name="storeCode" title="店铺编码"/>
+	<field name="extLinenum" title="外部单据行号"/>
+	<field name="skuBarCode" title="商品条码"/>
+	<field name="skuName" title="商品名称"/>
+	<field name="extSkuName" title="上位系统商品名称"/>
+	<field name="qty" title="计划数量"/>
+	<field name="planQty" title="计划数量"/>
+	<field name="linePrice" title=行单价/>
+	<field name="lineAmt" title="行总金额"/>
+	<field name="isCheck" title="是否复核"/>
+	<field name="fullLineOutbound" title="整行出库标志"/>
+	<field name="partOutboundStrategy" title="部分出库策略"/>
+	<field name="mfgDate" title="生产日期" pattern="yyyy/MM/dd"/>
+	<field name="expDate" title="失效日期" pattern="yyyy/MM/dd"/>
+	<field name="minExpDate" title="最小失效日期" pattern="yyyy/MM/dd"/>
+	<field name="maxExpDate" title="最大失效日期" pattern="yyyy/MM/dd"/>
+	<field name="batchNumber" title="批次号"/>
+	<field name="countryOfOrigin" title="原产地"/>
+	<field name="invStatus" title="库存状态"/>
+	<field name="invType" title="库存类型"/>
+	<field name="invAttr1" title="库存属性1"/>
+	<field name="invAttr2" title="库存属性2"/>
+	<field name="invAttr3" title="库存属性3"/>
+	<field name="invAttr4" title="库存属性4"/>
+	<field name="invAttr5" title="库存属性5"/>
+	<field name="outboundCartonType" title="出库箱类型"/>
+	<field name="color" title="颜色"/>
+	<field name="style" title="款式"/>
+	<field name="size" title="尺码"/>
+	<field name="mixingAttr" title="混放属性"/>
+	<field name="originalOdoCode" title="对应原始出库单CODE"/>
+</excel>
+<excel id="whOdoAddress" class="com.baozun.scm.primservice.whoperation.command.odo.OdoAddressCommand" sheetname="出库单地址列表" defaultColumnWidth="5000" enableStyle="true">
+	<field name="odoExt" title="出库单外接编码"/>
+	<field name="account" title="购买人平台账号"/>
+	<field name="distributionTargetName" title="配送对象姓名"/>
+	<field name="distributionTargetMobilePhone" title="配送对象手机"/>
+	<field name="distributionTargetTelephone" title="配送对象固定电话"/>
+	<field name="distributionTargetCountry" title="配送对象国家"/>
+	<field name="distributionTargetProvince" title="配送对象省"/>
+	<field name="distributionTargetCity" title="配送对象市"/>
+	<field name="distributionTargetDistrict" title="配送对象区"/>
+	<field name="distributionTargetVillagesTowns" title="配送对象乡镇"/>
+	<field name="distributionTargetAddress" title="配送对象详细地址"/>
+	<field name="distributionTargetEmail" title="配送对象邮箱"/>
+	<field name="distributionTargetZip" title="配送对象邮编"/>
+	<field name="consigneeTargetName" title="收货人姓名"/>
+	<field name="consigneeTargetMobilePhone" title="收货人手机"/>
+	<field name="consigneeTargetTelephone" title="收货人固定电话"/>
+	<field name="consigneeTargetCountry" title="收货人国家"/>
+	<field name="consigneeTargetProvince" title="收货人省"/>
+	<field name="consigneeTargetCity" title="收货人市"/>
+	<field name="consigneeTargetDistrict" title="收货人区"/>
+	<field name="consigneeTargetVillagesTowns" title="收货人乡镇"/>
+	<field name="consigneeTargetAddress" title="收货人详细地址"/>
+	<field name="consigneeTargetEmail" title="收货人邮箱"/>
+	<field name="consigneeTargetZip" title="收货人邮编"/>
+	<field name="outboundTargetType" title="出库目标对象"/>
+	<field name="distributionTargetTelephoneCode" title="配送人区号"/>
+	<field name="distributionTargetTelephoneNumber" title="配送人号码"/>
+	<field name="distributionTargetTelephoneDivision" title="配送人分机号"/>
+	<field name="consigneeTargetTelephoneCode" title="收货人区号"/>
+	<field name="consigneeTargetTelephoneNumber" title="收货人号码"/>
+	<field name="consigneeTargetTelephoneDivision" title="收货人分机号"/>
+</excel>
+<excel id="whOdoTransportMgmt" class="com.baozun.scm.primservice.whoperation.command.odo.OdoTransportMgmtCommand" sheetname="出库单运输服务商列表" defaultColumnWidth="5000" enableStyle="true">
+	<field name="odoExtCode" title="出库单外接编码"/>
+	<field name="transportServiceProvider" title="运输服务商"/>
+	<field name="modeOfTransport" title="运输方式"/>
+	<field name="courierServiceType" title="快递服务类型"/>
+	<field name="outboundTargetType" title="出库目标类型"/>
+	<field name="outboundTarget" title="出库目标对象"/>
+	<field name="deliverGoodsTimeMode" title="指定送货时间模式"/>
+	<field name="deliverGoodsTime" title="指定送货时间" pattern="yyyy/MM/dd"/>
+	<field name="planDeliverGoodsTime" title="计划发货时间" pattern="yyyy/MM/dd"/>
+	<field name="isCod" title="是否COD"/>
+	<field name="codAmt" title="COD金额"/>
+</excel>
+
 </excels>

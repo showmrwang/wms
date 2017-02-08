@@ -45,7 +45,7 @@ public class WhOperationLine extends BaseModel {
     /** 商品ID */
     private Long skuId;
     /** 计划量 */
-    private Long qty;
+    private Double qty;
     /** 库存状态 */
     private Long invStatus;
     /** 库存类型 */
@@ -157,11 +157,11 @@ public class WhOperationLine extends BaseModel {
         this.skuId = skuId;
     }
 
-    public Long getQty() {
+    public Double getQty() {
         return qty;
     }
 
-    public void setQty(Long qty) {
+    public void setQty(Double qty) {
         this.qty = qty;
     }
 
