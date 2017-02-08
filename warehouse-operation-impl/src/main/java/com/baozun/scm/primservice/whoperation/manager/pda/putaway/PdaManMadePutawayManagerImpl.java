@@ -7,7 +7,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -67,7 +66,6 @@ import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuI
 import com.baozun.scm.primservice.whoperation.model.sku.SkuExtattr;
 import com.baozun.scm.primservice.whoperation.model.sku.SkuMgmt;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
-import com.baozun.scm.primservice.whoperation.model.warehouse.InventoryStatus;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Location;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
@@ -2157,7 +2155,7 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
                 if(isNeedSkuDetail) {
                     WhSkuInventoryCommand skuInvCmd = new WhSkuInventoryCommand();
                     BeanUtils.copyProperties(skuInv,skuInvCmd);
-                    if(putwaySkuAttrId.equals(SkuCategoryProvider.getSkuAttrIdByInv(invSkuCmd))) {
+                    if(putwaySkuAttrId.equals(SkuCategoryProvider.getSkuAttrIdByInv(skuInvCmd))) {
                         whskuList.add(skuInv);
                     }else{
                         continue;
