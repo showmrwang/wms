@@ -201,6 +201,8 @@ public abstract class BaseManagerImpl implements BaseManager {
                         // redis出错只记录log
                         log.error("findSysDictionaryByRedis cacheManager.setObject(" + redisKey + groupValue + "$" + dicValue + ") error");
                     }
+                } else {
+                    sys = (SysDictionary) JSONObject.toBean(jsonToBean(sysDictionary), SysDictionary.class);
                 }
                 // 放入returnMap 格式key = groupValue_dicValue value SysDictionary
                 returnMap.put(groupValue + "_" + dicValue, sys);
@@ -241,6 +243,8 @@ public abstract class BaseManagerImpl implements BaseManager {
                     // redis出错只记录log
                     log.error("findCustomerByRedis cacheManager.setObject(" + redisKey + id + ") error");
                 }
+            } else {
+                c = (Customer) JSONObject.toBean(jsonToBean(customer), Customer.class);
             }
             returnMap.put(id, c);
         }
@@ -282,6 +286,8 @@ public abstract class BaseManagerImpl implements BaseManager {
                         // redis出错只记录log
                         log.error("findStoreByRedis cacheManager.setObject(" + redisKey + s.getCustomerId() + "-" + id + ") error");
                     }
+                } else {
+                    s = (Store) JSONObject.toBean(jsonToBean(store), Store.class);
                 }
             } else {
                 s = storeDao.findById(id);
@@ -338,6 +344,8 @@ public abstract class BaseManagerImpl implements BaseManager {
                             log.error("findCustomerAllByRedis cacheManager.setObject(" + redisKey + c.getId() + ") error");
                         }
                     }
+                } else {
+                    c = (Customer) JSONObject.toBean(jsonToBean(customer), Customer.class);
                 }
                 if (null != c) {
                     returnList.put(c.getId(), c);
@@ -401,6 +409,8 @@ public abstract class BaseManagerImpl implements BaseManager {
                             log.error("findStoreAllByRedis cacheManager.setObject(" + redisKey + store.getId() + ") error");
                         }
                     }
+                } else {
+                    store = (Store) JSONObject.toBean(jsonToBean(storeJson), Store.class);
                 }
                 if (null != store) {
                     returnList.put(store.getId(), store);
@@ -468,6 +478,8 @@ public abstract class BaseManagerImpl implements BaseManager {
                         // redis出错只记录log
                         log.error("findSysDictionaryByGroupValueAndRedis cacheManager.setObject(" + redisKey + dicValue + ") error");
                     }
+                } else {
+                    sys = (SysDictionary) JSONObject.toBean(jsonToBean(sysDictionary), SysDictionary.class);
                 }
                 if (null != sys) {
                     // 判断系统参数的lifecycle是否=传入的lifecycle

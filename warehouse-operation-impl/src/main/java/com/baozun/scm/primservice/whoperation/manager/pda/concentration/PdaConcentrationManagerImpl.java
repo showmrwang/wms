@@ -1104,8 +1104,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
             }*/
             ContainerCommand containerCmd = containerDao.getContainerByCode(containerCode, ouId);
             Long scanContainerId = containerCmd.getId();
-            Long workId = whOperationExecLineDao.getWorkIdByUseContainerId(batch, scanContainerId, ouId);
-            WorkCollectionCommand workCommand = this.createObject(batch, workId, ouId, null, scanContainerId);
+            WorkCollectionCommand workCommand = this.createObject(batch, null, ouId, null, scanContainerId);
             // 推荐播种墙逻辑,并判断是否推荐成功
             RecFacilityPathCommand recFacilityPath = new RecFacilityPathCommand();
             recFacilityPath.setOuId(ouId);
