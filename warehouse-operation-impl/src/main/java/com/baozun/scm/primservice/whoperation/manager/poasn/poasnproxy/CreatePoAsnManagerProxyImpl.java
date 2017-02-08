@@ -324,7 +324,7 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
      * @param storeId
      * @return
      */
-    private String getAsnExtCode(Long ouId, Long storeId) {
+    private String getAsnExtCode(Long storeId, Long ouId) {
         String asnExtCode = null;
         boolean isSuccess = false;
         // 验证asnextcode是否存在 最多调用接口5次

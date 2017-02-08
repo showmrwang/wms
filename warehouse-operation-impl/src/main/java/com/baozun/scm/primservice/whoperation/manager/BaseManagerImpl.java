@@ -20,6 +20,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.json.JSONObject;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -180,22 +182,27 @@ public abstract class BaseManagerImpl implements BaseManager {
             List<String> divValueList = sysDictionaryList.get(groupValue);
             for (String dicValue : divValueList) {
                 SysDictionary sys = null;
+                String sysDictionary = null;
                 try {
                     // 先查询Redis是否存在对应数据
-                    sys = cacheManager.getObject(redisKey + groupValue + "$" + dicValue);
+                    sysDictionary = cacheManager.getValue(redisKey + groupValue + "$" + dicValue);
+                    // sys = cacheManager.getObject(redisKey + groupValue + "$" + dicValue);
                 } catch (Exception e) {
                     // redis出错只记录log
                     log.error("findSysDictionaryByRedis cacheManager.getObject(" + redisKey + groupValue + "$" + dicValue + ") error");
                 }
-                if (null == sys) {
+                if (StringUtil.isEmpty(sysDictionary)) {
                     // 缓存无对应数据 查询数据库
                     sys = sysDictionaryDao.getGroupbyGroupValueAndDicValue(groupValue, dicValue);
                     try {
-                        cacheManager.setObject(redisKey + groupValue + "$" + dicValue, sys);
+                        cacheManager.setValue(redisKey + groupValue + "$" + dicValue, beanToJson(sys));
+                        // cacheManager.setObject(redisKey + groupValue + "$" + dicValue, sys);
                     } catch (Exception e) {
                         // redis出错只记录log
                         log.error("findSysDictionaryByRedis cacheManager.setObject(" + redisKey + groupValue + "$" + dicValue + ") error");
                     }
+                } else {
+                    sys = (SysDictionary) JSONObject.toBean(jsonToBean(sysDictionary), SysDictionary.class);
                 }
                 // 放入returnMap 格式key = groupValue_dicValue value SysDictionary
                 returnMap.put(groupValue + "_" + dicValue, sys);
@@ -217,22 +224,27 @@ public abstract class BaseManagerImpl implements BaseManager {
         // 遍历所有客户ID
         for (Long id : customerIdList) {
             Customer c = null;
+            String customer = null;
             try {
                 // 先查询Redis是否存在对应数据
-                c = cacheManager.getObject(redisKey + id);
+                customer = cacheManager.getValue(redisKey + id);
+                // c = cacheManager.getObject(redisKey + id);
             } catch (Exception e) {
                 // redis出错只记录log
                 log.error("findCustomerByRedis cacheManager.getObject(" + redisKey + id + ") error");
             }
-            if (null == c) {
+            if (StringUtil.isEmpty(customer)) {
                 // 缓存无对应数据 查询数据库
                 c = customerDao.findById(id);
                 try {
-                    cacheManager.setObject(redisKey + id, c);
+                    cacheManager.setValue(redisKey + id, beanToJson(c));
+                    // cacheManager.setObject(redisKey + id, c);
                 } catch (Exception e) {
                     // redis出错只记录log
                     log.error("findCustomerByRedis cacheManager.setObject(" + redisKey + id + ") error");
                 }
+            } else {
+                c = (Customer) JSONObject.toBean(jsonToBean(customer), Customer.class);
             }
             returnMap.put(id, c);
         }
@@ -252,30 +264,36 @@ public abstract class BaseManagerImpl implements BaseManager {
         for (Long id : storeIdList) {
             List<String> redis = new ArrayList<String>();
             Store s = null;
+            String store = null;
             try {
                 // 先查询Redis是否存在对应数据 店铺redis缓存格式前缀+customerId+storeId
                 redis = cacheManager.Keys(redisKey + "*-" + id);
             } catch (Exception e) {
                 // redis出错只记录log
-                log.error("findStoreByRedis cacheManager.Keys(" + redisKey + id + ") error");
+                log.error("findStoreByRedis cacheManager.getObject(" + redisKey + id + ") error");
             }
-            if (redis.size() != 0) {
+            if (redis.size() > 0) {
                 // 获取对应Redis数据
-                s = cacheManager.getObject(redis.get(0).split("_")[1]);
-                if (null == s) {
+                store = cacheManager.getValue(redis.get(0).split("_")[1]);
+                // s = cacheManager.getObject(redis.get(0).split("_")[1]);
+                if (StringUtil.isEmpty(store)) {
                     // 查询数据库
                     s = storeDao.findById(id);
                     try {
-                        cacheManager.setObject(redisKey + s.getCustomerId() + "-" + id, s);
+                        cacheManager.setValue(redisKey + s.getCustomerId() + "-" + id, beanToJson(s));
+                        // cacheManager.setObject(redisKey + s.getCustomerId() + "-" + id, s);
                     } catch (Exception e) {
                         // redis出错只记录log
                         log.error("findStoreByRedis cacheManager.setObject(" + redisKey + s.getCustomerId() + "-" + id + ") error");
                     }
+                } else {
+                    s = (Store) JSONObject.toBean(jsonToBean(store), Store.class);
                 }
             } else {
                 s = storeDao.findById(id);
                 try {
-                    cacheManager.setObject(redisKey + s.getCustomerId() + "-" + id, s);
+                    cacheManager.setValue(redisKey + s.getCustomerId() + "-" + id, beanToJson(s));
+                    // cacheManager.setObject(redisKey + s.getCustomerId() + "-" + id, s);
                 } catch (Exception e) {
                     // redis出错只记录log
                     log.error("findStoreByRedis cacheManager.setObject(" + redisKey + s.getCustomerId() + "-" + id + ") error");
@@ -302,27 +320,32 @@ public abstract class BaseManagerImpl implements BaseManager {
             // redis出错只记录log
             log.error("findCustomerAllByRedis cacheManager.Keys(" + redisKey + "*) error");
         }
-        if (redis.size() != 0) {
+        if (redis.size() > 0) {
             for (String s : redis) {
                 Customer c = null;
+                String customer = null;
                 // 获取对应Redis数据
                 try {
-                    c = cacheManager.getObject(redis.get(0).split("_")[1]);
+                    customer = cacheManager.getValue(s.split("_")[1]);
+                    // c = cacheManager.getObject(s.split("_")[1]);
                 } catch (Exception e) {
                     // redis出错只记录log
-                    log.error("findCustomerAllByRedis cacheManager.getObject(" + redis.get(0).split("_")[1] + ") error");
+                    log.error("findCustomerAllByRedis cacheManager.getObject(" + s.split("_")[1] + ") error");
                 }
-                if (null == c) {
+                if (StringUtil.isEmpty(customer)) {
                     // 缓存无对应数据 查询数据库
                     c = customerDao.findById(Long.parseLong(s.substring(s.lastIndexOf("-") + 1, s.length())));
                     if (null != c) {
                         try {
-                            cacheManager.setObject(redisKey + c.getId(), c);
+                            cacheManager.setValue(redisKey + c.getId(), beanToJson(c));
+                            // cacheManager.setObject(redisKey + c.getId(), c);
                         } catch (Exception e) {
                             // redis出错只记录log
                             log.error("findCustomerAllByRedis cacheManager.setObject(" + redisKey + c.getId() + ") error");
                         }
                     }
+                } else {
+                    c = (Customer) JSONObject.toBean(jsonToBean(customer), Customer.class);
                 }
                 if (null != c) {
                     returnList.put(c.getId(), c);
@@ -333,7 +356,8 @@ public abstract class BaseManagerImpl implements BaseManager {
             List<Customer> customers = customerDao.findCustomerAllList();
             for (Customer customer : customers) {
                 try {
-                    cacheManager.setObject(redisKey + customer.getId(), customer);
+                    cacheManager.setValue(redisKey + customer.getId(), beanToJson(customer));
+                    // cacheManager.setObject(redisKey + customer.getId(), customer);
                 } catch (Exception e) {
                     // redis出错只记录log
                     log.error("findCustomerAllByRedis cacheManager.setObject(" + redisKey + customer.getId() + ") error");
@@ -364,24 +388,29 @@ public abstract class BaseManagerImpl implements BaseManager {
         if (redis.size() > 0) {
             for (String s : redis) {
                 Store store = null;
+                String storeJson = null;
                 // 获取对应Redis数据
                 try {
-                    store = cacheManager.getObject(s.split("_")[1]);
+                    storeJson = cacheManager.getValue(s.split("_")[1]);
+                    // store = cacheManager.getObject(s.split("_")[1]);
                 } catch (Exception e) {
                     // redis出错只记录log
                     log.error("findStoreAllByRedis cacheManager.getObject(" + s.split("_")[1] + ") error");
                 }
-                if (null == store) {
+                if (StringUtil.isEmpty(storeJson)) {
                     // redis没有 查询数据库
                     store = storeDao.findById(Long.parseLong(s.substring(s.lastIndexOf("-") + 1, s.length())));
                     if (null != store) {
                         try {
-                            cacheManager.setObject(redisKey + store.getId(), store);
+                            cacheManager.setValue(redisKey + store.getId(), beanToJson(store));
+                            // cacheManager.setObject(redisKey + store.getId(), store);
                         } catch (Exception e) {
                             // redis出错只记录log
                             log.error("findStoreAllByRedis cacheManager.setObject(" + redisKey + store.getId() + ") error");
                         }
                     }
+                } else {
+                    store = (Store) JSONObject.toBean(jsonToBean(storeJson), Store.class);
                 }
                 if (null != store) {
                     returnList.put(store.getId(), store);
@@ -392,7 +421,8 @@ public abstract class BaseManagerImpl implements BaseManager {
             List<Store> storeList = storeDao.findStoreByCustomerId(customerId);
             for (Store store : storeList) {
                 try {
-                    cacheManager.setObject(redisKey + store.getId(), store);
+                    cacheManager.setValue(redisKey + store.getId(), beanToJson(store));
+                    // cacheManager.setObject(redisKey + store.getId(), store);
                 } catch (Exception e) {
                     // redis出错只记录log
                     log.error("findStoreAllByRedis cacheManager.setObject(" + redisKey + store.getId() + ") error");
@@ -428,29 +458,34 @@ public abstract class BaseManagerImpl implements BaseManager {
             // 有对应缓存信息
             for (String s : redis) {
                 SysDictionary sys = null;
+                String sysDictionary = null;
                 // 获取对应Redis数据
                 try {
-                    sys = cacheManager.getObject("%" + s.split("%")[1]);
+                    sysDictionary = cacheManager.getValue("%" + s.split("%")[1]);
+                    // sys = cacheManager.getObject("%" + s.split("%")[1]);
                 } catch (Exception e) {
                     // redis出错只记录log
                     log.error("findSysDictionaryByGroupValueAndRedis cacheManager.getObject(" + s.split("%")[1] + ") error");
                 }
-                if (null == sys) {
+                if (StringUtil.isEmpty(sysDictionary)) {
                     // 缓存无对应数据 查询数据库
                     String dicValue = s.substring(s.lastIndexOf("$") + 1, s.length());
                     sys = sysDictionaryDao.getGroupbyGroupValueAndDicValue(groupValue, dicValue);
                     try {
-                        cacheManager.setObject(redisKey + dicValue, sys);
+                        cacheManager.setValue(redisKey + dicValue, beanToJson(sys));
+                        // cacheManager.setObject(redisKey + dicValue, sys);
                     } catch (Exception e) {
                         // redis出错只记录log
                         log.error("findSysDictionaryByGroupValueAndRedis cacheManager.setObject(" + redisKey + dicValue + ") error");
                     }
+                } else {
+                    sys = (SysDictionary) JSONObject.toBean(jsonToBean(sysDictionary), SysDictionary.class);
                 }
                 if (null != sys) {
                     // 判断系统参数的lifecycle是否=传入的lifecycle
-                    if (sys.getLifecycle().equals(lifecycle)) {
-                        returnList.add(sys);
-                    }
+                    // if (sys.getLifecycle().equals(lifecycle)) {
+                    returnList.add(sys);
+                    // }
                 }
             }
         } else {
@@ -459,7 +494,8 @@ public abstract class BaseManagerImpl implements BaseManager {
             for (SysDictionary sys : sysList) {
                 try {
                     // 放入redis
-                    cacheManager.setObject(redisKey + sys.getDicValue(), sys);
+                    cacheManager.setValue(redisKey + sys.getDicValue(), beanToJson(sys));
+                    // cacheManager.setObject(redisKey + sys.getDicValue(), sys);
                 } catch (Exception e) {
                     // redis出错只记录log
                     log.error("findSysDictionaryByGroupValueAndRedis cacheManager.setObject(" + redisKey + sys.getDicValue() + ") error");
@@ -524,27 +560,53 @@ public abstract class BaseManagerImpl implements BaseManager {
         // 仓库KEY前缀
         String redisKey = CacheKeyConstant.CACHE_WAREHOSUE;
         Warehouse wh = null;
+        String w = null;
         try {
             // 读取仓库基础信息 redis
-            wh = cacheManager.getObject(redisKey + id);
+            w = cacheManager.getValue(redisKey + id);
+            // wh = cacheManager.getObject(redisKey + id);
         } catch (Exception e) {
             // redis出错只记录log
             log.error("getWhToRedis cacheManager.setObject(" + redisKey + id + ") error");
         }
-        if (null == wh) {
+        if (StringUtil.isEmpty(w)) {
             // 如果redis没有对应数据 查询数据库
             wh = warehouseDao.findWarehouseById(id);
             try {
                 // 放入redis缓存
-                cacheManager.setObject(redisKey + id, wh);
+                cacheManager.setValue(redisKey + id, beanToJson(wh));
+                // cacheManager.setObject(redisKey + id, wh);
             } catch (Exception e) {
                 // redis出错只记录log
                 log.error("getWhToRedis cacheManager.setObject(" + redisKey + id + ") error");
             }
+        } else {
+            wh = (Warehouse) JSONObject.toBean(jsonToBean(w), Warehouse.class);
         }
         return wh;
     }
 
+    /**
+     * 对象转json字符串
+     * 
+     * @param o
+     * @return
+     */
+    private String beanToJson(Object o) {
+        JSONObject jsonObject = JSONObject.fromObject(o);
+        return jsonObject.toString();
+    }
+
+    /**
+     * json字符串转Json对象
+     *
+     * @param o
+     * @return
+     */
+    private JSONObject jsonToBean(String o) {
+        JSONObject jsonobject = JSONObject.fromObject(o);
+        return jsonobject;
+    }
 
     protected void removeWaveLineWhole(Long waveId, Long odoId, Long ouId) {
         whWaveLineDao.removeWaveLineWhole(waveId, odoId, ouId);

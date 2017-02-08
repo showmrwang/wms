@@ -249,9 +249,10 @@ public interface OdoManager extends BaseManager {
      * 【业务方法】延迟创建波次
      * 
      * @param wave
+     * @param waveTemplateId
      * @param odoIdList
      */
-    void createOdoWaveNew(WhWave wave, List<Long> odoIdList);
+    void createOdoWaveNew(WhWave wave, Long waveTemplateId, List<Long> odoIdList);
 
     /**
      * 【业务方法】查找延迟加入波次的出库单

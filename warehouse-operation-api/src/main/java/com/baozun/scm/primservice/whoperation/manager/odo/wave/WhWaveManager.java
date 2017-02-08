@@ -297,5 +297,13 @@ public interface WhWaveManager extends BaseManager {
      */
     public void addOdoLineToWave(List<Long> odoIdList, WhWave wave);
 
+    /**
+     * 【定时任务】将数据插入到波次明细中(批量)
+     * 
+     * @param odoId
+     * @param wave
+     */
+    public void addOdoLineToWaveNew(List<Long> odoIdList, WhWave wave);
+
 
 }

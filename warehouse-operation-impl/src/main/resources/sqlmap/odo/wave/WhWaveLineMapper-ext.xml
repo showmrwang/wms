@@ -805,5 +805,109 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        id = #{id} and ou_id=#{ouId}
 	    ]]>
 	    </delete> 
+	    
+	    
+	    
+	    <insert id="batchInsert" parameterType="map" 
+				
+			 flushCache="true">
+		    <![CDATA[
+		        INSERT INTO
+		        t_wh_wave_line (
+		        id,
+		        	wave_id ,
+		        	odo_line_id ,
+		        	odo_id ,
+		        	odo_code ,
+		        	odo_priority_level ,
+		        	odo_plan_deliver_goods_time ,
+		        	odo_order_time ,
+		        	allocate_rule_id ,
+		        	linenum ,
+		        	store_id ,
+		        	ext_linenum ,
+		        	sku_id ,
+		        	sku_bar_code ,
+		        	sku_name ,
+		        	ext_sku_name ,
+		        	qty ,
+		        	is_whole_order_outbound ,
+		        	full_line_outbound ,
+		        	mfg_date ,
+		        	exp_date ,
+		        	min_exp_date ,
+		        	max_exp_date ,
+		        	batch_number ,
+		        	country_of_origin ,
+		        	inv_status ,
+		        	inv_type ,
+		        	inv_attr1 ,
+		        	inv_attr2 ,
+		        	inv_attr3 ,
+		        	inv_attr4 ,
+		        	inv_attr5 ,
+		        	outbound_carton_type ,
+		        	color ,
+		        	style ,
+		        	size ,
+		        	ou_id ,
+		        	create_time ,
+		        	created_id ,
+		        	last_modify_time ,
+		        	modified_id ,
+		        	is_static_location_allocate,
+		        	allocate_qty
+		        ) VALUES 
+		    ]]>
+		    	<foreach collection="list" item="item" index="index"
+			separator=",">
+		    (
+		        #{item.id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{item.waveId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{item.odoLineId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{item.odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{item.odoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{item.odoPriorityLevel,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{item.odoPlanDeliverGoodsTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{item.odoOrderTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{item.allocateRuleId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{item.linenum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{item.storeId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{item.extLinenum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{item.skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{item.skuBarCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{item.skuName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{item.extSkuName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{item.qty,javaType=Double,jdbcType=DECIMAL} ,
+		        	#{item.isWholeOrderOutbound,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	#{item.fullLineOutbound,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	#{item.mfgDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{item.expDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{item.minExpDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{item.maxExpDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{item.batchNumber,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{item.countryOfOrigin,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{item.invStatus,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{item.invType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{item.invAttr1,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{item.invAttr2,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{item.invAttr3,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{item.invAttr4,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{item.invAttr5,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{item.outboundCartonType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{item.color,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{item.style,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{item.size,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{item.ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{item.createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{item.createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{item.lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{item.modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{item.isStaticLocationAllocate,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	#{item.allocateQty,javaType=java.lang.Double,jdbcType=DECIMAL} 
+		        
+		        )
+				</foreach>
+		</insert>
 	
 </mapper>

@@ -43,6 +43,9 @@ public final class Constants {
     /** 调编码生成器Asn预约实体标识 */
     public static final String ASN_RESERVE_MODEL_URL = "com.baozun.scm.primservice.whinfo.model.warehouse.AsnReserve";
 
+    /** 波次明细 */
+    public static final String WAVE_LINE_URL = "com.baozun.scm.primservice.whinfo.model.odo.wave.WhWaveLine";
+
 
     /** 调编码生成器 ASN单WMS内部单号分组 */
     public static final String WMS_ASN_INNER = "WMS_ASN_INNER";
@@ -179,6 +182,7 @@ public final class Constants {
     /** 分配规则 */
     public static final String ALLOCATE_RULE = "ALLOCATE_RULE";
     public static final String ALLOCATE = "ALLOCATE";
+    public static final String WAVE_CREATE = "WAVE_CREATE";
 
     /** 分配策略 */
     public static final String ALLOCATE_STRATEGY = "ALLOCATE_STRATEGY";

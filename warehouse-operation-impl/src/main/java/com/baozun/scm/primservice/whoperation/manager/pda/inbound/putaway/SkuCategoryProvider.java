@@ -34,39 +34,40 @@ public final class SkuCategoryProvider {
     // 分隔符
     public static final String DV = "┊";
     // 属性数
-    public static int AN = 10;
+    public static int AN = 12;
     public static int IDX_SKUID = 0;
     public static int IDX_INVTYPE = 1;
     public static int IDX_INVSTATUS = 2;
-    public static int IDX_MFGDATE = 3;
-    public static int IDX_EXPDATE = 4;
-    public static int IDX_INVATTR1 = 5;
-    public static int IDX_INVATTR2 = 6;
-    public static int IDX_INVATTR3 = 7;
-    public static int IDX_INVATTR4 = 8;
-    public static int IDX_INVATTR5 = 9;
-    public static int IDX_SKUSN = 10;
-    public static int IDX_SKUDEFECT = 11;
+    public static int IDX_BATCHNUMBER = 3;
+    public static int IDX_COUNTRYOFORIGIN = 4;
+    public static int IDX_MFGDATE = 5;
+    public static int IDX_EXPDATE = 6;
+    public static int IDX_INVATTR1 = 7;
+    public static int IDX_INVATTR2 = 8;
+    public static int IDX_INVATTR3 = 9;
+    public static int IDX_INVATTR4 = 10;
+    public static int IDX_INVATTR5 = 11;
+    public static int IDX_SKUSN = 12;
+    public static int IDX_SKUDEFECT = 13;
 
     public static String getSkuAttrIdByInv(WhSkuInventoryCommand invCmd) {
         String ret = "";
         Long skuId = invCmd.getSkuId();
         String invType = (StringUtils.isEmpty(invCmd.getInvType()) ? PH : invCmd.getInvType());
         String invStatus = (StringUtils.isEmpty(invCmd.getInvStatus()) ? PH : invCmd.getInvStatus() + "");
-//         String batchNumber = (StringUtils.isEmpty(invCmd.getBatchNumber()) ? PH : invCmd.getBatchNumber());
+        String batchNumber = (StringUtils.isEmpty(invCmd.getBatchNumber()) ? PH : invCmd.getBatchNumber());
+        String countryOfOrigin = (StringUtils.isEmpty(invCmd.getCountryOfOrigin()) ? PH : invCmd.getCountryOfOrigin());
         String mfgDate = (StringUtils.isEmpty(invCmd.getMfgDate()) ? PH : new SimpleDateFormat("yyyyMMddHHmmss").format(invCmd.getMfgDate()));
         String expDate = (StringUtils.isEmpty(invCmd.getExpDate()) ? PH : new SimpleDateFormat("yyyyMMddHHmmss").format(invCmd.getExpDate()));
-//         String countryOfOrigin = (StringUtils.isEmpty(invCmd.getCountryOfOrigin()) ? PH :
-//         invCmd.getCountryOfOrigin());
         String invAttr1 = (StringUtils.isEmpty(invCmd.getInvAttr1()) ? PH : invCmd.getInvAttr1());
         String invAttr2 = (StringUtils.isEmpty(invCmd.getInvAttr2()) ? PH : invCmd.getInvAttr2());
         String invAttr3 = (StringUtils.isEmpty(invCmd.getInvAttr3()) ? PH : invCmd.getInvAttr3());
         String invAttr4 = (StringUtils.isEmpty(invCmd.getInvAttr4()) ? PH : invCmd.getInvAttr4());
         String invAttr5 = (StringUtils.isEmpty(invCmd.getInvAttr5()) ? PH : invCmd.getInvAttr5());
-//         ret = skuId + DV + invType + DV + invStatus + DV + batchNumber + DV + mfgDate + DV +
-//         expDate + DV + countryOfOrigin + DV + invAttr1 + DV + invAttr2 + DV + invAttr3 + DV +
-//         invAttr4 + DV + invAttr5;
-        ret = skuId + DV + invType + DV + invStatus + DV + mfgDate + DV + expDate + DV + invAttr1 + DV + invAttr2 + DV + invAttr3 + DV + invAttr4 + DV + invAttr5;
+        // ret = skuId + DV + invType + DV + invStatus + DV + batchNumber + DV + mfgDate + DV +
+        // expDate + DV + countryOfOrigin + DV + invAttr1 + DV + invAttr2 + DV + invAttr3 + DV +
+        // invAttr4 + DV + invAttr5;
+        ret = skuId + DV + invType + DV + invStatus + DV + batchNumber + DV + countryOfOrigin + DV + mfgDate + DV + expDate + DV + invAttr1 + DV + invAttr2 + DV + invAttr3 + DV + invAttr4 + DV + invAttr5;
         return ret;
     }
     
@@ -107,20 +108,19 @@ public final class SkuCategoryProvider {
         Long skuId = skuTobefilled.getSkuId();
         String invType = (StringUtils.isEmpty(skuTobefilled.getInvType()) ? PH : skuTobefilled.getInvType());
         String invStatus = (StringUtils.isEmpty(skuTobefilled.getInvStatus()) ? PH : skuTobefilled.getInvStatus() + "");
-//        String batchNumber = (StringUtils.isEmpty(skuTobefilled.getBatchNumber()) ? PH : skuTobefilled.getBatchNumber());
+        String batchNumber = (StringUtils.isEmpty(skuTobefilled.getBatchNumber()) ? PH : skuTobefilled.getBatchNumber());
+        String countryOfOrigin = (StringUtils.isEmpty(skuTobefilled.getCountryOfOrigin()) ? PH : skuTobefilled.getCountryOfOrigin());
         String mfgDate = (StringUtils.isEmpty(skuTobefilled.getMfgDate()) ? PH : new SimpleDateFormat("yyyyMMddHHmmss").format(skuTobefilled.getMfgDate()));
         String expDate = (StringUtils.isEmpty(skuTobefilled.getExpDate()) ? PH : new SimpleDateFormat("yyyyMMddHHmmss").format(skuTobefilled.getExpDate()));
-//        String countryOfOrigin = (StringUtils.isEmpty(skuTobefilled.getCountryOfOrigin()) ? PH :
-//            skuTobefilled.getCountryOfOrigin());
         String invAttr1 = (StringUtils.isEmpty(skuTobefilled.getInvAttr1()) ? PH : skuTobefilled.getInvAttr1());
         String invAttr2 = (StringUtils.isEmpty(skuTobefilled.getInvAttr2()) ? PH : skuTobefilled.getInvAttr2());
         String invAttr3 = (StringUtils.isEmpty(skuTobefilled.getInvAttr3()) ? PH : skuTobefilled.getInvAttr3());
         String invAttr4 = (StringUtils.isEmpty(skuTobefilled.getInvAttr4()) ? PH : skuTobefilled.getInvAttr4());
         String invAttr5 = (StringUtils.isEmpty(skuTobefilled.getInvAttr5()) ? PH : skuTobefilled.getInvAttr5());
-        ret = skuId + DV + invType + DV + invStatus + DV + mfgDate + DV + expDate + DV + invAttr1 + DV + invAttr2 + DV + invAttr3 + DV + invAttr4 + DV + invAttr5;
-//        ret = skuId + DV + invType + DV + invStatus + DV + batchNumber + DV + mfgDate + DV +
-//                expDate + DV + countryOfOrigin + DV + invAttr1 + DV + invAttr2 + DV + invAttr3 + DV +
-//                invAttr4 + DV + invAttr5;
+        ret = skuId + DV + invType + DV + invStatus + DV + batchNumber + DV + countryOfOrigin + DV + mfgDate + DV + expDate + DV + invAttr1 + DV + invAttr2 + DV + invAttr3 + DV + invAttr4 + DV + invAttr5;
+        // ret = skuId + DV + invType + DV + invStatus + DV + batchNumber + DV + mfgDate + DV +
+        // expDate + DV + countryOfOrigin + DV + invAttr1 + DV + invAttr2 + DV + invAttr3 + DV +
+        // invAttr4 + DV + invAttr5;
         return ret;
     }
     

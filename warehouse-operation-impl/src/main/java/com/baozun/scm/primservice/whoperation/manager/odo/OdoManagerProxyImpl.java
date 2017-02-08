@@ -2059,6 +2059,8 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
             OdoSearchCommand search = new OdoSearchCommand();
             BeanUtils.copyProperties(command, search);
             search.setLineFlag(true);
+            // @mender yimin.lu 2017/2/7 非锁定的出库单
+            search.setIsLocked(Constants.DEFAULT_INTEGER);
             if (StringUtils.hasText(command.getOdoStatus())) {
                 search.setOdoStatus(Arrays.asList(command.getOdoStatus().split(",")));
             }
@@ -2259,7 +2261,7 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
         wave.setLifecycle(Constants.LIFECYCLE_START);
 
 
-        this.odoManager.createOdoWaveNew(wave, odoIdList);
+        this.odoManager.createOdoWaveNew(wave, master.getWaveTemplateId(), odoIdList);
         return waveCode;
     }
 
@@ -2281,7 +2283,7 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
     @Override
     public void addOdoLineToWave(List<Long> odoIdList, WhWave wave) {
         try {
-            this.waveManager.addOdoLineToWave(odoIdList, wave);
+            this.waveManager.addOdoLineToWaveNew(odoIdList, wave);
         } catch (Exception e) {
 
         }

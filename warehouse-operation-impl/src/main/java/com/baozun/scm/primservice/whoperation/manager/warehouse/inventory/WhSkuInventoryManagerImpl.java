@@ -3817,7 +3817,10 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     }
     
     private void createSkuInventoryAllocatedAndTobefilled(WhSkuInventoryCommand invCommand, String occupyCode, String bhCode, Long occupyLineId, Long locationId, Warehouse wh, Double qty, Long ruleId, String type) {
-    	Long ouId = wh.getId();
+        if (qty.doubleValue() == 0) {
+            return;
+        }
+        Long ouId = wh.getId();
     	WhSkuInventoryAllocated allocated = new WhSkuInventoryAllocated();
 		BeanUtils.copyProperties(invCommand, allocated);
 		allocated.setId(null);
@@ -3955,14 +3958,14 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             // 货箱
             if (allocateUnitCodes.contains("," + Constants.ALLOCATE_UNIT_HX + ",")) {
                 upperLimitQty = occupySkuInventoryOfBoxToLimit(wh, replenishmentCode, rsc, locationId, ruleId, skuId, ouId, upperLimitQty);
-                if (upperLimitQty == 0) {
+                if (upperLimitQty.doubleValue() == 0) {
                     break;
                 }
             }
             // 件
             if (allocateUnitCodes.contains("," + Constants.ALLOCATE_UNIT_PIECE + ",")) {
                 upperLimitQty = occupySkuInventoryOfPieceToLimit(wh, replenishmentCode, rsc, locationId, ruleId, skuId, ouId, upperLimitQty);
-                if (upperLimitQty == 0) {
+                if (upperLimitQty.doubleValue() == 0) {
                     break;
                 }
             }
@@ -4010,6 +4013,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             for (WhSkuInventoryCommand invCommand : skuInvs) {
                 Double onHandQtySingle = invCommand.getOnHandQty();
                 Double usableQtySingle = this.whSkuInventoryDao.getUseableQtyByUuid(invCommand.getUuid(), ouId);
+                if (usableQtySingle.doubleValue() == 0) {
+                    continue;
+                }
                 Double upperCounter;// 同UUID的可用数量
                 if (onHandQtySingle <= usableQtySingle) {
                     upperCounter = onHandQtySingle;
@@ -4028,7 +4034,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     createSkuInventoryAllocatedAndTobefilled(invCommand, null, replenishmentCode, null, locationId, wh, upperLimitQty, ruleId, GLOBAL_LOG_UPDATE);
                     upperLimitQty = 0.0;
                 }
-                if (upperLimitQty == 0) {
+                if (upperLimitQty.doubleValue() == 0) {
                     break;
                 }
             }
@@ -4054,6 +4060,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 
                 Double onHandQtySingle = invCommand.getOnHandQty();
                 Double usableQtySingle = this.whSkuInventoryDao.getUseableQtyByUuid(invCommand.getUuid(), ouId);
+                if (usableQtySingle.doubleValue() == 0) {
+                    continue;
+                }
                 Double upperCounter;// 同UUID的可用数量
                 if (onHandQtySingle <= usableQtySingle) {
                     upperCounter = onHandQtySingle;
@@ -4072,11 +4081,11 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     createSkuInventoryAllocatedAndTobefilled(invCommand, null, replenishmentCode, null, locationId, wh, upperLimitQty, ruleId, GLOBAL_LOG_UPDATE);
                     upperLimitQty = 0.0;
                 }
-                if (upperLimitQty == 0) {
+                if (upperLimitQty.doubleValue() == 0) {
                     break;
                 }
             }
-            if (upperLimitQty == 0) {
+            if (upperLimitQty.doubleValue() == 0) {
                 break;
             }
 
@@ -4152,7 +4161,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 createSkuInventoryAllocatedAndTobefilled(invCommand, null, replenishmentCode, null, locationId, wh, upperLimitQty, ruleId, GLOBAL_LOG_DELETE);
             }
             upperLimitQty -= onHandQty;
-            if (upperLimitQty == 0) {
+            if (upperLimitQty.doubleValue() == 0) {
                 break;
             }
 
@@ -4211,7 +4220,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 upperLimitQty = 0.0;
 
             }
-            if (upperLimitQty == 0) {
+            if (upperLimitQty.doubleValue() == 0) {
                 break;
             }
 
@@ -4299,7 +4308,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 upperLimitQty = 0.0;
 
             }
-            if (upperLimitQty == 0) {
+            if (upperLimitQty.doubleValue() == 0) {
                 break;
             }
 
@@ -4332,7 +4341,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 createSkuInventoryAllocatedAndTobefilled(invCommand, null, replenishmentCode, null, locationId, wh, upperLimitQty, ruleId, GLOBAL_LOG_DELETE);
             }
             upperLimitQty -= onHandQty;
-            if (upperLimitQty == 0) {
+            if (upperLimitQty.doubleValue() == 0) {
                 break;
             }
 

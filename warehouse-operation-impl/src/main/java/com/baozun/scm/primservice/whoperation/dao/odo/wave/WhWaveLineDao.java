@@ -142,6 +142,13 @@ public interface WhWaveLineDao extends BaseDao<WhWaveLine, Long> {
      */
     WhWaveLine findHighestPriorityByOdoIds(@Param("waveId") Long waveId, @Param("odoIds") String odoIds, @Param("ouId") Long ouId);
 
+    /**
+     * 批量插入
+     * 
+     * @param waveLineList
+     */
+    int batchInsert(@Param("list") List<WhWaveLine> waveLineList);
+
 
     
 }

@@ -396,6 +396,9 @@
 			<if test="isWholeOrderOutbound!=null">
 				and odo.is_whole_order_outbound=#{isWholeOrderOutbound}
 			</if>
+			<if test="isLocked!=null">
+				and odo.is_locked=#{isLocked}
+			</if>
 			<if test="isExceptionOrder!=null and isExceptionOrder == 1">
 				and odo.is_assign_success = 0
 			</if>
@@ -1537,6 +1540,9 @@
 			<if test="isWholeOrderOutbound!=null">
 				and odo.is_whole_order_outbound=#{isWholeOrderOutbound}
 			</if>
+			<if test="isLocked!=null">
+				and odo.is_locked=#{isLocked}
+			</if>
 			<if test="lineFlag">
 				and EXISTS(select 1 from t_wh_odo_line odoline
 				inner join t_wh_sku
@@ -2294,6 +2300,9 @@
 			</if>
 			<if test="isWholeOrderOutbound!=null">
 				and odo.is_whole_order_outbound=#{isWholeOrderOutbound}
+			</if>
+			<if test="isLocked!=null">
+				and odo.is_locked=#{isLocked}
 			</if>
 			<if test="lineFlag">
 				and EXISTS(select 1 from t_wh_odo_line odoline
@@ -3190,7 +3199,7 @@
 		from t_wh_odo odo
 	
 		where odo.wave_code=#{waveCode} and odo.ou_id=#{ouId} 
-		and exists(select 1 from t_wh_odo_line odoline where odoline.odo_id=odo.id and (odoline.wave_code ='' or odoline.wave_code =null))
+		and exists(select 1 from t_wh_odo_line odoline where odoline.odo_id=odo.id and (odoline.wave_code ='' or odoline.wave_code is null))
 	</select>
 	
 	 <select id="findOdoIdCounterCodebyWaveCode" resultType="string">

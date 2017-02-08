@@ -3390,7 +3390,14 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                 csrCmd = pdaPutawayCacheManager.sysGuideSplitContainerPutawayCacheInsideContainerStatistic(containerCmd, ouId, logId);
             }
         }
-        // 1.提示商品并判断是否需要扫描属性
+        // 1.获取功能配置
+        WhFunctionPutAway putawyaFunc = whFunctionPutAwayManager.findWhFunctionPutAwayByFunctionId(funcId, ouId, logId);
+        if (null == putawyaFunc) {
+            log.error("whFunctionPutaway is null error, logId is:[{}]", logId);
+            throw new BusinessException(ErrorCodes.COMMON_FUNCTION_CONF_IS_NULL_ERROR);
+        }
+        Integer scanPattern = (WhScanPatternType.ONE_BY_ONE_SCAN == putawyaFunc.getScanPattern()) ? WhScanPatternType.ONE_BY_ONE_SCAN : WhScanPatternType.NUMBER_ONLY_SCAN;
+        // 2.提示商品并判断是否需要扫描属性
         Map<Long, Map<String, Long>> insideContainerSkuAttrIdsQty = isCmd.getInsideContainerSkuAttrIdsQty();
         // Map<Long, Map<String, Set<String>>> insideContainerSkuAttrIdsSnDefect =
         // isCmd.getInsideContainerSkuAttrIdsSnDefect();
@@ -3415,6 +3422,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
 //            log.error("sku is not found error, logId is:[{}]", logId);
 //            throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
 //        }
+        srCmd.setScanPattern(scanPattern);
         tipSkuDetailAspect(srCmd, tipSkuAttrId, locSkuAttrIds, skuAttrIdsQty, logId);
         srCmd.setNeedTipSku(true);
         srCmd.setTipSkuBarcode(sku.getBarCode());
@@ -3431,7 +3439,11 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
             log.error("sku qty is null error, logId is:[{}]", logId);
             throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
         }
-        srCmd.setTipSkuQty(qty.intValue());
+        if (WhScanPatternType.ONE_BY_ONE_SCAN == srCmd.getScanPattern()) {
+            srCmd.setTipSkuQty(1);
+        } else {
+            srCmd.setTipSkuQty(qty.intValue());
+        }
         if (true == isTipSkuDetail) {
             srCmd.setNeedTipSkuInvType(TipSkuDetailProvider.isTipSkuInvType(tipSkuAttrId));
             if (true == srCmd.isNeedTipSkuInvType()) {
@@ -3470,6 +3482,20 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                 }
             } else {
                 srCmd.setTipSkuInvStatus("");
+            }
+            srCmd.setNeedTipSkuBatchNumber(TipSkuDetailProvider.isTipSkuBatchNumber(tipSkuAttrId));
+            if (true == srCmd.isNeedTipSkuBatchNumber()) {
+                String skuBatchNumber = TipSkuDetailProvider.getSkuBatchNumber(tipSkuAttrId);
+                srCmd.setTipSkuBatchNumber(skuBatchNumber);
+            } else {
+                srCmd.setTipSkuBatchNumber("");
+            }
+            srCmd.setNeedTipSkuCountryOfOrigin(TipSkuDetailProvider.isTipSkuCountryOfOrigin(tipSkuAttrId));
+            if (true == srCmd.isNeedTipSkuCountryOfOrigin()) {
+                String skuCountryOfOrigin = TipSkuDetailProvider.getSkuCountryOfOrigin(tipSkuAttrId);
+                srCmd.setTipSkuCountryOfOrigin(skuCountryOfOrigin);
+            } else {
+                srCmd.setTipSkuCountryOfOrigin("");
             }
             srCmd.setNeedTipSkuMfgDate(TipSkuDetailProvider.isTipSkuMfgDate(tipSkuAttrId));
             if (true == srCmd.isNeedTipSkuMfgDate()) {
@@ -4356,6 +4382,8 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         sku.setIsNeedTipSkuDefect(null == skuCmd.getIsNeedTipSkuDefect() ? false : skuCmd.getIsNeedTipSkuDefect());
         sku.setInvType(StringUtils.isEmpty(skuCmd.getInvType()) ? "" : skuCmd.getInvType());
         sku.setInvStatus(StringUtils.isEmpty(skuCmd.getInvStatus()) ? "" : skuCmd.getInvStatus());
+        sku.setInvBatchNumber(StringUtils.isEmpty(skuCmd.getInvBatchNumber()) ? "" : skuCmd.getInvBatchNumber());
+        sku.setInvCountryOfOrigin(StringUtils.isEmpty(skuCmd.getInvCountryOfOrigin()) ? "" : skuCmd.getInvCountryOfOrigin());
         sku.setInvMfgDate(StringUtils.isEmpty(skuCmd.getInvMfgDate()) ? "" : skuCmd.getInvMfgDate());
         sku.setInvExpDate(StringUtils.isEmpty(skuCmd.getInvExpDate()) ? "" : skuCmd.getInvExpDate());
         sku.setInvAttr1(StringUtils.isEmpty(skuCmd.getInvAttr1()) ? "" : skuCmd.getInvAttr1());

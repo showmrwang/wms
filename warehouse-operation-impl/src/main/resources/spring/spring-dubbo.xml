@@ -126,4 +126,7 @@
     
     <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.bi.UserImportExcelManager" ref="userImportExcelManager" />
 
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.seeding.SeedingManagerProxy" ref="seedingManagerProxy" />
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.seeding.SeedingManager" ref="seedingManager" />
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.WhSeedingCollectionManager" ref="whSeedingCollectionManager" />
 </beans>

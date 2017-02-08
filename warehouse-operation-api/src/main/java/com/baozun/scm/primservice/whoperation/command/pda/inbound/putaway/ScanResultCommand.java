@@ -76,6 +76,14 @@ public class ScanResultCommand extends BaseCommand {
     private boolean isNeedTipSkuInvStatus;
     /** 提示商品库存状态 */
     private String tipSkuInvStatus = "";
+    /** 是否提示商品批次号 */
+    private boolean isNeedTipSkuBatchNumber;
+    /** 提示商品批次号 */
+    private String tipSkuBatchNumber = "";
+    /** 是否提示商品原产地 */
+    private boolean isNeedTipSkuCountryOfOrigin;
+    /** 提示商品原产地 */
+    private String tipSkuCountryOfOrigin = "";
     /** 是否需要提示商品的生产日期 */
     private boolean isNeedTipSkuMfgDate;
     /** 提示商品生产日期 */
@@ -352,6 +360,38 @@ public class ScanResultCommand extends BaseCommand {
 
     public void setTipSkuInvStatus(String tipSkuInvStatus) {
         this.tipSkuInvStatus = tipSkuInvStatus;
+    }
+    
+    public boolean isNeedTipSkuBatchNumber() {
+        return isNeedTipSkuBatchNumber;
+    }
+
+    public void setNeedTipSkuBatchNumber(boolean isNeedTipSkuBatchNumber) {
+        this.isNeedTipSkuBatchNumber = isNeedTipSkuBatchNumber;
+    }
+
+    public String getTipSkuBatchNumber() {
+        return tipSkuBatchNumber;
+    }
+
+    public void setTipSkuBatchNumber(String tipSkuBatchNumber) {
+        this.tipSkuBatchNumber = tipSkuBatchNumber;
+    }
+
+    public boolean isNeedTipSkuCountryOfOrigin() {
+        return isNeedTipSkuCountryOfOrigin;
+    }
+
+    public void setNeedTipSkuCountryOfOrigin(boolean isNeedTipSkuCountryOfOrigin) {
+        this.isNeedTipSkuCountryOfOrigin = isNeedTipSkuCountryOfOrigin;
+    }
+
+    public String getTipSkuCountryOfOrigin() {
+        return tipSkuCountryOfOrigin;
+    }
+
+    public void setTipSkuCountryOfOrigin(String tipSkuCountryOfOrigin) {
+        this.tipSkuCountryOfOrigin = tipSkuCountryOfOrigin;
     }
 
     public boolean isNeedTipSkuMfgDate() {
