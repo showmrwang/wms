@@ -246,37 +246,47 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
      * @return
      */
     private String initAsnOverchargeRate(Double overChargeRatePo, Double overChargeRateAsn, Long storeId, Long ouId) {
-        Map<Long, Store> storeMap = this.findStoreByRedis(Arrays.asList(new Long[] {storeId}));
-        Warehouse wh = this.warehouseManager.findWarehouseById(ouId);
-        Store store = storeMap.get(storeId);
-        if (null == overChargeRatePo) {
-            Integer storePo = store.getIsPoOvercharge() ? store.getPoOverchargeProportion() : null;
-            if (storePo != null) {
-                overChargeRatePo = (Double) storePo.doubleValue();
-            } else {
-                Integer whPo = wh.getIsPoOvercharge() ? wh.getPoOverchargeProportion() : null;
-                if (whPo != null) {
-                    overChargeRatePo = whPo.doubleValue();
-                }
-            }
-        }
-        if (null == overChargeRatePo) {
-            overChargeRatePo = Constants.DEFAULT_DOUBLE;
-        }
-        if (null == overChargeRateAsn) {
-            Integer storeAsn = store.getIsAsnOvercharge() ? store.getAsnOverchargeProportion() : null;
-            if (storeAsn != null) {
-                overChargeRateAsn = storeAsn.doubleValue();
-            } else {
-                Integer whAsn = wh.getIsAsnOvercharge() ? wh.getAsnOverchargeProportion() : null;
-                if (whAsn != null) {
-                    overChargeRateAsn = whAsn.doubleValue();
-                }
-            }
-        }
+        log.info("initAsnOverchargeRate params overChargeRatePo:{},overChargeRateAsn:{},storeId:{},ouId:{}", overChargeRatePo, overChargeRateAsn, storeId, ouId);
+        try {
 
-        if (null == overChargeRateAsn) {
-            overChargeRateAsn = Constants.DEFAULT_DOUBLE;
+            Warehouse wh = this.warehouseManager.findWarehouseById(ouId);
+            // #TODO 从缓存中读取----修正
+            // Map<Long, Store> storeMap = this.findStoreByRedis(Arrays.asList(new Long[]
+            // {storeId}));
+            // Store store = storeMap.get(storeId);
+            Store store = this.storeManager.findStoreById(storeId);
+            log.info("store:{}", store);
+            if (null == overChargeRatePo) {
+                Integer storePo = store.getIsPoOvercharge() ? store.getPoOverchargeProportion() : null;
+                if (storePo != null) {
+                    overChargeRatePo = (Double) storePo.doubleValue();
+                } else {
+                    Integer whPo = wh.getIsPoOvercharge() ? wh.getPoOverchargeProportion() : null;
+                    if (whPo != null) {
+                        overChargeRatePo = whPo.doubleValue();
+                    }
+                }
+            }
+            if (null == overChargeRatePo) {
+                overChargeRatePo = Constants.DEFAULT_DOUBLE;
+            }
+            if (null == overChargeRateAsn) {
+                Integer storeAsn = store.getIsAsnOvercharge() ? store.getAsnOverchargeProportion() : null;
+                if (storeAsn != null) {
+                    overChargeRateAsn = storeAsn.doubleValue();
+                } else {
+                    Integer whAsn = wh.getIsAsnOvercharge() ? wh.getAsnOverchargeProportion() : null;
+                    if (whAsn != null) {
+                        overChargeRateAsn = whAsn.doubleValue();
+                    }
+                }
+            }
+
+            if (null == overChargeRateAsn) {
+                overChargeRateAsn = Constants.DEFAULT_DOUBLE;
+            }
+        } catch (BusinessException ex) {
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
         return String.valueOf(overChargeRateAsn > overChargeRatePo ? overChargeRatePo : overChargeRateAsn);
     }
