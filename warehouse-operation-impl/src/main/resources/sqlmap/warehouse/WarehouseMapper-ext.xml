@@ -191,7 +191,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 
 	<sql id="warehouseDynamicWhereLikeExt">
 		<where>
-			w.code = ou.code
 			<if test="name!=null and name!=''">
 				and w.name like #{name}
 			</if>
@@ -203,9 +202,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			</if>
 			<if test="whCode!=null and whCode!=''">
 				and w.code like #{whCode}
-			</if>
-			<if test="ouid!=null and ouid!=''">
-				and ou.parent_ou_id = #{ouid}
 			</if>
 			<if test="lifecycle!=null">
 				and w.lifecycle = #{lifecycle}
@@ -293,24 +289,20 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		       	mgmt.y_qty as yqty,
 		       	mgmt.z_qty as zqty,
 		       	mgmt.seeding_odo_qty as seedingOdoQty,
-	        	ou.parent_ou_id as parentOuId,
-	        	ou.id as ouId
 	    ]]>
 	</sql>
 	<select id="findListByQueryMapWithPageExt" resultMap="warehouseCommand">
 		SELECT
 		<include refid="warehouseListColumnsExt" />
 		from t_bi_warehouse w
-		left join t_bi_warehouse_mgmt mgmt on (w.id = mgmt.warehouse_id),
-		au_operation_unit ou
+		left join t_bi_warehouse_mgmt mgmt on (w.id = mgmt.warehouse_id)
 		<include refid="warehouseDynamicWhereLikeExt" />
 	</select>
 
 	<select id="findListCountByQueryMapExt" resultType="long">
 		select count(*)
 		from t_bi_warehouse w
-		left join t_bi_warehouse_mgmt mgmt on (w.id = mgmt.warehouse_id),
-		au_operation_unit ou
+		left join t_bi_warehouse_mgmt mgmt on (w.id = mgmt.warehouse_id)
 		<include refid="warehouseDynamicWhereLikeExt" />
 	</select>
 
@@ -318,27 +310,24 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		SELECT
 		<include refid="warehouseListColumnsExt"></include>
 		from t_bi_warehouse w
-		left join t_bi_warehouse_mgmt mgmt on (w.id = mgmt.warehouse_id),
-		au_operation_unit ou
-		where w.code = ou.code and w.id = #{id}
+		left join t_bi_warehouse_mgmt mgmt on (w.id = mgmt.warehouse_id)
+		where w.id = #{id}
 	</select>
 	
 	<select id="findWarehouseByIdExt" resultMap="WarehouseResultExt">
 		SELECT
 		<include refid="warehouseListColumnsExt"></include>
 		from t_bi_warehouse w
-		left join t_bi_warehouse_mgmt mgmt on (w.id = mgmt.warehouse_id),
-		au_operation_unit ou
-		where w.code = ou.code and w.id = #{id}
+		left join t_bi_warehouse_mgmt mgmt on (w.id = mgmt.warehouse_id)
+		where w.id = #{id}
 	</select>
 
 	<select id="findWarehouseByCode" resultMap="WarehouseResultExt">
 		SELECT
 		<include refid="warehouseListColumnsExt"></include>
 		from t_bi_warehouse  w
-		left join t_bi_warehouse_mgmt mgmt on (w.id = mgmt.warehouse_id),
-		au_operation_unit ou
-		where w.code = ou.code and w.code = #{code} 
+		left join t_bi_warehouse_mgmt mgmt on (w.id = mgmt.warehouse_id)
+		where w.code = #{code} 
 	</select>
 
 
