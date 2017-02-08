@@ -548,23 +548,28 @@ public abstract class BaseManagerImpl implements BaseManager {
         // 仓库KEY前缀
         String redisKey = CacheKeyConstant.CACHE_WAREHOSUE;
         Warehouse wh = null;
+        String w = null;
         try {
             // 读取仓库基础信息 redis
-            wh = cacheManager.getObject(redisKey + id);
+            w = cacheManager.getValue(redisKey + id);
+            // wh = cacheManager.getObject(redisKey + id);
         } catch (Exception e) {
             // redis出错只记录log
             log.error("getWhToRedis cacheManager.setObject(" + redisKey + id + ") error");
         }
-        if (null == wh) {
+        if (StringUtil.isEmpty(w)) {
             // 如果redis没有对应数据 查询数据库
             wh = warehouseDao.findWarehouseById(id);
             try {
                 // 放入redis缓存
-                cacheManager.setObject(redisKey + id, wh);
+                cacheManager.setValue(redisKey + id, beanToJson(wh));
+                // cacheManager.setObject(redisKey + id, wh);
             } catch (Exception e) {
                 // redis出错只记录log
                 log.error("getWhToRedis cacheManager.setObject(" + redisKey + id + ") error");
             }
+        } else {
+            wh = (Warehouse) JSONObject.toBean(jsonToBean(w), Warehouse.class);
         }
         return wh;
     }
@@ -580,16 +585,16 @@ public abstract class BaseManagerImpl implements BaseManager {
         return jsonObject.toString();
     }
 
-    // /**
-    // * json字符串转Json对象
-    // *
-    // * @param o
-    // * @return
-    // */
-    // private JSONObject jsonToBean(String o) {
-    // JSONObject jsonobject = JSONObject.fromObject(o);
-    // return jsonobject;
-    // }
+    /**
+     * json字符串转Json对象
+     *
+     * @param o
+     * @return
+     */
+    private JSONObject jsonToBean(String o) {
+        JSONObject jsonobject = JSONObject.fromObject(o);
+        return jsonobject;
+    }
 
     protected void removeWaveLineWhole(Long waveId, Long odoId, Long ouId) {
         whWaveLineDao.removeWaveLineWhole(waveId, odoId, ouId);
