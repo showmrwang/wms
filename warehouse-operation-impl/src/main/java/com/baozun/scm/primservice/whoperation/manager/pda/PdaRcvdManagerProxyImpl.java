@@ -251,9 +251,13 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
 
             Warehouse wh = this.warehouseManager.findWarehouseById(ouId);
             // #TODO 从缓存中读取----修正
-            // Map<Long, Store> storeMap = this.findStoreByRedis(Arrays.asList(new Long[]
-            // {storeId}));
-            // Store store = storeMap.get(storeId);
+            try {
+
+                Map<Long, Store> storeMap = this.findStoreByRedis(Arrays.asList(new Long[] {storeId}));
+                Store store = storeMap.get(storeId);
+            } catch (Exception e) {
+                throw new BusinessException(ErrorCodes.RCVD_CACHE_ERROR);
+            }
             Store store = this.storeManager.findStoreById(storeId);
             log.info("store:{}", store);
             if (null == overChargeRatePo) {
@@ -286,6 +290,8 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                 overChargeRateAsn = Constants.DEFAULT_DOUBLE;
             }
         } catch (BusinessException ex) {
+            throw ex;
+        } catch (Exception e) {
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
         return String.valueOf(overChargeRateAsn > overChargeRatePo ? overChargeRatePo : overChargeRateAsn);
