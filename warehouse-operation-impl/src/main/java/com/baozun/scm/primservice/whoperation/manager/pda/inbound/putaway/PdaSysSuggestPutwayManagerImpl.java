@@ -2640,26 +2640,26 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
     }
     
     
-//    /**
-//     * 
-//     * @param insideContainerId
-//     * @param locationId
-//     * @param skuAttrIds
-//     */
-//    private void splitCacheScanSku(Long insideContainerId,Long locationId,String skuAttrIds) {
-//        log.info("PdaSysSuggestPutwayManagerImpl splitCacheScanSku is start"); 
-//        TipScanSkuCacheCommand cacheSkuCmd = cacheManager.getObject(CacheConstants.SCAN_SKU_QUEUE + insideContainerId.toString() + locationId.toString());
-//        if(null == cacheSkuCmd) {
-//            
-//        }
-//        ArrayDeque<String> scanSkuAttrIds = cacheSkuCmd.getScanSkuAttrIds();
-//        if(!scanSkuAttrIds.contains(skuAttrIds)) {
-//            scanSkuAttrIds.addFirst(skuAttrIds);
-//        }
-//        cacheSkuCmd.setScanSkuAttrIds(scanSkuAttrIds);
-//        cacheManager.setObject(CacheConstants.SCAN_SKU_QUEUE + insideContainerId.toString() + locationId.toString(), cacheSkuCmd, CacheConstants.CACHE_ONE_DAY);
-//        log.info("PdaSysSuggestPutwayManagerImpl splitCacheScanSku is end"); 
-//    }
+    /**
+     * 
+     * @param insideContainerId
+     * @param locationId
+     * @param skuAttrIds
+     */
+    private void splitCacheScanSku(Long insideContainerId,Long locationId,String skuAttrIds) {
+        log.info("PdaSysSuggestPutwayManagerImpl splitCacheScanSku is start"); 
+        TipScanSkuCacheCommand cacheSkuCmd = cacheManager.getObject(CacheConstants.SCAN_SKU_QUEUE + insideContainerId.toString() + locationId.toString());
+        if(null == cacheSkuCmd) {
+            throw new BusinessException(ErrorCodes.COMMON_FUNCTION_IS_CHANGE_ERROR);
+        }
+        ArrayDeque<String> scanSkuAttrIds = cacheSkuCmd.getScanSkuAttrIds();
+        if(!scanSkuAttrIds.contains(skuAttrIds)) {
+            scanSkuAttrIds.addFirst(skuAttrIds);
+        }
+        cacheSkuCmd.setScanSkuAttrIds(scanSkuAttrIds);
+        cacheManager.setObject(CacheConstants.SCAN_SKU_QUEUE + insideContainerId.toString() + locationId.toString(), cacheSkuCmd, CacheConstants.CACHE_ONE_DAY);
+        log.info("PdaSysSuggestPutwayManagerImpl splitCacheScanSku is end"); 
+    }
     /***
      * 推荐库位失败提示唯一sku(拆箱)
      * @param insideContainerId
@@ -2872,7 +2872,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
           if (cssrCmd.isNeedTipSkuSn()) {
               // 当前商品还未扫描，继续扫sn残次信息
               String tipSkuAttrId = cssrCmd.getTipSkuAttrId();
-//              this.splitCacheScanSku(insideContainerId, locationId, tipSkuAttrId);   //  缓存
+              this.splitCacheScanSku(insideContainerId, locationId, tipSkuAttrId);   //  缓存
               tipSkuDetailAspect(isRecommendFail,srCmd, tipSkuAttrId, locSkuAttrIds, skuAttrIdsQty, logId);
               srCmd.setIsContinueScanSn(true);
           } else if (cssrCmd.isNeedTipSku()) {
