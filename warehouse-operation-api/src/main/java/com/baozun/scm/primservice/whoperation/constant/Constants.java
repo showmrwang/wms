@@ -602,6 +602,18 @@ public final class Constants {
     /** 播种墙剩余容量不满足, 容器只能移到暂存库位*/
     public static final int SEEDING_WALL_NOT_SUFFICIENT = 3;
 
+    /** 复核台 */
+    public static final String FACILITY_TYPE_CHECKTABLE = "checkTable";
+    /** 播种墙 */
+    public static final String FACILITY_TYPE_SEEDINGWALL = "seedingWall";
+    /** 复核台组 */
+    public static final String FACILITY_GROUP_TYPE_CHECKTABLE = "checkTableGroup";
+    /** 播种墙组 */
+    public static final String FACILITY_GROUP_TYPE_SEEDINGWALL = "seedingWallGroup";
+    /** 复核暂存库位 */
+    public static final String TEMPORARY_STORAGE_CHECKTABLE = "checkTableTemporaryStorage";
+    /** 出库暂存库位 */
+    public static final String TEMPORARY_STORAGE_OUTBOUND = "outBoundTemporaryStorage";
 
 
 }

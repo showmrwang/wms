@@ -94,6 +94,9 @@
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.pda.work.PdaPickingWorkEntranceManager" ref="pdaPickingWorkEntranceManager" />
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.auth.OperPrivilegeManager" ref="operPrivilegeManager" />
 	
+	<!-- 推荐播种墙 -->
+	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy.WaveFacilityManagerProxy" ref="waveFacilityManagerProxy" />
+	
 	<!-- Pda补货 -->
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.pda.work.PdaReplenishmentWorkManager" ref="pdaReplenishmentWorkManager" />
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.pda.work.PdaReplenishmentWorkEntranceManager" ref="pdaReplenishmentWorkEntranceManager" />

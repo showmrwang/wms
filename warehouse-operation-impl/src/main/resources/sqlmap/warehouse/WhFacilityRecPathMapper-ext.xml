@@ -153,6 +153,15 @@
        		and ou_id = #{ouId}
        		and container_code = #{containerCode}
     </select>
+    
+    <select id="findWhFacilityRecPathByBatch" resultMap="WhFacilityRecPathResultExt">
+        select
+        <include refid="whFacilityRecPathColumnsExt"/>
+        from t_wh_facility_rec_path
+       	where
+       		batch = #{batch}
+       		and ou_id = #{ouId}
+    </select>
 	
 	<select id="getRecommendSeedingWallCodeByBatch" resultType="string">
 		select

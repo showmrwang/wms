@@ -37,20 +37,31 @@ public class WaveFacilityManagerProxyImpl extends BaseManagerImpl implements Wav
 
     @Override
     public RecFacilityPathCommand matchOutboundFacility(RecFacilityPathCommand recFacilityPath) {
-        // 校验传入参数
-        checkParams(recFacilityPath);
-        Long ouId = recFacilityPath.getOuId();
-        Warehouse wh = this.warehouseManager.findWarehouseById(ouId);
-        if (!wh.getIsApplyFacility()) {
-            return null;
-        }
+        try {
 
-        if (Constants.WH_SEEDING_WALL.equals(recFacilityPath.getPickingMode())) {
-            return matchSeedingWallWhenSeeding(wh, recFacilityPath);
-        } else {
-            // #TODO
+            // 校验传入参数
+            checkParams(recFacilityPath);
+            Long ouId = recFacilityPath.getOuId();
+            Warehouse wh = this.warehouseManager.findWarehouseById(ouId);
+            if (!wh.getIsApplyFacility()) {
+                return responseMsgForFacility(recFacilityPath, 0);
+            }
+
+            if (Constants.WH_SEEDING_WALL.equals(recFacilityPath.getPickingMode())) {
+                return matchSeedingWallWhenSeeding(wh, recFacilityPath);
+            } else {
+                // #TODO
+            }
+        } catch (Exception e) {
+            return responseMsgForFacility(recFacilityPath, 0);
         }
-        return null;
+        return responseMsgForFacility(recFacilityPath, 1);
+    }
+
+
+    private RecFacilityPathCommand responseMsgForFacility(RecFacilityPathCommand recFacilityPath, Integer responseStatus) {
+        recFacilityPath.setStatus(responseStatus);
+        return recFacilityPath;
     }
 
     /**
@@ -73,46 +84,53 @@ public class WaveFacilityManagerProxyImpl extends BaseManagerImpl implements Wav
             Long ouId = wh.getId();
             String batch = recFacilityPath.getBatch();
             List<Long> odoIdList = recFacilityPath.getOdoIdList();
-            // 是否已有推荐成功的箱信息
-            // 规则
-            RuleAfferCommand ruleAffer = new RuleAfferCommand();
-            ruleAffer.setSeedingWallOdoIdList(odoIdList);
-            ruleAffer.setOuid(ouId);
-            RuleExportCommand export = this.ruleManager.ruleExport(ruleAffer);
-            WhSeedingWallRuleCommand whSeedingWallRule = export.getWhSeedingWallRuleCommand();
-            if (whSeedingWallRule == null) {
-                recFacilityPath.setStatus(0);
-                return recFacilityPath;
-            }
+            // 是否已有推荐成功的箱信息;如果存在，则不需要寻找播种墙，如果不存在，则需要推荐播种墙
             List<WhFacilityRecPath> pathList = this.whFacilityRecPathManager.findWhFacilityRecPathByBatchAndContainer(batch, null, ouId);
             WhFacilityRecPath prePath = null;
             if (pathList != null && pathList.size() > 0) {// 存在推荐成功的信息
                 prePath = pathList.get(0);
             }
-            // 模式
-            if (StringUtils.isEmpty(wh.getSeedingMode())) {
-                recFacilityPath.setStatus(0);
-                return recFacilityPath;
-            }
-            // 播种墙组
-            WhOutboundFacilityGroup facilityGroup = this.whFacilityRecPathManager.findOutboundFacilityGroupById(whSeedingWallRule.getOutboundFacilityGroupId(), ouId);
-            if (facilityGroup == null) {
-                recFacilityPath.setStatus(0);
-                return recFacilityPath;
+
+            WhOutboundFacilityGroup facilityGroup = null;
+            if (prePath == null) {
+                // 规则
+                RuleAfferCommand ruleAffer = new RuleAfferCommand();
+                ruleAffer.setSeedingWallOdoIdList(odoIdList);
+                ruleAffer.setOuid(ouId);
+                RuleExportCommand export = this.ruleManager.ruleExport(ruleAffer);
+                WhSeedingWallRuleCommand whSeedingWallRule = export.getWhSeedingWallRuleCommand();
+                if (whSeedingWallRule == null) {
+                    return responseMsgForFacility(recFacilityPath, 0);
+                }
+                // 模式
+                if (StringUtils.isEmpty(wh.getSeedingMode())) {
+                    return responseMsgForFacility(recFacilityPath, 0);
+                }
+                // 播种墙组
+                facilityGroup = this.whFacilityRecPathManager.findOutboundFacilityGroupById(whSeedingWallRule.getOutboundFacilityGroupId(), ouId);
+                if (facilityGroup == null) {
+                    return responseMsgForFacility(recFacilityPath, 0);
+                }
             }
 
-            this.whFacilityRecPathManager.occupyFacilityAndlocationByFacilityGroup(facilityGroup, prePath, recFacilityPath, wh);
+            this.whFacilityRecPathManager.occupyFacilityAndlocation(facilityGroup, prePath, recFacilityPath, wh);
         } catch (Exception e) {
-            recFacilityPath.setStatus(0);
-            return recFacilityPath;
+            return responseMsgForFacility(recFacilityPath, 0);
         }
-        recFacilityPath.setStatus(1);
-        return recFacilityPath;
+        return responseMsgForFacility(recFacilityPath, 1);
     }
 
     @Override
     public void matchSeedingWalBySortQueue(WhFacilityQueue queue) {
+        try {
+            this.whFacilityRecPathManager.matchSeedingWalBySortQueue(queue);
+        } catch (Exception e) {}
+    }
 
+
+    @Override
+    public List<WhFacilityQueue> getSortedQueue(Long ouId) {
+        return this.whFacilityRecPathManager.getSortedQueue(ouId);
     }
 
 }

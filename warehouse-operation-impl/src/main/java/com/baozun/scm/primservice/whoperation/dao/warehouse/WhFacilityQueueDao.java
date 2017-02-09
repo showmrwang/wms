@@ -25,6 +25,8 @@ import lark.common.dao.QueryCondition;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFacilityQueue;
 
 public interface WhFacilityQueueDao extends BaseDao<WhFacilityQueue, Long> {
@@ -42,5 +44,9 @@ public interface WhFacilityQueueDao extends BaseDao<WhFacilityQueue, Long> {
 
     @CommonQuery
     int saveOrUpdate(WhFacilityQueue o);
+
+    int deleteExt(@Param("id") Long id, @Param("ouId") Long ouId);
+
+    List<WhFacilityQueue> findSortedQueue(@Param("ouId") Long ouId);
 
 }
