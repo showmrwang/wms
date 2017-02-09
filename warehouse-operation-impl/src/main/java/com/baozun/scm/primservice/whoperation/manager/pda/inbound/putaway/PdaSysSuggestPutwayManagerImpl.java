@@ -676,7 +676,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
             String containerCode = containerCmd.getCode(); 
             // 3.库存信息统计
             InventoryStatisticResultCommand isrCmd = cacheManager.getMapObject(CacheConstants.CONTAINER_INVENTORY_STATISTIC, containerId.toString());
-//            if(null == isrCmd) {
+            if(null == isrCmd) {
                     Set<Long> insideContainerIds = new HashSet<Long>();// 所有内部容器
                     Set<Long> caselevelContainerIds = new HashSet<Long>();// 所有caselevel内部容器
                     Set<Long> notcaselevelContainerIds = new HashSet<Long>();// 所有非caselevel内部容器
@@ -1116,7 +1116,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
                     outerContainerVolume = cubeCalculator.calculateStuffVolume(ocLength, ocWidth, ocHeight);
                     isrCmd.setInsideContainerVolume(insideContainerVolume);
                     isrCmd.setInsideContainerWeight(insideContainerWeight);
-//            }
+            }
             log.info("PdaSysSuggestPutwayManagerImpl cacheContainerInventoryStatistics is end"); 
             return isrCmd;
     }
@@ -3426,7 +3426,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
         //缓存库存信息
         List<WhSkuInventoryCommand>  invList =  this.splitPutwayCacheInventory(insideCommand, ouId, logId);
         // 2.清除所有库存统计信息
-        cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY_STATISTIC, insideContainerId.toString());
+//        cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY_STATISTIC, insideContainerId.toString());
         ScanResultCommand  sanResult = new ScanResultCommand();
         InventoryStatisticResultCommand iSRCmd = this.cacheContainerInventoryStatistics(invList,userId, ouId, logId, insideCommand, sanResult, putawayPatternDetailType,outerContainerCode);
         //设置库位信息
