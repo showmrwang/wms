@@ -296,7 +296,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		<where> 
 				ou_id = #{ouId}
 			<if test="workId!=null">
-				work_id = #{workId}
+				and work_id = #{workId}
 			</if>
 		</where>
     </select>

@@ -5,6 +5,7 @@ import java.util.List;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.RecFacilityPathCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhFacilityQueue;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFacilityRecPath;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundFacilityGroup;
 
@@ -37,5 +38,14 @@ public interface WhFacilityRecPathManager extends BaseManager {
      * @param wh
      * @return
      */
-    void occupyFacilityAndlocationByFacilityGroup(WhOutboundFacilityGroup facilityGroup, WhFacilityRecPath prePath, RecFacilityPathCommand recFacilityPath, Warehouse wh);
+    void occupyFacilityAndlocation(WhOutboundFacilityGroup facilityGroup, WhFacilityRecPath prePath, RecFacilityPathCommand recFacilityPath, Warehouse wh);
+
+    /**
+     * 【定时任务】根据队列进行播种
+     * 
+     * @param queue
+     */
+    void matchSeedingWalBySortQueue(WhFacilityQueue queue);
+
+    List<WhFacilityQueue> getSortedQueue(Long ouId);
 }
