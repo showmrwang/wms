@@ -333,6 +333,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				</if>
 			group by
 				uuid,
+				replenishmentCode,
 				locationId, 
 				outerContainerId, 
 				insideContainerId,
@@ -439,6 +440,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				</if>
 			group by
 				uuid,
+				replenishmentCode,
 				locationId, 
 				outerContainerId, 
 				insideContainerId,
