@@ -24,5 +24,17 @@ public interface WhSeedingCollectionManager extends BaseManager {
      * @return
      */
     public List<WhSeedingCollection> getSeedingCollectionByFacilityId(Long facilityId, Long ouId);
+    
+    /**
+     * 判断周转箱是否绑定对应播种墙
+     *
+     * @param facilityId
+     * @param containerId
+     * @param collectionStatus
+     * @param ouId
+     * @return
+     */
+    public List<WhSeedingCollection> getSeedingCollectionLst(Long facilityId, String turnoverBoxCode, String collectionStatus, Long ouId);
+
 
 }

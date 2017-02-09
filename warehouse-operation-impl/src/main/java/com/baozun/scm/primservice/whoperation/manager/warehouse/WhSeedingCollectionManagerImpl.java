@@ -63,4 +63,22 @@ public class WhSeedingCollectionManagerImpl extends BaseManagerImpl implements W
         return whSeedingCollectionDao.getSeedingCollectionByFacilityId(facilityId, ouId);
     }
 
+    /**
+     * 判断周转箱是否绑定对应播种墙
+     *
+     * @param facilityId
+     * @param containerId
+     * @param collectionStatus
+     * @param ouId
+     * @return
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<WhSeedingCollection> getSeedingCollectionLst(Long facilityId,  String turnoverBoxCode, String collectionStatus, Long ouId) {
+//        TODO Long containerId
+//        List<WhSeedingCollection> whSeedingCollectionLst = whSeedingCollectionDao
+//        return whSeedingCollectionLst;
+        return whSeedingCollectionDao.getSeedingCollectionByFacilityId(facilityId, ouId);
+    }
+
 }
