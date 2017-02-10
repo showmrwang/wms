@@ -336,12 +336,6 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
                 // 校验作业明细
                 if (replenishmentOperationLineCount != rWorkLineTotal) {
                     log.error("replenishmentOperationLineCount is error, replenishmentOperationLineCount:{}", replenishmentOperationLineCount);
-                }else{
-                    for(WhSkuInventoryAllocatedCommand skuInventoryAllocatedCommand : siacMap.get(key)){
-                        ReplenishmentTask replenishmentTask = replenishmentTaskDao.findReplenishmentTaskByCode(skuInventoryAllocatedCommand.getReplenishmentCode(), skuInventoryAllocatedCommand.getOuId());
-                        replenishmentTask.setStatus(10);
-                        replenishmentTaskDao.saveOrUpdateByVersion(replenishmentTask);
-                    }
                 }
             }
         }
