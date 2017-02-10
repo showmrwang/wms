@@ -2713,14 +2713,23 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         uomMap.put(WhUomType.LENGTH_UOM, lenUomConversionRate);
         uomMap.put(WhUomType.WEIGHT_UOM, weightUomConversionRate);
         List<LocationRecommendResultCommand> lrrList = null;
+        boolean isNoLocRecommend = true;
         try {
             lrrList = whLocationRecommendManager.recommendLocationByShevleRule(ruleAffer, export, WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY, caMap, invList, uomMap, logId);
+            if (null != lrrList) {
+                for (LocationRecommendResultCommand lrrCmd : lrrList) {
+                    if (!StringUtils.isEmpty(lrrCmd.getLocationCode())) {
+                        isNoLocRecommend = false;
+                        break;
+                    }
+                }
+            }
         } catch (Exception e1) {
             // 弹出排队队列
             pdaPutawayCacheManager.sysGuidePutawayLocRecommendPopQueue(insideContainerId, logId);
             throw e1;
         }
-        if (null == lrrList || 0 == lrrList.size() || StringUtils.isEmpty(lrrList.get(0).getLocationCode())) {
+        if (null == lrrList || 0 == lrrList.size() || isNoLocRecommend) {
             log.error("location recommend fail! containerCode is:[{}], logId is:[{}]", containerCode, logId);
             // 弹出排队队列
             pdaPutawayCacheManager.sysGuidePutawayLocRecommendPopQueue(insideContainerId, logId);
