@@ -220,6 +220,15 @@ public interface WhOdoDao extends BaseDao<WhOdo, Long> {
     /**
      * [业务方法]
      * 
+     * @param counterCode
+     * @param ouId
+     * @return
+     */
+    List<Long> findOdoByCounterCodeToCalcDistributeMode(@Param("counterCode") String counterCode, @Param("ouId") Long ouId);
+
+    /**
+     * [业务方法]
+     * 
      * @param subList
      * @return
      */

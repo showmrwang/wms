@@ -615,5 +615,10 @@ public final class Constants {
     /** 出库暂存库位 */
     public static final String TEMPORARY_STORAGE_OUTBOUND = "outBoundTemporaryStorage";
 
+    /** 越库标识 */
+    public static final String ODO_CROSS_DOCKING_SYSMBOL_1 = "1";// 库存不足支持越库
+    public static final String ODO_CROSS_DOCKING_SYSMBOL_2 = "2";// 不支持越库
+    public static final String ODO_CROSS_DOCKING_SYSMBOL_3 = "3";// 越库
+
 
 }

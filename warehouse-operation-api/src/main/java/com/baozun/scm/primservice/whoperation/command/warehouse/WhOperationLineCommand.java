@@ -100,6 +100,8 @@ public class WhOperationLineCommand extends BaseModel {
 	private java.lang.Long odoId;
 	/** 出库单明细ID */
 	private java.lang.Long odoLineId;
+	/** 补货单据号 */
+    private java.lang.String replenishmentCode;
 	/** 创建时间 */
 	private java.util.Date createTime;
 	/** 最后操作时间 */
@@ -336,6 +338,12 @@ public class WhOperationLineCommand extends BaseModel {
     }
     public void setUuid(java.lang.String uuid) {
         this.uuid = uuid;
+    }
+    public java.lang.String getReplenishmentCode() {
+        return replenishmentCode;
+    }
+    public void setReplenishmentCode(java.lang.String replenishmentCode) {
+        this.replenishmentCode = replenishmentCode;
     }
 }
 

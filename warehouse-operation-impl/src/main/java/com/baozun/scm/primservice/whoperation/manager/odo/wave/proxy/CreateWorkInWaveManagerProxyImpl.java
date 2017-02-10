@@ -1478,6 +1478,8 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
         whWorkLineCommand.setOdoId(odo == null ? null : odo.getId());
         //出库单明细ID 
         whWorkLineCommand.setOdoLineId(skuInventoryAllocatedCommand.getOccupationLineId());
+        //补货单据号        
+        whWorkLineCommand.setReplenishmentCode(skuInventoryAllocatedCommand.getReplenishmentCode());
         //创建时间 
         whWorkLineCommand.setCreateTime(new Date());
         //最后操作时间 
@@ -1816,6 +1818,8 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
             WhOperationLineCommand.setOdoId(whWorkLineCommand.getOdoId());
             //出库单明细ID
             WhOperationLineCommand.setOdoLineId(whWorkLineCommand.getOdoLineId());
+            //补货单据号
+            WhOperationLineCommand.setReplenishmentCode(whWorkLineCommand.getReplenishmentCode());
             //创建时间
             WhOperationLineCommand.setCreateTime(new Date());
             //最后操作时间
