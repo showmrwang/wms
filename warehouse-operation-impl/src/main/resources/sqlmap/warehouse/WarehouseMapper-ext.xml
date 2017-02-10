@@ -288,7 +288,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		       	mgmt.x_qty as xqty,
 		       	mgmt.y_qty as yqty,
 		       	mgmt.z_qty as zqty,
-		       	mgmt.seeding_odo_qty as seedingOdoQty,
+		       	mgmt.seeding_odo_qty as seedingOdoQty
 	    ]]>
 	</sql>
 	<select id="findListByQueryMapWithPageExt" resultMap="warehouseCommand">

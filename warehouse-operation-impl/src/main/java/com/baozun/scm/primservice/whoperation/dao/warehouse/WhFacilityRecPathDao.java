@@ -17,8 +17,6 @@ package com.baozun.scm.primservice.whoperation.dao.warehouse;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.ibatis.annotations.Param;
-
 import lark.common.annotation.CommonQuery;
 import lark.common.annotation.QueryPage;
 import lark.common.dao.Page;
@@ -26,6 +24,8 @@ import lark.common.dao.Pagination;
 import lark.common.dao.QueryCondition;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
+
+import org.apache.ibatis.annotations.Param;
 
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhFacilityRecPathCommand;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFacilityRecPath;
@@ -73,7 +73,17 @@ public interface WhFacilityRecPathDao extends BaseDao<WhFacilityRecPath, Long> {
     WhFacilityRecPath findWhFacilityRecPathByBatchAndContainer(String batch, String containerCode, Long ouId);
     
     /**
+     * [业务方法] 根据批次号和容器号查找推荐路径
+     * 
+     * @param batch
+     * @param ouId
+     * @return
+     */
+    List<WhFacilityRecPath> findWhFacilityRecPathByBatch(String batch, Long ouId);
+
+    /**
      * 根据批次获取推荐表中对应的路径code
+     * 
      * @param batch
      */
 	String getRecommendSeedingWallCodeByBatch(@Param("batch") String batch, @Param("ouId") Long ouId);

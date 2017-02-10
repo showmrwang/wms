@@ -51,4 +51,22 @@
         </where>
     </sql>
 
+ 	<delete id="deleteExt" parameterType="java.lang.Long">
+        <![CDATA[
+            delete from t_wh_facility_queue where
+                id = #{id} and ou_id=#{ouId}
+        ]]>
+    </delete>
+    
+    
+    <select id="getSortedQueue" resultMap="WhFacilityQueueResult">
+        select
+        <include refid="whFacilityQueueColumns"/>
+        from t_wh_facility_queue
+       	where ou_id=#{ouId} and is_rec=1
+       	order by create_time asc
+
+
+    </select>
+
 </mapper>

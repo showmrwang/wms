@@ -933,10 +933,10 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
         }
         //判断据工作明细是否只有唯一出库单
         if(isOdoId == true){
-            OdoCommand odoCommand = this.odoDao.findCommandByIdOuId(whWorkLineCommandList.get(0).getOdoId(), odoOutBoundBox.getOuId());
-            if(null != odoCommand){
+            WhOdo whOdo = this.odoDao.findByIdOuId(whWorkLineCommandList.get(0).getOdoId(), odoOutBoundBox.getOuId());
+            if(null != whOdo){
                 //设置订单号
-                whWorkCommand.setOrderCode(odoCommand.getEcOrderCode());
+                whWorkCommand.setOrderCode(whOdo.getEcOrderCode());
             }
         }
         
@@ -1180,7 +1180,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
         for(WhSkuInventoryAllocatedCommand whSkuInventoryAllocatedCommand : skuInventoryAllocatedCommandLst){
             // 初始化WhSkuInventoryAllocatedCommand列表
             List<WhSkuInventoryAllocatedCommand> rList = new ArrayList<WhSkuInventoryAllocatedCommand>();
-            if(null != replenishmentRuleCommand.getIsFromInsideContainerSplitWork() && null != replenishmentRuleCommand.getIsToLocationSplitWork()){
+            if(false != replenishmentRuleCommand.getIsFromInsideContainerSplitWork() && false != replenishmentRuleCommand.getIsToLocationSplitWork()){
                 // 分组标示 -- 配置为原始库位货箱与目标库位 
                 String str = "fromInsideContainerToLocation" + "-" + whSkuInventoryAllocatedCommand.getInsideContainerId() + "-" + whSkuInventoryAllocatedCommand.getToLocationId();
                 if(null != rMap && null != rMap.get(str)){
@@ -1188,7 +1188,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
                 }
                 rList.add(whSkuInventoryAllocatedCommand);
                 rMap.put(str, rList);
-            }else if(null != replenishmentRuleCommand.getIsFromInsideContainerSplitWork() && null == replenishmentRuleCommand.getIsToLocationSplitWork()){
+            }else if(false != replenishmentRuleCommand.getIsFromInsideContainerSplitWork() && false == replenishmentRuleCommand.getIsToLocationSplitWork()){
                 // 分组标示 -- 配置为原始库位货箱
                 String str = "fromInsideContainer" + "-" + whSkuInventoryAllocatedCommand.getInsideContainerId();
                 if(null != rMap && null != rMap.get(str)){
@@ -1196,7 +1196,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
                 }
                 rList.add(whSkuInventoryAllocatedCommand);
                 rMap.put(str, rList);
-            }else if(null != replenishmentRuleCommand.getIsFromOuterContainerSplitWork()  && null != replenishmentRuleCommand.getIsToLocationSplitWork()){
+            }else if(false != replenishmentRuleCommand.getIsFromOuterContainerSplitWork()  && false != replenishmentRuleCommand.getIsToLocationSplitWork()){
                 // 分组标示 -- 配置为原始库位托盘与目标库位
                 String str = "fromOuterContainerToLocation" + "-" + whSkuInventoryAllocatedCommand.getOuterContainerId() + "-" + whSkuInventoryAllocatedCommand.getToLocationId();
                 if(null != rMap && null != rMap.get(str)){
@@ -1204,7 +1204,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
                 }
                 rList.add(whSkuInventoryAllocatedCommand);
                 rMap.put(str, rList);
-            }else if(null != replenishmentRuleCommand.getIsFromOuterContainerSplitWork()  && null == replenishmentRuleCommand.getIsToLocationSplitWork()){
+            }else if(false != replenishmentRuleCommand.getIsFromOuterContainerSplitWork()  && false == replenishmentRuleCommand.getIsToLocationSplitWork()){
                 // 分组标示 -- 配置为原始库位托盘
                 String str = "fromOuterContainer" + "-" + whSkuInventoryAllocatedCommand.getOuterContainerId();
                 if(null != rMap && null != rMap.get(str)){
@@ -1212,7 +1212,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
                 }
                 rList.add(whSkuInventoryAllocatedCommand);
                 rMap.put(str, rList);
-            }else if(null != replenishmentRuleCommand.getIsFromLocationSplitWork() && null != replenishmentRuleCommand.getIsToLocationSplitWork()){ 
+            }else if(false != replenishmentRuleCommand.getIsFromLocationSplitWork() && false != replenishmentRuleCommand.getIsToLocationSplitWork()){ 
                 // 分组标示 -- 配置为原始库位与目标库位
                 String str = "fromLocationToLocation" + "-" + whSkuInventoryAllocatedCommand.getLocationId() + "-" + whSkuInventoryAllocatedCommand.getToLocationId();
                 if(null != rMap && null != rMap.get(str)){
@@ -1220,7 +1220,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
                 }
                 rList.add(whSkuInventoryAllocatedCommand);
                 rMap.put(str, rList);
-            }else if(null != replenishmentRuleCommand.getIsFromLocationSplitWork() && null == replenishmentRuleCommand.getIsToLocationSplitWork()){ 
+            }else if(false != replenishmentRuleCommand.getIsFromLocationSplitWork() && false == replenishmentRuleCommand.getIsToLocationSplitWork()){ 
                 // 分组标示 -- 配置为原始库位
                 String str = "fromLocation" + "-" + whSkuInventoryAllocatedCommand.getLocationId();
                 if(null != rMap && null != rMap.get(str)){
@@ -1598,10 +1598,10 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
         }
         //判断据工作明细是否只有唯一出库单
         if(isOdoId == true){
-            OdoCommand odoCommand = this.odoDao.findCommandByIdOuId(whWorkLineCommandList.get(0).getOdoId(), skuInventoryAllocatedCommand.getOuId());
-            if(null != odoCommand){
+            WhOdo whOdo = this.odoDao.findByIdOuId(whWorkLineCommandList.get(0).getOdoId(), skuInventoryAllocatedCommand.getOuId());
+            if(null != whOdo){
                 //设置订单号
-                whWorkCommand.setOrderCode(odoCommand.getEcOrderCode());
+                whWorkCommand.setOrderCode(whOdo.getEcOrderCode());
             }
         }
         
@@ -2019,10 +2019,10 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
         }
         //判断据工作明细是否只有唯一出库单
         if(isOdoId == true){
-            OdoCommand odoCommand = this.odoDao.findCommandByIdOuId(whWorkLineCommandList.get(0).getOdoId(), skuInventoryAllocatedCommand.getOuId());
-            if(null != odoCommand){
+            WhOdo whOdo = this.odoDao.findByIdOuId(whWorkLineCommandList.get(0).getOdoId(), skuInventoryAllocatedCommand.getOuId());
+            if(null != whOdo){
                 //设置订单号
-                whWorkCommand.setOrderCode(odoCommand.getEcOrderCode());
+                whWorkCommand.setOrderCode(whOdo.getEcOrderCode());
             }
         }
         

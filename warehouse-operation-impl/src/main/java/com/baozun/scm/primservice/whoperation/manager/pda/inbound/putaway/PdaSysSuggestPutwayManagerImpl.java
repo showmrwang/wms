@@ -324,9 +324,12 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
                     throw new BusinessException(ErrorCodes.CONTAINER_HAS_OUTER_CONTAINER_SCAN_OUTER_FIRST, new Object[] {containerCode});
                 }
             } 
-                srCmd.setContainerType(WhContainerType.INSIDE_CONTAINER);// 内部容器,无外部容器，无需循环提示容器
-                srCmd.setInsideContainerCode(containerCode);
-            this.containerPutawayCacheInsideContainer(containerCmd, outerContainerId, logId, outerContainerCode);
+           srCmd.setContainerType(WhContainerType.INSIDE_CONTAINER);// 内部容器,无外部容器，无需循环提示容器
+           srCmd.setInsideContainerCode(containerCode);
+           if(null != outerContainerId){
+               this.containerPutawayCacheInsideContainer(containerCmd, outerContainerId, logId, outerContainerCode);
+           }
+            
         }
         if (0 < outerCount1 || 0 < outerCount2) {
             srCmd.setContainerType(WhContainerType.OUTER_CONTAINER);// 外部容器
@@ -441,9 +444,11 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
                 srCmd.setContainerType(WhContainerType.INSIDE_CONTAINER);// 内部容器,无外部容器，无需循环提示容器
                 srCmd.setInsideContainerCode(containerCode);
             }
-            ContainerCommand outerCmd = containerDao.getContainerByCode(outerContainerCode, ouId);
-            Long outerContainerId = outerCmd.getId();
-            this.containerPutawayCacheInsideContainer(containerCmd, outerContainerId, logId, outerContainerCode);
+            if(!StringUtils.isEmpty(outerContainerCode)) {
+                ContainerCommand outerCmd = containerDao.getContainerByCode(outerContainerCode, ouId);
+                Long outerContainerId = outerCmd.getId();
+                this.containerPutawayCacheInsideContainer(containerCmd, outerContainerId, logId, outerContainerCode);
+            }
         }
         if (0 < outerCount1 || 0 < outerCount2) {
             srCmd.setContainerType(WhContainerType.OUTER_CONTAINER);// 外部容器
@@ -671,7 +676,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
             String containerCode = containerCmd.getCode(); 
             // 3.库存信息统计
             InventoryStatisticResultCommand isrCmd = cacheManager.getMapObject(CacheConstants.CONTAINER_INVENTORY_STATISTIC, containerId.toString());
-//            if(null == isrCmd) {
+            if(null == isrCmd) {
                     Set<Long> insideContainerIds = new HashSet<Long>();// 所有内部容器
                     Set<Long> caselevelContainerIds = new HashSet<Long>();// 所有caselevel内部容器
                     Set<Long> notcaselevelContainerIds = new HashSet<Long>();// 所有非caselevel内部容器
@@ -1111,7 +1116,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
                     outerContainerVolume = cubeCalculator.calculateStuffVolume(ocLength, ocWidth, ocHeight);
                     isrCmd.setInsideContainerVolume(insideContainerVolume);
                     isrCmd.setInsideContainerWeight(insideContainerWeight);
-//            }
+            }
             log.info("PdaSysSuggestPutwayManagerImpl cacheContainerInventoryStatistics is end"); 
             return isrCmd;
     }
@@ -1762,6 +1767,20 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
                 }
             } else {
                 srCmd.setTipSkuInvStatus("");
+            }
+            srCmd.setNeedTipSkuBatchNumber(TipSkuDetailProvider.isTipSkuBatchNumber(tipSkuAttrId));
+            if (true == srCmd.isNeedTipSkuBatchNumber()) {
+                String skuBatchNumber = TipSkuDetailProvider.getSkuBatchNumber(tipSkuAttrId);
+                srCmd.setTipSkuBatchNumber(skuBatchNumber);
+            } else {
+                srCmd.setTipSkuBatchNumber("");
+            }
+            srCmd.setNeedTipSkuCountryOfOrigin(TipSkuDetailProvider.isTipSkuCountryOfOrigin(tipSkuAttrId));
+            if (true == srCmd.isNeedTipSkuCountryOfOrigin()) {
+                String skuCountryOfOrigin = TipSkuDetailProvider.getSkuCountryOfOrigin(tipSkuAttrId);
+                srCmd.setTipSkuCountryOfOrigin(skuCountryOfOrigin);
+            } else {
+                srCmd.setTipSkuCountryOfOrigin("");
             }
             srCmd.setNeedTipSkuMfgDate(TipSkuDetailProvider.isTipSkuMfgDate(tipSkuAttrId));
             if (true == srCmd.isNeedTipSkuMfgDate()) {
@@ -2621,26 +2640,26 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
     }
     
     
-//    /**
-//     * 
-//     * @param insideContainerId
-//     * @param locationId
-//     * @param skuAttrIds
-//     */
-//    private void splitCacheScanSku(Long insideContainerId,Long locationId,String skuAttrIds) {
-//        log.info("PdaSysSuggestPutwayManagerImpl splitCacheScanSku is start"); 
-//        TipScanSkuCacheCommand cacheSkuCmd = cacheManager.getObject(CacheConstants.SCAN_SKU_QUEUE + insideContainerId.toString() + locationId.toString());
-//        if(null == cacheSkuCmd) {
-//            
-//        }
-//        ArrayDeque<String> scanSkuAttrIds = cacheSkuCmd.getScanSkuAttrIds();
-//        if(!scanSkuAttrIds.contains(skuAttrIds)) {
-//            scanSkuAttrIds.addFirst(skuAttrIds);
-//        }
-//        cacheSkuCmd.setScanSkuAttrIds(scanSkuAttrIds);
-//        cacheManager.setObject(CacheConstants.SCAN_SKU_QUEUE + insideContainerId.toString() + locationId.toString(), cacheSkuCmd, CacheConstants.CACHE_ONE_DAY);
-//        log.info("PdaSysSuggestPutwayManagerImpl splitCacheScanSku is end"); 
-//    }
+    /**
+     * 
+     * @param insideContainerId
+     * @param locationId
+     * @param skuAttrIds
+     */
+    private void splitCacheScanSku(Long insideContainerId,Long locationId,String skuAttrIds) {
+        log.info("PdaSysSuggestPutwayManagerImpl splitCacheScanSku is start"); 
+        TipScanSkuCacheCommand cacheSkuCmd = cacheManager.getObject(CacheConstants.SCAN_SKU_QUEUE + insideContainerId.toString() + locationId.toString());
+        if(null == cacheSkuCmd) {
+            throw new BusinessException(ErrorCodes.COMMON_FUNCTION_IS_CHANGE_ERROR);
+        }
+        ArrayDeque<String> scanSkuAttrIds = cacheSkuCmd.getScanSkuAttrIds();
+        if(!scanSkuAttrIds.contains(skuAttrIds)) {
+            scanSkuAttrIds.addFirst(skuAttrIds);
+        }
+        cacheSkuCmd.setScanSkuAttrIds(scanSkuAttrIds);
+        cacheManager.setObject(CacheConstants.SCAN_SKU_QUEUE + insideContainerId.toString() + locationId.toString(), cacheSkuCmd, CacheConstants.CACHE_ONE_DAY);
+        log.info("PdaSysSuggestPutwayManagerImpl splitCacheScanSku is end"); 
+    }
     /***
      * 推荐库位失败提示唯一sku(拆箱)
      * @param insideContainerId
@@ -2711,10 +2730,11 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
               throw new BusinessException(ErrorCodes.COMMON_INSIDE_CONTAINER_IS_NOT_EXISTS);
           }
           Long insideContainerId = icCmd.getId();
+          Long outerContainerId = null;
           if(!StringUtils.isEmpty(outerContainerCode)) {
               ocCmd = containerDao.getContainerByCode(outerContainerCode, ouId);
+              outerContainerId = ocCmd.getId();
           }
-          Long outerContainerId = ocCmd.getId();
           Location loc = locationDao.findLocationByCode(locationCode, ouId);
           if (null == loc) {
               loc = locationDao.getLocationByBarcode(locationCode, ouId);
@@ -2748,7 +2768,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
           List<WhSkuInventoryCommand> list = splitPutwayCacheInventory(icCmd,ouId,logId);
           for(WhSkuInventoryCommand whSkuInvCmd:list) {
               String skuInvAttrId = SkuCategoryProvider.getSkuAttrIdByInv(whSkuInvCmd);
-              String skuAttrId = SkuCategoryProvider.concatSkuAttrId(skuCmd.getId(), skuCmd.getInvType(), skuCmd.getInvStatus(), skuCmd.getInvMfgDate(), skuCmd.getInvExpDate(), skuCmd.getInvAttr1(), skuCmd.getInvAttr2(), skuCmd.getInvAttr3(),
+              String skuAttrId = SkuCategoryProvider.concatSkuAttrId(skuCmd.getId(), skuCmd.getInvType(),skuCmd.getInvBatchNumber(),skuCmd.getInvCountryOfOrigin(), skuCmd.getInvStatus(), skuCmd.getInvMfgDate(), skuCmd.getInvExpDate(), skuCmd.getInvAttr1(), skuCmd.getInvAttr2(), skuCmd.getInvAttr3(),
                   skuCmd.getInvAttr4(), skuCmd.getInvAttr5(), skuCmd.getSkuSn(), skuCmd.getSkuDefect());
               if(skuInvAttrId.equals(skuAttrId)) {
                   for(int i=0;i<Integer.valueOf(scanQty.toString());i++) {
@@ -2852,18 +2872,18 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
           if (cssrCmd.isNeedTipSkuSn()) {
               // 当前商品还未扫描，继续扫sn残次信息
               String tipSkuAttrId = cssrCmd.getTipSkuAttrId();
-//              this.splitCacheScanSku(insideContainerId, locationId, tipSkuAttrId);   //  缓存
+              this.splitCacheScanSku(insideContainerId, locationId, tipSkuAttrId);   //  缓存
               tipSkuDetailAspect(isRecommendFail,srCmd, tipSkuAttrId, locSkuAttrIds, skuAttrIdsQty, logId);
               srCmd.setIsContinueScanSn(true);
           } else if (cssrCmd.isNeedTipSku()) {
               srCmd.setNeedTipSku(true);// 提示下一个sku
               if(isRecommendFail) {  //人工流程,扫一个上一个
-                  String skuAttrId = SkuCategoryProvider.concatSkuAttrId(skuCmd.getId(), skuCmd.getInvType(), skuCmd.getInvStatus(), skuCmd.getInvMfgDate(), skuCmd.getInvExpDate(), skuCmd.getInvAttr1(), skuCmd.getInvAttr2(), skuCmd.getInvAttr3(),
+                  String skuAttrId = SkuCategoryProvider.concatSkuAttrId(skuCmd.getId(), skuCmd.getInvType(), skuCmd.getInvStatus(),skuCmd.getInvBatchNumber(),skuCmd.getInvCountryOfOrigin(), skuCmd.getInvMfgDate(), skuCmd.getInvExpDate(), skuCmd.getInvAttr1(), skuCmd.getInvAttr2(), skuCmd.getInvAttr3(),
                       skuCmd.getInvAttr4(), skuCmd.getInvAttr5(), skuCmd.getSkuSn(), skuCmd.getSkuDefect());
                   whSkuInventoryManager.sysManPutaway(skuCmd.getScanSkuQty(), warehouse, userId, ocCmd, icCmd, locationCode, putawayPatternDetailType, ouId, skuAttrId);
                   srCmd = this.splitPutWayNoLocation(isCmd, ouId, userId, srCmd, funcId, icCmd, invList,putawayPatternDetailType,warehouse);
               }else if(!isNotUser){
-                  String skuAttrId = SkuCategoryProvider.concatSkuAttrId(skuCmd.getId(), skuCmd.getInvType(), skuCmd.getInvStatus(), skuCmd.getInvMfgDate(), skuCmd.getInvExpDate(), skuCmd.getInvAttr1(), skuCmd.getInvAttr2(), skuCmd.getInvAttr3(),
+                  String skuAttrId = SkuCategoryProvider.concatSkuAttrId(skuCmd.getId(), skuCmd.getInvType(), skuCmd.getInvStatus(), skuCmd.getInvBatchNumber(),skuCmd.getInvCountryOfOrigin(),skuCmd.getInvMfgDate(), skuCmd.getInvExpDate(), skuCmd.getInvAttr1(), skuCmd.getInvAttr2(), skuCmd.getInvAttr3(),
                       skuCmd.getInvAttr4(), skuCmd.getInvAttr5(), skuCmd.getSkuSn(), skuCmd.getSkuDefect());
                   whSkuInventoryManager.sysManPutaway(skuCmd.getScanSkuQty(), warehouse, userId, ocCmd, icCmd, locationCode, putawayPatternDetailType, ouId, skuAttrId);
                   Long locId = null;
@@ -2902,7 +2922,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
               srCmd.setTipLocationCode(tipLoc.getCode());
           } else if (cssrCmd.isNeedTipContainer()) {
               if(isRecommendFail) {  //人工流程,扫一个上一个
-                  String skuAttrId = SkuCategoryProvider.concatSkuAttrId(skuCmd.getId(), skuCmd.getInvType(), skuCmd.getInvStatus(), skuCmd.getInvMfgDate(), skuCmd.getInvExpDate(), skuCmd.getInvAttr1(), skuCmd.getInvAttr2(), skuCmd.getInvAttr3(),
+                  String skuAttrId = SkuCategoryProvider.concatSkuAttrId(skuCmd.getId(), skuCmd.getInvType(), skuCmd.getInvStatus(),skuCmd.getInvBatchNumber(),skuCmd.getInvCountryOfOrigin(), skuCmd.getInvMfgDate(), skuCmd.getInvExpDate(), skuCmd.getInvAttr1(), skuCmd.getInvAttr2(), skuCmd.getInvAttr3(),
                       skuCmd.getInvAttr4(), skuCmd.getInvAttr5(), skuCmd.getSkuSn(), skuCmd.getSkuDefect());
                   whSkuInventoryManager.sysManPutaway(skuCmd.getScanSkuQty(), warehouse, userId, ocCmd, icCmd, locationCode, putawayPatternDetailType, ouId, skuAttrId);
               }
@@ -3406,7 +3426,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
         //缓存库存信息
         List<WhSkuInventoryCommand>  invList =  this.splitPutwayCacheInventory(insideCommand, ouId, logId);
         // 2.清除所有库存统计信息
-        cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY_STATISTIC, insideContainerId.toString());
+//        cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY_STATISTIC, insideContainerId.toString());
         ScanResultCommand  sanResult = new ScanResultCommand();
         InventoryStatisticResultCommand iSRCmd = this.cacheContainerInventoryStatistics(invList,userId, ouId, logId, insideCommand, sanResult, putawayPatternDetailType,outerContainerCode);
         //设置库位信息
