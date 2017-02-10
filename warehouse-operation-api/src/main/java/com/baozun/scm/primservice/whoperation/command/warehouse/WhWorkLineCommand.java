@@ -110,7 +110,7 @@ public class WhWorkLineCommand extends BaseCommand {
 	/** 出库单明细ID */
 	private java.lang.Long odoLineId;
 	/** 补货单据号 */
-    private String replenishmentCode;
+    private java.lang.String replenishmentCode;
 	/** 创建时间 */
 	private java.util.Date createTime;
 	/** 最后操作时间 */

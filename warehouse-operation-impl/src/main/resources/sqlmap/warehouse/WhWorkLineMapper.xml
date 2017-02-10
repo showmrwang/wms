@@ -49,6 +49,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	is_whole_case as isWholeCase,
 	        	odo_id as odoId,
 	        	odo_line_id as odoLineId,
+	        	replenishment_code as replenishmentCode,
 	        	create_time as createTime,
 	        	last_modify_time as lastModifyTime,
 	        	operator_id as operatorId
@@ -102,6 +103,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	is_whole_case ,
 		        	odo_id ,
 		        	odo_line_id ,
+		        	replenishment_code ,
 		        	create_time ,
 		        	last_modify_time ,
 		        	operator_id 
@@ -144,6 +146,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{isWholeCase,javaType=java.lang.Boolean,jdbcType=BIT} ,
 		        	#{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{odoLineId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{replenishmentCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        	#{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} 
@@ -193,6 +196,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        is_whole_case = #{isWholeCase,javaType=java.lang.Boolean,jdbcType=BIT} ,
 		        odo_id = #{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        odo_line_id = #{odoLineId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        replenishment_code = #{replenishmentCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} 
@@ -391,6 +395,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	       
 				<if test="odoLineId!=null">
 					and odo_line_id = #{odoLineId}
+				</if>
+				
+				<if test="replenishmentCode!=null and replenishmentCode!=''">
+					and replenishment_code = #{replenishmentCode}
 				</if>
 	       
 				<if test="createTime!=null">
