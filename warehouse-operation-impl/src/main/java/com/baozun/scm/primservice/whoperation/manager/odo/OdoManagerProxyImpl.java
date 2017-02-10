@@ -1474,8 +1474,13 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
             }
             List<WhOdoVasCommand> vasList = this.odoVasManager.findOdoOuVasCommandByOdoIdOdoLineIdType(odo.getId(), null, ouId);
             // 设置允许合并与否
-            if (vasList == null || vasList.size() == 0) {
-                odo.setIsAllowMerge(true);
+            // @mender yimin.lu 2017/2/10 锁定的出库单 不允许合并
+            if (odo.getIsLocked() == null || odo.getIsLocked() == false) {
+                if (vasList == null || vasList.size() == 0) {
+                    odo.setIsAllowMerge(true);
+                } else {
+                    odo.setIsAllowMerge(false);
+                }
             } else {
                 odo.setIsAllowMerge(false);
             }
@@ -1491,7 +1496,12 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
                 throw e;
             }
             if (flag) {
-                this.distributionModeArithmeticManagerProxy.addToWhDistributionModeArithmeticPool(counterCode, odoId);
+                // @mender yimin.lu 锁定的出库单不参与计数器计算 2017/2/10
+                // @mender yimin.lu 支持越库的出库单不参与计数器计算
+                if ((odo.getIsLocked() == null || odo.getIsLocked() == false) && Constants.ODO_CROSS_DOCKING_SYSMBOL_2.equals(odo.getCrossDockingSymbol())) {
+
+                    this.distributionModeArithmeticManagerProxy.addToWhDistributionModeArithmeticPool(counterCode, odoId);
+                }
             }
         }
 

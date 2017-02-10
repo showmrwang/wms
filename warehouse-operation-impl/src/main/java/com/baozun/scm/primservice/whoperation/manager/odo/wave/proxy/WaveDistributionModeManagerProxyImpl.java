@@ -668,6 +668,12 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
         return this.odoManager.findOdoByCounterCode(counterCode, ouId);
     }
 
+    @Override
+    public List<Long> findOdoByCounterCodeToCalcDistributeMode(String counterCode, Long ouId) {
+        log.info(this.getClass().getSimpleName() + ".findOdoByCounterCode params [counterCode:{},ouId:{}]", counterCode, ouId);
+        return this.odoManager.findOdoByCounterCodeToCalcDistributeMode(counterCode, ouId);
+    }
+
 
     @Override
     public boolean breakCounter(Long ouId) {

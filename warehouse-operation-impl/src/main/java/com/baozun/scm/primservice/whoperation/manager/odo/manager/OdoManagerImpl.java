@@ -675,6 +675,12 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<Long> findOdoByCounterCodeToCalcDistributeMode(String counterCode, Long ouId) {
+        return this.whOdoDao.findOdoByCounterCodeToCalcDistributeMode(counterCode, ouId);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void createOdo(List<OdoGroup> groupList, Long ouId, Long userId) {
         for (OdoGroup group : groupList) {
             this.createOdo(group.getOdo(), group.getOdoLineList(), group.getTransportMgmt(), group.getWhOdoAddress(), group.getOdoVasList(), group.getLineSnList(), ouId, userId);

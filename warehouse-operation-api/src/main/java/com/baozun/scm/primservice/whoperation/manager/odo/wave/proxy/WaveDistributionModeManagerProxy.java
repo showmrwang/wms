@@ -70,6 +70,16 @@ public interface WaveDistributionModeManagerProxy extends BaseManager {
      */
     public List<Long> findOdoByCounterCode(String counterCode, Long ouId);
 
+
+    /**
+     * [业务方法]根据出库单counterCode查找出库单
+     * 
+     * @param counterCode
+     * @param ouId
+     * @return
+     */
+    public List<Long> findOdoByCounterCodeToCalcDistributeMode(String counterCode, Long ouId);
+
     /**
      * 清除所有的计数器
      * 

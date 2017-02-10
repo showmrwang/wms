@@ -1,5 +1,7 @@
 package com.baozun.scm.primservice.whoperation.command.pda.rcvd;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
 import com.baozun.scm.primservice.whoperation.command.sku.SkuRedisCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
@@ -62,7 +64,8 @@ public class RcvdWorkFlow extends BaseCommand {
             list[RcvdWorkFlow.GENERAL_RECEIVING_ISBATCHNO] = null != mgt.getIsBatchNo() && mgt.getIsBatchNo() ? '1' : '0';
             list[RcvdWorkFlow.GENERAL_RECEIVING_ISCOUNTRYOFORIGIN] = null != mgt.getIsCountryOfOrigin() && mgt.getIsCountryOfOrigin() ? '1' : '0';
             list[RcvdWorkFlow.GENERAL_RECEIVING_ISINVTYPE] = null != mgt.getIsInvType() && mgt.getIsInvType() ? '1' : '0';
-            if (null == mgt.getSerialNumberType() || Constants.SERIAL_NUMBER_TYPE_OUT.equals(mgt.getSerialNumberType()) || Constants.SERIAL_NUMBER_TYPE_ALL_NOT.equals(mgt.getSerialNumberType())) {
+            // @mender yimin.lu 2017/2/10 商品的序列号管理类型
+            if (StringUtils.isEmpty(mgt.getSerialNumberType()) || Constants.SERIAL_NUMBER_TYPE_OUT.equals(mgt.getSerialNumberType()) || Constants.SERIAL_NUMBER_TYPE_ALL_NOT.equals(mgt.getSerialNumberType())) {
                 list[RcvdWorkFlow.GENERAL_RECEIVING_ISSERIALNUMBER] = '0';
             } else {
                 list[RcvdWorkFlow.GENERAL_RECEIVING_ISSERIALNUMBER] = '1';

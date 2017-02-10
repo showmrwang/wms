@@ -235,6 +235,8 @@ public interface OdoManager extends BaseManager {
 
     List<Long> findOdoByCounterCode(String counterCode, Long ouId);
 
+    List<Long> findOdoByCounterCodeToCalcDistributeMode(String counterCode, Long ouId);
+
     void createOdo(List<OdoGroup> groupList, Long ouId, Long userId);
 
     /**
