@@ -91,6 +91,15 @@ public interface WhSkuInventorySnDao extends BaseDao<WhSkuInventorySn, Long> {
      * @return
      */
     List<WhSkuInventorySnCommand> findWhSkuInventoryByUuidLeftJoinForeignKey(@Param("ouid") Long ouid, @Param("uuid") String uuid);
+    
+    /**
+     * 查询sn数据
+     * @author lichuan
+     * @param id
+     * @param ouId
+     * @return
+     */
+    WhSkuInventorySnCommand findWhSkuInventorySnByIdAndOuId(@Param("id") Long id, @Param("ouId") Long ouId);
 
     /**
      * 查询所有对应容器号的库存信息

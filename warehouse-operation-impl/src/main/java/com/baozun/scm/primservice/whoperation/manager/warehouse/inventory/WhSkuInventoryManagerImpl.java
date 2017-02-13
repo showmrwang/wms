@@ -1774,9 +1774,11 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         sn.setUuid(inv.getUuid());
                         whSkuInventorySnDao.insert(sn);
                         insertGlobalLog(GLOBAL_LOG_INSERT, sn, ouId, userId, null, null);
+                        // 记录SN日志
+                        insertSkuInventorySnLog(sn.getId(), ouId);
                     }
                     // 记录SN日志(这个实现的有问题)
-                    insertSkuInventorySnLog(inv.getUuid(), ouId);
+                    // insertSkuInventorySnLog(inv.getUuid(), ouId);
                     WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
                     BeanUtils.copyProperties(invCmd, cInv);
                     whSkuInventoryTobefilledDao.delete(cInv.getId());
@@ -2076,9 +2078,11 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         sn.setUuid(inv.getUuid());
                         whSkuInventorySnDao.insert(sn);
                         insertGlobalLog(GLOBAL_LOG_INSERT, sn, ouId, userId, null, null);
+                        // 记录SN日志
+                        insertSkuInventorySnLog(sn.getId(), ouId);
                     }
                     // 记录SN日志(这个实现的有问题)
-                    insertSkuInventorySnLog(inv.getUuid(), ouId);
+                    // insertSkuInventorySnLog(inv.getUuid(), ouId);
                     WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
                     BeanUtils.copyProperties(invCmd, cInv);
                     whSkuInventoryTobefilledDao.delete(cInv.getId());

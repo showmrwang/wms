@@ -20,4 +20,12 @@ public interface WhSkuInventorySnLogManager extends BaseManager {
 
     void insertSkuInventorySnLog(String uuid, Long ouid);
 
+    /**
+     * 
+     * @author lichuan
+     * @param snId
+     * @param ouId
+     */
+    void insertSkuInventorySnLog(Long snId, Long ouId);
+
 }

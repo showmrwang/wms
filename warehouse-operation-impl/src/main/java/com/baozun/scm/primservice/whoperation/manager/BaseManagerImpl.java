@@ -519,6 +519,21 @@ public abstract class BaseManagerImpl implements BaseManager {
         }
         whSkuInventorySnLogManager.insertSkuInventorySnLog(uuid, ouid);
     }
+    
+    /**
+     * 插入库存SN/残次日志
+     * 
+     * @author lichuan
+     * @param snId
+     * @param uuId
+     * @param ouId
+     */
+    protected void insertSkuInventorySnLog(Long snId, Long ouId) {
+        if (null == snId) {
+            throw new BusinessException(ErrorCodes.PARAM_IS_NULL, new Object[] {"snId"});
+        }
+        whSkuInventorySnLogManager.insertSkuInventorySnLog(snId, ouId);
+    }
 
     /**
      * 获取格式化的日志信息
