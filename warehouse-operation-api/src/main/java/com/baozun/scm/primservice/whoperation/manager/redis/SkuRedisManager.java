@@ -11,4 +11,7 @@ public interface SkuRedisManager extends BaseManager {
 
     SkuRedisCommand findSkuMasterBySkuId(Long skuid, Long ouid, String logId);
 
+    void delSkuRedis(Long skuid, Long ouid);
+
+    void delSkuBarCodeRedis(String barCode);
 }
