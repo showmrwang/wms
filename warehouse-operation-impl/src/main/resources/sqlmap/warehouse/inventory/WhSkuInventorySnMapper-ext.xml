@@ -155,6 +155,33 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				and sn.ou_id = #{ouid} 
     </select>
     
+    <select id="findWhSkuInventorySnByIdAndOuId" resultMap="WhSkuInventorySnCommandResultExt">
+	    	select 
+				sn.sn as sn,
+				sn.occupation_code as occupationCode,
+				sn.defect_ware_barcode as defectWareBarcode,
+				sn.defect_source as defectSource,
+				sn.defect_type_id as defectTypeId,
+				sn.defect_reasons_id as defectReasonsId,
+				sn.status as status,
+				sn.inv_attr as invAttr,
+				sn.uuid as uuid,
+				sn.ou_id as ouId,
+				sn.sys_uuid as sysUuid,
+				stype.name as storeDefectTypeName,
+				srea.name as storeDefectReasonsName,
+				wtype.name as whDefectTypeName,
+				wrea.name as whDefectReasonsName
+				from t_wh_sku_inventory_sn sn 
+				left join t_bi_store_defect_type stype on stype.id = sn.defect_type_id 
+				left join t_bi_store_defect_reasons srea on srea.id = sn.defect_reasons_id
+				left join t_wh_defect_type wtype on wtype.id = sn.defect_type_id 
+				left join t_wh_defect_reasons wrea on wrea.id = sn.defect_reasons_id
+				where 
+				sn.id = #{id}
+				and sn.ou_id = #{ouId} 
+    </select>
+    
     <update id="updateWhSkuInventorySnUuid">
 		update t_wh_sku_inventory_sn sn 
 			set sn.uuid = #{newuuid},

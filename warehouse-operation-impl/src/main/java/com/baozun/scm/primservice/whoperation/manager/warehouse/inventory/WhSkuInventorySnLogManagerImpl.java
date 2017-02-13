@@ -55,5 +55,34 @@ public class WhSkuInventorySnLogManagerImpl implements WhSkuInventorySnLogManage
             whSkuInventorySnLogDao.insert(snLog);
         }
     }
+    
+    /**
+     * 插入库存SN/残次日志
+     * @author lichuan
+     * @param snId
+     * @param ouId
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void insertSkuInventorySnLog(Long snId, Long ouId) {
+        WhSkuInventorySnCommand sn = whSkuInventorySnDao.findWhSkuInventorySnByIdAndOuId(snId, ouId);
+        WhSkuInventorySnLog snLog = new WhSkuInventorySnLog();
+        BeanUtils.copyProperties(sn, snLog);
+        snLog.setSysDate(DateUtil.getSysDate());
+        // 判断残次类型和残次原因是属于店铺还是仓库
+        if (!StringUtil.isEmpty(sn.getDefectSource())) {
+            if (sn.getDefectSource().equals(Constants.SKU_SN_DEFECT_SOURCE_STORE)) {
+                // 如果是店铺 把查出来的店铺残次原因/残次类型插入日志表
+                snLog.setDefectType(sn.getStoreDefectTypeName());
+                snLog.setDefectReasons(sn.getStoreDefectReasonsName());
+            }
+            if (sn.getDefectSource().equals(Constants.SKU_SN_DEFECT_SOURCE_WH)) {
+                // 如果是仓库 把查出来的仓库残次原因/残次类型插入日志表
+                snLog.setDefectType(sn.getWhDefectTypeName());
+                snLog.setDefectReasons(sn.getWhDefectReasonsName());
+            }
+        }
+        whSkuInventorySnLogDao.insert(snLog);
+    }
 
 }
