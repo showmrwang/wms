@@ -1133,7 +1133,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
         Set<Long> locationIds = isrCmd.getLocationIds(); 
         if (0 < locationIds.size()) {
             srCmd.setRecommendLocation(true);// 已推荐库位
-            if (1 < locationIds.size()) {   //整托上架已经推荐库位而且绑架多个库位，认定异常
+            if (1 < locationIds.size()) {   //上架已经推荐库位而且绑架多个库位，认定异常
                 log.error("sys guide pallet putaway location is more than one error, logId is:[{}]", logId);
                 throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
             }
@@ -2798,7 +2798,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
               }
               // 累加容器，容器内sku商品、库位上已有容器，商品重量， 判断是否<=库位承重 *
               Boolean result = this.IsLocationBearWeight(insideContainerId, locationSkuList, whskuList,putawayPatternDetailType,locationId, ouId);
-              if(result) {
+              if(result) {//超重时,更换库位
                   srCmd = this.reminderLocation(isCmd, srCmd, ouId);
                   srCmd.setIsNeedScanNewLocation(true);
                   return srCmd;
@@ -2864,11 +2864,11 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
               throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
           }
           CheckScanSkuResultCommand cssrCmd = null;
-          if(isRecommendFail) {
+//          if(isRecommendFail==true|| isNotUser == true) {  //推荐库位失败,或者不使用推荐库位(isRecommendFail=false，时推荐库位成功，isRecommendFail=true时，推荐库位失败,isNotUser=true，不使用推荐库位，isNotUser=false时，使用推荐库位)
               cssrCmd = pdaPutawayCacheManager.sysSuggestSplitContainerPutawayTipSkuOrContainer(scanPattern,ocCmd, icCmd, insideContainerIds, insideContainerSkuAttrIdsQty, insideContainerSkuAttrIdsSnDefect, insideContainerSkuAttrIds, locationId, skuCmd, logId);
-          }else{
-              cssrCmd = pdaPutawayCacheManager.sysGuideSplitContainerPutawayTipSkuOrLocOrContainer(ocCmd, icCmd, insideContainerIds, insideContainerSkuAttrIdsQty, insideContainerSkuAttrIdsSnDefect, insideContainerLocSkuAttrIds, loc.getId(), skuCmd, logId);
-          }
+//          }else{
+//              cssrCmd = pdaPutawayCacheManager.sysGuideSplitContainerPutawayTipSkuOrLocOrContainer(ocCmd, icCmd, insideContainerIds, insideContainerSkuAttrIdsQty, insideContainerSkuAttrIdsSnDefect, insideContainerLocSkuAttrIds, loc.getId(), skuCmd, logId);
+//          }
           if (cssrCmd.isNeedTipSkuSn()) {
               // 当前商品还未扫描，继续扫sn残次信息
               String tipSkuAttrId = cssrCmd.getTipSkuAttrId();
@@ -2882,7 +2882,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
                       skuCmd.getInvAttr4(), skuCmd.getInvAttr5(), skuCmd.getSkuSn(), skuCmd.getSkuDefect());
                   whSkuInventoryManager.sysManPutaway(skuCmd.getScanSkuQty(), warehouse, userId, ocCmd, icCmd, locationCode, putawayPatternDetailType, ouId, skuAttrId);
                   srCmd = this.splitPutWayNoLocation(isCmd, ouId, userId, srCmd, funcId, icCmd, invList,putawayPatternDetailType,warehouse);
-              }else if(!isNotUser){
+              }else if(isNotUser){
                   String skuAttrId = SkuCategoryProvider.concatSkuAttrId(skuCmd.getId(), skuCmd.getInvType(), skuCmd.getInvStatus(), skuCmd.getInvBatchNumber(),skuCmd.getInvCountryOfOrigin(),skuCmd.getInvMfgDate(), skuCmd.getInvExpDate(), skuCmd.getInvAttr1(), skuCmd.getInvAttr2(), skuCmd.getInvAttr3(),
                       skuCmd.getInvAttr4(), skuCmd.getInvAttr5(), skuCmd.getSkuSn(), skuCmd.getSkuDefect());
                   whSkuInventoryManager.sysManPutaway(skuCmd.getScanSkuQty(), warehouse, userId, ocCmd, icCmd, locationCode, putawayPatternDetailType, ouId, skuAttrId);
@@ -3338,7 +3338,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
      * @param putawayPatternDetailType
      * @return
      */
-    public ScanResultCommand splitContaienrManPutwayFlow(Boolean isRecommendFail,String invAttrMgmtHouse,String locationCode,String locBarCode,String outerContainerCode,String insideContainerCode,Long funcId,Long ouId,Long userId,Integer putawayPatternDetailType,Warehouse warehouse){
+    public ScanResultCommand splitContaienrManPutwayFlow(Boolean isNotUser,Boolean isRecommendFail,String invAttrMgmtHouse,String locationCode,String locBarCode,String outerContainerCode,String insideContainerCode,Long funcId,Long ouId,Long userId,Integer putawayPatternDetailType,Warehouse warehouse){
         ScanResultCommand sRcmd = new ScanResultCommand();
         sRcmd.setPutawayPatternDetailType(putawayPatternDetailType);
         ContainerCommand insideCommand = null;
@@ -3431,8 +3431,15 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
         InventoryStatisticResultCommand iSRCmd = this.cacheContainerInventoryStatistics(invList,userId, ouId, logId, insideCommand, sanResult, putawayPatternDetailType,outerContainerCode);
         //设置库位信息
         Set<Long> locationIds = iSRCmd.getLocationIds();
-        //添加库位
-        locationIds.add(locationId);
+//        Set<Long> locationIds = new HashSet<Long>();
+        if(locationIds == null  || locationIds.size() == 0) {
+           locationIds = new HashSet<Long>();
+          //添加库位
+           locationIds.add(locationId);
+           iSRCmd.setLocationIds(locationIds);
+        }
+        
+         
         //缓存库存统计信息
         cacheManager.setMapObject(CacheConstants.CONTAINER_INVENTORY_STATISTIC, insideContainerId.toString(), iSRCmd, CacheConstants.CACHE_ONE_DAY);
         // 0.判断是否已经缓存所有库存信息,获取库存统计信息及当前功能参数scan_pattern         CacheConstants.CONTAINER_INVENTORY
@@ -3448,7 +3455,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
         Map<String, Long> skuAttrIdsQty = insideContainerSkuAttrIdsQty.get(insideContainerId);   //内部容器唯一sku总件数'
         isCmd.getInsideContainerSkuAndSkuAttrIds();
         String tipSkuAttrId = "";
-        if(isRecommendFail) {  //推荐库位失败
+        if(isRecommendFail==true || isNotUser == true) {  //推荐库位失败,或者不使用推荐库位(isRecommendFail=false，时推荐库位成功，isRecommendFail=true时，推荐库位失败,isNotUser=true，不使用推荐库位，isNotUser=false时，使用推荐库位)
             tipSkuAttrId =  this.sysSuggestSplitContainerPutawayTipSku(invList,insideContainerId, locationId, insideContainerSkuAttrIds, insideContainerCode);
             
         }else{

@@ -137,7 +137,7 @@ public interface PdaSysSuggestPutwayManager extends BaseManager{
      * @param putawayPatternDetailType
      * @return
      */
-    public ScanResultCommand splitContaienrManPutwayFlow(Boolean isRecommendFail,String invAttrMgmtHouse,String locationCode,String locBarCode,String outerContainerCode,String insideContainerCode,Long funcId,Long ouId,Long userId,Integer putawayPatternDetailType,Warehouse warehouse);
+    public ScanResultCommand splitContaienrManPutwayFlow(Boolean isNotUser,Boolean isRecommendFail,String invAttrMgmtHouse,String locationCode,String locBarCode,String outerContainerCode,String insideContainerCode,Long funcId,Long ouId,Long userId,Integer putawayPatternDetailType,Warehouse warehouse);
     
     /***
      * 整托上架:扫描内部容器
