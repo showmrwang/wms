@@ -5,6 +5,7 @@ import java.util.List;
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAddress;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLineAttrSn;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt;
 
 public class OdoGroupCommand extends BaseCommand {
@@ -32,6 +33,18 @@ public class OdoGroupCommand extends BaseCommand {
     private Long odoId;
     /***/
     private Long odoLineId;
+
+    private List<WhOdoLineAttrSn> lineSnList;
+
+
+
+    public List<WhOdoLineAttrSn> getLineSnList() {
+        return lineSnList;
+    }
+
+    public void setLineSnList(List<WhOdoLineAttrSn> lineSnList) {
+        this.lineSnList = lineSnList;
+    }
 
     public List<WhOdoLine> getOdoLineList() {
         return odoLineList;

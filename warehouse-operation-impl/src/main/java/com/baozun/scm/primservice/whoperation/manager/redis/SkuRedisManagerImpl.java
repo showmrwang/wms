@@ -110,6 +110,7 @@ public class SkuRedisManagerImpl extends BaseManagerImpl implements SkuRedisMana
             log.error("findSkuMasterBySkuId cacheManager.getObject() error logid: " + logId);
         }
         if (null == redisMap || redisMap.size() == 0) {
+            redisMap = new HashMap<String, String>();
             // redis没有对应数据 查询数据库
             skuRedis = whSkuDao.findSkuAllInfoByParamExt(skuid, ouid);
             if (null == skuRedis) {

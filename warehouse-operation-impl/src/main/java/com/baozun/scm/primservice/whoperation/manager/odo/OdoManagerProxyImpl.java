@@ -164,7 +164,7 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
             /**
              * 第一步：封装ODO和ODOLine
              */
-            List<WhOdoLine> odoLineList = null;
+            List<WhOdoLine> odoLineList = odoGroup.getOdoLineList();
             /**
              * 第二步：封装ODO
              */
@@ -176,15 +176,15 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
             /**
              * 第四步：封装配送对象
              */
-            WhOdoAddress address = null;
+            WhOdoAddress address = odoGroup.getWhOdoAddress();
             /**
              * 第五步：封装增值服务
              */
-            List<WhOdoVas> odoVasList = null;
+            List<WhOdoVas> odoVasList = this.copyOdoVasProperties(odoGroup.getOdoVasList());
             /**
              * 第六步：封装SN
              */
-            List<WhOdoLineAttrSn> lineSnList = null;
+            List<WhOdoLineAttrSn> lineSnList = odoGroup.getLineSnList();
             /**
              * 第六步：SN TODO
              */
@@ -203,6 +203,11 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
         msg.setMsg(returnOdoId + "");
         msg.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
         return msg;
+    }
+
+    private List<WhOdoVas> copyOdoVasProperties(List<WhOdoVasCommand> odoVasList) {
+        List<WhOdoVas> vasList = new ArrayList<WhOdoVas>();
+        return vasList;
     }
 
     private void createOdo(WhOdo odo, List<WhOdoLine> odoLineList, WhOdoTransportMgmt transportMgmt, WhOdoAddress odoAddress, List<WhOdoVas> odoVasList, List<WhOdoLineAttrSn> lineSnList, Long ouId, Long userId) {
