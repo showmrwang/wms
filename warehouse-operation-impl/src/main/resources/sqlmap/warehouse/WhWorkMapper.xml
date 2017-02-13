@@ -18,8 +18,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	work_type as workType,
 	        	work_category as workCategory,
 	        	is_locked as isLocked,
+	        	is_assign_out as isAssignOut,
+	        	is_short_picking as isShortPicking,
+	        	is_wave_replenish as isWaveReplenish,
+	        	is_picking_tobefilled as isPickingTobefilled,
+	        	is_multi_operation as isMultiOperation,
+	        	work_area as workArea,
 	        	work_priority as workPriority,
 	        	batch as batch,
+	        	assign_out_batch as assignOutBatch,
 	        	start_time as startTime,
 	        	finish_time as finishTime,
 	        	wave_id as waveId,
@@ -53,8 +60,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	work_type ,
 		        	work_category ,
 		        	is_locked ,
+		        	is_assign_out ,
+		        	is_short_picking ,
+		        	is_wave_replenish ,
+		        	is_picking_tobefilled ,
+		        	is_multi_operation ,
+		        	work_area ,
 		        	work_priority ,
 		        	batch ,
+		        	assign_out_batch ,
 		        	start_time ,
 		        	finish_time ,
 		        	wave_id ,
@@ -77,8 +91,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{workType,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{workCategory,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{isLocked,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	#{isAssignOut,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	#{isShortPicking,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	#{isWaveReplenish,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	#{isPickingTobefilled,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	#{isMultiOperation,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	#{workArea,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{workPriority,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        	#{batch,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{assignOutBatch,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{startTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        	#{finishTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        	#{waveId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -108,8 +129,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        work_type = #{workType,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        work_category = #{workCategory,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        is_locked = #{isLocked,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        is_assign_out = #{isAssignOut,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        is_short_picking = #{isShortPicking,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        is_wave_replenish = #{isWaveReplenish,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        is_picking_tobefilled = #{isPickingTobefilled,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        is_multi_operation = #{isMultiOperation,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        work_area = #{workArea,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        work_priority = #{workPriority,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        batch = #{batch,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        assign_out_batch = #{assignOutBatch,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        start_time = #{startTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        finish_time = #{finishTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        wave_id = #{waveId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -140,7 +168,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        delete from t_wh_work 
 	        where id in
 				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
-#{item}				</foreach>	
+					#{item}				
+				</foreach>	
 	  
 	    </delete>  
 	         
@@ -157,18 +186,17 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			    from t_wh_work 
 		        where id in
 				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
-#{item}				</foreach>					
+					#{item}				
+				</foreach>					
 		</select>	
 	<sql id="whWorkDynamicWhere">
 		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
 		<where>
-	       
 				<if test="id!=null">
 					and id = #{id}
 				</if>
 	       
-	       
-		       <if test="code!=null and code!=''">
+		       	<if test="code!=null and code!=''">
 					and code = #{code}
 				</if>
 	       
@@ -180,13 +208,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					and ou_id = #{ouId}
 				</if>
 	       
-	       
-		       <if test="workType!=null and workType!=''">
+		       	<if test="workType!=null and workType!=''">
 					and work_type = #{workType}
 				</if>
 	       
-	       
-		       <if test="workCategory!=null and workCategory!=''">
+		       	<if test="workCategory!=null and workCategory!=''">
 					and work_category = #{workCategory}
 				</if>
 	       
@@ -194,13 +220,41 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					and is_locked = #{isLocked}
 				</if>
 	       
+				<if test="isAssignOut!=null">
+					and is_assign_out = #{isAssignOut}
+				</if>
+	       
+				<if test="isShortPicking!=null">
+					and is_short_picking = #{isShortPicking}
+				</if>
+	       
+				<if test="isWaveReplenish!=null">
+					and is_wave_replenish = #{isWaveReplenish}
+				</if>
+	       
+				<if test="isPickingTobefilled!=null">
+					and is_picking_tobefilled = #{isPickingTobefilled}
+				</if>
+	       
+				<if test="isMultiOperation!=null">
+					and is_multi_operation = #{isMultiOperation}
+				</if>
+	       
+		       	<if test="workArea!=null and workArea!=''">
+					and work_area = #{workArea}
+				</if>
+	       
 				<if test="workPriority!=null">
 					and work_priority = #{workPriority}
 				</if>
 	       
 	       
-		       <if test="batch!=null and batch!=''">
+		        <if test="batch!=null and batch!=''">
 					and batch = #{batch}
+				</if>
+	       
+		       <if test="assignOutBatch!=null and assignOutBatch!=''">
+					and assign_out_batch = #{assignOutBatch}
 				</if>
 	       
 				<if test="startTime!=null">
@@ -215,28 +269,23 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					and wave_id = #{waveId}
 				</if>
 	       
-	       
-		       <if test="waveCode!=null and waveCode!=''">
+		       	<if test="waveCode!=null and waveCode!=''">
 					and wave_code = #{waveCode}
 				</if>
 	       
-	       
-		       <if test="orderCode!=null and orderCode!=''">
+		       	<if test="orderCode!=null and orderCode!=''">
 					and order_code = #{orderCode}
 				</if>
 	       
-	       
-		       <if test="locationCode!=null and locationCode!=''">
+		       	<if test="locationCode!=null and locationCode!=''">
 					and location_code = #{locationCode}
 				</if>
 	       
-	       
-		       <if test="outerContainerCode!=null and outerContainerCode!=''">
+		       	<if test="outerContainerCode!=null and outerContainerCode!=''">
 					and outer_container_code = #{outerContainerCode}
 				</if>
 	       
-	       
-		       <if test="containerCode!=null and containerCode!=''">
+		       	<if test="containerCode!=null and containerCode!=''">
 					and container_code = #{containerCode}
 				</if>
 	       
