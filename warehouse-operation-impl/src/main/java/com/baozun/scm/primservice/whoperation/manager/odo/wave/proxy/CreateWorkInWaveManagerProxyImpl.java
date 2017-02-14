@@ -173,7 +173,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
                             log.error("qty != toQty", skuInventoryAllocatedCommand.getQty(), skuInventoryAllocatedCommand.getToQty());
                         }
                         // 创建补货工作明细
-                        this.saveReplenishmentWorkLine(key, replenishmentWorkCode, userId, skuInventoryAllocatedCommand);
+                        this.saveReplenishmentWorkLine(replenishmentWorkCode, userId, skuInventoryAllocatedCommand);
                         rWorkLineTotal = rWorkLineTotal + 1;
                     }
                     // 校验工作明细数量是否正确
@@ -319,7 +319,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
                         log.error("qty != toQty, qty:{}, toQty:{}", skuInventoryAllocatedCommand.getQty(), skuInventoryAllocatedCommand.getToQty());
                     }
                     // 创建补货工作明细
-                    this.saveReplenishmentWorkLine(key, replenishmentWorkCode, userId, skuInventoryAllocatedCommand);
+                    this.saveReplenishmentWorkLine(replenishmentWorkCode, userId, skuInventoryAllocatedCommand);
                     rWorkLineTotal = rWorkLineTotal + 1;
                 }
                 // 校验工作明细数量是否正确
@@ -1431,36 +1431,50 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void saveReplenishmentWorkLine(String key, String replenishmentWorkCode, Long userId, WhSkuInventoryAllocatedCommand skuInventoryAllocatedCommand) {
+    public void saveReplenishmentWorkLine(String replenishmentWorkCode, Long userId, WhSkuInventoryAllocatedCommand skuInventoryAllocatedCommand) {
         
         Boolean isWholeCase = false; 
-        // 获取分组标识
-        WhSkuInventory skuInventory = new WhSkuInventory();
-        WhSkuInventoryAllocatedCommand allocatedCommand = new WhSkuInventoryAllocatedCommand();
-        WhSkuInventoryAllocatedCommand totalCommand = new WhSkuInventoryAllocatedCommand();
-        String[] containerArray = key.split("-");
-        // 判断是否整托整箱        
+        // 判断是否整托整箱         
         if(null != skuInventoryAllocatedCommand.getInsideContainerId()){
-            skuInventory.setInsideContainerId(Long.valueOf(containerArray[1]));
-            allocatedCommand.setInsideContainerId(Long.valueOf(containerArray[1]));
-            totalCommand.setInsideContainerId(Long.valueOf(containerArray[1]));
-        }else{
-            if(null != skuInventoryAllocatedCommand.getOuterContainerId()){
-                skuInventory.setOuterContainerId(Long.valueOf(containerArray[1]));
-                allocatedCommand.setOuterContainerId(Long.valueOf(containerArray[1]));
-                totalCommand.setOuterContainerId(Long.valueOf(containerArray[1]));
-            }   
-        }
-        List<WhSkuInventory> SkuInventoryList = skuInventoryDao.getSkuInvListGroupUuid(skuInventory);
-        if( null == SkuInventoryList || 0 == SkuInventoryList.size()){
-            allocatedCommand.setReplenishmentCode(skuInventoryAllocatedCommand.getReplenishmentCode());
-            allocatedCommand.setReplenishmentRuleId(skuInventoryAllocatedCommand.getReplenishmentRuleId());
-            Double allocatedQty = skuInventoryAllocatedDao.skuInventoryAllocatedQty(allocatedCommand);
-            Double totalQty = skuInventoryAllocatedDao.skuInventoryAllocatedQty(totalCommand);
-            if(totalQty == allocatedQty){
-                isWholeCase = true;
+            WhSkuInventory skuInventory = new WhSkuInventory();
+            WhSkuInventoryAllocatedCommand allocatedCommand = new WhSkuInventoryAllocatedCommand();
+            WhSkuInventoryAllocatedCommand totalCommand = new WhSkuInventoryAllocatedCommand();
+            
+            skuInventory.setInsideContainerId(skuInventoryAllocatedCommand.getInsideContainerId());
+            allocatedCommand.setInsideContainerId(skuInventoryAllocatedCommand.getInsideContainerId());
+            totalCommand.setInsideContainerId(skuInventoryAllocatedCommand.getInsideContainerId());
+            
+            List<WhSkuInventory> SkuInventoryList = skuInventoryDao.getSkuInvListGroupUuid(skuInventory);
+            if( null == SkuInventoryList || 0 == SkuInventoryList.size()){
+                allocatedCommand.setReplenishmentCode(skuInventoryAllocatedCommand.getReplenishmentCode());
+                allocatedCommand.setReplenishmentRuleId(skuInventoryAllocatedCommand.getReplenishmentRuleId());
+                Double allocatedQty = skuInventoryAllocatedDao.skuInventoryAllocatedQty(allocatedCommand);
+                Double totalQty = skuInventoryAllocatedDao.skuInventoryAllocatedQty(totalCommand);
+                if(totalQty == allocatedQty){
+                    isWholeCase = true;
+                }
             }
         }
+        if(null != skuInventoryAllocatedCommand.getOuterContainerId()){
+            WhSkuInventory skuInventory = new WhSkuInventory();
+            WhSkuInventoryAllocatedCommand allocatedCommand = new WhSkuInventoryAllocatedCommand();
+            WhSkuInventoryAllocatedCommand totalCommand = new WhSkuInventoryAllocatedCommand();
+            
+            skuInventory.setOuterContainerId(skuInventoryAllocatedCommand.getOuterContainerId());
+            allocatedCommand.setOuterContainerId(skuInventoryAllocatedCommand.getOuterContainerId());
+            totalCommand.setOuterContainerId(skuInventoryAllocatedCommand.getOuterContainerId());
+            
+            List<WhSkuInventory> SkuInventoryList = skuInventoryDao.getSkuInvListGroupUuid(skuInventory);
+            if( null == SkuInventoryList || 0 == SkuInventoryList.size()){
+                allocatedCommand.setReplenishmentCode(skuInventoryAllocatedCommand.getReplenishmentCode());
+                allocatedCommand.setReplenishmentRuleId(skuInventoryAllocatedCommand.getReplenishmentRuleId());
+                Double allocatedQty = skuInventoryAllocatedDao.skuInventoryAllocatedQty(allocatedCommand);
+                Double totalQty = skuInventoryAllocatedDao.skuInventoryAllocatedQty(totalCommand);
+                if(totalQty == allocatedQty){
+                    isWholeCase = true;
+                }
+            }
+        }   
         
         // 根据出库单code获取出库单信息       
         WhOdo odo = odoDao.findOdoByCodeAndOuId(skuInventoryAllocatedCommand.getOccupationCode(), skuInventoryAllocatedCommand.getOuId());

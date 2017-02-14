@@ -196,7 +196,7 @@ public interface CreateWorkInWaveManagerProxy extends BaseManager {
      * @param WhSkuInventoryAllocatedCommand
      * @return
      */
-    public void saveReplenishmentWorkLine(String key, String replenishmentWorkCode, Long userId, WhSkuInventoryAllocatedCommand skuInventoryAllocatedCommand);
+    public void saveReplenishmentWorkLine(String replenishmentWorkCode, Long userId, WhSkuInventoryAllocatedCommand skuInventoryAllocatedCommand);
     
     /**
      * [业务方法] 创建补货工作-更新波次内工作头信息
