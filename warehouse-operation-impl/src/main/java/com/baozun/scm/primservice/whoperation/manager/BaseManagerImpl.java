@@ -47,6 +47,7 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryLog;
+import com.baozun.scm.primservice.whoperation.util.JsonUtil;
 import com.baozun.scm.primservice.whoperation.util.LogUtil;
 import com.baozun.scm.primservice.whoperation.util.ParamsUtil;
 import com.baozun.scm.primservice.whoperation.util.StringUtil;
@@ -195,14 +196,14 @@ public abstract class BaseManagerImpl implements BaseManager {
                     // 缓存无对应数据 查询数据库
                     sys = sysDictionaryDao.getGroupbyGroupValueAndDicValue(groupValue, dicValue);
                     try {
-                        cacheManager.setValue(redisKey + groupValue + "$" + dicValue, beanToJson(sys));
+                        cacheManager.setValue(redisKey + groupValue + "$" + dicValue, JsonUtil.beanToJson(sys));
                         // cacheManager.setObject(redisKey + groupValue + "$" + dicValue, sys);
                     } catch (Exception e) {
                         // redis出错只记录log
                         log.error("findSysDictionaryByRedis cacheManager.setObject(" + redisKey + groupValue + "$" + dicValue + ") error");
                     }
                 } else {
-                    sys = (SysDictionary) JSONObject.toBean(jsonToBean(sysDictionary), SysDictionary.class);
+                    sys = (SysDictionary) JSONObject.toBean(JsonUtil.jsonToBean(sysDictionary), SysDictionary.class);
                 }
                 // 放入returnMap 格式key = groupValue_dicValue value SysDictionary
                 returnMap.put(groupValue + "_" + dicValue, sys);
@@ -237,14 +238,14 @@ public abstract class BaseManagerImpl implements BaseManager {
                 // 缓存无对应数据 查询数据库
                 c = customerDao.findById(id);
                 try {
-                    cacheManager.setValue(redisKey + id, beanToJson(c));
+                    cacheManager.setValue(redisKey + id, JsonUtil.beanToJson(c));
                     // cacheManager.setObject(redisKey + id, c);
                 } catch (Exception e) {
                     // redis出错只记录log
                     log.error("findCustomerByRedis cacheManager.setObject(" + redisKey + id + ") error");
                 }
             } else {
-                c = (Customer) JSONObject.toBean(jsonToBean(customer), Customer.class);
+                c = (Customer) JSONObject.toBean(JsonUtil.jsonToBean(customer), Customer.class);
             }
             returnMap.put(id, c);
         }
@@ -280,19 +281,19 @@ public abstract class BaseManagerImpl implements BaseManager {
                     // 查询数据库
                     s = storeDao.findById(id);
                     try {
-                        cacheManager.setValue(redisKey + s.getCustomerId() + "-" + id, beanToJson(s));
+                        cacheManager.setValue(redisKey + s.getCustomerId() + "-" + id, JsonUtil.beanToJson(s));
                         // cacheManager.setObject(redisKey + s.getCustomerId() + "-" + id, s);
                     } catch (Exception e) {
                         // redis出错只记录log
                         log.error("findStoreByRedis cacheManager.setObject(" + redisKey + s.getCustomerId() + "-" + id + ") error");
                     }
                 } else {
-                    s = (Store) JSONObject.toBean(jsonToBean(store), Store.class);
+                    s = (Store) JSONObject.toBean(JsonUtil.jsonToBean(store), Store.class);
                 }
             } else {
                 s = storeDao.findById(id);
                 try {
-                    cacheManager.setValue(redisKey + s.getCustomerId() + "-" + id, beanToJson(s));
+                    cacheManager.setValue(redisKey + s.getCustomerId() + "-" + id, JsonUtil.beanToJson(s));
                     // cacheManager.setObject(redisKey + s.getCustomerId() + "-" + id, s);
                 } catch (Exception e) {
                     // redis出错只记录log
@@ -337,7 +338,7 @@ public abstract class BaseManagerImpl implements BaseManager {
                     c = customerDao.findById(Long.parseLong(s.substring(s.lastIndexOf("-") + 1, s.length())));
                     if (null != c) {
                         try {
-                            cacheManager.setValue(redisKey + c.getId(), beanToJson(c));
+                            cacheManager.setValue(redisKey + c.getId(), JsonUtil.beanToJson(c));
                             // cacheManager.setObject(redisKey + c.getId(), c);
                         } catch (Exception e) {
                             // redis出错只记录log
@@ -345,7 +346,7 @@ public abstract class BaseManagerImpl implements BaseManager {
                         }
                     }
                 } else {
-                    c = (Customer) JSONObject.toBean(jsonToBean(customer), Customer.class);
+                    c = (Customer) JSONObject.toBean(JsonUtil.jsonToBean(customer), Customer.class);
                 }
                 if (null != c) {
                     returnList.put(c.getId(), c);
@@ -356,7 +357,7 @@ public abstract class BaseManagerImpl implements BaseManager {
             List<Customer> customers = customerDao.findCustomerAllList();
             for (Customer customer : customers) {
                 try {
-                    cacheManager.setValue(redisKey + customer.getId(), beanToJson(customer));
+                    cacheManager.setValue(redisKey + customer.getId(), JsonUtil.beanToJson(customer));
                     // cacheManager.setObject(redisKey + customer.getId(), customer);
                 } catch (Exception e) {
                     // redis出错只记录log
@@ -402,7 +403,7 @@ public abstract class BaseManagerImpl implements BaseManager {
                     store = storeDao.findById(Long.parseLong(s.substring(s.lastIndexOf("-") + 1, s.length())));
                     if (null != store) {
                         try {
-                            cacheManager.setValue(redisKey + store.getId(), beanToJson(store));
+                            cacheManager.setValue(redisKey + store.getId(), JsonUtil.beanToJson(store));
                             // cacheManager.setObject(redisKey + store.getId(), store);
                         } catch (Exception e) {
                             // redis出错只记录log
@@ -410,7 +411,7 @@ public abstract class BaseManagerImpl implements BaseManager {
                         }
                     }
                 } else {
-                    store = (Store) JSONObject.toBean(jsonToBean(storeJson), Store.class);
+                    store = (Store) JSONObject.toBean(JsonUtil.jsonToBean(storeJson), Store.class);
                 }
                 if (null != store) {
                     returnList.put(store.getId(), store);
@@ -421,7 +422,7 @@ public abstract class BaseManagerImpl implements BaseManager {
             List<Store> storeList = storeDao.findStoreByCustomerId(customerId);
             for (Store store : storeList) {
                 try {
-                    cacheManager.setValue(redisKey + store.getId(), beanToJson(store));
+                    cacheManager.setValue(redisKey + store.getId(), JsonUtil.beanToJson(store));
                     // cacheManager.setObject(redisKey + store.getId(), store);
                 } catch (Exception e) {
                     // redis出错只记录log
@@ -472,14 +473,14 @@ public abstract class BaseManagerImpl implements BaseManager {
                     String dicValue = s.substring(s.lastIndexOf("$") + 1, s.length());
                     sys = sysDictionaryDao.getGroupbyGroupValueAndDicValue(groupValue, dicValue);
                     try {
-                        cacheManager.setValue(redisKey + dicValue, beanToJson(sys));
+                        cacheManager.setValue(redisKey + dicValue, JsonUtil.beanToJson(sys));
                         // cacheManager.setObject(redisKey + dicValue, sys);
                     } catch (Exception e) {
                         // redis出错只记录log
                         log.error("findSysDictionaryByGroupValueAndRedis cacheManager.setObject(" + redisKey + dicValue + ") error");
                     }
                 } else {
-                    sys = (SysDictionary) JSONObject.toBean(jsonToBean(sysDictionary), SysDictionary.class);
+                    sys = (SysDictionary) JSONObject.toBean(JsonUtil.jsonToBean(sysDictionary), SysDictionary.class);
                 }
                 if (null != sys) {
                     // 判断系统参数的lifecycle是否=传入的lifecycle
@@ -494,7 +495,7 @@ public abstract class BaseManagerImpl implements BaseManager {
             for (SysDictionary sys : sysList) {
                 try {
                     // 放入redis
-                    cacheManager.setValue(redisKey + sys.getDicValue(), beanToJson(sys));
+                    cacheManager.setValue(redisKey + sys.getDicValue(), JsonUtil.beanToJson(sys));
                     // cacheManager.setObject(redisKey + sys.getDicValue(), sys);
                 } catch (Exception e) {
                     // redis出错只记录log
@@ -519,7 +520,7 @@ public abstract class BaseManagerImpl implements BaseManager {
         }
         whSkuInventorySnLogManager.insertSkuInventorySnLog(uuid, ouid);
     }
-    
+
     /**
      * 插入库存SN/残次日志
      * 
@@ -589,38 +590,16 @@ public abstract class BaseManagerImpl implements BaseManager {
             wh = warehouseDao.findWarehouseById(id);
             try {
                 // 放入redis缓存
-                cacheManager.setValue(redisKey + id, beanToJson(wh));
+                cacheManager.setValue(redisKey + id, JsonUtil.beanToJson(wh));
                 // cacheManager.setObject(redisKey + id, wh);
             } catch (Exception e) {
                 // redis出错只记录log
                 log.error("getWhToRedis cacheManager.setObject(" + redisKey + id + ") error");
             }
         } else {
-            wh = (Warehouse) JSONObject.toBean(jsonToBean(w), Warehouse.class);
+            wh = (Warehouse) JSONObject.toBean(JsonUtil.jsonToBean(w), Warehouse.class);
         }
         return wh;
-    }
-
-    /**
-     * 对象转json字符串
-     * 
-     * @param o
-     * @return
-     */
-    private String beanToJson(Object o) {
-        JSONObject jsonObject = JSONObject.fromObject(o);
-        return jsonObject.toString();
-    }
-
-    /**
-     * json字符串转Json对象
-     *
-     * @param o
-     * @return
-     */
-    private JSONObject jsonToBean(String o) {
-        JSONObject jsonobject = JSONObject.fromObject(o);
-        return jsonobject;
     }
 
     protected void removeWaveLineWhole(Long waveId, Long odoId, Long ouId) {
