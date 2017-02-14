@@ -6,6 +6,8 @@ import java.util.Map;
 
 import lark.common.annotation.MoreDB;
 import net.sf.json.JSONObject;
+import net.sf.json.JsonConfig;
+import net.sf.json.processors.DefaultDefaultValueProcessor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -176,7 +178,13 @@ public class SkuRedisManagerImpl extends BaseManagerImpl implements SkuRedisMana
      * @return
      */
     private String beanToJson(Object o) {
-        JSONObject jsonObject = JSONObject.fromObject(o);
+        JsonConfig jsonConfig = new JsonConfig();
+        jsonConfig.registerDefaultValueProcessor(Integer.class, new DefaultDefaultValueProcessor() {
+            public Object getDefaultValue(@SuppressWarnings("rawtypes") Class type) {
+                return null;
+            }
+        });
+        JSONObject jsonObject = JSONObject.fromObject(o, jsonConfig);
         return jsonObject.toString();
     }
 
