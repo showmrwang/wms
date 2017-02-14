@@ -2049,16 +2049,16 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
                 //获取上一次循环的实体类            
                 WhWorkLineCommand whWorkLineCommandBefor = whWorkLineCommandList.get(count-1);
                 
-                if(whWorkLineCommandBefor.getFromLocationId() != whWorkLineCommand.getFromLocationId()){
+                if(null != whWorkLineCommandBefor.getFromLocationId() && null != whWorkLineCommand.getFromLocationId() && !whWorkLineCommandBefor.getFromLocationId().equals(whWorkLineCommand.getFromLocationId())){
                     isFromLocationId = false;
                 }
-                if(whWorkLineCommandBefor.getUseOuterContainerId() != whWorkLineCommand.getUseOuterContainerId()){
+                if(null != whWorkLineCommandBefor.getUseOuterContainerId() && null != whWorkLineCommand.getUseOuterContainerId() && !whWorkLineCommandBefor.getUseOuterContainerId().equals(whWorkLineCommand.getUseOuterContainerId())){
                     isUseOuterContainerId = false;
                 }
-                if(whWorkLineCommandBefor.getUseContainerId() != whWorkLineCommand.getUseContainerId()){
+                if(null != whWorkLineCommandBefor.getUseContainerId() && null != whWorkLineCommand.getUseContainerId() && !whWorkLineCommandBefor.getUseContainerId().equals(whWorkLineCommand.getUseContainerId())){
                     isUseContainerId = false;
                 }
-                if(whWorkLineCommandBefor.getOdoId() != whWorkLineCommand.getOdoId()){
+                if(null != whWorkLineCommandBefor.getOdoId() && null != whWorkLineCommand.getOdoId() && !whWorkLineCommandBefor.getOdoId().equals(whWorkLineCommand.getOdoId())){
                     isOdoId = false;
                 }
             }
