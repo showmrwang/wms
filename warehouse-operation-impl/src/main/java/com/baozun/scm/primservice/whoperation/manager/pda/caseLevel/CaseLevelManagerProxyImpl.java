@@ -449,10 +449,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
         if (StringUtil.isEmpty(skuMgmt.getSerialNumberType()) || null == skuMgmt.getIsValid() || null == skuMgmt.getIsBatchNo() || null == skuMgmt.getIsCountryOfOrigin() || null == skuMgmt.getIsInvType()) {
             throw new BusinessException(ErrorCodes.CASELEVEL_SKU_ATTR_NULL_ERROR);
         }
-        if (skuMgmt.getIsValid() && null == skuMgmt.getIsExpiredGoodsReceive()) {
-            throw new BusinessException(ErrorCodes.CASELEVEL_SKU_ATTR_NULL_ERROR);
-        }
-        if (null != skuMgmt.getValidDate() && StringUtil.isEmpty(skuMgmt.getGoodShelfLifeUnit())) {
+        if (skuMgmt.getIsValid() && (null == skuMgmt.getIsExpiredGoodsReceive() || null == skuMgmt.getValidDate() || StringUtil.isEmpty(skuMgmt.getGoodShelfLifeUnit()))) {
             throw new BusinessException(ErrorCodes.CASELEVEL_SKU_ATTR_NULL_ERROR);
         }
         SkuExtattr skuExtattr = skuRedisCommand.getSkuExtattr();
@@ -1532,7 +1529,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
             BigDecimal asnLineRcvdQtyTotal = asnLineRcvdQtyMap.get(asnLineId);
             // 统计ASN的收货数据：asn原有收货量 + asnLine总的收货量
             whAsn.setQtyRcvd(new BigDecimal(whAsn.getQtyRcvd().toString()).add(asnLineRcvdQtyTotal).doubleValue());
-            if(null == whAsn.getStartTime()){
+            if (null == whAsn.getStartTime()) {
                 whAsn.setStartTime(new Date());
             }
         }
@@ -1599,7 +1596,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
             whPo.setQtyRcvd(poRcvdQtyTotal.add(new BigDecimal(whPo.getQtyRcvd().toString())).doubleValue());
             whPo.setCtnRcvd(whPo.getCtnRcvd() + 1);
             whPo.setModifiedId(userId);
-            if(null == whPo.getStartTime()){
+            if (null == whPo.getStartTime()) {
                 whPo.setStartTime(new Date());
             }
             // 待保存的poLine

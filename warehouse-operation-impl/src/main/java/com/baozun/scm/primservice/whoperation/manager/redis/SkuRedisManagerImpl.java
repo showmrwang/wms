@@ -26,6 +26,7 @@ import com.baozun.scm.primservice.whoperation.model.sku.Sku;
 import com.baozun.scm.primservice.whoperation.model.sku.SkuExtattr;
 import com.baozun.scm.primservice.whoperation.model.sku.SkuMgmt;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhSkuWhmgmt;
+import com.baozun.scm.primservice.whoperation.util.JsonUtil;
 import com.baozun.scm.primservice.whoperation.util.StringUtil;
 
 @Service("skuRedisManager")
@@ -121,10 +122,10 @@ public class SkuRedisManagerImpl extends BaseManagerImpl implements SkuRedisMana
             // 放入redis缓存
             try {
                 // 保存商品数据Map
-                redisMap.put("sku", beanToJson(skuRedis.getSku()));
-                redisMap.put("skuExtattr", beanToJson(skuRedis.getSkuExtattr()));
-                redisMap.put("skuMgmt", beanToJson(skuRedis.getSkuMgmt()));
-                redisMap.put("whSkuWhMgmt", beanToJson(skuRedis.getWhSkuWhMgmt()));
+                redisMap.put("sku", JsonUtil.beanToJson(skuRedis.getSku()));
+                redisMap.put("skuExtattr", JsonUtil.beanToJson(skuRedis.getSkuExtattr()));
+                redisMap.put("skuMgmt", JsonUtil.beanToJson(skuRedis.getSkuMgmt()));
+                redisMap.put("whSkuWhMgmt", JsonUtil.beanToJson(skuRedis.getWhSkuWhMgmt()));
                 // cacheManager.setObject(redisSkuKey, skuRedis, CacheKeyConstant.CACHE_ONE_DAY);
                 cacheManager.setObject(redisSkuKey, redisMap, CacheKeyConstant.CACHE_ONE_DAY);
             } catch (Exception e) {
@@ -133,10 +134,10 @@ public class SkuRedisManagerImpl extends BaseManagerImpl implements SkuRedisMana
             }
         } else {
             skuRedis = new SkuRedisCommand();
-            skuRedis.setSku((Sku) JSONObject.toBean(jsonToBean(redisMap.get("sku")), Sku.class));
-            skuRedis.setSkuExtattr((SkuExtattr) JSONObject.toBean(jsonToBean(redisMap.get("skuExtattr")), SkuExtattr.class));
-            skuRedis.setSkuMgmt((SkuMgmt) JSONObject.toBean(jsonToBean(redisMap.get("skuMgmt")), SkuMgmt.class));
-            skuRedis.setWhSkuWhMgmt((WhSkuWhmgmt) JSONObject.toBean(jsonToBean(redisMap.get("whSkuWhMgmt")), WhSkuWhmgmt.class));
+            skuRedis.setSku((Sku) JSONObject.toBean(JsonUtil.jsonToBean(redisMap.get("sku")), Sku.class));
+            skuRedis.setSkuExtattr((SkuExtattr) JSONObject.toBean(JsonUtil.jsonToBean(redisMap.get("skuExtattr")), SkuExtattr.class));
+            skuRedis.setSkuMgmt((SkuMgmt) JSONObject.toBean(JsonUtil.jsonToBean(redisMap.get("skuMgmt")), SkuMgmt.class));
+            skuRedis.setWhSkuWhMgmt((WhSkuWhmgmt) JSONObject.toBean(JsonUtil.jsonToBean(redisMap.get("whSkuWhMgmt")), WhSkuWhmgmt.class));
         }
         log.info(this.getClass().getSimpleName() + ".findSkuMasterBySkuId method end! logid: " + logId);
         return skuRedis;
@@ -165,30 +166,6 @@ public class SkuRedisManagerImpl extends BaseManagerImpl implements SkuRedisMana
             returnMap.put(Long.parseLong(s.split("-")[0]), Integer.parseInt(s.split("-")[1]));
         }
         return returnMap;
-    }
-
-
-
-    /**
-     * 对象转json字符串
-     * 
-     * @param o
-     * @return
-     */
-    private String beanToJson(Object o) {
-        JSONObject jsonObject = JSONObject.fromObject(o);
-        return jsonObject.toString();
-    }
-
-    /**
-     * json字符串转Json对象
-     * 
-     * @param o
-     * @return
-     */
-    private JSONObject jsonToBean(String o) {
-        JSONObject jsonobject = JSONObject.fromObject(o);
-        return jsonobject;
     }
 
 
