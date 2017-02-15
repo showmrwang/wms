@@ -136,5 +136,5 @@
     <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.WhSeedingCollectionManager" ref="whSeedingCollectionManager" />
     
     
-    <!--  <dubbo:service interface="com.baozun.scm.baseservice.print.manager.printObject.PrintObjectManagerProxy" ref="printObjectManagerProxy" />-->
+    <dubbo:service interface="com.baozun.scm.baseservice.print.manager.printObject.PrintObjectManagerProxy" ref="printObjectManagerProxy" />
 </beans>
