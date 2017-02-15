@@ -1,20 +1,21 @@
 /**
  * Copyright (c) 2013 Baozun All Rights Reserved.
- *
+ * 
  * This software is the confidential and proprietary information of Baozun. You shall not disclose
  * such Confidential Information and shall use it only in accordance with the terms of the license
  * agreement you entered into with Baozun.
- *
+ * 
  * BAOZUN MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT THE SUITABILITY OF THE SOFTWARE, EITHER
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT. BAOZUN SHALL NOT BE LIABLE FOR ANY DAMAGES
  * SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS SOFTWARE OR ITS
  * DERIVATIVES.
- *
+ * 
  */
 
 package com.baozun.scm.primservice.whoperation.manager.pda;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +25,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.baozun.scm.baseservice.print.command.PrintDataCommand;
+import com.baozun.scm.baseservice.print.manager.printObject.PrintObjectManagerProxy;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
 import com.baozun.scm.primservice.whoperation.command.rule.RuleAfferCommand;
 import com.baozun.scm.primservice.whoperation.command.rule.RuleExportCommand;
@@ -72,6 +75,9 @@ public class CheckInManagerProxyImpl extends BaseManagerImpl implements CheckInM
     @Autowired
     private CheckInQueueManager checkInQueueManager;
 
+    @Autowired
+    private PrintObjectManagerProxy printObjectManagerProxy;
+
     /**
      * 查询仓库信息
      * 
@@ -108,7 +114,7 @@ public class CheckInManagerProxyImpl extends BaseManagerImpl implements CheckInM
 
     /**
      * 模糊查询方法。 根据asnExtCode,asn状态，仓库查找asn
-     *
+     * 
      * @author mingwei.xie
      * @param asnExtCode
      * @param status
@@ -141,7 +147,7 @@ public class CheckInManagerProxyImpl extends BaseManagerImpl implements CheckInM
 
     /**
      * 根据ASN的ID,OUID查找ASN
-     *
+     * 
      * @author mingwei.xie
      * @param paramWhAsnCommand
      * @param logId
@@ -175,7 +181,7 @@ public class CheckInManagerProxyImpl extends BaseManagerImpl implements CheckInM
 
     /**
      * 根据Id获取店铺
-     *
+     * 
      * @author mingwei.xie
      * @param storeId
      * @return
@@ -270,7 +276,7 @@ public class CheckInManagerProxyImpl extends BaseManagerImpl implements CheckInM
 
     /**
      * 根据asn预约号匹配月台推荐规则
-     *
+     * 
      * @author mingwei.xie
      * @param asnId
      * @param ouId
@@ -320,7 +326,7 @@ public class CheckInManagerProxyImpl extends BaseManagerImpl implements CheckInM
 
     /**
      * 加入asn签入等待序列
-     *
+     * 
      * @author mingwei.xie
      * @param asnId
      * @param ouId
@@ -348,7 +354,7 @@ public class CheckInManagerProxyImpl extends BaseManagerImpl implements CheckInM
 
     /**
      * 完成签入
-     *
+     * 
      * @author mingwei.xie
      * @param asnId
      * @param platformId
@@ -367,10 +373,18 @@ public class CheckInManagerProxyImpl extends BaseManagerImpl implements CheckInM
         if (log.isDebugEnabled()) {
             log.debug("CheckInManagerProxyImpl.finishCheckIn -> checkInQueueManager.finishCheckIn invoke, asnId is:[{}], platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", asnId, platformId, ouId, userId, logId);
         }
+        // TODO 打印
+        String printDocType = "5";
+        PrintDataCommand printDataCommand = new PrintDataCommand();
+        ArrayList<Long> platformIds = new ArrayList<Long>();
+        platformIds.add(platformId);
+        printDataCommand.setIdList(platformIds);
+        printObjectManagerProxy.printCommonInterface(printDataCommand, printDocType, userId, ouId);
         checkInQueueManager.finishCheckIn(asnId, platformId, ouId, userId, logId);
         if (log.isInfoEnabled()) {
             log.info("CheckInManagerProxyImpl.finishCheckIn end, asnId is:[{}], platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", asnId, platformId, ouId, userId, logId);
         }
+
     }
 
     /**
@@ -402,7 +416,7 @@ public class CheckInManagerProxyImpl extends BaseManagerImpl implements CheckInM
 
     /**
      * 获取asn预约号
-     *
+     * 
      * @author mingwei.xie
      * @param ouId
      * @param logId
@@ -416,14 +430,14 @@ public class CheckInManagerProxyImpl extends BaseManagerImpl implements CheckInM
         String asnReserveCode = asnReserveManager.createAsnReserveCode(ouId, logId);
 
         if (log.isInfoEnabled()) {
-            log.info("CheckInManagerProxyImpl.getAsnReserveCode end, ouId is:[{}], logId is:[{}], asnReserveCode is:[{}]",ouId, logId, asnReserveCode);
+            log.info("CheckInManagerProxyImpl.getAsnReserveCode end, ouId is:[{}], logId is:[{}], asnReserveCode is:[{}]", ouId, logId, asnReserveCode);
         }
         return asnReserveCode;
     }
 
     /**
      * 查找空闲月台
-     *
+     * 
      * @author mingwei.xie
      * @param ouId
      * @param lifecycle
@@ -451,7 +465,7 @@ public class CheckInManagerProxyImpl extends BaseManagerImpl implements CheckInM
 
     /**
      * 手工指定月台
-     *
+     * 
      * @author mingwei.xie
      * @param asnId
      * @param platformId
@@ -476,12 +490,19 @@ public class CheckInManagerProxyImpl extends BaseManagerImpl implements CheckInM
         if (log.isInfoEnabled()) {
             log.info("CheckInManagerProxyImpl.assignPlatform end, vacantPlatformList is:[{}], asnId is:[{}], platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", asnId, platformId, ouId, userId, logId);
         }
+        // TODO 打印
+        String printDocType = "5";
+        PrintDataCommand printDataCommand = new PrintDataCommand();
+        ArrayList<Long> platformIds = new ArrayList<Long>();
+        platformIds.add(platformId);
+        printDataCommand.setIdList(platformIds);
+        printObjectManagerProxy.printCommonInterface(printDataCommand, printDocType, userId, ouId);
         return updateCount;
     }
 
     /**
      * 查找被占用的月台
-     *
+     * 
      * @author mingwei.xie
      * @param ouId
      * @param lifecycle
@@ -540,7 +561,7 @@ public class CheckInManagerProxyImpl extends BaseManagerImpl implements CheckInM
 
     /**
      * 释放月台
-     *
+     * 
      * @author mingwei.xie
      * @param logId
      * @param asnId
@@ -563,13 +584,14 @@ public class CheckInManagerProxyImpl extends BaseManagerImpl implements CheckInM
             if (log.isDebugEnabled()) {
                 log.debug("CheckInManagerProxyImpl.releasePlatformByRcvdFinish -> selectPoAsnManagerProxy.findWhAsnCommandById invoke, queryWhAsnCommand is:[id:{},ouId:{}], logId is:[{}]", asnId, ouId, logId);
             }
-            WhAsnCommand originWhAsnCommand = selectPoAsnManagerProxy.findWhAsnCommandById(asnId,ouId);
+            WhAsnCommand originWhAsnCommand = selectPoAsnManagerProxy.findWhAsnCommandById(asnId, ouId);
             if (null == originWhAsnCommand) {
                 log.error("CheckInManagerProxyImpl.releasePlatformByRcvdFinish -> selectPoAsnManagerProxy.findWhAsnCommandById error, result is null, queryWhAsnCommand is:[id:{},ouId:{}], logId is:[{}]", asnId, ouId, logId);
                 throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
             }
             if (log.isDebugEnabled()) {
-                log.debug("CheckInManagerProxyImpl.releasePlatformByRcvdFinish -> selectPoAsnManagerProxy.findWhAsnCommandById result, queryWhAsnCommand is:[{}], logId is:[{}], originWhAsnCommand is:[id:{},ouId:{}]", asnId, ouId, logId, originWhAsnCommand);
+                log.debug("CheckInManagerProxyImpl.releasePlatformByRcvdFinish -> selectPoAsnManagerProxy.findWhAsnCommandById result, queryWhAsnCommand is:[{}], logId is:[{}], originWhAsnCommand is:[id:{},ouId:{}]", asnId, ouId, logId,
+                        originWhAsnCommand);
             }
 
             if (log.isDebugEnabled()) {
@@ -650,6 +672,12 @@ public class CheckInManagerProxyImpl extends BaseManagerImpl implements CheckInM
                     }
                     checkInQueueManager.finishCheckIn(checkInQueue.getAsnId(), recommendPlatformCommand.getPlatformId(), ouId, userId, logId);
                     // TODO 通知月台分配信息
+                    String printDocType = "5";
+                    PrintDataCommand printDataCommand = new PrintDataCommand();
+                    ArrayList<Long> platformIds = new ArrayList<Long>();
+                    platformIds.add(recommendPlatformCommand.getPlatformId());
+                    printDataCommand.setIdList(platformIds);
+                    printObjectManagerProxy.printCommonInterface(printDataCommand, printDocType, userId, ouId);
                 }
             }
 

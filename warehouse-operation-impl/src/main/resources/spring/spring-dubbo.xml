@@ -121,6 +121,9 @@
 	<dubbo:reference id="pkManager" url="${dubbo.sac.server}" interface="com.baozun.scm.baseservice.sac.manager.PkManager"/>
 	
 	<dubbo:reference id="codeManager" url="${dubbo.sac.server}" interface="com.baozun.scm.baseservice.sac.manager.CodeManager"/>
+	<dubbo:reference url="${dubbo.local.server.print}" id="printObjectManagerProxy"  interface="com.baozun.scm.baseservice.print.manager.printObject.PrintObjectManagerProxy" />
+	
+	
 
     <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.redis.SkuRedisManager"  ref="skuRedisManager" />
     <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.pda.caseLevel.CaseLevelManagerProxy"  ref="caseLevelManagerProxy" />
