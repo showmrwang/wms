@@ -497,35 +497,35 @@ public final class Constants {
     public static final String WORK_CODE = "WORK_CODE";
     /** 库位号 */
     public static final String LOC_CODE = "LOC_CODE";
-    /** 容器号*/
+    /** 容器号 */
     public static final String CONTAINER_CODE = "CONTAINER_CODE";
-    /** 出库小批次*/
+    /** 出库小批次 */
     public static final String OUT_BOUND = "OUT_BOUND";
-    /** 波次号*/
+    /** 波次号 */
     public static final String WAVE_CODE = "WAVE_CODE";
-    /** 出库箱*/
+    /** 出库箱 */
     public static final String OUT_BOUND_BOX = "OUT_BOUND_BOX";
 
-    /** 配置为原始库位*/
+    /** 配置为原始库位 */
     public static final String FROM_LOCATION = "FROM_LOCATION";
-    /** 配置为原始库位与目标库位*/
+    /** 配置为原始库位与目标库位 */
     public static final String FROM_LOCATION_TO_LOCATION = "FROM_LOCATION_TO_LOCATION";
-    /** 配置为原始库位托盘*/
+    /** 配置为原始库位托盘 */
     public static final String FROM_OUTER_CONTAINER = "FROM_OUTER_CONTAINER";
-    /** 配置为原始库位托盘与目标库位*/
+    /** 配置为原始库位托盘与目标库位 */
     public static final String FROM_OUTER_CONTAINER_TO_LOCATION = "FROM_OUTER_CONTAINER_TO_LOCATION";
-    /** 配置为原始库位货箱*/
+    /** 配置为原始库位货箱 */
     public static final String FROM_INSIDE_CONTAINER = "FROM_INSIDE_CONTAINER";
-    /** 配置为原始库位货箱与目标库位*/
+    /** 配置为原始库位货箱与目标库位 */
     public static final String FROM_INSIDE_CONTAINER_TO_LOCATION = "FROM_INSIDE_CONTAINER_TO_LOCATION";
-    /** 配置为目标库位*/
+    /** 配置为目标库位 */
     public static final String TO_LOCATION = "TO_LOCATION";
 
-    /**整托拣货流程*/
+    /** 整托拣货流程 */
     public static final Integer REPLENISH_WAY_ONE = 1;
-    /**整托拣货流程*/
+    /** 整托拣货流程 */
     public static final Integer REPLENISH_WAY_TWO = 2;
-    /**整托拣货流程*/
+    /** 整托拣货流程 */
     public static final Integer REPLENISH_WAY_THREE = 3;
 
     /** 导入EXCEL 错误信息文件上传路径 zk 配置 */
@@ -575,31 +575,31 @@ public final class Constants {
     public static final String SEEDING_MODE_1 = "1";// 边拣货边播种
     public static final String SEEDING_MODE_2 = "2";// 拣完货再播种
 
-    /** 扫描播种墙*/
+    /** 扫描播种墙 */
     public static final String TARGET_1 = "SEEDING_WALL";
-    /** 扫描播种墙校验码*/
+    /** 扫描播种墙校验码 */
     public static final String TARGET_2 = "SEEDING_WALL_CHECK_CODE";
-    /** 扫描出库暂存库位*/
+    /** 扫描出库暂存库位 */
     public static final String TARGET_3 = "TEMPORARY_STORAGE_LOCATION";
-    /** 扫描出库暂存库位校验码*/
+    /** 扫描出库暂存库位校验码 */
     public static final String TARGET_4 = "TEMPORARY_STORAGE_LOCATION_CHECK_CODE";
-    /** 扫描中转库位*/
+    /** 扫描中转库位 */
     public static final String TARGET_5 = "TRANSIT_LOCATION";
-    /** 扫描中转库位校验码*/
+    /** 扫描中转库位校验码 */
     public static final String TARGET_6 = "TRANSIT_LOCATION_CHECK_CODE";
 
-    /** 目标位置类型:播种墙*/
+    /** 目标位置类型:播种墙 */
     public static final int SEEDING_WALL = 1;
-    /** 目标位置类型:出库暂存库位*/
+    /** 目标位置类型:出库暂存库位 */
     public static final int TEMPORARY_STORAGE_LOCATION = 2;
-    /** 目标位置类型:中转库位*/
+    /** 目标位置类型:中转库位 */
     public static final int TRANSIT_LOCATION = 3;
 
-    /** 播种墙容量满足一次移动所有容器*/
+    /** 播种墙容量满足一次移动所有容器 */
     public static final int SEEDING_WALL_SUFFICIENT = 1;
-    /** 每次只能移动一个容器到播种墙*/
+    /** 每次只能移动一个容器到播种墙 */
     public static final int SEEDING_WALL_MOVE_ONE = 2;
-    /** 播种墙剩余容量不满足, 容器只能移到暂存库位*/
+    /** 播种墙剩余容量不满足, 容器只能移到暂存库位 */
     public static final int SEEDING_WALL_NOT_SUFFICIENT = 3;
 
     /** 复核台 */
@@ -620,5 +620,6 @@ public final class Constants {
     public static final String ODO_CROSS_DOCKING_SYSMBOL_2 = "2";// 不支持越库
     public static final String ODO_CROSS_DOCKING_SYSMBOL_3 = "3";// 越库
 
-
+    /** 月台标签 */
+    public static final String PRINT_ORDER_TYPE_5 = "5";
 }
