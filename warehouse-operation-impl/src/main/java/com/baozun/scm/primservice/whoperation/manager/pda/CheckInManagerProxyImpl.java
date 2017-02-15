@@ -373,13 +373,11 @@ public class CheckInManagerProxyImpl extends BaseManagerImpl implements CheckInM
         if (log.isDebugEnabled()) {
             log.debug("CheckInManagerProxyImpl.finishCheckIn -> checkInQueueManager.finishCheckIn invoke, asnId is:[{}], platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", asnId, platformId, ouId, userId, logId);
         }
-        // TODO 打印
-        String printDocType = "5";
         PrintDataCommand printDataCommand = new PrintDataCommand();
         ArrayList<Long> platformIds = new ArrayList<Long>();
         platformIds.add(platformId);
         printDataCommand.setIdList(platformIds);
-        printObjectManagerProxy.printCommonInterface(printDataCommand, printDocType, userId, ouId);
+        printObjectManagerProxy.printCommonInterface(printDataCommand, Constants.PRINT_ORDER_TYPE_5, userId, ouId);
         checkInQueueManager.finishCheckIn(asnId, platformId, ouId, userId, logId);
         if (log.isInfoEnabled()) {
             log.info("CheckInManagerProxyImpl.finishCheckIn end, asnId is:[{}], platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", asnId, platformId, ouId, userId, logId);
@@ -490,13 +488,11 @@ public class CheckInManagerProxyImpl extends BaseManagerImpl implements CheckInM
         if (log.isInfoEnabled()) {
             log.info("CheckInManagerProxyImpl.assignPlatform end, vacantPlatformList is:[{}], asnId is:[{}], platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", asnId, platformId, ouId, userId, logId);
         }
-        // TODO 打印
-        String printDocType = "5";
         PrintDataCommand printDataCommand = new PrintDataCommand();
         ArrayList<Long> platformIds = new ArrayList<Long>();
         platformIds.add(platformId);
         printDataCommand.setIdList(platformIds);
-        printObjectManagerProxy.printCommonInterface(printDataCommand, printDocType, userId, ouId);
+        printObjectManagerProxy.printCommonInterface(printDataCommand, Constants.PRINT_ORDER_TYPE_5, userId, ouId);
         return updateCount;
     }
 
@@ -551,7 +547,6 @@ public class CheckInManagerProxyImpl extends BaseManagerImpl implements CheckInM
             log.debug("CheckInManagerProxyImpl.releasePlatform -> checkInQueueManager.releasePlatform invoke, platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", platformId, ouId, userId, logId);
         }
         long resultCount = checkInQueueManager.releasePlatform(platformId, ouId, userId, logId);
-        // TODO 触发检查队列的操作，将空出的月台进行分配
         this.autoCheckIn(ouId, userId, logId);
         if (log.isInfoEnabled()) {
             log.info("CheckInManagerProxyImpl.releasePlatform end, vacantPlatformList is:[{}], platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", platformId, ouId, userId, logId);
@@ -606,7 +601,6 @@ public class CheckInManagerProxyImpl extends BaseManagerImpl implements CheckInM
                     log.debug("CheckInManagerProxyImpl.releasePlatformByRcvdFinish -> checkInQueueManager.releasePlatform invoke, asnId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", asnId, ouId, userId, logId);
                 }
                 checkInQueueManager.releasePlatform(platform.getId(), ouId, userId, logId);
-                // TODO 触发检查队列的操作，将空出的月台进行分配
                 this.autoCheckIn(ouId, userId, logId);
             }
             if (log.isInfoEnabled()) {
@@ -671,13 +665,11 @@ public class CheckInManagerProxyImpl extends BaseManagerImpl implements CheckInM
                         log.debug("CheckInManagerProxyImpl.autoCheckIn -> checkInQueueManager.finishCheckIn invoke, ouId is:[{}], userId is:[{}], logId is:[{}], recommendPlatformCommand is:[{}]", ouId, userId, logId, recommendPlatformCommand);
                     }
                     checkInQueueManager.finishCheckIn(checkInQueue.getAsnId(), recommendPlatformCommand.getPlatformId(), ouId, userId, logId);
-                    // TODO 通知月台分配信息
-                    String printDocType = "5";
                     PrintDataCommand printDataCommand = new PrintDataCommand();
                     ArrayList<Long> platformIds = new ArrayList<Long>();
                     platformIds.add(recommendPlatformCommand.getPlatformId());
                     printDataCommand.setIdList(platformIds);
-                    printObjectManagerProxy.printCommonInterface(printDataCommand, printDocType, userId, ouId);
+                    printObjectManagerProxy.printCommonInterface(printDataCommand, Constants.PRINT_ORDER_TYPE_5, userId, ouId);
                 }
             }
 
