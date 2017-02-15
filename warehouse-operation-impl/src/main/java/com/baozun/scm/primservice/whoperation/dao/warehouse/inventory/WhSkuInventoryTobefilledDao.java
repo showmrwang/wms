@@ -29,6 +29,7 @@ import lark.orm.dao.supports.BaseDao;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryAllocatedCommand;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryTobefilled;
 
 public interface WhSkuInventoryTobefilledDao extends BaseDao<WhSkuInventoryTobefilled,Long>{
@@ -103,5 +104,14 @@ public interface WhSkuInventoryTobefilledDao extends BaseDao<WhSkuInventoryTobef
      * @return
      */
     List<WhSkuInventoryTobefilled> getSkuItedListGroupUuid(WhSkuInventoryTobefilled whSkuInventoryTobefilled);
+    
+    /**
+     * 根据条件查询库存待移入数量
+     *
+     * @author qiming.liu
+     * @param WhSkuInventoryTobefilled
+     * @return
+     */
+    Double skuInventoryTobefilledQty (WhSkuInventoryTobefilled whSkuInventoryTobefilled);
 	
 }
