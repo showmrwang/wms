@@ -282,4 +282,22 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			uuid
 	</select>
 	
+	<select id="skuInventoryTobefilledQty" resultType="Double">
+		select
+			sum(invTobefilled.qty)
+		from
+			t_wh_sku_inventory_tobefilled invTobefilled
+		<where>
+			<if test="locationId!=null and locationId!=''">
+				and invTobefilled.location_id = #{locationId} 
+			</if>
+			<if test="outerContainerId!=null and outerContainerId!=''">
+				and invTobefilled.outer_container_id = #{outerContainerId} 
+			</if>
+			<if test="insideContainerId!=null and insideContainerId!=''">
+				and invTobefilled.inside_container_id = #{insideContainerId} 
+			</if>
+		</where>
+	</select>
+	
 </mapper>

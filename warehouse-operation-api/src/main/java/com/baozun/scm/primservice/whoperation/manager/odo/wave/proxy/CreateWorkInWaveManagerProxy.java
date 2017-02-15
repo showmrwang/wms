@@ -218,7 +218,7 @@ public interface CreateWorkInWaveManagerProxy extends BaseManager {
      * @param whOdoOutBoundBox
      * @return
      */
-    public String saveReplenishmentOperation(String key, String replenishmentWorkCode, WhSkuInventoryAllocatedCommand skuInventoryAllocatedCommand);
+    public String saveReplenishmentOperation(String replenishmentWorkCode, WhSkuInventoryAllocatedCommand skuInventoryAllocatedCommand);
     
     /**
      * [业务方法] 创建补货工作-创建作业明细
