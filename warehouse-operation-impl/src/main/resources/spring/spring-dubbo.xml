@@ -135,6 +135,6 @@
     <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.seeding.SeedingManager" ref="seedingManager" />
     <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.WhSeedingCollectionManager" ref="whSeedingCollectionManager" />
     
+	<dubbo:reference url="${dubbo.local.server.print}" id="printObjectManagerProxy"  interface="com.baozun.scm.baseservice.print.manager.printObject.PrintObjectManagerProxy" />
     
-    <dubbo:service interface="com.baozun.scm.baseservice.print.manager.printObject.PrintObjectManagerProxy" ref="printObjectManagerProxy" />
 </beans>
