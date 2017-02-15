@@ -59,19 +59,17 @@ public class LocationReplenishmentManagerProxyImpl extends BaseManagerImpl imple
 
 
     @Override
-    public void locationReplenishmentMsg(Warehouse wh, List<Location> locationList) {
+    public void locationReplenishmentMsg(Warehouse wh, Location l) {
         try {
             Long ouId = wh.getId();
-            for (Location l : locationList) {
-                Long skuId = this.whskuInventoryManager.findSkuInInventoryByLocation(l.getId(), ouId);
-                if (skuId == null) {
-                    skuId = this.locationManager.getBindedSkuByLocationId(l.getId(), ouId);
-                }
-                if (skuId == null) {
-                    continue;
-                }
-                this.locationReplenishmentMsg(wh, l, skuId);
+            Long skuId = this.whskuInventoryManager.findSkuInInventoryByLocation(l.getId(), ouId);
+            if (skuId == null) {
+                skuId = this.locationManager.getBindedSkuByLocationId(l.getId(), ouId);
             }
+            if (skuId == null) {
+                return;
+            }
+            this.locationReplenishmentMsg(wh, l, skuId);
         } catch (Exception e) {
 
         }

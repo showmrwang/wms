@@ -22,7 +22,7 @@ public interface LocationReplenishmentManagerProxy extends BaseManager {
      * @param wh
      * @param locationList
      */
-    void locationReplenishmentMsg(Warehouse wh, List<Location> locationList);
+    void locationReplenishmentMsg(Warehouse wh, Location l);
     
     void locationReplenishmentTask(List<ReplenishmentMsg> msgList, Warehouse wh);
 
