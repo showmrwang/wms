@@ -1428,9 +1428,9 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
         //库位--更新时获取数据
         whWorkCommand.setLocationCode(null);
         //托盘--更新时获取数据
-        whWorkCommand.setOuterContainerCode(null == outerContainer ? null : outerContainer.getCode());
-        //容器
-        whWorkCommand.setContainerCode(null == insideContainer ? null : insideContainer.getCode());
+        whWorkCommand.setOuterContainerCode(null);
+        //容器--更新时获取数据
+        whWorkCommand.setContainerCode(null);
         //创建时间
         whWorkCommand.setCreateTime(new Date());
         //最后操作时间
@@ -2102,9 +2102,9 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
         //库位--更新时获取数据
         whWorkCommand.setLocationCode(null);
         //托盘--更新时获取数据
-        whWorkCommand.setOuterContainerCode(null == outerContainer ? null : outerContainer.getCode());
-        //容器
-        whWorkCommand.setContainerCode(null == insideContainer ? null : insideContainer.getCode());
+        whWorkCommand.setOuterContainerCode(null);
+        //容器--更新时获取数据
+        whWorkCommand.setContainerCode(null);
         //创建时间
         whWorkCommand.setCreateTime(new Date());
         //最后操作时间
