@@ -98,4 +98,13 @@ public interface WhSeedingCollectionDao extends BaseDao<WhSeedingCollection, Lon
     
     
     public List<WhSeedingCollection> findSeedingCollection(@Param("facilityId") Long facilityId, @Param("collectionStatus") List<Integer> collectionStatus,  @Param("ouId") Long ouId);
+
+    /**
+     * 获取播种墙绑定的批次
+     *
+     * @param facilityId
+     * @param ouId
+     * @return
+     */
+    public List<String> getFacilityBindBatch(@Param("facilityId") Long facilityId, @Param("ouId") Long ouId);
 }

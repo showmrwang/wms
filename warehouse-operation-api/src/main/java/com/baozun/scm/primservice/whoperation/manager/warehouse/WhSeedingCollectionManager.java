@@ -71,4 +71,13 @@ public interface WhSeedingCollectionManager extends BaseManager {
      * @return
      */
     public Integer cahceTurnoverBoxStatus(String turnoverBoxCode);
+
+    /**
+     * 获取播种墙绑定的批次
+     *
+     * @param facilityId
+     * @param ouId
+     * @return
+     */
+    public List<String> getFacilityBindBatch(Long facilityId,Long ouId);
 }
