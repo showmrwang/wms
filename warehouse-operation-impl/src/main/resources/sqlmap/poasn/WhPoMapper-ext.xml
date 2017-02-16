@@ -589,7 +589,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		from t_wh_po p
 		where  p.id=#{poId} and p.ou_id=#{ouId}  
 		and p.status in('1','2','3')
-		and not exists (select 1 from t_wh_po_line l where l.po_id=p.id and l.ou_id=p.ou_id and l.status in('1','2') )   
+		and not exists (select 1 from t_wh_po_line l where l.po_id=p.id and l.ou_id=p.ou_id and l.status in('1','2','3') )   
 	</select>
 	
 	<select id="findPoListByExtCodeStoreId" resultMap="WhPoCommand">
