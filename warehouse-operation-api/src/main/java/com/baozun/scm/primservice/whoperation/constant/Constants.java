@@ -622,4 +622,6 @@ public final class Constants {
 
     /** 月台标签 */
     public static final String PRINT_ORDER_TYPE_5 = "5";
+    /** 箱號标签 */
+    public static final String PRINT_ORDER_TYPE_4 = "4";
 }
