@@ -3367,6 +3367,30 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                       } else if (cacheValue < skuQty.longValue()) {
                         // 继续复核
                           cssrCmd.setNeedTipSku(true);
+                          String tipSkuAttrId = "";
+                          for (String sId : skuAttrIds) {
+                            Set<String> tempSkuAttrIds = new HashSet<String>();
+                            tempSkuAttrIds.add(sId);
+                            boolean isExists = isCacheAllExists2(tempSkuAttrIds, tipSkuAttrIds);
+                            if (true == isExists) {
+                                continue;
+                            } else {
+                                tipSkuAttrId = sId;
+                                break;
+                            }
+                         }
+                          Set<String> snDefects = skuAttrIdsSnDefect.get(tipSkuAttrId);
+                          String snDefect = "";
+                          for(String snDe:snDefects) {
+                              String sn1 = snDe.replaceAll("︴","");
+                              String sn2 = sn1.replaceAll("┊","");
+                              if(!(sn2.equals(skuCmd.getSkuSn()) || sn2.equals(skuCmd.getSkuDefect()))) {
+                                  snDefect = snDefect+snDe;
+                              }
+                          }
+                          String tipSkuAttrIdSnDefect = SkuCategoryProvider.concatSkuAttrId(tipSkuAttrId,snDefect);
+                         cssrCmd.setNeedTipSku(true);
+                         cssrCmd.setTipSkuAttrId(tipSkuAttrIdSnDefect);
                       } else {
                         log.error("sku scan qty has already more than rcvd qty, skuId is:[{}], scan qty is:[{}], rcvd qty is:[{}], logId is:[{}]", skuId, cacheValue, scanSkuQty, logId);
                         throw new BusinessException(ErrorCodes.SCAN_SKU_QTY_IS_MORE_THAN_RCVD_QTY);
@@ -3523,8 +3547,30 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                         cssrCmd.setPutaway(true);// 上架结束
                     } else if (cacheValue < skuQty.longValue()) {
                         // 继续复核
-                        cssrCmd.setNeedTipSku(true);
-                        cssrCmd.setTipSkuAttrId(skuAttrId);
+                        String tipSkuAttrId = "";
+                        for (String sId : skuAttrIds) {
+                          Set<String> tempSkuAttrIds = new HashSet<String>();
+                          tempSkuAttrIds.add(sId);
+                          boolean isExists = isCacheAllExists2(tempSkuAttrIds, tipSkuAttrIds);
+                          if (true == isExists) {
+                              continue;
+                          } else {
+                              tipSkuAttrId = sId;
+                              break;
+                          }
+                       }
+                        Set<String> snDefects = skuAttrIdsSnDefect.get(tipSkuAttrId);
+                        String snDefect = "";
+                        for(String snDe:snDefects) {
+                            String sn1 = snDe.replaceAll("︴","");
+                            String sn2 = sn1.replaceAll("┊","");
+                            if(!(sn2.equals(skuCmd.getSkuSn()) || sn2.equals(skuCmd.getSkuDefect()))) {
+                                snDefect = snDefect+snDe;
+                            }
+                        }
+                        String tipSkuAttrIdSnDefect = SkuCategoryProvider.concatSkuAttrId(tipSkuAttrId,snDefect);
+                       cssrCmd.setNeedTipSku(true);
+                       cssrCmd.setTipSkuAttrId(tipSkuAttrIdSnDefect);
                     } else {
                         log.error("sku scan qty has already more than rcvd qty, skuId is:[{}], scan qty is:[{}], rcvd qty is:[{}], logId is:[{}]", skuId, cacheValue, scanSkuQty, logId);
                         throw new BusinessException(ErrorCodes.SCAN_SKU_QTY_IS_MORE_THAN_RCVD_QTY);
