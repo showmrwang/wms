@@ -324,7 +324,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				from
 					t_wh_sku_inventory_allocated
 				group by
-					uuid) invAllocated,
+					uuid, 
+					replenishment_code
+				) invAllocated,
 				(select
 					id,
 					sku_id,
@@ -354,7 +356,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				from
 					t_wh_sku_inventory_tobefilled
 				group by
-					uuid) invTobefilled,
+					uuid,
+					replenishment_code
+				) invTobefilled,
 				t_wh_replenishment_rule replenishRule 
 			where 
 				replenishTask.wave_id = wave.id 
@@ -499,7 +503,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				from
 					t_wh_sku_inventory_allocated
 				group by
-					uuid) invAllocated,
+					uuid, 
+					replenishment_code
+				) invAllocated,
 				(select
 					id,
 					sku_id,
@@ -529,7 +535,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				from
 					t_wh_sku_inventory_tobefilled
 				group by
-					uuid) invTobefilled,
+					uuid, 
+					replenishment_code
+				) invTobefilled,
 				t_wh_replenishment_rule replenishRule
 			where
 				replenishTask.is_create_work != 1
