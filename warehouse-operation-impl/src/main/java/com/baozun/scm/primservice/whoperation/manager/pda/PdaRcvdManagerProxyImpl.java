@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.baozun.redis.manager.CacheManager;
-import com.baozun.scm.baseservice.print.command.PrintDataCommand;
 import com.baozun.scm.baseservice.print.manager.printObject.PrintObjectManagerProxy;
 import com.baozun.scm.baseservice.sac.manager.CodeManager;
 import com.baozun.scm.baseservice.sac.manager.PkManager;
@@ -1624,14 +1623,15 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
             containerCommand.setStatus(ContainerStatus.CONTAINER_STATUS_USABLE);
             containerCommand.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_USABLE);
             // 打印箱號
-            try {
-                PrintDataCommand printDataCommand = new PrintDataCommand();
-                List<Long> facilityIdsList = Arrays.asList(containerCommand.getId());
-                printDataCommand.setIdList(facilityIdsList);
-                printObjectManagerProxy.printCommonInterface(printDataCommand, Constants.PRINT_ORDER_TYPE_4, userId, command.getOuId());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            // try {
+            // PrintDataCommand printDataCommand = new PrintDataCommand();
+            // List<Long> facilityIdsList = Arrays.asList(containerCommand.getId());
+            // printDataCommand.setIdList(facilityIdsList);
+            // printObjectManagerProxy.printCommonInterface(printDataCommand,
+            // Constants.PRINT_ORDER_TYPE_4, userId, command.getOuId());
+            // } catch (Exception e) {
+            // e.printStackTrace();
+            // }
             // 初始化容器-用户缓存
             RcvdContainerCacheCommand cacheContainer = new RcvdContainerCacheCommand();
             cacheContainer.setIsMixAttr(false);
@@ -1647,14 +1647,15 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
         } else {
             Long insideContainerId = containerCommand.getId();
             // 打印箱號
-            try {
-                PrintDataCommand printDataCommand = new PrintDataCommand();
-                List<Long> facilityIdsList = Arrays.asList(containerCommand.getId());
-                printDataCommand.setIdList(facilityIdsList);
-                printObjectManagerProxy.printCommonInterface(printDataCommand, Constants.PRINT_ORDER_TYPE_4, userId, command.getOuId());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            // try {
+            // PrintDataCommand printDataCommand = new PrintDataCommand();
+            // List<Long> facilityIdsList = Arrays.asList(containerCommand.getId());
+            // printDataCommand.setIdList(facilityIdsList);
+            // printObjectManagerProxy.printCommonInterface(printDataCommand,
+            // Constants.PRINT_ORDER_TYPE_4, userId, command.getOuId());
+            // } catch (Exception e) {
+            // e.printStackTrace();
+            // }
             command.setInsideContainerId(insideContainerId);
             // @mender yimin.lu 2016/7/13
             if (!BaseModel.LIFECYCLE_NORMAL.equals(containerCommand.getTwoLevelTypeLifecycle())) {
