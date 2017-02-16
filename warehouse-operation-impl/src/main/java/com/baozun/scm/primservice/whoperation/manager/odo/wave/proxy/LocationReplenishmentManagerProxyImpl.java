@@ -28,12 +28,16 @@ import com.baozun.scm.primservice.whoperation.manager.rule.RuleManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.LocationManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.ReplenishmentMsgManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WarehouseManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.WhFacilityGroupSkuVolumeManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.WhLocationSkuVolumeManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager;
 import com.baozun.scm.primservice.whoperation.model.sku.Sku;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Location;
 import com.baozun.scm.primservice.whoperation.model.warehouse.LocationProductVolume;
 import com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentMsg;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhFacilityGroupSkuVolume;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhLocationSkuVolume;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhSkuWhmgmt;
 
 @Service("locationReplenishmentManagerProxy")
@@ -56,6 +60,10 @@ public class LocationReplenishmentManagerProxyImpl extends BaseManagerImpl imple
     private ReplenishmentMsgManager replenishmentMsgManager;
     @Autowired
     private ReplenishedManagerProxy replenishedManagerProxy;
+    @Autowired
+    private WhLocationSkuVolumeManager whLocationSkuVolumeManager;
+    @Autowired
+    private WhFacilityGroupSkuVolumeManager whFacilityGroupSkuVolumeManager;
 
 
     @Override
@@ -140,19 +148,19 @@ public class LocationReplenishmentManagerProxyImpl extends BaseManagerImpl imple
         Long ouId = wh.getId();
         // 取得【商品】集合
         // 取得【商品-库位列表】
-        Map<Long,List<Long>> skuLocationMap=new HashMap<Long,List<Long>>();
+        Map<Long, List<Long>> skuLocationMap = new HashMap<Long, List<Long>>();
         Set<Long> skuIdSet = new HashSet<Long>();
         Map<Long, ReplenishmentMsg> locationMsgMap = new HashMap<Long, ReplenishmentMsg>();// [库位-补货信息]
         for (ReplenishmentMsg msg : msgList) {
             skuIdSet.add(msg.getSkuId());
             locationMsgMap.put(msg.getLocationId(), msg);
-           if(skuLocationMap.containsKey(msg.getSkuId())){
-               skuLocationMap.get(msg.getSkuId()).add(msg.getLocationId());
-           }else{
-               List<Long> list=new ArrayList<Long>();
-               list.add(msg.getLocationId());
-               skuLocationMap.put(msg.getSkuId(),list);
-           }
+            if (skuLocationMap.containsKey(msg.getSkuId())) {
+                skuLocationMap.get(msg.getSkuId()).add(msg.getLocationId());
+            } else {
+                List<Long> list = new ArrayList<Long>();
+                list.add(msg.getLocationId());
+                skuLocationMap.put(msg.getSkuId(), list);
+            }
         }
 
         /**
@@ -173,7 +181,7 @@ public class LocationReplenishmentManagerProxyImpl extends BaseManagerImpl imple
         if (skuRuleMap == null) {
             return;
         }
-        
+
         Map<Long, ReplenishmentRuleCommand> locationRuleMap = new HashMap<Long, ReplenishmentRuleCommand>();
         Iterator<Entry<Long, List<ReplenishmentRuleCommand>>> skuRuleMapIt = skuRuleMap.entrySet().iterator();
         while (skuRuleMapIt.hasNext()) {
@@ -261,6 +269,66 @@ public class LocationReplenishmentManagerProxyImpl extends BaseManagerImpl imple
         return true;
     }
 
+    // ================================wms4.0一期需求:复核台补货逻辑================================
+    @Override
+    public void checkLocationReplenishmentMsg(Warehouse wh, Location location) {
+        try {
+            Long ouId = wh.getId();
+            // 查找复核库位绑定的商品
+            WhLocationSkuVolume whLocationSkuVolume = this.whLocationSkuVolumeManager.findSkuByCheckLocation(location.getId(), ouId);
+            Long skuId = whLocationSkuVolume.getSkuId();
+            Integer lowerCapacity = whLocationSkuVolume.getLowerCapacity();
+            Integer upperCapacity = whLocationSkuVolume.getUpperCapacity();
+            if (null == skuId) {
+                WhFacilityGroupSkuVolume whFacilityGroupSkuVolume = this.whFacilityGroupSkuVolumeManager.findSkuByCheckLocationSerialNumber(whLocationSkuVolume.getSerialNumber(), ouId);
+                skuId = whFacilityGroupSkuVolume.getSkuId();
+                lowerCapacity = whFacilityGroupSkuVolume.getLowerCapacity();
+                upperCapacity = whFacilityGroupSkuVolume.getUpperCapacity();
+            }
+            if (skuId == null) {
+                return;
+            }
+            this.checkLocationReplenishmentMsg(wh, lowerCapacity, upperCapacity, location.getId(), skuId);
+        } catch (Exception e) {
+
+        }
+
+    }
+
+    private void checkLocationReplenishmentMsg(Warehouse wh, Integer lowerCapacity, Integer upperCapacity, Long locationId, Long skuId) {
+        // 计算是否需要补货
+        Long ouId = wh.getId();
+        String logId = "";
+
+        if (lowerCapacity == null || upperCapacity == null) {
+            return;
+        }
+
+        // 库位库存量=库位在库库存+库位待移入库存
+        double invQty = this.whskuInventoryManager.findInventoryByLocation(locationId, ouId);
+
+        if (invQty >= lowerCapacity) {
+            return;
+        }
+
+        Long replenishmentQty = (long) Math.floor(upperCapacity - invQty);
+        ReplenishmentMsg replenishmentMsg = this.replenishmentMsgManager.findMsgbyLocIdAndSkuId(locationId, skuId, ouId);
+        if (replenishmentMsg == null) {
+            replenishmentMsg = new ReplenishmentMsg();
+            replenishmentMsg.setLocationId(locationId);
+            replenishmentMsg.setSkuId(skuId);
+            replenishmentMsg.setUpperLimitQty(replenishmentQty);
+            replenishmentMsg.setOuId(ouId);
+            replenishmentMsg.setCreateTime(new Date());
+            replenishmentMsg.setLastModifyTime(new Date());
+            this.replenishmentMsgManager.insert(replenishmentMsg);
+            return;
+        }
+        if (replenishmentMsg.getUpperLimitQty() == null || replenishmentMsg.getUpperLimitQty().longValue() != replenishmentQty) {
+            replenishmentMsg.setUpperLimitQty(replenishmentQty);
+            this.replenishmentMsgManager.updateByVersion(replenishmentMsg);
+        }
+    }
 
 
 }

@@ -44,7 +44,7 @@ public class LocationManagerImpl extends BaseManagerImpl implements LocationMana
         List<LocationProductVolume> result = this.locationProductVolumeDao.findListByParam(search);
         return (result == null || result.size() == 0) ? null : result.get(0);
     }
-    
+
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<Long> sortByIds(Set<Long> ids, Long ouId) {
@@ -56,6 +56,7 @@ public class LocationManagerImpl extends BaseManagerImpl implements LocationMana
     public List<Location> findLocationWithStaticNoMix(Long ouId) {
         Location location = new Location();
         location.setOuId(ouId);
+        location.setIsCheckLocation(false);
         location.setIsStatic(true);
         location.setIsMixStacking(false);
 
@@ -63,8 +64,8 @@ public class LocationManagerImpl extends BaseManagerImpl implements LocationMana
     }
 
     @Override
-    public Long getBindedSkuByLocationId(Long locationId,Long ouId) {
-        WhSkuLocationCommand command=new WhSkuLocationCommand();
+    public Long getBindedSkuByLocationId(Long locationId, Long ouId) {
+        WhSkuLocationCommand command = new WhSkuLocationCommand();
         command.setLifecycle(Constants.LIFECYCLE_START);
         command.setLocationId(locationId);
         command.setOuId(ouId);
@@ -79,5 +80,16 @@ public class LocationManagerImpl extends BaseManagerImpl implements LocationMana
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public SkuRedisCommand findSkuMasterBySkuId(Long skuId, Long ouId, String logId) {
         return whSkuDao.findSkuAllInfoByParamExt(skuId, ouId);
+    }
+
+    @Override
+    public List<Location> findCheckLocationWithStaticNoMix(Long ouId) {
+        Location location = new Location();
+        location.setOuId(ouId);
+        location.setIsCheckLocation(true);
+        location.setIsStatic(true);
+        location.setIsMixStacking(false);
+
+        return this.whLocationDao.findListByParam(location);
     }
 }
