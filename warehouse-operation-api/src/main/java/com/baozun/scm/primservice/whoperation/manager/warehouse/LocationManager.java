@@ -21,6 +21,13 @@ public interface LocationManager extends BaseManager {
     List<Location> findLocationWithStaticNoMix(Long ouId);
 
     /**
+     * [业务方法] 取得复核库位
+     * @param ouId
+     * @return
+     */
+    List<Location> findCheckLocationWithStaticNoMix(Long ouId);
+
+    /**
      * [业务方法]取得静态非混放库位绑定的商品
      * 
      * @param locationId
@@ -28,7 +35,7 @@ public interface LocationManager extends BaseManager {
      * @return
      */
     Long getBindedSkuByLocationId(Long locationId, Long ouId);
-    
+
     List<Long> sortByIds(Set<Long> ids, Long ouId);
 
     /**
