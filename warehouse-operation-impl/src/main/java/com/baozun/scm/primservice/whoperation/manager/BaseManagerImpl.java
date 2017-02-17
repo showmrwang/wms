@@ -20,8 +20,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.json.JSONObject;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -203,7 +201,7 @@ public abstract class BaseManagerImpl implements BaseManager {
                         log.error("findSysDictionaryByRedis cacheManager.setObject(" + redisKey + groupValue + "$" + dicValue + ") error");
                     }
                 } else {
-                    sys = (SysDictionary) JSONObject.toBean(JsonUtil.jsonToBean(sysDictionary), SysDictionary.class);
+                    sys = (SysDictionary) JsonUtil.jsonToBean(sysDictionary, SysDictionary.class);
                 }
                 // 放入returnMap 格式key = groupValue_dicValue value SysDictionary
                 returnMap.put(groupValue + "_" + dicValue, sys);
@@ -245,7 +243,7 @@ public abstract class BaseManagerImpl implements BaseManager {
                     log.error("findCustomerByRedis cacheManager.setObject(" + redisKey + id + ") error");
                 }
             } else {
-                c = (Customer) JSONObject.toBean(JsonUtil.jsonToBean(customer), Customer.class);
+                c = (Customer) JsonUtil.jsonToBean(customer, Customer.class);
             }
             returnMap.put(id, c);
         }
@@ -288,7 +286,7 @@ public abstract class BaseManagerImpl implements BaseManager {
                         log.error("findStoreByRedis cacheManager.setObject(" + redisKey + s.getCustomerId() + "-" + id + ") error");
                     }
                 } else {
-                    s = (Store) JSONObject.toBean(JsonUtil.jsonToBean(store), Store.class);
+                    s = (Store) JsonUtil.jsonToBean(store, Store.class);
                 }
             } else {
                 s = storeDao.findById(id);
@@ -346,7 +344,7 @@ public abstract class BaseManagerImpl implements BaseManager {
                         }
                     }
                 } else {
-                    c = (Customer) JSONObject.toBean(JsonUtil.jsonToBean(customer), Customer.class);
+                    c = (Customer) JsonUtil.jsonToBean(customer, Customer.class);
                 }
                 if (null != c) {
                     returnList.put(c.getId(), c);
@@ -411,7 +409,7 @@ public abstract class BaseManagerImpl implements BaseManager {
                         }
                     }
                 } else {
-                    store = (Store) JSONObject.toBean(JsonUtil.jsonToBean(storeJson), Store.class);
+                    store = (Store) JsonUtil.jsonToBean(storeJson, Store.class);
                 }
                 if (null != store) {
                     returnList.put(store.getId(), store);
@@ -480,7 +478,7 @@ public abstract class BaseManagerImpl implements BaseManager {
                         log.error("findSysDictionaryByGroupValueAndRedis cacheManager.setObject(" + redisKey + dicValue + ") error");
                     }
                 } else {
-                    sys = (SysDictionary) JSONObject.toBean(JsonUtil.jsonToBean(sysDictionary), SysDictionary.class);
+                    sys = (SysDictionary) JsonUtil.jsonToBean(sysDictionary, SysDictionary.class);
                 }
                 if (null != sys) {
                     // 判断系统参数的lifecycle是否=传入的lifecycle
@@ -597,7 +595,7 @@ public abstract class BaseManagerImpl implements BaseManager {
                 log.error("getWhToRedis cacheManager.setObject(" + redisKey + id + ") error");
             }
         } else {
-            wh = (Warehouse) JSONObject.toBean(JsonUtil.jsonToBean(w), Warehouse.class);
+            wh = (Warehouse) JsonUtil.jsonToBean(w, Warehouse.class);
         }
         return wh;
     }
