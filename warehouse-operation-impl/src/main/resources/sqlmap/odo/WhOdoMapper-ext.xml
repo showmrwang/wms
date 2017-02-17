@@ -3194,7 +3194,9 @@
 	    	odo_status=#{odoStatus},
 	    	last_modify_time=now(),
 	    	modified_id=#{userId},
-	    	wave_code=#{waveCode}
+	    	wave_code=#{waveCode},
+	    	is_assign_success=null,
+	        assign_fail_reason=null
 	    where
 			ou_id=#{ouId} 
 			and odo_status='1' 

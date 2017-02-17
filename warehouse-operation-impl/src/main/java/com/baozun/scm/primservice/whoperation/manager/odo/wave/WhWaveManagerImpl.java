@@ -56,6 +56,7 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInven
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
+import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy.DistributionModeArithmeticManagerProxy;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
@@ -116,6 +117,8 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
     private WhOdoTransportMgmtDao whOdoTransportMgmtDao;
     @Autowired
     private PkManager pkManager;
+    @Autowired
+    private OdoManager odoManager;
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
@@ -484,6 +487,10 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
                         // 释放库存
                         whSkuInventoryManager.releaseInventoryByOdoId(odoId, wh);
                     }
+                    // 从波次中剔除出库单后更新波次头统计信息
+                    if (!odoIds.isEmpty()) {
+                    	calculateWaveHeadInfo(waveId, ouId);
+					}
                     // 波次进入到下个阶段
                     changeWavePhaseCode(waveId, ouId);
                 }
@@ -494,6 +501,10 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
                     // 释放库存
                     whSkuInventoryManager.releaseInventoryByOdoId(odoId, wh);
                 }
+                // 从波次中剔除出库单后更新波次头统计信息
+                if (!allOdoIds.isEmpty()) {
+                	calculateWaveHeadInfo(waveId, ouId);
+				}
                 // 波次进入到下个阶段
                 changeWavePhaseCode(waveId, ouId);
             }
@@ -503,6 +514,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         waveLine.setWaveId(waveId);
         waveLine.setOuId(ouId);
         List<WhWaveLine> waveLines = whWaveLineDao.findListByParam(waveLine);
+        // 记录波次内现有出库单idList
         for (WhWaveLine wavelines : waveLines) {
             WhOdoLine odoLine = whOdoLineDao.findOdoLineById(wavelines.getOdoLineId(), ouId);
             odoLine.setAssignQty(wavelines.getAllocateQty());
@@ -510,6 +522,25 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
             odoLine.setIsAssignSuccess(true);
             whOdoLineDao.saveOrUpdate(odoLine);
         }
+    }
+    
+    /**
+     * 从波次中剔除出库单后重新计算波次头统计信息
+     */
+    private void calculateWaveHeadInfo(Long waveId, Long ouId) {
+    	List<Long> odoIdList = whWaveLineDao.findOdoIdByWaveId(waveId, ouId);
+    	WaveCommand waveHeadInfo = odoManager.findWaveSumDatabyOdoIdList(odoIdList, ouId);
+    	WhWave wave = whWaveDao.findWaveExtByIdAndOuId(waveId, ouId);
+    	wave.setSkuCategoryQty(waveHeadInfo.getSkuCategoryQty());
+    	wave.setTotalVolume(waveHeadInfo.getTotalVolume());
+    	wave.setTotalWeight(waveHeadInfo.getTotalWeight());
+    	wave.setTotalOdoLineQty(waveHeadInfo.getTotalOdoLineQty());
+    	wave.setTotalAmount(waveHeadInfo.getTotalAmount());
+    	wave.setTotalSkuQty(waveHeadInfo.getTotalSkuQty());
+    	int updateCount = whWaveDao.saveOrUpdateByVersion(wave);
+    	if (updateCount == 0) {
+    		throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+		}
     }
 
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
