@@ -222,6 +222,24 @@
 
 	<sql id="whOdoDynamicWherePageExt">
 		<where>
+			<if test="customerList!=null">
+            	and  odo.customer_id in
+			    <foreach collection="customerList" item="cid" open="(" separator="," close=")">
+		        	#{cid}
+	            </foreach>
+	        </if>
+            <if test="customerList==null">
+               and odo.customer_id in (null)
+	        </if>
+	        <if test="storeList!=null">
+           		and  odo.store_id in
+		        <foreach collection="storeList" item="sid" open="(" separator="," close=")">
+	         		#{sid}
+             	</foreach>
+	        </if>
+            <if test="storeList==null">
+                and odo.store_id in (null)
+	        </if>
 			<if test="groupCustomerId!=null">
 				and odo.customer_id=#{groupCustomerId}
 			</if>
@@ -1356,6 +1374,24 @@
 		t_wh_outboundbox_type boxType on
 		boxType.id=odo.outbound_carton_type
 		<where>
+			<if test="customerList!=null">
+            	and  odo.customer_id in
+			    <foreach collection="customerList" item="cid" open="(" separator="," close=")">
+		        	#{cid}
+	            </foreach>
+	        </if>
+            <if test="customerList==null">
+               and odo.customer_id in (null)
+	        </if>
+	        <if test="storeList!=null">
+           		and  odo.store_id in
+		        <foreach collection="storeList" item="sid" open="(" separator="," close=")">
+	         		#{sid}
+             	</foreach>
+	        </if>
+            <if test="storeList==null">
+                and odo.store_id in (null)
+	        </if>
 			<if test="groupCustomerId!=null">
 				and odo.customer_id=#{groupCustomerId}
 			</if>
@@ -2117,6 +2153,24 @@
 		t_wh_outboundbox_type boxType on
 		boxType.id=odo.outbound_carton_type 
 		<where>
+			<if test="customerList!=null">
+            	and  odo.customer_id in
+			    <foreach collection="customerList" item="cid" open="(" separator="," close=")">
+		        	#{cid}
+	            </foreach>
+	        </if>
+            <if test="customerList==null">
+               and odo.customer_id in (null)
+	        </if>
+	        <if test="storeList!=null">
+           		and  odo.store_id in
+		        <foreach collection="storeList" item="sid" open="(" separator="," close=")">
+	         		#{sid}
+             	</foreach>
+	        </if>
+            <if test="storeList==null">
+                and odo.store_id in (null)
+	        </if>
 			<if test="groupCustomerId!=null">
 				and odo.customer_id=#{groupCustomerId}
 			</if>

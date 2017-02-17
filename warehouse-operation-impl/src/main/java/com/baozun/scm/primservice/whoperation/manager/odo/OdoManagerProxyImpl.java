@@ -2061,8 +2061,6 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
         Long userId = command.getUserId();
         Map<Long, WhOdo> odoMap = new HashMap<Long, WhOdo>();
 
-        Map<Long, WhOdoTransportMgmt> transMap = new HashMap<Long, WhOdoTransportMgmt>();
-        List<WhOdoLine> odolineList = new ArrayList<WhOdoLine>();
         Long waveMasterId = command.getWaveMasterId();// 波次主档信息
         WhWaveMaster master = this.odoManager.findWaveMasterByIdouId(waveMasterId, ouId);
         if (master == null) {
