@@ -390,6 +390,20 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         List<WhWave> list = this.whWaveDao.findListByParam(wave);
         wave = (null == list || list.isEmpty()) ? null : list.get(0);
         if (null != wave) {
+        	// 查询是否还有波次明细
+        	WhWaveLine line = new WhWaveLine();
+            line.setWaveId(waveId);
+            line.setOuId(ouId);
+            long lineCount = whWaveLineDao.findListCountByParam(line);
+            if (lineCount == 0) {
+            	wave.setPhaseCode(null);
+                wave.setStatus(WaveStatus.WAVE_CANCEL);
+                int num = this.whWaveDao.saveOrUpdateByVersion(wave);
+                if (1 != num) {
+                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                }
+            	return;
+            }
             // 获取下一个波次阶段
             WhWaveMaster whWaveMaster = whWaveMasterDao.findByIdExt(wave.getWaveMasterId(), ouId);
             Long waveTempletId = whWaveMaster.getWaveTemplateId();
