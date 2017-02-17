@@ -117,6 +117,28 @@ public class OdoWaveGroupSearchCommand extends BaseCommand {
 
     private Integer isMerged;
 
+    private List<Long> customerList;
+
+    private List<Long> storeList;
+
+
+
+    public List<Long> getCustomerList() {
+        return customerList;
+    }
+
+    public void setCustomerList(List<Long> customerList) {
+        this.customerList = customerList;
+    }
+
+    public List<Long> getStoreList() {
+        return storeList;
+    }
+
+    public void setStoreList(List<Long> storeList) {
+        this.storeList = storeList;
+    }
+
     public Integer getIsMerged() {
         return isMerged;
     }

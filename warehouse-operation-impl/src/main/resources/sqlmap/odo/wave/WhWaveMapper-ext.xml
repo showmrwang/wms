@@ -445,7 +445,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		left join oper_user user1 on user1.id=wave.created_id
 		<where>
 	        <if test="storeList!=null">
-	         and not exists(select 1 from t_wh_wave_line waveline where waveline.wave_id=wave.id and wave_line.store_id not in
+	         and not exists(select 1 from t_wh_wave_line waveline where waveline.wave_id=wave.id and waveline.store_id not in
 	          <foreach collection="storeList" item="sid" open="(" separator="," close=")">
 	         		#{sid}
              	</foreach>
