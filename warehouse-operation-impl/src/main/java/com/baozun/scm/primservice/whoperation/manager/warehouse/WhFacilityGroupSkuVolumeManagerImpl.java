@@ -23,12 +23,12 @@ public class WhFacilityGroupSkuVolumeManagerImpl extends BaseManagerImpl impleme
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public Long findSkuByCheckLocationSerialNumber(Integer serialNumber, Long ouId) {
+    public WhFacilityGroupSkuVolume findSkuByCheckLocationSerialNumber(Integer serialNumber, Long ouId) {
         WhFacilityGroupSkuVolume whFacilityGroupSkuVolume = new WhFacilityGroupSkuVolume();
         List<WhFacilityGroupSkuVolume> whFacilityGroupSkuVolumeList = this.whFacilityGroupSkuVolumeDao.findListByParam(whFacilityGroupSkuVolume);
         if (null == whFacilityGroupSkuVolumeList || whFacilityGroupSkuVolumeList.isEmpty()) {
             throw new BusinessException("没有设施组");
         }
-        return whFacilityGroupSkuVolumeList.get(0).getSkuId();
+        return whFacilityGroupSkuVolumeList.get(0);
     }
 }

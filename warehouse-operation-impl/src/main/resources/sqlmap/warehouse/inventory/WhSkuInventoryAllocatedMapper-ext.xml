@@ -294,8 +294,71 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				t_wh_wave_phase wavePhase, 
 				t_wh_wave_master waveMaster, 
 				t_wh_replenishment_task replenishTask, 
-				t_wh_sku_inventory_allocated invAllocated, 
-				t_wh_sku_inventory_tobefilled invTobefilled, 
+				(select
+					id,
+					sku_id,
+					location_id,
+					outer_container_id,
+					inside_container_id,
+					customer_id,
+					store_id,
+					occupation_code,
+					occupation_line_id,
+					replenishment_code,
+					sum(qty) AS qty,
+					inv_status,
+					inv_type,
+					batch_number,
+					mfg_date,
+					exp_date,
+					country_of_origin,
+					inv_attr1,
+					inv_attr2,
+					inv_attr3,
+					inv_attr4,
+					inv_attr5,
+					uuid,
+					ou_id,
+					last_modify_time,
+					replenishment_rule_id
+				from
+					t_wh_sku_inventory_allocated
+				group by
+					uuid, 
+					replenishment_code
+				) invAllocated,
+				(select
+					id,
+					sku_id,
+					location_id,
+					outer_container_id,
+					inside_container_id,
+					customer_id,
+					store_id,
+					occupation_code,
+					occupation_line_id,
+					replenishment_code,
+					sum(qty) AS qty,
+					inv_status,
+					inv_type,
+					batch_number,
+					mfg_date,
+					exp_date,
+					country_of_origin,
+					inv_attr1,
+					inv_attr2,
+					inv_attr3,
+					inv_attr4,
+					inv_attr5,
+					uuid,
+					ou_id,
+					last_modify_time
+				from
+					t_wh_sku_inventory_tobefilled
+				group by
+					uuid,
+					replenishment_code
+				) invTobefilled,
 				t_wh_replenishment_rule replenishRule 
 			where 
 				replenishTask.wave_id = wave.id 
@@ -410,8 +473,71 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				sum(invTobefilled.qty) as toQty
 			from
 				t_wh_replenishment_task replenishTask,
-				t_wh_sku_inventory_allocated invAllocated,
-				t_wh_sku_inventory_tobefilled invTobefilled,
+				(select
+					id,
+					sku_id,
+					location_id,
+					outer_container_id,
+					inside_container_id,
+					customer_id,
+					store_id,
+					occupation_code,
+					occupation_line_id,
+					replenishment_code,
+					sum(qty) AS qty,
+					inv_status,
+					inv_type,
+					batch_number,
+					mfg_date,
+					exp_date,
+					country_of_origin,
+					inv_attr1,
+					inv_attr2,
+					inv_attr3,
+					inv_attr4,
+					inv_attr5,
+					uuid,
+					ou_id,
+					last_modify_time,
+					replenishment_rule_id
+				from
+					t_wh_sku_inventory_allocated
+				group by
+					uuid, 
+					replenishment_code
+				) invAllocated,
+				(select
+					id,
+					sku_id,
+					location_id,
+					outer_container_id,
+					inside_container_id,
+					customer_id,
+					store_id,
+					occupation_code,
+					occupation_line_id,
+					replenishment_code,
+					sum(qty) AS qty,
+					inv_status,
+					inv_type,
+					batch_number,
+					mfg_date,
+					exp_date,
+					country_of_origin,
+					inv_attr1,
+					inv_attr2,
+					inv_attr3,
+					inv_attr4,
+					inv_attr5,
+					uuid,
+					ou_id,
+					last_modify_time
+				from
+					t_wh_sku_inventory_tobefilled
+				group by
+					uuid, 
+					replenishment_code
+				) invTobefilled,
 				t_wh_replenishment_rule replenishRule
 			where
 				replenishTask.is_create_work != 1

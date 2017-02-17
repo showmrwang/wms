@@ -25,6 +25,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.WarehouseCommand
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.auth.OperationUnit;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WarehouseMgmt;
 
 public interface WarehouseManager extends BaseManager {
 
@@ -51,4 +52,11 @@ public interface WarehouseManager extends BaseManager {
     Warehouse findWarehouseByCode(String code);
 
     boolean syncWarehouse(OperationUnit ou);
+
+    /**
+     * [业务方法] 通过仓库id获取仓库参数
+     * @param ouId
+     * @return
+     */
+    WarehouseMgmt findWhMgmtByOuId(Long ouId);
 }

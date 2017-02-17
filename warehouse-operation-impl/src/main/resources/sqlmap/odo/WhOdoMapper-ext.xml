@@ -3223,4 +3223,54 @@
 		from t_wh_odo odo
 		where odo.wave_code=#{waveCode} and odo.ou_id=#{ouId}
 	</select>
+
+    <select id="getSeedingOdoLineInfo" resultType="com.baozun.scm.primservice.whoperation.model.seeding.WhSeedingWallLatticeLine">
+        SELECT
+            sku.id as skuId,
+            sku.`code` AS skuCode,
+            sku.ext_code AS skuExtCode,
+            odoLine.sku_bar_code AS skuBarCode,
+            odoLine.sku_name AS skuName,
+            odoLine.qty AS qty,
+            customer.id as customerId,
+            customer.customer_code AS customerCode,
+            customer.customer_name AS customerName,
+            store.id as storeId,
+            store.store_code AS storeCode,
+            store.store_name AS storeName,
+            invStatus.`name` AS invStatus,
+            invTypeSys.dic_label AS invType,
+            odoLine.batch_number AS batchNumber,
+            date_format(odoLine.mfg_date,'%Y-%m-%d') AS mfgDate,
+            date_format(odoLine.exp_date,'%Y-%m-%d') AS expDate,
+            odoLine.country_of_origin AS countryOfOrigin,
+            invAttr1Sys.dic_label AS invAttr1,
+            invAttr2Sys.dic_label AS invAttr2,
+            invAttr3Sys.dic_label AS invAttr3,
+            invAttr4Sys.dic_label AS invAttr4,
+            invAttr5Sys.dic_label AS invAttr5,
+            odoLine.id as odoLineId
+        FROM
+        t_wh_odo AS odo
+            LEFT JOIN t_wh_odo_line AS odoLine ON odo.id = odoLine.odo_id
+            LEFT JOIN t_wh_sku AS sku ON odoLine.sku_id = sku.id
+            LEFT JOIN t_wh_inventory_status AS invStatus ON odoLine.inv_status = invStatus.id
+            LEFT JOIN sys_dictionary AS invTypeSys ON odoLine.inv_type = invTypeSys.dic_value
+            AND invTypeSys.group_value = "INVENTORY_TYPE"
+            LEFT JOIN t_bi_customer AS customer ON odo.customer_id = customer.id
+            LEFT JOIN t_bi_store AS store ON odo.store_id = store.id
+            LEFT JOIN sys_dictionary AS invAttr1Sys ON odoLine.inv_attr1 = invAttr1Sys.dic_value
+            AND invAttr1Sys.group_value = 'INVENTORY_ATTR_1'
+            LEFT JOIN sys_dictionary AS invAttr2Sys ON odoLine.inv_attr2 = invAttr1Sys.dic_value
+            AND invAttr1Sys.group_value = 'INVENTORY_ATTR_2'
+            LEFT JOIN sys_dictionary AS invAttr3Sys ON odoLine.inv_attr3 = invAttr1Sys.dic_value
+            AND invAttr1Sys.group_value = 'INVENTORY_ATTR_3'
+            LEFT JOIN sys_dictionary AS invAttr4Sys ON odoLine.inv_attr4 = invAttr1Sys.dic_value
+            AND invAttr1Sys.group_value = 'INVENTORY_ATTR_4'
+            LEFT JOIN sys_dictionary AS invAttr5Sys ON odoLine.inv_attr5 = invAttr1Sys.dic_value
+            AND invAttr1Sys.group_value = 'INVENTORY_ATTR_5'
+        where
+            odo.id = #{odoId}
+            and odo.ou_id = #{ouId}
+    </select>
 </mapper>

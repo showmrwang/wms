@@ -223,4 +223,9 @@ public class WhSeedingCollectionManagerImpl extends BaseManagerImpl implements W
         log.info("WhOutboundFacilityManagerImpl cahceTurnoverBoxStatus is end");
         return null;
     }
+
+    @Override
+    public List<String> getFacilityBindBatch(Long facilityId, Long ouId) {
+        return null;
+    }
 }

@@ -343,4 +343,22 @@
 			f.facility_code = #{facilityCode}
 			and f.ou_id = #{ouId}
 	</select>
+
+    <select id="getOutboundFacilityByCode" resultMap="WhOutboundFacilityCommand">
+        select
+        <include refid="whOutboundFacilityColumnsExt"/>
+        from
+        t_wh_outbound_facility
+        <where>
+            <if test="ouId!=null and ouId!=''">
+                and ou_id = #{ouId}
+            </if>
+            <if test="facilityCheckCode != null and facilityCheckCode != ''">
+                and check_code = #{facilityCheckCode}
+            </if>
+            <if test="facilityCode!=null and facilityCode!=''">
+                and facility_code = #{facilityCode}
+            </if>
+        </where>
+    </select>
 </mapper>
