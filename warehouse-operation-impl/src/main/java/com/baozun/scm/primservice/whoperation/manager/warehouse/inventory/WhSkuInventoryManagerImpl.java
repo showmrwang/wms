@@ -5189,7 +5189,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     WhSkuInventory inv = new WhSkuInventory();
                     BeanUtils.copyProperties(invCmd, inv);
                     inv.setId(null);
-                    inv.setOnHandQty(inv.getToBeFilledQty());// 在库库存
+                    inv.setOnHandQty(skuScanQty);// 在库库存
                     inv.setFrozenQty(0.0);
                     if (!StringUtils.isEmpty(containerCode)) {
                         if (0 != containerId.compareTo(inv.getOuterContainerId())) {
@@ -5260,7 +5260,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     WhSkuInventory inv = new WhSkuInventory();
                     BeanUtils.copyProperties(invCmd, inv);
                     inv.setId(null);
-                    inv.setOnHandQty(inv.getToBeFilledQty());// 在库库存
+                    inv.setOnHandQty(skuScanQty);// 在库库存
                     inv.setFrozenQty(0.0);
                     if (!StringUtils.isEmpty(containerCode)) {
                         if (0 != containerId.compareTo(inv.getOuterContainerId())) {
