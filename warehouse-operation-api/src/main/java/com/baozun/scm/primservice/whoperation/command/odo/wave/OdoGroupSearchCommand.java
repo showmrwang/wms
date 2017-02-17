@@ -102,10 +102,31 @@ public class OdoGroupSearchCommand extends BaseCommand {
 
     private Long waveMasterId;
 
+    //
+    private List<Long> customerList;
+
+    private List<Long> storeList;
+
     // --------------------------------------------------------------------------------
 
     public String getOdoCode() {
         return odoCode;
+    }
+
+    public List<Long> getCustomerList() {
+        return customerList;
+    }
+
+    public void setCustomerList(List<Long> customerList) {
+        this.customerList = customerList;
+    }
+
+    public List<Long> getStoreList() {
+        return storeList;
+    }
+
+    public void setStoreList(List<Long> storeList) {
+        this.storeList = storeList;
     }
 
     public List<OdoWaveGroupSearchCondition> getConditionList() {

@@ -55,6 +55,24 @@ public class Customer extends BaseModel {
     private Long operatorId;
     /** 1.可用;0.禁用 */
     private Integer lifecycle;
+    /** 联系手机 */
+    private String picMobileTelephone;
+    /** 国家ID */
+    private Long countryId;
+    /** 省ID */
+    private Long provinceId;
+    /** 市ID */
+    private Long cityId;
+    /** 详细地址 */
+    private String address;
+    /** 邮政编码 */
+    private String zipCode;
+    /** 邮箱 */
+    private String email;
+    /** 乡镇/街道 */
+    private Long villagesTownsId;
+    /** 区ID */
+    private Long districtId;
     /** 用于全局表最后修改时间统一 */
     private Date globalLastModifyTime;
 
@@ -161,4 +179,77 @@ public class Customer extends BaseModel {
     public void setGlobalLastModifyTime(Date globalLastModifyTime) {
         this.globalLastModifyTime = globalLastModifyTime;
     }
+
+    public String getPicMobileTelephone() {
+        return picMobileTelephone;
+    }
+
+    public void setPicMobileTelephone(String picMobileTelephone) {
+        this.picMobileTelephone = picMobileTelephone;
+    }
+
+    public Long getCountryId() {
+        return countryId;
+    }
+
+    public void setCountryId(Long countryId) {
+        this.countryId = countryId;
+    }
+
+    public Long getProvinceId() {
+        return provinceId;
+    }
+
+    public void setProvinceId(Long provinceId) {
+        this.provinceId = provinceId;
+    }
+
+    public Long getCityId() {
+        return cityId;
+    }
+
+    public void setCityId(Long cityId) {
+        this.cityId = cityId;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getZipCode() {
+        return zipCode;
+    }
+
+    public void setZipCode(String zipCode) {
+        this.zipCode = zipCode;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public Long getVillagesTownsId() {
+        return villagesTownsId;
+    }
+
+    public void setVillagesTownsId(Long villagesTownsId) {
+        this.villagesTownsId = villagesTownsId;
+    }
+
+    public Long getDistrictId() {
+        return districtId;
+    }
+
+    public void setDistrictId(Long districtId) {
+        this.districtId = districtId;
+    }
+
 }

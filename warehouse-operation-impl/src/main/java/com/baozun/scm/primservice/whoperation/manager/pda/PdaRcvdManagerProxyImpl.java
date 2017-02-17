@@ -652,7 +652,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
             Entry<Long, Double> entry = poIt.next();
             WhPoLine poline = this.poLineManager.findWhPoLineByIdOuIdToShard(entry.getKey(), ouId);
             poline.setQtyRcvd(poline.getQtyRcvd() + entry.getValue());
-            if (poline.getQtyRcvd() > poline.getQtyPlanned()) {
+            if (poline.getQtyRcvd() >= poline.getQtyPlanned()) {
                 poline.setStatus(PoAsnStatus.POLINE_RCVD_FINISH);
             } else {
                 poline.setStatus(PoAsnStatus.POLINE_RCVD);
