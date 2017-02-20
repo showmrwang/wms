@@ -1,6 +1,7 @@
 package com.baozun.scm.primservice.whoperation.manager.odo.wave;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -389,6 +390,20 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         List<WhWave> list = this.whWaveDao.findListByParam(wave);
         wave = (null == list || list.isEmpty()) ? null : list.get(0);
         if (null != wave) {
+        	// 查询是否还有波次明细
+        	WhWaveLine line = new WhWaveLine();
+            line.setWaveId(waveId);
+            line.setOuId(ouId);
+            long lineCount = whWaveLineDao.findListCountByParam(line);
+            if (lineCount == 0) {
+            	wave.setPhaseCode(null);
+                wave.setStatus(WaveStatus.WAVE_CANCEL);
+                int num = this.whWaveDao.saveOrUpdateByVersion(wave);
+                if (1 != num) {
+                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                }
+            	return;
+            }
             // 获取下一个波次阶段
             WhWaveMaster whWaveMaster = whWaveMasterDao.findByIdExt(wave.getWaveMasterId(), ouId);
             Long waveTempletId = whWaveMaster.getWaveTemplateId();
@@ -527,7 +542,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
     /**
      * 从波次中剔除出库单后重新计算波次头统计信息
      */
-    private void calculateWaveHeadInfo(Long waveId, Long ouId) {
+    public void calculateWaveHeadInfo(Long waveId, Long ouId) {
     	List<Long> odoIdList = whWaveLineDao.findOdoIdByWaveId(waveId, ouId);
     	WaveCommand waveHeadInfo = odoManager.findWaveSumDatabyOdoIdList(odoIdList, ouId);
     	WhWave wave = whWaveDao.findWaveExtByIdAndOuId(waveId, ouId);
@@ -643,12 +658,24 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         wave.setAllocatePhase(null);
         return whWaveDao.findWaveIdsByParam(wave);
     }
-
+    
+    @Override
+    public void deleteWaveLinesAndReleaseInventoryByOdoIdList(Long waveId, Collection<Long> odoIds, String reason, Warehouse wh) {
+    	Long ouId = wh.getId();
+		for (Long odoId : odoIds) {
+			this.deleteWaveLinesAndReleaseInventoryByOdoId(waveId, odoId, reason, wh);
+			log.info("releaseOdoFromWave, odoId:[{}],waveId:[{}],ouId:[{}]", odoId, waveId, ouId);
+		}
+		this.calculateWaveHeadInfo(waveId, ouId);
+    }
+    
     @Override
     public void deleteWaveLinesAndReleaseInventoryByOdoId(Long waveId, Long odoId, String reason, Warehouse wh) {
+    	Long ouId = wh.getId();
         whWaveLineManager.deleteWaveLinesByOdoId(odoId, waveId, wh.getId(), reason);
         whSkuInventoryManager.releaseInventoryByOdoId(odoId, wh);
         whOdoLineDao.updateOdoLineAssignQtyIsZero(odoId, wh.getId());
+        log.info("releaseOdoFromWave, odoId:[{}],waveId:[{}],ouId:[{}]", odoId, waveId, ouId);
     }
 
     @Override
