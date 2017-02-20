@@ -46,7 +46,7 @@ public class PdaPickingWorkEntranceManagerImpl extends BaseManagerImpl implement
     public PickingWorkCommand retrievePickingWorkList(PickingWorkCommand command, Page page, Sort[] sorts, Map<String, Object> param) {
         Long userId = command.getUserId();
         Long ouId = command.getOuId();
-        Integer maxObtainWorkQty = command.getMaxObtainWorkQty();
+        // Integer maxObtainWorkQty = command.getMaxObtainWorkQty();
         param.put("userId", userId);
         param.put("ouId", ouId);
         if (null == page) {
