@@ -18,6 +18,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	store_id as storeId,
 	        	supplier_id as supplierId,
 	        	logistics_provider_id as logisticsProviderId,
+	        	logistics_provider as logisticsProvider,
 	        	po_type as poType,
 	        	status as status,
 	        	is_iqc as isIqc,
@@ -56,6 +57,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				bipo.store_id as storeId,
 				bipo.supplier_id as supplierId,
 				bipo.logistics_provider_id as logisticsProviderId,
+				bipo.logistics_provider as logisticsProvider,
 				bipo.po_type as poType,
 				bipo.status as status,
 				bipo.is_iqc as isIqc,
@@ -98,6 +100,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				bipo.store_id as storeId,
 				bipo.supplier_id as supplierId,
 				bipo.logistics_provider_id as logisticsProviderId,
+				bipo.logistics_provider as logisticsProvider,
 				bipo.po_type as poType,
 				bipo.status as status,
 				bipo.is_iqc as isIqc,
@@ -170,6 +173,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					<if test="logisticsProviderId!=null">
 						and bipo.logistics_provider_id = #{logisticsProviderId}
 					</if>
+					<if test="logisticsProvider!=null and logisticsProvider!=''">
+						and bipo.logistics_provider = #{logisticsProvider}
+					</if>
 					<if test="isIqc!=null">
 						and bipo.is_iqc = #{isIqc}
 					</if>
@@ -213,6 +219,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				<foreach collection="logisticsProviderId" item="s" open="(" separator="," close=")">
 					#{s}
 				</foreach>
+			</if>
+			<if test="logisticsProvider!=null and logisticsProvider!=''">
+				and  bipo.logistics_provider like #{logisticsProvider}
 			</if>
 			<if test="poType!=null">
 				and  bipo.po_type in 
@@ -432,6 +441,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				<if test="logisticsProviderId!=null">
 					and logistics_provider_id = #{logisticsProviderId}
 				</if>
+				<if test="logisticsProvider!=null and logisticsProvider!=''">
+					and logistics_provider = #{logisticsProvider}
+				</if>
 	       
 				<if test="poType!=null">
 					and po_type = #{poType}
@@ -587,6 +599,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        store_id = #{storeId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        supplier_id = #{supplierId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        logistics_provider_id = #{logisticsProviderId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        logistics_provider = #{logisticsProvider,javaType=java.lang.String,jdbcType=BIGINT} ,
 		        po_type = #{poType,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        status = #{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        is_iqc = #{isIqc,javaType=java.lang.Boolean,jdbcType=BIT} ,

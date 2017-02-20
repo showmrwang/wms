@@ -56,6 +56,8 @@ public class WhAsnCommand extends BaseCommand {
     private Long supplierId;
     /** 运输商ID */
     private Long logisticsProviderId;
+    /** 运输商Code */
+    private String logisticsProvider;
     /** ASN单类型 */
     private Integer asnType;
     /** 状态 */
@@ -506,6 +508,14 @@ public class WhAsnCommand extends BaseCommand {
 
     public void setInboundTimeStr(String inboundTimeStr) {
         this.inboundTimeStr = inboundTimeStr;
+    }
+
+    public String getLogisticsProvider() {
+        return logisticsProvider;
+    }
+
+    public void setLogisticsProvider(String logisticsProvider) {
+        this.logisticsProvider = logisticsProvider;
     }
 
 

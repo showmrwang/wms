@@ -220,12 +220,12 @@
 
 
             <if test="code!=null and code!=''">
-                and code = #{code}
+                and code like #{code}
             </if>
 
 
             <if test="name!=null and name!=''">
-                and name = #{name}
+                and name like #{name}
             </if>
 
 

@@ -503,6 +503,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		inner join t_wh_wave_master waveMaster on waveMaster.id=wave.wave_master_id
 		left join oper_user user1 on user1.id=wave.created_id
 		<where>
+		 	<if test="storeList!=null">
+	         and not exists(select 1 from t_wh_wave_line waveline where waveline.wave_id=wave.id and waveline.store_id not in
+	          <foreach collection="storeList" item="sid" open="(" separator="," close=")">
+	         		#{sid}
+             	</foreach>
+	         )
+	        </if>
+            <if test="storeList==null">
+                  and 1 &gt;1
+	        </if>
 			<if test="ouId!=null">
 				 and wave.ou_id =#{ouId} 
 			</if>

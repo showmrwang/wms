@@ -21,6 +21,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	store_id as storeId,
 	        	supplier_id as supplierId,
 	        	logistics_provider_id as logisticsProviderId,
+	        	logistics_provider as logisticsProvider,
 	        	po_type as poType,
 	        	status as status,
 	        	is_iqc as isIqc,
@@ -128,6 +129,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	store_id ,
 		        	supplier_id ,
 		        	logistics_provider_id ,
+		        	logistics_provider ,
 		        	po_type ,
 		        	status ,
 		        	is_iqc ,
@@ -156,6 +158,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{storeId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{supplierId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{logisticsProviderId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{logisticsProvider,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{poType,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        	#{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        	#{isIqc,javaType=java.lang.Boolean,jdbcType=BIT} ,
@@ -191,6 +194,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        store_id = #{storeId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        supplier_id = #{supplierId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        logistics_provider_id = #{logisticsProviderId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        logistics_provider = #{logisticsProvider,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        po_type = #{poType,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        status = #{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        is_iqc = #{isIqc,javaType=java.lang.Boolean,jdbcType=BIT} ,
@@ -288,6 +292,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	       
 				<if test="logisticsProviderId!=null">
 					and logistics_provider_id = #{logisticsProviderId}
+				</if>
+	       
+				<if test="logisticsProvider!=null and logisticsProvider!=''">
+					and logistics_provider = #{logisticsProvider}
 				</if>
 	       
 				<if test="poType!=null">

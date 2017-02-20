@@ -61,6 +61,8 @@ public class WhAsn extends BaseModel {
     private Long supplierId;
     /** 运输商ID */
     private Long logisticsProviderId;
+    /** 运输商ID */
+    private String logisticsProvider;
     /** ASN单类型 */
     private Integer asnType;
     /** 状态 */
@@ -92,6 +94,14 @@ public class WhAsn extends BaseModel {
     private Double overChageRate;
     /** IT专用 */
     private String uuid;
+
+    public String getLogisticsProvider() {
+        return logisticsProvider;
+    }
+
+    public void setLogisticsProvider(String logisticsProvider) {
+        this.logisticsProvider = logisticsProvider;
+    }
 
     public String getUuid() {
         return uuid;

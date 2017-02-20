@@ -25,6 +25,8 @@ public class WhPoSearchCommand extends BaseCommand {
     private List<String> supplierId;
     /** 运输商ID */
     private List<String> logisticsProviderId;
+    /** 运输商 */
+    private String logisticsProvider;
     /** PO单类型 */
     private List<String> poType;
     /** 状态 */
@@ -104,6 +106,13 @@ public class WhPoSearchCommand extends BaseCommand {
     /** 批次号 */
     private String sn;
     
+    public String getLogisticsProvider() {
+        return logisticsProvider;
+    }
+
+    public void setLogisticsProvider(String logisticsProvider) {
+        this.logisticsProvider = logisticsProvider;
+    }
     public String getPoCode() {
         return poCode;
     }
