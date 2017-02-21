@@ -1,6 +1,7 @@
 package com.baozun.scm.primservice.whinterface.service;
 
 import com.baozun.scm.primservice.whinterface.model.WmsInBound;
+import com.baozun.scm.primservice.whinterface.model.outbound.WmsOutBoundLocked;
 import com.baozun.scm.primservice.whinterface.msg.WmsResponse;
 
 /**
@@ -16,4 +17,6 @@ public interface WmsService {
 	 */
 	WmsResponse wmsInBound(WmsInBound inBound);
 	
+    WmsResponse wmsOutBoundLocked(WmsOutBoundLocked outBoundLocked);
+
 }
