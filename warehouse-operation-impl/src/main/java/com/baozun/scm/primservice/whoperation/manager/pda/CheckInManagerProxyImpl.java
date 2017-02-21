@@ -377,7 +377,11 @@ public class CheckInManagerProxyImpl extends BaseManagerImpl implements CheckInM
         ArrayList<Long> platformIds = new ArrayList<Long>();
         platformIds.add(platformId);
         printDataCommand.setIdList(platformIds);
-        printObjectManagerProxy.printCommonInterface(printDataCommand, Constants.PRINT_ORDER_TYPE_5, userId, ouId);
+        try {
+            printObjectManagerProxy.printCommonInterface(printDataCommand, Constants.PRINT_ORDER_TYPE_5, userId, ouId);
+        } catch (Exception e) {
+            log.error("print error, exception is : [{}], logId, is :[{}]", e, logId);
+        }
         checkInQueueManager.finishCheckIn(asnId, platformId, ouId, userId, logId);
         if (log.isInfoEnabled()) {
             log.info("CheckInManagerProxyImpl.finishCheckIn end, asnId is:[{}], platformId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]", asnId, platformId, ouId, userId, logId);
@@ -492,7 +496,11 @@ public class CheckInManagerProxyImpl extends BaseManagerImpl implements CheckInM
         ArrayList<Long> platformIds = new ArrayList<Long>();
         platformIds.add(platformId);
         printDataCommand.setIdList(platformIds);
-        printObjectManagerProxy.printCommonInterface(printDataCommand, Constants.PRINT_ORDER_TYPE_5, userId, ouId);
+        try {
+            printObjectManagerProxy.printCommonInterface(printDataCommand, Constants.PRINT_ORDER_TYPE_5, userId, ouId);
+        }catch (Exception e){
+            log.error("print error, exception is : [{}], logId, is :[{}]", e, logId);
+        }
         return updateCount;
     }
 
@@ -669,7 +677,11 @@ public class CheckInManagerProxyImpl extends BaseManagerImpl implements CheckInM
                     ArrayList<Long> platformIds = new ArrayList<Long>();
                     platformIds.add(recommendPlatformCommand.getPlatformId());
                     printDataCommand.setIdList(platformIds);
-                    printObjectManagerProxy.printCommonInterface(printDataCommand, Constants.PRINT_ORDER_TYPE_5, userId, ouId);
+                    try {
+                        printObjectManagerProxy.printCommonInterface(printDataCommand, Constants.PRINT_ORDER_TYPE_5, userId, ouId);
+                    } catch (Exception e) {
+                        log.error("print error, exception is : [{}], logId, is :[{}]", e, logId);
+                    }
                 }
             }
 
