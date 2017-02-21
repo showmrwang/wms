@@ -1,6 +1,7 @@
 package com.baozun.scm.primservice.whoperation.command.odo.wave;
 
 import java.util.List;
+import java.util.Map;
 
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
 
@@ -18,6 +19,8 @@ public class SoftAllocationResponseCommand extends BaseCommand {
     private Long qty;
     /** 当前sku id*/
     private Long skuId;
+    /** 商品数量map*/
+    private Map<Long, Long> skuInvAvailableQtyMap;
 
     public boolean isSuccess() {
         return isSuccess;
@@ -49,6 +52,14 @@ public class SoftAllocationResponseCommand extends BaseCommand {
 
     public void setSkuId(Long skuId) {
         this.skuId = skuId;
+    }
+
+    public Map<Long, Long> getSkuInvAvailableQtyMap() {
+        return skuInvAvailableQtyMap;
+    }
+
+    public void setSkuInvAvailableQtyMap(Map<Long, Long> skuInvAvailableQtyMap) {
+        this.skuInvAvailableQtyMap = skuInvAvailableQtyMap;
     }
 
 }

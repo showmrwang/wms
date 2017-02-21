@@ -1,6 +1,7 @@
 package com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy;
 
 import java.util.List;
+import java.util.Map;
 
 import com.baozun.scm.primservice.whoperation.command.odo.wave.SoftAllocationCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.SoftAllocationResponseCommand;
@@ -68,12 +69,12 @@ public interface WhWaveSoftManagerProxy extends BaseManager {
      * [业务方法] 软分配-占用逻辑
      * @param waveId
      * @param skuId
-     * @param qty
      * @param waveLineId
      * @param ouId
+     * @param skuInvAvailableQtyMap
      * @return
      */
-    public SoftAllocationResponseCommand occupiedOperation(Long waveId, Long skuId, Long qty, Long waveLineId, Long ouId);
+    public SoftAllocationResponseCommand occupiedOperation(Long waveId, Long skuId, Long waveLineId, Long ouId, Map<Long, Long> skuInvAvailableQtyMap);
 
     /**
      * [业务方法] 软分配-整单剔除逻辑
