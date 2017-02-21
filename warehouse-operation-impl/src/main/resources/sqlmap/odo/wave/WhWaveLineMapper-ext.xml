@@ -642,7 +642,32 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	
 	<select id="getWhWaveLinesByWaveIdList" parameterType="map" resultMap="WhWaveLineResultExt">
 		select 
-			<include refid="whWaveLineColumns" />
+			id as id,
+        	wave_id as waveId,
+        	odo_line_id as odoLineId,
+        	odo_id as odoId,
+        	odo_code as odoCode,
+        	allocate_rule_id as allocateRuleId,
+        	store_id as storeId,
+        	sku_id as skuId,
+        	qty as qty,
+        	allocate_qty as allocateQty,
+        	is_whole_order_outbound as isWholeOrderOutbound,
+        	full_line_outbound as fullLineOutbound,
+        	mfg_date as mfgDate,
+        	exp_date as expDate,
+        	min_exp_date as minExpDate,
+        	max_exp_date as maxExpDate,
+        	batch_number as batchNumber,
+        	country_of_origin as countryOfOrigin,
+        	inv_status as invStatus,
+        	inv_type as invType,
+        	inv_attr1 as invAttr1,
+        	inv_attr2 as invAttr2,
+        	inv_attr3 as invAttr3,
+        	inv_attr4 as invAttr4,
+        	inv_attr5 as invAttr5,
+        	ou_id as ouId
 		from 
 			t_wh_wave_line l 
 		where 

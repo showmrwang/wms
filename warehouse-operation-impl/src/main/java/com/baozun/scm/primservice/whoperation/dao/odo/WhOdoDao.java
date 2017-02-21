@@ -35,6 +35,8 @@ import com.baozun.scm.primservice.whoperation.command.odo.wave.OdoWaveGroupResul
 import com.baozun.scm.primservice.whoperation.command.odo.wave.OdoWaveGroupSearchCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.WaveCommand;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
+import com.baozun.scm.primservice.whoperation.model.seeding.WhSeedingWallLatticeLine;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhSeedingCollectionLine;
 
 public interface WhOdoDao extends BaseDao<WhOdo, Long> {
 
@@ -247,4 +249,12 @@ public interface WhOdoDao extends BaseDao<WhOdo, Long> {
      */
     List<String> findOdoIdCounterCodebyWaveCode(@Param("waveCode") String code, @Param("ouId") Long ouId);
 
+    /**
+     * 获取播种中出库单明细信息
+     *
+     * @param odoId
+     * @param ouId
+     * @return
+     */
+    List<WhSeedingWallLatticeLine> getSeedingOdoLineInfo(@Param("odoId") Long odoId, @Param("ouId") Long ouId);
 }

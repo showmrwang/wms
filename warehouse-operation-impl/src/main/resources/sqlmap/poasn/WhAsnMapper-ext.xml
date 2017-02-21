@@ -32,6 +32,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				<if test="logisticsProviderId!=null">
 					and asn.logistics_provider_id = #{logisticsProviderId}
 				</if>
+				<if test="logisticsProvider!=null and logisticsProvider!=''">
+					and asn.logistics_provider = #{logisticsProvider}
+				</if>
 				<if test="isIqc!=null">
 					and asn.is_iqc = #{isIqc}
 				</if>
@@ -133,6 +136,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					<foreach collection="logisticsProviderId" item="s" open="(" separator="," close=")">
 						#{s}
 					</foreach>
+				</if>
+				<if test="logisticsProvider!=null and logisticsProvider!=''">
+					and asn.logistics_provider like #{logisticsProvider}
 				</if>
 				<if test="asnStatus!=null">
 					and asn.status in 
@@ -349,6 +355,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	asn.ctn_rcvd as ctnRcvd,
 	        	asn.supplier_id as supplierId,
 	        	asn.logistics_provider_id as logisticsProviderId,
+	        	asn.logistics_provider as logisticsProvider,
 	        	asn.asn_type as asnType,
 	        	asn.status as status,
 	        	asn.is_iqc as isIqc,
@@ -392,6 +399,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        ctn_rcvd = #{ctnRcvd,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 			        supplier_id = #{supplierId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        logistics_provider_id = #{logisticsProviderId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        logistics_provider = #{logisticsProvider,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        asn_type = #{asnType,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 			        status = #{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 			        is_iqc = #{isIqc,javaType=java.lang.Boolean,jdbcType=BIT} ,
@@ -439,6 +447,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				asn.ctn_rcvd as ctnRcvd,
 				asn.supplier_id as supplierId,
 				asn.logistics_provider_id as logisticsProviderId,
+				asn.logistics_provider as logisticsProvider,
 				asn.asn_type as asnType,
 				asn.status as status,
 				asn.is_iqc as isIqc,
@@ -478,6 +487,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				asn.ctn_rcvd as ctnRcvd,
 				asn.supplier_id as supplierId,
 				asn.logistics_provider_id as logisticsProviderId,
+				asn.logistics_provider as logisticsProvider,
 				asn.asn_type as asnType,
 				asn.status as status,
 				asn.is_iqc as isIqc,
@@ -562,6 +572,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	ctn_rcvd as ctnRcvd,
 	        	supplier_id as supplierId,
 	        	logistics_provider_id as logisticsProviderId,
+	        	logistics_provider as logisticsProvider,
 	        	asn_type as asnType,
 	        	status as status,
 	        	is_iqc as isIqc,

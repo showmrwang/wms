@@ -4149,6 +4149,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             Double usableQty = this.whSkuInventoryDao.getUseableQtyByUuidList(uuidList, ouId);
             Double allocatedQty = onHandQty.doubleValue() - usableQty;// 已分配
             // 占用数量 >= 在库数量
+            if (usableQty.doubleValue() == 0) {
+                continue;
+            }
             if (upperLimitQty < usableQty) {
                 break;
             }
@@ -4180,6 +4183,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             Double usableQty = this.whSkuInventoryDao.getUseableQtyByUuidList(uuidList, ouId);
             Double allocatedQty = onHandQty.doubleValue() - usableQty;// 已分配
 
+            if (usableQty.doubleValue() == 0) {
+                continue;
+            }
             if (upperLimitQty.doubleValue() > usableQty) {
                 invCmd.setOuId(wh.getId());
                 List<WhSkuInventoryCommand> invs = whSkuInventoryDao.findInventoryByUuidAndCondition(invCmd);
@@ -4328,7 +4334,10 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             Double usableQty = this.whSkuInventoryDao.getUseableQtyByUuidList(uuidList, ouId);
             Double allocatedQty = onHandQty.doubleValue() - usableQty;// 已分配
             // 占用数量 >= 在库数量
-            if (upperLimitQty < onHandQty - allocatedQty) {
+            if (usableQty.doubleValue() == 0) {
+                continue;
+            }
+            if (upperLimitQty < usableQty) {
                 break;
             }
 

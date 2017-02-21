@@ -1,0 +1,493 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.WarehouseMgmtDao">
+    <resultMap id="WarehouseMgmtResult" type="com.baozun.scm.primservice.whoperation.model.warehouse.WarehouseMgmt">
+    </resultMap>
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="warehouseMgmtColumns">
+        <![CDATA[
+                id as id,
+                warehouse_id as warehouseId,
+                is_mandatorily_reserved as isMandatorilyReserved,
+                is_po_overcharge as isPoOvercharge,
+                po_overcharge_proportion as poOverchargeProportion,
+                is_asn_overcharge as isAsnOvercharge,
+                asn_overcharge_proportion as asnOverchargeProportion,
+                is_po_auto_verify as isPoAutoVerify,
+                is_asn_auto_verify as isAsnAutoVerify,
+                goods_receipt_mode as goodsReceiptMode,
+                is_auto_print_bintag as isAutoPrintBintag,
+                is_auto_generation_cn as isAutoGenerationCn,
+                is_allow_blocked as isAllowBlocked,
+                is_sku_needs_scan as isSkuNeedsScan,
+                inv_attr_mgmt as invAttrMgmt,
+                is_auto_print_diff as isAutoPrintDiff,
+                is_hint_quality_testing as isHintQualityTesting,
+                is_auto_print_goods_receipt as isAutoPrintGoodsReceipt,
+                is_auto_print_platformtag as isAutoPrintPlatformtag,
+                sku_mix_number as skuMixNumber,
+                is_sortation_container_assign as isSortationContainerAssign,
+                is_repeatedly_outbound as isRepeatedlyOutbound,
+                is_tabb_inv_total as isTabbInvTotal,
+                is_calc_seckill as isCalcSeckill,
+                seckill_odo_qtys as seckillOdoQtys,
+                is_calc_two_sku_suit as isCalcTwoSkuSuit,
+                two_sku_suit_odo_qtys as twoSkuSuitOdoQtys,
+                is_calc_suits as isCalcSuits,
+                suits_odo_qtys as suitsOdoQtys,
+                suits_max_sku_categorys as suitsMaxSkuCategorys,
+                default_length_uom_type as defaultLengthUomType,
+                default_weight_uom_type as defaultWeightUomType,
+                default_volume_uom_type as defaultVolumeUomType,
+                default_area_uom_type as defaultAreaUomType,
+                is_generate_inventory_task as isGenerateInventoryTask,
+                is_inbound_location_barcode as isInboundLocationBarcode,
+                is_replenishment_location_barcode as isReplenishmentLocationBarcode,
+                is_apply_facility as isApplyFacility,
+                is_dieking_check_message as isDiekingCheckMessage,
+                is_dieking_seedingwall_message as isDiekingSeedingwallMessage,
+                is_facility_check_code as isFacilityCheckCode,
+                seeding_mode as seedingMode,
+                x_qty as xqty,
+                y_qty as yqty,
+                z_qty as zqty,
+                seeding_odo_qty as seedingOdoQty
+        ]]>
+    </sql>
+
+    <!-- 如果有自增字段 -->
+
+    <!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+    <insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WarehouseMgmt"
+
+            flushCache="true">
+        <![CDATA[
+                INSERT INTO
+                t_bi_warehouse_mgmt (
+                id,
+                    warehouse_id ,
+                    is_mandatorily_reserved ,
+                    is_po_overcharge ,
+                    po_overcharge_proportion ,
+                    is_asn_overcharge ,
+                    asn_overcharge_proportion ,
+                    is_po_auto_verify ,
+                    is_asn_auto_verify ,
+                    goods_receipt_mode ,
+                    is_auto_print_bintag ,
+                    is_auto_generation_cn ,
+                    is_allow_blocked ,
+                    is_sku_needs_scan ,
+                    inv_attr_mgmt ,
+                    is_auto_print_diff ,
+                    is_hint_quality_testing ,
+                    is_auto_print_goods_receipt ,
+                    is_auto_print_platformtag ,
+                    sku_mix_number ,
+                    is_sortation_container_assign ,
+                    is_repeatedly_outbound ,
+                    is_tabb_inv_total ,
+                    is_calc_seckill ,
+                    seckill_odo_qtys ,
+                    is_calc_two_sku_suit ,
+                    two_sku_suit_odo_qtys ,
+                    is_calc_suits ,
+                    suits_odo_qtys ,
+                    suits_max_sku_categorys ,
+                    default_length_uom_type ,
+                    default_weight_uom_type ,
+                    default_volume_uom_type ,
+                    default_area_uom_type ,
+                    is_generate_inventory_task ,
+                    is_inbound_location_barcode ,
+                    is_replenishment_location_barcode ,
+                    is_apply_facility ,
+                    is_dieking_check_message ,
+                    is_dieking_seedingwall_message ,
+                    is_facility_check_code ,
+                    seeding_mode ,
+                    x_qty ,
+                    y_qty ,
+                    z_qty ,
+                    seeding_odo_qty 
+                ) VALUES (
+                #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{warehouseId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{isMandatorilyReserved,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                    #{isPoOvercharge,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                    #{poOverchargeProportion,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                    #{isAsnOvercharge,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                    #{asnOverchargeProportion,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                    #{isPoAutoVerify,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                    #{isAsnAutoVerify,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                    #{goodsReceiptMode,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                    #{isAutoPrintBintag,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                    #{isAutoGenerationCn,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                    #{isAllowBlocked,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                    #{isSkuNeedsScan,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                    #{invAttrMgmt,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{isAutoPrintDiff,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                    #{isHintQualityTesting,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                    #{isAutoPrintGoodsReceipt,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                    #{isAutoPrintPlatformtag,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                    #{skuMixNumber,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                    #{isSortationContainerAssign,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                    #{isRepeatedlyOutbound,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                    #{isTabbInvTotal,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                    #{isCalcSeckill,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                    #{seckillOdoQtys,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                    #{isCalcTwoSkuSuit,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                    #{twoSkuSuitOdoQtys,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                    #{isCalcSuits,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                    #{suitsOdoQtys,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                    #{suitsMaxSkuCategorys,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                    #{defaultLengthUomType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{defaultWeightUomType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{defaultVolumeUomType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{defaultAreaUomType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{isGenerateInventoryTask,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                    #{isInboundLocationBarcode,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                    #{isReplenishmentLocationBarcode,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                    #{isApplyFacility,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                    #{isDiekingCheckMessage,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                    #{isDiekingSeedingwallMessage,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                    #{isFacilityCheckCode,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                    #{seedingMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{xqty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                    #{yqty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                    #{zqty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                    #{seedingOdoQty,javaType=java.lang.Integer,jdbcType=INTEGER} 
+                )
+            ]]>
+
+    </insert>
+
+
+    <update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WarehouseMgmt">
+        <![CDATA[
+            UPDATE t_bi_warehouse_mgmt SET
+                warehouse_id = #{warehouseId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                is_mandatorily_reserved = #{isMandatorilyReserved,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                is_po_overcharge = #{isPoOvercharge,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                po_overcharge_proportion = #{poOverchargeProportion,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                is_asn_overcharge = #{isAsnOvercharge,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                asn_overcharge_proportion = #{asnOverchargeProportion,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                is_po_auto_verify = #{isPoAutoVerify,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                is_asn_auto_verify = #{isAsnAutoVerify,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                goods_receipt_mode = #{goodsReceiptMode,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                is_auto_print_bintag = #{isAutoPrintBintag,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                is_auto_generation_cn = #{isAutoGenerationCn,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                is_allow_blocked = #{isAllowBlocked,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                is_sku_needs_scan = #{isSkuNeedsScan,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                inv_attr_mgmt = #{invAttrMgmt,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                is_auto_print_diff = #{isAutoPrintDiff,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                is_hint_quality_testing = #{isHintQualityTesting,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                is_auto_print_goods_receipt = #{isAutoPrintGoodsReceipt,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                is_auto_print_platformtag = #{isAutoPrintPlatformtag,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                sku_mix_number = #{skuMixNumber,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                is_sortation_container_assign = #{isSortationContainerAssign,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                is_repeatedly_outbound = #{isRepeatedlyOutbound,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                is_tabb_inv_total = #{isTabbInvTotal,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                is_calc_seckill = #{isCalcSeckill,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                seckill_odo_qtys = #{seckillOdoQtys,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                is_calc_two_sku_suit = #{isCalcTwoSkuSuit,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                two_sku_suit_odo_qtys = #{twoSkuSuitOdoQtys,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                is_calc_suits = #{isCalcSuits,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                suits_odo_qtys = #{suitsOdoQtys,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                suits_max_sku_categorys = #{suitsMaxSkuCategorys,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                default_length_uom_type = #{defaultLengthUomType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                default_weight_uom_type = #{defaultWeightUomType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                default_volume_uom_type = #{defaultVolumeUomType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                default_area_uom_type = #{defaultAreaUomType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                is_generate_inventory_task = #{isGenerateInventoryTask,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                is_inbound_location_barcode = #{isInboundLocationBarcode,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                is_replenishment_location_barcode = #{isReplenishmentLocationBarcode,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                is_apply_facility = #{isApplyFacility,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                is_dieking_check_message = #{isDiekingCheckMessage,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                is_dieking_seedingwall_message = #{isDiekingSeedingwallMessage,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                is_facility_check_code = #{isFacilityCheckCode,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                seeding_mode = #{seedingMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                x_qty = #{xqty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                y_qty = #{yqty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                z_qty = #{zqty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                seeding_odo_qty = #{seedingOdoQty,javaType=java.lang.Integer,jdbcType=INTEGER} 
+            WHERE 
+                id = #{id} 
+        ]]>
+    </update>
+    <delete id="delete" parameterType="java.lang.Long">
+        <![CDATA[
+            delete from t_bi_warehouse_mgmt where
+                id = #{id} 
+        ]]>
+    </delete>
+
+    <delete id="deleteByIds" parameterType="list">
+
+        delete from t_bi_warehouse_mgmt
+        where id in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+
+    </delete>
+
+    <select id="findById" parameterType="java.lang.Long" resultMap="WarehouseMgmtResult" flushCache="false">
+        select
+        <include refid="warehouseMgmtColumns"/>
+        <![CDATA[
+                from t_bi_warehouse_mgmt 
+                where 
+                id = #{id} 
+            ]]>
+    </select>
+    <select id="getByIds" parameterType="list" resultMap="WarehouseMgmtResult" flushCache="false">
+        select
+        <include refid="warehouseMgmtColumns"/>
+        from t_bi_warehouse_mgmt
+        where id in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+    <sql id="warehouseMgmtDynamicWhere">
+        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+
+            <if test="id!=null">
+                and id = #{id}
+            </if>
+
+            <if test="warehouseId!=null">
+                and warehouse_id = #{warehouseId}
+            </if>
+
+            <if test="isMandatorilyReserved!=null">
+                and is_mandatorily_reserved = #{isMandatorilyReserved}
+            </if>
+
+            <if test="isPoOvercharge!=null">
+                and is_po_overcharge = #{isPoOvercharge}
+            </if>
+
+            <if test="poOverchargeProportion!=null">
+                and po_overcharge_proportion = #{poOverchargeProportion}
+            </if>
+
+            <if test="isAsnOvercharge!=null">
+                and is_asn_overcharge = #{isAsnOvercharge}
+            </if>
+
+            <if test="asnOverchargeProportion!=null">
+                and asn_overcharge_proportion = #{asnOverchargeProportion}
+            </if>
+
+            <if test="isPoAutoVerify!=null">
+                and is_po_auto_verify = #{isPoAutoVerify}
+            </if>
+
+            <if test="isAsnAutoVerify!=null">
+                and is_asn_auto_verify = #{isAsnAutoVerify}
+            </if>
+
+            <if test="goodsReceiptMode!=null">
+                and goods_receipt_mode = #{goodsReceiptMode}
+            </if>
+
+            <if test="isAutoPrintBintag!=null">
+                and is_auto_print_bintag = #{isAutoPrintBintag}
+            </if>
+
+            <if test="isAutoGenerationCn!=null">
+                and is_auto_generation_cn = #{isAutoGenerationCn}
+            </if>
+
+            <if test="isAllowBlocked!=null">
+                and is_allow_blocked = #{isAllowBlocked}
+            </if>
+
+            <if test="isSkuNeedsScan!=null">
+                and is_sku_needs_scan = #{isSkuNeedsScan}
+            </if>
+
+
+            <if test="invAttrMgmt!=null and invAttrMgmt!=''">
+                and inv_attr_mgmt = #{invAttrMgmt}
+            </if>
+
+            <if test="isAutoPrintDiff!=null">
+                and is_auto_print_diff = #{isAutoPrintDiff}
+            </if>
+
+            <if test="isHintQualityTesting!=null">
+                and is_hint_quality_testing = #{isHintQualityTesting}
+            </if>
+
+            <if test="isAutoPrintGoodsReceipt!=null">
+                and is_auto_print_goods_receipt = #{isAutoPrintGoodsReceipt}
+            </if>
+
+            <if test="isAutoPrintPlatformtag!=null">
+                and is_auto_print_platformtag = #{isAutoPrintPlatformtag}
+            </if>
+
+            <if test="skuMixNumber!=null">
+                and sku_mix_number = #{skuMixNumber}
+            </if>
+
+            <if test="isSortationContainerAssign!=null">
+                and is_sortation_container_assign = #{isSortationContainerAssign}
+            </if>
+
+            <if test="isRepeatedlyOutbound!=null">
+                and is_repeatedly_outbound = #{isRepeatedlyOutbound}
+            </if>
+
+            <if test="isTabbInvTotal!=null">
+                and is_tabb_inv_total = #{isTabbInvTotal}
+            </if>
+
+            <if test="isCalcSeckill!=null">
+                and is_calc_seckill = #{isCalcSeckill}
+            </if>
+
+            <if test="seckillOdoQtys!=null">
+                and seckill_odo_qtys = #{seckillOdoQtys}
+            </if>
+
+            <if test="isCalcTwoSkuSuit!=null">
+                and is_calc_two_sku_suit = #{isCalcTwoSkuSuit}
+            </if>
+
+            <if test="twoSkuSuitOdoQtys!=null">
+                and two_sku_suit_odo_qtys = #{twoSkuSuitOdoQtys}
+            </if>
+
+            <if test="isCalcSuits!=null">
+                and is_calc_suits = #{isCalcSuits}
+            </if>
+
+            <if test="suitsOdoQtys!=null">
+                and suits_odo_qtys = #{suitsOdoQtys}
+            </if>
+
+            <if test="suitsMaxSkuCategorys!=null">
+                and suits_max_sku_categorys = #{suitsMaxSkuCategorys}
+            </if>
+
+            <if test="defaultLengthUomType!=null">
+                and default_length_uom_type = #{defaultLengthUomType}
+            </if>
+
+            <if test="defaultWeightUomType!=null">
+                and default_weight_uom_type = #{defaultWeightUomType}
+            </if>
+
+            <if test="defaultVolumeUomType!=null">
+                and default_volume_uom_type = #{defaultVolumeUomType}
+            </if>
+
+            <if test="defaultAreaUomType!=null">
+                and default_area_uom_type = #{defaultAreaUomType}
+            </if>
+
+            <if test="isGenerateInventoryTask!=null">
+                and is_generate_inventory_task = #{isGenerateInventoryTask}
+            </if>
+
+            <if test="isInboundLocationBarcode!=null">
+                and is_inbound_location_barcode = #{isInboundLocationBarcode}
+            </if>
+
+            <if test="isReplenishmentLocationBarcode!=null">
+                and is_replenishment_location_barcode = #{isReplenishmentLocationBarcode}
+            </if>
+
+            <if test="isApplyFacility!=null">
+                and is_apply_facility = #{isApplyFacility}
+            </if>
+
+            <if test="isDiekingCheckMessage!=null">
+                and is_dieking_check_message = #{isDiekingCheckMessage}
+            </if>
+
+            <if test="isDiekingSeedingwallMessage!=null">
+                and is_dieking_seedingwall_message = #{isDiekingSeedingwallMessage}
+            </if>
+
+            <if test="isFacilityCheckCode!=null">
+                and is_facility_check_code = #{isFacilityCheckCode}
+            </if>
+
+
+            <if test="seedingMode!=null and seedingMode!=''">
+                and seeding_mode = #{seedingMode}
+            </if>
+
+            <if test="xqty!=null">
+                and x_qty = #{xqty}
+            </if>
+
+            <if test="yqty!=null">
+                and y_qty = #{yqty}
+            </if>
+
+            <if test="zqty!=null">
+                and z_qty = #{zqty}
+            </if>
+
+            <if test="seedingOdoQty!=null">
+                and seeding_odo_qty = #{seedingOdoQty}
+            </if>
+        </where>
+    </sql>
+
+
+    <select id="getCount" resultType="long">
+        select count(*) from t_bi_warehouse_mgmt
+    </select>
+    <select id="findListCountByQueryMap" resultType="long">
+        select count(*) from t_bi_warehouse_mgmt
+        <include refid="warehouseMgmtDynamicWhere"/>
+    </select>
+
+    <select id="findListCountByParam" resultType="long">
+        select count(*) from t_bi_warehouse_mgmt
+        <include refid="warehouseMgmtDynamicWhere"/>
+    </select>
+
+    <!--
+        分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+        因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPage" resultMap="WarehouseMgmtResult">
+        select
+        <include refid="warehouseMgmtColumns"/>
+        from t_bi_warehouse_mgmt
+        <include refid="warehouseMgmtDynamicWhere"/>
+
+    </select>
+
+    <select id="findListByQueryMap" resultMap="WarehouseMgmtResult">
+        select
+        <include refid="warehouseMgmtColumns"/>
+        from t_bi_warehouse_mgmt
+        <include refid="warehouseMgmtDynamicWhere"/>
+
+    </select>
+
+    <select id="findListByParam" resultMap="WarehouseMgmtResult">
+        select
+        <include refid="warehouseMgmtColumns"/>
+        from t_bi_warehouse_mgmt
+        <include refid="warehouseMgmtDynamicWhere"/>
+
+    </select>
+
+
+</mapper>

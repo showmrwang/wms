@@ -1410,7 +1410,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
         //当前工作明细设计到的所有库区编码信息列表--更新时获取数据      
         whWorkCommand.setWorkArea(null);
         //工作优先级     
-        whWorkCommand.setWorkPriority(whWaveMaster.getPickingWorkPriority());
+        whWorkCommand.setWorkPriority(null == whWaveMaster.getPickingWorkPriority() ? whWaveMaster.getPickingWorkPriority() : workType.getPriority());
         //小批次
         whWorkCommand.setBatch(null);
         //签出批次
@@ -1678,6 +1678,8 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
         }
         //查询波次主档信息     
         WhWaveMaster whWaveMaster = waveMasterDao.findByIdExt(whWave.getWaveMasterId(), whWave.getOuId());
+        //获取工作类型      
+        WorkType workType = this.workTypeDao.findWorkTypeByworkCategory("REPLENISHMENT", skuInventoryAllocatedCommand.getOuId());
         String workArea = "" ;
         int count = 0;
         Boolean isFromLocationId = true;
@@ -1759,7 +1761,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
         //是否锁定 默认值：1
         whWorkCommand.setIsLocked(whWaveMaster.getIsAutoReleaseWork());
         //工作优先级     
-        whWorkCommand.setWorkPriority(whWaveMaster.getPickingWorkPriority());
+        whWorkCommand.setWorkPriority(null == whWaveMaster.getPickingWorkPriority() ? whWaveMaster.getPickingWorkPriority() : workType.getPriority());
         
         WhWork whWork = new WhWork();
         //复制数据        
@@ -1782,81 +1784,17 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public String saveReplenishmentOperation(String replenishmentWorkCode, WhSkuInventoryAllocatedCommand skuInventoryAllocatedCommand) {
 
-        //获取工作头信息        
+        Boolean isWholeCase = true; 
+        // 获取工作头信息        
         WhWorkCommand whWorkCommand = this.workDao.findWorkByWorkCode(replenishmentWorkCode, skuInventoryAllocatedCommand.getOuId());
+        // 获取工作明细信息列表        
+        List<WhWorkLineCommand> whWorkLineCommandList = this.workLineDao.findWorkLineByWorkId(whWorkCommand.getId(), skuInventoryAllocatedCommand.getOuId());
         // 判断是否整托整箱
-        Boolean isWholeCase = false; 
-        
-        if(null != skuInventoryAllocatedCommand.getInsideContainerId()){
-            WhSkuInventory skuInventory = new WhSkuInventory();
-            WhSkuInventoryAllocatedCommand allocatedCommand = new WhSkuInventoryAllocatedCommand();
-            WhSkuInventoryAllocatedCommand totalCommand = new WhSkuInventoryAllocatedCommand();
-            WhSkuInventoryTobefilled skuInventoryTobefilled = new WhSkuInventoryTobefilled();
-            Double onHandQty = 0.00;
-            Double frozenQty = 0.00;
-            skuInventory.setInsideContainerId(skuInventoryAllocatedCommand.getInsideContainerId());
-            allocatedCommand.setInsideContainerId(skuInventoryAllocatedCommand.getInsideContainerId());
-            totalCommand.setInsideContainerId(skuInventoryAllocatedCommand.getInsideContainerId());
-            skuInventoryTobefilled.setInsideContainerId(skuInventoryAllocatedCommand.getInsideContainerId());
-            skuInventoryTobefilled.setLocationId(skuInventoryAllocatedCommand.getLocationId());
-            allocatedCommand.setReplenishmentCode(skuInventoryAllocatedCommand.getReplenishmentCode());
-            allocatedCommand.setReplenishmentRuleId(skuInventoryAllocatedCommand.getReplenishmentRuleId());
-            Double allocatedQty = skuInventoryAllocatedDao.skuInventoryAllocatedQty(allocatedCommand);
-            Double totalQty = skuInventoryAllocatedDao.skuInventoryAllocatedQty(totalCommand);
-            Double toBeFilledQty = skuInventoryTobefilledDao.skuInventoryTobefilledQty(skuInventoryTobefilled);
-            List<WhSkuInventory> SkuInventoryList = skuInventoryDao.getSkuInvListGroupUuid(skuInventory);
-            if(null != SkuInventoryList || 0 != SkuInventoryList.size()){
-                for(WhSkuInventory whSkuInventory:SkuInventoryList){
-                    onHandQty = onHandQty + whSkuInventory.getOnHandQty();
-                    frozenQty = frozenQty + whSkuInventory.getFrozenQty();
-                }
-            }
-            double zero = 0.0; 
-            int resultFrozen = frozenQty.compareTo(zero);
-            int resultTo = 0;
-            if(null != toBeFilledQty){
-                resultTo = toBeFilledQty.compareTo(zero);    
-            }
-            if(totalQty.equals(allocatedQty) && onHandQty.equals(allocatedQty) && 0 == resultFrozen && 0 == resultTo){
-                isWholeCase = true;
+        for(WhWorkLineCommand whWorkLineCommand : whWorkLineCommandList){
+            if(false == whWorkLineCommand.getIsWholeCase()){
+                isWholeCase = false;
             }
         }
-        
-        if(null != skuInventoryAllocatedCommand.getOuterContainerId()){
-            WhSkuInventory skuInventory = new WhSkuInventory();
-            WhSkuInventoryAllocatedCommand allocatedCommand = new WhSkuInventoryAllocatedCommand();
-            WhSkuInventoryAllocatedCommand totalCommand = new WhSkuInventoryAllocatedCommand();
-            WhSkuInventoryTobefilled skuInventoryTobefilled = new WhSkuInventoryTobefilled();
-            Double onHandQty = 0.00;
-            Double frozenQty = 0.00;
-            skuInventory.setOuterContainerId(skuInventoryAllocatedCommand.getOuterContainerId());
-            allocatedCommand.setOuterContainerId(skuInventoryAllocatedCommand.getOuterContainerId());
-            totalCommand.setOuterContainerId(skuInventoryAllocatedCommand.getOuterContainerId());
-            skuInventoryTobefilled.setOuterContainerId(skuInventoryAllocatedCommand.getOuterContainerId());
-            skuInventoryTobefilled.setLocationId(skuInventoryAllocatedCommand.getLocationId());
-            allocatedCommand.setReplenishmentCode(skuInventoryAllocatedCommand.getReplenishmentCode());
-            allocatedCommand.setReplenishmentRuleId(skuInventoryAllocatedCommand.getReplenishmentRuleId());
-            Double allocatedQty = skuInventoryAllocatedDao.skuInventoryAllocatedQty(allocatedCommand);
-            Double totalQty = skuInventoryAllocatedDao.skuInventoryAllocatedQty(totalCommand);
-            Double toBeFilledQty = skuInventoryTobefilledDao.skuInventoryTobefilledQty(skuInventoryTobefilled);
-            List<WhSkuInventory> SkuInventoryList = skuInventoryDao.getSkuInvListGroupUuid(skuInventory);
-            if(null != SkuInventoryList || 0 != SkuInventoryList.size()){
-                for(WhSkuInventory whSkuInventory:SkuInventoryList){
-                    onHandQty = onHandQty + whSkuInventory.getOnHandQty();
-                    frozenQty = frozenQty + whSkuInventory.getFrozenQty();
-                }
-            }
-            double zero = 0.0; 
-            int resultFrozen = frozenQty.compareTo(zero);
-            int resultTo = 0;
-            if(null != toBeFilledQty){
-                resultTo = toBeFilledQty.compareTo(zero);    
-            }
-            if(totalQty.equals(allocatedQty) && onHandQty.equals(allocatedQty) && 0 == resultFrozen && 0 == resultTo){
-                isWholeCase = true;
-            }
-        }
-          
         //调编码生成器工作明细实体标识
         String operationCode = codeManager.generateCode(Constants.WMS, Constants.WHOPERATION_MODEL_URL, "", "OPERATION", null);
         WhOperationCommand WhOperationCommand = new WhOperationCommand();

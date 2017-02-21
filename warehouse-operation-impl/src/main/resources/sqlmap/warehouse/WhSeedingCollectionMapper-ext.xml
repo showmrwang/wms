@@ -215,4 +215,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		
     </select>
 
+    <select id="getFacilityBindBatch" resultType="String">
+        select distinct batch
+        from t_wh_seeding_collection
+        where facility_id = #{facilityId}
+        and ou_id = #{ouId}
+    </select>
+
 </mapper>

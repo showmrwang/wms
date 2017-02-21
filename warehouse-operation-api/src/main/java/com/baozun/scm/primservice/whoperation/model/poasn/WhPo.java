@@ -46,6 +46,8 @@ public class WhPo extends BaseModel {
     private Long supplierId;
     /** 运输商ID */
     private Long logisticsProviderId;
+    /** 运输商Code */
+    private String logisticsProvider;
     /** PO单类型 */
     private Integer poType;
     /** 状态 */
@@ -313,6 +315,14 @@ public class WhPo extends BaseModel {
 
     public void setOverChageRate(Double overChageRate) {
         this.overChageRate = overChageRate;
+    }
+
+    public String getLogisticsProvider() {
+        return logisticsProvider;
+    }
+
+    public void setLogisticsProvider(String logisticsProvider) {
+        this.logisticsProvider = logisticsProvider;
     }
 
 

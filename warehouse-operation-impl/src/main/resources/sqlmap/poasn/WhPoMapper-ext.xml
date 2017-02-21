@@ -19,6 +19,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	store_id as storeId,
 	        	supplier_id as supplierId,
 	        	logistics_provider_id as logisticsProviderId,
+	        	logistics_provider as logisticsProvider,
 	        	po_type as poType,
 	        	status as status,
 	        	is_iqc as isIqc,
@@ -73,6 +74,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				</if>
 				<if test="logisticsProviderId!=null">
 					and po.logistics_provider_id = #{logisticsProviderId}
+				</if>
+				<if test="logisticsProvider!=null and logisticsProvider!=''">
+					and po.logistics_provider like #{logisticsProvider}
 				</if>
 				<if test="isIqc!=null">
 					and po.is_iqc = #{isIqc}
@@ -143,6 +147,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				<foreach collection="logisticsProviderId" item="s" open="(" separator="," close=")">
 					#{s}
 				</foreach>
+			</if>
+			<if test="logisticsProvider!=null and logisticsProvider!=''">
+				and  po.logistics_provider  like #{logisticsProvider}
 			</if>
 			<if test="poType!=null">
 				and  po.po_type in 
@@ -359,6 +366,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        store_id = #{storeId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        supplier_id = #{supplierId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        logistics_provider_id = #{logisticsProviderId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        logistics_provider = #{logisticsProvider,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        po_type = #{poType,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 			        status = #{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 			        is_iqc = #{isIqc,javaType=java.lang.Boolean,jdbcType=BIT} ,
@@ -400,6 +408,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				po.store_id as storeId,
 				po.supplier_id as supplierId,
 				po.logistics_provider_id as logisticsProviderId,
+				po.logistics_provider as logisticsProvider,
 				po.po_type as poType,
 				po.status as status,
 				po.is_iqc as isIqc,
@@ -448,6 +457,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			po.store_id as storeId,
 			po.supplier_id as supplierId,
 			po.logistics_provider_id as logisticsProviderId,
+			po.logistics_provider as logisticsProvider,
 			po.po_type as poType,
 			po.status as status,
 			po.is_iqc as isIqc,
@@ -602,6 +612,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			po.store_id as storeId,
 			po.supplier_id as supplierId,
 			po.logistics_provider_id as logisticsProviderId,
+			po.logistics_provider as logisticsProvider,
 			po.po_type as poType,
 			po.status as status,
 			po.is_iqc as isIqc,

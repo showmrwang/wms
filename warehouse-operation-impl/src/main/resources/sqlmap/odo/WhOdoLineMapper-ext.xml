@@ -816,7 +816,9 @@
 			odo_line_status = #{status},
 			wave_code=#{waveCode},
 			last_modify_time=now(),
-			modified_id=#{userId}
+			modified_id=#{userId},
+			assign_fail_reason=null,
+	        is_assign_success=null
 		where
 			ou_id=#{ouId} 
 	    	and odo_id in

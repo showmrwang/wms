@@ -20,6 +20,8 @@ public class WhSeedingWallLatticeLine extends BaseModel {
 
     private static final long serialVersionUID = -9118252882038803499L;
 
+    /** 商品ID */
+    Long skuId;
     /** 商品编码 */
     String skuCode;
     /** 商品外部编码 */
@@ -30,10 +32,14 @@ public class WhSeedingWallLatticeLine extends BaseModel {
     String skuName;
     /** 计划数量 */
     Double qty;
+    /** 客户ID */
+    Long customerId;
     /** 客户CODE */
     String customerCode;
     /** 客户名称 */
     String customerName;
+    /** 店铺ID */
+    Long storeId;
     /** 店铺CODE */
     String storeCode;
     /** 店铺名称 */
@@ -60,6 +66,16 @@ public class WhSeedingWallLatticeLine extends BaseModel {
     String invAttr4;
     /** 库存属性5 dic_label */
     String invAttr5;
+    /** 出库单明细ID */
+    Long odoLineId;
+
+    public Long getSkuId() {
+        return skuId;
+    }
+
+    public void setSkuId(Long skuId) {
+        this.skuId = skuId;
+    }
 
     public String getSkuCode() {
         return skuCode;
@@ -101,6 +117,14 @@ public class WhSeedingWallLatticeLine extends BaseModel {
         this.qty = qty;
     }
 
+    public Long getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(Long customerId) {
+        this.customerId = customerId;
+    }
+
     public String getCustomerCode() {
         return customerCode;
     }
@@ -115,6 +139,14 @@ public class WhSeedingWallLatticeLine extends BaseModel {
 
     public void setCustomerName(String customerName) {
         this.customerName = customerName;
+    }
+
+    public Long getStoreId() {
+        return storeId;
+    }
+
+    public void setStoreId(Long storeId) {
+        this.storeId = storeId;
     }
 
     public String getStoreCode() {
@@ -219,5 +251,13 @@ public class WhSeedingWallLatticeLine extends BaseModel {
 
     public void setInvAttr5(String invAttr5) {
         this.invAttr5 = invAttr5;
+    }
+
+    public Long getOdoLineId() {
+        return odoLineId;
+    }
+
+    public void setOdoLineId(Long odoLineId) {
+        this.odoLineId = odoLineId;
     }
 }

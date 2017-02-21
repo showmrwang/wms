@@ -20,6 +20,7 @@ import java.util.List;
 
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
+import com.baozun.scm.primservice.whoperation.model.seeding.WhSeedingWallLattice;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhWork;
 
 
@@ -68,4 +69,22 @@ public interface WhWorkManager extends BaseManager{
      */
     List<WhWork> findWorkByWave(String code, Long ouId);
 
+
+    /**
+     * 获取批次下的所有工作
+     *
+     * @param batchNo
+     * @param ouId
+     * @return
+     */
+    List<WhWorkCommand> findWorkByBatch(String batchNo, Long ouId);
+
+    /**
+     * 获取播种批次下的出库单信息，用于和播种墙货格绑定
+     *
+     * @param batchNo
+     * @param ouId
+     * @return
+     */
+    List<WhSeedingWallLattice> getSeedingBatchOdoInfo(String batchNo, Long ouId);
 }

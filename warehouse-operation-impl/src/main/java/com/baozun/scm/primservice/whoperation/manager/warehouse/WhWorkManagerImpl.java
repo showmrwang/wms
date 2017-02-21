@@ -17,6 +17,7 @@ import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhWorkDao;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
+import com.baozun.scm.primservice.whoperation.model.seeding.WhSeedingWallLattice;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhWork;
 
 @Service("whWorkManager")
@@ -77,5 +78,26 @@ public class WhWorkManagerImpl extends BaseManagerImpl implements WhWorkManager 
         work.setLifecycle(Constants.LIFECYCLE_START);
         return this.whWorkDao.findListByParam(work);
     }
-    
+
+    /**
+     * 获取批次下的所有工作
+     *
+     * @param batchNo
+     * @param ouId
+     * @return
+     */
+    public List<WhWorkCommand> findWorkByBatch(String batchNo, Long ouId){
+        return whWorkDao.findWorkByBatch(batchNo, ouId);
+    }
+
+    /**
+     * 获取播种批次下的出库单信息，用于和播种墙货格绑定
+     *
+     * @param batchNo
+     * @param ouId
+     * @return
+     */
+    public List<WhSeedingWallLattice> getSeedingBatchOdoInfo(String batchNo, Long ouId){
+        return whWorkDao.getSeedingBatchOdoInfo(batchNo, ouId);
+    }
 }

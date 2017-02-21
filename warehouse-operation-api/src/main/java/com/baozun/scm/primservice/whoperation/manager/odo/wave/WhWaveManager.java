@@ -1,5 +1,6 @@
 package com.baozun.scm.primservice.whoperation.manager.odo.wave;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -169,8 +170,16 @@ public interface WhWaveManager extends BaseManager {
      * [业务方法] 整出库单剔除并释放库存
      */
     void deleteWaveLinesAndReleaseInventoryByOdoId(Long waveId, Long odoId, String reason, Warehouse wh);
-
+    
     /**
+     * [业务方法] 整出库单剔除并释放库存
+     * 
+     * @param odoId
+     * @param wave
+     */
+	void deleteWaveLinesAndReleaseInventoryByOdoIdList(Long waveId, Collection<Long> odoIds, String reason, Warehouse wh);
+    
+	/**
      * [业务方法] 在一个波次中查找包含skuIds的OdoId
      * @param skuIds
      * @param ouId
@@ -304,6 +313,5 @@ public interface WhWaveManager extends BaseManager {
      * @param wave
      */
     public void addOdoLineToWaveNew(List<Long> odoIdList, WhWave wave);
-
 
 }

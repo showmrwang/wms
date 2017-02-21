@@ -23,11 +23,13 @@ import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.dao.auth.OperationUnitDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WarehouseDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WarehouseMgmtDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.model.auth.OperationUnit;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WarehouseMgmt;
 
 
 @Service("warehouseManager")
@@ -42,6 +44,9 @@ public class WarehouseManagerImpl extends BaseManagerImpl implements WarehouseMa
     private OperationUnitDao operationUnitDao;
     @Autowired
     private CacheManager cacheManager;
+
+    @Autowired
+    private WarehouseMgmtDao warehouseMgmtDao;
 
     /**
      * 验证仓库名称/编码是否存在
@@ -288,4 +293,13 @@ public class WarehouseManagerImpl extends BaseManagerImpl implements WarehouseMa
         return true;
     }
 
+    /**
+     * [业务方法] 通过仓库id获取仓库参数
+     * @param ouId
+     * @return
+     */
+    @Override
+    public WarehouseMgmt findWhMgmtByOuId(Long ouId) {
+        return warehouseMgmtDao.findByOuId(ouId);
+    }
 }

@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import lark.common.annotation.MoreDB;
-import net.sf.json.JSONObject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -134,10 +133,10 @@ public class SkuRedisManagerImpl extends BaseManagerImpl implements SkuRedisMana
             }
         } else {
             skuRedis = new SkuRedisCommand();
-            skuRedis.setSku((Sku) JSONObject.toBean(JsonUtil.jsonToBean(redisMap.get("sku")), Sku.class));
-            skuRedis.setSkuExtattr((SkuExtattr) JSONObject.toBean(JsonUtil.jsonToBean(redisMap.get("skuExtattr")), SkuExtattr.class));
-            skuRedis.setSkuMgmt((SkuMgmt) JSONObject.toBean(JsonUtil.jsonToBean(redisMap.get("skuMgmt")), SkuMgmt.class));
-            skuRedis.setWhSkuWhMgmt((WhSkuWhmgmt) JSONObject.toBean(JsonUtil.jsonToBean(redisMap.get("whSkuWhMgmt")), WhSkuWhmgmt.class));
+            skuRedis.setSku((Sku) JsonUtil.jsonToBean(redisMap.get("sku"), Sku.class));
+            skuRedis.setSkuExtattr((SkuExtattr) JsonUtil.jsonToBean(redisMap.get("skuExtattr"), SkuExtattr.class));
+            skuRedis.setSkuMgmt((SkuMgmt) JsonUtil.jsonToBean(redisMap.get("skuMgmt"), SkuMgmt.class));
+            skuRedis.setWhSkuWhMgmt((WhSkuWhmgmt) JsonUtil.jsonToBean(redisMap.get("whSkuWhMgmt"), WhSkuWhmgmt.class));
         }
         log.info(this.getClass().getSimpleName() + ".findSkuMasterBySkuId method end! logid: " + logId);
         return skuRedis;

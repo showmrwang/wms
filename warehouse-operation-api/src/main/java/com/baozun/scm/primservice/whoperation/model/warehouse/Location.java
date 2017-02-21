@@ -94,11 +94,11 @@ public class Location extends BaseModel {
     private String dimension8;
     /* 是否静态库位 */
     private Boolean isStatic;
-    /*上限*/
+    /* 上限 */
     private Integer upBound;
-    /*下限*/
+    /* 下限 */
     private Integer downBound;
-    
+
     /** 长度 */
     private java.lang.Double length;
     /** 宽 */
@@ -117,7 +117,10 @@ public class Location extends BaseModel {
     private java.lang.Long maxChaosSku;
     /** 体积利用率 */
     private java.lang.String volumeRate;
-    
+
+    /* 是否复核库位 */
+    private Boolean isCheckLocation;
+
     public Boolean getIsStatic() {
         return isStatic;
     }
@@ -494,6 +497,12 @@ public class Location extends BaseModel {
         this.downBound = downBound;
     }
 
-    
-    
+    public Boolean getIsCheckLocation() {
+        return isCheckLocation;
+    }
+
+    public void setIsCheckLocation(Boolean isCheckLocation) {
+        this.isCheckLocation = isCheckLocation;
+    }
+
 }

@@ -1,6 +1,5 @@
 package com.baozun.scm.primservice.whoperation.command.poasn;
 
-import java.util.Date;
 import java.util.List;
 
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
@@ -32,6 +31,8 @@ public class WhAsnSearchCommand extends BaseCommand{
     private List<String> supplierId;
     /** 运输商ID */
     private List<String> logisticsProviderId;
+    /** 运输商ID */
+    private String logisticsProvider;
     /** 状态 */
     private List<String> asnStatus;
     /** 采购时间 */
@@ -110,6 +111,13 @@ public class WhAsnSearchCommand extends BaseCommand{
     private String defectReasons;
     
     
+    public String getLogisticsProvider() {
+        return logisticsProvider;
+    }
+
+    public void setLogisticsProvider(String logisticsProvider) {
+        this.logisticsProvider = logisticsProvider;
+    }
     public String getAsnCode() {
         return asnCode;
     }
