@@ -807,8 +807,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		and wave.id = #{waveId}
 		and wave.ou_id = #{ouId}
 		order by
-		waveLine.odo_priority_level,waveLine.odo_plan_deliver_goods_time,
-		waveLine.odo_order_time, waveLine.odo_id asc,waveLine.qty desc
+		waveLine.odo_priority_level asc,waveLine.odo_plan_deliver_goods_time asc,waveLine.qty desc,
+		waveLine.odo_order_time asc, waveLine.odo_id asc
 	</select>
 	
 	
