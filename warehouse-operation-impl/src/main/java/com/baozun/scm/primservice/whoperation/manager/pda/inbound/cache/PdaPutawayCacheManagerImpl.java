@@ -3314,7 +3314,32 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                             throw new BusinessException(ErrorCodes.SCAN_SKU_QTY_IS_VALID);
                         }
                     }
-                    
+                    //判断提示下一个容器
+                    Set<Long> allContainerIds = insideContainerIds;
+                    boolean isAllContainerCache = isCacheAllExists(allContainerIds, cacheContainerIds);
+                    Long tipContainerId = null;
+                    if (false == isAllContainerCache) {
+                        // 提示下一个容器
+                        cssrCmd.setPutaway(true);
+                        for (Long cId : allContainerIds) {
+                            if (0 == icId.compareTo(cId)) {
+                                continue;
+                            }
+                            Set<Long> tempContainerIds = new HashSet<Long>();
+                            tempContainerIds.add(cId);
+                            boolean isExists = isCacheAllExists(tempContainerIds, cacheContainerIds);
+                            if (true == isExists) {
+                                continue;
+                            } else {
+                                tipContainerId = cId;
+                                break;
+                            }
+                        }
+                        cssrCmd.setNeedTipContainer(true);
+                        cssrCmd.setTipContainerId(tipContainerId);
+                    } else {
+                        cssrCmd.setPutaway(true);// 可上架
+                    }
                 }else{ //逐件扫描
                     long cacheValue = cacheManager.incrBy(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + skuId.toString(), scanSkuQty.intValue());
                     if (cacheValue == skuQty.longValue()) {

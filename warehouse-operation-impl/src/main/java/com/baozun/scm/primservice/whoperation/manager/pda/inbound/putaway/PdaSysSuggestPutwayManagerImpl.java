@@ -2885,12 +2885,14 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
               tipSkuDetailAspect(isRecommendFail,srCmd, tipSkuAttrId, locSkuAttrIds, skuAttrIdsQty, logId);
               srCmd.setIsContinueScanSn(true);
           } else if (cssrCmd.isNeedTipSku()) {
+              String tipSkuAttrId = cssrCmd.getTipSkuAttrId();
               srCmd.setNeedTipSku(true);// 提示下一个sku
               if(isRecommendFail) {  //人工流程,扫一个上一个
                   String skuAttrId = SkuCategoryProvider.concatSkuAttrId(skuCmd.getId(), skuCmd.getInvType(), skuCmd.getInvStatus(),skuCmd.getInvBatchNumber(),skuCmd.getInvCountryOfOrigin(), skuCmd.getInvMfgDate(), skuCmd.getInvExpDate(), skuCmd.getInvAttr1(), skuCmd.getInvAttr2(), skuCmd.getInvAttr3(),
                       skuCmd.getInvAttr4(), skuCmd.getInvAttr5());
                   whSkuInventoryManager.sysManPutaway(skuCmd.getScanSkuQty(), warehouse, userId, ocCmd, icCmd, locationCode, putawayPatternDetailType, ouId, skuAttrId);
                   srCmd = this.splitPutWayNoLocation(isCmd, ouId, userId, srCmd, funcId, icCmd, invList,putawayPatternDetailType,warehouse);
+                  this.splitCacheScanSku(insideContainerId, locationId, tipSkuAttrId);   //  缓存
               }else if(isNotUser){
                   String skuAttrId = SkuCategoryProvider.concatSkuAttrId(skuCmd.getId(), skuCmd.getInvType(), skuCmd.getInvStatus(), skuCmd.getInvBatchNumber(),skuCmd.getInvCountryOfOrigin(),skuCmd.getInvMfgDate(), skuCmd.getInvExpDate(), skuCmd.getInvAttr1(), skuCmd.getInvAttr2(), skuCmd.getInvAttr3(),
                       skuCmd.getInvAttr4(), skuCmd.getInvAttr5());
@@ -2906,9 +2908,9 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
                   }
                   srCmd.setTipLocationCode(location.getCode()); 
                   srCmd.setTipLocBarCode(location.getBarCode());
+                  this.splitCacheScanSku(insideContainerId, locationId, tipSkuAttrId);   //  缓存
               }else{
                 //提示下一个商品
-                  String tipSkuAttrId = cssrCmd.getTipSkuAttrId();
                   Long skuId = SkuCategoryProvider.getSkuId(tipSkuAttrId);
                   WhSkuCommand tipSkuCmd = whSkuDao.findWhSkuByIdExt(skuId, ouId);
                   if (null == tipSkuCmd) {
@@ -3560,15 +3562,19 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
                             result1 = true;
                             break;
                         }else{
-                            for(WhSkuInventorySnCommand skuInvSnCmd:list){  //判断有没有sn
-                                String valueIds =  SkuCategoryProvider.concatSkuAttrId(skuAttrId,  skuInvSnCmd.getSn(), skuInvSnCmd.getDefectWareBarcode());
-                                if(cacheSkuAttrIds.contains(valueIds)) {
-                                    continue;
-                                }
-                                tipSku = valueIds;
-                                result = true;
-                                break;
-                            }
+//                            for(WhSkuInventorySnCommand skuInvSnCmd:list){  //判断有没有sn
+//                                String valueIds =  SkuCategoryProvider.concatSkuAttrId(skuAttrId,  skuInvSnCmd.getSn(), skuInvSnCmd.getDefectWareBarcode());
+//                                if(cacheSkuAttrIds.contains(valueIds)) {
+//                                    continue;
+//                                }
+//                                tipSku = valueIds;
+//                                result = true;
+//                                break;
+//                            }
+                            String valueIds = cacheSkuAttrIds.getFirst();
+                            tipSku = valueIds;
+                            result = true;
+                            break;
                         }
                     }
                     if(result) {
