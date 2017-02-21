@@ -1410,7 +1410,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
         //当前工作明细设计到的所有库区编码信息列表--更新时获取数据      
         whWorkCommand.setWorkArea(null);
         //工作优先级     
-        whWorkCommand.setWorkPriority(whWaveMaster.getPickingWorkPriority());
+        whWorkCommand.setWorkPriority(null == whWaveMaster.getPickingWorkPriority() ? whWaveMaster.getPickingWorkPriority() : workType.getPriority());
         //小批次
         whWorkCommand.setBatch(null);
         //签出批次
@@ -1678,6 +1678,8 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
         }
         //查询波次主档信息     
         WhWaveMaster whWaveMaster = waveMasterDao.findByIdExt(whWave.getWaveMasterId(), whWave.getOuId());
+        //获取工作类型      
+        WorkType workType = this.workTypeDao.findWorkTypeByworkCategory("REPLENISHMENT", skuInventoryAllocatedCommand.getOuId());
         String workArea = "" ;
         int count = 0;
         Boolean isFromLocationId = true;
@@ -1759,7 +1761,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
         //是否锁定 默认值：1
         whWorkCommand.setIsLocked(whWaveMaster.getIsAutoReleaseWork());
         //工作优先级     
-        whWorkCommand.setWorkPriority(whWaveMaster.getPickingWorkPriority());
+        whWorkCommand.setWorkPriority(null == whWaveMaster.getPickingWorkPriority() ? whWaveMaster.getPickingWorkPriority() : workType.getPriority());
         
         WhWork whWork = new WhWork();
         //复制数据        

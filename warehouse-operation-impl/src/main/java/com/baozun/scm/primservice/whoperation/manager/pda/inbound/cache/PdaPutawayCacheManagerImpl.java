@@ -3318,25 +3318,6 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                 }else{ //逐件扫描
                     long cacheValue = cacheManager.incrBy(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + skuId.toString(), scanSkuQty.intValue());
                     if (cacheValue == skuQty.longValue()) {
-//                        // 4.提示下一个商品
-//                        boolean isAllCache = isCacheAllExists2(skuAttrIds, tipSkuAttrIds);
-//                        if (false == isAllCache) {
-//                            // 提示下个商品
-//                            String tipSkuAttrId = "";
-//                            for (String sId : skuAttrIds) {
-//                                Set<String> tempSkuAttrIds = new HashSet<String>();
-//                                tempSkuAttrIds.add(sId);
-//                                boolean isExists = isCacheAllExists2(tempSkuAttrIds, tipSkuAttrIds);
-//                                if (true == isExists) {
-//                                    continue;
-//                                } else {
-//                                    tipSkuAttrId = sId;
-//                                    break;
-//                                }
-//                            }
-//                            cssrCmd.setNeedTipSku(true);
-//                            cssrCmd.setTipSkuAttrId(tipSkuAttrId);
-//                        } else {
                             // 判断是否需要提示下一个容器
                             Set<Long> allContainerIds = insideContainerIds;
                             boolean isAllContainerCache = isCacheAllExists(allContainerIds, cacheContainerIds);
@@ -3366,7 +3347,6 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
 //                          }
                       } else if (cacheValue < skuQty.longValue()) {
                         // 继续复核
-                          cssrCmd.setNeedTipSku(true);
                           String tipSkuAttrId = "";
                           for (String sId : skuAttrIds) {
                             Set<String> tempSkuAttrIds = new HashSet<String>();

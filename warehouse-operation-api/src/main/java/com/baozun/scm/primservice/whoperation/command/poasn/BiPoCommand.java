@@ -42,6 +42,8 @@ public class BiPoCommand extends BaseCommand {
     private Long supplierId;
     /** 运输商ID */
     private Long logisticsProviderId;
+    /** 运输商Code */
+    private String logisticsProvider;
     /** PO单类型 */
     private Integer poType;
     /** 状态 */
@@ -590,6 +592,14 @@ public class BiPoCommand extends BaseCommand {
 
     public void setInboundTimeStr(String inboundTimeStr) {
         this.inboundTimeStr = inboundTimeStr;
+    }
+
+    public String getLogisticsProvider() {
+        return logisticsProvider;
+    }
+
+    public void setLogisticsProvider(String logisticsProvider) {
+        this.logisticsProvider = logisticsProvider;
     }
 
 
