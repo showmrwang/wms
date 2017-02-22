@@ -2983,18 +2983,20 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
 
       
       private void splitContainerPutawayRemoveAllCache(ContainerCommand containerCmd, ContainerCommand insideContainerCmd, Long locationId, String logId){
-              Long ocId = containerCmd.getId();
-                  // 0.先清除所有复核商品队列及库位队列及内部库存及统计信息
-                  ContainerStatisticResultCommand isCmd = cacheManager.getMapObject(CacheConstants.CONTAINER_STATISTIC, ocId.toString());
-                  if (null != isCmd) {
-                      Set<Long> insideContainerIds = isCmd.getInsideContainerIds();
-                      for (Long icId : insideContainerIds) {
-                          cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icId.toString());
-                          cacheManager.remove(CacheConstants.SCAN_LOCATION_QUEUE + icId.toString());
-                          cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY_STATISTIC, icId.toString());
-                          cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY, icId.toString());
-                      }
-                  }
+                 if(null != containerCmd) {
+                     Long ocId = containerCmd.getId();
+                     // 0.先清除所有复核商品队列及库位队列及内部库存及统计信息
+                     ContainerStatisticResultCommand isCmd = cacheManager.getMapObject(CacheConstants.CONTAINER_STATISTIC, ocId.toString());
+                     if (null != isCmd) {
+                         Set<Long> insideContainerIds = isCmd.getInsideContainerIds();
+                         for (Long icId : insideContainerIds) {
+                             cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icId.toString());
+                             cacheManager.remove(CacheConstants.SCAN_LOCATION_QUEUE + icId.toString());
+                             cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY_STATISTIC, icId.toString());
+                             cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY, icId.toString());
+                         }
+                     }
+                 }
                   Long icId = insideContainerCmd.getId();
                   cacheManager.remove(CacheConstants.SCAN_LOCATION_QUEUE + icId.toString());
 
