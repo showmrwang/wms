@@ -132,6 +132,11 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
             // 根据波次获得出库单ID集合
             List<Long> whOdoIdList = whWaveLineManager.getOdoIdListByWaveId(whWaveCommand.getId(), ouId);
 
+            if (whOdoIdList.isEmpty()) {
+                // 设置波次的波次阶段为下一个阶段
+                whWaveManager.changeWavePhaseCode(whWaveCommand.getId(), ouId);
+                continue;
+            }
             // 波次下出库单列表
             List<OdoCommand> whOdoCommandList = odoManager.getWhOdoListById(whOdoIdList, ouId);
 
@@ -145,12 +150,18 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
             // 方便根据出库单ID获取出库单<odoId, odoCommand>
             Map<Long, OdoCommand> odoCommandMap = new HashMap<>();
 
-            //将出库单和波次绑定，并且将出库单按照拣货模式分组，分成摘果出库单和非摘果出库单
+            // 将出库单和波次绑定，并且将出库单按照拣货模式分组，分成摘果出库单和非摘果出库单
             for (OdoCommand odoCommand : whOdoCommandList) {
                 odoCommand.setWhWaveCommand(whWaveCommand);
                 odoCommandMap.put(odoCommand.getId(), odoCommand);
 
                 WhDistributionPatternRule rule = distributionPatternRuleMap.get(odoCommand.getDistributeMode());
+                if (null == rule) {
+                    // 踢出波次
+                    Warehouse warehouse = warehouseManager.findWarehouseByIdExt(ouId);
+                    whWaveManager.deleteWaveLinesAndReleaseInventoryByOdoId(whWaveCommand.getId(), odoCommand.getId(), Constants.CREATE_OUTBOUND_CARTON_REC_BOX_EXCEPTION, warehouse);
+                    continue;
+                }
                 if (Constants.PICKING_MODE_PICKING.equals(rule.getPickingMode().toString())) {
                     singleOdoPickModeOdoIdList.add(odoCommand.getId());
                 } else {
@@ -182,10 +193,14 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
             }
 
             // 处理摘果出库单
-            this.packingForSingleOdoPickMode(singleOdoPickModeOdoIdList, odoCommandMap, ouId, logId);
+            if (!singleOdoPickModeOdoIdList.isEmpty()) {
+                this.packingForSingleOdoPickMode(singleOdoPickModeOdoIdList, odoCommandMap, ouId, logId);
+            }
 
             // 处理非摘果的出库单，考虑分成两个线程
-            this.packingForBatchOdoPickMode(batchOdoPickModeOdoListMap, odoCommandMap, ouId, logId);
+            if (!batchOdoPickModeOdoListMap.isEmpty()) {
+                this.packingForBatchOdoPickMode(batchOdoPickModeOdoListMap, odoCommandMap, ouId, logId);
+            }
 
             // 设置波次的波次阶段为下一个阶段
             whWaveManager.changeWavePhaseCode(whWaveCommand.getId(), ouId);
@@ -1590,6 +1605,10 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                 }
             }
 
+            if(batchSingleOdoLineList.isEmpty()){
+                continue;
+            }
+
             // 批次下的库存列表
             List<WhSkuInventoryCommand> batchSkuInventoryList = skuInventoryManager.findListByOccLineIdListOrderByPickingSort(batchOccLineIdList, ouId);
             try {
@@ -1677,6 +1696,10 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                         batchOccLineIdList.add(odoLine.getId());
                         odoLineCommandMap.put(odoLine.getId(), odoLine);
                     }
+                }
+
+                if(batchSecKillOdoLineList.isEmpty()){
+                    continue;
                 }
 
                 // 批次下的库存列表
@@ -1790,6 +1813,9 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                         odoLineCommandMap.put(odoLineCommand.getId(), odoLineCommand);
                     }
                 }
+                if(batchOdoLineList.isEmpty()){
+                    continue;
+                }
 
 
                 // 周转箱列表
@@ -1899,6 +1925,10 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                         unmatchedTurnoverBoxOdoList.add(odoCommand);
                         batchGroupDistributeModeOdoList.remove(odoCommand);
                     }
+                }
+
+                if (skuGroupBatchOdoLineList.isEmpty()) {
+                    continue;
                 }
 
 
@@ -2038,20 +2068,21 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                         }
                     }
 
-                    //移除已装箱的整箱数据
+
+                    // 移除已装箱的整箱数据
                     Iterator<ContainerCommand> odoPackedWholeCaseIterator = odoPackedWholeCaseList.iterator();
-                    while(odoPackedWholeCaseIterator.hasNext()){
+                    while (odoPackedWholeCaseIterator.hasNext()) {
                         ContainerCommand container = odoPackedWholeCaseIterator.next();
-                        if(unmatchedBoxOdoIdList.contains(container.getOdoOutboundBoxCommandList().get(0).getOdoId())){
+                        if (unmatchedBoxOdoIdList.contains(container.getOdoOutboundBoxCommandList().get(0).getOdoId())) {
                             odoPackedWholeCaseIterator.remove();
                         }
                     }
 
-                    //移除已装箱的整托数据
+                    // 移除已装箱的整托数据
                     Iterator<ContainerCommand> odoPackedWholeTrayIterator = odoPackedWholeTrayList.iterator();
-                    while(odoPackedWholeTrayIterator.hasNext()){
+                    while (odoPackedWholeTrayIterator.hasNext()) {
                         ContainerCommand container = odoPackedWholeTrayIterator.next();
-                        if(unmatchedBoxOdoIdList.contains(container.getOdoOutboundBoxCommandList().get(0).getOdoId())){
+                        if (unmatchedBoxOdoIdList.contains(container.getOdoOutboundBoxCommandList().get(0).getOdoId())) {
                             odoPackedWholeTrayIterator.remove();
                         }
                     }
@@ -2073,11 +2104,15 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                         }
                     }
 
-                    //移除相应的出库单
-                    for(Long removeOdoId : unmatchedBoxOdoIdList){
+                    // 移除相应的出库单
+                    for (Long removeOdoId : unmatchedBoxOdoIdList) {
                         OdoCommand odoCommand = odoCommandMap.get(removeOdoId);
                         unmatchedTurnoverBoxOdoList.add(odoCommand);
                         batchSeedDistributeModeOdoList.remove(odoCommand);
+                    }
+
+                    if (batchOccLineIdList.isEmpty()) {
+                        continue;
                     }
 
                     // 周转箱列表
@@ -2605,17 +2640,18 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
             // 出库箱是否可用计算器
             SimpleCubeCalculator outboundBoxCalculator = new SimpleCubeCalculator(box.getLength(), box.getWidth(), box.getHigh(), SimpleCubeCalculator.SYS_UOM, Constants.OUTBOUND_BOX_AVAILABILITY, this.getLenUomConversionRate());
             for (OdoLineCommand odoLine : odoLineList) {
+                List<Container2ndCategoryCommand> odoLineAvailableBoxList = odoLineAvailableBoxListMap.get(odoLine);
+                if (null == odoLineAvailableBoxList) {
+                    odoLineAvailableBoxList = new ArrayList<>();
+                    odoLineAvailableBoxListMap.put(odoLine, odoLineAvailableBoxList);
+                }
+
                 // 出库单明细的商品
                 SkuRedisCommand skuRedisCommandTemp = skuRedisManager.findSkuMasterBySkuId(odoLine.getSkuId(), ouId, logId);
                 Sku sku = skuRedisCommandTemp.getSku();
                 outboundBoxCalculator.initStuffCube(sku.getLength(), sku.getWidth(), sku.getHeight(), SimpleCubeCalculator.SYS_UOM);
                 boolean isBoxAvailable = outboundBoxCalculator.calculateAvailable();
                 if (isBoxAvailable) {
-                    List<Container2ndCategoryCommand> odoLineAvailableBoxList = odoLineAvailableBoxListMap.get(odoLine);
-                    if (null == odoLineAvailableBoxList) {
-                        odoLineAvailableBoxList = new ArrayList<>();
-                        odoLineAvailableBoxListMap.put(odoLine, odoLineAvailableBoxList);
-                    }
                     odoLineAvailableBoxList.add(box);
                 }
             }
