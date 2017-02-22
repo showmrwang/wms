@@ -3329,4 +3329,17 @@
             odo.id = #{odoId}
             and odo.ou_id = #{ouId}
     </select>
+
+    <select id="getWhOdoListById" resultMap="OdoCommand">
+        select
+        <include refid="whOdoColumnsExt"/>
+        from t_wh_odo
+        where
+            id in
+            <foreach collection="odoIdList" item="id" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+            AND ou_id = #{ouId}
+    </select>
+
 </mapper>

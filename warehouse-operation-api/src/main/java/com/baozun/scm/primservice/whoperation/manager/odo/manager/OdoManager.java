@@ -265,4 +265,13 @@ public interface OdoManager extends BaseManager {
      */
     List<Long> findOdoToBeAddedToWave(String waveCode, Long ouId);
 
+    /**
+     *根据ID获取出库单列表
+     *
+     * @author mingwei.xie
+     * @param odoIdList
+     * @param ouId
+     * @return
+     */
+    List<OdoCommand> getWhOdoListById(List<Long> odoIdList, Long ouId);
 }

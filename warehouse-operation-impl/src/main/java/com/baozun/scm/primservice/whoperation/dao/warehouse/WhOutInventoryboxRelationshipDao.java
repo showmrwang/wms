@@ -23,6 +23,8 @@ import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutInventoryboxRelationship;
 
 
@@ -88,4 +90,22 @@ public interface WhOutInventoryboxRelationshipDao extends BaseDao<WhOutInventory
      * @return
      */
     int deleteByPramas(WhOutInventoryboxRelationship inventoryboxRelationship);
+
+    /**
+     * 查找查找指定类型指定关系的出库箱
+     *
+     * @author mingwei.xie
+     * @param ouId
+     * @return
+     */
+    List<WhOutInventoryboxRelationship> getRelationshipByType(@Param("type") String type, @Param("relationshipId") Long relationshipId, @Param("ouId") Long ouId);
+
+    /**
+     * 查找通用出库箱
+     *
+     * @author mingwei.xie
+     * @param ouId
+     * @return
+     */
+    List<WhOutInventoryboxRelationship> getGeneralRelationship(@Param("ouId") Long ouId);
 }

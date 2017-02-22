@@ -316,5 +316,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
             distribution_pattern_code = #{distributionPatternCode}
             and ou_id = #{ouId}
     </select>
-    
+
+    <select id="findRuleByOuId" resultMap="whDistributionPatternRuleResultExt">
+        select
+        <include refid="whDistributionPatternRuleColumnsExt"/>
+        from t_wh_distribution_pattern_rule
+        where
+            ou_id = #{ouId}
+            and lifecycle = 1
+    </select>
+
 </mapper>

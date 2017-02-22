@@ -67,4 +67,5 @@ public interface ContainerAssistDao extends BaseDao<ContainerAssist, Long> {
      */
     ContainerAssist findByContainerId(@Param("containerId") Long containerId, @Param("ouId") Long ouId);
 
+    List<ContainerAssist> findListByContainerId(@Param("containerIdList") List<Long> containerIdList, @Param("ouId") Long ouId);
 }

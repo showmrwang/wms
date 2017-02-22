@@ -137,5 +137,8 @@
     <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.seeding.SeedingManagerProxy" ref="seedingManagerProxy" />
     <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.seeding.SeedingManager" ref="seedingManager" />
     <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.WhSeedingCollectionManager" ref="whSeedingCollectionManager" />
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.odo.manager.OutboundBoxRecManager" ref="outboundBoxRecManager" />
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.odo.manager.OutboundBoxRecManagerProxy" ref="outboundBoxRecManagerProxy" />
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.OutBoundBoxTypeManager" ref="outBoundBoxTypeManager" />
 <!--     <dubbo:service interface="com.baozun.scm.baseservice.print.manager.printObject.PrintObjectManagerProxy" ref="printObjectManagerProxy" /> -->
 </beans>

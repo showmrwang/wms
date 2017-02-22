@@ -258,5 +258,42 @@
         code = #{code} and ou_id = #{ouId}
     </select>
 
+    <sql id="outInventoryBoxTypeDynamicWhereExtBrief">
+        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+
+            <if test="id!=null">
+                and id = #{id}
+            </if>
+
+            <if test="skuId!=null">
+                and sku_id = #{skuId}
+            </if>
+
+            <if test="ouId!=null">
+                and ou_id = #{ouId}
+            </if>
+
+
+            <if test="code!=null and code!=''">
+                and code = #{code}
+            </if>
+
+
+            <if test="name!=null and name!=''">
+                and name = #{name}
+            </if>
+
+
+            <if test="description!=null and description!=''">
+                and description = #{description}
+            </if>
+
+            <if test="lifecycle!=null">
+                and lifecycle = #{lifecycle}
+            </if>
+
+        </where>
+    </sql>
 
 </mapper>

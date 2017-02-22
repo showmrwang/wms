@@ -650,4 +650,13 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    and w.ou_id = #{ouId}
 	</select>
 	
+
+    <select id="getWhWaveByPhaseCode" resultMap="WhWaveCommand">
+        select
+        <include refid="whWaveColumnsExt"/>
+        from t_wh_wave
+        where
+            phase_code = #{phaseCode}
+            and ou_id = #{ouId}
+    </select>
 </mapper>

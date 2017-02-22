@@ -1,8 +1,11 @@
 package com.baozun.scm.primservice.whoperation.command.warehouse;
 
 import java.util.Date;
+import java.util.List;
 
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
+import com.baozun.scm.primservice.whoperation.command.odo.OdoCommand;
+import com.baozun.scm.primservice.whoperation.command.odo.WhOdoOutBoundBoxCommand;
 
 public class Container2ndCategoryCommand extends BaseCommand {
 
@@ -79,6 +82,13 @@ public class Container2ndCategoryCommand extends BaseCommand {
     private String gridVolumeUom;
     /** 货格重量单位 */
     private String gridWeightUom;
+
+    /** 出库单列表 */
+    private List<OdoCommand> odoCommandList;
+    /** 已分配货格数 */
+    private int assignedGridNum;
+
+    private List<WhOdoOutBoundBoxCommand> odoOutBoundBoxCommandList;
 
     public Long getId() {
         return id;
@@ -342,5 +352,29 @@ public class Container2ndCategoryCommand extends BaseCommand {
 
     public void setGridWeightUom(String gridWeightUom) {
         this.gridWeightUom = gridWeightUom;
+    }
+
+    public List<OdoCommand> getOdoCommandList() {
+        return odoCommandList;
+    }
+
+    public void setOdoCommandList(List<OdoCommand> odoCommandList) {
+        this.odoCommandList = odoCommandList;
+    }
+
+    public int getAssignedGridNum() {
+        return assignedGridNum;
+    }
+
+    public void setAssignedGridNum(int assignedGridNum) {
+        this.assignedGridNum = assignedGridNum;
+    }
+
+    public List<WhOdoOutBoundBoxCommand> getOdoOutBoundBoxCommandList() {
+        return odoOutBoundBoxCommandList;
+    }
+
+    public void setOdoOutBoundBoxCommandList(List<WhOdoOutBoundBoxCommand> odoOutBoundBoxCommandList) {
+        this.odoOutBoundBoxCommandList = odoOutBoundBoxCommandList;
     }
 }

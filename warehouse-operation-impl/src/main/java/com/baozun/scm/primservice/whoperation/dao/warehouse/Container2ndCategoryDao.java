@@ -94,4 +94,7 @@ public interface Container2ndCategoryDao extends BaseDao<Container2ndCategory, L
      */
     long uniqueCodeOrName(Container2ndCategory container2ndCategory);
 
+    List<Container2ndCategoryCommand> getTrolleyListOrderByGridNumDesc(@Param("ouId") Long ouId);
+
+    List<Container2ndCategoryCommand> getTurnoverBoxByOuIdOrderByVolumeDesc(@Param("ouId") Long ouId);
 }

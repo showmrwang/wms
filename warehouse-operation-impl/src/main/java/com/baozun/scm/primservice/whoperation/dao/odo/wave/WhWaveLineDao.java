@@ -28,6 +28,7 @@ import org.apache.ibatis.annotations.Param;
 
 import com.baozun.scm.primservice.whoperation.command.odo.wave.SoftAllocationCommand;
 import com.baozun.scm.primservice.whoperation.command.wave.WaveLineCommand;
+import com.baozun.scm.primservice.whoperation.command.wave.WhWaveLineCommand;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine;
 
 public interface WhWaveLineDao extends BaseDao<WhWaveLine, Long> {
@@ -100,6 +101,11 @@ public interface WhWaveLineDao extends BaseDao<WhWaveLine, Long> {
     List<WhWaveLine> getWhWaveLinesByWaveIdList(@Param("waveIdList") List<Long> waveIdList, @Param("ouId") Long ouId);
 
     /**
+     * [业务方法] 硬分配-得到所有硬阶段阶段需要分配库存的波次明细Id
+     */
+    List<WhWaveLineCommand> getWhWaveLineCommandByWaveId(@Param("waveId") Long waveId, @Param("ouId") Long ouId);
+
+    /**
      * [通用方法] 硬分配-根据id得到波次明细
      * @param id
      * @param ouId
@@ -149,6 +155,22 @@ public interface WhWaveLineDao extends BaseDao<WhWaveLine, Long> {
      */
     int batchInsert(@Param("list") List<WhWaveLine> waveLineList);
 
+    /**
+     * 根据波次Id获取出库单Id
+     *
+     * @param waveId
+     * @param ouId
+     * @return
+     */
+    List<Long> getOdoIdListByWaveId(@Param("waveId") Long waveId, @Param("ouId") Long ouId);
 
-    
+    /**
+     * 根据波次Id获取出库单Id
+     *
+     * @param waveIdList
+     * @param ouId
+     * @return
+     */
+    List<Long> getOdoIdListByWaveIdList(@Param("waveIdList") List<Long> waveIdList, @Param("ouId") Long ouId);
+
 }

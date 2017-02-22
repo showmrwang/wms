@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
+import com.baozun.scm.primservice.whoperation.model.sku.Sku;
 
 public class OdoLineCommand extends BaseCommand {
     /**
@@ -143,6 +144,10 @@ public class OdoLineCommand extends BaseCommand {
     private Integer priorityLevel;
     private Date planDeliverGoodsTime;
     private Date orderTime;
+
+    /** 出库箱推荐 */
+    private Sku sku;
+
 
 
 
@@ -686,4 +691,11 @@ public class OdoLineCommand extends BaseCommand {
         this.odoLineStatusName = odoLineStatusName;
     }
 
+    public Sku getSku() {
+        return sku;
+    }
+
+    public void setSku(Sku sku) {
+        this.sku = sku;
+    }
 }
