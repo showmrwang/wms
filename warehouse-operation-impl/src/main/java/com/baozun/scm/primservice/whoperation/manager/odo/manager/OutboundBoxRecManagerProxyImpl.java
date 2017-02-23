@@ -1458,6 +1458,9 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                 odoBoxList.addAll(odoLineOutBoundBoxMap.values());
                 trolley.setAssignedGridNum(gridNum);
             }
+            if(odoLineList.isEmpty()){
+                break;
+            }
         }// end-for 可用的货格数
          // 执行到这里，如果小车可用，出库单明细一定已经分配完，否则小车不可用，分配完的明细已被移除
         if (!odoLineList.isEmpty()) {
