@@ -245,30 +245,38 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     </select>
     <select id="getSeedingBatchOdoInfo" resultType="com.baozun.scm.primservice.whoperation.model.seeding.WhSeedingWallLattice">
         SELECT
-            `work`.batch as batch,
-            `work`.wave_code AS waveCode,
-            `work`.wave_id AS waveId,
-            odo.id as odoId,
+            workTemp.batch AS batch,
+            workTemp.wave_code AS waveCode,
+            workTemp.wave_id AS waveId,
+            odo.id AS odoId,
             odo.odo_code AS odoCode,
             odo.ext_code AS extCode,
             odo.ec_order_code AS ecOrderCode,
             odo.odo_status AS odoStatus,
-            odo.customer_id as customerId,
-            odo.store_id as storeId,
+            odo.customer_id AS customerId,
+            odo.store_id AS storeId,
             customer.customer_code AS customerCode,
             customer.customer_name AS customerName,
             store.store_code AS storeCode,
             store.store_name AS storeName
         FROM
-            t_wh_work AS work
-            left join t_wh_work_line AS workLine ON `work`.id = workLine.work_id
-            left join t_wh_odo AS odo ON odo.id = workLine.odo_id
-            left join sys_dictionary AS odoStatusSys ON odo.odo_status = odoStatusSys.dic_value
+            (
+                SELECT DISTINCT
+                workLine.odo_id,
+                `work`.batch,
+                `work`.wave_code,
+                `work`.wave_id
+                FROM
+                    t_wh_work AS WORK
+                    LEFT JOIN t_wh_work_line AS workLine ON `work`.id = workLine.work_id
+                WHERE
+                    `work`.ou_id = #{ouId}
+                    AND `work`.batch = #{batchNo}
+            ) AS workTemp
+            LEFT JOIN t_wh_odo AS odo ON workTemp.odo_id = odo.id
+            LEFT JOIN sys_dictionary AS odoStatusSys ON odo.odo_status = odoStatusSys.dic_value
             AND odoStatusSys.group_value = "ODO_STATUS"
-            left join t_bi_customer AS customer ON odo.customer_id = customer.id
-            left join t_bi_store AS store ON odo.store_id = store.id
-        WHERE
-            work.batch = #{batchNo}
-            and work.ou_id = #{ouId}
+            LEFT JOIN t_bi_customer AS customer ON odo.customer_id = customer.id
+            LEFT JOIN t_bi_store AS store ON odo.store_id = store.id
     </select>
 </mapper>

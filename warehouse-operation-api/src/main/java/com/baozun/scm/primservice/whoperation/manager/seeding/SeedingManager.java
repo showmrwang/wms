@@ -58,7 +58,7 @@ public interface SeedingManager extends BaseManager {
     WhOutboundFacilityCommand getOutboundFacilityByFacilityCheckCode(String facilityCheckCode, Long ouId);
 
 
-    WhOutboundFacilityCommand getOutboundFacilityById(Long id, Long ouId);
+    WhOutboundFacilityCommand getOutboundFacilityById(Long facilityId, Long ouId);
 
     /**
      * 根据id 和ouId 获取出库箱类型

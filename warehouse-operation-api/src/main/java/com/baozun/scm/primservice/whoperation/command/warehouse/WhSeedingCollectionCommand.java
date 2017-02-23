@@ -45,7 +45,9 @@ public class WhSeedingCollectionCommand extends BaseCommand {
 
     // ===============自定义字段===============
     /** 播种墙编码*/
-    private String seedingwallCode;
+    private String facilityCode;
+    /** 容器编码 */
+    private String containerCode;
 
     // columns END
 
@@ -111,12 +113,12 @@ public class WhSeedingCollectionCommand extends BaseCommand {
         return this.ouId;
     }
 
-    public String getSeedingwallCode() {
-        return seedingwallCode;
+    public String getFacilityCode() {
+        return facilityCode;
     }
 
-    public void setSeedingwallCode(String seedingwallCode) {
-        this.seedingwallCode = seedingwallCode;
+    public void setFacilityCode(String facilityCode) {
+        this.facilityCode = facilityCode;
     }
 
     public Integer getCollectionStatus() {
@@ -127,4 +129,11 @@ public class WhSeedingCollectionCommand extends BaseCommand {
         this.collectionStatus = collectionStatus;
     }
 
+    public String getContainerCode() {
+        return containerCode;
+    }
+
+    public void setContainerCode(String containerCode) {
+        this.containerCode = containerCode;
+    }
 }

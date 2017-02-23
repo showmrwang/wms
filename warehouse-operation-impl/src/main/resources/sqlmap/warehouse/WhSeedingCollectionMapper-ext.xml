@@ -79,8 +79,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         select count(*) from t_wh_seeding_collection sc, t_wh_outbound_facility facility
         where sc.facility_id = facility.id
         
-        <if test="seedingwallCode!=null and seedingwallCode!=''">
-        	and facility.facility_code = #{seedingwallCode}
+        <if test="facilityCode!=null and facilityCode!=''">
+        	and facility.facility_code = #{facilityCode}
         </if>
         
         <if test="id!=null">
@@ -195,11 +195,25 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			and s.ou_id = #{ouId}
 	</select>
 
-    <select id="getSeedingCollectionByFacilityId" resultMap="WhSeedingCollectionResultExt">
-        select <include refid="whSeedingCollectionColumns"/>
-        from t_wh_seeding_collection
-        where facility_id = #{facilityId}
-        and ou_id = #{ouId}
+    <select id="getSeedingCollectionByFacilityId" resultMap="WhSeedingCollectionCommand">
+        select
+            seedingCollection.id as id,
+            seedingCollection.facility_id as facilityId,
+            seedingCollection.temporary_location_id as temporaryLocationId,
+            seedingCollection.location_id as locationId,
+            seedingCollection.container_id as containerId,
+            seedingCollection.batch as batch,
+            seedingCollection.collection_status as collectionStatus,
+            seedingCollection.ou_id as ouId,
+            outboundFacility.facility_code as facilityCode,
+            container.code as containerCode
+        from
+            t_wh_seeding_collection as seedingCollection
+            left join t_wh_outbound_facility as outboundFacility on outboundFacility.id = seedingCollection.facility_id
+            left join t_wh_container as container on container.id = seedingCollection.container_id
+        where
+            facility_id = #{facilityId}
+            and ou_id = #{ouId}
 
     </select>
     
