@@ -376,8 +376,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				and invAllocated.inv_status = invTobefilled.inv_status
 				and invAllocated.inv_type = invTobefilled.inv_type
 				and invAllocated.batch_number = invTobefilled.batch_number
-				and invAllocated.mfg_date = invTobefilled.mfg_date
-				and invAllocated.exp_date = invTobefilled.exp_date
+				and (invAllocated.mfg_date = invTobefilled.mfg_date or (invAllocated.mfg_date is null and invTobefilled.mfg_date is null))
+				and (invAllocated.exp_date = invTobefilled.exp_date or (invAllocated.exp_date is null and invTobefilled.exp_date is null))
 				and invAllocated.country_of_origin = invTobefilled.country_of_origin
 				and invAllocated.inv_attr1 = invTobefilled.inv_attr1
 				and invAllocated.inv_attr2 = invTobefilled.inv_attr2
@@ -560,8 +560,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				and invAllocated.inv_status = invTobefilled.inv_status
 				and invAllocated.inv_type = invTobefilled.inv_type
 				and invAllocated.batch_number = invTobefilled.batch_number
-				and invAllocated.mfg_date = invTobefilled.mfg_date
-				and invAllocated.exp_date = invTobefilled.exp_date
+				and (invAllocated.mfg_date = invTobefilled.mfg_date or (invAllocated.mfg_date is null and invTobefilled.mfg_date is null))
+				and (invAllocated.exp_date = invTobefilled.exp_date or (invAllocated.exp_date is null and invTobefilled.exp_date is null))
 				and invAllocated.country_of_origin = invTobefilled.country_of_origin
 				and invAllocated.inv_attr1 = invTobefilled.inv_attr1
 				and invAllocated.inv_attr2 = invTobefilled.inv_attr2
