@@ -52,6 +52,7 @@ public class WarehouseManagerImpl extends BaseManagerImpl implements WarehouseMa
      * 验证仓库名称/编码是否存在
      */
     @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public WarehouseCommand checkNameOrCode(String name, String code) {
         return warehouseDao.checkNameOrCode(name, code);
     }
@@ -60,6 +61,7 @@ public class WarehouseManagerImpl extends BaseManagerImpl implements WarehouseMa
      * 保存/修改仓库信息
      */
     @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public Warehouse saveOrUpdate(Warehouse warehouse, Long userId) {
         // 修改数据
         Warehouse w = warehouseDao.findById(warehouse.getId());
@@ -84,6 +86,7 @@ public class WarehouseManagerImpl extends BaseManagerImpl implements WarehouseMa
     }
 
     @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public Pagination<WarehouseCommand> getListByParams(Page page, Sort[] sorts, Map<String, Object> params) {
         Pagination<WarehouseCommand> wList = warehouseDao.findListByQueryMapWithPageExt(page, sorts, params);
@@ -118,6 +121,7 @@ public class WarehouseManagerImpl extends BaseManagerImpl implements WarehouseMa
      * 修改仓库状态
      */
     @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public void updateWhType(Long userId, Long whId, Integer lifecycle) {
         Warehouse w = warehouseDao.findById(whId);
         if (null == w) {
@@ -135,6 +139,7 @@ public class WarehouseManagerImpl extends BaseManagerImpl implements WarehouseMa
      * 批量修改仓库状态
      */
     @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public int updateLifeCycle(List<Long> ids, Integer lifeCycle, Long userid) {
         int result = warehouseDao.updateLifeCycle(ids, lifeCycle, userid);
         if (result <= 0) {
@@ -152,6 +157,7 @@ public class WarehouseManagerImpl extends BaseManagerImpl implements WarehouseMa
     }
 
     @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public List<Warehouse> findListByParam(Warehouse warehouse) {
         return warehouseDao.findListByParam(warehouse);
     }
@@ -160,6 +166,7 @@ public class WarehouseManagerImpl extends BaseManagerImpl implements WarehouseMa
      * 集团下配置仓库信息
      */
     @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public OperationUnit saveOrUpdateBloc(OperationUnit operationUnit, Long userId) {
         int lifecycle = operationUnit.getLifecycle();
         if (null != operationUnit.getId()) {
@@ -222,6 +229,7 @@ public class WarehouseManagerImpl extends BaseManagerImpl implements WarehouseMa
     }
 
     @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public List<Warehouse> findListByLifecycle(Integer lifecycle) {
         if (log.isInfoEnabled()) {
             log.info("WarehouseManagerImpl findListByLifecycle start");
@@ -245,6 +253,7 @@ public class WarehouseManagerImpl extends BaseManagerImpl implements WarehouseMa
      * UAC同步仓库信息
      */
     @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public boolean syncWarehouse(OperationUnit ou) {
         if (log.isInfoEnabled()) {
             log.info("METHOD: " + this.getClass().getSimpleName() + ".syncWarehouse" + " start...");
@@ -299,6 +308,7 @@ public class WarehouseManagerImpl extends BaseManagerImpl implements WarehouseMa
      * @return
      */
     @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public WarehouseMgmt findWhMgmtByOuId(Long ouId) {
         return warehouseMgmtDao.findByOuId(ouId);
     }
