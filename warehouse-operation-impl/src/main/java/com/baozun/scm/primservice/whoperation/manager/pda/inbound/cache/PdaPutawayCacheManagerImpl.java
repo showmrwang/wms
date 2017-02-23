@@ -286,6 +286,9 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
             cacheManager.popListHead(CacheConstants.LOCATION_RECOMMEND_QUEUE);
             cacheManager.removeMapValue(CacheConstants.LOCATION_RECOMMEND_EXPIRE_TIME, containerId.toString());
             cacheManager.removeMapValue(CacheConstants.LOCATION_RECOMMEND_VALID_TIME, containerId.toString());
+        } else {
+            cacheManager.removeMapValue(CacheConstants.LOCATION_RECOMMEND_EXPIRE_TIME, containerId.toString());
+            cacheManager.removeMapValue(CacheConstants.LOCATION_RECOMMEND_VALID_TIME, containerId.toString());
         }
         if (log.isInfoEnabled()) {
             log.info("sys guide putaway locRecommend popQueue end, contianerId is:[{}], logId is:[{}]", containerId, logId);
