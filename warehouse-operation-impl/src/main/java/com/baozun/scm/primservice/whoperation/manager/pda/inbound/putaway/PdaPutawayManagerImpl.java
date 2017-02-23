@@ -825,7 +825,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         if (null != isrCmd) {
             locationIds = isrCmd.getLocationIds();
             if (null == locationIds || 0 == locationIds.size()) {
-                pdaPutawayCacheManager.sysGuidePalletPutawayCacheInventoryAndStatistic(containerCmd, ouId, logId);
+                pdaPutawayCacheManager.sysGuidePutawayRemoveInventoryStatistic(containerCmd, ouId, logId);
                 log.error("sys guide pallet putaway cache is error, logId is:[{}]", logId);
                 throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
             }
@@ -1745,7 +1745,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         if (null != isrCmd) {
             locationIds = isrCmd.getLocationIds();
             if (null == locationIds || 0 == locationIds.size()) {
-                pdaPutawayCacheManager.sysGuideContainerPutawayCacheInventoryAndStatistic(insideContainerCmd, ouId, logId);
+                pdaPutawayCacheManager.sysGuidePutawayRemoveInventoryStatistic(insideContainerCmd, ouId, logId);
                 log.error("sys guide container putaway cache is error, logId is:[{}]", logId);
                 throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
             }
@@ -2627,7 +2627,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         if (null != isrCmd) {
             locationIds = isrCmd.getLocationIds();
             if (null == locationIds || 0 == locationIds.size()) {
-                pdaPutawayCacheManager.sysGuideSplitContainerPutawayCacheInventoryAndStatistic(insideContainerCmd, ouId, logId);
+                pdaPutawayCacheManager.sysGuidePutawayRemoveInventoryStatistic(insideContainerCmd, ouId, logId);
                 log.error("sys guide container putaway cache is error, logId is:[{}]", logId);
                 throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
             }
