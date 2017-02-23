@@ -3843,6 +3843,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 		WhSkuInventoryTobefilled tobefilled = new WhSkuInventoryTobefilled();
 		BeanUtils.copyProperties(invCommand, tobefilled);
 		tobefilled.setId(null);
+		tobefilled.setInsideContainerId(null);
+		tobefilled.setOuterContainerId(null);
 		tobefilled.setOccupationCode(occupyCode);
 		tobefilled.setOccupationLineId(occupyLineId);
 		tobefilled.setReplenishmentCode(bhCode);
