@@ -217,6 +217,10 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
      * @param logId 日志ID
      */
     private void packingForSingleOdoPickMode(List<Long> singleOdoPickModeOdoIdList, Map<Long, OdoCommand> odoCommandMap, Long ouId, String logId) {
+        if(null == singleOdoPickModeOdoIdList || singleOdoPickModeOdoIdList.isEmpty()){
+            log.info("singleOdoPickModeOdoIdList is null or empty");
+            return;
+        }
         // <distributionPatternCode, List<OdoCommand>>未装箱的摘果出库单集合，根据配货模式分组，待分成小批次推荐小车或者周转箱
         Map<String, List<OdoCommand>> singleOdoPickModeUnpackedOdoMap = new HashMap<>();
         // <distributionPatternCode, List<odoCommand>>已装箱的摘果出库单按照配货模式分组，待分成小批次装入小车
@@ -246,6 +250,12 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
 
             // 获得出库单明细分组后的id列表，出库单应用规则后，将明细分组
             List<String> odoLineIdGroupList = this.getOdoLineIdGroupList(odoId, ruleCommand);
+            if(null == odoLineIdGroupList || odoLineIdGroupList.isEmpty()){
+                // 踢出波次
+                Warehouse warehouse = warehouseManager.findWarehouseByIdExt(ouId);
+                whWaveManager.deleteWaveLinesAndReleaseInventoryByOdoId(singlePickOdo.getWhWaveCommand().getId(), odoId, Constants.CREATE_OUTBOUND_CARTON_REC_BOX_EXCEPTION, warehouse);
+                continue;
+            }
 
             // 存在未匹配出库箱的明细,整单匹配小车
             boolean unmatchedBoxOdoLineExist = false;
@@ -254,6 +264,9 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                 for (String odoLineIdGroupStr : odoLineIdGroupList) {
                     // 获取排序后的出库单明细列表
                     List<OdoLineCommand> sortedOdoLineList = this.getSortedOdoLineList(odoLineIdGroupStr, ouId);
+                    if(null == sortedOdoLineList || sortedOdoLineList.isEmpty()){
+                        throw new BusinessException("明细分组后的出库单列表为空");
+                    }
 
                     // 去除整托整箱的明细，暂时只考虑波次明细，即出库单明细整托整箱的情况，多个明细占用整托整箱的计算以后考虑
                     this.packingWholeCaseLine(sortedOdoLineList, singlePickOdo, odoPackedWholeCaseList, odoPackedWholeTrayList, ouId);
@@ -483,6 +496,9 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
         List<Long> odoLineIdList = new ArrayList<>();
         for (String odoLineIdStr : odoLineIdStrList) {
             odoLineIdList.add(Long.valueOf(odoLineIdStr));
+        }
+        if(odoLineIdList.isEmpty()){
+            return null;
         }
         // 按装箱规则分好组之后的出库单对象列表
         List<OdoLineCommand> odoLineList = odoLineManager.findOdoLineById(odoLineIdList, ouId);
