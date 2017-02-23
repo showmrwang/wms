@@ -201,7 +201,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
                     }else{
                         // 计算目标库位容器
                         Long qty = locationReplenishmentCalculation(siaCommand, ouId);
-                        if(null != qty){
+                        if(null != qty && 0 > qty){
                             // 基于目标库位容器及工作明细生成作业明细 
                             int replenishmentOperationLineCount = this.saveReplenishmentOperationLine(replenishmentWorkCode, replenishmentOperationCode, ouId, (double)qty);
                             if (replenishmentOperationLineCount != rWorkLineTotal) {
@@ -1422,7 +1422,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
         //当前工作明细设计到的所有库区编码信息列表--更新时获取数据      
         whWorkCommand.setWorkArea(null);
         //工作优先级     
-        whWorkCommand.setWorkPriority(null != whWaveMaster.getPickingWorkPriority() ? whWaveMaster.getPickingWorkPriority() : workType.getPriority());
+        whWorkCommand.setWorkPriority(null != whWaveMaster.getReplenishmentWorkPriority() ? whWaveMaster.getReplenishmentWorkPriority() : workType.getPriority());
         //小批次
         whWorkCommand.setBatch(null);
         //签出批次
@@ -1773,7 +1773,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
         //是否锁定 默认值：1
         whWorkCommand.setIsLocked(whWaveMaster.getIsAutoReleaseWork());
         //工作优先级     
-        whWorkCommand.setWorkPriority(null != whWaveMaster.getPickingWorkPriority() ? whWaveMaster.getPickingWorkPriority() : workType.getPriority());
+        whWorkCommand.setWorkPriority(null != whWaveMaster.getReplenishmentWorkPriority() ? whWaveMaster.getReplenishmentWorkPriority() : workType.getPriority());
         
         WhWork whWork = new WhWork();
         //复制数据        
