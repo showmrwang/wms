@@ -108,7 +108,7 @@ public class OutboundBoxRecManagerImpl extends BaseManagerImpl implements Outbou
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void saveRecOutboundBoxByOdo(OdoCommand odoCommand) {
+    public void saveRecOutboundBoxByOdo(OdoCommand odoCommand, Container newContainer) {
         // 出库单分配的出库箱列表
         List<OutInvBoxTypeCommand> odoPackedOutboundBoxList = odoCommand.getOutboundBoxList();
         // 出库单分配的整箱容器列表
@@ -160,11 +160,15 @@ public class OutboundBoxRecManagerImpl extends BaseManagerImpl implements Outbou
                 }
             }
         }
+
+        if(null != newContainer){
+            containerDao.insert(newContainer);
+        }
     }
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void saveRecOutboundBoxForTrolleyPackedOdo(List<WhOdoOutBoundBoxCommand> odoOutBoundBoxCommandList) {
+    public void saveRecOutboundBoxForTrolleyPackedOdo(List<WhOdoOutBoundBoxCommand> odoOutBoundBoxCommandList, Container trolleyContainer) {
         if (null != odoOutBoundBoxCommandList && !odoOutBoundBoxCommandList.isEmpty()) {
             // 出库箱中的包裹，按照商品划分
             for (WhOdoOutBoundBoxCommand odoOutBoundBoxCommand : odoOutBoundBoxCommandList) {
@@ -177,11 +181,15 @@ public class OutboundBoxRecManagerImpl extends BaseManagerImpl implements Outbou
                 odoOutBoundBoxDao.insert(odoOutBoundBox);
             }
         }
+
+        if(null != trolleyContainer) {
+            containerDao.insert(trolleyContainer);
+        }
     }
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void saveRecOutboundBoxByContainer(List<Container2ndCategoryCommand> containerList) {
+    public void saveRecOutboundBoxByContainer(List<Container2ndCategoryCommand> containerList, List<Container> newOutboundBoxContainerList) {
         for (Container2ndCategoryCommand container : containerList) {
             // 整箱中的包裹
             for (WhOdoOutBoundBoxCommand odoOutBoundBoxCommand : container.getOdoOutBoundBoxCommandList()) {
@@ -194,11 +202,17 @@ public class OutboundBoxRecManagerImpl extends BaseManagerImpl implements Outbou
                 odoOutBoundBoxDao.insert(odoOutBoundBox);
             }
         }
+
+        if(null != newOutboundBoxContainerList) {
+            for (Container container : newOutboundBoxContainerList) {
+                containerDao.insert(container);
+            }
+        }
     }
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void saveRecOutboundBoxForSeedBatch(List<Container2ndCategoryCommand> turnoverBoxList, List<ContainerCommand> odoPackedWholeCaseList, List<ContainerCommand> odoPackedWholeTrayList) {
+    public void saveRecOutboundBoxForSeedBatch(List<Container2ndCategoryCommand> turnoverBoxList, List<ContainerCommand> odoPackedWholeCaseList, List<ContainerCommand> odoPackedWholeTrayList, List<Container> newOutboundBoxContainerList) {
         if (null != turnoverBoxList) {
             for (Container2ndCategoryCommand container : turnoverBoxList) {
                 // 整箱中的包裹
@@ -240,6 +254,12 @@ public class OutboundBoxRecManagerImpl extends BaseManagerImpl implements Outbou
                     odoOutBoundBox.setLastModifyTime(new Date());
                     odoOutBoundBoxDao.insert(odoOutBoundBox);
                 }
+            }
+        }
+
+        if(null != newOutboundBoxContainerList) {
+            for (Container container : newOutboundBoxContainerList) {
+                containerDao.insert(container);
             }
         }
     }

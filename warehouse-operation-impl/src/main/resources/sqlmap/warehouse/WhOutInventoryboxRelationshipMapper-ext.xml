@@ -53,7 +53,7 @@
             t_wh_outboundbox_relationship
         where
             ou_id = #{ouId}
-            and relation_id = #{relationId}
+            and relation_id = #{relationshipId}
             and type = #{type}
     </select>
 

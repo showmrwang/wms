@@ -50,7 +50,7 @@ public class WhOdoOutBoundBoxCommand extends BaseCommand {
     /** 外部容器ID 小车此类容器 */
     private Long outerContainerId;
     /** 货格编码数 */
-    private int containerLatticeNo;
+    private Integer containerLatticeNo;
     /** 数量 */
     private Double qty;
     /** 批次 */
@@ -118,10 +118,12 @@ public class WhOdoOutBoundBoxCommand extends BaseCommand {
     public void setOuterContainerId(Long outerContainerId) {
         this.outerContainerId = outerContainerId;
     }
-    public int getContainerLatticeNo() {
+
+    public Integer getContainerLatticeNo() {
         return containerLatticeNo;
     }
-    public void setContainerLatticeNo(int containerLatticeNo) {
+
+    public void setContainerLatticeNo(Integer containerLatticeNo) {
         this.containerLatticeNo = containerLatticeNo;
     }
     public Double getQty() {
