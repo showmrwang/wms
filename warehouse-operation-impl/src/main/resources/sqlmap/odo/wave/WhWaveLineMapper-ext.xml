@@ -9,6 +9,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	</resultMap>
 	<resultMap id="WhWaveLineCommandResultExt" type="com.baozun.scm.primservice.whoperation.command.wave.WaveLineCommand">
 	</resultMap>
+
+    <resultMap id="WhWaveLineCommand" type="com.baozun.scm.primservice.whoperation.command.wave.WhWaveLineCommand">
+    </resultMap>
 	
 	<resultMap id="WaveLineSku"
 		type="com.baozun.scm.primservice.whoperation.command.odo.wave.SoftAllocationCommand">
@@ -678,6 +681,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			AND l.ou_id = #{ouId}
 	</select>
 
+    <select id="getWhWaveLineCommandByWaveId" resultMap="WhWaveLineCommand">
+        select
+        <include refid="whWaveLineColumns" />
+        from
+        t_wh_wave_line l
+        where
+        l.wave_id = #{waveId}
+        AND l.ou_id = #{ouId}
+    </select>
+
 	    
 	<select id="findHighestPriorityByOdoIds" resultMap="WhWaveLineResult">
     	select <include refid="whWaveLineColumns" />
@@ -807,8 +820,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		and wave.id = #{waveId}
 		and wave.ou_id = #{ouId}
 		order by
-		waveLine.odo_priority_level,waveLine.odo_plan_deliver_goods_time,
-		waveLine.odo_order_time, waveLine.odo_id asc,waveLine.qty desc
+		waveLine.odo_priority_level asc,waveLine.odo_plan_deliver_goods_time asc,waveLine.qty desc,
+		waveLine.odo_order_time asc, waveLine.odo_id asc
 	</select>
 	
 	
@@ -935,4 +948,27 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				</foreach>
 		</insert>
 	
+
+    <select id="getOdoIdListByWaveIdList" resultType="Long">
+        select
+            distinct odo_id
+        from
+            t_wh_wave_line
+        where
+            wave_id in
+        <foreach collection="waveIdList" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        AND ou_id = #{ouId}
+    </select>
+
+    <select id="getOdoIdListByWaveId" resultType="Long">
+        select
+            distinct odo_id
+        from t_wh_wave_line
+        where
+            wave_id = #{waveId}
+            AND ou_id = #{ouId}
+    </select>
+
 </mapper>

@@ -20,6 +20,7 @@ import org.springframework.util.StringUtils;
 
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.command.wave.WaveLineCommand;
+import com.baozun.scm.primservice.whoperation.command.wave.WhWaveLineCommand;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineDao;
@@ -120,6 +121,11 @@ public class WhWaveLineManagerImpl extends BaseManagerImpl implements WhWaveLine
     public List<WhWaveLine> getWhWaveLinesByWaveIdList(List<Long> waveIdList, Long ouId) {
         List<WhWaveLine> datas = whWaveLineDao.getWhWaveLinesByWaveIdList(waveIdList, ouId);
         return datas;
+    }
+
+    @Override
+    public List<WhWaveLineCommand> findWaveLineCommandListByWaveId(Long waveId, Long ouId) {
+        return whWaveLineDao.getWhWaveLineCommandByWaveId(waveId, ouId);
     }
 
     @Override
@@ -298,5 +304,28 @@ public class WhWaveLineManagerImpl extends BaseManagerImpl implements WhWaveLine
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public Pagination<WaveLineCommand> findWaveLineListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params) {
         return this.whWaveLineDao.findListByQueryMapWithPageExt(page, sorts, params);
+    }
+
+    /**
+     * 根据波次Id获取出库单Id
+     *
+     * @param waveId
+     * @param ouId
+     * @return
+     */
+    public List<Long> getOdoIdListByWaveId(Long waveId, Long ouId){
+        return whWaveLineDao.getOdoIdListByWaveId(waveId, ouId);
+    }
+
+    /**
+     * 根据波次Id获取出库单Id
+     *
+     * @param waveIdList
+     * @param ouId
+     * @return
+     */
+    @Override
+    public List<Long> getOdoIdListByWaveIdList(List<Long> waveIdList, Long ouId) {
+        return whWaveLineDao.getOdoIdListByWaveIdList(waveIdList, ouId);
     }
 }

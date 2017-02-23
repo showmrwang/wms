@@ -15,6 +15,7 @@
 package com.baozun.scm.primservice.whoperation.util.formula;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -37,12 +38,15 @@ public class SimpleCubeCalculator {
     public static final String SYS_UOM = "1";
     private boolean isInit = false;
     private boolean isInitStuffCube = false;
+    // 容器系统单位边长
     private Double _x;
     private Double _y;
     private Double _z;
+    // 容器系统单位可用边长
     private Double _remainX;
     private Double _remainY;
     private Double _remainZ;
+    // 容器原始单位边长
     private Double _rawX;
     private Double _rawY;
     private Double _rawZ;
@@ -51,11 +55,13 @@ public class SimpleCubeCalculator {
     private static final String coords_y = COORDS_Y;
     private static final String coords_z = COORDS_Z;
     private static final String coords_all = COORDS_ALL;
-    private static final String[][] coordsCache = new String[][] {{"x", "y", "z"}, {"y", "z", "x"}, {"z", "x", "y"}};
-    private static final String[][] coordsCacheAll = new String[][] {{"x", "y", "z"}, {"x", "z", "y"}, {"y", "z", "x"}, {"y", "x", "z"}, {"z", "x", "y"}, {"z", "y", "x"}};
+    private static final String[][] coordsCache = new String[][] { {"x", "y", "z"}, {"y", "z", "x"}, {"z", "x", "y"}};
+    private static final String[][] coordsCacheAll = new String[][] { {"x", "y", "z"}, {"x", "z", "y"}, {"y", "z", "x"}, {"y", "x", "z"}, {"z", "x", "y"}, {"z", "y", "x"}};
+    // 填充立方体系统单位的边长
     private Double x;
     private Double y;
     private Double z;
+    // 填充立方体原始单位的边长
     private Double rawX;
     private Double rawY;
     private Double rawZ;
@@ -70,12 +76,19 @@ public class SimpleCubeCalculator {
     private static String[] uomCache = new String[] {sysUom};
     private static int uomSize = 1;
     private static Map<String, Double> uomConversion = new HashMap<String, Double>();
+    // 容器系统单位体积
     private Double _volume;
+    // 容器原始单位体积
     private Double _rawVolume;
+    // 已填充立方体系统单位体积
     private Double volume = 0.0;
-    private Double initStuffVolume = 0.0;
+    // 当前待填充立方体体积
+    private Double currentStuffVolume = 0.0;
+    // 填充立方体原始单位体积
     private Double rawVolume;
+    // 容器体积可用率
     private Double availability = 0.8;
+    // 容器可用体积
     private Double availableVolume;
     @SuppressWarnings("unused")
     private boolean isVolumeAvailable;
@@ -125,16 +138,32 @@ public class SimpleCubeCalculator {
         setInit(true);
     }
 
+    /**
+     * 获取容器体积，长度已转换后的体积，不是可用体积
+     *
+     * @return
+     */
     public Double getTotalVolume() {
         isInitialization();
         return get_Volume();
     }
 
+    /**
+     * 获取容器可用体积，长度已转换
+     *
+     * @return
+     */
     public Double getTotalAvailableCubage() {
         isInitialization();
         return getAvailableVolume();
     }
 
+    /**
+     * 放入立方体，累计填充的立方体体积，放入的体积需转换成系统单位的体积
+     *
+     * @param c
+     * @return
+     */
     public Double addStuffVolume(Double c) {
         Double ret = getVolume();
         ret += c;
@@ -142,14 +171,36 @@ public class SimpleCubeCalculator {
         return ret;
     }
 
+    /**
+     * 获取已填充的总体积
+     *
+     * @return
+     */
     public Double getStuffVolume() {
         return getVolume();
     }
 
+    /**
+     * 以系统默认转换率计算立方体体积
+     *
+     * @param actualX
+     * @param actualY
+     * @param actualZ
+     * @return
+     */
     public Double calculateStuffVolume(Double actualX, Double actualY, Double actualZ) {
         return calculateStuffVolume(actualX, actualY, actualZ, defaultUom);
     }
 
+    /**
+     * 以指定转换率计算立方体体积
+     *
+     * @param actualX
+     * @param actualY
+     * @param actualZ
+     * @param actualUom
+     * @return
+     */
     public Double calculateStuffVolume(Double actualX, Double actualY, Double actualZ, String actualUom) {
         Double cubage = 0.0;
         Double ax = uomConversion(actualUom, actualX);
@@ -159,27 +210,59 @@ public class SimpleCubeCalculator {
         return cubage;
     }
 
+    /**
+     * 以系统默认转换率累计填充的体积
+     *
+     * @param actualX
+     * @param actualY
+     * @param actualZ
+     * @return
+     */
     public Double accumulationStuffVolume(Double actualX, Double actualY, Double actualZ) {
         return accumulationStuffVolume(actualX, actualY, actualZ, defaultUom);
     }
 
+    /***
+     * 以指定转换率累积填充的体积
+     *
+     * @param actualX
+     * @param actualY
+     * @param actualZ
+     * @param actualUom
+     * @return
+     */
     public Double accumulationStuffVolume(Double actualX, Double actualY, Double actualZ, String actualUom) {
-        if (false == isInitStuffCube()) {
-            initStuffCube(0.0, 0.0, 0.0, defaultUom);
+        // 以指定转换率初始化已填充立方体体积
+        Double cubage = 0.0;
+        if (isInitStuffCube()) {
+            //已初始化，先把原来填充的体积保存
+            cubage = getVolume();
         }
-        Double cubage = getVolume();
-        Double ax = uomConversion(actualUom, actualX);
-        Double ay = uomConversion(actualUom, actualY);
-        Double az = uomConversion(actualUom, actualZ);
-        cubage += volumeFormula(ax, ay, az);
+        initStuffCube(actualX, actualY, actualZ, actualUom);
         addStuffVolume(cubage);
         return getStuffVolume();
     }
 
+    /**
+     * 计算可用体积
+     *
+     * @param availableVolume
+     * @param volume
+     * @return
+     */
     private Double calculateRemainCubage(Double availableVolume, Double volume) {
-        return availableVolume - volume + getInitStuffVolume();
+        // volume是假设已将待放入的立方体放入容器后的总占用体积，所以计算可用体积的时候需将待放入的立方体体积排除
+        return availableVolume - volume + getCurrentStuffVolume();
     }
 
+    /**
+     * 计算可用的Z轴边长 此处计算是将放入的商品体积平铺一个面之后计算的，所以计算出的轴边长会比实际的可用的大，该数值需配合可利用率使用
+     *
+     * @param remainCubage
+     * @param x
+     * @param y
+     * @return
+     */
     private Double calculateRemainZ(Double remainCubage, Double x, Double y) {
         Double rz = 0.0;
         isLengthSupport(x);
@@ -188,6 +271,14 @@ public class SimpleCubeCalculator {
         return rz;
     }
 
+    /**
+     * 计算可用的Y轴边长
+     *
+     * @param remainCubage
+     * @param z
+     * @param x
+     * @return
+     */
     private Double calculateRemainY(Double remainCubage, Double z, Double x) {
         Double rz = 0.0;
         isLengthSupport(z);
@@ -196,6 +287,14 @@ public class SimpleCubeCalculator {
         return rz;
     }
 
+    /**
+     * 计算可用的X轴边长
+     *
+     * @param remainCubage
+     * @param y
+     * @param z
+     * @return
+     */
     private Double calculateRemainX(Double remainCubage, Double y, Double z) {
         Double rz = 0.0;
         isLengthSupport(y);
@@ -204,6 +303,14 @@ public class SimpleCubeCalculator {
         return rz;
     }
 
+    /**
+     * 体积公式
+     *
+     * @param x
+     * @param y
+     * @param z
+     * @return
+     */
     private Double volumeFormula(Double x, Double y, Double z) {
         Double ret = 0.0;
         if (null == x) x = 0.0;
@@ -216,6 +323,11 @@ public class SimpleCubeCalculator {
         return ret;
     }
 
+    /**
+     * 是否支持单位转换
+     * 
+     * @param actualUom
+     */
     private void isUomSupport(String actualUom) {
         boolean ret = false;
         if (null == actualUom || "".equals(actualUom)) throw new IllegalArgumentException("isUomSupport actual uom is null error!");
@@ -306,6 +418,14 @@ public class SimpleCubeCalculator {
         }
     }
 
+    /**
+     * 初始化填充立方体的体积
+     *
+     * @param x
+     * @param y
+     * @param z
+     * @param uom
+     */
     public void initStuffCube(Double x, Double y, Double z, String uom) {
         if (null == x) x = 0.0;
         if (null == y) y = 0.0;
@@ -326,10 +446,19 @@ public class SimpleCubeCalculator {
         setY(ry);
         setZ(rz);
         setVolume(volumeFormula(rx, ry, rz));
-        setInitStuffVolume(getVolume());
+        setCurrentStuffVolume(getVolume());
         setInitStuffCube(true);
     }
-    
+
+    /**
+     * 初始化指定数量的填充立方体的体积
+     *
+     * @param x
+     * @param y
+     * @param z
+     * @param qty
+     * @param uom
+     */
     public void initStuffCube(Double x, Double y, Double z, Double qty, String uom) {
         if (null == x) x = 0.0;
         if (null == y) y = 0.0;
@@ -350,7 +479,7 @@ public class SimpleCubeCalculator {
         setY(ry);
         setZ(rz);
         setVolume(volumeFormula(rx, ry, rz) * qty);
-        setInitStuffVolume(getVolume());
+        setCurrentStuffVolume(getVolume());
         setInitStuffCube(true);
     }
 
@@ -360,6 +489,15 @@ public class SimpleCubeCalculator {
         }
     }
 
+    /**
+     * 计算货品体积是否可以放入容器
+     *
+     * @param x
+     * @param y
+     * @param z
+     * @param uom
+     * @return
+     */
     public boolean calculateVolumeAvailable(Double x, Double y, Double z, String uom) {
         boolean ret = false;
         isInitialization();
@@ -395,6 +533,27 @@ public class SimpleCubeCalculator {
     }
 
     private boolean permutationCompare(Double rx, Double ry, Double rz, Double ax, Double ay, Double az) {
+        // 将容器和目标物品的三边边长分别排序之后，
+        // 如果容器最长边大于物品最长边，第二长和第三长的边也分别大于物品的第二、第三长边，则容器一定能容纳物品
+        // 即以最合适的摆放方式将物品放入，如果依然无法放入，则其他摆放方式也一定无法放入
+        boolean isAvailable = true;
+        double[] originCubeLengthArray = {rx, ry, rz};
+        Arrays.sort(originCubeLengthArray);
+        double[] stuffCubeLengthArray = {ax, ay, az};
+        Arrays.sort(stuffCubeLengthArray);
+        //三边按照顺序比较大小
+        for(int index = 0; index < 3; index++){
+            Double originCubeLength = originCubeLengthArray[index];
+            Double stuffCubeLength = stuffCubeLengthArray[index];
+            if(stuffCubeLength > originCubeLength){
+                //其中一边不合适则肯定放不下
+                isAvailable = false;
+                break;
+            }
+        }
+        return isAvailable;
+
+        /*
         boolean ret = false;
         for (String[] rcds : coordsCache) {
             Map<String, Double> rValues = coordsValues(rcds, rx, ry, rz);
@@ -412,6 +571,7 @@ public class SimpleCubeCalculator {
             }
         }
         return ret;
+        */
     }
 
     private boolean calculateLengthAvailable4Coords(String coords) {
@@ -451,10 +611,22 @@ public class SimpleCubeCalculator {
         return ret;
     }
 
+    /**
+     * 计算货品边长是否可以放入容器
+     *
+     * @param x
+     * @param y
+     * @param z
+     * @param uom
+     * @return
+     */
     public boolean calculateLengthAvailable(Double x, Double y, Double z, String uom) {
         boolean ret = false;
+        // 容器是否已初始化，即边长是否已设定
         isInitialization();
+        // 待放入的立方体物品是否已初始化
         if (false == isInitStuffCube()) {
+            // 初始化待放入的立方体，即设置边长及体积
             initStuffCube(x, y, z, uom);
         }
         if (coords_z.equals(getCoordinate())) {
@@ -477,6 +649,11 @@ public class SimpleCubeCalculator {
         return isAvailable();
     }
 
+    /**
+     * 计算放入立方体之后的容器是否可用，调用此方法前需已经将目标放入容器内
+     * 
+     * @return
+     */
     public boolean calculateAvailable() {
         boolean ret = false;
         if (false == isInitStuffCube()) {
@@ -673,12 +850,12 @@ public class SimpleCubeCalculator {
         this.volume = cubage;
     }
 
-    public Double getInitStuffVolume() {
-        return initStuffVolume;
+    public Double getCurrentStuffVolume() {
+        return currentStuffVolume;
     }
 
-    public void setInitStuffVolume(Double initStuffVolume) {
-        this.initStuffVolume = initStuffVolume;
+    public void setCurrentStuffVolume(Double currentStuffVolume) {
+        this.currentStuffVolume = currentStuffVolume;
     }
 
     public Double getRawVolume() {

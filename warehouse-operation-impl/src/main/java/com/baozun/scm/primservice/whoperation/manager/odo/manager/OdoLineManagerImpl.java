@@ -34,6 +34,38 @@ public class OdoLineManagerImpl extends BaseManagerImpl implements OdoLineManage
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<OdoLineCommand> findOdoLineById(List<Long> idList, Long ouId) {
+        return this.whOdoLineDao.findOdoLineByIdList(idList, ouId);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<OdoLineCommand> findOdoLineByIdStr(List<String> idStrList, Long ouId) {
+        return this.whOdoLineDao.findOdoLineByIdStrList(idStrList, ouId);
+    }
+
+    /**
+     * 根据ODOLINEID和OUID查找ODOLINE
+     *
+     * @author mingwei.xie
+     * @param idList
+     * @param ouId
+     * @return
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<OdoLineCommand> findOdoLineByOdoId(List<Long> idList, Long ouId){
+        return whOdoLineDao.findOdoLineByOdoId(idList, ouId);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<OdoLineCommand> findOdoLineByOdoIdOrderByPickingSort(List<Long> idList, Long ouId) {
+        return this.whOdoLineDao.findOdoLineByOdoIdOrderByPickingSort(idList, ouId);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public Pagination<OdoLineCommand> findOdoLineListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params) {
         Pagination<OdoLineCommand> pages = this.whOdoLineDao.findListByQueryMapWithPageExt(page, sorts, params);
         return pages;
@@ -49,6 +81,12 @@ public class OdoLineManagerImpl extends BaseManagerImpl implements OdoLineManage
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<WhOdoLine> findOdoLineListByOdoId(Long odoId, Long ouId) {
         return this.whOdoLineDao.findOdoLineListByOdoIdOuId(odoId, ouId);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<OdoLineCommand> findOdoLineCommandListByOdoId(Long odoId, Long ouId) {
+        return this.whOdoLineDao.findOdoLineCommandListByOdoIdOuId(odoId, ouId);
     }
 
     @Override

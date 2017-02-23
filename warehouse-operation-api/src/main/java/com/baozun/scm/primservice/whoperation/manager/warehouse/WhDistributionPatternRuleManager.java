@@ -16,8 +16,11 @@
  */
 package com.baozun.scm.primservice.whoperation.manager.warehouse;
 
+import java.util.List;
+
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhDistributionPatternRuleCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhDistributionPatternRule;
 
 public interface WhDistributionPatternRuleManager extends BaseManager {
     
@@ -30,6 +33,15 @@ public interface WhDistributionPatternRuleManager extends BaseManager {
      * @return
      */
     WhDistributionPatternRuleCommand findRuleByCode(String distributionPatternCode, Long ouId);
+
+    /**
+     * 获取仓库组织下的配货模式规则
+     *
+     * @author mingwei.xie
+     * @param ouId
+     * @return
+     */
+    List<WhDistributionPatternRule> findRuleByOuId(Long ouId);
 
 
 }

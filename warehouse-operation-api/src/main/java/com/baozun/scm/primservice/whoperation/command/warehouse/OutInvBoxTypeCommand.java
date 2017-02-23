@@ -3,6 +3,7 @@ package com.baozun.scm.primservice.whoperation.command.warehouse;
 import java.util.List;
 
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
+import com.baozun.scm.primservice.whoperation.command.odo.WhOdoOutBoundBoxCommand;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutInventoryboxRelationship;
 
 /**
@@ -80,6 +81,8 @@ public class OutInvBoxTypeCommand extends BaseCommand {
 
     /** 出库箱对应店铺或客户 */
     private List<WhOutInventoryboxRelationship> WhOutInventoryboxRelationshipList;
+    /** 出库箱的装箱信息 */
+    private List<WhOdoOutBoundBoxCommand> odoOutBoundBoxCommandList;
 
     public Long getSkuId() {
         return skuId;
@@ -321,5 +324,11 @@ public class OutInvBoxTypeCommand extends BaseCommand {
         WhOutInventoryboxRelationshipList = whOutInventoryboxRelationshipList;
     }
 
+    public List<WhOdoOutBoundBoxCommand> getOdoOutBoundBoxCommandList() {
+        return odoOutBoundBoxCommandList;
+    }
 
+    public void setOdoOutBoundBoxCommandList(List<WhOdoOutBoundBoxCommand> odoOutBoundBoxCommandList) {
+        this.odoOutBoundBoxCommandList = odoOutBoundBoxCommandList;
+    }
 }

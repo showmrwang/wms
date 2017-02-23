@@ -150,6 +150,18 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        where 
 		        container_id = #{containerId} and  ou_id=#{ouId}
 		    ]]>
-		</select>	
-		
+		</select>
+
+    <select id="findListByContainerId" resultMap="ContainerAssistResultExt">
+        select
+            <include refid="containerAssistColumns" />
+        from t_wh_container_assist
+        where
+            container_id in
+            <foreach item="item" index="index" collection="containerIdList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            and  ou_id = #{ouId}
+    </select>
+
 </mapper>

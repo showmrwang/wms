@@ -183,6 +183,18 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        and ou_id = #{ouId}
 		    ]]>
 		</select>
+
+
+        <select id="findContainerCommandByIdExt" resultMap="ContainerCommandResultExt">
+            select
+                <include refid="containerColumns" />
+            <![CDATA[
+                from t_wh_container
+                where
+                id = #{id}
+                and ou_id = #{ouId}
+            ]]>
+        </select>
 		
 		<update id="updateExt" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Container">
 	    <![CDATA[

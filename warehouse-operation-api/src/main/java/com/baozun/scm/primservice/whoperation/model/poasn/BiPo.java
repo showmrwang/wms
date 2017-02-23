@@ -44,6 +44,8 @@ public class BiPo extends BaseModel {
 	private Long supplierId;
 	/** 运输商ID */
 	private Long logisticsProviderId;
+    /** 运输商Code */
+    private String logisticsProvider;
 	/** PO单类型 */
 	private Integer poType;
 	/** 状态 */
@@ -246,6 +248,14 @@ public class BiPo extends BaseModel {
 
     public void setOuId(Long ouId) {
         this.ouId = ouId;
+    }
+
+    public String getLogisticsProvider() {
+        return logisticsProvider;
+    }
+
+    public void setLogisticsProvider(String logisticsProvider) {
+        this.logisticsProvider = logisticsProvider;
     }
 	
 	

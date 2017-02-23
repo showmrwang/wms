@@ -1,269 +1,278 @@
 /**
  * Copyright (c) 2013 Baozun All Rights Reserved.
  *
- * This software is the confidential and proprietary information of Baozun.
- * You shall not disclose such Confidential Information and shall use it only in
- * accordance with the terms of the license agreement you entered into
- * with Baozun.
+ * This software is the confidential and proprietary information of Baozun. You shall not disclose
+ * such Confidential Information and shall use it only in accordance with the terms of the license
+ * agreement you entered into with Baozun.
  *
- * BAOZUN MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT THE SUITABILITY OF THE
- * SOFTWARE, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
- * PURPOSE, OR NON-INFRINGEMENT. BAOZUN SHALL NOT BE LIABLE FOR ANY DAMAGES
- * SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING
- * THIS SOFTWARE OR ITS DERIVATIVES.
+ * BAOZUN MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT THE SUITABILITY OF THE SOFTWARE, EITHER
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT. BAOZUN SHALL NOT BE LIABLE FOR ANY DAMAGES
+ * SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS SOFTWARE OR ITS
+ * DERIVATIVES.
  *
  */
 package com.baozun.scm.primservice.whoperation.command.odo.wave;
 
+import java.util.Date;
+import java.util.List;
+
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
+import com.baozun.scm.primservice.whoperation.command.wave.WhWaveLineCommand;
 
 public class WhWaveCommand extends BaseCommand {
 
-	private static final long serialVersionUID = 5705617664033075065L;
-	
-	/** 波次主档编码 */
-	private java.lang.String code;
-	/** 波次状态，系统常量 */
-	private java.lang.String status;
-	/** 仓库组织ID */
-	private java.lang.Long ouId;
-	/** 波次主档ID */
-	private java.lang.Long waveMasterId;
-	/** 波次阶段，系统常量 */
-	private java.lang.String phaseCode;
-	/** 硬分配阶段0：分配规则1：硬分配 */
-	private java.lang.Integer allocatePhase;
-	/** 开始运行时间 */
-	private java.util.Date startTime;
-	/** 结束运行时间 */
-	private java.util.Date finishTime;
-	/** 出库单总单数 */
-	private java.lang.Integer totalOdoQty;
-	/** 出库单明细总行数 */
-	private java.lang.Integer totalOdoLineQty;
-	/** 总金额 */
-	private Long totalAmount;
-	/** 总体积 */
-	private Long totalVolume;
-	/** 总重量 */
-	private Long totalWeight;
-	/** 商品总件数 */
-	private java.lang.Integer totalSkuQty;
-	/** 商品种类数 */
-	private java.lang.Integer skuCategoryQty;
-	/** 工作总单数 */
-	private java.lang.Integer execOdoQty;
-	/** 工作总行数 */
-	private java.lang.Integer execOdoLineQty;
-	/** 出库箱总数 */
-	private java.lang.Integer outboundCartonQty;
-	/** 创建时间 */
-	private java.util.Date createTime;
-	/** 最后操作时间 */
-	private java.util.Date lastModifyTime;
-	/** 创建人ID */
-	private java.lang.Long createdId;
-	/** 操作人ID */
-	private java.lang.Long modifiedId;
-	/** 是否启用 1:启用 0:停用 */
-	private java.lang.Integer lifecycle;
-	
-	// 自定义字段
-	/** id */
-	private java.lang.Long id;
-	
-	public java.lang.String getCode() {
-		return this.code;
-	}
-	
-	public void setCode(java.lang.String value) {
-		this.code = value;
-	}
-	
-	public java.lang.String getStatus() {
-		return this.status;
-	}
-	
-	public void setStatus(java.lang.String value) {
-		this.status = value;
-	}
-	
-	public java.lang.Long getOuId() {
-		return this.ouId;
-	}
-	
-	public void setOuId(java.lang.Long value) {
-		this.ouId = value;
-	}
-	
-	public java.lang.Long getWaveMasterId() {
-		return this.waveMasterId;
-	}
-	
-	public void setWaveMasterId(java.lang.Long value) {
-		this.waveMasterId = value;
-	}
-	
-	public java.lang.String getPhaseCode() {
-		return this.phaseCode;
-	}
-	
-	public void setPhaseCode(java.lang.String value) {
-		this.phaseCode = value;
-	}
-	
-	public java.lang.Integer getAllocatePhase() {
-		return this.allocatePhase;
-	}
-	
-	public void setAllocatePhase(java.lang.Integer value) {
-		this.allocatePhase = value;
-	}
-	
-	public java.util.Date getStartTime() {
-		return this.startTime;
-	}
-	
-	public void setStartTime(java.util.Date value) {
-		this.startTime = value;
-	}
-	
-	public java.util.Date getFinishTime() {
-		return this.finishTime;
-	}
-	
-	public void setFinishTime(java.util.Date value) {
-		this.finishTime = value;
-	}
-	
-	public java.lang.Integer getTotalOdoQty() {
-		return this.totalOdoQty;
-	}
-	
-	public void setTotalOdoQty(java.lang.Integer value) {
-		this.totalOdoQty = value;
-	}
-	
-	public java.lang.Integer getTotalOdoLineQty() {
-		return this.totalOdoLineQty;
-	}
-	
-	public void setTotalOdoLineQty(java.lang.Integer value) {
-		this.totalOdoLineQty = value;
-	}
-	
-	public Long getTotalAmount() {
-		return this.totalAmount;
-	}
-	
-	public void setTotalAmount(Long value) {
-		this.totalAmount = value;
-	}
-	
-	public Long getTotalVolume() {
-		return this.totalVolume;
-	}
-	
-	public void setTotalVolume(Long value) {
-		this.totalVolume = value;
-	}
-	
-	public Long getTotalWeight() {
-		return this.totalWeight;
-	}
-	
-	public void setTotalWeight(Long value) {
-		this.totalWeight = value;
-	}
-	
-	public java.lang.Integer getTotalSkuQty() {
-		return this.totalSkuQty;
-	}
-	
-	public void setTotalSkuQty(java.lang.Integer value) {
-		this.totalSkuQty = value;
-	}
-	
-	public java.lang.Integer getSkuCategoryQty() {
-		return this.skuCategoryQty;
-	}
-	
-	public void setSkuCategoryQty(java.lang.Integer value) {
-		this.skuCategoryQty = value;
-	}
-	
-	public java.lang.Integer getExecOdoQty() {
-		return this.execOdoQty;
-	}
-	
-	public void setExecOdoQty(java.lang.Integer value) {
-		this.execOdoQty = value;
-	}
-	
-	public java.lang.Integer getExecOdoLineQty() {
-		return this.execOdoLineQty;
-	}
-	
-	public void setExecOdoLineQty(java.lang.Integer value) {
-		this.execOdoLineQty = value;
-	}
-	
-	public java.lang.Integer getOutboundCartonQty() {
-		return this.outboundCartonQty;
-	}
-	
-	public void setOutboundCartonQty(java.lang.Integer value) {
-		this.outboundCartonQty = value;
-	}
-	
-	public java.util.Date getCreateTime() {
-		return this.createTime;
-	}
-	
-	public void setCreateTime(java.util.Date value) {
-		this.createTime = value;
-	}
-	
-	public java.util.Date getLastModifyTime() {
-		return this.lastModifyTime;
-	}
-	
-	public void setLastModifyTime(java.util.Date value) {
-		this.lastModifyTime = value;
-	}
-	
-	public java.lang.Long getCreatedId() {
-		return this.createdId;
-	}
-	
-	public void setCreatedId(java.lang.Long value) {
-		this.createdId = value;
-	}
-	
-	public java.lang.Long getModifiedId() {
-		return this.modifiedId;
-	}
-	
-	public void setModifiedId(java.lang.Long value) {
-		this.modifiedId = value;
-	}
-	
-	public java.lang.Integer getLifecycle() {
-		return this.lifecycle;
-	}
-	
-	public void setLifecycle(java.lang.Integer value) {
-		this.lifecycle = value;
-	}
+    private static final long serialVersionUID = 5705617664033075065L;
 
-	public java.lang.Long getId() {
-		return id;
-	}
+    /** id */
+    private Long id;
+    /** 波次主档编码 */
+    private String code;
+    /** 波次状态，系统常量 */
+    private String status;
+    /** 仓库组织ID */
+    private Long ouId;
+    /** 波次主档ID */
+    private Long waveMasterId;
+    /** 波次阶段，系统常量 */
+    private String phaseCode;
+    /** 硬分配阶段0：分配规则1：硬分配 */
+    private Integer allocatePhase;
+    /** 开始运行时间 */
+    private java.util.Date startTime;
+    /** 结束运行时间 */
+    private java.util.Date finishTime;
+    /** 出库单总单数 */
+    private Integer totalOdoQty;
+    /** 出库单明细总行数 */
+    private Integer totalOdoLineQty;
+    /** 总金额 */
+    private Long totalAmount;
+    /** 总体积 */
+    private Long totalVolume;
+    /** 总重量 */
+    private Long totalWeight;
+    /** 商品总件数 */
+    private Integer totalSkuQty;
+    /** 商品种类数 */
+    private Integer skuCategoryQty;
+    /** 工作总单数 */
+    private Integer execOdoQty;
+    /** 工作总行数 */
+    private Integer execOdoLineQty;
+    /** 出库箱总数 */
+    private Integer outboundCartonQty;
+    /** 创建时间 */
+    private Date createTime;
+    /** 最后操作时间 */
+    private Date lastModifyTime;
+    /** 创建人ID */
+    private Long createdId;
+    /** 操作人ID */
+    private Long modifiedId;
+    /** 是否启用 1:启用 0:停用 */
+    private Integer lifecycle;
 
-	public void setId(java.lang.Long id) {
-		this.id = id;
-	}
-	
+    // 自定义字段
+    private List<WhWaveLineCommand> waveLineCommandList;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public Long getOuId() {
+        return ouId;
+    }
+
+    public void setOuId(Long ouId) {
+        this.ouId = ouId;
+    }
+
+    public Long getWaveMasterId() {
+        return waveMasterId;
+    }
+
+    public void setWaveMasterId(Long waveMasterId) {
+        this.waveMasterId = waveMasterId;
+    }
+
+    public String getPhaseCode() {
+        return phaseCode;
+    }
+
+    public void setPhaseCode(String phaseCode) {
+        this.phaseCode = phaseCode;
+    }
+
+    public Integer getAllocatePhase() {
+        return allocatePhase;
+    }
+
+    public void setAllocatePhase(Integer allocatePhase) {
+        this.allocatePhase = allocatePhase;
+    }
+
+    public Date getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(Date startTime) {
+        this.startTime = startTime;
+    }
+
+    public Date getFinishTime() {
+        return finishTime;
+    }
+
+    public void setFinishTime(Date finishTime) {
+        this.finishTime = finishTime;
+    }
+
+    public Integer getTotalOdoQty() {
+        return totalOdoQty;
+    }
+
+    public void setTotalOdoQty(Integer totalOdoQty) {
+        this.totalOdoQty = totalOdoQty;
+    }
+
+    public Integer getTotalOdoLineQty() {
+        return totalOdoLineQty;
+    }
+
+    public void setTotalOdoLineQty(Integer totalOdoLineQty) {
+        this.totalOdoLineQty = totalOdoLineQty;
+    }
+
+    public Long getTotalAmount() {
+        return totalAmount;
+    }
+
+    public void setTotalAmount(Long totalAmount) {
+        this.totalAmount = totalAmount;
+    }
+
+    public Long getTotalVolume() {
+        return totalVolume;
+    }
+
+    public void setTotalVolume(Long totalVolume) {
+        this.totalVolume = totalVolume;
+    }
+
+    public Long getTotalWeight() {
+        return totalWeight;
+    }
+
+    public void setTotalWeight(Long totalWeight) {
+        this.totalWeight = totalWeight;
+    }
+
+    public Integer getTotalSkuQty() {
+        return totalSkuQty;
+    }
+
+    public void setTotalSkuQty(Integer totalSkuQty) {
+        this.totalSkuQty = totalSkuQty;
+    }
+
+    public Integer getSkuCategoryQty() {
+        return skuCategoryQty;
+    }
+
+    public void setSkuCategoryQty(Integer skuCategoryQty) {
+        this.skuCategoryQty = skuCategoryQty;
+    }
+
+    public Integer getExecOdoQty() {
+        return execOdoQty;
+    }
+
+    public void setExecOdoQty(Integer execOdoQty) {
+        this.execOdoQty = execOdoQty;
+    }
+
+    public Integer getExecOdoLineQty() {
+        return execOdoLineQty;
+    }
+
+    public void setExecOdoLineQty(Integer execOdoLineQty) {
+        this.execOdoLineQty = execOdoLineQty;
+    }
+
+    public Integer getOutboundCartonQty() {
+        return outboundCartonQty;
+    }
+
+    public void setOutboundCartonQty(Integer outboundCartonQty) {
+        this.outboundCartonQty = outboundCartonQty;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Date getLastModifyTime() {
+        return lastModifyTime;
+    }
+
+    public void setLastModifyTime(Date lastModifyTime) {
+        this.lastModifyTime = lastModifyTime;
+    }
+
+    public Long getCreatedId() {
+        return createdId;
+    }
+
+    public void setCreatedId(Long createdId) {
+        this.createdId = createdId;
+    }
+
+    public Long getModifiedId() {
+        return modifiedId;
+    }
+
+    public void setModifiedId(Long modifiedId) {
+        this.modifiedId = modifiedId;
+    }
+
+    public Integer getLifecycle() {
+        return lifecycle;
+    }
+
+    public void setLifecycle(Integer lifecycle) {
+        this.lifecycle = lifecycle;
+    }
+
+    public List<WhWaveLineCommand> getWaveLineCommandList() {
+        return waveLineCommandList;
+    }
+
+    public void setWaveLineCommandList(List<WhWaveLineCommand> waveLineCommandList) {
+        this.waveLineCommandList = waveLineCommandList;
+    }
 }
-

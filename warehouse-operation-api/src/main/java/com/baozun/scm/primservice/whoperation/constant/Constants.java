@@ -429,6 +429,10 @@ public final class Constants {
     public static final String REPLENISHED_FAIL = "ERROR003";
     /** 波次配货模式计算阶段未匹配到配货模式 */
     public static final String DISTRIBUTE_MODE_FAIL = "ERROR006";
+    /** 出库箱推荐阶段 未找到可用容器 */
+    public static final String CREATE_OUTBOUND_CARTON_UNMATCHED_BOX = "ERROR007";
+    /** 出库箱推荐阶段 发生异常 */
+    public static final String CREATE_OUTBOUND_CARTON_REC_BOX_EXCEPTION = "ERROR008";
 
     public static final String ALLOCATE_STRATEGY_FIRSTINFIRSTOUT = "1"; // 先入先出
     public static final String ALLOCATE_STRATEGY_FIRSTINLASTOUT = "2"; // 先入后出
@@ -624,4 +628,37 @@ public final class Constants {
     public static final String PRINT_ORDER_TYPE_5 = "5";
     /** 箱號标签 */
     public static final String PRINT_ORDER_TYPE_4 = "4";
+
+
+    /** 波次阶段创建出库箱 */
+    public static final String CREATE_OUTBOUND_CARTON = "CREATE_OUTBOUND_CARTON";
+
+    /** 出库单装箱信息 整托 */
+    public static final int ODO_OUTBOUND_BOX_WHOLE_TRAY = 1;
+    /** 出库单装箱信息 整箱 */
+    public static final int ODO_OUTBOUND_BOX_WHOLE_CAASE = 2;
+
+    /** 拣货模式 摘果 */
+    public static final String PICKING_MODE_PICKING = "1";
+    /** 拣货模式 播种 */
+    public static final String PICKING_MODE_SEED = "2";
+    /** 拣货模式 按批摘果-单品单件 */
+    public static final String PICKING_MODE_BATCH_SINGLE = "3";
+    /** 拣货模式 按批摘果-秒杀 */
+    public static final String PICKING_MODE_BATCH_SECKILL = "4";
+    /** 拣货模式 按批摘果-主副品 */
+    public static final String PICKING_MODE_BATCH_MAIN = "5";
+    /** 拣货模式 按批摘果-套装 */
+    public static final String PICKING_MODE_BATCH_GROUP = "6";
+
+    // 容器体积可用率
+    public static final Double OUTBOUND_BOX_AVAILABILITY = 0.8;
+
+    public static final String OUTBOUNDBOX_RELATIONSHIP_TYPE_STORE = "storetype";
+    public static final String OUTBOUNDBOX_RELATIONSHIP_TYPE_CUSTOMER = "customertype";
+    // 出库箱类型编码
+    public static final String OUTBOUNDBOX_CODE = "OUTBOUNDBOX_CODE";
+
+    /** 调编码生成器 出库箱推荐标识 */
+    public static final String OUTBOUND_BOX_BATCH = "WMS_OUTBOUND_BOX_BATCH";
 }

@@ -759,6 +759,7 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
         asn.setDeliveryTime(po.getDeliveryTime());
         asn.setSupplierId(po.getSupplierId());
         asn.setLogisticsProviderId(po.getLogisticsProviderId());
+        asn.setLogisticsProvider(po.getLogisticsProvider());
         asn.setAsnType(po.getPoType());
         asn.setStatus(PoAsnStatus.ASN_NEW);
         asn.setCreatedId(command.getUserId());

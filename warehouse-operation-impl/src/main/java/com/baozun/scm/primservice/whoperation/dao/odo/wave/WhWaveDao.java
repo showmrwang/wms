@@ -28,6 +28,7 @@ import org.apache.ibatis.annotations.Param;
 
 import com.baozun.scm.primservice.whoperation.command.odo.wave.SoftAllocationCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.WaveCommand;
+import com.baozun.scm.primservice.whoperation.command.odo.wave.WhWaveCommand;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
 
 public interface WhWaveDao extends BaseDao<WhWave, Long> {
@@ -89,4 +90,13 @@ public interface WhWaveDao extends BaseDao<WhWave, Long> {
     List<Long> getWhWaveListByPhaseCode(@Param("phaseCode") String phaseCode, @Param("ouId") Long ouId);
 
     List<Long> getNeedPickingWorkWhWave(@Param("status") Integer status, @Param("phaseCode") String phaseCode, @Param("ouId") Long ouId);
+    /**
+     * 根据波次编码获取波次列表
+     *
+     * @author mingwei.xie
+     * @param phaseCode
+     * @param ouId
+     * @return
+     */
+    List<WhWaveCommand> getWhWaveByPhaseCode(@Param("phaseCode") String phaseCode, @Param("ouId") Long ouId);
 }

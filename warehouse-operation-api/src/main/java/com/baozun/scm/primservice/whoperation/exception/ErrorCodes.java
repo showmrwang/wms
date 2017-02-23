@@ -676,6 +676,8 @@ public class ErrorCodes {
     // 60001-70000 xiemingwei
 
     // 70001-80000 tangming
+    /** 所选商品已绑定出库箱 */
+    public static final int EXIST_SKU_BOUND_BOX = 70010;
     /** 当前容器状态不允许上架*/
     public static final int COMMON_CONTAINER__NOT_PUTWAY = 70015;
     /***该商品容器中不存在*/

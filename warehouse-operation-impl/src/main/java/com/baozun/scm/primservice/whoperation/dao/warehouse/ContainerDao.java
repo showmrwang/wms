@@ -85,6 +85,14 @@ public interface ContainerDao extends BaseDao<Container, Long> {
     Container findByIdExt(@Param("id") Long id, @Param("ouId") Long ouId);
 
     /**
+     * 通过id进行查询单个对象
+     *
+     * @param id
+     * @return
+     */
+    ContainerCommand findContainerCommandByIdExt(@Param("id") Long id, @Param("ouId") Long ouId);
+
+    /**
      * 更新
      * 
      * @param obj

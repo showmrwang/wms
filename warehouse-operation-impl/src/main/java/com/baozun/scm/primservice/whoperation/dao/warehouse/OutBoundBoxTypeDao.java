@@ -77,5 +77,7 @@ public interface OutBoundBoxTypeDao extends BaseDao<OutBoundBoxType,Long>{
      * @param ouId
      * @return
      */
-    public  OutBoundBoxType findByCode(@Param("code") String code,@Param("ouId") Long ouId); 
+    public  OutBoundBoxType findByCode(@Param("code") String code,@Param("ouId") Long ouId);
+
+
 }

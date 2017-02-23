@@ -9,6 +9,7 @@ import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 
 import com.baozun.scm.primservice.whoperation.command.wave.WaveLineCommand;
+import com.baozun.scm.primservice.whoperation.command.wave.WhWaveLineCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine;
 
@@ -86,6 +87,16 @@ public interface WhWaveLineManager extends BaseManager {
      * @return
      */
     List<WhWaveLine> findWaveLineListByWaveId(Long waveId, Long ouId);
+
+    /**
+     * [通用方法]根据波次查询波次明细
+     *
+     * @author mingwei.xie
+     * @param waveId
+     * @param ouId
+     * @return
+     */
+    List<WhWaveLineCommand> findWaveLineCommandListByWaveId(Long waveId, Long ouId);
     
     /**
      * [业务方法] 补货-查询波次内需要补货的波次明细集合
@@ -96,4 +107,22 @@ public interface WhWaveLineManager extends BaseManager {
 	List<WhWaveLine> findWaveLineByNotEnoughAllocationQty(Long waveId, Long ouId);
 
     Pagination<WaveLineCommand> findWaveLineListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params);
+
+    /**
+     * 根据波次Id获取出库单Id
+     *
+     * @param waveId
+     * @param ouId
+     * @return
+     */
+    List<Long> getOdoIdListByWaveId(Long waveId, Long ouId);
+
+    /**
+     * 根据波次Id获取出库单Id
+     *
+     * @param waveIdList
+     * @param ouId
+     * @return
+     */
+    List<Long> getOdoIdListByWaveIdList(List<Long> waveIdList, Long ouId);
 }

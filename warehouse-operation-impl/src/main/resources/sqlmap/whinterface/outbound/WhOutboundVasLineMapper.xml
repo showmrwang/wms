@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whinterface.dao.outbound.WhOutboundVasLineDao">
+	<resultMap id="WhOutboundVasLineResult" type="com.baozun.scm.primservice.whoperation.model.whinterface.outbound.WhOutboundVasLine">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whOutboundVasLineColumns">
+	    <![CDATA[
+	        	id as id,
+	        	outbound_line_id as outboundLineId,
+	        	vas_type as vasType,
+	        	wh_vas_type as whVasType,
+	        	express_vas_type as expressVasType,
+	        	print_templet as printTemplet,
+	        	sku_bar_code as skuBarCode,
+	        	content as content,
+	        	carton_no as cartonNo,
+	        	qty as qty,
+	        	amt as amt
+	    ]]>
+	</sql>
+	
+		<!-- 如果有自增字段 -->
+		
+			<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+			<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.whinterface.outbound.WhOutboundVasLine" 
+				
+			 flushCache="true">
+		    <![CDATA[
+		        INSERT INTO
+		        t_wh_outbound_vas_line (
+		        id,
+		        	outbound_line_id ,
+		        	vas_type ,
+		        	wh_vas_type ,
+		        	express_vas_type ,
+		        	print_templet ,
+		        	sku_bar_code ,
+		        	content ,
+		        	carton_no ,
+		        	qty ,
+		        	amt 
+		        ) VALUES (
+		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{outboundLineId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{vasType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{whVasType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{expressVasType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{printTemplet,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{skuBarCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{content,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{cartonNo,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{qty,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{amt,javaType=java.lang.String,jdbcType=VARCHAR} 
+		        )
+		    ]]>
+
+		</insert>
+		
+		
+		<update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.whinterface.outbound.WhOutboundVasLine">
+	    <![CDATA[
+	        UPDATE t_wh_outbound_vas_line SET
+		        outbound_line_id = #{outboundLineId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        vas_type = #{vasType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        wh_vas_type = #{whVasType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        express_vas_type = #{expressVasType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        print_templet = #{printTemplet,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        sku_bar_code = #{skuBarCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        content = #{content,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        carton_no = #{cartonNo,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        qty = #{qty,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        amt = #{amt,javaType=java.lang.String,jdbcType=VARCHAR} 
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+		</update>
+	   <delete id="delete" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from t_wh_outbound_vas_line where
+		        id = #{id} 
+	    ]]>
+	    </delete> 
+	    
+	     <delete id="deleteByIds" parameterType="list">
+	    
+	        delete from t_wh_outbound_vas_line 
+	        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>	
+	  
+	    </delete>  
+	         
+	    <select id="findById" parameterType="java.lang.Long" resultMap="WhOutboundVasLineResult" flushCache="false">
+			select <include refid="whOutboundVasLineColumns" />
+		    <![CDATA[
+			    from t_wh_outbound_vas_line 
+		        where 
+		        id = #{id} 
+		    ]]>
+		</select>	
+		<select id="getByIds" parameterType="list"  resultMap="WhOutboundVasLineResult" flushCache="false">
+			select <include refid="whOutboundVasLineColumns" />
+			    from t_wh_outbound_vas_line 
+		        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>					
+		</select>	
+	<sql id="whOutboundVasLineDynamicWhere">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+				<if test="outboundLineId!=null">
+					and outbound_line_id = #{outboundLineId}
+				</if>
+	       
+	       
+		       <if test="vasType!=null and vasType!=''">
+					and vas_type = #{vasType}
+				</if>
+	       
+				<if test="whVasType!=null">
+					and wh_vas_type = #{whVasType}
+				</if>
+	       
+				<if test="expressVasType!=null">
+					and express_vas_type = #{expressVasType}
+				</if>
+	       
+	       
+		       <if test="printTemplet!=null and printTemplet!=''">
+					and print_templet = #{printTemplet}
+				</if>
+	       
+	       
+		       <if test="skuBarCode!=null and skuBarCode!=''">
+					and sku_bar_code = #{skuBarCode}
+				</if>
+	       
+	       
+		       <if test="content!=null and content!=''">
+					and content = #{content}
+				</if>
+	       
+	       
+		       <if test="cartonNo!=null and cartonNo!=''">
+					and carton_no = #{cartonNo}
+				</if>
+	       
+	       
+		       <if test="qty!=null and qty!=''">
+					and qty = #{qty}
+				</if>
+	       
+	       
+		       <if test="amt!=null and amt!=''">
+					and amt = #{amt}
+				</if>
+		</where>
+	</sql>
+	
+
+	<select id="getCount" resultType="long">
+        select count(*) from t_wh_outbound_vas_line 
+    </select>
+    <select id="findListCountByQueryMap" resultType="long">
+        select count(*) from t_wh_outbound_vas_line 
+		<include refid="whOutboundVasLineDynamicWhere"/>    
+    </select>
+    
+    <select id="findListCountByParam" resultType="long">
+        select count(*) from t_wh_outbound_vas_line 
+		<include refid="whOutboundVasLineDynamicWhere"/>    
+    </select>
+    
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPage" resultMap="WhOutboundVasLineResult">
+    	select <include refid="whOutboundVasLineColumns" />
+	    from t_wh_outbound_vas_line 
+		<include refid="whOutboundVasLineDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByQueryMap" resultMap="WhOutboundVasLineResult">
+    	select <include refid="whOutboundVasLineColumns" />
+	    from t_wh_outbound_vas_line 
+		<include refid="whOutboundVasLineDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByParam" resultMap="WhOutboundVasLineResult">
+    	select <include refid="whOutboundVasLineColumns" />
+	    from t_wh_outbound_vas_line 
+		<include refid="whOutboundVasLineDynamicWhere"/>
+		
+    </select>
+
+	
+</mapper>

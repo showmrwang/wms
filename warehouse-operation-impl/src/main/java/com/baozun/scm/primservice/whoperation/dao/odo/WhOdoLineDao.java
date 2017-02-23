@@ -89,6 +89,15 @@ public interface WhOdoLineDao extends BaseDao<WhOdoLine, Long> {
     List<WhOdoLine> findOdoLineListByOdoIdOuId(@Param("odoId") Long odoId, @Param("ouId") Long ouId);
 
     /**
+     * [通用方法]根据ODOID和OUID查找明细
+     *
+     * @param odoId
+     * @param ouId
+     * @return
+     */
+    List<OdoLineCommand> findOdoLineCommandListByOdoIdOuId(@Param("odoId") Long odoId, @Param("ouId") Long ouId);
+
+    /**
      * 获取出库单明细列表
      * @param o
      * @return
@@ -159,4 +168,43 @@ public interface WhOdoLineDao extends BaseDao<WhOdoLine, Long> {
     int updateOdoLineToWave(@Param("odoIdList") List<Long> odoIdList, @Param("status") String status, @Param("waveCode") String code, @Param("ouId") Long ouId, @Param("userId") Long userId);
 
     List<OdoLineCommand> findOdoLineListToWaveByOdoIdListOuId(@Param("odoIdList") List<Long> odoIdList, @Param("ouId") Long ouId);
+    /**
+     * 根据ODOLINEID和OUID查找ODOLINE
+     *
+     * @author mingwei.xie
+     * @param idList
+     * @param ouId
+     * @return
+     */
+    List<OdoLineCommand> findOdoLineByIdList(@Param("idList") List<Long> idList, @Param("ouId") Long ouId);
+
+    /**
+     * 根据ODOLINEID和OUID查找ODOLINE
+     *
+     * @author mingwei.xie
+     * @param idStrList
+     * @param ouId
+     * @return
+     */
+    List<OdoLineCommand> findOdoLineByIdStrList(@Param("idStrList") List<String> idStrList, @Param("ouId") Long ouId);
+
+    /**
+     * 根据ODOLINEID和OUID查找ODOLINE
+     *
+     * @author mingwei.xie
+     * @param idList
+     * @param ouId
+     * @return
+     */
+    List<OdoLineCommand> findOdoLineByOdoId(@Param("idList") List<Long> idList, @Param("ouId") Long ouId);
+
+    /**
+     * 根据ODOLINEID和OUID查找ODOLINE
+     *
+     * @author mingwei.xie
+     * @param idList
+     * @param ouId
+     * @return
+     */
+    List<OdoLineCommand> findOdoLineByOdoIdOrderByPickingSort(@Param("idList") List<Long> idList, @Param("ouId") Long ouId);
 }

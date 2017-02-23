@@ -4149,6 +4149,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             Double usableQty = this.whSkuInventoryDao.getUseableQtyByUuidList(uuidList, ouId);
             Double allocatedQty = onHandQty.doubleValue() - usableQty;// 已分配
             // 占用数量 >= 在库数量
+            if (usableQty.doubleValue() == 0) {
+                continue;
+            }
             if (upperLimitQty < usableQty) {
                 break;
             }
@@ -4180,6 +4183,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             Double usableQty = this.whSkuInventoryDao.getUseableQtyByUuidList(uuidList, ouId);
             Double allocatedQty = onHandQty.doubleValue() - usableQty;// 已分配
 
+            if (usableQty.doubleValue() == 0) {
+                continue;
+            }
             if (upperLimitQty.doubleValue() > usableQty) {
                 invCmd.setOuId(wh.getId());
                 List<WhSkuInventoryCommand> invs = whSkuInventoryDao.findInventoryByUuidAndCondition(invCmd);
@@ -4328,7 +4334,10 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             Double usableQty = this.whSkuInventoryDao.getUseableQtyByUuidList(uuidList, ouId);
             Double allocatedQty = onHandQty.doubleValue() - usableQty;// 已分配
             // 占用数量 >= 在库数量
-            if (upperLimitQty < onHandQty - allocatedQty) {
+            if (usableQty.doubleValue() == 0) {
+                continue;
+            }
+            if (upperLimitQty < usableQty) {
                 break;
             }
 
@@ -5189,7 +5198,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     WhSkuInventory inv = new WhSkuInventory();
                     BeanUtils.copyProperties(invCmd, inv);
                     inv.setId(null);
-                    inv.setOnHandQty(inv.getToBeFilledQty());// 在库库存
+                    inv.setOnHandQty(skuScanQty);// 在库库存
                     inv.setFrozenQty(0.0);
                     if (!StringUtils.isEmpty(containerCode)) {
                         if (0 != containerId.compareTo(inv.getOuterContainerId())) {
@@ -5260,7 +5269,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     WhSkuInventory inv = new WhSkuInventory();
                     BeanUtils.copyProperties(invCmd, inv);
                     inv.setId(null);
-                    inv.setOnHandQty(inv.getToBeFilledQty());// 在库库存
+                    inv.setOnHandQty(skuScanQty);// 在库库存
                     inv.setFrozenQty(0.0);
                     if (!StringUtils.isEmpty(containerCode)) {
                         if (0 != containerId.compareTo(inv.getOuterContainerId())) {
@@ -5768,4 +5777,28 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         
     }
     
+
+    /**
+     *根据占用码查询库存
+     *
+     * @author mingwei.xie
+     * @param occupationCode
+     * @param ouId
+     * @return
+     */
+    public List<WhSkuInventoryCommand> findListByOccupationCode(String occupationCode, Long ouId){
+        return whSkuInventoryDao.findListByOccupationCode(occupationCode, ouId);
+    }
+
+    /**
+     *根据占用码查询库存
+     *
+     * @author mingwei.xie
+     * @param occLineIdList
+     * @param ouId
+     * @return
+     */
+    public List<WhSkuInventoryCommand> findListByOccLineIdListOrderByPickingSort(List<Long> occLineIdList, Long ouId){
+        return whSkuInventoryDao.findListByOccLineIdListOrderByPickingSort(occLineIdList, ouId);
+    }
 }

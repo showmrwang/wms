@@ -26,6 +26,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationLineC
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryAllocatedCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.WavePhase;
@@ -138,6 +139,9 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
     @Autowired
     private WhSkuInventoryManager whskuInventoryManager;
     
+    @Autowired
+    private WhSkuInventoryDao whSkuInventoryDao;
+    
     
     
     
@@ -196,11 +200,19 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
                         }
                     }else{
                         // 计算目标库位容器
-                        Double qty = locationReplenishmentCalculation(siaCommand, ouId);
-                        // 基于目标库位容器及工作明细生成作业明细 
-                        int replenishmentOperationLineCount = this.saveReplenishmentOperationLine(replenishmentWorkCode, replenishmentOperationCode, ouId, qty);
-                        if (replenishmentOperationLineCount != rWorkLineTotal) {
-                            log.error("replenishmentOperationLineCount is error", rWorkLineTotal);
+                        Long qty = locationReplenishmentCalculation(siaCommand, ouId);
+                        if(null != qty && 0 > qty){
+                            // 基于目标库位容器及工作明细生成作业明细 
+                            int replenishmentOperationLineCount = this.saveReplenishmentOperationLine(replenishmentWorkCode, replenishmentOperationCode, ouId, (double)qty);
+                            if (replenishmentOperationLineCount != rWorkLineTotal) {
+                                log.error("replenishmentOperationLineCount is error", rWorkLineTotal);
+                                judge = false;
+                            }
+                        }else{
+                            //获取作业头信息  
+                            WhOperationCommand WhOperationCommand = this.operationDao.findOperationByCode(replenishmentOperationCode, ouId);
+                            operationDao.delete(WhOperationCommand.getId());
+                            log.error("qty is error", qty);
                             judge = false;
                         }
                     }
@@ -1410,7 +1422,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
         //当前工作明细设计到的所有库区编码信息列表--更新时获取数据      
         whWorkCommand.setWorkArea(null);
         //工作优先级     
-        whWorkCommand.setWorkPriority(whWaveMaster.getPickingWorkPriority());
+        whWorkCommand.setWorkPriority(null != whWaveMaster.getReplenishmentWorkPriority() ? whWaveMaster.getReplenishmentWorkPriority() : workType.getPriority());
         //小批次
         whWorkCommand.setBatch(null);
         //签出批次
@@ -1678,6 +1690,8 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
         }
         //查询波次主档信息     
         WhWaveMaster whWaveMaster = waveMasterDao.findByIdExt(whWave.getWaveMasterId(), whWave.getOuId());
+        //获取工作类型      
+        WorkType workType = this.workTypeDao.findWorkTypeByworkCategory("REPLENISHMENT", skuInventoryAllocatedCommand.getOuId());
         String workArea = "" ;
         int count = 0;
         Boolean isFromLocationId = true;
@@ -1759,7 +1773,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
         //是否锁定 默认值：1
         whWorkCommand.setIsLocked(whWaveMaster.getIsAutoReleaseWork());
         //工作优先级     
-        whWorkCommand.setWorkPriority(whWaveMaster.getPickingWorkPriority());
+        whWorkCommand.setWorkPriority(null != whWaveMaster.getReplenishmentWorkPriority() ? whWaveMaster.getReplenishmentWorkPriority() : workType.getPriority());
         
         WhWork whWork = new WhWork();
         //复制数据        
@@ -2178,35 +2192,59 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public Double locationReplenishmentCalculation(WhSkuInventoryAllocatedCommand siaCommand, Long ouId) {
+    public Long locationReplenishmentCalculation(WhSkuInventoryAllocatedCommand siaCommand, Long ouId) {
         String logId = "";
         Long locationId = siaCommand.getToLocationId();
         LocationCommand location = locationDao.findLocationCommandByParam(locationId, ouId);
-        Double maxQty = 0.00;
+        Long maxQty = Constants.DEFAULT_LONG;
+        Long minQty = Constants.DEFAULT_LONG;
+        // 上限        
         Integer upBound = location.getUpBound();
-        if (upBound == null) {
+        Integer downBound = location.getDownBound();
+        if (upBound == null || downBound == null) {
             return null;
         }
+        // 根据商品id和组织id获取商品所有相关属性         
         SkuRedisCommand skuRedis = this.locationManager.findSkuMasterBySkuId(siaCommand.getSkuId(), ouId, logId);
         Sku sku = skuRedis.getSku();
-        Double locationQty =  Math.floor(location.getVolume() / sku.getVolume());
+        Long locationQty = (long) Math.floor(location.getVolume() / sku.getVolume());
         if (StringUtils.hasText(location.getSizeType())) {
+            // 仓库商品管理
             WhSkuWhmgmt skuWhmgmt = skuRedis.getWhSkuWhMgmt();
             if (skuWhmgmt != null) {
+                // 货品类型
                 if (skuWhmgmt.getTypeOfGoods() != null) {
                     LocationProductVolume locationProductVolume = this.locationManager.getLocationProductVolumeByPcIdAndSize(skuWhmgmt.getTypeOfGoods(), location.getSizeType(), ouId);
                     if (locationProductVolume != null) {
-                        locationQty = (double)locationProductVolume.getVolume();
+                        locationQty = locationProductVolume.getVolume();
                     }
                 }
             }
         }
         // 上下限数量
         maxQty = locationQty * upBound / 100;
+        minQty = (long) Math.ceil(locationQty * downBound / 100);
         // 库位库存量=库位在库库存+库位待移入库存
-        double invQty = this.whskuInventoryManager.findInventoryByLocation(locationId, ouId);
-        Double replenishmentQty =  Math.floor(maxQty - invQty);
-        Double rQty = siaCommand.getQty() - replenishmentQty;
+        // double invQty = this.whskuInventoryManager.findInventoryByLocation(locationId, ouId);
+        List<WhSkuInventoryCommand> skuInvList = this.whSkuInventoryDao.findWhSkuInvCmdByLocation(ouId, locationId);
+        double invQty = Constants.DEFAULT_DOUBLE;
+        if (skuInvList != null && skuInvList.size() > 0) {
+            for (WhSkuInventoryCommand c : skuInvList) {
+                invQty += c.getOnHandQty();
+            }
+        }
+        List<WhSkuInventoryTobefilled> toBeFilledList = this.whSkuInventoryTobefilledDao.findLocWhSkuInventoryTobefilled(locationId, ouId);
+        if (toBeFilledList != null && toBeFilledList.size() > 0) {
+            for (WhSkuInventoryTobefilled t : toBeFilledList) {
+                invQty += t.getQty();
+            }
+        }
+        if (invQty >= maxQty) {
+            log.error("invQty >= maxQty", invQty, maxQty);
+            return null;
+        }
+        Long replenishmentQty = (long) Math.floor(maxQty - invQty);
+        Long rQty = (long) Math.floor(siaCommand.getQty() - replenishmentQty);
         return rQty;
     }
 

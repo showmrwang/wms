@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whinterface.dao.outbound.WhOutboundVasLineDao">
+	<resultMap id="WhOutboundVasLineResultExt" type="com.baozun.scm.primservice.whoperation.model.whinterface.outbound.WhOutboundVasLine">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whOutboundVasLineColumnsExt">
+	    <![CDATA[
+	        	id as id,
+	        	outbound_line_id as outboundLineId,
+	        	vas_type as vasType,
+	        	wh_vas_type as whVasType,
+	        	express_vas_type as expressVasType,
+	        	print_templet as printTemplet,
+	        	sku_bar_code as skuBarCode,
+	        	content as content,
+	        	carton_no as cartonNo,
+	        	qty as qty,
+	        	amt as amt
+	    ]]>
+	</sql>
+	
+	<sql id="whOutboundVasLineDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+				<if test="outboundLineId!=null">
+					and outbound_line_id = #{outboundLineId}
+				</if>
+	       
+	       
+		       <if test="vasType!=null and vasType!=''">
+					and vas_type = #{vasType}
+				</if>
+	       
+				<if test="whVasType!=null">
+					and wh_vas_type = #{whVasType}
+				</if>
+	       
+				<if test="expressVasType!=null">
+					and express_vas_type = #{expressVasType}
+				</if>
+	       
+	       
+		       <if test="printTemplet!=null and printTemplet!=''">
+					and print_templet = #{printTemplet}
+				</if>
+	       
+	       
+		       <if test="skuBarCode!=null and skuBarCode!=''">
+					and sku_bar_code = #{skuBarCode}
+				</if>
+	       
+	       
+		       <if test="content!=null and content!=''">
+					and content = #{content}
+				</if>
+	       
+	       
+		       <if test="cartonNo!=null and cartonNo!=''">
+					and carton_no = #{cartonNo}
+				</if>
+	       
+	       
+		       <if test="qty!=null and qty!=''">
+					and qty = #{qty}
+				</if>
+	       
+	       
+		       <if test="amt!=null and amt!=''">
+					and amt = #{amt}
+				</if>
+		</where>
+	</sql>
+	
+</mapper>

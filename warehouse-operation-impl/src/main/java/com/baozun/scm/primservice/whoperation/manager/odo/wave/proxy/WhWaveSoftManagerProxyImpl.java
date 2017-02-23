@@ -1,6 +1,7 @@
 package com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,8 +107,8 @@ public class WhWaveSoftManagerProxyImpl implements WhWaveSoftManagerProxy {
     }
 
     @Override
-    public SoftAllocationResponseCommand occupiedOperation(Long waveId, Long skuId, Long qty, Long waveLineId, Long ouId) {
-        if (null == waveId || null == skuId || null == qty || null == waveLineId || null == ouId) {
+    public SoftAllocationResponseCommand occupiedOperation(Long waveId, Long skuId, Long waveLineId, Long ouId, Map<Long, Long> skuInvAvailableQtyMap) {
+        if (null == waveId || null == skuId || null == waveLineId || null == ouId) {
             if (null == waveId || null == ouId) {
                 throw new BusinessException("软分配 : 没有参数");
             }
@@ -120,6 +121,7 @@ public class WhWaveSoftManagerProxyImpl implements WhWaveSoftManagerProxy {
             // 2.计算每个波次明细行是否可以占用库存
             WhWaveLine whWaveLine = this.whWaveLineManager.getWaveLineByIdAndOuId(waveLineId, ouId);
             Double skuQty = whWaveLine.getQty();
+            Long qty = skuInvAvailableQtyMap.get(skuId);
             if (qty >= skuQty) {
                 // 实际可用数量 > 需求数量:可以占用 执行占用方法
                 Long odoLineId = whWaveLine.getOdoLineId();
@@ -132,8 +134,10 @@ public class WhWaveSoftManagerProxyImpl implements WhWaveSoftManagerProxy {
                     if (0 == quantity) {
                         this.cacheAddEmptySku(waveId, skuId);
                     }
-                    command.setSkuId(skuId);
-                    command.setQty(quantity);
+                    skuInvAvailableQtyMap.put(skuId, quantity);
+                    command.setSkuInvAvailableQtyMap(skuInvAvailableQtyMap);
+                    // command.setSkuId(skuId);
+                    // command.setQty(quantity);
                     command.setSuccess(true);
                 } else {
                     throw new BusinessException("更新状态失败");
@@ -141,6 +145,7 @@ public class WhWaveSoftManagerProxyImpl implements WhWaveSoftManagerProxy {
             } else {
                 command.setSkuId(skuId);
                 command.setQty(qty);
+                command.setSkuInvAvailableQtyMap(skuInvAvailableQtyMap);
                 // 实际可用数量 < 需求数量:不可以占用 剔除
                 // removeOperation(odoId)
 

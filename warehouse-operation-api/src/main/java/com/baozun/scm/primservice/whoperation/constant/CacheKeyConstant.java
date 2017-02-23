@@ -144,4 +144,7 @@ public final class CacheKeyConstant {
     /** 波次主档缓存：前缀+waveMasterId */
     public static final String CACHE_WAVE_MASTER = "%WAVE_MASTER%";
 
+    /** 出库箱创建 配货模式规则缓存前缀 规则 */
+    public static final String CREATE_OUTBOUND_CARTON_DISTRIBUTION_PATTERN_RULE_PREFIX = "CREATE-OUTBOUND-CARTON-DISTRIBUTION-PATTERN-RULE-";
+
 }

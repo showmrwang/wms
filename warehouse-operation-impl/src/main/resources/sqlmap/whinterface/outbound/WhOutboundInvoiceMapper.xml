@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whinterface.dao.outbound.WhOutboundInvoiceDao">
+	<resultMap id="WhOutboundInvoiceResult" type="com.baozun.scm.primservice.whoperation.model.whinterface.outbound.WhOutboundInvoice">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whOutboundInvoiceColumns">
+	    <![CDATA[
+	        	id as id,
+	        	outbound_id as outboundId,
+	        	invoice_code as invoiceCode,
+	        	invoice_date as invoiceDate,
+	        	invoice_no as invoiceNo,
+	        	payer as payer,
+	        	item as item,
+	        	qty as qty,
+	        	unit_price as unitPrice,
+	        	amt as amt,
+	        	memo as memo,
+	        	payee as payee,
+	        	drawer as drawer,
+	        	company as company
+	    ]]>
+	</sql>
+	
+		<!-- 如果有自增字段 -->
+		
+			<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+			<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.whinterface.outbound.WhOutboundInvoice" 
+				
+			 flushCache="true">
+		    <![CDATA[
+		        INSERT INTO
+		        t_wh_outbound_invoice (
+		        id,
+		        	outbound_id ,
+		        	invoice_code ,
+		        	invoice_date ,
+		        	invoice_no ,
+		        	payer ,
+		        	item ,
+		        	qty ,
+		        	unit_price ,
+		        	amt ,
+		        	memo ,
+		        	payee ,
+		        	drawer ,
+		        	company 
+		        ) VALUES (
+		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{outboundId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{invoiceCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invoiceDate,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invoiceNo,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{payer,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{item,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{qty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{unitPrice,javaType=Long,jdbcType=DECIMAL} ,
+		        	#{amt,javaType=Long,jdbcType=DECIMAL} ,
+		        	#{memo,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{payee,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{drawer,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{company,javaType=java.lang.String,jdbcType=VARCHAR} 
+		        )
+		    ]]>
+
+		</insert>
+		
+		
+		<update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.whinterface.outbound.WhOutboundInvoice">
+	    <![CDATA[
+	        UPDATE t_wh_outbound_invoice SET
+		        outbound_id = #{outboundId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        invoice_code = #{invoiceCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        invoice_date = #{invoiceDate,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        invoice_no = #{invoiceNo,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        payer = #{payer,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        item = #{item,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        qty = #{qty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        unit_price = #{unitPrice,javaType=Long,jdbcType=DECIMAL} ,
+		        amt = #{amt,javaType=Long,jdbcType=DECIMAL} ,
+		        memo = #{memo,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        payee = #{payee,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        drawer = #{drawer,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        company = #{company,javaType=java.lang.String,jdbcType=VARCHAR} 
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+		</update>
+	   <delete id="delete" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from t_wh_outbound_invoice where
+		        id = #{id} 
+	    ]]>
+	    </delete> 
+	    
+	     <delete id="deleteByIds" parameterType="list">
+	    
+	        delete from t_wh_outbound_invoice 
+	        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>	
+	  
+	    </delete>  
+	         
+	    <select id="findById" parameterType="java.lang.Long" resultMap="WhOutboundInvoiceResult" flushCache="false">
+			select <include refid="whOutboundInvoiceColumns" />
+		    <![CDATA[
+			    from t_wh_outbound_invoice 
+		        where 
+		        id = #{id} 
+		    ]]>
+		</select>	
+		<select id="getByIds" parameterType="list"  resultMap="WhOutboundInvoiceResult" flushCache="false">
+			select <include refid="whOutboundInvoiceColumns" />
+			    from t_wh_outbound_invoice 
+		        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>					
+		</select>	
+	<sql id="whOutboundInvoiceDynamicWhere">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+				<if test="outboundId!=null">
+					and outbound_id = #{outboundId}
+				</if>
+	       
+	       
+		       <if test="invoiceCode!=null and invoiceCode!=''">
+					and invoice_code = #{invoiceCode}
+				</if>
+	       
+	       
+		       <if test="invoiceDate!=null and invoiceDate!=''">
+					and invoice_date = #{invoiceDate}
+				</if>
+	       
+	       
+		       <if test="invoiceNo!=null and invoiceNo!=''">
+					and invoice_no = #{invoiceNo}
+				</if>
+	       
+	       
+		       <if test="payer!=null and payer!=''">
+					and payer = #{payer}
+				</if>
+	       
+	       
+		       <if test="item!=null and item!=''">
+					and item = #{item}
+				</if>
+	       
+				<if test="qty!=null">
+					and qty = #{qty}
+				</if>
+	       
+				<if test="unitPrice!=null">
+					and unit_price = #{unitPrice}
+				</if>
+	       
+				<if test="amt!=null">
+					and amt = #{amt}
+				</if>
+	       
+	       
+		       <if test="memo!=null and memo!=''">
+					and memo = #{memo}
+				</if>
+	       
+	       
+		       <if test="payee!=null and payee!=''">
+					and payee = #{payee}
+				</if>
+	       
+	       
+		       <if test="drawer!=null and drawer!=''">
+					and drawer = #{drawer}
+				</if>
+	       
+	       
+		       <if test="company!=null and company!=''">
+					and company = #{company}
+				</if>
+		</where>
+	</sql>
+	
+
+	<select id="getCount" resultType="long">
+        select count(*) from t_wh_outbound_invoice 
+    </select>
+    <select id="findListCountByQueryMap" resultType="long">
+        select count(*) from t_wh_outbound_invoice 
+		<include refid="whOutboundInvoiceDynamicWhere"/>    
+    </select>
+    
+    <select id="findListCountByParam" resultType="long">
+        select count(*) from t_wh_outbound_invoice 
+		<include refid="whOutboundInvoiceDynamicWhere"/>    
+    </select>
+    
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPage" resultMap="WhOutboundInvoiceResult">
+    	select <include refid="whOutboundInvoiceColumns" />
+	    from t_wh_outbound_invoice 
+		<include refid="whOutboundInvoiceDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByQueryMap" resultMap="WhOutboundInvoiceResult">
+    	select <include refid="whOutboundInvoiceColumns" />
+	    from t_wh_outbound_invoice 
+		<include refid="whOutboundInvoiceDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByParam" resultMap="WhOutboundInvoiceResult">
+    	select <include refid="whOutboundInvoiceColumns" />
+	    from t_wh_outbound_invoice 
+		<include refid="whOutboundInvoiceDynamicWhere"/>
+		
+    </select>
+
+	
+</mapper>

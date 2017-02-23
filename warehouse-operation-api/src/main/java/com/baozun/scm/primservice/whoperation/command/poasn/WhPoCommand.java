@@ -41,6 +41,8 @@ public class WhPoCommand extends BaseCommand {
     private Long supplierId;
     /** 运输商ID */
     private Long logisticsProviderId;
+    /** 运输商Code */
+    private String logisticsProvider;
     /** PO单类型 */
     private Integer poType;
     /** 状态 */
@@ -538,6 +540,14 @@ public class WhPoCommand extends BaseCommand {
 
     public void setStoreList(List<Long> storeList) {
         this.storeList = storeList;
+    }
+
+    public String getLogisticsProvider() {
+        return logisticsProvider;
+    }
+
+    public void setLogisticsProvider(String logisticsProvider) {
+        this.logisticsProvider = logisticsProvider;
     }
 
 
