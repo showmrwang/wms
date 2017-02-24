@@ -771,6 +771,9 @@ public class ErrorCodes {
     public static final int TIP_CONTAINER_FAIL=70057;
     
     public static final int CHECK_INVENTORY_IS_ERROR=70058;
+    
+    /**分配库存不存在*/
+    public static final int ALLOCATE_INVENTORY_NO_EXIST=70059;
     // 70001-80000 tangming
     
 	// 80001-90000 zhukai
