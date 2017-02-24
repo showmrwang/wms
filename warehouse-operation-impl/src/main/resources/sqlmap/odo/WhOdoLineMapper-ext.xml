@@ -1043,4 +1043,20 @@
             location.code
     </select>
 
+
+	<select id="findListByParamExt" resultMap="WhOdoLineResult">
+		select
+		<include refid="whOdoLineColumns" />
+		from t_wh_odo_line
+		where
+		odo_id=#{odoId} and ou_Id=#{ouId}
+		<if test="extLinenumList!=null">
+				and ext_linenum in
+				<foreach collection="extLinenumList" item="s" open="(" separator=","
+					close=")">
+					#{s}
+				</foreach>
+			</if>
+
+	</select>
 </mapper>

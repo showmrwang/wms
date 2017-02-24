@@ -36,7 +36,6 @@ import com.baozun.scm.primservice.whoperation.command.odo.wave.OdoWaveGroupSearc
 import com.baozun.scm.primservice.whoperation.command.odo.wave.WaveCommand;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.seeding.WhSeedingWallLatticeLine;
-import com.baozun.scm.primservice.whoperation.model.warehouse.WhSeedingCollectionLine;
 
 public interface WhOdoDao extends BaseDao<WhOdo, Long> {
 
@@ -274,4 +273,13 @@ public interface WhOdoDao extends BaseDao<WhOdo, Long> {
      * @return
      */
     List<OdoCommand> getWhOdoListById(@Param("odoIdList") List<Long> odoIdList, @Param("ouId") Long ouId);
+
+    /**
+     * 查找非删除状态下的出库单
+     * 
+     * @param extOdoCode
+     * @param ouId
+     * @return
+     */
+    List<WhOdo> findByExtCodeOuIdNotCancel(@Param("extCode") String extOdoCode, @Param("ouId") Long ouId);
 }

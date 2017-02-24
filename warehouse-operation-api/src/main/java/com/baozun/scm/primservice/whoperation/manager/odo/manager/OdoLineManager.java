@@ -9,6 +9,7 @@ import lark.common.dao.Sort;
 
 import com.baozun.scm.primservice.whoperation.command.odo.OdoLineCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
 
 public interface OdoLineManager extends BaseManager {
@@ -102,14 +103,15 @@ public interface OdoLineManager extends BaseManager {
     List<OdoLineCommand> findOdoLineCommandListByOdoId(Long odoId, Long ouId);
 
     /**
-     * [删除出库单明细]可批量
+     * [取消出库单明细]可批量
      * 
+     * @param odo
      * @param lineList
      * @param ouId
      * @param userId
      * @param logId
      */
-    void deleteLines(List<WhOdoLine> lineList, Long ouId, Long userId, String logId);
+    void cancelLines(WhOdo odo, List<WhOdoLine> lineList, Long ouId, Long userId, String logId);
 
     /**
      * [通用方法] 修改出库单明细状态,方法统一放在OdoManager中进行事务处理
@@ -139,5 +141,15 @@ public interface OdoLineManager extends BaseManager {
      * @return
      */
     List<WhOdoLine> findOdoLineListByOdoIdStatus(Long odoId, Long ouId, String[] strings);
+
+    /**
+     * 根据外部对接行号列表 查询出库单明细
+     * 
+     * @param id
+     * @param ouId
+     * @param lineSeq
+     * @return
+     */
+    List<WhOdoLine> findOdoLineListByOdoIdAndLinenumList(Long odoId, Long ouId, List<Integer> lineSeq);
 
 }

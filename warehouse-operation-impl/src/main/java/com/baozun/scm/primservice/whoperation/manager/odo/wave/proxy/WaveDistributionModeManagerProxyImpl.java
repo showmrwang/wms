@@ -276,7 +276,7 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
         this.whWaveManager.matchWaveDisTributionMode(odoList, offWaveLineList, offOdoLineList, wave, ouId, userId, wh);
 
     }
-    
+
 
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -343,13 +343,13 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
      * @param twoSuitsOdoSet
      */
     private void calcTwoSuits(String code, Long odoId, Set<String> twoSuitsOdoSet, Set<String> twoSuitsSkuSet, Map<String, Integer> twoSuitsSkuMap, WhWaveMaster master, Map<String, Set<Long>> suitsOdoMap, Set<Long> noModeOdoList) {
-        if(!master.getIsCalcTwoSkuSuit()){
-            calcSuits(code,master,odoId,suitsOdoMap,noModeOdoList);
-        }else{
+        if (!master.getIsCalcTwoSkuSuit()) {
+            calcSuits(code, master, odoId, suitsOdoMap, noModeOdoList);
+        } else {
             String[] unitCodeArray = code.split("\\|");
-            
+
             String[] unitSkuIdArray = unitCodeArray[3].substring(1, unitCodeArray[3].length() - 1).split("\\$");
-            
+
             if (twoSuitsSkuMap.containsKey(unitSkuIdArray[0])) {
                 twoSuitsSkuMap.put(unitSkuIdArray[0], twoSuitsSkuMap.get(unitSkuIdArray[0]) + 1);
             } else {
@@ -360,7 +360,7 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
             } else {
                 twoSuitsSkuMap.put(unitSkuIdArray[1], 1);
             }
-            
+
             Iterator<Entry<String, Integer>> it = twoSuitsSkuMap.entrySet().iterator();
             while (it.hasNext()) {
                 Entry<String, Integer> entry = it.next();
@@ -368,10 +368,10 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
                     twoSuitsSkuSet.add(entry.getKey());
                 }
             }
-            
+
             twoSuitsOdoSet.add(code + "|" + odoId);
         }
-        
+
     }
 
     private void twoSuitsOdoMapIterator(Set<String> twoSuitsOdoSet, Set<String> twoSuitsSkuSet, Integer twoSkuSuitOdoQtys, Map<String, Set<Long>> twoSuitsOdoMap) {
@@ -404,7 +404,7 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
     }
 
 
-    private void packageWave(WhWave wave, Map<Long, WhWaveLine> waveLineMap, WhWaveMaster master,Long ouId, List<WhOdoLine> offOdoLineList, int divOdoSize) {
+    private void packageWave(WhWave wave, Map<Long, WhWaveLine> waveLineMap, WhWaveMaster master, Long ouId, List<WhOdoLine> offOdoLineList, int divOdoSize) {
         int odoCount = wave.getTotalOdoQty() - divOdoSize;// 波次出库单总单数
         int odolineCount = waveLineMap.size();// 波次明细数
 
@@ -494,10 +494,10 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
     @Override
     public Map<String, List<Long>> getSecKillOdoList(Long ouId) {
         List<String> keys = this.cacheManager.Keys(CacheKeyConstant.SECKILL_ODO_PREFIX + ouId + "|*");
-        Map<String,List<Long>> map=new HashMap<String,List<Long>>();
-        if(keys!=null&&keys.size()>0){
-            for(String key:keys){
-                String[] keyArray=key.split("%");
+        Map<String, List<Long>> map = new HashMap<String, List<Long>>();
+        if (keys != null && keys.size() > 0) {
+            for (String key : keys) {
+                String[] keyArray = key.split("%");
                 String[] codeOdoIdArray = keyArray[2].split("\\|");
                 String code = codeOdoIdArray[0] + "|" + codeOdoIdArray[1] + "|" + codeOdoIdArray[2] + "|" + codeOdoIdArray[3];
                 Long odoId = Long.parseLong(codeOdoIdArray[4]);
@@ -526,15 +526,14 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
                 odo.setDistributeMode(distributeMode);
                 odo.setDistributionCode(skuCode);
                 odo.setIsAllowMerge(false);
-                int count = this.odoManager.updateByVersion(odo);
-                // 更新失败，则再试一次
-                if (count <= 0) {
+                try {
+                    this.odoManager.updateByVersion(odo);
+                } catch (Exception e) {
+                    // 更新失败，则再试一次
                     odo = this.odoManager.findOdoByIdOuId(odoId, ouId);
-                    count = this.odoManager.updateByVersion(odo);
+                    this.odoManager.updateByVersion(odo);
                 }
-                if (count > 0) {
-                    this.cacheManager.remove(CacheKeyConstant.SECKILL_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + odoId);
-                }
+                this.cacheManager.remove(CacheKeyConstant.SECKILL_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + odoId);
             }
         } catch (Exception e) {
 
@@ -586,15 +585,14 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
                 odo.setDistributeMode(distributeMode);
                 odo.setDistributionCode(skuCode);
                 odo.setIsAllowMerge(false);
-                int count = this.odoManager.updateByVersion(odo);
-                // 更新失败，则再试一次
-                if (count <= 0) {
+                try {
+                    this.odoManager.updateByVersion(odo);
+                } catch (Exception e) {
+                    // 更新失败，则再试一次
                     odo = this.odoManager.findOdoByIdOuId(odoId, ouId);
-                    count = this.odoManager.updateByVersion(odo);
+                    this.odoManager.updateByVersion(odo);
                 }
-                if (count > 0) {
-                    this.cacheManager.remove(CacheKeyConstant.SUITS_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + odoId);
-                }
+                this.cacheManager.remove(CacheKeyConstant.SUITS_ODO_PREFIX + code + CacheKeyConstant.WAVE_ODO_SPLIT + odoId);
             }
         } catch (Exception e) {
 
@@ -639,15 +637,14 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
                 odo.setDistributeMode(distributeMode);
                 odo.setDistributionCode(skuCode);
                 odo.setIsAllowMerge(false);
-                int count = this.odoManager.updateByVersion(odo);
-                // 更新失败，则再试一次
-                if (count <= 0) {
+                try {
+                    this.odoManager.updateByVersion(odo);
+                } catch (Exception e) {
+                    // 更新失败，则再试一次
                     odo = this.odoManager.findOdoByIdOuId(odoId, ouId);
-                    count = this.odoManager.updateByVersion(odo);
+                    this.odoManager.updateByVersion(odo);
                 }
-                if (count > 0) {
-                    this.cacheManager.remove(CacheKeyConstant.TWOSKUSUIT_PREFIX + twoSkuSuitPrefix + CacheKeyConstant.WAVE_ODO_SPLIT + skuId + CacheKeyConstant.WAVE_ODO_SPLIT + odoId);
-                }
+                this.cacheManager.remove(CacheKeyConstant.TWOSKUSUIT_PREFIX + twoSkuSuitPrefix + CacheKeyConstant.WAVE_ODO_SPLIT + skuId + CacheKeyConstant.WAVE_ODO_SPLIT + odoId);
             }
         } catch (Exception e) {
 

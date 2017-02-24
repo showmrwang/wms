@@ -3353,4 +3353,14 @@
             AND ou_id = #{ouId}
     </select>
 
+
+
+
+<select id="findByExtCodeOuIdNotCancel" resultMap="WhOdoResult">
+        select
+        <include refid="whOdoColumns"/>
+        from t_wh_odo
+       where ext_code =#{extCode} and ouId=#{ouId} and odo_status!=17
+
+    </select>
 </mapper>
