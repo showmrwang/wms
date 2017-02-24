@@ -352,7 +352,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         WhSeedingCollectionCommand whSeedingCollectionCommand = new WhSeedingCollectionCommand();
         whSeedingCollectionCommand.setBatch(batch);
         whSeedingCollectionCommand.setOuId(ouId);
-        whSeedingCollectionCommand.setSeedingwallCode(seedingwallCode);
+        whSeedingCollectionCommand.setFacilityCode(seedingwallCode);
         whSeedingCollectionCommand.setCollectionStatus(CollectionStatus.FINISH);
         whSeedingCollectionCommand.setFacilityId(whOutboundFacility.getId());
         int occupied = this.whSeedingCollectionDao.countCapacityByParamExt(whSeedingCollectionCommand); // 播种墙已占有容量(集货表状态为非完成)

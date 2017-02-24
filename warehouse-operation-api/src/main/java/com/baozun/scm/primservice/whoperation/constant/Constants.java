@@ -433,6 +433,12 @@ public final class Constants {
     public static final String CREATE_OUTBOUND_CARTON_UNMATCHED_BOX = "ERROR007";
     /** 出库箱推荐阶段 发生异常 */
     public static final String CREATE_OUTBOUND_CARTON_REC_BOX_EXCEPTION = "ERROR008";
+    /** 出库单配货模式不存在或不可用 */
+    public static final String CREATE_OUTBOUND_CARTON_DISTRIBUTE_MODE_ERROR = "ERROR009";
+    /** 摘果出库单明细分组不存在 */
+    public static final String CREATE_OUTBOUND_CARTON_SPLIT_REQUIRE_ERROR = "ERROR010";
+    /** 出库单明细没有占用库存 */
+    public static final String CREATE_OUTBOUND_CARTON_OCC_INVENTORY_ERROR = "ERROR011";
 
     public static final String ALLOCATE_STRATEGY_FIRSTINFIRSTOUT = "1"; // 先入先出
     public static final String ALLOCATE_STRATEGY_FIRSTINLASTOUT = "2"; // 先入后出
