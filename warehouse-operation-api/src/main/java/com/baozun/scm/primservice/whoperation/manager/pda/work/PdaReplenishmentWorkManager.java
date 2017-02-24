@@ -40,6 +40,6 @@ public interface PdaReplenishmentWorkManager extends BaseManager {
      * 拣货完成
      * @param command
      */
-    public void pdaPickingFinish(PickingScanResultCommand  command);
+    public void pdaPickingFinish(PickingScanResultCommand  command,Boolean isTabbInvTotal);
     
 }

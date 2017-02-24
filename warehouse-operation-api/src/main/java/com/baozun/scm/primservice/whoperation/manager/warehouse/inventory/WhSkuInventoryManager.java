@@ -188,4 +188,14 @@ public interface WhSkuInventoryManager extends BaseManager {
      * @param workCode
      */
     public void replenishmentPutaway(Long operationId,Long ouId,Boolean isTabbInvTotal,Long userId,String workCode);
+    
+    /***
+     * 补货中的拣货由库位库存生成容器库存
+     * @param operationId
+     * @param ouId
+     * @param outerContainerId
+     * @param insideContainerId
+     * @param turnoverBoxId
+     */
+    public void replenishmentContainerInventory(Long operationId,Long ouId,Long outerContainerId,Long insideContainerId,Long turnoverBoxId,Boolean isTabbInvTotal,Long userId,String workCode);
 }

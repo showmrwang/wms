@@ -97,6 +97,54 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    ]]>
 	</sql>
 	
+	
+	<sql id="whSkuInventoryColumnsSnCommandExt">
+	    <![CDATA[
+			        inv.id as invId,
+					inv.sku_id as skuId,
+					inv.location_id as locationId,
+					inv.outer_container_id as outerContainerId,
+					inv.inside_container_id as insideContainerId,
+					inv.customer_id as customerId,
+					inv.store_id as storeId,
+					inv.occupation_code as invOccupationCode,
+					inv.on_hand_qty as onHandQty,
+					inv.frozen_qty as frozenQty,
+					inv.inv_status as invStatus,
+					inv.inv_type as invType,
+					inv.batch_number as batchNumber,
+					inv.mfg_date as mfgDate,
+					inv.exp_date as expDate,
+					inv.country_of_origin as countryOfOrigin,
+					inv.inv_attr1 as invAttr1,
+					inv.inv_attr2 as invAttr2,
+					inv.inv_attr3 as invAttr3,
+					inv.inv_attr4 as invAttr4,
+					inv.inv_attr5 as invAttr5,
+					inv.uuid as invUuid,
+					inv.is_locked as isLocked,
+					inv.ou_id as invOuId,
+					inv.occupation_code_source as occupationCodeSource,
+					inv.inbound_time as inboundTime,
+	        		inv.last_modify_time as lastModifyTime,
+	        		inv.container_lattice_no as containerLatticeNo,
+	            	inv.outboundbox_code as outboundboxCode,
+	            	inv.temporary_location_id as temporaryLocationId,
+	        		sn.id as snId,
+	        		sn.sn as snSn,
+	        		sn.occupation_code as snOccupationCode,
+	        		sn.defect_ware_barcode as snDefectWareBarcode,
+	        		sn.defect_source as snDefectSource,
+	        		sn.defect_type_id as snDefectTypeId,
+	        		sn.defect_reasons_id as snDefectReasonsId,
+	        		sn.status as snStatus,
+	        		sn.inv_attr as snInvAttr,
+	        		sn.uuid as snUuid,
+	        		sn.ou_id as snOuId,
+	        		sn.sys_uuid as snSysUuid
+	    ]]>
+	</sql>
+	
 	<sql id="whSkuInventoryDynamicWhereExt">
 		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
 		<where>
@@ -2991,14 +3039,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        		sn.ou_id as snOuId,
 	        		sn.sys_uuid as snSysUuid
 					from 
-					t_wh_sku_inventory inv
-					left join t_wh_operation_line operLine on operLine.odo_line_id = inv.occupation_line_id
-					left join t_wh_odo odo.id = operLine.odo_id  and odo.odo_code = inv.occupation_code
-					left join t_wh_sku_inventory_sn sn on inv.uuid = sn.uuid
-					where 
-						inv.occupation_code is not null 
-					    and inv.ou_id = #{ouId}
-					and operLine.operation_id = #{operationId}
+					t_wh_sku_inventory inv, t_wh_operation_line operLine, t_wh_odo odo ,t_wh_sku_inventory_sn sn
+                    where operLine.odo_line_id = inv.occupation_line_id
+                    and operLine.replenishment_code = inv.replenishment_code
+                    and odo.id = operLine.odo_id
+                    and odo.odo_code = inv.occupation_code
+                    and inv.uuid = sn.uuid 
+                    and inv.occupation_code IS NOT NULL
+                    and inv.ou_id = #{ouId}
+                    and operLine.operation_id = #{operationId}
     </select>
    <!--  
     <select id="getWhSkuInventoryTobefilledByOccupationLineId" resultMap="WhSkuInventoryCommandSnResultExt">
@@ -3157,7 +3206,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					from 
 					t_wh_sku_inventory_tobefilled inv
 					left join t_wh_operation_line operLine on operLine.odo_line_id = inv.occupation_line_id 
-					left join t_wh_odo odo.id = operLine.odo_id  and odo.odo_code = inv.occupation_code
+					left join t_wh_odo odo odo.id = operLine.odo_id  and odo.odo_code = inv.occupation_code
 					left join t_wh_sku_inventory_sn sn on inv.uuid = sn.uuid
 					where 
 						inv.occupation_code is not null 
@@ -3281,4 +3330,46 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			inv.sku_id,
 			inv.uuid	
 	</select>
+	
+	<!-- 
+	 <select id="getWhSkuInventoryByWave" resultMap="WhSkuInventoryCommandSnResultExt">
+			select 
+					<include refid="whSkuInventoryColumnsSnCommandExt" />
+					from 
+					t_wh_sku_inventory inv
+					left join t_wh_operation_line operLine on operLine.odo_line_id = inv.occupation_line_id 
+					left join t_wh_odo odo odo.id = operLine.odo_id  and odo.odo_code = inv.occupation_code
+					left join t_wh_sku_inventory_sn sn on inv.uuid = sn.uuid
+					where operLine.odo_line_id = inv.occupation_line_id 
+						and inv.occupation_code is not null 
+					    and inv.ou_id = #{ouId}
+					    and operLine.odo_line_id = #{operationId}
+	                    and inv.replenishmentCode = #{replenishmentCode}
+    </select> -->
+    
+    <select id="getWhSkuInventoryCmdByuuid" resultMap="WhSkuInventoryCommandSnResultExt">
+          select 
+					<include refid="whSkuInventoryColumnsSnCommandExt" />
+					from 
+					t_wh_sku_inventory inv
+					left join t_wh_sku_inventory_sn sn on inv.uuid = sn.uuid
+					where
+						inv.location_id = #{locationId}
+						and inv.sku_id = #{skuId}
+					    and inv.ou_id = #{ouId}
+	                    and inv.uuid = #{uuid}
+    </select>
+        <select id="findWhSkuInventoryCmdByuuid" resultMap="WhSkuInventoryCommandSnResultExt">
+          select 
+					<include refid="whSkuInventoryColumnsSnCommandExt" />
+					from 
+					t_wh_sku_inventory inv
+					left join t_wh_sku_inventory_sn sn on inv.uuid = sn.uuid
+					where 
+						inv.outer_container_id = #{outerContainerId}
+						and inv.inside_container_id = #{insideContainerId}
+						and inv.sku_id = #{skuId}
+					    and inv.ou_id = #{ouId}
+	                    and inv.uuid = #{uuid}
+    </select>
 </mapper>

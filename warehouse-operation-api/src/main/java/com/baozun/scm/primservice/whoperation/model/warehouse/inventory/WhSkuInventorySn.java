@@ -55,6 +55,8 @@ public class WhSkuInventorySn extends BaseModel {
     private Long ouId;
     /** 系统uuid 用于逻辑处理 */
     private String sysUuid;
+    /**补货编码*/
+    private String replenishmentCode;
 
     public Long getInvId() {
         return invId;
@@ -158,6 +160,14 @@ public class WhSkuInventorySn extends BaseModel {
 
     public void setSysUuid(String sysUuid) {
         this.sysUuid = sysUuid;
+    }
+
+    public String getReplenishmentCode() {
+        return replenishmentCode;
+    }
+
+    public void setReplenishmentCode(String replenishmentCode) {
+        this.replenishmentCode = replenishmentCode;
     }
 
 

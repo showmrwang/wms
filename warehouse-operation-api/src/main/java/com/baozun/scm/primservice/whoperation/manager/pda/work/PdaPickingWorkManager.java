@@ -96,7 +96,7 @@ public interface PdaPickingWorkManager extends BaseManager {
      * @param command
      * @return
      */
-    public PickingScanResultCommand scanSku(PickingScanResultCommand  command,WhSkuCommand skuCmd,Boolean isTabbInvTotal);
+    public PickingScanResultCommand scanSku(PickingScanResultCommand  command,WhSkuCommand skuCmd);
     
     /***
      * 判断货箱内库存属性是否唯一
@@ -197,7 +197,7 @@ public interface PdaPickingWorkManager extends BaseManager {
      * @param command
      * @return
      */
-    public void pdaPickingFinish(PickingScanResultCommand command);
+    public void pdaPickingFinish(PickingScanResultCommand command,Boolean isTabbInvTotal);
     
     /**
      * 生成作业执行明细
@@ -209,5 +209,7 @@ public interface PdaPickingWorkManager extends BaseManager {
      * @return
      */
     public PickingScanResultCommand wholeCaseOperationExecLine(PickingScanResultCommand  command,WhSkuCommand skuCmd,Boolean isTabbInvTotal);
+    
+    
     
 }

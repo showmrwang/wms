@@ -16,6 +16,8 @@
  */
  package com.baozun.scm.primservice.whoperation.command.warehouse.inventory;
 
+import java.util.List;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -117,6 +119,9 @@ public class WhSkuInventoryAllocatedCommand extends BaseModel {
     private java.lang.Long toLocationId;
     /** 目标库位数量 */
     private Double toQty;
+    
+    /** 残次库存信息 */
+    private List<WhSkuInventorySnCommand> whSkuInventorySnCommandList;
 	//columns END
 
 	public WhSkuInventoryAllocatedCommand(){
@@ -332,6 +337,17 @@ public class WhSkuInventoryAllocatedCommand extends BaseModel {
         this.toQty = toQty;
     }
     
+    
+    
+    
+    public List<WhSkuInventorySnCommand> getWhSkuInventorySnCommandList() {
+        return whSkuInventorySnCommandList;
+    }
+
+    public void setWhSkuInventorySnCommandList(List<WhSkuInventorySnCommand> whSkuInventorySnCommandList) {
+        this.whSkuInventorySnCommandList = whSkuInventorySnCommandList;
+    }
+
     @Override
 	public String toString() {
 		return new ToStringBuilder(this)

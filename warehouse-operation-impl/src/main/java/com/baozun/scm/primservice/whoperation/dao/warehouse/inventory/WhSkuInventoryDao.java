@@ -747,4 +747,10 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
 	public List<WhSkuInventoryCommand> findReplenishmentBylocationId(@Param("ouId") Long ouId,@Param("locationId") Long locationId,@Param("odoLineId") Long odoLineId,@Param("odoId") Long odoId);
 
 	List<WhSeedingCollectionLine> findSeedingDataByContainerId(@Param("containerId") Long containerId, @Param("ouId") Long ouId);
+	
+	
+	public List<WhSkuInventoryCommand> getWhSkuInventoryCmdByuuid(@Param("locationId") Long locationId,@Param("skuId") Long skuId,@Param("uuid") String uuid,@Param("ouId") Long ouId);
+	
+	
+	public List<WhSkuInventoryCommand> findWhSkuInventoryCmdByuuid(@Param("outerContainerId") Long outerContainerId,@Param("insideContainerId") Long insideContainerId,@Param("skuId") Long skuId,@Param("uuid") String uuid,@Param("ouId") Long ouId);
 }

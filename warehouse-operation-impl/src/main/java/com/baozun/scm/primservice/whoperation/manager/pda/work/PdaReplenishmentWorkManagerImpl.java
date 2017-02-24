@@ -13,15 +13,18 @@ import com.baozun.redis.manager.CacheManager;
 import com.baozun.scm.primservice.whoperation.command.pda.work.CheckScanResultCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.work.OperatioLineStatisticsCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.work.PickingScanResultCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationCommand;
 import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhFunctionReplenishmentDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhLocationDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhOperationManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Location;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionReplenishment;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhWork;
@@ -45,7 +48,10 @@ public class PdaReplenishmentWorkManagerImpl extends BaseManagerImpl implements 
     private PdaPickingWorkManager pdaPickingWorkManager;
     @Autowired
     private WhOperationManager whOperationManager;
-    
+    @Autowired
+    private WhSkuInventoryManager whSkuInventoryManager;
+    @Autowired
+    private ContainerDao containerDao;
     
     /****
      * 确定补货方式和占用模型
@@ -167,12 +173,42 @@ public class PdaReplenishmentWorkManagerImpl extends BaseManagerImpl implements 
      * 拣货完成
      * @param command
      */
-    public void pdaPickingFinish(PickingScanResultCommand  command){
+    public void pdaPickingFinish(PickingScanResultCommand  command,Boolean isTabbInvTotal){
         Long operationId = command.getOperationId();
         String workCode = command.getWorkBarCode();
         Long ouId = command.getOuId();
         Long userId = command.getUserId();
         Long locationId = command.getLocationId();
+        String outerContainerCode = command.getOuterContainerCode();
+        String turnoverBoxCode = command.getTurnoverBoxCode();
+        String insideContainerCode = command.getInsideContainerCode();
+        Long outerContainerId = null;
+        if(StringUtils.isEmpty(outerContainerCode)) {
+            ContainerCommand c = containerDao.getContainerByCode(outerContainerCode, ouId);
+            if(null == c) {
+                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+            }
+            outerContainerId = c.getId();
+        }
+        Long insideContainerId = null;
+        if(StringUtils.isEmpty(insideContainerCode)) {
+            ContainerCommand c = containerDao.getContainerByCode(insideContainerCode, ouId);
+            if(null == c) {
+                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+            }
+            insideContainerId = c.getId();
+        }
+        
+        Long turnoverBoxId = null;
+        if(StringUtils.isEmpty(turnoverBoxCode)) {
+            ContainerCommand c = containerDao.getContainerByCode(turnoverBoxCode, ouId);
+            if(null == c) {
+                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+            }
+            turnoverBoxId = c.getId();
+        }
+        //已分配的库位库存转变为容器库存
+        whSkuInventoryManager.replenishmentContainerInventory(operationId, ouId, outerContainerId, insideContainerId, turnoverBoxId, isTabbInvTotal, userId,workCode);
        //更新工作及作业状态
         pdaPickingWorkCacheManager.pdaReplenishmentUpdateOperation(operationId, ouId,userId);
         //清除缓存
