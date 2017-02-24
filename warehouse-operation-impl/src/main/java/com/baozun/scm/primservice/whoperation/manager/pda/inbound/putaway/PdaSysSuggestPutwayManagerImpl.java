@@ -4006,8 +4006,8 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
             throw new BusinessException(ErrorCodes.COMMON_STORE_NOT_FOUND_ERROR);
         }
         String invAttrMgmt = store.getInvAttrMgmt(); // 店铺的库存属性
-        if (null == invAttrMgmt) {
-            if (null != invAttrMgmtHouse) {
+        if (StringUtils.isEmpty(invAttrMgmt)) {
+            if (!StringUtils.isEmpty(invAttrMgmtHouse)) {
                 String[] warehouseAttr = invAttrMgmtHouse.split(","); // 仓库库存属性
                 this.attMgmt(warehouseAttr, whskuList, locationSkuList);
             }

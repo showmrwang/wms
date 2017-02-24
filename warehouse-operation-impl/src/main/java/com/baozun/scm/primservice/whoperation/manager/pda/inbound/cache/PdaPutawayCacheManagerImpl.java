@@ -3277,72 +3277,78 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
             Long skuQty = skuAttrIdsQty.get(saId);
 //            if (true == isSnLine) {
                 if(scanPattern == WhScanPatternType.NUMBER_ONLY_SCAN) {  //批量扫描
-                    if(true== isSnLine) {
-                       // sn或残次商品
-                        String snDefect = SkuCategoryProvider.getSnDefect(skuAttrId);// 当前sn残次信息
-                        Set<String> allSnDefect = skuAttrIdsSnDefect.get(saId);// 唯一sku对应的所有sn残次信息
-                        // 判断所有sn残次信息是否都已扫描完毕
-                        String tipSkuAttrId = "";
-                        for (String sd : allSnDefect) {
-                            if (snDefect.equals(sd)) {
-                                continue;// 跳过当前的
-                            }
-                            String tempSkuAttrId = SkuCategoryProvider.concatSkuAttrId(saId, sd);
-                            Set<String> tempSkuAttrIds = new HashSet<String>();
-                            tempSkuAttrIds.add(tempSkuAttrId);
-                            boolean isExists = isCacheAllExists2(tempSkuAttrIds, tipSkuAttrIds);
-                            if (true == isExists) {
-                                continue;
-                            } else {
-                                isSkuChecked = false;
-                                tipSkuAttrId = tempSkuAttrId;
-                                break;
-                            }
-                        }
-                        if (false == isSkuChecked) {
-                            // 提示相同商品的下一个sn明细
-                            cssrCmd.setNeedTipSkuSn(true);
-                            cssrCmd.setTipSkuAttrId(tipSkuAttrId);
-                            return cssrCmd;
-                        }
+                    if(scanSkuQty.longValue() > skuQty.longValue()){
+                        log.error("sku scan qty has already more than rcvd qty, skuId is:[{}], scan qty is:[{}], rcvd qty is:[{}], logId is:[{}]", skuId, skuQty, scanSkuQty, logId);
+                        throw new BusinessException(ErrorCodes.SCAN_SKU_QTY_IS_MORE_THAN_RCVD_QTY); 
                     }else{
-                        // 非sn残次商品
-                        if (null != scanSkuQty && (0 == new Long(scanSkuQty.longValue()).compareTo(skuQty))) {
-                            isSkuChecked = true;
-                        } else {
-                            isSkuChecked = false;
-                        }
-                        if (false == isSkuChecked) {
-                            log.error("scan sku qty is not equals loc binding qty error, logId is:[{}]", logId);
-                            throw new BusinessException(ErrorCodes.SCAN_SKU_QTY_IS_VALID);
-                        }
+                        if(true== isSnLine) {
+                            // sn或残次商品
+                             String snDefect = SkuCategoryProvider.getSnDefect(skuAttrId);// 当前sn残次信息
+                             Set<String> allSnDefect = skuAttrIdsSnDefect.get(saId);// 唯一sku对应的所有sn残次信息
+                             // 判断所有sn残次信息是否都已扫描完毕
+                             String tipSkuAttrId = "";
+                             for (String sd : allSnDefect) {
+                                 if (snDefect.equals(sd)) {
+                                     continue;// 跳过当前的
+                                 }
+                                 String tempSkuAttrId = SkuCategoryProvider.concatSkuAttrId(saId, sd);
+                                 Set<String> tempSkuAttrIds = new HashSet<String>();
+                                 tempSkuAttrIds.add(tempSkuAttrId);
+                                 boolean isExists = isCacheAllExists2(tempSkuAttrIds, tipSkuAttrIds);
+                                 if (true == isExists) {
+                                     continue;
+                                 } else {
+                                     isSkuChecked = false;
+                                     tipSkuAttrId = tempSkuAttrId;
+                                     break;
+                                 }
+                             }
+                             if (false == isSkuChecked) {
+                                 // 提示相同商品的下一个sn明细
+                                 cssrCmd.setNeedTipSkuSn(true);
+                                 cssrCmd.setTipSkuAttrId(tipSkuAttrId);
+                                 return cssrCmd;
+                             }
+                         }else{
+                             // 非sn残次商品
+                             if (null != scanSkuQty && (0 == new Long(scanSkuQty.longValue()).compareTo(skuQty))) {
+                                 isSkuChecked = true;
+                             } else {
+                                 isSkuChecked = false;
+                             }
+                             if (false == isSkuChecked) {
+                                 log.error("scan sku qty is not equals loc binding qty error, logId is:[{}]", logId);
+                                 throw new BusinessException(ErrorCodes.SCAN_SKU_QTY_IS_VALID);
+                             }
+                         }
+                         //判断提示下一个容器
+                         Set<Long> allContainerIds = insideContainerIds;
+                         boolean isAllContainerCache = isCacheAllExists(allContainerIds, cacheContainerIds);
+                         Long tipContainerId = null;
+                         if (false == isAllContainerCache) {
+                             // 提示下一个容器
+                             cssrCmd.setPutaway(true);
+                             for (Long cId : allContainerIds) {
+                                 if (0 == icId.compareTo(cId)) {
+                                     continue;
+                                 }
+                                 Set<Long> tempContainerIds = new HashSet<Long>();
+                                 tempContainerIds.add(cId);
+                                 boolean isExists = isCacheAllExists(tempContainerIds, cacheContainerIds);
+                                 if (true == isExists) {
+                                     continue;
+                                 } else {
+                                     tipContainerId = cId;
+                                     break;
+                                 }
+                             }
+                             cssrCmd.setNeedTipContainer(true);
+                             cssrCmd.setTipContainerId(tipContainerId);
+                         } else {
+                             cssrCmd.setPutaway(true);// 可上架
+                         }
                     }
-                    //判断提示下一个容器
-                    Set<Long> allContainerIds = insideContainerIds;
-                    boolean isAllContainerCache = isCacheAllExists(allContainerIds, cacheContainerIds);
-                    Long tipContainerId = null;
-                    if (false == isAllContainerCache) {
-                        // 提示下一个容器
-                        cssrCmd.setPutaway(true);
-                        for (Long cId : allContainerIds) {
-                            if (0 == icId.compareTo(cId)) {
-                                continue;
-                            }
-                            Set<Long> tempContainerIds = new HashSet<Long>();
-                            tempContainerIds.add(cId);
-                            boolean isExists = isCacheAllExists(tempContainerIds, cacheContainerIds);
-                            if (true == isExists) {
-                                continue;
-                            } else {
-                                tipContainerId = cId;
-                                break;
-                            }
-                        }
-                        cssrCmd.setNeedTipContainer(true);
-                        cssrCmd.setTipContainerId(tipContainerId);
-                    } else {
-                        cssrCmd.setPutaway(true);// 可上架
-                    }
+                    
                 }else{ //逐件扫描
                     long cacheValue = cacheManager.incrBy(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + skuId.toString(), scanSkuQty.intValue());
                     if (cacheValue == skuQty.longValue()) {
