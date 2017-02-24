@@ -119,8 +119,8 @@ public class SeedingManagerImpl extends BaseManagerImpl implements SeedingManage
     }
 
     @Override
-    public WhOutboundFacilityCommand getOutboundFacilityById(Long id, Long ouId) {
-        return whOutboundFacilityDao.findByIdExt(id, ouId);
+    public WhOutboundFacilityCommand getOutboundFacilityById(Long facilityId, Long ouId) {
+        return whOutboundFacilityDao.findByIdExt(facilityId, ouId);
     }
 
     /**

@@ -257,4 +257,13 @@ public interface WhOdoDao extends BaseDao<WhOdo, Long> {
      * @return
      */
     List<WhSeedingWallLatticeLine> getSeedingOdoLineInfo(@Param("odoId") Long odoId, @Param("ouId") Long ouId);
+    /**
+     *根据ID获取出库单列表
+     *
+     * @author mingwei.xie
+     * @param odoIdList
+     * @param ouId
+     * @return
+     */
+    List<OdoCommand> getWhOdoListById(@Param("odoIdList") List<Long> odoIdList, @Param("ouId") Long ouId);
 }

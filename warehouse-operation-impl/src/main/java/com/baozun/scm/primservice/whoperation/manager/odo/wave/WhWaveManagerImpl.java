@@ -30,6 +30,7 @@ import com.baozun.scm.primservice.whoperation.command.odo.OdoLineCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoMergeCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.SoftAllocationCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.WaveCommand;
+import com.baozun.scm.primservice.whoperation.command.odo.wave.WhWaveCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.UomCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhDistributionPatternRuleCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
@@ -1114,5 +1115,17 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         log.info("operation:addOdoLineToWaveNew,time end at {},costs {}!", date6, date6.getTime() - date1.getTime());
     }
 
+    /**
+     * 根据波次编码获取波次列表
+     *
+     * @author mingwei.xie
+     * @param phaseCode
+     * @param ouId
+     * @return
+     */
+    @Override
+    public List<WhWaveCommand> getWhWaveByPhaseCode(String phaseCode, Long ouId) {
+        return whWaveDao.getWhWaveByPhaseCode(phaseCode, ouId);
+    }
 
 }

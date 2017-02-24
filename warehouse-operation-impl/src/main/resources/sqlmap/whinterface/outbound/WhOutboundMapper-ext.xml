@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whinterface.dao.outbound.WhOutboundDao">
+	<resultMap id="WhOutboundResultExt" type="com.baozun.scm.primservice.whoperation.model.whinterface.outbound.WhOutbound">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whOutboundColumnsExt">
+	    <![CDATA[
+	        	id as id,
+	        	ext_odo_code as extOdoCode,
+	        	ec_order_code as ecOrderCode,
+	        	customer_code as customerCode,
+	        	store_code as storeCode,
+	        	odo_type as odoType,
+	        	is_whole_order_outbound as isWholeOrderOutbound,
+	        	part_outbound_strategy as partOutboundStrategy,
+	        	cross_docking_symbol as crossDockingSymbol,
+	        	ec_order_type as ecOrderType,
+	        	order_time as orderTime,
+	        	qty as qty,
+	        	amt as amt,
+	        	epistatic_systems_order_type as epistaticSystemsOrderType,
+	        	outbound_carton_type as outboundCartonType,
+	        	include_hazardous_cargo as includeHazardousCargo,
+	        	include_fragile_cargo as includeFragileCargo,
+	        	transport_service_provider as transportServiceProvider,
+	        	is_cod as isCod,
+	        	cod_amt as codAmt,
+	        	insurance_coverage as insuranceCoverage,
+	        	data_source as dataSource,
+	        	wh_code as whCode,
+	        	is_locked as isLocked,
+	        	express_aging_type as expressAgingType,
+	        	status as status,
+	        	error_count as errorCount,
+	        	create_time as createTime,
+	        	last_modify_time as lastModifyTime
+	    ]]>
+	</sql>
+	
+	<sql id="whOutboundDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+	       
+		       <if test="extOdoCode!=null and extOdoCode!=''">
+					and ext_odo_code = #{extOdoCode}
+				</if>
+	       
+	       
+		       <if test="ecOrderCode!=null and ecOrderCode!=''">
+					and ec_order_code = #{ecOrderCode}
+				</if>
+	       
+	       
+		       <if test="customerCode!=null and customerCode!=''">
+					and customer_code = #{customerCode}
+				</if>
+	       
+	       
+		       <if test="storeCode!=null and storeCode!=''">
+					and store_code = #{storeCode}
+				</if>
+	       
+	       
+		       <if test="odoType!=null and odoType!=''">
+					and odo_type = #{odoType}
+				</if>
+	       
+				<if test="isWholeOrderOutbound!=null">
+					and is_whole_order_outbound = #{isWholeOrderOutbound}
+				</if>
+	       
+	       
+		       <if test="partOutboundStrategy!=null and partOutboundStrategy!=''">
+					and part_outbound_strategy = #{partOutboundStrategy}
+				</if>
+	       
+				<if test="crossDockingSymbol!=null">
+					and cross_docking_symbol = #{crossDockingSymbol}
+				</if>
+	       
+	       
+		       <if test="ecOrderType!=null and ecOrderType!=''">
+					and ec_order_type = #{ecOrderType}
+				</if>
+	       
+				<if test="orderTime!=null">
+					and order_time = #{orderTime}
+				</if>
+	       
+				<if test="qty!=null">
+					and qty = #{qty}
+				</if>
+	       
+				<if test="amt!=null">
+					and amt = #{amt}
+				</if>
+	       
+	       
+		       <if test="epistaticSystemsOrderType!=null and epistaticSystemsOrderType!=''">
+					and epistatic_systems_order_type = #{epistaticSystemsOrderType}
+				</if>
+	       
+	       
+		       <if test="outboundCartonType!=null and outboundCartonType!=''">
+					and outbound_carton_type = #{outboundCartonType}
+				</if>
+	       
+				<if test="includeHazardousCargo!=null">
+					and include_hazardous_cargo = #{includeHazardousCargo}
+				</if>
+	       
+				<if test="includeFragileCargo!=null">
+					and include_fragile_cargo = #{includeFragileCargo}
+				</if>
+	       
+	       
+		       <if test="transportServiceProvider!=null and transportServiceProvider!=''">
+					and transport_service_provider = #{transportServiceProvider}
+				</if>
+	       
+				<if test="isCod!=null">
+					and is_cod = #{isCod}
+				</if>
+	       
+				<if test="codAmt!=null">
+					and cod_amt = #{codAmt}
+				</if>
+	       
+				<if test="insuranceCoverage!=null">
+					and insurance_coverage = #{insuranceCoverage}
+				</if>
+	       
+	       
+		       <if test="dataSource!=null and dataSource!=''">
+					and data_source = #{dataSource}
+				</if>
+	       
+	       
+		       <if test="whCode!=null and whCode!=''">
+					and wh_code = #{whCode}
+				</if>
+	       
+				<if test="isLocked!=null">
+					and is_locked = #{isLocked}
+				</if>
+	       
+	       
+		       <if test="expressAgingType!=null and expressAgingType!=''">
+					and express_aging_type = #{expressAgingType}
+				</if>
+	       
+				<if test="status!=null">
+					and status = #{status}
+				</if>
+	       
+				<if test="errorCount!=null">
+					and error_count = #{errorCount}
+				</if>
+	       
+				<if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+		</where>
+	</sql>
+	
+
+		<update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.whinterface.outbound.WhOutbound">
+		    <![CDATA[
+		        UPDATE t_wh_outbound SET
+			        ext_odo_code = #{extOdoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        ec_order_code = #{ecOrderCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        customer_code = #{customerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        store_code = #{storeCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        odo_type = #{odoType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        is_whole_order_outbound = #{isWholeOrderOutbound,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        part_outbound_strategy = #{partOutboundStrategy,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        cross_docking_symbol = #{crossDockingSymbol,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        ec_order_type = #{ecOrderType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        order_time = #{orderTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+			        qty = #{qty,javaType=Long,jdbcType=DECIMAL} ,
+			        amt = #{amt,javaType=Long,jdbcType=DECIMAL} ,
+			        epistatic_systems_order_type = #{epistaticSystemsOrderType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        outbound_carton_type = #{outboundCartonType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        include_hazardous_cargo = #{includeHazardousCargo,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        include_fragile_cargo = #{includeFragileCargo,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        transport_service_provider = #{transportServiceProvider,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        is_cod = #{isCod,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        cod_amt = #{codAmt,javaType=Long,jdbcType=DECIMAL} ,
+			        insurance_coverage = #{insuranceCoverage,javaType=Long,jdbcType=DECIMAL} ,
+			        data_source = #{dataSource,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        wh_code = #{whCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        is_locked = #{isLocked,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        express_aging_type = #{expressAgingType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        status = #{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        error_count = #{errorCount,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+			        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} 
+		        WHERE 
+			        id = #{id} 
+			        
+			        and last_modify_time	<=  #{lastModifyTime}    
+		    ]]>
+		</update>
+	
+</mapper>

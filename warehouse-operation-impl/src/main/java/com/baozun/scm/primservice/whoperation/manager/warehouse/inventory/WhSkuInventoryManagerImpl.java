@@ -3844,6 +3844,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 		WhSkuInventoryTobefilled tobefilled = new WhSkuInventoryTobefilled();
 		BeanUtils.copyProperties(invCommand, tobefilled);
 		tobefilled.setId(null);
+		tobefilled.setInsideContainerId(null);
+		tobefilled.setOuterContainerId(null);
 		tobefilled.setOccupationCode(occupyCode);
 		tobefilled.setOccupationLineId(occupyLineId);
 		tobefilled.setReplenishmentCode(bhCode);
@@ -4373,7 +4375,10 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         //到库存表中查询
         List<WhSkuInventoryCommand> allSkuInvList = whSkuInventoryDao.getWhSkuInventoryByOccupationLineId(ouId, operationId);
         if(null == allSkuInvList || allSkuInvList.size() == 0){
+//            allSkuInvList = whSkuInventoryDao.getWhSkuInventoryTobefilledByOccupationLineId(ouId, operationId);
+//            if(null == allSkuInvList || allSkuInvList.size() == 0) {
                 throw new BusinessException(ErrorCodes.LOCATION_INVENTORY_IS_NO);
+//            }
         }
         List<Long> skuInvCmdList = new ArrayList<Long>();
         List<Long> insideIdList = new ArrayList<Long>();
@@ -6109,4 +6114,28 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         }
     }
     
+
+    /**
+     *根据占用码查询库存
+     *
+     * @author mingwei.xie
+     * @param occupationCode
+     * @param ouId
+     * @return
+     */
+    public List<WhSkuInventoryCommand> findListByOccupationCode(String occupationCode, Long ouId){
+        return whSkuInventoryDao.findListByOccupationCode(occupationCode, ouId);
+    }
+
+    /**
+     *根据占用码查询库存
+     *
+     * @author mingwei.xie
+     * @param occLineIdList
+     * @param ouId
+     * @return
+     */
+    public List<WhSkuInventoryCommand> findListByOccLineIdListOrderByPickingSort(List<Long> occLineIdList, Long ouId){
+        return whSkuInventoryDao.findListByOccLineIdListOrderByPickingSort(occLineIdList, ouId);
+    }
 }

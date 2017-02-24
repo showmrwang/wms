@@ -12,13 +12,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<resultMap id="WhWaveLineResultExt" type="com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine">
 	</resultMap>
 	
-	<resultMap id="WhWaveCommand"
+	<resultMap id="waveCommand"
 		type="com.baozun.scm.primservice.whoperation.command.odo.wave.WaveCommand">
 	</resultMap>
 
 	<resultMap id="SoftAllocationCommand"
 		type="com.baozun.scm.primservice.whoperation.command.odo.wave.SoftAllocationCommand">
 	</resultMap>
+
+    <resultMap id="whWaveCommand" type="com.baozun.scm.primservice.whoperation.command.odo.wave.WhWaveCommand">
+    </resultMap>
 
 	<!-- 用于select查询公用抽取的列 -->
 	<sql id="whWaveColumnsExt">
@@ -418,7 +421,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			waveline.skuId
 	</select>
 	
-	 <select id="findListByQueryMapWithPageExt" resultMap="WhWaveCommand" parameterType="com.baozun.scm.primservice.whoperation.command.odo.wave.WaveCommand">
+	 <select id="findListByQueryMapWithPageExt" resultMap="waveCommand" parameterType="com.baozun.scm.primservice.whoperation.command.odo.wave.WaveCommand">
     	SELECT
     		wave.id as id,
 			wave.code as code,
@@ -565,7 +568,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		<include refid="whWaveDynamicWhere"/>
     </select>
     
-    <select id="findWaveByIdAndOuId" resultMap="WhWaveCommand">
+    <select id="findWaveByIdAndOuId" resultMap="waveCommand">
     	select 
     		<include refid="whWaveColumnsExt2" />
 	    from t_wh_wave wave 
@@ -650,4 +653,13 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    and w.ou_id = #{ouId}
 	</select>
 	
+
+    <select id="getWhWaveByPhaseCode" resultMap="whWaveCommand">
+        select
+        <include refid="whWaveColumnsExt"/>
+        from t_wh_wave
+        where
+            phase_code = #{phaseCode}
+            and ou_id = #{ouId}
+    </select>
 </mapper>

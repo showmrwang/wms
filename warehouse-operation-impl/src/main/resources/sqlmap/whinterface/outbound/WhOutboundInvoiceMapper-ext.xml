@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whinterface.dao.outbound.WhOutboundInvoiceDao">
+	<resultMap id="WhOutboundInvoiceResultExt" type="com.baozun.scm.primservice.whoperation.model.whinterface.outbound.WhOutboundInvoice">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whOutboundInvoiceColumnsExt">
+	    <![CDATA[
+	        	id as id,
+	        	outbound_id as outboundId,
+	        	invoice_code as invoiceCode,
+	        	invoice_date as invoiceDate,
+	        	invoice_no as invoiceNo,
+	        	payer as payer,
+	        	item as item,
+	        	qty as qty,
+	        	unit_price as unitPrice,
+	        	amt as amt,
+	        	memo as memo,
+	        	payee as payee,
+	        	drawer as drawer,
+	        	company as company
+	    ]]>
+	</sql>
+	
+	<sql id="whOutboundInvoiceDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+				<if test="outboundId!=null">
+					and outbound_id = #{outboundId}
+				</if>
+	       
+	       
+		       <if test="invoiceCode!=null and invoiceCode!=''">
+					and invoice_code = #{invoiceCode}
+				</if>
+	       
+	       
+		       <if test="invoiceDate!=null and invoiceDate!=''">
+					and invoice_date = #{invoiceDate}
+				</if>
+	       
+	       
+		       <if test="invoiceNo!=null and invoiceNo!=''">
+					and invoice_no = #{invoiceNo}
+				</if>
+	       
+	       
+		       <if test="payer!=null and payer!=''">
+					and payer = #{payer}
+				</if>
+	       
+	       
+		       <if test="item!=null and item!=''">
+					and item = #{item}
+				</if>
+	       
+				<if test="qty!=null">
+					and qty = #{qty}
+				</if>
+	       
+				<if test="unitPrice!=null">
+					and unit_price = #{unitPrice}
+				</if>
+	       
+				<if test="amt!=null">
+					and amt = #{amt}
+				</if>
+	       
+	       
+		       <if test="memo!=null and memo!=''">
+					and memo = #{memo}
+				</if>
+	       
+	       
+		       <if test="payee!=null and payee!=''">
+					and payee = #{payee}
+				</if>
+	       
+	       
+		       <if test="drawer!=null and drawer!=''">
+					and drawer = #{drawer}
+				</if>
+	       
+	       
+		       <if test="company!=null and company!=''">
+					and company = #{company}
+				</if>
+		</where>
+	</sql>
+	
+</mapper>

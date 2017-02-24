@@ -372,7 +372,18 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				and invAllocated.sku_id = invTobefilled.sku_id 
 				and invAllocated.occupation_code = invTobefilled.occupation_code 
 				and invAllocated.occupation_line_id = invTobefilled.occupation_line_id 
-				and invAllocated.replenishment_rule_id = replenishRule.id 
+				and invAllocated.replenishment_rule_id = replenishRule.id
+				and invAllocated.inv_status = invTobefilled.inv_status
+				and invAllocated.inv_type = invTobefilled.inv_type
+				and invAllocated.batch_number = invTobefilled.batch_number
+				and (invAllocated.mfg_date = invTobefilled.mfg_date or (invAllocated.mfg_date is null and invTobefilled.mfg_date is null))
+				and (invAllocated.exp_date = invTobefilled.exp_date or (invAllocated.exp_date is null and invTobefilled.exp_date is null))
+				and invAllocated.country_of_origin = invTobefilled.country_of_origin
+				and invAllocated.inv_attr1 = invTobefilled.inv_attr1
+				and invAllocated.inv_attr2 = invTobefilled.inv_attr2
+				and invAllocated.inv_attr3 = invTobefilled.inv_attr3
+				and invAllocated.inv_attr4 = invTobefilled.inv_attr4
+				and invAllocated.inv_attr5 = invTobefilled.inv_attr5 
 				<if test="waveId!=null and waveId!=''">
 					and wave.id = #{waveId} 
 				</if>
@@ -546,6 +557,17 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				and replenishTask.location_id = invTobefilled.location_id
 				and invAllocated.sku_id = invTobefilled.sku_id
 				and invAllocated.replenishment_rule_id = replenishRule.id
+				and invAllocated.inv_status = invTobefilled.inv_status
+				and invAllocated.inv_type = invTobefilled.inv_type
+				and invAllocated.batch_number = invTobefilled.batch_number
+				and (invAllocated.mfg_date = invTobefilled.mfg_date or (invAllocated.mfg_date is null and invTobefilled.mfg_date is null))
+				and (invAllocated.exp_date = invTobefilled.exp_date or (invAllocated.exp_date is null and invTobefilled.exp_date is null))
+				and invAllocated.country_of_origin = invTobefilled.country_of_origin
+				and invAllocated.inv_attr1 = invTobefilled.inv_attr1
+				and invAllocated.inv_attr2 = invTobefilled.inv_attr2
+				and invAllocated.inv_attr3 = invTobefilled.inv_attr3
+				and invAllocated.inv_attr4 = invTobefilled.inv_attr4
+				and invAllocated.inv_attr5 = invTobefilled.inv_attr5
 				<if test="taskOuId!=null and taskOuId!=''">
 					and replenishTask.ou_id = #{taskOuId} 
 				</if>

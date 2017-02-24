@@ -122,4 +122,13 @@ public interface WhDistributionPatternRuleDao extends BaseDao<WhDistributionPatt
      */
     WhDistributionPatternRule findByOdoIdAndOuId(@Param("odoId") Long odoId, @Param("ouId") Long ouId);
 
+
+    /**
+     * 获取仓库组织下的配货模式规则
+     *
+     * @author mingwei.xie
+     * @param ouId
+     * @return
+     */
+    List<WhDistributionPatternRule> findRuleByOuId(@Param("ouId") Long ouId);
 }

@@ -23,6 +23,48 @@ public interface OdoLineManager extends BaseManager {
     WhOdoLine findOdoLineById(Long id, Long ouId);
 
     /**
+     * 根据ODOLINEID和OUID查找ODOLINE
+     *
+     * @author mingwei.xie
+     * @param idList
+     * @param ouId
+     * @return
+     */
+    List<OdoLineCommand> findOdoLineById(List<Long> idList, Long ouId);
+
+    /**
+     * 根据ODOLINEID和OUID查找ODOLINE
+     *
+     * @author mingwei.xie
+     * @param idStrList
+     * @param ouId
+     * @return
+     */
+    List<OdoLineCommand> findOdoLineByIdStr(List<String> idStrList, Long ouId);
+
+    /**
+     * 根据ODOLINEID和OUID查找ODOLINE
+     *
+     * @author mingwei.xie
+     * @param idList
+     * @param ouId
+     * @return
+     */
+    List<OdoLineCommand> findOdoLineByOdoId(List<Long> idList, Long ouId);
+
+    /**
+     * 根据ODOLINEID和OUID查找ODOLINE
+     *
+     * @author mingwei.xie
+     * @param idList
+     * @param ouId
+     * @return
+     */
+    List<OdoLineCommand> findOdoLineByOdoIdOrderByPickingSort(List<Long> idList, Long ouId);
+
+
+
+    /**
      * [通用方法]出库单明细分页查询
      * 
      * @param page
@@ -49,6 +91,15 @@ public interface OdoLineManager extends BaseManager {
      * @return
      */
     List<WhOdoLine> findOdoLineListByOdoId(Long odoId, Long ouId);
+
+    /**
+     * [通用方法]根据ODOID和OUID查找明细
+     *
+     * @param odoId
+     * @param ouId
+     * @return
+     */
+    List<OdoLineCommand> findOdoLineCommandListByOdoId(Long odoId, Long ouId);
 
     /**
      * [删除出库单明细]可批量

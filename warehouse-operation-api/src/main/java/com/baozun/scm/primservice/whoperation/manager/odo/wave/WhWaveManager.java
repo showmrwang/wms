@@ -12,6 +12,7 @@ import lark.common.dao.Sort;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoMergeCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.SoftAllocationCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.WaveCommand;
+import com.baozun.scm.primservice.whoperation.command.odo.wave.WhWaveCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhDistributionPatternRuleCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
@@ -314,4 +315,13 @@ public interface WhWaveManager extends BaseManager {
      */
     public void addOdoLineToWaveNew(List<Long> odoIdList, WhWave wave);
 
+    /**
+     * 根据波次编码获取波次列表
+     *
+     * @author mingwei.xie
+     * @param phaseCode
+     * @param ouId
+     * @return
+     */
+    List<WhWaveCommand> getWhWaveByPhaseCode(String phaseCode, Long ouId);
 }

@@ -45,4 +45,28 @@
         </where>
     </sql>
 
+
+    <select id="getRelationshipByType" resultMap="WhOutInventoryboxRelationshipResultExt">
+        select
+            <include refid="whOutInventoryboxRelationshipColumnsExt" />
+        from
+            t_wh_outboundbox_relationship
+        where
+            ou_id = #{ouId}
+            and relation_id = #{relationshipId}
+            and type = #{type}
+    </select>
+
+    <select id="getGeneralRelationship" resultMap="WhOutInventoryboxRelationshipResultExt">
+        select
+            <include refid="whOutInventoryboxRelationshipColumnsExt" />
+        from
+            t_wh_outboundbox_relationship
+        where
+            ou_id = #{ouId}
+            and relation_id is null
+            and type is null
+    </select>
+
+
 </mapper>

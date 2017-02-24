@@ -45,6 +45,83 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    ]]>
 	</sql>
 
+    <sql id="warehouseCommandColumnsExt">
+        w.id as id,
+        w.code as code,
+        w.name as name,
+        w.op_mode as opMode,
+        w.manage_mode as manageMode,
+        w.pic as pic,
+        w.pic_contact as picContact,
+        w.phone as phone,
+        w.fax as fax,
+        w.other_contact1 as otherContact1,
+        w.other_contact2 as otherContact2,
+        w.other_contact3 as otherContact3,
+        w.country_id as countryId,
+        w.province_id as provinceId,
+        w.city_id as cityId,
+        w.villages_towns_id as villagesTownsId,
+        w.district_id as districtId,
+        w.address as address,
+        w.zip_code as zipCode,
+        w.size as size,
+        w.size_uom as sizeUom,
+        w.rent_price as rentPrice,
+        w.rent_price_uom as rentPriceUom,
+        w.description as description,
+        w.operator_id as operatorId,
+        w.email as email,
+        w.create_time as createTime,
+        w.last_modify_time as lastModifyTime,
+        w.lifecycle as lifecycle,
+
+        mgmt.is_mandatorily_reserved as isMandatorilyReserved,
+        mgmt.is_po_overcharge as isPoOvercharge,
+        mgmt.po_overcharge_proportion as poOverchargeProportion,
+        mgmt.is_asn_overcharge as isAsnOvercharge,
+        mgmt.asn_overcharge_proportion as asnOverchargeProportion,
+        mgmt.is_po_auto_verify as isPoAutoVerify,
+        mgmt.is_asn_auto_verify as isAsnAutoVerify,
+        mgmt.goods_receipt_mode as goodsReceiptMode,
+        mgmt.is_auto_print_bintag as isAutoPrintBintag,
+        mgmt.is_auto_generation_cn as isAutoGenerationCn,
+        mgmt.is_allow_blocked as isAllowBlocked,
+        mgmt.is_sku_needs_scan as isSkuNeedsScan,
+        mgmt.inv_attr_mgmt as invAttrMgmt,
+        mgmt.is_auto_print_diff as isAutoPrintDiff,
+        mgmt.is_hint_quality_testing as isHintQualityTesting,
+        mgmt.is_auto_print_goods_receipt as isAutoPrintGoodsReceipt,
+        mgmt.is_auto_print_platformtag as isAutoPrintPlatformtag,
+        mgmt.sku_mix_number as skuMixNumber,
+        mgmt.is_sortation_container_assign as isSortationContainerAssign,
+        mgmt.is_repeatedly_outbound as isRepeatedlyOutbound,
+        mgmt.is_tabb_inv_total as isTabbInvTotal,
+        mgmt.is_calc_seckill as isCalcSeckill,
+        mgmt.seckill_odo_qtys as seckillOdoQtys,
+        mgmt.is_calc_two_sku_suit as isCalcTwoSkuSuit,
+        mgmt.two_sku_suit_odo_qtys as twoSkuSuitOdoQtys,
+        mgmt.is_calc_suits as isCalcSuits,
+        mgmt.suits_odo_qtys as suitsOdoQtys,
+        mgmt.suits_max_sku_categorys as suitsMaxSkuCategorys,
+        mgmt.default_length_uom_type as defaultLengthUomType,
+        mgmt.default_weight_uom_type as defaultWeightUomType,
+        mgmt.default_volume_uom_type as defaultVolumeUomType,
+        mgmt.default_area_uom_type as defaultAreaUomType,
+        mgmt.is_generate_inventory_task as isGenerateInventoryTask,
+        mgmt.is_inbound_location_barcode as isInboundLocationBarcode,
+        mgmt.is_replenishment_location_barcode as isReplenishmentLocationBarcode,
+        mgmt.is_apply_facility as isApplyFacility,
+        mgmt.is_dieking_check_message as isDiekingCheckMessage,
+        mgmt.is_dieking_seedingwall_message as isDiekingSeedingwallMessage,
+        mgmt.is_facility_check_code as isFacilityCheckCode,
+        mgmt.seeding_mode as seedingMode,
+        mgmt.x_qty as xqty,
+        mgmt.y_qty as yqty,
+        mgmt.z_qty as zqty,
+        mgmt.seeding_odo_qty as seedingOdoQty
+    </sql>
+
 	<sql id="warehouseDynamicWhereExt">
 		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
 		<where>
@@ -383,7 +460,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<select id="findListByLifecycle"
 		resultType="com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse">
 		SELECT
-		<include refid="warehouseColumnsExt"></include>
+		<include refid="warehouseCommandColumnsExt"></include>
 		from t_bi_warehouse w
 		left join t_bi_warehouse_mgmt mgmt on (w.id = mgmt.warehouse_id)
 		where w.lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER}

@@ -105,7 +105,13 @@ public final class CacheConstants {
     
     /** 播种商品数据缓存 */
     public static final String CACHE_SEEDING = "SEEDING";
-    
+
+    /*************************************播种缓存***********************************/
+    /** 播种集货信息周转箱列表缓存 */
+    public static final String CACHE_SEEDING_COLLECTION = "SEEDING-COLLECTION";
+    /** odo出库单绑定货格 */
+    public static final String CACHE_SEEDING_ODO_BIND_GRID = "SEEDING-ODO-BIND-GRID";
+
     // --------------------------------------------集货缓存--------------------------------------------
     /** 集货推荐结果缓存:前缀+USERID*/
     public static final String PDA_CACHE_COLLECTION_REC = "CACHE_COLLECTION_REC";

@@ -279,13 +279,16 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
             log.info("sys guide putaway locRecommend popQueue start, contianerId is:[{}], logId is:[{}]", containerId, logId);
         }
         String fisrt = cacheManager.findListItem(CacheConstants.LOCATION_RECOMMEND_QUEUE, 0);
-        String[] values = ParamsUtil.splitParam(fisrt);
-        if (null != values) {
-            String fContainerId = values[0];
-            if (containerId.toString().equals(fContainerId)) {
-                // 弹出队列
-                cacheManager.popListHead(CacheConstants.LOCATION_RECOMMEND_QUEUE);
-            }
+        // String[] values = ParamsUtil.splitParam(fisrt);
+        String fContainerId = fisrt;
+        if (containerId.toString().equals(fContainerId)) {
+            // 弹出队列
+            cacheManager.popListHead(CacheConstants.LOCATION_RECOMMEND_QUEUE);
+            cacheManager.removeMapValue(CacheConstants.LOCATION_RECOMMEND_EXPIRE_TIME, containerId.toString());
+            cacheManager.removeMapValue(CacheConstants.LOCATION_RECOMMEND_VALID_TIME, containerId.toString());
+        } else {
+            cacheManager.removeMapValue(CacheConstants.LOCATION_RECOMMEND_EXPIRE_TIME, containerId.toString());
+            cacheManager.removeMapValue(CacheConstants.LOCATION_RECOMMEND_VALID_TIME, containerId.toString());
         }
         if (log.isInfoEnabled()) {
             log.info("sys guide putaway locRecommend popQueue end, contianerId is:[{}], logId is:[{}]", containerId, logId);

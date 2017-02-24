@@ -1,5 +1,7 @@
 package com.baozun.scm.primservice.whoperation.manager;
 
+import java.util.List;
+
 import lark.common.annotation.MoreDB;
 
 import org.slf4j.Logger;
@@ -14,6 +16,7 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.WhDistributionPatter
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhDistributionPatternRuleManager;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhDistributionPatternRule;
 
 
 @Service("whDistributionPatternRuleManager")
@@ -62,4 +65,15 @@ public class WhDistributionPatternRuleManagerImpl extends BaseManagerImpl implem
         return ruleCommand;
     }
 
+    /**
+     * 获取仓库组织下的配货模式规则
+     *
+     * @author mingwei.xie
+     * @param ouId
+     * @return
+     */
+    @Override
+    public List<WhDistributionPatternRule> findRuleByOuId(Long ouId) {
+        return whDistributionPatternRuleDao.findRuleByOuId(ouId);
+    }
 }

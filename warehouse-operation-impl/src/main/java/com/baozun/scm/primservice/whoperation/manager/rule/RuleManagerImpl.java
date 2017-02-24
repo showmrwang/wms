@@ -463,7 +463,10 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
         // 出库单ID列表
-        List<Long> odoIdList = ruleAffer.getOutboundBoxRuleOdoIdList();
+        List<Long> odoIdList = new ArrayList<>();
+        for(Long odoId : ruleAffer.getOutboundBoxRuleOdoIdList()){
+            odoIdList.add(odoId);
+        }
         // 组织ID
         Long ouId = ruleAffer.getOuid();
         // 查询所有可用的出库箱装箱规则,按照优先级排序

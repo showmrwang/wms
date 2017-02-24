@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whinterface.dao.outbound.WhOutboundLineDao">
+	<resultMap id="WhOutboundLineResult" type="com.baozun.scm.primservice.whoperation.model.whinterface.outbound.WhOutboundLine">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whOutboundLineColumns">
+	    <![CDATA[
+	        	id as id,
+	        	outbound_id as outboundId,
+	        	store_code as storeCode,
+	        	ext_linenum as extLinenum,
+	        	upc as upc,
+	        	ext_sku_name as extSkuName,
+	        	qty as qty,
+	        	line_price as linePrice,
+	        	line_amt as lineAmt,
+	        	full_line_outbound as fullLineOutbound,
+	        	part_outbound_strategy as partOutboundStrategy,
+	        	outbound_carton_type as outboundCartonType,
+	        	mixing_attr as mixingAttr,
+	        	inv_status as invStatus,
+	        	inv_type as invType,
+	        	batch_number as batchNumber,
+	        	mfg_date as mfgDate,
+	        	exp_date as expDate,
+	        	country_of_origin as countryOfOrigin,
+	        	inv_attr1 as invAttr1,
+	        	inv_attr2 as invAttr2,
+	        	inv_attr3 as invAttr3,
+	        	inv_attr4 as invAttr4,
+	        	inv_attr5 as invAttr5
+	    ]]>
+	</sql>
+	
+		<!-- 如果有自增字段 -->
+		
+			<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+			<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.whinterface.outbound.WhOutboundLine" 
+				
+			 flushCache="true">
+		    <![CDATA[
+		        INSERT INTO
+		        t_wh_outbound_line (
+		        id,
+		        	outbound_id ,
+		        	store_code ,
+		        	ext_linenum ,
+		        	upc ,
+		        	ext_sku_name ,
+		        	qty ,
+		        	line_price ,
+		        	line_amt ,
+		        	full_line_outbound ,
+		        	part_outbound_strategy ,
+		        	outbound_carton_type ,
+		        	mixing_attr ,
+		        	inv_status ,
+		        	inv_type ,
+		        	batch_number ,
+		        	mfg_date ,
+		        	exp_date ,
+		        	country_of_origin ,
+		        	inv_attr1 ,
+		        	inv_attr2 ,
+		        	inv_attr3 ,
+		        	inv_attr4 ,
+		        	inv_attr5 
+		        ) VALUES (
+		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{outboundId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{storeCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{extLinenum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{upc,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{extSkuName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{qty,javaType=Long,jdbcType=DECIMAL} ,
+		        	#{linePrice,javaType=Long,jdbcType=DECIMAL} ,
+		        	#{lineAmt,javaType=Long,jdbcType=DECIMAL} ,
+		        	#{fullLineOutbound,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	#{partOutboundStrategy,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{outboundCartonType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{mixingAttr,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invStatus,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{batchNumber,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{mfgDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{expDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{countryOfOrigin,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invAttr1,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invAttr2,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invAttr3,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invAttr4,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invAttr5,javaType=java.lang.String,jdbcType=VARCHAR} 
+		        )
+		    ]]>
+
+		</insert>
+		
+		
+		<update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.whinterface.outbound.WhOutboundLine">
+	    <![CDATA[
+	        UPDATE t_wh_outbound_line SET
+		        outbound_id = #{outboundId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        store_code = #{storeCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        ext_linenum = #{extLinenum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        upc = #{upc,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        ext_sku_name = #{extSkuName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        qty = #{qty,javaType=Long,jdbcType=DECIMAL} ,
+		        line_price = #{linePrice,javaType=Long,jdbcType=DECIMAL} ,
+		        line_amt = #{lineAmt,javaType=Long,jdbcType=DECIMAL} ,
+		        full_line_outbound = #{fullLineOutbound,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        part_outbound_strategy = #{partOutboundStrategy,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        outbound_carton_type = #{outboundCartonType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        mixing_attr = #{mixingAttr,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        inv_status = #{invStatus,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        inv_type = #{invType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        batch_number = #{batchNumber,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        mfg_date = #{mfgDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        exp_date = #{expDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        country_of_origin = #{countryOfOrigin,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        inv_attr1 = #{invAttr1,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        inv_attr2 = #{invAttr2,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        inv_attr3 = #{invAttr3,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        inv_attr4 = #{invAttr4,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        inv_attr5 = #{invAttr5,javaType=java.lang.String,jdbcType=VARCHAR} 
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+		</update>
+	   <delete id="delete" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from t_wh_outbound_line where
+		        id = #{id} 
+	    ]]>
+	    </delete> 
+	    
+	     <delete id="deleteByIds" parameterType="list">
+	    
+	        delete from t_wh_outbound_line 
+	        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>	
+	  
+	    </delete>  
+	         
+	    <select id="findById" parameterType="java.lang.Long" resultMap="WhOutboundLineResult" flushCache="false">
+			select <include refid="whOutboundLineColumns" />
+		    <![CDATA[
+			    from t_wh_outbound_line 
+		        where 
+		        id = #{id} 
+		    ]]>
+		</select>	
+		<select id="getByIds" parameterType="list"  resultMap="WhOutboundLineResult" flushCache="false">
+			select <include refid="whOutboundLineColumns" />
+			    from t_wh_outbound_line 
+		        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>					
+		</select>	
+	<sql id="whOutboundLineDynamicWhere">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+				<if test="outboundId!=null">
+					and outbound_id = #{outboundId}
+				</if>
+	       
+	       
+		       <if test="storeCode!=null and storeCode!=''">
+					and store_code = #{storeCode}
+				</if>
+	       
+				<if test="extLinenum!=null">
+					and ext_linenum = #{extLinenum}
+				</if>
+	       
+	       
+		       <if test="upc!=null and upc!=''">
+					and upc = #{upc}
+				</if>
+	       
+	       
+		       <if test="extSkuName!=null and extSkuName!=''">
+					and ext_sku_name = #{extSkuName}
+				</if>
+	       
+				<if test="qty!=null">
+					and qty = #{qty}
+				</if>
+	       
+				<if test="linePrice!=null">
+					and line_price = #{linePrice}
+				</if>
+	       
+				<if test="lineAmt!=null">
+					and line_amt = #{lineAmt}
+				</if>
+	       
+				<if test="fullLineOutbound!=null">
+					and full_line_outbound = #{fullLineOutbound}
+				</if>
+	       
+	       
+		       <if test="partOutboundStrategy!=null and partOutboundStrategy!=''">
+					and part_outbound_strategy = #{partOutboundStrategy}
+				</if>
+	       
+	       
+		       <if test="outboundCartonType!=null and outboundCartonType!=''">
+					and outbound_carton_type = #{outboundCartonType}
+				</if>
+	       
+	       
+		       <if test="mixingAttr!=null and mixingAttr!=''">
+					and mixing_attr = #{mixingAttr}
+				</if>
+	       
+	       
+		       <if test="invStatus!=null and invStatus!=''">
+					and inv_status = #{invStatus}
+				</if>
+	       
+	       
+		       <if test="invType!=null and invType!=''">
+					and inv_type = #{invType}
+				</if>
+	       
+	       
+		       <if test="batchNumber!=null and batchNumber!=''">
+					and batch_number = #{batchNumber}
+				</if>
+	       
+				<if test="mfgDate!=null">
+					and mfg_date = #{mfgDate}
+				</if>
+	       
+				<if test="expDate!=null">
+					and exp_date = #{expDate}
+				</if>
+	       
+	       
+		       <if test="countryOfOrigin!=null and countryOfOrigin!=''">
+					and country_of_origin = #{countryOfOrigin}
+				</if>
+	       
+	       
+		       <if test="invAttr1!=null and invAttr1!=''">
+					and inv_attr1 = #{invAttr1}
+				</if>
+	       
+	       
+		       <if test="invAttr2!=null and invAttr2!=''">
+					and inv_attr2 = #{invAttr2}
+				</if>
+	       
+	       
+		       <if test="invAttr3!=null and invAttr3!=''">
+					and inv_attr3 = #{invAttr3}
+				</if>
+	       
+	       
+		       <if test="invAttr4!=null and invAttr4!=''">
+					and inv_attr4 = #{invAttr4}
+				</if>
+	       
+	       
+		       <if test="invAttr5!=null and invAttr5!=''">
+					and inv_attr5 = #{invAttr5}
+				</if>
+		</where>
+	</sql>
+	
+
+	<select id="getCount" resultType="long">
+        select count(*) from t_wh_outbound_line 
+    </select>
+    <select id="findListCountByQueryMap" resultType="long">
+        select count(*) from t_wh_outbound_line 
+		<include refid="whOutboundLineDynamicWhere"/>    
+    </select>
+    
+    <select id="findListCountByParam" resultType="long">
+        select count(*) from t_wh_outbound_line 
+		<include refid="whOutboundLineDynamicWhere"/>    
+    </select>
+    
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPage" resultMap="WhOutboundLineResult">
+    	select <include refid="whOutboundLineColumns" />
+	    from t_wh_outbound_line 
+		<include refid="whOutboundLineDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByQueryMap" resultMap="WhOutboundLineResult">
+    	select <include refid="whOutboundLineColumns" />
+	    from t_wh_outbound_line 
+		<include refid="whOutboundLineDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByParam" resultMap="WhOutboundLineResult">
+    	select <include refid="whOutboundLineColumns" />
+	    from t_wh_outbound_line 
+		<include refid="whOutboundLineDynamicWhere"/>
+		
+    </select>
+
+	
+</mapper>

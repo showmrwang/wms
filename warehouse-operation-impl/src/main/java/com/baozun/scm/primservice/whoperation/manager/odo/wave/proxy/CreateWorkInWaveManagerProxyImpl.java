@@ -201,7 +201,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
                     }else{
                         // 计算目标库位容器
                         Long qty = locationReplenishmentCalculation(siaCommand, ouId);
-                        if(null != qty){
+                        if(null != qty && 0 > qty){
                             // 基于目标库位容器及工作明细生成作业明细 
                             int replenishmentOperationLineCount = this.saveReplenishmentOperationLine(replenishmentWorkCode, replenishmentOperationCode, ouId, (double)qty);
                             if (replenishmentOperationLineCount != rWorkLineTotal) {
@@ -1422,7 +1422,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
         //当前工作明细设计到的所有库区编码信息列表--更新时获取数据      
         whWorkCommand.setWorkArea(null);
         //工作优先级     
-        whWorkCommand.setWorkPriority(null != whWaveMaster.getPickingWorkPriority() ? whWaveMaster.getPickingWorkPriority() : workType.getPriority());
+        whWorkCommand.setWorkPriority(null != whWaveMaster.getReplenishmentWorkPriority() ? whWaveMaster.getReplenishmentWorkPriority() : workType.getPriority());
         //小批次
         whWorkCommand.setBatch(null);
         //签出批次
@@ -1699,26 +1699,40 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
         Boolean isUseContainerId = true;
         Boolean isOdoId = true;
         
-        for(WhWorkLineCommand whWorkLineCommand : whWorkLineCommandList){
-            if(count !=  0){
-                //获取上一次循环的实体类            
-                WhWorkLineCommand whWorkLineCommandBefor = whWorkLineCommandList.get(count-1);
+        if(null != whWorkLineCommandList || 1 < whWorkLineCommandList.size()){
+            for(WhWorkLineCommand whWorkLineCommand : whWorkLineCommandList){
+                if(count !=  0){
+                    //获取上一次循环的实体类            
+                    WhWorkLineCommand whWorkLineCommandBefor = whWorkLineCommandList.get(count-1);
+                    
+                    if(whWorkLineCommandBefor.getFromLocationId() != whWorkLineCommand.getFromLocationId()){
+                        isFromLocationId = false;
+                    }
+                    if(whWorkLineCommandBefor.getUseOuterContainerId() != whWorkLineCommand.getUseOuterContainerId()){
+                        isUseOuterContainerId = false;
+                    }
+                    if(whWorkLineCommandBefor.getUseContainerId() != whWorkLineCommand.getUseContainerId()){
+                        isUseContainerId = false;
+                    }
+                    if(whWorkLineCommandBefor.getOdoId() != whWorkLineCommand.getOdoId()){
+                        isOdoId = false;
+                    }
+                }
                 
-                if(whWorkLineCommandBefor.getFromLocationId() != whWorkLineCommand.getFromLocationId()){
-                    isFromLocationId = false;
+                LocationCommand locationCommand = locationDao.findLocationCommandByParam(whWorkLineCommand.getFromLocationId(), whWorkLineCommand.getOuId());
+                if(null != locationCommand){
+                    Area area = areaDao.findByIdExt(locationCommand.getWorkAreaId(),locationCommand.getOuId());
+                    if(workArea == ""){
+                        workArea = area.getAreaCode();
+                    }else{
+                        workArea = workArea +","+area.getAreaCode();
+                    }
                 }
-                if(whWorkLineCommandBefor.getUseOuterContainerId() != whWorkLineCommand.getUseOuterContainerId()){
-                    isUseOuterContainerId = false;
-                }
-                if(whWorkLineCommandBefor.getUseContainerId() != whWorkLineCommand.getUseContainerId()){
-                    isUseContainerId = false;
-                }
-                if(whWorkLineCommandBefor.getOdoId() != whWorkLineCommand.getOdoId()){
-                    isOdoId = false;
-                }
+                //索引自增            
+                count++;
             }
-            
-            LocationCommand locationCommand = locationDao.findLocationCommandByParam(whWorkLineCommand.getFromLocationId(), whWorkLineCommand.getOuId());
+        }else{
+            LocationCommand locationCommand = locationDao.findLocationCommandByParam(whWorkLineCommandList.get(0).getFromLocationId(), whWorkLineCommandList.get(0).getOuId());
             if(null != locationCommand){
                 Area area = areaDao.findByIdExt(locationCommand.getWorkAreaId(),locationCommand.getOuId());
                 if(workArea == ""){
@@ -1727,8 +1741,6 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
                     workArea = workArea +","+area.getAreaCode();
                 }
             }
-            //索引自增            
-            count++;
         }
         //判断工作明细是否只有唯一库位
         if(isFromLocationId == true){
@@ -1773,7 +1785,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
         //是否锁定 默认值：1
         whWorkCommand.setIsLocked(whWaveMaster.getIsAutoReleaseWork());
         //工作优先级     
-        whWorkCommand.setWorkPriority(null != whWaveMaster.getPickingWorkPriority() ? whWaveMaster.getPickingWorkPriority() : workType.getPriority());
+        whWorkCommand.setWorkPriority(null != whWaveMaster.getReplenishmentWorkPriority() ? whWaveMaster.getReplenishmentWorkPriority() : workType.getPriority());
         
         WhWork whWork = new WhWork();
         //复制数据        

@@ -1,8 +1,16 @@
 package com.baozun.scm.primservice.whoperation.command.odo;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
+import com.baozun.scm.primservice.whoperation.command.odo.wave.WhWaveCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.Container2ndCategoryCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.OutInvBoxTypeCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
+import com.baozun.scm.primservice.whoperation.command.wave.WhWaveLineCommand;
 
 public class OdoCommand extends BaseCommand {
 
@@ -92,6 +100,26 @@ public class OdoCommand extends BaseCommand {
     // 分组字段
     private String groupCode;
 
+    //出库箱推荐
+    private WhWaveCommand whWaveCommand;
+    /** 出库单下的波次明细列表 */
+    private List<WhWaveLineCommand> whWaveLineCommandList;
+    /** 订单下的出库箱列表 */
+    private List<OutInvBoxTypeCommand> outboundBoxList;
+    /** 订单下的整托列表 */
+    private List<ContainerCommand> wholeTrayList;
+    /** 订单下的整托列表 */
+    private List<ContainerCommand> wholeCaseList;
+    /** 订单下的占用库存列表 */
+    private List<WhSkuInventoryCommand> skuInventoryCommandList;
+    /** 订单涉及分配区域列表 */
+    private List<Long> allocateAreaIdList;
+    /** 推荐的拣货小车 */
+    private Container2ndCategoryCommand trolley;
+    /** 周转箱列表 */
+    private List<Container2ndCategoryCommand> turnoverBoxList;
+    /** 波次明细<odoLineId, waveLine> */
+    private Map<Long, WhWaveLineCommand> odoLineIdwaveLineMap;
 
 
     public Date getPlanDeliverGoodsTime() {
@@ -431,4 +459,83 @@ public class OdoCommand extends BaseCommand {
         this.counterCode = counterCode;
     }
 
+    public WhWaveCommand getWhWaveCommand() {
+        return whWaveCommand;
+    }
+
+    public void setWhWaveCommand(WhWaveCommand whWaveCommand) {
+        this.whWaveCommand = whWaveCommand;
+    }
+
+    public List<WhWaveLineCommand> getWhWaveLineCommandList() {
+        return whWaveLineCommandList;
+    }
+
+    public void setWhWaveLineCommandList(List<WhWaveLineCommand> whWaveLineCommandList) {
+        this.whWaveLineCommandList = whWaveLineCommandList;
+    }
+
+    public List<OutInvBoxTypeCommand> getOutboundBoxList() {
+        return outboundBoxList;
+    }
+
+    public void setOutboundBoxList(List<OutInvBoxTypeCommand> outboundBoxList) {
+        this.outboundBoxList = outboundBoxList;
+    }
+
+    public List<ContainerCommand> getWholeTrayList() {
+        return wholeTrayList;
+    }
+
+    public void setWholeTrayList(List<ContainerCommand> wholeTrayList) {
+        this.wholeTrayList = wholeTrayList;
+    }
+
+    public List<ContainerCommand> getWholeCaseList() {
+        return wholeCaseList;
+    }
+
+    public void setWholeCaseList(List<ContainerCommand> wholeCaseList) {
+        this.wholeCaseList = wholeCaseList;
+    }
+
+    public List<WhSkuInventoryCommand> getSkuInventoryCommandList() {
+        return skuInventoryCommandList;
+    }
+
+    public void setSkuInventoryCommandList(List<WhSkuInventoryCommand> skuInventoryCommandList) {
+        this.skuInventoryCommandList = skuInventoryCommandList;
+    }
+
+    public List<Long> getAllocateAreaIdList() {
+        return allocateAreaIdList;
+    }
+
+    public void setAllocateAreaIdList(List<Long> allocateAreaIdList) {
+        this.allocateAreaIdList = allocateAreaIdList;
+    }
+
+    public Container2ndCategoryCommand getTrolley() {
+        return trolley;
+    }
+
+    public void setTrolley(Container2ndCategoryCommand trolley) {
+        this.trolley = trolley;
+    }
+
+    public List<Container2ndCategoryCommand> getTurnoverBoxList() {
+        return turnoverBoxList;
+    }
+
+    public void setTurnoverBoxList(List<Container2ndCategoryCommand> turnoverBoxList) {
+        this.turnoverBoxList = turnoverBoxList;
+    }
+
+    public Map<Long, WhWaveLineCommand> getOdoLineIdwaveLineMap() {
+        return odoLineIdwaveLineMap;
+    }
+
+    public void setOdoLineIdwaveLineMap(Map<Long, WhWaveLineCommand> odoLineIdwaveLineMap) {
+        this.odoLineIdwaveLineMap = odoLineIdwaveLineMap;
+    }
 }

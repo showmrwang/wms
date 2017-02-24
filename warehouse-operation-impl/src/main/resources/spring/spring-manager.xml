@@ -61,6 +61,7 @@
                     <value>com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentTask</value>
                     <value>com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentMsg</value>
                     <value>com.baozun.scm.primservice.whoperation.model.warehouse.WhSeedingCollection</value>
+                    <value>com.baozun.scm.primservice.whoperation.model.odo.WhOdoOutBoundBox</value>
 				</list>
 			</property>
 			

@@ -1,8 +1,10 @@
 package com.baozun.scm.primservice.whoperation.command.warehouse;
 
 import java.util.Date;
+import java.util.List;
 
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
+import com.baozun.scm.primservice.whoperation.command.odo.WhOdoOutBoundBoxCommand;
 
 public class ContainerCommand extends BaseCommand {
 
@@ -80,6 +82,9 @@ public class ContainerCommand extends BaseCommand {
 
     /** 容器内sku id*/
     private Long skuId;
+
+    //==================出库箱推荐用
+    private List<WhOdoOutBoundBoxCommand> odoOutboundBoxCommandList;
 
 
     public Integer getStatus() {
@@ -251,4 +256,11 @@ public class ContainerCommand extends BaseCommand {
         this.skuId = skuId;
     }
 
+    public List<WhOdoOutBoundBoxCommand> getOdoOutboundBoxCommandList() {
+        return odoOutboundBoxCommandList;
+    }
+
+    public void setOdoOutboundBoxCommandList(List<WhOdoOutBoundBoxCommand> odoOutboundBoxCommandList) {
+        this.odoOutboundBoxCommandList = odoOutboundBoxCommandList;
+    }
 }

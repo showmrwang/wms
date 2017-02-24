@@ -14,6 +14,8 @@
 
 package com.baozun.scm.primservice.whoperation.model.seeding;
 
+import java.util.List;
+
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 
 public class WhSeedingWallLatticeLine extends BaseModel {
@@ -68,6 +70,8 @@ public class WhSeedingWallLatticeLine extends BaseModel {
     String invAttr5;
     /** 出库单明细ID */
     Long odoLineId;
+    /** 内部标识码 一个出库单明细会占用多个库存记录*/
+    List<String> uuidList;
 
     public Long getSkuId() {
         return skuId;
@@ -259,5 +263,13 @@ public class WhSeedingWallLatticeLine extends BaseModel {
 
     public void setOdoLineId(Long odoLineId) {
         this.odoLineId = odoLineId;
+    }
+
+    public List<String> getUuidList() {
+        return uuidList;
+    }
+
+    public void setUuidList(List<String> uuidList) {
+        this.uuidList = uuidList;
     }
 }

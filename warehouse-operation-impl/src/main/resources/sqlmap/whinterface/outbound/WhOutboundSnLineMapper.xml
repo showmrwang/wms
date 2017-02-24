@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whinterface.dao.outbound.WhOutboundSnLineDao">
+	<resultMap id="WhOutboundSnLineResult" type="com.baozun.scm.primservice.whoperation.model.whinterface.outbound.WhOutboundSnLine">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whOutboundSnLineColumns">
+	    <![CDATA[
+	        	id as id,
+	        	outbound_line_id as outboundLineId,
+	        	sn as sn,
+	        	defect_ware_barcode as defectWareBarcode,
+	        	defect_source as defectSource,
+	        	defect_type as defectType,
+	        	defect_reasons as defectReasons
+	    ]]>
+	</sql>
+	
+		<!-- 如果有自增字段 -->
+		
+			<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+			<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.whinterface.outbound.WhOutboundSnLine" 
+				
+			 flushCache="true">
+		    <![CDATA[
+		        INSERT INTO
+		        t_wh_outbound_sn_line (
+		        id,
+		        	outbound_line_id ,
+		        	sn ,
+		        	defect_ware_barcode ,
+		        	defect_source ,
+		        	defect_type ,
+		        	defect_reasons 
+		        ) VALUES (
+		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{outboundLineId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{sn,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{defectWareBarcode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{defectSource,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{defectType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{defectReasons,javaType=java.lang.String,jdbcType=VARCHAR} 
+		        )
+		    ]]>
+
+		</insert>
+		
+		
+		<update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.whinterface.outbound.WhOutboundSnLine">
+	    <![CDATA[
+	        UPDATE t_wh_outbound_sn_line SET
+		        outbound_line_id = #{outboundLineId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        sn = #{sn,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        defect_ware_barcode = #{defectWareBarcode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        defect_source = #{defectSource,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        defect_type = #{defectType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        defect_reasons = #{defectReasons,javaType=java.lang.String,jdbcType=VARCHAR} 
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+		</update>
+	   <delete id="delete" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from t_wh_outbound_sn_line where
+		        id = #{id} 
+	    ]]>
+	    </delete> 
+	    
+	     <delete id="deleteByIds" parameterType="list">
+	    
+	        delete from t_wh_outbound_sn_line 
+	        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>	
+	  
+	    </delete>  
+	         
+	    <select id="findById" parameterType="java.lang.Long" resultMap="WhOutboundSnLineResult" flushCache="false">
+			select <include refid="whOutboundSnLineColumns" />
+		    <![CDATA[
+			    from t_wh_outbound_sn_line 
+		        where 
+		        id = #{id} 
+		    ]]>
+		</select>	
+		<select id="getByIds" parameterType="list"  resultMap="WhOutboundSnLineResult" flushCache="false">
+			select <include refid="whOutboundSnLineColumns" />
+			    from t_wh_outbound_sn_line 
+		        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>					
+		</select>	
+	<sql id="whOutboundSnLineDynamicWhere">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+				<if test="outboundLineId!=null">
+					and outbound_line_id = #{outboundLineId}
+				</if>
+	       
+	       
+		       <if test="sn!=null and sn!=''">
+					and sn = #{sn}
+				</if>
+	       
+	       
+		       <if test="defectWareBarcode!=null and defectWareBarcode!=''">
+					and defect_ware_barcode = #{defectWareBarcode}
+				</if>
+	       
+	       
+		       <if test="defectSource!=null and defectSource!=''">
+					and defect_source = #{defectSource}
+				</if>
+	       
+	       
+		       <if test="defectType!=null and defectType!=''">
+					and defect_type = #{defectType}
+				</if>
+	       
+	       
+		       <if test="defectReasons!=null and defectReasons!=''">
+					and defect_reasons = #{defectReasons}
+				</if>
+		</where>
+	</sql>
+	
+
+	<select id="getCount" resultType="long">
+        select count(*) from t_wh_outbound_sn_line 
+    </select>
+    <select id="findListCountByQueryMap" resultType="long">
+        select count(*) from t_wh_outbound_sn_line 
+		<include refid="whOutboundSnLineDynamicWhere"/>    
+    </select>
+    
+    <select id="findListCountByParam" resultType="long">
+        select count(*) from t_wh_outbound_sn_line 
+		<include refid="whOutboundSnLineDynamicWhere"/>    
+    </select>
+    
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPage" resultMap="WhOutboundSnLineResult">
+    	select <include refid="whOutboundSnLineColumns" />
+	    from t_wh_outbound_sn_line 
+		<include refid="whOutboundSnLineDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByQueryMap" resultMap="WhOutboundSnLineResult">
+    	select <include refid="whOutboundSnLineColumns" />
+	    from t_wh_outbound_sn_line 
+		<include refid="whOutboundSnLineDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByParam" resultMap="WhOutboundSnLineResult">
+    	select <include refid="whOutboundSnLineColumns" />
+	    from t_wh_outbound_sn_line 
+		<include refid="whOutboundSnLineDynamicWhere"/>
+		
+    </select>
+
+	
+</mapper>

@@ -804,4 +804,17 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     }
 
 
+    /**
+     *根据ID获取出库单列表
+     *
+     * @author mingwei.xie
+     * @param odoIdList
+     * @param ouId
+     * @return
+     */
+    public List<OdoCommand> getWhOdoListById(List<Long> odoIdList, Long ouId){
+        return whOdoDao.getWhOdoListById(odoIdList, ouId);
+    }
+
+
 }
