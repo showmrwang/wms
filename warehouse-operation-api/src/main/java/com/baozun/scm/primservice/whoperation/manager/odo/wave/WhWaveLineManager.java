@@ -60,6 +60,11 @@ public interface WhWaveLineManager extends BaseManager {
 	void deleteWaveLinesByOdoId(Long odoId, Long waveId, Long ouId, String reason);
 	
 	/**
+	 * [业务方法] 硬分配-在一个波次明细中剔除整单并记录原因
+	 */
+	void deleteWaveLinesByOdoIdList(List<Long> odoId, Long waveId, Long ouId, String reason);
+	
+	/**
 	 * [业务方法] 硬分配-根据波次ID获得所有出库单明细ID
 	 */
 	List<WhWaveLine> getWhWaveLinesByWaveIdList(List<Long> waveIdList, Long ouId);

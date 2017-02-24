@@ -777,6 +777,22 @@
 			and l.ou_id = #{ouId}
 	</update>
 	
+	<update id="updateOdoLineByAllocateFailAndOdoIdList" parameterType="map">
+		update 
+			t_wh_odo_line l
+		set 
+			l.is_assign_success = 0,
+			l.assign_fail_reason = #{reason},
+			l.odo_line_status = 1,
+			l.wave_code = null
+		where 
+			l.odo_id in 
+			<foreach collection="odoIdList" item="id" open="(" separator="," close=")">
+				#{id}
+			</foreach>
+			and l.ou_id = #{ouId}
+	</update>
+	
 	 <select id="findOdoLineListByOdoIdStatus" parameterType="map" resultMap="WhOdoLineResult" flushCache="false">
         select
         <include refid="whOdoLineColumns"/>
