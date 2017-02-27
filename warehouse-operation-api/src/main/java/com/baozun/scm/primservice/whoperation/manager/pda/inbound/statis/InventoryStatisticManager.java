@@ -18,6 +18,7 @@ import java.util.List;
 
 import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.ContainerStatisticResultCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.InventoryStatisticResultCommand;
+import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.ScanResultCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.UomCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
@@ -34,5 +35,20 @@ public interface InventoryStatisticManager extends BaseManager {
     public InventoryStatisticResultCommand sysGuidePutawayInvStatistic(List<WhSkuInventoryCommand> invList, Integer putawayPatternDetailType, List<UomCommand> lenUomCmds, List<UomCommand> weightUomCmds, ContainerCommand containerCmd, Long ouId, Long userId, String logId);
     
     public ContainerStatisticResultCommand sysGuidePutawayContainerStatistic(List<ContainerCommand> icList, Integer putawayPatternDetailType, Long ouId, String logId);
+    
+    
+    /***
+     * 
+     * @param invList
+     * @param userId
+     * @param ouId
+     * @param logId
+     * @param containerCmd
+     * @param srCmd
+     * @param putawayPatternDetailType
+     * @param outerContainerCode
+     * @return
+     */
+    public InventoryStatisticResultCommand cacheContainerInventoryStatistics(List<WhSkuInventoryCommand> invList,Long userId,Long ouId,String logId,ContainerCommand containerCmd,Integer putawayPatternDetailType,String outerContainerCode);
 
 }

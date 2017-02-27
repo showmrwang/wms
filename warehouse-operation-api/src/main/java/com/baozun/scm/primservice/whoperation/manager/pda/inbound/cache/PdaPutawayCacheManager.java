@@ -498,8 +498,53 @@ public interface PdaPutawayCacheManager extends BaseManager {
      */
     Long sysGuideSplitContainerPutawayTipContainer(ContainerCommand containerCmd, Set<Long> insideContainerIds, Long containerId, String logId);
     
-    
+    /***
+     * 
+     * @param scanPattern
+     * @param ocCmd
+     * @param icCmd
+     * @param insideContainerIds
+     * @param insideContainerSkuAttrIdsQty
+     * @param insideContainerSkuAttrIdsSnDefect
+     * @param insideContainerSkuAttrIds
+     * @param locationId
+     * @param skuCmd
+     * @param logId
+     * @return
+     */
     public CheckScanSkuResultCommand sysSuggestSplitContainerPutawayTipSkuOrContainer(Integer scanPattern,ContainerCommand ocCmd, ContainerCommand icCmd, Set<Long> insideContainerIds, Map<Long, Map<String, Long>> insideContainerSkuAttrIdsQty,
                                                                                            Map<Long, Map<String, Set<String>>> insideContainerSkuAttrIdsSnDefect, Map<Long, Set<String>> insideContainerSkuAttrIds, Long locationId, WhSkuCommand skuCmd, String logId);
 
+    /***
+     * 建议上架整托上架缓存信息
+     * @param containerCmd
+     * @param ouId
+     * @param logId
+     * @return
+     */
+    public InventoryStatisticResultCommand sysSuggestPalletPutawayCacheInventoryStatistic(Long userId,ContainerCommand containerCmd, Long ouId, String logId,String outerContainerCode,int putawayPatternDetailType);
+    
+    /**
+     * 建议上架整箱上架缓存信息
+     * @param userId
+     * @param insideContainerCmd
+     * @param ouId
+     * @param logId
+     * @param outerContainerCode
+     * @param putawayPatternDetailType
+     * @return
+     */
+    public InventoryStatisticResultCommand sysSuggestContainerPutawayCacheInventoryStatistic(Long userId,ContainerCommand insideContainerCmd, Long ouId, String logId,String outerContainerCode,int putawayPatternDetailType);
+
+    /***
+     * 建议上架拆箱上架缓存信息
+     * @param userId
+     * @param insideContainerCmd
+     * @param ouId
+     * @param logId
+     * @param outerContainerCode
+     * @param putawayPatternDetailType
+     * @return
+     */
+    public InventoryStatisticResultCommand sysSuggestSplitPutawayCacheInventoryStatistic(Long userId,ContainerCommand insideContainerCmd, Long ouId, String logId,String outerContainerCode,int putawayPatternDetailType);
 }
