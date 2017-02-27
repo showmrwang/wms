@@ -21,6 +21,9 @@ public class WmsErrorCode {
 
     /** 无该仓库信息 **/
     public static final String NOT_HAVE_WAREHOUSE_INFOMATION = "1007";
+    
+    /** 没有该商品信息 **/
+    public static final String NOT_HAVE_SKU_INFOMATION = "1008";
 
     /** 上位系统单据号找不到对应的单据 */
     public static final String EXTCODE_NO_ERROR = "3001";
