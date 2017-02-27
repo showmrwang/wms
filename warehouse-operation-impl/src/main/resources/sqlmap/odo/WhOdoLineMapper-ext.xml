@@ -1044,7 +1044,7 @@
     </select>
 
 
-	<select id="findListByParamExt" resultMap="WhOdoLineResult">
+	<select id="findOdoLineListByOdoIdAndLinenumList" resultMap="WhOdoLineResult">
 		select
 		<include refid="whOdoLineColumns" />
 		from t_wh_odo_line
