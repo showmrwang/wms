@@ -154,4 +154,6 @@ public interface BiPoDao extends BaseDao<BiPo,Long>{
      */
     List<BiPo> findListByStoreIdExtCode(@Param("storeId") Long storeId, @Param("extCode") String extCode);
 
+    List<BiPo> findListByExtCode(@Param("extCode") String extCode);
+
 }

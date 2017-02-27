@@ -114,4 +114,22 @@ public interface BiPoLineManager extends BaseManager {
      */
     Sku findSkuByBarCode(String skuBarCode, Long customerId, String logId);
 
+    /**
+     * [业务方法]整行取消入库单
+     * 
+     * @param poId
+     * @param lineList
+     * @param userId
+     */
+    void cancelList(Long poId, List<BiPoLine> lineList, Long userId);
+
+    /**
+     * [通用方法]根据外接行号查找入库单明细
+     * 
+     * @param poId
+     * @param extLinenums
+     * @return
+     */
+    List<BiPoLine> findBiPoLineByBiPoIdAndLineNums(Long poId, List<Integer> extLinenums);
+
 }

@@ -643,5 +643,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        ext_code = #{extCode} and store_id=#{storeId}  
 			    ]]>
 	</select>
+	
+	<select id="findListByExtCode" resultMap="BiPoResult">
+		select <include refid="biPoColumns" />
+			    <![CDATA[
+				    from t_bi_po 
+			        where 
+			        ext_code = #{extCode}
+			    ]]>
+	</select>
    
 </mapper>

@@ -646,9 +646,36 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
     }
 
     @Override
-    public ResponseMsg cancelBiPo(BiPoCommand command) {
+    public ResponseMsg cancel(Long poId, Boolean isPoCancel, List<BiPoLine> biPoLineList, Long userId, String logId) {
+        if (isPoCancel) {
+            return this.cancelBiPo(poId, userId);
+        } else {
+            return this.cancelBiPoLines(poId, biPoLineList, userId);
+        }
+
+    }
+
+    private ResponseMsg cancelBiPoLines(Long poId, List<BiPoLine> biPoLineList, Long userId) {
         ResponseMsg rm = new ResponseMsg();
-        BiPo bipo = this.biPoManager.findBiPoById(command.getId());
+        try {
+            this.biPoLineManager.cancelList(poId, biPoLineList, userId);
+        } catch (BusinessException e) {
+            rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
+            rm.setMsg(e.getErrorCode() + "");
+            return rm;
+        } catch (Exception ex) {
+            rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
+            rm.setMsg(ErrorCodes.DAO_EXCEPTION + "");
+            return rm;
+        }
+        rm.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
+        rm.setMsg("success");
+        return rm;
+    }
+
+    private ResponseMsg cancelBiPo(Long poId, Long userId) {
+        ResponseMsg rm = new ResponseMsg();
+        BiPo bipo = this.biPoManager.findBiPoById(poId);
         if (null == bipo) {
             rm.setMsg("BiPo is null!");
             rm.setResponseStatus(ResponseMsg.DATA_ERROR);
@@ -668,7 +695,7 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
 
         }
         try {
-            this.biPoManager.cancelBiPo(command.getId(), command.getUserId());
+            this.biPoManager.cancelBiPo(poId, userId);
         } catch (BusinessException e) {
             rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
             rm.setMsg(e.getErrorCode() + "");

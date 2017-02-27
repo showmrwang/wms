@@ -311,8 +311,41 @@ public class BiPoLineManagerImpl extends BaseManagerImpl implements BiPoLineMana
 
     @Override
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
+    public void cancelList(Long poId, List<BiPoLine> lineList, Long userId) {
+        if (null != lineList && lineList.size() > 0) {
+            BiPo bipo = this.biPoDao.findById(poId);
+            double qty = bipo.getQtyPlanned();
+            for (BiPoLine line : lineList) {
+                if (PoAsnStatus.BIPOLINE_NEW != line.getStatus()) {
+                    throw new BusinessException(ErrorCodes.BIPO_DELETE_HAS_ALLOCATED_ERROR);
+                }
+                if (StringUtils.isEmpty(line.getUuid())) {
+                    qty -= line.getQtyPlanned();
+                }
+                int updateCount = this.biPoLineDao.saveOrUpdateByVersion(line);
+                if (updateCount <= 0) {
+                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                }
+            }
+            bipo.setQtyPlanned(qty);
+            bipo.setModifiedId(userId);
+            int updateCount = this.biPoDao.saveOrUpdateByVersion(bipo);
+            if (updateCount <= 0) {
+                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            }
+        }
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public Sku findSkuByBarCode(String skuBarCode, Long customerId, String logId) {
         return this.skudao.findSkuByBarCodeCustomerIdInAll(skuBarCode, customerId);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
+    public List<BiPoLine> findBiPoLineByBiPoIdAndLineNums(Long poId, List<Integer> extLinenums) {
+        return this.biPoLineDao.findBiPoLineByBiPoIdAndLineNums(poId, extLinenums);
     }
 
 }

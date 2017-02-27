@@ -166,5 +166,7 @@ public interface BiPoLineDao extends BaseDao<BiPoLine,Long>{
      * @return
      */
     BiPoLineCommand findCommandbyId(@Param("id") Long id);
+
+    List<BiPoLine> findBiPoLineByBiPoIdAndLineNums(@Param("poId") Long poId, @Param("extLinenumList") List<Integer> extLinenums);
 	
 }

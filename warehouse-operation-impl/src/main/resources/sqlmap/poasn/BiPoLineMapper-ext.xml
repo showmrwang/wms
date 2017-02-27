@@ -436,4 +436,17 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		where line.id=#{id}
     </select>
 		
+	<select id="findBiPoLineByBiPoIdAndLineNums" parameterType="map" resultMap="BiPoLineResult" flushCache="false">
+			select <include refid="biPoLineColumns" />
+			    from t_bi_po_line 
+		        where 
+		        po_id = #{poId} 
+		        and ext_line_num in 
+		        <if test="extLinenumList!=null">
+					 <foreach collection="extLinenumList" item="s" open="(" separator=","
+						close=")">
+						#{s}
+					</foreach>
+				</if>
+		</select>
 </mapper>
