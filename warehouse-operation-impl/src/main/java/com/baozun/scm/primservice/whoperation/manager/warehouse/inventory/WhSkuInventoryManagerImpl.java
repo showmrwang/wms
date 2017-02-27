@@ -5323,6 +5323,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     inv.setLastModifyTime(new Date());
                     whSkuInventoryDao.insert(inv);
                     insertGlobalLog(GLOBAL_LOG_INSERT, inv, ouId, userId, null, null);
+                    // 记录入库库存日志(这个实现的有问题)
+                    insertSkuInventoryLog(inv.getId(), inv.getOnHandQty(), oldQty, warehouse.getIsTabbInvTotal(), ouId, userId);
                     // 插入sn
                     for (WhSkuInventorySnCommand snCmd : snList) {
                         WhSkuInventorySn sn = new WhSkuInventorySn();
@@ -5331,6 +5333,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         sn.setUuid(inv.getUuid());
                         whSkuInventorySnDao.insert(sn);
                         insertGlobalLog(GLOBAL_LOG_INSERT, sn, ouId, userId, null, null);
+                        // 记录SN日志
+                        insertSkuInventorySnLog(sn.getId(), ouId);
                     }
                     //删除之前的sn/残次条码
                     for (WhSkuInventorySnCommand cSnCmd : snList) {
@@ -5339,8 +5343,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         whSkuInventorySnDao.delete(sn.getId());
                         insertGlobalLog(GLOBAL_LOG_DELETE, sn, ouId, userId, null, null);
                     }
-                    // 记录入库库存日志(这个实现的有问题)
-                    insertSkuInventoryLog(inv.getId(), inv.getOnHandQty(), oldQty, warehouse.getIsTabbInvTotal(), ouId, userId);
+                    
                     // 修改待移入库存
                     Double tobefilledQty = invCmd.getToBeFilledQty()-skuScanQty;   //待移入库存还剩下的sku数量
                     if(tobefilledQty.equals(0.0)) {
