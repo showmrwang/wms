@@ -118,8 +118,16 @@ public interface WhOdoLineDao extends BaseDao<WhOdoLine, Long> {
      * [业务方法] 合并订单-通过合并后出库单code和原始出库单明细行 行号查找原始出库单明细行信息
      */
     WhOdoLine findByOdoCodeAndLineNum(@Param("lineNum") Integer lineNum, @Param("originalOdoCode") String originalOdoCode, @Param("ouId") Long ouId);
-
+    
+    /**
+     * [业务方法] 修改出库单明细waveCode为空
+     */
     int updateOdoLineByAllocateFail(@Param("odoId") Long odoId, @Param("reason") String reason, @Param("ouId") Long ouId);
+    
+    /**
+     * [业务方法] 修改出库单明细waveCode为空
+     */
+    int updateOdoLineByAllocateFailAndOdoIdList(@Param("odoIdList") List<Long> odoIdList, @Param("reason") String reason, @Param("ouId") Long ouId);
 
     /**
      * [通用方法]根据ODOID查找某种状态的出库单
@@ -207,4 +215,6 @@ public interface WhOdoLineDao extends BaseDao<WhOdoLine, Long> {
      * @return
      */
     List<OdoLineCommand> findOdoLineByOdoIdOrderByPickingSort(@Param("idList") List<Long> idList, @Param("ouId") Long ouId);
+
+    List<WhOdoLine> findOdoLineListByOdoIdAndLinenumList(@Param("odoId") Long odoId, @Param("ouId") Long ouId, @Param("extLinenumList") List<Integer> lineSeq);
 }

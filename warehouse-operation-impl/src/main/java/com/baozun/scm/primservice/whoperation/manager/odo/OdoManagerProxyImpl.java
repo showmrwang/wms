@@ -727,49 +727,26 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
         this.odoVasManager.saveOdoOuVas(insertVasList, updateVasList, delVasList);
     }
 
+
+    /**
+     * 出库单：整单取消/行取消 接口
+     */
     @Override
-    public void deleteOdo(Long id, Long ouId, String logId) {
-        this.odoManager.deleteOdo(id, ouId, logId);
+    public void cancel(WhOdo odo,Long ouId,Boolean isOdoCancel,List<WhOdoLine> lineList,Long userId,String logId){
+        if(isOdoCancel){
+            this.cancelOdo(odo, ouId, logId);
+        }else{
+            this.cancelLines(odo, lineList, ouId, userId, logId);
+        }
+    }
+    
+    private void cancelOdo(WhOdo odo, Long ouId, String logId) {
+        this.odoManager.cancelOdo(odo, ouId, logId);
     }
 
-    @Override
-    public void deleteLines(OdoLineCommand lineCommand) {
-        List<WhOdoLine> lineList = new ArrayList<WhOdoLine>();
-        Long ouId = lineCommand.getOuId();
-        Long userId = lineCommand.getUserId();
-        String logId = lineCommand.getLogId();
+    private void cancelLines(WhOdo odo, List<WhOdoLine> lineList, Long ouId, Long userId, String logId) {
         try {
-            if (StringUtils.isEmpty(lineCommand.getIds())) {
-                throw new BusinessException(ErrorCodes.PARAM_IS_NULL);
-            }
-            String[] idArray = lineCommand.getIds().replace(" ", "").split(",");
-            List<Long> idList = new ArrayList<Long>();
-            WhOdo odo = null;
-            for (String id : idArray) {
-                WhOdoLine line = this.odoLineManager.findOdoLineById(Long.parseLong(id), ouId);
-                if (line == null) {
-                    throw new BusinessException(ErrorCodes.PARAMS_ERROR);
-                }
-                lineList.add(line);
-                if (odo == null) {
-                    odo = this.odoManager.findOdoByIdOuId(line.getOdoId(), ouId);
-                }
-                if (odo == null) {
-                    throw new BusinessException(ErrorCodes.PARAM_IS_NULL);
-                }
-                // 设置出库单数量
-                odo.setQty(odo.getQty() - line.getQty());
-                // 设置出库单金额
-                odo.setAmt(odo.getAmt() - line.getLineAmt());
-                idList.add(Long.parseLong(id));
-            }
-            // #TODO 设置ODO总件数
-            Integer skuCount = this.odoManager.getSkuNumberAwayFormSomeLines(idList, ouId);
-            // #TODO 是否含有危险品、易碎品
-
-
-
-            this.odoLineManager.deleteLines(lineList, ouId, userId, logId);
+            this.odoLineManager.cancelLines(odo, lineList, ouId, userId, logId);
         } catch (BusinessException ex) {
             throw ex;
         } catch (Exception e) {
@@ -1450,6 +1427,9 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
             boolean isFragile = odo.getIncludeFragileCargo();
             Set<Long> skuIdSet = new HashSet<Long>();
             for (WhOdoLine line : lineList) {
+                if (OdoStatus.ODOLINE_CANCEL.equals(line.getOdoLineStatus())) {
+                    continue;
+                }
                 if (OdoStatus.ODOLINE_TOBECREATED.equals(line.getOdoLineStatus())) {
                     SkuRedisCommand skuMaster = skuRedisManager.findSkuMasterBySkuId(line.getSkuId(), ouId, logId);
                     SkuMgmt skuMgmt = skuMaster.getSkuMgmt();
@@ -1511,6 +1491,7 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
         }
 
     }
+
 
     @Override
     public List<String> findExportExeclList(OdoSearchCommand odoSearchCommand) {

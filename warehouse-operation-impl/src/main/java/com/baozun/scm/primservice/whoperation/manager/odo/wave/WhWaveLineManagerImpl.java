@@ -1,6 +1,7 @@
 package com.baozun.scm.primservice.whoperation.manager.odo.wave;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.baozun.scm.primservice.whoperation.constant.Constants;
+import com.baozun.scm.primservice.whoperation.command.odo.OdoCommand;
 import com.baozun.scm.primservice.whoperation.command.wave.WaveLineCommand;
 import com.baozun.scm.primservice.whoperation.command.wave.WhWaveLineCommand;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
@@ -32,6 +34,7 @@ import com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy.Distributio
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine;
+import com.baozun.scm.primservice.whoperation.util.ListUtil;
 
 @Service("whWaveLineManager")
 @Transactional
@@ -148,14 +151,34 @@ public class WhWaveLineManagerImpl extends BaseManagerImpl implements WhWaveLine
         Map<Long, String> odoIdCounterCodeMap = new HashMap<Long, String>();
         odoIdCounterCodeMap.put(odoId, odo.getCounterCode());
         distributionModeArithmeticManagerProxy.addToPool(odoIdCounterCodeMap);
-        /*WhWaveLine line = new WhWaveLine();
-        line.setWaveId(waveId);
-        line.setOuId(ouId);
-        long lineCount = whWaveLineDao.findListCountByParam(line);
-        if (lineCount == 0) {
-            whWaveDao.deleteByIdOuId(waveId, ouId);
-            log.info("waveId:{} not have lines,delete", waveId);
-        }*/
+    }
+    
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void deleteWaveLinesByOdoIdList(List<Long> odoIdList, Long waveId, Long ouId, String reason) {
+    	List<List<Long>> subList = ListUtil.getSubList(odoIdList, 500);
+    	for (List<Long> list : subList) {
+    		// 1.修改出库单明细waveCode为空
+    		int num = whOdoLineDao.updateOdoLineByAllocateFailAndOdoIdList(list, reason, ouId);
+    		if (0 == num) {
+    			throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+    		}
+    		// 2.修改出库单waveCode为空
+    		num = whOdoDao.updateOdoByAllocateFailAndOdoIdList(list, reason, ouId);
+    		if (0 == num) {
+    			throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+    		}
+    		// 3.从波次明细中剔除出库单
+    		num = whWaveLineDao.removeWaveLineWholeByOdoIdList(waveId, list, ouId);
+			
+    		// 4.提出的出库单加入配货模式
+    		List<OdoCommand> odo = whOdoDao.getWhOdoListById(list, ouId);
+    		Map<Long, String> odoIdCounterCodeMap = new HashMap<Long, String>();
+    		for (OdoCommand odoCommand : odo) {
+    			odoIdCounterCodeMap.put(odoCommand.getId(), odoCommand.getCounterCode());
+			}
+    		distributionModeArithmeticManagerProxy.addToPool(odoIdCounterCodeMap);
+		}
     }
 
     @Override

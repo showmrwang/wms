@@ -180,21 +180,18 @@ public interface OdoManagerProxy extends BaseManager {
      */
     void saveOdoExpressVas(Long odoId, Long odoLineId, Long ouId, List<WhOdoVasCommand> odoVasList, String logId);
 
+    
     /**
-     * [业务方法]删除出库单
+     * [业务方法]出库单操作：整单取消/行取消 @mender yimin.lu 2017/2/24
      * 
-     * @param id
+     * @param odo
      * @param ouId
+     * @param isOdoCancel
+     * @param lineList
+     * @param userId
      * @param logId
      */
-    void deleteOdo(Long id, Long ouId, String logId);
-
-    /**
-     * [业务方法]删除出库单;可批量
-     * 
-     * @param lineCommand
-     */
-    void deleteLines(OdoLineCommand lineCommand);
+    public void cancel(WhOdo odo, Long ouId, Boolean isOdoCancel, List<WhOdoLine> lineList, Long userId, String logId);
 
     /**
      * 查询创建波次分组出库单

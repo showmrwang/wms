@@ -90,13 +90,13 @@ public interface OdoManager extends BaseManager {
     void saveAddressUnit(WhOdoAddress odoAddress, WhOdo odo);
 
     /**
-     * [业务方法]删除Odo
+     * [业务方法]取消Odo
      * 
-     * @param id
+     * @param odo
      * @param ouId
      * @param logId
      */
-    void deleteOdo(Long id, Long ouId, String logId);
+    void cancelOdo(WhOdo odo, Long ouId, String logId);
 
     /**
      * [业务方法]查询移除某些明细后，出库单的商品种类数；参数可选
@@ -221,7 +221,7 @@ public interface OdoManager extends BaseManager {
 
     void finishCreateOdo(WhOdo odo, List<WhOdoLine> lineList);
 
-    int updateByVersion(WhOdo odo);
+    void updateByVersion(WhOdo odo);
 
     /**
      * 出库单导出
@@ -274,4 +274,6 @@ public interface OdoManager extends BaseManager {
      * @return
      */
     List<OdoCommand> getWhOdoListById(List<Long> odoIdList, Long ouId);
+
+    List<WhOdo> findByExtCodeOuIdNotCancel(String extOdoCode, Long ouId);
 }

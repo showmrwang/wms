@@ -2725,6 +2725,22 @@
 			o.id = #{odoId}
 			and o.ou_id = #{ouId}
 	</update>
+	
+	<update id="updateOdoByAllocateFailAndOdoIdList" parameterType="map">
+		update 
+			t_wh_odo o
+		set 
+			o.is_assign_success = 0,
+			o.assign_fail_reason = #{reason},
+			o.odo_status = 1,
+			o.wave_code = null
+		where 
+			o.id in 
+			<foreach collection="odoIdList" item="id" open="(" separator="," close=")">
+				#{id}
+			</foreach> 
+			and o.ou_id = #{ouId}
+	</update>
 
 	<select id="findListByParamExt" resultMap="WhOdoResult">
         select
@@ -3337,4 +3353,14 @@
             AND ou_id = #{ouId}
     </select>
 
+
+
+
+<select id="findByExtCodeOuIdNotCancel" resultMap="WhOdoResult">
+        select
+        <include refid="whOdoColumns"/>
+        from t_wh_odo
+       where ext_code =#{extCode} and ouId=#{ouId} and odo_status!=17
+
+    </select>
 </mapper>

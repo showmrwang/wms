@@ -70,6 +70,14 @@ public interface WhWaveLineDao extends BaseDao<WhWaveLine, Long> {
      * @param ouId
      */
     int removeWaveLineWhole(@Param("waveId") Long waveId, @Param("odoId") Long odoId, @Param("ouId") Long ouId);
+    
+    /**
+     * [业务方法] 批量-剔除波次明细行
+     * @param waveId
+     * @param odoId
+     * @param ouId
+     */
+    int removeWaveLineWholeByOdoIdList(@Param("waveId") Long waveId, @Param("odoIdList") List<Long> odoIdList, @Param("ouId") Long ouId);
 
     /**
      * [业务方法] 软分配-换区波次明细和商品关联列表

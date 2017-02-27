@@ -74,6 +74,7 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhDistributionPatternRule;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutInventoryboxRelationship;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhSkuWhmgmt;
+import com.baozun.scm.primservice.whoperation.util.StringUtil;
 import com.baozun.scm.primservice.whoperation.util.formula.SimpleCubeCalculator;
 
 @Service("outboundBoxRecManagerProxy")
@@ -996,6 +997,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
 
             // 摘果的出库单分组下，一个配货模式就是一个小批次
             List<OdoCommand> distributeModeOdoList = singleOdoPickModePackedOdoMap.get(distributeMode);
+            //TODO 限制批次出库单数量
             // 将出库单按照出库箱数降序排序
             this.odoListOrderByBoxNumDesc(distributeModeOdoList);
             // 按照出库单涉及的区域将出库单分组<areaIdListStr, List<Odo>>
@@ -1044,7 +1046,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                             }
                         }
                         // 保存装箱数据到数据库，事务控制到出库单级别，异常的出库单踢出波次
-                        outboundBoxRecManager.saveRecOutboundBoxByOdo(odoCommand, null);
+                        outboundBoxRecManager.saveRecOutboundBoxByOdo(odoCommand);
                         odoComList.remove(odoCommand);
                         continue;
                     }// end-if 包含整托装箱的出库单，不推荐小车
@@ -1068,7 +1070,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                             }
                         }
                         // 保存装箱数据到数据库，统一事务
-                        outboundBoxRecManager.saveRecOutboundBoxByOdo(odoCommand, null);
+                        outboundBoxRecManager.saveRecOutboundBoxByOdo(odoCommand);
                         odoComList.remove(odoCommand);
                         continue;
                     }
@@ -1105,7 +1107,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                         availableTrolley.setAssignedGridNum(odoCommand.getWholeCaseList().size() + availableTrolley.getAssignedGridNum());
                     }
                     // 保存出库单的出库箱推荐信息到数据库，事务控制到出库单级别，异常的出库单踢出波次
-                    outboundBoxRecManager.saveRecOutboundBoxByOdo(odoCommand, trolleyContainer);
+                    outboundBoxRecManager.saveRecOutboundBoxByOdo(odoCommand);
                     // 出库单已分配小车，移除出列表
                     odoComList.remove(odoCommand);
                     // 从其他订单中选出可以继续放入小车的订单
@@ -1132,6 +1134,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
         for (String distributeMode : distributeModeUnPackingOdoMap.keySet()) {
             // 创建批次号
             String batchNo = outboundBoxRecManager.getBatchNo(ouId);
+            //TODO 限制批次出库单数量
 
             // 摘果的出库单分组下，一个配货模式就是一个小批次
             List<OdoCommand> distributeModeOdoList = distributeModeUnPackingOdoMap.get(distributeMode);
@@ -1176,7 +1179,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                         }
 
                         // 保存包裹数据到数据库
-                        outboundBoxRecManager.saveRecOutboundBoxForTrolleyPackedOdo(odoBoxList, trolleyContainer);
+                        outboundBoxRecManager.saveRecOutboundBoxForTrolleyPackedOdo(odoBoxList);
 
                         // 当前出库单明细已装完，移除出列表
                         odoComList.remove(odoCommand);
@@ -1220,13 +1223,19 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
         for (String distributeMode : distributeModePackingOdoMap.keySet()) {
             // 创建批次号
             String batchNo = outboundBoxRecManager.getBatchNo(ouId);
-
+            //TODO 限制批次出库单数量
             // 摘果的出库单分组下，一个配货模式就是一个小批次
             List<OdoCommand> distributeModeOdoList = distributeModePackingOdoMap.get(distributeMode);
-            for (OdoCommand odoCommand : distributeModeOdoList) {
-
+            Iterator<OdoCommand> distributeModeOdoListIterator = distributeModeOdoList.iterator();
+            while (distributeModeOdoListIterator.hasNext()) {
+                OdoCommand odoCommand = distributeModeOdoListIterator.next();
                 // 周转箱列表
                 List<Container2ndCategoryCommand> allTurnoverBoxList = this.getTurnoverBoxByOuIdOrderByVolumeDesc(ouId, logId);
+                if(null == allTurnoverBoxList || allTurnoverBoxList.isEmpty()){
+                    unmatchedTurnoverBoxOdoList.add(odoCommand);
+                    distributeModeOdoListIterator.remove();
+                    continue;
+                }
                 // 出库单明细
                 List<OdoLineCommand> odoLineList = odoLineManager.findOdoLineCommandListByOdoId(odoCommand.getId(), ouId);
                 // 各个明细可用的周转箱列表
@@ -1248,8 +1257,6 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                 List<Container2ndCategoryCommand> packingTurnoverBoxList = new ArrayList<>();
                 this.packingMultiSkuForMultiTurnoverBox(odoLineList, packingTurnoverBoxList, odoLineAvailableTurnoverBoxListMap, odoCommand, ouId, logId);
 
-                //需要创建的周转箱列表
-                List<Container> newOutboundBoxContainerList = new ArrayList<>();
 
                 for (Container2ndCategoryCommand container2ndCategory : packingTurnoverBoxList) {
                     // 创建周转箱
@@ -1261,10 +1268,9 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                         odoOutboundBox.setContainerId(turnoverBox.getId());
                     }
 
-                    newOutboundBoxContainerList.add(turnoverBox);
                 }
                 // 保存出库单的周转箱装箱信息到数据库
-                outboundBoxRecManager.saveRecOutboundBoxByContainer(packingTurnoverBoxList, newOutboundBoxContainerList);
+                outboundBoxRecManager.saveRecOutboundBoxByContainer(packingTurnoverBoxList);
             }
         }
         return unmatchedTurnoverBoxOdoList;
@@ -1388,7 +1394,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                     targetTrolley.setAssignedGridNum(subOdoCommand.getWholeCaseList().size() + targetTrolley.getAssignedGridNum());
                 }
                 // 保存出库单的装箱信息到数据库
-                outboundBoxRecManager.saveRecOutboundBoxByOdo(subOdoCommand, null);
+                outboundBoxRecManager.saveRecOutboundBoxByOdo(subOdoCommand);
                 // 出库单已放入小车，移除出列表
                 subOdoIterator.remove();
                 if (targetTrolley.getTotalGridNum() == targetTrolley.getAssignedGridNum()) {
@@ -1623,7 +1629,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
         for (String distributeMode : distributeModeOdoMap.keySet()) {
             // 创建批次号
             String batchNo = outboundBoxRecManager.getBatchNo(ouId);
-
+            //TODO 限制批次出库单数量
             // 一个配货模式就是一个小批次
             List<OdoCommand> batchSingleOdoList = distributeModeOdoMap.get(distributeMode);
             List<Long> odoIdList = new ArrayList<>();
@@ -1632,6 +1638,11 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
             }
             // 周转箱列表
             List<Container2ndCategoryCommand> allTurnoverBoxList = this.getTurnoverBoxByOuIdOrderByVolumeDesc(ouId, logId);
+            if(null == allTurnoverBoxList || allTurnoverBoxList.isEmpty()){
+                unmatchedTurnoverBoxOdoList.addAll(batchSingleOdoList);
+                batchSingleOdoList.clear();
+                continue;
+            }
             // 小批次下的所有明细
             List<OdoLineCommand> batchSingleOdoLineList = odoLineManager.findOdoLineByOdoId(odoIdList, ouId);
             // 各个明细可用的周转箱列表
@@ -1665,8 +1676,6 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                 // 周转箱列表
                 List<Container2ndCategoryCommand> packingTurnoverBoxList = this.allocateTurnoverBoxForBatchModeOdo(batchSkuInventoryList, batchSingleOdoLineList, odoLineCommandMap, odoCommandMap, odoLineAvailableTurnoverBoxListMap, ouId, logId);
 
-                //需要创建的周转箱列表
-                List<Container> newOutboundBoxContainerList = new ArrayList<>();
 
                 for (Container2ndCategoryCommand container : packingTurnoverBoxList) {
                     // 创建周转箱
@@ -1679,10 +1688,9 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                         odoOutboundBox.setBoxBatch(batchNo);
                     }
 
-                    newOutboundBoxContainerList.add(turnoverBox);
                 }
                 // 在一个事务中保存整个小批次的包裹信息
-                outboundBoxRecManager.saveRecOutboundBoxByContainer(packingTurnoverBoxList, newOutboundBoxContainerList);
+                outboundBoxRecManager.saveRecOutboundBoxByContainer(packingTurnoverBoxList);
             } catch (BusinessException be) {
                 // 整个批次的出库单踢出波次
                 this.releaseOdoFromWave(batchSingleOdoList, Constants.CREATE_OUTBOUND_CARTON_REC_BOX_EXCEPTION, ouId, logId);
@@ -1723,7 +1731,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
             for (String skuCode : skuBatchMap.keySet()) {
                 // 创建批次号
                 String batchNo = outboundBoxRecManager.getBatchNo(ouId);
-
+                //TODO 限制批次出库单数量
                 List<OdoCommand> batchOdoList = skuBatchMap.get(skuCode);
                 List<Long> odoIdList = new ArrayList<>();
                 for (OdoCommand odoCommand : batchOdoList) {
@@ -1731,6 +1739,11 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                 }
                 // 周转箱列表
                 List<Container2ndCategoryCommand> allTurnoverBoxList = this.getTurnoverBoxByOuIdOrderByVolumeDesc(ouId, logId);
+                if(null == allTurnoverBoxList || allTurnoverBoxList.isEmpty()){
+                    unmatchedTurnoverBoxOdoList.addAll(batchOdoList);
+                    batchOdoList.clear();
+                    continue;
+                }
                 // 小批次下的所有明细
                 List<OdoLineCommand> batchSecKillOdoLineList = odoLineManager.findOdoLineByOdoId(odoIdList, ouId);
                 // 各个明细可用的周转箱列表
@@ -1764,8 +1777,6 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                     // 周转箱列表
                     List<Container2ndCategoryCommand> packingTurnoverBoxList = this.allocateTurnoverBoxForBatchModeOdo(batchSkuInventoryList, batchSecKillOdoLineList, odoLineCommandMap, odoCommandMap, odoLineAvailableTurnoverBoxListMap, ouId, logId);
 
-                    //需要创建的周转箱列表
-                    List<Container> newOutboundBoxContainerList = new ArrayList<>();
 
                     for (Container2ndCategoryCommand container : packingTurnoverBoxList) {
                         // 创建周转箱
@@ -1778,10 +1789,9 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                             odoOutboundBox.setBoxBatch(batchNo);
                         }
 
-                        newOutboundBoxContainerList.add(turnoverBox);
                     }
                     // 在一个事务中保存整个小批次的包裹信息
-                    outboundBoxRecManager.saveRecOutboundBoxByContainer(packingTurnoverBoxList, newOutboundBoxContainerList);
+                    outboundBoxRecManager.saveRecOutboundBoxByContainer(packingTurnoverBoxList);
                 } catch (BusinessException be) {
                     // 整个批次的出库单踢出波次
                     this.releaseOdoFromWave(batchOdoList, Constants.CREATE_OUTBOUND_CARTON_REC_BOX_EXCEPTION, ouId, logId);
@@ -1821,7 +1831,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
             for (Long mainSkuId : batchMainOdoListMap.keySet()) {
                 // 创建批次号
                 String batchNo = outboundBoxRecManager.getBatchNo(ouId);
-
+                //TODO 限制批次出库单数量
                 // 小批次
                 List<Long> batchOdoIdList = batchMainOdoListMap.get(mainSkuId);
                 // 批次下所有明细集合
@@ -1829,6 +1839,15 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
 
                 // 周转箱列表
                 List<Container2ndCategoryCommand> allTurnoverBoxList = this.getTurnoverBoxByOuIdOrderByVolumeDesc(ouId, logId);
+                if(null == allTurnoverBoxList || allTurnoverBoxList.isEmpty()){
+                    for(Long odoId : batchOdoIdList){
+                        OdoCommand odoCommand = odoCommandMap.get(odoId);
+                        unmatchedTurnoverBoxOdoList.add(odoCommand);
+                        batchMainOdoList.remove(odoCommand);
+                    }
+                    batchOdoIdList.clear();
+                    continue;
+                }
                 // 各个明细可用的周转箱列表
                 Map<OdoLineCommand, List<Container2ndCategoryCommand>> odoLineAvailableTurnoverBoxListMap = this.getOdoLineAvailableTurnoverBoxMap(batchOdoLineList, allTurnoverBoxList, ouId, logId);
                 // 有明细未匹配上周转箱，出库单下的所有明细移除，出库单踢出波次
@@ -1901,8 +1920,6 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                     packingTurnoverBoxList.addAll(mainOdoPackingTurnoverBoxList);
                     packingTurnoverBoxList.addAll(accessoryOdoPackingTurnoverBoxList);
 
-                    //需要创建的周转箱列表
-                    List<Container> newOutboundBoxContainerList = new ArrayList<>();
 
                     for (Container2ndCategoryCommand container : packingTurnoverBoxList) {
                         // 创建周转箱
@@ -1915,10 +1932,9 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                             odoOutboundBox.setBoxBatch(batchNo);
                         }
 
-                        newOutboundBoxContainerList.add(turnoverBox);
                     }
                     // 在一个事务中保存整个小批次的包裹信息
-                    outboundBoxRecManager.saveRecOutboundBoxByContainer(packingTurnoverBoxList, newOutboundBoxContainerList);
+                    outboundBoxRecManager.saveRecOutboundBoxByContainer(packingTurnoverBoxList);
                 } catch (BusinessException be) {
                     // 整个批次的出库单踢出波次
                     this.releaseOdoFromWave(batchOdoIdList, odoCommandMap.get(batchOdoIdList.get(0)).getWhWaveCommand().getId(), Constants.CREATE_OUTBOUND_CARTON_REC_BOX_EXCEPTION, ouId, logId);
@@ -1958,7 +1974,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
             for (String skuGroupCode : skuGroupBatchMap.keySet()) {
                 // 创建批次号
                 String batchNo = outboundBoxRecManager.getBatchNo(ouId);
-
+                //TODO 限制批次出库单数量
                 List<OdoCommand> skuGroupBatchOdoList = skuGroupBatchMap.get(skuGroupCode);
                 List<Long> skuGroupOdoIdList = new ArrayList<>();
                 for (OdoCommand odoCommand : skuGroupBatchOdoList) {
@@ -1968,6 +1984,11 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                 List<OdoLineCommand> skuGroupBatchOdoLineList = odoLineManager.findOdoLineByOdoId(skuGroupOdoIdList, ouId);
                 // 周转箱列表
                 List<Container2ndCategoryCommand> allTurnoverBoxList = this.getTurnoverBoxByOuIdOrderByVolumeDesc(ouId, logId);
+                if(null == allTurnoverBoxList || allTurnoverBoxList.isEmpty()){
+                    unmatchedTurnoverBoxOdoList.addAll(skuGroupBatchOdoList);
+                    skuGroupBatchOdoList.clear();
+                    continue;
+                }
                 // 各个明细可用的周转箱列表
                 Map<OdoLineCommand, List<Container2ndCategoryCommand>> odoLineAvailableTurnoverBoxListMap = this.getOdoLineAvailableTurnoverBoxMap(skuGroupBatchOdoLineList, allTurnoverBoxList, ouId, logId);
                 // 有明细未匹配上周转箱，出库单下的所有明细移除，出库单踢出波次
@@ -2031,8 +2052,6 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                         packingTurnoverBoxList.addAll(skuBatchTurnoverBoxList);
                     }
 
-                    //需要创建的周转箱列表
-                    List<Container> newOutboundBoxContainerList = new ArrayList<>();
 
                     for (Container2ndCategoryCommand container : packingTurnoverBoxList) {
                         // 创建周转箱
@@ -2045,10 +2064,9 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                             odoOutboundBox.setBoxBatch(batchNo);
                         }
 
-                        newOutboundBoxContainerList.add(turnoverBox);
                     }
                     // 在一个事务中保存整个小批次的包裹信息和创建容器
-                    outboundBoxRecManager.saveRecOutboundBoxByContainer(packingTurnoverBoxList, newOutboundBoxContainerList);
+                    outboundBoxRecManager.saveRecOutboundBoxByContainer(packingTurnoverBoxList);
                 } catch (BusinessException be) {
                     // 整个批次的出库单踢出波次
                     this.releaseOdoFromWave(skuGroupBatchOdoList, Constants.CREATE_OUTBOUND_CARTON_REC_BOX_EXCEPTION, ouId, logId);
@@ -2113,9 +2131,16 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
 
                     // 创建批次号
                     String batchNo = outboundBoxRecManager.getBatchNo(ouId);
-
+                    //TODO 限制批次出库单数量
                     // 周转箱列表
                     List<Container2ndCategoryCommand> allTurnoverBoxList = this.getTurnoverBoxByOuIdOrderByVolumeDesc(ouId, logId);
+                    if(null == allTurnoverBoxList || allTurnoverBoxList.isEmpty()){
+                        for(Long odoId : batchOdoIdList){
+                            OdoCommand unmatchedBoxOdo = odoCommandMap.get(odoId);
+                            unmatchedTurnoverBoxOdoList.add(unmatchedBoxOdo);
+                        }
+                        continue;
+                    }
                     // 小批次下的所有明细
                     List<OdoLineCommand> batchSeedOdoLineList = odoLineManager.findOdoLineByOdoId(batchOdoIdList, ouId);
 
@@ -2178,6 +2203,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                     for (Long removeOdoId : unmatchedBoxOdoIdList) {
                         OdoCommand odoCommand = odoCommandMap.get(removeOdoId);
                         unmatchedTurnoverBoxOdoList.add(odoCommand);
+                        //分配进小批次的时候就已经移除了
                         batchSeedDistributeModeOdoList.remove(odoCommand);
                     }
 
@@ -2194,8 +2220,6 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                     try {
                         packingTurnoverBoxList = this.allocateTurnoverBoxForBatchModeOdo(batchSkuInventoryList, batchSeedOdoLineList, odoLineCommandMap, odoCommandMap, odoLineAvailableTurnoverBoxListMap, ouId, logId);
 
-                        //需要创建的周转箱列表
-                        List<Container> newOutboundBoxContainerList = new ArrayList<>();
 
                         for (Container2ndCategoryCommand container : packingTurnoverBoxList) {
                             // 创建周转箱
@@ -2208,11 +2232,10 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                                 odoOutboundBox.setBoxBatch(batchNo);
                             }
 
-                            newOutboundBoxContainerList.add(turnoverBox);
                         }
                         // 还有整托整箱的包裹信息
                         // 在一个事务中保存整个小批次的包裹信息
-                        outboundBoxRecManager.saveRecOutboundBoxForSeedBatch(packingTurnoverBoxList, odoPackedWholeCaseList, odoPackedWholeTrayList, newOutboundBoxContainerList);
+                        outboundBoxRecManager.saveRecOutboundBoxForSeedBatch(packingTurnoverBoxList, odoPackedWholeCaseList, odoPackedWholeTrayList);
                     } catch (BusinessException be) {
                         // 整个批次的出库单踢出波次
                         this.releaseOdoFromWave(batchOdoIdList, odoCommandMap.get(batchOdoIdList.get(0)).getWhWaveCommand().getId(), Constants.CREATE_OUTBOUND_CARTON_REC_BOX_EXCEPTION, ouId, logId);
@@ -2258,8 +2281,11 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
             SimpleCubeCalculator outboundBoxCalculator = new SimpleCubeCalculator(newBox.getLength(), newBox.getWidth(), newBox.getHigh(), SimpleCubeCalculator.SYS_UOM, Constants.OUTBOUND_BOX_AVAILABILITY, this.getLenUomConversionRate());
             // 记录该箱子中各个明细装了多少数量<odoLineId, outboundBox>
             Map<Long, WhOdoOutBoundBoxCommand> odoLineOutBoundBoxMap = new HashMap<>();
+            //为了获取第一个放入箱子的商品属性记录
+            WhSkuInventoryCommand firstSkuInventory = batchSkuInventoryList.get(0);
             boolean isMixAllowed = false;
             String mixAttr = null;
+            Long fistSkuId = null;
 
             // 记录箱子中已存放的商品属性<skuId, UUID>，此处其实只有播种的模式才需要
             Map<Long, String> skuAttrMap = new HashMap<>();
@@ -2275,14 +2301,19 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                 SkuRedisCommand skuRedisCommandTemp = skuRedisManager.findSkuMasterBySkuId(skuInventoryCommand.getSkuId(), ouId, logId);
                 Sku sku = skuRedisCommandTemp.getSku();
                 SkuMgmt skuMgmt = skuRedisCommandTemp.getSkuMgmt();
-                if (-1 == batchSkuInventoryIterator.previousIndex()) {
+                if (firstSkuInventory.equals(skuInventoryCommand)) {
                     isMixAllowed = skuMgmt.getIsMixAllowed();
                     mixAttr = skuMgmt.getMixAttr();
+                    fistSkuId = skuInventoryCommand.getSkuId();
+
+                    if (isMixAllowed) {
+                        assert !StringUtil.isEmpty(mixAttr);
+                    }
                 }
-                if (!isMixAllowed) {
-                    assert null != mixAttr;
+                if(isMixAllowed && skuMgmt.getIsMixAllowed() && !mixAttr.equals(skuMgmt.getMixAttr())){
+                    continue;
                 }
-                if ((!isMixAllowed && !mixAttr.equals(skuMgmt.getMixAttr())) || (!skuMgmt.getIsMixAllowed() && !skuMgmt.getMixAttr().equals(mixAttr))) {
+                if((!isMixAllowed || !skuMgmt.getIsMixAllowed()) && !skuInventoryCommand.getSkuId().equals(fistSkuId)){
                     continue;
                 }
                 // 判断商品边长是否符合的计算器
@@ -2292,7 +2323,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                     // 商品边长不合适，下一个明细,该处不移除，需要在下一次遍历中找出合适的箱子
                     continue;
                 }
-                String uuId = skuAttrMap.get(sku.getId());
+                String uuId = skuAttrMap.get(skuInventoryCommand.getSkuId());
                 if (null != uuId && !uuId.equals(skuInventoryCommand.getUuid())) {
                     continue;
                 }
@@ -2330,14 +2361,15 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                     odoOutBoundBoxCommand.setQty(odoOutBoundBoxCommand.getQty() + 1);
                     // 明细商品数减1
                     packingOdoLine.setQty((double) odoLineSkuQty - 1);
-                    skuInventoryCommand.setQty(skuInventoryCommand.getQty() - 1);
-                    if (skuInventoryCommand.getQty() == 0) {
+                    //TODO 是否应该使用在库库存 OnHandQty
+                    skuInventoryCommand.setOnHandQty(skuInventoryCommand.getOnHandQty() - 1);
+                    if (skuInventoryCommand.getOnHandQty() <= 0) {
                         // 该条库存记录的商品已装箱完，操作下一条库存记录
                         break;
                     }
                 }
                 if (null == uuId && isSkuAvailablePacking) {
-                    skuAttrMap.put(sku.getId(), skuInventoryCommand.getUuid());
+                    skuAttrMap.put(skuInventoryCommand.getSkuId(), skuInventoryCommand.getUuid());
                 }
                 if (0 == packingOdoLine.getQty()) {
                     // 明细数为0，则明细拣货完毕，相关的所有库存移除
@@ -2345,7 +2377,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                     batchSkuInventoryIterator.remove();
                     batchOdoLineList.remove(packingOdoLine);
                 }
-                if (skuInventoryCommand.getQty() == 0) {
+                if (skuInventoryCommand.getOnHandQty() <= 0 && 0 != packingOdoLine.getQty()) {
                     // 库存数为0，库位的商品已装箱完毕，移除该库存记录
                     batchSkuInventoryIterator.remove();
                 }
@@ -2462,7 +2494,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                 }
 
                 // 保存包裹数据到数据库
-                outboundBoxRecManager.saveRecOutboundBoxForTrolleyPackedOdo(odoBoxList, null);
+                outboundBoxRecManager.saveRecOutboundBoxForTrolleyPackedOdo(odoBoxList);
                 subOdoIterator.remove();
                 if (trolley.getAssignedGridNum() == trolley.getTotalGridNum()) {
                     // 小车货格已填满
@@ -2756,8 +2788,12 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
             SimpleCubeCalculator outboundBoxCalculator = new SimpleCubeCalculator(newBox.getLength(), newBox.getWidth(), newBox.getHigh(), SimpleCubeCalculator.SYS_UOM, Constants.OUTBOUND_BOX_AVAILABILITY, this.getLenUomConversionRate());
             // 记录该箱子中各个明细装了多少数量<odoLineId, outboundBox>
             Map<Long, WhOdoOutBoundBoxCommand> odoLineOutBoundBoxMap = new HashMap<>();
+            //为了获取第一个放入箱子的商品属性
+            OdoLineCommand firstOdoLine = odoLineList.get(0);
             boolean isMixAllowed = false;
             String mixAttr = null;
+            Long firstSkuId = null;
+
             ListIterator<OdoLineCommand> odoLineIterator = odoLineList.listIterator();
             while (odoLineIterator.hasNext()) {
                 // 一轮遍历结束，不管箱子有没有装满，已经没有可以放进去的商品
@@ -2766,15 +2802,20 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                 SkuRedisCommand skuRedisCommandTemp = skuRedisManager.findSkuMasterBySkuId(odoLine.getSkuId(), ouId, logId);
                 Sku sku = skuRedisCommandTemp.getSku();
                 SkuMgmt skuMgmt = skuRedisCommandTemp.getSkuMgmt();
-                if (-1 == odoLineIterator.previousIndex()) {
+                if (firstOdoLine.equals(odoLine)) {
                     // 第一个明细的商品一定可以放进周转箱
                     isMixAllowed = skuMgmt.getIsMixAllowed();
                     mixAttr = skuMgmt.getMixAttr();
+                    firstSkuId = odoLine.getSkuId();
+
+                    if (!isMixAllowed) {
+                        assert !StringUtil.isEmpty(mixAttr);
+                    }
                 }
-                if (!isMixAllowed) {
-                    assert null != mixAttr;
+                if(isMixAllowed && skuMgmt.getIsMixAllowed() && !mixAttr.equals(skuMgmt.getMixAttr())){
+                    continue;
                 }
-                if ((!isMixAllowed && !mixAttr.equals(skuMgmt.getMixAttr())) || (!skuMgmt.getIsMixAllowed() && !skuMgmt.getMixAttr().equals(mixAttr))) {
+                if((!isMixAllowed || !skuMgmt.getIsMixAllowed()) && !odoLine.getSkuId().equals(firstSkuId)){
                     continue;
                 }
                 // 判断商品边长是否符合的计算器
@@ -2921,9 +2962,34 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
      * @return 小车容器列表
      */
     private List<Container2ndCategoryCommand> getTrolleyListOrderByGridNumDesc(Long ouId, String logId) {
-        // TODO 放入缓存
-        List<Container2ndCategoryCommand> trolleyList = outboundBoxRecManager.getTrolleyListOrderByGridNumDesc(ouId);
-        return trolleyList;
+        String cacheKey = CacheKeyConstant.CREATE_OUTBOUND_CARTON_TROLLEY_LIST_ORDER_BY_GRID_NUM_DESC_PREFIX + ouId;
+        List<Container2ndCategoryCommand> trolleyListCache ;
+
+        try {
+            trolleyListCache = cacheManager.getObject(cacheKey);
+        } catch (Exception e) {
+            log.error("getTrolleyListOrderByGridNumDesc cacheManager.getObject error, exception is:[{}], logOd is:[{}]", e, logId);
+            throw new BusinessException("小车类二级容器缓存读取错误");
+        }
+        if (null == trolleyListCache || trolleyListCache.isEmpty()) {
+            List<Container2ndCategoryCommand> trolleyList = outboundBoxRecManager.getTrolleyListOrderByGridNumDesc(ouId);
+            try {
+                cacheManager.setObject(cacheKey, trolleyList, CacheKeyConstant.CACHE_ONE_DAY);
+            } catch (Exception e) {
+                log.error("getTrolleyListOrderByGridNumDesc cacheManager.setObject error, exception is:[{}], logOd is:[{}]", e, logId);
+                throw new BusinessException("小车类二级容器缓存写入缓存错误");
+            }
+        }
+        try {
+            trolleyListCache = cacheManager.getObject(cacheKey);
+        } catch (Exception e) {
+            log.error("getTrolleyListOrderByGridNumDesc cacheManager.getObject error, exception is:[{}], logOd is:[{}]", e, logId);
+            throw new BusinessException("小车类二级容器缓存读取错误");
+        }
+        if (null == trolleyListCache || trolleyListCache.isEmpty()) {
+            log.warn("cache getTrolleyListOrderByGridNumDesc, data is null, logId is:[{}]", log);
+        }
+        return trolleyListCache;
     }
 
     /**
@@ -2934,8 +3000,35 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
      * @return 按照体积降序排序后的二级容器类型是周转箱的集合
      */
     private List<Container2ndCategoryCommand> getTurnoverBoxByOuIdOrderByVolumeDesc(Long ouId, String logId) {
-        List<Container2ndCategoryCommand> turnoverBoxList = outboundBoxRecManager.getTurnoverBoxByOuIdOrderByVolumeDesc(ouId);
-        return turnoverBoxList;
+        String cacheKey = CacheKeyConstant.CREATE_OUTBOUND_CARTON_TURNOVERBOX_ORDER_BY_VOLUME_DESC_PREFIX + ouId;
+        List<Container2ndCategoryCommand> turnoverBoxListCache;
+
+        try {
+            turnoverBoxListCache = cacheManager.getObject(cacheKey);
+        } catch (Exception e) {
+            log.error("getTurnoverBoxByOuIdOrderByVolumeDesc cacheManager.getObject error, exception is:[{}], logOd is:[{}]", e, logId);
+            throw new BusinessException("周转箱类二级容器缓存读取错误");
+        }
+        if (null == turnoverBoxListCache || turnoverBoxListCache.isEmpty()) {
+            List<Container2ndCategoryCommand> turnoverBoxList = outboundBoxRecManager.getTurnoverBoxByOuIdOrderByVolumeDesc(ouId);
+            try {
+                cacheManager.setObject(cacheKey, turnoverBoxList, CacheKeyConstant.CACHE_ONE_DAY);
+            } catch (Exception e) {
+                log.error("getTurnoverBoxByOuIdOrderByVolumeDesc cacheManager.setObject error, exception is:[{}], logOd is:[{}]", e, logId);
+                throw new BusinessException("周转箱类二级容器缓存写入缓存错误");
+            }
+        }
+        try {
+            turnoverBoxListCache = cacheManager.getObject(cacheKey);
+        } catch (Exception e) {
+            log.error("getTurnoverBoxByOuIdOrderByVolumeDesc cacheManager.getObject error, exception is:[{}], logOd is:[{}]", e, logId);
+            throw new BusinessException("周转箱类二级容器缓存读取错误");
+        }
+        if (null == turnoverBoxListCache || turnoverBoxListCache.isEmpty()) {
+            log.warn("cache getTurnoverBoxByOuIdOrderByVolumeDesc, data is null, logId is:[{}]", log);
+        }
+
+        return turnoverBoxListCache;
     }
 
     /**
@@ -3014,12 +3107,12 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
         newContainer.setOuId(ouId);
         newContainer.setLastModifyTime(new Date());
         newContainer.setStatus(ContainerStatus.CONTAINER_STATUS_FORBIDDEN); // 1为可用
-        // 生成主键
-        Long pkId = pkManager.generatePk(Constants.WMS, Constants.CONTAINER_MODEL_URL);
-        newContainer.setId(pkId);
+        // 主键在插入时自动添加了
+        //Long pkId = pkManager.generatePk(Constants.WMS, Constants.CONTAINER_MODEL_URL);
+        //newContainer.setId(pkId);
 
         //在保存批次包裹时一个事务中创建
-        //outboundBoxRecManager.createContainer(newContainer, ouId);
+        outboundBoxRecManager.createContainer(newContainer, ouId);
         return newContainer;
     }
 

@@ -618,6 +618,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				and ou_id = #{ouId}
 	    ]]>
 	</delete> 
+	
+	<delete id="removeWaveLineWholeByOdoIdList" parameterType="map">
+        delete from t_wh_wave_line where
+	        wave_id = #{waveId} 
+			and odo_id in 
+			<foreach collection="odoIdList" item="id" open="(" separator="," close=")">
+				#{id}
+			</foreach> 
+			and ou_id = #{ouId}
+	</delete> 
 	    
 	<update id="modifyRuleIntoWhWaveLine" parameterType="map">
 		update t_wh_wave_line l set l.allocate_rule_id = #{ruleId} 
@@ -716,7 +726,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	
 	<select id="findNotEnoughAllocationQty" parameterType="map" resultMap="WhWaveLineResultExt">
 		select 
-			<include refid="whWaveLineColumns" /> 
+			id as id,
+        	wave_id as waveId,
+        	odo_line_id as odoLineId,
+        	odo_id as odoId,
+        	odo_code as odoCode,
+        	allocate_rule_id as allocateRuleId,
+        	qty as qty,
+        	allocate_qty as allocateQty,
+        	is_whole_order_outbound as isWholeOrderOutbound,
+        	full_line_outbound as fullLineOutbound
 		from 
 			t_wh_wave_line l 
 		where 

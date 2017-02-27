@@ -2331,6 +2331,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	
 	<select id="findInventoryByLocation" parameterType="com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand" resultMap="WhSkuInventoryCommandResultExt">
 		select 
+			ISNULL(inv.outer_container_id) + ISNULL(inv.inside_container_id) as unit,
 			<include refid="whSkuInventoryColumnsInvExt" /> 
 			from t_wh_sku_inventory inv,(
 			select *,(@n := @n + 1) rowNo from (
@@ -2382,7 +2383,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			and inv.ou_id = #{ouId}
 			and inv.sku_id = #{skuId}
 			<include refid="invAttrWhereCondition"/>
-		order by rowNo,inv.on_hand_qty
+		order by rowNo, unit desc, inv.on_hand_qty
 	</select>
 	
 	<select id="findInventoryByAmount" parameterType="com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand" resultMap="WhSkuInventoryCommandResultExt">

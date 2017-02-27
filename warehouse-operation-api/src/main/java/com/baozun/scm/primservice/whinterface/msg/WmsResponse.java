@@ -37,6 +37,12 @@ public class WmsResponse implements Serializable {
      */
     private String msg;
 
+    public WmsResponse(int status, String errorCode, String msg) {
+        this.status = status;
+        this.errorCode = errorCode;
+        this.msg = msg;
+    }
+
 
     public int getStatus() {
         return status;

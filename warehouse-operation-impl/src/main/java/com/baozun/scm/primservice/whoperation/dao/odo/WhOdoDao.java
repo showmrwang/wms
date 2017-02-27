@@ -36,7 +36,6 @@ import com.baozun.scm.primservice.whoperation.command.odo.wave.OdoWaveGroupSearc
 import com.baozun.scm.primservice.whoperation.command.odo.wave.WaveCommand;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.seeding.WhSeedingWallLatticeLine;
-import com.baozun.scm.primservice.whoperation.model.warehouse.WhSeedingCollectionLine;
 
 public interface WhOdoDao extends BaseDao<WhOdo, Long> {
 
@@ -189,8 +188,16 @@ public interface WhOdoDao extends BaseDao<WhOdo, Long> {
      * 根据提供波次ID查找当中有波次明细未分配规则的出库单ID
      */
     List<OdoCommand> getNoRuleOdoIdList(@Param("waveIdList") List<Long> waveIdList, @Param("ouId") Long ouId);
-
+    
+    /**
+     * 修改出库单waveCode为空,并添加失败原因
+     */
     int updateOdoByAllocateFail(@Param("odoId") Long odoId, @Param("reason") String reason, @Param("ouId") Long ouId);
+    
+    /**
+     * 修改出库单waveCode为空,并添加失败原因
+     */
+    int updateOdoByAllocateFailAndOdoIdList(@Param("odoIdList") List<Long> odoId, @Param("reason") String reason, @Param("ouId") Long ouId);
 
     /**
      * [通用方法]查找出库单列表
@@ -266,4 +273,13 @@ public interface WhOdoDao extends BaseDao<WhOdo, Long> {
      * @return
      */
     List<OdoCommand> getWhOdoListById(@Param("odoIdList") List<Long> odoIdList, @Param("ouId") Long ouId);
+
+    /**
+     * 查找非删除状态下的出库单
+     * 
+     * @param extOdoCode
+     * @param ouId
+     * @return
+     */
+    List<WhOdo> findByExtCodeOuIdNotCancel(@Param("extCode") String extOdoCode, @Param("ouId") Long ouId);
 }

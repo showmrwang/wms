@@ -367,50 +367,26 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void deleteOdo(Long id, Long ouId, String logId) {
+    public void cancelOdo(WhOdo odo, Long ouId, String logId) {
         try {
-            // 增值服务删除
-            List<WhOdoVas> vasList = this.whOdoVasDao.findOdoVasByOdoIdOdoLineIdType(id, null, null, ouId);
-            if (vasList != null && vasList.size() > 0) {
-                for (WhOdoVas vas : vasList) {
-                    int delVasCount = this.whOdoVasDao.deleteByIdOuId(vas.getId(), ouId);
-                    if (delVasCount <= 0) {
-                        throw new BusinessException(ErrorCodes.DELETE_DATA_ERROR);
-                    }
-                }
-            }
-            // 明细删除
-            List<WhOdoLine> lineList = this.whOdoLineDao.findOdoLineListByOdoIdOuId(id, ouId);
-            if (lineList != null && lineList.size() > 0) {
-                for (WhOdoLine line : lineList) {
-                    int delLineCount = this.whOdoLineDao.deleteByIdOuId(line.getId(), ouId);
-                    if (delLineCount <= 0) {
-                        throw new BusinessException(ErrorCodes.DELETE_DATA_ERROR);
-                    }
-                }
-            }
-            // 运输服务删除
-            WhOdoTransportMgmt transMgmt = this.whOdoTransportMgmtDao.findTransportMgmtByOdoIdOuId(id, ouId);
-            if (transMgmt != null) {
-                int delTransCount = this.whOdoTransportMgmtDao.deleteByIdOuId(transMgmt.getId(), ouId);
-                if (delTransCount <= 0) {
-                    throw new BusinessException(ErrorCodes.DELETE_DATA_ERROR);
-                }
-            }
-            // 配货人信息删除
-            WhOdoAddress address = this.whOdoAddressDao.findOdoAddressByOdoId(id, ouId);
-            if (address != null) {
-                int delAdCount = this.whOdoAddressDao.deleteByIdOuId(address.getId(), ouId);
-                if (delAdCount <= 0) {
-                    throw new BusinessException(ErrorCodes.DELETE_DATA_ERROR);
-                }
-            }
-            WhOdo odo = this.whOdoDao.findByIdOuId(id, ouId);
             if (odo == null) {
                 throw new BusinessException(ErrorCodes.PARAMS_ERROR);
             }
-            int delOdoCount = this.whOdoDao.deleteByIdOuId(id, ouId);
-            if (delOdoCount <= 0) {
+            // 明细取消
+            List<WhOdoLine> lineList = this.whOdoLineDao.findOdoLineListByOdoIdOuId(odo.getId(), ouId);
+            if (lineList != null && lineList.size() > 0) {
+                for (WhOdoLine line : lineList) {
+                    line.setOdoLineStatus(OdoStatus.ODOLINE_CANCEL);
+                    int updateLineCount = this.whOdoLineDao.saveOrUpdateByVersion(line);
+                    if (updateLineCount <= 0) {
+                        throw new BusinessException(ErrorCodes.DELETE_DATA_ERROR);
+                    }
+                }
+            }
+
+            odo.setOdoStatus(OdoStatus.ODO_CANCEL);
+            int updateOdoCount = this.whOdoDao.saveOrUpdateByVersion(odo);
+            if (updateOdoCount <= 0) {
                 throw new BusinessException(ErrorCodes.DELETE_DATA_ERROR);
             }
 
@@ -418,6 +394,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
             throw e;
         } catch (Exception ex) {
             log.error("" + ex);
+            throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
         }
     }
 
@@ -651,8 +628,18 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public int updateByVersion(WhOdo odo) {
-        return this.whOdoDao.saveOrUpdateByVersion(odo);
+    public void updateByVersion(WhOdo odo) {
+        try {
+
+            int updateCount = this.whOdoDao.saveOrUpdateByVersion(odo);
+            if (updateCount == 0) {
+                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            }
+        } catch (BusinessException ex) {
+            throw ex;
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
+        }
     }
 
     @Override
@@ -812,8 +799,15 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
      * @param ouId
      * @return
      */
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<OdoCommand> getWhOdoListById(List<Long> odoIdList, Long ouId){
         return whOdoDao.getWhOdoListById(odoIdList, ouId);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<WhOdo> findByExtCodeOuIdNotCancel(String extOdoCode, Long ouId) {
+        return this.whOdoDao.findByExtCodeOuIdNotCancel(extOdoCode, ouId);
     }
 
 

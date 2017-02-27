@@ -42,13 +42,13 @@ public interface OutboundBoxRecManager extends BaseManager {
      */
     public String getBatchNo(Long ouId);
 
-    public void saveRecOutboundBoxByOdo(OdoCommand odoCommand, Container newContainer);
+    public void saveRecOutboundBoxByOdo(OdoCommand odoCommand);
 
-    public void saveRecOutboundBoxForTrolleyPackedOdo(List<WhOdoOutBoundBoxCommand> odoOutBoundBoxCommandList, Container trolleyContainer);
+    public void saveRecOutboundBoxForTrolleyPackedOdo(List<WhOdoOutBoundBoxCommand> odoOutBoundBoxCommandList);
 
-    public void saveRecOutboundBoxByContainer(List<Container2ndCategoryCommand> containerList, List<Container> newOutboundBoxContainerList);
+    public void saveRecOutboundBoxByContainer(List<Container2ndCategoryCommand> containerList);
 
-    public void saveRecOutboundBoxForSeedBatch(List<Container2ndCategoryCommand> turnoverBoxList, List<ContainerCommand> odoPackedWholeCaseList, List<ContainerCommand> odoPackedWholeTrayList, List<Container> newOutboundBoxContainerList);
+    public void saveRecOutboundBoxForSeedBatch(List<Container2ndCategoryCommand> turnoverBoxList, List<ContainerCommand> odoPackedWholeCaseList, List<ContainerCommand> odoPackedWholeTrayList);
 
     public List<ContainerAssist> findContainerAssistById(List<Long> containerIdList, Long ouId);
 
