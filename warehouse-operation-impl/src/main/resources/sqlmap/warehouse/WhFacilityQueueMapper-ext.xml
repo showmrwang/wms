@@ -59,7 +59,7 @@
     </delete>
     
     
-    <select id="getSortedQueue" resultMap="WhFacilityQueueResult">
+    <select id="findSortedQueue" resultMap="WhFacilityQueueResult">
         select
         <include refid="whFacilityQueueColumns"/>
         from t_wh_facility_queue
