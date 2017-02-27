@@ -47,6 +47,6 @@ public interface WhFacilityQueueDao extends BaseDao<WhFacilityQueue, Long> {
 
     int deleteExt(@Param("id") Long id, @Param("ouId") Long ouId);
 
-    List<WhFacilityQueue> getSortedQueue(@Param("ouId") Long ouId);
+    List<WhFacilityQueue> findSortedQueue(@Param("ouId") Long ouId);
 
 }
