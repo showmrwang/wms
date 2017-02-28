@@ -156,7 +156,7 @@ public class WhWaveLineManagerImpl extends BaseManagerImpl implements WhWaveLine
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void deleteWaveLinesByOdoIdList(List<Long> odoIdList, Long waveId, Long ouId, String reason) {
-    	List<List<Long>> subList = ListUtil.getSubList(odoIdList, 500);
+    	List<List<Long>> subList = ListUtil.getSubList(odoIdList, 100);
     	for (List<Long> list : subList) {
     		// 1.修改出库单明细waveCode为空
     		int num = whOdoLineDao.updateOdoLineByAllocateFailAndOdoIdList(list, reason, ouId);
