@@ -424,37 +424,42 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
      * @return <distributionPatternCode, rule>
      */
     private Map<String, WhDistributionPatternRule> getDistributionPatternRule(Long ouId) {
-        String cacheKey = CacheKeyConstant.CREATE_OUTBOUND_CARTON_DISTRIBUTION_PATTERN_RULE_PREFIX + ouId;
-        Map<String, WhDistributionPatternRule> ruleMapCache;
-        try {
-            ruleMapCache = cacheManager.getObject(cacheKey);
-        } catch (Exception e) {
-            log.error("getDistributionPatternRule cacheManager.getObject error, exception is:[{}], logOd is:[{}]", e, logId);
-            throw new BusinessException("配货模式缓存读取错误");
-        }
-        if (null == ruleMapCache || ruleMapCache.isEmpty()) {
-            List<WhDistributionPatternRule> distributionPatternRuleList = whDistributionPatternRuleManager.findRuleByOuId(ouId);
-            ruleMapCache = new HashMap<>();
-            for (WhDistributionPatternRule rule : distributionPatternRuleList) {
-                ruleMapCache.put(rule.getDistributionPatternCode(), rule);
-            }
-            try {
-                cacheManager.setObject(cacheKey, ruleMapCache, CacheKeyConstant.CACHE_ONE_DAY);
-            } catch (Exception e) {
-                log.error("getDistributionPatternRule cacheManager.setObject error, exception is:[{}], logOd is:[{}]", e, logId);
-                throw new BusinessException("配货模式缓存写入缓存错误");
-            }
-        }
-        try {
-            ruleMapCache = cacheManager.getObject(cacheKey);
-        } catch (Exception e) {
-            log.error("getDistributionPatternRule cacheManager.getObject error, exception is:[{}], logOd is:[{}]", e, logId);
-            throw new BusinessException("配货模式缓存读取错误");
-        }
-        if (null == ruleMapCache || ruleMapCache.isEmpty()) {
-            log.warn("cache whDistributionPatternRule, data is null, logId is:[{}]", log);
-        }
+        //String cacheKey = CacheKeyConstant.CREATE_OUTBOUND_CARTON_DISTRIBUTION_PATTERN_RULE_PREFIX + ouId;
+        //Map<String, WhDistributionPatternRule> ruleMapCache;
+        //try {
+        //    ruleMapCache = cacheManager.getObject(cacheKey);
+        //} catch (Exception e) {
+        //    log.error("getDistributionPatternRule cacheManager.getObject error, exception is:[{}], logOd is:[{}]", e, logId);
+        //    throw new BusinessException("配货模式缓存读取错误");
+        //}
+        //if (null == ruleMapCache || ruleMapCache.isEmpty()) {
+        //    List<WhDistributionPatternRule> distributionPatternRuleList = whDistributionPatternRuleManager.findRuleByOuId(ouId);
+        //    ruleMapCache = new HashMap<>();
+        //    for (WhDistributionPatternRule rule : distributionPatternRuleList) {
+        //        ruleMapCache.put(rule.getDistributionPatternCode(), rule);
+        //    }
+        //    try {
+        //        cacheManager.setObject(cacheKey, ruleMapCache, CacheKeyConstant.CACHE_ONE_DAY);
+        //    } catch (Exception e) {
+        //        log.error("getDistributionPatternRule cacheManager.setObject error, exception is:[{}], logOd is:[{}]", e, logId);
+        //        throw new BusinessException("配货模式缓存写入缓存错误");
+        //    }
+        //}
+        //try {
+        //    ruleMapCache = cacheManager.getObject(cacheKey);
+        //} catch (Exception e) {
+        //    log.error("getDistributionPatternRule cacheManager.getObject error, exception is:[{}], logOd is:[{}]", e, logId);
+        //    throw new BusinessException("配货模式缓存读取错误");
+        //}
+        //if (null == ruleMapCache || ruleMapCache.isEmpty()) {
+        //    log.warn("cache whDistributionPatternRule, data is null, logId is:[{}]", log);
+        //}
 
+        List<WhDistributionPatternRule> distributionPatternRuleList = whDistributionPatternRuleManager.findRuleByOuId(ouId);
+        Map<String, WhDistributionPatternRule> ruleMapCache = new HashMap<>();
+        for (WhDistributionPatternRule rule : distributionPatternRuleList) {
+            ruleMapCache.put(rule.getDistributionPatternCode(), rule);
+        }
         return ruleMapCache;
     }
 
@@ -2962,34 +2967,36 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
      * @return 小车容器列表
      */
     private List<Container2ndCategoryCommand> getTrolleyListOrderByGridNumDesc(Long ouId, String logId) {
-        String cacheKey = CacheKeyConstant.CREATE_OUTBOUND_CARTON_TROLLEY_LIST_ORDER_BY_GRID_NUM_DESC_PREFIX + ouId;
-        List<Container2ndCategoryCommand> trolleyListCache ;
-
-        try {
-            trolleyListCache = cacheManager.getObject(cacheKey);
-        } catch (Exception e) {
-            log.error("getTrolleyListOrderByGridNumDesc cacheManager.getObject error, exception is:[{}], logOd is:[{}]", e, logId);
-            throw new BusinessException("小车类二级容器缓存读取错误");
-        }
-        if (null == trolleyListCache || trolleyListCache.isEmpty()) {
+        //String cacheKey = CacheKeyConstant.CREATE_OUTBOUND_CARTON_TROLLEY_LIST_ORDER_BY_GRID_NUM_DESC_PREFIX + ouId;
+        //List<Container2ndCategoryCommand> trolleyListCache ;
+        //
+        //try {
+        //    trolleyListCache = cacheManager.getObject(cacheKey);
+        //} catch (Exception e) {
+        //    log.error("getTrolleyListOrderByGridNumDesc cacheManager.getObject error, exception is:[{}], logOd is:[{}]", e, logId);
+        //    throw new BusinessException("小车类二级容器缓存读取错误");
+        //}
+        //if (null == trolleyListCache || trolleyListCache.isEmpty()) {
+        //    List<Container2ndCategoryCommand> trolleyList = outboundBoxRecManager.getTrolleyListOrderByGridNumDesc(ouId);
+        //    try {
+        //        cacheManager.setObject(cacheKey, trolleyList, CacheKeyConstant.CACHE_ONE_DAY);
+        //    } catch (Exception e) {
+        //        log.error("getTrolleyListOrderByGridNumDesc cacheManager.setObject error, exception is:[{}], logOd is:[{}]", e, logId);
+        //        throw new BusinessException("小车类二级容器缓存写入缓存错误");
+        //    }
+        //}
+        //try {
+        //    trolleyListCache = cacheManager.getObject(cacheKey);
+        //} catch (Exception e) {
+        //    log.error("getTrolleyListOrderByGridNumDesc cacheManager.getObject error, exception is:[{}], logOd is:[{}]", e, logId);
+        //    throw new BusinessException("小车类二级容器缓存读取错误");
+        //}
+        //if (null == trolleyListCache || trolleyListCache.isEmpty()) {
+        //    log.warn("cache getTrolleyListOrderByGridNumDesc, data is null, logId is:[{}]", log);
+        //}
             List<Container2ndCategoryCommand> trolleyList = outboundBoxRecManager.getTrolleyListOrderByGridNumDesc(ouId);
-            try {
-                cacheManager.setObject(cacheKey, trolleyList, CacheKeyConstant.CACHE_ONE_DAY);
-            } catch (Exception e) {
-                log.error("getTrolleyListOrderByGridNumDesc cacheManager.setObject error, exception is:[{}], logOd is:[{}]", e, logId);
-                throw new BusinessException("小车类二级容器缓存写入缓存错误");
-            }
-        }
-        try {
-            trolleyListCache = cacheManager.getObject(cacheKey);
-        } catch (Exception e) {
-            log.error("getTrolleyListOrderByGridNumDesc cacheManager.getObject error, exception is:[{}], logOd is:[{}]", e, logId);
-            throw new BusinessException("小车类二级容器缓存读取错误");
-        }
-        if (null == trolleyListCache || trolleyListCache.isEmpty()) {
-            log.warn("cache getTrolleyListOrderByGridNumDesc, data is null, logId is:[{}]", log);
-        }
-        return trolleyListCache;
+
+        return trolleyList;
     }
 
     /**
@@ -3000,35 +3007,35 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
      * @return 按照体积降序排序后的二级容器类型是周转箱的集合
      */
     private List<Container2ndCategoryCommand> getTurnoverBoxByOuIdOrderByVolumeDesc(Long ouId, String logId) {
-        String cacheKey = CacheKeyConstant.CREATE_OUTBOUND_CARTON_TURNOVERBOX_ORDER_BY_VOLUME_DESC_PREFIX + ouId;
-        List<Container2ndCategoryCommand> turnoverBoxListCache;
-
-        try {
-            turnoverBoxListCache = cacheManager.getObject(cacheKey);
-        } catch (Exception e) {
-            log.error("getTurnoverBoxByOuIdOrderByVolumeDesc cacheManager.getObject error, exception is:[{}], logOd is:[{}]", e, logId);
-            throw new BusinessException("周转箱类二级容器缓存读取错误");
-        }
-        if (null == turnoverBoxListCache || turnoverBoxListCache.isEmpty()) {
-            List<Container2ndCategoryCommand> turnoverBoxList = outboundBoxRecManager.getTurnoverBoxByOuIdOrderByVolumeDesc(ouId);
-            try {
-                cacheManager.setObject(cacheKey, turnoverBoxList, CacheKeyConstant.CACHE_ONE_DAY);
-            } catch (Exception e) {
-                log.error("getTurnoverBoxByOuIdOrderByVolumeDesc cacheManager.setObject error, exception is:[{}], logOd is:[{}]", e, logId);
-                throw new BusinessException("周转箱类二级容器缓存写入缓存错误");
-            }
-        }
-        try {
-            turnoverBoxListCache = cacheManager.getObject(cacheKey);
-        } catch (Exception e) {
-            log.error("getTurnoverBoxByOuIdOrderByVolumeDesc cacheManager.getObject error, exception is:[{}], logOd is:[{}]", e, logId);
-            throw new BusinessException("周转箱类二级容器缓存读取错误");
-        }
-        if (null == turnoverBoxListCache || turnoverBoxListCache.isEmpty()) {
-            log.warn("cache getTurnoverBoxByOuIdOrderByVolumeDesc, data is null, logId is:[{}]", log);
-        }
-
-        return turnoverBoxListCache;
+        //String cacheKey = CacheKeyConstant.CREATE_OUTBOUND_CARTON_TURNOVERBOX_ORDER_BY_VOLUME_DESC_PREFIX + ouId;
+        //List<Container2ndCategoryCommand> turnoverBoxListCache;
+        //
+        //try {
+        //    turnoverBoxListCache = cacheManager.getObject(cacheKey);
+        //} catch (Exception e) {
+        //    log.error("getTurnoverBoxByOuIdOrderByVolumeDesc cacheManager.getObject error, exception is:[{}], logOd is:[{}]", e, logId);
+        //    throw new BusinessException("周转箱类二级容器缓存读取错误");
+        //}
+        //if (null == turnoverBoxListCache || turnoverBoxListCache.isEmpty()) {
+        //    List<Container2ndCategoryCommand> turnoverBoxList = outboundBoxRecManager.getTurnoverBoxByOuIdOrderByVolumeDesc(ouId);
+        //    try {
+        //        cacheManager.setObject(cacheKey, turnoverBoxList, CacheKeyConstant.CACHE_ONE_DAY);
+        //    } catch (Exception e) {
+        //        log.error("getTurnoverBoxByOuIdOrderByVolumeDesc cacheManager.setObject error, exception is:[{}], logOd is:[{}]", e, logId);
+        //        throw new BusinessException("周转箱类二级容器缓存写入缓存错误");
+        //    }
+        //}
+        //try {
+        //    turnoverBoxListCache = cacheManager.getObject(cacheKey);
+        //} catch (Exception e) {
+        //    log.error("getTurnoverBoxByOuIdOrderByVolumeDesc cacheManager.getObject error, exception is:[{}], logOd is:[{}]", e, logId);
+        //    throw new BusinessException("周转箱类二级容器缓存读取错误");
+        //}
+        //if (null == turnoverBoxListCache || turnoverBoxListCache.isEmpty()) {
+        //    log.warn("cache getTurnoverBoxByOuIdOrderByVolumeDesc, data is null, logId is:[{}]", log);
+        //}
+        List<Container2ndCategoryCommand> turnoverBoxList = outboundBoxRecManager.getTurnoverBoxByOuIdOrderByVolumeDesc(ouId);
+        return turnoverBoxList;
     }
 
     /**
