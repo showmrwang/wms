@@ -56,7 +56,7 @@ public class WmsInboundServiceManagerProxyImpl implements WmsInboundServiceManag
                 if (ResponseMsg.STATUS_SUCCESS == msg.getReasonStatus()) {
                     return new WmsResponse(1, null, null);
                 } else {
-                    return new WmsResponse(0, WmsErrorCode.UPDATE_DATA_ERROR, "");
+                    return new WmsResponse(0, WmsErrorCode.UPDATE_DATA_ERROR, msg.getMsg());
                 }
             } else {
                 List<BiPoLine> lineList = this.selectPoAsnManagerProxy.findBiPoLineByBiPoIdAndLineNums(bipo.getId(), wmsInBoundCancel.getExtLinenum());
@@ -70,7 +70,7 @@ public class WmsInboundServiceManagerProxyImpl implements WmsInboundServiceManag
                 if (ResponseMsg.STATUS_SUCCESS == msg.getReasonStatus()) {
                     return new WmsResponse(1, null, null);
                 } else {
-                    return new WmsResponse(0, WmsErrorCode.UPDATE_DATA_ERROR, "");
+                    return new WmsResponse(0, WmsErrorCode.UPDATE_DATA_ERROR, msg.getMsg());
                 }
             }
         } catch (Exception e) {
