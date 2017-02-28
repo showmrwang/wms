@@ -878,8 +878,8 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
         String workArea = "" ;
         int count = 0;
         Boolean isFromLocationId = true;
-        Boolean isUseOuterContainerId = true;
-        Boolean isUseContainerId = true;
+        Boolean isFromOuterContainerId = true;
+        Boolean isFromInsideContainerId = true;
         Boolean isOdoId = true;
         
         for(WhWorkLineCommand whWorkLineCommand : whWorkLineCommandList){
@@ -890,11 +890,11 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
                 if(whWorkLineCommandBefor.getFromLocationId() != whWorkLineCommand.getFromLocationId()){
                     isFromLocationId = false;
                 }
-                if(whWorkLineCommandBefor.getUseOuterContainerId() != whWorkLineCommand.getUseOuterContainerId()){
-                    isUseOuterContainerId = false;
+                if(whWorkLineCommandBefor.getFromOuterContainerId() != whWorkLineCommand.getFromOuterContainerId()){
+                    isFromOuterContainerId = false;
                 }
-                if(whWorkLineCommandBefor.getUseContainerId() != whWorkLineCommand.getUseContainerId()){
-                    isUseContainerId = false;
+                if(whWorkLineCommandBefor.getFromInsideContainerId() != whWorkLineCommand.getFromInsideContainerId()){
+                    isFromInsideContainerId = false;
                 }
                 if(whWorkLineCommandBefor.getOdoId() != whWorkLineCommand.getOdoId()){
                     isOdoId = false;
@@ -923,20 +923,20 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
             }
         }
         //判断工作明细是否只有唯一外部容器
-        if(isUseOuterContainerId == true){
+        if(isFromOuterContainerId == true){
             //根据容器ID获取容器CODE      
             Container containerOut = new Container();
-            containerOut = containerDao.findByIdExt(whWorkLineCommandList.get(0).getUseOuterContainerId(),odoOutBoundBox.getOuId());
+            containerOut = containerDao.findByIdExt(whWorkLineCommandList.get(0).getFromOuterContainerId(),odoOutBoundBox.getOuId());
             if(null != containerOut){
                 //设置外部容器
                 whWorkCommand.setOuterContainerCode(containerOut.getCode());
             }
         }
         //判断据工作明细是否只有唯一内部容器
-        if(isUseContainerId == true){
+        if(isFromInsideContainerId == true){
             //根据容器ID获取容器CODE      
             Container containerIn = new Container();
-            containerIn = containerDao.findByIdExt(whWorkLineCommandList.get(0).getUseContainerId(),odoOutBoundBox.getOuId());
+            containerIn = containerDao.findByIdExt(whWorkLineCommandList.get(0).getFromInsideContainerId(),odoOutBoundBox.getOuId());
             if(null != containerIn){
                 //设置内部容器
                 whWorkCommand.setContainerCode(containerIn.getCode());
@@ -1695,8 +1695,8 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
         String workArea = "" ;
         int count = 0;
         Boolean isFromLocationId = true;
-        Boolean isUseOuterContainerId = true;
-        Boolean isUseContainerId = true;
+        Boolean isFromOuterContainerId = true;
+        Boolean isFromInsideContainerId = true;
         Boolean isOdoId = true;
         
         if(null != whWorkLineCommandList || 1 < whWorkLineCommandList.size()){
@@ -1708,11 +1708,11 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
                     if(whWorkLineCommandBefor.getFromLocationId() != whWorkLineCommand.getFromLocationId()){
                         isFromLocationId = false;
                     }
-                    if(whWorkLineCommandBefor.getUseOuterContainerId() != whWorkLineCommand.getUseOuterContainerId()){
-                        isUseOuterContainerId = false;
+                    if(whWorkLineCommandBefor.getFromOuterContainerId() != whWorkLineCommand.getFromOuterContainerId()){
+                        isFromOuterContainerId = false;
                     }
-                    if(whWorkLineCommandBefor.getUseContainerId() != whWorkLineCommand.getUseContainerId()){
-                        isUseContainerId = false;
+                    if(whWorkLineCommandBefor.getFromInsideContainerId() != whWorkLineCommand.getFromInsideContainerId()){
+                        isFromInsideContainerId = false;
                     }
                     if(whWorkLineCommandBefor.getOdoId() != whWorkLineCommand.getOdoId()){
                         isOdoId = false;
@@ -1752,20 +1752,20 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
             }
         }
         //判断工作明细是否只有唯一外部容器
-        if(isUseOuterContainerId == true){
+        if(isFromOuterContainerId == true){
             //根据容器ID获取容器CODE      
             Container containerOut = new Container();
-            containerOut = containerDao.findByIdExt(whWorkLineCommandList.get(0).getUseOuterContainerId(),skuInventoryAllocatedCommand.getOuId());
+            containerOut = containerDao.findByIdExt(whWorkLineCommandList.get(0).getFromOuterContainerId(),skuInventoryAllocatedCommand.getOuId());
             if(null != containerOut){
                 //设置外部容器
                 whWorkCommand.setOuterContainerCode(containerOut.getCode());
             }
         }
         //判断据工作明细是否只有唯一内部容器
-        if(isUseContainerId == true){
+        if(isFromInsideContainerId == true){
             //根据容器ID获取容器CODE      
             Container containerIn = new Container();
-            containerIn = containerDao.findByIdExt(whWorkLineCommandList.get(0).getUseContainerId(),skuInventoryAllocatedCommand.getOuId());
+            containerIn = containerDao.findByIdExt(whWorkLineCommandList.get(0).getFromInsideContainerId(),skuInventoryAllocatedCommand.getOuId());
             if(null != containerIn){
                 //设置内部容器
                 whWorkCommand.setContainerCode(containerIn.getCode());
@@ -2110,8 +2110,8 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
         String workArea = "" ;
         int count = 0;
         Boolean isFromLocationId = true;
-        Boolean isUseOuterContainerId = true;
-        Boolean isUseContainerId = true;
+        Boolean isFromOuterContainerId = true;
+        Boolean isFromInsideContainerId = true;
         Boolean isOdoId = true;
         
         for(WhWorkLineCommand whWorkLineCommand : whWorkLineCommandList){
@@ -2122,11 +2122,11 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
                 if(null != whWorkLineCommandBefor.getFromLocationId() && null != whWorkLineCommand.getFromLocationId() && !whWorkLineCommandBefor.getFromLocationId().equals(whWorkLineCommand.getFromLocationId())){
                     isFromLocationId = false;
                 }
-                if(null != whWorkLineCommandBefor.getUseOuterContainerId() && null != whWorkLineCommand.getUseOuterContainerId() && !whWorkLineCommandBefor.getUseOuterContainerId().equals(whWorkLineCommand.getUseOuterContainerId())){
-                    isUseOuterContainerId = false;
+                if(null != whWorkLineCommandBefor.getFromOuterContainerId() && null != whWorkLineCommand.getFromOuterContainerId() && !whWorkLineCommandBefor.getFromOuterContainerId().equals(whWorkLineCommand.getFromOuterContainerId())){
+                    isFromOuterContainerId = false;
                 }
-                if(null != whWorkLineCommandBefor.getUseContainerId() && null != whWorkLineCommand.getUseContainerId() && !whWorkLineCommandBefor.getUseContainerId().equals(whWorkLineCommand.getUseContainerId())){
-                    isUseContainerId = false;
+                if(null != whWorkLineCommandBefor.getFromInsideContainerId() && null != whWorkLineCommand.getFromInsideContainerId() && !whWorkLineCommandBefor.getFromInsideContainerId().equals(whWorkLineCommand.getFromInsideContainerId())){
+                    isFromInsideContainerId = false;
                 }
                 if(null != whWorkLineCommandBefor.getOdoId() && null != whWorkLineCommand.getOdoId() && !whWorkLineCommandBefor.getOdoId().equals(whWorkLineCommand.getOdoId())){
                     isOdoId = false;
@@ -2155,20 +2155,20 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
             }
         }
         //判断工作明细是否只有唯一外部容器
-        if(isUseOuterContainerId == true){
+        if(isFromOuterContainerId == true){
             //根据容器ID获取容器CODE      
             Container containerOut = new Container();
-            containerOut = containerDao.findByIdExt(whWorkLineCommandList.get(0).getUseOuterContainerId(),skuInventoryAllocatedCommand.getOuId());
+            containerOut = containerDao.findByIdExt(whWorkLineCommandList.get(0).getFromOuterContainerId(),skuInventoryAllocatedCommand.getOuId());
             if(null != containerOut){
                 //设置外部容器
                 whWorkCommand.setOuterContainerCode(containerOut.getCode());
             }
         }
         //判断据工作明细是否只有唯一内部容器
-        if(isUseContainerId == true){
+        if(isFromInsideContainerId == true){
             //根据容器ID获取容器CODE      
             Container containerIn = new Container();
-            containerIn = containerDao.findByIdExt(whWorkLineCommandList.get(0).getUseContainerId(),skuInventoryAllocatedCommand.getOuId());
+            containerIn = containerDao.findByIdExt(whWorkLineCommandList.get(0).getFromInsideContainerId(),skuInventoryAllocatedCommand.getOuId());
             if(null != containerIn){
                 //设置内部容器
                 whWorkCommand.setContainerCode(containerIn.getCode());
