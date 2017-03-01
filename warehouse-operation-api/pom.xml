@@ -12,6 +12,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<version.project.sdk>1.0</version.project.sdk>
 		<name.project.sdk>wh-operation-interface</name.project.sdk>
+		<groupid.project.sdk>WMS4-RMI</groupid.project.sdk>
 	</properties>
 
 	<dependencies>
@@ -112,7 +113,7 @@
 			            <configuration>
 			                <file>${project.build.directory}/${name.project.sdk}.jar</file>
 			                <sources>${project.build.directory}/${project.artifactId}-${project.version}-sources.jar</sources>
-			                <groupId>com.baozun.scm.primservice.operation.whinterface</groupId>
+			                <groupId>${groupid.project.sdk}</groupId>
 							<artifactId>${name.project.sdk}</artifactId>
 							<version>${version.project.sdk}</version>
 			                <packaging>jar</packaging>
@@ -137,7 +138,7 @@
 			            	<repositoryId>snapshots</repositoryId>
 			            	<url>http://itcentral.baozun.cn/nexus/content/repositories/releases/</url>
 			                <file>${project.build.directory}/${name.project.sdk}.jar</file>
-			                <groupId>WMS4-RMI</groupId>
+			                <groupId>${groupid.project.sdk}</groupId>
 							<artifactId>${name.project.sdk}</artifactId>
 							<version>${version.project.sdk}</version>
 			                <packaging>jar</packaging>
@@ -153,7 +154,7 @@
 			            	<repositoryId>releases</repositoryId>
 			            	<url>http://itcentral.baozun.cn/nexus/content/repositories/releases/</url>
 			                <file>${project.build.directory}/${project.artifactId}-${project.version}-sources.jar</file>
-			                <groupId>com.baozun.scm.primservice.operation.whinterface</groupId>
+			                <groupId>${groupid.project.sdk}</groupId>
 							<artifactId>${name.project.sdk}</artifactId>
 							<version>${version.project.sdk}</version>
 							<classifier>sources</classifier>
@@ -170,7 +171,7 @@
 			            	<repositoryId>releases</repositoryId>
 			            	<url>http://itcentral.baozun.cn/nexus/content/repositories/releases/</url>
 			                <file>${project.build.directory}/${project.artifactId}-${project.version}-test-sources.jar</file>
-			                <groupId>${project.groupId}</groupId>
+			                <groupId>${groupid.project.sdk}</groupId>
 							<artifactId>${name.project.sdk}</artifactId>
 							<version>${version.project.sdk}</version>
 							<classifier>test</classifier>
