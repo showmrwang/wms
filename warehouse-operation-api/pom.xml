@@ -137,7 +137,7 @@
 			            	<repositoryId>snapshots</repositoryId>
 			            	<url>http://itcentral.baozun.cn/nexus/content/repositories/releases/</url>
 			                <file>${project.build.directory}/${name.project.sdk}.jar</file>
-			                <groupId>com.baozun.scm.primservice.operation.whinterface</groupId>
+			                <groupId>WMS4-RMI</groupId>
 							<artifactId>${name.project.sdk}</artifactId>
 							<version>${version.project.sdk}</version>
 			                <packaging>jar</packaging>
