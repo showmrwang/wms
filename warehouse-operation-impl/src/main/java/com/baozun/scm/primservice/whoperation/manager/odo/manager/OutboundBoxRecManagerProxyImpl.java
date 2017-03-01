@@ -641,7 +641,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
             odoBoxType = outboundBoxTypeManager.findOutInventoryBoxType(odoCommand.getOutboundCartonType(), ouId);
         }
 
-        if (null == odoBoxType) {
+        if (null == odoBoxType || BaseModel.LIFECYCLE_DISABLE.equals(odoBoxType.getLifecycle())) {
             unmatchedBoxOdoLineList.addAll(odoLineList);
             odoLineList.clear();
         }
@@ -717,7 +717,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
             if (null != odoLine.getOutboundCartonType()) {
                 odoLineBox = outboundBoxTypeManager.findOutInventoryBoxType(odoLine.getOutboundCartonType(), ouId);
             }
-            if (null == odoLineBox) {
+            if (null == odoLineBox || BaseModel.LIFECYCLE_DISABLE.equals(odoLineBox.getLifecycle())) {
                 // 明细上的出库箱类型未定义，查找下一个范围
                 unmatchedBoxOdoLineList.add(odoLine);
                 odoLineIterator.remove();
@@ -766,7 +766,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
             if (null != skuWhmgmt.getOutboundCtnType()) {
                 skuBox = outboundBoxTypeManager.findOutInventoryBoxType(skuWhmgmt.getOutboundCtnType(), ouId);
             }
-            if (null == skuBox) {
+            if (null == skuBox || BaseModel.LIFECYCLE_DISABLE.equals(skuBox.getLifecycle())) {
                 // 商品上的出库箱类型未定义，查找下一范围
                 unmatchedBoxOdoLineList.add(odoLine);
                 odoLineIterator.remove();
@@ -2667,7 +2667,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
         if (null != outInventoryboxRelationshipList && !outInventoryboxRelationshipList.isEmpty()) {
             for (WhOutInventoryboxRelationship relationship : outInventoryboxRelationshipList) {
                 OutInvBoxTypeCommand odoLineOdoOutboundBox = outboundBoxTypeManager.findOutInventoryBoxType(relationship.getOutInventoryBoxId(), ouId);
-                if (null != odoLineOdoOutboundBox) {
+                if (null != odoLineOdoOutboundBox && BaseModel.LIFECYCLE_NORMAL.equals(odoLineOdoOutboundBox.getLifecycle())) {
                     odoStoreBoxList.add(odoLineOdoOutboundBox);
                 }
             }
@@ -2683,7 +2683,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
         if (null != outInventoryboxRelationshipList && !outInventoryboxRelationshipList.isEmpty()) {
             for (WhOutInventoryboxRelationship relationship : outInventoryboxRelationshipList) {
                 OutInvBoxTypeCommand odoLineOdoOutboundBox = outboundBoxTypeManager.findOutInventoryBoxType(relationship.getOutInventoryBoxId(), ouId);
-                if (null != odoLineOdoOutboundBox) {
+                if (null != odoLineOdoOutboundBox && BaseModel.LIFECYCLE_NORMAL.equals(odoLineOdoOutboundBox.getLifecycle())) {
                     odoCustomerBoxList.add(odoLineOdoOutboundBox);
                 }
             }
@@ -2699,7 +2699,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
         if (null != outInventoryboxRelationshipList && !outInventoryboxRelationshipList.isEmpty()) {
             for (WhOutInventoryboxRelationship relationship : outInventoryboxRelationshipList) {
                 OutInvBoxTypeCommand odoLineOdoOutboundBox = outboundBoxTypeManager.findOutInventoryBoxType(relationship.getOutInventoryBoxId(), ouId);
-                if (null != odoLineOdoOutboundBox) {
+                if (null != odoLineOdoOutboundBox && BaseModel.LIFECYCLE_NORMAL.equals(odoLineOdoOutboundBox.getLifecycle())) {
                     odoGeneralBoxList.add(odoLineOdoOutboundBox);
                 }
             }
@@ -3109,11 +3109,11 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
         newContainer.setName(availableContainer.getCategoryName());
         newContainer.setOneLevelType(availableContainer.getOneLevelType());
         newContainer.setTwoLevelType(availableContainer.getId());
-        newContainer.setLifecycle(BaseModel.LIFECYCLE_NORMAL);
+        newContainer.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
         newContainer.setOperatorId(getUserId());
         newContainer.setOuId(ouId);
         newContainer.setLastModifyTime(new Date());
-        newContainer.setStatus(ContainerStatus.CONTAINER_STATUS_FORBIDDEN); // 1为可用
+        newContainer.setStatus(ContainerStatus.CONTAINER_STATUS_REC_OUTBOUNDBOX); // 出库箱推荐
         // 主键在插入时自动添加了
         //Long pkId = pkManager.generatePk(Constants.WMS, Constants.CONTAINER_MODEL_URL);
         //newContainer.setId(pkId);

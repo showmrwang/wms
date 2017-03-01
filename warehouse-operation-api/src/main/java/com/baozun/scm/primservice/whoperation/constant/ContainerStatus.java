@@ -26,5 +26,6 @@ public class ContainerStatus implements Serializable {
     public static final int CONTAINER_STATUS_CAN_PUTAWAY = 3; // 待上架 putaway
     public static final int CONTAINER_STATUS_PUTAWAY = 5; // 上架中
     public static final int CONTAINER_STATUS_SHEVLED = 6; // 已上架/货位中
-    
+    public static final int CONTAINER_STATUS_REC_OUTBOUNDBOX = 7; // 出库箱推荐
+
 }
