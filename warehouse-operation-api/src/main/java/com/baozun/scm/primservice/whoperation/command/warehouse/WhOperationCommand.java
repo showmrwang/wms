@@ -34,6 +34,8 @@ public class WhOperationCommand extends BaseModel {
     private java.lang.Long id;
     /** 作业号 */
 	private java.lang.String code;
+	/** 状态 */
+    private java.lang.Integer status;
 	/** 工作ID */
 	private java.lang.Long workId;
 	/** 仓库组织ID */
@@ -64,6 +66,14 @@ public class WhOperationCommand extends BaseModel {
 	private java.lang.String containerCode;
 	/** 是否整托整箱 */
     private java.lang.Boolean isWholeCase;
+    /** 是否短拣 */
+    private java.lang.Boolean isShortPicking;
+    /** 是否拣货完成 */
+    private java.lang.Boolean isPickingFinish;
+    /** 是否波次内补货 */
+    private java.lang.Boolean isWaveReplenish;
+    /** 是否拣货库存待移入 */
+    private java.lang.Boolean isPickingTobefilled;
 	/** 创建时间 */
 	private java.util.Date createTime;
 	/** 最后操作时间 */
@@ -262,6 +272,45 @@ public class WhOperationCommand extends BaseModel {
     public void setIsWholeCase(java.lang.Boolean isWholeCase) {
         this.isWholeCase = isWholeCase;
     }
-    
+
+    public java.lang.Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(java.lang.Integer status) {
+        this.status = status;
+    }
+
+    public java.lang.Boolean getIsShortPicking() {
+        return isShortPicking;
+    }
+
+    public void setIsShortPicking(java.lang.Boolean isShortPicking) {
+        this.isShortPicking = isShortPicking;
+    }
+
+    public java.lang.Boolean getIsPickingFinish() {
+        return isPickingFinish;
+    }
+
+    public void setIsPickingFinish(java.lang.Boolean isPickingFinish) {
+        this.isPickingFinish = isPickingFinish;
+    }
+
+    public java.lang.Boolean getIsWaveReplenish() {
+        return isWaveReplenish;
+    }
+
+    public void setIsWaveReplenish(java.lang.Boolean isWaveReplenish) {
+        this.isWaveReplenish = isWaveReplenish;
+    }
+
+    public java.lang.Boolean getIsPickingTobefilled() {
+        return isPickingTobefilled;
+    }
+
+    public void setIsPickingTobefilled(java.lang.Boolean isPickingTobefilled) {
+        this.isPickingTobefilled = isPickingTobefilled;
+    }
 }
 
