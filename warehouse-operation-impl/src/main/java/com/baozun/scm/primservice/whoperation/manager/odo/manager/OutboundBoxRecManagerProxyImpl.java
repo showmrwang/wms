@@ -1824,7 +1824,8 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
             // 按照主品sku分组<mainSkuId, List<OdoId>>
             Map<Long, List<Long>> batchMainOdoListMap = new HashMap<>();
             for (OdoCommand odoCommand : batchMainOdoList) {
-                Long mainSkuId = Long.valueOf(odoCommand.getCounterCode().substring(odoCommand.getCounterCode().indexOf(CacheKeyConstant.CACHE_KEY_SPLIT) + 1));
+                //Long mainSkuId = Long.valueOf(odoCommand.getCounterCode().substring(odoCommand.getCounterCode().lastIndexOf(CacheKeyConstant.CACHE_KEY_SPLIT) + 1));
+                Long mainSkuId = Long.valueOf(odoCommand.getDistributionCode());
                 List<Long> mainSkuOdoIdList = batchMainOdoListMap.get(mainSkuId);
                 if (null == mainSkuOdoIdList) {
                     mainSkuOdoIdList = new ArrayList<>();

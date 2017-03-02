@@ -87,6 +87,8 @@ public class OdoCommand extends BaseCommand {
     private Date planDeliverGoodsTime;
     /** 计数器编码 */
     private String counterCode;
+    /** 配货模式码 */
+    private String distributionCode;
     // ------------------------------------------------------------------------------------
     // 自定义字段
     private Long userId;
@@ -537,5 +539,13 @@ public class OdoCommand extends BaseCommand {
 
     public void setOdoLineIdwaveLineMap(Map<Long, WhWaveLineCommand> odoLineIdwaveLineMap) {
         this.odoLineIdwaveLineMap = odoLineIdwaveLineMap;
+    }
+
+    public String getDistributionCode() {
+        return distributionCode;
+    }
+
+    public void setDistributionCode(String distributionCode) {
+        this.distributionCode = distributionCode;
     }
 }
