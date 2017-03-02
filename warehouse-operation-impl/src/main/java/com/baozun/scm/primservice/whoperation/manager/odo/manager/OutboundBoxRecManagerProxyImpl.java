@@ -1198,6 +1198,8 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                         // 将创建的小车传入，设置包裹的容器ID
                         // 填满小车
                         this.fillTrolleyForUnPackingOdo(trolley, allocateAreaIdList, allocateAreaIdListCollection, allocateAreaOdoListMap, batchNo, trolleyContainer.getId(), ouId, logId);
+                        //出库单已经放入小车，退出小车的循环，执行下一个出库单
+                        break;
                     }// end-for 遍历小车
                      // 遍历完小车，如果有小车可用，则出库单已分配完，且从出库单列表移除
                     if (odoComList.contains(odoCommand)) {
