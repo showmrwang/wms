@@ -10,5 +10,12 @@ import com.baozun.scm.primservice.whinterface.msg.WmsResponse;
  *
  */
 public interface WmsInboundServiceManagerProxy {
+    
+    /***
+     * 入库单整单/整单取消
+     * @param wmsInBoundCancel
+     * @return
+     */
     WmsResponse wmsInBoundCancel(WmsInBoundCancel wmsInBoundCancel);
+    
 }
