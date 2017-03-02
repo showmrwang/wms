@@ -563,6 +563,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                         odoOutBoundBoxCommand.setOdoLineId(odoLine.getId());
                         odoOutBoundBoxCommand.setContainerId(outerContainerAssist.getContainerId());
                         odoOutBoundBoxCommand.setWholeCase(Constants.ODO_OUTBOUND_BOX_WHOLE_TRAY);
+                        odoOutBoundBoxCommand.setIsCreateWork(false);
                         // 添加批次号,批次号在分配小车时创建
                         // odoOutBoundBoxCommand.setBoxBatch();
 
@@ -599,6 +600,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                         odoOutBoundBoxCommand.setOdoLineId(odoLine.getId());
                         odoOutBoundBoxCommand.setContainerId(innerContainerAssist.getContainerId());
                         odoOutBoundBoxCommand.setWholeCase(Constants.ODO_OUTBOUND_BOX_WHOLE_CAASE);
+                        odoOutBoundBoxCommand.setIsCreateWork(false);
                         // 添加批次号,批次号在分配小车时创建
                         // odoOutBoundBoxCommand.setBoxBatch();
 
@@ -973,6 +975,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                 odoOutBoundBoxCommand.setOdoId(odoLine.getOdoId());
                 odoOutBoundBoxCommand.setOdoLineId(odoLine.getId());
                 odoOutBoundBoxCommand.setOutbounxboxTypeId(targetBox.getId());
+                odoOutBoundBoxCommand.setIsCreateWork(false);
                 // 设置出库箱类型编码，应该在出库箱装满之后，以出库箱为单位创建编码，统一设置箱子内所有包裹的出库箱编码
                 // odoOutBoundBoxCommand.setOutbounxboxTypeCode();
                 odoOutBoundBoxCommand.setWaveId(odoCommand.getWhWaveCommand().getId());
@@ -1477,6 +1480,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                         // odoOutBoundBoxCommand.setOuterContainerId();
                         odoOutBoundBoxCommand.setContainerLatticeNo(gridNum);
                         odoOutBoundBoxCommand.setWaveId(odoCommand.getWhWaveCommand().getId());
+                        odoOutBoundBoxCommand.setIsCreateWork(false);
                         // 添加到记录明细装箱数量的map中
                         odoLineOutBoundBoxMap.put(odoLine.getId(), odoOutBoundBoxCommand);
                     }
@@ -1554,6 +1558,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                         odoOutBoundBoxCommand.setOdoLineId(odoLine.getId());
                         odoOutBoundBoxCommand.setContainerId(outerContainerAssist.getContainerId());
                         odoOutBoundBoxCommand.setWholeCase(Constants.ODO_OUTBOUND_BOX_WHOLE_TRAY);
+                        odoOutBoundBoxCommand.setIsCreateWork(false);
                         // 添加批次号,批次号在分配小车时创建
                         // odoOutBoundBoxCommand.setBoxBatch();
 
@@ -1590,6 +1595,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                         odoOutBoundBoxCommand.setOdoLineId(odoLine.getId());
                         odoOutBoundBoxCommand.setContainerId(innerContainerAssist.getContainerId());
                         odoOutBoundBoxCommand.setWholeCase(Constants.ODO_OUTBOUND_BOX_WHOLE_TRAY);
+                        odoOutBoundBoxCommand.setIsCreateWork(false);
                         // 添加批次号,批次号在分配小车时创建
                         // odoOutBoundBoxCommand.setBoxBatch();
 
@@ -2360,6 +2366,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                         odoOutBoundBoxCommand.setOdoLineId(packingOdoLine.getId());
                         // odoOutBoundBoxCommand.setContainerId(newBox.getId());
                         odoOutBoundBoxCommand.setWaveId(odoCommand.getWhWaveCommand().getId());
+                        odoOutBoundBoxCommand.setIsCreateWork(false);
                         // 添加到记录明细装箱数量的map中
                         odoLineOutBoundBoxMap.put(packingOdoLine.getId(), odoOutBoundBoxCommand);
                     }
@@ -2705,9 +2712,9 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                 }
             }
         }
-        if (odoGeneralBoxList.isEmpty()) {
-            throw new BusinessException("通用出库箱未配置");
-        }
+        //if (odoGeneralBoxList.isEmpty()) {
+        //    throw new BusinessException("通用出库箱未配置");
+        //}
         return odoGeneralBoxList;
     }
 
@@ -3072,6 +3079,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                 odoOutBoundBoxCommand.setOuId(ouId);
                 odoOutBoundBoxCommand.setOdoId(odoLine.getOdoId());
                 odoOutBoundBoxCommand.setOdoLineId(odoLine.getId());
+                odoOutBoundBoxCommand.setIsCreateWork(false);
                 // 应该是新创建的周转箱
                 // odoOutBoundBoxCommand.setContainerId(targetBox.getId());
                 odoOutBoundBoxCommand.setWaveId(odoCommand.getWhWaveCommand().getId());

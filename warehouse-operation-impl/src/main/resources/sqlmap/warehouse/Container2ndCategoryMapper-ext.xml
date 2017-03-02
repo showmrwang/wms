@@ -326,6 +326,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         where
             total_grid_num > 1
             and ou_id = #{ouId}
+            and lifecycle = 1
         order by total_grid_num DESC
     </select>
 
@@ -337,6 +338,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
             total_grid_num = 1
             and ou_id = #{ouId}
             and one_level_type = "BOX_TYPE"
+            and lifecycle = 1
             order by volume DESC
     </select>
 
