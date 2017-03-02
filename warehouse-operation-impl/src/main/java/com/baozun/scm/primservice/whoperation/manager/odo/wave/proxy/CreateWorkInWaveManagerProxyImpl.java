@@ -297,7 +297,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
         }
         if(true == judge){
             WhWave whWave = this.getWhWaveHead(waveId, ouId);
-            whWave.setIsCreateReplenishedWork(true);
+            whWave.setIsCreatePickingWork(true);
             this.updateWhWave(whWave);
         }
     }
