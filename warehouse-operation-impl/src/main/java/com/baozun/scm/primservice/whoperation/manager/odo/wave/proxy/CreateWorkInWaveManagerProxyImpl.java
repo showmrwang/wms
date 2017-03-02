@@ -201,7 +201,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
                     }else{
                         // 计算目标库位容器
                         Long qty = locationReplenishmentCalculation(siaCommand, ouId);
-                        if(null != qty && 0 > qty){
+                        if(null != qty && 0 < qty){
                             // 基于目标库位容器及工作明细生成作业明细 
                             int replenishmentOperationLineCount = this.saveReplenishmentOperationLine(replenishmentWorkCode, replenishmentOperationCode, ouId, (double)qty);
                             if (replenishmentOperationLineCount != rWorkLineTotal) {
