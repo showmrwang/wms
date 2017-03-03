@@ -446,6 +446,13 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         line.setOuId(ouId);
         long lineCount = whWaveLineDao.findListCountByParam(line);
         if (lineCount == 0) {
+        	WhWave wave = whWaveDao.findWaveExtByIdAndOuId(waveId, ouId);
+        	wave.setPhaseCode(null);
+            wave.setStatus(WaveStatus.WAVE_CANCEL);
+            int num = this.whWaveDao.saveOrUpdateByVersion(wave);
+            if (1 != num) {
+                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            }
         	return;
         }
         

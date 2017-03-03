@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -29,6 +30,7 @@ import com.baozun.scm.primservice.whoperation.command.odo.OdoResultCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
+import com.baozun.scm.primservice.whoperation.dao.localauth.OperUserDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoAddressDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoAttrDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
@@ -40,6 +42,7 @@ import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveLineDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy.DistributionModeArithmeticManagerProxy;
+import com.baozun.scm.primservice.whoperation.model.localauth.OperUser;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAddress;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAttr;
@@ -73,6 +76,8 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
     private WhWaveLineDao whWaveLineDao;
     @Autowired
     private WhWaveDao whWaveDao;
+    @Autowired
+    private OperUserDao operUserDao;
     @Autowired
     private DistributionModeArithmeticManagerProxy distributionModeArithmeticManagerProxy;
     @Autowired
@@ -148,7 +153,7 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
             Set<String> dic12 = new HashSet<String>();
             Set<Long> customerIdSet = new HashSet<Long>();
             Set<Long> storeIdSet = new HashSet<Long>();
-            Set<Long> userIdSet = new HashSet<Long>();
+            Set<String> userIdSet = new HashSet<String>();
             if (list != null && list.size() > 0) {
                 for (OdoResultCommand command : list) {
                     if (StringUtils.hasText(command.getIsWholeOrderOutbound())) {
@@ -201,13 +206,23 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
                         storeIdSet.add(Long.parseLong(command.getStoreId()));
                     }
                     if (StringUtils.hasText(command.getCreateId())) {
-                        userIdSet.add(Long.parseLong(command.getCreateId()));
+                        userIdSet.add(command.getCreateId());
                     }
                     if (StringUtils.hasText(command.getModifiedId())) {
-                        userIdSet.add(Long.parseLong(command.getModifiedId()));
+                        userIdSet.add(command.getModifiedId());
                     }
                     if (StringUtils.hasText(command.getOrderType())) {
                         dic12.add(command.getOrderType());
+                    }
+                }
+                // 查找用户
+                Map<String, String> userMap = new HashMap<String, String>();
+                if (userIdSet.size() > 0) {
+                    Iterator<String> userIt = userIdSet.iterator();
+                    while (userIt.hasNext()) {
+                        String id = userIt.next();
+                        OperUser user = this.operUserDao.findById(Long.parseLong(id));
+                        userMap.put(id, user == null ? id : user.getUserName());
                     }
                 }
                 Map<String, List<String>> map = new HashMap<String, List<String>>();

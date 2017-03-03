@@ -160,6 +160,15 @@ public interface BiPoManager extends BaseManager {
     List<BiPo> findListByStoreIdExtCode(Long storeId, String extCode);
 
     /**
+     * [通用方法]根据相关单据号查询
+     * 
+     * @param storeId @required
+     * @param extCode @required
+     * @return
+     */
+    List<BiPo> findListByExtCode(String extCode);
+
+    /**
      * [通用方法] 根据EXTCODE,STOREID查找BIPO
      * 
      * @param extCode @required

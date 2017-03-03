@@ -41,7 +41,7 @@ public class WmsOutboundServiceManagerProxyImpl implements WmsOutboundServiceMan
             }
             Warehouse warehouse = this.warehouseManager.findWarehouseByCode(wmsOutBoundLocked.getWhCode());
             if (warehouse == null) {
-                return new WmsResponse(0, WmsErrorCode.WAREHOUSE_IS_NULL, "WAREHOUSE_IS_NULL");
+                return new WmsResponse(0, WmsErrorCode.NOT_HAVE_WAREHOUSE_INFOMATION, "WAREHOUSE_IS_NULL");
             }
             Long ouId = warehouse.getId();
             List<WhOdo> odoList = this.odoManager.findByExtCodeOuIdNotCancel(wmsOutBoundLocked.getExtOdoCode(), ouId);
@@ -76,7 +76,7 @@ public class WmsOutboundServiceManagerProxyImpl implements WmsOutboundServiceMan
                 return new WmsResponse(0, WmsErrorCode.UPDATE_DATA_ERROR, "UPDATE BY VERSION ERROR");
             }
         } catch (Exception e) {
-            return new WmsResponse(0, WmsErrorCode.UNKNOWN_ERROR, "UNKNOWN_ERROR");
+            return new WmsResponse(0, WmsErrorCode.SYSTEM_EXCEPTION, "SYSTEM_EXCEPTION");
         }
 
         return new WmsResponse(1, null, null);
@@ -92,7 +92,7 @@ public class WmsOutboundServiceManagerProxyImpl implements WmsOutboundServiceMan
 
             Warehouse warehouse = this.warehouseManager.findWarehouseByCode(wmsOutBoundCancel.getWhCode());
             if (warehouse == null) {
-                return new WmsResponse(0, WmsErrorCode.WAREHOUSE_IS_NULL, "WAREHOUSE_IS_NULL");
+                return new WmsResponse(0, WmsErrorCode.NOT_HAVE_WAREHOUSE_INFOMATION, "WAREHOUSE_IS_NULL");
             }
             Long ouId = warehouse.getId();
             List<WhOdo> odoList = this.odoManager.findByExtCodeOuIdNotCancel(wmsOutBoundCancel.getExtOdoCode(), ouId);
@@ -106,7 +106,7 @@ public class WmsOutboundServiceManagerProxyImpl implements WmsOutboundServiceMan
             }
             WhOdo odo = odoList.get(0);
             if (!OdoStatus.ODO_NEW.equals(odo.getOdoStatus())) {
-                return new WmsResponse(0, WmsErrorCode.ODO_STATUS_CANCEL_ERROR, "ODO_STATUS_CANCEL_ERROR");
+                return new WmsResponse(0, WmsErrorCode.STATUS_CANCEL_ERROR, "ODO_STATUS_CANCEL_ERROR");
             }
             if (wmsOutBoundCancel.getIsOdoCancel().booleanValue()) {
                 this.odoManagerProxy.cancel(odo, ouId, true, null, null, null);
@@ -125,7 +125,7 @@ public class WmsOutboundServiceManagerProxyImpl implements WmsOutboundServiceMan
             }
 
         } catch (Exception e) {
-            return new WmsResponse(0, WmsErrorCode.UNKNOWN_ERROR, "UNKNOWN_ERROR");
+            return new WmsResponse(0, WmsErrorCode.SYSTEM_EXCEPTION, "SYSTEM_EXCEPTION");
         }
         return new WmsResponse(1, null, null);
     }

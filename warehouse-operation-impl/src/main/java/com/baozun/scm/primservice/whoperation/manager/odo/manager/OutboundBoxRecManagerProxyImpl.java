@@ -424,37 +424,42 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
      * @return <distributionPatternCode, rule>
      */
     private Map<String, WhDistributionPatternRule> getDistributionPatternRule(Long ouId) {
-        String cacheKey = CacheKeyConstant.CREATE_OUTBOUND_CARTON_DISTRIBUTION_PATTERN_RULE_PREFIX + ouId;
-        Map<String, WhDistributionPatternRule> ruleMapCache;
-        try {
-            ruleMapCache = cacheManager.getObject(cacheKey);
-        } catch (Exception e) {
-            log.error("getDistributionPatternRule cacheManager.getObject error, exception is:[{}], logOd is:[{}]", e, logId);
-            throw new BusinessException("配货模式缓存读取错误");
-        }
-        if (null == ruleMapCache || ruleMapCache.isEmpty()) {
-            List<WhDistributionPatternRule> distributionPatternRuleList = whDistributionPatternRuleManager.findRuleByOuId(ouId);
-            ruleMapCache = new HashMap<>();
-            for (WhDistributionPatternRule rule : distributionPatternRuleList) {
-                ruleMapCache.put(rule.getDistributionPatternCode(), rule);
-            }
-            try {
-                cacheManager.setObject(cacheKey, ruleMapCache, CacheKeyConstant.CACHE_ONE_DAY);
-            } catch (Exception e) {
-                log.error("getDistributionPatternRule cacheManager.setObject error, exception is:[{}], logOd is:[{}]", e, logId);
-                throw new BusinessException("配货模式缓存写入缓存错误");
-            }
-        }
-        try {
-            ruleMapCache = cacheManager.getObject(cacheKey);
-        } catch (Exception e) {
-            log.error("getDistributionPatternRule cacheManager.getObject error, exception is:[{}], logOd is:[{}]", e, logId);
-            throw new BusinessException("配货模式缓存读取错误");
-        }
-        if (null == ruleMapCache || ruleMapCache.isEmpty()) {
-            log.warn("cache whDistributionPatternRule, data is null, logId is:[{}]", log);
-        }
+        //String cacheKey = CacheKeyConstant.CREATE_OUTBOUND_CARTON_DISTRIBUTION_PATTERN_RULE_PREFIX + ouId;
+        //Map<String, WhDistributionPatternRule> ruleMapCache;
+        //try {
+        //    ruleMapCache = cacheManager.getObject(cacheKey);
+        //} catch (Exception e) {
+        //    log.error("getDistributionPatternRule cacheManager.getObject error, exception is:[{}], logOd is:[{}]", e, logId);
+        //    throw new BusinessException("配货模式缓存读取错误");
+        //}
+        //if (null == ruleMapCache || ruleMapCache.isEmpty()) {
+        //    List<WhDistributionPatternRule> distributionPatternRuleList = whDistributionPatternRuleManager.findRuleByOuId(ouId);
+        //    ruleMapCache = new HashMap<>();
+        //    for (WhDistributionPatternRule rule : distributionPatternRuleList) {
+        //        ruleMapCache.put(rule.getDistributionPatternCode(), rule);
+        //    }
+        //    try {
+        //        cacheManager.setObject(cacheKey, ruleMapCache, CacheKeyConstant.CACHE_ONE_DAY);
+        //    } catch (Exception e) {
+        //        log.error("getDistributionPatternRule cacheManager.setObject error, exception is:[{}], logOd is:[{}]", e, logId);
+        //        throw new BusinessException("配货模式缓存写入缓存错误");
+        //    }
+        //}
+        //try {
+        //    ruleMapCache = cacheManager.getObject(cacheKey);
+        //} catch (Exception e) {
+        //    log.error("getDistributionPatternRule cacheManager.getObject error, exception is:[{}], logOd is:[{}]", e, logId);
+        //    throw new BusinessException("配货模式缓存读取错误");
+        //}
+        //if (null == ruleMapCache || ruleMapCache.isEmpty()) {
+        //    log.warn("cache whDistributionPatternRule, data is null, logId is:[{}]", log);
+        //}
 
+        List<WhDistributionPatternRule> distributionPatternRuleList = whDistributionPatternRuleManager.findRuleByOuId(ouId);
+        Map<String, WhDistributionPatternRule> ruleMapCache = new HashMap<>();
+        for (WhDistributionPatternRule rule : distributionPatternRuleList) {
+            ruleMapCache.put(rule.getDistributionPatternCode(), rule);
+        }
         return ruleMapCache;
     }
 
@@ -558,6 +563,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                         odoOutBoundBoxCommand.setOdoLineId(odoLine.getId());
                         odoOutBoundBoxCommand.setContainerId(outerContainerAssist.getContainerId());
                         odoOutBoundBoxCommand.setWholeCase(Constants.ODO_OUTBOUND_BOX_WHOLE_TRAY);
+                        odoOutBoundBoxCommand.setIsCreateWork(false);
                         // 添加批次号,批次号在分配小车时创建
                         // odoOutBoundBoxCommand.setBoxBatch();
 
@@ -594,6 +600,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                         odoOutBoundBoxCommand.setOdoLineId(odoLine.getId());
                         odoOutBoundBoxCommand.setContainerId(innerContainerAssist.getContainerId());
                         odoOutBoundBoxCommand.setWholeCase(Constants.ODO_OUTBOUND_BOX_WHOLE_CAASE);
+                        odoOutBoundBoxCommand.setIsCreateWork(false);
                         // 添加批次号,批次号在分配小车时创建
                         // odoOutBoundBoxCommand.setBoxBatch();
 
@@ -636,7 +643,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
             odoBoxType = outboundBoxTypeManager.findOutInventoryBoxType(odoCommand.getOutboundCartonType(), ouId);
         }
 
-        if (null == odoBoxType) {
+        if (null == odoBoxType || BaseModel.LIFECYCLE_DISABLE.equals(odoBoxType.getLifecycle())) {
             unmatchedBoxOdoLineList.addAll(odoLineList);
             odoLineList.clear();
         }
@@ -712,7 +719,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
             if (null != odoLine.getOutboundCartonType()) {
                 odoLineBox = outboundBoxTypeManager.findOutInventoryBoxType(odoLine.getOutboundCartonType(), ouId);
             }
-            if (null == odoLineBox) {
+            if (null == odoLineBox || BaseModel.LIFECYCLE_DISABLE.equals(odoLineBox.getLifecycle())) {
                 // 明细上的出库箱类型未定义，查找下一个范围
                 unmatchedBoxOdoLineList.add(odoLine);
                 odoLineIterator.remove();
@@ -761,7 +768,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
             if (null != skuWhmgmt.getOutboundCtnType()) {
                 skuBox = outboundBoxTypeManager.findOutInventoryBoxType(skuWhmgmt.getOutboundCtnType(), ouId);
             }
-            if (null == skuBox) {
+            if (null == skuBox || BaseModel.LIFECYCLE_DISABLE.equals(skuBox.getLifecycle())) {
                 // 商品上的出库箱类型未定义，查找下一范围
                 unmatchedBoxOdoLineList.add(odoLine);
                 odoLineIterator.remove();
@@ -968,6 +975,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                 odoOutBoundBoxCommand.setOdoId(odoLine.getOdoId());
                 odoOutBoundBoxCommand.setOdoLineId(odoLine.getId());
                 odoOutBoundBoxCommand.setOutbounxboxTypeId(targetBox.getId());
+                odoOutBoundBoxCommand.setIsCreateWork(false);
                 // 设置出库箱类型编码，应该在出库箱装满之后，以出库箱为单位创建编码，统一设置箱子内所有包裹的出库箱编码
                 // odoOutBoundBoxCommand.setOutbounxboxTypeCode();
                 odoOutBoundBoxCommand.setWaveId(odoCommand.getWhWaveCommand().getId());
@@ -1190,6 +1198,8 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                         // 将创建的小车传入，设置包裹的容器ID
                         // 填满小车
                         this.fillTrolleyForUnPackingOdo(trolley, allocateAreaIdList, allocateAreaIdListCollection, allocateAreaOdoListMap, batchNo, trolleyContainer.getId(), ouId, logId);
+                        //出库单已经放入小车，退出小车的循环，执行下一个出库单
+                        break;
                     }// end-for 遍历小车
                      // 遍历完小车，如果有小车可用，则出库单已分配完，且从出库单列表移除
                     if (odoComList.contains(odoCommand)) {
@@ -1472,6 +1482,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                         // odoOutBoundBoxCommand.setOuterContainerId();
                         odoOutBoundBoxCommand.setContainerLatticeNo(gridNum);
                         odoOutBoundBoxCommand.setWaveId(odoCommand.getWhWaveCommand().getId());
+                        odoOutBoundBoxCommand.setIsCreateWork(false);
                         // 添加到记录明细装箱数量的map中
                         odoLineOutBoundBoxMap.put(odoLine.getId(), odoOutBoundBoxCommand);
                     }
@@ -1549,6 +1560,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                         odoOutBoundBoxCommand.setOdoLineId(odoLine.getId());
                         odoOutBoundBoxCommand.setContainerId(outerContainerAssist.getContainerId());
                         odoOutBoundBoxCommand.setWholeCase(Constants.ODO_OUTBOUND_BOX_WHOLE_TRAY);
+                        odoOutBoundBoxCommand.setIsCreateWork(false);
                         // 添加批次号,批次号在分配小车时创建
                         // odoOutBoundBoxCommand.setBoxBatch();
 
@@ -1585,6 +1597,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                         odoOutBoundBoxCommand.setOdoLineId(odoLine.getId());
                         odoOutBoundBoxCommand.setContainerId(innerContainerAssist.getContainerId());
                         odoOutBoundBoxCommand.setWholeCase(Constants.ODO_OUTBOUND_BOX_WHOLE_TRAY);
+                        odoOutBoundBoxCommand.setIsCreateWork(false);
                         // 添加批次号,批次号在分配小车时创建
                         // odoOutBoundBoxCommand.setBoxBatch();
 
@@ -1819,7 +1832,8 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
             // 按照主品sku分组<mainSkuId, List<OdoId>>
             Map<Long, List<Long>> batchMainOdoListMap = new HashMap<>();
             for (OdoCommand odoCommand : batchMainOdoList) {
-                Long mainSkuId = Long.valueOf(odoCommand.getCounterCode().substring(odoCommand.getCounterCode().indexOf(CacheKeyConstant.CACHE_KEY_SPLIT) + 1));
+                //Long mainSkuId = Long.valueOf(odoCommand.getCounterCode().substring(odoCommand.getCounterCode().lastIndexOf(CacheKeyConstant.CACHE_KEY_SPLIT) + 1));
+                Long mainSkuId = Long.valueOf(odoCommand.getDistributionCode());
                 List<Long> mainSkuOdoIdList = batchMainOdoListMap.get(mainSkuId);
                 if (null == mainSkuOdoIdList) {
                     mainSkuOdoIdList = new ArrayList<>();
@@ -2354,6 +2368,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                         odoOutBoundBoxCommand.setOdoLineId(packingOdoLine.getId());
                         // odoOutBoundBoxCommand.setContainerId(newBox.getId());
                         odoOutBoundBoxCommand.setWaveId(odoCommand.getWhWaveCommand().getId());
+                        odoOutBoundBoxCommand.setIsCreateWork(false);
                         // 添加到记录明细装箱数量的map中
                         odoLineOutBoundBoxMap.put(packingOdoLine.getId(), odoOutBoundBoxCommand);
                     }
@@ -2662,7 +2677,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
         if (null != outInventoryboxRelationshipList && !outInventoryboxRelationshipList.isEmpty()) {
             for (WhOutInventoryboxRelationship relationship : outInventoryboxRelationshipList) {
                 OutInvBoxTypeCommand odoLineOdoOutboundBox = outboundBoxTypeManager.findOutInventoryBoxType(relationship.getOutInventoryBoxId(), ouId);
-                if (null != odoLineOdoOutboundBox) {
+                if (null != odoLineOdoOutboundBox && BaseModel.LIFECYCLE_NORMAL.equals(odoLineOdoOutboundBox.getLifecycle())) {
                     odoStoreBoxList.add(odoLineOdoOutboundBox);
                 }
             }
@@ -2678,7 +2693,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
         if (null != outInventoryboxRelationshipList && !outInventoryboxRelationshipList.isEmpty()) {
             for (WhOutInventoryboxRelationship relationship : outInventoryboxRelationshipList) {
                 OutInvBoxTypeCommand odoLineOdoOutboundBox = outboundBoxTypeManager.findOutInventoryBoxType(relationship.getOutInventoryBoxId(), ouId);
-                if (null != odoLineOdoOutboundBox) {
+                if (null != odoLineOdoOutboundBox && BaseModel.LIFECYCLE_NORMAL.equals(odoLineOdoOutboundBox.getLifecycle())) {
                     odoCustomerBoxList.add(odoLineOdoOutboundBox);
                 }
             }
@@ -2694,14 +2709,14 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
         if (null != outInventoryboxRelationshipList && !outInventoryboxRelationshipList.isEmpty()) {
             for (WhOutInventoryboxRelationship relationship : outInventoryboxRelationshipList) {
                 OutInvBoxTypeCommand odoLineOdoOutboundBox = outboundBoxTypeManager.findOutInventoryBoxType(relationship.getOutInventoryBoxId(), ouId);
-                if (null != odoLineOdoOutboundBox) {
+                if (null != odoLineOdoOutboundBox && BaseModel.LIFECYCLE_NORMAL.equals(odoLineOdoOutboundBox.getLifecycle())) {
                     odoGeneralBoxList.add(odoLineOdoOutboundBox);
                 }
             }
         }
-        if (odoGeneralBoxList.isEmpty()) {
-            throw new BusinessException("通用出库箱未配置");
-        }
+        //if (odoGeneralBoxList.isEmpty()) {
+        //    throw new BusinessException("通用出库箱未配置");
+        //}
         return odoGeneralBoxList;
     }
 
@@ -2962,34 +2977,36 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
      * @return 小车容器列表
      */
     private List<Container2ndCategoryCommand> getTrolleyListOrderByGridNumDesc(Long ouId, String logId) {
-        String cacheKey = CacheKeyConstant.CREATE_OUTBOUND_CARTON_TROLLEY_LIST_ORDER_BY_GRID_NUM_DESC_PREFIX + ouId;
-        List<Container2ndCategoryCommand> trolleyListCache ;
-
-        try {
-            trolleyListCache = cacheManager.getObject(cacheKey);
-        } catch (Exception e) {
-            log.error("getTrolleyListOrderByGridNumDesc cacheManager.getObject error, exception is:[{}], logOd is:[{}]", e, logId);
-            throw new BusinessException("小车类二级容器缓存读取错误");
-        }
-        if (null == trolleyListCache || trolleyListCache.isEmpty()) {
+        //String cacheKey = CacheKeyConstant.CREATE_OUTBOUND_CARTON_TROLLEY_LIST_ORDER_BY_GRID_NUM_DESC_PREFIX + ouId;
+        //List<Container2ndCategoryCommand> trolleyListCache ;
+        //
+        //try {
+        //    trolleyListCache = cacheManager.getObject(cacheKey);
+        //} catch (Exception e) {
+        //    log.error("getTrolleyListOrderByGridNumDesc cacheManager.getObject error, exception is:[{}], logOd is:[{}]", e, logId);
+        //    throw new BusinessException("小车类二级容器缓存读取错误");
+        //}
+        //if (null == trolleyListCache || trolleyListCache.isEmpty()) {
+        //    List<Container2ndCategoryCommand> trolleyList = outboundBoxRecManager.getTrolleyListOrderByGridNumDesc(ouId);
+        //    try {
+        //        cacheManager.setObject(cacheKey, trolleyList, CacheKeyConstant.CACHE_ONE_DAY);
+        //    } catch (Exception e) {
+        //        log.error("getTrolleyListOrderByGridNumDesc cacheManager.setObject error, exception is:[{}], logOd is:[{}]", e, logId);
+        //        throw new BusinessException("小车类二级容器缓存写入缓存错误");
+        //    }
+        //}
+        //try {
+        //    trolleyListCache = cacheManager.getObject(cacheKey);
+        //} catch (Exception e) {
+        //    log.error("getTrolleyListOrderByGridNumDesc cacheManager.getObject error, exception is:[{}], logOd is:[{}]", e, logId);
+        //    throw new BusinessException("小车类二级容器缓存读取错误");
+        //}
+        //if (null == trolleyListCache || trolleyListCache.isEmpty()) {
+        //    log.warn("cache getTrolleyListOrderByGridNumDesc, data is null, logId is:[{}]", log);
+        //}
             List<Container2ndCategoryCommand> trolleyList = outboundBoxRecManager.getTrolleyListOrderByGridNumDesc(ouId);
-            try {
-                cacheManager.setObject(cacheKey, trolleyList, CacheKeyConstant.CACHE_ONE_DAY);
-            } catch (Exception e) {
-                log.error("getTrolleyListOrderByGridNumDesc cacheManager.setObject error, exception is:[{}], logOd is:[{}]", e, logId);
-                throw new BusinessException("小车类二级容器缓存写入缓存错误");
-            }
-        }
-        try {
-            trolleyListCache = cacheManager.getObject(cacheKey);
-        } catch (Exception e) {
-            log.error("getTrolleyListOrderByGridNumDesc cacheManager.getObject error, exception is:[{}], logOd is:[{}]", e, logId);
-            throw new BusinessException("小车类二级容器缓存读取错误");
-        }
-        if (null == trolleyListCache || trolleyListCache.isEmpty()) {
-            log.warn("cache getTrolleyListOrderByGridNumDesc, data is null, logId is:[{}]", log);
-        }
-        return trolleyListCache;
+
+        return trolleyList;
     }
 
     /**
@@ -3000,35 +3017,35 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
      * @return 按照体积降序排序后的二级容器类型是周转箱的集合
      */
     private List<Container2ndCategoryCommand> getTurnoverBoxByOuIdOrderByVolumeDesc(Long ouId, String logId) {
-        String cacheKey = CacheKeyConstant.CREATE_OUTBOUND_CARTON_TURNOVERBOX_ORDER_BY_VOLUME_DESC_PREFIX + ouId;
-        List<Container2ndCategoryCommand> turnoverBoxListCache;
-
-        try {
-            turnoverBoxListCache = cacheManager.getObject(cacheKey);
-        } catch (Exception e) {
-            log.error("getTurnoverBoxByOuIdOrderByVolumeDesc cacheManager.getObject error, exception is:[{}], logOd is:[{}]", e, logId);
-            throw new BusinessException("周转箱类二级容器缓存读取错误");
-        }
-        if (null == turnoverBoxListCache || turnoverBoxListCache.isEmpty()) {
-            List<Container2ndCategoryCommand> turnoverBoxList = outboundBoxRecManager.getTurnoverBoxByOuIdOrderByVolumeDesc(ouId);
-            try {
-                cacheManager.setObject(cacheKey, turnoverBoxList, CacheKeyConstant.CACHE_ONE_DAY);
-            } catch (Exception e) {
-                log.error("getTurnoverBoxByOuIdOrderByVolumeDesc cacheManager.setObject error, exception is:[{}], logOd is:[{}]", e, logId);
-                throw new BusinessException("周转箱类二级容器缓存写入缓存错误");
-            }
-        }
-        try {
-            turnoverBoxListCache = cacheManager.getObject(cacheKey);
-        } catch (Exception e) {
-            log.error("getTurnoverBoxByOuIdOrderByVolumeDesc cacheManager.getObject error, exception is:[{}], logOd is:[{}]", e, logId);
-            throw new BusinessException("周转箱类二级容器缓存读取错误");
-        }
-        if (null == turnoverBoxListCache || turnoverBoxListCache.isEmpty()) {
-            log.warn("cache getTurnoverBoxByOuIdOrderByVolumeDesc, data is null, logId is:[{}]", log);
-        }
-
-        return turnoverBoxListCache;
+        //String cacheKey = CacheKeyConstant.CREATE_OUTBOUND_CARTON_TURNOVERBOX_ORDER_BY_VOLUME_DESC_PREFIX + ouId;
+        //List<Container2ndCategoryCommand> turnoverBoxListCache;
+        //
+        //try {
+        //    turnoverBoxListCache = cacheManager.getObject(cacheKey);
+        //} catch (Exception e) {
+        //    log.error("getTurnoverBoxByOuIdOrderByVolumeDesc cacheManager.getObject error, exception is:[{}], logOd is:[{}]", e, logId);
+        //    throw new BusinessException("周转箱类二级容器缓存读取错误");
+        //}
+        //if (null == turnoverBoxListCache || turnoverBoxListCache.isEmpty()) {
+        //    List<Container2ndCategoryCommand> turnoverBoxList = outboundBoxRecManager.getTurnoverBoxByOuIdOrderByVolumeDesc(ouId);
+        //    try {
+        //        cacheManager.setObject(cacheKey, turnoverBoxList, CacheKeyConstant.CACHE_ONE_DAY);
+        //    } catch (Exception e) {
+        //        log.error("getTurnoverBoxByOuIdOrderByVolumeDesc cacheManager.setObject error, exception is:[{}], logOd is:[{}]", e, logId);
+        //        throw new BusinessException("周转箱类二级容器缓存写入缓存错误");
+        //    }
+        //}
+        //try {
+        //    turnoverBoxListCache = cacheManager.getObject(cacheKey);
+        //} catch (Exception e) {
+        //    log.error("getTurnoverBoxByOuIdOrderByVolumeDesc cacheManager.getObject error, exception is:[{}], logOd is:[{}]", e, logId);
+        //    throw new BusinessException("周转箱类二级容器缓存读取错误");
+        //}
+        //if (null == turnoverBoxListCache || turnoverBoxListCache.isEmpty()) {
+        //    log.warn("cache getTurnoverBoxByOuIdOrderByVolumeDesc, data is null, logId is:[{}]", log);
+        //}
+        List<Container2ndCategoryCommand> turnoverBoxList = outboundBoxRecManager.getTurnoverBoxByOuIdOrderByVolumeDesc(ouId);
+        return turnoverBoxList;
     }
 
     /**
@@ -3064,6 +3081,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                 odoOutBoundBoxCommand.setOuId(ouId);
                 odoOutBoundBoxCommand.setOdoId(odoLine.getOdoId());
                 odoOutBoundBoxCommand.setOdoLineId(odoLine.getId());
+                odoOutBoundBoxCommand.setIsCreateWork(false);
                 // 应该是新创建的周转箱
                 // odoOutBoundBoxCommand.setContainerId(targetBox.getId());
                 odoOutBoundBoxCommand.setWaveId(odoCommand.getWhWaveCommand().getId());
@@ -3102,11 +3120,11 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
         newContainer.setName(availableContainer.getCategoryName());
         newContainer.setOneLevelType(availableContainer.getOneLevelType());
         newContainer.setTwoLevelType(availableContainer.getId());
-        newContainer.setLifecycle(BaseModel.LIFECYCLE_NORMAL);
+        newContainer.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
         newContainer.setOperatorId(getUserId());
         newContainer.setOuId(ouId);
         newContainer.setLastModifyTime(new Date());
-        newContainer.setStatus(ContainerStatus.CONTAINER_STATUS_FORBIDDEN); // 1为可用
+        newContainer.setStatus(ContainerStatus.CONTAINER_STATUS_REC_OUTBOUNDBOX); // 出库箱推荐
         // 主键在插入时自动添加了
         //Long pkId = pkManager.generatePk(Constants.WMS, Constants.CONTAINER_MODEL_URL);
         //newContainer.setId(pkId);

@@ -468,7 +468,6 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
     }
 
 
-
     /**
      * 创建BIPO单据
      */

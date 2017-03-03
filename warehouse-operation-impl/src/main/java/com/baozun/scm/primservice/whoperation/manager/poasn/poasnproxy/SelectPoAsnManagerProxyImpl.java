@@ -443,4 +443,14 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
     public List<WhPoCommand> findPoListByExtCodeStoreId(String extCode, String storeId) {
         return this.poManager.findPoListByExtCodeStoreId(extCode, storeId);
     }
+
+    @Override
+    public List<BiPo> findBiPoByExtCode(String extPoCode) {
+        return this.biPoManager.findListByExtCode(extPoCode);
+    }
+
+    @Override
+    public List<BiPoLine> findBiPoLineByBiPoIdAndLineNums(Long poId, List<Integer> extLinenums) {
+        return this.biPoLineManager.findBiPoLineByBiPoIdAndLineNums(poId, extLinenums);
+    }
 }

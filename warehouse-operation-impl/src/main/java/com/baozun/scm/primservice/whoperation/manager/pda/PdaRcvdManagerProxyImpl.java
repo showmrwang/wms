@@ -2105,7 +2105,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
 
         }
         if (null == skuId) {
-            throw new BusinessException(ErrorCodes.SKU_CACHE_ERROR);
+            throw new BusinessException(ErrorCodes.RCVD_ASN_NO_SKU_ERROR);
         }
 
         SkuRedisCommand sku = this.skuRedisManager.findSkuMasterBySkuId(skuId, ouId, logId);

@@ -399,6 +399,8 @@ public class ErrorCodes {
 
     /** 更新数据失败， 请重新尝试 **/
     public static final int UPDATE_FAILURE = 11079;
+    /** ASN没有此商品信息 **/
+    public static final int RCVD_ASN_NO_SKU_ERROR = 11080;
     // 10001-20000 luyimin
 
 

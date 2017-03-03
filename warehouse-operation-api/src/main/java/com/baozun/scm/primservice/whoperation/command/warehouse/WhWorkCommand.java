@@ -1,17 +1,15 @@
 /**
  * Copyright (c) 2013 Baozun All Rights Reserved.
  *
- * This software is the confidential and proprietary information of Baozun.
- * You shall not disclose such Confidential Information and shall use it only in
- * accordance with the terms of the license agreement you entered into
- * with Baozun.
+ * This software is the confidential and proprietary information of Baozun. You shall not disclose
+ * such Confidential Information and shall use it only in accordance with the terms of the license
+ * agreement you entered into with Baozun.
  *
- * BAOZUN MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT THE SUITABILITY OF THE
- * SOFTWARE, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
- * PURPOSE, OR NON-INFRINGEMENT. BAOZUN SHALL NOT BE LIABLE FOR ANY DAMAGES
- * SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING
- * THIS SOFTWARE OR ITS DERIVATIVES.
+ * BAOZUN MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT THE SUITABILITY OF THE SOFTWARE, EITHER
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT. BAOZUN SHALL NOT BE LIABLE FOR ANY DAMAGES
+ * SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS SOFTWARE OR ITS
+ * DERIVATIVES.
  *
  */
 package com.baozun.scm.primservice.whoperation.command.warehouse;
@@ -27,11 +25,11 @@ import com.baozun.scm.primservice.whoperation.command.BaseCommand;
  *
  */
 public class WhWorkCommand extends BaseCommand {
-	
+
     private static final long serialVersionUID = 7328468466927329336L;
-	
-	//columns START
-    
+
+    // columns START
+
     /** 主键ID */
     private java.lang.Long id;
     /** 工作号 */
@@ -92,188 +90,256 @@ public class WhWorkCommand extends BaseCommand {
     private Long operatorId;
     /** 是否启用 1:启用 0:停用 */
     private Integer lifecycle;
-    
-    //columns END
-    
+    /** url*/
+    private String url;
+
+    // columns END
+
     public java.lang.Long getId() {
         return id;
     }
+
     public void setId(java.lang.Long id) {
         this.id = id;
     }
+
     public String getCode() {
         return code;
     }
+
     public void setCode(String code) {
         this.code = code;
     }
+
     public Integer getStatus() {
         return status;
     }
+
     public void setStatus(Integer status) {
         this.status = status;
     }
+
     public Long getOuId() {
         return ouId;
     }
+
     public void setOuId(Long ouId) {
         this.ouId = ouId;
     }
+
     public String getWorkType() {
         return workType;
     }
+
     public void setWorkType(String workType) {
         this.workType = workType;
     }
+
     public String getWorkCategory() {
         return workCategory;
     }
+
     public void setWorkCategory(String workCategory) {
         this.workCategory = workCategory;
     }
+
     public Boolean getIsLocked() {
         return isLocked;
     }
+
     public void setIsLocked(Boolean isLocked) {
         this.isLocked = isLocked;
     }
+
     public Boolean getIsAssignOut() {
         return isAssignOut;
     }
+
     public void setIsAssignOut(Boolean isAssignOut) {
         this.isAssignOut = isAssignOut;
     }
+
     public Boolean getIsShortPicking() {
         return isShortPicking;
     }
+
     public void setIsShortPicking(Boolean isShortPicking) {
         this.isShortPicking = isShortPicking;
     }
+
     public Boolean getIsWaveReplenish() {
         return isWaveReplenish;
     }
+
     public void setIsWaveReplenish(Boolean isWaveReplenish) {
         this.isWaveReplenish = isWaveReplenish;
     }
+
     public Boolean getIsPickingTobefilled() {
         return isPickingTobefilled;
     }
+
     public void setIsPickingTobefilled(Boolean isPickingTobefilled) {
         this.isPickingTobefilled = isPickingTobefilled;
     }
+
     public Boolean getIsMultiOperation() {
         return isMultiOperation;
     }
+
     public void setIsMultiOperation(Boolean isMultiOperation) {
         this.isMultiOperation = isMultiOperation;
     }
+
     public String getWorkArea() {
         return workArea;
     }
+
     public void setWorkArea(String workArea) {
         this.workArea = workArea;
     }
+
     public Integer getWorkPriority() {
         return workPriority;
     }
+
     public void setWorkPriority(Integer workPriority) {
         this.workPriority = workPriority;
     }
+
     public String getBatch() {
         return batch;
     }
+
     public void setBatch(String batch) {
         this.batch = batch;
     }
+
     public String getAssignOutBatch() {
         return assignOutBatch;
     }
+
     public void setAssignOutBatch(String assignOutBatch) {
         this.assignOutBatch = assignOutBatch;
     }
+
     public Date getStartTime() {
         return startTime;
     }
+
     public void setStartTime(Date startTime) {
         this.startTime = startTime;
     }
+
     public Date getFinishTime() {
         return finishTime;
     }
+
     public void setFinishTime(Date finishTime) {
         this.finishTime = finishTime;
     }
+
     public Long getWaveId() {
         return waveId;
     }
+
     public void setWaveId(Long waveId) {
         this.waveId = waveId;
     }
+
     public String getWaveCode() {
         return waveCode;
     }
+
     public void setWaveCode(String waveCode) {
         this.waveCode = waveCode;
     }
+
     public String getOrderCode() {
         return orderCode;
     }
+
     public void setOrderCode(String orderCode) {
         this.orderCode = orderCode;
     }
+
     public String getLocationCode() {
         return locationCode;
     }
+
     public void setLocationCode(String locationCode) {
         this.locationCode = locationCode;
     }
+
     public String getOuterContainerCode() {
         return outerContainerCode;
     }
+
     public void setOuterContainerCode(String outerContainerCode) {
         this.outerContainerCode = outerContainerCode;
     }
+
     public String getContainerCode() {
         return containerCode;
     }
+
     public void setContainerCode(String containerCode) {
         this.containerCode = containerCode;
     }
+
     public Date getCreateTime() {
         return createTime;
     }
+
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
     }
+
     public Date getLastModifyTime() {
         return lastModifyTime;
     }
+
     public void setLastModifyTime(Date lastModifyTime) {
         this.lastModifyTime = lastModifyTime;
     }
+
     public Long getCreatedId() {
         return createdId;
     }
+
     public void setCreatedId(Long createdId) {
         this.createdId = createdId;
     }
+
     public Long getModifiedId() {
         return modifiedId;
     }
+
     public void setModifiedId(Long modifiedId) {
         this.modifiedId = modifiedId;
     }
+
     public Long getOperatorId() {
         return operatorId;
     }
+
     public void setOperatorId(Long operatorId) {
         this.operatorId = operatorId;
     }
+
     public Integer getLifecycle() {
         return lifecycle;
     }
+
     public void setLifecycle(Integer lifecycle) {
         this.lifecycle = lifecycle;
     }
-}
 
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+}

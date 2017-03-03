@@ -10,7 +10,7 @@ public class WmsInBoundCancel implements Serializable {
     private static final long serialVersionUID = -7615395438559444391L;
 
     private String extPoCode;
-    private String isPoCancel;
+    private Boolean isPoCancel;
     private List<Integer> extLinenum;
     private String dataSource;
 
@@ -22,11 +22,11 @@ public class WmsInBoundCancel implements Serializable {
         this.extPoCode = extPoCode;
     }
 
-    public String getIsPoCancel() {
+    public Boolean getIsPoCancel() {
         return isPoCancel;
     }
 
-    public void setIsPoCancel(String isPoCancel) {
+    public void setIsPoCancel(Boolean isPoCancel) {
         this.isPoCancel = isPoCancel;
     }
 

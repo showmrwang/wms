@@ -22,8 +22,8 @@ public class OperPrivilegeManagerImpl extends BaseManagerImpl implements OperPri
     public Pagination<WhWorkCommand> findWork(Page page, Sort[] sorts, Map<String, Object> param) {
         Long userId = (Long) param.get("userId");
         Long ouId = (Long) param.get("ouId");
-        param.put("category", "gzlx2");
-        String workAreaIds = operPrivilegeDao.findworkAreaByUserAndOuId(userId, ouId, "gzlx2");
+        param.put("category", "REPLENISHMENT");
+        String workAreaIds = "(" + operPrivilegeDao.findworkAreaByUserAndOuId(userId, ouId, "REPLENISHMENT") + ")";
         param.put("workAreaIds", workAreaIds);
         Pagination<WhWorkCommand> commandList = this.operPrivilegeDao.findWorkListByQueryMapWithPage(page, sorts, param);
         return commandList;

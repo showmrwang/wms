@@ -1,6 +1,7 @@
 package com.baozun.scm.primservice.whoperation.manager.poasn.poasnproxy;
 
 import java.util.Date;
+import java.util.List;
 
 import com.baozun.scm.primservice.whoperation.command.poasn.BiPoCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.BiPoLineCommand;
@@ -124,8 +125,8 @@ public interface EditPoAsnManagerProxy extends BaseManager {
      * @param command
      * @return
      */
+    ResponseMsg cancel(Long poId, Boolean isPoCancel, List<BiPoLine> biPoLineList, Long userId, String logId);
 
-    ResponseMsg cancelBiPo(BiPoCommand command);
 
     /**
      * 根据PoId,uuid删除BiPo
@@ -177,5 +178,6 @@ public interface EditPoAsnManagerProxy extends BaseManager {
      * @param command
      */
     void deleteBiPoLines(BiPoLineCommand command);
+
 
 }

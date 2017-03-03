@@ -730,12 +730,17 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         	wave_id as waveId,
         	odo_line_id as odoLineId,
         	odo_id as odoId,
+        	sku_id as skuId,
         	odo_code as odoCode,
         	allocate_rule_id as allocateRuleId,
         	qty as qty,
         	allocate_qty as allocateQty,
         	is_whole_order_outbound as isWholeOrderOutbound,
-        	full_line_outbound as fullLineOutbound
+        	full_line_outbound as fullLineOutbound,
+        	area_id as areaId,
+        	is_static_location_allocate as isStaticLocationAllocate,
+        	store_id as storeId,
+        	inv_status as invStatus
 		from 
 			t_wh_wave_line l 
 		where 
