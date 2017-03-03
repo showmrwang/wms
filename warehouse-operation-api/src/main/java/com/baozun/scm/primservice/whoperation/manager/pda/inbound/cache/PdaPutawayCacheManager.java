@@ -512,7 +512,7 @@ public interface PdaPutawayCacheManager extends BaseManager {
      * @param logId
      * @return
      */
-    public CheckScanSkuResultCommand sysSuggestSplitContainerPutawayTipSkuOrContainer(Integer scanPattern,ContainerCommand ocCmd, ContainerCommand icCmd, Set<Long> insideContainerIds, Map<Long, Map<String, Long>> insideContainerSkuAttrIdsQty,
+    public CheckScanSkuResultCommand sysSuggestSplitContainerPutawayTipSkuOrContainer(Boolean isCancel,Map<Long, Map<String, Long>>  cSkuAttrIdsQty,Map<Long, Set<String>> eSlocSkuAttrIds,Boolean isRecommendFail,Boolean isNotUser,Map<Long, Set<String>> locSkuAttrIds,Integer scanPattern,ContainerCommand ocCmd, ContainerCommand icCmd, Set<Long> insideContainerIds, Map<Long, Map<String, Long>> insideContainerSkuAttrIdsQty,
                                                                                            Map<Long, Map<String, Set<String>>> insideContainerSkuAttrIdsSnDefect, Map<Long, Set<String>> insideContainerSkuAttrIds, Long locationId, WhSkuCommand skuCmd, String logId);
 
     /***
@@ -522,7 +522,7 @@ public interface PdaPutawayCacheManager extends BaseManager {
      * @param logId
      * @return
      */
-    public InventoryStatisticResultCommand sysSuggestPalletPutawayCacheInventoryStatistic(Long userId,ContainerCommand containerCmd, Long ouId, String logId,String outerContainerCode,int putawayPatternDetailType);
+    public InventoryStatisticResultCommand sysSuggestPalletPutawayCacheInventoryStatistic(int putawayPatternType,Long userId,ContainerCommand containerCmd, Long ouId, String logId,String outerContainerCode,int putawayPatternDetailType);
     
     /**
      * 建议上架整箱上架缓存信息
@@ -534,7 +534,7 @@ public interface PdaPutawayCacheManager extends BaseManager {
      * @param putawayPatternDetailType
      * @return
      */
-    public InventoryStatisticResultCommand sysSuggestContainerPutawayCacheInventoryStatistic(Long userId,ContainerCommand insideContainerCmd, Long ouId, String logId,String outerContainerCode,int putawayPatternDetailType);
+    public InventoryStatisticResultCommand sysSuggestContainerPutawayCacheInventoryStatistic(int putawayPatternType,Long userId,ContainerCommand insideContainerCmd, Long ouId, String logId,String outerContainerCode,int putawayPatternDetailType);
 
     /***
      * 建议上架拆箱上架缓存信息
@@ -546,5 +546,14 @@ public interface PdaPutawayCacheManager extends BaseManager {
      * @param putawayPatternDetailType
      * @return
      */
-    public InventoryStatisticResultCommand sysSuggestSplitPutawayCacheInventoryStatistic(Long userId,ContainerCommand insideContainerCmd, Long ouId, String logId,String outerContainerCode,int putawayPatternDetailType);
+    public InventoryStatisticResultCommand sysSuggestSplitPutawayCacheInventoryStatistic(int putawayPatternType,Long userId,ContainerCommand insideContainerCmd, Long ouId, String logId,String outerContainerCode,int putawayPatternDetailType);
+    
+    /***
+     * 取消流程(清楚缓存)
+     * @param outerContainer
+     * @param insideContainer
+     * @param skuId
+     * @param locationId
+     */
+    public void cancelPath(Boolean isCancel,Long outerContainerId,Long insideContainerId,int cancelPattern,int putawayPatternDetailType,String locationCode,Long ouId);
 }

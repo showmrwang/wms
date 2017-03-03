@@ -31,7 +31,6 @@ import org.springframework.util.StringUtils;
 import com.baozun.redis.manager.CacheManager;
 import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.ContainerStatisticResultCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.InventoryStatisticResultCommand;
-import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.ScanResultCommand;
 import com.baozun.scm.primservice.whoperation.command.sku.SkuRedisCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.UomCommand;
@@ -43,6 +42,7 @@ import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
 import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
 import com.baozun.scm.primservice.whoperation.constant.WhPutawayPatternDetailType;
+import com.baozun.scm.primservice.whoperation.constant.WhPutawayPatternType;
 import com.baozun.scm.primservice.whoperation.constant.WhUomType;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoDao;
@@ -952,14 +952,14 @@ public class InventoryStatisticManagerImpl extends BaseManagerImpl implements In
      * @return
      */
     @Override
-    public InventoryStatisticResultCommand cacheContainerInventoryStatistics(List<WhSkuInventoryCommand> invList, Long userId, Long ouId, String logId, ContainerCommand containerCmd,  Integer putawayPatternDetailType,
+    public InventoryStatisticResultCommand cacheContainerInventoryStatistics(int putawayPatternType,List<WhSkuInventoryCommand> invList, Long userId, Long ouId, String logId, ContainerCommand containerCmd,  Integer putawayPatternDetailType,
             String outerContainerCode) {
         log.info("PdaSysSuggestPutwayManagerImpl cacheContainerInventoryStatistics is start"); 
         Long containerId = containerCmd.getId(); 
         String containerCode = containerCmd.getCode(); 
         // 3.库存信息统计
         InventoryStatisticResultCommand isrCmd = cacheManager.getMapObject(CacheConstants.CONTAINER_INVENTORY_STATISTIC, containerId.toString());
-        if(null == isrCmd) {
+        if(null == isrCmd || putawayPatternDetailType != isrCmd.getPutawayPatternDetailType() || WhPutawayPatternType.SYS_SUGGEST_PUTAWAY != isrCmd.getPutawayPatternType()) {
                 Set<Long> insideContainerIds = new HashSet<Long>();// 所有内部容器
                 Set<Long> caselevelContainerIds = new HashSet<Long>();// 所有caselevel内部容器
                 Set<Long> notcaselevelContainerIds = new HashSet<Long>();// 所有非caselevel内部容器
@@ -1328,7 +1328,7 @@ public class InventoryStatisticManagerImpl extends BaseManagerImpl implements In
                         }
                         
                     }
-                    
+                    isrCmd.setPutawayPatternType(putawayPatternType);
                     isrCmd.setPutawayPatternDetailType(putawayPatternDetailType);
                     isrCmd.setHasOuterContainer(true);
                     isrCmd.setInsideContainerIds(insideContainerIds);  //所有内部容器

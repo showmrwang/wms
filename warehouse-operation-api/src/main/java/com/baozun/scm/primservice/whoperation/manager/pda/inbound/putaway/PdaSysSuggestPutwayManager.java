@@ -22,7 +22,7 @@ public interface PdaSysSuggestPutwayManager extends BaseManager{
      * 整托容器上架
      * @param code
      */
-    public ScanResultCommand sysSuggestScanContainer(String containerCode,Long ouId,String logId,Long userId,Integer putawayPatternDetailType,Long funcId,String outerContainerCode,Warehouse wareCommand);
+    public ScanResultCommand sysSuggestScanContainer(int putawayPatternType,String containerCode,Long ouId,String logId,Long userId,Integer putawayPatternDetailType,Long funcId,String outerContainerCode,Warehouse wareCommand);
     
     /***
      * 整托上架使用推荐库位上架
@@ -48,7 +48,7 @@ public interface PdaSysSuggestPutwayManager extends BaseManager{
      * @param srCmd
      * @return
      */
-    public ScanResultCommand  contianerUserSuggestLocation(String locationCode, Long functionId, String outerContainerCode, String insideContainerCode,Long userId, Long ouId,Integer putawayPatternDetailType,Warehouse warehouse,String locBarCode);
+    public ScanResultCommand  contianerUserSuggestLocation(int putawayPatternType,String locationCode, Long functionId, String outerContainerCode, String insideContainerCode,Long userId, Long ouId,Integer putawayPatternDetailType,Warehouse warehouse,String locBarCode);
     
     
     /***
@@ -60,7 +60,7 @@ public interface PdaSysSuggestPutwayManager extends BaseManager{
      * @param srCmd
      * @return
      */
-    public ScanResultCommand  splitUserSuggestLocation(String outContainerCode,String locationCode,String containerCode,Long userId,Long ouId,String locBarCode);
+    public ScanResultCommand  splitUserSuggestLocation(int putawayPatternType,String outContainerCode,String locationCode,String containerCode,Long userId,Long ouId,String locBarCode);
     
     
     
@@ -72,7 +72,7 @@ public interface PdaSysSuggestPutwayManager extends BaseManager{
      * @param sRCommand
      * @return
      */
-    public ScanResultCommand palletPutwayScanSku(WhSkuCommand skuCmd,String containerCode,Long ouId,Long userId,String locationCode,String insideContainerCode,Long functionId,Warehouse warehouse,Integer putawayPatternDetailType);
+    public ScanResultCommand palletPutwayScanSku(int putawayPatternType,WhSkuCommand skuCmd,String containerCode,Long ouId,Long userId,String locationCode,String insideContainerCode,Long functionId,Warehouse warehouse,Integer putawayPatternDetailType);
     
     /**
      * 整箱上架:扫描sku商品
@@ -81,7 +81,7 @@ public interface PdaSysSuggestPutwayManager extends BaseManager{
      * @param sRCommand
      * @return
      */
-    public ScanResultCommand containerPutwayScanSku(Boolean isNotUser,Boolean isRecommendFail,WhSkuCommand skuCmd,String containerCode,Long ouId,Long userId,String locationCode,String insideContainerCode,Long functionId,Warehouse warehouse,Integer putawayPatternDetailType);
+    public ScanResultCommand containerPutwayScanSku(int putawayPatternType,Boolean isNotUser,Boolean isRecommendFail,WhSkuCommand skuCmd,String containerCode,Long ouId,Long userId,String locationCode,String insideContainerCode,Long functionId,Warehouse warehouse,Integer putawayPatternDetailType);
     
     
   /***
@@ -98,7 +98,7 @@ public interface PdaSysSuggestPutwayManager extends BaseManager{
    * @param finish
    * @return
    */
-    public ScanResultCommand splitPutwayScanSku(Boolean isNotUser,Boolean isScanSkuSn,Boolean isRecommendFail,String outerContainerCode,String insideContainerCode,WhSkuCommand skuCmd, String locationCode, Long funcId, Long ouId, Long userId, String logId,Integer putawayPatternDetailType,Warehouse warehouse);
+    public ScanResultCommand splitPutwayScanSku(Boolean isCancel,int putawayPatternType,Boolean isNotUser,Boolean isScanSkuSn,Boolean isRecommendFail,String outerContainerCode,String insideContainerCode,WhSkuCommand skuCmd, String locationCode, Long funcId, Long ouId, Long userId, String logId,Integer putawayPatternDetailType,Warehouse warehouse);
     
 
     /***
@@ -111,7 +111,7 @@ public interface PdaSysSuggestPutwayManager extends BaseManager{
      * @param putawayPatternDetailType
      * @return
      */
-    public ScanResultCommand pallentManPutwayFlow(Boolean isRecommendFail,String invAttrMgmtHouse,String locationCode,String locBarCode,String outerContainerCode,String insideContainerCode,Long funcId,Long ouId,Long userId,Integer putawayPatternDetailType,Warehouse warehouse);
+    public ScanResultCommand pallentManPutwayFlow(int putawayPatternType,Boolean isRecommendFail,String invAttrMgmtHouse,String locationCode,String locBarCode,String outerContainerCode,String insideContainerCode,Long funcId,Long ouId,Long userId,Integer putawayPatternDetailType,Warehouse warehouse);
     
     
     /***
@@ -124,7 +124,7 @@ public interface PdaSysSuggestPutwayManager extends BaseManager{
      * @param putawayPatternDetailType
      * @return
      */
-    public ScanResultCommand containerManPutwayFlow(Boolean isRecommendFail,String invAttrMgmtHouse,String locationCode,String locBarCode,String outerContainerCode,String insideContainerCode,Long funcId,Long ouId,Long userId,Integer putawayPatternDetailType,Warehouse warehouse);
+    public ScanResultCommand containerManPutwayFlow(int putawayPatternType,Boolean isRecommendFail,String invAttrMgmtHouse,String locationCode,String locBarCode,String outerContainerCode,String insideContainerCode,Long funcId,Long ouId,Long userId,Integer putawayPatternDetailType,Warehouse warehouse);
     
     
     /***
@@ -137,7 +137,7 @@ public interface PdaSysSuggestPutwayManager extends BaseManager{
      * @param putawayPatternDetailType
      * @return
      */
-    public ScanResultCommand splitContaienrManPutwayFlow(Boolean isNotUser,Boolean isRecommendFail,String invAttrMgmtHouse,String locationCode,String locBarCode,String outerContainerCode,String insideContainerCode,Long funcId,Long ouId,Long userId,Integer putawayPatternDetailType,Warehouse warehouse);
+    public ScanResultCommand splitContaienrManPutwayFlow(int putawayPatternType,Boolean isNotUser,Boolean isRecommendFail,String invAttrMgmtHouse,String locationCode,String locBarCode,String outerContainerCode,String insideContainerCode,Long funcId,Long ouId,Long userId,Integer putawayPatternDetailType,Warehouse warehouse);
     
     /***
      * 整托上架:扫描内部容器
@@ -157,5 +157,29 @@ public interface PdaSysSuggestPutwayManager extends BaseManager{
      * @return
      */
     public ScanResultCommand splitPutWayRemmendLocation(String outerContainerCode,Long ouId,Long userId,String insideContainerCode,Long functionId,Integer putawayPatternDetailType,Warehouse warehouse);
+    
+
+    /***
+     * 取消流程
+     * @param outerContainerCode
+     * @param insideContainerCode
+     * @param skuId
+     * @param cancelPattern
+     */
+    public void cancelPattern(Boolean isCancel,String outerContainerCode,String insideContainerCode,int cancelPattern,Long ouId,String locationCode,int putawayPatternDetailType);
+    
+    /***
+     * 点击取消按钮时获取上一个扫描的货箱号
+     * @param outerContainerCode
+     * @return
+     */
+    public String getPreviousContainerCode(String outerContainerCode,Long ouId);
+    
+    /***
+     * 返回下一个容器
+     * @param outerContainerCode
+     * @return
+     */
+    public String getPalletPutawayCacheSkuOrTipContainer(String outerContainerCode,Long ouId);
     
 }
