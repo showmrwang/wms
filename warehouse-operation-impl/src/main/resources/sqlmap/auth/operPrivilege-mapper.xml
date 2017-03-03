@@ -10,7 +10,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 
 	<sql id="whWorkColumnsExt">
 	    <![CDATA[
-	        	work.id as id,
+	        	DISTINCT work.id as id,
 	        	work.code as code,
 	        	work.status as status,
 	        	work.ou_id as ouId,
@@ -37,7 +37,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	</sql>
 
 	<select id="findworkAreaByUserAndOuId" resultType="string" >
-		select group_concat(distinct workArea.id) from
+		select group_concat(distinct workArea.area_id) from
 			oper_user_role operUserRole,
 			oper_role_privilege operPrivilege,
 			t_wh_work_area workArea,
@@ -130,11 +130,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				and workType.work_category = work.work_category
 				and work.status in (1, 9)
 				and work.id = operation.work_id
-				and operation.status = 1
+				
 				and operation.id = operationLine.operation_id
 				and operationLine.from_location_id = loc.id
 				<if test="workAreaIds!=null and workAreaIds!=''">
-					and loc.work_area_id in (#{workAreaIds})
+					and loc.work_area_id in ${workAreaIds}
 				</if>
 				<if test="category!=null and category!=''">
 					and workType.work_category = #{category}
@@ -154,7 +154,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	
 	<!-- 对工作菜单进行分页查询 -->
 	    <select id="findWorkListCountByQueryMap" resultType="long">
-	        select count(*) 
+	        select count(distinct work.id) 
 	        from 
 				oper_user_role operUserRole,
 				oper_role_privilege operPrivilege,
@@ -176,11 +176,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				and workType.work_category = work.work_category
 				and work.status in (1, 9)
 				and work.id = operation.work_id
-				and operation.status = 1
+				
 				and operation.id = operationLine.operation_id
 				and operationLine.from_location_id = loc.id
 				<if test="workAreaIds!=null and workAreaIds!=''">
-					and loc.work_area_id in  (#{workAreaIds})
+					and loc.work_area_id in  ${workAreaIds}
 				</if>
 				<if test="category!=null and category!=''">
 					and workType.work_category = #{category}

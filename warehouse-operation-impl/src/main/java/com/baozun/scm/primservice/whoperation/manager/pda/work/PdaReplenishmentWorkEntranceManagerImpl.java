@@ -1,5 +1,6 @@
 package com.baozun.scm.primservice.whoperation.manager.pda.work;
 
+import java.util.List;
 import java.util.Map;
 
 import lark.common.dao.Page;
@@ -72,6 +73,12 @@ public class PdaReplenishmentWorkEntranceManagerImpl extends BaseManagerImpl imp
         }
         // page.setSize(maxObtainWorkQty.intValue());
         Pagination<WhWorkCommand> workList = privilegeControl(page, sorts, param);
+        List<WhWorkCommand> list = workList.getItems();
+        if (null != list && !list.isEmpty()) {
+            for (WhWorkCommand c : list) {
+                c.setUrl("/pda/warehouse/work/pdaReplenishment/isWorkStatus?workId=" + c.getId() + "&functionId=" + command.getFuncId());
+            }
+        }
         if (null != param.get("scanLocCode")) {
             String locCode = param.get("scanLocCode").toString();
             if (null != workList && (null == workList.getItems() || workList.getItems().isEmpty())) {
