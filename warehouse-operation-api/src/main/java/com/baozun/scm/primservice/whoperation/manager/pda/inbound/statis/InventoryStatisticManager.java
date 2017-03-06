@@ -49,6 +49,6 @@ public interface InventoryStatisticManager extends BaseManager {
      * @param outerContainerCode
      * @return
      */
-    public InventoryStatisticResultCommand cacheContainerInventoryStatistics(List<WhSkuInventoryCommand> invList,Long userId,Long ouId,String logId,ContainerCommand containerCmd,Integer putawayPatternDetailType,String outerContainerCode);
+    public InventoryStatisticResultCommand cacheContainerInventoryStatistics(int putawayPatternType,List<WhSkuInventoryCommand> invList,Long userId,Long ouId,String logId,ContainerCommand containerCmd,Integer putawayPatternDetailType,String outerContainerCode);
 
 }

@@ -193,13 +193,6 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                 waveLineMap.put(whWaveLineCommand.getOdoLineId(), whWaveLineCommand);
             }
 
-            try {
-                //测试定时任务并发
-                Thread.sleep(10800L * 1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
             // 处理摘果出库单
             if (!singleOdoPickModeOdoIdList.isEmpty()) {
                 this.packingForSingleOdoPickMode(singleOdoPickModeOdoIdList, odoCommandMap, ouId, logId);

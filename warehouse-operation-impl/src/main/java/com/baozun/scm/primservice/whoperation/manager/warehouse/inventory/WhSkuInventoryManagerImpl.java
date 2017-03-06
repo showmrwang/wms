@@ -3392,7 +3392,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             skuInv.setOccupationCode(null);
             skuInv.setOccupationLineId(null);
             skuInv.setOccupationCodeSource(null);
-            whSkuInventoryDao.saveOrUpdate(skuInv);
+            whSkuInventoryDao.saveOrUpdateByVersion(skuInv);
             
             // 还原库存日志
 			insertSkuInventoryLog(invId, qty, oldQty, wh.getIsTabbInvTotal(), ouId, 1L);

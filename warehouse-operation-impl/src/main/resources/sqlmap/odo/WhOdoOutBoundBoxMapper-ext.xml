@@ -238,12 +238,8 @@
 			t_wh_outboundbox_type
 		<where>
 			ou_id = #{ouId}
-			<if test="outbounxboxTypeId!=null">
-				and id = #{outbounxboxTypeId}
-			</if>
-			<if test="outbounxboxTypeCode!=null">
-				and code = #{outbounxboxTypeCode}
-			</if>
+			and id = #{outbounxboxTypeId}
+			and code = #{outbounxboxTypeCode}
 		</where>
 	</select>
 	

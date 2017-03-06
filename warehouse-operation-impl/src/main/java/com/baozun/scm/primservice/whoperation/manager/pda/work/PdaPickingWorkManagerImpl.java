@@ -136,6 +136,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
      * @return
      */
     @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void saveWorkOper(Long workId, Long ouId, Long userId) {
         //根据工作Id和ouId获取作业信息        
         WhOperationCommand WhOperationCommand = whOperationManager.findOperationByWorkId(workId, ouId);
