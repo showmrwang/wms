@@ -29,6 +29,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuI
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
+import com.baozun.scm.primservice.whoperation.constant.OperationStatus;
 import com.baozun.scm.primservice.whoperation.constant.WavePhase;
 import com.baozun.scm.primservice.whoperation.constant.WaveStatus;
 import com.baozun.scm.primservice.whoperation.constant.WorkStatus;
@@ -630,12 +631,13 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
         WhWorkCommand whWorkCommand = this.workDao.findWorkByWorkCode(workCode, whOdoOutBoundBoxCommand.getOuId());
         //查询对应的耗材        
         Long skuId = odoOutBoundBoxDao.findOutboundboxType(whOdoOutBoundBoxCommand.getOutbounxboxTypeId(), whOdoOutBoundBoxCommand.getOutbounxboxTypeCode(), whOdoOutBoundBoxCommand.getOuId());
-        //调编码生成器工作明细实体标识
-        String workLineCode = codeManager.generateCode(Constants.WMS, Constants.WHWORKLINE_MODEL_URL, "", "WORKLINE", null);
         
         for(WhSkuInventory whSkuInventory : whSkuInventoryList){
-            WhWorkLineCommand whWorkLineCommand = new WhWorkLineCommand();
             
+            //调编码生成器工作明细实体标识
+            String workLineCode = codeManager.generateCode(Constants.WMS, Constants.WHWORKLINE_MODEL_URL, "", "WORKLINE", null);
+            
+            WhWorkLineCommand whWorkLineCommand = new WhWorkLineCommand();
             //工作明细号  
             whWorkLineCommand.setLineCode(workLineCode);
             //工作ID            
@@ -745,6 +747,10 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
             workDao.saveOrUpdateByVersion(whWork);
             // 生成待移入工作明细           
             for(WhSkuInventoryTobefilled whSkuInventoryTobefilled : whSkuInventoryTobefilledList){
+                
+                //调编码生成器工作明细实体标识
+                String workLineCode = codeManager.generateCode(Constants.WMS, Constants.WHWORKLINE_MODEL_URL, "", "WORKLINE", null);
+                
                 WhWorkLineCommand whWorkLineCommand = new WhWorkLineCommand();
                 //工作明细号  
                 whWorkLineCommand.setLineCode(workLineCode);
@@ -979,12 +985,14 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
     public String savePickingOperation(String workCode, WhOdoOutBoundBox whOdoOutBoundBox) {
       //获取工作头信息        
       WhWorkCommand whWorkCommand = this.workDao.findWorkByWorkCode(workCode, whOdoOutBoundBox.getOuId());
-        
       //调编码生成器工作明细实体标识
       String operationCode = codeManager.generateCode(Constants.WMS, Constants.WHOPERATION_MODEL_URL, "", "OPERATION", null);
+        
       WhOperationCommand WhOperationCommand = new WhOperationCommand();
       //作业号
       WhOperationCommand.setCode(operationCode);
+      //状态        
+      WhOperationCommand.setStatus(OperationStatus.NEW);
       //工作ID
       WhOperationCommand.setWorkId(whWorkCommand.getId());
       //仓库组织ID
@@ -1021,6 +1029,14 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
           //是否整托整箱
           WhOperationCommand.setIsWholeCase(false);  
       }
+      //是否短拣
+      WhOperationCommand.setIsShortPicking(whWorkCommand.getIsShortPicking());
+      //是否拣货完成
+      WhOperationCommand.setIsPickingFinish(false);
+      //是否波次内补货
+      WhOperationCommand.setIsWaveReplenish(whWorkCommand.getIsWaveReplenish());
+      //是否拣货库存待移入
+      WhOperationCommand.setIsPickingTobefilled(whWorkCommand.getIsPickingTobefilled());
       //创建时间 
       WhOperationCommand.setCreateTime(whWorkCommand.getCreateTime());
       //最后操作时间
@@ -1821,9 +1837,12 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
         }
         //调编码生成器工作明细实体标识
         String operationCode = codeManager.generateCode(Constants.WMS, Constants.WHOPERATION_MODEL_URL, "", "OPERATION", null);
+        
         WhOperationCommand WhOperationCommand = new WhOperationCommand();
         //作业号
         WhOperationCommand.setCode(operationCode);
+        //状态        
+        WhOperationCommand.setStatus(OperationStatus.NEW);
         //工作ID
         WhOperationCommand.setWorkId(whWorkCommand.getId());
         //仓库组织ID
@@ -1853,7 +1872,15 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
         //容器
         WhOperationCommand.setContainerCode(whWorkCommand.getContainerCode());
         //是否整托整箱
-        WhOperationCommand.setIsWholeCase(isWholeCase);  
+        WhOperationCommand.setIsWholeCase(isWholeCase);
+        //是否短拣
+        WhOperationCommand.setIsShortPicking(whWorkCommand.getIsShortPicking());
+        //是否拣货完成
+        WhOperationCommand.setIsPickingFinish(false);
+        //是否波次内补货
+        WhOperationCommand.setIsWaveReplenish(whWorkCommand.getIsWaveReplenish());
+        //是否拣货库存待移入
+        WhOperationCommand.setIsPickingTobefilled(whWorkCommand.getIsPickingTobefilled());
         //创建时间 
         WhOperationCommand.setCreateTime(whWorkCommand.getCreateTime());
         //最后操作时间

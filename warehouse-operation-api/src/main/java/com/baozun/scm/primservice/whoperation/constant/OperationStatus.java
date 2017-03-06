@@ -11,6 +11,8 @@ public class OperationStatus implements Serializable {
     
     /** 已创建/新建 */
     public static final Integer NEW = 1;
+    /** 执行中 */
+    public static final Integer EXECUTING = 5;
     /** 已完成 */
     public static final Integer FINISH = 10;
     /** 已取消*/

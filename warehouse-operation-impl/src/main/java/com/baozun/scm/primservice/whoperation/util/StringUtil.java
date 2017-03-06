@@ -33,7 +33,7 @@ public class StringUtil implements Serializable {
      * @param separator
      * @return
      */
-    public static String listToString(List<?> list, char separator) {
+    public static String listToString(List<? extends Object> list, char separator) {
         return "(" + org.apache.commons.lang.StringUtils.join(list.toArray(), separator) + ")";
     }
 
