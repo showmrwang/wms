@@ -18,6 +18,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	rule_sql as ruleSql,
 	        	ou_id as ouId,
 	        	picking_mode as pickingMode,
+	        	orders_upper_limit as ordersUpperLimit,
+                checking_mode as checkingMode,
 	        	priority as priority,
 	        	is_need_outbound_carton as isNeedOutboundCarton,
 	        	description as description,
@@ -46,6 +48,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	rule_sql ,
 		        	ou_id ,
 		        	picking_mode ,
+		        	orders_upper_limit,
+                    checking_mode,
 		        	priority ,
 		        	is_need_outbound_carton ,
 		        	description ,
@@ -63,6 +67,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{ruleSql,javaType=java.lang.String,jdbcType=LONGVARCHAR} ,
 		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{pickingMode,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{ordersUpperLimit,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{checkingMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{priority,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        	#{isNeedOutboundCarton,javaType=java.lang.Boolean,jdbcType=BIT} ,
 		        	#{description,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -86,7 +92,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        rule = #{rule,javaType=java.lang.String,jdbcType=VARCHAR} , 
 		        rule_sql = #{ruleSql,javaType=java.lang.String,jdbcType=LONGVARCHAR} , 
 		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} , 
-		        picking_mode = #{pickingMode,javaType=java.lang.Integer,jdbcType=INTEGER} , 
+		        picking_mode = #{pickingMode,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        orders_upper_limit = #{ordersUpperLimit,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                checking_mode = #{checkingMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        priority = #{priority,javaType=java.lang.Integer,jdbcType=INTEGER} , 
 		        is_need_outbound_carton = #{isNeedOutboundCarton,javaType=java.lang.Boolean,jdbcType=BIT} , 
 		        description = #{description,javaType=java.lang.String,jdbcType=VARCHAR} , 
@@ -166,6 +174,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				<if test="pickingMode!=null">
 					and picking_mode = #{pickingMode}
 				</if>
+
+                <if test="checkingMode!=null">
+                    and checking_mode = #{checkingMode}
+                </if>
+
+                <if test="ordersUpperLimit!=null">
+                    and orders_upper_limit = #{ordersUpperLimit}
+                </if>
+
 	       
 				<if test="priority!=null">
 					and priority = #{priority}
