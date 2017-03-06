@@ -92,6 +92,10 @@ public class WhWorkCommand extends BaseCommand {
     private Integer lifecycle;
     /** url*/
     private String url;
+    /** 区域名称*/
+    private String areaName;
+    /** 类型名称*/
+    private String typeName;
 
     // columns END
 
@@ -342,4 +346,21 @@ public class WhWorkCommand extends BaseCommand {
     public void setUrl(String url) {
         this.url = url;
     }
+
+    public String getAreaName() {
+        return areaName;
+    }
+
+    public void setAreaName(String areaName) {
+        this.areaName = areaName;
+    }
+
+    public String getTypeName() {
+        return typeName;
+    }
+
+    public void setTypeName(String typeName) {
+        this.typeName = typeName;
+    }
+
 }

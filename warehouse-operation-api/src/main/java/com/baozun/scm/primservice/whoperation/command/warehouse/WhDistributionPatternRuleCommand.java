@@ -64,6 +64,10 @@ public class WhDistributionPatternRuleCommand extends BaseCommand {
 	private Integer lifecycle;
 	/** 是否系统预定义 0：否 1：是  */
     private Integer isSys;
+    /** 复核模式 */
+    private String checkingMode;
+    /** 订单数上限 */
+    private Integer ordersUpperLimit;
 	
 	//自定义变量
 	
@@ -189,6 +193,22 @@ public class WhDistributionPatternRuleCommand extends BaseCommand {
     }
     public void setIsSys(Integer isSys) {
         this.isSys = isSys;
+    }
+
+    public String getCheckingMode() {
+        return checkingMode;
+    }
+
+    public void setCheckingMode(String checkingMode) {
+        this.checkingMode = checkingMode;
+    }
+
+    public Integer getOrdersUpperLimit() {
+        return ordersUpperLimit;
+    }
+
+    public void setOrdersUpperLimit(Integer ordersUpperLimit) {
+        this.ordersUpperLimit = ordersUpperLimit;
     }
 }
 

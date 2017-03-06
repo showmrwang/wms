@@ -25,7 +25,6 @@ public class PickingWorkCommand extends BaseCommand {
     private Integer maxObtainWorkQty;
     /** 获取工作方法*/
     private String obtainWorkWay;
-    @Deprecated
     /** 工作列表*/
     private Pagination<WhWorkCommand> workList;
     /** 页码*/

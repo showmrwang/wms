@@ -32,7 +32,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	work.created_id as createdId,
 	        	work.modified_id as modifiedId,
 	        	work.operator_id as operatorId,
-	        	work.lifecycle as lifecycle
+	        	work.lifecycle as lifecycle,
+	        	area.area_name as areaName,
+	        	workType.name as typeName
 	    ]]>
 	</sql>
 
@@ -130,6 +132,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				and workType.work_category = work.work_category
 				and work.status in (1, 9)
 				and work.id = operation.work_id
+				and loc.work_area_id  = area.id
 				
 				and operation.id = operationLine.operation_id
 				and operationLine.from_location_id = loc.id
@@ -146,9 +149,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					and operUserRole.ou_id = #{ouId}
 				</if>
 				order by work.work_priority,loc.pick_sort,area.area_code,loc.code asc
-				<if test="maxObtainWorkQty!=null">
-					limit 1,#{maxObtainWorkQty}
-				</if>
+				<!-- <if test="maxObtainWorkQty!=null">
+					limit 1,6
+				</if> -->
 		    </where>
 		</select>	
 	
@@ -176,6 +179,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				and workType.work_category = work.work_category
 				and work.status in (1, 9)
 				and work.id = operation.work_id
+				and loc.work_area_id  = area.id
 				
 				and operation.id = operationLine.operation_id
 				and operationLine.from_location_id = loc.id
@@ -192,9 +196,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					and operUserRole.ou_id = #{ouId}
 				</if>
 				order by work.work_priority,loc.pick_sort,area.area_code,loc.code asc
-				<if test="maxObtainWorkQty!=null">
-					limit 1,#{maxObtainWorkQty}
-				</if>
+				<!-- <if test="maxObtainWorkQty!=null">
+					limit 1,6
+				</if> -->
 		    </where>
 	    </select>
 	    
