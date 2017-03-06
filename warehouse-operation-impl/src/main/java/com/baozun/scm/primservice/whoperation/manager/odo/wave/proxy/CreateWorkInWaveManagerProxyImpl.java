@@ -631,12 +631,13 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
         WhWorkCommand whWorkCommand = this.workDao.findWorkByWorkCode(workCode, whOdoOutBoundBoxCommand.getOuId());
         //查询对应的耗材        
         Long skuId = odoOutBoundBoxDao.findOutboundboxType(whOdoOutBoundBoxCommand.getOutbounxboxTypeId(), whOdoOutBoundBoxCommand.getOutbounxboxTypeCode(), whOdoOutBoundBoxCommand.getOuId());
-        //调编码生成器工作明细实体标识
-        String workLineCode = codeManager.generateCode(Constants.WMS, Constants.WHWORKLINE_MODEL_URL, "", "WORKLINE", null);
         
         for(WhSkuInventory whSkuInventory : whSkuInventoryList){
-            WhWorkLineCommand whWorkLineCommand = new WhWorkLineCommand();
             
+            //调编码生成器工作明细实体标识
+            String workLineCode = codeManager.generateCode(Constants.WMS, Constants.WHWORKLINE_MODEL_URL, "", "WORKLINE", null);
+            
+            WhWorkLineCommand whWorkLineCommand = new WhWorkLineCommand();
             //工作明细号  
             whWorkLineCommand.setLineCode(workLineCode);
             //工作ID            
@@ -746,6 +747,10 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
             workDao.saveOrUpdateByVersion(whWork);
             // 生成待移入工作明细           
             for(WhSkuInventoryTobefilled whSkuInventoryTobefilled : whSkuInventoryTobefilledList){
+                
+                //调编码生成器工作明细实体标识
+                String workLineCode = codeManager.generateCode(Constants.WMS, Constants.WHWORKLINE_MODEL_URL, "", "WORKLINE", null);
+                
                 WhWorkLineCommand whWorkLineCommand = new WhWorkLineCommand();
                 //工作明细号  
                 whWorkLineCommand.setLineCode(workLineCode);
@@ -980,9 +985,9 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
     public String savePickingOperation(String workCode, WhOdoOutBoundBox whOdoOutBoundBox) {
       //获取工作头信息        
       WhWorkCommand whWorkCommand = this.workDao.findWorkByWorkCode(workCode, whOdoOutBoundBox.getOuId());
-        
       //调编码生成器工作明细实体标识
       String operationCode = codeManager.generateCode(Constants.WMS, Constants.WHOPERATION_MODEL_URL, "", "OPERATION", null);
+        
       WhOperationCommand WhOperationCommand = new WhOperationCommand();
       //作业号
       WhOperationCommand.setCode(operationCode);
@@ -1832,6 +1837,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
         }
         //调编码生成器工作明细实体标识
         String operationCode = codeManager.generateCode(Constants.WMS, Constants.WHOPERATION_MODEL_URL, "", "OPERATION", null);
+        
         WhOperationCommand WhOperationCommand = new WhOperationCommand();
         //作业号
         WhOperationCommand.setCode(operationCode);
