@@ -1,6 +1,5 @@
 package com.baozun.scm.primservice.whoperation.manager.pda.work;
 
-import java.util.List;
 import java.util.Map;
 
 import lark.common.dao.Page;
@@ -63,22 +62,32 @@ public class PdaReplenishmentWorkEntranceManagerImpl extends BaseManagerImpl imp
 
     @Override
     public ReplenishmentWorkCommand retrieveReplenishmentWorkList(ReplenishmentWorkCommand command, Page page, Sort[] sorts, Map<String, Object> param) {
+        Boolean isLastPage = false;
         Long userId = command.getUserId();
         Long ouId = command.getOuId();
+        // 判断已经显示多少条工作
         Integer maxObtainWorkQty = command.getMaxObtainWorkQty();
-        param.put("userId", userId);
-        param.put("ouId", ouId);
         if (null == page) {
             page = new Page();
         }
+        Integer cnt = maxObtainWorkQty - page.getSize() * (page.getPage() - 1);
+        if (cnt <= page.getSize()) {
+            page.setSize(cnt);
+            isLastPage = true;
+        }
+        param.put("userId", userId);
+        param.put("ouId", ouId);
         // page.setSize(maxObtainWorkQty.intValue());
         Pagination<WhWorkCommand> workList = privilegeControl(page, sorts, param);
-        List<WhWorkCommand> list = workList.getItems();
-        if (null != list && !list.isEmpty()) {
-            for (WhWorkCommand c : list) {
-                c.setUrl("/pda/warehouse/work/pdaReplenishment/isWorkStatus?workId=" + c.getId() + "&functionId=" + command.getFuncId());
-            }
+        if (isLastPage) {
+            workList.setTotalPages(workList.getCurrentPage());
         }
+        /*
+         * List<WhWorkCommand> list = workList.getItems(); if (null != list && !list.isEmpty()) {
+         * for (WhWorkCommand c : list) {
+         * c.setUrl("/pda/warehouse/work/pdaReplenishment/isWorkStatus?workId=" + c.getId() +
+         * "&functionId=" + command.getFuncId()); } }
+         */
         if (null != param.get("scanLocCode")) {
             String locCode = param.get("scanLocCode").toString();
             if (null != workList && (null == workList.getItems() || workList.getItems().isEmpty())) {
