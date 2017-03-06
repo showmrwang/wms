@@ -3189,7 +3189,7 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
      * @return
      */
     @Override
-    public CheckScanSkuResultCommand sysSuggestSplitContainerPutawayTipSkuOrContainer(Boolean isCancel,Map<Long, Map<String, Long>>  cSkuAttrIdsQty,Map<Long, Set<String>> eSlocSkuAttrIds,Boolean isRecommendFail,Boolean isNotUser,Map<Long, Set<String>> locSkuAttrIds,Integer scanPattern,ContainerCommand ocCmd, ContainerCommand icCmd, Set<Long> insideContainerIds, Map<Long, Map<String, Long>> insideContainerSkuAttrIdsQty,
+    public CheckScanSkuResultCommand sysSuggestSplitContainerPutawayTipSkuOrContainer(Boolean isCancel,Map<Long, Map<String, Long>> containerSkuAttrIdsQty,Boolean isRecommendFail,Boolean isNotUser,Map<Long, Set<String>> locSkuAttrIds,Integer scanPattern,ContainerCommand ocCmd, ContainerCommand icCmd, Set<Long> insideContainerIds, Map<Long, Map<String, Long>> insideContainerSkuAttrIdsQty,
             Map<Long, Map<String, Set<String>>> insideContainerSkuAttrIdsSnDefect, Map<Long, Set<String>> insideContainerSkuAttrIds, Long locationId, WhSkuCommand skuCmd, String logId) {
         CheckScanSkuResultCommand cssrCmd = new CheckScanSkuResultCommand();
         Long ocId = null;
@@ -3208,20 +3208,18 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
             throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
         }
         Map<String, Long> skuAttrIdsQty = insideContainerSkuAttrIdsQty.get(icId);// 当前内部容器中所有唯一sku对应的数量
-        Map<String, Long> cskuAttrIdsQty = cSkuAttrIdsQty.get(icId);
+        Map<String, Long> cskuAttrIdsQty = containerSkuAttrIdsQty.get(icId);//当前容器内已经扫描的唯一sku对应的商品数量
         if(null == cskuAttrIdsQty) {
             cskuAttrIdsQty = new HashMap<String,Long>();
         }
         Map<String, Set<String>> skuAttrIdsSnDefect = insideContainerSkuAttrIdsSnDefect.get(icId);// 唯一sku对应的所有sn残次信息
         Set<String> skuAttrIds = null; 
-        Set<String> eScanSkuAttrIds = null;
         if(isNotUser == false || isRecommendFail == false) { //推荐库位
             skuAttrIds = locSkuAttrIds.get(locationId);// 内部容器对应的所有唯一sku
-            eScanSkuAttrIds = eSlocSkuAttrIds.get(locationId);  //缓存已经扫描的唯一sku
-            if(null == eScanSkuAttrIds) {
-                   eScanSkuAttrIds = new HashSet<String>();
-            }
         }else{//人工流程
+            skuAttrIds = insideContainerSkuAttrIds.get(icId);// 内部容器对应的所有唯一sku
+        }
+        if((isNotUser == false || isRecommendFail == false) && null == skuAttrIds){
             skuAttrIds = insideContainerSkuAttrIds.get(icId);// 内部容器对应的所有唯一sku
         }
         //存入缓存
@@ -3299,23 +3297,32 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                 log.error("scan sku queue is exception, logId is:[{}]", logId);
                 throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
             }
-            saId = SkuCategoryProvider.getSkuAttrId(skuAttrId);
+            saId = SkuCategoryProvider.getSkuAttrId(skuAttrId);  //获取唯一sku,当skuAttrId，存在sn/残次条码时
             // 4.判断当前商品是否扫描完毕
             Double scanSkuQty  = skuCmd.getScanSkuQty();
             Long skuQty = 0L;
-            if(isNotUser == false || isRecommendFail == false) { //推荐库位
-                if(isCancel == true){
-                    skuQty = (long)skuAttrIds.size() - (long)eScanSkuAttrIds.size(); 
-                }else{
+            if(isNotUser == false || isRecommendFail == false) { //使用推荐库位
+//                if(isCancel == true){
+//                    skuQty = (long)skuAttrIds.size() - (long)eScanSkuAttrIds.size(); 
+//                }else{
                     skuQty = (long)skuAttrIds.size();
-                }
+//                }
                 
             }else{//人工流程
-                if(isCancel == true){
-                    skuQty = skuAttrIdsQty.get(saId)-cskuAttrIdsQty.get(saId);
-                }else{
-                    skuQty = skuAttrIdsQty.get(saId);
+//                if(isCancel == true){
+//                    Long qty = cskuAttrIdsQty.get(saId);
+//                    if(null == qty) {
+//                        qty = 0L;
+//                    }
+//                    skuQty = skuAttrIdsQty.get(saId)-qty;
+//                }else{
+//                    skuQty = skuAttrIdsQty.get(saId);
+//                }
+                Long qty = cskuAttrIdsQty.get(saId);
+                if(null == qty) {
+                    qty = 0L;
                 }
+                skuQty = skuAttrIdsQty.get(saId)-qty;
             }
             boolean isSkuChecked = true;
                 if(scanPattern == WhScanPatternType.NUMBER_ONLY_SCAN) {  //批量扫描
@@ -3390,12 +3397,10 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                              cssrCmd.setPutaway(true);// 可上架
                          }
                     }
-                    
                 }else{ //逐件扫描
                     long cacheValue = cacheManager.incrBy(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + skuId.toString(), scanSkuQty.intValue());
                     if (cacheValue == skuQty.longValue()) {
                             //判断是否有不同唯一sku的商品
-                        // sn或残次商品
                         String snDefect1 = SkuCategoryProvider.getSnDefect(skuAttrId);// 当前sn残次信息
                         // 判断所有sn残次信息是否都已扫描完毕
                         String tipSkuAttrId = "";
@@ -3419,9 +3424,15 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                                 } else {
                                     allIsExists = true;
                                     tipSkuAttrId = sId;
-                                    eScanSkuAttrIds.add(sId);   //推荐成功扫描的唯一sku,添加到缓存
-                                    eSlocSkuAttrIds.put(locationId, eScanSkuAttrIds);
-                                    isCmd.setLocSkuAttrIds(eSlocSkuAttrIds);
+                                    if(!(isNotUser == false || isRecommendFail == false)){ 
+                                        if (false == isSnLine){ //没有sn/残次
+                                            cskuAttrIdsQty.put(skuAttrId,cacheValue);
+                                        }else{
+                                            cskuAttrIdsQty.put(skuAttrIdNoSn,cacheValue);
+                                        }
+                                        containerSkuAttrIdsQty.put(icId, cskuAttrIdsQty);
+                                        isCmd.setcSkuAttrIdsQty(containerSkuAttrIdsQty);
+                                    }
                                     break;
                                 }
                             }
@@ -3442,6 +3453,31 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                                    cssrCmd.setNeedTipSku(true);
                                    cssrCmd.setTipSkuAttrId(tipSkuAttrId);
                                }
+                           }else{
+                               // 判断是否需要提示下一个库位
+                               Set<Long> allLocIds = locSkuAttrIds.keySet();
+                               boolean isLocAllCache = isCacheAllExists(allLocIds, tipLocIds);
+                               if (false == isLocAllCache) {
+                                   // 提示下一个库位
+                                   cssrCmd.setPutaway(true);// 可上架
+                                   Long tipLocationId = null;
+                                   for (Long lId : allLocIds) {
+                                       if (0 == locationId.compareTo(lId)) {
+                                           continue;
+                                       }
+                                       Set<Long> tempLocIds = new HashSet<Long>();
+                                       tempLocIds.add(lId);
+                                       boolean isExists = isCacheAllExists(tempLocIds, tipLocIds);
+                                       if (true == isExists) {
+                                           continue;
+                                       } else {
+                                           tipLocationId = lId;
+                                           break;
+                                       }
+                                   }
+                                   cssrCmd.setNeedTipLoc(true);
+                                   cssrCmd.setTipLocId(tipLocationId);
+                                   return cssrCmd;
                            }else{
                                // 判断是否需要提示下一个容器
                                Set<Long> allContainerIds = insideContainerIds;
@@ -3470,9 +3506,9 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                                    cssrCmd.setPutaway(true);// 可上架
                                }
                            }
-                           
+                           } 
                       } else if (cacheValue < skuQty.longValue()) {
-                        // 继续复核
+                          // 继续复核
                           String tipSkuAttrId = null;
                           if (false == isSnLine){ //没有sn/残次
                               tipSkuAttrId = skuAttrId;
@@ -3489,16 +3525,15 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                           }
                           cssrCmd.setNeedTipSku(true);
                           cssrCmd.setTipSkuAttrId(tipSkuAttrId);
-                          if(isNotUser == false || isRecommendFail == false){ 
-                              eScanSkuAttrIds.add(tipSkuAttrId);   //推荐成功扫描的唯一sku,添加到缓存
-                              eSlocSkuAttrIds.put(locationId, eScanSkuAttrIds);
-                              isCmd.setLocSkuAttrIds(eSlocSkuAttrIds);
-                          }else{
-                              cskuAttrIdsQty.put(saId, cacheValue);
-                              cSkuAttrIdsQty.put(icId, cskuAttrIdsQty);
-                              isCmd.setcSkuAttrIdsQty(cSkuAttrIdsQty);
+                          if(!(isNotUser == false || isRecommendFail == false)){ 
+                              if (false == isSnLine){ //没有sn/残次
+                                  cskuAttrIdsQty.put(skuAttrId,cacheValue);
+                              }else{
+                                  cskuAttrIdsQty.put(skuAttrIdNoSn,cacheValue);
+                              }
+                              containerSkuAttrIdsQty.put(icId, cskuAttrIdsQty);
+                              isCmd.setcSkuAttrIdsQty(containerSkuAttrIdsQty);
                           }
-                        
                       } else {
                         log.error("sku scan qty has already more than rcvd qty, skuId is:[{}], scan qty is:[{}], rcvd qty is:[{}], logId is:[{}]", skuId, cacheValue, scanSkuQty, logId);
                         throw new BusinessException(ErrorCodes.SCAN_SKU_QTY_IS_MORE_THAN_RCVD_QTY);
@@ -3563,19 +3598,13 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
             Double scanSkuQty  = skuCmd.getScanSkuQty();
             Long skuQty = 0L;
             if(isNotUser == false || isRecommendFail == false) { //推荐库位
-                if(isCancel == true){
-                    skuQty = (long)skuAttrIds.size() - (long)eScanSkuAttrIds.size(); 
-                }else{
                     skuQty = (long)skuAttrIds.size();
-                }
-                
             }else{//人工流程
-                if(isCancel == true){
-                    skuQty = skuAttrIdsQty.get(saId)-cskuAttrIdsQty.get(saId);
-                }else{
-                    skuQty = skuAttrIdsQty.get(saId);
+                Long qty = cskuAttrIdsQty.get(saId);
+                if(null == qty) {
+                    qty = 0L;
                 }
-                
+                skuQty = skuAttrIdsQty.get(saId)-qty;
             } 
             boolean isSkuChecked = true;
                 if(scanPattern == WhScanPatternType.NUMBER_ONLY_SCAN) {  //批量扫描
@@ -3631,9 +3660,6 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                             if(isSnLine) { //存在sn
                                 if(isNotUser == false || isRecommendFail == false){  //库位推荐成功的skAttrIds是sn/残次信息加唯一sku,推荐不成功的只是唯一sku
                                     tempSkuAttrId = sId;
-//                                    eScanSkuAttrIds.add(sId);   //推荐成功扫描的唯一sku,添加到缓存
-//                                    isCmd.setLocSkuAttrIds(locSkuAttrIds);
-                                    
                                 }else{
                                     tempSkuAttrId = SkuCategoryProvider.concatSkuAttrId(sId, snDefect2);
                                 }
@@ -3648,9 +3674,15 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                              } else {
                                  allIsExists = true;
                                  tipSkuAttrId = sId;
-                                 eScanSkuAttrIds.add(sId);   //推荐成功扫描的唯一sku,添加到缓存
-                                 eSlocSkuAttrIds.put(locationId, eScanSkuAttrIds);
-                                 isCmd.setLocSkuAttrIds(eSlocSkuAttrIds);
+                                 if(!(isNotUser == false || isRecommendFail == false)){ 
+                                     if (false == isSnLine){ //没有sn/残次
+                                         cskuAttrIdsQty.put(skuAttrId,cacheValue);
+                                     }else{
+                                         cskuAttrIdsQty.put(skuAttrIdNoSn,cacheValue);
+                                     }
+                                     containerSkuAttrIdsQty.put(icId, cskuAttrIdsQty);
+                                     isCmd.setcSkuAttrIdsQty(containerSkuAttrIdsQty);
+                                 }
                                  break;
                              }
                          }
@@ -3672,7 +3704,33 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                                 cssrCmd.setTipSkuAttrId(tipSkuAttrId);
                             }
                         }else{
+                         // 判断是否需要提示下一个库位
+                            Set<Long> allLocIds = locSkuAttrIds.keySet();
+                            boolean isLocAllCache = isCacheAllExists(allLocIds, tipLocIds);
+                            if (false == isLocAllCache) {
+                                // 提示下一个库位
+                                cssrCmd.setPutaway(true);// 可上架
+                                Long tipLocationId = null;
+                                for (Long lId : allLocIds) {
+                                    if (0 == locationId.compareTo(lId)) {
+                                        continue;
+                                    }
+                                    Set<Long> tempLocIds = new HashSet<Long>();
+                                    tempLocIds.add(lId);
+                                    boolean isExists = isCacheAllExists(tempLocIds, tipLocIds);
+                                    if (true == isExists) {
+                                        continue;
+                                    } else {
+                                        tipLocationId = lId;
+                                        break;
+                                    }
+                                }
+                                cssrCmd.setNeedTipLoc(true);
+                                cssrCmd.setTipLocId(tipLocationId);
+                                return cssrCmd;
+                        }else{
                             cssrCmd.setPutaway(true);// 上架结束 
+                        }
                         }
                     } else if (cacheValue < skuQty.longValue()) {
                         // 继续复核
@@ -3692,14 +3750,14 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                         }
                         cssrCmd.setNeedTipSku(true);
                        cssrCmd.setTipSkuAttrId(tipSkuAttrId);
-                       if(isNotUser == false || isRecommendFail == false){ 
-                           eScanSkuAttrIds.add(tipSkuAttrId);   //推荐成功扫描的唯一sku,添加到缓存
-                           eSlocSkuAttrIds.put(locationId, eScanSkuAttrIds);
-                           isCmd.setLocSkuAttrIds(eSlocSkuAttrIds);
-                       }else{
-                           cskuAttrIdsQty.put(saId, cacheValue);
-                           cSkuAttrIdsQty.put(icId, cskuAttrIdsQty);
-                           isCmd.setcSkuAttrIdsQty(cSkuAttrIdsQty);
+                       if(!(isNotUser == false || isRecommendFail == false)){ 
+                           if (false == isSnLine){ //没有sn/残次
+                               cskuAttrIdsQty.put(skuAttrId,cacheValue);
+                           }else{
+                               cskuAttrIdsQty.put(skuAttrIdNoSn,cacheValue);
+                           }
+                           containerSkuAttrIdsQty.put(icId, cskuAttrIdsQty);
+                           isCmd.setcSkuAttrIdsQty(containerSkuAttrIdsQty);
                        }
                     } else {
                         log.error("sku scan qty has already more than rcvd qty, skuId is:[{}], scan qty is:[{}], rcvd qty is:[{}], logId is:[{}]", skuId, cacheValue, scanSkuQty, logId);
@@ -3830,7 +3888,7 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
      * @param skuId
      * @param locationId
      */
-    public void cancelPath(Boolean isCancel,Long outerContainerId,Long insideContainerId, int cancelPattern,int putawayPatternDetailType,String locationCode,Long ouId){
+    public void cancelPath(Boolean isRecommendFail,Boolean isCancel,Long outerContainerId,Long insideContainerId, int cancelPattern,int putawayPatternDetailType,String locationCode,Long ouId){
         log.info("PdaPutawayCacheManagerImpl cancelPath is start"); 
         //整托上架
         if(WhPutawayPatternDetailType.PALLET_PUTAWAY == putawayPatternDetailType){ //整托
@@ -3850,6 +3908,7 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                 cacheManager.remove(CacheConstants.SCAN_CONTAINER_QUEUE + outerContainerId.toString());
             }
             if(cancelPattern == CancalPattern.TIP_LOCATION_CANCEL){  //提示库位取消清楚统计缓存
+                cacheManager.remove(CacheConstants.SCAN_CONTAINER_QUEUE + outerContainerId.toString());
                 cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY_STATISTIC,outerContainerId.toString());
                 cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY, outerContainerId.toString());
                 cacheManager.removeMapValue(CacheConstants.CONTAINER_STATISTIC, outerContainerId.toString());
@@ -3880,6 +3939,7 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
             if(null != outerContainerId) { //有托盘
                 if(cancelPattern == CancalPattern.INSIDECONTAINER_CANCEL) {  //内部容器取消
                     cacheManager.removeMapValue(CacheConstants.CONTAINER_STATISTIC, outerContainerId.toString());
+                    cacheManager.remove(CacheConstants.SCAN_CONTAINER_QUEUE+outerContainerId.toString());
                 }
             }
         }
@@ -3895,21 +3955,29 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                        for(Long skuId:skuIds){
                            cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + insideContainerId.toString()+skuId.toString());
                        }
+                       Long locationId = null;
+                       Location loc = locationDao.findLocationByCode(locationCode, ouId);
+                       if (null == loc) {
+                           if(null == loc) {
+                               loc = locationDao.getLocationByBarcode(locationCode, ouId);
+                           }
+                           if(null == loc) {
+                               log.error("location is null error, locationCode is:[{}], logId is:[{}]", locationCode, logId);
+                               throw new BusinessException(ErrorCodes.COMMON_LOCATION_IS_NOT_EXISTS);
+                           }
+                       }
+                       locationId = loc.getId();
+                      cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + insideContainerId.toString()+locationId.toString());
                  }
                  if(cancelPattern == CancalPattern.SCAN_LOCATION_CANCEL){  //库位取消流程
-                     Long locationId = null;
-                     Location loc = locationDao.findLocationByCode(locationCode, ouId);
-                     if (null == loc) {
-                         if(null == loc) {
-                             loc = locationDao.getLocationByBarcode(locationCode, ouId);
-                         }
-                         if(null == loc) {
-                             log.error("location is null error, locationCode is:[{}], logId is:[{}]", locationCode, logId);
-                             throw new BusinessException(ErrorCodes.COMMON_LOCATION_IS_NOT_EXISTS);
-                         }
+                     if(isRecommendFail == true){
+                         // 1.清除所有库存统计信息
+                         cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY_STATISTIC, insideContainerId.toString());
+                         // 2.清除所有库存缓存信息
+                         cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY, insideContainerId.toString());
+                     }else{
+                         cacheManager.remove(CacheConstants.SCAN_LOCATION_QUEUE + insideContainerId.toString());
                      }
-                     locationId = loc.getId();
-                    cacheManager.remove(CacheConstants.SCAN_LOCATION_QUEUE + insideContainerId.toString()+locationId.toString());
                  }
                  if(cancelPattern == CancalPattern.TIP_LOCATION_CANCEL){  //库位取消流程
                      // 1.清除所有库存统计信息
@@ -3920,6 +3988,7 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                 if(null != outerContainerId) {
                     if(cancelPattern == CancalPattern.INSIDECONTAINER_CANCEL) {  //内部容器取消
                        cacheManager.removeMapValue(CacheConstants.CONTAINER_STATISTIC, outerContainerId.toString());
+                       cacheManager.remove(CacheConstants.SCAN_CONTAINER_QUEUE+outerContainerId.toString());
                     }
                 }
         }

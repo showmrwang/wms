@@ -512,7 +512,7 @@ public interface PdaPutawayCacheManager extends BaseManager {
      * @param logId
      * @return
      */
-    public CheckScanSkuResultCommand sysSuggestSplitContainerPutawayTipSkuOrContainer(Boolean isCancel,Map<Long, Map<String, Long>>  cSkuAttrIdsQty,Map<Long, Set<String>> eSlocSkuAttrIds,Boolean isRecommendFail,Boolean isNotUser,Map<Long, Set<String>> locSkuAttrIds,Integer scanPattern,ContainerCommand ocCmd, ContainerCommand icCmd, Set<Long> insideContainerIds, Map<Long, Map<String, Long>> insideContainerSkuAttrIdsQty,
+    public CheckScanSkuResultCommand sysSuggestSplitContainerPutawayTipSkuOrContainer(Boolean isCancel,Map<Long, Map<String, Long>>  containerSkuAttrIdsQty,Boolean isRecommendFail,Boolean isNotUser,Map<Long, Set<String>> locSkuAttrIds,Integer scanPattern,ContainerCommand ocCmd, ContainerCommand icCmd, Set<Long> insideContainerIds, Map<Long, Map<String, Long>> insideContainerSkuAttrIdsQty,
                                                                                            Map<Long, Map<String, Set<String>>> insideContainerSkuAttrIdsSnDefect, Map<Long, Set<String>> insideContainerSkuAttrIds, Long locationId, WhSkuCommand skuCmd, String logId);
 
     /***
@@ -555,5 +555,5 @@ public interface PdaPutawayCacheManager extends BaseManager {
      * @param skuId
      * @param locationId
      */
-    public void cancelPath(Boolean isCancel,Long outerContainerId,Long insideContainerId,int cancelPattern,int putawayPatternDetailType,String locationCode,Long ouId);
+    public void cancelPath(Boolean isRecommendFail,Boolean isCancel,Long outerContainerId,Long insideContainerId,int cancelPattern,int putawayPatternDetailType,String locationCode,Long ouId);
 }
