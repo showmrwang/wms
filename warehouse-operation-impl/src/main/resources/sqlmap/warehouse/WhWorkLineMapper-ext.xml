@@ -306,6 +306,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			</if>
 		</where>
     </select>
+
 	<select id="findWorkByLocationId" resultMap="WhWorkLineCommandResultExt">
     	select 
     		<include refid="whWorkLineColumnsExt" />
@@ -318,4 +319,20 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			</if>
 		</where>
     </select>
+
+    <select id="getTotalQtyByReplenishmentCode" resultType="Double">
+		select
+			sum(qty)
+		from
+			t_wh_work_line 
+		<where>
+			<if test="replenishmentCode!=null and replenishmentCode!=''">
+				and replenishment_code = #{replenishmentCode} 
+			</if>
+			<if test="ouId!=null and ouId!=''">
+				and ou_id = #{ouId} 
+			</if>
+		</where>
+	</select>
+
 </mapper>

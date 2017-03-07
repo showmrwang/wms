@@ -624,7 +624,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
 	</select>	
 	
-	
 	<select id="getWhSkuInventoryCommandByOccupationLineId" resultMap="WhSkuInventoryAllocatedCommandResultExt">
 	    select
 	          inv.id as invId,
@@ -676,5 +675,20 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				and inv.occupation_code IS NOT NULL
 				and inv.ou_id = #{ouId}
 				and operLine.operation_id = #{operationId}
+	</select>
+	
+	<select id="getTotalQtyByReplenishmentCode" resultType="Double">
+		select
+			sum(invAllocated.qty)
+		from
+			t_wh_sku_inventory_allocated invAllocated
+		<where>
+			<if test="replenishmentCode!=null and replenishmentCode!=''">
+				and invAllocated.replenishment_code = #{replenishmentCode} 
+			</if>
+			<if test="ouId!=null and ouId!=''">
+				and invAllocated.ou_id = #{ouId} 
+			</if>
+		</where>
 	</select>
 </mapper>
