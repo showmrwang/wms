@@ -459,6 +459,7 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
             Container container, List<WhCarton> saveWhCartonList, Warehouse wh) {
         try {
             Long userId = po.getModifiedId();
+            Long ouId = po.getOuId();
             // 保存残次信息
             for (WhSkuInventorySnCommand snCommand : saveSnList) {
                 WhSkuInventorySn sn = new WhSkuInventorySn();
@@ -555,12 +556,68 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
                 // 更新容器辅助表 TODO
                 this.updateContainerAssistByVersion(container.getId(), container.getOuId());
             }
+
+            // @mender yimin.lu 2017/3/7
+            // 自动关单逻辑：ASN自动关单逻辑：Asn不允许超收，实收数量=计划数量时候；仓库下PO单自动关单逻辑：PO单不允许超收，实收数量=计划数量
+            this.autoClose(po, asn, ouId, userId);
+
+
         } catch (BusinessException e) {
             throw e;
         } catch (Exception ex) {
             throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
         }
 
+    }
+
+
+    private void autoClose(WhPo po, WhAsn asn, Long ouId, Long userId) {
+        // 自动关闭ASN单据
+        if (null == asn.getOverChageRate() || asn.getOverChageRate() <= 0) {
+            if (asn.getQtyRcvd() >= asn.getQtyPlanned()) {
+                List<WhAsnLine> lineList = this.whAsnLineDao.findWhAsnLineByAsnIdOuId(asn.getId(), ouId);
+                if (lineList != null && lineList.size() > 0) {
+                    for (WhAsnLine line : lineList) {
+                        line.setStatus(PoAsnStatus.ASNLINE_CLOSE);
+                        line.setModifiedId(userId);
+                        int updateCountLine = this.whAsnLineDao.saveOrUpdateByVersion(line);
+                        if (updateCountLine <= 0) {
+                            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                        }
+                    }
+                }
+                WhAsn updateAsn = this.whAsnDao.findWhAsnById(asn.getId(), ouId);
+                updateAsn.setModifiedId(userId);
+                updateAsn.setStatus(PoAsnStatus.ASN_CLOSE);
+                int updateCountAsn = this.whAsnDao.saveOrUpdateByVersion(updateAsn);
+                if (updateCountAsn <= 0) {
+                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                }
+            }
+        }
+        // 自动关闭PO单据
+        if (null == po.getOverChageRate() || po.getOverChageRate() <= 0) {
+            if (po.getQtyRcvd() >= po.getQtyPlanned()) {
+                List<WhPoLine> lineList = this.whPoLineDao.findWhPoLineByPoIdOuIdUuid(po.getId(), ouId, null);
+                if (lineList != null && lineList.size() > 0) {
+                    for (WhPoLine line : lineList) {
+                        line.setModifiedId(userId);
+                        line.setStatus(PoAsnStatus.POLINE_CLOSE);
+                        int updateCountLine = this.whPoLineDao.saveOrUpdateByVersion(line);
+                        if (updateCountLine <= 0) {
+                            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                        }
+                    }
+                }
+                WhPo updatePo = this.whPoDao.findWhPoById(po.getId(), ouId);
+                updatePo.setModifiedId(userId);
+                updatePo.setStatus(PoAsnStatus.PO_CLOSE);
+                int updateCountPo = this.whPoDao.saveOrUpdateByVersion(updatePo);
+                if (updateCountPo <= 0) {
+                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                }
+            }
+        }
     }
 
     private void updateContainerAssistByVersion(Long id, Long ouId) {

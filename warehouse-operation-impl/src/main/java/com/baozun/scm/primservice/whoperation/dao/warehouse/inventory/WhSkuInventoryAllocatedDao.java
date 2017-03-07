@@ -90,4 +90,15 @@ public interface WhSkuInventoryAllocatedDao extends BaseDao<WhSkuInventoryAlloca
      * @return
      */
     public List<WhSkuInventoryAllocatedCommand> getWhSkuInventoryCommandByOccupationLineId(@Param("ouId") Long ouId,@Param("operationId") Long operationId,@Param("replenishmentCode") String replenishmentCode);
+    
+    /**
+     * 根据补货单据号查询库存调整数量之和
+     *
+     * @author qiming.liu
+     * @param replenishmentCode
+     * @param ouId
+     * @return
+     */
+    Double getTotalQtyByReplenishmentCode(@Param("replenishmentCode") String replenishmentCode, @Param("ouId") Long ouId);
+
 }

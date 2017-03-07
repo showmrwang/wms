@@ -3,8 +3,10 @@ package com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import lark.common.annotation.MoreDB;
 
@@ -171,6 +173,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
                     WhSkuInventoryAllocatedCommand siaCommand = siacMap.get(key).get(0);
                     String replenishmentWorkCode = this.saveReplenishmentWork(waveId, siaCommand, userId);
                     int rWorkLineTotal = 0;
+                    Set<String> replenishmentCodes = new HashSet<String>();
                     // 循环统计的分组补货信息列表
                     for(WhSkuInventoryAllocatedCommand skuInventoryAllocatedCommand : siacMap.get(key)){
                         // 判断分配量与待移入量是否相等
@@ -179,7 +182,21 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
                         }
                         // 创建补货工作明细
                         this.saveReplenishmentWorkLine(replenishmentWorkCode, userId, skuInventoryAllocatedCommand);
+                        //工作明细数量                        
                         rWorkLineTotal = rWorkLineTotal + 1;
+                        //获取明细补货单据号
+                        replenishmentCodes.add(skuInventoryAllocatedCommand.getReplenishmentCode());
+                    }
+                    // 判断补货单号对应库存是否都创完工作                    
+                    for(String replenishmentCode : replenishmentCodes){
+                        Double totalQtyAllocated = skuInventoryAllocatedDao.getTotalQtyByReplenishmentCode(replenishmentCode, ouId);
+                        Double totalQtyWorkLine = workLineDao.getTotalQtyByReplenishmentCode(replenishmentCode, ouId);
+                        if(null != totalQtyAllocated && null != totalQtyWorkLine && totalQtyAllocated.equals(totalQtyWorkLine)){
+                            // 将补货任务行标识为已创建工作
+                            ReplenishmentTask replenishmentTask = replenishmentTaskDao.findReplenishmentTaskByCode(replenishmentCode, ouId);
+                            replenishmentTask.setIsCreateWork(true);
+                            replenishmentTaskDao.saveOrUpdateByVersion(replenishmentTask);
+                        }
                     }
                     // 校验工作明细数量是否正确
                     if (rWorkLineTotal != siacMap.get(key).size()) {
@@ -325,6 +342,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
                 WhSkuInventoryAllocatedCommand siaCommand = siacMap.get(key).get(0);
                 String replenishmentWorkCode = this.saveOutReplenishmentWork(siaCommand, userId);
                 int rWorkLineTotal = 0;
+                Set<String> replenishmentCodes = new HashSet<String>();
                 // 循环统计的分组补货信息列表
                 for(WhSkuInventoryAllocatedCommand skuInventoryAllocatedCommand : siacMap.get(key)){
                     // 判断分配量与待移入量是否相等
@@ -334,6 +352,19 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
                     // 创建补货工作明细
                     this.saveReplenishmentWorkLine(replenishmentWorkCode, userId, skuInventoryAllocatedCommand);
                     rWorkLineTotal = rWorkLineTotal + 1;
+                    //获取明细补货单据号
+                    replenishmentCodes.add(skuInventoryAllocatedCommand.getReplenishmentCode());
+                }
+                // 判断补货单号对应库存是否都创完工作
+                for(String replenishmentCode : replenishmentCodes){
+                    Double totalQtyAllocated = skuInventoryAllocatedDao.getTotalQtyByReplenishmentCode(replenishmentCode, ouId);
+                    Double totalQtyWorkLine = workLineDao.getTotalQtyByReplenishmentCode(replenishmentCode, ouId);
+                    if(null != totalQtyAllocated && null != totalQtyWorkLine && totalQtyAllocated.equals(totalQtyWorkLine)){
+                        // 将补货任务行标识为已创建工作
+                        ReplenishmentTask replenishmentTask = replenishmentTaskDao.findReplenishmentTaskByCode(replenishmentCode, ouId);
+                        replenishmentTask.setIsCreateWork(true);
+                        replenishmentTaskDao.saveOrUpdateByVersion(replenishmentTask);
+                    }
                 }
                 // 校验工作明细数量是否正确
                 if (rWorkLineTotal != siacMap.get(key).size()) {
@@ -1670,11 +1701,6 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
         }else{
             workLineDao.insert(whWorkLine);
         }
-        
-        // 将补货任务行标识为已创建工作
-        ReplenishmentTask replenishmentTask = replenishmentTaskDao.findReplenishmentTaskByCode(skuInventoryAllocatedCommand.getReplenishmentCode(), skuInventoryAllocatedCommand.getOuId());
-        replenishmentTask.setIsCreateWork(true);
-        replenishmentTaskDao.saveOrUpdateByVersion(replenishmentTask);
     }
 
     /**

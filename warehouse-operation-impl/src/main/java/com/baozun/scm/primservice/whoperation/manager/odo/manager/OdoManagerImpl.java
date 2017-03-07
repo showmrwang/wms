@@ -287,6 +287,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void createOdo(WhOdo odo, List<WhOdoLine> odoLineList, WhOdoTransportMgmt transportMgmt, WhOdoAddress odoAddress, List<WhOdoVas> odoVasList, List<WhOdoLineAttrSn> lineSnList, Long ouId, Long userId) {
         try {
+            this.whOdoDao.insert(odo);
             if (odoLineList != null && odoLineList.size() > 0) {
                 for (WhOdoLine line : odoLineList) {
                     this.whOdoLineDao.insert(line);
@@ -302,7 +303,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                 }
             }
             if (lineSnList != null && lineSnList.size() > 0) {}
-            this.whOdoDao.insert(odo);
+
             transportMgmt.setOdoId(odo.getId());
             this.whOdoTransportMgmtDao.insert(transportMgmt);
         } catch (Exception e) {
@@ -396,11 +397,6 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
             log.error("" + ex);
             throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
         }
-    }
-
-    @Override
-    public Integer getSkuNumberAwayFormSomeLines(List<Long> idArray, Long ouId) {
-        return null;
     }
 
     @Override

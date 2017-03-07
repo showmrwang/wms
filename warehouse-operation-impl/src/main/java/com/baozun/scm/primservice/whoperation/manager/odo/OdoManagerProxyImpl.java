@@ -150,6 +150,7 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
         return this.odoManager.findListByQueryMapWithPageExt(page, sorts, params);
     }
 
+
     @Override
     public ResponseMsg createOdoFromWms(OdoGroupCommand odoGroup) {
         ResponseMsg msg = new ResponseMsg();
