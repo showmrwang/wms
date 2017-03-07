@@ -621,10 +621,18 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
             }
             asnLine.setQtyRcvd(asnLine.getQtyRcvd() + entry.getValue());
             asnLine.setModifiedId(userId);
-            if (asnLine.getQtyRcvd() >= asnLine.getQtyPlanned()) {
-                asnLine.setStatus(PoAsnStatus.ASNLINE_RCVD_FINISH);
+            if (null == asn.getOverChageRate() || asn.getOverChageRate() < 0) {
+                if (asnLine.getQtyRcvd() >= asnLine.getQtyPlanned()) {
+                    asnLine.setStatus(PoAsnStatus.ASN_CLOSE);
+                } else {
+                    asnLine.setStatus(PoAsnStatus.ASNLINE_RCVD);
+                }
             } else {
-                asnLine.setStatus(PoAsnStatus.ASNLINE_RCVD);
+                if (asnLine.getQtyRcvd() >= asnLine.getQtyPlanned()) {
+                    asnLine.setStatus(PoAsnStatus.ASN_CLOSE);
+                } else {
+                    asnLine.setStatus(PoAsnStatus.ASNLINE_RCVD);
+                }
             }
             saveAsnLineList.add(asnLine);
             if (polineMap.containsKey(asnLine.getPoLineId())) {
@@ -688,6 +696,12 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
 
         try {
             this.generalRcvdManager.saveScanedSkuWhenGeneralRcvdForPda(saveSnList, saveInvList, saveInvLogList, saveAsnLineList, asn, savePoLineList, po, container, saveWhCartonList, wh);
+            WhPo shardPo = this.poManager.findWhPoByIdToShard(po.getId(), ouId);
+            // @mender yimin.lu 2017/3/7 自动关单逻辑：仓库下PO单关闭要同步到集团下
+            if (PoAsnStatus.PO_CLOSE == shardPo.getStatus()) {
+                WhPo infoPo = this.poManager.findWhPoByExtCodeStoreIdOuIdToInfo(po.getExtCode(), po.getStoreId(), ouId);
+                this.poManager.closePoToInfo(infoPo.getId(), ouId, userId);
+            }
         } catch (BusinessException e) {
             throw e;
         } catch (Exception ex) {

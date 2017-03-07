@@ -99,15 +99,6 @@ public interface OdoManager extends BaseManager {
     void cancelOdo(WhOdo odo, Long ouId, String logId);
 
     /**
-     * [业务方法]查询移除某些明细后，出库单的商品种类数；参数可选
-     * 
-     * @param idList
-     * @param ouId
-     * @return
-     */
-    Integer getSkuNumberAwayFormSomeLines(List<Long> idList, Long ouId);
-
-    /**
      * [业务方法]出库单分组列表
      * 
      * @param page

@@ -24,7 +24,7 @@ public interface EditPoAsnManagerProxy extends BaseManager {
      * @param whPoCommand
      * @return
      */
-    ResponseMsg cancelPo(WhPoCommand whPoCommand);
+    ResponseMsg cancelPo(Long poId, Long ouId, Boolean isPoCancel, List<Integer> extlineNumList, Long userId);
 
     /**
      * 根据POLINE的POID,OUID,UUID删除PO单明细
