@@ -148,6 +148,10 @@ public class Store extends BaseModel {
      * 1.可用;2.已删除;0.禁用
      */
     private Integer lifecycle;
+    /** 入库单据反馈节点 */
+    private Integer inboundConfirmNode = 1;
+    /** 入库单据反馈类型 */
+    private Integer inboundConfirmType = 1;
     
     /** 联系手机 */
     private String picMobileTelephone;
@@ -477,6 +481,22 @@ public class Store extends BaseModel {
     public void setDistrictId(Long districtId) {
         this.districtId = districtId;
     }
+
+	public Integer getInboundConfirmNode() {
+		return inboundConfirmNode;
+	}
+
+	public void setInboundConfirmNode(Integer inboundConfirmNode) {
+		this.inboundConfirmNode = inboundConfirmNode;
+	}
+
+	public Integer getInboundConfirmType() {
+		return inboundConfirmType;
+	}
+
+	public void setInboundConfirmType(Integer inboundConfirmType) {
+		this.inboundConfirmType = inboundConfirmType;
+	}
     
 
 }

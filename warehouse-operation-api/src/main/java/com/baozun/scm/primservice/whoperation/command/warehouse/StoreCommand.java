@@ -154,6 +154,10 @@ public class StoreCommand extends BaseCommand {
      * 1.可用;2.已删除;0.禁用
      */
     private Integer lifecycle;
+    /** 入库单据反馈节点 */
+    private Integer inboundConfirmNode = 1;
+    /** 入库单据反馈类型 */
+    private Integer inboundConfirmType = 1;
     
     /*
      * 用于全局表最后修改时间统一
@@ -480,5 +484,21 @@ public class StoreCommand extends BaseCommand {
     public void setExistStoreList(List<Store> existStoreList) {
         this.existStoreList = existStoreList;
     }
+
+	public Integer getInboundConfirmNode() {
+		return inboundConfirmNode;
+	}
+
+	public void setInboundConfirmNode(Integer inboundConfirmNode) {
+		this.inboundConfirmNode = inboundConfirmNode;
+	}
+
+	public Integer getInboundConfirmType() {
+		return inboundConfirmType;
+	}
+
+	public void setInboundConfirmType(Integer inboundConfirmType) {
+		this.inboundConfirmType = inboundConfirmType;
+	}
 
 }

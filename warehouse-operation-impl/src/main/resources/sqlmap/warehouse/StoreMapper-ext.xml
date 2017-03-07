@@ -250,7 +250,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	create_time as createTime,
 	        	last_modify_time as lastModifyTime,
 	        	operator_id as operatorId,
-	        	lifecycle as lifecycle
+	        	lifecycle as lifecycle,
+	        	inbound_confirm_node as inboundConfirmNode,
+		        inbound_confirm_type as inboundConfirmType
 	    ]]>
 	</sql>
 	<sql id="storeDynamicWhereExpand">
