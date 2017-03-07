@@ -14,13 +14,17 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        id as id,
 	        	po_code as poCode,
 	        	ext_code as extCode,
+	        	ext_po_code as extPoCode,
 	        	ou_id as ouId,
 	        	customer_id as customerId,
 	        	store_id as storeId,
 	        	supplier_id as supplierId,
+	        	from_location as fromLocation,
+	        	to_location as toLocation,
 	        	logistics_provider_id as logisticsProviderId,
 	        	logistics_provider as logisticsProvider,
 	        	po_type as poType,
+	        	ext_po_type as extPoType,
 	        	status as status,
 	        	is_iqc as isIqc,
 	        	po_date as poDate,
@@ -35,6 +39,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	inbound_time as inboundTime,
 	        	is_wms as isWms,
 	        	is_vmi as isVmi,
+	        	data_source as dataSource,
 	        	create_time as createTime,
 	        	created_id as createdId,
 	        	last_modify_time as lastModifyTime,
@@ -52,13 +57,17 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	id,
 	        	po_code ,
 	        	ext_code ,
+	        	ext_po_code ,
 	        	ou_id ,
 	        	customer_id ,
 	        	store_id ,
 	        	supplier_id ,
+	        	from_location ,
+	        	to_location ,
 	        	logistics_provider_id ,
 	        	logistics_provider ,
 	        	po_type ,
+	        	ext_po_type ,
 	        	status ,
 	        	is_iqc ,
 	        	po_date ,
@@ -73,6 +82,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	inbound_time ,
 	        	is_wms ,
 	        	is_vmi ,
+	        	data_source ,
 	        	create_time ,
 	        	created_id ,
 	        	last_modify_time ,
@@ -83,13 +93,17 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	            #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{poCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 	        	#{extCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{extPoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 	        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{customerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{storeId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{supplierId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{fromLocation,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        #{toLocation,javaType=java.lang.String,jdbcType=VARCHAR} ,
 	        	#{logisticsProviderId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{logisticsProvider,javaType=java.lang.String,jdbcType=VARCHAR} ,
 	        	#{poType,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+	        	#{extPoType,javaType=java.lang.String,jdbcType=VARCHAR} ,
 	        	#{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 	        	#{isIqc,javaType=java.lang.Boolean,jdbcType=BIT} ,
 	        	#{poDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
@@ -104,6 +118,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	#{inboundTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 	        	#{isWms,javaType=java.lang.Boolean,jdbcType=BIT} ,
 	        	#{isVmi,javaType=java.lang.Boolean,jdbcType=BIT} ,
+	        	#{dataSource,javaType=java.lang.String,jdbcType=VARCHAR} ,
 	        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 	        	#{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
@@ -120,13 +135,17 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        UPDATE t_wh_po SET
 		        po_code = #{poCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        ext_code = #{extCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        ext_po_code = #{extPoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        customer_id = #{customerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        store_id = #{storeId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        supplier_id = #{supplierId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        from_location = #{fromLocation,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        to_location = #{toLocation,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        logistics_provider_id = #{logisticsProviderId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        logistics_provider = #{logisticsProvider,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        po_type = #{poType,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        ext_po_type = #{extPoType,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        status = #{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        is_iqc = #{isIqc,javaType=java.lang.Boolean,jdbcType=BIT} ,
 		        po_date = #{poDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
@@ -141,6 +160,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        inbound_time = #{inboundTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        is_wms = #{isWms,javaType=java.lang.Boolean,jdbcType=BIT} ,
 		        is_vmi = #{isVmi,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        data_source = #{dataSource,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
@@ -203,6 +223,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				<if test="supplierId!=null">
 					and supplier_id = #{supplierId}
 				</if>
+				
+				<if test="fromLocation!=null and fromLocation!=''">
+					and from_location = #{fromLocation}
+				</if>
+	       
+		       <if test="toLocation!=null and toLocation!=''">
+					and to_location = #{toLocation}
+				</if>
 	       
 				<if test="logisticsProviderId!=null">
 					and logistics_provider_id = #{logisticsProviderId}
@@ -214,6 +242,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	       
 				<if test="poType!=null">
 					and po_type = #{poType}
+				</if>
+				
+				<if test="extPoType!=null and extPoType!=''">
+					and ext_po_type = #{extPoType}
 				</if>
 	       
 				<if test="status!=null">

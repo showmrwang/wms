@@ -17,17 +17,24 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
+import com.baozun.scm.baseservice.sac.manager.CodeManager;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnLineCommand;
 import com.baozun.scm.primservice.whoperation.command.system.GlobalLogCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
+import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnLineDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoLineDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.Container2ndCategoryDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.carton.WhCartonDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
@@ -38,8 +45,12 @@ import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Container2ndCategory;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
+import com.baozun.scm.primservice.whoperation.model.warehouse.carton.WhCarton;
+import com.baozun.scm.primservice.whoperation.util.DateUtil;
 import com.baozun.scm.primservice.whoperation.util.StringUtil;
 
 
@@ -63,6 +74,14 @@ public class AsnManagerImpl extends BaseManagerImpl implements AsnManager {
     private WhPoDao whPoDao;
     @Autowired
     private GlobalLogManager globalLogManager;
+    @Autowired
+    private CodeManager codeManager;
+    @Autowired
+    private ContainerDao containerDao;
+    @Autowired
+    private Container2ndCategoryDao container2ndCategoryDao;
+    @Autowired
+    private WhCartonDao whCartonDao;
 
 
     /**
@@ -524,6 +543,10 @@ public class AsnManagerImpl extends BaseManagerImpl implements AsnManager {
             double qty = 0.0;// 计算计划数量
             // 插入asnline明细
             // @mender yimin.lu 可用数量为零的不创建ASN明细
+            // 可用数量为零的不创建ASN明细
+            Container2ndCategory c2c = null;
+            // 存放已生成的箱信息
+            Map<String, Long> containerMap = null;
             for (WhPoLine pl : whPoLines) {
                 if (pl.getQtyPlanned() >= pl.getAvailableQty() && StringUtil.isEmpty(pl.getUuid()) && pl.getAvailableQty() > 0) {
                     // 计划数量比如大于可用数量并且UUID为空才能创建
@@ -555,6 +578,14 @@ public class AsnManagerImpl extends BaseManagerImpl implements AsnManager {
                         throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
                     }
                     this.insertGlobalLog(GLOBAL_LOG_UPDATE, pl, ouId, userId, whpo.getPoCode(), null);
+                    // 生成箱信息
+                    if (null != whpo.getIsVmi() && whpo.getIsVmi() && StringUtils.hasText(pl.getCartonNo())) {
+                    	if (null == c2c && null == containerMap) {
+							c2c = container2ndCategoryDao.findByCodeAndOuId(Constants.CONTAINER_TYPE_2ND_BOX, ouId);
+							containerMap = new HashMap<String, Long>();
+						}
+                    	this.createCartonInfo(whAsn.getId(), pl.getCartonNo(), al, c2c, containerMap, userId, ouId);
+    				}
                 }
             }
             // 最后修改ASN的计划数量
@@ -572,6 +603,180 @@ public class AsnManagerImpl extends BaseManagerImpl implements AsnManager {
         }
     }
 
+	private void createCartonInfo(Long whAsnId, String cartonNo, WhAsnLine al, Container2ndCategory c2c, Map<String, Long> containerMap, Long userId, Long ouId) {
+		Long containerId = containerMap.get(cartonNo);
+		if (null == containerId) {
+			ContainerCommand container = containerDao.getContainerByCode(cartonNo, ouId);
+			Container newContainer = new Container();
+			newContainer.setName(c2c == null ? "系统预定义货箱" : c2c.getCategoryName());
+			newContainer.setCreateTime(new Date());
+			newContainer.setLastModifyTime(new Date());
+			newContainer.setStatus(ContainerStatus.CONTAINER_STATUS_RCVD);
+			newContainer.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
+			newContainer.setOperatorId(userId);
+			newContainer.setOuId(ouId);
+			if (null == container) {
+				newContainer.setCode(cartonNo);
+				containerDao.insert(newContainer);
+				containerId = newContainer.getId();
+			} else {
+				String containerCode = this.getContainerCode();
+				newContainer.setCode(containerCode);
+				containerDao.insert(newContainer);
+				containerId = newContainer.getId();
+			}
+			containerMap.put(cartonNo, containerId);
+		}
+		WhCarton carton = new WhCarton();
+		carton.setAsnId(whAsnId);
+		carton.setAsnLineId(al.getId());
+		carton.setSkuId(al.getSkuId());
+		carton.setContainerId(containerId);// 容器
+		carton.setExtContainerCode(cartonNo);
+		carton.setOuId(ouId);
+		carton.setBatchNo(al.getBatchNo());// 批次号
+		carton.setCountryOfOrigin(al.getCountryOfOrigin());// 原产地
+		carton.setQuantity(al.getQtyPlanned());// 数量
+		carton.setMfgDate(al.getMfgDate());
+		carton.setExpDate(al.getExpDate());
+		carton.setInvStatus(al.getInvStatus());// 库存状态
+		carton.setInvType(al.getInvType());// 库存类型
+		// 库存属性1-5
+		carton.setInvAttr1(al.getInvAttr1());
+		carton.setInvAttr2(al.getInvAttr2());
+		carton.setInvAttr3(al.getInvAttr3());
+		carton.setInvAttr4(al.getInvAttr4());
+		carton.setInvAttr5(al.getInvAttr5());
+		carton.setIsCaselevel(false);// 是否caselevel
+		carton.setCreatedId(userId);
+		carton.setModifiedId(userId);
+		carton.setCreateTime(new Date());
+		carton.setLastModifyTime(new Date());
+		whCartonDao.insert(carton);
+		// 插入系统日志表
+		insertGlobalLog(GLOBAL_LOG_INSERT, carton, carton.getOuId(), carton.getCreatedId(), null, null);
+	}
+    
+    @Override
+	public void createAsnByVmi(WhPo whpo, List<WhPoLine> whPoLines) {
+    	Long ouId = whpo.getOuId();
+    	Long userId = whpo.getCreatedId();
+    	WhAsn whAsn = new WhAsn();
+        BeanUtils.copyProperties(whpo, whAsn);
+        // 创建whasn表头信息
+        whAsn.setId(null);
+        whAsn.setOuId(ouId);
+        // WMS单据号 调用HUB编码生成器获得
+        String asnCode = codeManager.generateCode(Constants.WMS, Constants.WHASN_MODEL_URL, Constants.WMS_ASN_INNER, null, null);
+        if (StringUtil.isEmpty(asnCode)) {
+            log.warn("CreateAsnBatch warn asnCode generateCode is null");
+            throw new BusinessException(ErrorCodes.GET_GENERATECODE_NULL);
+        }
+        whAsn.setAsnCode(asnCode);
+        String asnExtCode = codeManager.generateCode(Constants.WMS, Constants.WHASN_MODEL_URL, Constants.WMS_ASN_EXT, null, null);
+        if (StringUtil.isEmpty(asnExtCode)) {
+            log.warn("CreateAsnBatch warn asnExtCode generateCode is null");
+            throw new BusinessException(ErrorCodes.GET_GENERATECODE_NULL);
+        }
+        whAsn.setAsnExtCode(asnExtCode);
+        whAsn.setPoId(whpo.getId());
+        whAsn.setPoOuId(whpo.getOuId());
+        whAsn.setAsnType(whpo.getPoType());
+        whAsn.setStatus(PoAsnStatus.ASN_NEW);
+        whAsn.setCreateTime(new Date());
+        whAsn.setCreatedId(userId);
+        whAsn.setLastModifyTime(new Date());
+        whAsn.setModifiedId(userId);
+        whAsnDao.insert(whAsn);
+        // 插入日志
+        this.insertGlobalLog(GLOBAL_LOG_INSERT, whAsn, ouId, userId, null, null);
+        if (PoAsnStatus.PO_NEW == whpo.getStatus()) {
+            // 如果是新建状态 改状态为已创建ASN
+            whpo.setStatus(PoAsnStatus.PO_CREATE_ASN);
+            whpo.setModifiedId(userId);
+            int result = whPoDao.saveOrUpdateByVersion(whpo);
+            if (result <= 0) {
+                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            }
+            this.insertGlobalLog(GLOBAL_LOG_UPDATE, whpo, ouId, userId, null, null);
+        }
+        double qty = 0.0;// 计算计划数量
+        // 插入asnline明细
+        // 可用数量为零的不创建ASN明细
+        Container2ndCategory c2c = container2ndCategoryDao.findByCodeAndOuId(Constants.CONTAINER_TYPE_2ND_BOX, ouId);
+        // 存放已生成的箱信息
+        Map<String, Long> containerMap = new HashMap<String, Long>();
+        for (WhPoLine pl : whPoLines) {
+            if (pl.getQtyPlanned() >= pl.getAvailableQty() && StringUtil.isEmpty(pl.getUuid()) && pl.getAvailableQty() > 0) {
+                // 计划数量比如大于可用数量并且UUID为空才能创建
+                WhAsnLine al = new WhAsnLine();
+                BeanUtils.copyProperties(pl, al);
+                qty = qty + pl.getAvailableQty();// 计算计划数量
+                al.setId(null);
+                al.setAsnId(whAsn.getId());
+                al.setStatus(PoAsnStatus.ASNLINE_NOT_RCVD);
+                al.setPoLinenum(pl.getLinenum());
+                al.setPoLineId(pl.getId());
+                al.setQtyPlanned(pl.getAvailableQty());// asnline的计划数量=poline的可用数量
+                al.setCreatedId(userId);
+                al.setCreateTime(new Date());
+                al.setModifiedId(userId);
+                al.setLastModifyTime(new Date());
+                whAsnLineDao.insert(al);
+                // 插入日志
+                this.insertGlobalLog(GLOBAL_LOG_INSERT, al, ouId, userId, whAsn.getAsnCode(), null);
+                // 修改poline的可用数量
+                pl.setAvailableQty(0.0);// asnline poline的可用数量0
+                pl.setModifiedId(userId);
+                if (pl.getStatus() == PoAsnStatus.POLINE_NEW) {
+                    // 如果明细状态为新建的话 改成已创建ASN状态
+                    pl.setStatus(PoAsnStatus.POLINE_CREATE_ASN);
+                }
+                int result = whPoLineDao.saveOrUpdateByVersion(pl);
+                if (result <= 0) {
+                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                }
+                this.insertGlobalLog(GLOBAL_LOG_UPDATE, pl, ouId, userId, whpo.getPoCode(), null);
+                // 生成箱信息
+                if (StringUtils.hasText(pl.getCartonNo())) {
+                	createCartonInfo(whAsn.getId(), pl.getCartonNo(), al, c2c, containerMap, userId, ouId);
+				}
+            }
+        }
+        // 最后修改ASN的计划数量
+        whAsn.setQtyPlanned(qty);
+        int result = whAsnDao.saveOrUpdateByVersion(whAsn);
+        if (result <= 0) {
+            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+        }
+        this.insertGlobalLog(GLOBAL_LOG_UPDATE, whAsn, ouId, userId, null, null);
+	}
+    
+    /***
+     * 通过HUB接口获取容器编码
+     * 
+     * @param c2c
+     * @return
+     */
+    private String getContainerCode() {
+        String code = null;
+        for (int i = 1; i <= 5; i++) {
+            // 每次获取5次 5次都失败直接抛错
+            code = codeManager.generateCode(Constants.WMS, Constants.CONTAINER_MODEL_URL, null, null, null);
+            if (null == code) {
+                // 为空记录失败次数
+                continue;
+            } else {
+                return code;
+            }
+        }
+        // 5次获取失败
+        // 编码生成器接口异常
+        log.warn("addDevanningList Interface codeManager generateCode code is null count: 5");
+        throw new BusinessException(ErrorCodes.CODE_INTERFACE_REEOR);
+    }
+    
+    
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<WhAsn> findWhAsnByPoIdOuIdToShard(Long poId, Long ouId) {
@@ -913,4 +1118,5 @@ public class AsnManagerImpl extends BaseManagerImpl implements AsnManager {
             throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
         }
     }
+
 }

@@ -343,4 +343,13 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
             order by volume DESC
     </select>
 
+	<select id="findByCodeAndOuId" resultMap="Container2ndCategoryResultExt">
+		select
+            <include refid="container2ndCategoryColumns" />
+        from 
+        	t_wh_container_2nd_category
+        where
+        	category_code = #{categoryCode} 
+        	and ou_id = #{ouId}
+	</select>
 </mapper>
