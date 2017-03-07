@@ -579,7 +579,7 @@ public class AsnManagerImpl extends BaseManagerImpl implements AsnManager {
                     }
                     this.insertGlobalLog(GLOBAL_LOG_UPDATE, pl, ouId, userId, whpo.getPoCode(), null);
                     // 生成箱信息
-                    if (null != whpo.getIsVmi() && whpo.getIsVmi() && StringUtils.hasText(pl.getCartonNo())) {
+                    if (StringUtils.hasText(pl.getCartonNo())) {
                     	if (null == c2c && null == containerMap) {
 							c2c = container2ndCategoryDao.findByCodeAndOuId(Constants.CONTAINER_TYPE_2ND_BOX, ouId);
 							containerMap = new HashMap<String, Long>();
