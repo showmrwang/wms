@@ -154,6 +154,10 @@ public class StoreCommand extends BaseCommand {
      * 1.可用;2.已删除;0.禁用
      */
     private Integer lifecycle;
+    /** 入库单据反馈节点 */
+    private Integer inboundNode = 1;
+    /** 入库单据反馈类型 */
+    private Integer inboundType = 1;
     
     /*
      * 用于全局表最后修改时间统一
@@ -480,5 +484,21 @@ public class StoreCommand extends BaseCommand {
     public void setExistStoreList(List<Store> existStoreList) {
         this.existStoreList = existStoreList;
     }
+
+	public Integer getInboundNode() {
+		return inboundNode;
+	}
+
+	public void setInboundNode(Integer inboundNode) {
+		this.inboundNode = inboundNode;
+	}
+
+	public Integer getInboundType() {
+		return inboundType;
+	}
+
+	public void setInboundType(Integer inboundType) {
+		this.inboundType = inboundType;
+	}
 
 }
