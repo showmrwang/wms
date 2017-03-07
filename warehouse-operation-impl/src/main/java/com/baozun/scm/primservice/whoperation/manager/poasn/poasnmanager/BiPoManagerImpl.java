@@ -21,7 +21,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import com.baozun.scm.baseservice.sac.manager.CodeManager;
 import com.baozun.scm.primservice.whoperation.command.poasn.BiPoCommand;
+import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoLineCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
@@ -42,6 +44,7 @@ import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
 import com.baozun.scm.primservice.whoperation.model.warehouse.ma.TransportProvider;
+import com.baozun.scm.primservice.whoperation.util.StringUtil;
 
 @Service("biPoManager")
 @Transactional
@@ -56,7 +59,11 @@ public class BiPoManagerImpl extends BaseManagerImpl implements BiPoManager {
     private WhPoLineDao whPoLineDao;
     @Autowired
     private TransportProviderDao transportProviderDao;
-
+    @Autowired
+    private AsnManager asnManager;
+    @Autowired
+    private CodeManager codeManager;
+    
     protected static final Logger log = LoggerFactory.getLogger(BiPoManager.class);
 
     @Override
@@ -272,6 +279,64 @@ public class BiPoManagerImpl extends BaseManagerImpl implements BiPoManager {
                 this.insertGlobalLog(GLOBAL_LOG_INSERT, whPoLine, whPoLine.getOuId(), whPoLine.getModifiedId(), null, DbDataSource.MOREDB_SHARDSOURCE);
             }
         }
+        // 上位系统传入入库单据,直接创建Asn
+        if (null != po.getIsVmi() && po.getIsVmi()) {
+        	log.info("BiPoManagerImpl.createAsnByVmi");
+        	WhAsnCommand asn = new WhAsnCommand();
+        	asn.setOuId(po.getOuId());
+        	asn.setUserId(po.getCreatedId());
+        	asn.setModifiedId(po.getModifiedId());
+        	// WMS单据号 调用HUB编码生成器获得
+            String asnCode = codeManager.generateCode(Constants.WMS, Constants.WHASN_MODEL_URL, Constants.WMS_ASN_INNER, null, null);
+            if (StringUtil.isEmpty(asnCode)) {
+                log.warn("CreateAsnBatch warn asnCode generateCode is null");
+                throw new BusinessException(ErrorCodes.GET_GENERATECODE_NULL);
+            }
+            asn.setAsnCode(asnCode);
+            String asnExtCode = this.getAsnExtCode(po.getStoreId(), po.getOuId());
+            asn.setAsnExtCode(asnExtCode);
+			asnManager.createAsnBatch(asn, po, whPoLines);
+		}
+        log.info("BiPoManagerImpl.createPoAndLineToShared method end!");
+    }
+    
+    /**
+     * 生成AsnExtCode
+     * 
+     * @param ouId
+     * @param storeId
+     * @return
+     */
+    private String getAsnExtCode(Long storeId, Long ouId) {
+        String asnExtCode = null;
+        boolean isSuccess = false;
+        // 验证asnextcode是否存在 最多调用接口5次
+        for (int i = 0; i <= 5; i++) {
+            if (true == isSuccess) {
+                break;
+            }
+            asnExtCode = codeManager.generateCode(Constants.WMS, Constants.WHASN_MODEL_URL, Constants.WMS_ASN_EXT, null, null);
+            if (StringUtil.isEmpty(asnExtCode)) {
+                log.warn("CreateAsnBatch warn asnExtCode generateCode is null");
+                throw new BusinessException(ErrorCodes.GET_GENERATECODE_NULL);
+            }
+
+            WhAsnCommand search = new WhAsnCommand();
+            search.setAsnExtCode(asnExtCode);
+            search.setOuId(ouId);
+            search.setStoreId(storeId);
+            List<WhAsnCommand> searchList = this.asnManager.findListByParamsExt(search);
+            // 如果没有 直接结束
+            if (searchList == null || searchList.size() == 0) {
+                isSuccess = true;
+            }
+        }
+        if (!isSuccess) {
+            // 如果5次获取都失败了 直接返回失败
+            log.warn("CreateAsnBatch warn asnExtCode generateCode CheckAsnCode is not null");
+            throw new BusinessException(ErrorCodes.GET_GENERATECODE_NULL);
+        }
+        return asnExtCode;
     }
 
     @Override

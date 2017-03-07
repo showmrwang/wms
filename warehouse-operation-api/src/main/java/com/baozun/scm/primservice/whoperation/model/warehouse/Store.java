@@ -148,6 +148,10 @@ public class Store extends BaseModel {
      * 1.可用;2.已删除;0.禁用
      */
     private Integer lifecycle;
+    /** 入库单据反馈节点 */
+    private Integer inboundNode = 1;
+    /** 入库单据反馈类型 */
+    private Integer inboundType = 1;
     
     /** 联系手机 */
     private String picMobileTelephone;
@@ -477,6 +481,22 @@ public class Store extends BaseModel {
     public void setDistrictId(Long districtId) {
         this.districtId = districtId;
     }
+
+	public Integer getInboundNode() {
+		return inboundNode;
+	}
+
+	public void setInboundNode(Integer inboundNode) {
+		this.inboundNode = inboundNode;
+	}
+
+	public Integer getInboundType() {
+		return inboundType;
+	}
+
+	public void setInboundType(Integer inboundType) {
+		this.inboundType = inboundType;
+	}
     
 
 }

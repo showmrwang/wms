@@ -36,18 +36,26 @@ public class BiPo extends BaseModel {
 	private String poCode;
 	/** 相关单据号 */
 	private String extCode;
+	/** 上位系统入库单据编码 */
+    private String extPoCode;
 	/** 客户ID */
 	private Long customerId;
 	/** 店铺ID */
 	private Long storeId;
 	/** 供应商ID */
 	private Long supplierId;
+	/** 来源地 */
+	private String fromLocation;
+	/** 目的地 */
+	private String toLocation;
 	/** 运输商ID */
 	private Long logisticsProviderId;
     /** 运输商Code */
     private String logisticsProvider;
 	/** PO单类型 */
 	private Integer poType;
+	/** 上位系统单据类型 */
+	private String extPoType;
 	/** 状态 */
 	private Integer status;
 	/** 是否质检 1:是 0:否 */
@@ -76,6 +84,8 @@ public class BiPo extends BaseModel {
 	private Boolean isWms;
 	/** 是否VMI收货单 1:是 0:否 */
 	private Boolean isVmi;
+	/** 数据来源 区分上位系统 */
+	private String dataSource;
 	/** 创建时间 */
 	private Date createTime;
 	/** 创建人 */
@@ -257,7 +267,36 @@ public class BiPo extends BaseModel {
     public void setLogisticsProvider(String logisticsProvider) {
         this.logisticsProvider = logisticsProvider;
     }
-	
+	public String getFromLocation() {
+		return fromLocation;
+	}
+	public void setFromLocation(String fromLocation) {
+		this.fromLocation = fromLocation;
+	}
+	public String getToLocation() {
+		return toLocation;
+	}
+	public void setToLocation(String toLocation) {
+		this.toLocation = toLocation;
+	}
+	public String getExtPoType() {
+		return extPoType;
+	}
+	public void setExtPoType(String extPoType) {
+		this.extPoType = extPoType;
+	}
+	public String getDataSource() {
+		return dataSource;
+	}
+	public void setDataSource(String dataSource) {
+		this.dataSource = dataSource;
+	}
+	public String getExtPoCode() {
+		return extPoCode;
+	}
+	public void setExtPoCode(String extPoCode) {
+		this.extPoCode = extPoCode;
+	}
 	
 }
 

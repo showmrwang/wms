@@ -14,7 +14,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	id as id,
 	        	po_id as poId,
 	        	linenum as linenum,
-	        	ou_id as ouId,	        	
+	        	ou_id as ouId,
+	        	ext_line_num as extLineNum,	        	
 	        	sku_id as skuId,
 	        	qty_planned as qtyPlanned,
 	        	overshipped as overshipped,
@@ -27,6 +28,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	mfg_date as mfgDate,
 	        	exp_date as expDate,
 	        	valid_date as validDate,
+	        	carton_no as cartonNo,
 	        	batch_no as batchNo,
 	        	country_of_origin as countryOfOrigin,
 	        	inv_status as invStatus,
@@ -54,6 +56,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	id,
 	        	po_id ,
 	        	linenum ,
+	        	ext_line_num ,
 	        	sku_id ,
 	        	qty_planned ,
 	        	overshipped ,
@@ -66,6 +69,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	mfg_date ,
 	        	exp_date ,
 	        	valid_date ,
+	        	carton_no ,
 	        	batch_no ,
 	        	country_of_origin ,
 	        	inv_status ,
@@ -86,7 +90,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        ) VALUES (
 	        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{poId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-	        	#{linenum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+	        	ifnull(#{linenum,javaType=java.lang.Integer,jdbcType=INTEGER},ifnull((select max(linenum) from t_wh_po_line line where line.po_id=#{poId}),0)+1),
+	        	#{extLineNum,javaType=java.lang.String,jdbcType=VARCHAR} ,
 	        	#{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{qtyPlanned,javaType=java.lang.Double,jdbcType=DECIMAL} ,
 	        	#{overshipped,javaType=java.lang.Double,jdbcType=DECIMAL} ,
@@ -99,6 +104,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	#{mfgDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 	        	#{expDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 	        	#{validDate,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+	        	#{cartonNo,javaType=java.lang.String,jdbcType=VARCHAR} ,
 	        	#{batchNo,javaType=java.lang.String,jdbcType=VARCHAR} ,
 	        	#{countryOfOrigin,javaType=java.lang.String,jdbcType=VARCHAR} ,
 	        	#{invStatus,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -126,6 +132,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    UPDATE t_wh_po_line SET
 		        po_id = #{poId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        linenum = #{linenum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        ext_line_num = #{extLineNum,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        sku_id = #{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        qty_planned = #{qtyPlanned,javaType=java.lang.Double,jdbcType=DECIMAL} ,
@@ -139,6 +146,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        mfg_date = #{mfgDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        exp_date = #{expDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        valid_date = #{validDate,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        carton_no = #{cartonNo,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        batch_no = #{batchNo,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        country_of_origin = #{countryOfOrigin,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        inv_status = #{invStatus,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -208,6 +216,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				<if test="linenum!=null">
 					and linenum = #{linenum}
 				</if>
+				
+				<if test="extLineNum!=null and extLineNum!=''">
+					and ext_line_num = #{extLineNum}
+				</if>
 	       
 				<if test="skuId!=null">
 					and sku_id = #{skuId}
@@ -252,7 +264,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				<if test="validDate!=null">
 					and valid_date = #{validDate}
 				</if>
-	       
+	       	
+	       		<if test="cartonNo!=null and cartonNo!=''">
+					and carton_no = #{cartonNo}
+				</if>
 	       
 		       <if test="batchNo!=null and batchNo!=''">
 					and batch_no = #{batchNo}

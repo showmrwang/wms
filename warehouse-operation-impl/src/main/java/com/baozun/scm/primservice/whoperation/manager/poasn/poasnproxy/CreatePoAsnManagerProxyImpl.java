@@ -171,6 +171,7 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
         whPo.setCreatedId(po.getUserId());
         whPo.setLastModifyTime(new Date());
         whPo.setModifiedId(po.getUserId());
+        whPo.setDataSource(Constants.WMS);
         if (null == whPo.getQtyPlanned()) {
             whPo.setQtyPlanned(Constants.DEFAULT_DOUBLE);
         }
@@ -451,7 +452,8 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
      * @param threshold
      * @return
      */
-    private String getUniqueCode() {
+    @Override
+    public String getUniqueCode() {
         return this.getUniqueCode(null);
     }
     private String getUniqueCode(Integer threshold) {
@@ -502,7 +504,7 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
             }
             // 创建PO单数据
             WhPo whPo = copyPropertiesPo(po);
-            whPo.setPoCode(getUniqueCode());
+            whPo.setPoCode(poCode);
             List<WhPoLine> whPoLines = null != po.getPoLineList() ? copyPropertiesPoLine(po) : null;
             // 判断OU_ID
             // 查询t_wh_check_pocode
@@ -1193,4 +1195,13 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
         return rm;
 
     }
+    
+    /**
+     * 创建上位系统传入的Po
+     */
+	@Override
+	public void createPoByExt(WhPo whPo, List<WhPoLine> whPoLines, Long ouId) {
+		// 复用同一套创建Po的逻辑
+		this.createPoDefault(whPo, whPoLines, ouId);
+	}
 }

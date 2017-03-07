@@ -245,5 +245,14 @@ public interface AsnManager extends BaseManager {
      * @param userId
      */
     void closeAsn(Long id, Long ouId, Long userId);
+    
+    /**
+     * [业务方法]外部单据指定仓库创建ASN
+     * 
+     * @param asn
+     * @param whpo
+     * @param whPoLines
+     */
+	void createAsnByVmi(WhPo po, List<WhPoLine> whPoLines);
 
 }

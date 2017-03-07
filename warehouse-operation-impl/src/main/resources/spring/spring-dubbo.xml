@@ -123,7 +123,7 @@
 	<dubbo:reference id="pkManager" url="${dubbo.sac.server}" interface="com.baozun.scm.baseservice.sac.manager.PkManager"/>
 	
 	<dubbo:reference id="codeManager" url="${dubbo.sac.server}" interface="com.baozun.scm.baseservice.sac.manager.CodeManager"/>
-	<dubbo:reference url="${dubbo.local.server.print}" id="printObjectManagerProxy"  interface="com.baozun.scm.baseservice.print.manager.printObject.PrintObjectManagerProxy" />
+	<dubbo:reference url="${dubbo.local.server.print}" id="printObjectManagerProxy"  interface="com.baozun.scm.baseservice.print.manager.printObject.PrintObjectManagerProxy" check="false" />
 	
 	
 
@@ -141,4 +141,8 @@
     <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.odo.manager.OutboundBoxRecManagerProxy" ref="outboundBoxRecManagerProxy" />
     <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.OutBoundBoxTypeManager" ref="outBoundBoxTypeManager" />
 <!--     <dubbo:service interface="com.baozun.scm.baseservice.print.manager.printObject.PrintObjectManagerProxy" ref="printObjectManagerProxy" /> -->
+
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.CustomerManager" ref="customerManager" />
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.StoreManager" ref="storeManager" />
+	
 </beans>

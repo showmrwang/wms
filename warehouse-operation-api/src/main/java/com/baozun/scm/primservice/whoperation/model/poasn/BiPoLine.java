@@ -37,6 +37,8 @@ public class BiPoLine extends BaseModel {
     private Long poId;
 	/** PO行号 */
     private Integer linenum;
+    /** 外部单据行号 */
+    private String extLineNum;
 	/** SKU_ID */
     private Long skuId;
 	/** 计划数量 */
@@ -61,6 +63,8 @@ public class BiPoLine extends BaseModel {
     private Date expDate;
 	/** 有效期天数 */
     private Integer validDate;
+    /** 箱号 */
+    private String cartonNo;
 	/** 批次号 */
     private String batchNo;
 	/** 原产地 */
@@ -335,6 +339,22 @@ public class BiPoLine extends BaseModel {
     public void setValidDateUom(String validDateUom) {
         this.validDateUom = validDateUom;
     }
+
+	public String getExtLineNum() {
+		return extLineNum;
+	}
+
+	public void setExtLineNum(String extLineNum) {
+		this.extLineNum = extLineNum;
+	}
+
+	public String getCartonNo() {
+		return cartonNo;
+	}
+
+	public void setCartonNo(String cartonNo) {
+		this.cartonNo = cartonNo;
+	}
 
 
 

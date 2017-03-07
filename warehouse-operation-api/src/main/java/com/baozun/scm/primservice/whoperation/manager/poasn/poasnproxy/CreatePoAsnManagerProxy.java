@@ -1,5 +1,6 @@
 package com.baozun.scm.primservice.whoperation.manager.poasn.poasnproxy;
 
+import java.util.List;
 import java.util.Locale;
 
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
@@ -9,6 +10,8 @@ import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 
 public interface CreatePoAsnManagerProxy extends BaseManager {
 
@@ -139,5 +142,19 @@ public interface CreatePoAsnManagerProxy extends BaseManager {
      * @return
      */
     ResponseMsg importBiPo(String url, String errorUrl, String fileName, Locale locale);
+    
+	/**
+	 * 生成PoCode编码
+	 * @author kai.zhu
+	 * @version 2017年3月2日
+	 */
+	String getUniqueCode();
+	
+	/**
+	 * 创建上位系统传入的Po
+	 * @author kai.zhu
+	 * @version 2017年3月3日
+	 */
+	void createPoByExt(WhPo whPo, List<WhPoLine> whPoLines, Long ouId);
 
 }
