@@ -2916,7 +2916,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
           if (cssrCmd.isNeedTipSkuSn()) {
               // 当前商品还未扫描，继续扫sn残次信息
               String tipSkuAttrId = cssrCmd.getTipSkuAttrId();
-              this.splitCacheScanSku(insideContainerId, locationId, tipSkuAttrId);   //  缓存
+              this.splitCacheScanSku(insideContainerId, tipLocationId, tipSkuAttrId);   //  缓存
               tipSkuDetailAspect(isRecommendFail,srCmd, tipSkuAttrId, locSkuAttrIds, skuAttrIdsQty, logId);
               srCmd.setIsContinueScanSn(true);
           } else if (cssrCmd.isNeedTipSku()) {

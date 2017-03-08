@@ -111,9 +111,9 @@ public class PdaReplenishmentWorkManagerImpl extends BaseManagerImpl implements 
                throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
            }
            List<Long> locationIds = operatorLine.getLocationIds();   //所有排序后的拣货库位
-           CheckScanResultCommand cSRCmd =  pdaPickingWorkCacheManager.locationTipcache(operationId, locationIds);
+           CheckScanResultCommand cSRCmd =  pdaPickingWorkCacheManager.tipLocation(operationId, locationIds);
            if(cSRCmd.getIsPicking()) {
-               psRCmd.setIsPicking(true);  //所有库位拣货完毕
+               throw new BusinessException(ErrorCodes.REPLE_WORK_ISEND);
            }else{
                psRCmd.setIsPicking(false);
                Long locationId = cSRCmd.getTipLocationId();   //提示库位id
@@ -121,8 +121,8 @@ public class PdaReplenishmentWorkManagerImpl extends BaseManagerImpl implements 
                if(null == location){
                    throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_LOCATION_NULL);
                }
-               psRCmd.setLocationBarCode(location.getBarCode());  //库位条码
-               psRCmd.setLocationCode(location.getCode()); 
+               psRCmd.setTipLocationBarCode(location.getBarCode());
+               psRCmd.setTipLocationCode(location.getCode());
            }
            //查询补货功能模板参数
            WhFunctionReplenishment resplenishment = whFunctionReplenishmentDao.findByFunctionIdExt(ouId, functionId);
@@ -213,5 +213,18 @@ public class PdaReplenishmentWorkManagerImpl extends BaseManagerImpl implements 
         pdaPickingWorkCacheManager.pdaReplenishmentUpdateOperation(operationId, ouId,userId);
         //清除缓存
         pdaPickingWorkCacheManager.pdaPickingRemoveAllCache(operationId, false, locationId);
+    }
+    
+    public void cacheLocation(Long operationId,String locationCode,Long ouId){
+        
+        Location location = whLocationDao.findLocationByCode(locationCode, ouId);
+        if(null == location) {
+            location =  whLocationDao.getLocationByBarcode(locationCode, ouId);
+            if(null == location) {
+                throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_LOCATION_NULL); 
+            }
+        }
+        Long locationId = location.getId();
+        pdaPickingWorkCacheManager.cacheLocation(operationId, locationId);
     }
 }
