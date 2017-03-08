@@ -71,14 +71,21 @@ public interface PdaPickingWorkCacheManager extends BaseManager{
     public OperatioLineStatisticsCommand getOperatioLineStatistics(Long operatorId,Long ouId);
     
    /***
-    * 缓存库位信息
+    * 提示库位
     *  @tangming
     * @param operatorId
-    * @param pickingType
     * @param locationIds
     * @return
     */
-    public CheckScanResultCommand locationTipcache(Long operatorId,List<Long> locationIds);
+    public CheckScanResultCommand tipLocation(Long operation,List<Long> locationIds);
+    
+    
+    /***
+     * 缓存库位
+     * @param operation
+     * @param locationId
+     */
+    public void cacheLocation(Long operation,Long locationId);
     
     /***
      * 缓存单个库位的作业明细

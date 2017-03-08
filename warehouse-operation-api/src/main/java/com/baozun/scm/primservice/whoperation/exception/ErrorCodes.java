@@ -776,6 +776,8 @@ public class ErrorCodes {
     
     /**分配库存不存在*/
     public static final int ALLOCATE_INVENTORY_NO_EXIST=70059;
+    /**补货工作结束*/
+    public static final int REPLE_WORK_ISEND=70060;
     // 70001-80000 tangming
     
 	// 80001-90000 zhukai
