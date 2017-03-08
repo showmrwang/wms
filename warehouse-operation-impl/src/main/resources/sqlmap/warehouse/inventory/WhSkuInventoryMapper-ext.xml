@@ -681,7 +681,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 						inv.occupation_code is not null 
 						and inv.location_id is null 
 						and asn.asn_code = inv.occupation_code
-						and (asn.status=5 or asn.status=10)
+						and (asn.status=5 or asn.status=10 or asn.status = 20)
 					    and inv.ou_id = #{ouid}
 					and c.code in 
 					<foreach item="item" index="index" collection="containerList" open="(" separator="," close=")">
@@ -743,7 +743,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					where 
 						inv.occupation_code is not null and inv.location_id is not null
 						and asn.asn_code = inv.occupation_code
-						and (asn.status=5 or asn.status=10)
+						and (asn.status=5 or asn.status=10 or asn.status = 20)
 						and inv.to_be_filled_qty > 0.0
 					    and inv.ou_id = #{ouid}
 					and c.code in 
@@ -857,7 +857,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					where 
 						inv.occupation_code is not null
 						and asn.asn_code = inv.occupation_code
-						and (asn.status=5 or asn.status=10)
+						and (asn.status=5 or asn.status=10 or asn.status = 20)
 					    and inv.ou_id = #{ouid}
 					and c.code in 
 					<foreach item="item" index="index" collection="containerList" open="(" separator="," close=")">
@@ -918,7 +918,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					where 
 						inv.occupation_code is not null and inv.location_id is null
 						and asn.asn_code = inv.occupation_code
-						and (asn.status=5 or asn.status=10)
+						and (asn.status=5 or asn.status=10 or asn.status = 20)
 						and inv.on_hand_qty > 0.0
 					    and inv.ou_id = #{ouId}
 						and c.id = #{outerContainerId}
@@ -970,7 +970,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					where 
 						inv.occupation_code is not null and inv.location_id is not null
 						and asn.asn_code = inv.occupation_code
-						and (asn.status=5 or asn.status=10)
+						and (asn.status=5 or asn.status=10 or asn.status = 20)
 						and inv.qty > 0.0
 					    and inv.ou_id = #{ouId}
 						and c.id = #{outerContainerId}
@@ -1023,7 +1023,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					where 
 						inv.occupation_code is not null and inv.location_id is not null
 						and asn.asn_code = inv.occupation_code
-						and (asn.status=5 or asn.status=10)
+						and (asn.status=5 or asn.status=10 or asn.status = 20)
 						and inv.location_id = loc.id
 						and inv.ou_id = loc.ou_id
 						and inv.qty > 0.0
@@ -1035,7 +1035,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
      <select id="findLocToBeFilledInventoryCountsByOuterContainerId" resultType="Integer">
 		select count(1) from t_wh_sku_inventory_tobefilled inv,t_wh_asn asn where inv.occupation_code is not null and inv.location_id is not null and inv.qty > 0.0 
 			and inv.ou_id=#{ouId}
-			and inv.occupation_code=asn.asn_code and (asn.status=5 or asn.status=10)
+			and inv.occupation_code=asn.asn_code and (asn.status=5 or asn.status=10 or asm.status = 20)
 			and inv.outer_container_id=#{outerContainerId}
 	</select>
     
@@ -1091,7 +1091,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					where 
 						inv.occupation_code is not null and inv.location_id is null 
 						and asn.asn_code = inv.occupation_code
-						and (asn.status=5 or asn.status=10)
+						and (asn.status=5 or asn.status=10 or asn.status=20)
 						and inv.on_hand_qty > 0.0
 					    and inv.ou_id = #{ouid}
 					and c.code in 
@@ -1153,7 +1153,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					where 
 						inv.occupation_code is not null and inv.location_id is not null 
 						and asn.asn_code = inv.occupation_code
-						and (asn.status=5 or asn.status=10)
+						and (asn.status=5 or asn.status=10 or asn.status=20)
 						and inv.to_be_filled_qty > 0.0
 					    and inv.ou_id = #{ouid}
 					and c.code in 
@@ -1215,7 +1215,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					where 
 						inv.occupation_code is not null and inv.location_id is null 
 						and asn.asn_code = inv.occupation_code
-						and (asn.status=5 or asn.status=10)
+						and (asn.status=5 or asn.status=10 or asn.status=20)
 						and inv.on_hand_qty > 0.0
 					    and inv.ou_id = #{ouId}
 						and c.id = #{insideContainerId}
@@ -1267,7 +1267,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					where 
 						inv.occupation_code is not null and inv.location_id is not null 
 						and asn.asn_code = inv.occupation_code
-						and (asn.status=5 or asn.status=10)
+						and (asn.status=5 or asn.status=10 or asn.status=20)
 						and inv.qty > 0.0
 					    and inv.ou_id = #{ouId}
 						and c.id = #{insideContainerId}
@@ -1276,7 +1276,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     <select id="findLocToBeFilledInventoryCountsByInsideContainerId" resultType="Integer">
 		select count(1) from t_wh_sku_inventory_tobefilled inv,t_wh_asn asn where inv.occupation_code is not null and inv.location_id is not null and inv.qty > 0.0 
 			and inv.ou_id=#{ouId}
-			and inv.occupation_code=asn.asn_code and (asn.status=5 or asn.status=10)
+			and inv.occupation_code=asn.asn_code and (asn.status=5 or asn.status=10 or asn.status=20)
 			and inv.inside_container_id=#{insideContainerId}
 	</select>
     
@@ -1337,7 +1337,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 						and asn.asn_code = inv.occupation_code
 						and inv.location_id = loc.id
 						and inv.ou_id = loc.ou_id
-						and (asn.status=5 or asn.status=10)
+						and (asn.status=5 or asn.status=10 or asn.status=20)
 					    and inv.ou_id = #{ouid}
 					    and loc.id = #{locid}
 					and c.code in 
@@ -1402,7 +1402,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 						and asn.asn_code = inv.occupation_code
 						and inv.location_id = loc.id
 						and inv.ou_id = loc.ou_id
-						and (asn.status=5 or asn.status=10)
+						and (asn.status=5 or asn.status=10 or asn.status=20)
 						and inv.to_be_filled_qty > 0.0
 					    and inv.ou_id = #{ouid}
 					    and loc.id = #{locid}
@@ -1461,7 +1461,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 						and asn.asn_code = inv.occupation_code
 						and inv.location_id = loc.id
 						and inv.ou_id = loc.ou_id
-						and (asn.status=5 or asn.status=10)
+						and (asn.status=5 or asn.status=10 or asn.status=20)
 						and inv.qty > 0.0
 					    and inv.ou_id = #{ouId}
 					    and loc.id = #{locId}
@@ -1792,14 +1792,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     <select id="findRcvdInventoryCountsByOuterContainerId" resultType="Integer">
 		select count(1) from t_wh_sku_inventory inv,t_wh_asn asn where inv.occupation_code is not null
 			and inv.ou_id=#{ouId}
-			and inv.occupation_code=asn.asn_code and (asn.status=5 or asn.status=10)
+			and inv.occupation_code=asn.asn_code and (asn.status=5 or asn.status=10 or asn.status=20)
 			and inv.outer_container_id=#{outerContainerId}
 	</select>
 	
 	 <select id="findRcvdInventoryCountsByInsideContainerId" resultType="Integer">
 		select count(1) from t_wh_sku_inventory inv,t_wh_asn asn where inv.occupation_code is not null 
 			and inv.ou_id=#{ouId}
-			and inv.occupation_code=asn.asn_code and (asn.status=5 or asn.status=10)
+			and inv.occupation_code=asn.asn_code and (asn.status=5 or asn.status=10 or asn.status=20)
 			and inv.inside_container_id=#{insideContainerId}
 	</select>
 	
@@ -1815,14 +1815,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	 <select id="findRcvdInventoryCountsByInsideContainerId1" resultType="Integer">
 		select count(1) from t_wh_sku_inventory inv,t_wh_asn asn where inv.occupation_code is not null and inv.outer_container_id is not null
 			and inv.ou_id=#{ouId}
-			and inv.occupation_code=asn.asn_code and (asn.status=5 or asn.status=10)
+			and inv.occupation_code=asn.asn_code and (asn.status=5 or asn.status=10 or asn.status=20)
 			and inv.inside_container_id=#{insideContainerId} 
 	</select>
 	
 	 <select id="findLocTobefilledInventoryCountsByInsideContainerId1" resultType="Integer">
 		select count(1) from t_wh_sku_inventory_tobefilled inv,t_wh_asn asn where inv.occupation_code is not null and inv.outer_container_id is not null
 			and inv.ou_id=#{ouId}
-			and inv.occupation_code=asn.asn_code and (asn.status=5 or asn.status=10)
+			and inv.occupation_code=asn.asn_code and (asn.status=5 or asn.status=10 or asn.status=20)
 			and inv.inside_container_id=#{insideContainerId} 
 	</select>
 	
@@ -1897,7 +1897,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			where 
 			inv.occupation_code is not null 
 			and asn.asn_code = inv.occupation_code
-			and (asn.status=5 or asn.status=10)
+			and (asn.status=5 or asn.status=10 or asn.status = 20)
 			and inv.allocated_qty > 0.0
 			and inv.location_id is null
 			and inv.uuid = #{uuid} 
@@ -1970,7 +1970,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        (
 		        select distinct inv.inside_container_id from t_wh_sku_inventory inv,t_wh_asn asn where inv.occupation_code is not null 
 			and inv.ou_id=#{ouid}
-			and inv.occupation_code=asn.asn_code and (asn.status=5 or asn.status=10)
+			and inv.occupation_code=asn.asn_code and (asn.status=5 or asn.status=10 or asn.status = 20)
 			and inv.outer_container_id=#{outerContainerid}
 				)		
 		    ]]>
@@ -2002,7 +2002,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        (
 		        select distinct inv.inside_container_id from t_wh_sku_inventory_tobefilled inv,t_wh_asn asn where inv.occupation_code is not null 
 			and inv.ou_id=#{ouid}
-			and inv.occupation_code=asn.asn_code and (asn.status=5 or asn.status=10)
+			and inv.occupation_code=asn.asn_code and (asn.status=5 or asn.status=10 or asn.status = 20)
 			and inv.outer_container_id=#{outerContainerid}
 				)		
 		    ]]>
@@ -2077,7 +2077,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					where 
 						inv.occupation_code is not null 
 						and asn.asn_code = inv.occupation_code
-						and (asn.status=5 or asn.status=10)
+						and (asn.status=5 or asn.status=10 or asn.status=20)
 					    and inv.ou_id = #{ouid}
 					and c.id in 
 					<foreach item="item" index="index" collection="containerList" open="(" separator="," close=")">
@@ -2093,7 +2093,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		select <include refid="whSkuInventoryColumnsInvExt"/>
 		from t_wh_sku_inventory inv,t_wh_asn asn where inv.occupation_code is not null 
 		and inv.ou_id=#{ouId}
-	    and inv.occupation_code=asn.asn_code and (asn.status=5 or asn.status=10)
+	    and inv.occupation_code=asn.asn_code and (asn.status=5 or asn.status=10 or asn.status=20)
 		and inv.outer_container_id = #{outerContainerId}
 	</select>
 
@@ -2103,7 +2103,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		select <include refid="whSkuInventoryColumnsInvExt"/>
 		from t_wh_sku_inventory inv,t_wh_asn asn where inv.occupation_code is not null 
 		and inv.ou_id=#{ouId}
-		and inv.occupation_code=asn.asn_code and (asn.status=5 or asn.status=10)
+		and inv.occupation_code=asn.asn_code and (asn.status=5 or asn.status=10 or asn.status = 20)
 		and inv.inside_container_id = #{insideContainerId}
 	</select>
 
@@ -2113,7 +2113,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		select <include refid="whSkuInventoryColumnsInvExt"/>
 		    from t_wh_sku_inventory inv,t_wh_asn asn where inv.occupation_code is not null 
 			and inv.ou_id=#{ouId}
-			and inv.occupation_code=asn.asn_code and (asn.status=5 or asn.status=10)
+			and inv.occupation_code=asn.asn_code and (asn.status=5 or asn.status=10 or asn.status = 20)
 		    and inv.outer_container_id = #{containerId}
 	</select>
     
@@ -2141,7 +2141,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			where
 				 inv.occupation_code is not null 
 			     and asn.asn_code = inv.occupation_code
-		    	 and (asn.status=5 or asn.status=10)
+		    	 and (asn.status=5 or asn.status=10 or asn.status=20)
 			     and inv.on_hand_qty > 0.0
 			     and inv.ou_id = #{ouId}
 				 <if test="insideContainerId != null">
@@ -2155,7 +2155,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
   	    <select id="findWhSkuInventoryCountByInsideContainerId" resultType="Integer">
 		select count(1) from t_wh_sku_inventory inv,t_wh_asn asn where inv.occupation_code is not null and inv.location_id is null and inv.on_hand_qty > 0.0 
 			and inv.ou_id=#{ouId}
-			and inv.occupation_code=asn.asn_code and (asn.status=5 or asn.status=10)
+			and inv.occupation_code=asn.asn_code and (asn.status=5 or asn.status=10 or asn.status = 20)
 			and inv.inside_container_id=#{insideContainerId}
 	</select>
 
@@ -2886,7 +2886,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		select <include refid="whSkuInventoryColumnsInvExt"/>
 		from t_wh_sku_inventory inv,t_wh_asn asn where inv.occupation_code is not null 
 		and inv.ou_id=#{ouId}
-	    and inv.occupation_code=asn.asn_code and (asn.status=5 or asn.status=10) and inv.location_id is not null
+	    and inv.occupation_code=asn.asn_code and (asn.status=5 or asn.status=10 or asn.status = 20) and inv.location_id is not null
 	    <if test="outerContainerId!=null and outerContainerId!=''">
 					 and inv.outer_container_id = #{outerContainerId}
 	   </if>
