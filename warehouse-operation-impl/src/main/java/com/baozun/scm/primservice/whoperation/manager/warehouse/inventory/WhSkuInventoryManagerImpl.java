@@ -4838,8 +4838,12 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
      * @param lrrList
      * @param putawayPatternDetailType
      */
-    public void manMadeBinding(Long outerContainerId,Long insideContainerId,List<WhSkuInventoryCommand> invList, Warehouse warehouse, Long locationId, Integer putawayPatternDetailType, Long ouId, Long userId, String logId,Double scanSkuQty){
+    public void manMadeBinding(Long outerContainerId,Long insideContainerId, Warehouse warehouse, Long locationId, Integer putawayPatternDetailType, Long ouId, Long userId, String logId,Double scanSkuQty){
         if (WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY == putawayPatternDetailType) {
+            List<WhSkuInventoryCommand> invList = whSkuInventoryDao.findContainerOnHandInventoryByInsideContainerId(ouId,insideContainerId);
+            if(null == invList || invList.size() == 0) {
+                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_INV_NULL);
+            }
             // 拆箱上架
             for (WhSkuInventoryCommand invCmd : invList) {
                 List<WhSkuInventorySnCommand> snList = invCmd.getWhSkuInventorySnCommandList();
@@ -4985,6 +4989,16 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 }
         } else {
             // 整托上架、整箱上架
+            List<WhSkuInventoryCommand> invList = null;
+            if(WhPutawayPatternDetailType.PALLET_PUTAWAY == putawayPatternDetailType){
+                invList = whSkuInventoryDao.findContainerOnHandInventoryByOuterContainerId(ouId, outerContainerId);
+            }
+            if(WhPutawayPatternDetailType.CONTAINER_PUTAWAY == putawayPatternDetailType){
+                invList = whSkuInventoryDao.findContainerOnHandInventoryByInsideContainerId(ouId,insideContainerId);
+            }
+            if(null == invList || invList.size() == 0) {
+                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_INV_NULL);
+            }
             List<WhSkuInventoryTobefilled> tobefilledList = whSkuInventoryTobefilledDao.findWhSkuInventoryTobefilled(outerContainerId, insideContainerId, ouId);
             for (WhSkuInventoryCommand invCmd : invList) {
                 List<WhSkuInventorySnCommand> snList = invCmd.getWhSkuInventorySnCommandList();

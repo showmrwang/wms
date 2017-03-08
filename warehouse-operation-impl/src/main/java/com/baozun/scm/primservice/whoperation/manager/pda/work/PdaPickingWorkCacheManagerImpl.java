@@ -164,54 +164,74 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
     }
     
     /***
-     * 提是库位
+     * 提示库位
      * @param command
      * @return
      */
-    public CheckScanResultCommand locationTipcache(Long operationId,List<Long> locationIds){
+    public CheckScanResultCommand tipLocation(Long operationId,List<Long> locationIds){
         log.info("PdaPickingWorkCacheManagerImpl containerPutawayCacheInsideContainer is start");
         CheckScanResultCommand scanResult = new CheckScanResultCommand();
+        scanResult.setIsPicking(true);
         Long tipLocationId = null;
         OperationLineCacheCommand tipLocationCmd = cacheManager.getObject(CacheConstants.CACHE_OPERATION_LINE + operationId.toString());
         for(Long locationId:locationIds) {
             if(null == tipLocationCmd) {
-                OperationLineCacheCommand tipCmd = new OperationLineCacheCommand();
-                ArrayDeque<Long> locIds = new ArrayDeque<Long>();
-                locIds.addFirst(locationId);
-                tipCmd.setTipLocationIds(locIds);
-                cacheManager.setObject(CacheConstants.CACHE_OPERATION_LINE + operationId.toString(), tipCmd, CacheConstants.CACHE_ONE_DAY);
-                scanResult.setTipLocationId(tipLocationId);
-                scanResult.setIsPicking(false);  // 没有上架结束
+                tipLocationId = locationId;
+                scanResult.setIsNeedTipLoc(true);
+                scanResult.setIsPicking(false);
                 break;
             }else{
                 ArrayDeque<Long> tipLocationIds = tipLocationCmd.getTipLocationIds();
-                if(this.isCacheAllExists2(locationIds, tipLocationIds)) {
-                    if (null != tipLocationIds && !tipLocationIds.isEmpty()) {
-                        //判断库位是否扫描完毕
+                if (null != tipLocationIds && !tipLocationIds.isEmpty()) {
+                    tipLocationId = locationId;
+                    scanResult.setIsPicking(true);
+                    break;
+                } else {
+                      //判断库位是否扫描完毕
                         if(tipLocationIds.contains(locationId)) {
                             continue;
                         }else{
-                            tipLocationIds.addFirst(locationId);
-                            cacheManager.setObject(CacheConstants.CACHE_OPERATION_LINE+ operationId.toString(), tipLocationCmd, CacheConstants.CACHE_ONE_DAY);
+                            tipLocationId = locationId;
+                            scanResult.setIsNeedTipLoc(true);
+                            scanResult.setIsPicking(false);
+                            break;
                         }
-                    } else {
-                        ArrayDeque<Long> locIds = new ArrayDeque<Long>();
-                        locIds.addFirst(locationId);
-                        tipLocationCmd.setTipLocationIds(locIds);
-                        cacheManager.setObject(CacheConstants.CACHE_OPERATION_LINE + operationId.toString(), tipLocationCmd, CacheConstants.CACHE_ONE_DAY);
-                    }
-                    scanResult.setTipLocationId(tipLocationId);
-                    scanResult.setIsPicking(false);  // 没有结束
-                }else{
-                    scanResult.setIsPicking(true); //所有库位已经扫描完毕
-                }
-                break;
+                 }
             }
         }
+        scanResult.setTipLocationId(tipLocationId);
         log.info("PdaPickingWorkCacheManagerImpl containerPutawayCacheInsideContainer is start");
         return scanResult;
     }  
+
+    
     /***
+     * 缓存库位
+     * @param operation
+     * @param locationId
+     */
+    public void cacheLocation(Long operationId,Long locationId){
+        OperationLineCacheCommand tipLocationCmd = cacheManager.getObject(CacheConstants.CACHE_OPERATION_LINE + operationId.toString());
+        if(null == tipLocationCmd){
+             tipLocationCmd = new OperationLineCacheCommand();
+             ArrayDeque<Long> locIds = new ArrayDeque<Long>();
+             locIds.addFirst(locationId);
+             tipLocationCmd.setTipLocationIds(locIds);
+        }else{
+            ArrayDeque<Long> tipLocationIds = tipLocationCmd.getTipLocationIds();
+            if(null == tipLocationIds || tipLocationIds.size() == 0){
+                ArrayDeque<Long> locIds = new ArrayDeque<Long>();
+                locIds.addFirst(locationId);
+                tipLocationCmd.setTipLocationIds(locIds);
+            }else{
+                if(!tipLocationIds.contains(locationId)) {
+                    tipLocationIds.addFirst(locationId);
+                }
+            }
+        }
+        cacheManager.setObject(CacheConstants.CACHE_OPERATION_LINE + operationId.toString(), tipLocationCmd, CacheConstants.CACHE_ONE_DAY);
+    }
+    
     
     /***
      * 提示小车

@@ -49,4 +49,14 @@ public interface WhWorkLineDao extends BaseDao<WhWorkLine,Long>{
 	
 	public List<WhWorkLineCommand> findWorkLineByLocationId(@Param("locationId") Long locationId,@Param("ouId") Long ouId);
 	
+	/**
+     * 根据补货单据号工作明细计划量之和
+     *
+     * @author qiming.liu
+     * @param replenishmentCode
+     * @param ouId
+     * @return
+     */
+    Double getTotalQtyByReplenishmentCode(@Param("replenishmentCode") String replenishmentCode, @Param("ouId") Long ouId);
+	
 }

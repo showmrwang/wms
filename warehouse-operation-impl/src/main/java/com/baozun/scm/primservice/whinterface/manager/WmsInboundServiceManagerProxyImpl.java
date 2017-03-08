@@ -63,7 +63,7 @@ public class WmsInboundServiceManagerProxyImpl implements WmsInboundServiceManag
                 if (lineList == null || lineList.size() != wmsInBoundCancel.getExtLinenum().size()) {
                     return new WmsResponse(0, WmsErrorCode.SEARCH_ERROR, " fidn BiPoLine by ExtLinenum error");
                 }
-                ResponseMsg msg = this.editPoAsnManagerProxy.cancel(bipo.getId(), true, lineList, null, null);
+                ResponseMsg msg = this.editPoAsnManagerProxy.cancel(bipo.getId(), false, lineList, null, null);
                 if (msg == null) {
                     return new WmsResponse(0, WmsErrorCode.SYSTEM_EXCEPTION, "SYSTEM_EXCEPTION ");
                 }

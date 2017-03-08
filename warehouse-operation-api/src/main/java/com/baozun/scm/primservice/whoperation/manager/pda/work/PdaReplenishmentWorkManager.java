@@ -42,4 +42,8 @@ public interface PdaReplenishmentWorkManager extends BaseManager {
      */
     public void pdaPickingFinish(PickingScanResultCommand  command,Boolean isTabbInvTotal);
     
+    
+    public void cacheLocation(Long operationId,String locationCode,Long ouId);
+    
+    
 }

@@ -69,24 +69,19 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
 
     /**
      * @author yimin.lu 修改PO单状态为取消; 传递参数：poIds,ouId,status,modifiedId,status；TODO 取消失败的回滚操作
+     * @mender yimin.lu 增加行取消逻辑
      */
     @Override
-    public ResponseMsg cancelPo(WhPoCommand whPo) {
-        Long id = whPo.getId();
-        Long userId = whPo.getUserId();
-        Long ouId = whPo.getOuId();
+    public ResponseMsg cancelPo(Long poId, Long ouId, Boolean isPoCancel, List<Integer> extlineNumList, Long userId) {
         log.info("EidtPoAsnManagerProxyImpl.cancelPo: start====================== ");
-        if (log.isDebugEnabled()) {
-            log.debug(this.getClass().getSimpleName() + ".cancelPo method params:{}", whPo);
-        }
         // 循环需要更新的po.id
         if (log.isDebugEnabled()) {
-            log.debug("cancelPo method id:{}", id);
+            log.debug("cancelPo method id:{}", poId);
         }
         // 根据ID查询到PO单
-        WhPo updatePo = poManager.findWhPoByIdToShard(id, ouId);
+        WhPo updatePo = poManager.findWhPoByIdToShard(poId, ouId);
         if (null == updatePo) {
-            log.error("cancelPo method,the id :{} of poids can not find po!", id);
+            log.error("cancelPo method,the id :{} of poids can not find po!", poId);
             return getResponseMsg("Can not find po!", ResponseMsg.STATUS_ERROR, null);
         }
         // 组装数据：修改者ID和修改的状态
@@ -97,16 +92,14 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
         }
 
         try {
-            this.poManager.cancelPoToShard(updatePo,userId);
-            this.poManager.cancelPoToInfo(infoPo, userId);
+            this.poManager.cancelPoToShard(updatePo, isPoCancel, extlineNumList, userId);
+            this.poManager.cancelPoToInfo(infoPo, isPoCancel, extlineNumList, userId);
+        } catch (BusinessException e) {
+            log.error(e + "");
+            throw e;
         } catch (Exception e) {
-            if (e instanceof BusinessException) {
-                log.error(e + "");
-                throw e;
-            } else {
-                log.error("Cancel Po throws exceptions!");
-                return getResponseMsg("Cancel Po failure! please retry it!", ResponseMsg.STATUS_ERROR, null);
-            }
+            log.error("Cancel Po throws exceptions!");
+            return getResponseMsg("Cancel Po failure! please retry it!", ResponseMsg.STATUS_ERROR, null);
         }
         return this.getResponseMsg("cancel po success", ResponseMsg.STATUS_SUCCESS, null);
     }
@@ -299,7 +292,9 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
             }
         }
         // 修改PO单状态为关闭
-        this.poManager.closePo(whpo.getId(), ouId, userId);
+        this.poManager.closePoToShard(whpo.getId(), ouId, userId);
+        WhPo infoPo = this.poManager.findWhPoByExtCodeStoreIdOuIdToInfo(whpo.getExtCode(), whpo.getStoreId(), ouId);
+        this.poManager.closePoToInfo(infoPo.getId(), ouId, userId);
         log.info("EditPoAsnManager.auditPo end =======================");
     }
 

@@ -165,7 +165,7 @@ public interface WhSkuInventoryManager extends BaseManager {
      * @param lrrList
      * @param putawayPatternDetailType
      */
-    public void manMadeBinding(Long outerContainerId,Long insideContainerId,List<WhSkuInventoryCommand> invList, Warehouse warehouse, Long locationId, Integer putawayPatternDetailType, Long ouId, Long userId, String logId,Double scanSkuQty);
+    public void manMadeBinding(Long outerContainerId,Long insideContainerId, Warehouse warehouse, Long locationId, Integer putawayPatternDetailType, Long ouId, Long userId, String logId,Double scanSkuQty);
 
     
     /****
