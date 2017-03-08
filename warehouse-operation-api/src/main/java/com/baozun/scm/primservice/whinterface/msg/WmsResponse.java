@@ -36,6 +36,11 @@ public class WmsResponse implements Serializable {
      * 备注
      */
     private String msg;
+    
+    /**
+     * 上位系统单据号
+     */
+    private String orderCode;
 
     public WmsResponse(int status, String errorCode, String msg) {
         this.status = status;
@@ -43,7 +48,13 @@ public class WmsResponse implements Serializable {
         this.msg = msg;
     }
 
-
+    public WmsResponse(int status, String orderCode, String errorCode, String msg) {
+        this.status = status;
+        this.orderCode = orderCode;
+        this.errorCode = errorCode;
+        this.msg = msg;
+    }
+    
     public int getStatus() {
         return status;
     }
@@ -67,6 +78,16 @@ public class WmsResponse implements Serializable {
     public void setMsg(String msg) {
         this.msg = msg;
     }
+
+
+	public String getOrderCode() {
+		return orderCode;
+	}
+
+
+	public void setOrderCode(String orderCode) {
+		this.orderCode = orderCode;
+	}
 
 
 
