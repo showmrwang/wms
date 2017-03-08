@@ -436,7 +436,7 @@ public class InventoryStatisticManagerImpl extends BaseManagerImpl implements In
                     log.error("asn is null error! containerCode is:[{}], logId is:[{}]", containerCode, logId);
                     throw new BusinessException(ErrorCodes.COMMON_ASN_IS_NULL_ERROR, new Object[] {asnCode});
                 }
-                if (PoAsnStatus.ASN_RCVD_FINISH != asn.getStatus() && PoAsnStatus.ASN_RCVD != asn.getStatus()) {
+                if (PoAsnStatus.ASN_RCVD_FINISH != asn.getStatus() && PoAsnStatus.ASN_RCVD != asn.getStatus() && PoAsnStatus.ASN_CLOSE != asn.getStatus()) {
                     log.error("asn status error! containerCode is:[{}], logId is:[{}]", containerCode, logId);
                     throw new BusinessException(ErrorCodes.COMMON_ASN_STATUS_ERROR, new Object[] {asnCode});
                 }
@@ -1023,7 +1023,7 @@ public class InventoryStatisticManagerImpl extends BaseManagerImpl implements In
                             log.error("asn is null error! containerCode is:[{}], logId is:[{}]", containerCode, logId);
                             throw new BusinessException(ErrorCodes.COMMON_ASN_IS_NULL_ERROR, new Object[] {asnCode});
                         }
-                        if (PoAsnStatus.ASN_RCVD_FINISH != asn.getStatus() && PoAsnStatus.ASN_RCVD != asn.getStatus()) {
+                        if (PoAsnStatus.ASN_RCVD_FINISH != asn.getStatus() && PoAsnStatus.ASN_RCVD != asn.getStatus() && PoAsnStatus.ASN_CLOSE != asn.getStatus()) {
                             pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(containerCmd, ouId, logId);
                             log.error("asn status error! containerCode is:[{}], logId is:[{}]", containerCode, logId);
                             throw new BusinessException(ErrorCodes.COMMON_ASN_STATUS_ERROR, new Object[] {asnCode});

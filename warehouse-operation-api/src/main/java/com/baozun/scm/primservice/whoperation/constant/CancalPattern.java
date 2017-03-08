@@ -36,5 +36,7 @@ public class CancalPattern implements Serializable {
     public static final int TIP_LOCATION_CANCEL = 5; // 提示库位取消
 
     
+    public static final int OUTERCONTAINER_CANCEL= 6;//外部容器取消
+    
     
 }

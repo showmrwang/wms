@@ -3906,7 +3906,11 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                 cacheManager.remove(CacheConstants.SCAN_CONTAINER_QUEUE + outerContainerId.toString());
                 cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY_STATISTIC,outerContainerId.toString());
                 cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY, outerContainerId.toString());
-                cacheManager.removeMapValue(CacheConstants.CONTAINER_STATISTIC, outerContainerId.toString());
+            }
+            if(cancelPattern == CancalPattern.OUTERCONTAINER_CANCEL){
+                if(null != outerContainerId) { 
+                    cacheManager.removeMapValue(CacheConstants.CONTAINER_STATISTIC, outerContainerId.toString());
+                }
             }
             
         }
@@ -3933,8 +3937,10 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
             }
             if(null != outerContainerId) { //有托盘
                 if(cancelPattern == CancalPattern.INSIDECONTAINER_CANCEL) {  //内部容器取消
-                    cacheManager.removeMapValue(CacheConstants.CONTAINER_STATISTIC, outerContainerId.toString());
                     cacheManager.remove(CacheConstants.SCAN_CONTAINER_QUEUE+outerContainerId.toString());
+                }
+                if(cancelPattern == CancalPattern.OUTERCONTAINER_CANCEL){
+                    cacheManager.removeMapValue(CacheConstants.CONTAINER_STATISTIC, outerContainerId.toString());
                 }
             }
         }
@@ -3982,8 +3988,10 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                  }
                 if(null != outerContainerId) {
                     if(cancelPattern == CancalPattern.INSIDECONTAINER_CANCEL) {  //内部容器取消
-                       cacheManager.removeMapValue(CacheConstants.CONTAINER_STATISTIC, outerContainerId.toString());
                        cacheManager.remove(CacheConstants.SCAN_CONTAINER_QUEUE+outerContainerId.toString());
+                    }
+                    if(cancelPattern == CancalPattern.OUTERCONTAINER_CANCEL){
+                        cacheManager.removeMapValue(CacheConstants.CONTAINER_STATISTIC, outerContainerId.toString());
                     }
                 }
         }
