@@ -175,7 +175,7 @@ public interface PoAsnArchivDao extends BaseDao<WhPo, Long> {
     /**
      * 删除仓库whpoSn信息
      * 
-     * @param poid
+     * @param asnid
      * @return
      */
     int deleteAsnSn(@Param("asnid") Long asnid, @Param("ouid") Long ouid);
