@@ -5153,7 +5153,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             whSkuInventoryDao.delete(invDelete.getId());
                             insertGlobalLog(GLOBAL_LOG_DELETE, invDelete, ouId, userId, null, null);
                             
-                            Double count = 1.0;
+//                            Double count = 1.0;
                             //先添加后删除sn
                             for (WhSkuInventorySnCommand snCmd : snList) {
                                 if(invCmd.getUuid().equals(snCmd.getUuid())) {
@@ -5165,10 +5165,10 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                     insertGlobalLog(GLOBAL_LOG_INSERT, sn, ouId, userId, null, null);
                                     // 记录SN日志
                                     insertSkuInventorySnLog(sn.getId(), ouId);
-                                    if(scanSkuQty.equals(count)) {
-                                        break;
-                                    }
-                                    count++;
+//                                    if(scanSkuQty.equals(count)) {
+//                                        break;
+//                                    }
+//                                    count++;
                                 }
                             }
                             
