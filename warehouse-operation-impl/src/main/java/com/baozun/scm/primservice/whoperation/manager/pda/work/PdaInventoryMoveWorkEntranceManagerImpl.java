@@ -12,25 +12,25 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import com.baozun.scm.primservice.whoperation.command.pda.work.PickingWorkCommand;
+import com.baozun.scm.primservice.whoperation.command.pda.work.InventoryMoveWorkCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
-import com.baozun.scm.primservice.whoperation.dao.warehouse.WhFunctionPickingDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhFunctionInventoryMoveDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhLocationDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhWorkDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.auth.OperPrivilegeManager;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Location;
-import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionPicking;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionInventoryMove;
 
-@Service("pdaPickingWorkEntranceManager")
+@Service("pdaInventoryMoveWorkEntranceManager")
 @Transactional
-public class PdaPickingWorkEntranceManagerImpl extends BaseManagerImpl implements PdaPickingWorkEntranceManager {
+public class PdaInventoryMoveWorkEntranceManagerImpl extends BaseManagerImpl implements PdaInventoryMoveWorkEntranceManager {
 
     @Autowired
-    private WhFunctionPickingDao whFunctionPickingDao;
+    private WhFunctionInventoryMoveDao whFunctionInventoryMoveDao;
 
     @Autowired
     private WhLocationDao whLocationDao;
@@ -43,7 +43,7 @@ public class PdaPickingWorkEntranceManagerImpl extends BaseManagerImpl implement
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public PickingWorkCommand retrievePickingWorkList(PickingWorkCommand command, Page page, Sort[] sorts, Map<String, Object> param) {
+    public InventoryMoveWorkCommand retrieveInventoryMoveWorkList(InventoryMoveWorkCommand command, Page page, Sort[] sorts, Map<String, Object> param) {
         Boolean isLastPage = false;
         Long userId = command.getUserId();
         Long ouId = command.getOuId();
@@ -57,7 +57,7 @@ public class PdaPickingWorkEntranceManagerImpl extends BaseManagerImpl implement
             page.setSize(cnt);
             isLastPage = true;
         }
-        param.put("category", "PICKING");
+        param.put("category", "INVENTROY_MOVE");
         param.put("userId", userId);
         param.put("ouId", ouId);
 
@@ -70,26 +70,10 @@ public class PdaPickingWorkEntranceManagerImpl extends BaseManagerImpl implement
         if (StringUtils.hasText(command.getContainerCode())) {
             param.put("containerCode", command.getContainerCode());
         }
-        if (StringUtils.hasText(command.getOutBound())) {
-            param.put("batch", command.getOutBound());
-        }
-        if (StringUtils.hasText(command.getWaveCode())) {
-            param.put("waveCode", command.getWaveCode());
-        }
-        if (StringUtils.hasText(command.getOutBoundBox())) {
-            param.put("outBoundBox", command.getOutBoundBox());
-        }
-        // page.setSize(maxObtainWorkQty.intValue());
         Pagination<WhWorkCommand> workList = privilegeControl(page, sorts, param);
         if (isLastPage) {
             workList.setTotalPages(workList.getCurrentPage());
         }
-        /*
-         * List<WhWorkCommand> list = workList.getItems(); if (null != list && !list.isEmpty()) {
-         * for (WhWorkCommand c : list) {
-         * c.setUrl("/pda/warehouse/work/pdaReplenishment/isWorkStatus?workId=" + c.getId() +
-         * "&functionId=" + command.getFuncId()); } }
-         */
 
         if (null != param.get("scanLocCode")) {
             String locCode = param.get("scanLocCode").toString();
@@ -103,8 +87,8 @@ public class PdaPickingWorkEntranceManagerImpl extends BaseManagerImpl implement
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public PickingWorkCommand getObtainWorkWay(PickingWorkCommand command, Long funcId, Long ouId) {
-        WhFunctionPicking picking = whFunctionPickingDao.findByFunctionIdExt(ouId, funcId);
+    public InventoryMoveWorkCommand getObtainWorkWay(InventoryMoveWorkCommand command, Long funcId, Long ouId) {
+        WhFunctionInventoryMove picking = whFunctionInventoryMoveDao.findByFunctionIdExt(ouId, funcId);
         if (null != picking) {
             String obtainWorkWays = picking.getObtainWorkWay();
             if (StringUtils.hasText(obtainWorkWays)) {
@@ -119,15 +103,6 @@ public class PdaPickingWorkEntranceManagerImpl extends BaseManagerImpl implement
                             break;
                         case Constants.CONTAINER_CODE:
                             command.setScanContainerCode(true);
-                            break;
-                        case Constants.OUT_BOUND:
-                            command.setScanOutBound(true);
-                            break;
-                        case Constants.WAVE_CODE:
-                            command.setScanWaveCode(true);
-                            break;
-                        case Constants.OUT_BOUND_BOX:
-                            command.setScanOutBoundBox(true);
                             break;
                         default:
                             throw new BusinessException("没有获取方法");
@@ -145,7 +120,7 @@ public class PdaPickingWorkEntranceManagerImpl extends BaseManagerImpl implement
         return command;
     }
 
-    private Pagination<WhWorkCommand> compensateStep(String locCode, PickingWorkCommand command, Page page, Sort[] sorts, Map<String, Object> param) {
+    private Pagination<WhWorkCommand> compensateStep(String locCode, InventoryMoveWorkCommand command, Page page, Sort[] sorts, Map<String, Object> param) {
         Location location = this.whLocationDao.findLocationByCode(locCode, Long.parseLong(param.get("ouId").toString()));
         Integer pickSort = Integer.parseInt(location.getPickSort());
         Long workAreaId = location.getWorkAreaId();

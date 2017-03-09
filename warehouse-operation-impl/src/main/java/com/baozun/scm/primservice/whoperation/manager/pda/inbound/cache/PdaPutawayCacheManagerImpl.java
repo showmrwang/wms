@@ -3902,10 +3902,17 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
             if(cancelPattern == CancalPattern.INSIDECONTAINER_CANCEL){ //内部容器取消
                 cacheManager.remove(CacheConstants.SCAN_CONTAINER_QUEUE + outerContainerId.toString());
             }
+            if(cancelPattern == CancalPattern.SCAN_LOCATION_CANCEL){
+                 if(isRecommendFail == true){ //推荐失败
+                       cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY_STATISTIC,outerContainerId.toString());
+                       cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY, outerContainerId.toString());
+                 }
+            }
             if(cancelPattern == CancalPattern.TIP_LOCATION_CANCEL){  //提示库位取消清楚统计缓存
-                cacheManager.remove(CacheConstants.SCAN_CONTAINER_QUEUE + outerContainerId.toString());
-                cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY_STATISTIC,outerContainerId.toString());
-                cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY, outerContainerId.toString());
+                if(isRecommendFail == false){ //推荐成功
+                    cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY_STATISTIC,outerContainerId.toString());
+                    cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY, outerContainerId.toString());
+                }
             }
             if(cancelPattern == CancalPattern.OUTERCONTAINER_CANCEL){
                 if(null != outerContainerId) { 
@@ -3928,13 +3935,19 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                 }
                 cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + insideContainerId.toString());
             }
-            if(cancelPattern == CancalPattern.SCAN_LOCATION_CANCEL){ //扫描库位取消
-                cacheManager.remove(CacheConstants.SCAN_CONTAINER_QUEUE + insideContainerId.toString());
-            }
-            if(cancelPattern == CancalPattern.TIP_LOCATION_CANCEL){  //提示库位取消
-                cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY_STATISTIC,insideContainerId.toString());
-                cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY, insideContainerId.toString());
-            }
+                if(cancelPattern == CancalPattern.SCAN_LOCATION_CANCEL){ //扫描库位取消
+                    if(isRecommendFail == true){ //推荐失败
+                        cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY_STATISTIC,insideContainerId.toString());
+                        cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY, insideContainerId.toString());
+                    }
+                   
+                }
+                if(cancelPattern == CancalPattern.TIP_LOCATION_CANCEL){  //提示库位取消
+                    if(isRecommendFail == false){ //推荐成功
+                        cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY_STATISTIC,insideContainerId.toString());
+                        cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY, insideContainerId.toString());
+                    }
+                }
             if(null != outerContainerId) { //有托盘
                 if(cancelPattern == CancalPattern.INSIDECONTAINER_CANCEL) {  //内部容器取消
                     cacheManager.remove(CacheConstants.SCAN_CONTAINER_QUEUE+outerContainerId.toString());
