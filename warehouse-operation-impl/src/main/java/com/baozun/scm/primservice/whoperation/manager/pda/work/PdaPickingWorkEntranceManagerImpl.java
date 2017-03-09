@@ -60,6 +60,25 @@ public class PdaPickingWorkEntranceManagerImpl extends BaseManagerImpl implement
         param.put("category", "PICKING");
         param.put("userId", userId);
         param.put("ouId", ouId);
+
+        if (StringUtils.hasText(command.getWorkCode())) {
+            param.put("workCode", command.getWorkCode());
+        }
+        if (StringUtils.hasText(command.getLocCode())) {
+            param.put("locCode", command.getLocCode());
+        }
+        if (StringUtils.hasText(command.getContainerCode())) {
+            param.put("containerCode", command.getContainerCode());
+        }
+        if (StringUtils.hasText(command.getOutBound())) {
+            param.put("batch", command.getOutBound());
+        }
+        if (StringUtils.hasText(command.getWaveCode())) {
+            param.put("waveCode", command.getWaveCode());
+        }
+        if (StringUtils.hasText(command.getOutBoundBox())) {
+            param.put("outBoundBox", command.getOutBoundBox());
+        }
         // page.setSize(maxObtainWorkQty.intValue());
         Pagination<WhWorkCommand> workList = privilegeControl(page, sorts, param);
         if (isLastPage) {
