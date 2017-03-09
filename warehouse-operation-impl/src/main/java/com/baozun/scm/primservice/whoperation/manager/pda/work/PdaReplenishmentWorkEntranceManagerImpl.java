@@ -75,8 +75,23 @@ public class PdaReplenishmentWorkEntranceManagerImpl extends BaseManagerImpl imp
             page.setSize(cnt);
             isLastPage = true;
         }
+        param.put("category", "REPLENISHMENT");
         param.put("userId", userId);
         param.put("ouId", ouId);
+
+        if (StringUtils.hasText(command.getWorkCode())) {
+            param.put("workCode", command.getWorkCode());
+        }
+        if (StringUtils.hasText(command.getLocCode())) {
+            param.put("locCode", command.getLocCode());
+        }
+        if (StringUtils.hasText(command.getContainerCode())) {
+            param.put("containerCode", command.getContainerCode());
+        }
+        if (StringUtils.hasText(command.getWaveCode())) {
+            param.put("waveCode", command.getWaveCode());
+        }
+
         // page.setSize(maxObtainWorkQty.intValue());
         Pagination<WhWorkCommand> workList = privilegeControl(page, sorts, param);
         if (isLastPage) {
