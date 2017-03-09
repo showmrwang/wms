@@ -34,6 +34,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				insert into t_wh_po_sn_archiv${sysDate} (${whPoSnInsert})
 				select ${whPoSnInsert} from t_wh_po_sn where po_line_id in (select id from t_wh_po_line where po_id = #{poid})
 	</insert>
+	
 	<!-- 删除集团/仓库bi/whpo信息 -->
 	<delete id="deletePo" parameterType="map">
 			delete from ${tableName} where id = #{poid}
