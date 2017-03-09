@@ -4990,7 +4990,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                  sn.setId(null);
                                  sn.setUuid(inv.getUuid());
                                  whSkuInventorySnDao.insert(sn);
-                                 insertGlobalLog(GLOBAL_LOG_INSERT, sn, ouId, userId, null, null);
+//                                 insertGlobalLog(GLOBAL_LOG_INSERT, sn, ouId, userId, null, null);
                                  // 记录SN日志
                                  insertSkuInventorySnLog(sn.getId(), ouId);
                                  if(scanSkuQty.equals(count)) {
