@@ -436,7 +436,7 @@ public class InventoryStatisticManagerImpl extends BaseManagerImpl implements In
                     log.error("asn is null error! containerCode is:[{}], logId is:[{}]", containerCode, logId);
                     throw new BusinessException(ErrorCodes.COMMON_ASN_IS_NULL_ERROR, new Object[] {asnCode});
                 }
-                if (PoAsnStatus.ASN_RCVD_FINISH != asn.getStatus() && PoAsnStatus.ASN_RCVD != asn.getStatus()) {
+                if (PoAsnStatus.ASN_RCVD_FINISH != asn.getStatus() && PoAsnStatus.ASN_RCVD != asn.getStatus() && PoAsnStatus.ASN_CLOSE != asn.getStatus()) {
                     log.error("asn status error! containerCode is:[{}], logId is:[{}]", containerCode, logId);
                     throw new BusinessException(ErrorCodes.COMMON_ASN_STATUS_ERROR, new Object[] {asnCode});
                 }
@@ -974,7 +974,7 @@ public class InventoryStatisticManagerImpl extends BaseManagerImpl implements In
                 Map<Long, Set<String>> insideContainerSkuAttrIds = new HashMap<Long, Set<String>>();// 内部容器唯一sku(skuId|库存装填|库存类型|生产日期|失效日期|库存属性1|库存属性2|库存属性3|库存属性4|库存属性51|)
                 Map<Long, Map<String, Long>> insideContainerSkuAttrIdsQty = new HashMap<Long, Map<String, Long>>();// 内部容器唯一sku总件数
                 Map<Long, Map<Long, Set<String>>> insideContainerLocSkuAttrIds = new HashMap<Long, Map<Long, Set<String>>>();   /** 内部容器推荐库位对应唯一sku及残次条码 */
-                Map<Long, Set<String>> locSkuAttrIds = new HashMap<Long, Set<String>>();
+//                Map<Long, Set<String>> locSkuAttrIds = new HashMap<Long, Set<String>>();
                 /** 内部容器唯一sku对应所有残次条码 和sn*/
                 Map<Long, Map<String, Set<String>>> insideContainerSkuAttrIdsSnDefect = new HashMap<Long, Map<String, Set<String>>>(); //内部容器内唯一sku对应所有sn及残次条码
                 Double outerContainerWeight = 0.0;
@@ -1023,7 +1023,7 @@ public class InventoryStatisticManagerImpl extends BaseManagerImpl implements In
                             log.error("asn is null error! containerCode is:[{}], logId is:[{}]", containerCode, logId);
                             throw new BusinessException(ErrorCodes.COMMON_ASN_IS_NULL_ERROR, new Object[] {asnCode});
                         }
-                        if (PoAsnStatus.ASN_RCVD_FINISH != asn.getStatus() && PoAsnStatus.ASN_RCVD != asn.getStatus()) {
+                        if (PoAsnStatus.ASN_RCVD_FINISH != asn.getStatus() && PoAsnStatus.ASN_RCVD != asn.getStatus() && PoAsnStatus.ASN_CLOSE != asn.getStatus()) {
                             pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(containerCmd, ouId, logId);
                             log.error("asn status error! containerCode is:[{}], logId is:[{}]", containerCode, logId);
                             throw new BusinessException(ErrorCodes.COMMON_ASN_STATUS_ERROR, new Object[] {asnCode});
@@ -1223,10 +1223,10 @@ public class InventoryStatisticManagerImpl extends BaseManagerImpl implements In
                             }
                         }
                         skuAttrIds.add(skuAttrId);    //所有唯一的sku(包含库存属性)
-                        if(null != locationId) {
-                            locSkuAttrIds.put(locationId, skuAttrIds);
-                        }
-                        insideContainerLocSkuAttrIds.put(icId, locSkuAttrIds);
+//                        if(null != locationId) {
+//                            locSkuAttrIds.put(locationId, skuAttrIds);
+//                        }
+//                        insideContainerLocSkuAttrIds.put(icId, locSkuAttrIds);
                         Long stroeId = invCmd.getStoreId();
                         if (null != stroeId) {
                             storeIds.add(stroeId);  //统计所有店铺
@@ -1304,6 +1304,28 @@ public class InventoryStatisticManagerImpl extends BaseManagerImpl implements In
                                         String defectBar = snCmd.getDefectWareBarcode();
                                         String sn = snCmd.getSn();
                                         snDefects.add(SkuCategoryProvider.concatSkuAttrId(sn, defectBar));
+                                        if (null != locationId) {
+                                          if (null != insideContainerLocSkuAttrIds.get(icId)) {
+                                              Map<Long, Set<String>> locSkuAttrIds = insideContainerLocSkuAttrIds.get(icId);
+                                              Set<String> allSkuAttrIds = locSkuAttrIds.get(locationId);
+                                              if (null != allSkuAttrIds) {
+                                                  allSkuAttrIds.add(SkuCategoryProvider.concatSkuAttrId(SkuCategoryProvider.getSkuAttrIdByInv(invCmd), sn, defectBar));
+                                                  locSkuAttrIds.put(locationId, allSkuAttrIds);
+                                                  insideContainerLocSkuAttrIds.put(icId, locSkuAttrIds);
+                                              } else {
+                                                  allSkuAttrIds = new HashSet<String>();
+                                                  allSkuAttrIds.add(SkuCategoryProvider.concatSkuAttrId(SkuCategoryProvider.getSkuAttrIdByInv(invCmd), sn, defectBar));
+                                                  locSkuAttrIds.put(locationId, allSkuAttrIds);
+                                                  insideContainerLocSkuAttrIds.put(icId, locSkuAttrIds);
+                                              }
+                                          } else {
+                                              Set<String> allSkuAttrIds = new HashSet<String>();
+                                              allSkuAttrIds.add(SkuCategoryProvider.concatSkuAttrId(SkuCategoryProvider.getSkuAttrIdByInv(invCmd), sn, defectBar));
+                                              Map<Long, Set<String>> locSkuAttrIds = new HashMap<Long, Set<String>>();
+                                              locSkuAttrIds.put(locationId, allSkuAttrIds);
+                                              insideContainerLocSkuAttrIds.put(icId, locSkuAttrIds);
+                                          }
+                                      }
                                     }
                                 }
                             }

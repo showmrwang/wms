@@ -57,6 +57,7 @@ public class PdaPickingWorkEntranceManagerImpl extends BaseManagerImpl implement
             page.setSize(cnt);
             isLastPage = true;
         }
+        param.put("category", "PICKING");
         param.put("userId", userId);
         param.put("ouId", ouId);
         // page.setSize(maxObtainWorkQty.intValue());

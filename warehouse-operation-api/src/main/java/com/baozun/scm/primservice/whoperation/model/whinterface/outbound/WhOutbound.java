@@ -52,9 +52,9 @@ public class WhOutbound extends BaseModel {
 	/** 下单时间 */
 	private java.util.Date orderTime;
 	/** 商品数量 */
-	private Long qty;
+	private Double qty;
 	/** 订单总金额 */
-	private Long amt;
+	private Double amt;
 	/** 上位系统单据类型 */
 	private java.lang.String epistaticSystemsOrderType;
 	/** 出库箱类型 */
@@ -68,9 +68,9 @@ public class WhOutbound extends BaseModel {
 	/** 是否COD 默认否 */
 	private java.lang.Boolean isCod;
 	/** COD金额 */
-	private Long codAmt;
+	private Double codAmt;
 	/** 保价金额 */
-	private Long insuranceCoverage;
+	private Double insuranceCoverage;
 	/** 数据来源 区分上位系统 */
 	private java.lang.String dataSource;
 	/** 仓库编码 */
@@ -149,16 +149,16 @@ public class WhOutbound extends BaseModel {
     public void setOrderTime(java.util.Date orderTime) {
         this.orderTime = orderTime;
     }
-    public Long getQty() {
+    public Double getQty() {
         return qty;
     }
-    public void setQty(Long qty) {
+    public void setQty(Double qty) {
         this.qty = qty;
     }
-    public Long getAmt() {
+    public Double getAmt() {
         return amt;
     }
-    public void setAmt(Long amt) {
+    public void setAmt(Double amt) {
         this.amt = amt;
     }
     public java.lang.String getEpistaticSystemsOrderType() {
@@ -197,16 +197,16 @@ public class WhOutbound extends BaseModel {
     public void setIsCod(java.lang.Boolean isCod) {
         this.isCod = isCod;
     }
-    public Long getCodAmt() {
+    public Double getCodAmt() {
         return codAmt;
     }
-    public void setCodAmt(Long codAmt) {
+    public void setCodAmt(Double codAmt) {
         this.codAmt = codAmt;
     }
-    public Long getInsuranceCoverage() {
+    public Double getInsuranceCoverage() {
         return insuranceCoverage;
     }
-    public void setInsuranceCoverage(Long insuranceCoverage) {
+    public void setInsuranceCoverage(Double insuranceCoverage) {
         this.insuranceCoverage = insuranceCoverage;
     }
     public java.lang.String getDataSource() {

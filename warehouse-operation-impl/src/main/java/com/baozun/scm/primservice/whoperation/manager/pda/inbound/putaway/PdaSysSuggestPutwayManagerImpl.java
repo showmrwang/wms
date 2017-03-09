@@ -34,16 +34,13 @@ import com.baozun.scm.primservice.whoperation.command.rule.RuleExportCommand;
 import com.baozun.scm.primservice.whoperation.command.sku.SkuRedisCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ShelveRecommendRuleCommand;
-import com.baozun.scm.primservice.whoperation.command.warehouse.UomCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuLocationCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
 import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
-import com.baozun.scm.primservice.whoperation.constant.CancalPattern;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
-import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
 import com.baozun.scm.primservice.whoperation.constant.WhContainerType;
 import com.baozun.scm.primservice.whoperation.constant.WhPutawayPatternDetailType;
 import com.baozun.scm.primservice.whoperation.constant.WhPutawayPatternType;
@@ -79,8 +76,6 @@ import com.baozun.scm.primservice.whoperation.manager.warehouse.WhFunctionPutAwa
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryLogManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
-import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
-import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container2ndCategory;
@@ -90,11 +85,8 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.Location;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionPutAway;
-import com.baozun.scm.primservice.whoperation.model.warehouse.carton.WhCarton;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryTobefilled;
 import com.baozun.scm.primservice.whoperation.util.StringUtil;
-import com.baozun.scm.primservice.whoperation.util.formula.SimpleCubeCalculator;
-import com.baozun.scm.primservice.whoperation.util.formula.SimpleWeightCalculator;
 
 
 /**
@@ -2804,50 +2796,6 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
           Long locationId = loc.getId();
           Double scanQty = skuCmd.getScanSkuQty();
           String barCode = skuCmd.getBarCode();
-          // 查询库位上已有商品
-          List<WhSkuInventoryCommand> locationSkuList = whSkuInventoryDao.findWhSkuInvCmdByLocation(ouId,locationId);
-          List<WhSkuInventoryCommand> whskuList = new ArrayList<WhSkuInventoryCommand>();
-          List<WhSkuInventoryCommand> list = splitPutwayCacheInventory(icCmd,ouId,logId);
-          for(WhSkuInventoryCommand whSkuInvCmd:list) {
-              String skuInvAttrId = SkuCategoryProvider.getSkuAttrIdByInv(whSkuInvCmd);
-              String skuAttrId = SkuCategoryProvider.concatSkuAttrId(skuCmd.getId(), skuCmd.getInvType(),skuCmd.getInvBatchNumber(),skuCmd.getInvCountryOfOrigin(), skuCmd.getInvStatus(), skuCmd.getInvMfgDate(), skuCmd.getInvExpDate(), skuCmd.getInvAttr1(), skuCmd.getInvAttr2(), skuCmd.getInvAttr3(),
-                  skuCmd.getInvAttr4(), skuCmd.getInvAttr5(), skuCmd.getSkuSn(), skuCmd.getSkuDefect());
-              if(skuInvAttrId.equals(skuAttrId)) {
-                  for(int i=0;i<Integer.valueOf(scanQty.toString());i++) {
-                      list.add(whSkuInvCmd);
-                  }
-                  break;
-              }
-          }
-          //如果是多次扫sn，则跳过
-          if(!(null != isScanSkuSn && isScanSkuSn == true)) {
-              if(isRecommendFail) { //推荐库位失败的情况,绑定库位
-                  //缓存容器库存
-                  whSkuInventoryManager.manMadeBinding(outerContainerId, insideContainerId, warehouse, locationId, putawayPatternDetailType, ouId, userId, insideContainerCode, scanQty);
-              }else{
-                  //手动绑定库位
-                  List<WhSkuInventoryTobefilled> listTobeFilled = whSkuInventoryTobefilledDao.findWhSkuInventoryTobefilled(outerContainerId, insideContainerId, ouId);
-                  for(WhSkuInventoryTobefilled skuInvTobeFilled :listTobeFilled) {
-                      skuInvTobeFilled.setLocationId(locationId);  //中心设置库位
-                      //先删除待入库数据，在添加
-                      Long tobeFilledId = skuInvTobeFilled.getId();
-                      whSkuInventoryTobefilledDao.deleteByExt(tobeFilledId, ouId);
-                      //重新插入
-                      skuInvTobeFilled.setId(null);  //id置空
-                      skuInvTobeFilled.setLastModifyTime(new Date());
-                      whSkuInventoryTobefilledDao.insert(skuInvTobeFilled);
-                  }
-              }
-              // 累加容器，容器内sku商品、库位上已有容器，商品重量， 判断是否<=库位承重 *
-              Boolean result = this.IsLocationBearWeight(insideContainerId, locationSkuList, whskuList,putawayPatternDetailType,locationId, ouId);
-              if(result) {//超重时,更换库位
-                  srCmd = this.reminderLocation(isCmd, srCmd, ouId);
-                  srCmd.setIsNeedScanNewLocation(true);
-                  return srCmd;
-              }else{
-                  srCmd.setIsNeedScanNewLocation(false);
-              }
-          }
           // 1.获取功能配置
           WhFunctionPutAway putawyaFunc = whFunctionPutAwayManager.findWhFunctionPutAwayByFunctionId(funcId, ouId, logId);
           if (null == putawyaFunc) {
@@ -2907,6 +2855,50 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
               log.error("sku is not found error, logId is:[{}]", logId);
               throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
           }
+          // 查询库位上已有商品
+          List<WhSkuInventoryCommand> locationSkuList = whSkuInventoryDao.findWhSkuInvCmdByLocation(ouId,locationId);
+          List<WhSkuInventoryCommand> whskuList = new ArrayList<WhSkuInventoryCommand>();
+          List<WhSkuInventoryCommand> list = splitPutwayCacheInventory(icCmd,ouId,logId);
+          for(WhSkuInventoryCommand whSkuInvCmd:list) {
+              String skuInvAttrId = SkuCategoryProvider.getSkuAttrIdByInv(whSkuInvCmd);
+              String skuAttrId = SkuCategoryProvider.concatSkuAttrId(skuCmd.getId(), skuCmd.getInvType(),skuCmd.getInvBatchNumber(),skuCmd.getInvCountryOfOrigin(), skuCmd.getInvStatus(), skuCmd.getInvMfgDate(), skuCmd.getInvExpDate(), skuCmd.getInvAttr1(), skuCmd.getInvAttr2(), skuCmd.getInvAttr3(),
+                  skuCmd.getInvAttr4(), skuCmd.getInvAttr5(), skuCmd.getSkuSn(), skuCmd.getSkuDefect());
+              if(skuInvAttrId.equals(skuAttrId)) {
+                  for(int i=0;i<Integer.valueOf(scanQty.toString());i++) {
+                      list.add(whSkuInvCmd);
+                  }
+                  break;
+              }
+          }
+          //如果是多次扫sn，则跳过
+          if(!(null != isScanSkuSn && isScanSkuSn == true)) {
+              if(isRecommendFail) { //推荐库位失败的情况,绑定库位
+                  //缓存容器库存
+                  whSkuInventoryManager.manMadeBinding(outerContainerId, insideContainerId, warehouse, locationId, putawayPatternDetailType, ouId, userId, insideContainerCode, skuCmd.getScanSkuQty());
+              }else{
+                  //手动绑定库位
+                  List<WhSkuInventoryTobefilled> listTobeFilled = whSkuInventoryTobefilledDao.findWhSkuInventoryTobefilled(outerContainerId, insideContainerId, ouId);
+                  for(WhSkuInventoryTobefilled skuInvTobeFilled :listTobeFilled) {
+                      skuInvTobeFilled.setLocationId(locationId);  //中心设置库位
+                      //先删除待入库数据，在添加
+                      Long tobeFilledId = skuInvTobeFilled.getId();
+                      whSkuInventoryTobefilledDao.deleteByExt(tobeFilledId, ouId);
+                      //重新插入
+                      skuInvTobeFilled.setId(null);  //id置空
+                      skuInvTobeFilled.setLastModifyTime(new Date());
+                      whSkuInventoryTobefilledDao.insert(skuInvTobeFilled);
+                  }
+              }
+              // 累加容器，容器内sku商品、库位上已有容器，商品重量， 判断是否<=库位承重 *
+              Boolean result = this.IsLocationBearWeight(insideContainerId, locationSkuList, whskuList,putawayPatternDetailType,locationId, ouId);
+              if(result) {//超重时,更换库位
+                  srCmd = this.reminderLocation(isCmd, srCmd, ouId);
+                  srCmd.setIsNeedScanNewLocation(true);
+                  return srCmd;
+              }else{
+                  srCmd.setIsNeedScanNewLocation(false);
+              }
+          }
           CheckScanSkuResultCommand cssrCmd = null;
 //          if(isRecommendFail==true|| isNotUser == true) {  //推荐库位失败,或者不使用推荐库位(isRecommendFail=false，时推荐库位成功，isRecommendFail=true时，推荐库位失败,isNotUser=true，不使用推荐库位，isNotUser=false时，使用推荐库位)
               cssrCmd = pdaPutawayCacheManager.sysSuggestSplitContainerPutawayTipSkuOrContainer(tipLocationId,isCancel,containerSkuAttrIdsQty,isRecommendFail,locSkuAttrIds,scanPattern,ocCmd, icCmd, insideContainerIds, insideContainerSkuAttrIdsQty, insideContainerSkuAttrIdsSnDefect, insideContainerSkuAttrIds, skuCmd, logId);
@@ -2954,7 +2946,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
                       log.error("sku is not found error, logId is:[{}]", logId);
                       throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
                   }
-                  this.splitCacheScanSku(insideContainerId, locationId, tipSkuAttrId);   //  缓存
+                  this.splitCacheScanSku(insideContainerId, tipLocationId, tipSkuAttrId);   //  缓存
                   tipSkuDetailAspect(isRecommendFail,srCmd, tipSkuAttrId, locSkuAttrIds, skuAttrIdsQty, logId);
                   srCmd.setTipSkuBarcode(skuCmd.getBarCode());
               }
