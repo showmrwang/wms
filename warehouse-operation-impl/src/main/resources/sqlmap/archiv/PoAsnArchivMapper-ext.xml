@@ -1,0 +1,412 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.archiv.PoAsnArchivDao">
+	<resultMap id="WhPoResultExt" type="com.baozun.scm.primservice.whoperation.model.poasn.WhPo">
+	</resultMap>
+	<!-- 备份集团下bipo信息 -->
+	<insert id="archivBiPo"  parameterType="map" 	 flushCache="true">
+				insert into t_bi_po_archiv${sysDate} (${biPoInsert}) 
+				select 	${biPoSelect} from t_bi_po where id = #{poid} 
+	</insert>
+	<insert id="archivBiPoLine"  parameterType="map" 	 flushCache="true">
+				insert into t_bi_po_line_archiv${sysDate} (${biPoLineInsert})
+				select ${biPoLineInsert} from t_bi_po_line where po_id = #{poid}
+	</insert>
+	<insert id="archivBiPoSn"  parameterType="map"   flushCache="true">
+				insert into t_bi_po_sn_archiv${sysDate} (${biPoSnInsert})
+				select ${biPoSnInsert} from t_bi_po_sn where po_line_id in (select id from t_bi_po_line where po_id = #{poid})
+	</insert>
+	
+	<!-- 备份集团whpo信息 -->
+    <insert id="archivWhPo"  parameterType="map" flushCache="true">
+				insert into t_wh_po_archiv${sysDate} (${whPoInsert},archiv_time) 
+				select 	${whPoInsert},now() from t_wh_po where id = #{poid} 
+	</insert>
+    <insert id="archivWhPoLine"  parameterType="map" flushCache="true">
+				insert into t_wh_po_line_archiv${sysDate} (${whPoLineInsert})
+				select ${whPoLineInsert} from t_wh_po_line where po_id = #{poid}
+	</insert>
+    <insert id="archivWhPoSn"  parameterType="map" flushCache="true">
+				insert into t_wh_po_sn_archiv${sysDate} (${whPoSnInsert})
+				select ${whPoSnInsert} from t_wh_po_sn where po_line_id in (select id from t_wh_po_line where po_id = #{poid})
+	</insert>
+	<!-- 删除集团/仓库bi/whpo信息 -->
+	<delete id="deletePo" parameterType="map">
+			delete from ${tableName} where id = #{poid}
+			<if test="ouid!=null">
+				and ou_id = #{ouid}
+			</if>
+	 </delete>
+	<delete id="deletePoLine" parameterType="map">
+			delete from ${tableName} where po_id = #{poid}
+			<if test="ouid!=null">
+				and ou_id = #{ouid}
+			</if>
+	 </delete>
+	<delete id="deletePoSn" parameterType="map">
+			delete from ${tableName} where po_line_id in (select id from ${lineTableName} where po_id = #{poid}) 
+			<if test="ouid!=null">
+				and ou_id = #{ouid}
+			</if>
+	 </delete>
+	 
+	<!-- 删除仓库whasn信息 -->
+	<delete id="deleteAsn" parameterType="map">
+			delete from t_wh_asn where id = #{asnid} and ou_id = #{ouid}
+	 </delete>
+	<delete id="deleteAsnLine" parameterType="map">
+			delete from t_wh_asn_line where asn_id = #{asnid} and ou_id = #{ouid}
+	 </delete>
+	<delete id="deleteAsnSn" parameterType="map">
+			delete from t_wh_asn_sn where asn_line_id in (select id from t_wh_asn_line where asn_id = #{asnid}) and ou_id = #{ouid}
+	 </delete>
+	 
+	 <insert id="archivWhPoByShard" parameterType="com.baozun.scm.primservice.whoperation.model.poasn.WhPo"  
+		 flushCache="true">
+	    <![CDATA[
+	        INSERT INTO
+	        t_wh_po_archiv${sysDate} (
+	        	id,
+	        	po_code ,
+	        	ext_code ,
+	        	ext_po_code ,
+	        	ou_id ,
+	        	customer_id ,
+	        	store_id ,
+	        	supplier_id ,
+	        	logistics_provider ,
+	        	po_type ,
+	        	ext_po_type ,
+	        	status ,
+	        	is_iqc ,
+	        	po_date ,
+	        	eta ,
+	        	delivery_time ,
+	        	qty_planned ,
+	        	qty_rcvd ,
+	        	ctn_planned ,
+	        	ctn_rcvd ,
+	        	start_time ,
+	        	stop_time ,
+	        	inbound_time ,
+	        	is_wms ,
+	        	is_vmi ,
+	        	create_time ,
+	        	created_id ,
+	        	last_modify_time ,
+	        	modified_id ,
+	        	archiv_time ,
+	        	from_location ,
+	        	to_location
+	        ) VALUES (
+	            #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{poCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{extCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{extPoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{customerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{storeId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{supplierId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{logisticsProvider,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{poType,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+	        	#{extPoType,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+	        	#{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+	        	#{isIqc,javaType=java.lang.Boolean,jdbcType=BIT} ,
+	        	#{poDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+	        	#{eta,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+	        	#{deliveryTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+	        	#{qtyPlanned,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+	        	#{qtyRcvd,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+	        	#{ctnPlanned,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+	        	#{ctnRcvd,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+	        	#{startTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+	        	#{stopTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+	        	#{inboundTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+	        	#{isWms,javaType=java.lang.Boolean,jdbcType=BIT} ,
+	        	#{isVmi,javaType=java.lang.Boolean,jdbcType=BIT} ,
+	        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+	        	#{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+	        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{archivTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+	        	#{fromLocation,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{toLocation,javaType=java.lang.String,jdbcType=VARCHAR} 
+	        )
+	    ]]>
+		</insert>
+		
+	 <insert id="archivWhPoLineByShard" parameterType="com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine"  
+		 flushCache="true">
+	    <![CDATA[
+	      INSERT INTO
+	        t_wh_po_line_archiv${sysDate} (
+	        	id,
+	        	po_id ,
+	        	linenum ,
+	        	ext_line_num ,
+	        	sku_id ,
+	        	qty_planned ,
+	        	overshipped ,
+	        	available_qty ,
+	        	ctn_planned ,
+	        	qty_rcvd ,
+	        	ctn_rcvd ,
+	        	status ,
+	        	is_iqc ,
+	        	mfg_date ,
+	        	exp_date ,
+	        	valid_date ,
+	        	carton_no ,
+	        	batch_no ,
+	        	country_of_origin ,
+	        	inv_status ,
+	        	inv_type,
+	        	inv_attr1 ,
+	        	inv_attr2 ,
+	        	inv_attr3 ,
+	        	inv_attr4 ,
+	        	inv_attr5 ,
+	        	create_time ,
+	        	created_id ,
+	        	last_modify_time ,
+	        	modified_id ,
+	        	ou_id,
+	        	valid_date_uom
+	        ) VALUES (
+	        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{poId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{linenum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+	        	#{extLineNum,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{qtyPlanned,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+	        	#{overshipped,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+	        	#{availableQty,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+	        	#{ctnPlanned,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+	        	#{qtyRcvd,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+	        	#{ctnRcvd,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+	        	#{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+	        	#{isIqc,javaType=java.lang.Boolean,jdbcType=BIT} ,
+	        	#{mfgDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+	        	#{expDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+	        	#{validDate,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+	        	#{cartonNo,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{batchNo,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{countryOfOrigin,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{invStatus,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{invType,javaType=java.lang.String,jdbcType=VARCHAR},
+	        	#{invAttr1,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{invAttr2,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{invAttr3,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{invAttr4,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{invAttr5,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+	        	#{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+	        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{validDateUom,javaType=java.lang.String,jdbcType=VARCHAR}
+	        )
+	    ]]>
+		</insert>
+		
+	<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.poasn.WhPoSn"  
+		 flushCache="true">
+	    <![CDATA[
+	        INSERT INTO
+	        t_wh_po_sn_archiv${sysDate} (
+	            id,
+	        	po_line_id ,
+	        	sku_id ,
+	        	sn ,
+	        	create_time ,
+	        	created_id ,
+	        	last_modify_time ,
+	        	modified_id,
+	        	ou_id 
+	        ) VALUES (
+	        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{poLineId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{sn,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+	        	#{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+	        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT}
+	        )
+	    ]]>
+		</insert>
+	 
+	 <insert id="archivWhAsnByShard" parameterType="com.baozun.scm.primservice.whoperation.model.poasn.WhAsn" 
+		 flushCache="true">
+	    <![CDATA[
+	        INSERT INTO
+	        t_wh_asn_archiv${sysDate} (
+	        	id,
+	        	asn_code ,
+	        	asn_ext_code ,
+	        	po_id ,
+	        	ou_id ,
+	        	customer_id ,
+	        	store_id ,
+	        	po_date ,
+	        	eta ,
+	        	delivery_time ,
+	        	qty_planned ,
+	        	qty_rcvd ,
+	        	ctn_planned ,
+	        	ctn_rcvd ,
+	        	supplier_id ,
+	        	logistics_provider_id ,
+	        	logistics_provider ,
+	        	asn_type ,
+	        	status ,
+	        	is_iqc ,
+	        	start_time ,
+	        	stop_time ,
+	        	inbound_time ,
+	        	create_time ,
+	        	created_id ,
+	        	last_modify_time ,
+	        	modified_id,
+	        	po_ou_id ,
+	        	ext_code ,
+	        	urgent_status ,
+	        	archiv_time
+	        ) VALUES (
+	        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{asnCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{asnExtCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{poId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{customerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{storeId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{poDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+	        	#{eta,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+	        	#{deliveryTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        #{qtyPlanned,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+		        #{qtyRcvd,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+	        	#{ctnPlanned,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+	        	#{ctnRcvd,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+	        	#{supplierId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{logisticsProviderId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{logisticsProvider,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{asnType,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+	        	#{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+	        	#{isIqc,javaType=java.lang.Boolean,jdbcType=BIT} ,
+	        	#{startTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+	        	#{stopTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+	        	#{inboundTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+	        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+	        	#{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+	        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{poOuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{extCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{urgentStatus,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{archivTime,javaType=java.util.Date,jdbcType=TIMESTAMP}
+	        )
+	    ]]>
+		</insert>
+	 
+	<insert id="archivWhAsnLineByShard" parameterType="com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine" 
+		 flushCache="true">
+	    <![CDATA[
+	        INSERT INTO
+	        t_wh_asn_line_archiv${sysDate} (
+	        	id,
+	        	asn_id ,
+	        	po_line_id ,
+	        	po_linenum ,
+	        	sku_id ,
+	        	qty_planned ,
+	        	ctn_planned ,
+	        	qty_rcvd ,
+	        	ctn_rcvd ,
+	        	status ,
+	        	is_iqc ,
+	        	mfg_date ,
+	        	exp_date ,
+	        	valid_date ,
+	        	batch_no ,
+	        	country_of_origin ,
+	        	inv_status ,
+	        	inv_type,
+	        	inv_attr1 ,
+	        	inv_attr2 ,
+	        	inv_attr3 ,
+	        	inv_attr4 ,
+	        	inv_attr5 ,
+	        	create_time ,
+	        	created_id ,
+	        	last_modify_time ,
+	        	modified_id,
+	        	ou_id ,
+	        	valid_date_uom
+	        ) VALUES (
+	        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{asnId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{poLineId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{poLinenum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+	        	#{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        #{qtyPlanned,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+	        	#{ctnPlanned,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        #{qtyRcvd,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+	        	#{ctnRcvd,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+	        	#{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+	        	#{isIqc,javaType=java.lang.Boolean,jdbcType=BIT} ,
+	        	#{mfgDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+	        	#{expDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+	        	#{validDate,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+	        	#{batchNo,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{countryOfOrigin,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{invStatus,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{invType,javaType=java.lang.String,jdbcType=VARCHAR},
+	        	#{invAttr1,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{invAttr2,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{invAttr3,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{invAttr4,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{invAttr5,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+	        	#{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+	        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{validDateUom,javaType=java.lang.String,jdbcType=VARCHAR}
+	        )
+	    ]]>
+		</insert>
+		
+	<insert id="archivWhAsnSnByShard" parameterType="com.baozun.scm.primservice.whoperation.model.poasn.WhAsnSn"  
+		 flushCache="true">
+	    <![CDATA[
+	        INSERT INTO
+	        t_wh_asn_sn_archiv${sysDate} (
+	        	id,
+	        	asn_line_id ,
+	        	sku_id ,
+	        	sn ,
+	        	create_time ,
+	        	created_id ,
+	        	last_modify_time ,
+	        	modified_id,
+	        	ou_id 
+	        ) VALUES (
+	        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{asnLineId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{sn,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+	        	#{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+	        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+	        )
+	    ]]>
+		</insert>
+	 
+</mapper>

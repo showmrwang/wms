@@ -79,5 +79,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        and last_modify_time	<=  #{lastModifyTime}    
 		    ]]>
 		</update>
-	
+		
+	    <select id="findWhPoSnByPoLineId" resultMap="WhPoSnResultExt">
+    	select <include refid="whPoSnColumnsExt" />
+		    from 
+		    t_wh_po_sn
+			where 
+			po_line_id = #{polineid} and ou_id = #{ouid}
+    </select>
 </mapper>

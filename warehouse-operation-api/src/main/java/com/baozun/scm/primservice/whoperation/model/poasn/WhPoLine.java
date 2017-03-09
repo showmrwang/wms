@@ -98,6 +98,9 @@ public class WhPoLine extends BaseModel {
     /** 保质期单位 */
     private String validDateUom;
 
+    /** 当前月份 归档使用 */
+    private String sysDate;
+
     public String getInvType() {
         return invType;
     }
@@ -357,20 +360,28 @@ public class WhPoLine extends BaseModel {
         this.validDateUom = validDateUom;
     }
 
-	public String getExtLineNum() {
-		return extLineNum;
-	}
+    public String getExtLineNum() {
+        return extLineNum;
+    }
 
-	public void setExtLineNum(String extLineNum) {
-		this.extLineNum = extLineNum;
-	}
+    public void setExtLineNum(String extLineNum) {
+        this.extLineNum = extLineNum;
+    }
 
-	public String getCartonNo() {
-		return cartonNo;
-	}
+    public String getCartonNo() {
+        return cartonNo;
+    }
 
-	public void setCartonNo(String cartonNo) {
-		this.cartonNo = cartonNo;
-	}
+    public void setCartonNo(String cartonNo) {
+        this.cartonNo = cartonNo;
+    }
+
+    public String getSysDate() {
+        return sysDate;
+    }
+
+    public void setSysDate(String sysDate) {
+        this.sysDate = sysDate;
+    }
 
 }

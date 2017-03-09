@@ -95,6 +95,11 @@ public class WhAsn extends BaseModel {
     /** IT专用 */
     private String uuid;
 
+    /** 当前月份 用于归档 */
+    private String sysDate;
+    /** 归档时间 */
+    private Date archivTime;
+
     public String getLogisticsProvider() {
         return logisticsProvider;
     }
@@ -341,6 +346,22 @@ public class WhAsn extends BaseModel {
 
     public void setUrgentStatus(String urgentStatus) {
         this.urgentStatus = urgentStatus;
+    }
+
+    public String getSysDate() {
+        return sysDate;
+    }
+
+    public void setSysDate(String sysDate) {
+        this.sysDate = sysDate;
+    }
+
+    public Date getArchivTime() {
+        return archivTime;
+    }
+
+    public void setArchivTime(Date archivTime) {
+        this.archivTime = archivTime;
     }
 
 
