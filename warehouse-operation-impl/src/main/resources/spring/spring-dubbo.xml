@@ -104,6 +104,9 @@
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.pda.work.PdaReplenishmentWorkEntranceManager" ref="pdaReplenishmentWorkEntranceManager" />
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.pda.work.PdaReplenishmentPutawayManager" ref="pdaReplenishmentPutawayManager" />
 	
+	<!-- Pda库间移动 -->
+	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.pda.work.PdaInventoryMoveWorkEntranceManager" ref="pdaInventoryMoveWorkEntranceManager" />
+	
 	<!-- 业务规则配置 -->
    	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.WhDistributionPatternRuleManager"  ref="whDistributionPatternRuleManager" />
 	

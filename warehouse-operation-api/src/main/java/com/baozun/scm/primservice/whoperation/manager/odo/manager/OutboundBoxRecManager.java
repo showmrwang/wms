@@ -24,6 +24,7 @@ import com.baozun.scm.primservice.whoperation.command.odo.WhOdoOutBoundBoxComman
 import com.baozun.scm.primservice.whoperation.command.warehouse.Container2ndCategoryCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.UomCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container2ndCategory;
@@ -69,4 +70,24 @@ public interface OutboundBoxRecManager extends BaseManager {
     public List<WhOutInventoryboxRelationship> getGeneralRelationship(Long ouId);
 
     public void releaseOdoFromWave(Long waveId, Collection<Long> odoIds, String reason, Warehouse wh, String logId);
+
+    /**
+     *根据占用码查询库存
+     *
+     * @author mingwei.xie
+     * @param occupationCode
+     * @param ouId
+     * @return
+     */
+    public List<WhSkuInventoryCommand> findListByOccupationCode(String occupationCode, Long ouId);
+
+    /**
+     *根据占用码查询库存
+     *
+     * @author mingwei.xie
+     * @param occLineIdList
+     * @param ouId
+     * @return
+     */
+    public List<WhSkuInventoryCommand> findListByOccLineIdListOrderByPickingSort(List<Long> occLineIdList, Long ouId);
 }
