@@ -504,17 +504,17 @@ public final class Constants {
     /** 复核台推荐规则 */
     public static final String RULE_TYPE_CHECK_OPERATIONS_AREA = "CHECK_OPERATIONS_AREA";
     /** 工作号 */
-    public static final String WORK_CODE = "WORK_CODE";
+    public static final String WORK_CODE = "1";
     /** 库位号 */
-    public static final String LOC_CODE = "LOC_CODE";
+    public static final String LOC_CODE = "2";
     /** 容器号 */
-    public static final String CONTAINER_CODE = "CONTAINER_CODE";
+    public static final String CONTAINER_CODE = "3";
     /** 出库小批次 */
-    public static final String OUT_BOUND = "OUT_BOUND";
+    public static final String OUT_BOUND = "4";
     /** 波次号 */
-    public static final String WAVE_CODE = "WAVE_CODE";
+    public static final String WAVE_CODE = "5";
     /** 出库箱 */
-    public static final String OUT_BOUND_BOX = "OUT_BOUND_BOX";
+    public static final String OUT_BOUND_BOX = "6";
 
     /** 配置为原始库位 */
     public static final String FROM_LOCATION = "FROM_LOCATION";

@@ -47,9 +47,9 @@ public class WhPo extends BaseModel {
     /** 供应商ID */
     private Long supplierId;
     /** 来源地 */
-	private String fromLocation;
-	/** 目的地 */
-	private String toLocation;
+    private String fromLocation;
+    /** 目的地 */
+    private String toLocation;
     /** 运输商ID */
     private Long logisticsProviderId;
     /** 运输商Code */
@@ -57,7 +57,7 @@ public class WhPo extends BaseModel {
     /** PO单类型 */
     private Integer poType;
     /** 上位系统单据类型 */
-	private String extPoType;
+    private String extPoType;
     /** 状态 */
     private Integer status;
     /** 是否质检 1:是 0:否 */
@@ -87,7 +87,7 @@ public class WhPo extends BaseModel {
     /** 是否VMI收货单 1:是 0:否 */
     private Boolean isVmi;
     /** 数据来源 区分上位系统 */
-	private String dataSource;
+    private String dataSource;
     /** 创建时间 */
     private Date createTime;
     /** 创建人 */
@@ -100,6 +100,11 @@ public class WhPo extends BaseModel {
     private String uuid;
     /** 超收比例 */
     private Double overChageRate;
+
+    /** 当前月份 用于归档 */
+    private String sysDate;
+    /** 归档时间 */
+    private Date archivTime;
 
 
     public String getUuid() {
@@ -335,45 +340,61 @@ public class WhPo extends BaseModel {
         this.logisticsProvider = logisticsProvider;
     }
 
-	public String getFromLocation() {
-		return fromLocation;
-	}
+    public String getExtPoCode() {
+        return extPoCode;
+    }
 
-	public void setFromLocation(String fromLocation) {
-		this.fromLocation = fromLocation;
-	}
+    public void setExtPoCode(String extPoCode) {
+        this.extPoCode = extPoCode;
+    }
 
-	public String getToLocation() {
-		return toLocation;
-	}
+    public String getFromLocation() {
+        return fromLocation;
+    }
 
-	public void setToLocation(String toLocation) {
-		this.toLocation = toLocation;
-	}
+    public void setFromLocation(String fromLocation) {
+        this.fromLocation = fromLocation;
+    }
 
-	public String getExtPoType() {
-		return extPoType;
-	}
+    public String getToLocation() {
+        return toLocation;
+    }
 
-	public void setExtPoType(String extPoType) {
-		this.extPoType = extPoType;
-	}
+    public void setToLocation(String toLocation) {
+        this.toLocation = toLocation;
+    }
 
-	public String getDataSource() {
-		return dataSource;
-	}
+    public String getExtPoType() {
+        return extPoType;
+    }
 
-	public void setDataSource(String dataSource) {
-		this.dataSource = dataSource;
-	}
+    public void setExtPoType(String extPoType) {
+        this.extPoType = extPoType;
+    }
 
-	public String getExtPoCode() {
-		return extPoCode;
-	}
+    public String getDataSource() {
+        return dataSource;
+    }
 
-	public void setExtPoCode(String extPoCode) {
-		this.extPoCode = extPoCode;
-	}
+    public void setDataSource(String dataSource) {
+        this.dataSource = dataSource;
+    }
+
+    public String getSysDate() {
+        return sysDate;
+    }
+
+    public void setSysDate(String sysDate) {
+        this.sysDate = sysDate;
+    }
+
+    public Date getArchivTime() {
+        return archivTime;
+    }
+
+    public void setArchivTime(Date archivTime) {
+        this.archivTime = archivTime;
+    }
 
 
 }

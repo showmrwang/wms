@@ -148,6 +148,18 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				<if test="ouId!=null">
 					and operUserRole.ou_id = #{ouId}
 				</if>
+				<if test="workCode!=null and workCode!=''">
+					and work.code = #{workCode}
+				</if>
+				<if test="locCode!=null and locCode!=''">
+					and work.location_code = #{locCode}
+				</if>
+				<if test="containerCode!=null and containerCode!=''">
+					and work.container_code = #{containerCode}
+				</if>
+				<if test="waveCode!=null and waveCode!=''">
+					and work.wave_code = #{waveCode}
+				</if>
 				order by work.work_priority,loc.pick_sort,area.area_code,loc.code asc
 				<!-- <if test="maxObtainWorkQty!=null">
 					limit 1,6
@@ -194,6 +206,18 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				</if>
 				<if test="ouId!=null">
 					and operUserRole.ou_id = #{ouId}
+				</if>
+				<if test="workCode!=null and workCode!=''">
+					and work.code = #{workCode}
+				</if>
+				<if test="locCode!=null and locCode!=''">
+					and work.location_code = #{locCode}
+				</if>
+				<if test="containerCode!=null and containerCode!=''">
+					and work.container_code = #{containerCode}
+				</if>
+				<if test="waveCode!=null and waveCode!=''">
+					and work.wave_code = #{waveCode}
 				</if>
 				order by work.work_priority,loc.pick_sort,area.area_code,loc.code asc
 				<!-- <if test="maxObtainWorkQty!=null">

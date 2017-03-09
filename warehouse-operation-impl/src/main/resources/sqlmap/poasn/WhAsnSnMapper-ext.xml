@@ -79,5 +79,13 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        and last_modify_time	<=  #{lastModifyTime}    
 		    ]]>
 		</update>
+		
+	<select id="findWhAsnSnByAsnLineId" resultMap="WhAsnSnResultExt">
+    	select <include refid="whAsnSnColumnsExt" />
+		    from 
+		    t_wh_asn_sn
+			where 
+			asn_line_id = #{asnlineid} and ou_id = #{ouid}
+    </select>
 	
 </mapper>
