@@ -667,4 +667,11 @@ public final class Constants {
 
     /** 调编码生成器 出库箱推荐标识 */
     public static final String OUTBOUND_BOX_BATCH = "WMS_OUTBOUND_BOX_BATCH";
+    
+    /** 对接系统系数来源 */
+    public static final String DATA_SOURCE_WMS = "wms";
+    public static final String DATA_SOURCE_PAC = "pac";
+    public static final String DATA_SOURCE_HUB = "hub";
+    
+    
 }
