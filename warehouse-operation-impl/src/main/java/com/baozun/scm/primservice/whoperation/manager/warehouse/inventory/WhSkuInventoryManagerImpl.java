@@ -6176,27 +6176,4 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     }
     
 
-    /**
-     *根据占用码查询库存
-     *
-     * @author mingwei.xie
-     * @param occupationCode
-     * @param ouId
-     * @return
-     */
-    public List<WhSkuInventoryCommand> findListByOccupationCode(String occupationCode, Long ouId){
-        return whSkuInventoryDao.findListByOccupationCode(occupationCode, ouId);
-    }
-
-    /**
-     *根据占用码查询库存
-     *
-     * @author mingwei.xie
-     * @param occLineIdList
-     * @param ouId
-     * @return
-     */
-    public List<WhSkuInventoryCommand> findListByOccLineIdListOrderByPickingSort(List<Long> occLineIdList, Long ouId){
-        return whSkuInventoryDao.findListByOccLineIdListOrderByPickingSort(occLineIdList, ouId);
-    }
 }

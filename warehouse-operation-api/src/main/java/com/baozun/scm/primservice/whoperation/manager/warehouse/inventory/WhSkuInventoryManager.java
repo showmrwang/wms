@@ -188,25 +188,7 @@ public interface WhSkuInventoryManager extends BaseManager {
      * @param workCode
      */
     public void replenishmentPutaway(Long operationId,Long ouId,Boolean isTabbInvTotal,Long userId,String workCode);
-    /**
-     *根据占用码查询库存
-     *
-     * @author mingwei.xie
-     * @param occupationCode
-     * @param ouId
-     * @return
-     */
-    public List<WhSkuInventoryCommand> findListByOccupationCode(String occupationCode, Long ouId);
 
-    /**
-     *根据占用码查询库存
-     *
-     * @author mingwei.xie
-     * @param occLineIdList
-     * @param ouId
-     * @return
-     */
-    public List<WhSkuInventoryCommand> findListByOccLineIdListOrderByPickingSort(List<Long> occLineIdList, Long ouId);
 
     
     /***

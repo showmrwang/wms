@@ -1684,7 +1684,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
             }
 
             // 批次下的库存列表
-            List<WhSkuInventoryCommand> batchSkuInventoryList = skuInventoryManager.findListByOccLineIdListOrderByPickingSort(batchOccLineIdList, ouId);
+            List<WhSkuInventoryCommand> batchSkuInventoryList = outboundBoxRecManager.findListByOccLineIdListOrderByPickingSort(batchOccLineIdList, ouId);
             try {
                 // 周转箱列表
                 List<Container2ndCategoryCommand> packingTurnoverBoxList = this.allocateTurnoverBoxForBatchModeOdo(batchSkuInventoryList, batchSingleOdoLineList, odoLineCommandMap, odoCommandMap, odoLineAvailableTurnoverBoxListMap, ouId, logId);
@@ -1784,7 +1784,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                 }
 
                 // 批次下的库存列表
-                List<WhSkuInventoryCommand> batchSkuInventoryList = skuInventoryManager.findListByOccLineIdListOrderByPickingSort(batchOccLineIdList, ouId);
+                List<WhSkuInventoryCommand> batchSkuInventoryList = outboundBoxRecManager.findListByOccLineIdListOrderByPickingSort(batchOccLineIdList, ouId);
 
                 try {
                     // 周转箱列表
@@ -1921,12 +1921,12 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
 
                 try {
                     // 批次下的主品库存列表
-                    List<WhSkuInventoryCommand> batchMainSkuInventoryList = skuInventoryManager.findListByOccLineIdListOrderByPickingSort(mainOdoOccLineIdList, ouId);
+                    List<WhSkuInventoryCommand> batchMainSkuInventoryList = outboundBoxRecManager.findListByOccLineIdListOrderByPickingSort(mainOdoOccLineIdList, ouId);
                     List<Container2ndCategoryCommand> mainOdoPackingTurnoverBoxList =
                             this.allocateTurnoverBoxForBatchModeOdo(batchMainSkuInventoryList, batchMainOdoLineList, odoLineCommandMap, odoCommandMap, odoLineAvailableTurnoverBoxListMap, ouId, logId);
 
                     // 批次下的副品库存列表
-                    List<WhSkuInventoryCommand> batchAccessorySkuInventoryList = skuInventoryManager.findListByOccLineIdListOrderByPickingSort(accessoryOdoOccLineIdList, ouId);
+                    List<WhSkuInventoryCommand> batchAccessorySkuInventoryList = outboundBoxRecManager.findListByOccLineIdListOrderByPickingSort(accessoryOdoOccLineIdList, ouId);
                     List<Container2ndCategoryCommand> accessoryOdoPackingTurnoverBoxList =
                             this.allocateTurnoverBoxForBatchModeOdo(batchAccessorySkuInventoryList, batchAccessoryOdoLineList, odoLineCommandMap, odoCommandMap, odoLineAvailableTurnoverBoxListMap, ouId, logId);
 
@@ -2058,7 +2058,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                         }
 
                         // 批次sku组下的库存列表
-                        List<WhSkuInventoryCommand> batchSkuInventoryList = skuInventoryManager.findListByOccLineIdListOrderByPickingSort(skuGroupOdoLineIdList, ouId);
+                        List<WhSkuInventoryCommand> batchSkuInventoryList = outboundBoxRecManager.findListByOccLineIdListOrderByPickingSort(skuGroupOdoLineIdList, ouId);
 
                         // 周转箱列表
                         List<Container2ndCategoryCommand> skuBatchTurnoverBoxList = this.allocateTurnoverBoxForBatchModeOdo(batchSkuInventoryList, skuGroupOdoLineList, odoLineCommandMap, odoCommandMap, odoLineAvailableTurnoverBoxListMap, ouId, logId);
@@ -2229,7 +2229,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                     List<Container2ndCategoryCommand> packingTurnoverBoxList = new ArrayList<>();
 
                     // 批次下的库存列表
-                    List<WhSkuInventoryCommand> batchSkuInventoryList = skuInventoryManager.findListByOccLineIdListOrderByPickingSort(batchOccLineIdList, ouId);
+                    List<WhSkuInventoryCommand> batchSkuInventoryList = outboundBoxRecManager.findListByOccLineIdListOrderByPickingSort(batchOccLineIdList, ouId);
 
                     try {
                         packingTurnoverBoxList = this.allocateTurnoverBoxForBatchModeOdo(batchSkuInventoryList, batchSeedOdoLineList, odoLineCommandMap, odoCommandMap, odoLineAvailableTurnoverBoxListMap, ouId, logId);
@@ -2544,7 +2544,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
             // 根据明细ID查询库存表对应的占用的库存记录，获得分配区域
             List<OdoLineCommand> odoLineCommandList = odoLineManager.findOdoLineCommandListByOdoId(odoCommand.getId(), odoCommand.getOuId());
             // 获取出库单的库存记录
-            List<WhSkuInventoryCommand> skuInventoryList = skuInventoryManager.findListByOccupationCode(odoCommand.getOdoCode(), ouId);
+            List<WhSkuInventoryCommand> skuInventoryList = outboundBoxRecManager.findListByOccupationCode(odoCommand.getOdoCode(), ouId);
             // 出库单明细占用的库存记录<odoLineId, List<skuInv>>
             Map<Long, List<WhSkuInventoryCommand>> odoLineIdSkuInvMap = new HashMap<>();
             for (WhSkuInventoryCommand skuInventory : skuInventoryList) {
