@@ -34,6 +34,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.Container2ndCate
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.OutInvBoxTypeCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.UomCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoOutBoundBoxDao;
@@ -42,6 +43,7 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerAssistDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.UomDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutInventoryboxRelationshipDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.odo.wave.WhWaveManager;
 import com.baozun.scm.primservice.whoperation.manager.system.GlobalLogManager;
@@ -83,6 +85,9 @@ public class OutboundBoxRecManagerImpl extends BaseManagerImpl implements Outbou
 
     @Autowired
     private WhOdoOutBoundBoxDao odoOutBoundBoxDao;
+
+    @Autowired
+    private WhSkuInventoryDao whSkuInventoryDao;
 
 
     /**
@@ -317,5 +322,31 @@ public class OutboundBoxRecManagerImpl extends BaseManagerImpl implements Outbou
                 log.error(getLogMsg("deleteWaveLines and releaseInventoryByOdoId error! odoId:[{}],waveId:[{}],ouId:[{}]", odoId, waveId, ouId, logId), e);
             }
         }
+    }
+
+    /**
+     *根据占用码查询库存
+     *
+     * @author mingwei.xie
+     * @param occupationCode
+     * @param ouId
+     * @return
+     */
+    public List<WhSkuInventoryCommand> findListByOccupationCode(String occupationCode, Long ouId){
+        return whSkuInventoryDao.findListByOccupationCode(occupationCode, ouId);
+    }
+
+    /**
+     *根据占用码查询库存
+     *
+     * @author mingwei.xie
+     * @param occLineIdList
+     * @param ouId
+     * @return
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<WhSkuInventoryCommand> findListByOccLineIdListOrderByPickingSort(List<Long> occLineIdList, Long ouId){
+        return whSkuInventoryDao.findListByOccLineIdListOrderByPickingSort(occLineIdList, ouId);
     }
 }

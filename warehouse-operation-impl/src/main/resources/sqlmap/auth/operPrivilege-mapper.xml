@@ -160,6 +160,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				<if test="waveCode!=null and waveCode!=''">
 					and work.wave_code = #{waveCode}
 				</if>
+				<if test="batch!=null and batch!=''">
+					and work.batch = #{batch}
+				</if>
+				<if test="outBoundBox!=null and outBoundBox!=''">
+					and operationLine.use_outboundbox_code = #{outBoundBox}
+				</if>
 				order by work.work_priority,loc.pick_sort,area.area_code,loc.code asc
 				<!-- <if test="maxObtainWorkQty!=null">
 					limit 1,6
@@ -218,6 +224,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				</if>
 				<if test="waveCode!=null and waveCode!=''">
 					and work.wave_code = #{waveCode}
+				</if>
+				<if test="batch!=null and batch!=''">
+					and work.batch = #{batch}
+				</if>
+				<if test="outBoundBox!=null and outBoundBox!=''">
+					and operationLine.use_outboundbox_code = #{outBoundBox}
 				</if>
 				order by work.work_priority,loc.pick_sort,area.area_code,loc.code asc
 				<!-- <if test="maxObtainWorkQty!=null">
