@@ -95,6 +95,8 @@ public class WhSkuInventoryLog extends BaseModel {
     private String style;
     /** 尺码 */
     private String size;
+    /** 库存事务类型 */
+    private String invTransactionType;
 
     public String getSkuCode() {
         return skuCode;
@@ -358,6 +360,14 @@ public class WhSkuInventoryLog extends BaseModel {
 
     public void setSize(String size) {
         this.size = size;
+    }
+
+    public String getInvTransactionType() {
+        return invTransactionType;
+    }
+
+    public void setInvTransactionType(String invTransactionType) {
+        this.invTransactionType = invTransactionType;
     }
 
 
