@@ -42,11 +42,11 @@ public class WhOutboundLine extends BaseModel {
 	/** 上位系统商品名称 */
 	private java.lang.String extSkuName;
 	/** 商品数量 */
-	private Long qty;
+	private Double qty;
 	/** 行单价 */
-	private Long linePrice;
+	private Double linePrice;
 	/** 行总价 */
-	private Long lineAmt;
+	private Double lineAmt;
 	/** 整行出库标志 默认是 */
 	private java.lang.Boolean fullLineOutbound;
 	/** 部分出库策略 */
@@ -109,22 +109,22 @@ public class WhOutboundLine extends BaseModel {
     public void setExtSkuName(java.lang.String extSkuName) {
         this.extSkuName = extSkuName;
     }
-    public Long getQty() {
+    public Double getQty() {
         return qty;
     }
-    public void setQty(Long qty) {
+    public void setQty(Double qty) {
         this.qty = qty;
     }
-    public Long getLinePrice() {
+    public Double getLinePrice() {
         return linePrice;
     }
-    public void setLinePrice(Long linePrice) {
+    public void setLinePrice(Double linePrice) {
         this.linePrice = linePrice;
     }
-    public Long getLineAmt() {
+    public Double getLineAmt() {
         return lineAmt;
     }
-    public void setLineAmt(Long lineAmt) {
+    public void setLineAmt(Double lineAmt) {
         this.lineAmt = lineAmt;
     }
     public java.lang.Boolean getFullLineOutbound() {

@@ -48,6 +48,9 @@ public class WhPoSn extends BaseModel {
     /** 操作人ID */
     private Long modifiedId;
 
+    /** 当前月份 归档使用 */
+    private String sysDate;
+
     public Long getId() {
         return this.id;
     }
@@ -118,6 +121,14 @@ public class WhPoSn extends BaseModel {
 
     public void setOuId(Long ouId) {
         this.ouId = ouId;
+    }
+
+    public String getSysDate() {
+        return sysDate;
+    }
+
+    public void setSysDate(String sysDate) {
+        this.sysDate = sysDate;
     }
 
 }

@@ -14,7 +14,10 @@
  */
 package com.baozun.scm.primservice.whoperation.dao.poasn;
 
+import java.util.List;
 import java.util.Map;
+
+import org.apache.ibatis.annotations.Param;
 
 import lark.common.annotation.CommonQuery;
 import lark.common.annotation.QueryPage;
@@ -38,5 +41,14 @@ public interface WhAsnSnDao extends BaseDao<WhAsnSn, Long> {
 
     @CommonQuery
     int saveOrUpdateByVersion(WhAsnSn o);
+
+
+    /***
+     * 通过asnlineid查找asnsn信息
+     * 
+     * @return
+     */
+    List<WhAsnSn> findWhAsnSnByAsnLineId(@Param("asnlineid") Long asnlineid, @Param("ouid") Long ouid);
+
 
 }
