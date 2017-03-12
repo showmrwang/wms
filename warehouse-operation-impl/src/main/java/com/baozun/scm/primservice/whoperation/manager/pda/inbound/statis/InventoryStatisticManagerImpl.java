@@ -1350,6 +1350,8 @@ public class InventoryStatisticManagerImpl extends BaseManagerImpl implements In
                         }
                         
                     }
+                    isrCmd.setLenUomConversionRate(lenUomConversionRate);
+                    isrCmd.setWeightUomConversionRate(weightUomConversionRate);
                     isrCmd.setPutawayPatternType(putawayPatternType);
                     isrCmd.setPutawayPatternDetailType(putawayPatternDetailType);
                     isrCmd.setHasOuterContainer(true);

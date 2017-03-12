@@ -3946,6 +3946,7 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                     if(isRecommendFail == false){ //推荐成功
                         cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY_STATISTIC,insideContainerId.toString());
                         cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY, insideContainerId.toString());
+                        cacheManager.removeMapValue(CacheConstants.CONTAINER_STATISTIC, outerContainerId.toString());
                     }
                 }
             if(null != outerContainerId) { //有托盘

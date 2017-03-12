@@ -1490,8 +1490,10 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
         List<Long> containerids = new ArrayList<Long> ();
         CollectionUtils.addAll(containerids, insideContainerIds.iterator());
         //修改所有内部容器状态
+        List<String> icCodeList = new ArrayList<String>();
         for(Long insideContainerId:containerids) {
             Container container = containerDao.findByIdExt(insideContainerId, ouId);
+            icCodeList.add(container.getCode());
             container.setStatus(ContainerStatus.CONTAINER_STATUS_PUTAWAY);   //上架中
             container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);  //占用中
             containerDao.saveOrUpdateByVersion(container);
@@ -1555,8 +1557,6 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
             insertGlobalLog(GLOBAL_LOG_INSERT, cAssist, ouId, userId, null, null);
         }
         // 6.匹配上架规则
-        List<String> icCodeList = new ArrayList<String>();
-        icCodeList.add(isrCommand.getInsideContainerCode());
         List<Long> storeList = new ArrayList<Long>();
         CollectionUtils.addAll(storeList, isrCommand.getStoreIds().iterator());
         List<Long> icIdList = new ArrayList<Long>();
@@ -1607,8 +1607,10 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
         }
         //推荐库位流程
         Map<String, Map<String, Double>> uomMap = new HashMap<String, Map<String, Double>>();
-        uomMap.put(WhUomType.LENGTH_UOM, null);
-        uomMap.put(WhUomType.WEIGHT_UOM, null);
+//        uomMap.put(WhUomType.LENGTH_UOM, null);
+//        uomMap.put(WhUomType.WEIGHT_UOM, null);
+        uomMap.put(WhUomType.LENGTH_UOM, isrCommand.getLenUomConversionRate());
+        uomMap.put(WhUomType.WEIGHT_UOM, isrCommand.getWeightUomConversionRate());
         List<LocationRecommendResultCommand> lrrList = null;
         try {
             lrrList = whLocationRecommendManager.recommendLocationByShevleRule(ruleAffer, export, WhPutawayPatternDetailType.PALLET_PUTAWAY, caMap, invList, uomMap, logId);
