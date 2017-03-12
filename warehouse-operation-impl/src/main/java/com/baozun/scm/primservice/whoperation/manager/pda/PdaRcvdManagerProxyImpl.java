@@ -1733,7 +1733,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                     if (StringUtils.isEmpty(cacheContainer)) {
                         throw new BusinessException(ErrorCodes.RCVD_CONTAINER_OCCUPATIED_ERROR);
                     }
-                    if (!command.getUserId().toString().equals(cacheContainer.getUserId())) {
+                    if (!command.getUserId().equals(cacheContainer.getUserId())) {
 
                         throw new BusinessException(ErrorCodes.RCVD_CONTAINER_OCCUPATIED_ERROR);
                     }
@@ -1830,7 +1830,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
                     if (null == cacheContainer) {
                         throw new BusinessException(ErrorCodes.RCVD_CONTAINER_OCCUPATIED_ERROR);
                     }
-                    if (!command.getUserId().toString().equals(cacheContainer.getUserId())) {
+                    if (!command.getUserId().equals(cacheContainer.getUserId())) {
                         throw new BusinessException(ErrorCodes.RCVD_CONTAINER_OCCUPATIED_ERROR);
                     }
 

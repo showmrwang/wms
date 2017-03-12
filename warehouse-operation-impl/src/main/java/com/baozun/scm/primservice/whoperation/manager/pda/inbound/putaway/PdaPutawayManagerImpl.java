@@ -1237,7 +1237,10 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
      * @return
      */
     private ScanResultCommand sysGuideContainerPutawayScanContainer(ContainerCommand containerCmd, ContainerCommand insideContainerCmd, Long funcId, Long ouId, Long userId, String logId) {
-        ScanResultCommand srCmd = new ScanResultCommand();
+        if(containerCmd == null){
+        	throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
+        }
+    	ScanResultCommand srCmd = new ScanResultCommand();
         srCmd.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
         srCmd.setPutawayPatternDetailType(WhPutawayPatternDetailType.CONTAINER_PUTAWAY);
         Long containerId = containerCmd.getId();

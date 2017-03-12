@@ -428,14 +428,12 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
         List<WhOdoVasCommand> odoVasList = lineCommand.getOdoVasList();
         List<WhOdoVas> insertVasList = new ArrayList<WhOdoVas>();
         if (odoVasList != null && odoVasList.size() > 0) {
-            if (odoVasList != null && odoVasList.size() > 0) {
-                for (WhOdoVasCommand vc : odoVasList) {
-                    WhOdoVas ov = new WhOdoVas();
-                    BeanUtils.copyProperties(vc, ov);
-                    ov.setOdoId(lineCommand.getOdoId());
-                    ov.setOuId(ouId);
-                    insertVasList.add(ov);
-                }
+            for (WhOdoVasCommand vc : odoVasList) {
+                WhOdoVas ov = new WhOdoVas();
+                BeanUtils.copyProperties(vc, ov);
+                ov.setOdoId(lineCommand.getOdoId());
+                ov.setOuId(ouId);
+                insertVasList.add(ov);
             }
         }
 
@@ -1710,24 +1708,25 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
 
         List<WhWork> workList = this.whWorkManager.findWorkByWave(wave.getCode(), ouId);
         if (workList == null || workList.size() == 0) {
-
+        	
         }
         // Map<Long,List<WhWorkLine>> workToCancelMap = new HashMap<Long,List<WhWorkLine>>();
         Set<Long> workToLazyCancelSet = new HashSet<Long>();
-        for (WhWork work : workList) {
-            if (WorkStatus.NEW.intValue() == work.getStatus().intValue()) {
-                // workToCancelMap.put(work.getId(),workLineList);
-            } else {
-                workToLazyCancelSet.add(work.getId());
-                // List<WhWorkLine> workLineList =
-                // this.whWorkLineManager.findListByWorkId(work.getId(), ouId);
-                if(odoCodeIdMap.containsKey(work.getOrderCode())){
-                    Long l=odoCodeIdMap.get(work.getOrderCode());
-                    odoToLazyFreeSet.add(l);
+        if(workList != null){
+            for (WhWork work : workList) {
+                if (WorkStatus.NEW.intValue() == work.getStatus().intValue()) {
+                    // workToCancelMap.put(work.getId(),workLineList);
+                } else {
+                    workToLazyCancelSet.add(work.getId());
+                    // List<WhWorkLine> workLineList =
+                    // this.whWorkLineManager.findListByWorkId(work.getId(), ouId);
+                    if(odoCodeIdMap.containsKey(work.getOrderCode())){
+                        Long l=odoCodeIdMap.get(work.getOrderCode());
+                        odoToLazyFreeSet.add(l);
+                    }
                 }
             }
         }
-        
         this.waveManager.cancelWaveWithWork(wave, task, workList, workToLazyCancelSet, odoList, odoToLazyFreeSet, userId);
         // this.waveManager.cancelWaveWithLazy(wave)
     }

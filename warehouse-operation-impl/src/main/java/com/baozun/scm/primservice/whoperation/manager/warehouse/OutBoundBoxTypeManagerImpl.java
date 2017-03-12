@@ -52,9 +52,9 @@ public class OutBoundBoxTypeManagerImpl implements OutBoundBoxTypeManager{
         // TODO Auto-generated method stub
         log.info("OutInventoryBoxTypeManagerImpl findListByQueryMapWithPage  is start");
         if (log.isDebugEnabled()) {
-            log.debug("Param page is {}", page+"  Param sorts is {}",sorts+" Param param is {}",param);
+            log.debug("Param page is {}", page+"  Param sorts is {}",Sort.toSortStr(sorts)+" Param param is {}",param);
         }
-        log.info("Param page is {}", page+"  Param sorts is {}",sorts+" Param param is {}",param);
+        log.info("Param page is {}", page+"  Param sorts is {}",Sort.toSortStr(sorts)+" Param param is {}",param);
         Pagination<OutInvBoxTypeCommand> paginaction =null;
         try{
             paginaction= outBoundBoxTypeDao.findListByQueryMapWithPageExt(page, sorts, param);
