@@ -1242,7 +1242,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                     break;
                                 } else {
                                     log.error("scan sku has already checked,  locationId is:[{}], scanSkuId is:[{}], logId is:[{}]", locationId, skuId, logId);
-                                    throw new BusinessException(ErrorCodes.CONTAINER_SKU_HAS_ALREADY_SCANNED, new Object[] {insideContainerCmd.getCode()});
+                                    throw new BusinessException(ErrorCodes.CONTAINER_SKU_HAS_ALREADY_SCANNED, new Object[] {insideContainerCmd == null ? "" : insideContainerCmd.getCode()});
                                 }
                             } else {
                                 ScanTipSkuCacheCommand cacheSkuCmd = new ScanTipSkuCacheCommand();
@@ -1266,7 +1266,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                         } 
                      else {
                             log.error("scan sku qty is not equal with rcvd inv qty,  locationId is:[{}], scanSkuId is:[{}], logId is:[{}]", locationId, skuId, logId);
-                            throw new BusinessException(ErrorCodes.CONTAINER_SKU_QTY_NOT_EQUAL_SCAN_SKU_QTY_ERROR, new Object[] {insideContainerCmd.getCode()});
+                            throw new BusinessException(ErrorCodes.CONTAINER_SKU_QTY_NOT_EQUAL_SCAN_SKU_QTY_ERROR, new Object[] {insideContainerCmd == null ? "" : insideContainerCmd.getCode()});
                         }
                       }
                   }

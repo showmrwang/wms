@@ -1643,7 +1643,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         log.info("PdaPickingWorkManagerImpl wholeCaseForTipInsideContainer is end");
         return command;
     }
-    
+       
     /**
      * 循环提示扫描商品--整箱整托拣货
      * 
@@ -1805,7 +1805,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             Boolean isSkuSnOccupation = false;
             for(WhSkuInventorySnCommand whSkuInventorySnCommand : whSkuInventorySnCommands){
                 // 判断是否占用SN/残次条码 
-                if(whSkuInventoryCommands.get(0).getOccupationCode() == whSkuInventorySnCommand.getOccupationCode()){
+                if(whSkuInventoryCommands.get(0).getOccupationCode().equals(whSkuInventorySnCommand.getOccupationCode())){
                     isSkuSnOccupation = true;
                 }
             }

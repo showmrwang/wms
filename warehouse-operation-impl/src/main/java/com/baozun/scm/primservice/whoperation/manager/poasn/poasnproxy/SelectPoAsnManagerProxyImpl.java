@@ -349,7 +349,7 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
             }
         } else {
             log.error("SelectPoAsnManagerProxy.returnReceiptMode,WhAsn has no Store");
-            throw new BusinessException(ErrorCodes.WH_ASN_STORE_EMPTY, new Object[] {whCommand.getAsnExtCode()});
+            throw new BusinessException(ErrorCodes.WH_ASN_STORE_EMPTY, new Object[] {whCommand == null ? "" :whCommand.getAsnExtCode()});
         }
         // 查看仓库上的预收货模式，1为总数，2为总箱数，3为商品总数
         if (configureStore) {
