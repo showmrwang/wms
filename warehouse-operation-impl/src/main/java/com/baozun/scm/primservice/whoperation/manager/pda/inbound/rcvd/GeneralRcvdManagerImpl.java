@@ -36,6 +36,7 @@ import com.baozun.scm.primservice.whoperation.constant.CacheKeyConstant;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
+import com.baozun.scm.primservice.whoperation.constant.InvTransactionType;
 import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnLineDao;
@@ -487,13 +488,13 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
                 WhSkuInventory skuInv = this.whSkuInventoryDao.findWhSkuInventoryByUuid(inv.getOuId(), inv.getUuid());
                 if (null == skuInv) {
                     this.whSkuInventoryDao.insert(inv);
-                    this.insertSkuInventoryLog(inv.getId(), inv.getOnHandQty(), Constants.DEFAULT_DOUBLE, wh.getIsTabbInvTotal(), inv.getOuId(), userId);
+                    this.insertSkuInventoryLog(inv.getId(), inv.getOnHandQty(), Constants.DEFAULT_DOUBLE, wh.getIsTabbInvTotal(), inv.getOuId(), userId, InvTransactionType.RECEIVING);
                 } else {
                     Double oldQty = skuInv.getOnHandQty();
                     skuInv.setOnHandQty(skuInv.getOnHandQty() + inv.getOnHandQty());
                     this.whSkuInventoryDao.saveOrUpdateByVersion(skuInv);
                     // 插入库存日志
-                    this.insertSkuInventoryLog(skuInv.getId(), skuInv.getOnHandQty() - oldQty, oldQty, wh.getIsTabbInvTotal(), skuInv.getOuId(), userId);
+                    this.insertSkuInventoryLog(skuInv.getId(), skuInv.getOnHandQty() - oldQty, oldQty, wh.getIsTabbInvTotal(), skuInv.getOuId(), userId, InvTransactionType.RECEIVING);
                 }
             }
             // 保存收货日志
