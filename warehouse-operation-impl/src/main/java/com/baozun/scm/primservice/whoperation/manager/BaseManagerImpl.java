@@ -28,6 +28,7 @@ import com.baozun.redis.manager.CacheManager;
 import com.baozun.scm.primservice.whoperation.command.system.GlobalLogCommand;
 import com.baozun.scm.primservice.whoperation.constant.CacheKeyConstant;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
+import com.baozun.scm.primservice.whoperation.constant.InvTransactionType;
 import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveLineDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWavePhaseDao;
 import com.baozun.scm.primservice.whoperation.dao.system.SysDictionaryDao;
@@ -132,11 +133,21 @@ public abstract class BaseManagerImpl implements BaseManager {
      * @param ouid 仓库组织ID
      * @param userid 操作人ID
      */
-    protected void insertSkuInventoryLog(Long skuInvId, Double qty, Double oldQty, Boolean isTabbInvTotal, Long ouid, Long userid) {
-        insertSkuInventoryLog(skuInvId, null, null, qty, oldQty, isTabbInvTotal, ouid, userid);
+    protected void insertSkuInventoryLog(Long skuInvId, Double qty, Double oldQty, Boolean isTabbInvTotal, Long ouid, Long userid, String invTransactionType) {
+        if (!StringUtil.isEmpty(invTransactionType)) {
+            // 如果有库存事务类型 需要验证数据正确性
+            if (!InvTransactionType.RECEIVING.equals(invTransactionType) || !InvTransactionType.OUTBOUND_SORTING.equals(invTransactionType) || !InvTransactionType.SHELF.equals(invTransactionType) || !InvTransactionType.ASSEMBLY.equals(invTransactionType)
+                    || !InvTransactionType.INTRA_WH_MOVE.equals(invTransactionType) || !InvTransactionType.REPLENISHMENT.equals(invTransactionType) || !InvTransactionType.PICKING.equals(invTransactionType)
+                    || !InvTransactionType.FACILITY_GOODS_COLLECTION.equals(invTransactionType) || !InvTransactionType.CHECK.equals(invTransactionType) || !InvTransactionType.HANDOVER.equals(invTransactionType)
+                    || !InvTransactionType.HANDOVER_OUTBOUND.equals(invTransactionType) || !InvTransactionType.SPLIT_MOVE_OUTBOUND_BOX.equals(invTransactionType) || !InvTransactionType.SPLIT_MOVE_PACKING_CASE.equals(invTransactionType)
+                    || !InvTransactionType.INTRA_WH_ADJUSTMENT.equals(invTransactionType) || !InvTransactionType.WH_TO_WH_FLITTING.equals(invTransactionType) || !InvTransactionType.INTRA_WH_MACHINING.equals(invTransactionType)) {
+                throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+            }
+        }
+        insertSkuInventoryLog(skuInvId, null, null, qty, oldQty, isTabbInvTotal, ouid, userid, invTransactionType);
     }
 
-    protected void insertSkuInventoryLog(Long skuInvId, String occupyCode, String occupySource, Double qty, Double oldQty, Boolean isTabbInvTotal, Long ouid, Long userid) {
+    protected void insertSkuInventoryLog(Long skuInvId, String occupyCode, String occupySource, Double qty, Double oldQty, Boolean isTabbInvTotal, Long ouid, Long userid, String invTransactionType) {
         if (null == skuInvId) {
             throw new BusinessException(ErrorCodes.PARAM_IS_NULL, new Object[] {"skuInvId"});
         }
@@ -149,6 +160,7 @@ public abstract class BaseManagerImpl implements BaseManager {
         log.setRevisionQty(qty);
         log.setModifiedId(userid);
         log.setModifyTime(new Date());
+        log.setInvTransactionType(invTransactionType);
         if (null != occupyCode && null != occupySource) {
             log.setOccupationCode(occupyCode);
             log.setOccupationCodeSource(occupySource);

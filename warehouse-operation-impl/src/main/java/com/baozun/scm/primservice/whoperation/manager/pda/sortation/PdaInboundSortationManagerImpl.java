@@ -25,6 +25,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuI
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
+import com.baozun.scm.primservice.whoperation.constant.InvTransactionType;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnDao;
 import com.baozun.scm.primservice.whoperation.dao.sku.SkuDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
@@ -379,7 +380,7 @@ public class PdaInboundSortationManagerImpl extends BaseManagerImpl implements P
             // 插入操作日志
             insertGlobalLog(Constants.GLOBAL_LOG_INSERT, newSkuInv, pdaInboundSortation.getOuId(), pdaInboundSortation.getUserId(), null, null);
             // 插入库存日志(新库存)
-            insertSkuInventoryLog(newSkuInv.getId(), pdaInboundSortation.getShiftInQty(), inboundOnHandQty, pdaInboundSortation.getIsTabbInvTotal(), pdaInboundSortation.getOuId(), pdaInboundSortation.getUserId());
+            insertSkuInventoryLog(newSkuInv.getId(), pdaInboundSortation.getShiftInQty(), inboundOnHandQty, pdaInboundSortation.getIsTabbInvTotal(), pdaInboundSortation.getOuId(), pdaInboundSortation.getUserId(), InvTransactionType.OUTBOUND_SORTING);
         } else {
             // 更新原有库存记录在库库存数量
             b = updateSkuInvOnHandQty(newSkuInv, pdaInboundSortation, uuid, inboundOnHandQty);
@@ -402,7 +403,7 @@ public class PdaInboundSortationManagerImpl extends BaseManagerImpl implements P
             insertSkuInventorySnLog(uuid, pdaInboundSortation.getOuId());
         }
         // 插入库存日志(原始库存)
-        insertSkuInventoryLog(skuInv.getId(), -pdaInboundSortation.getShiftInQty(), outboundOnHandQty, pdaInboundSortation.getIsTabbInvTotal(), pdaInboundSortation.getOuId(), pdaInboundSortation.getUserId());
+        insertSkuInventoryLog(skuInv.getId(), -pdaInboundSortation.getShiftInQty(), outboundOnHandQty, pdaInboundSortation.getIsTabbInvTotal(), pdaInboundSortation.getOuId(), pdaInboundSortation.getUserId(), InvTransactionType.OUTBOUND_SORTING);
         // 修改原始容器号在库库存
         b = updateSkuInvOnHandQtyForOriginal(newSkuInv, pdaInboundSortation);
         if (!b) {
@@ -535,7 +536,7 @@ public class PdaInboundSortationManagerImpl extends BaseManagerImpl implements P
                 // 修改成功 跳出循环 返回true
                 b = true;
                 // 插入库存日志(新库存)
-                insertSkuInventoryLog(oldSkuInv.getId(), pdaInboundSortation.getShiftInQty(), inboundOnHandQty, pdaInboundSortation.getIsTabbInvTotal(), pdaInboundSortation.getOuId(), pdaInboundSortation.getUserId());
+                insertSkuInventoryLog(oldSkuInv.getId(), pdaInboundSortation.getShiftInQty(), inboundOnHandQty, pdaInboundSortation.getIsTabbInvTotal(), pdaInboundSortation.getOuId(), pdaInboundSortation.getUserId(), InvTransactionType.OUTBOUND_SORTING);
                 break;
             }
         }
