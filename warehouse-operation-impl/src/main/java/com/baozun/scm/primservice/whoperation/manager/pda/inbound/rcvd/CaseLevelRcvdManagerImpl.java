@@ -37,6 +37,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.carton.WhCartonC
 import com.baozun.scm.primservice.whoperation.command.warehouse.conf.basis.WarehouseDefectReasonsCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.conf.basis.WarehouseDefectTypeCommand;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
+import com.baozun.scm.primservice.whoperation.constant.InvTransactionType;
 import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnLineDao;
@@ -444,7 +445,7 @@ public class CaseLevelRcvdManagerImpl extends BaseManagerImpl implements CaseLev
             whSkuInventoryDao.insert(whSkuInventory);
             log.warn("CaseLevelRcvdManagerImpl.saveWhSkuInventoryToDB save whSkuInventory to share DB, whSkuInventory is:[{}], logId is:[{}]", whSkuInventory, logId);
             this.insertGlobalLog(GLOBAL_LOG_INSERT, whSkuInventory, ouId, userId, null, null);
-            this.insertSkuInventoryLog(whSkuInventory.getId(), whSkuInventory.getOnHandQty(), originOnHandQty, isTabbInvTotal, ouId, userId);
+            this.insertSkuInventoryLog(whSkuInventory.getId(), whSkuInventory.getOnHandQty(), originOnHandQty, isTabbInvTotal, ouId, userId, InvTransactionType.RECEIVING);
         }
 
     }
