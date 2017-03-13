@@ -4003,6 +4003,7 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                 if(null != outerContainerId) {
                     if(cancelPattern == CancalPattern.INSIDECONTAINER_CANCEL) {  //内部容器取消
                        cacheManager.remove(CacheConstants.SCAN_CONTAINER_QUEUE+outerContainerId.toString());
+                       cacheManager.removeMapValue(CacheConstants.CONTAINER_STATISTIC, outerContainerId.toString());
                     }
                     if(cancelPattern == CancalPattern.OUTERCONTAINER_CANCEL){
                         cacheManager.removeMapValue(CacheConstants.CONTAINER_STATISTIC, outerContainerId.toString());

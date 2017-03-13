@@ -21,9 +21,11 @@ import org.apache.ibatis.annotations.Param;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnSn;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnTransportMgmt;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoSn;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhPoTransportMgmt;
 
 
 
@@ -56,6 +58,11 @@ public interface PoAsnArchivDao extends BaseDao<WhPo, Long> {
      */
     int archivBiPoSn(@Param("poid") Long poid, @Param("biPoSnInsert") String biPoSnInsert, @Param("sysDate") String sysDate);
 
+    /**
+     * 备份集团BiPoTransportMgmt信息
+     */
+    int archivBiPoTransportMgmt(@Param("poid") Long poid, @Param("poTransportMgmt") String poTransportMgmt, @Param("sysDate") String sysDate);
+
     /***
      * 备份集团whPo信息
      * 
@@ -84,6 +91,11 @@ public interface PoAsnArchivDao extends BaseDao<WhPo, Long> {
     int archivWhPoSn(@Param("poid") Long poid, @Param("whPoSnInsert") String whPoSnInsert, @Param("sysDate") String sysDate);
 
     /**
+     * 备份集团WhPoTransportMgmt信息
+     */
+    int archivWhPoTransportMgmt(@Param("poid") Long poid, @Param("poTransportMgmt") String poTransportMgmt, @Param("sysDate") String sysDate);
+
+    /**
      * 删除集团/仓库bi/whpo信息
      * 
      * @param poid
@@ -108,6 +120,16 @@ public interface PoAsnArchivDao extends BaseDao<WhPo, Long> {
     int deletePoSn(@Param("poid") Long poid, @Param("tableName") String tableName, @Param("lineTableName") String lineTableName, @Param("ouid") Long ouid);
 
     /***
+     * 删除集团/仓库bi/whPotransportMgmt信息
+     * 
+     * @param poid
+     * @param tableName
+     * @param ouid
+     * @return
+     */
+    int deletePoTransportMgmt(@Param("poid") Long poid, @Param("tableName") String tableName, @Param("ouid") Long ouid);
+
+    /***
      * 备份仓库whPo
      * 
      * @param whPo
@@ -130,6 +152,14 @@ public interface PoAsnArchivDao extends BaseDao<WhPo, Long> {
      * @return
      */
     int archivWhPoSnByShard(WhPoSn whPoSn);
+
+    /**
+     * 备份仓库下WhPoTransportMgmt
+     * 
+     * @param whPoTransportMgmt
+     * @return
+     */
+    int archivWhPoTransportMgmtByShard(WhPoTransportMgmt whPoTransportMgmt);
 
 
     /***
@@ -157,6 +187,14 @@ public interface PoAsnArchivDao extends BaseDao<WhPo, Long> {
     int archivWhAsnSnByShard(WhAsnSn whAsnSn);
 
     /**
+     * 备份仓库下WhAsnTransportMgmt
+     * 
+     * @param whAsnTransportMgmt
+     * @return
+     */
+    int archivWhAsnTransportMgmtByShard(WhAsnTransportMgmt whAsnTransportMgmt);
+
+    /**
      * 删除仓库whasn信息
      * 
      * @param asnid
@@ -179,5 +217,14 @@ public interface PoAsnArchivDao extends BaseDao<WhPo, Long> {
      * @return
      */
     int deleteAsnSn(@Param("asnid") Long asnid, @Param("ouid") Long ouid);
+
+    /**
+     * 删除仓库whAsnTransportMgmt
+     * 
+     * @param asnid
+     * @param ouid
+     * @return
+     */
+    int deleteAsnTransportMgmt(@Param("asnid") Long asnid, @Param("ouid") Long ouid);
 
 }

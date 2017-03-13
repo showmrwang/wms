@@ -113,4 +113,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
 	</sql>
 	
+	<select id="findWhAsnTransportMgmtByAsnId" resultMap="WhAsnTransportMgmtResultExt">
+    	select <include refid="whAsnTransportMgmtColumnsExt" />
+		    from 
+		    t_wh_asn_transport_mgmt
+			where 
+			asn_id = #{asnid}
+			<if test="ouid!=null">
+		   			and ou_id = #{ouid}
+			</if>
+    </select>
+	
 </mapper>
