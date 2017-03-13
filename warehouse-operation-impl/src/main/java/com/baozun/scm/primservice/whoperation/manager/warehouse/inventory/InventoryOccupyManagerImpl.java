@@ -131,7 +131,7 @@ public class InventoryOccupyManagerImpl extends BaseInventoryManagerImpl impleme
     		skuInv.setOccupationLineId(odoLineId);
     		int num = inventoryDao.saveOrUpdateByVersion(skuInv);
     		if (1 == num) {
-    			insertSkuInventoryLog(invId, -qty, oldQty, wh.getIsTabbInvTotal(), wh.getId(), 1L);
+    			insertSkuInventoryLog(invId, occupyCode, occupySource, -qty, oldQty, wh.getIsTabbInvTotal(), wh.getId(), 1L, null);
     			flag = true;
     			break;
 			} else {
@@ -152,7 +152,7 @@ public class InventoryOccupyManagerImpl extends BaseInventoryManagerImpl impleme
 			skuInv.setOnHandQty(skuInv.getOnHandQty() - qty);
 			int num = inventoryDao.saveOrUpdateByVersion(skuInv);
 			if (1 == num) {
-				insertSkuInventoryLog(invId, occupyCode, occupySource, -qty, oldQty, wh.getIsTabbInvTotal(), wh.getId(), 1L);
+				insertSkuInventoryLog(invId, occupyCode, occupySource, -qty, oldQty, wh.getIsTabbInvTotal(), wh.getId(), 1L, null);
 				flag = true;
 				break;
 			} else {

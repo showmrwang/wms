@@ -2052,7 +2052,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                         // 明细集合，方便取数据<odoLineId, odoLineCommand>
                         Map<Long, OdoLineCommand> odoLineCommandMap = new HashMap<>();
                         List<Long> skuGroupOdoLineIdList = new ArrayList<>();
-                        for (OdoLineCommand odoLineCommand : skuGroupBatchOdoLineList) {
+                        for (OdoLineCommand odoLineCommand : skuGroupOdoLineList) {
                             skuGroupOdoLineIdList.add(odoLineCommand.getId());
                             odoLineCommandMap.put(odoLineCommand.getId(), odoLineCommand);
                         }

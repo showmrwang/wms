@@ -211,7 +211,6 @@ public class PoAsnArchivManagerImpl implements PoAsnArchivManager {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
             log.error("PoArchivManagerImpl archivWhPoByShard error" + e);
             throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
         }
@@ -272,7 +271,6 @@ public class PoAsnArchivManagerImpl implements PoAsnArchivManager {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
             log.error("PoArchivManagerImpl archivWhAsn error" + e);
             throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
         }
@@ -294,7 +292,6 @@ public class PoAsnArchivManagerImpl implements PoAsnArchivManager {
             int asn = poAsnArchivDao.deleteAsn(asnid, ouid);
             count += asn;
         } catch (Exception e) {
-            e.printStackTrace();
             log.error("PoArchivManagerImpl deleteWhAsnByShard error" + e);
             throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
         }
