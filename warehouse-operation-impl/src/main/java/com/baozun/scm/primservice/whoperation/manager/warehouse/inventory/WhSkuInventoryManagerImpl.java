@@ -3395,7 +3395,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             whSkuInventoryDao.saveOrUpdateByVersion(skuInv);
             
             // 还原库存日志
-			insertSkuInventoryLog(invId, qty, oldQty, wh.getIsTabbInvTotal(), ouId, 1L);
+			insertSkuInventoryLog(invId, qty, oldQty, wh.getIsTabbInvTotal(), ouId, 1L, null);
 		}
 	}
 	
