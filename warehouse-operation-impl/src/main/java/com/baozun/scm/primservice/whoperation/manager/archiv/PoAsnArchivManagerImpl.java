@@ -16,17 +16,21 @@ import com.baozun.scm.primservice.whoperation.dao.archiv.PoAsnArchivDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnLineDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnSnDao;
+import com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnTransportMgmtDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoLineDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoSnDao;
+import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoTransportMgmtDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnSn;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnTransportMgmt;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoSn;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhPoTransportMgmt;
 import com.baozun.scm.primservice.whoperation.util.DateUtil;
 
 @Service("poAsnArchivManager")
@@ -49,6 +53,10 @@ public class PoAsnArchivManagerImpl implements PoAsnArchivManager {
     private WhAsnLineDao whAsnLineDao;
     @Autowired
     private WhAsnSnDao whAsnSnDao;
+    @Autowired
+    private WhPoTransportMgmtDao whPoTransportMgmtDao;
+    @Autowired
+    private WhAsnTransportMgmtDao whAsnTransportMgmtDao;
 
     /** 备份集团/仓库whPo */
     private static final String WhPoInsert = "id,po_code,ext_code,ext_po_code,ou_id,customer_id,store_id,supplier_id,from_location,to_location,logistics_provider,po_type,ext_po_type,status,is_iqc,po_date,eta,delivery_time,"
@@ -76,16 +84,21 @@ public class PoAsnArchivManagerImpl implements PoAsnArchivManager {
     /** 备份集团BiPoLine */
     /** 备份集团BiPoSn */
     private static final String BiPoSnInsert = "id,po_line_id,sku_id,sn,create_time,created_id,last_modify_time,modified_id";
-
     /** 备份集团BiPoSn */
+
+    /** 备份集团bi/wh_po_transport_mgmt poTransportMgmt */
+    private static final String poTransportMgmt =
+            "id,po_id,transport_service_provider,tracking_number,sender_target_name,sender_target_mobile_phone,sender_target_telephone,sender_target_country,sender_target_province,sender_target_city,sender_target_district,sender_target_villages_towns,sender_target_address,sender_target_email,sender_target_zip";
 
     private static final String T_BI_PO = "t_bi_po";
     private static final String T_BI_PO_LINE = "t_bi_po_line";
     private static final String T_BI_PO_SN = "t_bi_po_sn";
+    private static final String T_BI_PO_TRANSPORT_MGMT = "t_bi_po_transport_mgmt";
 
     private static final String T_WH_PO = "t_wh_po";
     private static final String T_WH_PO_LINE = "t_wh_po_line";
     private static final String T_WH_PO_SN = "t_wh_po_sn";
+    private static final String T_WH_PO_TRANSPORT_MGMT = "t_wh_po_transport_mgmt";
 
 
     /**
@@ -106,6 +119,8 @@ public class PoAsnArchivManagerImpl implements PoAsnArchivManager {
             count += poLine;
             int poSn = poAsnArchivDao.archivBiPoSn(poid, BiPoSnInsert, sysDate);
             count += poSn;
+            int poTm = poAsnArchivDao.archivBiPoTransportMgmt(poid, poTransportMgmt, sysDate);
+            count += poTm;
         } catch (Exception e) {
             log.error("PoArchivManagerImpl archivWhPoByInfo error" + e);
             throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
@@ -128,6 +143,8 @@ public class PoAsnArchivManagerImpl implements PoAsnArchivManager {
             count += poLine;
             int poSn = poAsnArchivDao.archivWhPoSn(poid, WhPoSnInsert, sysDate);
             count += poSn;
+            int poTm = poAsnArchivDao.archivWhPoTransportMgmt(poid, poTransportMgmt, sysDate);
+            count += poTm;
         } catch (Exception e) {
             log.error("PoArchivManagerImpl archivWhPoByInfo error" + e);
             throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
@@ -147,6 +164,8 @@ public class PoAsnArchivManagerImpl implements PoAsnArchivManager {
             count += poSn;
             int poLine = poAsnArchivDao.deletePoLine(poid, T_WH_PO_LINE, null);
             count += poLine;
+            int poTm = poAsnArchivDao.deletePoTransportMgmt(poid, T_WH_PO_TRANSPORT_MGMT, null);
+            count += poTm;
             int po = poAsnArchivDao.deletePo(poid, T_WH_PO, null);
             count += po;
         } catch (Exception e) {
@@ -168,6 +187,8 @@ public class PoAsnArchivManagerImpl implements PoAsnArchivManager {
             count += poSn;
             int poLine = poAsnArchivDao.deletePoLine(poid, T_BI_PO_LINE, null);
             count += poLine;
+            int poTm = poAsnArchivDao.deletePoTransportMgmt(poid, T_BI_PO_TRANSPORT_MGMT, null);
+            count += poTm;
             int po = poAsnArchivDao.deletePo(poid, T_BI_PO, null);
             count += po;
         } catch (Exception e) {
@@ -196,6 +217,13 @@ public class PoAsnArchivManagerImpl implements PoAsnArchivManager {
             // 插入whPoArchiv
             int po = poAsnArchivDao.archivWhPoByShard(whpo);
             count += po;
+            WhPoTransportMgmt ptm = whPoTransportMgmtDao.findWhPoTransportMgmtByPoId(poid, ouid);
+            if (null != ptm) {
+                // 不为空 插入WhPoTransportMgmtArchiv
+                ptm.setSysDate(sysDate);
+                int poTm = poAsnArchivDao.archivWhPoTransportMgmtByShard(ptm);
+                count += poTm;
+            }
             List<WhPoLine> poLineList = whPoLineDao.findWhPoLineByPoIdOuIdUuid(poid, ouid, null);
             for (WhPoLine l : poLineList) {
                 l.setSysDate(sysDate);
@@ -229,6 +257,8 @@ public class PoAsnArchivManagerImpl implements PoAsnArchivManager {
             count += poSn;
             int poLine = poAsnArchivDao.deletePoLine(poid, T_WH_PO_LINE, ouid);
             count += poLine;
+            int poTm = poAsnArchivDao.deletePoTransportMgmt(poid, T_WH_PO_TRANSPORT_MGMT, ouid);
+            count += poTm;
             int po = poAsnArchivDao.deletePo(poid, T_WH_PO, ouid);
             count += po;
         } catch (Exception e) {
@@ -257,6 +287,13 @@ public class PoAsnArchivManagerImpl implements PoAsnArchivManager {
             // 插入whasnArchiv
             int asn = poAsnArchivDao.archivWhAsnByShard(whAsn);
             count += asn;
+            WhAsnTransportMgmt atm = whAsnTransportMgmtDao.findWhAsnTransportMgmtByAsnId(asnid, ouid);
+            if (null != atm) {
+                // 不为空 插入WhAsnTransportMgmtArchiv
+                atm.setSysDate(sysDate);
+                int asnTm = poAsnArchivDao.archivWhAsnTransportMgmtByShard(atm);
+                count += asnTm;
+            }
             List<WhAsnLine> asnLineList = whAsnLineDao.findWhAsnLineByAsnIdOuId(asnid, ouid);
             for (WhAsnLine asnLine : asnLineList) {
                 asnLine.setSysDate(sysDate);
@@ -289,6 +326,8 @@ public class PoAsnArchivManagerImpl implements PoAsnArchivManager {
             count += asnSn;
             int asnLine = poAsnArchivDao.deleteAsnLine(asnid, ouid);
             count += asnLine;
+            int asnTm = poAsnArchivDao.deleteAsnTransportMgmt(asnid, ouid);
+            count += asnTm;
             int asn = poAsnArchivDao.deleteAsn(asnid, ouid);
             count += asn;
         } catch (Exception e) {
