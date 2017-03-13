@@ -2262,4 +2262,51 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         log.info("PdaPickingWorkManagerImpl scanSku is end");
         return command;
     }
+    
+    
+    /***
+     * 缓存库位
+     * @param operationId
+     * @param locationCode
+     * @param ouId
+     */
+    public void cacheLocation(Long operationId,String locationCode,Long ouId){
+        Location location = whLocationDao.findLocationByCode(locationCode, ouId);
+        if(null == location) {
+            location =  whLocationDao.getLocationByBarcode(locationCode, ouId);
+            if(null == location) {
+                throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_LOCATION_NULL); 
+            }
+        }
+        Long locationId = location.getId();
+        pdaPickingWorkCacheManager.cacheLocation(operationId, locationId);
+    }
+    
+    /***
+     * 拣货取消流程
+     * @param outerContainerId
+     * @param insideContainerId
+     * @param cancelPattern
+     * @param pickingType
+     * @param locationId
+     * @param ouId
+     */
+    public void cancelPattern(String carCode,String outerContainerCode,String insideContainerCode, int cancelPattern,int pickingWay,Long locationId,Long ouId,Long operationId){
+        
+        Long carId = null;
+        if(!StringUtils.isEmpty(carCode)) {
+            ContainerCommand cmd =  containerDao.getContainerByCode(carCode, ouId);
+            carId = cmd.getId();
+        }
+        Long outerContainerId = null;
+        if(!StringUtils.isEmpty(outerContainerCode)){
+            ContainerCommand cmd =  containerDao.getContainerByCode(outerContainerCode, ouId);
+            outerContainerId = cmd.getId();
+        }
+        Long insideContainerId = null;
+        if(!StringUtils.isEmpty(insideContainerCode)){
+            ContainerCommand cmd = containerDao.getContainerByCode(insideContainerCode, ouId);
+        }
+        pdaPickingWorkCacheManager.cancelPattern(carId, outerContainerId, insideContainerId, cancelPattern, pickingWay, locationId, ouId,operationId);
+    }
 }
