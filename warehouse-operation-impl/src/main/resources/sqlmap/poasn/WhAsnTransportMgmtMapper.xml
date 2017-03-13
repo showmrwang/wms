@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnTransportMgmtDao">
+	<resultMap id="WhAsnTransportMgmtResult" type="com.baozun.scm.primservice.whoperation.model.poasn.WhAsnTransportMgmt">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whAsnTransportMgmtColumns">
+	    <![CDATA[
+	        	id as id,
+	        	asn_id as asnId,
+	        	transport_service_provider as transportServiceProvider,
+	        	tracking_number as trackingNumber,
+	        	sender_target_name as senderTargetName,
+	        	sender_target_mobile_phone as senderTargetMobilePhone,
+	        	sender_target_telephone as senderTargetTelephone,
+	        	sender_target_country as senderTargetCountry,
+	        	sender_target_province as senderTargetProvince,
+	        	sender_target_city as senderTargetCity,
+	        	sender_target_district as senderTargetDistrict,
+	        	sender_target_villages_towns as senderTargetVillagesTowns,
+	        	sender_target_address as senderTargetAddress,
+	        	sender_target_email as senderTargetEmail,
+	        	sender_target_zip as senderTargetZip,
+	        	ou_id as ouId
+	    ]]>
+	</sql>
+	
+		<!-- 如果有自增字段 -->
+		
+			<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+			<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.poasn.WhAsnTransportMgmt" 
+				
+			 flushCache="true">
+		    <![CDATA[
+		        INSERT INTO
+		        t_wh_asn_transport_mgmt (
+		        id,
+		        	asn_id ,
+		        	transport_service_provider ,
+		        	tracking_number ,
+		        	sender_target_name ,
+		        	sender_target_mobile_phone ,
+		        	sender_target_telephone ,
+		        	sender_target_country ,
+		        	sender_target_province ,
+		        	sender_target_city ,
+		        	sender_target_district ,
+		        	sender_target_villages_towns ,
+		        	sender_target_address ,
+		        	sender_target_email ,
+		        	sender_target_zip ,
+		        	ou_id 
+		        ) VALUES (
+		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{asnId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{transportServiceProvider,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{trackingNumber,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{senderTargetName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{senderTargetMobilePhone,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{senderTargetTelephone,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{senderTargetCountry,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{senderTargetProvince,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{senderTargetCity,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{senderTargetDistrict,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{senderTargetVillagesTowns,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{senderTargetAddress,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{senderTargetEmail,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{senderTargetZip,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        )
+		    ]]>
+
+		</insert>
+		
+		
+		<update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.poasn.WhAsnTransportMgmt">
+	    <![CDATA[
+	        UPDATE t_wh_asn_transport_mgmt SET
+		        asn_id = #{asnId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        transport_service_provider = #{transportServiceProvider,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        tracking_number = #{trackingNumber,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        sender_target_name = #{senderTargetName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        sender_target_mobile_phone = #{senderTargetMobilePhone,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        sender_target_telephone = #{senderTargetTelephone,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        sender_target_country = #{senderTargetCountry,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        sender_target_province = #{senderTargetProvince,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        sender_target_city = #{senderTargetCity,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        sender_target_district = #{senderTargetDistrict,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        sender_target_villages_towns = #{senderTargetVillagesTowns,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        sender_target_address = #{senderTargetAddress,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        sender_target_email = #{senderTargetEmail,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        sender_target_zip = #{senderTargetZip,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+		</update>
+	   <delete id="delete" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from t_wh_asn_transport_mgmt where
+		        id = #{id} 
+	    ]]>
+	    </delete> 
+	    
+	     <delete id="deleteByIds" parameterType="list">
+	    
+	        delete from t_wh_asn_transport_mgmt 
+	        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>	
+	  
+	    </delete>  
+	         
+	    <select id="findById" parameterType="java.lang.Long" resultMap="WhAsnTransportMgmtResult" flushCache="false">
+			select <include refid="whAsnTransportMgmtColumns" />
+		    <![CDATA[
+			    from t_wh_asn_transport_mgmt 
+		        where 
+		        id = #{id} 
+		    ]]>
+		</select>	
+		<select id="getByIds" parameterType="list"  resultMap="WhAsnTransportMgmtResult" flushCache="false">
+			select <include refid="whAsnTransportMgmtColumns" />
+			    from t_wh_asn_transport_mgmt 
+		        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>					
+		</select>	
+	<sql id="whAsnTransportMgmtDynamicWhere">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+				<if test="asnId!=null">
+					and asn_id = #{asnId}
+				</if>
+	       
+	       
+		       <if test="transportServiceProvider!=null and transportServiceProvider!=''">
+					and transport_service_provider = #{transportServiceProvider}
+				</if>
+	       
+	       
+		       <if test="trackingNumber!=null and trackingNumber!=''">
+					and tracking_number = #{trackingNumber}
+				</if>
+	       
+	       
+		       <if test="senderTargetName!=null and senderTargetName!=''">
+					and sender_target_name = #{senderTargetName}
+				</if>
+	       
+	       
+		       <if test="senderTargetMobilePhone!=null and senderTargetMobilePhone!=''">
+					and sender_target_mobile_phone = #{senderTargetMobilePhone}
+				</if>
+	       
+	       
+		       <if test="senderTargetTelephone!=null and senderTargetTelephone!=''">
+					and sender_target_telephone = #{senderTargetTelephone}
+				</if>
+	       
+	       
+		       <if test="senderTargetCountry!=null and senderTargetCountry!=''">
+					and sender_target_country = #{senderTargetCountry}
+				</if>
+	       
+	       
+		       <if test="senderTargetProvince!=null and senderTargetProvince!=''">
+					and sender_target_province = #{senderTargetProvince}
+				</if>
+	       
+	       
+		       <if test="senderTargetCity!=null and senderTargetCity!=''">
+					and sender_target_city = #{senderTargetCity}
+				</if>
+	       
+	       
+		       <if test="senderTargetDistrict!=null and senderTargetDistrict!=''">
+					and sender_target_district = #{senderTargetDistrict}
+				</if>
+	       
+	       
+		       <if test="senderTargetVillagesTowns!=null and senderTargetVillagesTowns!=''">
+					and sender_target_villages_towns = #{senderTargetVillagesTowns}
+				</if>
+	       
+	       
+		       <if test="senderTargetAddress!=null and senderTargetAddress!=''">
+					and sender_target_address = #{senderTargetAddress}
+				</if>
+	       
+	       
+		       <if test="senderTargetEmail!=null and senderTargetEmail!=''">
+					and sender_target_email = #{senderTargetEmail}
+				</if>
+	       
+	       
+		       <if test="senderTargetZip!=null and senderTargetZip!=''">
+					and sender_target_zip = #{senderTargetZip}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+		</where>
+	</sql>
+	
+
+	<select id="getCount" resultType="long">
+        select count(*) from t_wh_asn_transport_mgmt 
+    </select>
+    <select id="findListCountByQueryMap" resultType="long">
+        select count(*) from t_wh_asn_transport_mgmt 
+		<include refid="whAsnTransportMgmtDynamicWhere"/>    
+    </select>
+    
+    <select id="findListCountByParam" resultType="long">
+        select count(*) from t_wh_asn_transport_mgmt 
+		<include refid="whAsnTransportMgmtDynamicWhere"/>    
+    </select>
+    
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPage" resultMap="WhAsnTransportMgmtResult">
+    	select <include refid="whAsnTransportMgmtColumns" />
+	    from t_wh_asn_transport_mgmt 
+		<include refid="whAsnTransportMgmtDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByQueryMap" resultMap="WhAsnTransportMgmtResult">
+    	select <include refid="whAsnTransportMgmtColumns" />
+	    from t_wh_asn_transport_mgmt 
+		<include refid="whAsnTransportMgmtDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByParam" resultMap="WhAsnTransportMgmtResult">
+    	select <include refid="whAsnTransportMgmtColumns" />
+	    from t_wh_asn_transport_mgmt 
+		<include refid="whAsnTransportMgmtDynamicWhere"/>
+		
+    </select>
+
+	
+</mapper>

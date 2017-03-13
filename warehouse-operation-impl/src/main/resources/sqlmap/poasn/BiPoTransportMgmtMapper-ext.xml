@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.poasn.BiPoTransportMgmtDao">
+	<resultMap id="BiPoTransportMgmtResultExt" type="com.baozun.scm.primservice.whoperation.model.poasn.BiPoTransportMgmt">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="biPoTransportMgmtColumnsExt">
+	    <![CDATA[
+	        	id as id,
+	        	po_id as poId,
+	        	transport_service_provider as transportServiceProvider,
+	        	tracking_number as trackingNumber,
+	        	sender_target_name as senderTargetName,
+	        	sender_target_mobile_phone as senderTargetMobilePhone,
+	        	sender_target_telephone as senderTargetTelephone,
+	        	sender_target_country as senderTargetCountry,
+	        	sender_target_province as senderTargetProvince,
+	        	sender_target_city as senderTargetCity,
+	        	sender_target_district as senderTargetDistrict,
+	        	sender_target_villages_towns as senderTargetVillagesTowns,
+	        	sender_target_address as senderTargetAddress,
+	        	sender_target_email as senderTargetEmail,
+	        	sender_target_zip as senderTargetZip
+	    ]]>
+	</sql>
+	
+	<sql id="biPoTransportMgmtDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+				<if test="poId!=null">
+					and po_id = #{poId}
+				</if>
+	       
+	       
+		       <if test="transportServiceProvider!=null and transportServiceProvider!=''">
+					and transport_service_provider = #{transportServiceProvider}
+				</if>
+	       
+	       
+		       <if test="trackingNumber!=null and trackingNumber!=''">
+					and tracking_number = #{trackingNumber}
+				</if>
+	       
+	       
+		       <if test="senderTargetName!=null and senderTargetName!=''">
+					and sender_target_name = #{senderTargetName}
+				</if>
+	       
+	       
+		       <if test="senderTargetMobilePhone!=null and senderTargetMobilePhone!=''">
+					and sender_target_mobile_phone = #{senderTargetMobilePhone}
+				</if>
+	       
+	       
+		       <if test="senderTargetTelephone!=null and senderTargetTelephone!=''">
+					and sender_target_telephone = #{senderTargetTelephone}
+				</if>
+	       
+	       
+		       <if test="senderTargetCountry!=null and senderTargetCountry!=''">
+					and sender_target_country = #{senderTargetCountry}
+				</if>
+	       
+	       
+		       <if test="senderTargetProvince!=null and senderTargetProvince!=''">
+					and sender_target_province = #{senderTargetProvince}
+				</if>
+	       
+	       
+		       <if test="senderTargetCity!=null and senderTargetCity!=''">
+					and sender_target_city = #{senderTargetCity}
+				</if>
+	       
+	       
+		       <if test="senderTargetDistrict!=null and senderTargetDistrict!=''">
+					and sender_target_district = #{senderTargetDistrict}
+				</if>
+	       
+	       
+		       <if test="senderTargetVillagesTowns!=null and senderTargetVillagesTowns!=''">
+					and sender_target_villages_towns = #{senderTargetVillagesTowns}
+				</if>
+	       
+	       
+		       <if test="senderTargetAddress!=null and senderTargetAddress!=''">
+					and sender_target_address = #{senderTargetAddress}
+				</if>
+	       
+	       
+		       <if test="senderTargetEmail!=null and senderTargetEmail!=''">
+					and sender_target_email = #{senderTargetEmail}
+				</if>
+	       
+	       
+		       <if test="senderTargetZip!=null and senderTargetZip!=''">
+					and sender_target_zip = #{senderTargetZip}
+				</if>
+		</where>
+	</sql>
+	
+</mapper>
