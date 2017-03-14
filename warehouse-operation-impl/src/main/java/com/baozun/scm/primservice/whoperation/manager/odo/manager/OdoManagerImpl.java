@@ -28,7 +28,7 @@ import com.baozun.scm.primservice.whoperation.command.odo.OdoLineCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoResultCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoSearchCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoTransportMgmtCommand;
-import com.baozun.scm.primservice.whoperation.command.odo.WhOdoLineAttrSnCommand;
+import com.baozun.scm.primservice.whoperation.command.odo.WhOdoLineSnCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.WhOdoVasCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.OdoWaveGroupResultCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.OdoWaveGroupSearchCommand;
@@ -41,7 +41,7 @@ import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
 import com.baozun.scm.primservice.whoperation.dao.localauth.OperUserDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoAddressDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
-import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineAttrSnDao;
+import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineSnDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoTransportMgmtDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoVasDao;
@@ -62,7 +62,7 @@ import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAddress;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoInvoice;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoInvoiceLine;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
-import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLineAttrSn;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLineSn;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoVas;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
@@ -83,7 +83,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     @Autowired
     private WhOdoLineDao whOdoLineDao;
     @Autowired
-    private WhOdoLineAttrSnDao whOdoLineAttrSnDao;
+    private WhOdoLineSnDao whOdoLineAttrSnDao;
     @Autowired
     private WhOdoTransportMgmtDao whOdoTransportMgmtDao;
     @Autowired
@@ -338,8 +338,8 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                         }
                     }
                     if (lineCommand.getLineSnList() != null && lineCommand.getLineSnList().size() > 0) {
-                        for (WhOdoLineAttrSnCommand snCommand : lineCommand.getLineSnList()) {
-                            WhOdoLineAttrSn sn=new WhOdoLineAttrSn();
+                        for (WhOdoLineSnCommand snCommand : lineCommand.getLineSnList()) {
+                            WhOdoLineSn sn=new WhOdoLineSn();
                             BeanUtils.copyProperties(snCommand, sn);
                             sn.setOuId(ouId);
                             sn.setOdoLineId(odoId);

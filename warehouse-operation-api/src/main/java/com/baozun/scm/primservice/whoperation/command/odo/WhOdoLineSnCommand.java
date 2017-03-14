@@ -2,7 +2,7 @@ package com.baozun.scm.primservice.whoperation.command.odo;
 
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
 
-public class WhOdoLineAttrSnCommand extends BaseCommand{
+public class WhOdoLineSnCommand extends BaseCommand{
     /**
      * 
      */
