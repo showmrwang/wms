@@ -271,7 +271,8 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
 
         }
         // 封装波次头
-        packageWave(wave, waveLineMap, master, ouId, offOdoLineList, noModeOdoList.size());
+        // @mender yimin.lu 2017/3/14 剔除波次 接口方法调整
+        // packageWave(wave, waveLineMap, master, ouId, offOdoLineList, noModeOdoList.size());
         // 保存
         this.whWaveManager.matchWaveDisTributionMode(odoList, offWaveLineList, offOdoLineList, wave, ouId, userId, wh);
 

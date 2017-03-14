@@ -175,10 +175,13 @@ public interface WhWaveManager extends BaseManager {
     /**
      * [业务方法] 整出库单剔除并释放库存
      * 
-     * @param odoId
-     * @param wave
+     * @param waveId
+     * @param odoIds
+     * @param reason
+     * @param wh
+     * @param wavePhase
      */
-	void deleteWaveLinesAndReleaseInventoryByOdoIdList(Long waveId, Collection<Long> odoIds, String reason, Warehouse wh);
+    void deleteWaveLinesAndReleaseInventoryByOdoIdList(Long waveId, Collection<Long> odoIds, String reason, Warehouse wh);
     
 	/**
      * [业务方法] 在一个波次中查找包含skuIds的OdoId
