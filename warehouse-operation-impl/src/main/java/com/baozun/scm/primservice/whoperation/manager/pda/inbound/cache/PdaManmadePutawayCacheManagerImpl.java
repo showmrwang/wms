@@ -2033,8 +2033,10 @@ public class PdaManmadePutawayCacheManagerImpl extends BaseManagerImpl implement
                    cacheManager.removeMapValue(CacheConstants.PDA_MAN_MANDE_CONTAINER_INVENTORY, outerContainerId.toString());
                    cacheManager.removeMapValue(CacheConstants.PDA_MAN_MANDE_SCAN_CONTAINER_QUEUE, outerContainerId.toString());
                }else{
-                   cacheManager.removeMapValue(CacheConstants.PDA_MAN_MANDE_CONTAINER_INVENTORY_STATISTIC, insideContainerId.toString());
-                   cacheManager.removeMapValue(CacheConstants.PDA_MAN_MANDE_CONTAINER_INVENTORY, insideContainerId.toString());
+                   if(null != insideContainerId) {
+                       cacheManager.removeMapValue(CacheConstants.PDA_MAN_MANDE_CONTAINER_INVENTORY_STATISTIC, insideContainerId.toString());
+                       cacheManager.removeMapValue(CacheConstants.PDA_MAN_MANDE_CONTAINER_INVENTORY, insideContainerId.toString());
+                   }
                }
            }
        }
