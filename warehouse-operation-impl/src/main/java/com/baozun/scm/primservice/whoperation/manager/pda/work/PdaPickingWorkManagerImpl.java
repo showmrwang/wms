@@ -1992,9 +1992,9 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             pickingScanResultCommand.setPickingWay(Constants.PICKING_WAY_ONE);
         }else if(whOperationCommand.getIsWholeCase() == false && statisticsCommand.getOuterContainers().size() > 0 && statisticsCommand.getOutbounxBoxs().size() > 0){
             pickingScanResultCommand.setPickingWay(Constants.PICKING_WAY_TWO);
-        }else if(whOperationCommand.getIsWholeCase() == false && statisticsCommand.getOuterContainers().size() == 0 && statisticsCommand.getOutbounxBoxs().size() == 0){
+        }else if(whOperationCommand.getIsWholeCase() == false && statisticsCommand.getOuterContainers().size() == 0 && statisticsCommand.getOutbounxBoxs().size() > 0){
             pickingScanResultCommand.setPickingWay(Constants.PICKING_WAY_THREE);
-        }else if(whOperationCommand.getIsWholeCase() == false && statisticsCommand.getOuterContainers().size() == 0 && statisticsCommand.getTurnoverBoxs().size() == 0){
+        }else if(whOperationCommand.getIsWholeCase() == false && statisticsCommand.getOuterContainers().size() == 0 && statisticsCommand.getTurnoverBoxs().size() > 0){
             pickingScanResultCommand.setPickingWay(Constants.PICKING_WAY_FOUR);
         }else if(whOperationCommand.getIsWholeCase() == true && statisticsCommand.getPallets().size() > 0 && statisticsCommand.getPallets().size() > 0){
             pickingScanResultCommand.setPickingWay(Constants.PICKING_WAY_FIVE);
