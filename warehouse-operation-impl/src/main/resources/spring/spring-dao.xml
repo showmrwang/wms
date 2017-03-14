@@ -75,7 +75,7 @@
 
 		  <!-- mybatis数据映射配置文件扫描器配置 -->  
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">  
-        <property name="basePackage" value="com.baozun.scm.primservice.whoperation.**.dao" />  
+        <property name="basePackage" value="com.baozun.scm.primservice.**.dao" />  
 <!--         只有声明了com.lxl.core.SqlMapper注解的接口才可以被扫描   -->
 <!--         <property name="annotationClass" value="lark.orm.annotation.Query"/>   -->
     </bean>
