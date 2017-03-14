@@ -747,9 +747,7 @@ public class ErrorCodes {
     public static final int  OUT_BOUNX_BOX_IS_NO_NULL = 70045;
     /**推荐周转箱不能为空*/
     public static final int  TURNOVER_BOX_IS_NO_NULL = 70046;
-    /**推荐小车状态不可用*/
-    public static final int OUT_CONTAINER_IS_NOT_NORMAL = 70047;
-    /**推荐小车状态不可用*/
+    /**推荐出库箱状态不可用*/
     public static final int OUT_BOUNDBOX_IS_NOT_NORMAL = 70048;
     /**推荐出库箱不正确*/
     public static final int  OUT_BOUNX_BOX_IS_STATUS_NO= 70049;
@@ -771,7 +769,7 @@ public class ErrorCodes {
     public static final int TIP_LOCATION_FAIL= 70056;
     /**提示周转箱失败*/
     public static final int TIP_CONTAINER_FAIL=70057;
-    
+    /**缓存失败*/
     public static final int CHECK_INVENTORY_IS_ERROR=70058;
     
     /**分配库存不存在*/
