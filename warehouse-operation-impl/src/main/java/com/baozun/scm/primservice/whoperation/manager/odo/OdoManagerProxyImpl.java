@@ -166,9 +166,10 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             // 原始数据集合
             OdoCommand sourceOdo = odoGroup.getOdo();
             //#TODO yimin.lu 设置状态逻辑 暂时放于此位置
-            if(odoGroup.getIsWms()!=null&&!odoGroup.getIsWms()){
+            if (odoGroup.getIsWms() != null && odoGroup.getIsWms()) {
                 sourceOdo.setOdoStatus(OdoStatus.ODO_TOBECREATED);
             }
+
             List<OdoLineCommand> sourceOdoLineList = odoGroup.getOdoLineList();
             OdoTransportMgmtCommand sourceOdoTrans = odoGroup.getTransPortMgmt();
             WhOdoAddress sourceAddress = odoGroup.getWhOdoAddress();
@@ -262,8 +263,19 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             }
 
             // 匹配配货模式
-
             transportMgmt.setOuId(ouId);
+            try {
+
+                if (StringUtils.hasText(transportMgmt.getDeliverGoodsTimeStr())) {
+                    transportMgmt.setDeliverGoodsTime(DateUtils.parseDate(transportMgmt.getDeliverGoodsTimeStr(), Constants.DATE_PATTERN_YMD));
+                }
+                if (StringUtils.hasText(transportMgmt.getPlanDeliverGoodsTimeStr())) {
+                    transportMgmt.setPlanDeliverGoodsTime(DateUtils.parseDate(transportMgmt.getPlanDeliverGoodsTimeStr(), Constants.DATE_PATTERN_YMD));
+                }
+            } catch (Exception ex) {
+                log.error(ex + "");
+                throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+            }
             odoId = this.odoManager.createOdo(odo, odoLineList, transportMgmt, odoAddress, invoice, invoiceLineList, ouId, userId);
         } catch (BusinessException e) {
             throw e;
