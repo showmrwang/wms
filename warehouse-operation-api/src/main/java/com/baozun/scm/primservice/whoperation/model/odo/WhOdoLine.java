@@ -131,6 +131,10 @@ public class WhOdoLine extends BaseModel {
     private Long modifiedId;
     /** 波次号 */
     private String waveCode;
+
+    /** 当前月份 用于归档 */
+    private String sysDate;
+
     // columns END
 
     public Long getOdoId() {
@@ -523,6 +527,14 @@ public class WhOdoLine extends BaseModel {
 
     public void setPlanQty(Double planQty) {
         this.planQty = planQty;
+    }
+
+    public String getSysDate() {
+        return sysDate;
+    }
+
+    public void setSysDate(String sysDate) {
+        this.sysDate = sysDate;
     }
 
 }

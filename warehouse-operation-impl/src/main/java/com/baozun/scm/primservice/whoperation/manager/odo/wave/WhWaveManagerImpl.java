@@ -606,7 +606,6 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
     	Long ouId = wh.getId();
 		for (Long odoId : odoIds) {
 			this.deleteWaveLinesAndReleaseInventoryByOdoId(waveId, odoId, reason, wh);
-			log.info("releaseOdoFromWave, odoId:[{}],waveId:[{}],ouId:[{}]", odoId, waveId, ouId);
 		}
 		this.calculateWaveHeadInfo(waveId, ouId);
     }

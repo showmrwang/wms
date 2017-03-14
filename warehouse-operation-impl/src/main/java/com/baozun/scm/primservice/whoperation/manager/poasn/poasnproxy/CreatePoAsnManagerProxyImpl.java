@@ -56,6 +56,7 @@ import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhPoTransportMgmt;
 import com.baozun.scm.primservice.whoperation.model.sku.Sku;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
@@ -533,12 +534,15 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
 
 
     private void createPoDefault(WhPo whPo, List<WhPoLine> whPoLines, Long ouId) {
-        biPoManager.createPoAndLineToInfo(whPo, whPoLines);
-        if (ouId != null) {
-            whPo.setPoCode(getUniqueCode());
-            biPoManager.createPoAndLineToShared(whPo, whPoLines);
-        }
-
+        this.createPoDefault(whPo, null, whPoLines, ouId);
+    }
+    
+    private void createPoDefault(WhPo whPo, WhPoTransportMgmt whPoTm, List<WhPoLine> whPoLines, Long ouId) {
+    	biPoManager.createPoAndLineToInfo(whPo, whPoTm, whPoLines);
+    	if (ouId != null) {
+    		whPo.setPoCode(getUniqueCode());
+    		biPoManager.createPoAndLineToShared(whPo, whPoTm, whPoLines);
+    	}
     }
 
     @Override
@@ -1200,8 +1204,8 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
      * 创建上位系统传入的Po
      */
 	@Override
-	public void createPoByExt(WhPo whPo, List<WhPoLine> whPoLines, Long ouId) {
+	public void createPoByExt(WhPo whPo, WhPoTransportMgmt whPoTm, List<WhPoLine> whPoLines, Long ouId) {
 		// 复用同一套创建Po的逻辑
-		this.createPoDefault(whPo, whPoLines, ouId);
+		this.createPoDefault(whPo, whPoTm, whPoLines, ouId);
 	}
 }

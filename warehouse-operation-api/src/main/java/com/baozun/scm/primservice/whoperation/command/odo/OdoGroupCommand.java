@@ -6,7 +6,7 @@ import com.baozun.scm.primservice.whoperation.command.BaseCommand;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAddress;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoInvoice;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoInvoiceLine;
-import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLineAttrSn;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLineSn;
 
 public class OdoGroupCommand extends BaseCommand {
     /**
@@ -32,7 +32,7 @@ public class OdoGroupCommand extends BaseCommand {
     /***/
     private Long odoLineId;
 
-    private List<WhOdoLineAttrSn> lineSnList;
+    private List<WhOdoLineSn> lineSnList;
 
     private WhOdoInvoice odoInvoice;
 
@@ -64,11 +64,11 @@ public class OdoGroupCommand extends BaseCommand {
         this.odoInvoiceLineList = odoInvoiceLineList;
     }
 
-    public List<WhOdoLineAttrSn> getLineSnList() {
+    public List<WhOdoLineSn> getLineSnList() {
         return lineSnList;
     }
 
-    public void setLineSnList(List<WhOdoLineAttrSn> lineSnList) {
+    public void setLineSnList(List<WhOdoLineSn> lineSnList) {
         this.lineSnList = lineSnList;
     }
 

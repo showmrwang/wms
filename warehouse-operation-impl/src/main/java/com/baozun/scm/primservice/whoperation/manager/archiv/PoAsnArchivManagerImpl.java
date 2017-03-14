@@ -33,6 +33,12 @@ import com.baozun.scm.primservice.whoperation.model.poasn.WhPoSn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoTransportMgmt;
 import com.baozun.scm.primservice.whoperation.util.DateUtil;
 
+/**
+ * 入库单归档
+ * 
+ * @author bin.hu
+ *
+ */
 @Service("poAsnArchivManager")
 @Transactional
 public class PoAsnArchivManagerImpl implements PoAsnArchivManager {
@@ -209,7 +215,7 @@ public class PoAsnArchivManagerImpl implements PoAsnArchivManager {
             String sysDate = DateUtil.getSysDate();
             WhPo whpo = whPoDao.findWhPoById(poid, ouid);
             if (null == whpo) {
-                log.warn("PoArchivManagerImpl archivWhPoByShard error whpo is null poid:" + poid + " ouid:" + ouid);
+                log.warn("PoArchivManagerImpl archivWhPoByShard warn whpo is null poid:" + poid + " ouid:" + ouid);
                 return count;
             }
             whpo.setSysDate(sysDate);
@@ -279,7 +285,7 @@ public class PoAsnArchivManagerImpl implements PoAsnArchivManager {
             String sysDate = DateUtil.getSysDate();
             WhAsn whAsn = whAsnDao.findWhAsnById(asnid, ouid);
             if (null == whAsn) {
-                log.warn("PoArchivManagerImpl archivWhAsn error WhAsn is null asnid:" + asnid + " ouid:" + ouid);
+                log.warn("PoArchivManagerImpl archivWhAsn warn WhAsn is null asnid:" + asnid + " ouid:" + ouid);
                 return count;
             }
             whAsn.setSysDate(sysDate);
