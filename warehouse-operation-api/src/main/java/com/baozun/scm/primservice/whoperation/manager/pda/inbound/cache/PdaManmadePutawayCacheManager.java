@@ -133,4 +133,14 @@ public interface PdaManmadePutawayCacheManager extends BaseManager {
 
    
    public CheckScanSkuResultCommand  manMadeContainerCacheContainer(ContainerCommand ocCmd, ContainerCommand icCmd, Set<Long> insideContainerIds,String logId);
+   
+   
+   /***
+    * 取消流程(清除缓存)
+    * @param outerContainer
+    * @param insideContainer
+    * @param skuId
+    * @param locationId
+    */
+   public void cancelPath(Long outerContainerId,Long insideContainerId, int cancelPattern,int putawayPatternDetailType,Long locationId,Long ouId);
 }

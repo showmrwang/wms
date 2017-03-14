@@ -185,5 +185,14 @@ public interface PdaPickingWorkCacheManager extends BaseManager{
       */
      public void pdaReplenishmentUpdateOperation(Long operationId,Long ouId,Long userId);
       
-    
+     /***
+      * 拣货取消流程
+      * @param outerContainerId
+      * @param insideContainerId
+      * @param cancelPattern
+      * @param pickingType
+      * @param locationId
+      * @param ouId
+      */
+     public void cancelPattern(Long carId,Long outerContainerId,Long insideContainerId, int cancelPattern,int pickingWay,Long locationId,Long ouId,Long operationId);
 }

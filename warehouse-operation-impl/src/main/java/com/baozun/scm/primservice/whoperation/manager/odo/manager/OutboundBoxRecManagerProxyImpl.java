@@ -890,7 +890,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
             if (null == odoLineAvailableBoxListMap.get(odoLine) || odoLineAvailableBoxListMap.get(odoLine).isEmpty()) {
                 // 添加到下一个匹配范围
                 unmatchedBoxOdoLineList.add(odoLine);
-                // 收藏当前的分配列表移除
+                // 从当前的分配列表移除
                 odoLineList.remove(odoLine);
             }
         }
@@ -933,23 +933,23 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                 if (0 == odoLine.getQty()) {
                     odoLineIterator.remove();
                 }
-                // 箱子不为空的
-                if (!odoLineOutBoundBoxMap.isEmpty()) {
-                    // 出库箱装箱包裹列表
-                    List<WhOdoOutBoundBoxCommand> newBoxOdoOutboundBoxList = new ArrayList<>();
-                    // 创建出库箱编码，设置包裹的出库箱编码
-                    String outboundBoxCode = this.codeManager.generateCode(Constants.WMS, Constants.OUTBOUNDBOX_CODE, null, null, null);
-                    for (WhOdoOutBoundBoxCommand odoOutBoundBox : odoLineOutBoundBoxMap.values()) {
-                        odoOutBoundBox.setOutbounxboxTypeCode(outboundBoxCode);
-                        newBoxOdoOutboundBoxList.add(odoOutBoundBox);
-                    }
-                    // 将明细包裹放入箱子
-                    newBox.setOdoOutBoundBoxCommandList(newBoxOdoOutboundBoxList);
-                    // 将箱子添加到箱子列表
-                    packingBoxList.add(newBox);
-
-                }
             }// end-while 遍历明细，试着将明细的商品放入出库箱
+            // 箱子不为空的
+            if (!odoLineOutBoundBoxMap.isEmpty()) {
+                // 出库箱装箱包裹列表
+                List<WhOdoOutBoundBoxCommand> newBoxOdoOutboundBoxList = new ArrayList<>();
+                // 创建出库箱编码，设置包裹的出库箱编码
+                String outboundBoxCode = this.codeManager.generateCode(Constants.WMS, Constants.OUTBOUNDBOX_CODE, null, null, null);
+                for (WhOdoOutBoundBoxCommand odoOutBoundBox : odoLineOutBoundBoxMap.values()) {
+                    odoOutBoundBox.setOutbounxboxTypeCode(outboundBoxCode);
+                    newBoxOdoOutboundBoxList.add(odoOutBoundBox);
+                }
+                // 将明细包裹放入箱子
+                newBox.setOdoOutBoundBoxCommandList(newBoxOdoOutboundBoxList);
+                // 将箱子添加到箱子列表
+                packingBoxList.add(newBox);
+
+            }
         }// end-while 分配出库箱装箱
         return unmatchedBoxOdoLineList;
     }
@@ -2052,7 +2052,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                         // 明细集合，方便取数据<odoLineId, odoLineCommand>
                         Map<Long, OdoLineCommand> odoLineCommandMap = new HashMap<>();
                         List<Long> skuGroupOdoLineIdList = new ArrayList<>();
-                        for (OdoLineCommand odoLineCommand : skuGroupBatchOdoLineList) {
+                        for (OdoLineCommand odoLineCommand : skuGroupOdoLineList) {
                             skuGroupOdoLineIdList.add(odoLineCommand.getId());
                             odoLineCommandMap.put(odoLineCommand.getId(), odoLineCommand);
                         }

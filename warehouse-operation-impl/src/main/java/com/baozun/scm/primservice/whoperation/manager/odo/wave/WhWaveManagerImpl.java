@@ -568,84 +568,14 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
 
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void matchWaveDisTributionMode(List<WhOdo> odoList, List<WhWaveLine> offWaveLineList, List<WhOdoLine> offOdoLineList, WhWave wave, Long ouId, Long userId, Warehouse wh) {
-        for (WhWaveLine line : offWaveLineList) {
-            this.whWaveLineDao.deleteByIdOuId(line.getId(), ouId);
-        }
-        for (WhOdoLine line : offOdoLineList) {
-            if (userId != null) {
-                line.setModifiedId(userId);
-            }
-            int updateCount = this.whOdoLineDao.saveOrUpdateByVersion(line);
-            if (updateCount <= 0) {
-                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-            }
-
-        }
+        // #mender yimin.lu 获取需要提出波次的出库单集合
+        List<Long> odoIdList = new ArrayList<Long>();
         for (WhOdo odo : odoList) {
-            if (userId != null) {
-                odo.setModifiedId(userId);
-            }
-            int updateCount = this.whOdoDao.saveOrUpdateByVersion(odo);
-            if (updateCount <= 0) {
-                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-            }
             if (StringUtils.isEmpty(odo.getWaveCode())) {
-                this.deleteWaveLinesAndReleaseInventoryByOdoId(wave.getId(), odo.getId(), Constants.DISTRIBUTE_MODE_FAIL, wh);
-
-                // 获得需要回滚的库存：已分配和待移入。
-                List<WhSkuInventory> skuInvList = this.whSkuInventoryDao.findbyOccupationCode(odo.getOdoCode(), ouId);
-                if (skuInvList != null && skuInvList.size() > 0) {
-                    for (WhSkuInventory skuInv : skuInvList) {
-                        skuInv.setOccupationCode(null);
-                        skuInv.setOccupationCodeSource(null);
-                        skuInv.setOccupationLineId(null);
-                        int updateSkuInvCount = this.whSkuInventoryDao.saveOrUpdateByVersion(skuInv);
-                        if (updateSkuInvCount <= 0) {
-                            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-                        }
-                    }
-                }
-                List<WhSkuInventoryAllocated> skuInvAllocatedList = this.whSkuInventoryAllocatedDao.findbyOccupationCode(odo.getOdoCode(), ouId);
-                if (skuInvAllocatedList != null && skuInvAllocatedList.size() > 0) {
-                    for (WhSkuInventoryAllocated invAllocated : skuInvAllocatedList) {
-                        this.whSkuInventoryAllocatedDao.deleteExt(invAllocated.getId(), ouId);
-                    }
-                }
-                List<WhSkuInventoryTobefilled> skuInvTobefilledList = this.whSkuInventoryTobefilledDao.findbyOccupationCode(odo.getOdoCode(), ouId);
-                if (skuInvTobefilledList != null && skuInvTobefilledList.size() > 0) {
-                    for (WhSkuInventoryTobefilled invTobefilled : skuInvTobefilledList) {
-                        this.whSkuInventoryTobefilledDao.deleteByExt(invTobefilled.getId(), ouId);
-                    }
-                }
+                odoIdList.add(odo.getId());
             }
         }
-        ReplenishmentTask task = new ReplenishmentTask();
-        task.setOuId(ouId);
-        task.setWaveId(wave.getId());
-        task.setStatus(ReplenishmentTaskStatus.REPLENISHMENT_TASK_NEW);
-        List<ReplenishmentTask> rtList = this.replenishmentTaskDao.findListByParam(task);
-        if (rtList != null && rtList.size() > 0) {
-            for (ReplenishmentTask rt : rtList) {
-                if (WaveStatus.WAVE_EXECUTED == wave.getStatus()) {
-                    rt.setStatus(ReplenishmentTaskStatus.REPLENISHMENT_TASK_CANCEL);
-                    this.replenishmentTaskDao.saveOrUpdateByVersion(rt);
-                } else {
-                    WhSkuInventoryTobefilled tbfInv = new WhSkuInventoryTobefilled();
-                    tbfInv.setOuId(ouId);
-                    tbfInv.setReplenishmentCode(rt.getReplenishmentCode());
-                    List<WhSkuInventoryTobefilled> tbfInvList = this.whSkuInventoryTobefilledDao.findskuInventoryTobefilleds(tbfInv);
-                    if (tbfInvList == null || tbfInvList.size() == 0) {
-                        rt.setStatus(ReplenishmentTaskStatus.REPLENISHMENT_TASK_CANCEL);
-                        this.replenishmentTaskDao.saveOrUpdateByVersion(rt);
-                    }
-                }
-            }
-        }
-        int updateCount = this.whWaveDao.saveOrUpdateByVersion(wave);
-        if (updateCount <= 0) {
-            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-        }
-
+        this.deleteWaveLinesAndReleaseInventoryByOdoIdList(wave.getId(), odoIdList, Constants.DISTRIBUTE_MODE_FAIL, wh, WavePhase.DISTRIBUTION);
     }
 
     @Override
@@ -669,6 +599,10 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
     
     @Override
     public void deleteWaveLinesAndReleaseInventoryByOdoIdList(Long waveId, Collection<Long> odoIds, String reason, Warehouse wh) {
+        this.deleteWaveLinesAndReleaseInventoryByOdoIdList(waveId, odoIds, reason, wh, null);
+    }
+
+    private void deleteWaveLinesAndReleaseInventoryByOdoIdList(Long waveId, Collection<Long> odoIds, String reason, Warehouse wh, String wavePhase) {
     	Long ouId = wh.getId();
 		for (Long odoId : odoIds) {
 			this.deleteWaveLinesAndReleaseInventoryByOdoId(waveId, odoId, reason, wh);

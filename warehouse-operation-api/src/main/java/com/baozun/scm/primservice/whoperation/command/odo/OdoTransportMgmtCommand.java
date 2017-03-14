@@ -33,6 +33,8 @@ public class OdoTransportMgmtCommand extends BaseCommand {
     private Boolean isCod;
     /** COD金额 */
     private Double codAmt;
+    /** 保价金额 */
+    private Double insuranceCoverage;
 
     // ------------------------------------------------------------------------------------------------------------
     // 自定义字段
@@ -43,6 +45,14 @@ public class OdoTransportMgmtCommand extends BaseCommand {
     private String odoExtCode;
 
 
+
+    public Double getInsuranceCoverage() {
+        return insuranceCoverage;
+    }
+
+    public void setInsuranceCoverage(Double insuranceCoverage) {
+        this.insuranceCoverage = insuranceCoverage;
+    }
 
     public String getOdoExtCode() {
         return odoExtCode;

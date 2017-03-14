@@ -18,7 +18,10 @@ public class OutInvBoxTypeCommand extends BaseCommand {
     /**
      * 
      */
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 7723223662262891448L;
+    /**
+     * 
+     */
     private Long id;
     /** sku主键 */
     private Long skuId;

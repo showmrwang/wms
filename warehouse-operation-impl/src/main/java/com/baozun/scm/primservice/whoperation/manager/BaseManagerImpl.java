@@ -137,11 +137,11 @@ public abstract class BaseManagerImpl implements BaseManager {
     protected void insertSkuInventoryLog(Long skuInvId, Double qty, Double oldQty, Boolean isTabbInvTotal, Long ouid, Long userid, String invTransactionType) {
         if (!StringUtil.isEmpty(invTransactionType)) {
             // 如果有库存事务类型 需要验证数据正确性
-            if (!InvTransactionType.RECEIVING.equals(invTransactionType) || !InvTransactionType.OUTBOUND_SORTING.equals(invTransactionType) || !InvTransactionType.SHELF.equals(invTransactionType) || !InvTransactionType.ASSEMBLY.equals(invTransactionType)
-                    || !InvTransactionType.INTRA_WH_MOVE.equals(invTransactionType) || !InvTransactionType.REPLENISHMENT.equals(invTransactionType) || !InvTransactionType.PICKING.equals(invTransactionType)
-                    || !InvTransactionType.FACILITY_GOODS_COLLECTION.equals(invTransactionType) || !InvTransactionType.CHECK.equals(invTransactionType) || !InvTransactionType.HANDOVER.equals(invTransactionType)
-                    || !InvTransactionType.HANDOVER_OUTBOUND.equals(invTransactionType) || !InvTransactionType.SPLIT_MOVE_OUTBOUND_BOX.equals(invTransactionType) || !InvTransactionType.SPLIT_MOVE_PACKING_CASE.equals(invTransactionType)
-                    || !InvTransactionType.INTRA_WH_ADJUSTMENT.equals(invTransactionType) || !InvTransactionType.WH_TO_WH_FLITTING.equals(invTransactionType) || !InvTransactionType.INTRA_WH_MACHINING.equals(invTransactionType)) {
+            if (!InvTransactionType.RECEIVING.equals(invTransactionType) && !InvTransactionType.OUTBOUND_SORTING.equals(invTransactionType) && !InvTransactionType.SHELF.equals(invTransactionType) && !InvTransactionType.ASSEMBLY.equals(invTransactionType)
+                    && !InvTransactionType.INTRA_WH_MOVE.equals(invTransactionType) && !InvTransactionType.REPLENISHMENT.equals(invTransactionType) && !InvTransactionType.PICKING.equals(invTransactionType)
+                    && !InvTransactionType.FACILITY_GOODS_COLLECTION.equals(invTransactionType) && !InvTransactionType.CHECK.equals(invTransactionType) && !InvTransactionType.HANDOVER.equals(invTransactionType)
+                    && !InvTransactionType.HANDOVER_OUTBOUND.equals(invTransactionType) && !InvTransactionType.SPLIT_MOVE_OUTBOUND_BOX.equals(invTransactionType) && !InvTransactionType.SPLIT_MOVE_PACKING_CASE.equals(invTransactionType)
+                    && !InvTransactionType.INTRA_WH_ADJUSTMENT.equals(invTransactionType) && !InvTransactionType.WH_TO_WH_FLITTING.equals(invTransactionType) && !InvTransactionType.INTRA_WH_MACHINING.equals(invTransactionType)) {
                 throw new BusinessException(ErrorCodes.PARAMS_ERROR);
             }
         }

@@ -51,7 +51,9 @@ public interface OutBoundBoxTypeManager extends BaseManager {
      * @param o
      * @return
      */
-    public Boolean checkUnique(OutInvBoxTypeCommand o); 
+    public Boolean checkUnique(OutInvBoxTypeCommand o);
+
+    List<OutBoundBoxType> findListByParamExt(OutBoundBoxType o);
 
 
 }

@@ -36,7 +36,6 @@ import com.baozun.scm.baseservice.sac.manager.CodeManager;
 import com.baozun.scm.primservice.whoperation.command.auth.OperUserManager;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoAddressCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoCommand;
-import com.baozun.scm.primservice.whoperation.command.odo.OdoGroup;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoGroupCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoLineCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoResultCommand;
@@ -50,7 +49,6 @@ import com.baozun.scm.primservice.whoperation.command.odo.wave.OdoWaveGroupSearc
 import com.baozun.scm.primservice.whoperation.command.odo.wave.WaveCommand;
 import com.baozun.scm.primservice.whoperation.command.sku.SkuRedisCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.UomCommand;
-import com.baozun.scm.primservice.whoperation.command.warehouse.WhDistributionPatternRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.wave.WaveLineCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
@@ -65,7 +63,6 @@ import com.baozun.scm.primservice.whoperation.excel.exception.RootExcelException
 import com.baozun.scm.primservice.whoperation.excel.result.ExcelImportResult;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
-import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoAddressManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoLineManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoManager;
@@ -76,19 +73,23 @@ import com.baozun.scm.primservice.whoperation.manager.odo.wave.WhWaveManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy.DistributionModeArithmeticManagerProxy;
 import com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy.WaveDistributionModeManagerProxy;
 import com.baozun.scm.primservice.whoperation.manager.redis.SkuRedisManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.CustomerManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.InventoryStatusManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.OutBoundBoxTypeManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.ReplenishmentTaskManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.StoreManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.WarehouseManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhDistributionPatternRuleManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhWorkLineManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhWorkManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
-import com.baozun.scm.primservice.whoperation.model.localauth.OperUser;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAddress;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoInvoice;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoInvoiceLine;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
-import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLineAttrSn;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoVas;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
@@ -96,20 +97,18 @@ import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveMaster;
 import com.baozun.scm.primservice.whoperation.model.sku.Sku;
 import com.baozun.scm.primservice.whoperation.model.sku.SkuMgmt;
-import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
-import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
 import com.baozun.scm.primservice.whoperation.model.warehouse.InventoryStatus;
 import com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentTask;
-import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhWork;
-import com.baozun.scm.primservice.whoperation.model.warehouse.ma.TransportProvider;
 
 @Service("odoManagerProxy")
-public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerProxy {
+public class OdoManagerProxyImpl implements OdoManagerProxy {
 
     protected static final Logger log = LoggerFactory.getLogger(OdoManagerProxy.class);
     @Autowired
     private OdoManager odoManager;
+    @Autowired
+    private WarehouseManager warehouseManager;
     @Autowired
     private CodeManager codeManager;
     @Autowired
@@ -144,6 +143,12 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
     private WhSkuInventoryManager whSkuInventoryManager;
     @Autowired
     private OperUserManager operUserManager;
+    @Autowired
+    private CustomerManager customerManager;
+    @Autowired
+    private StoreManager storeManager;
+    @Autowired
+    private OutBoundBoxTypeManager outBoundBoxTypeManager;
 
     @Override
     public Pagination<OdoResultCommand> findOdoListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params) {
@@ -152,45 +157,26 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
 
 
     @Override
-    public ResponseMsg createOdoFromWms(OdoGroupCommand odoGroup) {
+    public ResponseMsg createOdo(OdoGroupCommand odoGroup) {
         ResponseMsg msg = new ResponseMsg();
         Long returnOdoId = null;
         try {
             Long ouId = odoGroup.getOuId();
             Long userId = odoGroup.getUserId();
             // 原始数据集合
-            OdoCommand odoCommand = odoGroup.getOdo();
-            OdoTransportMgmtCommand transportMgmtCommand = odoGroup.getTransPortMgmt();
-            
-            /**
-             * 第一步：封装ODO和ODOLine
-             */
-            List<WhOdoLine> odoLineList = odoGroup.getOdoLineList();
-            /**
-             * 第二步：封装ODO
-             */
-            WhOdo odo = this.copyOdoProperties(odoCommand);
-            /**
-             * 第三步：封装出库单运输商表
-             */
-            WhOdoTransportMgmt transportMgmt = this.copyTransportMgmtProperties(transportMgmtCommand);
-            /**
-             * 第四步：封装配送对象
-             */
-            WhOdoAddress address = odoGroup.getWhOdoAddress();
-            /**
-             * 第五步：封装增值服务
-             */
-            List<WhOdoVas> odoVasList = this.copyOdoVasProperties(odoGroup.getOdoVasList());
-            /**
-             * 第六步：封装SN
-             */
-            List<WhOdoLineAttrSn> lineSnList = odoGroup.getLineSnList();
-            /**
-             * 第六步：SN TODO
-             */
-            this.createOdo(odo, odoLineList, transportMgmt, address, odoVasList, lineSnList, ouId, userId);
-            returnOdoId = odo.getId();
+            OdoCommand sourceOdo = odoGroup.getOdo();
+            //#TODO yimin.lu 设置状态逻辑 暂时放于此位置
+            if(odoGroup.getIsWms()!=null&&!odoGroup.getIsWms()){
+                sourceOdo.setOdoStatus(OdoStatus.ODO_TOBECREATED);
+            }
+            List<OdoLineCommand> sourceOdoLineList = odoGroup.getOdoLineList();
+            OdoTransportMgmtCommand sourceOdoTrans = odoGroup.getTransPortMgmt();
+            WhOdoAddress sourceAddress = odoGroup.getWhOdoAddress();
+            WhOdoInvoice sourceInvoice = odoGroup.getOdoInvoice();
+            List<WhOdoInvoiceLine> sourceInvoiceLineList = odoGroup.getOdoInvoiceLineList();
+
+
+            returnOdoId = this.createOdo(sourceOdo, sourceOdoLineList, sourceOdoTrans, sourceAddress, sourceInvoice, sourceInvoiceLineList, ouId, userId);
         } catch (BusinessException e) {
             msg.setResponseStatus(ResponseMsg.STATUS_ERROR);
             msg.setMsg(e.getErrorCode() + "");
@@ -206,12 +192,8 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
         return msg;
     }
 
-    private List<WhOdoVas> copyOdoVasProperties(List<WhOdoVasCommand> odoVasList) {
-        List<WhOdoVas> vasList = new ArrayList<WhOdoVas>();
-        return vasList;
-    }
-
-    private void createOdo(WhOdo odo, List<WhOdoLine> odoLineList, WhOdoTransportMgmt transportMgmt, WhOdoAddress odoAddress, List<WhOdoVas> odoVasList, List<WhOdoLineAttrSn> lineSnList, Long ouId, Long userId) {
+    private Long createOdo(OdoCommand odo, List<OdoLineCommand> odoLineList, OdoTransportMgmtCommand transportMgmt, WhOdoAddress odoAddress, WhOdoInvoice invoice, List<WhOdoInvoiceLine> invoiceLineList, Long ouId, Long userId) {
+        Long odoId = null;
         try {
             // 默认属性
             if (odo.getCurrentQty() == null) {
@@ -272,7 +254,7 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
             if (OdoStatus.ODO_NEW.equals(odo.getOdoStatus())) {
                 // 设置计数器编码
                 Set<Long> skuIdSet = new HashSet<Long>();
-                for (WhOdoLine line : odoLineList) {
+                for (OdoLineCommand line : odoLineList) {
                     skuIdSet.add(line.getSkuId());
                 }
                 String counterCode = this.distributionModeArithmeticManagerProxy.getCounterCodeForOdo(ouId, odo.getSkuNumberOfPackages(), odo.getQty(), skuIdSet);
@@ -282,13 +264,14 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
             // 匹配配货模式
 
             transportMgmt.setOuId(ouId);
-            this.odoManager.createOdo(odo, odoLineList, transportMgmt, odoAddress, odoVasList, lineSnList, ouId, userId);
+            odoId = this.odoManager.createOdo(odo, odoLineList, transportMgmt, odoAddress, invoice, invoiceLineList, ouId, userId);
         } catch (BusinessException e) {
             throw e;
         } catch (Exception ex) {
             log.error(ex + "");
             throw new BusinessException(ErrorCodes.PACKAGING_ERROR);
         }
+        return odoId;
     }
 
     private WhOdoTransportMgmt copyTransportMgmtProperties(OdoTransportMgmtCommand transportMgmtCommand) throws ParseException {
@@ -312,22 +295,6 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
         }
     }
 
-    private WhOdo copyOdoProperties(OdoCommand odoCommand) {
-        try {
-            if (odoCommand == null) {
-                return null;
-            }
-            WhOdo odo = new WhOdo();
-            // 复制属性
-            BeanUtils.copyProperties(odoCommand, odo);
-            odo.setOdoStatus(OdoStatus.ODO_TOBECREATED);
-            // 返回
-            return odo;
-        } catch (Exception e) {
-            log.error(e + "");
-            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
-        }
-    }
 
     @Override
     public WhOdo findOdOById(Long id, Long ouId) {
@@ -443,30 +410,8 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
 
     @Override
     public Pagination<OdoLineCommand> findOdoLineListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params) {
-        Pagination<OdoLineCommand> pages = this.odoLineManager.findOdoLineListByQueryMapWithPageExt(page, sorts, params);
-        List<OdoLineCommand> odoLineList=pages.getItems();
-        if(odoLineList!=null&&odoLineList.size()>0){
-            //库存状态
-            List<InventoryStatus> invStatusList=this.inventoryStatusManager.findAllInventoryStatus();
-            Map<Long, String> invStatusMap = new HashMap<Long, String>();
-            // 出库单明细状态
-            Set<String> dic1 = new HashSet<String>();
-            for(InventoryStatus s:invStatusList){
-                invStatusMap.put(s.getId(), s.getName());
-            }
-            for(OdoLineCommand odo:odoLineList){
-                odo.setInvStatusName(invStatusMap.get(odo.getInvStatus()));
-                dic1.add(odo.getOdoLineStatus());
-            }
-            Map<String, List<String>> map = new HashMap<String, List<String>>();
-            map.put(Constants.ODO_LINE_STATUS, new ArrayList<String>(dic1));
-            Map<String, SysDictionary> dicMap = this.findSysDictionaryByRedis(map);
-            for (OdoLineCommand odoline : odoLineList) {
-                SysDictionary sys = dicMap.get(Constants.ODO_LINE_STATUS + "_" + odoline.getOdoLineStatus());
-                odoline.setOdoLineStatusName(sys == null ? odoline.getOdoLineStatus() : sys.getDicLabel());
-            }
-        }
-        return pages;
+        return this.odoLineManager.findOdoLineListByQueryMapWithPageExt(page, sorts, params);
+
     }
 
     @Override
@@ -756,261 +701,12 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
 
     @Override
     public Pagination<OdoWaveGroupResultCommand> findOdoSummaryListForWaveByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params) {
-        Pagination<OdoWaveGroupResultCommand> pages = this.odoManager.findOdoListForWaveByQueryMapWithPageExt(page, sorts, params);
-        try {
-            Long ouId = (Long) params.get("ouId");
-
-            if (pages != null) {
-                Set<String> dic1 = new HashSet<String>();// 出库单状态
-                Set<String> dic2 = new HashSet<String>();// 出库单类型
-                Set<String> dic3 = new HashSet<String>();// 配货模式
-                Set<String> dic4 = new HashSet<String>();// 上位单据类型
-                Set<String> transCodeSet = new HashSet<String>();// 运输服务商
-                Set<Long> customerIdSet = new HashSet<Long>();
-                Set<Long> storeIdSet = new HashSet<Long>();
-                Map<String,String> distributionModeMap=new HashMap<String,String>();
-                List<OdoWaveGroupResultCommand> list = pages.getItems();
-                if (list != null && list.size() > 0) {
-                    for (OdoWaveGroupResultCommand command : list) {
-                        if (StringUtils.hasText(command.getOdoStatus())) {
-                            dic1.add(command.getOdoStatus());
-                        }
-                        if (StringUtils.hasText(command.getOdoType())) {
-                            dic2.add(command.getOdoType());
-                        }
-                        if (StringUtils.hasText(command.getDistributeMode())) {
-                            dic3.add(command.getDistributeMode());
-                        }
-                        if (StringUtils.hasText(command.getEpistaticSystemsOrderType())) {
-                            dic4.add(command.getEpistaticSystemsOrderType());
-                        }
-                        if (StringUtils.hasText(command.getTransportServiceProvider())) {
-                            transCodeSet.add(command.getTransportServiceProvider());
-                        }
-                        if (command.getCustomerId() != null) {
-                            customerIdSet.add(command.getCustomerId());
-                        }
-                        if (command.getStoreId() != null) {
-                            storeIdSet.add(command.getStoreId());
-                        }
-                    }
-                    Map<String, List<String>> map = new HashMap<String, List<String>>();
-                    if (dic1.size() > 0) {
-                        map.put(Constants.ODO_STATUS, new ArrayList<String>(dic1));
-                    }
-                    if (dic2.size() > 0) {
-                        map.put(Constants.ODO_TYPE, new ArrayList<String>(dic2));
-                    }
-                    //配货模式
-                    if (dic3.size() > 0) {
-                        for (String ruleCode : dic3) {
-                            
-                            WhDistributionPatternRuleCommand rule = this.whDistributionPatternRuleManager.findRuleByCode(ruleCode, ouId);
-                            if (rule != null) {
-                                distributionModeMap.put(ruleCode, rule.getDistributionPatternName());
-                            }
-                        }
-                       
-                    }
-                    if (dic4.size() > 0) {
-                        map.put(Constants.ODO_PRE_TYPE, new ArrayList<String>(dic4));
-                    }
-                    Map<String, TransportProvider> transMap = new HashMap<String, TransportProvider>();
-                    if (transCodeSet.size() > 0) {
-                        for (String transCode : transCodeSet) {
-                            TransportProvider tp = this.odoTransportMgmtManager.findByCode(transCode);
-                            transMap.put(transCode, tp);
-                        }
-
-                    }
-
-                    Map<String, SysDictionary> dicMap = map.size() > 0 ? this.findSysDictionaryByRedis(map) : null;
-
-                    Map<Long, Customer> customerMap = customerIdSet.size() > 0 ? this.findCustomerByRedis(new ArrayList<Long>(customerIdSet)) : null;
-                    Map<Long, Store> storeMap = storeIdSet.size() > 0 ? this.findStoreByRedis(new ArrayList<Long>(storeIdSet)) : null;
-                    for (OdoWaveGroupResultCommand command : list) {
-                        String groupName = "";
-                        if (command.getCustomerId() != null) {
-                            Customer customer = customerMap.get(command.getCustomerId());
-                            command.setCustomerName(customer == null ? command.getCustomerId().toString() : customer.getCustomerName());
-                            groupName += "$" + command.getCustomerName();
-                        }
-                        if (command.getStoreId() != null) {
-                            Store store = storeMap.get(command.getStoreId());
-                            command.setStoreName(store == null ? command.getStoreId().toString() : store.getStoreName());
-                            groupName += "$" + command.getStoreName();
-                        }
-                        if (StringUtils.hasText(command.getOdoStatus())) {
-                            SysDictionary sys = dicMap.get(Constants.ODO_STATUS + "_" + command.getOdoStatus());
-                            command.setOdoStatusName(sys.getDicLabel());
-                            groupName += "$" + command.getOdoStatusName();
-                        }
-                        if (StringUtils.hasText(command.getOdoType())) {
-                            SysDictionary sys = dicMap.get(Constants.ODO_TYPE + "_" + command.getOdoType());
-                            command.setOdoTypeName(sys.getDicLabel());
-                            groupName += "$" + command.getOdoTypeName();
-                        }
-                        if (StringUtils.hasText(command.getDistributeMode())) {
-                            String name = distributionModeMap.get(command.getDistributeMode());
-                            if (StringUtils.hasText(name)) {
-                                command.setDistributeModeName(name);
-                            } else {
-                                command.setDistributeModeName(command.getDistributeMode());
-                            }
-                            groupName += "$" + command.getDistributeModeName();
-                        }
-                        if (StringUtils.hasText(command.getTransportServiceProvider())) {
-                            if (transMap != null) {
-                                if (transMap.containsKey(command.getTransportServiceProvider())) {
-                                    TransportProvider tp = transMap.get(command.getTransportServiceProvider());
-                                    command.setTransportServiceProviderName(tp.getName());
-                                    groupName += "$" + command.getTransportServiceProviderName();
-                                }
-                            }
-                        }
-                        if (StringUtils.hasText(command.getEpistaticSystemsOrderType())) {
-                            SysDictionary sys = dicMap.get(Constants.ODO_PRE_TYPE + "_" + command.getEpistaticSystemsOrderType());
-                            command.setEpistaticSystemsOrderTypeName(sys.getDicLabel());
-                            groupName += "$" + command.getEpistaticSystemsOrderTypeName();
-                        }
-                        command.setGroupName(groupName);
-                    }
-                    pages.setItems(list);
-                }
-            }
-        } catch (Exception ex) {
-            log.error(ex + "");
-            throw new BusinessException(ErrorCodes.PACKAGING_ERROR);
-        }
-        return pages;
+        return this.odoManager.findOdoListForWaveByQueryMapWithPageExt(page, sorts, params);
     }
 
     @Override
     public List<OdoResultCommand> findOdoCommandListForWave(OdoSearchCommand command) {
-        List<OdoResultCommand> list = this.odoManager.findOdoCommandListForWave(command);
-        // 出库单状态
-        Set<String> dic1 = new HashSet<String>();// ODO_STATUS
-        // 订单平台类型
-        Set<String> dic2 = new HashSet<String>();// ODO_ORDER_TYPE
-        // 上位单据类型
-        Set<String> dic3 = new HashSet<String>();// ODO_PRE_TYPE
-        // 出库单类型
-        Set<String> dic4 = new HashSet<String>();// ODO_TYPE
-        // 业务模式（配货模式）
-        Set<String> dic5 = new HashSet<String>();// DISTRIBUTE_MODE
-        // 整单出库标志
-        Set<String> dic6 = new HashSet<String>();// IS_NOT
-        // 越库标志
-        Set<String> dic7 = new HashSet<String>();// ODO_CROSS_DOCKING_SYSMBOL
-        // 运行标志
-        Set<String> dic8 = new HashSet<String>();//
-        // 客户
-        Set<Long> customerIdSet = new HashSet<Long>();
-        // 店铺
-        Set<Long> storeIdSet = new HashSet<Long>();
-        // 用户
-        Set<String> userIdSet = new HashSet<String>();
-        if (list != null && list.size() > 0) {
-            for (OdoResultCommand res : list) {
-                if (StringUtils.hasText(res.getOdoStatus())) {
-                    dic1.add(res.getOdoStatus());
-                }
-                if (StringUtils.hasText(res.getOrderType())) {
-                    dic2.add(res.getOrderType());
-                }
-                if (StringUtils.hasText(res.getEpistaticSystemsOrderType())) {
-                    dic3.add(res.getEpistaticSystemsOrderType());
-                }
-                if (StringUtils.hasText(res.getOdoType())) {
-                    dic4.add(res.getOdoType());
-                }
-                if (StringUtils.hasText(res.getDistributeMode())) {
-                    dic5.add(res.getDistributeMode());
-                }
-                if (StringUtils.hasText(res.getIsWholeOrderOutbound())) {
-                    dic6.add(res.getIsWholeOrderOutbound());
-                }
-                if (StringUtils.hasText(res.getCrossDockingSysmbol())) {
-                    dic7.add(res.getCrossDockingSysmbol());
-                }
-                customerIdSet.add(Long.parseLong(res.getCustomerId()));
-                storeIdSet.add(Long.parseLong(res.getStoreId()));
-                
-                if(StringUtils.hasText(res.getCreateId())){
-                    
-                    userIdSet.add(res.getCreateId());
-                }
-                if (StringUtils.hasText(res.getModifiedId())) {
-                    userIdSet.add(res.getModifiedId());
-                }
-            }
-            // 用户
-            // 查找用户
-            Map<String, String> userMap = new HashMap<String, String>();
-            if (userIdSet.size() > 0) {
-                Iterator<String> userIt = userIdSet.iterator();
-                while (userIt.hasNext()) {
-                    String id = userIt.next();
-                    OperUser user = this.operUserManager.findUserById(Long.parseLong(id));
-                    userMap.put(id, user == null ? id : user.getUserName());
-                }
-
-            }
-            Map<String, List<String>> map = new HashMap<String, List<String>>();
-            map.put(Constants.ODO_STATUS, new ArrayList<String>(dic1));
-            map.put(Constants.ODO_ORDER_TYPE, new ArrayList<String>(dic2));
-            map.put(Constants.ODO_PRE_TYPE, new ArrayList<String>(dic3));
-            map.put(Constants.ODO_TYPE, new ArrayList<String>(dic4));
-            map.put(Constants.DISTRIBUTE_MODE, new ArrayList<String>(dic5));
-            map.put(Constants.IS_WHOLE_ORDER_OUTBOUND, new ArrayList<String>(dic6));
-            map.put(Constants.ODO_CROSS_DOCKING_SYSMBOL, new ArrayList<String>(dic7));
-            Map<String, SysDictionary> dicMap = this.findSysDictionaryByRedis(map);
-            Map<Long, Customer> customerMap = this.findCustomerByRedis(new ArrayList<Long>(customerIdSet));
-            Map<Long, Store> storeMap = this.findStoreByRedis(new ArrayList<Long>(storeIdSet));
-            for (OdoResultCommand result : list) {
-                if (StringUtils.hasText(result.getOdoStatus())) {
-                    SysDictionary sys = dicMap.get(Constants.ODO_STATUS + "_" + result.getOdoStatus());
-                    result.setOdoStatusName(sys == null ? result.getOdoStatus() : sys.getDicLabel());
-                }
-                if (StringUtils.hasText(result.getOrderType())) {
-                    SysDictionary sys = dicMap.get(Constants.ODO_ORDER_TYPE + "_" + result.getOrderType());
-                    result.setOrderTypeName(sys == null ? result.getOrderType() : sys.getDicLabel());
-                }
-                if (StringUtils.hasText(result.getEpistaticSystemsOrderType())) {
-                    SysDictionary sys = dicMap.get(Constants.ODO_PRE_TYPE + "_" + result.getEpistaticSystemsOrderType());
-                    result.setEpistaticSystemsOrderTypeName(sys == null ? result.getEpistaticSystemsOrderType() : sys.getDicLabel());
-                }
-                if (StringUtils.hasText(result.getOdoType())) {
-                    SysDictionary sys = dicMap.get(Constants.ODO_TYPE + "_" + result.getOdoType());
-                    result.setOdoTypeName(sys == null ? result.getOdoType() : sys.getDicLabel());
-                }
-                if (StringUtils.hasText(result.getDistributeMode())) {
-                    SysDictionary sys = dicMap.get(Constants.DISTRIBUTE_MODE + "_" + result.getDistributeMode());
-                    result.setDistributeModeName(sys == null ? result.getDistributeMode() : sys.getDicLabel());
-                }
-                if (StringUtils.hasText(result.getIsWholeOrderOutbound())) {
-                    SysDictionary sys = dicMap.get(Constants.IS_WHOLE_ORDER_OUTBOUND + "_" + result.getIsWholeOrderOutbound());
-                    result.setIsWholeOrderOutboundName(sys == null ? result.getIsWholeOrderOutbound() : sys.getDicLabel());
-                }
-                if (StringUtils.hasText(result.getCrossDockingSysmbol())) {
-                    SysDictionary sys = dicMap.get(Constants.ODO_CROSS_DOCKING_SYSMBOL + "_" + result.getCrossDockingSysmbol());
-                    result.setCrossDockingSysmbolName(sys == null ? result.getCrossDockingSysmbol() : sys.getDicLabel());
-                }
-                Customer customer = customerMap.get(Long.parseLong(result.getCustomerId()));
-                result.setCustomerName(customer == null ? result.getCustomerId() : customer.getCustomerName());
-                Store store = storeMap.get(Long.parseLong(result.getStoreId()));
-                result.setStoreName(store == null ? result.getStoreId() : store.getStoreName());
-
-                if (StringUtils.hasText(result.getCreateId())) {
-                    result.setCreatedName(userMap.get(result.getCreateId()));
-                }
-                if (StringUtils.hasText(result.getCreatedName())) {
-                    result.setModifiedName(userMap.get(result.getModifiedId()));
-                }
-            }
-        }
-
-        return list;
+        return this.odoManager.findOdoCommandListForWave(command);
     }
 
     @Override
@@ -1767,7 +1463,7 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
 
             ExcelImportResult odoVasResult = this.readExcelSheet(inPath, excelIdArray[4], locale);
 
-            List<OdoGroup> groupList = new ArrayList<OdoGroup>();
+            List<OdoGroupCommand> groupList = new ArrayList<OdoGroupCommand>();
 
             this.checkAndPackageOdoForImport(odoResult, odoLineResult, odoAddressResult, transportMgmtResult, odoVasResult, groupList, workbook);
 
@@ -1797,29 +1493,11 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
         }
 
 
-        // 校验逻辑
-
-        WhOdo odo = new WhOdo();
-        WhOdoTransportMgmt transportMgmt = new WhOdoTransportMgmt();
-        WhOdoAddress odoAddress = new WhOdoAddress();
-        List<WhOdoLine> odoLineList = new ArrayList<WhOdoLine>();
-        List<WhOdoVas> odoVasList = new ArrayList<WhOdoVas>();
-        List<WhOdoLineAttrSn> lineSnList = new ArrayList<WhOdoLineAttrSn>();
-
-        OdoGroup odoGroup = new OdoGroup();
-        odoGroup.setOdo(odo);
-        odoGroup.setOdoLineList(odoLineList);
-        odoGroup.setWhOdoAddress(odoAddress);
-        odoGroup.setOdoVasList(odoVasList);
-        odoGroup.setTransportMgmt(transportMgmt);
-        odoGroup.setLineSnList(lineSnList);
-        List<OdoGroup> groupList = new ArrayList<OdoGroup>();
-        this.createOdo(groupList, ouId, userId);
 
         return null;
     }
 
-    private void checkAndPackageOdoForImport(ExcelImportResult odoResult, ExcelImportResult odoLineResult, ExcelImportResult odoAddressResult, ExcelImportResult transportMgmtResult, ExcelImportResult odoVasResult, List<OdoGroup> groupList,
+    private void checkAndPackageOdoForImport(ExcelImportResult odoResult, ExcelImportResult odoLineResult, ExcelImportResult odoAddressResult, ExcelImportResult transportMgmtResult, ExcelImportResult odoVasResult, List<OdoGroupCommand> groupList,
             Workbook workbook) {
         boolean checkFlag = true;
 
@@ -1829,7 +1507,7 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
         List<OdoTransportMgmtCommand> transportMgmtCommandList = transportMgmtResult.getListBean();
         List<WhOdoVasCommand> whOdoVasCommandList = odoVasResult.getListBean();
         
-        Map<String, OdoGroup> groupMap = new HashMap<String, OdoGroup>();
+        Map<String, OdoGroupCommand> groupMap = new HashMap<String, OdoGroupCommand>();
 
         for (int i = 0; i < odoCommandList.size(); i++) {
             OdoCommand odoCommand = odoCommandList.get(i);
@@ -1839,10 +1517,8 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
                     checkFlag = false;
                 }
             } else {
-                WhOdo odo = new WhOdo();
-                BeanUtils.copyProperties(odoCommand, odo);
-                OdoGroup group = new OdoGroup();
-                group.setOdo(odo);
+                OdoGroupCommand group = new OdoGroupCommand();
+                group.setOdo(odoCommand);
                 groupMap.put(odoCommand.getExtCode(), group);
             }
         }
@@ -1851,9 +1527,7 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
             OdoLineCommand lineCommand = odoLineCommandList.get(i);
             
             if (groupMap.containsKey(lineCommand.getOdoExtCode())) {
-                WhOdoLine line = new WhOdoLine();
-                BeanUtils.copyProperties(lineCommand, line);
-                groupMap.get(lineCommand.getOdoExtCode()).getOdoLineList().add(line);
+                groupMap.get(lineCommand.getOdoExtCode()).getOdoLineList().add(lineCommand);
             } else {
                 odoLineResult.addRowException("出库单明细找不到对应的出库单", "", i + 1);
                 if (checkFlag) {
@@ -1881,9 +1555,7 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
         for (int i = 0; i < transportMgmtCommandList.size(); i++) {
             OdoTransportMgmtCommand transportMgmtCommand = transportMgmtCommandList.get(i);
             if (groupMap.containsKey(transportMgmtCommand.getOdoExtCode())) {
-                WhOdoTransportMgmt transportMgmt = new WhOdoTransportMgmt();
-                BeanUtils.copyProperties(transportMgmtCommand, transportMgmt);
-                groupMap.get(transportMgmtCommand.getOdoExtCode()).setTransportMgmt(transportMgmt);
+                groupMap.get(transportMgmtCommand.getOdoExtCode()).setTransPortMgmt(transportMgmtCommand);
             } else {
                 odoLineResult.addRowException("出库单明细找不到对应的出库单", "", i + 1);
                 if (checkFlag) {
@@ -1896,9 +1568,8 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
         for (int i = 0; i < whOdoVasCommandList.size(); i++) {
             WhOdoVasCommand vasCommand = whOdoVasCommandList.get(i);
             if (groupMap.containsKey(vasCommand.getOdoExtCode())) {
-                WhOdoVas vas = new WhOdoVas();
-                BeanUtils.copyProperties(vasCommand, vas);
-                groupMap.get(vasCommand.getOdoExtCode()).getOdoVasList().add(vas);
+
+                groupMap.get(vasCommand.getOdoExtCode()).getOdoVasList().add(vasCommand);
             } else {
                 odoLineResult.addRowException("出库单明细找不到对应的出库单", "", i + 1);
                 if (checkFlag) {
@@ -1925,17 +1596,24 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
                 log.error("", e);
             }
         }
+        Iterator<Entry<String, OdoGroupCommand>> groupMapIt = groupMap.entrySet().iterator();
+        while (groupMapIt.hasNext()) {
 
-        groupList = (List<OdoGroup>) groupMap.values();
+            if (groupList == null) {
+                groupList = new ArrayList<OdoGroupCommand>();
+            }
+            Entry<String, OdoGroupCommand> entry = groupMapIt.next();
+            groupList.add(entry.getValue());
+        }
 
     }
 
-    private void createOdo(List<OdoGroup> groupList, Long ouId, Long userId) {
+    private void createOdo(List<OdoGroupCommand> groupList, Long ouId, Long userId) {
 
-        for (OdoGroup group : groupList) {
-            WhOdo odo = group.getOdo();
-            WhOdoTransportMgmt transportMgmt = group.getTransportMgmt();
-            List<WhOdoLine> odoLineList = group.getOdoLineList();
+        for (OdoGroupCommand group : groupList) {
+            OdoCommand odo = group.getOdo();
+            OdoTransportMgmtCommand transportMgmt = group.getTransPortMgmt();
+            List<OdoLineCommand> odoLineList = group.getOdoLineList();
             // 默认属性
             if (odo.getCurrentQty() == null) {
                 odo.setCurrentQty(Constants.DEFAULT_DOUBLE);
@@ -1995,7 +1673,7 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
             if (OdoStatus.ODO_NEW.equals(odo.getOdoStatus())) {
                 // 设置计数器编码
                 Set<Long> skuIdSet = new HashSet<Long>();
-                for (WhOdoLine line : odoLineList) {
+                for (OdoLineCommand line : odoLineList) {
                     skuIdSet.add(line.getSkuId());
                 }
                 String counterCode = this.distributionModeArithmeticManagerProxy.getCounterCodeForOdo(ouId, odo.getSkuNumberOfPackages(), odo.getQty(), skuIdSet);
@@ -2293,4 +1971,11 @@ public class OdoManagerProxyImpl extends BaseManagerImpl implements OdoManagerPr
         }
 
     }
+
+
+    @Override
+    public WhOdo findByExtCodeStoreIdOuId(String extOdoCode, Long storeId, Long ouId) {
+        return this.odoManager.findByExtCodeStoreIdOuId(extOdoCode, storeId, ouId);
+    }
+
 }

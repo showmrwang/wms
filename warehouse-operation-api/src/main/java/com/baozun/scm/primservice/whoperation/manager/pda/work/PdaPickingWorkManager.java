@@ -210,6 +210,23 @@ public interface PdaPickingWorkManager extends BaseManager {
      */
     public PickingScanResultCommand wholeCaseOperationExecLine(PickingScanResultCommand  command,WhSkuCommand skuCmd,Boolean isTabbInvTotal);
     
+    /***
+     * 拣货取消流程
+     * @param outerContainerId
+     * @param insideContainerId
+     * @param cancelPattern
+     * @param pickingType
+     * @param locationId
+     * @param ouId
+     */
+    public void cancelPattern(String carCode,String outerContainerCode,String insideContainerCode, int cancelPattern,int pickingWay,Long locationId,Long ouId,Long operationId);
     
-    
+    /***
+     * 缓存库位
+     * @param operationId
+     * @param locationCode
+     * @param ouId
+     */
+    public void cacheLocation(Long operationId,String locationCode,Long ouId);
+        
 }

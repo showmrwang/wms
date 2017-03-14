@@ -54,6 +54,16 @@ public class WhOdoTransportMgmt extends BaseModel {
     private Boolean isCod;
     /** COD金额 */
     private Double codAmt;
+    /** 保价金额 */
+    private Double insuranceCoverage;
+
+    public Double getInsuranceCoverage() {
+        return insuranceCoverage;
+    }
+
+    public void setInsuranceCoverage(Double insuranceCoverage) {
+        this.insuranceCoverage = insuranceCoverage;
+    }
 
     public Boolean getIsCod() {
         return isCod;

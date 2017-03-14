@@ -2790,4 +2790,42 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
         return result;
     }
 
+    
+    /***
+     * 取消流程
+     * @param outerContainerCode
+     * @param insideContainerCode
+     * @param skuId
+     * @param cancelPattern
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void cancelPattern(String outerContainerCode,String insideContainerCode,int cancelPattern,Long ouId,Long locationId,int putawayPatternDetailType){
+        Long outerContainerId = null;
+        if(!StringUtils.isEmpty(outerContainerCode)) {
+            ContainerCommand command = containerDao.getContainerByCode(outerContainerCode, ouId);
+            if(null == command){
+                throw new BusinessException(ErrorCodes.PARAMS_ERROR); 
+            }
+            outerContainerId = command.getId();
+        }
+        Long insideContainerId = null;
+        if(!StringUtils.isEmpty(insideContainerCode)){
+            ContainerCommand command = containerDao.getContainerByCode(insideContainerCode, ouId);
+            if(null == command){
+                throw new BusinessException(ErrorCodes.PARAMS_ERROR); 
+            }
+            insideContainerId = command.getId();
+        }
+        pdaManmadePutawayCacheManager.cancelPath(outerContainerId, insideContainerId, cancelPattern, putawayPatternDetailType, locationId, ouId);
+    }
+    
+    
+    public Boolean isTrackVessel(Long ouId,Long locationId){
+        Location location =  whLocationDao.findByIdExt(locationId, ouId);
+        if(null == location) {
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR); 
+        }
+        return location.getIsTrackVessel();
+    }
 }

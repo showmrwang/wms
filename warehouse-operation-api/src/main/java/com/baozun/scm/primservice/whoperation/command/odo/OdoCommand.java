@@ -89,6 +89,8 @@ public class OdoCommand extends BaseCommand {
     private String counterCode;
     /** 配货模式码 */
     private String distributionCode;
+    /** 是否允许合并 1：允许 0：不允许 */
+    private java.lang.Boolean isAllowMerge;
     // ------------------------------------------------------------------------------------
     // 自定义字段
     private Long userId;
@@ -101,6 +103,8 @@ public class OdoCommand extends BaseCommand {
 
     // 分组字段
     private String groupCode;
+
+    private List<WhOdoVasCommand> vasList;
 
     //出库箱推荐
     private WhWaveCommand whWaveCommand;
@@ -123,6 +127,21 @@ public class OdoCommand extends BaseCommand {
     /** 波次明细<odoLineId, waveLine> */
     private Map<Long, WhWaveLineCommand> odoLineIdwaveLineMap;
 
+    public java.lang.Boolean getIsAllowMerge() {
+        return isAllowMerge;
+    }
+
+    public void setIsAllowMerge(java.lang.Boolean isAllowMerge) {
+        this.isAllowMerge = isAllowMerge;
+    }
+
+    public List<WhOdoVasCommand> getVasList() {
+        return vasList;
+    }
+
+    public void setVasList(List<WhOdoVasCommand> vasList) {
+        this.vasList = vasList;
+    }
 
     public Date getPlanDeliverGoodsTime() {
         return planDeliverGoodsTime;

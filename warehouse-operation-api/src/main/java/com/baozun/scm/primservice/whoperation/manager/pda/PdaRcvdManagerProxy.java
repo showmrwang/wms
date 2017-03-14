@@ -32,13 +32,6 @@ public interface PdaRcvdManagerProxy extends BaseManager {
     void cacheScanedSkuWhenGeneralRcvd(WhSkuInventoryCommand command);
 
     /**
-     * 刷新ASN缓存操作
-     * 
-     * @param id
-     */
-    void freshAsnCacheForGeneralReceiving(Long occupationId, Long ouId);
-
-    /**
      * 获取匹配的明细行
      * 
      * @param command

@@ -30,6 +30,8 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
+import com.baozun.scm.primservice.whoperation.constant.CancalPattern;
+import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
 import com.baozun.scm.primservice.whoperation.constant.WhScanPatternType;
 import com.baozun.scm.primservice.whoperation.constant.WorkStatus;
@@ -270,7 +272,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
             }
         }
         if(StringUtil.isEmpty(tipOuterContainer)) {
-            throw new BusinessException(ErrorCodes.OUT_CONTAINER_IS_NOT_NORMAL);
+            throw new BusinessException(ErrorCodes.OUT_CONTAINER_IS_NO_NULL);
         }
         log.info("PdaPickingWorkCacheManagerImpl pdaPickingWorkTipOutContainer is end");
         return tipOuterContainer;
@@ -1535,5 +1537,23 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
         operation.setIsPickingFinish(true);
         operation.setModifiedId(userId);
         whOperationDao.saveOrUpdateByVersion(operation);
+    }
+    
+    /***
+     * 拣货取消流程
+     * @param outerContainerId
+     * @param insideContainerId
+     * @param cancelPattern
+     * @param pickingType
+     * @param locationId
+     * @param ouId
+     */
+    public void cancelPattern(Long carId,Long outerContainerId,Long insideContainerId, int cancelPattern,int pickingWay,Long locationId,Long ouId,Long operationId){
+          if(Constants.PICKING_WAY_ONE == pickingWay){
+              if(cancelPattern == CancalPattern.TIP_CAR_CANCEL) {
+                  cacheManager.remove(CacheConstants.OPERATIONLINE_STATISTICS + operationId.toString());  //删除统计缓存
+                  cacheManager.remove(CacheConstants.OPERATION_LINE + operationId.toString());   //删除作业明细
+             }
+          }
     }
 }
