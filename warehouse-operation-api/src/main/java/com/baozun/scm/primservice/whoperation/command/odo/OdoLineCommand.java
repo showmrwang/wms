@@ -148,7 +148,7 @@ public class OdoLineCommand extends BaseCommand {
     /** 出库箱推荐 */
     private Sku sku;
 
-    private List<WhOdoLineAttrSnCommand> lineSnList;
+    private List<WhOdoLineSnCommand> lineSnList;
 
     private List<WhOdoVasCommand> vasList;
 
@@ -161,11 +161,11 @@ public class OdoLineCommand extends BaseCommand {
         this.vasList = vasList;
     }
 
-    public List<WhOdoLineAttrSnCommand> getLineSnList() {
+    public List<WhOdoLineSnCommand> getLineSnList() {
         return lineSnList;
     }
 
-    public void setLineSnList(List<WhOdoLineAttrSnCommand> lineSnList) {
+    public void setLineSnList(List<WhOdoLineSnCommand> lineSnList) {
         this.lineSnList = lineSnList;
     }
 

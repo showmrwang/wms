@@ -6,7 +6,7 @@ import com.baozun.scm.primservice.whoperation.command.BaseCommand;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAddress;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
-import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLineAttrSn;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLineSn;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoVas;
 
@@ -28,7 +28,7 @@ public class OdoGroup extends BaseCommand {
     /***/
     private List<WhOdoVas> odoVasList;
 
-    List<WhOdoLineAttrSn> lineSnList;
+    List<WhOdoLineSn> lineSnList;
     /***/
     private Long userId;
     /***/
@@ -38,11 +38,11 @@ public class OdoGroup extends BaseCommand {
     /***/
     private Long odoLineId;
 
-    public List<WhOdoLineAttrSn> getLineSnList() {
+    public List<WhOdoLineSn> getLineSnList() {
         return lineSnList;
     }
 
-    public void setLineSnList(List<WhOdoLineAttrSn> lineSnList) {
+    public void setLineSnList(List<WhOdoLineSn> lineSnList) {
         this.lineSnList = lineSnList;
     }
 

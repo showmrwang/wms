@@ -17,9 +17,26 @@ package com.baozun.scm.primservice.whoperation.dao.archiv;
 import lark.orm.dao.supports.BaseDao;
 
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
 
 
 
 public interface OdoArchivDao extends BaseDao<WhOdo, Long> {
+
+    /**
+     * 备份odo
+     * 
+     * @param whOdo
+     * @return
+     */
+    int archivWhOdo(WhOdo whOdo);
+
+    /**
+     * 备份odoLine
+     * 
+     * @param whOdoLine
+     * @return
+     */
+    int archivWhOdoLine(WhOdoLine whOdoLine);
 
 }

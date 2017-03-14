@@ -3,16 +3,16 @@
         PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
 
-<mapper namespace="com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineAttrSnDao">
-    <resultMap id="WhOdoLineAttrSnResult" type="com.baozun.scm.primservice.whoperation.model.odo.WhOdoLineAttrSn">
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineSnDao">
+    <resultMap id="WhOdoLineSnResult" type="com.baozun.scm.primservice.whoperation.model.odo.WhOdoLineSn">
     </resultMap>
     
-    <resultMap id="WhOdoLineAttrSnPaginationResult" type="lark.common.dao.Pagination">
-        <collection property="items" javaType="ArrayList" resultMap="WhOdoLineAttrSnResult"/>
+    <resultMap id="WhOdoLineSnPaginationResult" type="lark.common.dao.Pagination">
+        <collection property="items" javaType="ArrayList" resultMap="WhOdoLineSnResult"/>
     </resultMap>
 
     <!-- 用于select查询公用抽取的列 -->
-    <sql id="whOdoLineAttrSnColumns">
+    <sql id="WhOdoLineSnColumns">
         <![CDATA[
                 id as id,
                 odo_line_id as odoLineId,
@@ -23,7 +23,7 @@
                 ou_id as ouId
         ]]>
     </sql>
-    <sql id="whOdoLineAttrSnConditionWhereExt">
+    <sql id="WhOdoLineSnConditionWhereExt">
         <where>
             <if test="likeEqualsMap != null">
                 <foreach collection="likeEqualsMap" index="key" item="value" separator="and" open=" and ">
@@ -106,7 +106,7 @@
     <!-- 如果有自增字段 -->
 
     <!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
-    <insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.odo.WhOdoLineAttrSn" flushCache="true">
+    <insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.odo.WhOdoLineSn" flushCache="true">
         <![CDATA[
                 INSERT INTO
                 t_wh_odo_line_sn (
@@ -130,7 +130,7 @@
 
     </insert>
 
-    <update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.odo.WhOdoLineAttrSn">
+    <update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.odo.WhOdoLineSn">
         <![CDATA[
             UPDATE t_wh_odo_line_sn SET
                 odo_line_id = #{odoLineId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -149,7 +149,7 @@
         <foreach collection="batchUpdateMap" index="key" item="value" separator=",">
             ${key} = #{value}
         </foreach>
-        <include refid="whOdoLineAttrSnConditionWhereExt"/>
+        <include refid="WhOdoLineSnConditionWhereExt"/>
     </update>
 
     <delete id="delete" parameterType="java.lang.Long">
@@ -171,12 +171,12 @@
     
     <update id="batchDelete">
         delete from t_wh_odo_line_sn
-        <include refid="whOdoLineAttrSnConditionWhereExt"/>
+        <include refid="WhOdoLineSnConditionWhereExt"/>
     </update>
 
-    <select id="findById" parameterType="java.lang.Long" resultMap="WhOdoLineAttrSnResult" flushCache="false">
+    <select id="findById" parameterType="java.lang.Long" resultMap="WhOdoLineSnResult" flushCache="false">
         select
-        <include refid="whOdoLineAttrSnColumns"/>
+        <include refid="WhOdoLineSnColumns"/>
         <![CDATA[
                 from t_wh_odo_line_sn 
                 where 
@@ -184,9 +184,9 @@
             ]]>
     </select>
     
-    <select id="getByIds" parameterType="list" resultMap="WhOdoLineAttrSnResult" flushCache="false">
+    <select id="getByIds" parameterType="list" resultMap="WhOdoLineSnResult" flushCache="false">
         select
-        <include refid="whOdoLineAttrSnColumns"/>
+        <include refid="WhOdoLineSnColumns"/>
         from t_wh_odo_line_sn
         where id in
         <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
@@ -194,7 +194,7 @@
         </foreach>
     </select>
     
-    <sql id="whOdoLineAttrSnDynamicWhere">
+    <sql id="WhOdoLineSnDynamicWhere">
         <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
         <where>
 
@@ -234,52 +234,52 @@
 
     <select id="findListCountByQueryMap" resultType="long">
         select count(*) from t_wh_odo_line_sn
-        <include refid="whOdoLineAttrSnDynamicWhere"/>
+        <include refid="WhOdoLineSnDynamicWhere"/>
     </select>
 
     <select id="findListCountByParam" resultType="long">
         select count(*) from t_wh_odo_line_sn
-        <include refid="whOdoLineAttrSnDynamicWhere"/>
+        <include refid="WhOdoLineSnDynamicWhere"/>
     </select>
 
     <!--
         分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
         因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
     -->
-    <select id="findListByQueryMapWithPage" resultMap="WhOdoLineAttrSnResult">
+    <select id="findListByQueryMapWithPage" resultMap="WhOdoLineSnResult">
         select
-        <include refid="whOdoLineAttrSnColumns"/>
+        <include refid="WhOdoLineSnColumns"/>
         from t_wh_odo_line_sn
-        <include refid="whOdoLineAttrSnDynamicWhere"/>
+        <include refid="WhOdoLineSnDynamicWhere"/>
 
     </select>
 
-    <select id="findListByQueryMap" resultMap="WhOdoLineAttrSnResult">
+    <select id="findListByQueryMap" resultMap="WhOdoLineSnResult">
         select
-        <include refid="whOdoLineAttrSnColumns"/>
+        <include refid="WhOdoLineSnColumns"/>
         from t_wh_odo_line_sn
-        <include refid="whOdoLineAttrSnDynamicWhere"/>
+        <include refid="WhOdoLineSnDynamicWhere"/>
 
     </select>
 
-    <select id="findListByParam" resultMap="WhOdoLineAttrSnResult">
+    <select id="findListByParam" resultMap="WhOdoLineSnResult">
         select
-        <include refid="whOdoLineAttrSnColumns"/>
+        <include refid="WhOdoLineSnColumns"/>
         from t_wh_odo_line_sn
-        <include refid="whOdoLineAttrSnDynamicWhere"/>
+        <include refid="WhOdoLineSnDynamicWhere"/>
 
     </select>
 
-    <select id="query" resultMap="WhOdoLineAttrSnResult">
+    <select id="query" resultMap="WhOdoLineSnResult">
         select
-        <include refid="whOdoLineAttrSnColumns"/>
+        <include refid="WhOdoLineSnColumns"/>
         from t_wh_odo_line_sn
-        <include refid="whOdoLineAttrSnConditionWhereExt"/>
+        <include refid="WhOdoLineSnConditionWhereExt"/>
     </select>
 
     <select id="queryCount" resultType="long">
         select count(*) from t_wh_odo_line_sn
-        <include refid="whOdoLineAttrSnConditionWhereExt"/>
+        <include refid="WhOdoLineSnConditionWhereExt"/>
     </select>
 
 </mapper>
