@@ -577,7 +577,7 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
 
     private void autoClose(WhPo po, WhAsn asn, Long ouId, Long userId) {
         Double overRate = this.getOverChargeRate(asn.getId(), ouId);
-        if (overRate != null && overRate > 0) {
+        if (overRate == null || overRate <= 0) {
             // 自动关闭ASN单据
             if (asn.getQtyRcvd() >= asn.getQtyPlanned()) {
                 List<WhAsnLine> lineList = this.whAsnLineDao.findWhAsnLineByAsnIdOuId(asn.getId(), ouId);
