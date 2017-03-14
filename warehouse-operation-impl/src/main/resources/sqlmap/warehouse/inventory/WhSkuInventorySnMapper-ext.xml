@@ -7,6 +7,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventorySnDao">
 	<resultMap id="WhSkuInventorySnResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventorySn">
 	</resultMap>
+	<resultMap id="WhSkuInventorySnCommandResultExt" type="com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand">
+	</resultMap>
 	
 	<!-- 用于select查询公用抽取的列 -->
 	<sql id="whSkuInventorySnColumnsExt">
@@ -26,8 +28,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    ]]>
 	</sql>
 	
-	<resultMap id="WhSkuInventorySnCommandResultExt" type="com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand">
-	</resultMap>
 	
 	<sql id="findListByQueryMapWithPageWhereExt">
 		<where>
@@ -225,5 +225,34 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
             #{insideContainerId}
         </foreach>
 </select>
-
+	
+	<select id="findInvSnByAsnCodeAndUuid" resultMap="WhSkuInventorySnCommandResultExt">
+		select 
+			sn.id as id,
+			sn.sn as sn,
+			sn.occupation_code as occupationCode,
+			sn.defect_ware_barcode as defectWareBarcode,
+			sn.defect_source as defectSource,
+			sn.defect_type_id as defectTypeId,
+			sn.defect_reasons_id as defectReasonsId,
+			sn.status as status,
+			sn.inv_attr as invAttr,
+			sn.uuid as uuid,
+			sn.ou_id as ouId,
+			sn.sys_uuid as sysUuid,
+			stype.code as storeDefectTypeCode,
+			srea.code as storeDefectReasonsCode,
+			wtype.code as whDefectTypeCode,
+			wrea.code as whDefectReasonsCode
+		from 
+			t_wh_sku_inventory_sn sn
+			left join t_bi_store_defect_type stype on stype.id = sn.defect_type_id 
+			left join t_bi_store_defect_reasons srea on srea.id = sn.defect_reasons_id
+			left join t_wh_defect_type wtype on wtype.id = sn.defect_type_id 
+			left join t_wh_defect_reasons wrea on wrea.id = sn.defect_reasons_id
+		where 
+			occupation_code = #{asnCode}
+			and uuid = #{uuid}
+			and ou_id = #{ouid} 
+	</select>
 </mapper>

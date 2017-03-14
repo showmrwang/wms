@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whinterface.dao.inbound.WhInboundConfirmDao">
+	<resultMap id="WhInboundConfirmResultExt" type="com.baozun.scm.primservice.whoperation.model.whinterface.inbound.WhInboundConfirm">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whInboundConfirmColumnsExt">
+	    <![CDATA[
+	        	id as id,
+	        	uuid as uuid,
+	        	ext_po_code as extPoCode,
+	        	ext_code as extCode,
+	        	customer_code as customerCode,
+	        	store_code as storeCode,
+	        	from_location as fromLocation,
+	        	to_location as toLocation,
+	        	delivery_time as deliveryTime,
+	        	wh_code as whCode,
+	        	po_status as poStatus,
+	        	po_type as poType,
+	        	is_iqc as isIqc,
+	        	qty_planned as qtyPlanned,
+	        	qty_rcvd as qtyRcvd,
+	        	ctn_planned as ctnPlanned,
+	        	ctn_rcvd as ctnRcvd,
+	        	ext_memo as extMemo,
+	        	data_source as dataSource,
+	        	status as status,
+	        	error_count as errorCount,
+	        	create_time as createTime,
+	        	last_modify_time as lastModifyTime
+	    ]]>
+	</sql>
+	
+	<sql id="whInboundConfirmDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+	       
+		       <if test="uuid!=null and uuid!=''">
+					and uuid = #{uuid}
+				</if>
+	       
+	       
+		       <if test="extPoCode!=null and extPoCode!=''">
+					and ext_po_code = #{extPoCode}
+				</if>
+	       
+	       
+		       <if test="extCode!=null and extCode!=''">
+					and ext_code = #{extCode}
+				</if>
+	       
+	       
+		       <if test="customerCode!=null and customerCode!=''">
+					and customer_code = #{customerCode}
+				</if>
+	       
+	       
+		       <if test="storeCode!=null and storeCode!=''">
+					and store_code = #{storeCode}
+				</if>
+	       
+	       
+		       <if test="fromLocation!=null and fromLocation!=''">
+					and from_location = #{fromLocation}
+				</if>
+	       
+	       
+		       <if test="toLocation!=null and toLocation!=''">
+					and to_location = #{toLocation}
+				</if>
+	       
+				<if test="deliveryTime!=null">
+					and delivery_time = #{deliveryTime}
+				</if>
+	       
+	       
+		       <if test="whCode!=null and whCode!=''">
+					and wh_code = #{whCode}
+				</if>
+	       
+	       
+		       <if test="poStatus!=null and poStatus!=''">
+					and po_status = #{poStatus}
+				</if>
+	       
+	       
+		       <if test="poType!=null and poType!=''">
+					and po_type = #{poType}
+				</if>
+	       
+				<if test="isIqc!=null">
+					and is_iqc = #{isIqc}
+				</if>
+	       
+				<if test="qtyPlanned!=null">
+					and qty_planned = #{qtyPlanned}
+				</if>
+	       
+				<if test="qtyRcvd!=null">
+					and qty_rcvd = #{qtyRcvd}
+				</if>
+	       
+				<if test="ctnPlanned!=null">
+					and ctn_planned = #{ctnPlanned}
+				</if>
+	       
+				<if test="ctnRcvd!=null">
+					and ctn_rcvd = #{ctnRcvd}
+				</if>
+	       
+	       
+		       <if test="extMemo!=null and extMemo!=''">
+					and ext_memo = #{extMemo}
+				</if>
+	       
+	       
+		       <if test="dataSource!=null and dataSource!=''">
+					and data_source = #{dataSource}
+				</if>
+	       
+				<if test="status!=null">
+					and status = #{status}
+				</if>
+	       
+				<if test="errorCount!=null">
+					and error_count = #{errorCount}
+				</if>
+	       
+				<if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+		</where>
+	</sql>
+	
+	<update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.whinterface.inbound.WhInboundConfirm">
+	    <![CDATA[
+	        UPDATE t_wh_inbound_confirm SET
+		        uuid = #{uuid,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        ext_po_code = #{extPoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        ext_code = #{extCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        customer_code = #{customerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        store_code = #{storeCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        from_location = #{fromLocation,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        to_location = #{toLocation,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        delivery_time = #{deliveryTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        wh_code = #{whCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        po_status = #{poStatus,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        po_type = #{poType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        is_iqc = #{isIqc,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        qty_planned = #{qtyPlanned,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+		        qty_rcvd = #{qtyRcvd,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+		        ctn_planned = #{ctnPlanned,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        ctn_rcvd = #{ctnRcvd,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        ext_memo = #{extMemo,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        data_source = #{dataSource,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        status = #{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        error_count = #{errorCount,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        last_modify_time = now() 
+	        WHERE 
+		        id = #{id} 
+		        and last_modify_time	<=  #{lastModifyTime}    
+	    ]]>
+	</update>
+</mapper>

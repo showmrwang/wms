@@ -30,16 +30,20 @@ import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
 import com.baozun.scm.primservice.whoperation.dao.poasn.BiPoDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.BiPoLineDao;
+import com.baozun.scm.primservice.whoperation.dao.poasn.BiPoTransportMgmtDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoLineDao;
+import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoTransportMgmtDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ma.TransportProviderDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.model.poasn.BiPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.BiPoLine;
+import com.baozun.scm.primservice.whoperation.model.poasn.BiPoTransportMgmt;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhPoTransportMgmt;
 import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
@@ -52,9 +56,13 @@ public class BiPoManagerImpl extends BaseManagerImpl implements BiPoManager {
     @Autowired
     private BiPoDao biPoDao;
     @Autowired
+    private BiPoTransportMgmtDao biPoTransportMgmtDao;
+    @Autowired
     private BiPoLineDao biPoLineDao;
     @Autowired
     private WhPoDao whPoDao;
+    @Autowired
+    private WhPoTransportMgmtDao whPoTransportMgmtDao;
     @Autowired
     private WhPoLineDao whPoLineDao;
     @Autowired
@@ -172,7 +180,7 @@ public class BiPoManagerImpl extends BaseManagerImpl implements BiPoManager {
 
     @Override
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
-    public void createPoAndLineToInfo(WhPo po, List<WhPoLine> whPoLines) {
+    public void createPoAndLineToInfo(WhPo po, WhPoTransportMgmt whPoTm, List<WhPoLine> whPoLines) {
         // create-po分支：
         // 逻辑:
         // 1.没有指定仓库，则只需要插入BIPO
@@ -182,16 +190,31 @@ public class BiPoManagerImpl extends BaseManagerImpl implements BiPoManager {
         if (log.isDebugEnabled()) {
             log.debug("BiPoManager.createPoAndLineToInfo start inserting data to info.bipo/info.whpo!orgin:[data:{}]", po);
         }
+        
+        // 插入BIPO
         BiPo biPo = new BiPo();// biPo为插入到BIPO的实体对象;po为插入到INFO.WHPO的对象
         BeanUtils.copyProperties(po, biPo);
         biPo.setStatus(null == po.getOuId() ? PoAsnStatus.BIPO_NEW : PoAsnStatus.BIPO_ALLOT);
-        // 插入BIPO
         long bipocount = biPoDao.insert(biPo);
         if (bipocount <= Constants.DEFAULT_LONG) {
             log.error("BiPoManager.createPoAndLineToInfo method insert into BIPO error:[insertCount:{},insertData:{}]", bipocount, biPo);
             throw new BusinessException(ErrorCodes.INSERT_DATA_ERROR);
         }
         this.insertGlobalLog(GLOBAL_LOG_INSERT, biPo, po.getOuId(), po.getCreatedId(), null, null);
+        
+        // 插入BiPoTransportMgmt
+        if (null != whPoTm) {
+        	BiPoTransportMgmt biPoTransportMgmt = new BiPoTransportMgmt();
+			BeanUtils.copyProperties(whPoTm, biPoTransportMgmt);
+			biPoTransportMgmt.setPoId(biPo.getId());
+			long insertCount = biPoTransportMgmtDao.insert(biPoTransportMgmt);
+			if (insertCount <= 0) {
+	            log.error("BiPoManager.createPoAndLineToInfo method insert into BiPoTransportMgmt error:[insertCount:{},insertData:{}]", insertCount, biPoTransportMgmt);
+	            throw new BusinessException(ErrorCodes.INSERT_DATA_ERROR);
+	        }
+	        this.insertGlobalLog(GLOBAL_LOG_INSERT, biPoTransportMgmt, po.getOuId(), po.getCreatedId(), null, null);
+		}
+        
         if (po.getOuId() != null) {
             // 插入WHPO
             po.setStatus(PoAsnStatus.PO_NEW);
@@ -248,7 +271,7 @@ public class BiPoManagerImpl extends BaseManagerImpl implements BiPoManager {
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void createPoAndLineToShared(WhPo po, List<WhPoLine> whPoLines) {
+    public void createPoAndLineToShared(WhPo po, WhPoTransportMgmt whPoTm, List<WhPoLine> whPoLines) {
         // 逻辑:
         // 将INFO.WHPO数据同步到SHARD.WHPO中
         // 1.头信息同步：po
@@ -263,6 +286,18 @@ public class BiPoManagerImpl extends BaseManagerImpl implements BiPoManager {
             throw new BusinessException(ErrorCodes.INSERT_DATA_ERROR);
         }
         this.insertGlobalLog(GLOBAL_LOG_INSERT, po, po.getOuId(), po.getModifiedId(), null, DbDataSource.MOREDB_SHARDSOURCE);
+        
+        // 插入BiPoTransportMgmt
+        if (null != whPoTm) {
+        	whPoTm.setPoId(po.getId());
+			long insertCount = whPoTransportMgmtDao.insert(whPoTm);
+			if (insertCount <= 0) {
+	            log.error("BiPoManager.createPoAndLineToShared method insert into WhPoTransportMgmt error:[insertCount:{},insertData:{}]", insertCount, whPoTm);
+	            throw new BusinessException(ErrorCodes.INSERT_DATA_ERROR);
+	        }
+	        this.insertGlobalLog(GLOBAL_LOG_INSERT, whPoTm, po.getOuId(), po.getCreatedId(), null, null);
+		}
+        
         // 插入SHARD.WHPOLINE
         if (whPoLines != null && whPoLines.size() > 0) {
             // 有line信息保存

@@ -18,6 +18,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -25,14 +27,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import lark.common.annotation.MoreDB;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
@@ -47,12 +49,17 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand
 import com.baozun.scm.primservice.whoperation.command.warehouse.ReplenishmentRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ReplenishmentStrategyCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationLineCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryAllocatedCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
 import com.baozun.scm.primservice.whoperation.command.wave.WhWaveLineCommand;
+import com.baozun.scm.primservice.whoperation.command.whinterface.inbound.WhInboundConfirmCommand;
+import com.baozun.scm.primservice.whoperation.command.whinterface.inbound.WhInboundInvLineConfirmCommand;
+import com.baozun.scm.primservice.whoperation.command.whinterface.inbound.WhInboundLineConfirmCommand;
+import com.baozun.scm.primservice.whoperation.command.whinterface.inbound.WhInboundSnLineConfirmCommand;
 import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
@@ -64,6 +71,7 @@ import com.baozun.scm.primservice.whoperation.constant.WhPutawayPatternDetailTyp
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.CustomerDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ReplenishmentMsgDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ReplenishmentStrategyDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ReplenishmentTaskDao;
@@ -84,14 +92,21 @@ import com.baozun.scm.primservice.whoperation.manager.odo.wave.WhWaveLineManager
 import com.baozun.scm.primservice.whoperation.manager.odo.wave.WhWaveManager;
 import com.baozun.scm.primservice.whoperation.manager.pda.inbound.cache.PdaPutawayCacheManager;
 import com.baozun.scm.primservice.whoperation.manager.pda.inbound.putaway.SkuCategoryProvider;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.CustomerManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.StoreManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.WarehouseManager;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.AllocateStrategy;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Location;
 import com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentMsg;
 import com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentTask;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationExecLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationLine;
@@ -100,8 +115,12 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInv
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryAllocated;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventorySn;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryTobefilled;
+import com.baozun.scm.primservice.whoperation.model.whinterface.inbound.WhInboundConfirm;
+import com.baozun.scm.primservice.whoperation.model.whinterface.inbound.WhInboundLineConfirm;
 import com.baozun.scm.primservice.whoperation.util.SkuInventoryUuid;
 import com.baozun.utilities.type.StringUtil;
+
+import lark.common.annotation.MoreDB;
 
 /**
  * @author lichuan
@@ -157,6 +176,12 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     private WhWorkDao whWorkDao;
     @Autowired
     private WhWorkLineDao  whWorkLineDao;
+    @Autowired
+    private WarehouseManager warehouseManager;
+    @Autowired
+    private CustomerManager customerManager;
+    @Autowired
+    private StoreManager storeManager;
     /**
      * 库位绑定（分配容器库存及生成待移入库位库存）
      * 
@@ -6169,5 +6194,221 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         }
     }
     
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public WhInboundConfirmCommand findInventoryByPo(WhPo po, List<WhPoLine> lineList, Long ouId) {
+    	Collections.sort(lineList, new Comparator<WhPoLine>() {
 
+			@Override
+			public int compare(WhPoLine po1, WhPoLine po2) {
+				if (po1.getSkuId() == null || po2.getSkuId() == null) {
+					throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
+				}
+				return po1.getSkuId().compareTo(po2.getSkuId());
+			}
+    		
+		});
+    	
+    	List<WhInboundLineConfirmCommand> confirmLineList = new ArrayList<WhInboundLineConfirmCommand>();
+    	// 存放记录uuid是否找过对应sn信息
+    	Map<String, Boolean> uuidMap = new HashMap<String, Boolean>();
+    	
+    	// TODO 根据ASN_CODE查询库存表已收获的数据
+    	List<WhSkuInventoryCommand> skuInvs = new ArrayList<WhSkuInventoryCommand>();
+    	for (WhPoLine poLine : lineList) {
+    		Long skuId = poLine.getSkuId();
+    		WhSkuCommand sku = skuDao.findWhSkuByIdExt(skuId, ouId);
+    		WhInboundLineConfirmCommand confirmLine = new WhInboundLineConfirmCommand();
+    		confirmLine.setUpc(sku.getExtCode());
+    		confirmLine.setStyle(sku.getStyle());
+    		confirmLine.setColor(sku.getColor());
+    		confirmLine.setSize(sku.getSize());
+    		confirmLine.setCartonNo(poLine.getCartonNo());
+    		confirmLine.setLineSeq(poLine.getExtLineNum());
+    		confirmLine.setQty(poLine.getQtyPlanned());
+    		confirmLine.setSkuId(skuId);
+    		confirmLine.setIsIqc(poLine.getIsIqc());
+    		
+    		List<WhInboundInvLineConfirmCommand> invLines = new ArrayList<WhInboundInvLineConfirmCommand>();
+    		// 第一次实际收货数据计算
+    		Double actualQty = Constants.DEFAULT_DOUBLE;
+    		// 第一次把有库存属性的商品对应库存数据匹配
+    		for (int i = 0; i < skuInvs.size(); i++) {
+    			WhSkuInventoryCommand inv = skuInvs.get(i);
+    			if (!hasInvAttr(poLine)) {
+					break;
+				}
+    			if (checkInvAttrEqual(poLine, inv)) {
+    				WhInboundInvLineConfirmCommand invLineConfirm = new WhInboundInvLineConfirmCommand();
+    				BeanUtils.copyProperties(inv, invLineConfirm, "id");
+    				invLineConfirm.setIsIqc(poLine.getIsIqc());
+    				if (poLine.getQtyPlanned().compareTo(inv.getOnHandQty()) != -1) {
+    					// poLine.getQtyPlanned() >= inv.getOnHandQty()
+    					invLineConfirm.setQtyRcvd(inv.getOnHandQty());
+    					actualQty = inv.getOnHandQty();
+    					skuInvs.remove(i--);
+					} else {
+						invLineConfirm.setQtyRcvd(poLine.getQtyPlanned());
+						actualQty = poLine.getQtyPlanned();
+						inv.setOnHandQty(inv.getOnHandQty() - poLine.getQtyPlanned());
+					}
+    				// 查询sn信息, 有则封装
+    				this.getSnInfo(uuidMap, inv, invLineConfirm, invLines, ouId);
+    				break;
+				}
+    		}
+    		confirmLine.setActualQty(actualQty);
+    		confirmLine.setWhInBoundInvLineConfirmsList(invLines);
+    		confirmLineList.add(confirmLine);
+		}
+    	// 第二次把库存数据填补上
+    	for (int i = 0; i < confirmLineList.size(); i++) {
+    		WhInboundLineConfirmCommand confirmLine = confirmLineList.get(i);
+    		Long skuId = confirmLine.getSkuId();
+    		String upc = confirmLine.getUpc();
+    		Double qtyPlanned = confirmLine.getQty();
+    		Double actualQty = confirmLine.getActualQty();
+    		Double qty = qtyPlanned - actualQty;
+    		
+    		List<WhInboundInvLineConfirmCommand> whInBoundInvLineConfirmsList = confirmLine.getWhInBoundInvLineConfirmsList();
+    		// 判断是否是最后一件
+    		if (i + 1 >= confirmLineList.size() || !upc.equals(confirmLineList.get(i + 1).getUpc())) {
+				// 是最后一件
+    			for (int j = 0; j < skuInvs.size(); j++) {
+    				WhSkuInventoryCommand inv = skuInvs.get(j);
+    				if (skuId.equals(inv.getSkuId())) {
+    					WhInboundInvLineConfirmCommand invLine = new WhInboundInvLineConfirmCommand();
+    					BeanUtils.copyProperties(inv, invLine, "id");
+    					invLine.setQtyRcvd(inv.getOnHandQty());
+    					invLine.setIsIqc(confirmLine.getIsIqc());
+    					whInBoundInvLineConfirmsList.add(invLine);
+    					skuInvs.remove(j--);
+    					this.getSnInfo(uuidMap, inv, invLine, whInBoundInvLineConfirmsList, ouId);
+					}
+				}
+    			
+			} else {
+				if (Constants.DEFAULT_DOUBLE.compareTo(qty) == 0) {
+					continue;
+				}
+				for (int j = 0; j < skuInvs.size(); j++) {
+					WhSkuInventoryCommand inv = skuInvs.get(j);
+    				if (skuId.equals(inv.getSkuId())) {
+    					WhInboundInvLineConfirmCommand invLine = new WhInboundInvLineConfirmCommand();
+    					BeanUtils.copyProperties(inv, invLine, "id");
+    					if (qty.compareTo(inv.getOnHandQty()) != -1) {
+							// qty >= inv.getOnHandQty()
+    						invLine.setQtyRcvd(inv.getOnHandQty());
+    						invLine.setIsIqc(confirmLine.getIsIqc());
+    						whInBoundInvLineConfirmsList.add(invLine);
+    						qty -= inv.getOnHandQty();
+    						skuInvs.remove(j--);
+						} else {
+							invLine.setQtyRcvd(qty);
+    						invLine.setIsIqc(confirmLine.getIsIqc());
+    						whInBoundInvLineConfirmsList.add(invLine);
+    						inv.setOnHandQty(inv.getOnHandQty() - qty);
+    						qty = Constants.DEFAULT_DOUBLE;
+						}
+    					if (Constants.DEFAULT_DOUBLE.compareTo(qty) == 0) {
+							break;
+						}
+    				}
+				}
+			}
+		}
+    	
+    	WhInboundConfirmCommand inboundConfirm = new WhInboundConfirmCommand();
+    	inboundConfirm.setUuid(UUID.randomUUID().toString());
+    	inboundConfirm.setExtPoCode(po.getExtPoCode());
+    	inboundConfirm.setExtCode(po.getExtCode());
+    	Customer customer = customerManager.getCustomerById(po.getCustomerId());
+    	if (null == customer) {
+			throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
+		}
+    	inboundConfirm.setCustomerCode(customer.getCustomerCode());
+    	Store store = storeManager.getStoreById(po.getStoreId());
+    	if (null == store) {
+			throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
+		}
+    	inboundConfirm.setStoreCode(store.getStoreCode());
+    	inboundConfirm.setFromLocation(po.getFromLocation());
+    	inboundConfirm.setToLocation(po.getToLocation());
+    	inboundConfirm.setDeliveryTime(po.getDeliveryTime());
+    	Warehouse wh = warehouseManager.findWarehouseByIdExt(ouId);
+    	if (null == wh) {
+			throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
+		}
+    	inboundConfirm.setWhCode(wh.getCode());
+    	inboundConfirm.setPoStatus(po.getStatus().toString());
+    	inboundConfirm.setPoType(po.getPoType().toString());
+    	inboundConfirm.setIsIqc(po.getIsIqc());
+    	inboundConfirm.setQtyPlanned(po.getQtyPlanned());
+    	inboundConfirm.setQtyRcvd(po.getQtyRcvd());
+    	inboundConfirm.setCtnPlanned(po.getCtnPlanned());
+    	inboundConfirm.setCtnRcvd(po.getCtnRcvd());
+    	inboundConfirm.setDataSource(Constants.DATA_SOURCE_HUB);
+    	inboundConfirm.setStatus(1);
+    	inboundConfirm.setErrorCount(0);
+    	inboundConfirm.setCreateTime(new Date());
+    	inboundConfirm.setLastModifyTime(new Date());
+    	inboundConfirm.setWhInboundLineConfirmList(confirmLineList);
+    	return inboundConfirm;
+    }
+
+	private void getSnInfo(Map<String, Boolean> uuidMap, WhSkuInventoryCommand inv, WhInboundInvLineConfirmCommand invLineConfirm, List<WhInboundInvLineConfirmCommand> invLines, Long ouId) {
+		if (null == uuidMap.get(inv.getUuid()) || !uuidMap.get(inv.getUuid())) {
+			List<WhSkuInventorySnCommand> invSnList = whSkuInventorySnDao.findInvSnByAsnCodeAndUuid(inv.getOccupationCode(), inv.getUuid(), ouId);
+			if (null != invSnList && !invSnList.isEmpty()) {
+				List<WhInboundSnLineConfirmCommand> snLineList = new ArrayList<WhInboundSnLineConfirmCommand>();
+				for (WhSkuInventorySnCommand sn : invSnList) {
+					WhInboundSnLineConfirmCommand snLine = new WhInboundSnLineConfirmCommand();
+					snLine.setSn(sn.getSn());
+					snLine.setDefectWareBarcode(sn.getDefectWareBarcode());
+					snLine.setDefectSource(sn.getDefectSource());
+					if (Constants.SKU_SN_DEFECT_SOURCE_WH.equals(sn.getDefectSource())) {
+						snLine.setDefectType(sn.getWhDefectTypeCode());
+						snLine.setDefectReasons(sn.getWhDefectReasonsCode());
+					} else {
+						snLine.setDefectType(sn.getStoreDefectTypeCode());
+						snLine.setDefectReasons(sn.getStoreDefectReasonsCode());
+					}
+					snLineList.add(snLine);
+				}
+				invLineConfirm.setWhInBoundSnLineConfirmCommandList(snLineList);
+			}
+			invLines.add(invLineConfirm);
+			uuidMap.put(inv.getUuid(), Boolean.TRUE);
+		}
+	}
+    
+    private boolean hasInvAttr(WhPoLine poLine) {
+    	if (StringUtils.isEmpty(poLine.getInvType()) && null == poLine.getInvStatus()
+    			&& StringUtils.isEmpty(poLine.getInvAttr1()) && StringUtils.isEmpty(poLine.getInvAttr2())
+    			&& StringUtils.isEmpty(poLine.getInvAttr3()) && StringUtils.isEmpty(poLine.getInvAttr4())
+    			&& StringUtils.isEmpty(poLine.getInvAttr5()) && StringUtils.isEmpty(poLine.getBatchNo())
+    			&& StringUtils.isEmpty(poLine.getCountryOfOrigin()) && null == poLine.getMfgDate() 
+    			&& null == poLine.getExpDate()) {
+			return false;
+		}
+    	return true;
+    }
+    
+    private boolean checkInvAttrEqual(WhPoLine poLine, WhSkuInventoryCommand inv) {
+    	if (poLine.getInvType() == null ? inv.getInvType() == null : poLine.getInvType().equals(inv.getInvType())
+    			&& poLine.getInvStatus() == null ? inv.getInvStatus() == null : poLine.getInvStatus().equals(inv.getInvStatus())
+    			&& poLine.getInvAttr1() == null ? inv.getInvAttr1() == null : poLine.getInvAttr1().equals(inv.getInvAttr1())
+    			&& poLine.getInvAttr2() == null ? inv.getInvAttr2() == null : poLine.getInvAttr2().equals(inv.getInvAttr2())
+    			&& poLine.getInvAttr3() == null ? inv.getInvAttr3() == null : poLine.getInvAttr3().equals(inv.getInvAttr3())
+    			&& poLine.getInvAttr4() == null ? inv.getInvAttr4() == null : poLine.getInvAttr4().equals(inv.getInvAttr4())
+    			&& poLine.getInvAttr5() == null ? inv.getInvAttr5() == null : poLine.getInvAttr5().equals(inv.getInvAttr5())
+    			&& poLine.getBatchNo() == null ? inv.getBatchNumber() == null : poLine.getBatchNo().equals(inv.getBatchNumber())
+    			&& poLine.getCountryOfOrigin() == null ? inv.getCountryOfOrigin() == null : poLine.getCountryOfOrigin().equals(inv.getCountryOfOrigin())
+    			&& poLine.getMfgDate() == null ? inv.getMfgDate() == null : poLine.getMfgDate().equals(inv.getMfgDate())
+    			&& poLine.getExpDate() == null ? inv.getExpDate() == null : poLine.getExpDate().equals(inv.getExpDate())) {
+			return true;
+		}
+    	return false;
+    }
 }

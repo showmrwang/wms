@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whinterface.dao.inbound.WhInboundLineConfirmDao">
+	<resultMap id="WhInboundLineConfirmResultExt" type="com.baozun.scm.primservice.whoperation.model.whinterface.inbound.WhInboundLineConfirm">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whInboundLineConfirmColumnsExt">
+	    <![CDATA[
+	        	id as id,
+	        	inbound_confirm_id as inboundConfirmId,
+	        	upc as upc,
+	        	style as style,
+	        	color as color,
+	        	size as size,
+	        	qty as qty,
+	        	line_seq as lineSeq,
+	        	carton_no as cartonNo
+	    ]]>
+	</sql>
+	
+	<sql id="whInboundLineConfirmDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+				<if test="inboundConfirmId!=null">
+					and inbound_confirm_id = #{inboundConfirmId}
+				</if>
+	       
+	       
+		       <if test="upc!=null and upc!=''">
+					and upc = #{upc}
+				</if>
+	       
+	       
+		       <if test="style!=null and style!=''">
+					and style = #{style}
+				</if>
+	       
+	       
+		       <if test="color!=null and color!=''">
+					and color = #{color}
+				</if>
+	       
+	       
+		       <if test="size!=null and size!=''">
+					and size = #{size}
+				</if>
+	       
+				<if test="qty!=null">
+					and qty = #{qty}
+				</if>
+	       
+	       
+		       <if test="lineSeq!=null and lineSeq!=''">
+					and line_seq = #{lineSeq}
+				</if>
+	       
+	       
+		       <if test="cartonNo!=null and cartonNo!=''">
+					and carton_no = #{cartonNo}
+				</if>
+		</where>
+	</sql>
+	
+</mapper>

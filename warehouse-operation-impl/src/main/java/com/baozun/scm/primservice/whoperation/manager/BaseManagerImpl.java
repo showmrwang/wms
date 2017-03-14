@@ -122,7 +122,8 @@ public abstract class BaseManagerImpl implements BaseManager {
             globalLogManager.insertGlobalLog(gl, dataSource);
         }
     }
-
+    protected void insertSkuInventoryLog(Long skuInvId, Double qty, Double oldQty, Boolean isTabbInvTotal, Long ouid, Long userid) {}
+    protected void insertSkuInventoryLog(Long skuInvId, String occupyCode, String occupySource, Double qty, Double oldQty, Boolean isTabbInvTotal, Long ouid, Long userid) {}
     /**
      * 库存日志插入
      * 
