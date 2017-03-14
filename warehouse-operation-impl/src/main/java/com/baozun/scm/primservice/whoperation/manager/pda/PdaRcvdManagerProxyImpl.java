@@ -42,7 +42,6 @@ import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
 import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
-import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.pda.inbound.rcvd.GeneralRcvdManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnLineManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnManager;
@@ -64,7 +63,6 @@ import com.baozun.scm.primservice.whoperation.model.sku.SkuMgmt;
 import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
 import com.baozun.scm.primservice.whoperation.model.warehouse.InventoryStatus;
-import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
 import com.baozun.scm.primservice.whoperation.model.warehouse.StoreDefectReasons;
 import com.baozun.scm.primservice.whoperation.model.warehouse.StoreDefectType;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Uom;
@@ -79,7 +77,7 @@ import com.baozun.scm.primservice.whoperation.util.SkuInventoryUuid;
 import com.baozun.utilities.DateUtil;
 
 @Service("pdaRcvdManagerProxy")
-public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdManagerProxy {
+public class PdaRcvdManagerProxyImpl implements PdaRcvdManagerProxy {
 
     protected static final Logger log = LoggerFactory.getLogger(PdaRcvdManagerProxy.class);
 
@@ -146,8 +144,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
         }
         WhPo po = this.poManager.findWhPoByIdToShard(cacheAsn.getPoId(), ouId);
 
-        String cacheRate = this.initAsnOverchargeRate(po.getOverChageRate(), cacheAsn.getOverChageRate(), cacheAsn.getStoreId(), cacheAsn.getOuId());
-        this.cacheManager.setMapValue(CacheKeyConstant.CACHE_ASN_OVERCHARGE, occupationId.toString(), cacheRate, 365 * 24 * 60 * 60);
+        Double cacheRate = this.generalRcvdManager.getRedisOverChargeRate(occupationId, ouId);
         try {
             // 加锁
             int updateCount = this.asnManager.updateByVersionForLock(cacheAsn.getId(), ouId, cacheAsn.getLastModifyTime());
@@ -241,50 +238,6 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
 
     }
 
-    /**
-     * 初始化Asn的超收比例
-     * 
-     * @param overChargeRatePo
-     * @param overChargeRateAsn
-     * @param storeId
-     * @param ouId
-     * @return
-     */
-    private String initAsnOverchargeRate(Double overChargeRatePo, Double overChargeRateAsn, Long storeId, Long ouId) {
-        Map<Long, Store> storeMap = this.findStoreByRedis(Arrays.asList(new Long[] {storeId}));
-        Warehouse wh = this.warehouseManager.findWarehouseById(ouId);
-        Store store = storeMap.get(storeId);
-        if (null == overChargeRatePo) {
-            Integer storePo = store.getIsPoOvercharge() ? store.getPoOverchargeProportion() : null;
-            if (storePo != null) {
-                overChargeRatePo = (Double) storePo.doubleValue();
-            } else {
-                Integer whPo = wh.getIsPoOvercharge() ? wh.getPoOverchargeProportion() : null;
-                if (whPo != null) {
-                    overChargeRatePo = whPo.doubleValue();
-                }
-            }
-        }
-        if (null == overChargeRatePo) {
-            overChargeRatePo = Constants.DEFAULT_DOUBLE;
-        }
-        if (null == overChargeRateAsn) {
-            Integer storeAsn = store.getIsAsnOvercharge() ? store.getAsnOverchargeProportion() : null;
-            if (storeAsn != null) {
-                overChargeRateAsn = storeAsn.doubleValue();
-            } else {
-                Integer whAsn = wh.getIsAsnOvercharge() ? wh.getAsnOverchargeProportion() : null;
-                if (whAsn != null) {
-                    overChargeRateAsn = whAsn.doubleValue();
-                }
-            }
-        }
-
-        if (null == overChargeRateAsn) {
-            overChargeRateAsn = Constants.DEFAULT_DOUBLE;
-        }
-        return String.valueOf(overChargeRateAsn > overChargeRatePo ? overChargeRatePo : overChargeRateAsn);
-    }
 
     @Override
     public void saveScanedSkuWhenGeneralRcvdForPda(Long userId, Long ouId) {
@@ -899,39 +852,6 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
             throw new BusinessException(ErrorCodes.RCVD_CACHE_ERROR);
         }
         return rcvdCacheCommand;
-    }
-
-    /**
-     * 刷新缓存操作
-     */
-    @Override
-    public void freshAsnCacheForGeneralReceiving(Long occupationId, Long ouId) {
-        try {
-            // 刷新缓存逻辑：
-            // 如果检测到超收比例被更改，则需要刷新超收比例
-            Double overchargeRate = this.getOverChargeRate(occupationId, ouId);
-            String cacheRate = cacheManager.getMapValue(CacheKeyConstant.CACHE_ASN_OVERCHARGE, occupationId.toString());
-            if (StringUtils.isEmpty(cacheRate)) {
-                cacheManager.setMapValue(CacheKeyConstant.CACHE_ASN_OVERCHARGE, occupationId.toString(), overchargeRate.toString(), 24 * 60 * 60);
-            }
-            if (!overchargeRate.equals(Double.parseDouble(cacheRate))) {
-                cacheManager.setMapValue(CacheKeyConstant.CACHE_ASN_OVERCHARGE, occupationId.toString(), overchargeRate.toString(), 24 * 60 * 60);
-                Map<String, String> asnlineMap = this.cacheManager.getAllMap(CacheKeyConstant.CACHE_ASNLINE_PREFIX + occupationId);
-                if (null == asnlineMap) {
-                    throw new BusinessException(ErrorCodes.ASN_CACHE_ERROR);
-                }
-                Iterator<Entry<String, String>> it = asnlineMap.entrySet().iterator();
-                while (it.hasNext()) {
-                    Entry<String, String> entry = it.next();
-                    WhAsnLine line = this.cacheManager.getMapObject(CacheKeyConstant.CACHE_ASNLINE_PREFIX + occupationId, entry.getKey());
-                    Integer overchargeCount = (int) (line.getQtyPlanned() * overchargeRate / 100);
-                    this.cacheManager.setMapObject(CacheKeyConstant.CACHE_ASNLINE_OVERCHARGE_PREFIX + occupationId, entry.getKey(), overchargeCount, 24 * 60 * 60);
-                }
-            }
-
-        } catch (Exception e) {
-            throw new BusinessException(ErrorCodes.ASN_CACHE_ERROR);
-        }
     }
 
     /**
@@ -1608,6 +1528,7 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
      */
     @Override
     public void checkContainer(WhSkuInventoryCommand command, Long ouId) {
+        String logId = command.getLogId();
         Long userId = command.getUserId();
         /***/
         // 逻辑：
@@ -1962,51 +1883,9 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
             // 如果检测到超收比例被更改，则需要刷新超收比例
             log.info(this.getClass().getSimpleName() + ".initOrFreshCacheForScanningAsn->this.freshAsnCacheForGeneralReceiving begin!");
             log.debug(this.getClass().getSimpleName() + ".initOrFreshCacheForScanningAsn->this.freshAsnCacheForGeneralReceiving params:[occupationId:{},ouId:{}]", occupationId, ouId);
-            freshAsnCacheForGeneralReceiving(occupationId, ouId);
+            this.generalRcvdManager.freshAsnCacheForGeneralReceiving(occupationId, ouId);
             log.info(this.getClass().getSimpleName() + ".initOrFreshCacheForScanningAsn->this.freshAsnCacheForGeneralReceiving end!");
         }
-    }
-
-
-    /**
-     * 获取超收比例
-     * 
-     * @param occupationId
-     * @return
-     */
-    private double getOverChargeRate(Long occupationId, Long ouId) {
-        WhAsn asn = this.cacheManager.getObject(CacheKeyConstant.CACHE_ASN_PREFIX + occupationId);
-        WhPo po = this.cacheManager.getObject(CacheKeyConstant.CACHE_PO_PREFIX + asn.getPoId());
-        Map<Long, Store> storeMap = this.findStoreByRedis(Arrays.asList(new Long[] {asn.getStoreId()}));
-        Store store = storeMap.get(asn.getStoreId());
-        Warehouse wh = this.warehouseManager.findWarehouseById(ouId);
-        Double minAsnOverChargeRate = null;
-        Double minPoOverChargeRate = null;
-        if (wh.getIsPoOvercharge() && wh.getPoOverchargeProportion() != null) {
-            minPoOverChargeRate = wh.getPoOverchargeProportion().doubleValue();
-        }
-        if (store.getIsPoOvercharge() && store.getPoOverchargeProportion() != null) {
-            minPoOverChargeRate = store.getPoOverchargeProportion().doubleValue();
-        }
-        if (null != po.getOverChageRate()) {
-            minPoOverChargeRate = po.getOverChageRate();
-        }
-        if (wh.getIsAsnOvercharge() && wh.getAsnOverchargeProportion() != null) {
-            minAsnOverChargeRate = wh.getAsnOverchargeProportion().doubleValue();
-        }
-        if (store.getIsAsnOvercharge() && store.getAsnOverchargeProportion() != null) {
-            minAsnOverChargeRate = store.getAsnOverchargeProportion().doubleValue();
-        }
-        if (null != asn.getOverChageRate()) {
-            minAsnOverChargeRate = asn.getOverChageRate();
-        }
-        if (null == minAsnOverChargeRate) {
-            return null == minPoOverChargeRate ? Constants.DEFAULT_DOUBLE : minPoOverChargeRate;
-        }
-        if (null == minPoOverChargeRate) {
-            return null == minAsnOverChargeRate ? Constants.DEFAULT_DOUBLE : minAsnOverChargeRate;
-        }
-        return minAsnOverChargeRate.doubleValue() > minPoOverChargeRate.doubleValue() ? minPoOverChargeRate : minAsnOverChargeRate;
     }
 
     @Override
@@ -2436,4 +2315,5 @@ public class PdaRcvdManagerProxyImpl extends BaseManagerImpl implements PdaRcvdM
         this.cacheContainerSkuAttr(command);
 
     }
+
 }

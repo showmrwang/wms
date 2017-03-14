@@ -48,7 +48,7 @@ public interface OdoManagerProxy extends BaseManager {
      * @param odoGroup
      * @return
      */
-    ResponseMsg createOdoFromWms(OdoGroupCommand odoGroup);
+    ResponseMsg createOdo(OdoGroupCommand odoGroup);
 
     /**
      * [通用方法]根据ID,OUID查找ODO
@@ -366,5 +366,9 @@ public interface OdoManagerProxy extends BaseManager {
      * @param wave
      */
     void finishCreateWave(WhWave wave);
+
+    WhOdo findByExtCodeStoreIdOuId(String extOdoCode, Long storeId, Long ouId);
+
+
 
 }

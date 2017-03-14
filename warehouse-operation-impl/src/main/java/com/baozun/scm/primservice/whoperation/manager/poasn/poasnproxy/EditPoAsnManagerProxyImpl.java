@@ -700,7 +700,7 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
             rm.setMsg(ErrorCodes.DAO_EXCEPTION + "");
             return rm;
         }
-        rm.setReasonStatus(ResponseMsg.STATUS_SUCCESS);
+        rm.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
         rm.setMsg("success");
         return rm;
 
