@@ -8,7 +8,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 
 import lark.common.annotation.MoreDB;
 import lark.common.dao.Page;
@@ -29,7 +28,6 @@ import com.baozun.scm.primservice.whinterface.dao.inbound.WhInboundLineConfirmDa
 import com.baozun.scm.primservice.whinterface.dao.inbound.WhInboundSnLineConfirmDao;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
 import com.baozun.scm.primservice.whoperation.command.system.GlobalLogCommand;
-import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.command.whinterface.inbound.WhInboundConfirmCommand;
 import com.baozun.scm.primservice.whoperation.command.whinterface.inbound.WhInboundInvLineConfirmCommand;
 import com.baozun.scm.primservice.whoperation.command.whinterface.inbound.WhInboundLineConfirmCommand;
@@ -41,13 +39,10 @@ import com.baozun.scm.primservice.whoperation.dao.poasn.BiPoDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.BiPoLineDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoLineDao;
-import com.baozun.scm.primservice.whoperation.dao.warehouse.CustomerDao;
-import com.baozun.scm.primservice.whoperation.dao.warehouse.StoreDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.system.GlobalLogManager;
-import com.baozun.scm.primservice.whoperation.manager.warehouse.WarehouseManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager;
 import com.baozun.scm.primservice.whoperation.model.poasn.BiPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.BiPoLine;
@@ -56,7 +51,6 @@ import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
-import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 import com.baozun.scm.primservice.whoperation.model.whinterface.inbound.WhInboundConfirm;
 import com.baozun.scm.primservice.whoperation.model.whinterface.inbound.WhInboundInvLineConfirm;
 import com.baozun.scm.primservice.whoperation.model.whinterface.inbound.WhInboundLineConfirm;
@@ -83,12 +77,6 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
     private BiPoDao biPoDao;
     @Autowired
     private BiPoLineDao biPoLineDao;
-    @Autowired
-    private CustomerDao customerDao;
-    @Autowired
-    private StoreDao storeDao;
-    @Autowired
-    private WarehouseManager warehouseManager;
     @Autowired
     private WhInboundConfirmDao whInboundConfirmDao;
     @Autowired

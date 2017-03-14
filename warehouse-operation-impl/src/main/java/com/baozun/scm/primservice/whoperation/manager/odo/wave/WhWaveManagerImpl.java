@@ -575,7 +575,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
                 odoIdList.add(odo.getId());
             }
         }
-        this.deleteWaveLinesAndReleaseInventoryByOdoIdList(wave.getId(), odoIdList, Constants.DISTRIBUTE_MODE_FAIL, wh, WavePhase.DISTRIBUTION);
+        this.deleteWaveLinesAndReleaseInventoryByOdoIdList(wave.getId(), odoIdList, Constants.DISTRIBUTE_MODE_FAIL, wh, WavePhase.REPLENISHED_NUM);
     }
 
     @Override
@@ -599,24 +599,98 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
     
     @Override
     public void deleteWaveLinesAndReleaseInventoryByOdoIdList(Long waveId, Collection<Long> odoIds, String reason, Warehouse wh) {
-        this.deleteWaveLinesAndReleaseInventoryByOdoIdList(waveId, odoIds, reason, wh, null);
+        this.deleteWaveLinesAndReleaseInventoryByOdoIdList(waveId, odoIds, reason, wh, WavePhase.ALLOCATED_NUM);
     }
 
-    private void deleteWaveLinesAndReleaseInventoryByOdoIdList(Long waveId, Collection<Long> odoIds, String reason, Warehouse wh, String wavePhase) {
+    private void deleteWaveLinesAndReleaseInventoryByOdoIdList(Long waveId, Collection<Long> odoIds, String reason, Warehouse wh, Integer wavePhase) {
     	Long ouId = wh.getId();
 		for (Long odoId : odoIds) {
-			this.deleteWaveLinesAndReleaseInventoryByOdoId(waveId, odoId, reason, wh);
+			this.deleteWaveLinesFromWaveByWavePhase(waveId, odoId, reason, wh, wavePhase);
 		}
 		this.calculateWaveHeadInfo(waveId, ouId);
     }
     
     @Override
     public void deleteWaveLinesAndReleaseInventoryByOdoId(Long waveId, Long odoId, String reason, Warehouse wh) {
+        log.info("releaseOdoFromWave, odoId:[{}],waveId:[{}],ouId:[{}]", odoId, waveId, wh.getId());
+        this.deleteWaveLinesFromWaveByWavePhase(waveId, odoId, reason, wh, WavePhase.ALLOCATED_NUM);
+    }
+    
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void deleteWaveLinesFromWaveByWavePhase(Long waveId, Long odoId, String reason, Warehouse wh, Integer wavePhase) {
+    	if (null == waveId || null == odoId || StringUtils.isEmpty(reason) || null == wh) {
+			throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+		}
     	Long ouId = wh.getId();
-        whWaveLineManager.deleteWaveLinesByOdoId(odoId, waveId, wh.getId(), reason);
-        whSkuInventoryManager.releaseInventoryByOdoId(odoId, wh);
-        whOdoLineDao.updateOdoLineAssignQtyIsZero(odoId, wh.getId());
-        log.info("releaseOdoFromWave, odoId:[{}],waveId:[{}],ouId:[{}]", odoId, waveId, ouId);
+    	// 共用删除逻辑
+    	// 1.修改出库单明细waveCode为空
+        // 2.修改出库单waveCode为空
+        // 3.从波次明细中剔除出库单
+    	// 4.出库单重新计算配货模式
+        WhOdo odo = whWaveLineManager.deleteWaveLinesByOdoId(odoId, waveId, ouId, reason);
+        if (null == wavePhase) {
+			return;
+		}
+        // 波次在模板中配置波次编码集合
+        List<Integer> wavePhaseList = whWaveDao.findWavePhaseOrderListByWaveId(waveId, ouId);
+        /** 软分配剔除逻辑 */
+        if (wavePhase.intValue() >= WavePhase.WEAK_ALLOCATED_NUM && wavePhaseList.contains(wavePhase)) {}
+        /** 合并出库单剔除逻辑 */
+        if (wavePhase.intValue() >= WavePhase.MERGE_ODO_NUM && wavePhaseList.contains(wavePhase)) {}
+        /** 硬分配剔除逻辑 */
+        if (wavePhase.intValue() >= WavePhase.ALLOCATED_NUM && wavePhaseList.contains(wavePhase)) {
+        	// 出库单释放库存
+        	whSkuInventoryManager.releaseInventoryByOccupyCode(odo.getOdoCode(), wh);
+        	// 修改出库单明细已分配数量
+            whOdoLineDao.updateOdoLineAssignQtyIsZero(odoId, wh.getId());
+        }
+        /** 补货剔除逻辑 */
+        if (wavePhase.intValue() >= WavePhase.REPLENISHED_NUM && wavePhaseList.contains(wavePhase)) {
+        	WhWave wave = whWaveDao.findWaveExtByIdAndOuId(waveId, ouId);
+        	// 删除已分配库存
+        	List<WhSkuInventoryAllocated> skuInvAllocatedList = this.whSkuInventoryAllocatedDao.findbyOccupationCode(odo.getOdoCode(), ouId);
+            if (skuInvAllocatedList != null && skuInvAllocatedList.size() > 0) {
+                for (WhSkuInventoryAllocated invAllocated : skuInvAllocatedList) {
+                    this.whSkuInventoryAllocatedDao.deleteExt(invAllocated.getId(), ouId);
+                }
+            }
+            // 删除待移入库存
+            List<WhSkuInventoryTobefilled> skuInvTobefilledList = this.whSkuInventoryTobefilledDao.findbyOccupationCode(odo.getOdoCode(), ouId);
+            if (skuInvTobefilledList != null && skuInvTobefilledList.size() > 0) {
+                for (WhSkuInventoryTobefilled invTobefilled : skuInvTobefilledList) {
+                    this.whSkuInventoryTobefilledDao.deleteByExt(invTobefilled.getId(), ouId);
+                }
+            }
+            ReplenishmentTask task = new ReplenishmentTask();
+            task.setOuId(ouId);
+            task.setWaveId(waveId);
+            task.setStatus(ReplenishmentTaskStatus.REPLENISHMENT_TASK_NEW);
+            List<ReplenishmentTask> rtList = this.replenishmentTaskDao.findListByParam(task);
+            if (rtList != null && rtList.size() > 0) {
+                for (ReplenishmentTask rt : rtList) {
+                    if (WaveStatus.WAVE_EXECUTED == wave.getStatus()) {
+                        rt.setStatus(ReplenishmentTaskStatus.REPLENISHMENT_TASK_CANCEL);
+                        this.replenishmentTaskDao.saveOrUpdateByVersion(rt);
+                    } else {
+                        WhSkuInventoryTobefilled tbfInv = new WhSkuInventoryTobefilled();
+                        tbfInv.setOuId(ouId);
+                        tbfInv.setReplenishmentCode(rt.getReplenishmentCode());
+                        List<WhSkuInventoryTobefilled> tbfInvList = this.whSkuInventoryTobefilledDao.findskuInventoryTobefilleds(tbfInv);
+                        if (tbfInvList == null || tbfInvList.size() == 0) {
+                            rt.setStatus(ReplenishmentTaskStatus.REPLENISHMENT_TASK_CANCEL);
+                            this.replenishmentTaskDao.saveOrUpdateByVersion(rt);
+                        }
+                    }
+                }
+            }
+        }
+        /** 配货模式计算剔除逻辑 */
+        if (wavePhase.intValue() >= WavePhase.DISTRIBUTION_NUM && wavePhaseList.contains(wavePhase)) {}
+        /** 创建出库箱/容器剔除逻辑 */
+        if (wavePhase.intValue() >= WavePhase.CREATE_OUTBOUND_CARTON_NUM && wavePhaseList.contains(wavePhase)) {}
+        /** 创建工作剔除逻辑 */
+        if (wavePhase.intValue() >= WavePhase.CREATE_WORK_NUM && wavePhaseList.contains(wavePhase)) {}
     }
 
     @Override

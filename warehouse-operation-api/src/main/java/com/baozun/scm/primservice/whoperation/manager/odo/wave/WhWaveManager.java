@@ -327,4 +327,9 @@ public interface WhWaveManager extends BaseManager {
      * @return
      */
     List<WhWaveCommand> getWhWaveByPhaseCode(String phaseCode, Long ouId);
+    
+    /**
+     * [通用方法] 出库单从波次中剔除
+     */
+	void deleteWaveLinesFromWaveByWavePhase(Long waveId, Long odoId, String reason, Warehouse wh, Integer wavePhase);
 }

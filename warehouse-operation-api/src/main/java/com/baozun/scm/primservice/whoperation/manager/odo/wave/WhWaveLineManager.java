@@ -11,6 +11,7 @@ import lark.common.dao.Sort;
 import com.baozun.scm.primservice.whoperation.command.wave.WaveLineCommand;
 import com.baozun.scm.primservice.whoperation.command.wave.WhWaveLineCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine;
 
 public interface WhWaveLineManager extends BaseManager {
@@ -57,7 +58,7 @@ public interface WhWaveLineManager extends BaseManager {
 	/**
 	 * [业务方法] 硬分配-在一个波次明细中剔除整单并记录原因
 	 */
-	void deleteWaveLinesByOdoId(Long odoId, Long waveId, Long ouId, String reason);
+	WhOdo deleteWaveLinesByOdoId(Long odoId, Long waveId, Long ouId, String reason);
 	
 	/**
 	 * [业务方法] 硬分配-在一个波次明细中剔除整单并记录原因
