@@ -198,7 +198,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                             dic12.add(command.getOrderType());
                         }
                     }
-                    //查找用户
+                    // 查找用户
                     Map<String, String> userMap = new HashMap<String, String>();
                     if (userIdSet.size() > 0) {
                         Iterator<String> userIt = userIdSet.iterator();
@@ -315,8 +315,8 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
             BeanUtils.copyProperties(odoCommand, odo);
             this.whOdoDao.insert(odo);
             odoId = odo.getId();
-            //头增值服务
-            if(odoCommand.getVasList()!=null&& odoCommand.getVasList().size()>0){
+            // 头增值服务
+            if (odoCommand.getVasList() != null && odoCommand.getVasList().size() > 0) {
                 for (WhOdoVasCommand vasCommand : odoCommand.getVasList()) {
                     WhOdoVas vas = new WhOdoVas();
                     BeanUtils.copyProperties(vasCommand, vas);
@@ -345,7 +345,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                     }
                     if (lineCommand.getLineSnList() != null && lineCommand.getLineSnList().size() > 0) {
                         for (WhOdoLineSnCommand snCommand : lineCommand.getLineSnList()) {
-                            WhOdoLineSn sn=new WhOdoLineSn();
+                            WhOdoLineSn sn = new WhOdoLineSn();
                             BeanUtils.copyProperties(snCommand, sn);
                             sn.setOuId(ouId);
                             sn.setOdoLineId(odoId);
@@ -362,7 +362,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
             BeanUtils.copyProperties(transCommand, trans);
             trans.setOdoId(odo.getId());
             this.whOdoTransportMgmtDao.insert(trans);
-            
+
             if (invoice != null) {
                 invoice.setOdoId(odoId);
                 invoice.setOuId(ouId);
@@ -932,6 +932,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                 WhOdoLine whOdoLine = this.whOdoLineDao.findOdoLineById(odoLineId, ouId);
                 whOdoLine.setWaveCode(null);
                 whOdoLine.setOdoLineStatus(OdoStatus.ODOLINE_NEW);
+                whOdoLine.setAssignFailReason(Constants.SOFT_ALLOCATION_FAIL);
                 int cnt = this.whOdoLineDao.saveOrUpdateByVersion(whOdoLine);
                 if (cnt <= 0) {
                     throw new BusinessException("剔除逻辑-更新出库单明细-失败");
@@ -956,6 +957,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
         if (0 == cnt) {
             whOdo.setOdoStatus(OdoStatus.ODO_NEW);
         }
+        whOdo.setAssignFailReason(Constants.SOFT_ALLOCATION_FAIL);
         whOdo.setWaveCode(null);
         int count = this.whOdoDao.saveOrUpdateByVersion(whOdo);
         if (count <= 0) {
@@ -1170,7 +1172,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
      * @return
      */
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public List<OdoCommand> getWhOdoListById(List<Long> odoIdList, Long ouId){
+    public List<OdoCommand> getWhOdoListById(List<Long> odoIdList, Long ouId) {
         return whOdoDao.getWhOdoListById(odoIdList, ouId);
     }
 
