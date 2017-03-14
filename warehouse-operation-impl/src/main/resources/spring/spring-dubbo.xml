@@ -152,5 +152,6 @@
     <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.StoreManager" ref="storeManager" />
     
         <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.archiv.PoAsnArchivManager" ref="poAsnArchivManager" />
+        <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.archiv.OdoArchivManager" ref="odoArchivManager" />
 	
 </beans>

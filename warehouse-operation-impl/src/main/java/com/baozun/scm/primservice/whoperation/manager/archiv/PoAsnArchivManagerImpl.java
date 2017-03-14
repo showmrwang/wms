@@ -33,6 +33,12 @@ import com.baozun.scm.primservice.whoperation.model.poasn.WhPoSn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoTransportMgmt;
 import com.baozun.scm.primservice.whoperation.util.DateUtil;
 
+/**
+ * 入库单归档
+ * 
+ * @author bin.hu
+ *
+ */
 @Service("poAsnArchivManager")
 @Transactional
 public class PoAsnArchivManagerImpl implements PoAsnArchivManager {
