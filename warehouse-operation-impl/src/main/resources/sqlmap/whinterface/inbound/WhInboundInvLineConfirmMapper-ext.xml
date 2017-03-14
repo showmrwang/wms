@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whinterface.dao.inbound.WhInboundInvLineConfirmDao">
+	<resultMap id="WhInboundInvLineConfirmResultExt" type="com.baozun.scm.primservice.whoperation.model.whinterface.inbound.WhInboundInvLineConfirm">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whInboundInvLineConfirmColumnsExt">
+	    <![CDATA[
+	        	id as id,
+	        	inbound_confirm_line_id as inboundConfirmLineId,
+	        	qty_rcvd as qtyRcvd,
+	        	inv_status as invStatus,
+	        	inv_type as invType,
+	        	batch_number as batchNumber,
+	        	mfg_date as mfgDate,
+	        	exp_date as expDate,
+	        	country_of_origin as countryOfOrigin,
+	        	inv_attr1 as invAttr1,
+	        	inv_attr2 as invAttr2,
+	        	inv_attr3 as invAttr3,
+	        	inv_attr4 as invAttr4,
+	        	inv_attr5 as invAttr5,
+	        	ext_memo as extMemo,
+	        	is_iqc as isIqc
+	    ]]>
+	</sql>
+	
+	<sql id="whInboundInvLineConfirmDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+				<if test="inboundConfirmLineId!=null">
+					and inbound_confirm_line_id = #{inboundConfirmLineId}
+				</if>
+	       
+				<if test="qtyRcvd!=null">
+					and qty_rcvd = #{qtyRcvd}
+				</if>
+	       
+	       
+		       <if test="invStatus!=null and invStatus!=''">
+					and inv_status = #{invStatus}
+				</if>
+	       
+	       
+		       <if test="invType!=null and invType!=''">
+					and inv_type = #{invType}
+				</if>
+	       
+	       
+		       <if test="batchNumber!=null and batchNumber!=''">
+					and batch_number = #{batchNumber}
+				</if>
+	       
+				<if test="mfgDate!=null">
+					and mfg_date = #{mfgDate}
+				</if>
+	       
+				<if test="expDate!=null">
+					and exp_date = #{expDate}
+				</if>
+	       
+	       
+		       <if test="countryOfOrigin!=null and countryOfOrigin!=''">
+					and country_of_origin = #{countryOfOrigin}
+				</if>
+	       
+	       
+		       <if test="invAttr1!=null and invAttr1!=''">
+					and inv_attr1 = #{invAttr1}
+				</if>
+	       
+	       
+		       <if test="invAttr2!=null and invAttr2!=''">
+					and inv_attr2 = #{invAttr2}
+				</if>
+	       
+	       
+		       <if test="invAttr3!=null and invAttr3!=''">
+					and inv_attr3 = #{invAttr3}
+				</if>
+	       
+	       
+		       <if test="invAttr4!=null and invAttr4!=''">
+					and inv_attr4 = #{invAttr4}
+				</if>
+	       
+	       
+		       <if test="invAttr5!=null and invAttr5!=''">
+					and inv_attr5 = #{invAttr5}
+				</if>
+	       
+	       
+		       <if test="extMemo!=null and extMemo!=''">
+					and ext_memo = #{extMemo}
+				</if>
+	       
+				<if test="isIqc!=null">
+					and is_iqc = #{isIqc}
+				</if>
+		</where>
+	</sql>
+	
+</mapper>

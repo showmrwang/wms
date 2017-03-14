@@ -12,6 +12,7 @@ import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.poasn.BiPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhPoTransportMgmt;
 import com.baozun.scm.primservice.whoperation.model.warehouse.ma.TransportProvider;
 
 /**
@@ -79,21 +80,23 @@ public interface BiPoManager extends BaseManager {
      * 逻辑:②当创建的PO单有仓库的时候，数据会同步到INFO库的whpo和shard库的whpo;此时不可单独使用
      * 
      * @param whPo
+     * @param whPoTm 
      * @param whPoLines
      * @param rm
      * @return
      */
-    void createPoAndLineToInfo(WhPo whPo, List<WhPoLine> whPoLines);
+    void createPoAndLineToInfo(WhPo whPo, WhPoTransportMgmt whPoTm, List<WhPoLine> whPoLines);
 
     /**
      * [业务方法]创建PO单分支二：创建shard库PO单；
      * 
      * @param whPo
+     * @param whPoTm 
      * @param whPoLines
      * @param rm
      * @return
      */
-    void createPoAndLineToShared(WhPo whPo, List<WhPoLine> whPoLines);
+    void createPoAndLineToShared(WhPo whPo, WhPoTransportMgmt whPoTm, List<WhPoLine> whPoLines);
 
     /**
      * [业务方法]删除BIPO单操作：删除BIPO及明细

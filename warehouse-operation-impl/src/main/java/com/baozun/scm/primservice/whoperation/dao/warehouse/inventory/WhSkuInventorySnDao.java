@@ -110,4 +110,14 @@ public interface WhSkuInventorySnDao extends BaseDao<WhSkuInventorySn, Long> {
      * @return 返回的String有残次库存的是"invId,invSnId"，没有残次库存的是"invId,null"
      */
     List<String> findInvSnIdStrByInsideContainerId(@Param("ouId") Long ouId, @Param("insideContainerIdList") List<Long> insideContainerIdList);
+    
+    /**
+     * 
+     * @author kai.zhu
+     * @version 2017年3月10日
+     * @param occupationCode
+     * @param uuid
+     * @return
+     */
+	List<WhSkuInventorySnCommand> findInvSnByAsnCodeAndUuid(@Param("asnCode") String occupationCode, @Param("uuid") String uuid, @Param("ouId") Long ouId);
 }
