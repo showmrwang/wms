@@ -28,6 +28,7 @@
                 actual_deliver_goods_time as actualDeliverGoodsTime,
                 is_cod as isCod,
                 cod_amt as codAmt,
+                insurance_coverage as insuranceCoverage,
                 ou_id as ouId
         ]]>
     </sql>
@@ -132,6 +133,7 @@
                     actual_deliver_goods_time ,
                     is_cod,
                     cod_amt,
+                    insurance_coverage,
                     ou_id 
                 ) VALUES (
                 	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -147,6 +149,7 @@
                     #{actualDeliverGoodsTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
                     #{isCod,javaType=java.lang.Boolean,jdbcType=BIT} ,
                     #{codAmt,javaType=Double,jdbcType=DECIMAL} ,
+                    #{insuranceCoverage,javaType=Double,jdbcType=DECIMAL} ,
                     #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
                 )
             ]]>
@@ -167,6 +170,7 @@
                 plan_deliver_goods_time = #{planDeliverGoodsTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
                 is_cod = #{isCod,javaType=java.lang.Boolean,jdbcType=BIT} ,
                 cod_amt = #{codAmt,javaType=Double,jdbcType=DECIMAL} ,
+                insurance_coverage = #{insuranceCoverage,javaType=Double,jdbcType=DECIMAL} ,
                 actual_deliver_goods_time = #{actualDeliverGoodsTime,javaType=java.util.Date,jdbcType=TIMESTAMP}
             WHERE 
                 id = #{id} and ou_id=#{ouId}

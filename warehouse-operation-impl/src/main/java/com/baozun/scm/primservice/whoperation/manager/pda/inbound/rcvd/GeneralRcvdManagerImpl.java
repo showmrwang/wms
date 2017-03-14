@@ -3,6 +3,7 @@ package com.baozun.scm.primservice.whoperation.manager.pda.inbound.rcvd;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -12,6 +13,7 @@ import java.util.Map.Entry;
 
 import lark.common.annotation.MoreDB;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -78,6 +80,7 @@ import com.baozun.scm.primservice.whoperation.model.sku.SkuMgmt;
 import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container2ndCategory;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
 import com.baozun.scm.primservice.whoperation.model.warehouse.StoreDefectReasons;
 import com.baozun.scm.primservice.whoperation.model.warehouse.StoreDefectType;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Uom;
@@ -573,8 +576,9 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
 
 
     private void autoClose(WhPo po, WhAsn asn, Long ouId, Long userId) {
-        // 自动关闭ASN单据
-        if (null == asn.getOverChageRate() || asn.getOverChageRate() <= 0) {
+        Double overRate = this.getOverChargeRate(asn.getId(), ouId);
+        if (overRate != null && overRate > 0) {
+            // 自动关闭ASN单据
             if (asn.getQtyRcvd() >= asn.getQtyPlanned()) {
                 List<WhAsnLine> lineList = this.whAsnLineDao.findWhAsnLineByAsnIdOuId(asn.getId(), ouId);
                 if (lineList != null && lineList.size() > 0) {
@@ -595,9 +599,7 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
                     throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
                 }
             }
-        }
-        // 自动关闭PO单据
-        if (null == po.getOverChageRate() || po.getOverChageRate() <= 0) {
+            // 自动关闭PO单据
             if (po.getQtyRcvd() >= po.getQtyPlanned()) {
                 List<WhPoLine> lineList = this.whPoLineDao.findWhPoLineByPoIdOuIdUuid(po.getId(), ouId, null);
                 if (lineList != null && lineList.size() > 0) {
@@ -1013,5 +1015,99 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
     @MoreDB(DbDataSource.MOREDB_GLOBALSOURCE)
     public Map<String, SysDictionary> findSysDictionaryByRedisExt(Map<String, List<String>> sysDictionaryList) {
         return this.findSysDictionaryByRedis(sysDictionaryList);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public Double getRedisOverChargeRate(Long occupationId, Long ouId) {
+        String cacheRate = this.cacheManager.getMapValue(CacheKeyConstant.CACHE_ASN_OVERCHARGE, occupationId.toString());
+        if (StringUtils.isEmpty(cacheRate)) {
+            cacheRate = String.valueOf(this.getOverChargeRate(occupationId, ouId));
+            // 插入缓存
+            this.cacheManager.setMapValue(CacheKeyConstant.CACHE_ASN_OVERCHARGE, occupationId.toString(), cacheRate + "", CacheKeyConstant.CACHE_ONE_DAY);
+        }
+        return Double.parseDouble(cacheRate);
+    }
+
+    @Override
+    public void freshAsnCacheForGeneralReceiving(Long occupationId, Long ouId) {
+        try {
+            // 刷新缓存逻辑：
+            // 如果检测到超收比例被更改，则需要刷新超收比例
+            Double overchargeRate = this.getOverChargeRate(occupationId, ouId);
+            String cacheRate = cacheManager.getMapValue(CacheKeyConstant.CACHE_ASN_OVERCHARGE, occupationId.toString());
+            if (StringUtils.isEmpty(cacheRate)) {
+                cacheManager.setMapValue(CacheKeyConstant.CACHE_ASN_OVERCHARGE, occupationId.toString(), overchargeRate.toString(), CacheKeyConstant.CACHE_ONE_DAY);
+            }
+            if (!overchargeRate.equals(Double.parseDouble(cacheRate))) {
+                cacheManager.setMapValue(CacheKeyConstant.CACHE_ASN_OVERCHARGE, occupationId.toString(), overchargeRate.toString(), CacheKeyConstant.CACHE_ONE_DAY);
+                Map<String, String> asnlineMap = this.cacheManager.getAllMap(CacheKeyConstant.CACHE_ASNLINE_PREFIX + occupationId);
+                if (null == asnlineMap) {
+                    throw new BusinessException(ErrorCodes.ASN_CACHE_ERROR);
+                }
+                Iterator<Entry<String, String>> it = asnlineMap.entrySet().iterator();
+                while (it.hasNext()) {
+                    Entry<String, String> entry = it.next();
+                    WhAsnLine line = this.cacheManager.getMapObject(CacheKeyConstant.CACHE_ASNLINE_PREFIX + occupationId, entry.getKey());
+                    Integer overchargeCount = (int) (line.getQtyPlanned() * overchargeRate / 100);
+                    this.cacheManager.setMapObject(CacheKeyConstant.CACHE_ASNLINE_OVERCHARGE_PREFIX + occupationId, entry.getKey(), overchargeCount, CacheKeyConstant.CACHE_ONE_DAY);
+                }
+            }
+
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCodes.ASN_CACHE_ERROR);
+        }
+
+    }
+    
+    private Double getOverChargeRate(Long occupationId, Long ouId) {
+        WhAsn asn = this.cacheManager.getObject(CacheKeyConstant.CACHE_ASN_PREFIX + occupationId);
+        if (asn == null) {
+            asn = this.whAsnDao.findWhAsnById(occupationId, ouId);
+        }
+        WhPo po = this.cacheManager.getObject(CacheKeyConstant.CACHE_PO_PREFIX + asn.getPoId());
+
+        if (po == null) {
+            po = this.whPoDao.findWhPoById(asn.getPoId(), ouId);
+        }
+
+        Long storeId = asn.getStoreId();
+
+        Double overChargeRatePo = po.getOverChageRate();
+        Double overChargeRateAsn = asn.getOverChageRate();
+
+        Map<Long, Store> storeMap = this.findStoreByRedis(Arrays.asList(new Long[] {storeId}));
+        Warehouse wh = this.getWhToRedis(ouId);
+        Store store = storeMap.get(storeId);
+        if (null == overChargeRatePo) {
+            Integer storePo = store.getIsPoOvercharge() ? store.getPoOverchargeProportion() : null;
+            if (storePo != null) {
+                overChargeRatePo = (Double) storePo.doubleValue();
+            } else {
+                Integer whPo = wh.getIsPoOvercharge() ? wh.getPoOverchargeProportion() : null;
+                if (whPo != null) {
+                    overChargeRatePo = whPo.doubleValue();
+                }
+            }
+        }
+        if (null == overChargeRatePo) {
+            overChargeRatePo = Constants.DEFAULT_DOUBLE;
+        }
+        if (null == overChargeRateAsn) {
+            Integer storeAsn = store.getIsAsnOvercharge() ? store.getAsnOverchargeProportion() : null;
+            if (storeAsn != null) {
+                overChargeRateAsn = storeAsn.doubleValue();
+            } else {
+                Integer whAsn = wh.getIsAsnOvercharge() ? wh.getAsnOverchargeProportion() : null;
+                if (whAsn != null) {
+                    overChargeRateAsn = whAsn.doubleValue();
+                }
+            }
+        }
+
+        if (null == overChargeRateAsn) {
+            overChargeRateAsn = Constants.DEFAULT_DOUBLE;
+        }
+        return overChargeRateAsn > overChargeRatePo ? overChargeRatePo : overChargeRateAsn;
     }
 }
