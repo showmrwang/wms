@@ -31,19 +31,20 @@ public class WhWorkLine extends BaseModel {
      * 
      */
     private static final long serialVersionUID = 7994271972699117648L;
-    // columns START
+    
+    //columns START
     /** 工作明细号 */
-    private String lineCode;
+    private java.lang.String lineCode;
     /** 工作ID */
-    private Long workId;
+    private java.lang.Long workId;
     /** 仓库组织ID */
-    private Long ouId;
+    private java.lang.Long ouId;
     /** 操作开始时间 */
-    private Date startTime;
+    private java.util.Date startTime;
     /** 操作结束时间 */
-    private Date finishTime;
+    private java.util.Date finishTime;
     /** 商品ID */
-    private Long skuId;
+    private java.lang.Long skuId;
     /** 计划量 */
     private Double qty;
     /** 执行量/完成量 */
@@ -51,69 +52,72 @@ public class WhWorkLine extends BaseModel {
     /** 取消量 */
     private Double cancelQty;
     /** 库存状态 */
-    private Long invStatus;
+    private java.lang.Long invStatus;
     /** 库存类型 */
-    private String invType;
+    private java.lang.String invType;
     /** 批次号 */
-    private String batchNumber;
+    private java.lang.String batchNumber;
     /** 生产日期 */
-    private Date mfgDate;
+    private java.util.Date mfgDate;
     /** 失效日期 */
-    private Date expDate;
+    private java.util.Date expDate;
     /** 最小失效日期 */
-    private Date minExpDate;
+    private java.util.Date minExpDate;
     /** 最大失效日期 */
-    private Date maxExpDate;
+    private java.util.Date maxExpDate;
     /** 原产地 */
-    private String countryOfOrigin;
+    private java.lang.String countryOfOrigin;
     /** 库存属性1 */
-    private String invAttr1;
+    private java.lang.String invAttr1;
     /** 库存属性2 */
-    private String invAttr2;
+    private java.lang.String invAttr2;
     /** 库存属性3 */
-    private String invAttr3;
+    private java.lang.String invAttr3;
     /** 库存属性4 */
-    private String invAttr4;
+    private java.lang.String invAttr4;
     /** 库存属性5 */
-    private String invAttr5;
+    private java.lang.String invAttr5;
     /** 内部对接码 */
-    private String uuid;
+    private java.lang.String uuid;
     /** 原始库位 */
-    private Long fromLocationId;
+    private java.lang.Long fromLocationId;
     /** 原始库位外部容器 */
-    private Long fromOuterContainerId;
+    private java.lang.Long fromOuterContainerId;
     /** 原始库位内部容器 */
-    private Long fromInsideContainerId;
+    private java.lang.Long fromInsideContainerId;
     /** 使用出库箱，耗材ID */
-    private Long useOutboundboxId;
+    private java.lang.Long useOutboundboxId;
     /** 使用出库箱编码 */
-    private String useOutboundboxCode;
+    private java.lang.String useOutboundboxCode;
     /** 使用容器 */
-    private Long useContainerId;
+    private java.lang.Long useContainerId;
     /** 使用外部容器，小车 */
-    private Long useOuterContainerId;
+    private java.lang.Long useOuterContainerId;
     /** 使用货格编码数 */
-    private Integer useContainerLatticeNo;
+    private java.lang.Integer useContainerLatticeNo;
     /** 目标库位 */
-    private Long toLocationId;
+    private java.lang.Long toLocationId;
     /** 目标库位外部容器 */
-    private Long toOuterContainerId;
+    private java.lang.Long toOuterContainerId;
     /** 目标库位内部容器 */
-    private Long toInsideContainerId;
+    private java.lang.Long toInsideContainerId;
     /** 是否整托整箱 */
-    private Boolean isWholeCase;
+    private java.lang.Boolean isWholeCase;
     /** 出库单ID */
-    private Long odoId;
+    private java.lang.Long odoId;
     /** 出库单明细ID */
-    private Long odoLineId;
+    private java.lang.Long odoLineId;
     /** 补货单据号 */
-    private String replenishmentCode;
+    private java.lang.String replenishmentCode;
+    /** invMoveCode */
+    private java.lang.String invMoveCode;
     /** 创建时间 */
-    private Date createTime;
+    private java.util.Date createTime;
     /** 最后操作时间 */
-    private Date lastModifyTime;
+    private java.util.Date lastModifyTime;
     /** 操作人ID */
-    private Long operatorId;
+    private java.lang.Long operatorId;
+    //columns END
 
     public String getLineCode() {
         return lineCode;
@@ -441,6 +445,14 @@ public class WhWorkLine extends BaseModel {
 
     public void setOperatorId(Long operatorId) {
         this.operatorId = operatorId;
+    }
+
+    public java.lang.String getInvMoveCode() {
+        return invMoveCode;
+    }
+
+    public void setInvMoveCode(java.lang.String invMoveCode) {
+        this.invMoveCode = invMoveCode;
     }
 
 }
