@@ -227,18 +227,30 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             //流程相关统计信息 
             if(whOperationCommand.getIsWholeCase() == false){
                 // 所有小车
-                outerContainers.add(operationLine.getFromOuterContainerId());
+                if(null != operationLine.getFromOuterContainerId()){
+                    outerContainers.add(operationLine.getFromOuterContainerId());
+                }
                 // 所有出库箱
-                outbounxBoxs.add(operationLine.getUseOutboundboxCode());
+                if(null != operationLine.getUseOutboundboxCode()){
+                    outbounxBoxs.add(operationLine.getUseOutboundboxCode());    
+                }
                 // 小车货格与出库箱对应关系
-                carStockToOutgoingBox.put(operationLine.getUseContainerLatticeNo(), operationLine.getUseOutboundboxCode());
+                if(null != operationLine.getUseContainerLatticeNo() && null != operationLine.getUseOutboundboxCode()){
+                    carStockToOutgoingBox.put(operationLine.getUseContainerLatticeNo(), operationLine.getUseOutboundboxCode());
+                }
                 // 所有周转箱
-                turnoverBoxs.add(operationLine.getFromInsideContainerId());
+                if(null != operationLine.getFromInsideContainerId()){
+                    turnoverBoxs.add(operationLine.getFromInsideContainerId());    
+                }
             }else{
                 // 所有托盘
-                pallets.add(operationLine.getFromOuterContainerId());
+                if(null != operationLine.getFromOuterContainerId()){
+                    pallets.add(operationLine.getFromOuterContainerId());    
+                }
                 // 所有货箱
-                containers.add(operationLine.getFromInsideContainerId());
+                if(null != operationLine.getFromInsideContainerId()){
+                    containers.add(operationLine.getFromInsideContainerId());
+                }
             }
             // 临时set 
             Set<Long> temporaryL = new HashSet<Long>();
@@ -252,9 +264,9 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             workLineToOnlySku.put(lineToSku, onlySku);
             //根据库存UUID查找对应SN/残次信息
             List<WhSkuInventorySnCommand> skuInventorySnCommands = whSkuInventorySnDao.findWhSkuInventoryByUuid(whOperationCommand.getOuId(), operationLine.getUuid());
-            //获取库位ID            
+            //获取库位ID
             locationIds.add(operationLine.getFromLocationId());
-            //获取外部容器 
+            //获取外部容器
             if(outerContainerIds.get(operationLine.getFromLocationId() ) != null){
                 outerContainerIds.get(operationLine.getFromLocationId()).add(operationLine.getFromOuterContainerId());
             }else{
@@ -264,7 +276,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             }
             //获取内部容器（无外部容器情况）
             if(null == operationLine.getFromOuterContainerId()){
-                //无外部容器情况                
+                //无外部容器情况
                 if(insideContainerIds.get(operationLine.getFromLocationId() ) != null){
                     insideContainerIds.get(operationLine.getFromLocationId()).add(operationLine.getFromInsideContainerId());
                 }else{
@@ -273,7 +285,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                     temporaryL.clear();
                 }
             }
-            //sku不在任何容器内            
+            //sku不在任何容器内
             if(null == operationLine.getFromOuterContainerId() && null == operationLine.getFromInsideContainerId() && null == operationLine.getUseOutboundboxCode()){
                 //获取sku（sku不在任何容器内）
                 if(skuIds.get(operationLine.getFromLocationId() ) != null){
