@@ -194,7 +194,11 @@ public class OutBoundBoxTypeManagerImpl implements OutBoundBoxTypeManager{
         globalLogManager.insertGlobalLog(gl);
     }
 
-
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<OutBoundBoxType> findListByParamExt(OutBoundBoxType o) {
+        return this.outBoundBoxTypeDao.findListByParam(o);
+    }
     
 
 }

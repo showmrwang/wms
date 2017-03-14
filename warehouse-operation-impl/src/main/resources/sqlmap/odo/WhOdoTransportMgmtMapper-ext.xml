@@ -24,6 +24,7 @@
                 actual_deliver_goods_time as actualDeliverGoodsTime,
                 is_cod as isCod,
                 cod_amt as codAmt,
+                insurance_coverage as insuranceCoverage,
                 ou_id as ouId
         ]]>
     </sql>

@@ -8,9 +8,11 @@ import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 
 import com.baozun.scm.primservice.whoperation.command.odo.OdoCommand;
-import com.baozun.scm.primservice.whoperation.command.odo.OdoGroup;
+import com.baozun.scm.primservice.whoperation.command.odo.OdoGroupCommand;
+import com.baozun.scm.primservice.whoperation.command.odo.OdoLineCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoResultCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoSearchCommand;
+import com.baozun.scm.primservice.whoperation.command.odo.OdoTransportMgmtCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.OdoWaveGroupResultCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.OdoWaveGroupSearchCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.WaveCommand;
@@ -18,9 +20,9 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.UomCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAddress;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoInvoice;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoInvoiceLine;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
-import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLineAttrSn;
-import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoVas;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine;
@@ -31,18 +33,18 @@ public interface OdoManager extends BaseManager {
     Pagination<OdoResultCommand> findListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params);
 
     /**
-     * [业务方法]创建出库单TODO
+     * [业务方法]创建出库单
      * 
      * @param odo
      * @param odoLineList
      * @param transportMgmt
      * @param userId
      * @param ouId
-     * @param lineSnList
-     * @param odoVasList
+     * @param invoiceLineList
+     * @param invoice
      * @param odoAddress
      */
-    void createOdo(WhOdo odo, List<WhOdoLine> odoLineList, WhOdoTransportMgmt transportMgmt, WhOdoAddress odoAddress, List<WhOdoVas> odoVasList, List<WhOdoLineAttrSn> lineSnList, Long ouId, Long userId);
+    Long createOdo(OdoCommand odo, List<OdoLineCommand> odoLineList, OdoTransportMgmtCommand transportMgmt, WhOdoAddress odoAddress, WhOdoInvoice invoice, List<WhOdoInvoiceLine> invoiceLineList, Long ouId, Long userId);
 
     /**
      * [通用方法]根据ID,OUID查找ODO
@@ -228,7 +230,7 @@ public interface OdoManager extends BaseManager {
 
     List<Long> findOdoByCounterCodeToCalcDistributeMode(String counterCode, Long ouId);
 
-    void createOdo(List<OdoGroup> groupList, Long ouId, Long userId);
+    void createOdo(List<OdoGroupCommand> groupList, Long ouId, Long userId);
 
     /**
      * 【业务方法】统计批量出库单数据的总金额，总件数，商品种类数，体积数目
@@ -267,4 +269,6 @@ public interface OdoManager extends BaseManager {
     List<OdoCommand> getWhOdoListById(List<Long> odoIdList, Long ouId);
 
     List<WhOdo> findByExtCodeOuIdNotCancel(String extOdoCode, Long ouId);
+
+    WhOdo findByExtCodeStoreIdOuId(String extCode, Long storeId, Long ouId);
 }
