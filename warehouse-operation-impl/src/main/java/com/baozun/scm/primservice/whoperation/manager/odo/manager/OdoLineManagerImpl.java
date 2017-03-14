@@ -146,6 +146,9 @@ public class OdoLineManagerImpl extends BaseManagerImpl implements OdoLineManage
                 }
             }
             odo = this.getSummaryByOdolineList(odo);
+            if (OdoStatus.ODO_TOBECREATED.equals(odo.getOdoStatus())) {
+                odo.setOdoStatus(OdoStatus.ODO_NEW);
+            }
             int updateOdoCount = this.whOdoDao.saveOrUpdateByVersion(odo);
             if (updateOdoCount <= 0) {
                 throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
@@ -200,9 +203,6 @@ public class OdoLineManagerImpl extends BaseManagerImpl implements OdoLineManage
         odo.setSkuNumberOfPackages(skuNumberOfPackages);
         odo.setIncludeFragileCargo(isFragile);
         odo.setIncludeHazardousCargo(isHazardous);
-        if (OdoStatus.ODO_TOBECREATED.equals(odo.getOdoStatus())) {
-            odo.setOdoStatus(OdoStatus.ODO_NEW);
-        }
 
         // 设置允许合并与否
         odo.setIsAllowMerge(false);

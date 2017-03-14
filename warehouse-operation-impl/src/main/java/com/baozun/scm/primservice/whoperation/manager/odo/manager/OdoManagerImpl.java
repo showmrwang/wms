@@ -41,8 +41,10 @@ import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
 import com.baozun.scm.primservice.whoperation.dao.localauth.OperUserDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoAddressDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
-import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineSnDao;
+import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoInvoiceDao;
+import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoInvoiceLineDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineDao;
+import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineSnDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoTransportMgmtDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoVasDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveDao;
@@ -100,6 +102,10 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     private WhWaveMasterDao whWaveMasterDao;
     @Autowired
     private WhWaveDao whWaveDao;
+    @Autowired
+    private WhOdoInvoiceDao whOdoInvoiceDao;
+    @Autowired
+    private WhOdoInvoiceLineDao whOdoInvoiceLineDao;
     @Autowired
     private WhWaveLineDao whWaveLineDao;
     @Autowired
@@ -356,12 +362,81 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
             BeanUtils.copyProperties(transCommand, trans);
             trans.setOdoId(odo.getId());
             this.whOdoTransportMgmtDao.insert(trans);
+            
+            if (invoice != null) {
+                invoice.setOdoId(odoId);
+                invoice.setOuId(ouId);
+                this.whOdoInvoiceDao.insert(invoice);
+                if (invoiceLineList != null && invoiceLineList.size() > 0) {
+                    for (WhOdoInvoiceLine invoiceLine : invoiceLineList) {
+                        invoiceLine.setOdoInvoiceId(invoice.getId());
+                        invoiceLine.setOuId(ouId);
+                        this.whOdoInvoiceLineDao.insert(invoiceLine);
+                    }
+                }
+            }
+            // 汇总信息
+            if (OdoStatus.ODO_NEW.equals(odo.getOdoStatus())) {
+                this.getSummaryByOdolineList(odo);
+                int updateCount = this.whOdoDao.saveOrUpdateByVersion(odo);
+                if (updateCount <= 0) {
+                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                }
+            }
         } catch (Exception e) {
             log.error(e + "");
             throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
         }
         return odoId;
     }
+
+    private void getSummaryByOdolineList(WhOdo odo) {
+        List<WhOdoLine> lineList = this.whOdoLineDao.findOdoLineListByOdoIdOuId(odo.getId(), odo.getOuId());
+        // 出库单统计数目
+        double qty = Constants.DEFAULT_DOUBLE;
+        int skuNumberOfPackages = Constants.DEFAULT_INTEGER;
+        double amt = Constants.DEFAULT_DOUBLE;
+        boolean isHazardous = odo.getIncludeHazardousCargo();
+        boolean isFragile = odo.getIncludeFragileCargo();
+        Set<Long> skuIdSet = new HashSet<Long>();
+        boolean isAllowMerge = false;
+        if (odo.getIsLocked() == null || odo.getIsLocked() == false) {
+            isAllowMerge = true;
+        } else {
+            List<WhOdoVasCommand> ouVasList = this.whOdoVasDao.findOdoOuVasCommandByOdoIdOdoLineIdType(odo.getId(), null, odo.getOuId());
+            if (ouVasList != null && ouVasList.size() > 0) {
+                isAllowMerge = false;
+            }
+        }
+        if (lineList != null && lineList.size() > 0) {
+            for (WhOdoLine line : lineList) {
+                if (OdoStatus.ODOLINE_CANCEL.equals(line.getOdoLineStatus())) {
+                    continue;
+                }
+                skuIdSet.add(line.getSkuId());
+                amt += line.getLineAmt();
+                qty += line.getQty();
+
+                if (isAllowMerge) {
+                    List<WhOdoVasCommand> ouVasList = this.whOdoVasDao.findOdoOuVasCommandByOdoIdOdoLineIdType(odo.getId(), line.getId(), odo.getOuId());
+                    if (ouVasList != null && ouVasList.size() > 0) {
+                        isAllowMerge = false;
+                    }
+                }
+            }
+
+        }
+        odo.setQty(qty);
+        odo.setAmt(amt);
+        skuNumberOfPackages = skuIdSet.size();
+        odo.setSkuNumberOfPackages(skuNumberOfPackages);
+        odo.setIncludeFragileCargo(isFragile);
+        odo.setIncludeHazardousCargo(isHazardous);
+
+        // 设置允许合并与否
+        odo.setIsAllowMerge(false);
+    }
+
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
@@ -441,7 +516,6 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
             if (updateOdoCount <= 0) {
                 throw new BusinessException(ErrorCodes.DELETE_DATA_ERROR);
             }
-
         } catch (BusinessException e) {
             throw e;
         } catch (Exception ex) {
