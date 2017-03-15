@@ -31,61 +31,63 @@ public class WhOperation extends BaseModel {
      * 
      */
     private static final long serialVersionUID = -588604605712533351L;
-    // columns START
+    
+    //columns START
     /** 作业号 */
-    private String code;
+    private java.lang.String code;
     /** 状态 */
-    private Integer status;
+    private java.lang.Integer status;
     /** 工作ID */
-    private Long workId;
+    private java.lang.Long workId;
     /** 仓库组织ID */
-    private Long ouId;
+    private java.lang.Long ouId;
     /** 工作类型编码 */
-    private String workType;
+    private java.lang.String workType;
     /** 工作类别编码 */
-    private String workCategory;
+    private java.lang.String workCategory;
     /** 优先级 */
-    private Integer workPriority;
+    private java.lang.Integer workPriority;
     /** 小批次 */
-    private String batch;
+    private java.lang.String batch;
     /** 操作开始时间 */
-    private Date startTime;
+    private java.util.Date startTime;
     /** 操作结束时间 */
-    private Date finishTime;
+    private java.util.Date finishTime;
     /** 波次ID */
-    private Long waveId;
+    private java.lang.Long waveId;
     /** 波次号 */
-    private String waveCode;
+    private java.lang.String waveCode;
     /** 订单号 */
-    private String orderCode;
+    private java.lang.String orderCode;
     /** 库位 */
-    private String locationCode;
+    private java.lang.String locationCode;
     /** 托盘 */
-    private String outerContainerCode;
+    private java.lang.String outerContainerCode;
     /** 容器 */
-    private String containerCode;
+    private java.lang.String containerCode;
     /** 是否整托整箱 */
-    private Boolean isWholeCase;
+    private java.lang.Boolean isWholeCase;
     /** 是否短拣 */
-    private Boolean isShortPicking;
+    private java.lang.Boolean isShortPicking;
     /** 是否拣货完成 */
-    private Boolean isPickingFinish;
+    private java.lang.Boolean isPickingFinish;
     /** 是否波次内补货 */
-    private Boolean isWaveReplenish;
+    private java.lang.Boolean isWaveReplenish;
     /** 是否拣货库存待移入 */
-    private Boolean isPickingTobefilled;
+    private java.lang.Boolean isPickingTobefilled;
     /** 创建时间 */
-    private Date createTime;
+    private java.util.Date createTime;
     /** 最后操作时间 */
-    private Date lastModifyTime;
+    private java.util.Date lastModifyTime;
     /** 创建人ID */
-    private Long createdId;
+    private java.lang.Long createdId;
     /** 修改人ID */
-    private Long modifiedId;
+    private java.lang.Long modifiedId;
     /** 操作人ID */
-    private Long operatorId;
+    private java.lang.Long operatorId;
     /** 是否启用 1:启用 0:停用 */
-    private Integer lifecycle;
+    private java.lang.Integer lifecycle;
+    //columns END
 
     public String getCode() {
         return code;

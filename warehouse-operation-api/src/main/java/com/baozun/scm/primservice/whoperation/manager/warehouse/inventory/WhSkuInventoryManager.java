@@ -104,8 +104,20 @@ public interface WhSkuInventoryManager extends BaseManager {
 	void allocationInventoryByLine(WhWaveLineCommand whWaveLineCommand, List<AllocateStrategy> rules, Double qty, Warehouse wh, String logId);
 
 	void allocationInventoryByLineList(List<WhWaveLine> notHaveInvAttrLines, List<AllocateStrategy> rules, Long skuId, Long storeId, Long invStatusId, Warehouse wh, String logId);
-
+	
+	/**
+	 * 根据出库单Id清除库存
+	 * @author kai.zhu
+	 * @version 2017年3月14日
+	 */
 	void releaseInventoryByOdoId(Long odoId, Warehouse wh);
+	
+	/**
+	 * 根据占用码清除库存
+	 * @author kai.zhu
+	 * @version 2017年3月14日
+	 */
+	void releaseInventoryByOccupyCode(String occupyCode, Warehouse wh);
 	
 	/**
      * 根据参数查询出库存信息
@@ -210,4 +222,5 @@ public interface WhSkuInventoryManager extends BaseManager {
      * @version 2017年3月13日
      */
 	WhInboundConfirmCommand findInventoryByPo(WhPo po, List<WhPoLine> lineList, Long ouId);
+	
 }

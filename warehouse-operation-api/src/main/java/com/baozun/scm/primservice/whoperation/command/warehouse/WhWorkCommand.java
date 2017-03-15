@@ -28,76 +28,82 @@ public class WhWorkCommand extends BaseCommand {
 
     private static final long serialVersionUID = 7328468466927329336L;
 
-    // columns START
-
+    //columns START
     /** 主键ID */
     private java.lang.Long id;
     /** 工作号 */
-    private String code;
+    private java.lang.String code;
     /** 工作状态，系统常量 */
-    private Integer status;
+    private java.lang.Integer status;
     /** 仓库组织ID */
-    private Long ouId;
+    private java.lang.Long ouId;
     /** 工作类型编码 */
-    private String workType;
+    private java.lang.String workType;
     /** 工作类别编码 */
-    private String workCategory;
+    private java.lang.String workCategory;
     /** 是否锁定 默认值：1 */
-    private Boolean isLocked;
+    private java.lang.Boolean isLocked;
     /** 是否已迁出 */
-    private Boolean isAssignOut;
+    private java.lang.Boolean isAssignOut;
     /** 是否短拣 */
-    private Boolean isShortPicking;
+    private java.lang.Boolean isShortPicking;
     /** 是否波次内补货 */
-    private Boolean isWaveReplenish;
+    private java.lang.Boolean isWaveReplenish;
     /** 是否拣货库存待移入 */
-    private Boolean isPickingTobefilled;
+    private java.lang.Boolean isPickingTobefilled;
     /** 是否多次作业 */
-    private Boolean isMultiOperation;
+    private java.lang.Boolean isMultiOperation;
     /** 当前工作明细涉及到的所有库区编码信息列表 */
-    private String workArea;
+    private java.lang.String workArea;
     /** 工作优先级 */
-    private Integer workPriority;
+    private java.lang.Integer workPriority;
     /** 小批次 */
-    private String batch;
+    private java.lang.String batch;
     /** 签出批次 */
-    private String assignOutBatch;
+    private java.lang.String assignOutBatch;
+    /** 配货模式 */
+    private java.lang.String distributionMode;
+    /** 拣货模式 */
+    private java.lang.String pickingMode;
+    /** 复核模式 */
+    private java.lang.String checkingMode;
     /** 操作开始时间 */
-    private Date startTime;
+    private java.util.Date startTime;
     /** 操作结束时间 */
-    private Date finishTime;
+    private java.util.Date finishTime;
     /** 波次ID */
-    private Long waveId;
+    private java.lang.Long waveId;
     /** 波次号 */
-    private String waveCode;
+    private java.lang.String waveCode;
     /** 订单号 */
-    private String orderCode;
+    private java.lang.String orderCode;
     /** 库位 */
-    private String locationCode;
+    private java.lang.String locationCode;
     /** 托盘 */
-    private String outerContainerCode;
+    private java.lang.String outerContainerCode;
     /** 容器 */
-    private String containerCode;
+    private java.lang.String containerCode;
     /** 创建时间 */
-    private Date createTime;
+    private java.util.Date createTime;
     /** 最后操作时间 */
-    private Date lastModifyTime;
+    private java.util.Date lastModifyTime;
     /** 创建人ID */
-    private Long createdId;
+    private java.lang.Long createdId;
     /** 修改人ID */
-    private Long modifiedId;
+    private java.lang.Long modifiedId;
     /** 操作人ID */
-    private Long operatorId;
+    private java.lang.Long operatorId;
     /** 是否启用 1:启用 0:停用 */
-    private Integer lifecycle;
+    private java.lang.Integer lifecycle;
+    
+    /*-----------------自定义------------------*/
     /** url*/
     private String url;
     /** 区域名称*/
     private String areaName;
     /** 类型名称*/
     private String typeName;
-
-    // columns END
+    //columns END
 
     public java.lang.Long getId() {
         return id;
@@ -361,6 +367,30 @@ public class WhWorkCommand extends BaseCommand {
 
     public void setTypeName(String typeName) {
         this.typeName = typeName;
+    }
+
+    public java.lang.String getDistributionMode() {
+        return distributionMode;
+    }
+
+    public void setDistributionMode(java.lang.String distributionMode) {
+        this.distributionMode = distributionMode;
+    }
+
+    public java.lang.String getPickingMode() {
+        return pickingMode;
+    }
+
+    public void setPickingMode(java.lang.String pickingMode) {
+        this.pickingMode = pickingMode;
+    }
+
+    public java.lang.String getCheckingMode() {
+        return checkingMode;
+    }
+
+    public void setCheckingMode(java.lang.String checkingMode) {
+        this.checkingMode = checkingMode;
     }
 
 }

@@ -662,4 +662,19 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
             phase_code = #{phaseCode}
             and ou_id = #{ouId}
     </select>
+    
+    <select id="findWavePhaseOrderListByWaveId" resultType="int">
+    	select
+			p.phase_order
+		from
+			t_wh_wave wave
+			join t_wh_wave_master ma on (wave.wave_master_id = ma.id)
+			join t_wh_wave_template t on (ma.wave_template_id = t.id)
+			join t_wh_wave_phase p on (p.wave_template_id = t.id)
+		where
+			wave.id = #{waveId}
+			and wave.ou_id = #{ouId}
+		order by
+			p.phase_order
+    </select>
 </mapper>
