@@ -575,7 +575,9 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
                 odoIdList.add(odo.getId());
             }
         }
-        this.deleteWaveLinesAndReleaseInventoryByOdoIdList(wave.getId(), odoIdList, Constants.DISTRIBUTE_MODE_FAIL, wh, WavePhase.REPLENISHED_NUM);
+        this.deleteWaveLinesAndReleaseInventoryByOdoIdList(wave.getId(), odoIdList, Constants.DISTRIBUTE_MODE_FAIL, wh, WavePhase.DISTRIBUTION_NUM);
+        // 更新波次的下一个阶段
+        this.changeWavePhaseCode(wave.getId(), wh.getId());
     }
 
     @Override
@@ -652,38 +654,21 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         	List<WhSkuInventoryAllocated> skuInvAllocatedList = this.whSkuInventoryAllocatedDao.findbyOccupationCode(odo.getOdoCode(), ouId);
             if (skuInvAllocatedList != null && skuInvAllocatedList.size() > 0) {
                 for (WhSkuInventoryAllocated invAllocated : skuInvAllocatedList) {
-                    this.whSkuInventoryAllocatedDao.deleteExt(invAllocated.getId(), ouId);
+                    invAllocated.setOccupationCode(null);
+                    invAllocated.setOccupationLineId(null);
+                    this.whSkuInventoryAllocatedDao.saveOrUpdateByVersion(invAllocated);
                 }
             }
             // 删除待移入库存
             List<WhSkuInventoryTobefilled> skuInvTobefilledList = this.whSkuInventoryTobefilledDao.findbyOccupationCode(odo.getOdoCode(), ouId);
             if (skuInvTobefilledList != null && skuInvTobefilledList.size() > 0) {
                 for (WhSkuInventoryTobefilled invTobefilled : skuInvTobefilledList) {
-                    this.whSkuInventoryTobefilledDao.deleteByExt(invTobefilled.getId(), ouId);
+                    invTobefilled.setOccupationCode(null);
+                    invTobefilled.setOccupationLineId(null);
+                    this.whSkuInventoryTobefilledDao.saveOrUpdateByVersion(invTobefilled);
                 }
             }
-            ReplenishmentTask task = new ReplenishmentTask();
-            task.setOuId(ouId);
-            task.setWaveId(waveId);
-            task.setStatus(ReplenishmentTaskStatus.REPLENISHMENT_TASK_NEW);
-            List<ReplenishmentTask> rtList = this.replenishmentTaskDao.findListByParam(task);
-            if (rtList != null && rtList.size() > 0) {
-                for (ReplenishmentTask rt : rtList) {
-                    if (WaveStatus.WAVE_EXECUTED == wave.getStatus()) {
-                        rt.setStatus(ReplenishmentTaskStatus.REPLENISHMENT_TASK_CANCEL);
-                        this.replenishmentTaskDao.saveOrUpdateByVersion(rt);
-                    } else {
-                        WhSkuInventoryTobefilled tbfInv = new WhSkuInventoryTobefilled();
-                        tbfInv.setOuId(ouId);
-                        tbfInv.setReplenishmentCode(rt.getReplenishmentCode());
-                        List<WhSkuInventoryTobefilled> tbfInvList = this.whSkuInventoryTobefilledDao.findskuInventoryTobefilleds(tbfInv);
-                        if (tbfInvList == null || tbfInvList.size() == 0) {
-                            rt.setStatus(ReplenishmentTaskStatus.REPLENISHMENT_TASK_CANCEL);
-                            this.replenishmentTaskDao.saveOrUpdateByVersion(rt);
-                        }
-                    }
-                }
-            }
+            // @mender yimin.lu 2017/3/15补货任务不回滚 del
         }
         /** 配货模式计算剔除逻辑 */
         if (wavePhase.intValue() >= WavePhase.DISTRIBUTION_NUM && wavePhaseList.contains(wavePhase)) {}

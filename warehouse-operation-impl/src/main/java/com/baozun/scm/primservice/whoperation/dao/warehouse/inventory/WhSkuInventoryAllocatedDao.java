@@ -31,7 +31,6 @@ import org.apache.ibatis.annotations.Param;
 
 import com.baozun.scm.primservice.whoperation.command.warehouse.ReplenishmentRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryAllocatedCommand;
-import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryAllocated;
 
 public interface WhSkuInventoryAllocatedDao extends BaseDao<WhSkuInventoryAllocated,Long>{
@@ -100,5 +99,8 @@ public interface WhSkuInventoryAllocatedDao extends BaseDao<WhSkuInventoryAlloca
      * @return
      */
     Double getTotalQtyByReplenishmentCode(@Param("replenishmentCode") String replenishmentCode, @Param("ouId") Long ouId);
+
+    @CommonQuery
+    int saveOrUpdateByVersion(WhSkuInventoryAllocated invAllocated);
 
 }
