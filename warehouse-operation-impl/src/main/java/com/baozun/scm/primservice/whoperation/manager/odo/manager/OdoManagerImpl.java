@@ -933,6 +933,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                 whOdoLine.setWaveCode(null);
                 whOdoLine.setOdoLineStatus(OdoStatus.ODOLINE_NEW);
                 whOdoLine.setAssignFailReason(Constants.SOFT_ALLOCATION_FAIL);
+                whOdoLine.setIsAssignSuccess(false);
                 int cnt = this.whOdoLineDao.saveOrUpdateByVersion(whOdoLine);
                 if (cnt <= 0) {
                     throw new BusinessException("剔除逻辑-更新出库单明细-失败");
@@ -958,6 +959,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
             whOdo.setOdoStatus(OdoStatus.ODO_NEW);
         }
         whOdo.setAssignFailReason(Constants.SOFT_ALLOCATION_FAIL);
+        whOdo.setIsAssignSuccess(false);
         whOdo.setWaveCode(null);
         int count = this.whOdoDao.saveOrUpdateByVersion(whOdo);
         if (count <= 0) {
