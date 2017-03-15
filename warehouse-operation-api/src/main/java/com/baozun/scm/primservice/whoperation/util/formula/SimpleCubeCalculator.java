@@ -579,7 +579,7 @@ public class SimpleCubeCalculator {
         if (coords_z.equals(coords)) {
             Double rx = get_x();
             Double ry = get_y();
-            set_remainZ(calculateRemainZ(calculateRemainCubage(getTotalAvailableCubage(), getStuffVolume()), rx, ry));
+            set_remainZ(calculateRemainZ(calculateRemainCubage(get_Volume(), getStuffVolume()), rx, ry));
             Double rz = get_remainZ();
             Double ax = getX();
             Double ay = getY();
@@ -588,7 +588,7 @@ public class SimpleCubeCalculator {
         } else if (coords_y.equals(coords)) {
             Double rx = get_x();
             Double rz = get_z();
-            set_remainY(calculateRemainY(calculateRemainCubage(getTotalAvailableCubage(), getStuffVolume()), rz, rx));
+            set_remainY(calculateRemainY(calculateRemainCubage(get_Volume(), getStuffVolume()), rz, rx));
             Double ry = get_remainY();
             Double ax = getX();
             Double ay = getY();
@@ -597,7 +597,7 @@ public class SimpleCubeCalculator {
         } else if (coords_x.equals(coords)) {
             Double ry = get_y();
             Double rz = get_z();
-            set_remainX(calculateRemainX(calculateRemainCubage(getTotalAvailableCubage(), getStuffVolume()), ry, rz));
+            set_remainX(calculateRemainX(calculateRemainCubage(get_Volume(), getStuffVolume()), ry, rz));
             Double rx = get_remainX();
             Double ax = getX();
             Double ay = getY();

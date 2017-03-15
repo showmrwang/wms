@@ -37,6 +37,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.UomCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
+import com.baozun.scm.primservice.whoperation.constant.WavePhase;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoOutBoundBoxDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.Container2ndCategoryDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerAssistDao;
@@ -125,7 +126,6 @@ public class OutboundBoxRecManagerImpl extends BaseManagerImpl implements Outbou
             for (OutInvBoxTypeCommand outboundBoxType : odoPackedOutboundBoxList) {
                 // 出库箱中的包裹，按照商品划分
                 for (WhOdoOutBoundBoxCommand odoOutBoundBoxCommand : outboundBoxType.getOdoOutBoundBoxCommandList()) {
-                    // TODO 保存到t_wh_odo_outboundbox
                     WhOdoOutBoundBox odoOutBoundBox = new WhOdoOutBoundBox();
                     BeanUtils.copyProperties(odoOutBoundBoxCommand, odoOutBoundBox);
 
@@ -140,7 +140,6 @@ public class OutboundBoxRecManagerImpl extends BaseManagerImpl implements Outbou
             for (ContainerCommand container : odoPackedWholeCaseList) {
                 // 整箱中的包裹
                 for (WhOdoOutBoundBoxCommand odoOutBoundBoxCommand : container.getOdoOutboundBoxCommandList()) {
-                    // TODO 保存到t_wh_odo_outboundbox
                     WhOdoOutBoundBox odoOutBoundBox = new WhOdoOutBoundBox();
                     BeanUtils.copyProperties(odoOutBoundBoxCommand, odoOutBoundBox);
 
@@ -155,7 +154,6 @@ public class OutboundBoxRecManagerImpl extends BaseManagerImpl implements Outbou
             for (ContainerCommand container : odoPackedWholeTrayList) {
                 // 整箱中的包裹
                 for (WhOdoOutBoundBoxCommand odoOutBoundBoxCommand : container.getOdoOutboundBoxCommandList()) {
-                    // TODO 保存到t_wh_odo_outboundbox
                     WhOdoOutBoundBox odoOutBoundBox = new WhOdoOutBoundBox();
                     BeanUtils.copyProperties(odoOutBoundBoxCommand, odoOutBoundBox);
 
@@ -174,7 +172,6 @@ public class OutboundBoxRecManagerImpl extends BaseManagerImpl implements Outbou
         if (null != odoOutBoundBoxCommandList && !odoOutBoundBoxCommandList.isEmpty()) {
             // 出库箱中的包裹，按照商品划分
             for (WhOdoOutBoundBoxCommand odoOutBoundBoxCommand : odoOutBoundBoxCommandList) {
-                // TODO 保存到t_wh_odo_outboundbox
                 WhOdoOutBoundBox odoOutBoundBox = new WhOdoOutBoundBox();
                 BeanUtils.copyProperties(odoOutBoundBoxCommand, odoOutBoundBox);
 
@@ -192,7 +189,6 @@ public class OutboundBoxRecManagerImpl extends BaseManagerImpl implements Outbou
         for (Container2ndCategoryCommand container : containerList) {
             // 整箱中的包裹
             for (WhOdoOutBoundBoxCommand odoOutBoundBoxCommand : container.getOdoOutBoundBoxCommandList()) {
-                // TODO 保存到t_wh_odo_outboundbox
                 WhOdoOutBoundBox odoOutBoundBox = new WhOdoOutBoundBox();
                 BeanUtils.copyProperties(odoOutBoundBoxCommand, odoOutBoundBox);
 
@@ -211,7 +207,6 @@ public class OutboundBoxRecManagerImpl extends BaseManagerImpl implements Outbou
             for (Container2ndCategoryCommand container : turnoverBoxList) {
                 // 整箱中的包裹
                 for (WhOdoOutBoundBoxCommand odoOutBoundBoxCommand : container.getOdoOutBoundBoxCommandList()) {
-                    // TODO 保存到t_wh_odo_outboundbox
                     WhOdoOutBoundBox odoOutBoundBox = new WhOdoOutBoundBox();
                     BeanUtils.copyProperties(odoOutBoundBoxCommand, odoOutBoundBox);
 
@@ -225,7 +220,6 @@ public class OutboundBoxRecManagerImpl extends BaseManagerImpl implements Outbou
             for (ContainerCommand container : odoPackedWholeCaseList) {
                 // 整箱中的包裹
                 for (WhOdoOutBoundBoxCommand odoOutBoundBoxCommand : container.getOdoOutboundBoxCommandList()) {
-                    // TODO 保存到t_wh_odo_outboundbox
                     WhOdoOutBoundBox odoOutBoundBox = new WhOdoOutBoundBox();
                     BeanUtils.copyProperties(odoOutBoundBoxCommand, odoOutBoundBox);
 
@@ -240,7 +234,6 @@ public class OutboundBoxRecManagerImpl extends BaseManagerImpl implements Outbou
             for (ContainerCommand container : odoPackedWholeTrayList) {
                 // 整箱中的包裹
                 for (WhOdoOutBoundBoxCommand odoOutBoundBoxCommand : container.getOdoOutboundBoxCommandList()) {
-                    // TODO 保存到t_wh_odo_outboundbox
                     WhOdoOutBoundBox odoOutBoundBox = new WhOdoOutBoundBox();
                     BeanUtils.copyProperties(odoOutBoundBoxCommand, odoOutBoundBox);
 
@@ -312,11 +305,11 @@ public class OutboundBoxRecManagerImpl extends BaseManagerImpl implements Outbou
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void releaseOdoFromWave(Long waveId, Collection<Long> odoIds, String reason, Warehouse wh, String logId) {
-        // TODO 踢出波次
+        // 踢出波次
         Long ouId = wh.getId();
         for (Long odoId : odoIds) {
             try {
-                whWaveManager.deleteWaveLinesAndReleaseInventoryByOdoId(waveId, odoId, reason, wh);
+                whWaveManager.deleteWaveLinesFromWaveByWavePhase(waveId, odoId, reason, wh, WavePhase.CREATE_OUTBOUND_CARTON_NUM);
                 log.info("releaseOdoFromWave, odoId:[{}],waveId:[{}],ouId:[{}],logId:[{}]", odoId, waveId, ouId, logId);
             } catch (Exception e) {
                 log.error(getLogMsg("deleteWaveLines and releaseInventoryByOdoId error! odoId:[{}],waveId:[{}],ouId:[{}]", odoId, waveId, ouId, logId), e);

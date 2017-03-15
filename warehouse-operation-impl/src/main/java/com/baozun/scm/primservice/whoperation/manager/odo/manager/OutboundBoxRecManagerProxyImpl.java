@@ -554,6 +554,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                     }
                     // 查询容器辅助表容器获取商品数量，一个明细内占用的整托整箱，只有一种商品，所以只有一个包裹
                     List<ContainerAssist> outerContainerAssistList = outboundBoxRecManager.findContainerAssistById(outerContainerIdList, ouId);
+                    //TODO 容器辅助表的数据需要重新计算
                     for (ContainerAssist outerContainerAssist : outerContainerAssistList) {
                         WhOdoOutBoundBoxCommand odoOutBoundBoxCommand = new WhOdoOutBoundBoxCommand();
                         odoOutBoundBoxCommand.setQty(outerContainerAssist.getSkuQty().doubleValue());
@@ -591,6 +592,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                     }
                     // 查询容器辅助表容器的数量
                     List<ContainerAssist> innerContainerAssistList = outboundBoxRecManager.findContainerAssistById(innerContainerIdList, ouId);
+                    //TODO 容器辅助表的数据需要重新计算
                     for (ContainerAssist innerContainerAssist : innerContainerAssistList) {
                         WhOdoOutBoundBoxCommand odoOutBoundBoxCommand = new WhOdoOutBoundBoxCommand();
                         odoOutBoundBoxCommand.setQty(innerContainerAssist.getSkuQty().doubleValue());
@@ -1551,6 +1553,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                     }
                     // 查询容器辅助表容器获取商品数量，一个明细内占用的整托整箱，只有一种商品
                     List<ContainerAssist> outerContainerAssistList = outboundBoxRecManager.findContainerAssistById(outerContainerIdList, ouId);
+                    //TODO 容器辅助表的数据需要重新计算
                     for (ContainerAssist outerContainerAssist : outerContainerAssistList) {
                         WhOdoOutBoundBoxCommand odoOutBoundBoxCommand = new WhOdoOutBoundBoxCommand();
                         odoOutBoundBoxCommand.setQty(outerContainerAssist.getSkuQty().doubleValue());
@@ -1588,6 +1591,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                     }
                     // 查询容器辅助表容器的数量
                     List<ContainerAssist> innerContainerAssistList = outboundBoxRecManager.findContainerAssistById(innerContainerIdList, ouId);
+                    //TODO 容器辅助表的数据需要重新计算
                     for (ContainerAssist innerContainerAssist : innerContainerAssistList) {
                         WhOdoOutBoundBoxCommand odoOutBoundBoxCommand = new WhOdoOutBoundBoxCommand();
                         odoOutBoundBoxCommand.setQty(innerContainerAssist.getSkuQty().doubleValue());
