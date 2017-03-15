@@ -1,16 +1,16 @@
 /**
  * Copyright (c) 2013 Baozun All Rights Reserved.
- *
+ * 
  * This software is the confidential and proprietary information of Baozun. You shall not disclose
  * such Confidential Information and shall use it only in accordance with the terms of the license
  * agreement you entered into with Baozun.
- *
+ * 
  * BAOZUN MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT THE SUITABILITY OF THE SOFTWARE, EITHER
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT. BAOZUN SHALL NOT BE LIABLE FOR ANY DAMAGES
  * SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS SOFTWARE OR ITS
  * DERIVATIVES.
- *
+ * 
  */
 package com.baozun.scm.primservice.whoperation.command.warehouse;
 
@@ -22,88 +22,114 @@ import com.baozun.scm.primservice.whoperation.command.BaseCommand;
 /**
  * 
  * @author larkark
- *
+ * 
  */
 public class WhWorkCommand extends BaseCommand {
 
     private static final long serialVersionUID = 7328468466927329336L;
 
-    //columns START
+    // columns START
+
     /** 主键ID */
     private java.lang.Long id;
     /** 工作号 */
-    private java.lang.String code;
+    private String code;
     /** 工作状态，系统常量 */
-    private java.lang.Integer status;
+    private Integer status;
     /** 仓库组织ID */
-    private java.lang.Long ouId;
+    private Long ouId;
     /** 工作类型编码 */
-    private java.lang.String workType;
+    private String workType;
     /** 工作类别编码 */
-    private java.lang.String workCategory;
+    private String workCategory;
     /** 是否锁定 默认值：1 */
-    private java.lang.Boolean isLocked;
+    private Boolean isLocked;
     /** 是否已迁出 */
-    private java.lang.Boolean isAssignOut;
+    private Boolean isAssignOut;
     /** 是否短拣 */
-    private java.lang.Boolean isShortPicking;
+    private Boolean isShortPicking;
     /** 是否波次内补货 */
-    private java.lang.Boolean isWaveReplenish;
+    private Boolean isWaveReplenish;
     /** 是否拣货库存待移入 */
-    private java.lang.Boolean isPickingTobefilled;
+    private Boolean isPickingTobefilled;
     /** 是否多次作业 */
-    private java.lang.Boolean isMultiOperation;
+    private Boolean isMultiOperation;
     /** 当前工作明细涉及到的所有库区编码信息列表 */
-    private java.lang.String workArea;
+    private String workArea;
     /** 工作优先级 */
-    private java.lang.Integer workPriority;
+    private Integer workPriority;
     /** 小批次 */
-    private java.lang.String batch;
+    private String batch;
     /** 签出批次 */
-    private java.lang.String assignOutBatch;
-    /** 配货模式 */
-    private java.lang.String distributionMode;
-    /** 拣货模式 */
-    private java.lang.String pickingMode;
-    /** 复核模式 */
-    private java.lang.String checkingMode;
+    private String assignOutBatch;
     /** 操作开始时间 */
-    private java.util.Date startTime;
+    private Date startTime;
     /** 操作结束时间 */
-    private java.util.Date finishTime;
+    private Date finishTime;
     /** 波次ID */
-    private java.lang.Long waveId;
+    private Long waveId;
     /** 波次号 */
-    private java.lang.String waveCode;
+    private String waveCode;
     /** 订单号 */
-    private java.lang.String orderCode;
+    private String orderCode;
     /** 库位 */
-    private java.lang.String locationCode;
+    private String locationCode;
     /** 托盘 */
-    private java.lang.String outerContainerCode;
+    private String outerContainerCode;
     /** 容器 */
-    private java.lang.String containerCode;
+    private String containerCode;
     /** 创建时间 */
-    private java.util.Date createTime;
+    private Date createTime;
     /** 最后操作时间 */
-    private java.util.Date lastModifyTime;
+    private Date lastModifyTime;
     /** 创建人ID */
-    private java.lang.Long createdId;
+    private Long createdId;
     /** 修改人ID */
-    private java.lang.Long modifiedId;
+    private Long modifiedId;
     /** 操作人ID */
-    private java.lang.Long operatorId;
+    private Long operatorId;
     /** 是否启用 1:启用 0:停用 */
     private java.lang.Integer lifecycle;
-    
+
     /*-----------------自定义------------------*/
-    /** url*/
+    /** url */
     private String url;
-    /** 区域名称*/
+    /** 区域名称 */
     private String areaName;
-    /** 类型名称*/
+    /** 类型名称 */
     private String typeName;
-    //columns END
+    /** 配货模式 */
+    private String distributionMode;
+    /** 拣货模式 */
+    private String pickingMode;
+    /** 复核模式 */
+    private String checkingMode;
+
+    // columns END
+
+    public String getDistributionMode() {
+        return distributionMode;
+    }
+
+    public void setDistributionMode(String distributionMode) {
+        this.distributionMode = distributionMode;
+    }
+
+    public String getPickingMode() {
+        return pickingMode;
+    }
+
+    public void setPickingMode(String pickingMode) {
+        this.pickingMode = pickingMode;
+    }
+
+    public String getCheckingMode() {
+        return checkingMode;
+    }
+
+    public void setCheckingMode(String checkingMode) {
+        this.checkingMode = checkingMode;
+    }
 
     public java.lang.Long getId() {
         return id;
@@ -367,30 +393,6 @@ public class WhWorkCommand extends BaseCommand {
 
     public void setTypeName(String typeName) {
         this.typeName = typeName;
-    }
-
-    public java.lang.String getDistributionMode() {
-        return distributionMode;
-    }
-
-    public void setDistributionMode(java.lang.String distributionMode) {
-        this.distributionMode = distributionMode;
-    }
-
-    public java.lang.String getPickingMode() {
-        return pickingMode;
-    }
-
-    public void setPickingMode(java.lang.String pickingMode) {
-        this.pickingMode = pickingMode;
-    }
-
-    public java.lang.String getCheckingMode() {
-        return checkingMode;
-    }
-
-    public void setCheckingMode(java.lang.String checkingMode) {
-        this.checkingMode = checkingMode;
     }
 
 }

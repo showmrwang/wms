@@ -36,6 +36,7 @@ import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.OperationStatus;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhCheckingCollectionDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhDistributionPatternRuleDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhFacilityRecPathDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhLocationDao;
@@ -52,6 +53,7 @@ import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy.WaveFacilityManagerProxy;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Location;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhCheckingCollection;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhDistributionPatternRule;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFacilityRecPath;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperation;
@@ -74,6 +76,8 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
     @Autowired
     private WhSeedingCollectionDao whSeedingCollectionDao;
 
+    @Autowired
+    private WhCheckingCollectionDao whCheckingCollectionDao;
     @Autowired
     private WhOutboundFacilityDao whOutboundFacilityDao;
 
@@ -121,6 +125,26 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                 seedingCollection.setContainerId(execLineCommand.getUseContainerId());
                 seedingCollection.setOuId(ouId);
                 this.whSeedingCollectionDao.saveOrUpdateByVersion(seedingCollection);
+            }
+        }
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void insertIntoWorkingCollection(String batch, Long workId, Long ouId, WhWorkCommand work) {
+        List<WhOperationExecLineCommand> execLineCommandList = this.whOperationExecLineDao.findCommandByWorkId(workId, ouId);
+        if (null != execLineCommandList && !execLineCommandList.isEmpty()) {
+            for (WhOperationExecLineCommand execLineCommand : execLineCommandList) {
+                WhCheckingCollection whCheckingCollection = new WhCheckingCollection();
+                whCheckingCollection.setBatch(batch);
+                whCheckingCollection.setContainerId(execLineCommand.getUseContainerId());
+                whCheckingCollection.setOuId(ouId);
+                whCheckingCollection.setPickingMode(work.getPickingMode());
+                whCheckingCollection.setDistributionMode(work.getDistributionMode());
+                whCheckingCollection.setCheckingMode(work.getCheckingMode());
+                whCheckingCollection.setOuterContainerId(execLineCommand.getUseOuterContainerId());
+                whCheckingCollection.setCollectionStatus(Constants.COLLECTION_STATUS_10);
+                this.whCheckingCollectionDao.saveOrUpdate(whCheckingCollection);
             }
         }
     }
@@ -216,6 +240,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 
     /**
      * [业务方法] 初始化推荐逻辑缓存
+     * 
      * @param workCollectionCommand
      * @return [false:容器列表为空]/[true:容器列表不为空]
      */
@@ -320,6 +345,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 
     /**
      * [通用方法] 通过索引取得播种墙推荐路径
+     * 
      * @param workCollectionCommand
      * @return
      */
@@ -338,6 +364,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 
     /**
      * [业务方法] 判断推荐的播种墙剩余容量是否满足
+     * 
      * @param seedingwallCode
      * @param batch
      * @param ouId
@@ -375,6 +402,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 
     /**
      * [业务方法] 移动全部容器
+     * 
      * @param workCollectionCommand
      * @return
      */
@@ -417,6 +445,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 
     /**
      * [业务方法] 记录容器集货信息
+     * 
      * @param workCollectionCommand
      * @return
      */
@@ -456,6 +485,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 
     /**
      * [业务方法] 移动容器
+     * 
      * @param workCollectionCommand
      * @return
      */
@@ -523,6 +553,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 
     /**
      * 出库集货-获取系统推荐暂存库位
+     * 
      * @return
      */
     @Override
@@ -1019,17 +1050,17 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 
         // 3.记录容器集货信息（到目的地）
         this.updateContainerToDestination(recCommand, destinationType, ouId);
-        
+
         // 4.判断暂存库位,没有就释放
         if (destinationType == Constants.SEEDING_WALL) {
-        	int count = whSeedingCollectionDao.checkCountInDestination(batch, Constants.TEMPORARY_STORAGE_LOCATION, ouId);
-        	if (count == 0 && StringUtils.hasText(storageLocation.getBatch())) {
-        		storageLocation.setBatch(null);
-        		storageLocation.setStatus(1);
-        		whTemporaryStorageLocationDao.saveOrUpdateByVersion(storageLocation);
-			}
-		}
-        
+            int count = whSeedingCollectionDao.checkCountInDestination(batch, Constants.TEMPORARY_STORAGE_LOCATION, ouId);
+            if (count == 0 && StringUtils.hasText(storageLocation.getBatch())) {
+                storageLocation.setBatch(null);
+                storageLocation.setStatus(1);
+                whTemporaryStorageLocationDao.saveOrUpdateByVersion(storageLocation);
+            }
+        }
+
         ArrayDeque<String> containerCodeDeque = cacheManager.getObject(CacheConstants.PDA_CACHE_MANUAL_COLLECTION_CONTAINER + userId);
         if (null == containerCodeDeque || containerCodeDeque.isEmpty()) {
             throw new BusinessException(ErrorCodes.COLLECTION_CONTAINER_QTY_IS_NULL);
@@ -1098,10 +1129,11 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         String batch = seedingCollection.getBatch();
         WhFacilityRecPathCommand rec = whFacilityRecPathDao.getRecommendResultByContainerCode(containerCode, batch, ouId);
         if (null == rec) {
-            /*List<Long> odoIdList = whWorkDao.getOdoIdListByBatch(batch, ouId);
-            if (null == odoIdList || odoIdList.isEmpty()) {
-                throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
-            }*/
+            /*
+             * List<Long> odoIdList = whWorkDao.getOdoIdListByBatch(batch, ouId); if (null ==
+             * odoIdList || odoIdList.isEmpty()) { throw new
+             * BusinessException(ErrorCodes.DATA_BIND_EXCEPTION); }
+             */
             ContainerCommand containerCmd = containerDao.getContainerByCode(containerCode, ouId);
             Long scanContainerId = containerCmd.getId();
             WorkCollectionCommand workCommand = this.createObject(batch, null, ouId, null, scanContainerId);

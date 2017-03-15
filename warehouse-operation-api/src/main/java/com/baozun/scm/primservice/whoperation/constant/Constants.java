@@ -674,6 +674,6 @@ public final class Constants {
     public static final String DATA_SOURCE_WMS = "wms";
     public static final String DATA_SOURCE_PAC = "pac";
     public static final String DATA_SOURCE_HUB = "hub";
-
-
+    public static final String COLLECTION_STATUS_10 = "10";
+    
 }
