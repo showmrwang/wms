@@ -575,6 +575,27 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
                 odoIdList.add(odo.getId());
             }
         }
+        // 更新出库单
+        boolean flag = false;
+        if (odoList != null && odoList.size() > 0) {
+            for (WhOdo odo : odoList) {
+                if (StringUtils.hasText(odo.getDistributeMode())) {
+                    int updateCount = this.whOdoDao.saveOrUpdateByVersion(odo);
+                    if (updateCount <= 0) {
+                        throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                    }
+                } else {
+                    this.deleteWaveLinesFromWaveByWavePhase(wave.getId(), odo.getId(), Constants.DISTRIBUTE_MODE_FAIL, wh, WavePhase.DISTRIBUTION_NUM);
+                    if (!flag) {
+
+                        flag = true;
+                    }
+                }
+            }
+        }
+        if (flag) {
+            this.calculateWaveHeadInfo(wave.getId(), ouId);
+        }
         this.deleteWaveLinesAndReleaseInventoryByOdoIdList(wave.getId(), odoIdList, Constants.DISTRIBUTE_MODE_FAIL, wh, WavePhase.DISTRIBUTION_NUM);
         // 更新波次的下一个阶段
         this.changeWavePhaseCode(wave.getId(), wh.getId());
