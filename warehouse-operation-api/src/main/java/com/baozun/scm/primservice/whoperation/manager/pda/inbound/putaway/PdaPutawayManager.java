@@ -26,19 +26,6 @@ import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 public interface PdaPutawayManager extends BaseManager {
 
     /**
-     * 系统指导上架扫托盘号
-     * 
-     * @author lichuan
-     * @param containerCode
-     * @param funcId
-     * @param ouId
-     * @param userId
-     * @param logId
-     * @return
-     */
-    LocationCommand sysGuideScanPallet(String containerCode, Long funcId, Integer putawayPatternDetailType, Long ouId, Long userId, String logId);
-
-    /**
      * 系统指导上架扫容器
      * 
      * @author lichuan
