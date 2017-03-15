@@ -21,7 +21,7 @@ import com.baozun.scm.primservice.whoperation.model.BaseModel;
  * @author larkark
  *
  */
-public class WhOdoLineAttrSn extends BaseModel {
+public class WhOdoLineSn extends BaseModel {
 
     private static final long serialVersionUID = -4980455201790097341L;
 

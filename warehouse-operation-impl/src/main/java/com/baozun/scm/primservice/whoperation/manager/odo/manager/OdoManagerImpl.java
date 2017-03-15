@@ -23,20 +23,28 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.baozun.scm.primservice.whoperation.command.odo.OdoCommand;
-import com.baozun.scm.primservice.whoperation.command.odo.OdoGroup;
+import com.baozun.scm.primservice.whoperation.command.odo.OdoGroupCommand;
+import com.baozun.scm.primservice.whoperation.command.odo.OdoLineCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoResultCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoSearchCommand;
+import com.baozun.scm.primservice.whoperation.command.odo.OdoTransportMgmtCommand;
+import com.baozun.scm.primservice.whoperation.command.odo.WhOdoLineSnCommand;
+import com.baozun.scm.primservice.whoperation.command.odo.WhOdoVasCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.OdoWaveGroupResultCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.OdoWaveGroupSearchCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.WaveCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.UomCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhDistributionPatternRuleCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
 import com.baozun.scm.primservice.whoperation.dao.localauth.OperUserDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoAddressDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
+import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoInvoiceDao;
+import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoInvoiceLineDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineDao;
+import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineSnDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoTransportMgmtDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoVasDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveDao;
@@ -44,6 +52,8 @@ import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveLineDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveMasterDao;
 import com.baozun.scm.primservice.whoperation.dao.sku.SkuDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.UomDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhDistributionPatternRuleDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.ma.TransportProviderDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
@@ -51,8 +61,10 @@ import com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy.Distributio
 import com.baozun.scm.primservice.whoperation.model.localauth.OperUser;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAddress;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoInvoice;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoInvoiceLine;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
-import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLineAttrSn;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLineSn;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoVas;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
@@ -62,6 +74,7 @@ import com.baozun.scm.primservice.whoperation.model.sku.Sku;
 import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
+import com.baozun.scm.primservice.whoperation.model.warehouse.ma.TransportProvider;
 
 @Service("odoManager")
 @Transactional
@@ -72,7 +85,11 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     @Autowired
     private WhOdoLineDao whOdoLineDao;
     @Autowired
+    private WhOdoLineSnDao whOdoLineAttrSnDao;
+    @Autowired
     private WhOdoTransportMgmtDao whOdoTransportMgmtDao;
+    @Autowired
+    private TransportProviderDao transportProviderDao;
     @Autowired
     private WhOdoAddressDao whOdoAddressDao;
     @Autowired
@@ -86,9 +103,15 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     @Autowired
     private WhWaveDao whWaveDao;
     @Autowired
+    private WhOdoInvoiceDao whOdoInvoiceDao;
+    @Autowired
+    private WhOdoInvoiceLineDao whOdoInvoiceLineDao;
+    @Autowired
     private WhWaveLineDao whWaveLineDao;
     @Autowired
     private OperUserDao operUserDao;
+    @Autowired
+    private WhDistributionPatternRuleDao whDistributionPatternRuleDao;
     @Autowired
     private DistributionModeArithmeticManagerProxy distributionModeArithmeticManagerProxy;
 
@@ -175,7 +198,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                             dic12.add(command.getOrderType());
                         }
                     }
-                    //查找用户
+                    // 查找用户
                     Map<String, String> userMap = new HashMap<String, String>();
                     if (userIdSet.size() > 0) {
                         Iterator<String> userIt = userIdSet.iterator();
@@ -285,32 +308,135 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void createOdo(WhOdo odo, List<WhOdoLine> odoLineList, WhOdoTransportMgmt transportMgmt, WhOdoAddress odoAddress, List<WhOdoVas> odoVasList, List<WhOdoLineAttrSn> lineSnList, Long ouId, Long userId) {
+    public Long createOdo(OdoCommand odoCommand, List<OdoLineCommand> odoLineList, OdoTransportMgmtCommand transCommand, WhOdoAddress odoAddress, WhOdoInvoice invoice, List<WhOdoInvoiceLine> invoiceLineList, Long ouId, Long userId) {
+        Long odoId = null;
         try {
+            WhOdo odo = new WhOdo();
+            BeanUtils.copyProperties(odoCommand, odo);
             this.whOdoDao.insert(odo);
+            odoId = odo.getId();
+            // 头增值服务
+            if (odoCommand.getVasList() != null && odoCommand.getVasList().size() > 0) {
+                for (WhOdoVasCommand vasCommand : odoCommand.getVasList()) {
+                    WhOdoVas vas = new WhOdoVas();
+                    BeanUtils.copyProperties(vasCommand, vas);
+                    vas.setOdoId(odoId);
+                    vas.setOuId(ouId);
+                    this.whOdoVasDao.insert(vas);
+                }
+            }
             if (odoLineList != null && odoLineList.size() > 0) {
-                for (WhOdoLine line : odoLineList) {
-                    this.whOdoLineDao.insert(line);
+                for (OdoLineCommand lineCommand : odoLineList) {
+                    WhOdoLine odoLine = new WhOdoLine();
+                    BeanUtils.copyProperties(lineCommand, odoLine);
+                    odoLine.setOdoId(odoId);
+                    odoLine.setOuId(ouId);
+                    this.whOdoLineDao.insert(odoLine);
+                    Long odoLineId = odoLine.getId();
+                    if (lineCommand.getVasList() != null && lineCommand.getVasList().size() > 0) {
+                        for (WhOdoVasCommand vasCommand : odoCommand.getVasList()) {
+                            WhOdoVas vas = new WhOdoVas();
+                            BeanUtils.copyProperties(vasCommand, vas);
+                            vas.setOdoId(odoId);
+                            vas.setOdoLineId(odoLineId);
+                            vas.setOuId(ouId);
+                            this.whOdoVasDao.insert(vas);
+                        }
+                    }
+                    if (lineCommand.getLineSnList() != null && lineCommand.getLineSnList().size() > 0) {
+                        for (WhOdoLineSnCommand snCommand : lineCommand.getLineSnList()) {
+                            WhOdoLineSn sn = new WhOdoLineSn();
+                            BeanUtils.copyProperties(snCommand, sn);
+                            sn.setOuId(ouId);
+                            sn.setOdoLineId(odoId);
+                            this.whOdoLineAttrSnDao.insert(sn);
+                        }
+                    }
                 }
             }
             if (odoAddress != null) {
                 this.whOdoAddressDao.insert(odoAddress);
             }
-            if (odoVasList != null && odoVasList.size() > 0) {
-                for (WhOdoVas vas : odoVasList) {
 
-                    this.whOdoVasDao.insert(vas);
+            WhOdoTransportMgmt trans = new WhOdoTransportMgmt();
+            BeanUtils.copyProperties(transCommand, trans);
+            trans.setOdoId(odo.getId());
+            this.whOdoTransportMgmtDao.insert(trans);
+
+            if (invoice != null) {
+                invoice.setOdoId(odoId);
+                invoice.setOuId(ouId);
+                this.whOdoInvoiceDao.insert(invoice);
+                if (invoiceLineList != null && invoiceLineList.size() > 0) {
+                    for (WhOdoInvoiceLine invoiceLine : invoiceLineList) {
+                        invoiceLine.setOdoInvoiceId(invoice.getId());
+                        invoiceLine.setOuId(ouId);
+                        this.whOdoInvoiceLineDao.insert(invoiceLine);
+                    }
                 }
             }
-            if (lineSnList != null && lineSnList.size() > 0) {}
-
-            transportMgmt.setOdoId(odo.getId());
-            this.whOdoTransportMgmtDao.insert(transportMgmt);
+            // 汇总信息
+            if (OdoStatus.ODO_NEW.equals(odo.getOdoStatus())) {
+                this.getSummaryByOdolineList(odo);
+                int updateCount = this.whOdoDao.saveOrUpdateByVersion(odo);
+                if (updateCount <= 0) {
+                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                }
+            }
         } catch (Exception e) {
             log.error(e + "");
             throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
         }
+        return odoId;
     }
+
+    private void getSummaryByOdolineList(WhOdo odo) {
+        List<WhOdoLine> lineList = this.whOdoLineDao.findOdoLineListByOdoIdOuId(odo.getId(), odo.getOuId());
+        // 出库单统计数目
+        double qty = Constants.DEFAULT_DOUBLE;
+        int skuNumberOfPackages = Constants.DEFAULT_INTEGER;
+        double amt = Constants.DEFAULT_DOUBLE;
+        boolean isHazardous = odo.getIncludeHazardousCargo();
+        boolean isFragile = odo.getIncludeFragileCargo();
+        Set<Long> skuIdSet = new HashSet<Long>();
+        boolean isAllowMerge = false;
+        if (odo.getIsLocked() == null || odo.getIsLocked() == false) {
+            isAllowMerge = true;
+        } else {
+            List<WhOdoVasCommand> ouVasList = this.whOdoVasDao.findOdoOuVasCommandByOdoIdOdoLineIdType(odo.getId(), null, odo.getOuId());
+            if (ouVasList != null && ouVasList.size() > 0) {
+                isAllowMerge = false;
+            }
+        }
+        if (lineList != null && lineList.size() > 0) {
+            for (WhOdoLine line : lineList) {
+                if (OdoStatus.ODOLINE_CANCEL.equals(line.getOdoLineStatus())) {
+                    continue;
+                }
+                skuIdSet.add(line.getSkuId());
+                amt += line.getLineAmt();
+                qty += line.getQty();
+
+                if (isAllowMerge) {
+                    List<WhOdoVasCommand> ouVasList = this.whOdoVasDao.findOdoOuVasCommandByOdoIdOdoLineIdType(odo.getId(), line.getId(), odo.getOuId());
+                    if (ouVasList != null && ouVasList.size() > 0) {
+                        isAllowMerge = false;
+                    }
+                }
+            }
+
+        }
+        odo.setQty(qty);
+        odo.setAmt(amt);
+        skuNumberOfPackages = skuIdSet.size();
+        odo.setSkuNumberOfPackages(skuNumberOfPackages);
+        odo.setIncludeFragileCargo(isFragile);
+        odo.setIncludeHazardousCargo(isHazardous);
+
+        // 设置允许合并与否
+        odo.setIsAllowMerge(false);
+    }
+
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
@@ -390,7 +516,6 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
             if (updateOdoCount <= 0) {
                 throw new BusinessException(ErrorCodes.DELETE_DATA_ERROR);
             }
-
         } catch (BusinessException e) {
             throw e;
         } catch (Exception ex) {
@@ -402,7 +527,133 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public Pagination<OdoWaveGroupResultCommand> findOdoListForWaveByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params) {
-        return this.whOdoDao.findOdoListForWaveByQueryMapWithPageExt(page, sorts, params);
+        Pagination<OdoWaveGroupResultCommand> pages = this.whOdoDao.findOdoListForWaveByQueryMapWithPageExt(page, sorts, params);
+        try {
+            Long ouId = (Long) params.get("ouId");
+
+            if (pages != null) {
+                Set<String> dic1 = new HashSet<String>();// 出库单状态
+                Set<String> dic2 = new HashSet<String>();// 出库单类型
+                Set<String> dic3 = new HashSet<String>();// 配货模式
+                Set<String> dic4 = new HashSet<String>();// 上位单据类型
+                Set<String> transCodeSet = new HashSet<String>();// 运输服务商
+                Set<Long> customerIdSet = new HashSet<Long>();
+                Set<Long> storeIdSet = new HashSet<Long>();
+                Map<String, String> distributionModeMap = new HashMap<String, String>();
+                List<OdoWaveGroupResultCommand> list = pages.getItems();
+                if (list != null && list.size() > 0) {
+                    for (OdoWaveGroupResultCommand command : list) {
+                        if (StringUtils.hasText(command.getOdoStatus())) {
+                            dic1.add(command.getOdoStatus());
+                        }
+                        if (StringUtils.hasText(command.getOdoType())) {
+                            dic2.add(command.getOdoType());
+                        }
+                        if (StringUtils.hasText(command.getDistributeMode())) {
+                            dic3.add(command.getDistributeMode());
+                        }
+                        if (StringUtils.hasText(command.getEpistaticSystemsOrderType())) {
+                            dic4.add(command.getEpistaticSystemsOrderType());
+                        }
+                        if (StringUtils.hasText(command.getTransportServiceProvider())) {
+                            transCodeSet.add(command.getTransportServiceProvider());
+                        }
+                        if (command.getCustomerId() != null) {
+                            customerIdSet.add(command.getCustomerId());
+                        }
+                        if (command.getStoreId() != null) {
+                            storeIdSet.add(command.getStoreId());
+                        }
+                    }
+                    Map<String, List<String>> map = new HashMap<String, List<String>>();
+                    if (dic1.size() > 0) {
+                        map.put(Constants.ODO_STATUS, new ArrayList<String>(dic1));
+                    }
+                    if (dic2.size() > 0) {
+                        map.put(Constants.ODO_TYPE, new ArrayList<String>(dic2));
+                    }
+                    // 配货模式
+                    if (dic3.size() > 0) {
+                        for (String ruleCode : dic3) {
+
+                            WhDistributionPatternRuleCommand rule = this.whDistributionPatternRuleDao.findRuleByCode(ruleCode, ouId);
+                            if (rule != null) {
+                                distributionModeMap.put(ruleCode, rule.getDistributionPatternName());
+                            }
+                        }
+
+                    }
+                    if (dic4.size() > 0) {
+                        map.put(Constants.ODO_PRE_TYPE, new ArrayList<String>(dic4));
+                    }
+                    Map<String, TransportProvider> transMap = new HashMap<String, TransportProvider>();
+                    if (transCodeSet.size() > 0) {
+                        for (String transCode : transCodeSet) {
+                            TransportProvider tp = this.transportProviderDao.findByCode(transCode);
+                            transMap.put(transCode, tp);
+                        }
+
+                    }
+
+                    Map<String, SysDictionary> dicMap = map.size() > 0 ? this.findSysDictionaryByRedis(map) : null;
+
+                    Map<Long, Customer> customerMap = customerIdSet.size() > 0 ? this.findCustomerByRedis(new ArrayList<Long>(customerIdSet)) : null;
+                    Map<Long, Store> storeMap = storeIdSet.size() > 0 ? this.findStoreByRedis(new ArrayList<Long>(storeIdSet)) : null;
+                    for (OdoWaveGroupResultCommand command : list) {
+                        String groupName = "";
+                        if (command.getCustomerId() != null) {
+                            Customer customer = customerMap.get(command.getCustomerId());
+                            command.setCustomerName(customer == null ? command.getCustomerId().toString() : customer.getCustomerName());
+                            groupName += "$" + command.getCustomerName();
+                        }
+                        if (command.getStoreId() != null) {
+                            Store store = storeMap.get(command.getStoreId());
+                            command.setStoreName(store == null ? command.getStoreId().toString() : store.getStoreName());
+                            groupName += "$" + command.getStoreName();
+                        }
+                        if (StringUtils.hasText(command.getOdoStatus())) {
+                            SysDictionary sys = dicMap.get(Constants.ODO_STATUS + "_" + command.getOdoStatus());
+                            command.setOdoStatusName(sys.getDicLabel());
+                            groupName += "$" + command.getOdoStatusName();
+                        }
+                        if (StringUtils.hasText(command.getOdoType())) {
+                            SysDictionary sys = dicMap.get(Constants.ODO_TYPE + "_" + command.getOdoType());
+                            command.setOdoTypeName(sys.getDicLabel());
+                            groupName += "$" + command.getOdoTypeName();
+                        }
+                        if (StringUtils.hasText(command.getDistributeMode())) {
+                            String name = distributionModeMap.get(command.getDistributeMode());
+                            if (StringUtils.hasText(name)) {
+                                command.setDistributeModeName(name);
+                            } else {
+                                command.setDistributeModeName(command.getDistributeMode());
+                            }
+                            groupName += "$" + command.getDistributeModeName();
+                        }
+                        if (StringUtils.hasText(command.getTransportServiceProvider())) {
+                            if (transMap != null) {
+                                if (transMap.containsKey(command.getTransportServiceProvider())) {
+                                    TransportProvider tp = transMap.get(command.getTransportServiceProvider());
+                                    command.setTransportServiceProviderName(tp.getName());
+                                    groupName += "$" + command.getTransportServiceProviderName();
+                                }
+                            }
+                        }
+                        if (StringUtils.hasText(command.getEpistaticSystemsOrderType())) {
+                            SysDictionary sys = dicMap.get(Constants.ODO_PRE_TYPE + "_" + command.getEpistaticSystemsOrderType());
+                            command.setEpistaticSystemsOrderTypeName(sys.getDicLabel());
+                            groupName += "$" + command.getEpistaticSystemsOrderTypeName();
+                        }
+                        command.setGroupName(groupName);
+                    }
+                    pages.setItems(list);
+                }
+            }
+        } catch (Exception ex) {
+            log.error(ex + "");
+            throw new BusinessException(ErrorCodes.PACKAGING_ERROR);
+        }
+        return pages;
 
 
     }
@@ -411,7 +662,130 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<OdoResultCommand> findOdoCommandListForWave(OdoSearchCommand command) {
 
-        return this.whOdoDao.findCommandListForWave(command);
+        List<OdoResultCommand> list = this.whOdoDao.findCommandListForWave(command);
+        // 出库单状态
+        Set<String> dic1 = new HashSet<String>();// ODO_STATUS
+        // 订单平台类型
+        Set<String> dic2 = new HashSet<String>();// ODO_ORDER_TYPE
+        // 上位单据类型
+        Set<String> dic3 = new HashSet<String>();// ODO_PRE_TYPE
+        // 出库单类型
+        Set<String> dic4 = new HashSet<String>();// ODO_TYPE
+        // 业务模式（配货模式）
+        Set<String> dic5 = new HashSet<String>();// DISTRIBUTE_MODE
+        // 整单出库标志
+        Set<String> dic6 = new HashSet<String>();// IS_NOT
+        // 越库标志
+        Set<String> dic7 = new HashSet<String>();// ODO_CROSS_DOCKING_SYSMBOL
+        // 运行标志
+        Set<String> dic8 = new HashSet<String>();//
+        // 客户
+        Set<Long> customerIdSet = new HashSet<Long>();
+        // 店铺
+        Set<Long> storeIdSet = new HashSet<Long>();
+        // 用户
+        Set<String> userIdSet = new HashSet<String>();
+        if (list != null && list.size() > 0) {
+            for (OdoResultCommand res : list) {
+                if (StringUtils.hasText(res.getOdoStatus())) {
+                    dic1.add(res.getOdoStatus());
+                }
+                if (StringUtils.hasText(res.getOrderType())) {
+                    dic2.add(res.getOrderType());
+                }
+                if (StringUtils.hasText(res.getEpistaticSystemsOrderType())) {
+                    dic3.add(res.getEpistaticSystemsOrderType());
+                }
+                if (StringUtils.hasText(res.getOdoType())) {
+                    dic4.add(res.getOdoType());
+                }
+                if (StringUtils.hasText(res.getDistributeMode())) {
+                    dic5.add(res.getDistributeMode());
+                }
+                if (StringUtils.hasText(res.getIsWholeOrderOutbound())) {
+                    dic6.add(res.getIsWholeOrderOutbound());
+                }
+                if (StringUtils.hasText(res.getCrossDockingSysmbol())) {
+                    dic7.add(res.getCrossDockingSysmbol());
+                }
+                customerIdSet.add(Long.parseLong(res.getCustomerId()));
+                storeIdSet.add(Long.parseLong(res.getStoreId()));
+
+                if (StringUtils.hasText(res.getCreateId())) {
+
+                    userIdSet.add(res.getCreateId());
+                }
+                if (StringUtils.hasText(res.getModifiedId())) {
+                    userIdSet.add(res.getModifiedId());
+                }
+            }
+            // 用户
+            // 查找用户
+            Map<String, String> userMap = new HashMap<String, String>();
+            if (userIdSet.size() > 0) {
+                Iterator<String> userIt = userIdSet.iterator();
+                while (userIt.hasNext()) {
+                    String id = userIt.next();
+                    OperUser user = this.operUserDao.findById(Long.parseLong(id));
+                    userMap.put(id, user == null ? id : user.getUserName());
+                }
+
+            }
+            Map<String, List<String>> map = new HashMap<String, List<String>>();
+            map.put(Constants.ODO_STATUS, new ArrayList<String>(dic1));
+            map.put(Constants.ODO_ORDER_TYPE, new ArrayList<String>(dic2));
+            map.put(Constants.ODO_PRE_TYPE, new ArrayList<String>(dic3));
+            map.put(Constants.ODO_TYPE, new ArrayList<String>(dic4));
+            map.put(Constants.DISTRIBUTE_MODE, new ArrayList<String>(dic5));
+            map.put(Constants.IS_WHOLE_ORDER_OUTBOUND, new ArrayList<String>(dic6));
+            map.put(Constants.ODO_CROSS_DOCKING_SYSMBOL, new ArrayList<String>(dic7));
+            Map<String, SysDictionary> dicMap = this.findSysDictionaryByRedis(map);
+            Map<Long, Customer> customerMap = this.findCustomerByRedis(new ArrayList<Long>(customerIdSet));
+            Map<Long, Store> storeMap = this.findStoreByRedis(new ArrayList<Long>(storeIdSet));
+            for (OdoResultCommand result : list) {
+                if (StringUtils.hasText(result.getOdoStatus())) {
+                    SysDictionary sys = dicMap.get(Constants.ODO_STATUS + "_" + result.getOdoStatus());
+                    result.setOdoStatusName(sys == null ? result.getOdoStatus() : sys.getDicLabel());
+                }
+                if (StringUtils.hasText(result.getOrderType())) {
+                    SysDictionary sys = dicMap.get(Constants.ODO_ORDER_TYPE + "_" + result.getOrderType());
+                    result.setOrderTypeName(sys == null ? result.getOrderType() : sys.getDicLabel());
+                }
+                if (StringUtils.hasText(result.getEpistaticSystemsOrderType())) {
+                    SysDictionary sys = dicMap.get(Constants.ODO_PRE_TYPE + "_" + result.getEpistaticSystemsOrderType());
+                    result.setEpistaticSystemsOrderTypeName(sys == null ? result.getEpistaticSystemsOrderType() : sys.getDicLabel());
+                }
+                if (StringUtils.hasText(result.getOdoType())) {
+                    SysDictionary sys = dicMap.get(Constants.ODO_TYPE + "_" + result.getOdoType());
+                    result.setOdoTypeName(sys == null ? result.getOdoType() : sys.getDicLabel());
+                }
+                if (StringUtils.hasText(result.getDistributeMode())) {
+                    SysDictionary sys = dicMap.get(Constants.DISTRIBUTE_MODE + "_" + result.getDistributeMode());
+                    result.setDistributeModeName(sys == null ? result.getDistributeMode() : sys.getDicLabel());
+                }
+                if (StringUtils.hasText(result.getIsWholeOrderOutbound())) {
+                    SysDictionary sys = dicMap.get(Constants.IS_WHOLE_ORDER_OUTBOUND + "_" + result.getIsWholeOrderOutbound());
+                    result.setIsWholeOrderOutboundName(sys == null ? result.getIsWholeOrderOutbound() : sys.getDicLabel());
+                }
+                if (StringUtils.hasText(result.getCrossDockingSysmbol())) {
+                    SysDictionary sys = dicMap.get(Constants.ODO_CROSS_DOCKING_SYSMBOL + "_" + result.getCrossDockingSysmbol());
+                    result.setCrossDockingSysmbolName(sys == null ? result.getCrossDockingSysmbol() : sys.getDicLabel());
+                }
+                Customer customer = customerMap.get(Long.parseLong(result.getCustomerId()));
+                result.setCustomerName(customer == null ? result.getCustomerId() : customer.getCustomerName());
+                Store store = storeMap.get(Long.parseLong(result.getStoreId()));
+                result.setStoreName(store == null ? result.getStoreId() : store.getStoreName());
+
+                if (StringUtils.hasText(result.getCreateId())) {
+                    result.setCreatedName(userMap.get(result.getCreateId()));
+                }
+                if (StringUtils.hasText(result.getCreatedName())) {
+                    result.setModifiedName(userMap.get(result.getModifiedId()));
+                }
+            }
+        }
+
+        return list;
     }
 
     @Override
@@ -558,6 +932,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                 WhOdoLine whOdoLine = this.whOdoLineDao.findOdoLineById(odoLineId, ouId);
                 whOdoLine.setWaveCode(null);
                 whOdoLine.setOdoLineStatus(OdoStatus.ODOLINE_NEW);
+                whOdoLine.setAssignFailReason(Constants.SOFT_ALLOCATION_FAIL);
                 int cnt = this.whOdoLineDao.saveOrUpdateByVersion(whOdoLine);
                 if (cnt <= 0) {
                     throw new BusinessException("剔除逻辑-更新出库单明细-失败");
@@ -582,6 +957,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
         if (0 == cnt) {
             whOdo.setOdoStatus(OdoStatus.ODO_NEW);
         }
+        whOdo.setAssignFailReason(Constants.SOFT_ALLOCATION_FAIL);
         whOdo.setWaveCode(null);
         int count = this.whOdoDao.saveOrUpdateByVersion(whOdo);
         if (count <= 0) {
@@ -664,9 +1040,9 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void createOdo(List<OdoGroup> groupList, Long ouId, Long userId) {
-        for (OdoGroup group : groupList) {
-            this.createOdo(group.getOdo(), group.getOdoLineList(), group.getTransportMgmt(), group.getWhOdoAddress(), group.getOdoVasList(), group.getLineSnList(), ouId, userId);
+    public void createOdo(List<OdoGroupCommand> groupList, Long ouId, Long userId) {
+        for (OdoGroupCommand group : groupList) {
+            this.createOdo(group.getOdo(), group.getOdoLineList(), group.getTransPortMgmt(), group.getWhOdoAddress(), group.getOdoInvoice(), group.getOdoInvoiceLineList(), ouId, userId);
         }
 
     }
@@ -796,7 +1172,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
      * @return
      */
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public List<OdoCommand> getWhOdoListById(List<Long> odoIdList, Long ouId){
+    public List<OdoCommand> getWhOdoListById(List<Long> odoIdList, Long ouId) {
         return whOdoDao.getWhOdoListById(odoIdList, ouId);
     }
 
@@ -804,6 +1180,23 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<WhOdo> findByExtCodeOuIdNotCancel(String extOdoCode, Long ouId) {
         return this.whOdoDao.findByExtCodeOuIdNotCancel(extOdoCode, ouId);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public WhOdo findByExtCodeStoreIdOuId(String extCode, Long storeId, Long ouId) {
+        WhOdo odo = new WhOdo();
+        odo.setExtCode(extCode);
+        odo.setStoreId(storeId);
+        odo.setOuId(ouId);
+        List<WhOdo> odoList = this.whOdoDao.findListByParamExt(odo);
+        if (odoList == null || odoList.size() == 0) {
+            return null;
+        }
+        if (odoList.size() > 1) {
+            throw new BusinessException(ErrorCodes.ODO_EXTCODE_ISEXIST);
+        }
+        return odoList.get(0);
     }
 
 

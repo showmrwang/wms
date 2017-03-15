@@ -154,10 +154,12 @@ public class StoreCommand extends BaseCommand {
      * 1.可用;2.已删除;0.禁用
      */
     private Integer lifecycle;
-    /** 入库单据反馈节点 */
+    /** 入库单据反馈节点 1:收货时反馈 2:上架时反馈*/
     private Integer inboundConfirmNode = 1;
-    /** 入库单据反馈类型 */
+    /** 入库反馈类型 1:按单反馈 2:按箱反馈*/
     private Integer inboundConfirmType = 1;
+    /** 入库反馈单据类型 1:按PO单反馈 2:按ASN单反馈*/
+    private Integer inboundConfirmOrderType = 1;
     
     /*
      * 用于全局表最后修改时间统一
@@ -499,6 +501,14 @@ public class StoreCommand extends BaseCommand {
 
 	public void setInboundConfirmType(Integer inboundConfirmType) {
 		this.inboundConfirmType = inboundConfirmType;
+	}
+
+	public Integer getInboundConfirmOrderType() {
+		return inboundConfirmOrderType;
+	}
+
+	public void setInboundConfirmOrderType(Integer inboundConfirmOrderType) {
+		this.inboundConfirmOrderType = inboundConfirmOrderType;
 	}
 
 }

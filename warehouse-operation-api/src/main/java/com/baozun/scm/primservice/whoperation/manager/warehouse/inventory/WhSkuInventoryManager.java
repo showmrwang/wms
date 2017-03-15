@@ -24,8 +24,11 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand
 import com.baozun.scm.primservice.whoperation.command.warehouse.ReplenishmentRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.command.wave.WhWaveLineCommand;
+import com.baozun.scm.primservice.whoperation.command.whinterface.inbound.WhInboundConfirmCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.AllocateStrategy;
 import com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentMsg;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
@@ -101,8 +104,20 @@ public interface WhSkuInventoryManager extends BaseManager {
 	void allocationInventoryByLine(WhWaveLineCommand whWaveLineCommand, List<AllocateStrategy> rules, Double qty, Warehouse wh, String logId);
 
 	void allocationInventoryByLineList(List<WhWaveLine> notHaveInvAttrLines, List<AllocateStrategy> rules, Long skuId, Long storeId, Long invStatusId, Warehouse wh, String logId);
-
+	
+	/**
+	 * 根据出库单Id清除库存
+	 * @author kai.zhu
+	 * @version 2017年3月14日
+	 */
 	void releaseInventoryByOdoId(Long odoId, Warehouse wh);
+	
+	/**
+	 * 根据占用码清除库存
+	 * @author kai.zhu
+	 * @version 2017年3月14日
+	 */
+	void releaseInventoryByOccupyCode(String occupyCode, Warehouse wh);
 	
 	/**
      * 根据参数查询出库存信息
@@ -200,4 +215,12 @@ public interface WhSkuInventoryManager extends BaseManager {
      * @param turnoverBoxId
      */
     public void replenishmentContainerInventory(Long operationId,Long ouId,Long outerContainerId,Long insideContainerId,Long turnoverBoxId,Boolean isTabbInvTotal,Long userId,String workCode);
+    
+    /**
+     * 获取入库反馈信息实体
+     * @author kai.zhu
+     * @version 2017年3月13日
+     */
+	WhInboundConfirmCommand findInventoryByPo(WhPo po, List<WhPoLine> lineList, Long ouId);
+	
 }

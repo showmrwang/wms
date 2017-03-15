@@ -12,6 +12,7 @@ import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhPoTransportMgmt;
 
 public interface CreatePoAsnManagerProxy extends BaseManager {
 
@@ -154,7 +155,8 @@ public interface CreatePoAsnManagerProxy extends BaseManager {
 	 * 创建上位系统传入的Po
 	 * @author kai.zhu
 	 * @version 2017年3月3日
+	 * @param whPoTm 
 	 */
-	void createPoByExt(WhPo whPo, List<WhPoLine> whPoLines, Long ouId);
+	void createPoByExt(WhPo whPo, WhPoTransportMgmt whPoTm, List<WhPoLine> whPoLines, Long ouId);
 
 }

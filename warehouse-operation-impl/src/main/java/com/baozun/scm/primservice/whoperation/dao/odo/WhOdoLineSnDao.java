@@ -25,22 +25,22 @@ import lark.common.dao.QueryCondition;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
 
-import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLineAttrSn;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLineSn;
 
-public interface WhOdoLineAttrSnDao extends BaseDao<WhOdoLineAttrSn, Long> {
+public interface WhOdoLineSnDao extends BaseDao<WhOdoLineSn, Long> {
 
 
     @QueryPage("findListCountByQueryMap")
-    Pagination<WhOdoLineAttrSn> findListByQueryMapWithPage(Page page, Sort[] sorts, Map<String, Object> params);
+    Pagination<WhOdoLineSn> findListByQueryMapWithPage(Page page, Sort[] sorts, Map<String, Object> params);
 
     @QueryPage("queryCount")
-    Pagination<WhOdoLineAttrSn> query(Page page, Sort[] sorts, QueryCondition cond);
+    Pagination<WhOdoLineSn> query(Page page, Sort[] sorts, QueryCondition cond);
 
-    List<WhOdoLineAttrSn> query(QueryCondition cond);
+    List<WhOdoLineSn> query(QueryCondition cond);
 
     Long queryCount(QueryCondition cond);
 
     @CommonQuery
-    int saveOrUpdate(WhOdoLineAttrSn o);
+    int saveOrUpdate(WhOdoLineSn o);
 
 }

@@ -1,16 +1,16 @@
 /**
  * Copyright (c) 2013 Baozun All Rights Reserved.
- *
+ * 
  * This software is the confidential and proprietary information of Baozun. You shall not disclose
  * such Confidential Information and shall use it only in accordance with the terms of the license
  * agreement you entered into with Baozun.
- *
+ * 
  * BAOZUN MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT THE SUITABILITY OF THE SOFTWARE, EITHER
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT. BAOZUN SHALL NOT BE LIABLE FOR ANY DAMAGES
  * SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS SOFTWARE OR ITS
  * DERIVATIVES.
- *
+ * 
  */
 package com.baozun.scm.primservice.whoperation.command.warehouse;
 
@@ -22,7 +22,7 @@ import com.baozun.scm.primservice.whoperation.command.BaseCommand;
 /**
  * 
  * @author larkark
- *
+ * 
  */
 public class WhWorkCommand extends BaseCommand {
 
@@ -89,15 +89,47 @@ public class WhWorkCommand extends BaseCommand {
     /** 操作人ID */
     private Long operatorId;
     /** 是否启用 1:启用 0:停用 */
-    private Integer lifecycle;
-    /** url*/
+    private java.lang.Integer lifecycle;
+
+    /*-----------------自定义------------------*/
+    /** url */
     private String url;
-    /** 区域名称*/
+    /** 区域名称 */
     private String areaName;
-    /** 类型名称*/
+    /** 类型名称 */
     private String typeName;
+    /** 配货模式 */
+    private String distributionMode;
+    /** 拣货模式 */
+    private String pickingMode;
+    /** 复核模式 */
+    private String checkingMode;
 
     // columns END
+
+    public String getDistributionMode() {
+        return distributionMode;
+    }
+
+    public void setDistributionMode(String distributionMode) {
+        this.distributionMode = distributionMode;
+    }
+
+    public String getPickingMode() {
+        return pickingMode;
+    }
+
+    public void setPickingMode(String pickingMode) {
+        this.pickingMode = pickingMode;
+    }
+
+    public String getCheckingMode() {
+        return checkingMode;
+    }
+
+    public void setCheckingMode(String checkingMode) {
+        this.checkingMode = checkingMode;
+    }
 
     public java.lang.Long getId() {
         return id;

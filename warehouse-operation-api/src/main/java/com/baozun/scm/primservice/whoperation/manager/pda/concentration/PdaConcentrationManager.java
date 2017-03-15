@@ -4,17 +4,20 @@ import com.baozun.scm.primservice.whoperation.command.pda.collection.WorkCollect
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhFacilityRecPathCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSeedingCollectionCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhTemporaryStorageLocationCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 
 /**
  * PDA-集货
+ * 
  * @author jumbo
- *
+ * 
  */
 public interface PdaConcentrationManager extends BaseManager {
 
     /**
      * [业务方法] 插入集货表
+     * 
      * @param batch
      * @param workId
      * @param ouId
@@ -22,7 +25,17 @@ public interface PdaConcentrationManager extends BaseManager {
     void insertIntoSeedingCollection(String batch, Long workId, Long ouId);
 
     /**
+     * [业务方法] 插入复核台集货表
+     * 
+     * @param batch
+     * @param workId
+     * @param ouId
+     */
+    void insertIntoWorkingCollection(String batch, Long workId, Long ouId, WhWorkCommand work);
+
+    /**
      * [通用方法] 批次号, 组织id, 是否是最后一个拣货容器
+     * 
      * @param batch
      * @param ouId
      * @param isLastContainer
@@ -32,12 +45,14 @@ public interface PdaConcentrationManager extends BaseManager {
 
     /**
      * 出库集货-获取推荐暂存库位
+     * 
      * @return
      */
     WhTemporaryStorageLocationCommand getRecommendTemporaryStorageLocation(Long ouId);
 
     /**
      * 通过容器号获取集货状态
+     * 
      * @param containerCode
      * @param ouId
      * @return
@@ -46,19 +61,21 @@ public interface PdaConcentrationManager extends BaseManager {
 
     /**
      * 判断当前容器是否有推荐结果
+     * 
      * @param containerCode
      * @param ouId
-     * @param ouId 
+     * @param ouId
      */
     WhFacilityRecPathCommand checkContainerHaveRecommendResult(String containerCode, String batch, Long userId, Long ouId);
 
     /**
      * 判断是否达到可携带容量数量限制且小于播种墙容器上限
-     * @param facilityId	设施Id
-     * @param carryQty		已携带数量
-     * @param containerQty	功能定义数量
-     * @param upperLimit	播种墙上限
-     * @param batch			批次
+     * 
+     * @param facilityId 设施Id
+     * @param carryQty 已携带数量
+     * @param containerQty 功能定义数量
+     * @param upperLimit 播种墙上限
+     * @param batch 批次
      * @param ouId
      * @return
      */
@@ -66,18 +83,21 @@ public interface PdaConcentrationManager extends BaseManager {
 
     /**
      * 得到缓存里面的一条推荐结果
+     * 
      * @param batch
      */
     WhFacilityRecPathCommand popRecommendResultListHead(String batch, Long userId);
 
     /**
      * 得到人为集货缓存里面的一条推荐结果
+     * 
      * @param batch
      */
     WhFacilityRecPathCommand popManualRecommendResultListHead(Long userId);
 
     /**
      * 判断小批次是否全部移动到播种墙
+     * 
      * @param batch
      * @param ouId
      * @return
@@ -86,12 +106,14 @@ public interface PdaConcentrationManager extends BaseManager {
 
     /**
      * 移动容器
+     * 
      * @param destinationType
      */
     void updateContainerSkuInventory(WhFacilityRecPathCommand recCommand, Integer destinationType, Long ouId);
 
     /**
      * 记录容器到播种墙上集货信息
+     * 
      * @param containerCode
      * @param batch
      */
@@ -99,6 +121,7 @@ public interface PdaConcentrationManager extends BaseManager {
 
     /**
      * 清除集货推荐缓存
+     * 
      * @param batch
      * @param userId
      */
@@ -106,6 +129,7 @@ public interface PdaConcentrationManager extends BaseManager {
 
     /**
      * [业务方法] 获取推荐路径
+     * 
      * @param workCollectionCommand
      * @return RecFacilityPathCommand
      */
@@ -113,6 +137,7 @@ public interface PdaConcentrationManager extends BaseManager {
 
     /**
      * [业务方法] 获取目标位置
+     * 
      * @param command
      * @return
      */
@@ -120,6 +145,7 @@ public interface PdaConcentrationManager extends BaseManager {
 
     /**
      * [业务方法] 校验并且移动容器
+     * 
      * @param workCollectionCommand
      * @return targetPos$containerCode
      */
@@ -127,6 +153,7 @@ public interface PdaConcentrationManager extends BaseManager {
 
     /**
      * [业务方法] 校验并且记录库存
+     * 
      * @param workCollectionCommand
      * @return targetPos$containerCode
      */
@@ -134,12 +161,14 @@ public interface PdaConcentrationManager extends BaseManager {
 
     /**
      * [通用方法] 清理缓存: cache+userId, batch
+     * 
      * @param workCollectionCommand
      */
     void cleanCache(WorkCollectionCommand workCollectionCommand);
 
     /**
      * [通用方法] 补偿机制: cache+userId, batch
+     * 
      * @param workCollectionCommand
      */
     void compensationCache(WorkCollectionCommand workCollectionCommand);
@@ -158,6 +187,7 @@ public interface PdaConcentrationManager extends BaseManager {
 
     /**
      * 得到目的地类型
+     * 
      * @param destinationCode
      * @param ouId
      * @return
@@ -166,6 +196,7 @@ public interface PdaConcentrationManager extends BaseManager {
 
     /**
      * 容器移动到目的地
+     * 
      * @param containerCode
      * @param destinationCode
      * @param destinationType 目的地类型 1:播种墙 2:暂存库位 3:中转库位
@@ -177,6 +208,7 @@ public interface PdaConcentrationManager extends BaseManager {
 
     /**
      * 人为集货-应用系统推荐
+     * 
      * @param containerCode
      * @param userId
      * @param ouId
@@ -187,8 +219,11 @@ public interface PdaConcentrationManager extends BaseManager {
 
     /**
      * 通过推荐结果判断容器去哪
+     * 
      * @return
      */
     Integer checkDestinationByRecommendResult(WhFacilityRecPathCommand rec, Long ouId);
+
+
 
 }

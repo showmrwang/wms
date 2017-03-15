@@ -439,6 +439,8 @@ public final class Constants {
     public static final String CREATE_OUTBOUND_CARTON_SPLIT_REQUIRE_ERROR = "ERROR010";
     /** 出库单明细没有占用库存 */
     public static final String CREATE_OUTBOUND_CARTON_OCC_INVENTORY_ERROR = "ERROR011";
+    /** 软分配阶段失败 */
+    public static final String SOFT_ALLOCATION_FAIL = "ERROR012";
 
     public static final String ALLOCATE_STRATEGY_FIRSTINFIRSTOUT = "1"; // 先入先出
     public static final String ALLOCATE_STRATEGY_FIRSTINLASTOUT = "2"; // 先入后出
@@ -667,11 +669,11 @@ public final class Constants {
 
     /** 调编码生成器 出库箱推荐标识 */
     public static final String OUTBOUND_BOX_BATCH = "WMS_OUTBOUND_BOX_BATCH";
-    
+
     /** 对接系统系数来源 */
     public static final String DATA_SOURCE_WMS = "wms";
     public static final String DATA_SOURCE_PAC = "pac";
     public static final String DATA_SOURCE_HUB = "hub";
-    
+    public static final String COLLECTION_STATUS_10 = "10";
     
 }

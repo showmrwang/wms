@@ -4,9 +4,9 @@ import java.util.List;
 
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAddress;
-import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
-import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLineAttrSn;
-import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoInvoice;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoInvoiceLine;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLineSn;
 
 public class OdoGroupCommand extends BaseCommand {
     /**
@@ -15,12 +15,10 @@ public class OdoGroupCommand extends BaseCommand {
     private static final long serialVersionUID = 7375456505949641849L;
     /***/
     private OdoCommand odo;
-    /***/
+    /** 运输商 */
     private OdoTransportMgmtCommand transPortMgmt;
     /** 明细 */
-    private List<WhOdoLine> odoLineList;
-    /** 运输商 */
-    private WhOdoTransportMgmt transportMgmt;
+    private List<OdoLineCommand> odoLineList;
     /** 配送对象 */
     private WhOdoAddress WhOdoAddress;
     /***/
@@ -34,32 +32,52 @@ public class OdoGroupCommand extends BaseCommand {
     /***/
     private Long odoLineId;
 
-    private List<WhOdoLineAttrSn> lineSnList;
+    private List<WhOdoLineSn> lineSnList;
 
+    private WhOdoInvoice odoInvoice;
 
+    private List<WhOdoInvoiceLine> odoInvoiceLineList;
 
-    public List<WhOdoLineAttrSn> getLineSnList() {
+    private Boolean isWms;
+
+    public Boolean getIsWms() {
+        return isWms;
+    }
+
+    public void setIsWms(Boolean isWms) {
+        this.isWms = isWms;
+    }
+
+    public WhOdoInvoice getOdoInvoice() {
+        return odoInvoice;
+    }
+
+    public void setOdoInvoice(WhOdoInvoice odoInvoice) {
+        this.odoInvoice = odoInvoice;
+    }
+
+    public List<WhOdoInvoiceLine> getOdoInvoiceLineList() {
+        return odoInvoiceLineList;
+    }
+
+    public void setOdoInvoiceLineList(List<WhOdoInvoiceLine> odoInvoiceLineList) {
+        this.odoInvoiceLineList = odoInvoiceLineList;
+    }
+
+    public List<WhOdoLineSn> getLineSnList() {
         return lineSnList;
     }
 
-    public void setLineSnList(List<WhOdoLineAttrSn> lineSnList) {
+    public void setLineSnList(List<WhOdoLineSn> lineSnList) {
         this.lineSnList = lineSnList;
     }
 
-    public List<WhOdoLine> getOdoLineList() {
+    public List<OdoLineCommand> getOdoLineList() {
         return odoLineList;
     }
 
-    public void setOdoLineList(List<WhOdoLine> odoLineList) {
+    public void setOdoLineList(List<OdoLineCommand> odoLineList) {
         this.odoLineList = odoLineList;
-    }
-
-    public WhOdoTransportMgmt getTransportMgmt() {
-        return transportMgmt;
-    }
-
-    public void setTransportMgmt(WhOdoTransportMgmt transportMgmt) {
-        this.transportMgmt = transportMgmt;
     }
 
     public Long getOdoLineId() {

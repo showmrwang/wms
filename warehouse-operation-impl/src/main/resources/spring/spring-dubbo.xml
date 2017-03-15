@@ -107,6 +107,9 @@
 	<!-- Pda库间移动 -->
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.pda.work.PdaInventoryMoveWorkEntranceManager" ref="pdaInventoryMoveWorkEntranceManager" />
 	
+	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.pda.work.PdaInWarehouseMoveWorkManager" ref="pdaInWarehouseMoveWorkManager" />
+	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.pda.work.PdaInWarehouseMovePutawayManager" ref="pdaInWarehouseMovePutawayManager" />
+	
 	<!-- 业务规则配置 -->
    	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.WhDistributionPatternRuleManager"  ref="whDistributionPatternRuleManager" />
 	
@@ -126,7 +129,7 @@
 	<dubbo:reference id="pkManager" url="${dubbo.sac.server}" interface="com.baozun.scm.baseservice.sac.manager.PkManager"/>
 	
 	<dubbo:reference id="codeManager" url="${dubbo.sac.server}" interface="com.baozun.scm.baseservice.sac.manager.CodeManager"/>
-	<dubbo:reference url="${dubbo.local.server.print}" id="printObjectManagerProxy"  interface="com.baozun.scm.baseservice.print.manager.printObject.PrintObjectManagerProxy" check="false" />
+	<dubbo:reference url="dubbo://localhost:20895" id="printObjectManagerProxy"  interface="com.baozun.scm.baseservice.print.manager.printObject.PrintObjectManagerProxy" check="false" />
 	
 	
 
@@ -149,5 +152,6 @@
     <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.StoreManager" ref="storeManager" />
     
         <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.archiv.PoAsnArchivManager" ref="poAsnArchivManager" />
+        <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.archiv.OdoArchivManager" ref="odoArchivManager" />
 	
 </beans>

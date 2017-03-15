@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whinterface.dao.inbound.WhInboundDao">
+	<resultMap id="WhInboundResult" type="com.baozun.scm.primservice.whoperation.model.whinterface.inbound.WhInbound">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whInboundColumns">
+	    <![CDATA[
+	        	id as id,
+	        	uuid as uuid,
+	        	ext_po_code as extPoCode,
+	        	ext_code as extCode,
+	        	customer_code as customerCode,
+	        	store_code as storeCode,
+	        	from_location as fromLocation,
+	        	to_location as toLocation,
+	        	eta as eta,
+	        	wh_code as whCode,
+	        	po_type as poType,
+	        	ext_po_type as extPoType,
+	        	is_iqc as isIqc,
+	        	qty_planned as qtyPlanned,
+	        	ctn_planned as ctnPlanned,
+	        	ext_memo as extMemo,
+	        	data_source as dataSource,
+	        	status as status,
+	        	error_count as errorCount,
+	        	create_time as createTime,
+	        	last_modify_time as lastModifyTime
+	    ]]>
+	</sql>
+	
+		<!-- 如果有自增字段 -->
+		
+			<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+			<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.whinterface.inbound.WhInbound" 
+			 useGeneratedKeys="true" keyProperty="id"
+			 flushCache="true">
+		    <![CDATA[
+		        INSERT INTO
+		        t_wh_inbound (
+		        	uuid ,
+		        	ext_po_code ,
+		        	ext_code ,
+		        	customer_code ,
+		        	store_code ,
+		        	from_location ,
+		        	to_location ,
+		        	eta ,
+		        	wh_code ,
+		        	po_type ,
+		        	ext_po_type ,
+		        	is_iqc ,
+		        	qty_planned ,
+		        	ctn_planned ,
+		        	ext_memo ,
+		        	data_source ,
+		        	status ,
+		        	error_count ,
+		        	create_time ,
+		        	last_modify_time 
+		        ) VALUES (
+		        	#{uuid,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{extPoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{extCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{customerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{storeCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{fromLocation,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{toLocation,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{eta,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{whCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{poType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{extPoType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{isIqc,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	#{qtyPlanned,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+		        	#{ctnPlanned,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{extMemo,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{dataSource,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{errorCount,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} 
+		        )
+		    ]]>
+
+		</insert>
+		
+		
+		<update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.whinterface.inbound.WhInbound">
+	    <![CDATA[
+	        UPDATE t_wh_inbound SET
+		        uuid = #{uuid,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        ext_po_code = #{extPoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        ext_code = #{extCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        customer_code = #{customerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        store_code = #{storeCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        from_location = #{fromLocation,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        to_location = #{toLocation,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        eta = #{eta,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        wh_code = #{whCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        po_type = #{poType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        ext_po_type = #{extPoType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        is_iqc = #{isIqc,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        qty_planned = #{qtyPlanned,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+		        ctn_planned = #{ctnPlanned,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        ext_memo = #{extMemo,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        data_source = #{dataSource,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        status = #{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        error_count = #{errorCount,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        last_modify_time = now() 
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+		</update>
+	   <delete id="delete" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from t_wh_inbound where
+		        id = #{id} 
+	    ]]>
+	    </delete> 
+	    
+	     <delete id="deleteByIds" parameterType="list">
+	    
+	        delete from t_wh_inbound 
+	        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>	
+	  
+	    </delete>  
+	         
+	    <select id="findById" parameterType="java.lang.Long" resultMap="WhInboundResult" flushCache="false">
+			select <include refid="whInboundColumns" />
+		    <![CDATA[
+			    from t_wh_inbound 
+		        where 
+		        id = #{id} 
+		    ]]>
+		</select>	
+		<select id="getByIds" parameterType="list"  resultMap="WhInboundResult" flushCache="false">
+			select <include refid="whInboundColumns" />
+			    from t_wh_inbound 
+		        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>					
+		</select>	
+	<sql id="whInboundDynamicWhere">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+	       
+		       <if test="uuid!=null and uuid!=''">
+					and uuid = #{uuid}
+				</if>
+	       
+	       
+		       <if test="extPoCode!=null and extPoCode!=''">
+					and ext_po_code = #{extPoCode}
+				</if>
+	       
+	       
+		       <if test="extCode!=null and extCode!=''">
+					and ext_code = #{extCode}
+				</if>
+	       
+	       
+		       <if test="customerCode!=null and customerCode!=''">
+					and customer_code = #{customerCode}
+				</if>
+	       
+	       
+		       <if test="storeCode!=null and storeCode!=''">
+					and store_code = #{storeCode}
+				</if>
+	       
+	       
+		       <if test="fromLocation!=null and fromLocation!=''">
+					and from_location = #{fromLocation}
+				</if>
+	       
+	       
+		       <if test="toLocation!=null and toLocation!=''">
+					and to_location = #{toLocation}
+				</if>
+	       
+				<if test="eta!=null">
+					and eta = #{eta}
+				</if>
+	       
+	       
+		       <if test="whCode!=null and whCode!=''">
+					and wh_code = #{whCode}
+				</if>
+	       
+	       
+		       <if test="poType!=null and poType!=''">
+					and po_type = #{poType}
+				</if>
+				
+		       <if test="extPoType!=null and extPoType!=''">
+					and ext_po_type = #{extPoType}
+				</if>
+	       
+				<if test="isIqc!=null">
+					and is_iqc = #{isIqc}
+				</if>
+	       
+				<if test="qtyPlanned!=null">
+					and qty_planned = #{qtyPlanned}
+				</if>
+	       
+				<if test="ctnPlanned!=null">
+					and ctn_planned = #{ctnPlanned}
+				</if>
+	       
+	       
+		       <if test="extMemo!=null and extMemo!=''">
+					and ext_memo = #{extMemo}
+				</if>
+	       
+	       
+		       <if test="dataSource!=null and dataSource!=''">
+					and data_source = #{dataSource}
+				</if>
+	       
+				<if test="status!=null">
+					and status = #{status}
+				</if>
+	       
+				<if test="errorCount!=null">
+					and error_count = #{errorCount}
+				</if>
+	       
+				<if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+		</where>
+	</sql>
+	
+
+	<select id="getCount" resultType="long">
+        select count(*) from t_wh_inbound 
+    </select>
+    <select id="findListCountByQueryMap" resultType="long">
+        select count(*) from t_wh_inbound 
+		<include refid="whInboundDynamicWhere"/>    
+    </select>
+    
+    <select id="findListCountByParam" resultType="long">
+        select count(*) from t_wh_inbound 
+		<include refid="whInboundDynamicWhere"/>    
+    </select>
+    
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPage" resultMap="WhInboundResult">
+    	select <include refid="whInboundColumns" />
+	    from t_wh_inbound 
+		<include refid="whInboundDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByQueryMap" resultMap="WhInboundResult">
+    	select <include refid="whInboundColumns" />
+	    from t_wh_inbound 
+		<include refid="whInboundDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByParam" resultMap="WhInboundResult">
+    	select <include refid="whInboundColumns" />
+	    from t_wh_inbound 
+		<include refid="whInboundDynamicWhere"/>
+		
+    </select>
+
+	
+</mapper>

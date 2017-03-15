@@ -93,5 +93,19 @@ public interface PdaManMadePutawayManager extends BaseManager{
    * @return
    */
   public Double  manMadeCalculateBarCode(String skuBarCode,Double skuQty,Long ouId,PdaManMadePutawayCommand manMadePutawayCommand);
+  
+  
+  /***
+   * 取消流程
+   * @param outerContainerCode
+   * @param insideContainerCode
+   * @param skuId
+   * @param cancelPattern
+   */
+  public void cancelPattern(String outerContainerCode,String insideContainerCode,int cancelPattern,Long ouId,Long locationId,int putawayPatternDetailType);
+  
+  
+  
+  public Boolean isTrackVessel(Long ouId,Long locationId);
 
 }

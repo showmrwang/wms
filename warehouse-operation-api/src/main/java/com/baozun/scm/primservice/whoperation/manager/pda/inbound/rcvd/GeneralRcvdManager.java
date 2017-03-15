@@ -252,4 +252,21 @@ public interface GeneralRcvdManager extends BaseManager {
      * @return
      */
     Map<String, SysDictionary> findSysDictionaryByRedisExt(Map<String, List<String>> sysDictionaryList);
+
+    /**
+     * 从缓存中获取超收比例
+     * 
+     * @param occupationId
+     * @param ouId
+     * @return
+     */
+    Double getRedisOverChargeRate(Long occupationId, Long ouId);
+
+    /**
+     * 刷新ASN缓存操作
+     * 
+     * @param occupationId
+     * @param ouId
+     */
+    void freshAsnCacheForGeneralReceiving(Long occupationId, Long ouId);
 }

@@ -102,6 +102,11 @@ public class WhOdo extends BaseModel {
     /** 配货模式码 */
     private String distributionCode;
 
+    /** 当前月份 用于归档 */
+    private String sysDate;
+    /** 归档时间 */
+    private Date archivTime;
+
     public String getDistributionCode() {
         return distributionCode;
     }
@@ -396,6 +401,22 @@ public class WhOdo extends BaseModel {
 
     public void setIsAllowMerge(Boolean isAllowMerge) {
         this.isAllowMerge = isAllowMerge;
+    }
+
+    public String getSysDate() {
+        return sysDate;
+    }
+
+    public void setSysDate(String sysDate) {
+        this.sysDate = sysDate;
+    }
+
+    public Date getArchivTime() {
+        return archivTime;
+    }
+
+    public void setArchivTime(Date archivTime) {
+        this.archivTime = archivTime;
     }
 
 }

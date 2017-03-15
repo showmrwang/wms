@@ -1,5 +1,7 @@
 package com.baozun.scm.primservice.whoperation.manager.odo.manager;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -23,11 +25,14 @@ import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoVasDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.InventoryStatusDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
+import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
+import com.baozun.scm.primservice.whoperation.model.warehouse.InventoryStatus;
 
 @Service("odoLineManager")
 @Transactional
@@ -38,6 +43,8 @@ public class OdoLineManagerImpl extends BaseManagerImpl implements OdoLineManage
     private WhOdoVasDao whOdoVasDao;
     @Autowired
     private WhOdoDao whOdoDao;
+    @Autowired
+    private InventoryStatusDao inventoryStatusDao;
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
@@ -81,6 +88,30 @@ public class OdoLineManagerImpl extends BaseManagerImpl implements OdoLineManage
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public Pagination<OdoLineCommand> findOdoLineListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params) {
         Pagination<OdoLineCommand> pages = this.whOdoLineDao.findListByQueryMapWithPageExt(page, sorts, params);
+        List<OdoLineCommand> odoLineList = pages.getItems();
+        if (odoLineList != null && odoLineList.size() > 0) {
+            // 库存状态
+            InventoryStatus status = new InventoryStatus();
+            status.setLifecycle(1);
+            List<InventoryStatus> invStatusList = this.inventoryStatusDao.findListByParam(status);
+            Map<Long, String> invStatusMap = new HashMap<Long, String>();
+            // 出库单明细状态
+            Set<String> dic1 = new HashSet<String>();
+            for (InventoryStatus s : invStatusList) {
+                invStatusMap.put(s.getId(), s.getName());
+            }
+            for (OdoLineCommand odo : odoLineList) {
+                odo.setInvStatusName(invStatusMap.get(odo.getInvStatus()));
+                dic1.add(odo.getOdoLineStatus());
+            }
+            Map<String, List<String>> map = new HashMap<String, List<String>>();
+            map.put(Constants.ODO_LINE_STATUS, new ArrayList<String>(dic1));
+            Map<String, SysDictionary> dicMap = this.findSysDictionaryByRedis(map);
+            for (OdoLineCommand odoline : odoLineList) {
+                SysDictionary sys = dicMap.get(Constants.ODO_LINE_STATUS + "_" + odoline.getOdoLineStatus());
+                odoline.setOdoLineStatusName(sys == null ? odoline.getOdoLineStatus() : sys.getDicLabel());
+            }
+        }
         return pages;
     }
 
@@ -115,6 +146,9 @@ public class OdoLineManagerImpl extends BaseManagerImpl implements OdoLineManage
                 }
             }
             odo = this.getSummaryByOdolineList(odo);
+            if (OdoStatus.ODO_TOBECREATED.equals(odo.getOdoStatus())) {
+                odo.setOdoStatus(OdoStatus.ODO_NEW);
+            }
             int updateOdoCount = this.whOdoDao.saveOrUpdateByVersion(odo);
             if (updateOdoCount <= 0) {
                 throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
@@ -169,9 +203,6 @@ public class OdoLineManagerImpl extends BaseManagerImpl implements OdoLineManage
         odo.setSkuNumberOfPackages(skuNumberOfPackages);
         odo.setIncludeFragileCargo(isFragile);
         odo.setIncludeHazardousCargo(isHazardous);
-        if (OdoStatus.ODO_TOBECREATED.equals(odo.getOdoStatus())) {
-            odo.setOdoStatus(OdoStatus.ODO_NEW);
-        }
 
         // 设置允许合并与否
         odo.setIsAllowMerge(false);

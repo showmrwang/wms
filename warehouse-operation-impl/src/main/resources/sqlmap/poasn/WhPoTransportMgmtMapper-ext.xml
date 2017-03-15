@@ -113,4 +113,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
 	</sql>
 	
+	<select id="findWhPoTransportMgmtByPoId" resultMap="WhPoTransportMgmtResultExt">
+    	select <include refid="whPoTransportMgmtColumnsExt" />
+		    from 
+		    t_wh_po_transport_mgmt
+			where 
+			po_id = #{poid}
+			<if test="ouid!=null">
+		   			and ou_id = #{ouid}
+			</if>
+    </select>
+	
 </mapper>

@@ -3,12 +3,12 @@
         PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
 
-<mapper namespace="com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineAttrSnDao">
-    <resultMap id="WhOdoLineAttrSnResultExt" type="com.baozun.scm.primservice.whoperation.model.odo.WhOdoLineAttrSn">
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineSnDao">
+    <resultMap id="WhOdoLineSnResultExt" type="com.baozun.scm.primservice.whoperation.model.odo.WhOdoLineSn">
     </resultMap>
 
     <!-- 用于select查询公用抽取的列 -->
-    <sql id="whOdoLineAttrSnColumnsExt">
+    <sql id="WhOdoLineSnColumnsExt">
         <![CDATA[
                 id as id,
                 odo_line_id as odoLineId,
@@ -20,7 +20,7 @@
         ]]>
     </sql>
 
-    <sql id="whOdoLineAttrSnDynamicWhereExt">
+    <sql id="WhOdoLineSnDynamicWhereExt">
         <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
         <where>
 

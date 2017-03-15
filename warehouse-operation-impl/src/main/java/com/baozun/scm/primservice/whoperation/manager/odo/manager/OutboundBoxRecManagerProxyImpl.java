@@ -554,6 +554,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                     }
                     // 查询容器辅助表容器获取商品数量，一个明细内占用的整托整箱，只有一种商品，所以只有一个包裹
                     List<ContainerAssist> outerContainerAssistList = outboundBoxRecManager.findContainerAssistById(outerContainerIdList, ouId);
+                    //TODO 容器辅助表的数据需要重新计算
                     for (ContainerAssist outerContainerAssist : outerContainerAssistList) {
                         WhOdoOutBoundBoxCommand odoOutBoundBoxCommand = new WhOdoOutBoundBoxCommand();
                         odoOutBoundBoxCommand.setQty(outerContainerAssist.getSkuQty().doubleValue());
@@ -591,6 +592,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                     }
                     // 查询容器辅助表容器的数量
                     List<ContainerAssist> innerContainerAssistList = outboundBoxRecManager.findContainerAssistById(innerContainerIdList, ouId);
+                    //TODO 容器辅助表的数据需要重新计算
                     for (ContainerAssist innerContainerAssist : innerContainerAssistList) {
                         WhOdoOutBoundBoxCommand odoOutBoundBoxCommand = new WhOdoOutBoundBoxCommand();
                         odoOutBoundBoxCommand.setQty(innerContainerAssist.getSkuQty().doubleValue());
@@ -890,7 +892,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
             if (null == odoLineAvailableBoxListMap.get(odoLine) || odoLineAvailableBoxListMap.get(odoLine).isEmpty()) {
                 // 添加到下一个匹配范围
                 unmatchedBoxOdoLineList.add(odoLine);
-                // 收藏当前的分配列表移除
+                // 从当前的分配列表移除
                 odoLineList.remove(odoLine);
             }
         }
@@ -933,23 +935,23 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                 if (0 == odoLine.getQty()) {
                     odoLineIterator.remove();
                 }
-                // 箱子不为空的
-                if (!odoLineOutBoundBoxMap.isEmpty()) {
-                    // 出库箱装箱包裹列表
-                    List<WhOdoOutBoundBoxCommand> newBoxOdoOutboundBoxList = new ArrayList<>();
-                    // 创建出库箱编码，设置包裹的出库箱编码
-                    String outboundBoxCode = this.codeManager.generateCode(Constants.WMS, Constants.OUTBOUNDBOX_CODE, null, null, null);
-                    for (WhOdoOutBoundBoxCommand odoOutBoundBox : odoLineOutBoundBoxMap.values()) {
-                        odoOutBoundBox.setOutbounxboxTypeCode(outboundBoxCode);
-                        newBoxOdoOutboundBoxList.add(odoOutBoundBox);
-                    }
-                    // 将明细包裹放入箱子
-                    newBox.setOdoOutBoundBoxCommandList(newBoxOdoOutboundBoxList);
-                    // 将箱子添加到箱子列表
-                    packingBoxList.add(newBox);
-
-                }
             }// end-while 遍历明细，试着将明细的商品放入出库箱
+            // 箱子不为空的
+            if (!odoLineOutBoundBoxMap.isEmpty()) {
+                // 出库箱装箱包裹列表
+                List<WhOdoOutBoundBoxCommand> newBoxOdoOutboundBoxList = new ArrayList<>();
+                // 创建出库箱编码，设置包裹的出库箱编码
+                String outboundBoxCode = this.codeManager.generateCode(Constants.WMS, Constants.OUTBOUNDBOX_CODE, null, null, null);
+                for (WhOdoOutBoundBoxCommand odoOutBoundBox : odoLineOutBoundBoxMap.values()) {
+                    odoOutBoundBox.setOutbounxboxTypeCode(outboundBoxCode);
+                    newBoxOdoOutboundBoxList.add(odoOutBoundBox);
+                }
+                // 将明细包裹放入箱子
+                newBox.setOdoOutBoundBoxCommandList(newBoxOdoOutboundBoxList);
+                // 将箱子添加到箱子列表
+                packingBoxList.add(newBox);
+
+            }
         }// end-while 分配出库箱装箱
         return unmatchedBoxOdoLineList;
     }
@@ -1551,6 +1553,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                     }
                     // 查询容器辅助表容器获取商品数量，一个明细内占用的整托整箱，只有一种商品
                     List<ContainerAssist> outerContainerAssistList = outboundBoxRecManager.findContainerAssistById(outerContainerIdList, ouId);
+                    //TODO 容器辅助表的数据需要重新计算
                     for (ContainerAssist outerContainerAssist : outerContainerAssistList) {
                         WhOdoOutBoundBoxCommand odoOutBoundBoxCommand = new WhOdoOutBoundBoxCommand();
                         odoOutBoundBoxCommand.setQty(outerContainerAssist.getSkuQty().doubleValue());
@@ -1588,6 +1591,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                     }
                     // 查询容器辅助表容器的数量
                     List<ContainerAssist> innerContainerAssistList = outboundBoxRecManager.findContainerAssistById(innerContainerIdList, ouId);
+                    //TODO 容器辅助表的数据需要重新计算
                     for (ContainerAssist innerContainerAssist : innerContainerAssistList) {
                         WhOdoOutBoundBoxCommand odoOutBoundBoxCommand = new WhOdoOutBoundBoxCommand();
                         odoOutBoundBoxCommand.setQty(innerContainerAssist.getSkuQty().doubleValue());

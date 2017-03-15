@@ -1,7 +1,6 @@
 package com.baozun.scm.primservice.whoperation.manager.odo.wave;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -133,7 +132,7 @@ public class WhWaveLineManagerImpl extends BaseManagerImpl implements WhWaveLine
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void deleteWaveLinesByOdoId(Long odoId, Long waveId, Long ouId, String reason) {
+    public WhOdo deleteWaveLinesByOdoId(Long odoId, Long waveId, Long ouId, String reason) {
         // 1.修改出库单明细waveCode为空
         int num = whOdoLineDao.updateOdoLineByAllocateFail(odoId, reason, ouId);
         if (0 == num) {
@@ -151,6 +150,7 @@ public class WhWaveLineManagerImpl extends BaseManagerImpl implements WhWaveLine
         Map<Long, String> odoIdCounterCodeMap = new HashMap<Long, String>();
         odoIdCounterCodeMap.put(odoId, odo.getCounterCode());
         distributionModeArithmeticManagerProxy.addToPool(odoIdCounterCodeMap);
+        return odo;
     }
     
     @Override

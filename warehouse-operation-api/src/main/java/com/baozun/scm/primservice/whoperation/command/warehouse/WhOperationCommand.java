@@ -29,42 +29,42 @@ public class WhOperationCommand extends BaseModel {
 	
     private static final long serialVersionUID = -8165493664871702794L;
     
-	//columns START
+    //columns START
     /** 主键ID */
     private java.lang.Long id;
     /** 作业号 */
-	private java.lang.String code;
-	/** 状态 */
+    private java.lang.String code;
+    /** 状态 */
     private java.lang.Integer status;
-	/** 工作ID */
-	private java.lang.Long workId;
-	/** 仓库组织ID */
-	private java.lang.Long ouId;
-	/** 工作类型编码 */
-	private java.lang.String workType;
-	/** 工作类别编码 */
-	private java.lang.String workCategory;
-	/** 优先级 */
-	private java.lang.Integer workPriority;
-	/** 小批次 */
-	private java.lang.String batch;
-	/** 操作开始时间 */
-	private java.util.Date startTime;
-	/** 操作结束时间 */
-	private java.util.Date finishTime;
-	/** 波次ID */
-	private java.lang.Long waveId;
-	/** 波次号 */
-	private java.lang.String waveCode;
-	/** 订单号 */
-	private java.lang.String orderCode;
-	/** 库位 */
-	private java.lang.String locationCode;
-	/** 托盘 */
-	private java.lang.String outerContainerCode;
-	/** 容器 */
-	private java.lang.String containerCode;
-	/** 是否整托整箱 */
+    /** 工作ID */
+    private java.lang.Long workId;
+    /** 仓库组织ID */
+    private java.lang.Long ouId;
+    /** 工作类型编码 */
+    private java.lang.String workType;
+    /** 工作类别编码 */
+    private java.lang.String workCategory;
+    /** 优先级 */
+    private java.lang.Integer workPriority;
+    /** 小批次 */
+    private java.lang.String batch;
+    /** 操作开始时间 */
+    private java.util.Date startTime;
+    /** 操作结束时间 */
+    private java.util.Date finishTime;
+    /** 波次ID */
+    private java.lang.Long waveId;
+    /** 波次号 */
+    private java.lang.String waveCode;
+    /** 订单号 */
+    private java.lang.String orderCode;
+    /** 库位 */
+    private java.lang.String locationCode;
+    /** 托盘 */
+    private java.lang.String outerContainerCode;
+    /** 容器 */
+    private java.lang.String containerCode;
+    /** 是否整托整箱 */
     private java.lang.Boolean isWholeCase;
     /** 是否短拣 */
     private java.lang.Boolean isShortPicking;
@@ -74,20 +74,19 @@ public class WhOperationCommand extends BaseModel {
     private java.lang.Boolean isWaveReplenish;
     /** 是否拣货库存待移入 */
     private java.lang.Boolean isPickingTobefilled;
-	/** 创建时间 */
-	private java.util.Date createTime;
-	/** 最后操作时间 */
-	private java.util.Date lastModifyTime;
-	/** 创建人ID */
-	private java.lang.Long createdId;
-	/** 修改人ID */
-	private java.lang.Long modifiedId;
-	/** 操作人ID */
-	private java.lang.Long operatorId;
-	/** 是否启用 1:启用 0:停用 */
-	private java.lang.Integer lifecycle;
-	
-	//columns END
+    /** 创建时间 */
+    private java.util.Date createTime;
+    /** 最后操作时间 */
+    private java.util.Date lastModifyTime;
+    /** 创建人ID */
+    private java.lang.Long createdId;
+    /** 修改人ID */
+    private java.lang.Long modifiedId;
+    /** 操作人ID */
+    private java.lang.Long operatorId;
+    /** 是否启用 1:启用 0:停用 */
+    private java.lang.Integer lifecycle;
+    //columns END
 
 	public java.lang.String getCode() {
 	    return code;
@@ -312,5 +311,6 @@ public class WhOperationCommand extends BaseModel {
     public void setIsPickingTobefilled(java.lang.Boolean isPickingTobefilled) {
         this.isPickingTobefilled = isPickingTobefilled;
     }
+    
 }
 
