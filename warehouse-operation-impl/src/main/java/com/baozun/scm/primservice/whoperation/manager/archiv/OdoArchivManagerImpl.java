@@ -22,6 +22,7 @@ import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineAttrDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineSnDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoTransportMgmtDao;
+import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoVasDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
@@ -33,6 +34,7 @@ import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLineAttr;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLineSn;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoVas;
 import com.baozun.scm.primservice.whoperation.util.DateUtil;
 
 /***
@@ -67,6 +69,8 @@ public class OdoArchivManagerImpl implements OdoArchivManager {
     private WhOdoLineAttrDao whOdoLineAttrDao;
     @Autowired
     private WhOdoTransportMgmtDao whOdoTransportMgmtDao;
+    @Autowired
+    private WhOdoVasDao whOdoVasDao;
 
     /***
      * 归档仓库Odo信息
@@ -92,7 +96,7 @@ public class OdoArchivManagerImpl implements OdoArchivManager {
             whOdo.setArchivTime(new Date());
             int odo = odoArchivDao.archivWhOdo(whOdo);
             count += odo;
-            // 归档odoLine+odoLineSn+odoLineAttr
+            // 归档odoLine+odoLineSn+odoLineAttr+odoVasByOdoLine
             count = archivWhOdoLine(odoid, ouid, sysDate, count);
             // 归档odoAddress
             count = archivWhOdoAddress(odoid, ouid, sysDate, count);
@@ -102,6 +106,8 @@ public class OdoArchivManagerImpl implements OdoArchivManager {
             count = archivWhOdoInvoice(odoid, ouid, sysDate, count);
             // 归档odoTransportMgmt
             count = archivWhOdoTransportMgmt(odoid, ouid, sysDate, count);
+            // 归档odoVas by odoid
+            count = archivWhOdoVas(odoid, ouid, sysDate, count);
         } catch (Exception e) {
             log.error("OdoArchivManagerImpl archivOdo error" + e);
             throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
@@ -110,7 +116,7 @@ public class OdoArchivManagerImpl implements OdoArchivManager {
     }
 
     /**
-     * 归档odoLine+odoLineSn+odoLineAttr
+     * 归档odoLine+odoLineSn+odoLineAttr+odoVasByOdoLine
      * 
      * @param odoid
      * @param ouid
@@ -141,6 +147,14 @@ public class OdoArchivManagerImpl implements OdoArchivManager {
                 odoLineAttr.setSysDate(sysDate);
                 int ola = odoArchivDao.archivWhOdoLineAttr(odoLineAttr);
                 count += ola;
+            }
+            // 查询odoVas数据by OdoLine
+            List<WhOdoVas> odoVasList = whOdoVasDao.findOdoVasByOdoIdOdoLineIdType(null, ol.getId(), null, ouid);
+            for (WhOdoVas whOdoVas : odoVasList) {
+                // 有数据插入WhOdoVasArchiv
+                whOdoVas.setSysDate(sysDate);
+                int ov = odoArchivDao.archivWhOdoVas(whOdoVas);
+                count += ov;
             }
         }
         return count;
@@ -234,6 +248,27 @@ public class OdoArchivManagerImpl implements OdoArchivManager {
             whOdoTransportMgmt.setSysDate(sysDate);
             int otm = odoArchivDao.archivWhOdoTransportMgmt(whOdoTransportMgmt);
             count += otm;
+        }
+        return count;
+    }
+
+    /**
+     * 归档OdoVas by odoid
+     * 
+     * @param odoid
+     * @param ouid
+     * @param sysDate
+     * @param count
+     * @return
+     */
+    private int archivWhOdoVas(Long odoid, Long ouid, String sysDate, int count) {
+        // 查询odoVas数据by OdoLine
+        List<WhOdoVas> odoVasList = whOdoVasDao.findOdoVasByOdoIdOdoLineIdType(odoid, null, null, ouid);
+        for (WhOdoVas whOdoVas : odoVasList) {
+            // 有数据插入WhOdoVasArchiv
+            whOdoVas.setSysDate(sysDate);
+            int ov = odoArchivDao.archivWhOdoVas(whOdoVas);
+            count += ov;
         }
         return count;
     }

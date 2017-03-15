@@ -555,4 +555,51 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
                 )
             ]]>
     </insert>
+    
+        <insert id="archivWhOdoVas" parameterType="com.baozun.scm.primservice.whoperation.model.odo.WhOdoVas" flushCache="true">
+        <![CDATA[
+                INSERT INTO
+                t_wh_odo_vas_archiv${sysDate} (
+                    id,
+                    odo_id ,
+                    odo_line_id ,
+                    vas_type ,
+                    wh_vas_type ,
+                    express_vas_type ,
+                    print_templet ,
+                    sku_bar_code ,
+                    content ,
+                    carton_no ,
+                    qty ,
+                    amt ,
+                    mode_of_payment ,
+                    vas_attr1 ,
+                    vas_attr2 ,
+                    vas_attr3 ,
+                    vas_attr4 ,
+                    vas_attr5 ,
+                    ou_id 
+                ) VALUES (
+                    #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{odoLineId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{vasType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{whVasType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{expressVasType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{printTemplet,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{skuBarCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{content,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{cartonNo,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{qty,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{amt,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{modeOfPayment,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{vasAttr1,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{vasAttr2,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{vasAttr3,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{vasAttr4,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{vasAttr5,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+                )
+            ]]>
+    </insert>
 </mapper>

@@ -25,6 +25,7 @@ import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLineAttr;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLineSn;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoVas;
 
 
 
@@ -101,5 +102,13 @@ public interface OdoArchivDao extends BaseDao<WhOdo, Long> {
      * @return
      */
     int archivWhOdoTransportMgmt(WhOdoTransportMgmt whOdoTransportMgmt);
+
+    /**
+     * 归档whOdoVas
+     * 
+     * @param whOdoVas
+     * @return
+     */
+    int archivWhOdoVas(WhOdoVas whOdoVas);
 
 }
