@@ -2731,6 +2731,12 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
             // 出库箱是否可用计算器
             SimpleCubeCalculator outboundBoxCalculator = new SimpleCubeCalculator(box.getLength(), box.getWidth(), box.getHigh(), SimpleCubeCalculator.SYS_UOM, Constants.OUTBOUND_BOX_AVAILABILITY, this.getLenUomConversionRate());
             for (OdoLineCommand odoLine : odoLineList) {
+                List<OutInvBoxTypeCommand> odoLineAvailableBoxList = odoLineAvailableBoxListMap.get(odoLine);
+                if (null == odoLineAvailableBoxList) {
+                    odoLineAvailableBoxList = new ArrayList<>();
+                    odoLineAvailableBoxListMap.put(odoLine, odoLineAvailableBoxList);
+                }
+
                 // 出库单明细的商品
                 SkuRedisCommand skuRedisCommand = skuRedisManager.findSkuMasterBySkuId(odoLine.getSkuId(), ouId, logId);
                 Sku sku = skuRedisCommand.getSku();
@@ -2738,11 +2744,6 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                 outboundBoxCalculator.initStuffCube(sku.getLength(), sku.getWidth(), sku.getHeight(), SimpleCubeCalculator.SYS_UOM);
                 boolean isBoxAvailable = outboundBoxCalculator.calculateAvailable();
                 if (isBoxAvailable) {
-                    List<OutInvBoxTypeCommand> odoLineAvailableBoxList = odoLineAvailableBoxListMap.get(odoLine);
-                    if (null == odoLineAvailableBoxList) {
-                        odoLineAvailableBoxList = new ArrayList<>();
-                        odoLineAvailableBoxListMap.put(odoLine, odoLineAvailableBoxList);
-                    }
                     odoLineAvailableBoxList.add(box);
                 }
             }
