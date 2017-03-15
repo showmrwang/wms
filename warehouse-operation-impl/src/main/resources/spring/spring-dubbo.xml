@@ -129,7 +129,7 @@
 	<dubbo:reference id="pkManager" url="${dubbo.sac.server}" interface="com.baozun.scm.baseservice.sac.manager.PkManager"/>
 	
 	<dubbo:reference id="codeManager" url="${dubbo.sac.server}" interface="com.baozun.scm.baseservice.sac.manager.CodeManager"/>
-	<dubbo:reference url="dubbo://localhost:20895" id="printObjectManagerProxy"  interface="com.baozun.scm.baseservice.print.manager.printObject.PrintObjectManagerProxy" check="false" />
+	<dubbo:reference url="${dubbo.local.server.print}" id="printObjectManagerProxy"  interface="com.baozun.scm.baseservice.print.manager.printObject.PrintObjectManagerProxy" check="false" />
 	
 	
 

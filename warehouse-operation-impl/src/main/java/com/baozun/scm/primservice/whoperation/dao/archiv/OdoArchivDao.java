@@ -17,14 +17,21 @@ package com.baozun.scm.primservice.whoperation.dao.archiv;
 import lark.orm.dao.supports.BaseDao;
 
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAddress;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAttr;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoInvoice;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoInvoiceLine;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLineAttr;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLineSn;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt;
 
 
 
 public interface OdoArchivDao extends BaseDao<WhOdo, Long> {
 
     /**
-     * 备份odo
+     * 归档odo
      * 
      * @param whOdo
      * @return
@@ -32,11 +39,67 @@ public interface OdoArchivDao extends BaseDao<WhOdo, Long> {
     int archivWhOdo(WhOdo whOdo);
 
     /**
-     * 备份odoLine
+     * 归档odoLine
      * 
      * @param whOdoLine
      * @return
      */
     int archivWhOdoLine(WhOdoLine whOdoLine);
+
+    /***
+     * 归档odoLineSn
+     * 
+     * @param whOdoLineSn
+     * @return
+     */
+    int archivWhOdoLineSn(WhOdoLineSn whOdoLineSn);
+
+    /***
+     * 归档odoAddress
+     * 
+     * @param whOdoAddress
+     * @return
+     */
+    int archivWhOdoAddress(WhOdoAddress whOdoAddress);
+
+    /**
+     * 归档odoAttr
+     * 
+     * @param whOdoAttr
+     * @return
+     */
+    int archivWhOdoAttr(WhOdoAttr whOdoAttr);
+
+    /***
+     * 归档whOdoInvoice
+     * 
+     * @param whOdoInvoice
+     * @return
+     */
+    int archivWhOdoInvoice(WhOdoInvoice whOdoInvoice);
+
+    /**
+     * 归档whOdoInvoiceLine
+     * 
+     * @param whOdoInvoiceLine
+     * @return
+     */
+    int archivWhOdoInvoiceLine(WhOdoInvoiceLine whOdoInvoiceLine);
+
+    /***
+     * 归档whOdoLineAttr
+     * 
+     * @param whOdoLineAttr
+     * @return
+     */
+    int archivWhOdoLineAttr(WhOdoLineAttr whOdoLineAttr);
+
+    /**
+     * 归档whOdoTransportMgmt
+     * 
+     * @param whOdoTransportMgmt
+     * @return
+     */
+    int archivWhOdoTransportMgmt(WhOdoTransportMgmt whOdoTransportMgmt);
 
 }

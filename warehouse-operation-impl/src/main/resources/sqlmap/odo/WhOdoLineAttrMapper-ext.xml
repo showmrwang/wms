@@ -140,5 +140,12 @@
 		from t_wh_odo_line_attr
 		<include refid="whOdoLineAttrDynamicWhereExt" />
 	</select>
+	
+	 <select id="findWhOdoLineAttrByOdoLineId" resultMap="WhOdoLineAttrResultExt">
+        select
+        	<include refid="whOdoLineAttrColumns"/>
+        from t_wh_odo_line_attr
+       	where odo_line_id = #{odolineid} and ou_id = #{ouid}
+    </select>
 
 </mapper>

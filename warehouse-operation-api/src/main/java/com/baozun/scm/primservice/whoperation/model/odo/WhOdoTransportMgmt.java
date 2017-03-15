@@ -57,6 +57,9 @@ public class WhOdoTransportMgmt extends BaseModel {
     /** 保价金额 */
     private Double insuranceCoverage;
 
+    /** 当前月份 用于归档 */
+    private String sysDate;
+
     public Double getInsuranceCoverage() {
         return insuranceCoverage;
     }
@@ -168,4 +171,13 @@ public class WhOdoTransportMgmt extends BaseModel {
     public void setOuId(Long ouId) {
         this.ouId = ouId;
     }
+
+    public String getSysDate() {
+        return sysDate;
+    }
+
+    public void setSysDate(String sysDate) {
+        this.sysDate = sysDate;
+    }
+
 }

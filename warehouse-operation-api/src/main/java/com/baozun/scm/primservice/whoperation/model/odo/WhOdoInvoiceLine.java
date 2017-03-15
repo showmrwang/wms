@@ -40,6 +40,9 @@ public class WhOdoInvoiceLine extends BaseModel {
     /** 仓库组织ID */
     private Long ouId;
 
+    /** 当前月份 用于归档 */
+    private String sysDate;
+
     public Long getOdoInvoiceId() {
         return odoInvoiceId;
     }
@@ -95,4 +98,14 @@ public class WhOdoInvoiceLine extends BaseModel {
     public void setOuId(Long ouId) {
         this.ouId = ouId;
     }
+
+    public String getSysDate() {
+        return sysDate;
+    }
+
+    public void setSysDate(String sysDate) {
+        this.sysDate = sysDate;
+    }
+
+
 }

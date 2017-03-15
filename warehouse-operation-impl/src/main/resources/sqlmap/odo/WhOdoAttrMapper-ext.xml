@@ -142,5 +142,11 @@
 		<include refid="whOdoAttrDynamicWhereExt" />
 	</select>
 
+<select id="findWhOdoAttrByOdoId" resultMap="WhOdoAttrResultExt">
+        select
+        	<include refid="whOdoAttrColumns"/>
+        from t_wh_odo_attr
+       	where odo_id = #{odoid} and ou_id = #{ouid}
+    </select>
 
 </mapper>

@@ -99,4 +99,11 @@
         </where>
     </sql>
 
+<select id="findWhOdoInvoiceByOdoId" resultMap="WhOdoInvoiceResultExt">
+        select
+        	<include refid="whOdoInvoiceColumns"/>
+        from t_wh_odo_invoice
+       	where odo_id = #{odoid} and ou_id = #{ouid}
+    </select>
+
 </mapper>

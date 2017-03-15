@@ -201,4 +201,358 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
                 )
             ]]>
 	</insert>
+	
+	    <insert id="archivWhOdoLineSn" parameterType="com.baozun.scm.primservice.whoperation.model.odo.WhOdoLineSn" flushCache="true">
+        <![CDATA[
+                INSERT INTO
+                t_wh_odo_line_sn_archiv${sysDate} (
+                    id,
+                    odo_line_id ,
+                    sn ,
+                    defect_ware_barcode ,
+                    defect_type ,
+                    defect_reasons ,
+                    ou_id 
+                ) VALUES (
+                    #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{odoLineId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{sn,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{defectWareBarcode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{defectType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{defectReasons,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+                )
+            ]]>
+    </insert>
+    
+        <insert id="archivWhOdoAddress" parameterType="com.baozun.scm.primservice.whoperation.model.odo.WhOdoAddress" flushCache="true">
+        <![CDATA[
+                INSERT INTO
+                t_wh_odo_address_archiv${sysDate} (
+                	id,
+                    odo_id ,
+                    account ,
+                    distribution_target_name ,
+                    distribution_target_mobile_phone ,
+                    distribution_target_telephone ,
+                    distribution_target_country ,
+                    distribution_target_province ,
+                    distribution_target_city ,
+                    distribution_target_district ,
+                    distribution_target_villages_towns ,
+                    distribution_target_address ,
+                    distribution_target_email ,
+                    distribution_target_zip ,
+                    consignee_target_name ,
+                    consignee_target_mobile_phone ,
+                    consignee_target_telephone ,
+                    consignee_target_country ,
+                    consignee_target_province ,
+                    consignee_target_city ,
+                    consignee_target_district ,
+                    consignee_target_villages_towns ,
+                    consignee_target_address ,
+                    consignee_target_email ,
+                    consignee_target_zip ,
+                    ou_id 
+                ) VALUES (
+                	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{account,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{distributionTargetName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{distributionTargetMobilePhone,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{distributionTargetTelephone,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{distributionTargetCountry,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{distributionTargetProvince,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{distributionTargetCity,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{distributionTargetDistrict,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{distributionTargetVillagesTowns,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{distributionTargetAddress,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{distributionTargetEmail,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{distributionTargetZip,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{consigneeTargetName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{consigneeTargetMobilePhone,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{consigneeTargetTelephone,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{consigneeTargetCountry,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{consigneeTargetProvince,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{consigneeTargetCity,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{consigneeTargetDistrict,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{consigneeTargetVillagesTowns,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{consigneeTargetAddress,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{consigneeTargetEmail,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{consigneeTargetZip,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+                )
+            ]]>
+    </insert>
+    
+        <insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.odo.WhOdoAttr" flushCache="true">
+        <![CDATA[
+                INSERT INTO
+                t_wh_odo_attr_archiv${sysDate} (
+                    id,
+                    odo_id ,
+                    odo_attr1 ,
+                    odo_attr2 ,
+                    odo_attr3 ,
+                    odo_attr4 ,
+                    odo_attr5 ,
+                    odo_attr6 ,
+                    odo_attr7 ,
+                    odo_attr8 ,
+                    odo_attr9 ,
+                    odo_attr10 ,
+                    odo_attr11 ,
+                    odo_attr12 ,
+                    odo_attr13 ,
+                    odo_attr14 ,
+                    odo_attr15 ,
+                    odo_attr16 ,
+                    odo_attr17 ,
+                    odo_attr18 ,
+                    odo_attr19 ,
+                    odo_attr20 ,
+                    ou_id 
+                ) VALUES (
+               		#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{odoAttr1,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoAttr2,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoAttr3,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoAttr4,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoAttr5,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoAttr6,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoAttr7,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoAttr8,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoAttr9,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoAttr10,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoAttr11,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoAttr12,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoAttr13,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoAttr14,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoAttr15,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoAttr16,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoAttr17,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoAttr18,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoAttr19,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoAttr20,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+                )
+            ]]>
+    </insert>
+    
+        <insert id="archivWhOdoAttr" parameterType="com.baozun.scm.primservice.whoperation.model.odo.WhOdoAttr" flushCache="true">
+        <![CDATA[
+                INSERT INTO
+                t_wh_odo_attr_archiv${sysDate} (
+                    id,
+                    odo_id ,
+                    odo_attr1 ,
+                    odo_attr2 ,
+                    odo_attr3 ,
+                    odo_attr4 ,
+                    odo_attr5 ,
+                    odo_attr6 ,
+                    odo_attr7 ,
+                    odo_attr8 ,
+                    odo_attr9 ,
+                    odo_attr10 ,
+                    odo_attr11 ,
+                    odo_attr12 ,
+                    odo_attr13 ,
+                    odo_attr14 ,
+                    odo_attr15 ,
+                    odo_attr16 ,
+                    odo_attr17 ,
+                    odo_attr18 ,
+                    odo_attr19 ,
+                    odo_attr20 ,
+                    ou_id 
+                ) VALUES (
+                	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{odoAttr1,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoAttr2,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoAttr3,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoAttr4,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoAttr5,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoAttr6,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoAttr7,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoAttr8,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoAttr9,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoAttr10,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoAttr11,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoAttr12,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoAttr13,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoAttr14,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoAttr15,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoAttr16,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoAttr17,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoAttr18,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoAttr19,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoAttr20,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+                )
+            ]]>
+    </insert>
+    
+        <insert id="archivWhOdoInvoice" parameterType="com.baozun.scm.primservice.whoperation.model.odo.WhOdoInvoice" flushCache="true">
+        <![CDATA[
+                INSERT INTO
+                t_wh_odo_invoice_archiv${sysDate} (
+                    id,
+                    odo_id ,
+                    invoice_code ,
+                    invoice_date ,
+                    invoice_no ,
+                    payer ,
+                    item ,
+                    qty ,
+                    unit_price ,
+                    amt ,
+                    memo ,
+                    payee ,
+                    drawer ,
+                    executecount ,
+                    company ,
+                    ou_id 
+                ) VALUES (
+               		#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{invoiceCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{invoiceDate,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{invoiceNo,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{payer,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{item,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{qty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                    #{unitPrice,javaType=Long,jdbcType=DECIMAL} ,
+                    #{amt,javaType=Long,jdbcType=DECIMAL} ,
+                    #{memo,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{payee,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{drawer,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{executecount,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                    #{company,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+                )
+            ]]>
+    </insert>
+    
+        <insert id="archivWhOdoInvoiceLine" parameterType="com.baozun.scm.primservice.whoperation.model.odo.WhOdoInvoiceLine" flushCache="true">
+        <![CDATA[
+                INSERT INTO
+                t_wh_odo_invoice_line_archiv${sysDate} (
+               		id,
+                    odo_invoice_id ,
+                    linenum ,
+                    qty ,
+                    unit_price ,
+                    amt ,
+                    item ,
+                    ou_id 
+                ) VALUES (
+                	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{odoInvoiceId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{linenum,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{qty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                    #{unitPrice,javaType=Long,jdbcType=DECIMAL} ,
+                    #{amt,javaType=Long,jdbcType=DECIMAL} ,
+                    #{item,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+                )
+            ]]>
+    </insert>
+    
+        <insert id="archivWhOdoLineAttr" parameterType="com.baozun.scm.primservice.whoperation.model.odo.WhOdoLineAttr" flushCache="true">
+        <![CDATA[
+                INSERT INTO
+                t_wh_odo_line_attr_archiv${sysDate} (
+                    id,
+                    odo_line_id ,
+                    odo_line_attr1 ,
+                    odo_line_attr2 ,
+                    odo_line_attr3 ,
+                    odo_line_attr4 ,
+                    odo_line_attr5 ,
+                    odo_line_attr6 ,
+                    odo_line_attr7 ,
+                    odo_line_attr8 ,
+                    odo_line_attr9 ,
+                    odo_line_attr10 ,
+                    odo_line_attr11 ,
+                    odo_line_attr12 ,
+                    odo_line_attr13 ,
+                    odo_line_attr14 ,
+                    odo_line_attr15 ,
+                    odo_line_attr16 ,
+                    odo_line_attr17 ,
+                    odo_line_attr18 ,
+                    odo_line_attr19 ,
+                    odo_line_attr20 ,
+                    ou_id 
+                ) VALUES (
+                	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{odoLineId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{odoLineAttr1,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoLineAttr2,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoLineAttr3,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoLineAttr4,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoLineAttr5,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoLineAttr6,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoLineAttr7,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoLineAttr8,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoLineAttr9,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoLineAttr10,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoLineAttr11,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoLineAttr12,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoLineAttr13,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoLineAttr14,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoLineAttr15,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoLineAttr16,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoLineAttr17,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoLineAttr18,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoLineAttr19,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoLineAttr20,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+                )
+            ]]>
+    </insert>
+    
+        <insert id="archivWhOdoTransportMgmt" parameterType="com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt" flushCache="true">
+        <![CDATA[
+                INSERT INTO
+                t_wh_odo_transport_mgmt_archiv${sysDate} (
+               		id,
+                    odo_id ,
+                    transport_service_provider ,
+                    mode_of_transport ,
+                    courier_service_type ,
+                    outbound_target_type ,
+                    outbound_target ,
+                    deliver_goods_time_mode ,
+                    deliver_goods_time ,
+                    plan_deliver_goods_time ,
+                    actual_deliver_goods_time ,
+                    is_cod,
+                    cod_amt,
+                    insurance_coverage,
+                    ou_id 
+                ) VALUES (
+                	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{transportServiceProvider,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{modeOfTransport,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{courierServiceType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{outboundTargetType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{outboundTarget,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{deliverGoodsTimeMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{deliverGoodsTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                    #{planDeliverGoodsTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                    #{actualDeliverGoodsTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                    #{isCod,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                    #{codAmt,javaType=Double,jdbcType=DECIMAL} ,
+                    #{insuranceCoverage,javaType=Double,jdbcType=DECIMAL} ,
+                    #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+                )
+            ]]>
+    </insert>
 </mapper>

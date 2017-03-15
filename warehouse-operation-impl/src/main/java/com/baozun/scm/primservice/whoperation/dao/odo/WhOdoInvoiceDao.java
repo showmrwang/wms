@@ -17,6 +17,8 @@ package com.baozun.scm.primservice.whoperation.dao.odo;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.annotations.Param;
+
 import lark.common.annotation.CommonQuery;
 import lark.common.annotation.QueryPage;
 import lark.common.dao.Page;
@@ -43,4 +45,12 @@ public interface WhOdoInvoiceDao extends BaseDao<WhOdoInvoice, Long> {
     @CommonQuery
     int saveOrUpdate(WhOdoInvoice o);
 
+    /**
+     * 通过odoid查询对应数据
+     * 
+     * @param odoid
+     * @param ouid
+     * @return
+     */
+    List<WhOdoInvoice> findWhOdoInvoiceByOdoId(@Param("odoid") Long odoid, @Param("ouid") Long ouid);
 }

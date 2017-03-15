@@ -53,5 +53,11 @@
             </if>
         </where>
     </sql>
-
+    
+<select id="findWhOdoLineSnByOdoLineId" resultMap="WhOdoLineSnResultExt">
+        select
+        	<include refid="WhOdoLineSnColumns"/>
+        from t_wh_odo_line_sn
+       	where odo_line_id = #{odolineid} and ou_id = #{ouid}
+    </select>
 </mapper>
