@@ -229,4 +229,11 @@ public interface PdaPickingWorkManager extends BaseManager {
      */
     public void cacheLocation(Long operationId,String locationCode,Long ouId);
         
+    /***
+     * 有小车有出库箱的情况下(获取货格号)
+     * @param operationId
+     * @param outBounxBoxCode
+     * @return
+     */
+    public Integer getUseContainerLatticeNo(Long operationId,String outBounxBoxCode);
 }

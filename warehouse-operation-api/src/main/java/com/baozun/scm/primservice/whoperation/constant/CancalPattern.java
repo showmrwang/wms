@@ -46,8 +46,6 @@ public class CancalPattern implements Serializable {
     
     public static final int TIP_CAR_CANCEL = 1; //提示小车取消
     
-    public static final int SCAN_CAR_CANCEL = 2; //扫描小车取消
-    
     public static final int TIP_LOC_CANCEL = 3;//提示库位取消
     
     public static final int SCAN_LOC_CANCEL = 4;//  扫描库位取消
@@ -61,4 +59,8 @@ public class CancalPattern implements Serializable {
     public static final int SCAN_INSIDECONTAINER_CANCEL = 8;  //扫描内部容器
     
     public static final int SCAN_SKU_SCANCEL = 9;  //sku取消
+    
+    public static final int SCAM_SKU_DETAIL = 10;   //sku库存属性取消
+    
+    public static final int SCAN_OUT_BOUNX_BOX = 11;  //有小车情况下出库箱取消
 }

@@ -174,6 +174,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
         log.info("PdaPickingWorkCacheManagerImpl containerPutawayCacheInsideContainer is start");
         CheckScanResultCommand scanResult = new CheckScanResultCommand();
         scanResult.setIsPicking(true);
+        scanResult.setIsNeedTipLoc(false);
         Long tipLocationId = null;
         OperationLineCacheCommand tipLocationCmd = cacheManager.getObject(CacheConstants.CACHE_OPERATION_LINE + operationId.toString());
         for(Long locationId:locationIds) {
@@ -185,19 +186,18 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
             }else{
                 ArrayDeque<Long> tipLocationIds = tipLocationCmd.getTipLocationIds();
                 if (null != tipLocationIds && !tipLocationIds.isEmpty()) {
-                    tipLocationId = locationId;
-                    scanResult.setIsPicking(true);
-                    break;
+                    if(tipLocationIds.contains(locationId)) {
+                        continue;
+                    }else{
+                        tipLocationId = locationId;
+                        scanResult.setIsPicking(true);
+                        break;
+                    }
                 } else {
-                      //判断库位是否扫描完毕
-                        if(tipLocationIds.contains(locationId)) {
-                            continue;
-                        }else{
-                            tipLocationId = locationId;
-                            scanResult.setIsNeedTipLoc(true);
-                            scanResult.setIsPicking(false);
-                            break;
-                        }
+                    tipLocationId = locationId;
+                    scanResult.setIsNeedTipLoc(true);
+                    scanResult.setIsPicking(false);
+                    break;
                  }
             }
         }
@@ -206,7 +206,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
         return scanResult;
     }  
 
-    
+
     /***
      * 缓存库位
      * @param operation
@@ -233,8 +233,8 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
         }
         cacheManager.setObject(CacheConstants.CACHE_OPERATION_LINE + operationId.toString(), tipLocationCmd, CacheConstants.CACHE_ONE_DAY);
     }
-    
-    
+
+
     /***
      * 提示小车
      * @param operationId
@@ -260,11 +260,11 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                     throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
                 }
                 // 验证容器Lifecycle是否有效
-                if (!container.getLifecycle().equals(ContainerStatus.CONTAINER_LIFECYCLE_USABLE)) {
+                if (!container.getLifecycle().equals(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED)) {
                     continue;
                 }
                 // 验证容器状态是否是待上架
-                if (!(container.getStatus().equals(ContainerStatus.CONTAINER_STATUS_USABLE))) {
+                if (!(container.getStatus().equals(ContainerStatus.CONTAINER_STATUS_SHEVLED) || container.getStatus().equals(ContainerStatus.CONTAINER_STATUS_PICKING))) {
                     continue;
                 }
                 tipOuterContainer = container.getCode();
@@ -407,40 +407,40 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
       public CheckScanResultCommand pdaPickingTipOuterContainer(Set<Long> outerContainerIds,Long locationId){
           log.info("PdaPickingWorkCacheManagerImpl pdaPickingTipOuterContainer is start");
           CheckScanResultCommand scanResult = new CheckScanResultCommand();
+          scanResult.setIsNeedTipOutContainer(false); // 所有的外部容器已经扫描完毕
           Long tipOuterContainerId = null;
           LocationTipCacheCommand tipLocationCmd = cacheManager.getObject(CacheConstants.CACHE_LOCATION + locationId.toString());
-          if(null == tipLocationCmd) {
-              throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
-          }else{
-              ArrayDeque<Long> tipOuterContainerIds = tipLocationCmd.getTipOuterContainerIds();
-              if(!this.isCacheAllExists(outerContainerIds, tipOuterContainerIds)) {//库位上托盘没有扫描结束
-                  for (Long oc : outerContainerIds) {
-                      Long ocId = oc;
-                      if (null != ocId) {
-                          if(null == tipOuterContainerIds) {
-                              tipOuterContainerIds = new ArrayDeque<Long>();
-                              tipOuterContainerIds.addFirst(ocId);
-                          }else{
-                              //判断改外部容器id是否已经存在缓存中
-                              if(tipOuterContainerIds.contains(ocId)) {
-                                  continue;
-                              }
-                              tipOuterContainerIds.addFirst(ocId);
-                          }
-                          //存入缓存
-                          tipOuterContainerId = ocId;
-                          cacheManager.setObject(CacheConstants.CACHE_LOCATION + locationId.toString(), tipLocationCmd, CacheConstants.CACHE_ONE_DAY);
-                          break;
-                      }
-                   }
+          for(Long outerId:outerContainerIds){
+              if(null == tipLocationCmd) {
+                  tipLocationCmd = new LocationTipCacheCommand();
+                  ArrayDeque<Long> tipOuterContainerIds = new ArrayDeque<Long>();
+                  tipOuterContainerIds.addFirst(outerId);
+                  tipLocationCmd.setTipOuterContainerIds(tipOuterContainerIds);
                   scanResult.setIsNeedTipOutContainer(true); 
-                  scanResult.setTipOuterContainerId(tipOuterContainerId);
+                  break;
               }else{
-                  scanResult.setIsNeedTipOutContainer(false); // 所有的外部容器已经扫描完毕
+                  ArrayDeque<Long> tipOuterContainerIds = tipLocationCmd.getTipOuterContainerIds();
+                  if(tipOuterContainerIds.isEmpty() || tipOuterContainerIds == null){
+                      tipOuterContainerIds = new ArrayDeque<Long>();
+                      tipOuterContainerIds.addFirst(outerId);
+                      tipLocationCmd.setTipOuterContainerIds(tipOuterContainerIds);
+                      scanResult.setIsNeedTipOutContainer(true); 
+                      break;
+                  }else{
+                        if(tipOuterContainerIds.contains(outerId)){
+                            continue;
+                        }else{
+                            tipOuterContainerId = outerId;
+                            tipOuterContainerIds.addFirst(outerId);
+                            tipLocationCmd.setTipOuterContainerIds(tipOuterContainerIds);
+                            scanResult.setIsNeedTipOutContainer(true); 
+                            break;
+                        }
+                  }
               }
-             
-              
           }
+          cacheManager.setObject(CacheConstants.CACHE_LOCATION+locationId.toString(),tipLocationCmd, CacheConstants.CACHE_ONE_DAY);
+          scanResult.setTipOuterContainerId(tipOuterContainerId);
           log.info("PdaPickingWorkCacheManagerImpl pdaPickingTipOuterContainer is end");
           return scanResult;
       }
@@ -459,7 +459,13 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
           CheckScanResultCommand scanResult = new CheckScanResultCommand();
           LocationTipCacheCommand tipLocationCmd = cacheManager.getObject(CacheConstants.CACHE_LOCATION + locationId.toString());
           if(null == tipLocationCmd) {
-              throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+              tipLocationCmd = new LocationTipCacheCommand();
+              ArrayDeque<Long> tipInsideContainerIds = new ArrayDeque<Long>();
+              for(Long icId:insideContainerIds) {
+                  tipInsideContainerIds.addFirst(icId);
+                  break;
+              }
+              tipLocationCmd.setTipInsideContainerIds(tipInsideContainerIds);
           }else{
               ArrayDeque<Long> tipInsideContainerIds = tipLocationCmd.getTipInsideContainerIds();
               if(!this.isCacheAllExists(insideContainerIds, tipInsideContainerIds)) {
@@ -1549,11 +1555,60 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
      * @param ouId
      */
     public void cancelPattern(Long carId,Long outerContainerId,Long insideContainerId, int cancelPattern,int pickingWay,Long locationId,Long ouId,Long operationId){
-          if(Constants.PICKING_WAY_ONE == pickingWay){
               if(cancelPattern == CancalPattern.TIP_CAR_CANCEL) {
                   cacheManager.remove(CacheConstants.OPERATIONLINE_STATISTICS + operationId.toString());  //删除统计缓存
                   cacheManager.remove(CacheConstants.OPERATION_LINE + operationId.toString());   //删除作业明细
+                  if(Constants.PICKING_WAY_TWO == pickingWay){
+                      OperationLineCacheCommand tipLocationCmd = cacheManager.getObject(CacheConstants.CACHE_OPERATION_LINE + operationId.toString());
+                      if(null != tipLocationCmd ) {
+                          tipLocationCmd.setTipOutBonxBoxIds(null);
+                          cacheManager.setObject(CacheConstants.CACHE_OPERATION_LINE+ operationId.toString(), tipLocationCmd, CacheConstants.CACHE_ONE_DAY);
+                      }
+                  }
+             }
+             if(CancalPattern.TIP_LOC_CANCEL == cancelPattern){
+                 OperationLineCacheCommand tipLocationCmd = cacheManager.getObject(CacheConstants.CACHE_OPERATION_LINE + operationId.toString());
+                 if(null != tipLocationCmd ) {
+                     tipLocationCmd.setTipLocationIds(null);
+                     cacheManager.setObject(CacheConstants.CACHE_OPERATION_LINE+ operationId.toString(), tipLocationCmd, CacheConstants.CACHE_ONE_DAY);
+                 }
+             }
+             if(CancalPattern.SCAN_LOC_CANCEL == cancelPattern){
+                 OperationLineCacheCommand tipLocationCmd = cacheManager.getObject(CacheConstants.CACHE_OPERATION_LINE + operationId.toString());
+                 if(null != tipLocationCmd){
+                     tipLocationCmd.setTipLocationIds(null);//提示库位队列
+                     cacheManager.setObject(CacheConstants.CACHE_OPERATION_LINE+ operationId.toString(), tipLocationCmd, CacheConstants.CACHE_ONE_DAY);
+                 }
+             }
+             if(CancalPattern.TIP_OUTCONTAINER_CANCEL == cancelPattern){
+                 //清除库位上的托盘
+                 LocationTipCacheCommand tipLocCmd = cacheManager.getObject(CacheConstants.CACHE_LOCATION + locationId.toString());
+                 if(null != tipLocCmd){
+                     tipLocCmd.setTipOuterContainerIds(null);
+                     cacheManager.setObject(CacheConstants.CACHE_LOCATION+locationId.toString(),tipLocCmd, CacheConstants.CACHE_ONE_DAY);
+                 }
+             }
+             if(CancalPattern.TIP_INSIDECONTAINER_CANCEL == cancelPattern){ //提示货箱取消流程
+                 LocationTipCacheCommand tipLocCmd = cacheManager.getObject(CacheConstants.CACHE_LOCATION + locationId.toString());
+                 if(null != tipLocCmd){
+                     tipLocCmd.setTipInsideContainerIds(null);
+                     tipLocCmd.setTipLocSkuIds(null);
+                     cacheManager.setObject(CacheConstants.CACHE_LOCATION+locationId.toString(),tipLocCmd, CacheConstants.CACHE_ONE_DAY);
+                 }
+             }
+             if(CancalPattern.SCAN_SKU_SCANCEL== cancelPattern){ //提示货箱取消流程){
+                 LocationTipCacheCommand tipLocCmd = cacheManager.getObject(CacheConstants.CACHE_LOCATION + locationId.toString());
+                 if(null != tipLocCmd){
+                     tipLocCmd.setTipLocSkuIds(null);
+                     cacheManager.setObject(CacheConstants.CACHE_LOCATION+locationId.toString(),tipLocCmd, CacheConstants.CACHE_ONE_DAY);
+                 }
+             }
+             if(CancalPattern.SCAN_OUT_BOUNX_BOX == cancelPattern){
+                 OperationLineCacheCommand tipLocationCmd = cacheManager.getObject(CacheConstants.CACHE_OPERATION_LINE + operationId.toString());
+                 if(null != tipLocationCmd ) {
+                     tipLocationCmd.setTipOutBonxBoxIds(null);
+                     cacheManager.setObject(CacheConstants.CACHE_OPERATION_LINE+ operationId.toString(), tipLocationCmd, CacheConstants.CACHE_ONE_DAY);
+                 }
              }
           }
-    }
 }
