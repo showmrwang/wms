@@ -29,6 +29,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	work_priority as workPriority,
 	        	batch as batch,
 	        	assign_out_batch as assignOutBatch,
+	        	distribution_mode as distributionMode,
+	        	picking_mode as pickingMode,
+	        	checking_mode as checkingMode,
 	        	start_time as startTime,
 	        	finish_time as finishTime,
 	        	wave_id as waveId,
@@ -108,9 +111,21 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		       	<if test="batch!=null and batch!=''">
 					and batch = #{batch}
 				</if>
-				
-				<if test="assignOutBatch!=null and assignOutBatch!=''">
+	       
+		       	<if test="assignOutBatch!=null and assignOutBatch!=''">
 					and assign_out_batch = #{assignOutBatch}
+				</if>
+	       
+		       	<if test="distributionMode!=null and distributionMode!=''">
+					and distribution_mode = #{distributionMode}
+				</if>
+	       
+		       	<if test="pickingMode!=null and pickingMode!=''">
+					and picking_mode = #{pickingMode}
+				</if>
+	       
+		       	<if test="checkingMode!=null and checkingMode!=''">
+					and checking_mode = #{checkingMode}
 				</if>
 	       
 				<if test="startTime!=null">
@@ -188,6 +203,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        work_priority = #{workPriority,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 			        batch = #{batch,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        assign_out_batch = #{assignOutBatch,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        distribution_mode = #{distributionMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        picking_mode = #{pickingMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        checking_mode = #{checkingMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        start_time = #{startTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        finish_time = #{finishTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        wave_id = #{waveId,javaType=java.lang.Long,jdbcType=BIGINT} ,

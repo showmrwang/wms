@@ -24,6 +24,7 @@ import com.baozun.scm.primservice.whoperation.command.odo.WhOdoOutBoundBoxComman
 import com.baozun.scm.primservice.whoperation.command.sku.SkuRedisCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.LocationCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ReplenishmentRuleCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhDistributionPatternRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkCommand;
@@ -44,6 +45,7 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.AreaDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ReplenishmentRuleDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ReplenishmentTaskDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhDistributionPatternRuleDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhLocationDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOperationDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOperationLineDao;
@@ -146,6 +148,9 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
     
     @Autowired
     private WhSkuInventoryDao whSkuInventoryDao;
+    
+    @Autowired
+    private WhDistributionPatternRuleDao whDistributionPatternRuleDao;
     
     
     
@@ -956,6 +961,14 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
             }
             //索引自增            
             count++;
+        }
+        //配置模式  
+        if(null != whWorkLineCommandList && 0 < whWorkLineCommandList.size()){
+            WhOdo odo = odoDao.findByIdOuId(whWorkLineCommandList.get(0).getOdoId(), whWorkLineCommandList.get(0).getOuId());
+            WhDistributionPatternRuleCommand whDistributionPatternRuleCommand = whDistributionPatternRuleDao.findRuleByCode(odo.getDistributionCode(), odo.getOuId()); 
+            whWorkCommand.setDistributionMode(odo.getDistributionCode());
+            whWorkCommand.setPickingMode(whDistributionPatternRuleCommand.getPickingMode().toString());
+            whWorkCommand.setCheckingMode(whDistributionPatternRuleCommand.getCheckingMode());
         }
         //判断工作明细是否只有唯一库位
         if(isFromLocationId == true){
