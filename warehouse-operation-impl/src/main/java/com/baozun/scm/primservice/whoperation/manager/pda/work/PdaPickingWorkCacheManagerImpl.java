@@ -29,6 +29,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationLineC
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
 import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
 import com.baozun.scm.primservice.whoperation.constant.CancalPattern;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
@@ -141,18 +142,14 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
         log.info("PdaPickingWorkCacheManagerImpl cacheLocationInventory is start");
         List<WhSkuInventoryCommand> skuInvList = cacheManager.getObject(CacheConstants.CACHE_LOC_INVENTORY + operationId.toString()+locationId.toString());
         if(null == skuInvList || skuInvList.size() == 0) {
-            skuInvList = new ArrayList<WhSkuInventoryCommand>();
-            List<WhSkuInventoryCommand> skuInvCmdList = whSkuInventoryDao.getWhSkuInventoryByOccupationLineId(ouId, operationId);
-            if(null == skuInvCmdList || skuInvCmdList.size() == 0){
-//                skuInvCmdList = whSkuInventoryDao.getWhSkuInventoryTobefilledByOccupationLineId(ouId, operationId);
-//                if(null == skuInvCmdList || skuInvCmdList.size() == 0) {
+            skuInvList = whSkuInventoryDao.getWhSkuInventoryByOccupationLineId(ouId, operationId);
+            if(null == skuInvList || skuInvList.size() == 0){
                     throw new BusinessException(ErrorCodes.LOCATION_INVENTORY_IS_NO);
-//                }
             }
             List<WhOperationLineCommand> operationLineList = whOperationLineDao.findOperationLineByOperationId(operationId, ouId);   //当前工作下所有的作业明细集合
             for(WhOperationLineCommand operLineCmd : operationLineList){
                 Long odoLineId = operLineCmd.getOdoLineId();  //出库单明细ID
-                for(WhSkuInventoryCommand skuInvCmd:skuInvCmdList) {
+                for(WhSkuInventoryCommand skuInvCmd:skuInvList) {
                     Long occupationLineId = skuInvCmd.getOccupationId();
                     if(odoLineId.equals(occupationLineId)) {
                         skuInvList.add(skuInvCmd); 
@@ -507,84 +504,102 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
           //该库位要拣货的所有库存记录
           List<WhSkuInventoryCommand> list = this.cacheLocationInventory(operationId, locationId, ouId);
           LocationTipCacheCommand tipLocationCmd = cacheManager.getObject(CacheConstants.CACHE_LOCATION + locationId.toString());
+          Long tipSkuId = null;
+          scanResult.setIsNeedTipSku(false);
           if(null == tipLocationCmd) {
-              throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+                tipLocationCmd = new LocationTipCacheCommand();
+                ArrayDeque<Long> tipLocSkuIds = new ArrayDeque<Long>();
+                for(Long skuId:skuIds){
+                    tipSkuId = skuId;
+                    tipLocSkuIds.addFirst(skuId);
+                    scanResult.setIsNeedTipSku(true);
+                    break;
+                }
+                tipLocationCmd.setTipLocSkuIds(tipLocSkuIds);
           }else{
               ArrayDeque<Long> tipSkuIds = tipLocationCmd.getTipLocSkuIds();
-              if(this.isCacheAllExists(skuIds, tipSkuIds)) {
-                   //缓存sku唯一标示
-                  String skuAttrId = null;
-                  String skuAttrIdSnDef = null;
-                  for(Long skuId:skuIds) {
-                      if(null == tipSkuIds || tipSkuIds.isEmpty()) {
-                          tipSkuIds = new ArrayDeque<Long>();
-                          tipSkuIds.addFirst(skuId);
-                      }else{
-                          //判断改外部容器id是否已经存在缓存中
-                          if(tipSkuIds.contains(skuId)) {
-                              continue;
-                          }
-                          tipSkuIds.addFirst(skuId);
-                          ArrayDeque<String> skuAttrIdsSn = cacheManager.getObject(CacheConstants.CACHE_LOC_SKU_ATTR + locationId.toString()+skuId.toString());
-                          if(null == skuAttrIdsSn) {
-                              skuAttrIdsSn = new ArrayDeque<String>();
-                          }
-                          Set<String> snDefectSet = new HashSet<String>();  //sn及残次条码集合
-                          for(WhSkuInventoryCommand skuCmd:list) {
-                              if(null != insideContainerId) { //有货箱
-                                  if(insideContainerId.equals(skuCmd.getInsideContainerId())) {
-                                      if(skuId.longValue() == skuCmd.getSkuId().longValue()) {
-                                             skuAttrId = SkuCategoryProvider.getSkuAttrIdByInv(skuCmd);
-                                             Map<String,Set<String>> skuAttrIdSnDefect  = insideSkuAttrIdsSnDefect.get(insideContainerId);
-                                             snDefectSet = skuAttrIdSnDefect.get(skuAttrId);   
-                                       }
-                                  }
-                              }else{//散装
-                                  if(skuId.longValue() == skuCmd.getSkuId().longValue()) {
-                                      skuAttrId = SkuCategoryProvider.getSkuAttrIdByInv(skuCmd);
-                                      Map<String,Set<String>> skuAttrIdSnDefect = locskuAttrIdsSnDefect.get(locationId);
-                                      snDefectSet = skuAttrIdSnDefect.get(skuAttrId);
-                                   }
-                                  //把直接放在库位上的sku，放入缓存
-                                  LocationTipCacheCommand cacheLocationCmd = cacheManager.getObject(CacheConstants.CACHE_LOCATION + locationId.toString());
-                                  if(null == cacheLocationCmd) {
-                                      throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
-                                  }else{
-                                      ArrayDeque<Long>  tipLocSkuIds = cacheLocationCmd.getTipLocSkuIds();
-                                      if(null == tipLocSkuIds) {
-                                          tipLocSkuIds = new ArrayDeque<Long>();
-                                          tipLocSkuIds.addFirst(skuId);
-                                      }else{
-                                          tipLocSkuIds.addFirst(skuId);
-                                      }
-                                      cacheLocationCmd.setTipLocSkuIds(tipLocSkuIds);
-                                      cacheManager.setObject(CacheConstants.CACHE_LOCATION + locationId.toString(), cacheLocationCmd, CacheConstants.CACHE_ONE_DAY);
-                                  }
-                              }
-                          }
-                          for(String snDefect:snDefectSet) {
-                              skuAttrIdSnDef = SkuCategoryProvider.concatSkuAttrId(skuAttrId,snDefect);
-                              if(skuAttrIdsSn.contains(skuAttrIdSnDef)) {  //缓存中已经存在
-                                  continue;
-                              }else{
-                                  skuAttrIdsSn.addFirst(skuAttrIdSnDef);
-                                  break;
-                              }
-                          }
-                          cacheManager.setObject(CacheConstants.CACHE_LOC_SKU_ATTR + locationId.toString()+skuId.toString(),skuAttrIdsSn, CacheConstants.CACHE_ONE_DAY);
-                      }
-                       //存入缓存
-                      cacheManager.setObject(CacheConstants.CACHE_LOCATION + locationId.toString(), tipLocationCmd, CacheConstants.CACHE_ONE_DAY);
+              if(null == tipSkuIds || tipSkuIds.size() == 0) {
+                  for(Long skuId:skuIds){
+                      tipSkuIds = new ArrayDeque<Long>();
+                      tipSkuId = skuId;
+                      tipSkuIds.addFirst(skuId);
+                      tipLocationCmd.setTipLocSkuIds(tipSkuIds);
+                      scanResult.setIsNeedTipSku(true);
                       break;
                   }
-                  scanResult.setIsNeedTipSku(true);
-                  scanResult.setTipSkuAttrId(skuAttrId);
-                  scanResult.setTipSkuAttrIdSnDefect(skuAttrIdSnDef);
-              }else{  //所有的内部容器全部扫描完毕
-                  scanResult.setIsNeedTipSku(false);
+              }else{
+                  if(this.isCacheAllExists(skuIds, tipSkuIds)) {
+                      for(Long skuId:skuIds) {
+                              //判断改外部容器id是否已经存在缓存中
+                              if(tipSkuIds.contains(skuId)) {
+                                  continue;
+                              }else{
+                                  tipSkuId = skuId;
+                                  tipSkuIds.addFirst(skuId);
+                                  tipLocationCmd.setTipLocSkuIds(tipSkuIds);
+                                  scanResult.setIsNeedTipSku(true);
+                                  break;
+                              }
+                      }
+                   }
               }
-              
           }
+          if(!scanResult.getIsNeedTipSku()) {
+              return scanResult;
+          }
+         
+          //临时添加
+          cacheManager.remove(CacheConstants.CACHE_LOC_SKU_ATTR + locationId.toString()+tipSkuId.toString());
+          //  //拼装唯一sku及残次信息 缓存sku唯一标示
+          String skuAttrId = null;
+          String skuAttrIdSnDef = null;  //唯一sku及残次信息
+          ArrayDeque<String> skuAttrIdsSnDef = cacheManager.getObject(CacheConstants.CACHE_LOC_SKU_ATTR + locationId.toString()+tipSkuId.toString());
+          if(null == skuAttrIdsSnDef) {
+              skuAttrIdsSnDef = new ArrayDeque<String>();
+          }
+          //判断是否存在sn
+          Boolean isExistSn = false;
+          Set<String> snDefectSet = new HashSet<String>();  //sn及残次条码集合
+          for(WhSkuInventoryCommand skuCmd:list) {
+              List<WhSkuInventorySnCommand> listSnCmd =  skuCmd.getWhSkuInventorySnCommandList();
+              if(null != listSnCmd && listSnCmd.size() != 0){ //
+                  isExistSn = true;
+                  if(null != insideContainerId) { //有货箱
+                      if(insideContainerId.equals(skuCmd.getInsideContainerId()) && locationId.equals(skuCmd.getLocationId())) {
+                          if(tipSkuId.longValue() == skuCmd.getSkuId().longValue()) {
+                                 skuAttrId = SkuCategoryProvider.getSkuAttrIdByInv(skuCmd);
+                                 Map<String,Set<String>> skuAttrIdSnDefect  = insideSkuAttrIdsSnDefect.get(insideContainerId);
+                                 snDefectSet = skuAttrIdSnDefect.get(skuAttrId);  
+                                 break;
+                           }
+                      }
+                  }else{//散装
+                      if(tipSkuId.longValue() == skuCmd.getSkuId().longValue() && locationId.equals(skuCmd.getLocationId())) {
+                          skuAttrId = SkuCategoryProvider.getSkuAttrIdByInv(skuCmd);
+                          Map<String,Set<String>> skuAttrIdSnDefect = locskuAttrIdsSnDefect.get(locationId);
+                          snDefectSet = skuAttrIdSnDefect.get(skuAttrId);
+                          break;
+                       }
+                  }
+              }
+          }
+          if(isExistSn){ //没有残次sn/残次信息
+              for(String snDefect:snDefectSet) {
+                  skuAttrIdSnDef = SkuCategoryProvider.concatSkuAttrId(skuAttrId,snDefect);
+                  if(skuAttrIdsSnDef.contains(skuAttrIdSnDef)) {  //缓存中已经存在
+                      continue;
+                  }else{
+                      skuAttrIdsSnDef.addFirst(skuAttrIdSnDef);
+                      break;
+                  }
+              }
+          }else{
+              skuAttrIdsSnDef.addFirst(skuAttrId);  
+          }
+          cacheManager.setObject(CacheConstants.CACHE_LOC_SKU_ATTR + locationId.toString()+tipSkuId.toString(),skuAttrIdsSnDef, CacheConstants.CACHE_ONE_DAY);
+          cacheManager.setObject(CacheConstants.CACHE_LOCATION + locationId.toString(), tipLocationCmd, CacheConstants.CACHE_ONE_DAY);
+          scanResult.setTipSkuAttrId(skuAttrId);
+          scanResult.setTipSkuAttrIdSnDefect(skuAttrIdSnDef);
           log.info("PdaPickingWorkCacheManagerImpl pdaPickingTipSku is end");
           return scanResult;
       }
@@ -1459,7 +1474,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
       }
       
       private boolean isCacheAllExists(Set<Long> ids, ArrayDeque<Long> cacheKeys) {
-          boolean allExists = true;  //默认没有复合完毕
+          boolean allExists = true;  //默认没有复合完毕   
           if (null != cacheKeys && !cacheKeys.isEmpty()) {
               for (Long id : ids) {
                   boolean isExists = false;
@@ -1574,11 +1589,14 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                  }
              }
              if(CancalPattern.SCAN_LOC_CANCEL == cancelPattern){
-                 OperationLineCacheCommand tipLocationCmd = cacheManager.getObject(CacheConstants.CACHE_OPERATION_LINE + operationId.toString());
-                 if(null != tipLocationCmd){
-                     tipLocationCmd.setTipLocationIds(null);//提示库位队列
-                     cacheManager.setObject(CacheConstants.CACHE_OPERATION_LINE+ operationId.toString(), tipLocationCmd, CacheConstants.CACHE_ONE_DAY);
+                 OperationLineCacheCommand operationCmd = cacheManager.getObject(CacheConstants.CACHE_OPERATION_LINE + operationId.toString());
+                 if(null != operationCmd){
+                     operationCmd.setTipLocationIds(null);//提示库位队列
+                     cacheManager.setObject(CacheConstants.CACHE_OPERATION_LINE+ operationId.toString(),operationCmd, CacheConstants.CACHE_ONE_DAY);
                  }
+                 //临时添加
+                 cacheManager.remove(CacheConstants.CACHE_LOCATION + 115100689);
+                 
              }
              if(CancalPattern.TIP_OUTCONTAINER_CANCEL == cancelPattern){
                  //清除库位上的托盘

@@ -2994,7 +2994,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     
        <select id="getWhSkuInventoryByOccupationLineId" resultMap="WhSkuInventoryCommandSnResultExt">
 			select 
-					inv.id as invId,
+					distinct inv.id as invId,
 					inv.sku_id as skuId,
 					inv.location_id as locationId,
 					inv.outer_container_id as outerContainerId,
@@ -3039,11 +3039,13 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        		sn.ou_id as snOuId,
 	        		sn.sys_uuid as snSysUuid
 					from 
-					t_wh_sku_inventory inv, t_wh_operation_line operLine, t_wh_odo odo ,t_wh_sku_inventory_sn sn
+						t_wh_operation_line operLine,
+	                    t_wh_odo odo,
+                        t_wh_sku_inventory inv
+                      	left join t_wh_sku_inventory_sn sn on inv.uuid = sn.uuid
                     where operLine.odo_line_id = inv.occupation_line_id
                     and odo.id = operLine.odo_id
                     and odo.odo_code = inv.occupation_code
-                    and inv.uuid = sn.uuid 
                     and inv.occupation_code IS NOT NULL
                     and inv.ou_id = #{ouId}
                     and operLine.operation_id = #{operationId}

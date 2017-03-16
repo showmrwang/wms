@@ -857,7 +857,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             skuIds = insideSkuIds.get(insideContainerId);
         }
         CheckScanResultCommand cSRCmd = pdaPickingWorkCacheManager.pdaPickingTipSku(skuIds, operationId,locationId,ouId, insideContainerId,skuAttrIdsSnDefect,insideSkuAttrIdsSnDefect);
-        if(cSRCmd.getIsNeedScanSku()){  //此货箱的sku，还没有扫描完毕
+        if(cSRCmd.getIsNeedTipSku()){  //此货箱的sku，还没有扫描完毕
             String skuAttrId = cSRCmd.getTipSkuAttrId();   //提示唯一的sku
             Long skuId = SkuCategoryProvider.getSkuId(skuAttrId);
             Map<String,Long> skuAttrIdsQty = skuIdSkuAttrIdsQty.get(skuId);
@@ -866,10 +866,10 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
             }
             command.setTipSkuBarCode(skuCmd.getBarCode());    //提示sku
-            command.setIsNeedScanSku(true);
+            command.setIsNeedTipSku(true);
             this.tipSkuDetailAspect(command, cSRCmd.getTipSkuAttrIdSnDefect(), skuAttrIdsQty, logId);
         }else{
-            command.setIsNeedScanSku(false);
+            command.setIsNeedTipSku(false);
         }
         log.info("PdaPickingWorkManagerImpl tipSku is end");
         
