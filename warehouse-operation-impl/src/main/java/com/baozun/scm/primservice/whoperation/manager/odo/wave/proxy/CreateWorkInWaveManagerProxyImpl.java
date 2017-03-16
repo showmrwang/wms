@@ -164,10 +164,11 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void createReplenishmentWorkInWave(Long waveId, Long ouId, Long userId) {
+    public Boolean createReplenishmentWorkInWave(Long waveId, Long ouId, Long userId) {
         // 查询补货工作释放及拆分条件分组 -- 补货工作
         List<ReplenishmentRuleCommand> replenishmentRuleCommands = this.getInReplenishmentConditionGroup(waveId, ouId);
         Boolean judge = true;
+        Boolean isReplenishmentWorkInWave = false;
         try {
             // 循环补货工作释放及拆分条件分组        
             for(ReplenishmentRuleCommand replenishmentRuleCommand : replenishmentRuleCommands){
@@ -241,6 +242,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
                             judge = false;
                         }
                     }
+                    isReplenishmentWorkInWave = true;
                 }
             }
         } catch (Exception e) {
@@ -252,6 +254,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
             whWave.setIsCreateReplenishedWork(true);
             this.updateWhWave(whWave);    
         }
+        return isReplenishmentWorkInWave;
     }
 
     /**
@@ -263,7 +266,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void createPickingWorkInWave(Long waveId, Long ouId, Long userId) {
+    public void createPickingWorkInWave(Long waveId, Long ouId, Long userId, Boolean isReplenishmentWorkInWave) {
         // 查询出小批次列表
         List<WhOdoOutBoundBox> whOdoOutBoundBoxList = this.getBoxBatchsForPicking(waveId, ouId);
         if (null == whOdoOutBoundBoxList || whOdoOutBoundBoxList.isEmpty()) {
@@ -282,7 +285,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
 	                    //2.1.1 根据小批次分组查询出所有出库箱/容器信息
 	                    List<WhOdoOutBoundBoxCommand> whOdoOutBoundBoxCommandList = this.getOdoOutBoundBoxListByGroup(whOdoOutBoundBoxGroup);
 	                    //2.1.2 创建拣货工作--创建工作头信息
-	                    String workCode = this.savePickingWork(whOdoOutBoundBoxGroup,userId);
+	                    String workCode = this.savePickingWork(whOdoOutBoundBoxGroup, userId, isReplenishmentWorkInWave);
 	                    //2.1.3 循环出库箱/容器信息列表创建工作明细
 	                    for(WhOdoOutBoundBoxCommand whOdoOutBoundBoxCommand : whOdoOutBoundBoxCommandList){
 	                        //2.1.3.1 判断库位占用量是否满足 
@@ -310,7 +313,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
 	                        this.updateWhOdoOutBoundBoxCommand(whOdoOutBoundBoxCommand);
 	                    }
 	                    //2.1.4 更新工作头信息
-	                    this.updatePickingWork(workCode, whOdoOutBoundBoxGroup);
+	                    this.updatePickingWork(workCode, whOdoOutBoundBoxGroup, isReplenishmentWorkInWave);
 	                    //2.1.5 创建作业头
 	                    String operationCode = this.savePickingOperation(workCode, whOdoOutBoundBoxGroup);
 	                    //2.1.6 创建作业明细
@@ -532,7 +535,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public String savePickingWork(WhOdoOutBoundBox whOdoOutBoundBox, Long userId) {
+    public String savePickingWork(WhOdoOutBoundBox whOdoOutBoundBox, Long userId, Boolean isReplenishmentWorkInWave) {
         //查询波次头信息     
         if (null == whOdoOutBoundBox.getWaveId() || null == whOdoOutBoundBox.getOuId()) {
             log.error("savePickingWork is error, whOdoOutBoundBox:{}, userId:{}", whOdoOutBoundBox.getWaveId(), whOdoOutBoundBox.getOuId());
@@ -576,8 +579,12 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
         whWorkCommand.setIsAssignOut(false);
         //当前工作明细设计到的所有库区编码信息列表--更新时获取数据      
         whWorkCommand.setWorkArea(null);
-        //工作优先级     
-        whWorkCommand.setWorkPriority(null != whWaveMaster.getPickingWorkPriority() ? whWaveMaster.getPickingWorkPriority() : workType.getPriority());
+        //工作优先级 
+        if(false == isReplenishmentWorkInWave){
+            whWorkCommand.setWorkPriority(null != whWaveMaster.getPickingWorkPriority() ? whWaveMaster.getPickingWorkPriority() : workType.getPriority());
+        }else{
+            whWorkCommand.setWorkPriority(null != whWaveMaster.getPickingExtPriority() ? whWaveMaster.getPickingExtPriority() : workType.getPriority());
+        }
         //小批次
         whWorkCommand.setBatch(whOdoOutBoundBox.getBoxBatch());
         //操作开始时间
@@ -906,7 +913,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void updatePickingWork(String workCode, WhOdoOutBoundBox odoOutBoundBox) {
+    public void updatePickingWork(String workCode, WhOdoOutBoundBox odoOutBoundBox, Boolean isReplenishmentWorkInWave) {
         //获取工作头信息        
         WhWorkCommand whWorkCommand = this.workDao.findWorkByWorkCode(workCode, odoOutBoundBox.getOuId());
         //获取工作明细信息列表        
@@ -1014,9 +1021,12 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
         whWorkCommand.setWorkArea(workArea);
         //是否锁定 默认值：1
         whWorkCommand.setIsLocked(whWaveMaster.getIsAutoReleaseWork());
-        //工作优先级     
-        whWorkCommand.setWorkPriority(null != whWaveMaster.getPickingWorkPriority() ? whWaveMaster.getPickingWorkPriority() : workType.getPriority());
-        
+        //工作优先级 
+        if(false == isReplenishmentWorkInWave){
+            whWorkCommand.setWorkPriority(null != whWaveMaster.getPickingWorkPriority() ? whWaveMaster.getPickingWorkPriority() : workType.getPriority());
+        }else{
+            whWorkCommand.setWorkPriority(null != whWaveMaster.getPickingExtPriority() ? whWaveMaster.getPickingExtPriority() : workType.getPriority());
+        }
         WhWork whWork = new WhWork();
         //复制数据        
         BeanUtils.copyProperties(whWorkCommand, whWork);

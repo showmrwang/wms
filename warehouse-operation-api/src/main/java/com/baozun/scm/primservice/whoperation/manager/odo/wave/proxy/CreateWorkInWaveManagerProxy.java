@@ -27,7 +27,7 @@ public interface CreateWorkInWaveManagerProxy extends BaseManager {
      * @param userId
      * @return
      */
-    public void createPickingWorkInWave(Long waveId, Long ouId, Long userId);
+    public void createPickingWorkInWave(Long waveId, Long ouId, Long userId, Boolean isReplenishmentWorkInWave);
     
     /**
      * [业务方法] 波次中创建补货工作和作业
@@ -35,7 +35,7 @@ public interface CreateWorkInWaveManagerProxy extends BaseManager {
      * @param userId
      * @return
      */
-    public void createReplenishmentWorkInWave(Long waveId, Long ouId, Long userId);
+    public Boolean createReplenishmentWorkInWave(Long waveId, Long ouId, Long userId);
    
     /**
      * [业务方法] 波次外创建工作和作业
@@ -82,7 +82,7 @@ public interface CreateWorkInWaveManagerProxy extends BaseManager {
      * @param ouId
      * @return
      */
-    public String savePickingWork(WhOdoOutBoundBox whOdoOutBoundBox, Long userId);
+    public String savePickingWork(WhOdoOutBoundBox whOdoOutBoundBox, Long userId, Boolean isReplenishmentWorkInWave);
     
     /**
      * [业务方法] 创建拣货工作-查询占用的库存信息
@@ -112,7 +112,7 @@ public interface CreateWorkInWaveManagerProxy extends BaseManager {
      * @param WhOdoOutBoundBox
      * @return
      */
-    public void updatePickingWork(String workCode, WhOdoOutBoundBox whOdoOutBoundBox);
+    public void updatePickingWork(String workCode, WhOdoOutBoundBox odoOutBoundBox, Boolean isReplenishmentWorkInWave);
     
     /**
      * [业务方法] 创建拣货工作-创建作业头
