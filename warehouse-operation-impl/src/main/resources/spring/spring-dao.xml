@@ -94,12 +94,12 @@
             <value><![CDATA[${dataSource.url.info}]]></value>
         </property>
     </bean>
-<!-- 数据收集库-->
+<!-- 数据收集库
 	<bean id="collectSource" parent="parentSource">
         <property name="url">
             <value><![CDATA[${dataSource.url.collect}]]></value>
         </property>
-    </bean>
+    </bean>-->
 <!-- 拆分库 -->
     <bean id="shardSource" parent="parentSource">
         <property name="url">
@@ -126,9 +126,9 @@
 				<entry key="globalSource">
 					<ref bean="globalSource"/>
 				</entry>
-				<entry key="collectSource">
+				<!--  <entry key="collectSource">
 					<ref bean="collectSource"/>
-				</entry>
+				</entry>-->
 			</map>
 		</property>
 		<property name="defaultDataSourceKey" >
