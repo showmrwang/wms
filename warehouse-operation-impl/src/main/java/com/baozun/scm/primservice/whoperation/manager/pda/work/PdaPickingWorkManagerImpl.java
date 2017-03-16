@@ -523,7 +523,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         // 库位上所有内部容器 
         statisticsCommand.setInsideContainerIds(insideContainerIds);
         // 库位上所有sku
-        statisticsCommand.setSkuIds(insideSkuIds);
+        statisticsCommand.setSkuIds(skuIds);
         // 库位上每个sku总件数
         statisticsCommand.setSkuQty(skuQty);
         // 库位上每个sku对应的唯一sku及件数
