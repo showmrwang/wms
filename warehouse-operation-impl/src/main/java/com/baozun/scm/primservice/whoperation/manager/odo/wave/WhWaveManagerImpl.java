@@ -569,6 +569,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void matchWaveDisTributionMode(List<WhOdo> odoList, List<WhWaveLine> offWaveLineList, List<WhOdoLine> offOdoLineList, WhWave wave, Long ouId, Long userId, Warehouse wh) {
         // #mender yimin.lu 获取需要提出波次的出库单集合
+        Long waveId = wave.getId();
         List<Long> odoIdList = new ArrayList<Long>();
         for (WhOdo odo : odoList) {
             if (StringUtils.isEmpty(odo.getWaveCode())) {
@@ -594,11 +595,38 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
             }
         }
         if (flag) {
-            this.calculateWaveHeadInfo(wave.getId(), ouId);
+            this.calculateWaveHeadInfo(waveId, ouId);
         }
-        this.deleteWaveLinesAndReleaseInventoryByOdoIdList(wave.getId(), odoIdList, Constants.DISTRIBUTE_MODE_FAIL, wh, WavePhase.DISTRIBUTION_NUM);
         // 更新波次的下一个阶段
-        this.changeWavePhaseCode(wave.getId(), wh.getId());
+        this.changeWavePhaseCode(waveId, ouId);
+        // 波次取消需要取消补货任务
+        this.checkReplenishmentTaskForWave(waveId, ouId);
+    }
+
+    private void checkReplenishmentTaskForWave(Long waveId, Long ouId) {
+        WaveCommand wave = this.whWaveDao.findWaveByIdAndOuId(waveId, ouId);
+        if (wave == null) {
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+        }
+        if (WaveStatus.WAVE_CANCEL == wave.getStatus()) {
+            ReplenishmentTask task = new ReplenishmentTask();
+            task.setOuId(ouId);
+            task.setWaveId(waveId);
+            task.setStatus(ReplenishmentTaskStatus.REPLENISHMENT_TASK_NEW);
+            List<ReplenishmentTask> rtList = this.replenishmentTaskDao.findListByParam(task);
+            if (rtList != null && rtList.size() > 0) {
+                for (ReplenishmentTask rt : rtList) {
+                    WhSkuInventoryTobefilled tbfInv = new WhSkuInventoryTobefilled();
+                    tbfInv.setOuId(ouId);
+                    tbfInv.setReplenishmentCode(rt.getReplenishmentCode());
+                    List<WhSkuInventoryTobefilled> tbfInvList = this.whSkuInventoryTobefilledDao.findskuInventoryTobefilleds(tbfInv);
+                    if (tbfInvList == null || tbfInvList.size() == 0) {
+                        rt.setStatus(ReplenishmentTaskStatus.REPLENISHMENT_TASK_CANCEL);
+                        this.replenishmentTaskDao.saveOrUpdateByVersion(rt);
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -677,19 +705,20 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
                 for (WhSkuInventoryAllocated invAllocated : skuInvAllocatedList) {
                     invAllocated.setOccupationCode(null);
                     invAllocated.setOccupationLineId(null);
-                    this.whSkuInventoryAllocatedDao.saveOrUpdateByVersion(invAllocated);
+                    this.whSkuInventoryAllocatedDao.deleteExt(invAllocated.getId(), ouId);
                 }
             }
             // 删除待移入库存
             List<WhSkuInventoryTobefilled> skuInvTobefilledList = this.whSkuInventoryTobefilledDao.findbyOccupationCode(odo.getOdoCode(), ouId);
             if (skuInvTobefilledList != null && skuInvTobefilledList.size() > 0) {
                 for (WhSkuInventoryTobefilled invTobefilled : skuInvTobefilledList) {
-                    invTobefilled.setOccupationCode(null);
-                    invTobefilled.setOccupationLineId(null);
-                    this.whSkuInventoryTobefilledDao.saveOrUpdateByVersion(invTobefilled);
+                    this.whSkuInventoryTobefilledDao.deleteByExt(invTobefilled.getId(), ouId);
                 }
             }
             // @mender yimin.lu 2017/3/15补货任务不回滚 del
+            if (wave.getStatus() == WaveStatus.WAVE_CANCEL) {
+
+            }
         }
         /** 配货模式计算剔除逻辑 */
         if (wavePhase.intValue() >= WavePhase.DISTRIBUTION_NUM && wavePhaseList.contains(wavePhase)) {}

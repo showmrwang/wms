@@ -27,6 +27,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	work_priority as workPriority,
 	        	batch as batch,
 	        	assign_out_batch as assignOutBatch,
+	        	distribution_mode as distributionMode,
+	        	picking_mode as pickingMode,
+	        	checking_mode as checkingMode,
 	        	start_time as startTime,
 	        	finish_time as finishTime,
 	        	wave_id as waveId,
@@ -47,7 +50,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		<!-- 如果有自增字段 -->
 		
 			<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
-			<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhWork" 
+			<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhWork"
 				
 			 flushCache="true">
 		    <![CDATA[
@@ -69,6 +72,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	work_priority ,
 		        	batch ,
 		        	assign_out_batch ,
+		        	distribution_mode ,
+		        	picking_mode ,
+		        	checking_mode ,
 		        	start_time ,
 		        	finish_time ,
 		        	wave_id ,
@@ -100,6 +106,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{workPriority,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        	#{batch,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{assignOutBatch,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{distributionMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{pickingMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{checkingMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{startTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        	#{finishTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        	#{waveId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -138,6 +147,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        work_priority = #{workPriority,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        batch = #{batch,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        assign_out_batch = #{assignOutBatch,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        distribution_mode = #{distributionMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        picking_mode = #{pickingMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        checking_mode = #{checkingMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        start_time = #{startTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        finish_time = #{finishTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        wave_id = #{waveId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -168,8 +180,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        delete from t_wh_work 
 	        where id in
 				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
-					#{item}				
-				</foreach>	
+					#{item}
+				</foreach>
 	  
 	    </delete>  
 	         
@@ -186,8 +198,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			    from t_wh_work 
 		        where id in
 				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
-					#{item}				
-				</foreach>					
+					#{item}
+				</foreach>
 		</select>	
 	<sql id="whWorkDynamicWhere">
 		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
@@ -195,7 +207,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				<if test="id!=null">
 					and id = #{id}
 				</if>
-	       
+
 		       	<if test="code!=null and code!=''">
 					and code = #{code}
 				</if>
@@ -207,11 +219,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				<if test="ouId!=null">
 					and ou_id = #{ouId}
 				</if>
-	       
+
 		       	<if test="workType!=null and workType!=''">
 					and work_type = #{workType}
 				</if>
-	       
+
 		       	<if test="workCategory!=null and workCategory!=''">
 					and work_category = #{workCategory}
 				</if>
@@ -239,7 +251,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				<if test="isMultiOperation!=null">
 					and is_multi_operation = #{isMultiOperation}
 				</if>
-	       
+
 		       	<if test="workArea!=null and workArea!=''">
 					and work_area = #{workArea}
 				</if>
@@ -247,14 +259,25 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				<if test="workPriority!=null">
 					and work_priority = #{workPriority}
 				</if>
-	       
-	       
-		        <if test="batch!=null and batch!=''">
+
+		       	<if test="batch!=null and batch!=''">
 					and batch = #{batch}
 				</if>
-	       
-		       <if test="assignOutBatch!=null and assignOutBatch!=''">
+
+		       	<if test="assignOutBatch!=null and assignOutBatch!=''">
 					and assign_out_batch = #{assignOutBatch}
+				</if>
+
+		       	<if test="distributionMode!=null and distributionMode!=''">
+					and distribution_mode = #{distributionMode}
+				</if>
+
+		       	<if test="pickingMode!=null and pickingMode!=''">
+					and picking_mode = #{pickingMode}
+				</if>
+
+		       	<if test="checkingMode!=null and checkingMode!=''">
+					and checking_mode = #{checkingMode}
 				</if>
 	       
 				<if test="startTime!=null">
@@ -284,7 +307,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		       	<if test="outerContainerCode!=null and outerContainerCode!=''">
 					and outer_container_code = #{outerContainerCode}
 				</if>
-	       
+			
 		       	<if test="containerCode!=null and containerCode!=''">
 					and container_code = #{containerCode}
 				</if>
@@ -315,10 +338,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
 	</sql>
 	
-
 	<select id="getCount" resultType="long">
         select count(*) from t_wh_work 
     </select>
+    
     <select id="findListCountByQueryMap" resultType="long">
         select count(*) from t_wh_work 
 		<include refid="whWorkDynamicWhere"/>    
