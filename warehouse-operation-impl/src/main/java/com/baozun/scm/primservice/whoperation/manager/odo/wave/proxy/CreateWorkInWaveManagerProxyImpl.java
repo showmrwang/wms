@@ -701,7 +701,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
             //商品ID 
             whWorkLineCommand.setSkuId(whSkuInventory.getSkuId());
             //计划量 
-            if(whSkuInventoryList.size() == 1 && null == whSkuInventoryTobefilledList ){
+            if(whSkuInventoryList.size() == 1 && (null == whSkuInventoryTobefilledList || 0 == whSkuInventoryTobefilledList.size())){
                 whWorkLineCommand.setQty(whOdoOutBoundBoxCommand.getQty());
             }else{
                 whWorkLineCommand.setQty(whSkuInventory.getOnHandQty());
