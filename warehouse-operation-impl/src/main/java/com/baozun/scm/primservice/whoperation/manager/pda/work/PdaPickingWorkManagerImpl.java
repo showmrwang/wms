@@ -280,7 +280,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 }
             }
             //sku不在任何容器内
-            if(null == operationLine.getFromOuterContainerId() && null == operationLine.getFromInsideContainerId() && null == operationLine.getUseOutboundboxCode()){
+            if(null == operationLine.getFromOuterContainerId() && null == operationLine.getFromInsideContainerId()){
                 //获取sku（sku不在任何容器内）
                 if(null != operationLine.getFromLocationId() && null != operationLine.getSkuId() && null != skuIds.get(operationLine.getFromLocationId())){
                     skuIds.get(operationLine.getFromLocationId()).add(operationLine.getSkuId());
@@ -359,7 +359,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                     skuAttrIdsSnDefect.put(operationLine.getFromLocationId(), onlySkuSnMap);
                 }
                 // 库位上每个唯一sku对应的货格（is_whole_case=0&&有小车&&库位上sku不在任何容器内）
-                if(null != operationLine.getFromLocationId() && null != onlySku && null != operationLine.getUseOutboundboxCode() && whOperationCommand.getIsWholeCase() == false && null != operationLine.getFromOuterContainerId()){
+                if(null != operationLine.getFromLocationId() && null != onlySku && null != operationLine.getUseOutboundboxCode() && whOperationCommand.getIsWholeCase() == false){
                     if(null != skuAttrIdsContainerLattice.get(operationLine.getFromLocationId())){
                         Map<String, Set<String>> onlySkuUseOutboundboxMap = new HashMap<String, Set<String>>();
                         onlySkuUseOutboundboxMap = skuAttrIdsContainerLattice.get(operationLine.getFromLocationId());
@@ -471,7 +471,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                     insideSkuAttrIdsSnDefect.put(operationLine.getFromInsideContainerId(), onlySkuSnMap);
                 }
                 //内部容器每个唯一sku对应的货格（is_whole_case=0&&有小车）
-                if(null != operationLine.getFromInsideContainerId() && null != onlySku && null != operationLine.getUseOutboundboxCode() && whOperationCommand.getIsWholeCase() == false && null != operationLine.getFromOuterContainerId()){
+                if(null != operationLine.getFromInsideContainerId() && null != onlySku && null != operationLine.getUseOutboundboxCode() && whOperationCommand.getIsWholeCase() == false){
                     if(null != skuAttrIdsContainerLattice.get(operationLine.getFromInsideContainerId())){
                         Map<String, Set<String>> onlySkuOutboundboxMap = new HashMap<String, Set<String>>();
                         onlySkuOutboundboxMap = skuAttrIdsContainerLattice.get(operationLine.getFromInsideContainerId());
