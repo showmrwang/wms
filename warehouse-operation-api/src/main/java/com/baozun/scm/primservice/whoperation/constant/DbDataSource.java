@@ -10,4 +10,7 @@ public class DbDataSource {
 
     /** globalSource */
     public static final String MOREDB_GLOBALSOURCE = "globalSource";
+
+    /** collectSource */
+    public static final String MOREDB_COLLECTSOURCE = "collectSource";
 }

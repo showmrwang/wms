@@ -965,8 +965,8 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
         //配置模式  
         if(null != whWorkLineCommandList && 0 < whWorkLineCommandList.size()){
             WhOdo odo = odoDao.findByIdOuId(whWorkLineCommandList.get(0).getOdoId(), whWorkLineCommandList.get(0).getOuId());
-            WhDistributionPatternRuleCommand whDistributionPatternRuleCommand = whDistributionPatternRuleDao.findRuleByCode(odo.getDistributionCode(), odo.getOuId()); 
-            whWorkCommand.setDistributionMode(odo.getDistributionCode());
+            WhDistributionPatternRuleCommand whDistributionPatternRuleCommand = whDistributionPatternRuleDao.findRuleByCode(odo.getDistributeMode(), odo.getOuId()); 
+            whWorkCommand.setDistributionMode(odo.getDistributeMode());
             whWorkCommand.setPickingMode(whDistributionPatternRuleCommand.getPickingMode().toString());
             whWorkCommand.setCheckingMode(whDistributionPatternRuleCommand.getCheckingMode());
         }
