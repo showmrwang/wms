@@ -581,6 +581,20 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                           break;
                        }
                   }
+              }else{
+                  if(null != insideContainerId) { //有货箱
+                      if(insideContainerId.equals(skuCmd.getInsideContainerId()) && locationId.equals(skuCmd.getLocationId())) {
+                          if(tipSkuId.longValue() == skuCmd.getSkuId().longValue()) {
+                                 skuAttrId = SkuCategoryProvider.getSkuAttrIdByInv(skuCmd);
+                                 break;
+                           }
+                      }
+                  }else{//散装
+                      if(tipSkuId.longValue() == skuCmd.getSkuId().longValue() && locationId.equals(skuCmd.getLocationId())) {
+                          skuAttrId = SkuCategoryProvider.getSkuAttrIdByInv(skuCmd);
+                          break;
+                       }
+                  }
               }
           }
           if(isExistSn){ //没有残次sn/残次信息
