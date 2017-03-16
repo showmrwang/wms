@@ -57,7 +57,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			</if>
 	 </delete>
 	<delete id="deletePoSn" parameterType="map">
-			delete from ${tableName} where po_line_id in (select id from ${lineTableName} where po_id = #{poid}) 
+			delete from ${tableName} where po_line_id in (select id from ${lineTableName} where po_id = #{poid} 
+			<if test="ouid!=null">
+				and ou_id = #{ouid}
+			</if>
+			) 
 			<if test="ouid!=null">
 				and ou_id = #{ouid}
 			</if>
@@ -77,7 +81,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			delete from t_wh_asn_line where asn_id = #{asnid} and ou_id = #{ouid}
 	 </delete>
 	<delete id="deleteAsnSn" parameterType="map">
-			delete from t_wh_asn_sn where asn_line_id in (select id from t_wh_asn_line where asn_id = #{asnid}) and ou_id = #{ouid}
+			delete from t_wh_asn_sn where asn_line_id in (select id from t_wh_asn_line where asn_id = #{asnid} and ou_id = #{ouid}) and ou_id = #{ouid}
 	 </delete>
 	<delete id="deleteAsnTransportMgmt" parameterType="map">
 			delete from t_wh_asn_transport_mgmt where asn_id = #{asnid} and ou_id = #{ouid}

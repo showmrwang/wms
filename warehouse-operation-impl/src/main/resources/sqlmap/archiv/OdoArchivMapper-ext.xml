@@ -602,4 +602,36 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
                 )
             ]]>
     </insert>
+    
+    <!-- 删除WhOdo信息 -->
+    <delete id="deleteOdo" parameterType="map">
+			delete from t_wh_odo where id = #{odoid} and ou_id = #{ouid}
+	 </delete>
+    <delete id="deleteOdoLine" parameterType="map">
+			delete from t_wh_odo_line where odo_id = #{odoid} and ou_id = #{ouid}
+	 </delete>
+    <delete id="deleteOdoLineSn" parameterType="map">
+			delete from t_wh_odo_line_sn where odo_line_id in (select id from t_wh_odo_line where odo_id = #{odoid} and ou_id = #{ouid}) and ou_id = #{ouid}
+	 </delete>
+    <delete id="deleteOdoAttr" parameterType="map">
+			delete from t_wh_odo_attr where odo_id = #{odoid} and ou_id = #{ouid}
+	 </delete>
+    <delete id="deleteOdoLineAttr" parameterType="map">
+			delete from t_wh_odo_line_attr where odo_line_id in (select id from t_wh_odo_line where odo_id = #{odoid} and ou_id = #{ouid}) and ou_id = #{ouid}
+	 </delete>
+    <delete id="deleteOdoInvoice" parameterType="map">
+			delete from t_wh_odo_invoice where odo_id = #{odoid} and ou_id = #{ouid}
+	 </delete>
+    <delete id="deleteOdoInvoiceLine" parameterType="map">
+			delete from t_wh_odo_invoice_line where odo_invoice_id in (select id from t_wh_odo_invoice where odo_id = #{odoid} and ou_id = #{ouid}) and ou_id = #{ouid}
+	 </delete>
+    <delete id="deleteOdoAddress" parameterType="map">
+			delete from t_wh_odo_address where odo_id = #{odoid} and ou_id = #{ouid}
+	 </delete>
+	 <delete id="deleteOdoVas" parameterType="map">
+			delete from t_wh_odo_vas where odo_id = #{odoid} and ou_id = #{ouid}
+	 </delete>
+	 <delete id="deleteOdoTransportMgmt" parameterType="map">
+			delete from t_wh_odo_transport_mgmt where odo_id = #{odoid} and ou_id = #{ouid}
+	 </delete>
 </mapper>

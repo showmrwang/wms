@@ -96,7 +96,7 @@ public class OdoArchivManagerImpl implements OdoArchivManager {
             whOdo.setArchivTime(new Date());
             int odo = odoArchivDao.archivWhOdo(whOdo);
             count += odo;
-            // 归档odoLine+odoLineSn+odoLineAttr+odoVasByOdoLine
+            // 归档odoLine+odoLineSn+odoLineAttr
             count = archivWhOdoLine(odoid, ouid, sysDate, count);
             // 归档odoAddress
             count = archivWhOdoAddress(odoid, ouid, sysDate, count);
@@ -116,7 +116,7 @@ public class OdoArchivManagerImpl implements OdoArchivManager {
     }
 
     /**
-     * 归档odoLine+odoLineSn+odoLineAttr+odoVasByOdoLine
+     * 归档odoLine+odoLineSn+odoLineAttr
      * 
      * @param odoid
      * @param ouid
@@ -147,14 +147,6 @@ public class OdoArchivManagerImpl implements OdoArchivManager {
                 odoLineAttr.setSysDate(sysDate);
                 int ola = odoArchivDao.archivWhOdoLineAttr(odoLineAttr);
                 count += ola;
-            }
-            // 查询odoVas数据by OdoLine
-            List<WhOdoVas> odoVasList = whOdoVasDao.findOdoVasByOdoIdOdoLineIdType(null, ol.getId(), null, ouid);
-            for (WhOdoVas whOdoVas : odoVasList) {
-                // 有数据插入WhOdoVasArchiv
-                whOdoVas.setSysDate(sysDate);
-                int ov = odoArchivDao.archivWhOdoVas(whOdoVas);
-                count += ov;
             }
         }
         return count;
@@ -269,6 +261,41 @@ public class OdoArchivManagerImpl implements OdoArchivManager {
             whOdoVas.setSysDate(sysDate);
             int ov = odoArchivDao.archivWhOdoVas(whOdoVas);
             count += ov;
+        }
+        return count;
+    }
+
+    /**
+     * 删除Odo信息
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public int deleteOdo(Long odoid, Long ouid) {
+        int count = 0;
+        try {
+            int odoVas = odoArchivDao.deleteOdoVas(odoid, ouid);
+            count += odoVas;
+            int odoTm = odoArchivDao.deleteOdoTransportMgmt(odoid, ouid);
+            count += odoTm;
+            int odoLineSn = odoArchivDao.deleteOdoLineSn(odoid, ouid);
+            count += odoLineSn;
+            int odoLineAttr = odoArchivDao.deleteOdoLineAttr(odoid, ouid);
+            count += odoLineAttr;
+            int odoInvoiceLine = odoArchivDao.deleteOdoInvoiceLine(odoid, ouid);
+            count += odoInvoiceLine;
+            int odoInvoice = odoArchivDao.deleteOdoInvoice(odoid, ouid);
+            count += odoInvoice;
+            int odoAttr = odoArchivDao.deleteOdoAttr(odoid, ouid);
+            count += odoAttr;
+            int odoLine = odoArchivDao.deleteOdoLine(odoid, ouid);
+            count += odoLine;
+            int odoAddress = odoArchivDao.deleteOdoAddress(odoid, ouid);
+            count += odoAddress;
+            int odo = odoArchivDao.deleteOdo(odoid, ouid);
+            count += odo;
+        } catch (Exception e) {
+            log.error("OdoArchivManagerImpl deleteOdo error" + e);
+            throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
         }
         return count;
     }

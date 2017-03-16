@@ -14,6 +14,8 @@
  */
 package com.baozun.scm.primservice.whoperation.dao.archiv;
 
+import org.apache.ibatis.annotations.Param;
+
 import lark.orm.dao.supports.BaseDao;
 
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
@@ -110,5 +112,95 @@ public interface OdoArchivDao extends BaseDao<WhOdo, Long> {
      * @return
      */
     int archivWhOdoVas(WhOdoVas whOdoVas);
+
+    /**
+     * 删除WhOdo
+     * 
+     * @param odoid
+     * @param ouid
+     * @return
+     */
+    int deleteOdo(@Param("odoid") Long odoid, @Param("ouid") Long ouid);
+
+    /**
+     * 删除WhOdoLine
+     * 
+     * @param odoid
+     * @param ouid
+     * @return
+     */
+    int deleteOdoLine(@Param("odoid") Long odoid, @Param("ouid") Long ouid);
+
+    /**
+     * 删除WhOdoLineSn
+     * 
+     * @param odoid
+     * @param ouid
+     * @return
+     */
+    int deleteOdoLineSn(@Param("odoid") Long odoid, @Param("ouid") Long ouid);
+
+    /***
+     * 删除WhOdoAttr
+     * 
+     * @param odoid
+     * @param ouid
+     * @return
+     */
+    int deleteOdoAttr(@Param("odoid") Long odoid, @Param("ouid") Long ouid);
+
+    /***
+     * 删除WhOdoLineAttr
+     * 
+     * @param odoid
+     * @param ouid
+     * @return
+     */
+    int deleteOdoLineAttr(@Param("odoid") Long odoid, @Param("ouid") Long ouid);
+
+    /**
+     * 删除WhOdoInvoice
+     * 
+     * @param odoid
+     * @param ouid
+     * @return
+     */
+    int deleteOdoInvoice(@Param("odoid") Long odoid, @Param("ouid") Long ouid);
+
+    /**
+     * 删除WhOdoInvoiceLine
+     * 
+     * @param odoid
+     * @param ouid
+     * @return
+     */
+    int deleteOdoInvoiceLine(@Param("odoid") Long odoid, @Param("ouid") Long ouid);
+
+    /**
+     * 删除WhOdoAddress
+     * 
+     * @param odoid
+     * @param ouid
+     * @return
+     */
+    int deleteOdoAddress(@Param("odoid") Long odoid, @Param("ouid") Long ouid);
+
+    /**
+     * 删除WhOdoVas
+     * 
+     * @param odoid
+     * @param ouid
+     * @return
+     */
+    int deleteOdoVas(@Param("odoid") Long odoid, @Param("ouid") Long ouid);
+
+    /**
+     * 删除WhOdoTransportMgmt
+     * 
+     * @param odoid
+     * @param ouid
+     * @return
+     */
+    int deleteOdoTransportMgmt(@Param("odoid") Long odoid, @Param("ouid") Long ouid);
 
 }
