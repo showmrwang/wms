@@ -603,7 +603,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         this.checkReplenishmentTaskForWave(waveId, ouId);
     }
 
-    private void checkReplenishmentTaskForWave(Long waveId, Long ouId) {
+    public void checkReplenishmentTaskForWave(Long waveId, Long ouId) {
         WaveCommand wave = this.whWaveDao.findWaveByIdAndOuId(waveId, ouId);
         if (wave == null) {
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);

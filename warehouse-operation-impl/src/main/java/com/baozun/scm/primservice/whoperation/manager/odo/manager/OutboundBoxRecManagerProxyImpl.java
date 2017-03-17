@@ -205,6 +205,9 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
 
             // 设置波次的波次阶段为下一个阶段
             whWaveManager.changeWavePhaseCode(whWaveCommand.getId(), ouId);
+
+            // 波次取消需要取消补货任务
+            whWaveManager.checkReplenishmentTaskForWave(whWaveCommand.getId(), ouId);
         }
 
     }
@@ -2849,7 +2852,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                     mixAttr = skuMgmt.getMixAttr();
                     firstSkuId = odoLine.getSkuId();
 
-                    if (!isMixAllowed) {
+                    if (isMixAllowed) {
                         assert !StringUtil.isEmpty(mixAttr);
                     }
                 }
