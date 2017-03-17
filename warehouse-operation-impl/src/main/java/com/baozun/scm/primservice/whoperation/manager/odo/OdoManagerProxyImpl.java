@@ -158,6 +158,8 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
 
     @Override
     public ResponseMsg createOdo(OdoGroupCommand odoGroup) {
+        String logId = odoGroup.getLogId();
+        log.info(this.getClass().getSimpleName() + ".createOdo ,logId:{},params:[odoGroupCommand:{}]", logId, odoGroup);
         ResponseMsg msg = new ResponseMsg();
         Long returnOdoId = null;
         try {
@@ -165,6 +167,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             Long userId = odoGroup.getUserId();
             // 原始数据集合
             OdoCommand sourceOdo = odoGroup.getOdo();
+            sourceOdo.setOuId(odoGroup.getOuId());
             //#TODO yimin.lu 设置状态逻辑 暂时放于此位置
             if (odoGroup.getIsWms() != null && odoGroup.getIsWms()) {
                 sourceOdo.setOdoStatus(OdoStatus.ODO_TOBECREATED);
@@ -176,8 +179,12 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             WhOdoInvoice sourceInvoice = odoGroup.getOdoInvoice();
             List<WhOdoInvoiceLine> sourceInvoiceLineList = odoGroup.getOdoInvoiceLineList();
 
-
-            returnOdoId = this.createOdo(sourceOdo, sourceOdoLineList, sourceOdoTrans, sourceAddress, sourceInvoice, sourceInvoiceLineList, ouId, userId);
+            if (sourceOdo.getId() != null) {
+                this.editOdo(sourceOdo, sourceOdoTrans);
+                returnOdoId = sourceOdo.getId();
+            } else {
+                returnOdoId = this.createOdo(sourceOdo, sourceOdoLineList, sourceOdoTrans, sourceAddress, sourceInvoice, sourceInvoiceLineList, ouId, userId);
+            }
         } catch (BusinessException e) {
             msg.setResponseStatus(ResponseMsg.STATUS_ERROR);
             msg.setMsg(e.getErrorCode() + "");
@@ -192,6 +199,79 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         msg.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
         return msg;
     }
+
+    /**
+     * 修改出库单头信息
+     * 
+     * @param sourceOdo
+     * @param sourceOdoTrans
+     */
+    private void editOdo(OdoCommand sourceOdo, OdoTransportMgmtCommand sourceOdoTrans) {
+        try {
+
+            Long ouId = sourceOdo.getOuId();
+            WhOdo odo = this.odoManager.findOdoByIdOuId(sourceOdo.getId(), ouId);
+            if (odo == null) {
+                throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+            }
+            if (!(OdoStatus.ODO_TOBECREATED.equals(odo.getOdoStatus()) || OdoStatus.ODO_NEW.equals(odo.getOdoStatus()))) {
+                throw new BusinessException(ErrorCodes.ODO_EDIT_ERROR);
+            }
+            Long odoId = odo.getId();
+            //配货模式计算
+            boolean distributionModeCalcFlag=false;
+            if ((null == odo.getIsLocked() || !odo.getIsLocked()) && Constants.ODO_CROSS_DOCKING_SYSMBOL_2.equals(odo.getCrossDockingSymbol())) {
+                distributionModeCalcFlag=true;
+            }
+            
+            odo.setEpistaticSystemsOrderType(sourceOdo.getEpistaticSystemsOrderType());
+            odo.setOrderType(sourceOdo.getOrderType());
+            odo.setEcOrderCode(sourceOdo.getEcOrderCode());
+            odo.setOdoType(sourceOdo.getOdoType());
+            WhOdoTransportMgmt trans = this.odoTransportMgmtManager.findTransportMgmtByOdoIdOuId(odoId, ouId);
+            if(trans==null){
+                throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+            }
+            trans.setPlanDeliverGoodsTime(DateUtils.parseDate(sourceOdoTrans.getPlanDeliverGoodsTimeStr(), Constants.DATE_PATTERN_YMD));
+            odo.setPriorityLevel(sourceOdo.getPriorityLevel());
+            odo.setIsLocked(sourceOdo.getIsLocked());
+            odo.setIsWholeOrderOutbound(sourceOdo.getIsWholeOrderOutbound());
+            odo.setCrossDockingSymbol(sourceOdo.getCrossDockingSymbol());
+            odo.setOutboundCartonType(sourceOdo.getOutboundCartonType());
+            trans.setDeliverGoodsTimeMode(sourceOdoTrans.getDeliverGoodsTimeMode());
+            trans.setDeliverGoodsTime(DateUtils.parseDate(sourceOdoTrans.getDeliverGoodsTimeStr(), Constants.DATE_PATTERN_YMD));
+            trans.setOutboundTargetType(sourceOdoTrans.getOutboundTargetType());
+            trans.setOutboundTarget(sourceOdoTrans.getOutboundTarget());
+            trans.setTransportServiceProvider(sourceOdoTrans.getTransportServiceProvider());
+            trans.setModeOfTransport(sourceOdoTrans.getModeOfTransport());
+            trans.setIsCod(sourceOdoTrans.getIsCod());
+            trans.setCodAmt(sourceOdoTrans.getCodAmt());
+            if (distributionModeCalcFlag) {
+                if ((null == odo.getIsLocked() || !odo.getIsLocked()) && Constants.ODO_CROSS_DOCKING_SYSMBOL_2.equals(odo.getCrossDockingSymbol())) {
+                    distributionModeCalcFlag = false;
+                } 
+            } else {
+                if ((null == odo.getIsLocked() || !odo.getIsLocked()) && Constants.ODO_CROSS_DOCKING_SYSMBOL_2.equals(odo.getCrossDockingSymbol())) {
+                    distributionModeCalcFlag = true;
+                }
+            }
+            // 保存数据
+            this.odoManager.editOdo(odo, trans);
+            // 计算配货模式
+            if (distributionModeCalcFlag) {
+                if (!OdoStatus.ODO_TOBECREATED.equals(odo.getOdoStatus())) {
+
+                    this.distributionModeArithmeticManagerProxy.AddToWave(odo.getCounterCode(), odoId);
+                }
+            }
+        } catch (BusinessException ex) {
+            throw ex;
+
+        } catch (Exception e) {
+            log.error(e + "");
+        }
+    }
+
 
     private Long createOdo(OdoCommand odo, List<OdoLineCommand> odoLineList, OdoTransportMgmtCommand transportMgmt, WhOdoAddress odoAddress, WhOdoInvoice invoice, List<WhOdoInvoiceLine> invoiceLineList, Long ouId, Long userId) {
         Long odoId = null;
@@ -441,6 +521,9 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             if (odo == null) {
                 throw new BusinessException(ErrorCodes.NO_ODO_FOUND);
             }
+            if (!(OdoStatus.ODO_TOBECREATED.equals(odo.getOdoStatus()) || OdoStatus.ODO_NEW.equals(odo.getOdoStatus()))) {
+                throw new BusinessException(ErrorCodes.ODO_EDIT_ERROR);
+            }
             /*
              * WhOdoTransportMgmt transportMgmt =
              * this.odoTransportMgmtManager.findTransportMgmtByOdoIdOuId(odoId, ouId); if
@@ -517,6 +600,9 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             WhOdo odo = this.odoManager.findOdoByIdOuId(odoId, ouId);
             if (odo == null) {
                 throw new BusinessException(ErrorCodes.NO_ODO_FOUND);
+            }
+            if (!(OdoStatus.ODO_TOBECREATED.equals(odo.getOdoStatus()) || OdoStatus.ODO_NEW.equals(odo.getOdoStatus()))) {
+                throw new BusinessException(ErrorCodes.ODO_EDIT_ERROR);
             }
             /*
              * WhOdoTransportMgmt transportMgmt =

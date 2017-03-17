@@ -332,4 +332,8 @@ public interface WhWaveManager extends BaseManager {
      * [通用方法] 出库单从波次中剔除
      */
 	void deleteWaveLinesFromWaveByWavePhase(Long waveId, Long odoId, String reason, Warehouse wh, Integer wavePhase);
+
+    public void calculateWaveHeadInfo(Long waveId, Long ouId);
+
+    public void checkReplenishmentTaskForWave(Long waveId, Long ouId);
 }

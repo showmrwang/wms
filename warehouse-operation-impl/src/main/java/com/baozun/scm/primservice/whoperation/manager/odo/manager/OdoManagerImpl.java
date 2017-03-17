@@ -1201,5 +1201,23 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
         return odoList.get(0);
     }
 
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void editOdo(WhOdo odo, WhOdoTransportMgmt trans) {
+       try{
+           int updateCount=this.whOdoDao.saveOrUpdateByVersion(odo);
+           if(updateCount<=0){
+               throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+           }
+           this.whOdoTransportMgmtDao.saveOrUpdate(trans);
+       }catch(BusinessException e){
+           throw e;
+       }catch(Exception ex){
+           log.error(ex+"");
+            throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
+       }
+        
+    }
+
 
 }

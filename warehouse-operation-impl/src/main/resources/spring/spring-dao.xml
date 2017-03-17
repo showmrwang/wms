@@ -126,7 +126,7 @@
 				<entry key="globalSource">
 					<ref bean="globalSource"/>
 				</entry>
-				<!---->  <entry key="collectSource">
+				<entry key="collectSource">
 					<ref bean="collectSource"/>
 				</entry>
 			</map>
