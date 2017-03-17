@@ -117,8 +117,6 @@ public class WhAsnLineCommand extends BaseCommand {
     private Double conversionRate;
     /** 库存状态名称 */
     private String invName;
-    /** 商品ID */
-    private Long skuid;
     /** 库存属性1 */
     private String inv1Str;
     /** 库存属性2 */
@@ -475,14 +473,6 @@ public class WhAsnLineCommand extends BaseCommand {
 
     public void setIds(List<Long> ids) {
         this.ids = ids;
-    }
-
-    public Long getSkuid() {
-        return skuid;
-    }
-
-    public void setSkuid(Long skuid) {
-        this.skuid = skuid;
     }
 
     public String getInv1Str() {

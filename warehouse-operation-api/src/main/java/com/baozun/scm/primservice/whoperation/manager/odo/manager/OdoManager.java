@@ -23,6 +23,7 @@ import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAddress;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoInvoice;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoInvoiceLine;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoVas;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine;
@@ -271,4 +272,12 @@ public interface OdoManager extends BaseManager {
     List<WhOdo> findByExtCodeOuIdNotCancel(String extOdoCode, Long ouId);
 
     WhOdo findByExtCodeStoreIdOuId(String extCode, Long storeId, Long ouId);
+
+    /**
+     * 编辑出库单
+     * 
+     * @param odo
+     * @param trans
+     */
+    void editOdo(WhOdo odo, WhOdoTransportMgmt trans);
 }
