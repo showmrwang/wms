@@ -50,7 +50,6 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.Container2ndCatego
 import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
 import com.baozun.scm.primservice.whoperation.model.warehouse.carton.WhCarton;
-import com.baozun.scm.primservice.whoperation.util.DateUtil;
 import com.baozun.scm.primservice.whoperation.util.StringUtil;
 
 
@@ -798,15 +797,7 @@ public class AsnManagerImpl extends BaseManagerImpl implements AsnManager {
         }
 
         try {
-            // 删除Asn表头信息
             WhAsn asn = this.whAsnDao.findWhAsnById(asnId, ouId);
-            int deleteAsnCount = whAsnDao.deleteByIdOuId(asnId, ouId);
-            if (deleteAsnCount <= 0) {
-                log.warn("method deleteAsnAndAsnLineToShard delete asn error: no asn to be deleted![params:-->id:{},ouId:{},returns:{}] ", asnId, ouId, deleteAsnCount);
-                throw new BusinessException(ErrorCodes.DELETE_DATA_ERROR);
-            }
-            // 写入日志
-            this.insertGlobalLog(GLOBAL_LOG_DELETE, asn, ouId, userId, null, null);
             // 删除AsnLINE明细信息
             List<WhAsnLine> asnLineList = this.whAsnLineDao.findWhAsnLineByAsnIdOuId(asnId, ouId);
             if (asnLineList != null && asnLineList.size() > 0) {
@@ -819,6 +810,14 @@ public class AsnManagerImpl extends BaseManagerImpl implements AsnManager {
                     this.insertGlobalLog(GLOBAL_LOG_DELETE, asnLine, ouId, userId, asn.getAsnCode(), null);
                 }
             }
+            // 删除Asn表头信息
+            int deleteAsnCount = whAsnDao.deleteByIdOuId(asnId, ouId);
+            if (deleteAsnCount <= 0) {
+                log.warn("method deleteAsnAndAsnLineToShard delete asn error: no asn to be deleted![params:-->id:{},ouId:{},returns:{}] ", asnId, ouId, deleteAsnCount);
+                throw new BusinessException(ErrorCodes.DELETE_DATA_ERROR);
+            }
+            // 写入日志
+            this.insertGlobalLog(GLOBAL_LOG_DELETE, asn, ouId, userId, null, null);
             // 更改PO单信息
             int updatePoCount = this.whPoDao.saveOrUpdateByVersion(whpo);
             if (updatePoCount <= 0) {
