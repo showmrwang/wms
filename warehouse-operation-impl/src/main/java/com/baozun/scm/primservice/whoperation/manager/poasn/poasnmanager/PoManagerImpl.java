@@ -39,10 +39,12 @@ import com.baozun.scm.primservice.whoperation.dao.poasn.BiPoDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.BiPoLineDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoLineDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.StoreDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.system.GlobalLogManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.inbound.WhInboundManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager;
 import com.baozun.scm.primservice.whoperation.model.poasn.BiPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.BiPoLine;
@@ -78,16 +80,11 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
     @Autowired
     private BiPoLineDao biPoLineDao;
     @Autowired
-    private WhInboundConfirmDao whInboundConfirmDao;
-    @Autowired
-    private WhInboundLineConfirmDao whInboundLineConfirmDao;
-    @Autowired
-    private WhInboundInvLineConfirmDao whInboundInvLineConfirmDao;
-    @Autowired
-    private WhInboundSnLineConfirmDao whInboundSnLineConfirmDao;
+    private WhInboundManager whInboundManager;
     @Autowired
     private WhSkuInventoryManager whSkuInventoryManager;
-    
+    @Autowired
+    private StoreDao storeDao;
     /**
      * 读取拆分库PO单数据
      * 
@@ -571,16 +568,16 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void closePoToShard(Long id, Long ouId, Long userId) {
-        closePo(id, ouId, userId);
+        closePo(id, ouId, userId, true);
     }
 
     @Override
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public void closePoToInfo(Long id, Long ouId, Long userId) {
-        closePo(id, ouId, userId);
+        closePo(id, ouId, userId, false);
     }
 
-    private void closePo(Long id, Long ouId, Long userId) {
+    private void closePo(Long id, Long ouId, Long userId, boolean flag) {
         try {
             List<WhPoLine> lineList = this.whPoLineDao.findWhPoLineByPoIdOuIdUuid(id, ouId, null);
             if (lineList != null && lineList.size() > 0) {
@@ -600,9 +597,15 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
             if (updateCountPo <= 0) {
                 throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
             }
-            
-            if (null != po.getIsVmi() && po.getIsVmi()) {
-            	this.createInBoundConfirmData(po, lineList, ouId);
+            // zhu.kai 收货反馈
+            if (flag) {
+            	Store store = storeDao.findById(po.getStoreId());
+            	if (null != store && null != store.getInboundConfirmOrderType() && store.getInboundConfirmOrderType().intValue() == 1) {
+					// 按PO单反馈, 上位系统单据才反馈
+            		if (null != po.getIsVmi() && po.getIsVmi()) {
+            			this.createInBoundConfirmData(po, lineList, ouId);
+            		}
+				}
 			}
 
         } catch (BusinessException e) {
@@ -615,44 +618,7 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
 
 	private void createInBoundConfirmData(WhPo po, List<WhPoLine> lineList, Long ouId) {
 		WhInboundConfirmCommand inboundConfirmCommand = whSkuInventoryManager.findInventoryByPo(po, lineList, ouId);
-		
-		// 保存入库反馈头信息
-		WhInboundConfirm inboundConfirm = new WhInboundConfirm();
-		BeanUtils.copyProperties(inboundConfirmCommand, inboundConfirm);
-		whInboundConfirmDao.insert(inboundConfirm);
-		
-		// 保存入库反馈明细信息
-		List<WhInboundLineConfirmCommand> whInboundLineConfirmList = inboundConfirmCommand.getWhInboundLineConfirmList();
-		if (null != whInboundLineConfirmList) {
-			for (WhInboundLineConfirmCommand lineCommand : whInboundLineConfirmList) {
-				WhInboundLineConfirm line = new WhInboundLineConfirm();
-				BeanUtils.copyProperties(lineCommand, line);
-				line.setInboundConfirmId(inboundConfirm.getId());
-				whInboundLineConfirmDao.insert(line);
-				
-				// 保存入库反馈库存明细信息
-				List<WhInboundInvLineConfirmCommand> invLineCommandList = lineCommand.getWhInBoundInvLineConfirmsList();
-				if (null != invLineCommandList) {
-					for (WhInboundInvLineConfirmCommand invLineCommand : invLineCommandList) {
-						WhInboundInvLineConfirm invLine = new WhInboundInvLineConfirm();
-						BeanUtils.copyProperties(invLineCommand, invLine);
-						invLine.setInboundConfirmLineId(line.getId());
-						whInboundInvLineConfirmDao.insert(invLine);
-						
-						// 保存入库反馈SN信息
-						List<WhInboundSnLineConfirmCommand> snLineCommand = invLineCommand.getWhInBoundSnLineConfirmCommandList();
-						if (null != snLineCommand) {
-							for (WhInboundSnLineConfirmCommand snLineCommandList : snLineCommand) {
-								WhInboundSnLineConfirm snLine = new WhInboundSnLineConfirm();
-								BeanUtils.copyProperties(snLineCommandList, snLine);
-								snLine.setInboundInvLineConfirmId(invLine.getId());
-								whInboundSnLineConfirmDao.insert(snLine);
-							}
-						}
-					}
-				}
-			}
-		}
+		whInboundManager.insertWhInboundData(inboundConfirmCommand);
 	}
 	
 }

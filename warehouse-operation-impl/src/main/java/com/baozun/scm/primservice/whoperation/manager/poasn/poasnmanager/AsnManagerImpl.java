@@ -24,6 +24,7 @@ import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnLineCommand;
 import com.baozun.scm.primservice.whoperation.command.system.GlobalLogCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
+import com.baozun.scm.primservice.whoperation.command.whinterface.inbound.WhInboundConfirmCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
@@ -34,11 +35,14 @@ import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoLineDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.Container2ndCategoryDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.StoreDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.carton.WhCartonDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.system.GlobalLogManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.inbound.WhInboundManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine;
@@ -82,6 +86,12 @@ public class AsnManagerImpl extends BaseManagerImpl implements AsnManager {
     private Container2ndCategoryDao container2ndCategoryDao;
     @Autowired
     private WhCartonDao whCartonDao;
+    @Autowired
+    private StoreDao storeDao;
+    @Autowired
+    private WhInboundManager whInboundManager;
+    @Autowired
+    private WhSkuInventoryManager whSkuInventoryManager;
 
 
     /**
@@ -1111,6 +1121,19 @@ public class AsnManagerImpl extends BaseManagerImpl implements AsnManager {
             if (updateCountAsn <= 0) {
                 throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
             }
+            // zhu.kai 收货反馈
+            Store store = storeDao.findById(asn.getStoreId());
+            if (null != store && null != store.getInboundConfirmOrderType() && store.getInboundConfirmOrderType().intValue() == 2) {
+				// 按ASN单反馈, 上位系统单据才反馈
+            	WhPo po = whPoDao.findWhPoById(asn.getPoId(), ouId);
+        		if (null != po.getIsVmi() && po.getIsVmi()) {
+        			// 根据asnId查找出asnLine, 用WhPoLine封装参数
+        			List<WhPoLine> asnLineList = whAsnLineDao.findAsnInboundData(asn.getId(), ouId);
+        			WhInboundConfirmCommand inboundConfirmCommand = whSkuInventoryManager.findInventoryByPo(po, asnLineList, ouId);
+        			whInboundManager.insertWhInboundData(inboundConfirmCommand);
+        		}
+			}
+            
         } catch (BusinessException ex) {
             throw ex;
         } catch (Exception e) {
