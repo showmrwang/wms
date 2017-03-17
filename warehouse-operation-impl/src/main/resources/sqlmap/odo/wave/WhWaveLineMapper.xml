@@ -54,7 +54,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	last_modify_time as lastModifyTime,
 	        	modified_id as modifiedId, 
 	        	is_pallet_container as isPalletContainer,
-	        	pallet_container_qty as palleContainerQty, 
+	        	pallet_container_qty as palletContainerQty, 
 	        	is_static_location_allocate as isStaticLocationAllocate,
 	        	static_location_ids as staticLocationIds,
 	        	area_id as areaId,
