@@ -335,8 +335,10 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
         // 未匹配小车的出库单分配周转箱
         if (!unmatchedTrolleyOdoListDistributeMap.isEmpty()) {
             List<OdoCommand> unmatchedTurnoverBoxOdoList = this.allocateTurnoverBoxForUnPackingOdo(unmatchedTrolleyOdoListDistributeMap, ouId, logId);
-            // 未匹配周转箱的出库单,待踢出波次
-            this.releaseOdoFromWave(unmatchedTurnoverBoxOdoList, Constants.CREATE_OUTBOUND_CARTON_UNMATCHED_BOX, ouId, logId);
+            if(!unmatchedTurnoverBoxOdoList.isEmpty()) {
+                // 未匹配周转箱的出库单,待踢出波次
+                this.releaseOdoFromWave(unmatchedTurnoverBoxOdoList, Constants.CREATE_OUTBOUND_CARTON_UNMATCHED_BOX, ouId, logId);
+            }
         }
     }
 
@@ -1717,6 +1719,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                 // 在一个事务中保存整个小批次的包裹信息
                 outboundBoxRecManager.saveRecOutboundBoxByContainer(packingTurnoverBoxList);
             } catch (BusinessException be) {
+                log.error("packingForSingleMode error,batchSingleOdoList is:[{}], e is:[{}], logId is:[{}]", batchSingleOdoList, be, logId);
                 // 整个批次的出库单踢出波次
                 this.releaseOdoFromWave(batchSingleOdoList, Constants.CREATE_OUTBOUND_CARTON_REC_BOX_EXCEPTION, ouId, logId);
             }
@@ -1818,6 +1821,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                     // 在一个事务中保存整个小批次的包裹信息
                     outboundBoxRecManager.saveRecOutboundBoxByContainer(packingTurnoverBoxList);
                 } catch (BusinessException be) {
+                    log.error("packingForSecKillMode error,batchOdoList is:[{}], e is:[{}], logId is:[{}]", batchOdoList, be, logId);
                     // 整个批次的出库单踢出波次
                     this.releaseOdoFromWave(batchOdoList, Constants.CREATE_OUTBOUND_CARTON_REC_BOX_EXCEPTION, ouId, logId);
                 }
@@ -1964,6 +1968,8 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                     // 在一个事务中保存整个小批次的包裹信息
                     outboundBoxRecManager.saveRecOutboundBoxByContainer(packingTurnoverBoxList);
                 } catch (BusinessException be) {
+                    log.error("packingForMainSkuMode error,batchOdoIdList is:[{}], e is:[{}], logId is:[{}]", batchOdoIdList, be, logId);
+
                     // 整个批次的出库单踢出波次
                     this.releaseOdoFromWave(batchOdoIdList, odoCommandMap.get(batchOdoIdList.get(0)).getWhWaveCommand().getId(), Constants.CREATE_OUTBOUND_CARTON_REC_BOX_EXCEPTION, ouId, logId);
                 }
@@ -2096,6 +2102,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                     // 在一个事务中保存整个小批次的包裹信息和创建容器
                     outboundBoxRecManager.saveRecOutboundBoxByContainer(packingTurnoverBoxList);
                 } catch (BusinessException be) {
+                    log.error("packingForSkuGroupMode error,skuGroupBatchOdoList is:[{}], e is:[{}], logId is:[{}]", skuGroupBatchOdoList, be, logId);
                     // 整个批次的出库单踢出波次
                     this.releaseOdoFromWave(skuGroupBatchOdoList, Constants.CREATE_OUTBOUND_CARTON_REC_BOX_EXCEPTION, ouId, logId);
                 }
@@ -2265,6 +2272,8 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                         // 在一个事务中保存整个小批次的包裹信息
                         outboundBoxRecManager.saveRecOutboundBoxForSeedBatch(packingTurnoverBoxList, odoPackedWholeCaseList, odoPackedWholeTrayList);
                     } catch (BusinessException be) {
+                        log.error("packingForModeSeed error,batchOdoIdList is:[{}], e is:[{}], logId is:[{}]", batchOdoIdList, be, logId);
+
                         // 整个批次的出库单踢出波次
                         this.releaseOdoFromWave(batchOdoIdList, odoCommandMap.get(batchOdoIdList.get(0)).getWhWaveCommand().getId(), Constants.CREATE_OUTBOUND_CARTON_REC_BOX_EXCEPTION, ouId, logId);
                     }
