@@ -48,4 +48,19 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
 	</sql>
 	
+	<select id="findWhOdoArchivIndexByEcOrderCode" resultMap="WhOdoArchivIndexResultExt">
+		select
+		<include refid="whOdoArchivIndexColumnsExt" />
+		from 
+		t_wh_odo_archiv_index_${num}
+		where
+		ec_order_code = #{ecOrderCode} 
+		<if test="dataSource!=null and dataSource!=''">
+				and data_source = #{dataSource}
+		</if>
+		<if test="ouid!=null">
+				and ou_id = #{ouid}
+		</if>
+	</select>
+	
 </mapper>

@@ -17,6 +17,8 @@ package com.baozun.scm.primservice.whoperation.dao.collect;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.annotations.Param;
+
 import lark.common.annotation.CommonQuery;
 import lark.common.annotation.QueryPage;
 import lark.common.dao.Page;
@@ -42,5 +44,10 @@ public interface WhOdoArchivIndexDao extends BaseDao<WhOdoArchivIndex, Long> {
 
     @CommonQuery
     int saveOrUpdate(WhOdoArchivIndex o);
+
+    /**
+     * 通过电商平台订单号(NOT NULL) or 数据来源(DEFAULT NULL) 查询仓库出库单归档索引数据
+     */
+    List<WhOdoArchivIndex> findWhOdoArchivIndexByEcOrderCode(@Param("ecOrderCode") String ecOrderCode, @Param("dataSource") String dataSource, @Param("num") String num, @Param("ouid") Long ouid);
 
 }
