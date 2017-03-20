@@ -144,13 +144,13 @@ public class AsnManagerImpl extends BaseManagerImpl implements AsnManager {
         for (WhAsnCommand command : asnList) {
             // 封装系统参数值 INVENTORY_TYPE
             if (!StringUtil.isEmpty(command.getAsnType().toString())) {
-                b = dic1.contains(command.getAsnType());
+                b = dic1.contains(null == command.getAsnType() ? "" : command.getAsnType().toString());
                 if (!b) {
                     dic1.add(command.getAsnType().toString());
                 }
             }
             if (!StringUtil.isEmpty(command.getStatus().toString())) {
-                b = dic2.contains(command.getStatus());
+                b = dic2.contains(null == command.getStatus() ? "" : command.getStatus().toString());
                 if (!b) {
                     dic2.add(command.getStatus().toString());
                 }
