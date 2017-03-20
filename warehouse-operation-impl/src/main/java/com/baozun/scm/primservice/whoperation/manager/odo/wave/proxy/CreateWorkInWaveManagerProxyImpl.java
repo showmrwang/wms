@@ -945,16 +945,16 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
                 //获取上一次循环的实体类            
                 WhWorkLineCommand whWorkLineCommandBefor = whWorkLineCommandList.get(count-1);
                 
-                if(whWorkLineCommandBefor.getFromLocationId() != whWorkLineCommand.getFromLocationId()){
+                if (0 == whWorkLineCommandBefor.getFromLocationId().compareTo(whWorkLineCommand.getFromLocationId())) {
                     isFromLocationId = false;
                 }
-                if(whWorkLineCommandBefor.getFromOuterContainerId() != whWorkLineCommand.getFromOuterContainerId()){
+                if(0 == whWorkLineCommandBefor.getFromOuterContainerId().compareTo(whWorkLineCommand.getFromOuterContainerId())){
                     isFromOuterContainerId = false;
                 }
-                if(whWorkLineCommandBefor.getFromInsideContainerId() != whWorkLineCommand.getFromInsideContainerId()){
+                if (0 == whWorkLineCommandBefor.getFromInsideContainerId().compareTo(whWorkLineCommand.getFromInsideContainerId())) {
                     isFromInsideContainerId = false;
                 }
-                if(whWorkLineCommandBefor.getOdoId() != whWorkLineCommand.getOdoId()){
+                if(0 == whWorkLineCommandBefor.getOdoId().compareTo(whWorkLineCommand.getOdoId())){
                     isOdoId = false;
                 }
             }
@@ -1779,16 +1779,16 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
                     //获取上一次循环的实体类            
                     WhWorkLineCommand whWorkLineCommandBefor = whWorkLineCommandList.get(count-1);
                     
-                    if(whWorkLineCommandBefor.getFromLocationId() != whWorkLineCommand.getFromLocationId()){
+                    if (0 == whWorkLineCommandBefor.getFromLocationId().compareTo(whWorkLineCommand.getFromLocationId())) {
                         isFromLocationId = false;
                     }
-                    if(whWorkLineCommandBefor.getFromOuterContainerId() != whWorkLineCommand.getFromOuterContainerId()){
+                    if (0 == whWorkLineCommandBefor.getFromOuterContainerId().compareTo(whWorkLineCommand.getFromOuterContainerId())) {
                         isFromOuterContainerId = false;
                     }
-                    if(whWorkLineCommandBefor.getFromInsideContainerId() != whWorkLineCommand.getFromInsideContainerId()){
+                    if (0 == whWorkLineCommandBefor.getFromInsideContainerId().compareTo(whWorkLineCommand.getFromInsideContainerId())) {
                         isFromInsideContainerId = false;
                     }
-                    if(whWorkLineCommandBefor.getOdoId() != whWorkLineCommand.getOdoId()){
+                    if (0 == whWorkLineCommandBefor.getOdoId().compareTo(whWorkLineCommand.getOdoId())) {
                         isOdoId = false;
                     }
                 }

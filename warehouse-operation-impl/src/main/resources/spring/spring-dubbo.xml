@@ -155,5 +155,7 @@
         <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.archiv.OdoArchivManager" ref="odoArchivManager" />
         
         <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.collect.WhOdoArchivIndexManager" ref="whOdoArchivIndexManager" />
+        
+        <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.confirm.WhOdoStatusConfirmManager" ref="whOdoStatusConfirmManager" />
 	
 </beans>

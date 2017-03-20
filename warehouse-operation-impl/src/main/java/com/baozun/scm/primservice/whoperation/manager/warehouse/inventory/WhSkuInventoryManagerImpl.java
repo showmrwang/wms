@@ -4607,7 +4607,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                          count++;
                          Double skuQty = skuInvCmd.getQty();
                          String skuAttrIds = SkuCategoryProvider.getSkuAttrIdByInv(skuInvCmd);
-                         if(opLineExec.getFromLocationId() == skuInvCmd.getLocationId() && execSkuAttrIds.equals(skuAttrIds)){
+                         if(0 == opLineExec.getFromLocationId().compareTo(skuInvCmd.getLocationId()) && execSkuAttrIds.equals(skuAttrIds)){
                               sumQty = sumQty+skuQty;
                               skuInvCmdList.add(skuInvCmd.getId());
                               if(opLineExec.getIsShortPicking()) {  //短拣的商品生成库位库存
@@ -4651,7 +4651,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                        count++;
                        String skuAttrIds = SkuCategoryProvider.getSkuAttrIdByInv(skuInvCmd);
                        Double skuQty = skuInvCmd.getQty();
-                       if(opLineExec.getFromLocationId() == skuInvCmd.getLocationId() && execSkuAttrIds.equals(skuAttrIds)){
+                       if(0 == opLineExec.getFromLocationId().compareTo(skuInvCmd.getLocationId()) && execSkuAttrIds.equals(skuAttrIds)){
                            sumQty = sumQty+skuQty;
                            skuInvCmdList.add(skuInvCmd.getId());
                            if(opLineExec.getIsShortPicking()) {  //短拣的商品生成库位库存
@@ -4748,7 +4748,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
               for(WhSkuInventoryCommand skuInvCmd:allSkuInvList){
                   String skuAttrIds = SkuCategoryProvider.getSkuAttrIdByInv(skuInvCmd);
                   Double skuQty = skuInvCmd.getOnHandQty();
-                  if(opLineExec.getFromLocationId() == skuInvCmd.getLocationId() && execSkuAttrIds.equals(skuAttrIds) && opLineExec.getFromInsideContainerId() == skuInvCmd.getInsideContainerId()){
+                  if(opLineExec.getFromLocationId() == skuInvCmd.getLocationId() && execSkuAttrIds.equals(skuAttrIds) && 0 == opLineExec.getFromInsideContainerId().compareTo(skuInvCmd.getInsideContainerId())){
                       sumQty = sumQty+skuQty;
                       count++;
                       if(opLineExec.getIsShortPicking()) {  //短拣的商品生成库位库存
