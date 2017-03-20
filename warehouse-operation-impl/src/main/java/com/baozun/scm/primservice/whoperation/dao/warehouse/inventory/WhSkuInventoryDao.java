@@ -774,4 +774,10 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @return
      */
     public List<WhSkuInventoryCommand> findListByOccLineIdListOrderByPickingSort(@Param("occLineIdList") List<Long> occLineIdList, @Param("ouId") Long ouId);
+
+	List<WhSkuInventoryCommand> findInventoryByPo(@Param("poId") Long id, @Param("ouId") Long ouId);
+
+	List<WhSkuInventoryCommand> findUseableInventoryByOuterContainerId(@Param("outerContainerId") Long outerContainerId, @Param("skuId") Long skuId, @Param("ouId") Long ouId);
+
+	List<WhSkuInventoryCommand> findUseableInventoryByInsideContainerId(@Param("insideContainerId") Long insideContainerId, @Param("skuId") Long skuId, @Param("ouId") Long ouId);
 }
