@@ -22,16 +22,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import com.baozun.scm.primservice.whinterface.dao.inbound.WhInboundConfirmDao;
-import com.baozun.scm.primservice.whinterface.dao.inbound.WhInboundInvLineConfirmDao;
-import com.baozun.scm.primservice.whinterface.dao.inbound.WhInboundLineConfirmDao;
-import com.baozun.scm.primservice.whinterface.dao.inbound.WhInboundSnLineConfirmDao;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
 import com.baozun.scm.primservice.whoperation.command.system.GlobalLogCommand;
 import com.baozun.scm.primservice.whoperation.command.whinterface.inbound.WhInboundConfirmCommand;
-import com.baozun.scm.primservice.whoperation.command.whinterface.inbound.WhInboundInvLineConfirmCommand;
-import com.baozun.scm.primservice.whoperation.command.whinterface.inbound.WhInboundLineConfirmCommand;
-import com.baozun.scm.primservice.whoperation.command.whinterface.inbound.WhInboundSnLineConfirmCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
@@ -53,10 +46,6 @@ import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
-import com.baozun.scm.primservice.whoperation.model.whinterface.inbound.WhInboundConfirm;
-import com.baozun.scm.primservice.whoperation.model.whinterface.inbound.WhInboundInvLineConfirm;
-import com.baozun.scm.primservice.whoperation.model.whinterface.inbound.WhInboundLineConfirm;
-import com.baozun.scm.primservice.whoperation.model.whinterface.inbound.WhInboundSnLineConfirm;
 
 
 /**

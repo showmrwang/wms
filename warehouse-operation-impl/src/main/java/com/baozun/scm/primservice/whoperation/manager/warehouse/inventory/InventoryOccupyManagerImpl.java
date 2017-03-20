@@ -267,9 +267,10 @@ public class InventoryOccupyManagerImpl extends BaseInventoryManagerImpl impleme
 				Double useableQty = this.sumContainerInventoryQuantity(skuInvList, ouId);
 				if (qty.compareTo(useableQty) != -1 && Constants.DEFAULT_DOUBLE.compareTo(useableQty) == -1) {
 					// 占用数量大于等于容器数量
-					occupyNum += this.occupyInvByPalletContainer(skuInvList, qty, useableQty, skuId, occupyCode, odoLineId, occupySource, wh, logId, isStaticLocation, staticLocationIds, trayIds, null);
-					containerNum += occupyNum;
-					qty -= occupyNum;
+					Double num = this.occupyInvByPalletContainer(skuInvList, qty, useableQty, skuId, occupyCode, odoLineId, occupySource, wh, logId, isStaticLocation, staticLocationIds, trayIds, null);
+					occupyNum += num;
+					containerNum += num;
+					qty -= num;
 					this.deleteSkuInvs(list, skuInvList);
 					i--;
 					if (Constants.DEFAULT_DOUBLE.compareTo(qty) == 0) {
@@ -284,9 +285,10 @@ public class InventoryOccupyManagerImpl extends BaseInventoryManagerImpl impleme
 				Double useableQty = this.sumContainerInventoryQuantity(skuInvList, ouId);
 				if (qty.compareTo(useableQty) != -1 && Constants.DEFAULT_DOUBLE.compareTo(useableQty) == -1) {
 					// 占用数量大于等于容器数量
-					occupyNum += this.occupyInvByPalletContainer(skuInvList, qty, useableQty, skuId, occupyCode, odoLineId, occupySource, wh, logId, isStaticLocation, staticLocationIds, null, packingCaseIds);
-					containerNum += occupyNum;
-					qty -= occupyNum;
+					Double num = this.occupyInvByPalletContainer(skuInvList, qty, useableQty, skuId, occupyCode, odoLineId, occupySource, wh, logId, isStaticLocation, staticLocationIds, null, packingCaseIds);
+					occupyNum += num;
+					containerNum += num;
+					qty -= num;
 					this.deleteSkuInvs(list, skuInvList);
 					i--;
 					if (Constants.DEFAULT_DOUBLE.compareTo(qty) == 0) {
