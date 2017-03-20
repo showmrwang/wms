@@ -122,8 +122,11 @@ public abstract class BaseManagerImpl implements BaseManager {
             globalLogManager.insertGlobalLog(gl, dataSource);
         }
     }
+
     protected void insertSkuInventoryLog(Long skuInvId, Double qty, Double oldQty, Boolean isTabbInvTotal, Long ouid, Long userid) {}
+
     protected void insertSkuInventoryLog(Long skuInvId, String occupyCode, String occupySource, Double qty, Double oldQty, Boolean isTabbInvTotal, Long ouid, Long userid) {}
+
     /**
      * 库存日志插入
      * 
@@ -518,6 +521,91 @@ public abstract class BaseManagerImpl implements BaseManager {
         return returnList;
     }
 
+
+    /**
+     * 通过客户ID获取客户信息 redis = null查询数据库
+     * 
+     * @return
+     */
+    protected Customer getCustomerByRedis(Long customerId) {
+        String redisKey = CacheKeyConstant.WMS_CACHE_CUSTOMER;
+        Customer c = null;
+        String customer = null;
+        // 获取对应Redis数据
+        try {
+            customer = cacheManager.getValue(redisKey + customerId);
+            // c = cacheManager.getObject(redisKey + customerId);
+        } catch (Exception e) {
+            // redis出错只记录log
+            log.error("getCustomerByRedis cacheManager.getObject(" + redisKey + customerId + ") error");
+        }
+        if (StringUtil.isEmpty(customer)) {
+            // 缓存无对应数据 查询数据库
+            c = customerDao.findById(customerId);
+            try {
+                cacheManager.setValue(redisKey + c.getId(), JsonUtil.beanToJson(c));
+                // cacheManager.setObject(redisKey + c.getId(), c);
+            } catch (Exception e) {
+                // redis出错只记录log
+                log.error("getCustomerByRedis cacheManager.setObject(" + redisKey + c.getId() + ") error");
+            }
+        } else {
+            c = (Customer) JsonUtil.jsonToBean(customer, Customer.class);
+        }
+        return c;
+    }
+
+    /**
+     * 通过店铺ID获取店铺信息 redis = null查询数据库
+     * 
+     * @return
+     */
+    protected Store getStoreByRedis(Long storeId) {
+        List<String> redis = new ArrayList<String>();
+        Store store = null;
+        String s = null;
+        // 店铺KEY前缀
+        String redisKey = CacheKeyConstant.WMS_CACHE_STORE;
+        // 先查询Redis是否存在对应数据 店铺redis缓存格式前缀+customerId+storeId
+        redis = cacheManager.Keys(redisKey + "*-" + storeId);
+        if (redis.size() > 0) {
+            // 获取对应Redis数据
+            String key = redis.get(0).split("_")[1];
+            try {
+                s = cacheManager.getValue(key);
+                // store = cacheManager.getObject(key);
+            } catch (Exception e) {
+                // redis出错只记录log
+                log.error("getStoreByRedis cacheManager.getObject(" + key + ") error");
+            }
+            if (StringUtil.isEmpty(s)) {
+                // 如果Redis缓存不存在对应店铺数据 直接新增
+                store = storeDao.findById(storeId);
+                try {
+                    cacheManager.setValue(redisKey + store.getCustomerId() + "-" + store.getId(), JsonUtil.beanToJson(store));
+                    // cacheManager.setObject(redisKey + store.getCustomerId() + "-" +
+                    // store.getId(), store);
+                } catch (Exception e) {
+                    // redis出错只记录log
+                    log.error("getStoreByRedis cacheManager.setObject(" + redisKey + store.getCustomerId() + "-" + store.getId() + ") error");
+                }
+            } else {
+                store = (Store) JsonUtil.jsonToBean(s, Store.class);
+            }
+        } else {
+            // 如果Redis缓存不存在对应店铺数据 直接新增
+            store = storeDao.findById(storeId);
+            try {
+                cacheManager.setValue(redisKey + store.getCustomerId() + "-" + store.getId(), JsonUtil.beanToJson(store));
+                // cacheManager.setObject(redisKey + store.getCustomerId() + "-" + store.getId(),
+                // store);
+            } catch (Exception e) {
+                // redis出错只记录log
+                log.error("getStoreByRedis cacheManager.setObject(" + redisKey + store.getCustomerId() + "-" + store.getId() + ") error");
+            }
+        }
+        return store;
+    }
 
     /**
      * 库存SN/残次日志插入

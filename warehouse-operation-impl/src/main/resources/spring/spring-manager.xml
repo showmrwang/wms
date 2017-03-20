@@ -66,6 +66,7 @@
                     <value>com.baozun.scm.primservice.whoperation.model.warehouse.WhSeedingCollection</value>
                     <value>com.baozun.scm.primservice.whoperation.model.odo.WhOdoOutBoundBox</value>
                     <value>com.baozun.scm.primservice.whoperation.model.warehouse.WhWorkOper</value>
+                    <value>com.baozun.scm.primservice.whoperation.model.confirm.WhOdoStatusConfirm</value>
 				</list>
 			</property>
 			

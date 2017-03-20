@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.confirm.WhOdoStatusConfirmDao">
+	<resultMap id="WhOdoStatusConfirmResult" type="com.baozun.scm.primservice.whoperation.model.confirm.WhOdoStatusConfirm">
+	</resultMap>
+	<resultMap id="WhOdoStatusConfirmPaginationResult" type="lark.common.dao.Pagination">
+    	<collection property="items" javaType="ArrayList" resultMap="WhOdoStatusConfirmResult"/>
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whOdoStatusConfirmColumns">
+	    <![CDATA[
+	        	id as id,
+	        	ext_odo_code as extOdoCode,
+	        	wms_odo_code as wmsOdoCode,
+	        	wms_odo_status as wmsOdoStatus,
+	        	customer_code as customerCode,
+	        	store_code as storeCode,
+	        	wh_code as whCode,
+	        	ou_id as ouId,
+	        	create_time as createTime
+	    ]]>
+	</sql>
+	<sql id="whOdoStatusConfirmConditionWhereExt">
+		<where>
+			<if test="likeEqualsMap != null">
+				<foreach collection="likeEqualsMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} like CONCAT('%',#{value},'%') 
+				</foreach> 
+			</if> 
+			<if test="equalsMap != null"> 
+				<foreach collection="equalsMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} = #{value} 
+				</foreach> 
+			</if> 
+			<if test="notEqualsMap != null"> 
+				<foreach collection="notEqualsMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} != #{value} 
+				</foreach> 
+			</if> 
+			<if test="greateMap != null"> 
+				<foreach collection="greateMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} &gt; #{value} 
+				</foreach> 
+			</if> 
+			<if test="greateEqualsMap != null"> 
+				<foreach collection="greateEqualsMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} &gt;= #{value} 
+				</foreach> 
+			</if> 
+			<if test="lessMap != null"> 
+				<foreach collection="lessMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} &lt; #{value} 
+				</foreach> 
+			</if> 
+			<if test="lessEqualsMap != null"> 
+				<foreach collection="lessEqualsMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} &lt;= #{value} 
+				</foreach> 
+			</if> 
+			<if test="nullMap != null"> 
+				<foreach collection="nullMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} is null 
+				</foreach> 
+			</if> 
+			<if test="notNullMap != null"> 
+				<foreach collection="notNullMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} is not null 
+				</foreach> 
+			</if> 
+			<if test="inMap != null"> 
+				<foreach collection="inMap" index="key"  item="value" separator="and" open=" and (" close=")"> 
+					<foreach collection="value" item="itemin" index="index" separator="or"> 
+						${key} = #{itemin} 
+					</foreach> 
+				</foreach> 
+			</if> 
+			<if test="notInMap != null"> 
+				<foreach collection="notInMap" index="key"  item="value" separator="and" open=" and (" close=")"> 
+					<foreach collection="value" item="itemin" index="index" separator="and"> 
+						${key} != #{itemin} 
+					</foreach> 
+				</foreach> 
+			</if> 
+		</where>
+		<if test="sortBy != null"> 
+			<foreach collection="sortBy" item="item" separator=","  open=" order by "> 
+				${item.field} ${item.type}
+			</foreach> 
+		</if>
+	</sql>
+	
+		<!-- 如果有自增字段 -->
+		
+			<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+			<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.confirm.WhOdoStatusConfirm" 
+				
+			 flushCache="true">
+		    <![CDATA[
+		        INSERT INTO
+		        t_wh_odo_status_confirm (
+		       		id,
+		        	ext_odo_code ,
+		        	wms_odo_code ,
+		        	wms_odo_status ,
+		        	customer_code ,
+		        	store_code ,
+		        	wh_code ,
+		        	ou_id ,
+		        	create_time 
+		        ) VALUES (
+		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{extOdoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{wmsOdoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{wmsOdoStatus,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{customerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{storeCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{whCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} 
+		        )
+		    ]]>
+
+		</insert>
+		
+		
+		<update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.confirm.WhOdoStatusConfirm">
+	    <![CDATA[
+	        UPDATE t_wh_odo_status_confirm SET
+		        ext_odo_code = #{extOdoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        wms_odo_code = #{wmsOdoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        wms_odo_status = #{wmsOdoStatus,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        customer_code = #{customerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        store_code = #{storeCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        wh_code = #{whCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} 
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+		</update>
+		<update id="batchUpdate">
+	        UPDATE t_wh_odo_status_confirm SET
+	        	<foreach collection="batchUpdateMap" index="key"  item="value" separator=",">
+	        		${key} = #{value}
+	        	</foreach>
+	        	<include refid="whOdoStatusConfirmConditionWhereExt"/>
+		</update>
+		
+	   <delete id="delete" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from t_wh_odo_status_confirm where
+		        id = #{id} 
+	    ]]>
+	    </delete> 
+	    
+	     <delete id="deleteByIds" parameterType="list">
+	    
+	        delete from t_wh_odo_status_confirm 
+	        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>	
+	  
+	    </delete>  
+	    <update id="batchDelete">
+	        delete from t_wh_odo_status_confirm <include refid="whOdoStatusConfirmConditionWhereExt"/>
+		</update>
+	         
+	    <select id="findById" parameterType="java.lang.Long" resultMap="WhOdoStatusConfirmResult" flushCache="false">
+			select <include refid="whOdoStatusConfirmColumns" />
+		    <![CDATA[
+			    from t_wh_odo_status_confirm 
+		        where 
+		        id = #{id} 
+		    ]]>
+		</select>	
+		<select id="getByIds" parameterType="list"  resultMap="WhOdoStatusConfirmResult" flushCache="false">
+			select <include refid="whOdoStatusConfirmColumns" />
+			    from t_wh_odo_status_confirm 
+		        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>					
+		</select>	
+	<sql id="whOdoStatusConfirmDynamicWhere">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+	       
+		       <if test="extOdoCode!=null and extOdoCode!=''">
+					and ext_odo_code = #{extOdoCode}
+				</if>
+	       
+	       
+		       <if test="wmsOdoCode!=null and wmsOdoCode!=''">
+					and wms_odo_code = #{wmsOdoCode}
+				</if>
+	       
+				<if test="wmsOdoStatus!=null">
+					and wms_odo_status = #{wmsOdoStatus}
+				</if>
+	       
+	       
+		       <if test="customerCode!=null and customerCode!=''">
+					and customer_code = #{customerCode}
+				</if>
+	       
+	       
+		       <if test="storeCode!=null and storeCode!=''">
+					and store_code = #{storeCode}
+				</if>
+	       
+	       
+		       <if test="whCode!=null and whCode!=''">
+					and wh_code = #{whCode}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+	       
+				<if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+		</where>
+	</sql>
+	
+
+	<select id="getCount" resultType="long">
+        select count(*) from t_wh_odo_status_confirm 
+    </select>
+    <select id="findListCountByQueryMap" resultType="long">
+        select count(*) from t_wh_odo_status_confirm 
+		<include refid="whOdoStatusConfirmDynamicWhere"/>    
+    </select>
+    
+    <select id="findListCountByParam" resultType="long">
+        select count(*) from t_wh_odo_status_confirm 
+		<include refid="whOdoStatusConfirmDynamicWhere"/>    
+    </select>
+    
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPage" resultMap="WhOdoStatusConfirmResult">
+    	select <include refid="whOdoStatusConfirmColumns" />
+	    from t_wh_odo_status_confirm 
+		<include refid="whOdoStatusConfirmDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByQueryMap" resultMap="WhOdoStatusConfirmResult">
+    	select <include refid="whOdoStatusConfirmColumns" />
+	    from t_wh_odo_status_confirm 
+		<include refid="whOdoStatusConfirmDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByParam" resultMap="WhOdoStatusConfirmResult">
+    	select <include refid="whOdoStatusConfirmColumns" />
+	    from t_wh_odo_status_confirm 
+		<include refid="whOdoStatusConfirmDynamicWhere"/>
+		
+    </select>
+    
+    <select id="query" resultMap="WhOdoStatusConfirmResult">
+		select <include refid="whOdoStatusConfirmColumns" />
+	    from t_wh_odo_status_confirm  
+		<include refid="whOdoStatusConfirmConditionWhereExt"/>
+    </select>
+    
+    <select id="queryCount" resultType="long">
+		select count(*) from t_wh_odo_status_confirm  
+		<include refid="whOdoStatusConfirmConditionWhereExt"/>
+    </select>
+
+	
+</mapper>
