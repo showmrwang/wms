@@ -26,13 +26,20 @@ public class WhCheckingResultCommand extends BaseModel {
      * 
      */
     private static final long serialVersionUID = 7075809126455313703L;
-	
+    
+    //columns START
     /** 功能ID */
     private Long functionId;
     /** 对应组织ID */
     private Long ouId;
+    /** 用户Id */
+    private Long userId;
+    /** 用户Id */
+    private Long checkingQty;
+    
     /** 复核头集合 */
     private List<WhCheckingCommand> whCheckingCommandLst;
+    //columns END
     
     
     public Long getFunctionId() {
@@ -52,6 +59,18 @@ public class WhCheckingResultCommand extends BaseModel {
     }
     public void setWhCheckingCommandLst(List<WhCheckingCommand> whCheckingCommandLst) {
         this.whCheckingCommandLst = whCheckingCommandLst;
+    }
+    public Long getUserId() {
+        return userId;
+    }
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+    public Long getCheckingQty() {
+        return checkingQty;
+    }
+    public void setCheckingQty(Long checkingQty) {
+        this.checkingQty = checkingQty;
     }
 
 }

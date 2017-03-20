@@ -60,7 +60,7 @@ public class WhChecking extends BaseModel {
 	/** 时效类型名称 */
 	private java.lang.String timeEffectName;
 	/** 复核状态 */
-	private java.lang.String status;
+	private java.lang.Integer status;
 	/** 对应组织ID */
 	private java.lang.Long ouId;
 	/** 外部容器，小车 */
@@ -164,10 +164,10 @@ public class WhChecking extends BaseModel {
     public void setTimeEffectName(java.lang.String timeEffectName) {
         this.timeEffectName = timeEffectName;
     }
-    public java.lang.String getStatus() {
+    public java.lang.Integer getStatus() {
         return status;
     }
-    public void setStatus(java.lang.String status) {
+    public void setStatus(java.lang.Integer status) {
         this.status = status;
     }
     public java.lang.Long getOuId() {

@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.WhFunctionOutBoundDao">
+	<resultMap id="WhFunctionOutBoundResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionOutBound">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whFunctionOutBoundColumnsExt">
+	    <![CDATA[
+	        	id as id,
+	        	function_id as functionId,
+	        	function_module as functionModule,
+	        	checking_mode as checkingMode,
+	        	is_foc_count_nums as isFocCountNums,
+	        	scan_pattern as scanPattern,
+	        	is_tip_inv_attr as isTipInvAttr,
+	        	is_scan_inv_attr as isScanInvAttr,
+	        	is_checking_to_outboundbox as isCheckingToOutboundbox,
+	        	is_auto_generate_outboundbox as isAutoGenerateOutboundbox,
+	        	is_scan_outboundbox as isScanOutboundbox,
+	        	checking_print as checkingPrint,
+	        	is_scan_sku_photograph as isScanSkuPhotograph,
+	        	scan_inv_attr_photograph as scanInvAttrPhotograph,
+	        	weighing_print as weighingPrint,
+	        	is_validate_weight as isValidateWeight,
+	        	weight_float_percentage as weightFloatPercentage,
+	        	way_bill_print_type as wayBillPrintType,
+	        	is_scan_way_bill as isScanWayBill,
+	        	handover_print as handoverPrint,
+	        	is_tip_handover_station as isTipHandoverStation,
+	        	ou_id as ouId
+	    ]]>
+	</sql>
+	
+	<sql id="whFunctionOutBoundDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+				<if test="functionId!=null">
+					and function_id = #{functionId}
+				</if>
+	       
+	       
+		       <if test="functionModule!=null and functionModule!=''">
+					and function_module = #{functionModule}
+				</if>
+	       
+	       
+		       <if test="checkingMode!=null and checkingMode!=''">
+					and checking_mode = #{checkingMode}
+				</if>
+	       
+				<if test="isFocCountNums!=null">
+					and is_foc_count_nums = #{isFocCountNums}
+				</if>
+	       
+				<if test="scanPattern!=null">
+					and scan_pattern = #{scanPattern}
+				</if>
+	       
+				<if test="isTipInvAttr!=null">
+					and is_tip_inv_attr = #{isTipInvAttr}
+				</if>
+	       
+				<if test="isScanInvAttr!=null">
+					and is_scan_inv_attr = #{isScanInvAttr}
+				</if>
+	       
+				<if test="isCheckingToOutboundbox!=null">
+					and is_checking_to_outboundbox = #{isCheckingToOutboundbox}
+				</if>
+	       
+				<if test="isAutoGenerateOutboundbox!=null">
+					and is_auto_generate_outboundbox = #{isAutoGenerateOutboundbox}
+				</if>
+	       
+				<if test="isScanOutboundbox!=null">
+					and is_scan_outboundbox = #{isScanOutboundbox}
+				</if>
+	       
+	       
+		       <if test="checkingPrint!=null and checkingPrint!=''">
+					and checking_print = #{checkingPrint}
+				</if>
+	       
+				<if test="isScanSkuPhotograph!=null">
+					and is_scan_sku_photograph = #{isScanSkuPhotograph}
+				</if>
+	       
+	       
+		       <if test="scanInvAttrPhotograph!=null and scanInvAttrPhotograph!=''">
+					and scan_inv_attr_photograph = #{scanInvAttrPhotograph}
+				</if>
+	       
+	       
+		       <if test="weighingPrint!=null and weighingPrint!=''">
+					and weighing_print = #{weighingPrint}
+				</if>
+	       
+				<if test="isValidateWeight!=null">
+					and is_validate_weight = #{isValidateWeight}
+				</if>
+	       
+				<if test="weightFloatPercentage!=null">
+					and weight_float_percentage = #{weightFloatPercentage}
+				</if>
+	       
+	       
+		       <if test="wayBillPrintType!=null and wayBillPrintType!=''">
+					and way_bill_print_type = #{wayBillPrintType}
+				</if>
+	       
+				<if test="isScanWayBill!=null">
+					and is_scan_way_bill = #{isScanWayBill}
+				</if>
+	       
+	       
+		       <if test="handoverPrint!=null and handoverPrint!=''">
+					and handover_print = #{handoverPrint}
+				</if>
+	       
+				<if test="isTipHandoverStation!=null">
+					and is_tip_handover_station = #{isTipHandoverStation}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+		</where>
+	</sql>
+	
+	<select id="findByFunctionIdExt" resultType="com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionOutBound">
+	        select <include refid="whFunctionOutBoundColumnsExt" />
+	        from  t_wh_function_outbound
+	        where function_id=#{functionId} and ou_id=#{ouId}
+	</select>
+	
+	<update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionOutBound">
+	    <![CDATA[
+	        UPDATE t_wh_function_outbound SET
+		        function_id = #{functionId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        collection_pattern = #{collectionPattern,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        container_qty = #{containerQty,javaType=java.lang.Integer,jdbcType=INTEGER} 
+	        WHERE 
+		        id = #{id} and ou_id = #{ouId}
+	    ]]>
+	</update>
+	
+</mapper>
