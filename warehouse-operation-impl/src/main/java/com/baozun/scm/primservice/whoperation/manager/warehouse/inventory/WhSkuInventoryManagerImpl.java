@@ -3238,7 +3238,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 				HardAllocationCommand command = null;
 				// 数量最佳匹配逻辑
 				if (Constants.ALLOCATE_STRATEGY_QUANTITYBESTMATCH.equals(strategyCode)) {
-					
+					// TODO 数量最佳匹配逻辑
+					command = new HardAllocationCommand();
 				} else {
 					command = inventoryOccupyManager.hardAllocateListOccupyNew(allSkuInvs, allocateUnitCodes, qty, skuId, occupyCode, odoLineId, Constants.SKU_INVENTORY_OCCUPATION_SOURCE_ODO, wh, isStaticLocation, logId);
 				}
@@ -3550,6 +3551,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         return whSkuInventoryList;
     }
     
+    // TODO zhukai
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
 	public void replenishmentToLines(List<WhWaveLine> lines, Long odoId, String bhCode, Map<String, List<ReplenishmentRuleCommand>> ruleMap, Map<String, String> map, Warehouse wh) {
@@ -3976,7 +3978,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 		allocated.setLastModifyTime(new Date());
 		allocated.setReplenishmentRuleId(ruleId);
 		whSkuInventoryAllocatedDao.insert(allocated);
-		insertGlobalLog(GLOBAL_LOG_INSERT, allocated, ouId, 2L, null, null);
+		insertGlobalLog(GLOBAL_LOG_INSERT, allocated, ouId, 1L, null, null);
 		
 		WhSkuInventoryTobefilled tobefilled = new WhSkuInventoryTobefilled();
 		BeanUtils.copyProperties(invCommand, tobefilled);
@@ -4000,7 +4002,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
              throw new BusinessException(ErrorCodes.COMMON_INV_PROCESS_UUID_ERROR);
          }
 		whSkuInventoryTobefilledDao.insert(tobefilled);
-		insertGlobalLog(GLOBAL_LOG_INSERT, tobefilled, ouId, 2L, null, null);
+		insertGlobalLog(GLOBAL_LOG_INSERT, tobefilled, ouId, 1L, null, null);
 		
 		/*Double oldQty = 0.0;
         if (true == wh.getIsTabbInvTotal()) {
@@ -4061,7 +4063,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         }
         return skuInvList.get(0).getSkuId();
     }
-
+    
+    // TODO zhukai
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void replenishmentToLocation(ReplenishmentMsg msg, ReplenishmentRuleCommand rule, Warehouse wh) {
@@ -4136,6 +4139,69 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 
     }
     
+    // TODO　zhukai 
+	public void replenishment(List<WhSkuInventoryCommand> skuInvs, Double qty, List<String> units,
+			String replenishmentCode, String bhCode, String occupyCode, Long occupyLineId, Long targetLocationId, Long ruleId, Warehouse wh) {
+		Long ouId = wh.getId();
+		Double occupyQty = qty;
+		Double moreQty = 0.0;
+    	if (null == skuInvs || skuInvs.isEmpty()) {
+			return;
+		}
+    	for (int i = 0; i < skuInvs.size(); i++) {
+    		WhSkuInventoryCommand inv = skuInvs.get(i);
+    		// 策略中包含托盘
+    		if (units.contains(Constants.ALLOCATE_UNIT_TP) && null != inv.getOuterContainerId()) {
+    			List<WhSkuInventoryCommand> skuInvList = whSkuInventoryDao.findUseableInventoryByOuterContainerId(inv.getOuterContainerId(), inv.getSkuId(), ouId);
+				Double useableQty = this.sumContainerInventoryQuantity(skuInvList, ouId);
+				if (-1 != Constants.DEFAULT_DOUBLE.compareTo(useableQty)) {
+					continue;
+				}
+				if (Constants.REPLENISHMENT_UP.equals(replenishmentCode)) {
+					// 向上补货
+					Map<String, Double> mapQty = this.replenishmentUp(skuInvList, occupyQty, useableQty, bhCode, occupyCode, occupyLineId, targetLocationId, ruleId, wh);
+					occupyQty -= mapQty.get("qty");
+					moreQty += mapQty.get("moreQty");
+					this.deleteSkuInvs(skuInvs, skuInvList);
+					i--;
+					if (Constants.DEFAULT_DOUBLE.compareTo(occupyQty) == 0) {
+						break;
+					}
+					continue;
+				} else if (Constants.REPLENISHMENT_DOWN.equals(replenishmentCode) || Constants.REPLENISHMENT_ONDEMAND.equals(replenishmentCode)) {
+					// 向下补货和严格按需求量补货
+					
+				}
+				
+    		}
+		}
+    }
+    
+    private Double sumContainerInventoryQuantity(List<WhSkuInventoryCommand> skuInvList, Long ouId) {
+		Double qty = Constants.DEFAULT_DOUBLE;
+		if (null == skuInvList || skuInvList.isEmpty()) {
+			return qty;
+		}
+		Set<String> uuidSet = new HashSet<String>();
+		for (WhSkuInventoryCommand skuInv : skuInvList) {
+			uuidSet.add(skuInv.getUuid());
+		}
+		// 根据uuid查出已分配的库存并减去得到可用的库存
+		qty = whSkuInventoryDao.getUseableQtyByUuidList(new ArrayList<String>(uuidSet), ouId);
+		return qty;
+	}
+    
+    private void deleteSkuInvs(List<WhSkuInventoryCommand> list, List<WhSkuInventoryCommand> deleteList) {
+		for (WhSkuInventoryCommand deleteInv : deleteList) {
+			for (int i = 0; i < list.size(); i++) {
+				WhSkuInventoryCommand skuInv = list.get(i);
+				if (skuInv.getId().equals(deleteInv.getId())) {
+					list.remove(i);
+					break;
+				}
+			}
+		}
+	}
 
     private Double occupySkuInventoryOfPieceToLimit(Warehouse wh, String replenishmentCode, ReplenishmentStrategyCommand rsc, Long locationId, Long ruleId, Long skuId, Long ouId, Double upperLimitQty) {
         if (Constants.ALLOCATE_STRATEGY_QUANTITYBESTMATCH.equals(rsc.getStrategyCode())) {
