@@ -127,6 +127,20 @@ public class OdoCommand extends BaseCommand {
     /** 波次明细<odoLineId, waveLine> */
     private Map<Long, WhWaveLineCommand> odoLineIdwaveLineMap;
 
+    /**
+     * 用于页面跳转
+     */
+    private String menuId;
+
+
+    public String getMenuId() {
+        return menuId;
+    }
+
+    public void setMenuId(String menuId) {
+        this.menuId = menuId;
+    }
+
     public java.lang.Boolean getIsAllowMerge() {
         return isAllowMerge;
     }
