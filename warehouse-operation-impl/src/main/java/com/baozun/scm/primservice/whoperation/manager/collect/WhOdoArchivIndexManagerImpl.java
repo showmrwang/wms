@@ -52,7 +52,8 @@ public class WhOdoArchivIndexManagerImpl implements WhOdoArchivIndexManager {
     }
 
     /**
-     * 通过电商平台订单号(NOT NULL) or 数据来源(DEFAULT NULL) or 仓库组织ID(DEFAULT NULL) 查询仓库出库单归档索引数据
+     * 通过电商平台订单号(NOT NULL) or 数据来源(DEFAULT NULL) or 仓库组织ID(DEFAULT NULL) or wms出库单号(DEFAULT NULL)
+     * 查询仓库出库单归档索引数据
      * 
      * @param ecOrderCode
      * @param dataSource
@@ -60,7 +61,7 @@ public class WhOdoArchivIndexManagerImpl implements WhOdoArchivIndexManager {
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_COLLECTSOURCE)
-    public List<WhOdoArchivIndex> findWhOdoArchivIndexByEcOrderCode(String ecOrderCode, String dataSource, Long ouid) {
+    public List<WhOdoArchivIndex> findWhOdoArchivIndexByEcOrderCode(String ecOrderCode, String dataSource, String wmsOdoCode, Long ouid) {
         log.info("WhOdoArchivIndexManagerImpl.findWhOdoArchivIndexByEcOrderCode begin!");
         // 验证电商平台订单号是否为空
         if (StringUtil.isEmpty(ecOrderCode)) {
@@ -73,7 +74,7 @@ public class WhOdoArchivIndexManagerImpl implements WhOdoArchivIndexManager {
             log.warn("WhOdoArchivIndexManagerImpl.findWhOdoArchivIndexByEcOrderCode serialNumber is null EcOrderCode: " + ecOrderCode);
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
-        List<WhOdoArchivIndex> whOdoArchivIndexList = whOdoArchivIndexDao.findWhOdoArchivIndexByEcOrderCode(ecOrderCode, dataSource, serialNumber, ouid);
+        List<WhOdoArchivIndex> whOdoArchivIndexList = whOdoArchivIndexDao.findWhOdoArchivIndexByEcOrderCode(ecOrderCode, dataSource, wmsOdoCode, serialNumber, ouid);
         log.info("WhOdoArchivIndexManagerImpl.findWhOdoArchivIndexByEcOrderCode end!");
         return whOdoArchivIndexList;
     }

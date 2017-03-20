@@ -48,6 +48,6 @@ public interface WhOdoArchivIndexDao extends BaseDao<WhOdoArchivIndex, Long> {
     /**
      * 通过电商平台订单号(NOT NULL) or 数据来源(DEFAULT NULL) 查询仓库出库单归档索引数据
      */
-    List<WhOdoArchivIndex> findWhOdoArchivIndexByEcOrderCode(@Param("ecOrderCode") String ecOrderCode, @Param("dataSource") String dataSource, @Param("num") String num, @Param("ouid") Long ouid);
+    List<WhOdoArchivIndex> findWhOdoArchivIndexByEcOrderCode(@Param("ecOrderCode") String ecOrderCode, @Param("dataSource") String dataSource, @Param("wmsOdoCode") String wmsOdoCode, @Param("num") String num, @Param("ouid") Long ouid);
 
 }

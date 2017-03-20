@@ -16,6 +16,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    <![CDATA[
 	        	id as id,
 	        	ec_order_code as ecOrderCode,
+	        	wms_odo_code as wmsOdoCode,
+	        	is_returned_purchase as isReturnedPurchase,
 	        	ou_id as ouId,
 	        	sys_date as sysDate,
 	        	data_source as dataSource
@@ -100,11 +102,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        INSERT INTO
 		        t_wh_odo_archiv_index_${num} (
 		        	ec_order_code ,
+		        	wms_odo_code ,
+		        	is_returned_purchase ,
 		        	ou_id ,
 		        	sys_date ,
 		        	data_source 
 		        ) VALUES (
 		        	#{ecOrderCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		            #{wmsOdoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		            #{isReturnedPurchase,javaType=java.lang.Boolean,jdbcType=BIT} ,
 		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{sysDate,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{dataSource,javaType=java.lang.String,jdbcType=VARCHAR} 
@@ -117,6 +123,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    <![CDATA[
 	        UPDATE t_wh_odo_archiv_index_${num} SET
 		        ec_order_code = #{ecOrderCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        wms_odo_code = #{wmsOdoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        is_returned_purchase = #{isReturnedPurchase,javaType=java.lang.Boolean,jdbcType=BIT} ,
 		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        sys_date = #{sysDate,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        data_source = #{dataSource,javaType=java.lang.String,jdbcType=VARCHAR} 

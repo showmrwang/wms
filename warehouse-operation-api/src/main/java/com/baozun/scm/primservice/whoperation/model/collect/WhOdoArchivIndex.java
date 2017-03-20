@@ -32,6 +32,10 @@ public class WhOdoArchivIndex extends BaseModel {
 
     /** 电商平台订单号 */
     private String ecOrderCode;
+    /** WMS出库单号 */
+    private String wmsOdoCode;
+    /** 是否退货入 默认否 */
+    private Boolean isReturnedPurchase = false;
     /** 仓库组织ID */
     private Long ouId;
     /** 年月 格式yyyyMM */
@@ -80,6 +84,22 @@ public class WhOdoArchivIndex extends BaseModel {
 
     public void setNum(String num) {
         this.num = num;
+    }
+
+    public String getWmsOdoCode() {
+        return wmsOdoCode;
+    }
+
+    public void setWmsOdoCode(String wmsOdoCode) {
+        this.wmsOdoCode = wmsOdoCode;
+    }
+
+    public Boolean getIsReturnedPurchase() {
+        return isReturnedPurchase;
+    }
+
+    public void setIsReturnedPurchase(Boolean isReturnedPurchase) {
+        this.isReturnedPurchase = isReturnedPurchase;
     }
 
 
