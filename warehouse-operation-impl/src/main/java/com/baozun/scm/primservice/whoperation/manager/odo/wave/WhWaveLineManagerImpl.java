@@ -195,7 +195,7 @@ public class WhWaveLineManagerImpl extends BaseManagerImpl implements WhWaveLine
         }
         if (null != isStaticLocation && isStaticLocation) {
             whWaveLine.setIsStaticLocationAllocate(isStaticLocation);
-            if (!staticLocationIds.isEmpty()) {
+            if (null != staticLocationIds && !staticLocationIds.isEmpty()) {
 				String staticLocationIdsStr = whWaveLine.getStaticLocationIds();
 				staticLocationIdsStr = StringUtils.isEmpty(staticLocationIdsStr)
 						? StringUtils.collectionToCommaDelimitedString(staticLocationIds)
@@ -203,14 +203,14 @@ public class WhWaveLineManagerImpl extends BaseManagerImpl implements WhWaveLine
 				whWaveLine.setStaticLocationIds(staticLocationIdsStr);
             }
         }
-        if (!trayIds.isEmpty()) {
+        if (null != trayIds && !trayIds.isEmpty()) {
         	String trayIdsStr = whWaveLine.getTrayIds();
         	trayIdsStr = StringUtils.isEmpty(trayIdsStr) 
         			? StringUtils.collectionToCommaDelimitedString(trayIds)
         			: trayIdsStr + "," + StringUtils.collectionToCommaDelimitedString(trayIds);
             whWaveLine.setTrayIds(trayIdsStr);
         }
-        if (!packingCaseIds.isEmpty()) {
+        if (null != packingCaseIds && !packingCaseIds.isEmpty()) {
         	String packingCaseIdsStr = whWaveLine.getPackingCaseIds();
         	packingCaseIdsStr = StringUtils.isEmpty(packingCaseIdsStr) 
         			? StringUtils.collectionToCommaDelimitedString(packingCaseIds)

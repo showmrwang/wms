@@ -8,6 +8,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<resultMap id="WhAsnLineResultExt" type="com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine">
 	</resultMap>
 	
+	<resultMap id="WhPoLineResultExt" type="com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine">
+	</resultMap>
+	
 	<!-- 用于select查询公用抽取的列 -->
 	<sql id="whAsnLineColumnsExt">
 	    <![CDATA[
@@ -377,7 +380,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 						line.last_modify_time as lastModifyTime,
 						line.modified_id as modifiedId,
 						line.valid_date_uom as validDateUom,
-						sku.id as skuid,
 						sku.code as skuCode,
 						sku.name as skuName,
 						inv.name as invName,
@@ -449,7 +451,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 							line.last_modify_time as lastModifyTime,
 							line.modified_id as modifiedId,
 							line.valid_date_uom as validDateUom,
-							sku.id as skuid,
 							sku.code as skuCode,
 							sku.name as skuName,
 							uom.uom_code as uomCode,
@@ -591,5 +592,37 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<if test="uuid==null or uuid==''">
 			and uuid is null
 			</if>
+	 </select>
+	 
+	 <select id="findAsnInboundData" resultMap="WhPoLineResultExt">
+	 	select
+			al.sku_id as skuId,
+			al.qty_planned as qtyPlanned,
+			al.ctn_planned as ctnPlanned,
+			al.qty_rcvd as qtyRcvd,
+			al.ctn_rcvd as ctnRcvd,
+			al. status as status,
+			al.is_iqc as isIqc,
+			al.mfg_date as mfgDate,
+			al.exp_date as expDate,
+			al.valid_date as validDate,
+			al.batch_no as batchNo,
+			al.country_of_origin as countryOfOrigin,
+			al.inv_status as invStatus,
+			al.inv_type as invType,
+			al.inv_attr1 as invAttr1,
+			al.inv_attr2 as invAttr2,
+			al.inv_attr3 as invAttr3,
+			al.inv_attr4 as invAttr4,
+			al.inv_attr5 as invAttr5,
+			al.uuid as uuid,
+			pl.ext_line_num as extLineNum,
+			pl.carton_no as cartonNo
+		from
+			t_wh_asn_line al
+			join t_wh_po_line pl on al.po_line_id = pl.id
+		where
+			al.asn_id = #{asnId}
+			and al.ou_id = #{ouId}
 	 </select>
 </mapper>

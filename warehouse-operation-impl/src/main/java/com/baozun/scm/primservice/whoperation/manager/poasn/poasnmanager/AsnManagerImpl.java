@@ -24,6 +24,7 @@ import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnLineCommand;
 import com.baozun.scm.primservice.whoperation.command.system.GlobalLogCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
+import com.baozun.scm.primservice.whoperation.command.whinterface.inbound.WhInboundConfirmCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
@@ -34,11 +35,14 @@ import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoLineDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.Container2ndCategoryDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.StoreDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.carton.WhCartonDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.system.GlobalLogManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.inbound.WhInboundManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine;
@@ -50,7 +54,6 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.Container2ndCatego
 import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
 import com.baozun.scm.primservice.whoperation.model.warehouse.carton.WhCarton;
-import com.baozun.scm.primservice.whoperation.util.DateUtil;
 import com.baozun.scm.primservice.whoperation.util.StringUtil;
 
 
@@ -82,6 +85,12 @@ public class AsnManagerImpl extends BaseManagerImpl implements AsnManager {
     private Container2ndCategoryDao container2ndCategoryDao;
     @Autowired
     private WhCartonDao whCartonDao;
+    @Autowired
+    private StoreDao storeDao;
+    @Autowired
+    private WhInboundManager whInboundManager;
+    @Autowired
+    private WhSkuInventoryManager whSkuInventoryManager;
 
 
     /**
@@ -135,13 +144,13 @@ public class AsnManagerImpl extends BaseManagerImpl implements AsnManager {
         for (WhAsnCommand command : asnList) {
             // 封装系统参数值 INVENTORY_TYPE
             if (!StringUtil.isEmpty(command.getAsnType().toString())) {
-                b = dic1.contains(command.getAsnType());
+                b = dic1.contains(null == command.getAsnType() ? "" : command.getAsnType().toString());
                 if (!b) {
                     dic1.add(command.getAsnType().toString());
                 }
             }
             if (!StringUtil.isEmpty(command.getStatus().toString())) {
-                b = dic2.contains(command.getStatus());
+                b = dic2.contains(null == command.getStatus() ? "" : command.getStatus().toString());
                 if (!b) {
                     dic2.add(command.getStatus().toString());
                 }
@@ -798,15 +807,7 @@ public class AsnManagerImpl extends BaseManagerImpl implements AsnManager {
         }
 
         try {
-            // 删除Asn表头信息
             WhAsn asn = this.whAsnDao.findWhAsnById(asnId, ouId);
-            int deleteAsnCount = whAsnDao.deleteByIdOuId(asnId, ouId);
-            if (deleteAsnCount <= 0) {
-                log.warn("method deleteAsnAndAsnLineToShard delete asn error: no asn to be deleted![params:-->id:{},ouId:{},returns:{}] ", asnId, ouId, deleteAsnCount);
-                throw new BusinessException(ErrorCodes.DELETE_DATA_ERROR);
-            }
-            // 写入日志
-            this.insertGlobalLog(GLOBAL_LOG_DELETE, asn, ouId, userId, null, null);
             // 删除AsnLINE明细信息
             List<WhAsnLine> asnLineList = this.whAsnLineDao.findWhAsnLineByAsnIdOuId(asnId, ouId);
             if (asnLineList != null && asnLineList.size() > 0) {
@@ -819,6 +820,14 @@ public class AsnManagerImpl extends BaseManagerImpl implements AsnManager {
                     this.insertGlobalLog(GLOBAL_LOG_DELETE, asnLine, ouId, userId, asn.getAsnCode(), null);
                 }
             }
+            // 删除Asn表头信息
+            int deleteAsnCount = whAsnDao.deleteByIdOuId(asnId, ouId);
+            if (deleteAsnCount <= 0) {
+                log.warn("method deleteAsnAndAsnLineToShard delete asn error: no asn to be deleted![params:-->id:{},ouId:{},returns:{}] ", asnId, ouId, deleteAsnCount);
+                throw new BusinessException(ErrorCodes.DELETE_DATA_ERROR);
+            }
+            // 写入日志
+            this.insertGlobalLog(GLOBAL_LOG_DELETE, asn, ouId, userId, null, null);
             // 更改PO单信息
             int updatePoCount = this.whPoDao.saveOrUpdateByVersion(whpo);
             if (updatePoCount <= 0) {
@@ -1111,6 +1120,19 @@ public class AsnManagerImpl extends BaseManagerImpl implements AsnManager {
             if (updateCountAsn <= 0) {
                 throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
             }
+            // zhu.kai 收货反馈
+            Store store = storeDao.findById(asn.getStoreId());
+            if (null != store && null != store.getInboundConfirmOrderType() && store.getInboundConfirmOrderType().intValue() == 2) {
+				// 按ASN单反馈, 上位系统单据才反馈
+            	WhPo po = whPoDao.findWhPoById(asn.getPoId(), ouId);
+        		if (null != po.getIsVmi() && po.getIsVmi()) {
+        			// 根据asnId查找出asnLine, 用WhPoLine封装参数
+        			List<WhPoLine> asnLineList = whAsnLineDao.findAsnInboundData(asn.getId(), ouId);
+        			WhInboundConfirmCommand inboundConfirmCommand = whSkuInventoryManager.findInventoryByPo(po, asnLineList, ouId);
+        			whInboundManager.insertWhInboundData(inboundConfirmCommand);
+        		}
+			}
+            
         } catch (BusinessException ex) {
             throw ex;
         } catch (Exception e) {

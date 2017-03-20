@@ -13,6 +13,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    <![CDATA[
 	        	id as id,
 	        	ec_order_code as ecOrderCode,
+	        	wms_odo_code as wmsOdoCode,
+	        	is_returned_purchase as isReturnedPurchase,
 	        	ou_id as ouId,
 	        	sys_date as sysDate,
 	        	data_source as dataSource
@@ -47,5 +49,23 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				</if>
 		</where>
 	</sql>
+	
+	<select id="findWhOdoArchivIndexByEcOrderCode" resultMap="WhOdoArchivIndexResultExt">
+		select
+		<include refid="whOdoArchivIndexColumnsExt" />
+		from 
+		t_wh_odo_archiv_index_${num}
+		where
+		ec_order_code = #{ecOrderCode} 
+		<if test="dataSource!=null and dataSource!=''">
+				and data_source = #{dataSource}
+		</if>
+		<if test="wmsOdoCode!=null and wmsOdoCode!=''">
+				and wms_odo_code = #{wmsOdoCode}
+		</if>
+		<if test="ouid!=null">
+				and ou_id = #{ouid}
+		</if>
+	</select>
 	
 </mapper>

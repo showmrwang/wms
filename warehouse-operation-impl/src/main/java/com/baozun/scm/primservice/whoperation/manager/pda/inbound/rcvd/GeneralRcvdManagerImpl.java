@@ -11,8 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import lark.common.annotation.MoreDB;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +32,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhAsnRcvdLogCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.carton.WhCartonCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
+import com.baozun.scm.primservice.whoperation.command.whinterface.inbound.WhInboundConfirmCommand;
 import com.baozun.scm.primservice.whoperation.constant.CacheKeyConstant;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
@@ -53,6 +52,7 @@ import com.baozun.scm.primservice.whoperation.dao.system.SysDictionaryDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.Container2ndCategoryDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerAssistDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.StoreDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.StoreDefectReasonsDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.StoreDefectTypeDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.UomDao;
@@ -68,6 +68,8 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInven
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.inbound.WhInboundManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine;
@@ -96,6 +98,8 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInv
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventorySnLog;
 import com.baozun.scm.primservice.whoperation.util.DateUtil;
 import com.baozun.scm.primservice.whoperation.util.SkuInventoryUuid;
+
+import lark.common.annotation.MoreDB;
 
 @Service("generalRcvdManager")
 @Transactional
@@ -157,6 +161,12 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
     private CacheManager cacheManager;
     @Autowired
     private UomDao uomDao;
+    @Autowired
+    private StoreDao storeDao;
+    @Autowired
+    private WhSkuInventoryManager whSkuInventoryManager;
+    @Autowired
+    private WhInboundManager whInboundManager;
 
     @Override
     @Deprecated
@@ -598,6 +608,18 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
                 if (updateCountAsn <= 0) {
                     throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
                 }
+                // zhu.kai 收货反馈
+                Store store = storeDao.findById(asn.getStoreId());
+                if (null != store && null != store.getInboundConfirmOrderType() && store.getInboundConfirmOrderType().intValue() == 2) {
+    				// 按ASN单反馈, 上位系统单据才反馈
+                	WhPo whPo = whPoDao.findWhPoById(asn.getPoId(), ouId);
+            		if (null != whPo.getIsVmi() && whPo.getIsVmi()) {
+            			// 根据asnId查找出asnLine, 用WhPoLine封装参数
+            			List<WhPoLine> asnLineList = whAsnLineDao.findAsnInboundData(asn.getId(), ouId);
+            			WhInboundConfirmCommand inboundConfirmCommand = whSkuInventoryManager.findInventoryByPo(whPo, asnLineList, ouId);
+            			whInboundManager.insertWhInboundData(inboundConfirmCommand);
+            		}
+    			}
             }
             // 自动关闭PO单据
             if (po.getQtyRcvd() >= po.getQtyPlanned()) {
@@ -619,6 +641,15 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
                 if (updateCountPo <= 0) {
                     throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
                 }
+                // zhu.kai 收货反馈
+                Store store = storeDao.findById(updatePo.getStoreId());
+            	if (null != store && null != store.getInboundConfirmOrderType() && store.getInboundConfirmOrderType().intValue() == 1) {
+					// 按PO单反馈, 上位系统单据才反馈
+            		if (null != updatePo.getIsVmi() && updatePo.getIsVmi()) {
+            			WhInboundConfirmCommand inboundConfirmCommand = whSkuInventoryManager.findInventoryByPo(updatePo, lineList, ouId);
+            			whInboundManager.insertWhInboundData(inboundConfirmCommand);
+            		}
+				}
             }
         }
     }

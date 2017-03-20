@@ -403,6 +403,8 @@ public class ErrorCodes {
     public static final int RCVD_ASN_NO_SKU_ERROR = 11080;
     /** 出库单外部单号已存在 **/
     public static final int ODO_EXTCODE_ISEXIST = 11081;
+    /** 此状态下出库单不允许编辑 */
+    public static final int ODO_EDIT_ERROR = 11082;
     // 10001-20000 luyimin
 
 

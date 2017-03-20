@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.WhPrintInfoDao">
+	<resultMap id="WhPrintInfoResult" type="com.baozun.scm.primservice.whoperation.model.warehouse.WhPrintInfo">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whPrintInfoColumns">
+	    <![CDATA[
+	        	id as id,
+	        	facility_id as facilityId,
+	        	container_id as containerId,
+	        	container_code as containerCode,
+	        	batch as batch,
+	        	wave_code as waveCode,
+	        	ou_id as ouId,
+	        	outer_container_id as outerContainerId,
+	        	outer_container_code as outerContainerCode,
+	        	container_lattice_no as containerLatticeNo,
+	        	outboundbox_id as outboundboxId,
+	        	outboundbox_code as outboundboxCode,
+	        	print_type as printType,
+	        	print_count as printCount
+	    ]]>
+	</sql>
+	
+		<!-- 如果有自增字段 -->
+		
+			<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+			<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhPrintInfo" 
+				
+			 flushCache="true">
+		    <![CDATA[
+		        INSERT INTO
+		        t_wh_print_info (
+		        id,
+		        	facility_id ,
+		        	container_id ,
+		        	container_code ,
+		        	batch ,
+		        	wave_code ,
+		        	ou_id ,
+		        	outer_container_id ,
+		        	outer_container_code ,
+		        	container_lattice_no ,
+		        	outboundbox_id ,
+		        	outboundbox_code ,
+		        	print_type ,
+		        	print_count 
+		        ) VALUES (
+		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{facilityId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{containerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{containerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{batch,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{waveCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{outerContainerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{outerContainerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{containerLatticeNo,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{outboundboxId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{outboundboxCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{printType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{printCount,javaType=java.lang.Integer,jdbcType=INTEGER} 
+		        )
+		    ]]>
+
+		</insert>
+		
+		
+		<update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhPrintInfo">
+	    <![CDATA[
+	        UPDATE t_wh_print_info SET
+		        facility_id = #{facilityId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        container_id = #{containerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        container_code = #{containerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        batch = #{batch,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        wave_code = #{waveCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        outer_container_id = #{outerContainerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        outer_container_code = #{outerContainerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        container_lattice_no = #{containerLatticeNo,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        outboundbox_id = #{outboundboxId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        outboundbox_code = #{outboundboxCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        print_type = #{printType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        print_count = #{printCount,javaType=java.lang.Integer,jdbcType=INTEGER} 
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+		</update>
+	   <delete id="delete" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from t_wh_print_info where
+		        id = #{id} 
+	    ]]>
+	    </delete> 
+	    
+	     <delete id="deleteByIds" parameterType="list">
+	    
+	        delete from t_wh_print_info 
+	        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>	
+	  
+	    </delete>  
+	         
+	    <select id="findById" parameterType="java.lang.Long" resultMap="WhPrintInfoResult" flushCache="false">
+			select <include refid="whPrintInfoColumns" />
+		    <![CDATA[
+			    from t_wh_print_info 
+		        where 
+		        id = #{id} 
+		    ]]>
+		</select>	
+		<select id="getByIds" parameterType="list"  resultMap="WhPrintInfoResult" flushCache="false">
+			select <include refid="whPrintInfoColumns" />
+			    from t_wh_print_info 
+		        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>					
+		</select>	
+	<sql id="whPrintInfoDynamicWhere">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+				<if test="facilityId!=null">
+					and facility_id = #{facilityId}
+				</if>
+	       
+				<if test="containerId!=null">
+					and container_id = #{containerId}
+				</if>
+	       
+	       
+		       <if test="containerCode!=null and containerCode!=''">
+					and container_code = #{containerCode}
+				</if>
+	       
+	       
+		       <if test="batch!=null and batch!=''">
+					and batch = #{batch}
+				</if>
+	       
+	       
+		       <if test="waveCode!=null and waveCode!=''">
+					and wave_code = #{waveCode}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+	       
+				<if test="outerContainerId!=null">
+					and outer_container_id = #{outerContainerId}
+				</if>
+	       
+	       
+		       <if test="outerContainerCode!=null and outerContainerCode!=''">
+					and outer_container_code = #{outerContainerCode}
+				</if>
+	       
+				<if test="containerLatticeNo!=null">
+					and container_lattice_no = #{containerLatticeNo}
+				</if>
+	       
+				<if test="outboundboxId!=null">
+					and outboundbox_id = #{outboundboxId}
+				</if>
+	       
+	       
+		       <if test="outboundboxCode!=null and outboundboxCode!=''">
+					and outboundbox_code = #{outboundboxCode}
+				</if>
+	       
+	       
+		       <if test="printType!=null and printType!=''">
+					and print_type = #{printType}
+				</if>
+	       
+				<if test="printCount!=null">
+					and print_count = #{printCount}
+				</if>
+		</where>
+	</sql>
+	
+
+	<select id="getCount" resultType="long">
+        select count(*) from t_wh_print_info 
+    </select>
+    <select id="findListCountByQueryMap" resultType="long">
+        select count(*) from t_wh_print_info 
+		<include refid="whPrintInfoDynamicWhere"/>    
+    </select>
+    
+    <select id="findListCountByParam" resultType="long">
+        select count(*) from t_wh_print_info 
+		<include refid="whPrintInfoDynamicWhere"/>    
+    </select>
+    
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPage" resultMap="WhPrintInfoResult">
+    	select <include refid="whPrintInfoColumns" />
+	    from t_wh_print_info 
+		<include refid="whPrintInfoDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByQueryMap" resultMap="WhPrintInfoResult">
+    	select <include refid="whPrintInfoColumns" />
+	    from t_wh_print_info 
+		<include refid="whPrintInfoDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByParam" resultMap="WhPrintInfoResult">
+    	select <include refid="whPrintInfoColumns" />
+	    from t_wh_print_info 
+		<include refid="whPrintInfoDynamicWhere"/>
+		
+    </select>
+
+	
+</mapper>

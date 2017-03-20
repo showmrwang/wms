@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.WhFunctionOutBoundDao">
+	<resultMap id="WhFunctionOutBoundResult" type="com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionOutBound">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whFunctionOutBoundColumns">
+	    <![CDATA[
+	        	id as id,
+	        	function_id as functionId,
+	        	function_module as functionModule,
+	        	checking_mode as checkingMode,
+	        	is_foc_count_nums as isFocCountNums,
+	        	scan_pattern as scanPattern,
+	        	is_tip_inv_attr as isTipInvAttr,
+	        	is_scan_inv_attr as isScanInvAttr,
+	        	is_checking_to_outboundbox as isCheckingToOutboundbox,
+	        	is_auto_generate_outboundbox as isAutoGenerateOutboundbox,
+	        	is_scan_outboundbox as isScanOutboundbox,
+	        	checking_print as checkingPrint,
+	        	is_scan_sku_photograph as isScanSkuPhotograph,
+	        	scan_inv_attr_photograph as scanInvAttrPhotograph,
+	        	weighing_print as weighingPrint,
+	        	is_validate_weight as isValidateWeight,
+	        	weight_float_percentage as weightFloatPercentage,
+	        	way_bill_print_type as wayBillPrintType,
+	        	is_scan_way_bill as isScanWayBill,
+	        	handover_print as handoverPrint,
+	        	is_tip_handover_station as isTipHandoverStation,
+	        	ou_id as ouId
+	    ]]>
+	</sql>
+	
+		<!-- 如果有自增字段 -->
+		
+			<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+			<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionOutBound" 
+				
+			 flushCache="true">
+		    <![CDATA[
+		        INSERT INTO
+		        t_wh_function_outbound (
+		        id,
+		        	function_id ,
+		        	function_module ,
+		        	checking_mode ,
+		        	is_foc_count_nums ,
+		        	scan_pattern ,
+		        	is_tip_inv_attr ,
+		        	is_scan_inv_attr ,
+		        	is_checking_to_outboundbox ,
+		        	is_auto_generate_outboundbox ,
+		        	is_scan_outboundbox ,
+		        	checking_print ,
+		        	is_scan_sku_photograph ,
+		        	scan_inv_attr_photograph ,
+		        	weighing_print ,
+		        	is_validate_weight ,
+		        	weight_float_percentage ,
+		        	way_bill_print_type ,
+		        	is_scan_way_bill ,
+		        	handover_print ,
+		        	is_tip_handover_station ,
+		        	ou_id 
+		        ) VALUES (
+		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{functionId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{functionModule,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{checkingMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{isFocCountNums,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	#{scanPattern,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{isTipInvAttr,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	#{isScanInvAttr,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	#{isCheckingToOutboundbox,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	#{isAutoGenerateOutboundbox,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	#{isScanOutboundbox,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	#{checkingPrint,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{isScanSkuPhotograph,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	#{scanInvAttrPhotograph,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{weighingPrint,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{isValidateWeight,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	#{weightFloatPercentage,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{wayBillPrintType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{isScanWayBill,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	#{handoverPrint,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{isTipHandoverStation,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        )
+		    ]]>
+
+		</insert>
+		
+		
+		<update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionOutBound">
+	    <![CDATA[
+	        UPDATE t_wh_function_outbound SET
+		        function_id = #{functionId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        function_module = #{functionModule,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        checking_mode = #{checkingMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        is_foc_count_nums = #{isFocCountNums,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        scan_pattern = #{scanPattern,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        is_tip_inv_attr = #{isTipInvAttr,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        is_scan_inv_attr = #{isScanInvAttr,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        is_checking_to_outboundbox = #{isCheckingToOutboundbox,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        is_auto_generate_outboundbox = #{isAutoGenerateOutboundbox,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        is_scan_outboundbox = #{isScanOutboundbox,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        checking_print = #{checkingPrint,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        is_scan_sku_photograph = #{isScanSkuPhotograph,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        scan_inv_attr_photograph = #{scanInvAttrPhotograph,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        weighing_print = #{weighingPrint,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        is_validate_weight = #{isValidateWeight,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        weight_float_percentage = #{weightFloatPercentage,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        way_bill_print_type = #{wayBillPrintType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        is_scan_way_bill = #{isScanWayBill,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        handover_print = #{handoverPrint,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        is_tip_handover_station = #{isTipHandoverStation,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+		</update>
+	   <delete id="delete" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from t_wh_function_outbound where
+		        id = #{id} 
+	    ]]>
+	    </delete> 
+	    
+	     <delete id="deleteByIds" parameterType="list">
+	        delete from t_wh_function_outbound 
+	        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+					#{item}				
+				</foreach>	
+	    </delete>  
+	         
+	    <select id="findById" parameterType="java.lang.Long" resultMap="WhFunctionOutBoundResult" flushCache="false">
+			select <include refid="whFunctionOutBoundColumns" />
+		    <![CDATA[
+			    from t_wh_function_outbound 
+		        where 
+		        id = #{id} 
+		    ]]>
+		</select>	
+		<select id="getByIds" parameterType="list"  resultMap="WhFunctionOutBoundResult" flushCache="false">
+			select <include refid="whFunctionOutBoundColumns" />
+			    from t_wh_function_outbound 
+		        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+					#{item}				
+				</foreach>					
+		</select>	
+	<sql id="whFunctionOutBoundDynamicWhere">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+				<if test="functionId!=null">
+					and function_id = #{functionId}
+				</if>
+	       
+	       
+		       <if test="functionModule!=null and functionModule!=''">
+					and function_module = #{functionModule}
+				</if>
+	       
+	       
+		       <if test="checkingMode!=null and checkingMode!=''">
+					and checking_mode = #{checkingMode}
+				</if>
+	       
+				<if test="isFocCountNums!=null">
+					and is_foc_count_nums = #{isFocCountNums}
+				</if>
+	       
+				<if test="scanPattern!=null">
+					and scan_pattern = #{scanPattern}
+				</if>
+	       
+				<if test="isTipInvAttr!=null">
+					and is_tip_inv_attr = #{isTipInvAttr}
+				</if>
+	       
+				<if test="isScanInvAttr!=null">
+					and is_scan_inv_attr = #{isScanInvAttr}
+				</if>
+	       
+				<if test="isCheckingToOutboundbox!=null">
+					and is_checking_to_outboundbox = #{isCheckingToOutboundbox}
+				</if>
+	       
+				<if test="isAutoGenerateOutboundbox!=null">
+					and is_auto_generate_outboundbox = #{isAutoGenerateOutboundbox}
+				</if>
+	       
+				<if test="isScanOutboundbox!=null">
+					and is_scan_outboundbox = #{isScanOutboundbox}
+				</if>
+	       
+	       
+		       <if test="checkingPrint!=null and checkingPrint!=''">
+					and checking_print = #{checkingPrint}
+				</if>
+	       
+				<if test="isScanSkuPhotograph!=null">
+					and is_scan_sku_photograph = #{isScanSkuPhotograph}
+				</if>
+	       
+	       
+		       <if test="scanInvAttrPhotograph!=null and scanInvAttrPhotograph!=''">
+					and scan_inv_attr_photograph = #{scanInvAttrPhotograph}
+				</if>
+	       
+	       
+		       <if test="weighingPrint!=null and weighingPrint!=''">
+					and weighing_print = #{weighingPrint}
+				</if>
+	       
+				<if test="isValidateWeight!=null">
+					and is_validate_weight = #{isValidateWeight}
+				</if>
+	       
+				<if test="weightFloatPercentage!=null">
+					and weight_float_percentage = #{weightFloatPercentage}
+				</if>
+	       
+	       
+		       <if test="wayBillPrintType!=null and wayBillPrintType!=''">
+					and way_bill_print_type = #{wayBillPrintType}
+				</if>
+	       
+				<if test="isScanWayBill!=null">
+					and is_scan_way_bill = #{isScanWayBill}
+				</if>
+	       
+	       
+		       <if test="handoverPrint!=null and handoverPrint!=''">
+					and handover_print = #{handoverPrint}
+				</if>
+	       
+				<if test="isTipHandoverStation!=null">
+					and is_tip_handover_station = #{isTipHandoverStation}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+		</where>
+	</sql>
+	
+
+	<select id="getCount" resultType="long">
+        select count(*) from t_wh_function_outbound 
+    </select>
+    <select id="findListCountByQueryMap" resultType="long">
+        select count(*) from t_wh_function_outbound 
+		<include refid="whFunctionOutBoundDynamicWhere"/>    
+    </select>
+    
+    <select id="findListCountByParam" resultType="long">
+        select count(*) from t_wh_function_outbound 
+		<include refid="whFunctionOutBoundDynamicWhere"/>    
+    </select>
+    
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPage" resultMap="WhFunctionOutBoundResult">
+    	select <include refid="whFunctionOutBoundColumns" />
+	    from t_wh_function_outbound 
+		<include refid="whFunctionOutBoundDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByQueryMap" resultMap="WhFunctionOutBoundResult">
+    	select <include refid="whFunctionOutBoundColumns" />
+	    from t_wh_function_outbound 
+		<include refid="whFunctionOutBoundDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByParam" resultMap="WhFunctionOutBoundResult">
+    	select <include refid="whFunctionOutBoundColumns" />
+	    from t_wh_function_outbound 
+		<include refid="whFunctionOutBoundDynamicWhere"/>
+		
+    </select>
+
+	
+</mapper>

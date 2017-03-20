@@ -28,6 +28,7 @@ import org.apache.ibatis.annotations.Param;
 
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnLineCommand;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 
 
 
@@ -193,5 +194,13 @@ public interface WhAsnLineDao extends BaseDao<WhAsnLine, Long> {
      * @return
      */
     WhAsnLine findWhAsnLineByAsnIdPolineIdOuIdAndUuid(@Param("asnId") Long asnId, @Param("poLineId") Long poLineId, @Param("ouId") Long ouId, @Param("uuid") String uuid);
+    
+    /**
+     * 根据asnId查找对应收货反馈数据,用WhPoLine实体封装
+     * @author kai.zhu
+     * @version 2017年3月17日
+     * @return
+     */
+	List<WhPoLine> findAsnInboundData(@Param("asnId") Long asnId, @Param("ouId") Long ouId);
 
 }

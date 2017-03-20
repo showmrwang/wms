@@ -401,7 +401,7 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
                     for (WhAsnLine asnLine : asnLineList) {
                         if (whpoline.getId().equals(asnLine.getPoLineId())) {
                             whpoline.setAvailableQty(whpoline.getAvailableQty() + asnLine.getQtyPlanned());
-                            if (whpoline.getAvailableQty() == whpoline.getQtyPlanned()) {
+                            if (0 == whpoline.getAvailableQty().compareTo(whpoline.getQtyPlanned())) {
                                 whpoline.setStatus(PoAsnStatus.POLINE_NEW);
                             }
                             whpoline.setModifiedId(whasn.getModifiedId());
