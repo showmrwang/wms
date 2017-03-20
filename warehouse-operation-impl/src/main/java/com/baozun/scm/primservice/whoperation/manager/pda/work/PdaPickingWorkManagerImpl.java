@@ -527,7 +527,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         // 库位上每个sku总件数
         statisticsCommand.setSkuQty(skuQty);
         // 库位上每个sku对应的唯一sku及件数
-        statisticsCommand.setSkuAttrIds(insideSkuAttrIds);
+        statisticsCommand.setSkuAttrIds(skuAttrIds);
         // 库位上每个唯一sku对应的所有sn及残次条码
         statisticsCommand.setSkuAttrIdsSnDefect(skuAttrIdsSnDefect);
         // 库位上每个唯一sku对应的货格（is_whole_case=0&&有小车&&库位上sku不在任何容器内）
@@ -729,8 +729,8 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         log.info("PdaPickingWorkManagerImpl scanLocation is start");
         Long operationId = command.getOperationId();
         Long ouId = command.getOuId();
-        String locationCode = command.getLocationCode();
-        String locationBarCode = command.getLocationBarCode();
+        String locationCode = command.getTipLocationCode();
+        String locationBarCode = command.getTipLocationBarCode();
         if(!StringUtil.isEmpty(locationBarCode) && StringUtil.isEmpty(locationCode)) {
             locationCode = locationBarCode;
         }
@@ -867,7 +867,8 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             }
             command.setTipSkuBarCode(skuCmd.getBarCode());    //提示sku
             command.setIsNeedTipSku(true);
-            this.tipSkuDetailAspect(command, cSRCmd.getTipSkuAttrIdSnDefect(), skuAttrIdsQty, logId);
+            command.setSkuId(skuId);
+            this.tipSkuDetailAspect(command, skuAttrId, skuAttrIdsQty, logId);
         }else{
             command.setIsNeedTipSku(false);
         }
@@ -2275,7 +2276,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
      * @param locationId
      * @param ouId
      */
-    public void cancelPattern(String carCode,String outerContainerCode,String insideContainerCode, int cancelPattern,int pickingWay,Long locationId,Long ouId,Long operationId){
+    public void cancelPattern(String carCode,String outerContainerCode,String insideContainerCode, int cancelPattern,int pickingWay,Long locationId,Long ouId,Long operationId,Long tipSkuId){
         
         Long carId = null;
         if(!StringUtils.isEmpty(carCode)) {
@@ -2300,7 +2301,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             }
             insideContainerId = cmd.getId();
         }
-        pdaPickingWorkCacheManager.cancelPattern(carId, outerContainerId, insideContainerId, cancelPattern, pickingWay, locationId, ouId,operationId);
+        pdaPickingWorkCacheManager.cancelPattern(carId, outerContainerId, insideContainerId, cancelPattern, pickingWay, locationId, ouId,operationId,tipSkuId);
     }
     
     /***
