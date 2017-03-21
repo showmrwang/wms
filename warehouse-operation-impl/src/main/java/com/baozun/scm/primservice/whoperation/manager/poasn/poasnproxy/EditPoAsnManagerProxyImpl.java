@@ -366,8 +366,9 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
          * 逻辑：1.需要删除ASN表头信息；2.需要删除ASN单明细；3.需要更新对应的PO单明细并可能需要回滚状态；4.需要更新对应的PO单表头信息并可能需要回滚状态
          */
         log.info("deleteAsnAndAsnLine start =======================");
+        Long ouId = whAsnCommand.getOuId();
         // 查询拆库内信息
-        WhAsnCommand whasn = asnManager.findWhAsnCommandByIdToShard(whAsnCommand.getId(), whAsnCommand.getOuId());
+        WhAsnCommand whasn = asnManager.findWhAsnCommandByIdToShard(whAsnCommand.getId(), ouId);
         // 业务逻辑：获取到的asn的状态不为新建状态，不能够删除
         if (null == whasn) {
             log.warn("no asn to be delete!");
@@ -383,13 +384,13 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
         // 修改asn要对应修改po单、po单明细的数据
         List<WhPoLine> polineList = new ArrayList<WhPoLine>();
         // asn对应的po单
-        WhPo whpo = null == whasn.getPoOuId() ? this.poManager.findWhPoByIdToInfo(whasn.getPoId(), whasn.getPoOuId()) : this.poManager.findWhPoByIdToShard(whasn.getPoId(), whasn.getPoOuId());
+        WhPo whpo = this.poManager.findWhPoByIdToShard(whasn.getPoId(), ouId);
         if (null == whpo) {
             log.warn("no po found!");
             return getResponseMsg("no po found!", ResponseMsg.STATUS_ERROR, null);
         }
         // po单对应的明细
-        List<WhPoLine> whpolineList = null == whasn.getPoOuId() ? this.poLineManager.findWhPoLineListByPoIdToInfo(whpo.getId(), whpo.getOuId()) : this.poLineManager.findWhPoLineListByPoIdToShard(whpo.getId(), whpo.getOuId());
+        List<WhPoLine> whpolineList = this.poLineManager.findWhPoLineListByPoIdToShard(whpo.getId(), ouId);
         boolean poStatusFlag = true;// 判断是否需要回滚PO单状态：从已创建ASN回滚到新建状态
         // 对应的ASN明细修改对应的PO单明细
         /**
@@ -421,6 +422,7 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
         // 数据库操作
         try {
             this.asnManager.deleteAsnAndAsnLineToShard(whasn, whpo, polineList);
+            // #TODO回滚集团下状态
         } catch (Exception e) {
             if (e instanceof BusinessException) {
                 return getResponseMsg(String.valueOf(((BusinessException) e).getErrorCode()), ResponseMsg.DATA_ERROR, null);

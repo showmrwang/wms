@@ -17,14 +17,14 @@ package com.baozun.scm.primservice.whoperation.dao.poasn;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.ibatis.annotations.Param;
-
 import lark.common.annotation.CommonQuery;
 import lark.common.annotation.QueryPage;
 import lark.common.dao.Page;
 import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
+
+import org.apache.ibatis.annotations.Param;
 
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnSn;
 
@@ -49,6 +49,8 @@ public interface WhAsnSnDao extends BaseDao<WhAsnSn, Long> {
      * @return
      */
     List<WhAsnSn> findWhAsnSnByAsnLineId(@Param("asnlineid") Long asnlineid, @Param("ouid") Long ouid);
+
+    int deleteByIdOuId(@Param("id") Long id, @Param("ouId") Long ouId);
 
 
 }

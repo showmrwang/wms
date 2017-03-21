@@ -101,6 +101,8 @@ public class WhOdo extends BaseModel {
     private String counterCode;
     /** 配货模式码 */
     private String distributionCode;
+    /** 数据来源 */
+    private String dataSource;
 
     /** 当前月份 用于归档 */
     private String sysDate;
@@ -417,6 +419,14 @@ public class WhOdo extends BaseModel {
 
     public void setArchivTime(Date archivTime) {
         this.archivTime = archivTime;
+    }
+
+    public String getDataSource() {
+        return dataSource;
+    }
+
+    public void setDataSource(String dataSource) {
+        this.dataSource = dataSource;
     }
 
 }

@@ -18,6 +18,7 @@ import org.apache.ibatis.annotations.Param;
 
 import lark.orm.dao.supports.BaseDao;
 
+import com.baozun.scm.primservice.whoperation.model.collect.WhOdoArchivIndex;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAddress;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAttr;
@@ -202,5 +203,13 @@ public interface OdoArchivDao extends BaseDao<WhOdo, Long> {
      * @return
      */
     int deleteOdoTransportMgmt(@Param("odoid") Long odoid, @Param("ouid") Long ouid);
+
+    /**
+     * 保存出库单索引数据(仓库)
+     * 
+     * @param whOdoArchivIndex
+     * @return
+     */
+    int saveOdoArchivIndex(WhOdoArchivIndex whOdoArchivIndex);
 
 }
