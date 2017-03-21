@@ -1816,7 +1816,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         String logId = command.getLogId();
         Long ouId = command.getOuId();
         Long userId = command.getUserId();
-        Map<Long, WhOdo> odoMap = new HashMap<Long, WhOdo>();
+        // Map<Long, WhOdo> odoMap = new HashMap<Long, WhOdo>();
 
         Long waveMasterId = command.getWaveMasterId();// 波次主档信息
         WhWaveMaster master = this.odoManager.findWaveMasterByIdouId(waveMasterId, ouId);

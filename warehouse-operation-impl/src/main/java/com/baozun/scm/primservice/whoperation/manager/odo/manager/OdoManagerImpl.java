@@ -678,7 +678,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
         // 越库标志
         Set<String> dic7 = new HashSet<String>();// ODO_CROSS_DOCKING_SYSMBOL
         // 运行标志
-        Set<String> dic8 = new HashSet<String>();//
+        // Set<String> dic8 = new HashSet<String>();//
         // 客户
         Set<Long> customerIdSet = new HashSet<Long>();
         // 店铺

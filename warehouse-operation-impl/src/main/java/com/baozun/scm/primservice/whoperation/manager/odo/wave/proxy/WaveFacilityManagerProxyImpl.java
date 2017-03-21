@@ -3,6 +3,8 @@ package com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +26,7 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundFacility
 
 @Service("waveFacilityManagerProxy")
 public class WaveFacilityManagerProxyImpl extends BaseManagerImpl implements WaveFacilityManagerProxy {
+    protected static final Logger log = LoggerFactory.getLogger(WaveFacilityManagerProxyImpl.class);
     @Autowired
     private OdoManager odoManager;
     @Autowired
@@ -124,7 +127,9 @@ public class WaveFacilityManagerProxyImpl extends BaseManagerImpl implements Wav
     public void matchSeedingWalBySortQueue(WhFacilityQueue queue) {
         try {
             this.whFacilityRecPathManager.matchSeedingWalBySortQueue(queue);
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            log.error("matchSeedingWalBySortQueue error", e);
+        }
     }
 
 
