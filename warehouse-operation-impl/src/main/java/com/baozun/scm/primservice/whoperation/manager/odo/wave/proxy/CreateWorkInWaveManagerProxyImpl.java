@@ -267,6 +267,8 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void createPickingWorkInWave(Long waveId, Long ouId, Long userId, Boolean isReplenishmentWorkInWave) {
+        Map<Long, List<WhSkuInventory>> odoLineIdAndInventory = new HashMap<Long, List<WhSkuInventory>>();
+        Map<Long, List<WhSkuInventoryTobefilled>> odoLineIdAndTobefilled = new HashMap<Long, List<WhSkuInventoryTobefilled>>();
         // 查询出小批次列表
         List<WhOdoOutBoundBox> whOdoOutBoundBoxList = this.getBoxBatchsForPicking(waveId, ouId);
         if (null == whOdoOutBoundBoxList || whOdoOutBoundBoxList.isEmpty()) {
@@ -550,7 +552,8 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
         //查询波次主档信息     
         WhWaveMaster whWaveMaster = waveMasterDao.findByIdExt(whWave.getWaveMasterId(), whWave.getOuId());
         //获取工作类型      
-        WorkType workType = this.workTypeDao.findWorkTypeByworkCategory("PICKING", whOdoOutBoundBox.getOuId());
+        //        WorkType workType = this.workTypeDao.findWorkTypeByworkCategory("PICKING", whOdoOutBoundBox.getOuId());
+        WorkType workType = new WorkType();
         //根据容器ID获取容器CODE      
         Container container = new Container();
         if(whOdoOutBoundBox.getOuterContainerId() != null){

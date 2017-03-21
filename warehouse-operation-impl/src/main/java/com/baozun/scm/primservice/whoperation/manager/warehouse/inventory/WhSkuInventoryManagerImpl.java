@@ -6589,4 +6589,10 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 		}
     	return false;
     }
+
+    @Override
+    public List<WhSkuInventoryCommand> findInventoryByUuid(String uuid, Long ouId) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }
