@@ -87,5 +87,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			where 
 			asn_line_id = #{asnlineid} and ou_id = #{ouid}
     </select>
-	
+    
+	 <delete id="deleteByIdOuId" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from t_wh_asn_sn where
+		        id = #{id} and ou_id=#{ouId}
+	    ]]>
+	    </delete> 
 </mapper>

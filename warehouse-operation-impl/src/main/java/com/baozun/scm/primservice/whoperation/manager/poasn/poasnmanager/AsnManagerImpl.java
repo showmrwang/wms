@@ -31,6 +31,7 @@ import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnLineDao;
+import com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnSnDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoLineDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.Container2ndCategoryDao;
@@ -46,6 +47,7 @@ import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuI
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnSn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
@@ -85,6 +87,8 @@ public class AsnManagerImpl extends BaseManagerImpl implements AsnManager {
     private Container2ndCategoryDao container2ndCategoryDao;
     @Autowired
     private WhCartonDao whCartonDao;
+    @Autowired
+    private WhAsnSnDao whAsnSnDao;
     @Autowired
     private StoreDao storeDao;
     @Autowired
@@ -808,10 +812,35 @@ public class AsnManagerImpl extends BaseManagerImpl implements AsnManager {
 
         try {
             WhAsn asn = this.whAsnDao.findWhAsnById(asnId, ouId);
+            // @mender yimin.lu 删除Asn明细相关数据:SN数据和装箱信息
+            // 删除装箱信息
+            WhCarton cartonSearch = new WhCarton();
+            cartonSearch.setIsCaselevel(null);
+            cartonSearch.setQtyRcvd(null);
+            cartonSearch.setAsnId(asnId);
+            cartonSearch.setOuId(ouId);
+            List<WhCarton> cartonList = this.whCartonDao.findListByParam(cartonSearch);
+            if (cartonList != null && cartonList.size() > 0) {
+                for (WhCarton carton : cartonList) {
+                    this.whCartonDao.deleteCartonById(carton.getId(), ouId);
+                }
+            }
             // 删除AsnLINE明细信息
             List<WhAsnLine> asnLineList = this.whAsnLineDao.findWhAsnLineByAsnIdOuId(asnId, ouId);
             if (asnLineList != null && asnLineList.size() > 0) {
                 for (WhAsnLine asnLine : asnLineList) {
+                    //删除SN信息#TODO
+                    WhAsnSn snSearch=new WhAsnSn();
+                    snSearch.setOuId(ouId);
+                    snSearch.setAsnLineId(asnLine.getId());
+                    List<WhAsnSn> snList=this.whAsnSnDao.findListByParam(snSearch);
+                    if(snList!=null&&snList.size()>0){
+                        for(WhAsnSn sn:snList){
+                            
+                            this.whAsnSnDao.deleteByIdOuId(sn.getId(),ouId);
+                        }
+                    }
+
                     int deleteAsnlineCount = whAsnLineDao.deleteByIdOuId(asnLine.getId(), asnLine.getOuId());
                     if (deleteAsnlineCount <= 0) {
                         log.warn("method deleteAsnAndAsnLineToShard delete asnline error: delete asnline error[params:-->id:{},ouId:{},returns:{}]  ", asnLine.getId(), asnLine.getOuId(), deleteAsnlineCount);
