@@ -1,6 +1,5 @@
 package com.baozun.scm.primservice.whoperation.manager.pda.concentration;
 
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -516,7 +515,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                     if (isMove) {
                         try {
                             inv.setUuid(SkuInventoryUuid.invUuid(inv));
-                        } catch (NoSuchAlgorithmException e) {
+                        } catch (Exception e) {
                             e.printStackTrace();
                             return false;
                         }
@@ -1102,7 +1101,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
             }
             try {
                 inv.setUuid(SkuInventoryUuid.invUuid(inv));
-            } catch (NoSuchAlgorithmException e) {
+            } catch (Exception e) {
                 log.error("SkuInventoryUuid.invUuid error");
             }
             int cnt = this.whSkuInventoryDao.saveOrUpdateByVersion(inv);

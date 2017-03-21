@@ -14,7 +14,6 @@
  */
 package com.baozun.scm.primservice.whoperation.manager.warehouse.inventory;
 
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,12 +28,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import lark.common.annotation.MoreDB;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
@@ -72,7 +72,6 @@ import com.baozun.scm.primservice.whoperation.constant.WhPutawayPatternDetailTyp
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
-import com.baozun.scm.primservice.whoperation.dao.warehouse.CustomerDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ReplenishmentMsgDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ReplenishmentStrategyDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ReplenishmentTaskDao;
@@ -116,12 +115,8 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInv
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryAllocated;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventorySn;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryTobefilled;
-import com.baozun.scm.primservice.whoperation.model.whinterface.inbound.WhInboundConfirm;
-import com.baozun.scm.primservice.whoperation.model.whinterface.inbound.WhInboundLineConfirm;
 import com.baozun.scm.primservice.whoperation.util.SkuInventoryUuid;
 import com.baozun.utilities.type.StringUtil;
-
-import lark.common.annotation.MoreDB;
 
 /**
  * @author lichuan
@@ -378,7 +373,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         sn.setId(null);
                         try {
                             sn.setUuid(SkuInventoryUuid.invUuid(inv));
-                        } catch (NoSuchAlgorithmException e) {
+                        } catch (Exception e) {
                             log.error(getLogMsg("invSn uuid error, logId is:[{}]", new Object[] {logId}), e);
                             throw new BusinessException(ErrorCodes.COMMON_INV_PROCESS_UUID_ERROR);
                         }
@@ -534,7 +529,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                 sn.setId(null);
                                 try {
                                     sn.setUuid(SkuInventoryUuid.invUuid(inv));
-                                } catch (NoSuchAlgorithmException e) {
+                                } catch (Exception e) {
                                     log.error(getLogMsg("invSn uuid error, logId is:[{}]", new Object[] {logId}), e);
                                     throw new BusinessException(ErrorCodes.COMMON_INV_PROCESS_UUID_ERROR);
                                 }
@@ -672,7 +667,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         sn.setId(null);
                         try {
                             sn.setUuid(SkuInventoryUuid.invUuid(inv));
-                        } catch (NoSuchAlgorithmException e) {
+                        } catch (Exception e) {
                             log.error(getLogMsg("invSn uuid error, logId is:[{}]", new Object[] {logId}), e);
                             throw new BusinessException(ErrorCodes.COMMON_INV_PROCESS_UUID_ERROR);
                         }
