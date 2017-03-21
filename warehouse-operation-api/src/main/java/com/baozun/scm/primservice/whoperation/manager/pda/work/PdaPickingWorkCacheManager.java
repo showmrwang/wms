@@ -195,4 +195,7 @@ public interface PdaPickingWorkCacheManager extends BaseManager{
       * @param ouId
       */
      public void cancelPattern(Long carId,Long outerContainerId,Long insideContainerId, int cancelPattern,int pickingWay,Long locationId,Long ouId,Long operationId,Long tipSkuId);
+     
+     
+     public void cacheSkuAttrId(Long locationId,Long skuId,String skuAttrId);
 }

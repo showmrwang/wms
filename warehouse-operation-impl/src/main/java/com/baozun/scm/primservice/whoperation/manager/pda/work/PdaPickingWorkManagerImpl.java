@@ -1213,8 +1213,8 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 break;
             }
         }
-//        String skuAttrIds = SkuCategoryProvider.getSkuAttrIdByInv(invSkuCmd);
-//        Long operationLineId = pdaPickingWorkCacheManager.cachePickingOperLineId(operationId, skuAttrIds, outerContainerId, insideContainerId, locationId, ouId,isShortPicking,scanQty);
+        String skuAttrIds = SkuCategoryProvider.getSkuAttrIdByInv(invSkuCmd);
+        pdaPickingWorkCacheManager.cacheSkuAttrId(locationId,skuId,skuAttrIds);
         WhFunctionPicking picking = whFunctionPickingDao.findByFunctionIdExt(ouId, functionId);
         if (null == picking) {
             log.error("whFunctionPutaway is null error, logId is:[{}]", logId);
