@@ -30,7 +30,7 @@ public class BiPoCommand extends BaseCommand {
     private Long id;
     /** PO单号 */
     private String poCode;
-    /** 相关单据号 */
+    /** 上位系统入库单据号 相关单据号 */
     private String extCode;
     /** 对应组织ID */
     private Long ouId;
@@ -98,7 +98,7 @@ public class BiPoCommand extends BaseCommand {
     /** 操作员工ID */
     private Long userId;
 
-/** poid list */
+    /** poid list */
     private List<Long> poIds;
     /** 状态名称 */
     private String statusName;
@@ -232,6 +232,7 @@ public class BiPoCommand extends BaseCommand {
     }
 
     private List<Integer> statusList;
+
     public Long getId() {
         return this.id;
     }
