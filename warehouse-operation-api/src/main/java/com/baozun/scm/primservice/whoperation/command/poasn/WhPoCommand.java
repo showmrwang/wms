@@ -29,7 +29,7 @@ public class WhPoCommand extends BaseCommand {
     private Long id;
     /** PO单号 */
     private String poCode;
-    /** 相关单据号 */
+    /** 上位系统入库单据号 相关单据号 */
     private String extCode;
     /** 对应组织ID */
     private Long ouId;
@@ -96,7 +96,7 @@ public class WhPoCommand extends BaseCommand {
     /** 操作员工ID */
     private Long userId;
 
-/** poid list */
+    /** poid list */
     /** 状态名称 */
     private String statusName;
     /** 仓库名称 */
@@ -127,11 +127,12 @@ public class WhPoCommand extends BaseCommand {
     private Double overChageRate;
     /** 创建ASN时用 asnId */
     private Long asnId;
-    /**顾客ID*/
+    /** 顾客ID */
     private List<Long> customerList;
 
-    /**店铺ID*/
+    /** 店铺ID */
     private List<Long> storeList;
+
     public Long getAsnId() {
         return asnId;
     }
@@ -173,6 +174,7 @@ public class WhPoCommand extends BaseCommand {
     }
 
     private List<Integer> statusList;
+
     public Long getId() {
         return this.id;
     }
