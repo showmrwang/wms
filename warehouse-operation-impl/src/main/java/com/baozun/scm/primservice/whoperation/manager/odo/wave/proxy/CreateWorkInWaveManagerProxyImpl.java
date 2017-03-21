@@ -419,12 +419,12 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
             log.error("findWaveExtByIdAndOuId is error, ouId:{}, waveId:{}", ouId, waveId);
             log.error("", e);
         }
-        if (null == whWave) {
+       /* if (null == whWave) {
             log.error("whWave is null ,ouId:{}, waveId:{}", ouId, waveId);
         }
         if (BaseModel.LIFECYCLE_NORMAL != whWave.getLifecycle() || WaveStatus.WAVE_EXECUTING != whWave.getStatus() || !WavePhase.CREATE_WORK.equals(whWave.getPhaseCode())) {
             log.error("1 != lifecycle || 5 != status || CREATE_WORK != phaseCode, ouId:{}, waveId:{}", ouId, waveId);
-        }
+        }*/
         return whWave;
     }
     
@@ -2097,7 +2097,10 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
     public String saveOutReplenishmentWork(WhSkuInventoryAllocatedCommand skuInventoryAllocatedCommand, Long userId) {
         //获取工作类型      
         WorkType workType = this.workTypeDao.findWorkTypeByworkCategory("REPLENISHMENT", skuInventoryAllocatedCommand.getOuId());
-        
+        if (null == workType) {
+            // TODO 定义工作类型不存在的异常信息
+            throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
+        }
         //根据容器ID获取容器CODE
         Container outerContainer = new Container();
         Container insideContainer = new Container();
@@ -2120,7 +2123,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
         //仓库组织ID        
         whWorkCommand.setOuId(skuInventoryAllocatedCommand.getOuId());
         //工作类型编码
-        whWorkCommand.setWorkType(null == workType ? null : workType.getCode());
+        whWorkCommand.setWorkType(workType.getCode());
         //工作类别编码 
         whWorkCommand.setWorkCategory("REPLENISHMENT");
         //是否锁定 默认值：1
@@ -2327,7 +2330,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
         }
         // 上下限数量
         maxQty = locationQty * upBound / 100;
-        minQty = (long) Math.ceil(locationQty * downBound / 100);
+        minQty = (long) Math.ceil(new Double(locationQty * downBound / 100));
         // 库位库存量=库位在库库存+库位待移入库存
         // double invQty = this.whskuInventoryManager.findInventoryByLocation(locationId, ouId);
         List<WhSkuInventoryCommand> skuInvList = this.whSkuInventoryDao.findWhSkuInvCmdByLocation(ouId, locationId);
