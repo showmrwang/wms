@@ -5338,6 +5338,10 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                 }
             }
         }
+        if (null == csrCmd) {
+            log.error("container statistic cache is error, logId is:[{}]", logId);
+            throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+        }
         Set<Long> insideContainerIds = csrCmd.getInsideContainerIds();
         Map<Long, String> insideContainerIdsCode = csrCmd.getInsideContainerIdsCode();
         Long tipContainerId = null;

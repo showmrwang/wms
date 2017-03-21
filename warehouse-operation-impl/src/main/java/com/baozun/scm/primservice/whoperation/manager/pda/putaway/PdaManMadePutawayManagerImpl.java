@@ -2327,9 +2327,9 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
         ContainerCommand insideCommand = null;
         if (!StringUtil.isEmpty(insideContainerCode)) {
             insideCommand = containerDao.getContainerByCode(insideContainerCode, ouId); // 根据内部容器编码查询内部容器
-            if (null == insideCommand) {
-                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL); // 内部容器不存在
-            }
+        }
+        if (null == insideCommand) {
+            throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL); // 内部容器不存在
         }
         Long insideContainerId = insideCommand.getId(); // 内部容器id
         ContainerCommand outCommand = null;
@@ -2613,9 +2613,9 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
         Long outerContainerId = null;
         if (!StringUtil.isEmpty(insideContainerCode)) {
             insideCommand = containerDao.getContainerByCode(insideContainerCode, ouId); // 根据内部容器编码查询内部容器
-            if (null == insideCommand) {
-                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL); // 内部容器不存在
-            }
+        }
+        if (null == insideCommand) {
+            throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL); // 内部容器不存在
         }
         Long insideContainerId = insideCommand.getId(); // 内部容器id
         ContainerCommand outCommand = null;
