@@ -4690,7 +4690,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                          count++;
                          String skuAttrIds = SkuCategoryProvider.getSkuAttrIdByInv(skuInvCmd);
                          Double skuQty = skuInvCmd.getOnHandQty();
-                         if(opLineExec.getFromLocationId() == skuInvCmd.getLocationId() && execSkuAttrIds.equals(skuAttrIds)){
+                         if(0 == opLineExec.getFromLocationId().compareTo(skuInvCmd.getLocationId()) && execSkuAttrIds.equals(skuAttrIds)){
                              sumQty = sumQty+skuQty;
                              skuInvCmdList.add(skuInvCmd.getId());
                              if(opLineExec.getIsShortPicking()) {  //短拣的商品生成库位库存
