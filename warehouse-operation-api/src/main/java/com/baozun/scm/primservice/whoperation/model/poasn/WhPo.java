@@ -34,9 +34,9 @@ public class WhPo extends BaseModel {
     private static final long serialVersionUID = 3128949844364994933L;
     /** PO单号 */
     private String poCode;
-    /** 相关单据号 */
+    /** 上位系统入库单据号 相关单据号 */
     private String extCode;
-    /** 上位系统入库单据编码 */
+    /** 上位系统平台单据号 */
     private String extPoCode;
     /** 对应组织ID */
     private Long ouId;

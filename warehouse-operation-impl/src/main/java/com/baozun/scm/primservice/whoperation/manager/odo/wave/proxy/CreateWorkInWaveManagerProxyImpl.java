@@ -267,6 +267,8 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void createPickingWorkInWave(Long waveId, Long ouId, Long userId, Boolean isReplenishmentWorkInWave) {
+        Map<Long, List<WhSkuInventory>> odoLineIdAndInventory = new HashMap<Long, List<WhSkuInventory>>();
+        Map<Long, List<WhSkuInventoryTobefilled>> odoLineIdAndTobefilled = new HashMap<Long, List<WhSkuInventoryTobefilled>>();
         // 查询出小批次列表
         List<WhOdoOutBoundBox> whOdoOutBoundBoxList = this.getBoxBatchsForPicking(waveId, ouId);
         if (null == whOdoOutBoundBoxList || whOdoOutBoundBoxList.isEmpty()) {
@@ -417,12 +419,12 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
             log.error("findWaveExtByIdAndOuId is error, ouId:{}, waveId:{}", ouId, waveId);
             log.error("", e);
         }
-        if (null == whWave) {
+       /* if (null == whWave) {
             log.error("whWave is null ,ouId:{}, waveId:{}", ouId, waveId);
         }
         if (BaseModel.LIFECYCLE_NORMAL != whWave.getLifecycle() || WaveStatus.WAVE_EXECUTING != whWave.getStatus() || !WavePhase.CREATE_WORK.equals(whWave.getPhaseCode())) {
             log.error("1 != lifecycle || 5 != status || CREATE_WORK != phaseCode, ouId:{}, waveId:{}", ouId, waveId);
-        }
+        }*/
         return whWave;
     }
     
@@ -550,7 +552,8 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
         //查询波次主档信息     
         WhWaveMaster whWaveMaster = waveMasterDao.findByIdExt(whWave.getWaveMasterId(), whWave.getOuId());
         //获取工作类型      
-        WorkType workType = this.workTypeDao.findWorkTypeByworkCategory("PICKING", whOdoOutBoundBox.getOuId());
+        //        WorkType workType = this.workTypeDao.findWorkTypeByworkCategory("PICKING", whOdoOutBoundBox.getOuId());
+        WorkType workType = new WorkType();
         //根据容器ID获取容器CODE      
         Container container = new Container();
         if(whOdoOutBoundBox.getOuterContainerId() != null){
@@ -599,10 +602,14 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
         whWorkCommand.setOrderCode(null);
         //库位--更新时获取数据
         whWorkCommand.setLocationCode(null);
-        //托盘--更新时获取数据
-        whWorkCommand.setOuterContainerCode(null);
+        //托盘
+        if(whOdoOutBoundBox.getOuterContainerId() != null){
+            whWorkCommand.setOuterContainerCode(null == container ? null : container.getCode());
+        }
         //容器
-        whWorkCommand.setContainerCode(null == container ? null : container.getCode());
+        if(whOdoOutBoundBox.getOuterContainerId() == null){
+            whWorkCommand.setContainerCode(null == container ? null : container.getCode());
+        }
         //创建时间
         whWorkCommand.setCreateTime(new Date());
         //最后操作时间
@@ -945,16 +952,16 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
                 //获取上一次循环的实体类            
                 WhWorkLineCommand whWorkLineCommandBefor = whWorkLineCommandList.get(count-1);
                 
-                if (0 == whWorkLineCommandBefor.getFromLocationId().compareTo(whWorkLineCommand.getFromLocationId())) {
+                if ( null != whWorkLineCommandBefor.getFromLocationId() && null != whWorkLineCommand.getFromLocationId() && whWorkLineCommandBefor.getFromLocationId().equals(whWorkLineCommand.getFromLocationId())) {
                     isFromLocationId = false;
                 }
-                if(0 == whWorkLineCommandBefor.getFromOuterContainerId().compareTo(whWorkLineCommand.getFromOuterContainerId())){
+                if ( null != whWorkLineCommandBefor.getFromOuterContainerId() && null != whWorkLineCommand.getFromOuterContainerId() && whWorkLineCommandBefor.getFromOuterContainerId().equals(whWorkLineCommand.getFromOuterContainerId())){
                     isFromOuterContainerId = false;
                 }
-                if (0 == whWorkLineCommandBefor.getFromInsideContainerId().compareTo(whWorkLineCommand.getFromInsideContainerId())) {
+                if ( null != whWorkLineCommandBefor.getFromInsideContainerId() && null != whWorkLineCommand.getFromInsideContainerId() && whWorkLineCommandBefor.getFromInsideContainerId().equals(whWorkLineCommand.getFromInsideContainerId())) {
                     isFromInsideContainerId = false;
                 }
-                if(0 == whWorkLineCommandBefor.getOdoId().compareTo(whWorkLineCommand.getOdoId())){
+                if ( null != whWorkLineCommandBefor.getOdoId() && null != whWorkLineCommand.getOdoId() && whWorkLineCommandBefor.getOdoId().equals(whWorkLineCommand.getOdoId())){
                     isOdoId = false;
                 }
             }
@@ -2090,7 +2097,10 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
     public String saveOutReplenishmentWork(WhSkuInventoryAllocatedCommand skuInventoryAllocatedCommand, Long userId) {
         //获取工作类型      
         WorkType workType = this.workTypeDao.findWorkTypeByworkCategory("REPLENISHMENT", skuInventoryAllocatedCommand.getOuId());
-        
+        if (null == workType) {
+            // TODO 定义工作类型不存在的异常信息
+            throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
+        }
         //根据容器ID获取容器CODE
         Container outerContainer = new Container();
         Container insideContainer = new Container();
@@ -2113,7 +2123,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
         //仓库组织ID        
         whWorkCommand.setOuId(skuInventoryAllocatedCommand.getOuId());
         //工作类型编码
-        whWorkCommand.setWorkType(null == workType ? null : workType.getCode());
+        whWorkCommand.setWorkType(workType.getCode());
         //工作类别编码 
         whWorkCommand.setWorkCategory("REPLENISHMENT");
         //是否锁定 默认值：1
@@ -2204,16 +2214,16 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
                 //获取上一次循环的实体类            
                 WhWorkLineCommand whWorkLineCommandBefor = whWorkLineCommandList.get(count-1);
                 
-                if(null != whWorkLineCommandBefor.getFromLocationId() && null != whWorkLineCommand.getFromLocationId() && !whWorkLineCommandBefor.getFromLocationId().equals(whWorkLineCommand.getFromLocationId())){
+                if ( null != whWorkLineCommandBefor.getFromLocationId() && null != whWorkLineCommand.getFromLocationId() && whWorkLineCommandBefor.getFromLocationId().equals(whWorkLineCommand.getFromLocationId())) {
                     isFromLocationId = false;
                 }
-                if(null != whWorkLineCommandBefor.getFromOuterContainerId() && null != whWorkLineCommand.getFromOuterContainerId() && !whWorkLineCommandBefor.getFromOuterContainerId().equals(whWorkLineCommand.getFromOuterContainerId())){
+                if ( null != whWorkLineCommandBefor.getFromOuterContainerId() && null != whWorkLineCommand.getFromOuterContainerId() && whWorkLineCommandBefor.getFromOuterContainerId().equals(whWorkLineCommand.getFromOuterContainerId())){
                     isFromOuterContainerId = false;
                 }
-                if(null != whWorkLineCommandBefor.getFromInsideContainerId() && null != whWorkLineCommand.getFromInsideContainerId() && !whWorkLineCommandBefor.getFromInsideContainerId().equals(whWorkLineCommand.getFromInsideContainerId())){
+                if ( null != whWorkLineCommandBefor.getFromInsideContainerId() && null != whWorkLineCommand.getFromInsideContainerId() && whWorkLineCommandBefor.getFromInsideContainerId().equals(whWorkLineCommand.getFromInsideContainerId())) {
                     isFromInsideContainerId = false;
                 }
-                if(null != whWorkLineCommandBefor.getOdoId() && null != whWorkLineCommand.getOdoId() && !whWorkLineCommandBefor.getOdoId().equals(whWorkLineCommand.getOdoId())){
+                if ( null != whWorkLineCommandBefor.getOdoId() && null != whWorkLineCommand.getOdoId() && whWorkLineCommandBefor.getOdoId().equals(whWorkLineCommand.getOdoId())){
                     isOdoId = false;
                 }
             }
@@ -2320,7 +2330,7 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
         }
         // 上下限数量
         maxQty = locationQty * upBound / 100;
-        minQty = (long) Math.ceil(locationQty * downBound / 100);
+        minQty = (long) Math.ceil(new Double(locationQty * downBound / 100));
         // 库位库存量=库位在库库存+库位待移入库存
         // double invQty = this.whskuInventoryManager.findInventoryByLocation(locationId, ouId);
         List<WhSkuInventoryCommand> skuInvList = this.whSkuInventoryDao.findWhSkuInvCmdByLocation(ouId, locationId);

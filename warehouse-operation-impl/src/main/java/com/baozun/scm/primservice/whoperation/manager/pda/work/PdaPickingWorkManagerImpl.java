@@ -227,8 +227,8 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             //流程相关统计信息 
             if(whOperationCommand.getIsWholeCase() == false){
                 // 所有小车
-                if(null != operationLine.getFromOuterContainerId()){
-                    outerContainers.add(operationLine.getFromOuterContainerId());
+                if(null != operationLine.getUseOuterContainerId()){
+                    outerContainers.add(operationLine.getUseOuterContainerId());
                 }
                 // 所有出库箱
                 if(null != operationLine.getUseOutboundboxCode()){
@@ -729,8 +729,8 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         log.info("PdaPickingWorkManagerImpl scanLocation is start");
         Long operationId = command.getOperationId();
         Long ouId = command.getOuId();
-        String locationCode = command.getLocationCode();
-        String locationBarCode = command.getLocationBarCode();
+        String locationCode = command.getTipLocationCode();
+        String locationBarCode = command.getTipLocationBarCode();
         if(!StringUtil.isEmpty(locationBarCode) && StringUtil.isEmpty(locationCode)) {
             locationCode = locationBarCode;
         }
@@ -867,7 +867,8 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             }
             command.setTipSkuBarCode(skuCmd.getBarCode());    //提示sku
             command.setIsNeedTipSku(true);
-            this.tipSkuDetailAspect(command, cSRCmd.getTipSkuAttrIdSnDefect(), skuAttrIdsQty, logId);
+            command.setSkuId(skuId);
+            this.tipSkuDetailAspect(command, skuAttrId, skuAttrIdsQty, logId);
         }else{
             command.setIsNeedTipSku(false);
         }
@@ -1212,8 +1213,8 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 break;
             }
         }
-//        String skuAttrIds = SkuCategoryProvider.getSkuAttrIdByInv(invSkuCmd);
-//        Long operationLineId = pdaPickingWorkCacheManager.cachePickingOperLineId(operationId, skuAttrIds, outerContainerId, insideContainerId, locationId, ouId,isShortPicking,scanQty);
+        String skuAttrIds = SkuCategoryProvider.getSkuAttrIdByInv(invSkuCmd);
+        pdaPickingWorkCacheManager.cacheSkuAttrId(locationId,skuId,skuAttrIds);
         WhFunctionPicking picking = whFunctionPickingDao.findByFunctionIdExt(ouId, functionId);
         if (null == picking) {
             log.error("whFunctionPutaway is null error, logId is:[{}]", logId);
@@ -2275,7 +2276,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
      * @param locationId
      * @param ouId
      */
-    public void cancelPattern(String carCode,String outerContainerCode,String insideContainerCode, int cancelPattern,int pickingWay,Long locationId,Long ouId,Long operationId){
+    public void cancelPattern(String carCode,String outerContainerCode,String insideContainerCode, int cancelPattern,int pickingWay,Long locationId,Long ouId,Long operationId,Long tipSkuId){
         
         Long carId = null;
         if(!StringUtils.isEmpty(carCode)) {
@@ -2300,7 +2301,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             }
             insideContainerId = cmd.getId();
         }
-        pdaPickingWorkCacheManager.cancelPattern(carId, outerContainerId, insideContainerId, cancelPattern, pickingWay, locationId, ouId,operationId);
+        pdaPickingWorkCacheManager.cancelPattern(carId, outerContainerId, insideContainerId, cancelPattern, pickingWay, locationId, ouId,operationId,tipSkuId);
     }
     
     /***

@@ -373,7 +373,7 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
             log.warn("no asn to be delete!");
             return getResponseMsg("no asn to be delete!", ResponseMsg.STATUS_ERROR, null);
         }
-        if (null == whasn.getStatus() || whasn.getStatus() != PoAsnStatus.PO_NEW) {
+        if (null == whasn.getStatus() || whasn.getStatus() != PoAsnStatus.ASN_NEW) {
             log.warn("deleteAsnAndAsnLine warn WhPo status NE PO_NEW");
             return getResponseMsg(ErrorCodes.ASN_DELETE_STATUS_ERROR + "", ResponseMsg.DATA_ERROR, null);
         }

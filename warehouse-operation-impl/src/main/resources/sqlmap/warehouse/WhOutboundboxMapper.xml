@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundboxDao">
+	<resultMap id="WhOutboundboxResult" type="com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundbox">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whOutboundboxColumns">
+	    <![CDATA[
+	        	id as id,
+	        	batch as batch,
+	        	wave_code as waveCode,
+	        	customer_code as customerCode,
+	        	customer_name as customerName,
+	        	store_code as storeCode,
+	        	store_name as storeName,
+	        	transport_code as transportCode,
+	        	transport_name as transportName,
+	        	product_code as productCode,
+	        	product_name as productName,
+	        	time_effect_code as timeEffectCode,
+	        	time_effect_name as timeEffectName,
+	        	status as status,
+	        	ou_id as ouId,
+	        	odo_id as odoId,
+	        	outboundbox_id as outboundboxId,
+	        	outboundbox_code as outboundboxCode,
+	        	distribution_mode as distributionMode,
+	        	picking_mode as pickingMode,
+	        	checking_mode as checkingMode
+	    ]]>
+	</sql>
+	
+		<!-- 如果有自增字段 -->
+		
+			<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+			<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundbox" 
+				
+			 flushCache="true">
+		    <![CDATA[
+		        INSERT INTO
+		        t_wh_outboundbox (
+		        id,
+		        	batch ,
+		        	wave_code ,
+		        	customer_code ,
+		        	customer_name ,
+		        	store_code ,
+		        	store_name ,
+		        	transport_code ,
+		        	transport_name ,
+		        	product_code ,
+		        	product_name ,
+		        	time_effect_code ,
+		        	time_effect_name ,
+		        	status ,
+		        	ou_id ,
+		        	odo_id ,
+		        	outboundbox_id ,
+		        	outboundbox_code ,
+		        	distribution_mode ,
+		        	picking_mode ,
+		        	checking_mode 
+		        ) VALUES (
+		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{batch,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{waveCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{customerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{customerName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{storeCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{storeName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{transportCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{transportName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{productCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{productName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{timeEffectCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{timeEffectName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{status,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{outboundboxId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{outboundboxCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{distributionMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{pickingMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{checkingMode,javaType=java.lang.String,jdbcType=VARCHAR} 
+		        )
+		    ]]>
+
+		</insert>
+		
+		
+		<update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundbox">
+	    <![CDATA[
+	        UPDATE t_wh_outboundbox SET
+		        batch = #{batch,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        wave_code = #{waveCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        customer_code = #{customerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        customer_name = #{customerName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        store_code = #{storeCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        store_name = #{storeName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        transport_code = #{transportCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        transport_name = #{transportName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        product_code = #{productCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        product_name = #{productName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        time_effect_code = #{timeEffectCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        time_effect_name = #{timeEffectName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        status = #{status,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        odo_id = #{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        outboundbox_id = #{outboundboxId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        outboundbox_code = #{outboundboxCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        distribution_mode = #{distributionMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        picking_mode = #{pickingMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        checking_mode = #{checkingMode,javaType=java.lang.String,jdbcType=VARCHAR} 
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+		</update>
+	   <delete id="delete" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from t_wh_outboundbox where
+		        id = #{id} 
+	    ]]>
+	    </delete> 
+	    
+	     <delete id="deleteByIds" parameterType="list">
+	    
+	        delete from t_wh_outboundbox 
+	        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>	
+	  
+	    </delete>  
+	         
+	    <select id="findById" parameterType="java.lang.Long" resultMap="WhOutboundboxResult" flushCache="false">
+			select <include refid="whOutboundboxColumns" />
+		    <![CDATA[
+			    from t_wh_outboundbox 
+		        where 
+		        id = #{id} 
+		    ]]>
+		</select>	
+		<select id="getByIds" parameterType="list"  resultMap="WhOutboundboxResult" flushCache="false">
+			select <include refid="whOutboundboxColumns" />
+			    from t_wh_outboundbox 
+		        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>					
+		</select>	
+	<sql id="whOutboundboxDynamicWhere">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+	       
+		       <if test="batch!=null and batch!=''">
+					and batch = #{batch}
+				</if>
+	       
+	       
+		       <if test="waveCode!=null and waveCode!=''">
+					and wave_code = #{waveCode}
+				</if>
+	       
+	       
+		       <if test="customerCode!=null and customerCode!=''">
+					and customer_code = #{customerCode}
+				</if>
+	       
+	       
+		       <if test="customerName!=null and customerName!=''">
+					and customer_name = #{customerName}
+				</if>
+	       
+	       
+		       <if test="storeCode!=null and storeCode!=''">
+					and store_code = #{storeCode}
+				</if>
+	       
+	       
+		       <if test="storeName!=null and storeName!=''">
+					and store_name = #{storeName}
+				</if>
+	       
+	       
+		       <if test="transportCode!=null and transportCode!=''">
+					and transport_code = #{transportCode}
+				</if>
+	       
+	       
+		       <if test="transportName!=null and transportName!=''">
+					and transport_name = #{transportName}
+				</if>
+	       
+	       
+		       <if test="productCode!=null and productCode!=''">
+					and product_code = #{productCode}
+				</if>
+	       
+	       
+		       <if test="productName!=null and productName!=''">
+					and product_name = #{productName}
+				</if>
+	       
+	       
+		       <if test="timeEffectCode!=null and timeEffectCode!=''">
+					and time_effect_code = #{timeEffectCode}
+				</if>
+	       
+	       
+		       <if test="timeEffectName!=null and timeEffectName!=''">
+					and time_effect_name = #{timeEffectName}
+				</if>
+	       
+	       
+		       <if test="status!=null and status!=''">
+					and status = #{status}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+	       
+				<if test="odoId!=null">
+					and odo_id = #{odoId}
+				</if>
+	       
+				<if test="outboundboxId!=null">
+					and outboundbox_id = #{outboundboxId}
+				</if>
+	       
+	       
+		       <if test="outboundboxCode!=null and outboundboxCode!=''">
+					and outboundbox_code = #{outboundboxCode}
+				</if>
+	       
+	       
+		       <if test="distributionMode!=null and distributionMode!=''">
+					and distribution_mode = #{distributionMode}
+				</if>
+	       
+	       
+		       <if test="pickingMode!=null and pickingMode!=''">
+					and picking_mode = #{pickingMode}
+				</if>
+	       
+	       
+		       <if test="checkingMode!=null and checkingMode!=''">
+					and checking_mode = #{checkingMode}
+				</if>
+		</where>
+	</sql>
+	
+
+	<select id="getCount" resultType="long">
+        select count(*) from t_wh_outboundbox 
+    </select>
+    <select id="findListCountByQueryMap" resultType="long">
+        select count(*) from t_wh_outboundbox 
+		<include refid="whOutboundboxDynamicWhere"/>    
+    </select>
+    
+    <select id="findListCountByParam" resultType="long">
+        select count(*) from t_wh_outboundbox 
+		<include refid="whOutboundboxDynamicWhere"/>    
+    </select>
+    
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPage" resultMap="WhOutboundboxResult">
+    	select <include refid="whOutboundboxColumns" />
+	    from t_wh_outboundbox 
+		<include refid="whOutboundboxDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByQueryMap" resultMap="WhOutboundboxResult">
+    	select <include refid="whOutboundboxColumns" />
+	    from t_wh_outboundbox 
+		<include refid="whOutboundboxDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByParam" resultMap="WhOutboundboxResult">
+    	select <include refid="whOutboundboxColumns" />
+	    from t_wh_outboundbox 
+		<include refid="whOutboundboxDynamicWhere"/>
+		
+    </select>
+
+	
+</mapper>

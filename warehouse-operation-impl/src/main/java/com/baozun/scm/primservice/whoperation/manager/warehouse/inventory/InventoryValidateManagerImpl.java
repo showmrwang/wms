@@ -61,7 +61,7 @@ public class InventoryValidateManagerImpl extends BaseManagerImpl implements Inv
             result = false;
         }
         Double onHandQty = inv.getOnHandQty();
-        if (null == onHandQty || -1 == onHandQty.compareTo(expectQty)) {
+        if (null == onHandQty || (null != onHandQty && -1 == onHandQty.compareTo(expectQty))) {
             result = false;
         }
         return result;

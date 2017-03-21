@@ -16,7 +16,7 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInv
 public class SkuInventoryUuid {
 
 
-    public static String invUuid(WhSkuInventory inv) throws NoSuchAlgorithmException {
+    public static String invUuid(WhSkuInventory inv) throws Exception {
         String uuid = null;
         if (null == inv) {
             return uuid;
@@ -42,7 +42,7 @@ public class SkuInventoryUuid {
      * @return
      * @throws NoSuchAlgorithmException
      */
-    public static String invUuid(WhSkuInventoryTobefilled inv) throws NoSuchAlgorithmException {
+    public static String invUuid(WhSkuInventoryTobefilled inv) throws Exception {
         String uuid = null;
         if (null == inv) {
             return uuid;
@@ -59,7 +59,7 @@ public class SkuInventoryUuid {
         uuid = Md5Util.getMd5(forMatString);
         return uuid;
     }
-    
+
     /**
      * 
      * @author lichuan
@@ -67,7 +67,7 @@ public class SkuInventoryUuid {
      * @return
      * @throws NoSuchAlgorithmException
      */
-    public static String invUuid(WhSkuInventoryAllocated inv) throws NoSuchAlgorithmException {
+    public static String invUuid(WhSkuInventoryAllocated inv) throws Exception {
         String uuid = null;
         if (null == inv) {
             return uuid;

@@ -58,7 +58,7 @@ public class CancalPattern implements Serializable {
     
     public static final int SCAN_INSIDECONTAINER_CANCEL = 8;  //扫描内部容器
     
-    public static final int SCAN_SKU_SCANCEL = 9;  //sku取消
+    public static final int TIP_SKU_SCANCEL = 9;  //sku取消
     
     public static final int SCAM_SKU_DETAIL = 10;   //sku库存属性取消
     

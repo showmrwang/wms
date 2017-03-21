@@ -2,7 +2,6 @@ package com.baozun.scm.primservice.whoperation.util;
 
 import java.io.Serializable;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,10 +15,10 @@ public class Md5Util implements Serializable {
 
     public static final Logger log = LoggerFactory.getLogger(Md5Util.class);
 
-    public static String getMd5(String str) throws NoSuchAlgorithmException {
+    public static String getMd5(String str) throws Exception {
         MessageDigest messageDigest = null;
         messageDigest = MessageDigest.getInstance("MD5");
-        byte[] inputByteArray = str.getBytes();
+        byte[] inputByteArray = str.getBytes("gb2312");
         messageDigest.update(inputByteArray);
         byte[] outputByteArray = messageDigest.digest();
         StringBuffer buf = new StringBuffer();
