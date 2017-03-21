@@ -1,6 +1,5 @@
 package com.baozun.scm.primservice.whoperation.manager.pda.inbound.rcvd;
 
-import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -10,6 +9,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import lark.common.annotation.MoreDB;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -98,8 +99,6 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInv
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventorySnLog;
 import com.baozun.scm.primservice.whoperation.util.DateUtil;
 import com.baozun.scm.primservice.whoperation.util.SkuInventoryUuid;
-
-import lark.common.annotation.MoreDB;
 
 @Service("generalRcvdManager")
 @Transactional
@@ -213,7 +212,7 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
                 // skuInv.setId((long) Math.random() * 1000000);
                 try {
                     uuid = SkuInventoryUuid.invUuid(skuInv);
-                } catch (NoSuchAlgorithmException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 if (skuInvMap.containsKey(uuid)) {

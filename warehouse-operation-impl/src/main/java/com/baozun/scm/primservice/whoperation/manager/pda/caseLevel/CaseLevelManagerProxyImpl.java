@@ -17,7 +17,6 @@ package com.baozun.scm.primservice.whoperation.manager.pda.caseLevel;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
-import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -1651,7 +1650,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
         String uuid = null;
         try {
             uuid = SkuInventoryUuid.invUuid(skuInventory);
-        } catch (NoSuchAlgorithmException e) {
+        } catch (Exception e) {
             log.error("caseLevelReceivingCompleted createWhSkuInventory error, throw NoSuchAlgorithmException, skuInventory is:[{}], logId is:[{}]", skuInventory, logId);
             throw new BusinessException(ErrorCodes.CASELEVEL_UUID_ERROR);
         }
@@ -1971,7 +1970,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
                         + (whCarton.getInvAttr5() == null ? "" : whCarton.getInvAttr5()) + "" + (whCarton.getInvType() == null ? "" : whCarton.getInvType()) + whCarton.getInvStatus();
         try {
             uuid = Md5Util.getMd5(forMatString);
-        } catch (NoSuchAlgorithmException e) {
+        } catch (Exception e) {
             log.error("getWhCartonUUID error, getWhCartonUUID throw NoSuchAlgorithmException, logId is:[{}]", logId);
             throw new BusinessException(ErrorCodes.CASELEVEL_UUID_ERROR);
         }

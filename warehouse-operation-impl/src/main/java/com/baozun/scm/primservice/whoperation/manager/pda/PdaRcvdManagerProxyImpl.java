@@ -1,6 +1,5 @@
 package com.baozun.scm.primservice.whoperation.manager.pda;
 
-import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -313,7 +312,7 @@ public class PdaRcvdManagerProxyImpl implements PdaRcvdManagerProxy {
             // skuInv.setId((long) Math.random() * 1000000);
             try {
                 uuid = SkuInventoryUuid.invUuid(skuInv);
-            } catch (NoSuchAlgorithmException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
             if (skuInvMap.containsKey(uuid)) {
