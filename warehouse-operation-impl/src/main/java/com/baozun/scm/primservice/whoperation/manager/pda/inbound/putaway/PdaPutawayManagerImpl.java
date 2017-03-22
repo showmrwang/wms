@@ -3289,7 +3289,10 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
             throw new BusinessException(ErrorCodes.COMMON_LOCATION_IS_NOT_EXISTS);
         }
         Map<Long, Set<String>> locSkuAttrIds = insideContainerLocSkuAttrIds.get(containerId);
-        Map<String, Long> skuAttrIdsQty = insideContainerSkuAttrIdsQty.get(containerId);
+        Map<Long, Map<Long, Map<String, Long>>> insideContainerLocSkuAttrIdsQty = isCmd.getInsideContainerLocSkuAttrIdsQty();
+        Map<Long, Map<String, Long>> locSkuAttrIdsQty = insideContainerLocSkuAttrIdsQty.get(containerId);
+        // Map<String, Long> skuAttrIdsQty = insideContainerSkuAttrIdsQty.get(containerId);
+        Map<String, Long> skuAttrIdsQty = locSkuAttrIdsQty.get(loc.getId());
         String tipSkuAttrId = pdaPutawayCacheManager.sysGuideSplitContainerPutawayTipSku0(insideContainerCmd, loc.getId(), locSkuAttrIds, logId);
         Long skuId = SkuCategoryProvider.getSkuId(tipSkuAttrId);
         SkuRedisCommand cacheSku = skuRedisManager.findSkuMasterBySkuId(skuId, ouId, logId);
