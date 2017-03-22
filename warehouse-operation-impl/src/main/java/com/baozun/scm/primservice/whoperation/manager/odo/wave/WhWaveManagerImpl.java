@@ -1222,6 +1222,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         whWave.setLifecycle(BaseModel.LIFECYCLE_NORMAL);
         whWave.setStatus(WaveStatus.WAVE_EXECUTING);
         whWave.setPhaseCode(WavePhase.CREATE_WORK);
+        whWave.setAllocatePhase(null);
         
         List<WhWave> whWaveList = this.whWaveDao.findListByParam(whWave);
         

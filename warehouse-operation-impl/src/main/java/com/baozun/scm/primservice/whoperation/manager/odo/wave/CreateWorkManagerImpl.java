@@ -263,6 +263,7 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
                 //如果不满足，则抛出异常 
                 if(!onHandQty.equals(whOdoOutBoundBoxCommand.getQty())){
                     log.error("onHandQty != whOdoOutBoundBoxCommand.getQty()", onHandQty, whOdoOutBoundBoxCommand.getQty());
+                    throw new BusinessException("数量错误");
                 }
                 //2.1.3.2 创建工作明细
                 this.savePickingWorkLine(whOdoOutBoundBoxCommand, whSkuInventoryList, whSkuInventoryTobefilledList, userId, workCode);
@@ -987,8 +988,7 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
         //查询波次主档信息     
         WhWaveMaster whWaveMaster = waveMasterDao.findByIdExt(whWave.getWaveMasterId(), whWave.getOuId());
         //获取工作类型      
-        //        WorkType workType = this.workTypeDao.findWorkTypeByworkCategory("PICKING", whOdoOutBoundBox.getOuId());
-        WorkType workType = new WorkType();
+        WorkType workType = this.workTypeDao.findWorkTypeByworkCategory("PICKING", whOdoOutBoundBox.getOuId());
         //根据容器ID获取容器CODE      
         Container container = new Container();
         if(whOdoOutBoundBox.getOuterContainerId() != null){
@@ -1372,6 +1372,10 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
             WhOdo odo = odoDao.findByIdOuId(whWorkLineCommandList.get(0).getOdoId(), whWorkLineCommandList.get(0).getOuId());
             WhDistributionPatternRuleCommand whDistributionPatternRuleCommand = whDistributionPatternRuleDao.findRuleByCode(odo.getDistributeMode(), odo.getOuId()); 
             whWorkCommand.setDistributionMode(odo.getDistributeMode());
+            if(null != whDistributionPatternRuleCommand){
+                log.error("whDistributionPatternRuleCommand = null", whDistributionPatternRuleCommand);
+                throw new BusinessException("配货模式不存在");   
+            }
             whWorkCommand.setPickingMode(whDistributionPatternRuleCommand.getPickingMode().toString());
             whWorkCommand.setCheckingMode(whDistributionPatternRuleCommand.getCheckingMode());
         }

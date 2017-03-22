@@ -1334,7 +1334,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         if (odoIdList == null || odoIdList.size() == 0) {
             throw new BusinessException(ErrorCodes.PARAM_IS_NULL);
         }
-        Long ouId = waveLineCommand.getOdoId();
+        Long ouId = waveLineCommand.getOuId();
         Long userId = waveLineCommand.getUserId();
         Long waveId = waveLineCommand.getWaveId();
 
