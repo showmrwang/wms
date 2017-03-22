@@ -3952,7 +3952,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     				// 先到期先出,先到期后出验证是否是有效期商品
     				if (Constants.ALLOCATE_STRATEGY_FIRSTEXPIRATIONFIRSTOUT.equals(rsc.getStrategyCode())
     						|| Constants.ALLOCATE_STRATEGY_FIRSTEXPIRATIONLASTOUT.equals(rsc.getStrategyCode())) {
-    					Boolean isExpirationSku = skuDao.checkIsExpirationSku(line.getSkuId(), line.getOuId());
+    					Boolean isExpirationSku = skuDao.checkIsExpirationSku(skuId, ouId);
     					if (isExpirationSku == null || !isExpirationSku) {
     						continue;
     					}
@@ -6852,8 +6852,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     }
 
     @Override
-    public List<WhSkuInventoryCommand> findInventoryByUuid(String uuid, Long ouId) {
-        // TODO Auto-generated method stub
-        return null;
+    public List<WhSkuInventory> findWhSkuInventoryByPramas(WhSkuInventory inventory) {
+        return whSkuInventoryDao.findWhSkuInventoryByPramas(inventory);
     }
 }

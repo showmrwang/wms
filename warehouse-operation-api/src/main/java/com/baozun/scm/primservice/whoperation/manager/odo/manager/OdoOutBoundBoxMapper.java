@@ -53,4 +53,13 @@ public interface OdoOutBoundBoxMapper extends BaseManager {
      */
     Boolean saveOrUpdate(WhOdoOutBoundBoxCommand whOdoOutBoundBoxCommand);
     
+    /**
+     * 查询波次中的所有小批次 -- 捡货工作
+     * 
+     * @param waveId
+     * @param ouId
+     * @return
+     */
+    List<WhOdoOutBoundBox> getBoxBatchsForPicking(Long waveId, Long ouId);
+    
 }

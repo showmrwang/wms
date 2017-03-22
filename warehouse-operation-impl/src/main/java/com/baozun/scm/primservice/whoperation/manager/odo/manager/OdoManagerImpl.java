@@ -453,11 +453,36 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void saveUnit(WhOdoLine line, List<WhOdoVas> insertVasList) {
+        // @mender yimin.lu 2017/3/22 添加编辑逻辑和增值服务编辑逻辑
         try {
+            if (line.getId() == null) {
+                this.whOdoLineDao.insert(line);
+                WhOdo odo = this.whOdoDao.findByIdOuId(line.getOdoId(), line.getOuId());
+                if (odo == null) {
+                    throw new BusinessException(ErrorCodes.PARAM_IS_NULL);
+                }
+                if (OdoStatus.ODO_TOBECREATED.equals(odo.getOdoStatus())) {
 
-            this.whOdoLineDao.insert(line);
+                } else if (OdoStatus.ODO_NEW.equals(odo.getOdoStatus())) {
+                    odo.setOdoStatus(OdoStatus.ODO_TOBECREATED);
+                    int updateCount = this.whOdoDao.saveOrUpdateByVersion(odo);
+                    if (updateCount <= 0) {
+                        throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                    }
+                } else {
+                    throw new BusinessException(ErrorCodes.ODO_EDIT_ERROR);
+                }
+            }
+            // 增值服务逻辑：先全部删除再重新添加
+            List<WhOdoVas> delVasList = this.whOdoVasDao.findOdoVasByOdoIdOdoLineIdType(line.getOdoId(), line.getId(), null, line.getOuId());
+            if (delVasList != null && delVasList.size() > 0) {
+                for (WhOdoVas vas : insertVasList) {
+                    this.whOdoVasDao.deleteByIdOuId(vas.getId(), vas.getOuId());
+                }
+            }
             if (insertVasList != null && insertVasList.size() > 0) {
                 for (WhOdoVas vas : insertVasList) {
+                    vas.setOdoId(line.getOdoId());
                     vas.setOdoLineId(line.getId());
                     this.whOdoVasDao.insert(vas);
                 }

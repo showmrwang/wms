@@ -1210,4 +1210,41 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         return whWaveDao.getWhWaveByPhaseCode(phaseCode, ouId);
     }
 
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public WhWave getWaveByWaveIdAndOuId(Long waveId, Long ouId) {
+        if (null == waveId || null == ouId) {
+            throw new BusinessException("波次内创工作 : 没有参数");
+        }
+        WhWave whWave = new WhWave();
+        whWave.setId(waveId);
+        whWave.setOuId(ouId);
+        whWave.setLifecycle(BaseModel.LIFECYCLE_NORMAL);
+        whWave.setStatus(WaveStatus.WAVE_EXECUTING);
+        whWave.setPhaseCode(WavePhase.CREATE_WORK);
+        
+        List<WhWave> whWaveList = this.whWaveDao.findListByParam(whWave);
+        
+        if (null == whWaveList || 1 != whWaveList.size()) {
+            throw new BusinessException("多个波次");
+        }
+        return whWaveList.get(0);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void updateWaveByWhWave(WhWave whWave) {
+        try {
+            int updateCount = this.whWaveDao.saveOrUpdateByVersion(whWave);
+            if (updateCount <= 0) {
+                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            }
+        } catch (BusinessException ex) {
+            throw ex;
+        } catch (Exception e) {
+            log.error(e + "");
+            throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
+        }
+    }
+
 }

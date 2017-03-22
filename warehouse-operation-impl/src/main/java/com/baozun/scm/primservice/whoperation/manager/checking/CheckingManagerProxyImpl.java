@@ -41,6 +41,7 @@ import com.baozun.scm.primservice.whoperation.manager.warehouse.WhPrintInfoManag
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionOutBound;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhPrintInfo;
+import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 
 
 @Service("checkingManagerProxy")
@@ -160,7 +161,9 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
                     // 删除原有的库存（小车货格库存，小车出库箱库存，播种墙货格库存，播种墙出库箱库存，周转箱库存）
                     // t_wh_sku_inventory
                     // t_wh_outboundbox,t_wh_outboundbox_line
-                    List<WhSkuInventoryCommand> whSkuInventoryCommandLst = whSkuInventoryManager.findInventoryByUuid(whCheckingLineCommand.getUuid(), whCheckingLineCommand.getOuId());
+                    WhSkuInventory skuInventory = new WhSkuInventory();
+                    
+                    List<WhSkuInventory> whSkuInventoryLst = whSkuInventoryManager.findWhSkuInventoryByPramas(skuInventory);
                     
                     
                 }
