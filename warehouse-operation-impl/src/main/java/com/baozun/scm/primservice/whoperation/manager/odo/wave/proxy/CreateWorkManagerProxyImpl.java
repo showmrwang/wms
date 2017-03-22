@@ -63,13 +63,13 @@ public class CreateWorkManagerProxyImpl implements CreateWorkManagerProxy {
                 // 波次中创建拣货工作和作业
                 Boolean isPickingWorkInWave = this.createPickingWorkInWave(waveId, ouId, userId);
                 if(true == isPickingWorkInWave){
-                    whWave.setIsCreateReplenishedWork(true);
+                    whWave.setIsCreatePickingWork(true);
                 }
             }
             if(true == whWave.getIsCreateReplenishedWork() && true == whWave.getIsCreatePickingWork()){
                 whWave.setStatus(WaveStatus.WAVE_EXECUTED);
-                whWaveManager.updateWaveByWhWave(whWave);    
             }
+            whWaveManager.updateWaveByWhWave(whWave); 
         } catch (Exception e) {
             log.error("", e);
         }
@@ -131,6 +131,7 @@ public class CreateWorkManagerProxyImpl implements CreateWorkManagerProxy {
      * @return
      */
     public Boolean createPickingWorkInWave(Long waveId, Long ouId, Long userId) {
+        Boolean isPickingWorkInWave = true;
         // 查询出小批次列表
         List<WhOdoOutBoundBox> whOdoOutBoundBoxList = odoOutBoundBoxMapper.getBoxBatchsForPicking(waveId, ouId);
         if (null == whOdoOutBoundBoxList || whOdoOutBoundBoxList.isEmpty()) {
@@ -148,11 +149,12 @@ public class CreateWorkManagerProxyImpl implements CreateWorkManagerProxy {
                         createWorkManager.createPickingWorkInWave(whOdoOutBoundBoxGroup, whOdoOutBoundBox, userId);
                     } catch (Exception e) {
                         log.error("", e);
+                        isPickingWorkInWave = false;
                     }    
                 }
             }
     	}
-    	return true;
+    	return isPickingWorkInWave;
     }
     
     /**
