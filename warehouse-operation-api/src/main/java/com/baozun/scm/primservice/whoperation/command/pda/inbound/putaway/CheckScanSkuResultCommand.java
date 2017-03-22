@@ -46,6 +46,8 @@ public class CheckScanSkuResultCommand extends BaseCommand {
     private boolean isNeedTipSkuSn;
     /** 提示唯一sku */
     private String tipSkuAttrId;
+    /** 是否提示相同唯一sku */
+    private boolean isTipSameSkuAttrId;
     /** 是否提示库位 */
     private boolean isNeedTipLoc;
     /** 提示库位id */
@@ -137,6 +139,14 @@ public class CheckScanSkuResultCommand extends BaseCommand {
 
     public void setTipSkuAttrId(String tipSkuAttrId) {
         this.tipSkuAttrId = tipSkuAttrId;
+    }
+
+    public boolean isTipSameSkuAttrId() {
+        return isTipSameSkuAttrId;
+    }
+
+    public void setTipSameSkuAttrId(boolean isTipSameSkuAttrId) {
+        this.isTipSameSkuAttrId = isTipSameSkuAttrId;
     }
 
     public boolean isNeedTipLoc() {

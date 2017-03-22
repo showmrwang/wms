@@ -424,8 +424,30 @@ public interface PdaPutawayCacheManager extends BaseManager {
      * @param logId
      * @return
      */
+    @Deprecated
     CheckScanSkuResultCommand sysGuideSplitContainerPutawayTipSkuOrLocOrContainer(ContainerCommand ocCmd, ContainerCommand icCmd, Set<Long> insideContainerIds, Map<Long, Map<String, Long>> insideContainerSkuAttrIdsQty,
             Map<Long, Map<String, Set<String>>> insideContainerSkuAttrIdsSnDefect, Map<Long, Map<Long, Set<String>>> insideContainerLocSkuAttrIds, Long locationId, WhSkuCommand skuCmd, String logId);
+    
+    /**
+     * pda拆箱上架提示商品、库位、容器、上架判断
+     * 
+     * @author lichuan
+     * @param ocCmd
+     * @param icCmd
+     * @param insideContainerIds
+     * @param insideContainerSkuAttrIdsQty
+     * @param insideContainerSkuAttrIdsSnDefect
+     * @param insideContainerLocSkuAttrIds
+     * @param locationId
+     * @param skuCmd
+     * @param scanPattern
+     * @param logId
+     * @return
+     */
+    CheckScanSkuResultCommand sysGuideSplitContainerPutawayTipSkuOrLocOrContainer(ContainerCommand ocCmd, ContainerCommand icCmd, Set<Long> insideContainerIds, Map<Long, Map<String, Long>> insideContainerSkuAttrIdsQty,
+            Map<Long, Map<String, Set<String>>> insideContainerSkuAttrIdsSnDefect, Map<Long, Map<Long, Set<String>>> insideContainerLocSkuAttrIds, Map<Long, Map<Long, Map<String, Long>>> insideContainerLocSkuAttrIdsQty, Long locationId,
+            WhSkuCommand skuCmd, Integer scanPattern, String logId);
+
 
 
     /**

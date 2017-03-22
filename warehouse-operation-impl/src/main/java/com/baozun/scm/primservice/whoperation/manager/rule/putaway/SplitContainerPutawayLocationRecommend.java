@@ -397,6 +397,7 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                         lrrc.setInsideContainerId(containerId);
                                         lrrc.setSkuId(skuId);
                                         lrrc.setSkuAttrId(SkuCategoryProvider.getSkuAttrIdByInv(invRule));
+                                        lrrc.setQty(onHandQty);
                                         lrrc.setDefectBarcode(null);
                                         lrrc.setSn(null);
                                         list.add(lrrc);
@@ -491,6 +492,7 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                         lrrc.setInsideContainerId(containerId);
                                         lrrc.setSkuId(skuId);
                                         lrrc.setSkuAttrId(SkuCategoryProvider.getSkuAttrIdByInv(invRule));
+                                        lrrc.setQty(onHandQty);
                                         lrrc.setDefectBarcode(null);
                                         lrrc.setSn(null);
                                         list.add(lrrc);
@@ -528,6 +530,7 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                         lrrc.setInsideContainerId(containerId);
                                         lrrc.setSkuId(skuId);
                                         lrrc.setSkuAttrId(SkuCategoryProvider.getSkuAttrIdByInv(invRule));
+                                        lrrc.setQty(onHandQty);
                                         lrrc.setDefectBarcode(null);
                                         lrrc.setSn(null);
                                         list.add(lrrc);
@@ -583,6 +586,7 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                         lrrc.setInsideContainerId(containerId);
                                         lrrc.setSkuId(skuId);
                                         lrrc.setSkuAttrId(SkuCategoryProvider.getSkuAttrIdByInv(invRule));
+                                        lrrc.setQty(onHandQty);
                                         lrrc.setDefectBarcode(null);
                                         lrrc.setSn(null);
                                         list.add(lrrc);
@@ -612,6 +616,7 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                         lrrc.setInsideContainerId(containerId);
                                         lrrc.setSkuId(skuId);
                                         lrrc.setSkuAttrId(SkuCategoryProvider.getSkuAttrIdByInv(invRule));
+                                        lrrc.setQty(onHandQty);
                                         lrrc.setDefectBarcode(null);
                                         lrrc.setSn(null);
                                         list.add(lrrc);
@@ -643,6 +648,7 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                         lrrc.setInsideContainerId(containerId);
                         lrrc.setSkuId(skuId);
                         lrrc.setSkuAttrId(SkuCategoryProvider.getSkuAttrIdByInv(invRule));
+                        lrrc.setQty(new Double("0"));
                         lrrc.setDefectBarcode(null);
                         lrrc.setSn(null);
                         list.add(lrrc);
@@ -670,6 +676,7 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                         lrrc.setInsideContainerId(containerId);
                         lrrc.setSkuId(skuId);
                         lrrc.setSkuAttrId(SkuCategoryProvider.getSkuAttrIdByInv(invRule));
+                        lrrc.setQty(new Double("0"));
                         lrrc.setDefectBarcode(defectBarcode);
                         lrrc.setSn(sn);
                         list.add(lrrc);
@@ -857,6 +864,7 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                             lrrc.setInsideContainerId(containerId);
                                             lrrc.setSkuId(skuId);
                                             lrrc.setSkuAttrId(SkuCategoryProvider.concatSkuAttrId(SkuCategoryProvider.getSkuAttrIdByInv(invRule), sn, defectBarcode));
+                                            lrrc.setQty(onHandQty);
                                             lrrc.setDefectBarcode(defectBarcode);
                                             lrrc.setSn(sn);
                                             list.add(lrrc);
@@ -958,6 +966,7 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                             lrrc.setInsideContainerId(containerId);
                                             lrrc.setSkuId(skuId);
                                             lrrc.setSkuAttrId(SkuCategoryProvider.concatSkuAttrId(SkuCategoryProvider.getSkuAttrIdByInv(invRule), sn, defectBarcode));
+                                            lrrc.setQty(onHandQty);
                                             lrrc.setDefectBarcode(defectBarcode);
                                             lrrc.setSn(sn);
                                             list.add(lrrc);
@@ -995,6 +1004,7 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                             lrrc.setInsideContainerId(containerId);
                                             lrrc.setSkuId(skuId);
                                             lrrc.setSkuAttrId(SkuCategoryProvider.concatSkuAttrId(SkuCategoryProvider.getSkuAttrIdByInv(invRule), sn, defectBarcode));
+                                            lrrc.setQty(onHandQty);
                                             lrrc.setDefectBarcode(defectBarcode);
                                             lrrc.setSn(sn);
                                             list.add(lrrc);
@@ -1050,6 +1060,7 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                             lrrc.setInsideContainerId(containerId);
                                             lrrc.setSkuId(skuId);
                                             lrrc.setSkuAttrId(SkuCategoryProvider.concatSkuAttrId(SkuCategoryProvider.getSkuAttrIdByInv(invRule), sn, defectBarcode));
+                                            lrrc.setQty(onHandQty);
                                             lrrc.setDefectBarcode(defectBarcode);
                                             lrrc.setSn(sn);
                                             list.add(lrrc);
@@ -1119,6 +1130,7 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                             lrrc.setInsideContainerId(containerId);
                             lrrc.setSkuId(skuId);
                             lrrc.setSkuAttrId(SkuCategoryProvider.concatSkuAttrId(SkuCategoryProvider.getSkuAttrIdByInv(invRule), sn, defectBarcode));
+                            lrrc.setQty(new Double("0"));
                             lrrc.setDefectBarcode(defectBarcode);
                             lrrc.setSn(sn);
                             list.add(lrrc);

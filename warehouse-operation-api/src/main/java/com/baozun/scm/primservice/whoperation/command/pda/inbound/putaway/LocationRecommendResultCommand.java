@@ -47,6 +47,8 @@ public class LocationRecommendResultCommand extends BaseCommand {
     private String locBarcode;
     /** 唯一商品 */
     private String skuAttrId;
+    /** 唯一商品数量 */
+    private Double qty;
     /** 残次条码 */
     private String defectBarcode;
     /** 序列号 */
@@ -138,6 +140,14 @@ public class LocationRecommendResultCommand extends BaseCommand {
 
     public void setLocBarcode(String locBarcode) {
         this.locBarcode = locBarcode;
+    }
+    
+    public Double getQty() {
+        return qty;
+    }
+
+    public void setQty(Double qty) {
+        this.qty = qty;
     }
 
     public String getSkuAttrId() {
