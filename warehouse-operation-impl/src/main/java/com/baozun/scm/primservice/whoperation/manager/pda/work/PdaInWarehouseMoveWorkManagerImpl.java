@@ -212,16 +212,16 @@ public class PdaInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implement
        //更新工作及作业状态
         pdaPickingWorkCacheManager.pdaReplenishmentUpdateOperation(operationId, ouId,userId);
         //清除缓存
-        pdaPickingWorkCacheManager.pdaPickingRemoveAllCache(operationId, false, locationId);
+        pdaPickingWorkCacheManager.pdaPickingRemoveAllCache(operationId, false, locationId,null);
     }
     
     public void cacheLocation(Long operationId,String locationCode,Long ouId){
-        
+
         Location location = whLocationDao.findLocationByCode(locationCode, ouId);
         if(null == location) {
             location =  whLocationDao.getLocationByBarcode(locationCode, ouId);
             if(null == location) {
-                throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_LOCATION_NULL); 
+                throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_LOCATION_NULL);
             }
         }
         Long locationId = location.getId();
