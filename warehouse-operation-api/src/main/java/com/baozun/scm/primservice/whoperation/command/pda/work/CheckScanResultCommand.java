@@ -41,7 +41,7 @@ public class CheckScanResultCommand extends BaseCommand {
     /** 提示商品条码 */
     private Long tipSkuBarcode;
     /** 是否直接核扫商品 */
-    private Boolean isNeedScanSku;
+    private Boolean isNeedScanSku = false;
     /** 是否提示sn明细 */
     private Boolean isNeedTipSkuSn;
     /** 提示唯一sku */

@@ -262,7 +262,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                     continue;
                 }
                 // 验证容器状态是否是待上架
-                if (!(container.getStatus().equals(ContainerStatus.CONTAINER_STATUS_SHEVLED) || container.getStatus().equals(ContainerStatus.CONTAINER_STATUS_PICKING))) {
+                if (!(container.getStatus().equals(ContainerStatus.CONTAINER_STATUS_REC_OUTBOUNDBOX) || container.getStatus().equals(ContainerStatus.CONTAINER_STATUS_PICKING))) {
                     continue;
                 }
                 tipOuterContainer = container.getCode();
@@ -603,8 +603,13 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
            return skuAttrId;
       }
       
-      public void cacheSkuAttrId(Long locationId,String skuAttrId){
-          ScanTipSkuCacheCommand tipScanSkuCmd = cacheManager.getObject(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE +locationId.toString());
+      public void cacheSkuAttrId(Long locationId,String skuAttrId,Long insideContainerId){
+          ScanTipSkuCacheCommand tipScanSkuCmd = null;
+          if(null == insideContainerId){
+              tipScanSkuCmd = cacheManager.getObject(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE +locationId.toString());
+          }else{
+              tipScanSkuCmd = cacheManager.getObject(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE +insideContainerId.toString());
+          }
           if(null == tipScanSkuCmd){
               tipScanSkuCmd = new ScanTipSkuCacheCommand();
               ArrayDeque<String> scanSkuAttrIds = new ArrayDeque<String>();
@@ -623,7 +628,12 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                   }
               }
           }
-          cacheManager.setObject(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE +locationId.toString(),tipScanSkuCmd , CacheConstants.CACHE_ONE_DAY);
+          if(null == insideContainerId){
+              cacheManager.setObject(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE +locationId.toString(),tipScanSkuCmd , CacheConstants.CACHE_ONE_DAY);
+          }else{
+              cacheManager.setObject(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE +insideContainerId.toString(),tipScanSkuCmd , CacheConstants.CACHE_ONE_DAY);
+          }
+          
       }
       /***
        * 
@@ -1362,7 +1372,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                   Map<String, Long> skuAttrIdQty =  skuAttrIdsQty.get(skuId);  //唯一sku对应的sku数量
                                   Set<String> skuAttrIds = skuAttrIdQty.keySet();
                                   String tipSkuAttrId = null;
-                                  if(isCacheAllExists2(skuAttrIds, scanSkuAttrIds)){
+                                  if(!isCacheAllExists2(skuAttrIds, scanSkuAttrIds)){
                                       //同一种sku有不同的库存属性
                                       for(String skuAttr:skuAttrIds){
                                           Set<String> snDefectSet = skuSnDefect.get(skuAttr);
@@ -1387,7 +1397,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                       cacheSkuIds.addFirst(skuId);
                                       tipScanSkuCmd.setScanSkuIds(cacheSkuIds);
                                       cacheManager.setObject(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + locationId.toString(), tipScanSkuCmd, CacheConstants.CACHE_ONE_DAY);
-                                      if (isCacheAllExists(skuIds, cacheSkuIds)) {
+                                      if (!isCacheAllExists(skuIds, cacheSkuIds)) {
                                           if (isCacheAllExists2(locationIds, cacheLocaitionIds)) {  //返回true ,两者相同
                                               //判断库位上是否有直接放的sku商品
                                               cssrCmd.setIsPicking(true);
@@ -1441,10 +1451,10 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                   throw new BusinessException(ErrorCodes.SCAN_SKU_QTY_IS_MORE_THAN_RCVD_QTY);
                               }
                           } else {  //缓存skuId队列为空
-                              ScanTipSkuCacheCommand cacheSkuCmd = new ScanTipSkuCacheCommand();
                               ArrayDeque<Long> oneByOneCacheSkuIds = new ArrayDeque<Long>();
                               oneByOneCacheSkuIds.addFirst(skuId);
-                              cacheSkuCmd.setOneByOneScanSkuIds(oneByOneCacheSkuIds);
+                              tipScanSkuCmd.setOneByOneScanSkuIds(oneByOneCacheSkuIds);
+                              cacheManager.setObject(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + locationId.toString(), tipScanSkuCmd, CacheConstants.CACHE_ONE_DAY);
                               long value = 0L;
                               if ((value + skuQty.longValue()) > icSkuQty.longValue()) {
                                   log.error("sku scan qty has already more than rcvd qty, skuId is:[{}], scan qty is:[{}], rcvd qty is:[{}], logId is:[{}]", skuId, value + skuQty.longValue(), icSkuQty, logId);
@@ -1454,8 +1464,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                               if (cacheValue == icSkuQty.longValue()) {
                                   ArrayDeque<Long> cacheSkuIds = new ArrayDeque<Long>();
                                   cacheSkuIds.addFirst(skuId);
-                                  cacheSkuCmd.setScanSkuIds(cacheSkuIds);
-                                  cacheManager.setObject(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + locationId.toString(), cacheSkuCmd, CacheConstants.CACHE_ONE_DAY);
+                                  tipScanSkuCmd.setScanSkuIds(cacheSkuIds);
                                   if (isCacheAllExists(skuIds, cacheSkuIds)) {
                                       //判断库位上是否还有货箱没有扫描
                                       if (isCacheAllExists2(locationIds, cacheLocaitionIds)) {  //返回true ,两者相同
@@ -1478,6 +1487,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                   log.error("sku scan qty has already more than rcvd qty, skuId is:[{}], scan qty is:[{}], rcvd qty is:[{}], logId is:[{}]", skuId, cacheValue, icSkuQty, logId);
                                   throw new BusinessException(ErrorCodes.SCAN_SKU_QTY_IS_MORE_THAN_RCVD_QTY);
                               }
+                              
                           }
                       }else{   //批量扫描
                           if (skuQty.longValue() == icSkuQty.longValue()) {
@@ -1720,6 +1730,12 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
            log.info("PdaPickingWorkCacheManagerImpl addPickingOperationExecLine is end");
        }
        
+       /**
+        * 判断是值是否相同
+        * @param ids
+        * @param cacheKeys
+        * @return
+        */
        private boolean isCacheAllExists2(Set<String> ids, ArrayDeque<String> cacheKeys) {
            boolean allExists = true;
            if (null != cacheKeys && !cacheKeys.isEmpty()) {
