@@ -751,6 +751,17 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			l.is_static_location_allocate desc,l.sku_id
 	</select>
 	
+	<select id="countNotEnoughAllocationQty" parameterType="map" resultType="long">
+		select 
+			count(1)
+		from 
+			t_wh_wave_line l 
+		where 
+			l.allocate_qty &lt; l.qty 
+			and l.wave_id = #{waveId}
+			and ou_id = #{ouId}
+	</select>
+	
 	<select id="findOdoIdByWaveId" resultType="long">
 		select distinct odo_id from t_wh_wave_line l
 		where l.wave_id = #{waveId}

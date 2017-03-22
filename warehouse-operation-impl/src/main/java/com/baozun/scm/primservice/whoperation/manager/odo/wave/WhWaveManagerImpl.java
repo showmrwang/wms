@@ -511,25 +511,23 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
                         whSkuInventoryManager.releaseInventoryByOdoId(odoId, wh);
                     }
                     // 从波次中剔除出库单后更新波次头统计信息
-                    if (!odoIds.isEmpty()) {
-                    	calculateWaveHeadInfo(waveId, ouId);
-					}
-                    // 波次进入到下个阶段
-                    changeWavePhaseCode(waveId, ouId);
+                    this.calculateWaveHeadInfo(waveId, ouId);
+                    // 计算是否进入补货
+                    this.changeWaveByHardAllocation(waveId, waveTempletId, phaseCode, ouId);
                 }
             } else {
-                // 剔除库存数量没有分配完全所有工作单
-            	whWaveLineManager.deleteWaveLinesByOdoIdList(new ArrayList<Long>(allOdoIds), waveId, ouId, Constants.INVENTORY_SHORTAGE);
-                for (Long odoId : allOdoIds) {
-                    // 释放库存
-                    whSkuInventoryManager.releaseInventoryByOdoId(odoId, wh);
-                }
-                // 从波次中剔除出库单后更新波次头统计信息
-                if (!allOdoIds.isEmpty()) {
-                	calculateWaveHeadInfo(waveId, ouId);
+            	if (!allOdoIds.isEmpty()) {
+	                // 剔除库存数量没有分配完全所有工作单
+	            	whWaveLineManager.deleteWaveLinesByOdoIdList(new ArrayList<Long>(allOdoIds), waveId, ouId, Constants.INVENTORY_SHORTAGE);
+	                for (Long odoId : allOdoIds) {
+	                    // 释放库存
+	                    whSkuInventoryManager.releaseInventoryByOdoId(odoId, wh);
+	                }
+	                // 从波次中剔除出库单后更新波次头统计信息
+                	this.calculateWaveHeadInfo(waveId, ouId);
 				}
                 // 波次进入到下个阶段
-                changeWavePhaseCode(waveId, ouId);
+                this.changeWavePhaseCode(waveId, ouId);
             }
         }
         // 回写odoLine的分配数量
@@ -545,6 +543,41 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
             odoLine.setIsAssignSuccess(true);
             whOdoLineDao.saveOrUpdate(odoLine);
         }
+    }
+    
+    /**
+     * 计算是否进入补货阶段
+     */
+    private void changeWaveByHardAllocation(Long waveId, Long waveTempletId, String phaseCode, Long ouId) {
+    	WhWave wave = whWaveDao.findWaveExtByIdAndOuId(waveId, ouId);
+    	WhWaveLine line = new WhWaveLine();
+        line.setWaveId(waveId);
+        line.setOuId(ouId);
+        long lineCount = whWaveLineDao.findListCountByParam(line);
+        if (lineCount == 0) {
+        	wave.setPhaseCode(null);
+            wave.setStatus(WaveStatus.WAVE_CANCEL);
+            int num = this.whWaveDao.saveOrUpdateByVersion(wave);
+            if (1 != num) {
+                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            }
+        	return;
+        }
+        lineCount = whWaveLineDao.countNotEnoughAllocationQty(waveId, ouId);
+        if (lineCount == 0) {
+        	phaseCode = this.getWavePhaseCode(phaseCode, waveTempletId, ouId);
+        	wave.setPhaseCode(phaseCode);
+        	int num = whWaveDao.saveOrUpdateByVersion(wave);
+        	if (num != 1) {
+        		throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+        	}
+        	return;
+        }
+        wave.setPhaseCode(phaseCode);
+    	int num = whWaveDao.saveOrUpdateByVersion(wave);
+    	if (num != 1) {
+    		throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+    	}
     }
     
     /**
