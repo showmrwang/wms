@@ -755,7 +755,6 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                     Long outerContainerId = cSRCmd.getTipOuterContainerId();
                     //判断外部容器
                     Container c = containerDao.findByIdExt(outerContainerId, ouId);
-                    this.judeContainerStatus(c);
                     //提示外部容器编码
                     command.setTipOuterContainerCode(c.getCode());
                     command.setIsTipOuterContainer(true);
@@ -811,7 +810,6 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             if(cSRCmd.getIsNeedTipInsideContainer()) { //托盘上还有货箱没有扫描
                 Long tipInsideContainerId = cSRCmd.getTipiInsideContainerId();
                 Container ic = containerDao.findByIdExt(tipInsideContainerId, ouId);
-                this.judeContainerStatus(ic);
                 command.setTipInsideContainerCode(ic.getCode());
                 command.setOuterContainerCode(tipOuterContainerCode);
                 command.setIsTipinsideCotnainer(true);
@@ -838,7 +836,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             tipLocationCmd.setTipOuterContainerIds(tipOuterContainerIds);
         }else{
             ArrayDeque<Long> tipOuterContainerIds = tipLocationCmd.getTipOuterContainerIds();
-            if(tipOuterContainerIds.isEmpty() || tipOuterContainerIds == null){
+            if(tipOuterContainerIds == null || tipOuterContainerIds.size() == 0){
                 tipOuterContainerIds = new ArrayDeque<Long>();
                 tipOuterContainerIds.addFirst(outerId);
                 tipLocationCmd.setTipOuterContainerIds(tipOuterContainerIds);
@@ -957,7 +955,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         Long locationId = command.getLocationId();
         Long ouId = command.getOuId();
         Long insideContainerId  = null;
-        String insideContainerCode = command.getInsideContainerCode();
+        String insideContainerCode = command.getTipInsideContainerCode();
         String skuBarcode = command.getSkuBarCode();   //商品条码
         Long skuId = command.getSkuId();
         if(!StringUtil.isEmpty(insideContainerCode)) {
@@ -1218,8 +1216,8 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         Long ouId = command.getOuId();
         Long skuId = command.getSkuId();
         String skuBarCode = command.getSkuBarCode();
-        String insideContainerCode = command.getInsideContainerCode();
-        String outerContainerCode = command.getOuterContainerCode(); 
+        String insideContainerCode = command.getTipInsideContainerCode();
+        String outerContainerCode = command.getTipOuterContainerCode();
         String turnoverBoxCode = command.getTurnoverBoxCode();   //周转箱
         Long outBoundBoxId = command.getOutBoundBoxId();   //出库箱id
         Boolean isTrunkful = command.getIsTrunkful();  //是否满箱
@@ -1321,7 +1319,10 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         }else{
             skuIdSkuAttrIdsQty = locSkuAttrIdsQty.get(locationId);
         }
-        Set<Long> insideContainerIds = outerToInsideIds.get(locationId);
+        Set<Long> insideContainerIds = null;
+        if(null != outerContainerId){
+            insideContainerIds = outerToInsideIds.get(outerContainerId);//外部容器对应的内内部容器
+        }
         boolean isSkuExists = false;
         Integer cacheSkuQty = 1;
         Integer icSkuQty = 1;
