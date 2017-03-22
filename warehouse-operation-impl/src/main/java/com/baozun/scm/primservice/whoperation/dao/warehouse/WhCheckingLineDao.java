@@ -25,6 +25,9 @@ import lark.common.dao.QueryCondition;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
 
+import org.apache.ibatis.annotations.Param;
+
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingLineCommand;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhCheckingLine;
 
 public interface WhCheckingLineDao extends BaseDao<WhCheckingLine, Long> {
@@ -42,5 +45,14 @@ public interface WhCheckingLineDao extends BaseDao<WhCheckingLine, Long> {
 
     @CommonQuery
     int saveOrUpdate(WhCheckingLine o);
+
+    /**
+     * 根据复核ID查询复核明细
+     * @param checkingId
+     * @param ouId
+     * @return
+     */
+    List<WhCheckingLineCommand> getCheckingLineByCheckingId(@Param("checkingId") Long checkingId, @Param("ouId") Long ouId);
+
 
 }
