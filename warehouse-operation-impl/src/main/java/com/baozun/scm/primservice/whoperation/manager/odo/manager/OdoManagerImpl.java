@@ -457,21 +457,27 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
         try {
             if (line.getId() == null) {
                 this.whOdoLineDao.insert(line);
-                WhOdo odo = this.whOdoDao.findByIdOuId(line.getOdoId(), line.getOuId());
-                if (odo == null) {
-                    throw new BusinessException(ErrorCodes.PARAM_IS_NULL);
-                }
-                if (OdoStatus.ODO_TOBECREATED.equals(odo.getOdoStatus())) {
 
-                } else if (OdoStatus.ODO_NEW.equals(odo.getOdoStatus())) {
-                    odo.setOdoStatus(OdoStatus.ODO_TOBECREATED);
-                    int updateCount = this.whOdoDao.saveOrUpdateByVersion(odo);
-                    if (updateCount <= 0) {
-                        throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-                    }
-                } else {
-                    throw new BusinessException(ErrorCodes.ODO_EDIT_ERROR);
+            } else {
+                int updateCount = this.whOdoLineDao.saveOrUpdateByVersion(line);
+                if (updateCount <= 0) {
+                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
                 }
+            }
+            WhOdo odo = this.whOdoDao.findByIdOuId(line.getOdoId(), line.getOuId());
+            if (odo == null) {
+                throw new BusinessException(ErrorCodes.PARAM_IS_NULL);
+            }
+            if (OdoStatus.ODO_TOBECREATED.equals(odo.getOdoStatus())) {
+
+            } else if (OdoStatus.ODO_NEW.equals(odo.getOdoStatus())) {
+                odo.setOdoStatus(OdoStatus.ODO_TOBECREATED);
+                int updateCount = this.whOdoDao.saveOrUpdateByVersion(odo);
+                if (updateCount <= 0) {
+                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                }
+            } else {
+                throw new BusinessException(ErrorCodes.ODO_EDIT_ERROR);
             }
             // 增值服务逻辑：先全部删除再重新添加
             List<WhOdoVas> delVasList = this.whOdoVasDao.findOdoVasByOdoIdOdoLineIdType(line.getOdoId(), line.getId(), null, line.getOuId());
