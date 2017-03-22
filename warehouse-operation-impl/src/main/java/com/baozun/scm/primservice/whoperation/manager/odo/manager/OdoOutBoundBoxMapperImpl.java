@@ -94,4 +94,19 @@ public class OdoOutBoundBoxMapperImpl extends BaseManagerImpl implements OdoOutB
         }
         return null;
     }
+
+    /**
+     * 查询波次中的所有小批次 -- 捡货工作
+     * 
+     * @param waveId
+     * @param ouId
+     * @return
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<WhOdoOutBoundBox> getBoxBatchsForPicking(Long waveId, Long ouId) {
+     // 查询波次中的所有小批次
+        List<WhOdoOutBoundBox> whOdoOutBoundBoxList = whOdoOutBoundBoxDao.findPickingWorkWhOdoOutBoundBox(waveId, ouId);
+        return whOdoOutBoundBoxList;
+    }
 }

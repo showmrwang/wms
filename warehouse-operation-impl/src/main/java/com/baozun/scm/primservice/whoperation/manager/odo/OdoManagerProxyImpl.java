@@ -408,23 +408,45 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         Long ouId = lineCommand.getOuId();
         Long userId = lineCommand.getUserId();
         WhOdoLine line = new WhOdoLine();
-        if (lineCommand.getLinenum() != null) {
-            line.setLinenum(lineCommand.getLinenum());
+        // @mender yimin.lu 2017/3/22 添加编辑逻辑
+        if (lineCommand.getId() != null) {
+            line = this.odoLineManager.findOdoLineById(lineCommand.getId(), ouId);
+            if (null == line) {
+                throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+            }
+            line.setPlanQty(lineCommand.getQty());
+            line.setLinePrice(lineCommand.getLinePrice());
+            line.setLineAmt(lineCommand.getLineAmt());
+        } else {
+            if (lineCommand.getLinenum() != null) {
+                line.setLinenum(lineCommand.getLinenum());
+            }
+            if (lineCommand.getExtLinenum() != null) {
+                line.setExtLinenum(lineCommand.getExtLinenum());
+            }
+            line.setSkuId(lineCommand.getSkuId());
+            line.setOdoId(lineCommand.getOdoId());
+            line.setOuId(ouId);
+            line.setSkuBarCode(lineCommand.getSkuBarCode());
+            line.setStoreId(lineCommand.getStoreId());
+            line.setSkuName(lineCommand.getSkuName());
+            line.setQty(lineCommand.getQty());
+            // @mender yimin.lu 201 6/9/28
+            line.setPlanQty(lineCommand.getQty());
+            line.setLinePrice(lineCommand.getLinePrice());
+            line.setLineAmt(lineCommand.getLineAmt());
+
+            // 默认值设置
+            line.setCurrentQty(Constants.DEFAULT_DOUBLE);
+            line.setActualQty(Constants.DEFAULT_DOUBLE);
+            line.setCancelQty(Constants.DEFAULT_DOUBLE);
+            line.setAssignQty(Constants.DEFAULT_DOUBLE);
+            line.setDiekingQty(Constants.DEFAULT_DOUBLE);
+            line.setCreateTime(new Date());
+            line.setCreatedId(userId);
+            line.setLastModifyTime(new Date());
+            line.setModifiedId(userId);
         }
-        if (lineCommand.getExtLinenum() != null) {
-            line.setExtLinenum(lineCommand.getExtLinenum());
-        }
-        line.setSkuId(lineCommand.getSkuId());
-        line.setOdoId(lineCommand.getOdoId());
-        line.setOuId(ouId);
-        line.setSkuBarCode(lineCommand.getSkuBarCode());
-        line.setStoreId(lineCommand.getStoreId());
-        line.setSkuName(lineCommand.getSkuName());
-        line.setQty(lineCommand.getQty());
-        // @mender yimin.lu 201 6/9/28
-        line.setPlanQty(lineCommand.getQty());
-        line.setLinePrice(lineCommand.getLinePrice());
-        line.setLineAmt(lineCommand.getLineAmt());
         line.setOdoLineStatus(OdoStatus.ODO_TOBECREATED);
         line.setIsCheck(lineCommand.getIsCheck());
         line.setFullLineOutbound(lineCommand.getFullLineOutbound());
@@ -470,16 +492,6 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         line.setInvAttr3(lineCommand.getInvAttr3());
         line.setInvAttr4(lineCommand.getInvAttr4());
         line.setInvAttr5(lineCommand.getInvAttr5());
-        // 默认值设置
-        line.setCurrentQty(Constants.DEFAULT_DOUBLE);
-        line.setActualQty(Constants.DEFAULT_DOUBLE);
-        line.setCancelQty(Constants.DEFAULT_DOUBLE);
-        line.setAssignQty(Constants.DEFAULT_DOUBLE);
-        line.setDiekingQty(Constants.DEFAULT_DOUBLE);
-        line.setCreateTime(new Date());
-        line.setCreatedId(userId);
-        line.setLastModifyTime(new Date());
-        line.setModifiedId(userId);
 
         /**
          *  保存明细的增值服务：

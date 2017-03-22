@@ -336,4 +336,20 @@ public interface WhWaveManager extends BaseManager {
     public void calculateWaveHeadInfo(Long waveId, Long ouId);
 
     public void checkReplenishmentTaskForWave(Long waveId, Long ouId);
+    
+    /**
+     * [通用方法] 波次内创工作-获取波次头信息
+     * @param waveId
+     * @param ouId
+     * @return
+     */
+    public WhWave getWaveByWaveIdAndOuId(Long waveId, Long ouId);
+    
+    /**
+     * [通用方法] 波次内创工作-更新波次状态
+     * @param whWave
+     * @return
+     */
+    void updateWaveByWhWave(WhWave whWave);
+    
 }

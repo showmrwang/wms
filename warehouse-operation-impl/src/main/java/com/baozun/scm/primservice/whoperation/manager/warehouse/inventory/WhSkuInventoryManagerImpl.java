@@ -6852,8 +6852,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     }
 
     @Override
-    public List<WhSkuInventoryCommand> findInventoryByUuid(String uuid, Long ouId) {
-        // TODO Auto-generated method stub
-        return null;
+    public List<WhSkuInventory> findWhSkuInventoryByPramas(WhSkuInventory inventory) {
+        return whSkuInventoryDao.findWhSkuInventoryByPramas(inventory);
     }
 }

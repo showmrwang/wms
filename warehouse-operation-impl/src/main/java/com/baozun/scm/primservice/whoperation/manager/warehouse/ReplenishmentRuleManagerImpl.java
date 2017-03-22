@@ -316,4 +316,33 @@ public class ReplenishmentRuleManagerImpl extends BaseManagerImpl implements Rep
 	public List<ReplenishmentStrategyCommand> getReplenishmentStrategyCommandByRuleId(Long ruleId, Long ouId) {
 		return replenishmentStrategyDao.findCommandByRuleIdWithPriority(ruleId, ouId);
 	}
+
+	/**
+     * 查询波次内补货工作释放及拆分条件分组 -- 补货工作
+     * 
+     * @param waveId
+     * @param ouId
+     * @return
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<ReplenishmentRuleCommand> getInReplenishmentConditionGroup(Long waveId, Long ouId) {
+        // 查询补货工作释放及拆分条件分组
+        List<ReplenishmentRuleCommand> replenishmentRuleCommands = this.replenishmentRuleDao.getInReplenishmentConditionGroup(waveId, ouId);
+        return replenishmentRuleCommands;
+    }
+
+    /**
+     * 查询波次外补货工作释放及拆分条件分组 -- 补货工作
+     * 
+     * @param ouId
+     * @return
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<ReplenishmentRuleCommand> getOutReplenishmentConditionGroup(Long ouId) {
+        // 查询补货工作释放及拆分条件分组
+        List<ReplenishmentRuleCommand> replenishmentRuleCommands = this.replenishmentRuleDao.getOutReplenishmentConditionGroup(ouId);
+        return replenishmentRuleCommands;
+    }
 }
