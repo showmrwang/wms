@@ -740,7 +740,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         	area_id as areaId,
         	is_static_location_allocate as isStaticLocationAllocate,
         	store_id as storeId,
-        	inv_status as invStatus
+        	inv_status as invStatus,
+        	ou_id as ouId
 		from 
 			t_wh_wave_line l 
 		where 
