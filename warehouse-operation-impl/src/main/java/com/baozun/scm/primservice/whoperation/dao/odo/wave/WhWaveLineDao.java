@@ -124,7 +124,12 @@ public interface WhWaveLineDao extends BaseDao<WhWaveLine, Long> {
     /**
      * [业务方法] 硬分配-得到波次明细没有分配好足够的库存的明细行
      */
-    List<WhWaveLine> findNotEnoughAllocationQty(@Param("waveId") Long waveIdList, @Param("ouId") Long ouId);
+    List<WhWaveLine> findNotEnoughAllocationQty(@Param("waveId") Long waveId, @Param("ouId") Long ouId);
+    
+    /**
+     * [业务方法] 硬分配-得到波次明细没有分配好足够的库存的明细行数量
+     */
+    long countNotEnoughAllocationQty(@Param("waveId") Long waveId, @Param("ouId") Long ouId);
 
     /**
      * [通用方法] 硬分配-根据waveid得到此波次包含的出库单id集合

@@ -1,223 +1,258 @@
 /**
  * Copyright (c) 2013 Baozun All Rights Reserved.
  *
- * This software is the confidential and proprietary information of Baozun.
- * You shall not disclose such Confidential Information and shall use it only in
- * accordance with the terms of the license agreement you entered into
- * with Baozun.
+ * This software is the confidential and proprietary information of Baozun. You shall not disclose
+ * such Confidential Information and shall use it only in accordance with the terms of the license
+ * agreement you entered into with Baozun.
  *
- * BAOZUN MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT THE SUITABILITY OF THE
- * SOFTWARE, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
- * PURPOSE, OR NON-INFRINGEMENT. BAOZUN SHALL NOT BE LIABLE FOR ANY DAMAGES
- * SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING
- * THIS SOFTWARE OR ITS DERIVATIVES.
+ * BAOZUN MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT THE SUITABILITY OF THE SOFTWARE, EITHER
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT. BAOZUN SHALL NOT BE LIABLE FOR ANY DAMAGES
+ * SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS SOFTWARE OR ITS
+ * DERIVATIVES.
  *
  */
 package com.baozun.scm.primservice.whoperation.model.warehouse;
 
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
+
 /**
- * 复核头表(t_wh_checking)
  * 
  * @author larkark
  *
  */
 public class WhChecking extends BaseModel {
-	
-	/**
-     * 
-     */
-    private static final long serialVersionUID = 6019495871640623013L;
-    
-    //columns START
-	/** 播种墙ID */
-	private java.lang.Long facilityId;
-	/** 周转箱ID */
-	private java.lang.Long containerId;
-	/** 小批次 */
-	private java.lang.String batch;
-	/** 波次号 */
-	private java.lang.String waveCode;
-	/** 客户CODE */
-	private java.lang.String customerCode;
-	/** 客户名称 */
-	private java.lang.String customerName;
-	/** 店铺CODE */
-	private java.lang.String storeCode;
-	/** 店铺名称 */
-	private java.lang.String storeName;
-	/** 运输服务商CODE */
-	private java.lang.String transportCode;
-	/** 运输服务商名称 */
-	private java.lang.String transportName;
-	/** 产品类型CODE */
-	private java.lang.String productCode;
-	/** 产品类型名称 */
-	private java.lang.String productName;
-	/** 时效类型CODE */
-	private java.lang.String timeEffectCode;
-	/** 时效类型名称 */
-	private java.lang.String timeEffectName;
-	/** 复核状态 */
-	private java.lang.Integer status;
-	/** 对应组织ID */
-	private java.lang.Long ouId;
-	/** 外部容器，小车 */
-	private java.lang.Long outerContainerId;
-	/** 货格编码数 */
-	private java.lang.Integer containerLatticeNo;
-	/** 耗材ID */
-	private java.lang.Long outboundboxId;
-	/** 出库箱编码 */
-	private java.lang.String outboundboxCode;
-	/** 配货模式 */
-	private java.lang.String distributionMode;
-	/** 拣货模式 */
-	private java.lang.String pickingMode;
-	/** 复核模式 */
-	private java.lang.String checkingMode;
-	//columns END
-	
-	
-    public java.lang.Long getFacilityId() {
+
+    private static final long serialVersionUID = 6540925758334852347L;
+
+    /** 播种墙ID */
+    private Long facilityId;
+    /** 周转箱ID */
+    private Long containerId;
+    /** 小批次 */
+    private String batch;
+    /** 波次号 */
+    private String waveCode;
+    /** 客户CODE */
+    private String customerCode;
+    /** 客户名称 */
+    private String customerName;
+    /** 店铺CODE */
+    private String storeCode;
+    /** 店铺名称 */
+    private String storeName;
+    /** 运输服务商CODE */
+    private String transportCode;
+    /** 运输服务商名称 */
+    private String transportName;
+    /** 产品类型CODE */
+    private String productCode;
+    /** 产品类型名称 */
+    private String productName;
+    /** 时效类型CODE */
+    private String timeEffectCode;
+    /** 时效类型名称 */
+    private String timeEffectName;
+    /** 复核状态 */
+    private Integer status;
+    /** 对应组织ID */
+    private Long ouId;
+    /** 外部容器，小车 */
+    private Long outerContainerId;
+    /** 货格编码数 */
+    private Integer containerLatticeNo;
+    /** 耗材ID */
+    private Long outboundboxId;
+    /** 出库箱编码 */
+    private String outboundboxCode;
+    /** 配货模式 */
+    private String distributionMode;
+    /** 拣货模式 */
+    private String pickingMode;
+    /** 复核模式 */
+    private String checkingMode;
+
+    public Long getFacilityId() {
         return facilityId;
     }
-    public void setFacilityId(java.lang.Long facilityId) {
+
+    public void setFacilityId(Long facilityId) {
         this.facilityId = facilityId;
     }
-    public java.lang.Long getContainerId() {
+
+    public Long getContainerId() {
         return containerId;
     }
-    public void setContainerId(java.lang.Long containerId) {
+
+    public void setContainerId(Long containerId) {
         this.containerId = containerId;
     }
-    public java.lang.String getBatch() {
+
+    public String getBatch() {
         return batch;
     }
-    public void setBatch(java.lang.String batch) {
+
+    public void setBatch(String batch) {
         this.batch = batch;
     }
-    public java.lang.String getWaveCode() {
+
+    public String getWaveCode() {
         return waveCode;
     }
-    public void setWaveCode(java.lang.String waveCode) {
+
+    public void setWaveCode(String waveCode) {
         this.waveCode = waveCode;
     }
-    public java.lang.String getCustomerCode() {
+
+    public String getCustomerCode() {
         return customerCode;
     }
-    public void setCustomerCode(java.lang.String customerCode) {
+
+    public void setCustomerCode(String customerCode) {
         this.customerCode = customerCode;
     }
-    public java.lang.String getCustomerName() {
+
+    public String getCustomerName() {
         return customerName;
     }
-    public void setCustomerName(java.lang.String customerName) {
+
+    public void setCustomerName(String customerName) {
         this.customerName = customerName;
     }
-    public java.lang.String getStoreCode() {
+
+    public String getStoreCode() {
         return storeCode;
     }
-    public void setStoreCode(java.lang.String storeCode) {
+
+    public void setStoreCode(String storeCode) {
         this.storeCode = storeCode;
     }
-    public java.lang.String getStoreName() {
+
+    public String getStoreName() {
         return storeName;
     }
-    public void setStoreName(java.lang.String storeName) {
+
+    public void setStoreName(String storeName) {
         this.storeName = storeName;
     }
-    public java.lang.String getTransportCode() {
+
+    public String getTransportCode() {
         return transportCode;
     }
-    public void setTransportCode(java.lang.String transportCode) {
+
+    public void setTransportCode(String transportCode) {
         this.transportCode = transportCode;
     }
-    public java.lang.String getTransportName() {
+
+    public String getTransportName() {
         return transportName;
     }
-    public void setTransportName(java.lang.String transportName) {
+
+    public void setTransportName(String transportName) {
         this.transportName = transportName;
     }
-    public java.lang.String getProductCode() {
+
+    public String getProductCode() {
         return productCode;
     }
-    public void setProductCode(java.lang.String productCode) {
+
+    public void setProductCode(String productCode) {
         this.productCode = productCode;
     }
-    public java.lang.String getProductName() {
+
+    public String getProductName() {
         return productName;
     }
-    public void setProductName(java.lang.String productName) {
+
+    public void setProductName(String productName) {
         this.productName = productName;
     }
-    public java.lang.String getTimeEffectCode() {
+
+    public String getTimeEffectCode() {
         return timeEffectCode;
     }
-    public void setTimeEffectCode(java.lang.String timeEffectCode) {
+
+    public void setTimeEffectCode(String timeEffectCode) {
         this.timeEffectCode = timeEffectCode;
     }
-    public java.lang.String getTimeEffectName() {
+
+    public String getTimeEffectName() {
         return timeEffectName;
     }
-    public void setTimeEffectName(java.lang.String timeEffectName) {
+
+    public void setTimeEffectName(String timeEffectName) {
         this.timeEffectName = timeEffectName;
     }
-    public java.lang.Integer getStatus() {
+
+    public Integer getStatus() {
         return status;
     }
-    public void setStatus(java.lang.Integer status) {
+
+    public void setStatus(Integer status) {
         this.status = status;
     }
-    public java.lang.Long getOuId() {
+
+    public Long getOuId() {
         return ouId;
     }
-    public void setOuId(java.lang.Long ouId) {
+
+    public void setOuId(Long ouId) {
         this.ouId = ouId;
     }
-    public java.lang.Long getOuterContainerId() {
+
+    public Long getOuterContainerId() {
         return outerContainerId;
     }
-    public void setOuterContainerId(java.lang.Long outerContainerId) {
+
+    public void setOuterContainerId(Long outerContainerId) {
         this.outerContainerId = outerContainerId;
     }
-    public java.lang.Integer getContainerLatticeNo() {
+
+    public Integer getContainerLatticeNo() {
         return containerLatticeNo;
     }
-    public void setContainerLatticeNo(java.lang.Integer containerLatticeNo) {
+
+    public void setContainerLatticeNo(Integer containerLatticeNo) {
         this.containerLatticeNo = containerLatticeNo;
     }
-    public java.lang.Long getOutboundboxId() {
+
+    public Long getOutboundboxId() {
         return outboundboxId;
     }
-    public void setOutboundboxId(java.lang.Long outboundboxId) {
+
+    public void setOutboundboxId(Long outboundboxId) {
         this.outboundboxId = outboundboxId;
     }
-    public java.lang.String getOutboundboxCode() {
+
+    public String getOutboundboxCode() {
         return outboundboxCode;
     }
-    public void setOutboundboxCode(java.lang.String outboundboxCode) {
+
+    public void setOutboundboxCode(String outboundboxCode) {
         this.outboundboxCode = outboundboxCode;
     }
-    public java.lang.String getDistributionMode() {
+
+    public String getDistributionMode() {
         return distributionMode;
     }
-    public void setDistributionMode(java.lang.String distributionMode) {
+
+    public void setDistributionMode(String distributionMode) {
         this.distributionMode = distributionMode;
     }
-    public java.lang.String getPickingMode() {
+
+    public String getPickingMode() {
         return pickingMode;
     }
-    public void setPickingMode(java.lang.String pickingMode) {
+
+    public void setPickingMode(String pickingMode) {
         this.pickingMode = pickingMode;
     }
-    public java.lang.String getCheckingMode() {
+
+    public String getCheckingMode() {
         return checkingMode;
     }
-    public void setCheckingMode(java.lang.String checkingMode) {
+
+    public void setCheckingMode(String checkingMode) {
         this.checkingMode = checkingMode;
     }
-
 }
-

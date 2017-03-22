@@ -1,104 +1,102 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
-PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
-"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
 
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.WhCheckingCollectionDao">
+    <resultMap id="WhCheckingCollectionResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.WhCheckingCollection">
+    </resultMap>
 
-<mapper namespace="com.baozun.scm.baseservice.print.dao..WhCheckingCollectionDao">
-	<resultMap id="WhCheckingCollectionResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.WhCheckingCollection">
-	</resultMap>
-	
-	<!-- 用于select查询公用抽取的列 -->
-	<sql id="whCheckingCollectionColumnsExt">
-	    <![CDATA[
-	        	id as id,
-	        	facility_id as facilityId,
-	        	temporary_location_id as temporaryLocationId,
-	        	location_id as locationId,
-	        	container_id as containerId,
-	        	batch as batch,
-	        	collection_status as collectionStatus,
-	        	ou_id as ouId,
-	        	outer_container_id as outerContainerId,
-	        	container_lattice_no as containerLatticeNo,
-	        	outboundbox_id as outboundboxId,
-	        	outboundbox_code as outboundboxCode,
-	        	distribution_mode as distributionMode,
-	        	picking_mode as pickingMode,
-	        	checking_mode as checkingMode
-	    ]]>
-	</sql>
-	
-	<sql id="whCheckingCollectionDynamicWhereExt">
-		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
-		<where>
-	       
-				<if test="id!=null">
-					and id = #{id}
-				</if>
-	       
-				<if test="facilityId!=null">
-					and facility_id = #{facilityId}
-				</if>
-	       
-				<if test="temporaryLocationId!=null">
-					and temporary_location_id = #{temporaryLocationId}
-				</if>
-	       
-				<if test="locationId!=null">
-					and location_id = #{locationId}
-				</if>
-	       
-				<if test="containerId!=null">
-					and container_id = #{containerId}
-				</if>
-	       
-	       
-		       <if test="batch!=null and batch!=''">
-					and batch = #{batch}
-				</if>
-	       
-	       
-		       <if test="collectionStatus!=null and collectionStatus!=''">
-					and collection_status = #{collectionStatus}
-				</if>
-	       
-				<if test="ouId!=null">
-					and ou_id = #{ouId}
-				</if>
-	       
-				<if test="outerContainerId!=null">
-					and outer_container_id = #{outerContainerId}
-				</if>
-	       
-				<if test="containerLatticeNo!=null">
-					and container_lattice_no = #{containerLatticeNo}
-				</if>
-	       
-				<if test="outboundboxId!=null">
-					and outboundbox_id = #{outboundboxId}
-				</if>
-	       
-	       
-		       <if test="outboundboxCode!=null and outboundboxCode!=''">
-					and outboundbox_code = #{outboundboxCode}
-				</if>
-	       
-	       
-		       <if test="distributionMode!=null and distributionMode!=''">
-					and distribution_mode = #{distributionMode}
-				</if>
-	       
-	       
-		       <if test="pickingMode!=null and pickingMode!=''">
-					and picking_mode = #{pickingMode}
-				</if>
-	       
-	       
-		       <if test="checkingMode!=null and checkingMode!=''">
-					and checking_mode = #{checkingMode}
-				</if>
-		</where>
-	</sql>
-	
+    <resultMap id="WhCheckingCollectionCommand" type="com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingCollectionCommand">
+    </resultMap>
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="whCheckingCollectionColumnsExt">
+        <![CDATA[
+        
+                id as id,
+                facility_id as facilityId,
+                temporary_location_id as temporaryLocationId,
+                location_id as locationId,
+                container_id as containerId,
+                batch as batch,
+                collection_status as collectionStatus,
+                ou_id as ouId,
+                outer_container_id as outerContainerId,
+                container_lattice_no as containerLatticeNo,
+                outboundbox_id as outboundboxId,
+                outboundbox_code as outboundboxCode,
+                distribution_mode as distributionMode,
+                picking_mode as pickingMode,
+                checking_mode as checkingMode
+        
+        ]]>
+    </sql>
+
+    <sql id="whCheckingCollectionDynamicWhereExt">
+        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+
+            <if test="id!=null">
+                and id = #{id}
+            </if>
+
+            <if test="facilityId!=null">
+                and facility_id = #{facilityId}
+            </if>
+
+            <if test="temporaryLocationId!=null">
+                and temporary_location_id = #{temporaryLocationId}
+            </if>
+
+            <if test="locationId!=null">
+                and location_id = #{locationId}
+            </if>
+
+            <if test="containerId!=null">
+                and container_id = #{containerId}
+            </if>
+
+            <if test="batch!=null and batch!=''">
+                and batch = #{batch}
+            </if>
+
+            <if test="collectionStatus!=null and collectionStatus!=''">
+                and collection_status = #{collectionStatus}
+            </if>
+
+            <if test="ouId!=null">
+                and ou_id = #{ouId}
+            </if>
+
+            <if test="outerContainerId!=null">
+                and outer_container_id = #{outerContainerId}
+            </if>
+
+            <if test="containerLatticeNo!=null">
+                and container_lattice_no = #{containerLatticeNo}
+            </if>
+
+            <if test="outboundboxId!=null">
+                and outboundbox_id = #{outboundboxId}
+            </if>
+
+            <if test="outboundboxCode!=null and outboundboxCode!=''">
+                and outboundbox_code = #{outboundboxCode}
+            </if>
+
+            <if test="distributionMode!=null and distributionMode!=''">
+                and distribution_mode = #{distributionMode}
+            </if>
+
+            <if test="pickingMode!=null and pickingMode!=''">
+                and picking_mode = #{pickingMode}
+            </if>
+
+            <if test="checkingMode!=null and checkingMode!=''">
+                and checking_mode = #{checkingMode}
+            </if>
+        </where>
+    </sql>
+
 </mapper>
