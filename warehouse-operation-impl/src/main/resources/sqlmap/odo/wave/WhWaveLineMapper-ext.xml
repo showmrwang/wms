@@ -871,7 +871,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
    <select id="findListCountByQueryMapExt" resultType="long">
         select count(*) from t_wh_wave_line
        <include refid="whWaveLineDynamicWhereExt"/>
-       order by odoCode 
+       order by odo_code 
     </select>
 		<delete id="deleteByIdOuId" parameterType="map">
 	    <![CDATA[
