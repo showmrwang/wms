@@ -96,7 +96,7 @@ public class PickingScanResultCommand extends BaseCommand {
     /** 整箱拣货模式 */
     private java.lang.Integer containerPickingMode;
     /** 是否拣货完毕 */
-    private Boolean isPicking;
+    private Boolean isPicking = false;
 
     private Boolean isInboundLocationBarcode;
     /*** sku条码 */
@@ -173,13 +173,13 @@ public class PickingScanResultCommand extends BaseCommand {
     private Boolean isNeedSkuDetail;
 
     /** 库位上外部容器是否扫描完毕 */
-    private Boolean isNeedTipOutContainer;
+    private Boolean isNeedTipOutContainer = false;
     /** 库位上内部容器是否扫描完毕 */
-    private Boolean isNeedTipInsideContainer;
+    private Boolean isNeedTipInsideContainer = false;
     /** 是否提示商品 (所有的商品sku是否已经扫描完毕) */
-    private Boolean isNeedTipSku;
+    private Boolean isNeedTipSku = false;
     /** 库位是否扫描完毕 */
-    private Boolean isNeedTipLocation;
+    private Boolean isNeedTipLocation = false;
     /** 出库箱编码 */
     private String tipOutBounxBoxCode;
     /** 是否需要出库箱编码 */
@@ -192,7 +192,7 @@ public class PickingScanResultCommand extends BaseCommand {
     /** 是否满箱 */
     private Boolean isTrunkful;
     /** 出库箱/周转箱满箱后是否使用新的容器 */
-    private Boolean isUserNewContainer;
+    private Boolean isUserNewContainer =false;
 
     private Boolean isNeedScanSku; // 是否扫描sku
 

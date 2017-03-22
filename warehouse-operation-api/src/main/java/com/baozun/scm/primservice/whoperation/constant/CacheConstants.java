@@ -86,8 +86,8 @@ public final class CacheConstants {
     public static final String CACHE_LOCATION = "CACHE_LOCATION";
     /***缓存单个库位库存*/
     public static final String CACHE_LOC_INVENTORY = "CACHE_LOC_INVENTORY";
-    /***缓存唯一sku*/
-    public static final String CACHE_LOC_SKU_ATTR = "CACHE_LOC_SKU_ATTR";
+//    /***缓存唯一sku*/
+//    public static final String CACHE_LOC_SKU_ATTR = "CACHE_LOC_SKU_ATTR";
     /** pda拣货:已扫描的Sku队列 */
     public static final String PDA_PICKING_SCAN_SKU_QUEUE = "PDA_PICKING_SCAN_SKU_QUEUE_";
 

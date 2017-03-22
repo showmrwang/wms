@@ -27,15 +27,15 @@ public class CheckScanResultCommand extends BaseCommand {
     /** 拣货模式 */
     private int pickingWay;
     /** 库位上外部容器是否扫描完毕*/
-    private Boolean isNeedTipOutContainer;
+    private Boolean isNeedTipOutContainer =false;
     /**库位上内部容器是否扫描完毕*/
-    private Boolean isNeedTipInsideContainer;
+    private Boolean isNeedTipInsideContainer =false;
     /**外部容器id*/
     private Long tipOuterContainerId;
     /**内部容器id*/
     private Long tipiInsideContainerId;
     /** 所有库位已经全部拣货完成 */
-    private Boolean isPicking;
+    private Boolean isPicking =false;
     /** 缓存是否存在 */
     private Boolean isCacheExists;
     /** 提示商品条码 */
@@ -49,7 +49,7 @@ public class CheckScanResultCommand extends BaseCommand {
     /**唯一sku,sn及残次条码*/
     private String tipSkuAttrIdSnDefect;
     /** 是否提示库位 (所有的库位是否已经扫描完毕)*/
-    private Boolean isNeedTipLoc;
+    private Boolean isNeedTipLoc =false;
     /**提示库位id*/
     private Long tipLocationId;
     /**出库箱号*/
