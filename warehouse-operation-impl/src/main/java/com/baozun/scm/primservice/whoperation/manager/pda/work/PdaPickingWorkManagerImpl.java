@@ -229,8 +229,8 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             //流程相关统计信息 
             if(whOperationCommand.getIsWholeCase() == false){
                 // 所有小车
-                if(null != operationLine.getFromOuterContainerId()){
-                    outerContainers.add(operationLine.getFromOuterContainerId());
+                if(null != operationLine.getUseOuterContainerId()){
+                    outerContainers.add(operationLine.getUseOuterContainerId());
                 }
                 // 所有出库箱
                 if(null != operationLine.getUseOutboundboxCode()){

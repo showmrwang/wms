@@ -25,6 +25,7 @@ import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoTransportMgmtDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoVasDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
+import com.baozun.scm.primservice.whoperation.model.collect.WhOdoArchivIndex;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAddress;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAttr;
@@ -108,6 +109,19 @@ public class OdoArchivManagerImpl implements OdoArchivManager {
             count = archivWhOdoTransportMgmt(odoid, ouid, sysDate, count);
             // 归档odoVas by odoid
             count = archivWhOdoVas(odoid, ouid, sysDate, count);
+
+            // 保存出库单索引数据(仓库)
+            WhOdoArchivIndex oai = new WhOdoArchivIndex();
+            oai.setEcOrderCode(whOdo.getEcOrderCode());
+            oai.setDataSource(whOdo.getDataSource());
+            oai.setWmsOdoCode(whOdo.getOdoCode());
+            oai.setSysDate(sysDate);
+            oai.setOuId(ouid);
+            int odoIndex = odoArchivDao.saveOdoArchivIndex(oai);
+            if (odoIndex == 0) {
+                log.error("OdoArchivManagerImpl saveOdoArchivIndex error");
+                throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
+            }
         } catch (Exception e) {
             log.error("OdoArchivManagerImpl archivOdo error" + e);
             throw new BusinessException(ErrorCodes.SYSTEM_ERROR);

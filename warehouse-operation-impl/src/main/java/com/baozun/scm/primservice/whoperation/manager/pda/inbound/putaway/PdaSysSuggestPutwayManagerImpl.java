@@ -2198,6 +2198,10 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
                 }
             }
         }
+        if (null == csrCmd) {
+            log.error("container statistic cache is error, logId is:[{}]", containerStatus, logId);
+            throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+        }
         Set<Long> insideContainerIds = csrCmd.getInsideContainerIds();
         Map<Long, String> insideContainerIdsCode = csrCmd.getInsideContainerIdsCode();
         Long tipContainerId = null;
@@ -3258,9 +3262,9 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
         ContainerCommand insideCommand = null;
         if(!StringUtil.isEmpty(insideContainerCode)) {
             insideCommand = containerDao.getContainerByCode(insideContainerCode, ouId); // 根据内部容器编码查询内部容器
-            if (null == insideCommand) {
-                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL); // 外部容器不存在
-            }
+        }
+        if (null == insideCommand) {
+            throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL); // 外部容器不存在
         }
         Long insideContainerId = insideCommand.getId();
         Long outerContainerId = null;
@@ -3465,9 +3469,9 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
         ContainerCommand insideCommand = null;
         if(!StringUtil.isEmpty(insideContainerCode)) {
             insideCommand = containerDao.getContainerByCode(insideContainerCode, ouId); // 根据内部容器编码查询内部容器
-            if (null == insideCommand) {
-                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL); // 外部容器不存在
-            }
+        }
+        if (null == insideCommand) {
+            throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL); // 外部容器不存在
         }
         Long insideContainerId = insideCommand.getId();
         Location tipLoc = locationDao.getLocationByBarcode(tipLocationCode, ouId);

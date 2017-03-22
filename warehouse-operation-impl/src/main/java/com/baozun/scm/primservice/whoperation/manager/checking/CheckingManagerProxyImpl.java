@@ -28,12 +28,17 @@ import com.baozun.scm.baseservice.print.manager.printObject.PrintObjectManagerPr
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingResultCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.constant.CheckingStatus;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhCheckingLineManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhCheckingManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhFunctionOutBoundManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.WhOdoPackageInfoManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.WhOutboundboxLineManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.WhOutboundboxManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhPrintInfoManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionOutBound;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhPrintInfo;
 
@@ -55,6 +60,15 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
     private WhCheckingManager whCheckingManager;
     @Autowired
     private WhCheckingLineManager whCheckingLineManager;
+    @Autowired
+    private WhOdoPackageInfoManager whOdoPackageInfoManager;
+    @Autowired
+    private WhOutboundboxLineManager whOutboundboxLineManager;
+    @Autowired
+    private WhOutboundboxManager whOutboundboxManager;
+    @Autowired
+    private WhSkuInventoryManager whSkuInventoryManager;
+    
    
     /**
      * 根据复核打印配置打印单据
@@ -112,6 +126,7 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
      */
     @Override
     public Boolean updateChecking(WhCheckingResultCommand whCheckingResultCommand) {
+        Boolean isSuccess = true;
         for(WhCheckingCommand whCheckingCommand : whCheckingResultCommand.getWhCheckingCommandLst()){
             if(CheckingStatus.NEW == whCheckingCommand.getStatus()){
                 whCheckingCommand.setStatus(CheckingStatus.FINISH);
@@ -123,7 +138,7 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
                 }
             }
         }
-        return null;
+        return isSuccess;
     }
     
     /**
@@ -136,15 +151,23 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
      */
     @Override
     public Boolean createOutboundbox(WhCheckingResultCommand whCheckingResultCommand) {
-        // 5.8.6.7生成出库箱库存与箱数据 TODO 
-        // 先生成出库箱库存。
-        // 删除原有的库存（小车货格库存，小车出库箱库存，播种墙货格库存，播种墙出库箱库存，周转箱库存）
-        // t_wh_sku_inventory
-        // t_wh_outboundbox,t_wh_outboundbox_line
-        // 5.8.6.8更新出库单状态 TODO 
-        // 修改出库单状态为复核完成状态。
-        
-        return null;
+        Boolean isSuccess = true;
+        for(WhCheckingCommand whCheckingCommand : whCheckingResultCommand.getWhCheckingCommandLst()){
+            if(null != whCheckingCommand.getFacilityId() || null != whCheckingCommand.getContainerId() || null != whCheckingCommand.getOuterContainerId() || null != whCheckingCommand.getContainerLatticeNo()){
+                List<WhCheckingLineCommand> whCheckingLineCommandLst = whCheckingLineManager.getCheckingLineByCheckingId(whCheckingCommand.getId(), whCheckingCommand.getOuId());
+                for(WhCheckingLineCommand whCheckingLineCommand : whCheckingLineCommandLst){
+                    // 先生成出库箱库存。
+                    // 删除原有的库存（小车货格库存，小车出库箱库存，播种墙货格库存，播种墙出库箱库存，周转箱库存）
+                    // t_wh_sku_inventory
+                    // t_wh_outboundbox,t_wh_outboundbox_line
+                    List<WhSkuInventoryCommand> whSkuInventoryCommandLst = whSkuInventoryManager.findInventoryByUuid(whCheckingLineCommand.getUuid(), whCheckingLineCommand.getOuId());
+                    
+                    
+                }
+                
+            }
+        }
+        return isSuccess;
     }
     
     /**
@@ -157,15 +180,16 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
      */
     @Override
     public Boolean updateOdoStatus(WhCheckingResultCommand whCheckingResultCommand) {
-        // 5.8.6.7生成出库箱库存与箱数据 TODO 
-        // 先生成出库箱库存。
-        // 删除原有的库存（小车货格库存，小车出库箱库存，播种墙货格库存，播种墙出库箱库存，周转箱库存）
-        // t_wh_sku_inventory
-        // t_wh_outboundbox,t_wh_outboundbox_line
-        // 5.8.6.8更新出库单状态 TODO 
+        Boolean isSuccess = true;
         // 修改出库单状态为复核完成状态。
-        
-        return null;
+        for(WhCheckingCommand whCheckingCommand : whCheckingResultCommand.getWhCheckingCommandLst()){
+            List<WhCheckingLineCommand> whCheckingLineCommandLst = whCheckingLineManager.getCheckingLineByCheckingId(whCheckingCommand.getId(), whCheckingCommand.getOuId());
+            for(WhCheckingLineCommand whCheckingLineCommand : whCheckingLineCommandLst){
+                
+                
+            }
+        }
+        return isSuccess;
     }
 
     /**
@@ -179,6 +203,8 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
     @Override
     public Boolean packageWeightCalculation(WhCheckingResultCommand whCheckingResultCommand) {
         // 5.8.6.9算包裹计重  TODO 
+        // t_wh_odo_package_info.calc_weight 
+        // t_wh_outboundbox,t_wh_outboundbox_line
         
         return null;
     }

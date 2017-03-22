@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundboxLineDao">
+	<resultMap id="WhOutboundboxLineResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundboxLine">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whOutboundboxLineColumnsExt">
+	    <![CDATA[
+	        	id as id,
+	        	wh_outboundbox_id as whOutboundboxId,
+	        	sku_code as skuCode,
+	        	sku_ext_code as skuExtCode,
+	        	sku_bar_code as skuBarCode,
+	        	sku_name as skuName,
+	        	qty as qty,
+	        	customer_code as customerCode,
+	        	customer_name as customerName,
+	        	store_code as storeCode,
+	        	store_name as storeName,
+	        	inv_status as invStatus,
+	        	inv_type as invType,
+	        	batch_number as batchNumber,
+	        	mfg_date as mfgDate,
+	        	exp_date as expDate,
+	        	country_of_origin as countryOfOrigin,
+	        	inv_attr1 as invAttr1,
+	        	inv_attr2 as invAttr2,
+	        	inv_attr3 as invAttr3,
+	        	inv_attr4 as invAttr4,
+	        	inv_attr5 as invAttr5,
+	        	uuid as uuid,
+	        	ou_id as ouId,
+	        	odo_id as odoId,
+	        	odo_line_id as odoLineId
+	    ]]>
+	</sql>
+	
+	<sql id="whOutboundboxLineDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+				<if test="whOutboundboxId!=null">
+					and wh_outboundbox_id = #{whOutboundboxId}
+				</if>
+	       
+	       
+		       <if test="skuCode!=null and skuCode!=''">
+					and sku_code = #{skuCode}
+				</if>
+	       
+	       
+		       <if test="skuExtCode!=null and skuExtCode!=''">
+					and sku_ext_code = #{skuExtCode}
+				</if>
+	       
+	       
+		       <if test="skuBarCode!=null and skuBarCode!=''">
+					and sku_bar_code = #{skuBarCode}
+				</if>
+	       
+	       
+		       <if test="skuName!=null and skuName!=''">
+					and sku_name = #{skuName}
+				</if>
+	       
+				<if test="qty!=null">
+					and qty = #{qty}
+				</if>
+	       
+	       
+		       <if test="customerCode!=null and customerCode!=''">
+					and customer_code = #{customerCode}
+				</if>
+	       
+	       
+		       <if test="customerName!=null and customerName!=''">
+					and customer_name = #{customerName}
+				</if>
+	       
+	       
+		       <if test="storeCode!=null and storeCode!=''">
+					and store_code = #{storeCode}
+				</if>
+	       
+	       
+		       <if test="storeName!=null and storeName!=''">
+					and store_name = #{storeName}
+				</if>
+	       
+	       
+		       <if test="invStatus!=null and invStatus!=''">
+					and inv_status = #{invStatus}
+				</if>
+	       
+	       
+		       <if test="invType!=null and invType!=''">
+					and inv_type = #{invType}
+				</if>
+	       
+	       
+		       <if test="batchNumber!=null and batchNumber!=''">
+					and batch_number = #{batchNumber}
+				</if>
+	       
+				<if test="mfgDate!=null">
+					and mfg_date = #{mfgDate}
+				</if>
+	       
+				<if test="expDate!=null">
+					and exp_date = #{expDate}
+				</if>
+	       
+	       
+		       <if test="countryOfOrigin!=null and countryOfOrigin!=''">
+					and country_of_origin = #{countryOfOrigin}
+				</if>
+	       
+	       
+		       <if test="invAttr1!=null and invAttr1!=''">
+					and inv_attr1 = #{invAttr1}
+				</if>
+	       
+	       
+		       <if test="invAttr2!=null and invAttr2!=''">
+					and inv_attr2 = #{invAttr2}
+				</if>
+	       
+	       
+		       <if test="invAttr3!=null and invAttr3!=''">
+					and inv_attr3 = #{invAttr3}
+				</if>
+	       
+	       
+		       <if test="invAttr4!=null and invAttr4!=''">
+					and inv_attr4 = #{invAttr4}
+				</if>
+	       
+	       
+		       <if test="invAttr5!=null and invAttr5!=''">
+					and inv_attr5 = #{invAttr5}
+				</if>
+	       
+	       
+		       <if test="uuid!=null and uuid!=''">
+					and uuid = #{uuid}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+	       
+				<if test="odoId!=null">
+					and odo_id = #{odoId}
+				</if>
+	       
+				<if test="odoLineId!=null">
+					and odo_line_id = #{odoLineId}
+				</if>
+		</where>
+	</sql>
+	
+</mapper>

@@ -115,7 +115,7 @@ public class LocationReplenishmentManagerProxyImpl extends BaseManagerImpl imple
         }
         // 上下限数量
         maxQty = locationQty * upBound / 100;
-        minQty = (long) Math.ceil(locationQty * downBound / 100);
+        minQty = (long) Math.ceil(new Double(locationQty * downBound / 100));
 
         // 库位库存量=库位在库库存+库位待移入库存
         double invQty = this.whskuInventoryManager.findInventoryByLocation(locationId, ouId);

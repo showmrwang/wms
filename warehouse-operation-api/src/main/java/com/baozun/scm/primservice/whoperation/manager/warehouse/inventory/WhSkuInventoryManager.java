@@ -225,5 +225,15 @@ public interface WhSkuInventoryManager extends BaseManager {
 
 	void allocationInventoryByLineListNew(List<WhWaveLine> notHaveInvAttrLines, List<AllocateStrategy> rules,
 			Long skuId, Long storeId, Long invStatusId, Warehouse wh, String logId);
+
+	Map<String, String> replenishmentToLinesNew(List<WhWaveLine> lines, Long odoId, String bhCode,
+			Map<String, List<ReplenishmentRuleCommand>> ruleMap, Map<String, String> map, Warehouse wh);
+	
+	/**
+     * 根据uuid获取
+     * @author kai.zhu
+     * @version 2017年3月13日
+     */
+	List<WhSkuInventoryCommand> findInventoryByUuid(String uuid, Long ouId);
 	
 }
