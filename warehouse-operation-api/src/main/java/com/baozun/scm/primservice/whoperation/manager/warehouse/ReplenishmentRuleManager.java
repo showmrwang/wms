@@ -125,4 +125,21 @@ public interface ReplenishmentRuleManager extends BaseManager {
      * @return
      */
     List<ReplenishmentStrategyCommand> getReplenishmentStrategyCommandByRuleId(Long ruleId, Long ouId);
+    
+    /**
+     * 查询波次内补货工作释放及拆分条件分组 -- 补货工作
+     * @param ruleId
+     * @param ouId
+     * @return
+     */
+    List<ReplenishmentRuleCommand> getInReplenishmentConditionGroup(Long waveId, Long ouId);
+    
+    /**
+     * 查询波次外补货工作释放及拆分条件分组 -- 补货工作
+     * 
+     * @param ouId
+     * @return
+     */
+    List<ReplenishmentRuleCommand> getOutReplenishmentConditionGroup(Long ouId);
+    
 }
