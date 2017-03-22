@@ -153,10 +153,6 @@ public class PickingScanResultCommand extends BaseCommand {
     private String skuInvAttr5 = "";
     /** 提示商品数量 */
     private Long tipSkuQty;
-    /** 提示商品sn */
-    private Boolean IsNeedScanSkuSn;
-    /** 提示商品defect */
-    private Boolean IsNeedScanSkuDefect;
 
     private String skuSn;
 
@@ -172,7 +168,7 @@ public class PickingScanResultCommand extends BaseCommand {
     /** 是否需要扫描商品sn */
     private Boolean isNeedScanSkuSn = false;
     /** 是否需要扫描商品残次 */
-    private Boolean isNeedScanDefect = false;
+    private Boolean isNeedScanSkuDefect = false;
     /** 是否扫描sku库存属性 */
     private Boolean isNeedSkuDetail;
 
@@ -740,22 +736,6 @@ public class PickingScanResultCommand extends BaseCommand {
         this.tipSkuQty = tipSkuQty;
     }
 
-    public Boolean getIsNeedScanSkuSn() {
-        return IsNeedScanSkuSn;
-    }
-
-    public void setIsNeedScanSkuSn(Boolean isNeedScanSkuSn) {
-        IsNeedScanSkuSn = isNeedScanSkuSn;
-    }
-
-    public Boolean getIsNeedScanSkuDefect() {
-        return IsNeedScanSkuDefect;
-    }
-
-    public void setIsNeedScanSkuDefect(Boolean isNeedScanSkuDefect) {
-        IsNeedScanSkuDefect = isNeedScanSkuDefect;
-    }
-
     public String getSkuSn() {
         return skuSn;
     }
@@ -1036,13 +1016,6 @@ public class PickingScanResultCommand extends BaseCommand {
         this.isTipSkuDefect = isTipSkuDefect;
     }
 
-    public Boolean getIsNeedScanDefect() {
-        return isNeedScanDefect;
-    }
-
-    public void setIsNeedScanDefect(Boolean isNeedScanDefect) {
-        this.isNeedScanDefect = isNeedScanDefect;
-    }
 
     public Integer getReplenishWay() {
         return replenishWay;
@@ -1086,6 +1059,22 @@ public class PickingScanResultCommand extends BaseCommand {
 
     public void setIsScanOutBoundBox(Boolean isScanOutBoundBox) {
         this.isScanOutBoundBox = isScanOutBoundBox;
+    }
+
+    public Boolean getIsNeedScanSkuSn() {
+        return isNeedScanSkuSn;
+    }
+
+    public void setIsNeedScanSkuSn(Boolean isNeedScanSkuSn) {
+        this.isNeedScanSkuSn = isNeedScanSkuSn;
+    }
+
+    public Boolean getIsNeedScanSkuDefect() {
+        return isNeedScanSkuDefect;
+    }
+
+    public void setIsNeedScanSkuDefect(Boolean isNeedScanSkuDefect) {
+        this.isNeedScanSkuDefect = isNeedScanSkuDefect;
     }
 
 
