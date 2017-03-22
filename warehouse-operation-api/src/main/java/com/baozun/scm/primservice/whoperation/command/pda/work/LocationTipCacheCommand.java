@@ -41,7 +41,7 @@ public class LocationTipCacheCommand extends BaseCommand {
     /** 提示外容器号队列 */
     private ArrayDeque<Long> tipOuterContainerIds = new ArrayDeque<Long>();
     /** 直接放在库位上的sku队列 */
-    private ArrayDeque<Long> tipLocSkuIds = new ArrayDeque<Long>();
+//    private ArrayDeque<String> tipLocSkuIds = new ArrayDeque<String>();
     public int getPickingType() {
         return pickingType;
     }
@@ -98,13 +98,14 @@ public class LocationTipCacheCommand extends BaseCommand {
         this.tipOuterContainerIds = tipOuterContainerIds;
     }
 
-    public ArrayDeque<Long> getTipLocSkuIds() {
-        return tipLocSkuIds;
-    }
+//    public ArrayDeque<String> getTipLocSkuIds() {
+//        return tipLocSkuIds;
+//    }
+//
+//    public void setTipLocSkuIds(ArrayDeque<String> tipLocSkuIds) {
+//        this.tipLocSkuIds = tipLocSkuIds;
+//    }
 
-    public void setTipLocSkuIds(ArrayDeque<Long> tipLocSkuIds) {
-        this.tipLocSkuIds = tipLocSkuIds;
-    }
-
+    
 
 }

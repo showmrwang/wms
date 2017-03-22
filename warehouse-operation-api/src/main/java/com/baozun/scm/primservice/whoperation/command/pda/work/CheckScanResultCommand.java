@@ -38,8 +38,6 @@ public class CheckScanResultCommand extends BaseCommand {
     private Boolean isPicking;
     /** 缓存是否存在 */
     private Boolean isCacheExists;
-    /** 是否提示商品 (所有的商品sku是否已经扫描完毕)*/
-    private Boolean isNeedTipSku;
     /** 提示商品条码 */
     private Long tipSkuBarcode;
     /** 是否直接核扫商品 */
@@ -103,12 +101,6 @@ public class CheckScanResultCommand extends BaseCommand {
     }
     public void setIsCacheExists(Boolean isCacheExists) {
         this.isCacheExists = isCacheExists;
-    }
-    public Boolean getIsNeedTipSku() {
-        return isNeedTipSku;
-    }
-    public void setIsNeedTipSku(Boolean isNeedTipSku) {
-        this.isNeedTipSku = isNeedTipSku;
     }
     public Long getTipSkuBarcode() {
         return tipSkuBarcode;

@@ -64,20 +64,20 @@ public class TaskTest extends AbstractJUnit4SpringContextTests {
 
     @Test
     public void testExecute() {
-        WhPoCommand po = new WhPoCommand();
-        // po.setId(22L);
-        po.setStoreId(22L);
-        po.setPoCode("tes22t");
-        po.setPoType(1);
-        po.setStatus(11);
-        po.setIsWms(true);
-        po.setOuId(12L);
         try {
+            WhPoCommand po = new WhPoCommand();
+            // po.setId(22L);
+            po.setStoreId(22L);
+            po.setPoCode("tes22t");
+            po.setPoType(1);
+            po.setStatus(11);
+            po.setIsWms(true);
+            po.setOuId(12L);
+            // createsAsnManager.findWhAsnListByAsnCode("aa", null);
+            // WhPoCommand po = new WhPoCommand();
+            // createPoAsnManagerProxy.CreatePo(po);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        // createsAsnManager.findWhAsnListByAsnCode("aa", null);
-        // WhPoCommand po = new WhPoCommand();
-        // createPoAsnManagerProxy.CreatePo(po);
     }
 }

@@ -634,4 +634,27 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	 <delete id="deleteOdoTransportMgmt" parameterType="map">
 			delete from t_wh_odo_transport_mgmt where odo_id = #{odoid} and ou_id = #{ouid}
 	 </delete>
+	 
+	 	<insert id="saveOdoArchivIndex" parameterType="com.baozun.scm.primservice.whoperation.model.collect.WhOdoArchivIndex" 
+				useGeneratedKeys="true" keyProperty="id" 
+			 flushCache="true">
+		    <![CDATA[
+		        INSERT INTO
+		        t_wh_odo_archiv_index (
+		        	ec_order_code ,
+		        	wms_odo_code ,
+		        	is_returned_purchase ,
+		        	ou_id ,
+		        	sys_date ,
+		        	data_source 
+		        ) VALUES (
+		        	#{ecOrderCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		            #{wmsOdoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		            #{isReturnedPurchase,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{sysDate,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{dataSource,javaType=java.lang.String,jdbcType=VARCHAR} 
+		        )
+		    ]]>
+			</insert>
 </mapper>

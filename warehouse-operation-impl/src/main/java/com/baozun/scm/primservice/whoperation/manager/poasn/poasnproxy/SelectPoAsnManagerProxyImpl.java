@@ -204,9 +204,9 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
     public Pagination<WhAsnCommand> findWhAsnListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params, Integer sourceType) {
         log.info(this.getClass().getSimpleName() + ".findWhAsnListByQueryMapWithPageExt method begin!");
         Pagination<WhAsnCommand> whAsnCommandList = null;
-        if (null == sourceType) {
+        /*if (null == sourceType) {
             sourceType = Constants.SHARD_SOURCE;
-        }
+        }*/
         whAsnCommandList = asnManager.findListByQueryMapWithPageExtByShard(page, sorts, params);
         log.info(this.getClass().getSimpleName() + ".findWhAsnListByQueryMapWithPageExt method end!");
         return whAsnCommandList;

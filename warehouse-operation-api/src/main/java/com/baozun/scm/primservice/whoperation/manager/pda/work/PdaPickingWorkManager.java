@@ -227,7 +227,7 @@ public interface PdaPickingWorkManager extends BaseManager {
      * @param locationCode
      * @param ouId
      */
-    public void cacheLocation(Long operationId,String locationCode,Long ouId);
+    public void cacheLocation(Long operationId,String locationCode,Long ouId,String tipLocationBarCode);
         
     /***
      * 有小车有出库箱的情况下(获取货格号)

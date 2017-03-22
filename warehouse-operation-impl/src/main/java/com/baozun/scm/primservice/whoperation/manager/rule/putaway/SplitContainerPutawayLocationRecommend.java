@@ -359,7 +359,7 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                 Double locWidth = al.getWidth();
                                 Double locWeight = al.getWeight();
                                 Double locVolumeRate = (null == al.getVolumeRate() ? 1.0 : al.getVolumeRate());
-                                if (null == locLength || null == locLength || null == locLength) {
+                                if (null == locLength || null == locWidth || null == locHeight) {
                                     log.error("sys guide container putaway sku length、width、height is null error, skuId is:[{}], logId is:[{}]", locId, logId);
                                     throw new BusinessException(ErrorCodes.LOCATION_LENGTH_WIDTH_HIGHT_IS_NULL_ERROR, new Object[] {al.getCode()});
                                 }
@@ -814,7 +814,7 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                     Double locWidth = al.getWidth();
                                     Double locWeight = al.getWeight();
                                     Double locVolumeRate = (null == al.getVolumeRate() ? 1.0 : al.getVolumeRate());
-                                    if (null == locLength || null == locLength || null == locLength) {
+                                    if (null == locLength || null == locWidth || null == locHeight) {
                                         log.error("sys guide container putaway sku length、width、height is null error, skuId is:[{}], logId is:[{}]", locId, logId);
                                         throw new BusinessException(ErrorCodes.LOCATION_LENGTH_WIDTH_HIGHT_IS_NULL_ERROR, new Object[] {al.getCode()});
                                     }

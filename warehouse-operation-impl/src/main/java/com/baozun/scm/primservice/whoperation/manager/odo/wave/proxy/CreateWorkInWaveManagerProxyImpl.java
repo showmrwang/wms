@@ -267,8 +267,10 @@ public class CreateWorkInWaveManagerProxyImpl implements CreateWorkInWaveManager
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void createPickingWorkInWave(Long waveId, Long ouId, Long userId, Boolean isReplenishmentWorkInWave) {
-        Map<Long, List<WhSkuInventory>> odoLineIdAndInventory = new HashMap<Long, List<WhSkuInventory>>();
-        Map<Long, List<WhSkuInventoryTobefilled>> odoLineIdAndTobefilled = new HashMap<Long, List<WhSkuInventoryTobefilled>>();
+        // Map<Long, List<WhSkuInventory>> odoLineIdAndInventory = new HashMap<Long,
+        // List<WhSkuInventory>>();
+        // Map<Long, List<WhSkuInventoryTobefilled>> odoLineIdAndTobefilled = new HashMap<Long,
+        // List<WhSkuInventoryTobefilled>>();
         // 查询出小批次列表
         List<WhOdoOutBoundBox> whOdoOutBoundBoxList = this.getBoxBatchsForPicking(waveId, ouId);
         if (null == whOdoOutBoundBoxList || whOdoOutBoundBoxList.isEmpty()) {

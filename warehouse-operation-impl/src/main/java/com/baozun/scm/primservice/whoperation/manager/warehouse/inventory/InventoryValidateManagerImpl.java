@@ -59,6 +59,7 @@ public class InventoryValidateManagerImpl extends BaseManagerImpl implements Inv
         WhSkuInventoryCommand inv = inventoryDao.findWhSkuInventoryByIdGroupByUuid(skuId, uuid, ouId);
         if (null == inv) {
             result = false;
+            return result;
         }
         Double onHandQty = inv.getOnHandQty();
         if (null == onHandQty || (null != onHandQty && -1 == onHandQty.compareTo(expectQty))) {
