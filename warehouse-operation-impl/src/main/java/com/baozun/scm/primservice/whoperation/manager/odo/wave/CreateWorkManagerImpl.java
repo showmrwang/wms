@@ -180,17 +180,6 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
                 //获取明细补货单据号
                 replenishmentCodes.add(skuInventoryAllocatedCommand.getReplenishmentCode());
             }
-            // 判断补货单号对应库存是否都创完工作
-            for(String replenishmentCode : replenishmentCodes){
-                Double totalQtyAllocated = skuInventoryAllocatedDao.getTotalQtyByReplenishmentCode(replenishmentCode, replenishmentRuleCommand.getTaskOuId());
-                Double totalQtyWorkLine = workLineDao.getTotalQtyByReplenishmentCode(replenishmentCode, replenishmentRuleCommand.getTaskOuId());
-                if(null != totalQtyAllocated && null != totalQtyWorkLine && totalQtyAllocated.equals(totalQtyWorkLine)){
-                    // 将补货任务行标识为已创建工作
-                    ReplenishmentTask replenishmentTask = replenishmentTaskDao.findReplenishmentTaskByCode(replenishmentCode, replenishmentRuleCommand.getTaskOuId());
-                    replenishmentTask.setIsCreateWork(true);
-                    replenishmentTaskDao.saveOrUpdateByVersion(replenishmentTask);
-                }
-            }
             // 校验工作明细数量是否正确
             if (rWorkLineTotal != whSkuInventoryAllocatedCommandLst.size()) {
                 log.error("rWorkLineTotal is error", rWorkLineTotal);
@@ -222,6 +211,17 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
                     WhOperationCommand WhOperationCommand = this.operationDao.findOperationByCode(replenishmentOperationCode, replenishmentRuleCommand.getTaskOuId());
                     operationDao.delete(WhOperationCommand.getId());
                     log.error("qty is error", qty);
+                }
+            }
+            // 判断补货单号对应库存是否都创完工作
+            for(String replenishmentCode : replenishmentCodes){
+                Double totalQtyAllocated = skuInventoryAllocatedDao.getTotalQtyByReplenishmentCode(replenishmentCode, replenishmentRuleCommand.getTaskOuId());
+                Double totalQtyWorkLine = workLineDao.getTotalQtyByReplenishmentCode(replenishmentCode, replenishmentRuleCommand.getTaskOuId());
+                if(null != totalQtyAllocated && null != totalQtyWorkLine && totalQtyAllocated.equals(totalQtyWorkLine)){
+                    // 将补货任务行标识为已创建工作
+                    ReplenishmentTask replenishmentTask = replenishmentTaskDao.findReplenishmentTaskByCode(replenishmentCode, replenishmentRuleCommand.getTaskOuId());
+                    replenishmentTask.setIsCreateWork(true);
+                    replenishmentTaskDao.saveOrUpdateByVersion(replenishmentTask);
                 }
             }
         } catch (Exception e) {
@@ -266,8 +266,6 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
                 }
                 //2.1.3.2 创建工作明细
                 this.savePickingWorkLine(whOdoOutBoundBoxCommand, whSkuInventoryList, whSkuInventoryTobefilledList, userId, workCode);
-                //2.1.3.3 设置出库箱行标识  
-                this.updateWhOdoOutBoundBoxCommand(whOdoOutBoundBoxCommand);
             }
             //2.1.4 更新工作头信息
             this.updatePickingWork(workCode, whOdoOutBoundBoxGroup);
@@ -275,6 +273,10 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
             String operationCode = this.savePickingOperation(workCode, whOdoOutBoundBoxGroup);
             //2.1.6 创建作业明细
             this.savePickingOperationLine(workCode, operationCode, whOdoOutBoundBox.getOuId());
+            for(WhOdoOutBoundBoxCommand whOdoOutBoundBoxCommand : whOdoOutBoundBoxCommandList){
+                //2.1.3.3 设置出库箱行标识  
+                this.updateWhOdoOutBoundBoxCommand(whOdoOutBoundBoxCommand);    
+            }
         } catch (Exception e) {
             log.error("", e);
             throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
@@ -309,17 +311,6 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
                 //获取明细补货单据号
                 replenishmentCodes.add(skuInventoryAllocatedCommand.getReplenishmentCode());
             }
-            // 判断补货单号对应库存是否都创完工作
-            for(String replenishmentCode : replenishmentCodes){
-                Double totalQtyAllocated = skuInventoryAllocatedDao.getTotalQtyByReplenishmentCode(replenishmentCode, replenishmentRuleCommand.getOuId());
-                Double totalQtyWorkLine = workLineDao.getTotalQtyByReplenishmentCode(replenishmentCode, replenishmentRuleCommand.getOuId());
-                if(null != totalQtyAllocated && null != totalQtyWorkLine && totalQtyAllocated.equals(totalQtyWorkLine)){
-                    // 将补货任务行标识为已创建工作
-                    ReplenishmentTask replenishmentTask = replenishmentTaskDao.findReplenishmentTaskByCode(replenishmentCode, replenishmentRuleCommand.getOuId());
-                    replenishmentTask.setIsCreateWork(true);
-                    replenishmentTaskDao.saveOrUpdateByVersion(replenishmentTask);
-                }
-            }
             // 校验工作明细数量是否正确
             if (rWorkLineTotal != whSkuInventoryAllocatedCommandLst.size()) {
                 log.error("rWorkLineTotal is error, rWorkLineTotal:{}", rWorkLineTotal);
@@ -333,6 +324,17 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
             // 校验作业明细
             if (replenishmentOperationLineCount != rWorkLineTotal) {
                 log.error("replenishmentOperationLineCount is error, replenishmentOperationLineCount:{}", replenishmentOperationLineCount);
+            }
+            // 判断补货单号对应库存是否都创完工作
+            for(String replenishmentCode : replenishmentCodes){
+                Double totalQtyAllocated = skuInventoryAllocatedDao.getTotalQtyByReplenishmentCode(replenishmentCode, replenishmentRuleCommand.getOuId());
+                Double totalQtyWorkLine = workLineDao.getTotalQtyByReplenishmentCode(replenishmentCode, replenishmentRuleCommand.getOuId());
+                if(null != totalQtyAllocated && null != totalQtyWorkLine && totalQtyAllocated.equals(totalQtyWorkLine)){
+                    // 将补货任务行标识为已创建工作
+                    ReplenishmentTask replenishmentTask = replenishmentTaskDao.findReplenishmentTaskByCode(replenishmentCode, replenishmentRuleCommand.getOuId());
+                    replenishmentTask.setIsCreateWork(true);
+                    replenishmentTaskDao.saveOrUpdateByVersion(replenishmentTask);
+                }
             }
         } catch (Exception e) {
             log.error("", e);
