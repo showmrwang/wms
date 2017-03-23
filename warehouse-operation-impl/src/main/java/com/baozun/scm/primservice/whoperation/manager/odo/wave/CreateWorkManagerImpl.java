@@ -263,14 +263,11 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
                 //根据占用单据号和占用单据明细行ID查询库存列表
                 if(null == odoLineIdAndInventory.get(whOdoOutBoundBoxCommand.getOdoLineId())){
                     whSkuInventoryList = this.getSkuInventory(whOdoOutBoundBoxCommand);
-                    odoLineIdAndInventory.put(whOdoOutBoundBoxCommand.getOdoLineId(), whSkuInventoryList);
                 }else{
                     whSkuInventoryList = odoLineIdAndInventory.get(whOdoOutBoundBoxCommand.getOdoLineId());
-                    
                 }
                 if(null == odoLineIdAndTobefilled.get(whOdoOutBoundBoxCommand.getOdoLineId())){
                     whSkuInventoryTobefilledList = this.getSkuInventoryTobefilled(whOdoOutBoundBoxCommand);
-                    odoLineIdAndTobefilled.put(whOdoOutBoundBoxCommand.getOdoLineId(), whSkuInventoryTobefilledList);
                 }else{
                     whSkuInventoryTobefilledList = odoLineIdAndTobefilled.get(whOdoOutBoundBoxCommand.getOdoLineId());
                 }
@@ -282,11 +279,13 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
                 }
                 //初始化占用库存量
                 Double onHandQty =  0.0 ;
-                //计算占用库存量                       
-                for(WhSkuInventory whSkuInventory : whSkuInventoryList){
+                //计算占用库存量
+                List<WhSkuInventory> inventoryQtyList = this.getSkuInventory(whOdoOutBoundBoxCommand);
+                for(WhSkuInventory whSkuInventory : inventoryQtyList){
                     onHandQty =  whSkuInventory.getOnHandQty() + onHandQty;
                 }
-                for(WhSkuInventoryTobefilled whSkuInventoryTobefilled : whSkuInventoryTobefilledList){
+                List<WhSkuInventoryTobefilled> tobefilledQtyList = this.getSkuInventoryTobefilled(whOdoOutBoundBoxCommand);
+                for(WhSkuInventoryTobefilled whSkuInventoryTobefilled : tobefilledQtyList){
                     onHandQty =  whSkuInventoryTobefilled.getQty() + onHandQty;
                 }
                 //如果不满足，则抛出异常 
@@ -328,38 +327,42 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
                     }
                 }
                 whSkuInventoryList = ListUtils.subtract(whSkuInventoryList,skuInventoryLst);
+                odoLineIdAndInventory.put(whOdoOutBoundBoxCommand.getOdoLineId(), whSkuInventoryList);
                 List<WhSkuInventoryTobefilled> whSkuInventoryTobefilledLst = new ArrayList<WhSkuInventoryTobefilled>();
-                List<WhSkuInventoryTobefilled> skuInventoryTobefilledLst = new ArrayList<WhSkuInventoryTobefilled>();
-                for(WhSkuInventoryTobefilled whSkuInventoryTobefilled : whSkuInventoryTobefilledList){
-                    Double tobefilledQty = whSkuInventoryTobefilled.getQty();
-                    //出库箱数量和库存数量比较                    
-                    int retval =  odoOutBoundBoxQty.compareTo(tobefilledQty);
-                    BigDecimal b1 = new BigDecimal(odoOutBoundBoxQty.toString());
-                    BigDecimal b2 = new BigDecimal(tobefilledQty.toString());
-                    if(retval > 0){
-                        odoOutBoundBoxQty =  b1.subtract(b2).doubleValue();
-                        whSkuInventoryTobefilledLst.add(whSkuInventoryTobefilled);
-                        skuInventoryTobefilledLst.add(whSkuInventoryTobefilled);
-                    }else{
-                        tobefilledQty = b2.subtract(b1).doubleValue();
-                        if(0 == tobefilledQty.compareTo(0.00)){
+                if(0 != odoOutBoundBoxQty.compareTo(0.00)){
+                    List<WhSkuInventoryTobefilled> skuInventoryTobefilledLst = new ArrayList<WhSkuInventoryTobefilled>();
+                    for(WhSkuInventoryTobefilled whSkuInventoryTobefilled : whSkuInventoryTobefilledList){
+                        Double tobefilledQty = whSkuInventoryTobefilled.getQty();
+                        //出库箱数量和库存数量比较                    
+                        int retval =  odoOutBoundBoxQty.compareTo(tobefilledQty);
+                        BigDecimal b1 = new BigDecimal(odoOutBoundBoxQty.toString());
+                        BigDecimal b2 = new BigDecimal(tobefilledQty.toString());
+                        if(retval > 0){
+                            odoOutBoundBoxQty =  b1.subtract(b2).doubleValue();
                             whSkuInventoryTobefilledLst.add(whSkuInventoryTobefilled);
                             skuInventoryTobefilledLst.add(whSkuInventoryTobefilled);
                         }else{
-                            whSkuInventoryTobefilled.setQty(tobefilledQty);
-                            WhSkuInventoryTobefilled newWhSkuInventoryTobefilled = new WhSkuInventoryTobefilled();
-                            BeanUtils.copyProperties(whSkuInventoryTobefilled, newWhSkuInventoryTobefilled);
-                            newWhSkuInventoryTobefilled.setQty(odoOutBoundBoxQty);
-                            whSkuInventoryTobefilledLst.add(newWhSkuInventoryTobefilled);    
+                            tobefilledQty = b2.subtract(b1).doubleValue();
+                            if(0 == tobefilledQty.compareTo(0.00)){
+                                whSkuInventoryTobefilledLst.add(whSkuInventoryTobefilled);
+                                skuInventoryTobefilledLst.add(whSkuInventoryTobefilled);
+                            }else{
+                                whSkuInventoryTobefilled.setQty(tobefilledQty);
+                                WhSkuInventoryTobefilled newWhSkuInventoryTobefilled = new WhSkuInventoryTobefilled();
+                                BeanUtils.copyProperties(whSkuInventoryTobefilled, newWhSkuInventoryTobefilled);
+                                newWhSkuInventoryTobefilled.setQty(odoOutBoundBoxQty);
+                                whSkuInventoryTobefilledLst.add(newWhSkuInventoryTobefilled);    
+                            }
+                            odoOutBoundBoxQty = 0.00;
                         }
-                        odoOutBoundBoxQty = 0.00;
+                        int retva2 =  odoOutBoundBoxQty.compareTo(0.00);
+                        if(retva2 == 0){
+                            break;    
+                        }
                     }
-                    int retva2 =  odoOutBoundBoxQty.compareTo(0.00);
-                    if(retva2 == 0){
-                        break;    
-                    }
+                    whSkuInventoryTobefilledList = ListUtils.subtract(whSkuInventoryTobefilledList,skuInventoryTobefilledLst);
                 }
-                whSkuInventoryTobefilledList = ListUtils.subtract(whSkuInventoryTobefilledList,skuInventoryTobefilledLst);
+                odoLineIdAndTobefilled.put(whOdoOutBoundBoxCommand.getOdoLineId(), whSkuInventoryTobefilledList);
                 //2.1.3.2 创建工作明细
                 this.savePickingWorkLine(whOdoOutBoundBoxCommand, whSkuInventoryLst, whSkuInventoryTobefilledLst, userId, workCode);
             }
@@ -1293,11 +1296,13 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
             }
         }
         if( null != whSkuInventoryTobefilledList){
-            WhWork whWork = new WhWork();
-            //复制数据        
-            BeanUtils.copyProperties(whWorkCommand, whWork);
-            whWork.setIsPickingTobefilled(true);
-            workDao.saveOrUpdateByVersion(whWork);
+            if(0 != whSkuInventoryTobefilledList.size()){
+                WhWork whWork = new WhWork();
+                //复制数据        
+                BeanUtils.copyProperties(whWorkCommand, whWork);
+                whWork.setIsPickingTobefilled(true);
+                workDao.saveOrUpdateByVersion(whWork);
+            }
             // 生成待移入工作明细           
             for(WhSkuInventoryTobefilled whSkuInventoryTobefilled : whSkuInventoryTobefilledList){
                 
