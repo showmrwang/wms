@@ -37,8 +37,8 @@ public class WhOdoStatusConfirmManagerImpl extends BaseManagerImpl implements Wh
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public int saveWhOdoStatusConfirm(WhOdo whOdo) {
-        Long count = 0L;
         log.info("WhOdoStatusConfirmManagerImpl.saveWhOdoStatusConfirm begin!");
+        Long count = 0L;
         if (null == whOdo) {
             log.warn("WhOdoStatusConfirmManagerImpl.saveWhOdoStatusConfirm whOdo is null");
             return count.intValue();

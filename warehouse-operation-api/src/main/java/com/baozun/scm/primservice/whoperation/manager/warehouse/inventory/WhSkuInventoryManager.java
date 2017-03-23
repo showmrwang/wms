@@ -22,6 +22,7 @@ import java.util.Map;
 import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.LocationRecommendResultCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ReplenishmentRuleCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhOdoPackageInfoCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.command.wave.WhWaveLineCommand;
 import com.baozun.scm.primservice.whoperation.command.whinterface.inbound.WhInboundConfirmCommand;
@@ -231,4 +232,19 @@ public interface WhSkuInventoryManager extends BaseManager {
 	
     List<WhSkuInventory> findWhSkuInventoryByPramas(WhSkuInventory inventory);
 	
+    /**
+     * 生成出库箱库存
+     * 
+     * @param WhSkuInventoryCommand
+     * @return
+     */
+    void saveOrUpdate(WhSkuInventoryCommand whSkuInventoryCommand);
+    
+    /**
+     * 删除原有的库存（小车货格库存，小车出库箱库存，播种墙货格库存，播种墙出库箱库存，周转箱库存）
+     * 
+     * @param outId
+     * @return
+     */
+    int deleteSkuInventory(Long id, Long ouid);
 }

@@ -108,6 +108,7 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentMsg;
 import com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentTask;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhOdoPackageInfo;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationExecLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhWorkLine;
@@ -6796,5 +6797,36 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     @Override
     public List<WhSkuInventory> findWhSkuInventoryByPramas(WhSkuInventory inventory) {
         return whSkuInventoryDao.findWhSkuInventoryByPramas(inventory);
+    }
+
+    /**
+     * 生成出库箱库存
+     * 
+     * @param whSkuInventoryCommand
+     * @return
+     */
+    @Override
+    public void saveOrUpdate(WhSkuInventoryCommand whSkuInventoryCommand) {
+        WhSkuInventory whSkuInventory = new WhSkuInventory();
+        //复制数据        
+        BeanUtils.copyProperties(whSkuInventoryCommand, whSkuInventory);
+        if(null != whSkuInventoryCommand.getId() ){
+            whSkuInventoryDao.saveOrUpdate(whSkuInventory);
+        }else{
+            whSkuInventoryDao.insert(whSkuInventory);
+        }
+    }
+
+    /**
+     * 根据参数删除数据
+     * 
+     * @param id
+     * @param ouid
+     * @return
+     */
+    @Override
+    public int deleteSkuInventory(Long id, Long ouid) {
+        int count = whSkuInventoryDao.deleteWhSkuInventoryById(id, ouid);
+        return count;
     }
 }
