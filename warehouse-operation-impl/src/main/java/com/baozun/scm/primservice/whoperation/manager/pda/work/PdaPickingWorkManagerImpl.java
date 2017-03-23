@@ -926,6 +926,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
     private void cacheInsideContainerCode(Long locationId ,Long insideId){
         LocationTipCacheCommand tipLocationCmd = cacheManager.getObject(CacheConstants.CACHE_LOCATION + locationId.toString());
         if(null == tipLocationCmd){
+            tipLocationCmd = new LocationTipCacheCommand();
            ArrayDeque<Long> tipInsideContainerIds = new ArrayDeque<Long>();
            tipInsideContainerIds.addFirst(insideId);
            tipLocationCmd.setTipInsideContainerIds(tipInsideContainerIds);
