@@ -1400,7 +1400,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 Long outerId = cSRCmd.getTipOuterContainerId();
                 //判断外部容器
                 Container c = containerDao.findByIdExt(outerId, ouId);
-                this.judeContainerStatus(c);
+//                this.judeContainerStatus(c);
                 //提示外部容器编码
                 command.setTipOuterContainerCode(c.getCode());
                 command.setIsNeedTipOutContainer(true);
