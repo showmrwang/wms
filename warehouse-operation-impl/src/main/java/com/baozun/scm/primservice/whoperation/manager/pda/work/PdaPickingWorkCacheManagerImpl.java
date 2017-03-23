@@ -2270,6 +2270,14 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                           cacheManager.setObject(CacheConstants.CACHE_OPERATION_LINE+ operationId.toString(), tipLocationCmd, CacheConstants.CACHE_ONE_DAY);
                       }
                   }
+                  OperationLineCacheCommand tipLocationCmd = cacheManager.getObject(CacheConstants.CACHE_OPERATION_LINE + operationId.toString());
+                  if(null != tipLocationCmd ) {
+                      ArrayDeque<Long> tipLocationIds = tipLocationCmd.getTipLocationIds();
+                      for(Long locId:tipLocationIds){
+                          cacheManager.remove(CacheConstants.CACHE_LOCATION + locId.toString());
+                      }
+                  }
+                  cacheManager.remove(CacheConstants.CACHE_OPERATION_LINE + operationId.toString());
              }
              if(CancalPattern.SCAN_LOC_CANCEL == cancelPattern){
                  OperationLineCacheCommand tipLocationCmd = cacheManager.getObject(CacheConstants.CACHE_OPERATION_LINE + operationId.toString());
@@ -2281,7 +2289,6 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                          cacheManager.setObject(CacheConstants.CACHE_OPERATION_LINE+ operationId.toString(), tipLocationCmd, CacheConstants.CACHE_ONE_DAY);
                      }
                  }
-                 cacheManager.remove(CacheConstants.CACHE_LOCATION + 115100690);
              }
              if(CancalPattern.SCAN_OUTCONTAINER_CANCEL == cancelPattern){
                  //清除库位上的托盘
@@ -2290,27 +2297,30 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                      ArrayDeque<Long> tipOuterContainerIds = tipLocCmd.getTipOuterContainerIds();
                      if(null != tipOuterContainerIds && tipOuterContainerIds.size() != 0) {
                          tipOuterContainerIds.removeFirst();
+                         tipLocCmd.setTipInsideContainerIds(null);
                          cacheManager.setObject(CacheConstants.CACHE_LOCATION+locationId.toString(),tipLocCmd, CacheConstants.CACHE_ONE_DAY);
                      }
                  }
+                  //删除库位上的托盘货箱统计
+                 cacheManager.remove(CacheConstants.CACHE_LOCATION + locationId.toString());
              }
              if(CancalPattern.SCAN_INSIDECONTAINER_CANCEL == cancelPattern){ //提示货箱取消流程
                  LocationTipCacheCommand tipLocCmd = cacheManager.getObject(CacheConstants.CACHE_LOCATION + locationId.toString());
                  if(null != tipLocCmd){
-                     tipLocCmd.setTipInsideContainerIds(null);
-                     cacheManager.setObject(CacheConstants.CACHE_LOCATION+locationId.toString(),tipLocCmd, CacheConstants.CACHE_ONE_DAY);
+                     ArrayDeque<Long> tipInsideContainerIds = tipLocCmd.getTipInsideContainerIds();
+                     if(null != tipInsideContainerIds && tipInsideContainerIds.size() != 0){
+                         tipInsideContainerIds.removeFirst();
+                         cacheManager.setObject(CacheConstants.CACHE_LOCATION+locationId.toString(),tipLocCmd, CacheConstants.CACHE_ONE_DAY);
+                     }
                  }
              }
              if(CancalPattern.SCAN_SKU_SCANCEL== cancelPattern){ //提示货箱取消流程){
                  if(null != insideContainerId) {
                      cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + insideContainerId.toString());
-                   cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + insideContainerId.toString()+tipSkuId.toString());
-//                   cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + insideContainerId.toString()+511);
-//                   String cacheValue = cacheManager.getValue(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + insideContainerId.toString() + tipSkuId.toString());
+                     cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + insideContainerId.toString()+tipSkuId.toString());
                  }else{
                      cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + locationId.toString());
-                   cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + locationId.toString()+tipSkuId.toString());
-//                   cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + locationId.toString()+511);
+                     cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + locationId.toString()+tipSkuId.toString());
                  }
              }
              if(CancalPattern.SCAN_OUT_BOUNX_BOX == cancelPattern){
@@ -2319,6 +2329,11 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                      tipLocationCmd.setTipOutBonxBoxIds(null);
                      cacheManager.setObject(CacheConstants.CACHE_OPERATION_LINE+ operationId.toString(), tipLocationCmd, CacheConstants.CACHE_ONE_DAY);
                  }
+                 ArrayDeque<Long> tipLocationIds = tipLocationCmd.getTipLocationIds();
+                 for(Long locId:tipLocationIds){
+                     cacheManager.remove(CacheConstants.CACHE_LOCATION + locId.toString());
+                 }
+                 cacheManager.remove(CacheConstants.CACHE_OPERATION_LINE + operationId.toString());
              }
           }
 }

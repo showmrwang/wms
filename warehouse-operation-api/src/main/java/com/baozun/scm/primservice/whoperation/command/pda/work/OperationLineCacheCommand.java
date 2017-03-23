@@ -1,6 +1,7 @@
 package com.baozun.scm.primservice.whoperation.command.pda.work;
 
 import java.util.ArrayDeque;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -17,7 +18,7 @@ public class OperationLineCacheCommand extends BaseCommand{
     /**非短拣作业明细id集合*/
     private Set<Long> pickingOperIds;
     /**作业明细id对应的拣货数量*/
-    private Map<Long,Double> operLineIdToQty;
+    private List<Map<Long,Double>> operLineIdToQtyList;
     /**出库箱列表*/
     private Set<String> outBoundxBoxs;
     /** 周转箱列表*/
@@ -59,13 +60,6 @@ public class OperationLineCacheCommand extends BaseCommand{
         this.pickingOperIds = pickingOperIds;
     }
 
-    public Map<Long, Double> getOperLineIdToQty() {
-        return operLineIdToQty;
-    }
-
-    public void setOperLineIdToQty(Map<Long, Double> operLineIdToQty) {
-        this.operLineIdToQty = operLineIdToQty;
-    }
 
     public ArrayDeque<Long> getTipLocationIds() {
         return tipLocationIds;
@@ -81,6 +75,14 @@ public class OperationLineCacheCommand extends BaseCommand{
 
     public void setTipOutBonxBoxIds(ArrayDeque<String> tipOutBonxBoxIds) {
         this.tipOutBonxBoxIds = tipOutBonxBoxIds;
+    }
+
+    public List<Map<Long, Double>> getOperLineIdToQtyList() {
+        return operLineIdToQtyList;
+    }
+
+    public void setOperLineIdToQtyList(List<Map<Long, Double>> operLineIdToQtyList) {
+        this.operLineIdToQtyList = operLineIdToQtyList;
     }
 
     
