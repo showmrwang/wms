@@ -1084,6 +1084,16 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public WaveCommand findWaveSumDatabyOdoIdList(List<Long> odoIdList, Long ouId) {
         // @mender yimin.lu 2017/3/23 修正商品总数的统计
+    	if (null == odoIdList || odoIdList.isEmpty()) {
+    		WaveCommand waveCommand = new WaveCommand();
+    		waveCommand.setSkuCategoryQty(Constants.DEFAULT_INTEGER);
+    		waveCommand.setTotalVolume(Constants.DEFAULT_DOUBLE);
+    		waveCommand.setTotalWeight(Constants.DEFAULT_DOUBLE);
+    		waveCommand.setTotalOdoLineQty(Constants.DEFAULT_INTEGER);
+    		waveCommand.setTotalAmount(Constants.DEFAULT_DOUBLE);
+    		waveCommand.setTotalSkuQty(Constants.DEFAULT_DOUBLE);
+    		return waveCommand;
+		}
         WaveCommand waveCommand = this.whOdoDao.findWaveSumDatabyOdoIdList(odoIdList, ouId);
         waveCommand.setTotalOdoQty(odoIdList.size());
         return waveCommand;

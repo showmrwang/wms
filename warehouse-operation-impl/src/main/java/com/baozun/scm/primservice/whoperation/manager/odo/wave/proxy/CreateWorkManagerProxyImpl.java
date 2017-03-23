@@ -1,5 +1,6 @@
 package com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.baozun.scm.baseservice.print.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ReplenishmentRuleCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.CreatePickingWorkResultCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryAllocatedCommand;
 import com.baozun.scm.primservice.whoperation.constant.WaveStatus;
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoOutBoundBoxMapper;
@@ -18,6 +20,8 @@ import com.baozun.scm.primservice.whoperation.manager.odo.wave.WhWaveManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.ReplenishmentRuleManager;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoOutBoundBox;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
+import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
+import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryTobefilled;
 
 @Service("createWorkManagerProxy")
 public class CreateWorkManagerProxyImpl implements CreateWorkManagerProxy {
@@ -132,6 +136,7 @@ public class CreateWorkManagerProxyImpl implements CreateWorkManagerProxy {
      */
     public Boolean createPickingWorkInWave(Long waveId, Long ouId, Long userId) {
         Boolean isPickingWorkInWave = true;
+        CreatePickingWorkResultCommand resultCommand = new CreatePickingWorkResultCommand();
         // 查询出小批次列表
         List<WhOdoOutBoundBox> whOdoOutBoundBoxList = odoOutBoundBoxMapper.getBoxBatchsForPicking(waveId, ouId);
         if (null == whOdoOutBoundBoxList || whOdoOutBoundBoxList.isEmpty()) {
@@ -146,10 +151,11 @@ public class CreateWorkManagerProxyImpl implements CreateWorkManagerProxy {
                 //循环小批次下所有分组信息分别创建工作 和作业         
                 for(WhOdoOutBoundBox whOdoOutBoundBoxGroup : odoOutBoundBoxForGroup){
                     try {
-                        createWorkManager.createPickingWorkInWave(whOdoOutBoundBoxGroup, whOdoOutBoundBox, userId);
+                        resultCommand = createWorkManager.createPickingWorkInWave(whOdoOutBoundBoxGroup, whOdoOutBoundBox, resultCommand, userId);
                     } catch (Exception e) {
                         log.error("", e);
                         isPickingWorkInWave = false;
+                        continue;
                     }    
                 }
             }
