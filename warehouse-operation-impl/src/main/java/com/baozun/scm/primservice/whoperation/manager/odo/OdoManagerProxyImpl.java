@@ -1018,7 +1018,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         int odoCount = odoMap.size();// 波次出库单总单数
         int odolineCount = odolineList.size();// 波次明细数
 
-        Map<Long, Double> skuMap = new HashMap<Long, Double>();// 商品总件数
+        Map<Long, Double> skuMap = new HashMap<Long, Double>();// 商品种类数
         double totalAmt = Constants.DEFAULT_DOUBLE;// 总金额
         double totalSkuQty = Constants.DEFAULT_DOUBLE;// 商品总件数
         for (WhOdoLine line : odolineList) {

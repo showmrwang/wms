@@ -255,5 +255,18 @@
 			</if>
 		</where>
 	</select>
+	
+	<select id="findQtyByOdoLineId" resultType="Double">
+		select
+			sum(qty)
+		from
+			t_wh_odo_outboundbox
+		<where>
+			ou_id = #{ouId}
+			<if test="odoLineId!=null">
+				and odo_line_id = #{odoLineId}
+			</if>
+		</where>
+	</select>
 
 </mapper>

@@ -1083,56 +1083,19 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public WaveCommand findWaveSumDatabyOdoIdList(List<Long> odoIdList, Long ouId) {
-        //
-        int batchCount = 500;
-        int totalCount = odoIdList.size();
-        int ceil = (int) Math.ceil((double) totalCount / batchCount);
-        //
-        // 商品种类数
-        int skuCategoryQty = Constants.DEFAULT_INTEGER;
-        // 总体积
-        double totalVolume = Constants.DEFAULT_DOUBLE;
-        // 总重量
-        double totalWeight = Constants.DEFAULT_DOUBLE;
-        // 波次明细数
-        int totalOdoLineQty = Constants.DEFAULT_INTEGER;
-        // 总金额
-        double totalAmount = Constants.DEFAULT_DOUBLE;
-        // 商品总件数
-        double totalSkuQty = Constants.DEFAULT_DOUBLE;
-        for (int i = 0; i < ceil; i++) {
-            List<Long> subList = null;
-            if (ceil == 1) {
-                subList = odoIdList;
-            } else {
-                int fromIndex = batchCount * i;
-                int toIndex = batchCount * (i + 1);
-                if (totalCount < toIndex) {
-                    toIndex = totalCount;
-                }
-                if (fromIndex == 0) {
-                    subList = odoIdList.subList(0, toIndex);
-                } else {
-                    subList = odoIdList.subList(fromIndex + 1, toIndex);
-                }
-            }
-            WaveCommand waveCommand = this.whOdoDao.findWaveSumDatabyOdoIdList(subList, ouId);
-
-            skuCategoryQty += waveCommand.getSkuCategoryQty();
-            totalVolume += waveCommand.getTotalVolume();
-            totalWeight += waveCommand.getTotalWeight();
-            totalOdoLineQty += waveCommand.getTotalOdoLineQty();
-            totalAmount += waveCommand.getTotalAmount();
-            totalSkuQty += waveCommand.getTotalSkuQty();
-
-        }
-        WaveCommand waveCommand = new WaveCommand();
-        waveCommand.setSkuCategoryQty(skuCategoryQty);
-        waveCommand.setTotalVolume(totalVolume);
-        waveCommand.setTotalWeight(totalWeight);
-        waveCommand.setTotalOdoLineQty(totalOdoLineQty);
-        waveCommand.setTotalAmount(totalAmount);
-        waveCommand.setTotalSkuQty(totalSkuQty);
+        // @mender yimin.lu 2017/3/23 修正商品总数的统计
+    	if (null == odoIdList || odoIdList.isEmpty()) {
+    		WaveCommand waveCommand = new WaveCommand();
+    		waveCommand.setSkuCategoryQty(Constants.DEFAULT_INTEGER);
+    		waveCommand.setTotalVolume(Constants.DEFAULT_DOUBLE);
+    		waveCommand.setTotalWeight(Constants.DEFAULT_DOUBLE);
+    		waveCommand.setTotalOdoLineQty(Constants.DEFAULT_INTEGER);
+    		waveCommand.setTotalAmount(Constants.DEFAULT_DOUBLE);
+    		waveCommand.setTotalSkuQty(Constants.DEFAULT_DOUBLE);
+    		return waveCommand;
+		}
+        WaveCommand waveCommand = this.whOdoDao.findWaveSumDatabyOdoIdList(odoIdList, ouId);
+        waveCommand.setTotalOdoQty(odoIdList.size());
         return waveCommand;
     }
 
@@ -1180,6 +1143,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
             wave.setTotalOdoLineQty(waveCommand.getTotalOdoLineQty());
             wave.setTotalAmount(waveCommand.getTotalAmount());
             wave.setTotalSkuQty(waveCommand.getTotalSkuQty());
+            wave.setTotalOdoQty(waveOdoIdList.size());
         }
         wave.setPhaseCode(this.getWavePhaseCode(null, waveTemplateId, wave.getOuId()));
         // 插入波次
