@@ -88,5 +88,13 @@ public interface WhOdoOutBoundBoxDao extends BaseDao<WhOdoOutBoundBox, Long> {
      * @return
      */
     WhOdoOutBoundBoxCommand findWhOdoOutBoundBoxCommandById(@Param("id") Long id, @Param("ouId") Long ouId);
+    
+    /**
+     * [业务方法] 波次中创拣货工作-根据id查询数据
+     * @param id
+     * @param ouId
+     * @return
+     */
+    Double findQtyByOdoLineId(@Param("odoLineId") Long odoLineId, @Param("ouId") Long ouId);
 
 }

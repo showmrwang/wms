@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.baozun.scm.primservice.whoperation.command.warehouse.ReplenishmentRuleCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.CreatePickingWorkResultCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryAllocatedCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoOutBoundBox;
@@ -37,7 +38,7 @@ public interface CreateWorkManager extends BaseManager {
      * @param userId
      * @return
      */
-    public void createPickingWorkInWave(WhOdoOutBoundBox whOdoOutBoundBoxGroup, WhOdoOutBoundBox whOdoOutBoundBox, Long userId);
+    public CreatePickingWorkResultCommand createPickingWorkInWave(WhOdoOutBoundBox whOdoOutBoundBoxGroup, WhOdoOutBoundBox whOdoOutBoundBox, CreatePickingWorkResultCommand createPickingWorkResultCommand, Long userId);
     
    
     /**
