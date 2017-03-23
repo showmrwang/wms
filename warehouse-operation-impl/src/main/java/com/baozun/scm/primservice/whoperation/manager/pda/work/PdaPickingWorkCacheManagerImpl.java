@@ -2289,6 +2289,8 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                          cacheManager.setObject(CacheConstants.CACHE_OPERATION_LINE+ operationId.toString(), tipLocationCmd, CacheConstants.CACHE_ONE_DAY);
                      }
                  }
+                 //删除库位上的托盘货箱统计
+                 cacheManager.remove(CacheConstants.CACHE_LOCATION + locationId.toString());
              }
              if(CancalPattern.SCAN_OUTCONTAINER_CANCEL == cancelPattern){
                  //清除库位上的托盘
@@ -2301,8 +2303,6 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                          cacheManager.setObject(CacheConstants.CACHE_LOCATION+locationId.toString(),tipLocCmd, CacheConstants.CACHE_ONE_DAY);
                      }
                  }
-                  //删除库位上的托盘货箱统计
-                 cacheManager.remove(CacheConstants.CACHE_LOCATION + locationId.toString());
              }
              if(CancalPattern.SCAN_INSIDECONTAINER_CANCEL == cancelPattern){ //提示货箱取消流程
                  LocationTipCacheCommand tipLocCmd = cacheManager.getObject(CacheConstants.CACHE_LOCATION + locationId.toString());

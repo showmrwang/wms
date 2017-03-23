@@ -188,7 +188,7 @@ public class PickingScanResultCommand extends BaseCommand {
     /** 货格号 */
     private Integer useContainerLatticeNo;
     /** 是否短拣 */
-    private Boolean isShortPicking;
+    private Boolean isShortPicking = false;
     /** 是否满箱 */
     private Boolean isTrunkful;
     /** 出库箱/周转箱满箱后是否使用新的容器 */

@@ -2488,4 +2488,20 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         }
         return useContainerLatticeNo;
     }
+    
+    /***
+     * 返回库位
+     * @param locationCode
+     * @return
+     */
+    public Location getLocationByCode(String locationCode,Long ouId){
+        Location location = whLocationDao.findLocationByCode(locationCode, ouId);
+        if(null == location) {
+            location =  whLocationDao.getLocationByBarcode(locationCode, ouId);
+            if(null == location) {
+                throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_LOCATION_NULL);
+            }
+        }
+        return location;
+    }
 }
