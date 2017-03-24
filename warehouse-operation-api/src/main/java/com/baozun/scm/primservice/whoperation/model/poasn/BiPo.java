@@ -47,8 +47,6 @@ public class BiPo extends BaseModel {
     private String fromLocation;
     /** 目的地 */
     private String toLocation;
-    /** 运输商ID */
-    private Long logisticsProviderId;
     /** 运输商Code */
     private String logisticsProvider;
     /** PO单类型 */
@@ -95,6 +93,16 @@ public class BiPo extends BaseModel {
     private Long modifiedId;
     /** 用于标识创单时有OUID时有此字段 */
     private Long ouId;
+    /** 是否自动关单 */
+    private Boolean isAutoClose;
+
+    public Boolean getIsAutoClose() {
+        return isAutoClose;
+    }
+
+    public void setIsAutoClose(Boolean isAutoClose) {
+        this.isAutoClose = isAutoClose;
+    }
 
     // columns END
     public String getPoCode() {
@@ -135,14 +143,6 @@ public class BiPo extends BaseModel {
 
     public void setSupplierId(Long supplierId) {
         this.supplierId = supplierId;
-    }
-
-    public Long getLogisticsProviderId() {
-        return logisticsProviderId;
-    }
-
-    public void setLogisticsProviderId(Long logisticsProviderId) {
-        this.logisticsProviderId = logisticsProviderId;
     }
 
     public Integer getPoType() {

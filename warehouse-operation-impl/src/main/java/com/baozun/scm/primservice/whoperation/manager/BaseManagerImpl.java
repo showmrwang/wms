@@ -498,9 +498,9 @@ public abstract class BaseManagerImpl implements BaseManager {
                 }
                 if (null != sys) {
                     // 判断系统参数的lifecycle是否=传入的lifecycle
-                    // if (sys.getLifecycle().equals(lifecycle)) {
-                    returnList.add(sys);
-                    // }
+                    if(null == lifecycle || lifecycle.equals(sys.getLifecycle())){
+                        returnList.add(sys);
+                     }
                 }
             }
         } else {

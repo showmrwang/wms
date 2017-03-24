@@ -53,6 +53,12 @@ public class WhSkuInventoryCommand extends BaseCommand {
     private Long occupationLineId;
     /** 调整数量 */
     private Double modifyQty;
+    /** 播种墙编码 */
+    private String seedingWallCode;
+    /**货格号*/
+    private Integer containerLatticeNo;
+    /**出库箱号*/
+    private String outboundboxCode;
     /** 在库可用库存 */
     private Double onHandQty;
     /** 已分配库存 */
@@ -1050,6 +1056,30 @@ public class WhSkuInventoryCommand extends BaseCommand {
 
     public void setTemporaryLocationId(Long temporaryLocationId) {
         this.temporaryLocationId = temporaryLocationId;
+    }
+
+    public String getSeedingWallCode() {
+        return seedingWallCode;
+    }
+
+    public void setSeedingWallCode(String seedingWallCode) {
+        this.seedingWallCode = seedingWallCode;
+    }
+
+    public Integer getContainerLatticeNo() {
+        return containerLatticeNo;
+    }
+
+    public void setContainerLatticeNo(Integer containerLatticeNo) {
+        this.containerLatticeNo = containerLatticeNo;
+    }
+
+    public String getOutboundboxCode() {
+        return outboundboxCode;
+    }
+
+    public void setOutboundboxCode(String outboundboxCode) {
+        this.outboundboxCode = outboundboxCode;
     }
 
 }

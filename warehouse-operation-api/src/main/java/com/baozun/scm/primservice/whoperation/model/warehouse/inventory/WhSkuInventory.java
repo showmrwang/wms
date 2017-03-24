@@ -30,12 +30,14 @@ public class WhSkuInventory extends BaseModel {
      * 
      */
     private static final long serialVersionUID = -263625851030926135L;
-
-
+    
+    
     /** 商品ID */
     private Long skuId;
     /** 库位ID 库位号 */
     private Long locationId;
+    /** 暂存库位ID*/
+    private Long temporaryLocationId;
     /** 外部容器ID 托盘 货箱 */
     private Long outerContainerId;
     /** 内部容器ID 托盘 货箱 */
@@ -48,6 +50,12 @@ public class WhSkuInventory extends BaseModel {
     private String occupationCode;
     /** 占用单据明细行ID */
     private Long occupationLineId;
+    /** 播种墙编码 */
+    private String seedingWallCode;
+    /**货格号*/
+    private Integer containerLatticeNo;
+    /**出库箱号*/
+    private String outboundboxCode;
     /** 在库可用库存 */
     private Double onHandQty;
     /** 已分配库存 */
@@ -90,14 +98,8 @@ public class WhSkuInventory extends BaseModel {
     private Date inboundTime;
     /** 最后操作时间 */
     private Date lastModifyTime;
-
-    /**货格号*/
-    private Integer containerLatticeNo;
-    /**出库箱号*/
-    private String outboundboxCode;
-    /** 暂存库位ID*/
-    private Long temporaryLocationId;
-
+    
+    
     public Long getSkuId() {
         return skuId;
     }
@@ -379,6 +381,14 @@ public class WhSkuInventory extends BaseModel {
 
     public void setTemporaryLocationId(Long temporaryLocationId) {
         this.temporaryLocationId = temporaryLocationId;
+    }
+
+    public String getSeedingWallCode() {
+        return seedingWallCode;
+    }
+
+    public void setSeedingWallCode(String seedingWallCode) {
+        this.seedingWallCode = seedingWallCode;
     }
 
 }

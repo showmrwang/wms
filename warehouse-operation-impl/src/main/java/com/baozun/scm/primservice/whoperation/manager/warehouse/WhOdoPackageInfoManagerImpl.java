@@ -16,13 +16,33 @@ package com.baozun.scm.primservice.whoperation.manager.warehouse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhOdoPackageInfoCommand;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOdoPackageInfoDao;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhOdoPackageInfo;
 
 @Service("whOdoPackageInfoManager")
 public class WhOdoPackageInfoManagerImpl extends BaseManagerImpl implements WhOdoPackageInfoManager {
     
     public static final Logger log = LoggerFactory.getLogger(WhOdoPackageInfoManagerImpl.class);
+    
+    @Autowired
+    private WhOdoPackageInfoDao whOdoPackageInfoDao;
+
+    @Override
+    public void saveOrUpdate(WhOdoPackageInfoCommand whOdoPackageInfoCommand) {
+        WhOdoPackageInfo whOdoPackageInfo = new WhOdoPackageInfo();
+        //复制数据        
+        BeanUtils.copyProperties(whOdoPackageInfoCommand, whOdoPackageInfo);
+        if(null != whOdoPackageInfoCommand.getId() ){
+            whOdoPackageInfoDao.saveOrUpdate(whOdoPackageInfo);
+        }else{
+            whOdoPackageInfoDao.insert(whOdoPackageInfo);
+        }
+    }
 
 }

@@ -16,6 +16,7 @@ package com.baozun.scm.primservice.whoperation.dao.warehouse;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import lark.common.annotation.CommonQuery;
 import lark.common.annotation.QueryPage;
@@ -88,8 +89,7 @@ public interface WhOperationExecLineDao extends BaseDao<WhOperationExecLine, Lon
      * @param containerLatticeNoList
      * @return
      */
-    public List<WhOperationExecLine> checkContainerInventory(@Param("operationId") Long operationId, @Param("ouId") Long ouId, @Param("outerContainerId") Long outerContainerId, @Param("insideIdList") List<Long> insideIdList,
-            @Param("containerLatticeNoList") List<Integer> containerLatticeNoList, @Param("outboundboxIdList") List<String> outboundboxIdList);
+    public List<WhOperationExecLine> checkContainerInventory(@Param("invSkuIds") Set<Long> invSkuIds, @Param("ouId") Long ouId, @Param("execLineIds") Set<Long> execLineIds);
 
 	Long getWorkIdByUseContainerId(@Param("batch") String batch, @Param("scanContainerId") Long scanContainerId, @Param("ouId") Long ouId);
 }

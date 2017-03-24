@@ -68,9 +68,10 @@ public interface CreatePoAsnManagerProxy extends BaseManager {
      * 一键创建ASN；添加ASN明细【接口方法；业务方法】
      * 
      * @param asn
+     * @param isCreateAsn @mender yimin.lu 是否PO单整单创建
      * @return
      */
-    ResponseMsg createAsnBatch(WhAsnCommand asn);
+    ResponseMsg createAsnBatch(WhAsnCommand asn, Boolean isCreateAsn);
 
     /**
      * 创建子po流程：清除掉所有临时数据【业务方法】

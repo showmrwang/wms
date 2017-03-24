@@ -188,4 +188,13 @@ public interface BiPoManager extends BaseManager {
      */
     TransportProvider findTransportProviderByCode(String logisticsProviderCode);
 
+    /**
+     * 计算是否自动关单
+     * 
+     * @param storeId
+     * @param ouId
+     * @return
+     */
+    Boolean calIsAutoClose(Long storeId, Long ouId);
+
 }

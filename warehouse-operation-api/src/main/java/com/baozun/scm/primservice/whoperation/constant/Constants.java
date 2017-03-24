@@ -632,10 +632,20 @@ public final class Constants {
     public static final String ODO_CROSS_DOCKING_SYSMBOL_2 = "2";// 不支持越库
     public static final String ODO_CROSS_DOCKING_SYSMBOL_3 = "3";// 越库
 
+    /** 箱标签(出库) */
+    public static final String PRINT_ORDER_TYPE_1 = "1";
     /** 月台标签 */
     public static final String PRINT_ORDER_TYPE_5 = "5";
     /** 箱號标签 */
     public static final String PRINT_ORDER_TYPE_4 = "4";
+    /** 销售清单 */
+    public static final String PRINT_ORDER_TYPE_13 = "13";
+    /** 发票 */
+    public static final String PRINT_ORDER_TYPE_14 = "14";
+    /** 面单 */
+    public static final String PRINT_ORDER_TYPE_15 = "15";
+    /** 装箱清单 */
+    public static final String PRINT_ORDER_TYPE_16 = "16";
 
 
     /** 波次阶段创建出库箱 */

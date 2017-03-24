@@ -198,4 +198,12 @@ public interface PoManager extends BaseManager {
 
     void closePoToInfo(Long id, Long ouId, Long userId);
 
+    /**
+     * [业务方法]同步数据到集团下
+     * 
+     * @param infoPo
+     * @param operateType
+     */
+    void snycPoToInfo(WhPo infoPo, String operateType);
+
 }

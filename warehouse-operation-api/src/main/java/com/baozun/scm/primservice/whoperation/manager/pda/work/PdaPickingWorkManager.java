@@ -7,6 +7,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationComma
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Location;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhWork;
 
 
@@ -236,4 +237,11 @@ public interface PdaPickingWorkManager extends BaseManager {
      * @return
      */
     public Integer getUseContainerLatticeNo(Long operationId,String outBounxBoxCode);
+    
+    /***
+     * 返回库位
+     * @param locationCode
+     * @return
+     */
+    public Location getLocationByCode(String locationCode,Long ouId);
 }

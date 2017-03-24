@@ -47,6 +47,7 @@ import com.baozun.scm.primservice.whoperation.model.poasn.WhPoTransportMgmt;
 import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 import com.baozun.scm.primservice.whoperation.model.warehouse.ma.TransportProvider;
 import com.baozun.scm.primservice.whoperation.util.StringUtil;
 
@@ -574,6 +575,40 @@ public class BiPoManagerImpl extends BaseManagerImpl implements BiPoManager {
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public TransportProvider findTransportProviderByCode(String logisticsProviderCode) {
         return transportProviderDao.findByCode(logisticsProviderCode);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
+    public Boolean calIsAutoClose(Long storeId, Long ouId) {
+        Store store = this.getStoreByRedis(storeId);
+        boolean flag = true;
+        if ((store.getAsnOverchargeProportion() == null || store.getAsnOverchargeProportion().intValue() == 0) && (store.getPoOverchargeProportion() == null || store.getPoOverchargeProportion().intValue() == 0)) {
+            if (ouId == null) {
+                if (store.getIsPoAutoVerify() == null || store.getIsPoAutoVerify()) {
+                    flag = true;
+                } else {
+                    flag = false;
+                }
+            } else {
+                Warehouse wh = this.getWhToRedis(ouId);
+                if ((wh.getAsnOverchargeProportion() == null || wh.getAsnOverchargeProportion().intValue() == 0) && (wh.getPoOverchargeProportion() == null || wh.getPoOverchargeProportion().intValue() == 0)) {
+                    if (store.getIsPoAutoVerify() == null || store.getIsPoAutoVerify()) {
+                        if (wh.getIsPoAutoVerify() == null || wh.getIsPoAutoVerify()) {
+                            flag = true;
+                        } else {
+                            flag = false;
+                        }
+                    } else {
+                        flag = false;
+                    }
+                } else {
+                    flag = false;
+                }
+            }
+        } else {
+            flag = false;
+        }
+        return flag;
     }
 
 }

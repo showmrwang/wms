@@ -125,6 +125,16 @@ public class WhAsnCommand extends BaseCommand {
     private Double overChageRate;
     /** IT用uuid */
     private String uuid;
+    /** 是否自动关单 */
+    private Boolean isAutoClose;
+
+    public Boolean getIsAutoClose() {
+        return isAutoClose;
+    }
+
+    public void setIsAutoClose(Boolean isAutoClose) {
+        this.isAutoClose = isAutoClose;
+    }
 
     public String getUuid() {
         return uuid;

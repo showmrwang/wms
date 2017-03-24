@@ -458,9 +458,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		<include refid="whSkuInventoryDynamicWhere"/>
 	</select>
 	
-	
-	
-	
 	<select id="findSkuInventoryByOutContainerId" resultMap="WhSkuInventoryResult">
 		select 
 	        	inside_container_id as insideContainerId
@@ -469,5 +466,43 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		GROUP BY inside_container_id;
 	</select>
 	
-	
+	<select id="findSkuInventoryByContainer" resultMap="WhSkuInventoryResult">
+		select 
+			id as id,
+        	sku_id as skuId,
+        	location_id as locationId,
+        	outer_container_id as outerContainerId,
+        	inside_container_id as insideContainerId,
+        	customer_id as customerId,
+        	store_id as storeId,
+        	occupation_code as occupationCode,
+        	occupation_line_id as occupationLineId,
+        	sum(on_hand_qty) as onHandQty,
+        	frozen_qty as frozenQty,
+        	inv_status as invStatus,
+        	inv_type as invType,
+        	batch_number as batchNumber,
+        	mfg_date as mfgDate,
+        	exp_date as expDate,
+        	country_of_origin as countryOfOrigin,
+        	inv_attr1 as invAttr1,
+        	inv_attr2 as invAttr2,
+        	inv_attr3 as invAttr3,
+        	inv_attr4 as invAttr4,
+        	inv_attr5 as invAttr5,
+        	uuid as uuid,
+        	is_locked as isLocked,
+        	ou_id as ouId,
+        	occupation_code_source as occupationCodeSource,
+        	inbound_time as inboundTime,
+        	last_modify_time as lastModifyTime,
+        	container_lattice_no as containerLatticeNo,
+        	temporary_location_id as temporaryLocationId,
+            outboundbox_code as outboundboxCode
+		from 
+			t_wh_sku_inventory
+		<include refid="whSkuInventoryDynamicWhere"/>
+		group by uuid
+	</select>
+
 </mapper>

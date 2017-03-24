@@ -132,6 +132,17 @@ public class WhPoCommand extends BaseCommand {
 
     /** 店铺ID */
     private List<Long> storeList;
+    /** 是否自动关单 */
+    private Boolean isAutoClose;
+
+
+    public Boolean getIsAutoClose() {
+        return isAutoClose;
+    }
+
+    public void setIsAutoClose(Boolean isAutoClose) {
+        this.isAutoClose = isAutoClose;
+    }
 
     public Long getAsnId() {
         return asnId;

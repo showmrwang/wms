@@ -664,7 +664,13 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		FROM
 		t_wh_operation_exec_line operationExecLine
 		WHERE
-		operationExecLine.operation_id = #{operationId}
+		operationExecLine.ou_id = #{ouId}
+		<if test="execLineIds!=null and execLineIds.size()>0">
+		  and operationExecLine.id in 
+		   <foreach item="ecLineId" index="index" collection="execLineIds" open="(" separator="," close=")">
+              #{ecLineId}				
+           </foreach>
+		</if>
 		GROUP BY
 		operationExecLine.use_container_lattice_no,
 		operationExecLine.use_outer_container_id,
@@ -684,26 +690,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		FROM
 		t_wh_sku_inventory inventory
 		WHERE
-		1=1
-		<if test="outerContainerId!=null">
-	      and	inventory.outer_container_id = #{outerContainerId}
-		</if>
-		<if test="insideIdList!=null">
-		  and inventory.inside_container_id in 
-		   <foreach item="insideIdList" index="index" collection="list" open="(" separator="," close=")">
-              #{insideIdList}				
-           </foreach>
-		</if>
-		<if test="containerLatticeNoList!=null">
-		  	and inventory.container_lattice_no in
-		   <foreach item="containerLatticeNoList" index="indexs" collection="list" open="(" separator="," close=")">
-             #{containerLatticeNoList}				
-            </foreach>
-		</if>
-		<if test="outboundboxIdList!=null">
-		    and  inventory.outboundbox_code in 
-           <foreach item="outboundboxIdList" index="ids" collection="list" open="(" separator="," close=")">
-                 #{outboundboxIdList}				
+		inventory.ou_id = #{ouId}
+		<if test="invSkuIds!=null and invSkuIds.size()>0">
+		  and inventory.id in 
+		   <foreach item="invSkuId" index="index" collection="invSkuIds" open="(" separator="," close=")">
+              #{invSkuId}				
            </foreach>
 		</if>
 		GROUP BY
@@ -716,11 +707,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		WHERE
 		1 = 1
 		GROUP BY
-		opLine.use_container_lattice_no,
-		opLine.use_outer_container_id,
-		opLine.use_container_id,
-		opLine.use_outboundbox_code,
-		opLine.sku_id
+		opLine.useContainerLatticeNo,
+		opLine.useOuterContainerId,
+		opLine.useContainerId,
+		opLine.useOutboundboxCode,
+		opLine.skuId
 		HAVING
 		sum(qty) != 0
 	</select>
